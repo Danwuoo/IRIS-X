@@ -1,0 +1,8 @@
+# IRIS-X workspace hygiene; imported trees retain their own tracked files.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+node_modules/
+.DS_Store
+Thumbs.db

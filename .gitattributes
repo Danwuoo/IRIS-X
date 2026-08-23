@@ -1,0 +1,4 @@
+# Keep generated corpus index sections readable as UTF-8 text across platforms.
+*.md text eol=lf
+*.yaml text eol=lf
+*.py text eol=lf
