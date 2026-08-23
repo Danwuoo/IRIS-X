@@ -1,0 +1,30 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_reversible_append_section_001",
+    "expected_runtime_status":  "committed",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "diff_exact_match",
+                              "backup_metadata_exists",
+                              "rollback_metadata_sufficient"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "apply_reversible_structured_edit",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/notes.md",
+                                                                       "selector":  {
+                                                                                        "type":  "heading",
+                                                                                        "text":  "Scope",
+                                                                                        "level":  2
+                                                                                    },
+                                                                       "operation":  "insert_after",
+                                                                       "replacement":  "Add audit trail before commit.",
+                                                                       "backup_policy":  "fixture_backup_restore"
+                                                                   }
+                                            }
+                                        ]
+                        },
+    "expected_rollback_status":  "available"
+}

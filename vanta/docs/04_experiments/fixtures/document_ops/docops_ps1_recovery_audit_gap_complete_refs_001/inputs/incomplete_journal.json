@@ -1,0 +1,69 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "episode_id": "episode_docops_audit_gap_001_supplied",
+  "task_id": "docops_audit_gap_001",
+  "runtime_manifest": {
+    "runtime": "vanta_phase4_fixture",
+    "runtime_version": "0.1.0",
+    "language": "elixir",
+    "language_version": "1.19.0",
+    "otp_version": "28.0",
+    "schema_version": "stage1-mvp-v0",
+    "schema_contracts": [
+      "execution_step.schema.json",
+      "evidence_packet.schema.json",
+      "verifier_output.schema.json",
+      "episode_journal.schema.json"
+    ],
+    "tool_environment": {
+      "fixture": "docops_audit_gap_001"
+    },
+    "side_effect_classes_allowed": [
+      "READ_ONLY",
+      "SIMULATED",
+      "REVERSIBLE",
+      "COMPENSABLE"
+    ]
+  },
+  "steps": [
+    {
+      "schema_version": "stage1-mvp-v0",
+      "step_id": "step_episode_docops_audit_gap_001_validate_artifact",
+      "episode_id": "episode_docops_audit_gap_001_supplied",
+      "parent_step_id": null,
+      "action_type": "validate_artifact",
+      "action_payload": {
+        "validation": "episode_audit_refs",
+        "path": "inputs/incomplete_journal.json",
+        "artifacts_path": "inputs/audit_artifacts.json"
+      },
+      "expected_effect": "Validate supplied audit references without mutation.",
+      "preconditions": [
+        "fixture_workspace_exists",
+        "action_is_allowed"
+      ],
+      "postconditions": [
+        "source_files_preserved_unless_explicitly_allowed"
+      ],
+      "dependency_edges": [],
+      "verifier_requirements": [
+        "schema_valid",
+        "evidence_complete",
+        "side_effect_allowed",
+        "provenance_present"
+      ],
+      "rollback_policy": "not_applicable",
+      "side_effect_class": "READ_ONLY",
+      "status": "committed"
+    }
+  ],
+  "state_hashes": [
+    "sha256:state-before",
+    "sha256:state-after"
+  ],
+  "evidence_refs": [],
+  "verifier_output_refs": [],
+  "commit_status": "committed",
+  "rollback_status": "not_applicable",
+  "memory_write_effects": []
+}

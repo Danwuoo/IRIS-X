@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Fixture Acceptance",
+  "type": "object",
+  "description": "Deterministic expected outcome and action recipe for a Stage 1 fixture.",
+  "required": [
+    "schema_version",
+    "task_id",
+    "expected_runtime_status",
+    "expected_task_success",
+    "action_sequence"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "expected_runtime_status": {
+      "type": "string",
+      "enum": [
+        "committed",
+        "rejected",
+        "aborted",
+        "invalid_actions"
+      ]
+    },
+    "expected_task_success": {
+      "type": "boolean"
+    },
+    "acceptance_checks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expected_failure_labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expected_recovery_policy": {
+      "type": "string"
+    },
+    "expected_rollback_status": {
+      "type": "string",
+      "enum": [
+        "not_applicable",
+        "available",
+        "completed",
+        "failed",
+        "unavailable",
+        "compensation_required",
+        "compensation_completed",
+        "irreversible_escalation"
+      ]
+    },
+    "recovery_assertions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "action_sequence": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

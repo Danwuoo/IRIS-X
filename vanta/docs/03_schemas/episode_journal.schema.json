@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Episode Journal",
+  "type": "object",
+  "description": "Audit and replay journal for runtime episodes. This is not durable memory.",
+  "required": [
+    "schema_version",
+    "episode_id",
+    "task_id",
+    "runtime_manifest",
+    "steps",
+    "state_hashes",
+    "evidence_refs",
+    "verifier_output_refs",
+    "commit_status",
+    "rollback_status",
+    "memory_write_effects"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "episode_id": {
+      "type": "string",
+      "description": "Stable identifier for this runtime episode."
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Benchmark task identifier this episode belongs to."
+    },
+    "runtime_manifest": {
+      "type": "object",
+      "description": "Runtime, tool, environment, and schema version metadata needed for audit and replay."
+    },
+    "steps": {
+      "type": "array",
+      "description": "Execution and audit step records. This is not canonical state or durable memory.",
+      "items": {
+        "type": "object"
+      }
+    },
+    "state_hashes": {
+      "type": "array",
+      "description": "Ordered accepted Canonical State hash sequence. The Episode Journal stores the sequence but is not part of Canonical State hash input.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verifier_output_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "approval_record_refs": {
+      "type": "array",
+      "description": "Typed IDs of standalone Approval Records; approval objects are never inlined.",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "artifact_refs": {
+      "type": "array",
+      "description": "Typed committed-artifact references required by G10 committed promotion.",
+      "items": {
+        "type": "object",
+        "required": ["artifact_role", "path", "content_hash", "target_identity"],
+        "properties": {
+          "artifact_role": {"const": "committed_document"},
+          "path": {"type": "string", "minLength": 1},
+          "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "target_identity": {"type": "object"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "commit_status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "pending_verification",
+        "committed",
+        "aborted",
+        "rejected",
+        "reconciled",
+        "escalated"
+      ],
+      "description": "Episode or commit-group status after verifier and commit-controller handling."
+    },
+    "rollback_status": {
+      "type": "string",
+      "enum": [
+        "not_applicable",
+        "available",
+        "completed",
+        "failed",
+        "unavailable",
+        "compensation_required",
+        "compensation_completed",
+        "irreversible_escalation"
+      ],
+      "description": "Rollback or compensation status. Rollback is only available for reversible changes."
+    },
+    "memory_write_effects": {
+      "type": "array",
+      "description": "Audit references to memory-write effects. This is not the durable memory store and not learning.",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": false
+}

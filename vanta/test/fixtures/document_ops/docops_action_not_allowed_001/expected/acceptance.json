@@ -1,0 +1,22 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_action_not_allowed_001",
+  "expected_runtime_status": "rejected",
+  "expected_task_success": true,
+  "acceptance_checks": [
+    "disallowed_action_rejected",
+    "source_not_modified"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "simulate_patch",
+        "action_payload": {
+          "path": "inputs/source.md",
+          "find": "First controlled environment: TBD.",
+          "replace": "First controlled environment: Document Ops."
+        }
+      }
+    ]
+  }
+}

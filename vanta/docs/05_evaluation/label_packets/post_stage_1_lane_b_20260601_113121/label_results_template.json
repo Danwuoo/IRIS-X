@@ -1,0 +1,39 @@
+{
+  "adjudication_records": [],
+  "agreement_report": {
+    "method": "Not yet run",
+    "notes": "Not yet run",
+    "raw_agreement_counts": "Not yet run",
+    "status": "Not yet run"
+  },
+  "label_collection_status": "Not yet run",
+  "label_policy_version": "PS1-LB-LABEL-001",
+  "packet_id": "PS1-LB-PACKET-20260601-113121-BATCH-001",
+  "packet_manifest_path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/packet_manifest.json",
+  "primary_label_freeze": {
+    "fixture_oracle_exposed_before_freeze": false,
+    "frozen_at": "Not yet run",
+    "oracle_exposure_notes": "Not yet run",
+    "status": "Not yet run"
+  },
+  "raw_labels": {
+    "evidence_sufficiency_score": [],
+    "working_set_context": []
+  },
+  "reporting_boundary": {
+    "claim_level": "template only; no labels imported",
+    "disallowed_claims": [
+      "human-labeled broader evaluation evidence",
+      "secondary review completed",
+      "adjudication completed",
+      "inter-annotator agreement reported",
+      "H1-H5 validation",
+      "full Context OS validation",
+      "production readiness",
+      "runtime approval or human-in-the-loop verifier claim"
+    ]
+  },
+  "result_format": "PS1-LB-LABEL-RESULT-LOCAL-001",
+  "review_mode": "double_human_adjudicated",
+  "secondary_reviews": []
+}

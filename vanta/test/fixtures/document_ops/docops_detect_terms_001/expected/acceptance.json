@@ -1,0 +1,24 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_detect_terms_001",
+  "expected_runtime_status": "committed",
+  "expected_task_success": true,
+  "acceptance_checks": [
+    "terminology_inconsistency_exact_match",
+    "read_only_no_mutation"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "validate_artifact",
+        "action_payload": {
+          "paths": [
+            "inputs/term_a.md",
+            "inputs/term_b.md"
+          ],
+          "validation": "terminology_consistency"
+        }
+      }
+    ]
+  }
+}

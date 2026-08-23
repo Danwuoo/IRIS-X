@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eidos.local/schema/document-v1.json",
+  "title": "Eidos governed document",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "kind",
+    "status",
+    "title",
+    "language",
+    "authority",
+    "summary",
+    "relations",
+    "content",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "id": {
+      "type": "string",
+      "pattern": "^(GOV|PRJ|RFC|ADR|SPEC|EXP|NOTE)-[0-9]{4}$"
+    },
+    "kind": {
+      "enum": [
+        "governance",
+        "project",
+        "proposal",
+        "decision",
+        "specification",
+        "experiment",
+        "note"
+      ]
+    },
+    "status": {"type": "string"},
+    "title": {"type": "string", "minLength": 1},
+    "language": {
+      "type": "string",
+      "pattern": "^[a-z]{2}(?:-[A-Z]{2})?$"
+    },
+    "authority": {"enum": ["normative", "non_normative"]},
+    "summary": {"type": "string", "minLength": 1},
+    "relations": {"$ref": "#/$defs/relations"},
+    "content": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "provenance": {"$ref": "#/$defs/provenance"}
+  },
+  "$defs": {
+    "document_id": {
+      "type": "string",
+      "pattern": "^(GOV|PRJ|RFC|ADR|SPEC|EXP|NOTE)-[0-9]{4}$"
+    },
+    "relation_list": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/document_id"}
+    },
+    "relations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["depends_on", "supersedes", "informed_by"],
+      "properties": {
+        "depends_on": {"$ref": "#/$defs/relation_list"},
+        "supersedes": {"$ref": "#/$defs/relation_list"},
+        "informed_by": {"$ref": "#/$defs/relation_list"}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["created_on", "sources"],
+      "properties": {
+        "created_on": {"type": "string", "format": "date"},
+        "updated_on": {"type": "string", "format": "date"},
+        "sources": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"kind": {"const": "governance"}}, "required": ["kind"]},
+      "then": {
+        "properties": {
+          "id": {"pattern": "^GOV-[0-9]{4}$"},
+          "status": {"enum": ["draft", "active", "superseded", "archived"]}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"kind": {"const": "project"}}, "required": ["kind"]},
+      "then": {
+        "properties": {
+          "id": {"pattern": "^PRJ-[0-9]{4}$"},
+          "status": {"enum": ["draft", "active", "superseded", "archived"]}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"kind": {"const": "proposal"}}, "required": ["kind"]},
+      "then": {
+        "properties": {
+          "id": {"pattern": "^RFC-[0-9]{4}$"},
+          "status": {"enum": ["draft", "in_review", "accepted", "rejected", "withdrawn"]},
+          "authority": {"const": "non_normative"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"kind": {"const": "decision"}}, "required": ["kind"]},
+      "then": {
+        "properties": {
+          "id": {"pattern": "^ADR-[0-9]{4}$"},
+          "status": {"enum": ["proposed", "accepted", "deprecated", "superseded"]}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"kind": {"const": "specification"}}, "required": ["kind"]},
+      "then": {
+        "properties": {
+          "id": {"pattern": "^SPEC-[0-9]{4}$"},
+          "status": {"enum": ["draft", "active", "deprecated", "superseded"]}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"kind": {"const": "experiment"}}, "required": ["kind"]},
+      "then": {
+        "properties": {
+          "id": {"pattern": "^EXP-[0-9]{4}$"},
+          "status": {"enum": ["planned", "running", "completed", "abandoned"]},
+          "authority": {"const": "non_normative"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"kind": {"const": "note"}}, "required": ["kind"]},
+      "then": {
+        "properties": {
+          "id": {"pattern": "^NOTE-[0-9]{4}$"},
+          "status": {"const": "archived"},
+          "authority": {"const": "non_normative"}
+        }
+      }
+    }
+  ]
+}
+

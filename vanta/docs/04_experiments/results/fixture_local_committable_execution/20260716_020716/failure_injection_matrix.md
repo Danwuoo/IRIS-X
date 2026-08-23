@@ -1,0 +1,32 @@
+# Failure-Injection Matrix
+
+| Fixture | Family | Injection/condition | Effects | Rollback | Status |
+| --- | --- | --- | ---: | --- | --- |
+| `G10-001` | `valid_approved_commit` | `valid_approved_commit` | 1 | `available` | pass |
+| `G10-002` | `approval_boundary` | `missing_approval` | 0 | `not_applicable` | pass |
+| `G10-003` | `approval_boundary` | `denied_approval` | 0 | `not_applicable` | pass |
+| `G10-004` | `approval_boundary` | `expired_approval` | 0 | `not_applicable` | pass |
+| `G10-005` | `approval_boundary` | `wrong_scope_approval` | 0 | `not_applicable` | pass |
+| `G10-006` | `approval_boundary` | `approval_target_mismatch` | 0 | `not_applicable` | pass |
+| `G10-007` | `approval_boundary` | `approval_candidate_hash_mismatch` | 0 | `not_applicable` | pass |
+| `G10-008` | `verifier_boundary` | `verifier_reject` | 0 | `not_applicable` | pass |
+| `G10-009` | `verifier_boundary` | `verifier_request_evidence` | 0 | `not_applicable` | pass |
+| `G10-010` | `evidence_boundary` | `missing_evidence` | 0 | `not_applicable` | pass |
+| `G10-011` | `path_boundary` | `path_escape` | 0 | `not_applicable` | pass |
+| `G10-012` | `path_boundary` | `source_fixture_mutation` | 0 | `not_applicable` | pass |
+| `G10-013` | `idempotency` | `duplicate_same_request` | 1 | `available` | pass |
+| `G10-014` | `idempotency` | `conflict_same_key_different_request` | 1 | `not_applicable` | pass |
+| `G10-015` | `crash_window` | `crash_before_durable_prepare` | 0 | `not_started` | pass |
+| `G10-016` | `crash_window` | `crash_after_prepare_before_effect` | 0 | `not_started` | pass |
+| `G10-017` | `crash_window` | `crash_after_effect_before_db_commit` | 1 | `completed` | pass |
+| `G10-018` | `crash_window` | `crash_after_db_commit_before_response` | 1 | `available` | pass |
+| `G10-019` | `restart_recovery` | `restart_recovery` | 1 | `completed` | pass |
+| `G10-020` | `rollback` | `rollback_success` | 1 | `completed` | pass |
+| `G10-021` | `rollback` | `rollback_failure` | 1 | `failed` | pass |
+| `G10-022` | `corrupt_refs` | `corrupted_approval_ref` | 0 | `not_applicable` | pass |
+| `G10-023` | `corrupt_refs` | `missing_approval_ref` | 0 | `not_applicable` | pass |
+| `G10-024` | `corrupt_refs` | `corrupted_evidence_ref` | 1 | `completed` | pass |
+| `G10-025` | `corrupt_refs` | `missing_journal_refs` | 1 | `completed` | pass |
+| `G10-026` | `classification` | `irreversible_misclassification` | 0 | `not_applicable` | pass |
+| `G10-027` | `classification` | `memory_write_smuggling` | 0 | `not_applicable` | pass |
+| `G10-028` | `replay` | `strict_replay_mismatch` | 1 | `available` | pass |

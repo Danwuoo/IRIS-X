@@ -1,0 +1,29 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_reversible_json_path_replace_001",
+    "expected_runtime_status":  "committed",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "selector_resolved",
+                              "backup_metadata_exists"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "apply_reversible_structured_edit",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/config.json",
+                                                                       "format":  "json",
+                                                                       "selector":  {
+                                                                                        "type":  "json_path",
+                                                                                        "path":  "$.domain"
+                                                                                    },
+                                                                       "operation":  "replace",
+                                                                       "replacement":  "Document Ops",
+                                                                       "backup_policy":  "fixture_backup_restore"
+                                                                   }
+                                            }
+                                        ]
+                        },
+    "expected_rollback_status":  "available"
+}

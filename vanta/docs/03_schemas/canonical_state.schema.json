@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Canonical State",
+  "type": "object",
+  "description": "Accepted task-relevant state. This schema is not an execution trace and must not contain raw tool logs.",
+  "required": [
+    "schema_version",
+    "state_id",
+    "task_id",
+    "task_intent",
+    "objects",
+    "relations",
+    "events",
+    "uncertainty",
+    "provenance",
+    "state_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this schema used by the runtime."
+    },
+    "state_id": {
+      "type": "string",
+      "description": "Stable identifier for this canonical state snapshot."
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Benchmark task identifier this state belongs to."
+    },
+    "task_intent": {
+      "type": "string",
+      "description": "Accepted representation of the current task intent."
+    },
+    "objects": {
+      "type": "array",
+      "description": "Accepted task-relevant entities, not raw extracted context.",
+      "items": {
+        "type": "object"
+      }
+    },
+    "relations": {
+      "type": "array",
+      "description": "Accepted task-relevant relationships among state objects.",
+      "items": {
+        "type": "object"
+      }
+    },
+    "events": {
+      "type": "array",
+      "description": "Accepted state-relevant events only. This is not a complete execution trace or raw tool log.",
+      "items": {
+        "type": "object"
+      }
+    },
+    "uncertainty": {
+      "type": "object",
+      "description": "Known uncertainty, conflicts, or unresolved state assumptions."
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Source and version metadata for accepted state content."
+    },
+    "state_hash": {
+      "type": "string",
+      "description": "SHA-256 hash of deterministic semantic Canonical State JSON under the manifest-selected hash policy. The hash input excludes this state_hash field and non-canonical runtime metadata."
+    }
+  },
+  "additionalProperties": false
+}

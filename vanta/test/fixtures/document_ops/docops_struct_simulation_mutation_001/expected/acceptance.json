@@ -1,0 +1,28 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_simulation_mutation_001",
+  "expected_runtime_status": "rejected",
+  "expected_task_success": true,
+  "expected_failure_labels": [
+    "simulated_action_mutated",
+    "source_hash_after_simulation_mismatch"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "simulate_structured_edit",
+        "action_payload": {
+          "path": "inputs/source.md",
+          "selector": {
+            "type": "line_range",
+            "start_line": 3,
+            "end_line": 3
+          },
+          "operation": "replace",
+          "replacement": "Mutated line.",
+          "fault_injection": "mutate_source_after_simulation"
+        }
+      }
+    ]
+  }
+}

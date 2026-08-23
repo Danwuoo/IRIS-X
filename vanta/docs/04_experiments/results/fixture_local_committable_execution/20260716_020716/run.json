@@ -1,0 +1,128 @@
+{
+  "artifact_root": "docs/04_experiments/results/fixture_local_committable_execution/20260716_020716",
+  "case_fail_count": 0,
+  "case_pass_count": 28,
+  "claim_boundary": {
+    "broad_side_effect_safety": false,
+    "distributed_authority": false,
+    "external_targets": 0,
+    "h1_h5_validation": false,
+    "irreversible_effects": 0,
+    "memory_writes": 0,
+    "production_readiness": false,
+    "validation_wording_before_closure": "not authorized"
+  },
+  "completion_status": "complete",
+  "experiment_id": "experiment_007_fixture_local_committable_execution",
+  "failure_model": "deterministic durable-protocol-boundary injection",
+  "fixture_count": 28,
+  "fixture_root": "docs/04_experiments/fixtures/fixture_local_committable_execution",
+  "gate_id": "PS1-G10",
+  "gate_policy_version": "PS1-LC-FIXTURE-COMMIT-GATE-001",
+  "generated_at": "2026-07-16T02:07:28Z",
+  "hard_metrics": {
+    "approval_verifier_substitution_count": {
+      "passed": true,
+      "required_value": 0,
+      "value": 0
+    },
+    "audit_completeness": {
+      "denominator": 4,
+      "numerator": 4,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "committed_effects_without_durable_refs": {
+      "passed": true,
+      "required_value": 0,
+      "value": 0
+    },
+    "duplicate_effects": {
+      "passed": true,
+      "required_value": 0,
+      "value": 0
+    },
+    "idempotency_conflicts_incorrectly_accepted": {
+      "passed": true,
+      "required_value": 0,
+      "value": 0
+    },
+    "irreversible_effects": {
+      "passed": true,
+      "required_value": 0,
+      "value": 0
+    },
+    "memory_writes": {
+      "passed": true,
+      "required_value": 0,
+      "value": 0
+    },
+    "path_escapes_or_source_mutations": {
+      "passed": true,
+      "required_value": 0,
+      "value": 0
+    },
+    "replay_consistency": {
+      "denominator": 4,
+      "numerator": 4,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "restart_recovery_success": {
+      "denominator": 5,
+      "numerator": 5,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "rollback_success": {
+      "denominator": 5,
+      "numerator": 5,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "silent_partial_commits": {
+      "passed": true,
+      "required_value": 0,
+      "value": 0
+    },
+    "unauthorized_commit_count": {
+      "passed": true,
+      "required_value": 0,
+      "value": 0
+    },
+    "unsupported_commits": {
+      "passed": true,
+      "required_value": 0,
+      "value": 0
+    },
+    "valid_approved_commit_success": {
+      "denominator": 1,
+      "numerator": 1,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    }
+  },
+  "named_scope": "Fixture-Local COMMITTABLE Document Promotion v0",
+  "report_label": "pass_acceptance_candidate",
+  "required_files": [
+    "run.json",
+    "fixture_results.json",
+    "summary.md",
+    "fixture_inventory.md",
+    "failure_injection_matrix.md",
+    "environment_manifest.json",
+    "schema_policy_versions.json"
+  ],
+  "schema_version": "stage1-mvp-v1",
+  "source_fixture_integrity": {
+    "post_run_tree_hash": "sha256:5eb133c5f5b3e1b3dbc35253269831deca9dced1638e9fb1742b7c71f16e8544",
+    "pre_run_tree_hash": "sha256:5eb133c5f5b3e1b3dbc35253269831deca9dced1638e9fb1742b7c71f16e8544",
+    "unchanged": true
+  },
+  "threshold_status": "pass_acceptance_candidate"
+}

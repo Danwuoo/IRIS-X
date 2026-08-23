@@ -1,0 +1,62 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_reversible_edit_001",
+  "task_type": "document_ops",
+  "prompt": "Apply a reversible fixture-local edit that corrects verifier terminology and records backup metadata.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_reversible_edit_001_initial",
+    "task_id": "docops_reversible_edit_001",
+    "task_intent": "Apply and audit a reversible local document edit.",
+    "objects": [
+      {
+        "object_id": "glossary_doc",
+        "path": "inputs/glossary.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_reversible_edit_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_reversible_edit_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/glossary.md",
+      "role": "source",
+      "description": "Markdown glossary excerpt with incorrect verifier wording."
+    }
+  ],
+  "allowed_actions": [
+    "read_file",
+    "compute_hash",
+    "apply_reversible_patch",
+    "compute_diff",
+    "validate_artifact"
+  ],
+  "success_criteria": [
+    "The edit replaces final-answer checker with runtime verifier.",
+    "Backup metadata exists for rollback.",
+    "Evidence includes the diff and rollback metadata."
+  ],
+  "failure_criteria": [
+    "The edit is not reversible.",
+    "Backup metadata is missing.",
+    "The edit changes unrelated text."
+  ],
+  "side_effect_classes": [
+    "READ_ONLY",
+    "REVERSIBLE"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

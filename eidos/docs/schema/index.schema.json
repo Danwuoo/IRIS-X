@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eidos.local/schema/index-v1.json",
+  "title": "Eidos generated document index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "generated_from", "documents"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "generated_from": {"const": "docs/records/*.yaml"},
+    "documents": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/entry"}
+    }
+  },
+  "$defs": {
+    "relation_list": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^(GOV|PRJ|RFC|ADR|SPEC|EXP|NOTE)-[0-9]{4}$"
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "status",
+        "title",
+        "language",
+        "authority",
+        "summary",
+        "path",
+        "relations"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(GOV|PRJ|RFC|ADR|SPEC|EXP|NOTE)-[0-9]{4}$"
+        },
+        "kind": {
+          "enum": [
+            "governance",
+            "project",
+            "proposal",
+            "decision",
+            "specification",
+            "experiment",
+            "note"
+          ]
+        },
+        "status": {"type": "string"},
+        "title": {"type": "string", "minLength": 1},
+        "language": {"type": "string"},
+        "authority": {"enum": ["normative", "non_normative"]},
+        "summary": {"type": "string", "minLength": 1},
+        "path": {
+          "type": "string",
+          "pattern": "^docs/records/(GOV|PRJ|RFC|ADR|SPEC|EXP|NOTE)-[0-9]{4}\\.yaml$"
+        },
+        "relations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["depends_on", "supersedes", "informed_by"],
+          "properties": {
+            "depends_on": {"$ref": "#/$defs/relation_list"},
+            "supersedes": {"$ref": "#/$defs/relation_list"},
+            "informed_by": {"$ref": "#/$defs/relation_list"}
+          }
+        }
+      }
+    }
+  }
+}
+

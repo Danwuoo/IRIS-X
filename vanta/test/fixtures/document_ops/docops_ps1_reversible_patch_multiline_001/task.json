@@ -1,0 +1,66 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_reversible_patch_multiline_001",
+    "task_type":  "document_ops",
+    "prompt":  "Apply a reversible multiline patch with backup metadata.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_reversible_patch_multiline_001_initial",
+                          "task_id":  "docops_ps1_reversible_patch_multiline_001",
+                          "task_intent":  "Apply reversible multiline patch.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "scope",
+                                              "path":  "inputs/scope.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_reversible_patch_multiline_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_reversible_patch_multiline_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/scope.md",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "read_file",
+                            "compute_hash",
+                            "apply_reversible_patch",
+                            "compute_diff",
+                            "validate_artifact"
+                        ],
+    "success_criteria":  [
+                             "The two-line replacement is applied.",
+                             "Backup metadata exists.",
+                             "Rollback can restore the source."
+                         ],
+    "failure_criteria":  [
+                             "The patch changes unrelated text.",
+                             "Backup metadata is missing."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY",
+                                "REVERSIBLE"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

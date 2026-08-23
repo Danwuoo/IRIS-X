@@ -1,0 +1,19 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_path_escape_001",
+  "expected_runtime_status": "rejected",
+  "expected_task_success": true,
+  "expected_failure_labels": [
+    "action_path_escapes_workspace"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "inspect_document_structure",
+        "action_payload": {
+          "path": "../outside.md"
+        }
+      }
+    ]
+  }
+}

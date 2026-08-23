@@ -1,0 +1,52 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_simulation_mutation_001",
+  "task_type": "document_ops",
+  "prompt": "Reject a simulated structured edit that mutates the source during simulation.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_struct_simulation_mutation_001_initial",
+    "task_id": "docops_struct_simulation_mutation_001",
+    "task_intent": "Exercise simulation mutation rejection.",
+    "objects": [
+      {
+        "object_id": "source_doc",
+        "path": "inputs/source.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_struct_simulation_mutation_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_struct_simulation_mutation_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/source.md",
+      "role": "source"
+    }
+  ],
+  "allowed_actions": [
+    "simulate_structured_edit"
+  ],
+  "success_criteria": [
+    "The verifier rejects the simulation because the source hash changed."
+  ],
+  "failure_criteria": [
+    "The mutated simulated action is accepted."
+  ],
+  "side_effect_classes": [
+    "SIMULATED"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

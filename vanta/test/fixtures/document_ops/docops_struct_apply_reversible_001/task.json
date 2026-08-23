@@ -1,0 +1,55 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_apply_reversible_001",
+  "task_type": "document_ops",
+  "prompt": "Apply a selector-based reversible markdown edit and record fixture backup metadata.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_struct_apply_reversible_001_initial",
+    "task_id": "docops_struct_apply_reversible_001",
+    "task_intent": "Apply and audit a reversible structured edit.",
+    "objects": [
+      {
+        "object_id": "glossary_doc",
+        "path": "inputs/glossary.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_struct_apply_reversible_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_struct_apply_reversible_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/glossary.md",
+      "role": "source"
+    }
+  ],
+  "allowed_actions": [
+    "apply_reversible_structured_edit"
+  ],
+  "success_criteria": [
+    "The selected line is replaced.",
+    "Backup metadata uses fixture_backup_restore.",
+    "Rollback can restore the original source."
+  ],
+  "failure_criteria": [
+    "Backup metadata is missing.",
+    "The edit changes unrelated text."
+  ],
+  "side_effect_classes": [
+    "REVERSIBLE"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

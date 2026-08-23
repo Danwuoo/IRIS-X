@@ -1,0 +1,63 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_ws_irrelevant_context_001",
+  "task_type": "document_ops",
+  "prompt": "Validate the relevant source artifact while ignoring irrelevant context refs.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_ws_irrelevant_context_001_initial",
+    "task_id": "docops_ws_irrelevant_context_001",
+    "task_intent": "Use relevant context and ignore unrelated document refs.",
+    "objects": [
+      {
+        "object_id": "source_doc",
+        "path": "inputs/source.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_ws_irrelevant_context_001",
+      "source": "phase5_working_set_fixture"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/noise.md",
+      "role": "distractor",
+      "description": "Irrelevant context."
+    },
+    {
+      "path": "inputs/source.md",
+      "role": "source",
+      "description": "Relevant source artifact."
+    }
+  ],
+  "allowed_actions": [
+    "validate_artifact"
+  ],
+  "success_criteria": [
+    "inputs/source.md exists.",
+    "No source file is modified.",
+    "Evidence includes source path and file hash."
+  ],
+  "failure_criteria": [
+    "The relevant source artifact is omitted.",
+    "Irrelevant context is treated as the source of truth.",
+    "A source file is modified."
+  ],
+  "side_effect_classes": [
+    "READ_ONLY"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "working_set",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

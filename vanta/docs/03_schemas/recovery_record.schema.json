@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Recovery Record",
+  "type": "object",
+  "description": "Prepared-effect and crash-window recovery record for fixture-local persistence.",
+  "required": [
+    "recovery_id",
+    "episode_id",
+    "step_id",
+    "status",
+    "crash_window",
+    "target_identity",
+    "pre_state_hash",
+    "backup_metadata",
+    "effect_applied",
+    "rollback_status",
+    "content_hash",
+    "created_sequence",
+    "updated_sequence"
+  ],
+  "properties": {
+    "recovery_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "episode_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "step_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "prepared",
+        "effect_applied",
+        "commit_completed",
+        "abort_completed",
+        "rollback_pending",
+        "rollback_in_progress",
+        "rolled_back",
+        "recovery_required"
+      ]
+    },
+    "crash_window": {
+      "type": "string"
+    },
+    "target_identity": {
+      "type": "object"
+    },
+    "pre_state_hash": {
+      "type": "string"
+    },
+    "backup_metadata": {
+      "type": "object"
+    },
+    "effect_applied": {
+      "type": "boolean"
+    },
+    "rollback_status": {
+      "type": "string"
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "created_sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated_sequence": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "additionalProperties": false
+}

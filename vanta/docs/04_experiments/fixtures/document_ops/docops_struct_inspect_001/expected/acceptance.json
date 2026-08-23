@@ -1,0 +1,32 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_inspect_001",
+  "expected_runtime_status": "committed",
+  "expected_task_success": true,
+  "acceptance_checks": [
+    "structure_summary_matches",
+    "selector_resolution_matches"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "inspect_document_structure",
+        "action_payload": {
+          "path": "inputs/spec.md",
+          "selectors": [
+            {
+              "type": "heading",
+              "text": "Scope",
+              "level": 2
+            },
+            {
+              "type": "section",
+              "heading": "Evidence",
+              "level": 2
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_recovery_audit_gap_complete_refs_001",
+    "expected_runtime_status":  "rejected",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "audit_gap_detected",
+                              "targeted_recovery_expected"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "validate_artifact",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/incomplete_journal.json",
+                                                                       "artifacts_path":  "inputs/audit_artifacts.json",
+                                                                       "validation":  "episode_audit_refs"
+                                                                   }
+                                            }
+                                        ]
+                        },
+    "expected_failure_labels":  [
+                                    "F_EXEC",
+                                    "F_EXEC_AUDIT_GAP"
+                                ],
+    "expected_recovery_policy":  "repair_audit_refs",
+    "expected_rollback_status":  "not_applicable",
+    "recovery_assertions":  [
+                                "repaired_audit_complete"
+                            ]
+}

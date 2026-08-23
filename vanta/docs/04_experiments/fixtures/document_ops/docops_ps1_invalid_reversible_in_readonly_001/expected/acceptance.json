@@ -1,0 +1,22 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_invalid_reversible_in_readonly_001",
+    "expected_runtime_status":  "rejected",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "action_not_allowed_rejected",
+                              "read_only_preserved"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "apply_reversible_patch",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/source.md",
+                                                                       "find":  "Do not mutate this source.",
+                                                                       "replace":  "Mutated."
+                                                                   }
+                                            }
+                                        ]
+                        }
+}

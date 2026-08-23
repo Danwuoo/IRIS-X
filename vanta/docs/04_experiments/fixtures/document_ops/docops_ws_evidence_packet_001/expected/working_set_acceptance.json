@@ -1,0 +1,61 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_ws_evidence_packet_001",
+  "active_goal_ref": "task:docops_ws_evidence_packet_001",
+  "budget": {
+    "max_context_chars": 260
+  },
+  "required_refs": [
+    "state:evidence_packet",
+    "evidence:fixture_packet",
+    "constraint:read_only"
+  ],
+  "relevant_refs": [
+    "state:evidence_packet",
+    "evidence:fixture_packet",
+    "constraint:read_only"
+  ],
+  "irrelevant_refs": [
+    "artifact:noise"
+  ],
+  "omission_trap_refs": [
+    "evidence:fixture_packet"
+  ],
+  "candidate_refs": [
+    {
+      "ref_id": "artifact:noise",
+      "kind": "artifact",
+      "role": "irrelevant",
+      "required": false,
+      "source": "fixture",
+      "path": "inputs/noise.md"
+    },
+    {
+      "ref_id": "state:evidence_packet",
+      "kind": "canonical_state",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "task.json#/initial_state",
+      "content": "Goal: validate inputs/evidence_packet.json."
+    },
+    {
+      "ref_id": "evidence:fixture_packet",
+      "kind": "evidence",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "inputs/evidence_packet.json",
+      "content": "Required Evidence Packet path: inputs/evidence_packet.json."
+    },
+    {
+      "ref_id": "constraint:read_only",
+      "kind": "constraint",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "task.json#/side_effect_classes",
+      "content": "Allowed side effect: READ_ONLY."
+    }
+  ]
+}

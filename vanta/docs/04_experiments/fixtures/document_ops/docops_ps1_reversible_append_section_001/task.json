@@ -1,0 +1,60 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_reversible_append_section_001",
+    "task_type":  "document_ops",
+    "prompt":  "Apply a reversible structured insert after the Scope heading with fixture backup metadata. Insert the exact line: Add audit trail before commit.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_reversible_append_section_001_initial",
+                          "task_id":  "docops_ps1_reversible_append_section_001",
+                          "task_intent":  "Apply reversible structured insert.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "notes",
+                                              "path":  "inputs/notes.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_reversible_append_section_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_reversible_append_section_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/notes.md",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "apply_reversible_structured_edit"
+                        ],
+    "success_criteria":  [
+                             "The exact inserted line appears after Scope: Add audit trail before commit.",
+                             "Backup metadata is sufficient for fixture restore."
+                         ],
+    "failure_criteria":  [
+                             "Backup metadata is missing.",
+                             "Unrelated text is changed."
+                         ],
+    "side_effect_classes":  [
+                                "REVERSIBLE"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

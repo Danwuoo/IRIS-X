@@ -1,0 +1,38 @@
+{
+  "structure": {
+    "line_count": 11,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Product Spec",
+        "line": 1
+      },
+      {
+        "level": 2,
+        "text": "Scope",
+        "line": 5
+      },
+      {
+        "level": 2,
+        "text": "Evidence",
+        "line": 9
+      }
+    ]
+  },
+  "selector_results": [
+    {
+      "status": "resolved",
+      "target": {
+        "start_line": 5,
+        "end_line": 5
+      }
+    },
+    {
+      "status": "resolved",
+      "target": {
+        "start_line": 9,
+        "end_line": 11
+      }
+    }
+  ]
+}

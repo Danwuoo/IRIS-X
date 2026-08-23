@@ -1,0 +1,12 @@
+{
+  "passed": false,
+  "failures": [
+    {
+      "code": "required_heading_missing",
+      "detail": {
+        "text": "Rollback",
+        "level": 2
+      }
+    }
+  ]
+}

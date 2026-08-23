@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Evaluation Result",
+  "type": "object",
+  "required": [
+    "schema_version"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "eval_id": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "episode_id": {
+      "type": "string"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "failure_labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "human_labels": {
+      "type": "object"
+    },
+    "verifier_labels": {
+      "type": "object"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

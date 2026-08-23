@@ -1,0 +1,70 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_detect_terms_001",
+  "task_type": "document_ops",
+  "prompt": "Detect inconsistent terminology across two markdown documents without modifying any source file.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_detect_terms_001_initial",
+    "task_id": "docops_detect_terms_001",
+    "task_intent": "Detect terminology inconsistency for Evidence Packet wording.",
+    "objects": [
+      {
+        "object_id": "term_doc_a",
+        "path": "inputs/term_a.md",
+        "kind": "markdown"
+      },
+      {
+        "object_id": "term_doc_b",
+        "path": "inputs/term_b.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_detect_terms_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_detect_terms_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/term_a.md",
+      "role": "source",
+      "description": "Canonical terminology sample."
+    },
+    {
+      "path": "inputs/term_b.md",
+      "role": "source",
+      "description": "Document with inconsistent terminology."
+    }
+  ],
+  "allowed_actions": [
+    "list_files",
+    "read_file",
+    "compute_hash",
+    "validate_artifact"
+  ],
+  "success_criteria": [
+    "The inconsistent phrase evidence package is identified as conflicting with Evidence Packet.",
+    "No source file is modified.",
+    "Evidence includes source paths and observations for both documents."
+  ],
+  "failure_criteria": [
+    "The terminology inconsistency is missed.",
+    "A source file is modified.",
+    "Evidence does not include both source documents."
+  ],
+  "side_effect_classes": [
+    "READ_ONLY"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "fixture_id": "sidefx_irreversible_misclassification_001",
+  "family": "irreversible_misclassification",
+  "description": "Proposal labels an explicitly irreversible deletion as COMMITTABLE.",
+  "proposal_overrides": {
+    "expected_effect": {
+      "kind": "irreversible_delete",
+      "irreversible": true
+    }
+  },
+  "remove_fields": [],
+  "oracle": {
+    "expected_decision": "rejected",
+    "expected_report_label": "blocked_irreversible_misclassification",
+    "expected_reason_codes": ["irreversible_misclassification"]
+  }
+}

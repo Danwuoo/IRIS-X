@@ -1,0 +1,2 @@
+-Recovery boundary: original wording.
++Recovery boundary: changed wording.

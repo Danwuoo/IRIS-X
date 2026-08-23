@@ -1,0 +1,90 @@
+{
+  "adjudication_record_count": 0,
+  "adjudication_required": [],
+  "adjudication_required_count": 0,
+  "claim_boundary": "Import validation summary only. It supports the packet-local Lane B label report under PS1-LB-LABEL-001; it is not broad validation, runtime approval, full Context OS validation, or an H1-H5 validation claim.",
+  "fixture_oracle_exposed_before_freeze": false,
+  "label_collection_status": "complete_reported",
+  "label_policy_version": "PS1-LB-LABEL-001",
+  "needs_review_count": 0,
+  "packet_id": "PS1-LB-PACKET-20260601-113121-BATCH-001",
+  "raw_label_counts": {
+    "evidence_sufficiency_score": 16,
+    "working_set_context": 24
+  },
+  "reported_metric_scores": {
+    "context_omission_error_rate": {
+      "by_blinded_arm": {
+        "Combined": {
+          "omitted_task_critical_ref_count": 14,
+          "score_4dp": "0.3684",
+          "task_critical_candidate_ref_count": 38
+        },
+        "context_arm_A": {
+          "omitted_task_critical_ref_count": 14,
+          "score_4dp": "0.7368",
+          "task_critical_candidate_ref_count": 19
+        },
+        "context_arm_B": {
+          "omitted_task_critical_ref_count": 0,
+          "score_4dp": "0.0000",
+          "task_critical_candidate_ref_count": 19
+        }
+      },
+      "omitted_task_critical_ref_count": 14,
+      "score_4dp": "0.3684",
+      "task_critical_candidate_ref_count": 38
+    },
+    "evidence_sufficiency_score": {
+      "normalized_score_denominator": 64,
+      "normalized_score_numerator": 60,
+      "raw_label_count": 16,
+      "score_4dp": "0.9375",
+      "scored_raw_label_count": 16
+    },
+    "working_set_relevance_score": {
+      "by_blinded_arm": {
+        "Combined": {
+          "included_ref_denominator": 31,
+          "relevant_included_ref_count": 24,
+          "score_4dp": "0.7742"
+        },
+        "context_arm_A": {
+          "included_ref_denominator": 11,
+          "relevant_included_ref_count": 5,
+          "score_4dp": "0.4545"
+        },
+        "context_arm_B": {
+          "included_ref_denominator": 20,
+          "relevant_included_ref_count": 19,
+          "score_4dp": "0.9500"
+        }
+      },
+      "included_ref_denominator": 31,
+      "relevant_included_ref_count": 24,
+      "score_4dp": "0.7742"
+    }
+  },
+  "result_format": "PS1-LB-LABEL-RESULT-LOCAL-001",
+  "result_path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/label_results_primary_filled.json",
+  "review_coverage": {
+    "context_omission_error_rate": {
+      "expected_item_count": 12,
+      "fully_reviewed_item_count": 12,
+      "missing_item_ids": []
+    },
+    "evidence_sufficiency_score": {
+      "expected_item_count": 8,
+      "fully_reviewed_item_count": 8,
+      "missing_item_ids": []
+    },
+    "working_set_relevance_score": {
+      "expected_item_count": 12,
+      "fully_reviewed_item_count": 12,
+      "missing_item_ids": []
+    }
+  },
+  "secondary_review_count": 0,
+  "status": "ok",
+  "unhandled_adjudication_required_count": 0
+}

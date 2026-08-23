@@ -1,0 +1,60 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_recovery_structured_rollback_001",
+    "task_type":  "document_ops",
+    "prompt":  "Recover a reversible patch whose backup files were dropped by reconstructing rollback from the diff payload.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_recovery_structured_rollback_001_initial",
+                          "task_id":  "docops_ps1_recovery_structured_rollback_001",
+                          "task_intent":  "Recover dropped-backup rollback failure.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "target",
+                                              "path":  "inputs/target.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_recovery_structured_rollback_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_recovery_structured_rollback_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/target.md",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "apply_reversible_patch"
+                        ],
+    "success_criteria":  [
+                             "The initial runtime rejects the missing backup file path.",
+                             "Targeted recovery restores the source from the patch payload."
+                         ],
+    "failure_criteria":  [
+                             "The runtime commits without rollback material.",
+                             "Recovery uses blind retry instead of rollback reconstruction."
+                         ],
+    "side_effect_classes":  [
+                                "REVERSIBLE"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

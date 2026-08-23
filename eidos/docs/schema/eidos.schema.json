@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eidos.local/schema/eidos-v1.json",
+  "title": "Eidos repository manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project", "documentation"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "lifecycle"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "name": {"type": "string", "minLength": 1},
+        "lifecycle": {"enum": ["bootstrap", "active", "maintenance", "archived"]}
+      }
+    },
+    "documentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_format",
+        "records_directory",
+        "record_pattern",
+        "document_schema",
+        "index",
+        "index_schema",
+        "authority_order",
+        "commands"
+      ],
+      "properties": {
+        "source_format": {"const": "yaml"},
+        "records_directory": {"const": "docs/records"},
+        "record_pattern": {"const": "*.yaml"},
+        "document_schema": {"const": "docs/schema/document.schema.json"},
+        "index": {"const": "docs/index.json"},
+        "index_schema": {"const": "docs/schema/index.schema.json"},
+        "authority_order": {
+          "type": "array",
+          "prefixItems": [
+            {"const": "governance"},
+            {"const": "project"},
+            {"const": "specification"},
+            {"const": "decision"},
+            {"const": "proposal"},
+            {"const": "experiment"},
+            {"const": "note"}
+          ],
+          "items": false,
+          "minItems": 7,
+          "maxItems": 7
+        },
+        "commands": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["build_index", "validate", "test"],
+          "properties": {
+            "build_index": {"const": "python -m tools.docs.build_index"},
+            "validate": {"const": "python -m tools.docs.validate"},
+            "test": {"const": "python -m unittest discover -s tests -v"}
+          }
+        }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,12 @@
+{
+    "links":  [
+                  {
+                      "label":  "Glossary",
+                      "target":  "glossary.md"
+                  },
+                  {
+                      "label":  "Metric Policy",
+                      "target":  "metrics.md"
+                  }
+              ]
+}

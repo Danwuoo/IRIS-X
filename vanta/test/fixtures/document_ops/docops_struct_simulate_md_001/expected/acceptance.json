@@ -1,0 +1,28 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_simulate_md_001",
+  "expected_runtime_status": "committed",
+  "expected_task_success": true,
+  "acceptance_checks": [
+    "diff_exact_match",
+    "selector_resolution_matches",
+    "simulated_source_hash_unchanged"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "simulate_structured_edit",
+        "action_payload": {
+          "path": "inputs/notes.md",
+          "selector": {
+            "type": "line_range",
+            "start_line": 3,
+            "end_line": 3
+          },
+          "operation": "replace",
+          "replacement": "Verifier Runtime: runtime verifier for action feasibility, evidence sufficiency, and final correctness where applicable."
+        }
+      }
+    ]
+  }
+}

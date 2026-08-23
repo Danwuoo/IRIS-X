@@ -1,0 +1,71 @@
+﻿{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_rollback_failure_001",
+    "task_type":  "document_ops",
+    "prompt":  "Exercise a reversible edit whose backup artifact is missing before verifier acceptance, then require targeted recovery to reconstruct rollback from the diff.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_rollback_failure_001_initial",
+                          "task_id":  "docops_rollback_failure_001",
+                          "task_intent":  "Detect a rollback failure caused by missing backup metadata and recover the fixture-local source file.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "rollback_doc",
+                                              "path":  "inputs/rollback.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_rollback_failure_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_rollback_failure_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/rollback.md"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "apply_reversible_patch"
+                        ],
+    "success_criteria":  [
+                             "The reversible patch writes only inside the fixture workspace.",
+                             "The verifier rejects the action because rollback backup files are unavailable.",
+                             "The Episode Journal records rollback_status failed.",
+                             "Targeted Recovery reconstructs the source text from the failed diff."
+                         ],
+    "failure_criteria":  [
+                             "The action is committed despite missing rollback backup files.",
+                             "Rollback is claimed as completed when backup restore failed.",
+                             "Recovery leaves the changed wording in the source file."
+                         ],
+    "side_effect_classes":  [
+                                "REVERSIBLE"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal",
+                          "recovery_decision"
+                      ],
+    "redaction":  {
+                      "removed_fields":  [
+                                             "input_artifacts.role",
+                                             "input_artifacts.description"
+                                         ],
+                      "reason":  "Primary Lane B labelers must not see fixture oracle role fields before label freeze.",
+                      "source_task_path":  "docs/04_experiments/fixtures/document_ops/docops_rollback_failure_001/task.json"
+                  }
+}

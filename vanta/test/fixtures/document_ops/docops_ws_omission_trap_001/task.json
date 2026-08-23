@@ -1,0 +1,63 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_ws_omission_trap_001",
+  "task_type": "document_ops",
+  "prompt": "Validate the source artifact named by the late required context ref.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_ws_omission_trap_001_initial",
+    "task_id": "docops_ws_omission_trap_001",
+    "task_intent": "Expose omission when required context appears late in raw trace order.",
+    "objects": [
+      {
+        "object_id": "late_source",
+        "path": "inputs/late_source.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_ws_omission_trap_001",
+      "source": "phase5_working_set_fixture"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/noise.md",
+      "role": "distractor",
+      "description": "Budget pressure before the late required ref."
+    },
+    {
+      "path": "inputs/late_source.md",
+      "role": "source",
+      "description": "Late required source artifact."
+    }
+  ],
+  "allowed_actions": [
+    "validate_artifact"
+  ],
+  "success_criteria": [
+    "inputs/late_source.md exists.",
+    "No source file is modified.",
+    "Evidence includes source path and file hash."
+  ],
+  "failure_criteria": [
+    "The late required source ref is omitted.",
+    "A source file is modified.",
+    "Evidence lacks provenance."
+  ],
+  "side_effect_classes": [
+    "READ_ONLY"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "working_set",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

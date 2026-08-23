@@ -1,0 +1,59 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_read_traceability_001",
+  "task_type": "document_ops",
+  "prompt": "Extract explicit markdown links and source references from the fixture document without modifying any source file.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_read_traceability_001_initial",
+    "task_id": "docops_read_traceability_001",
+    "task_intent": "Extract traceability links from one markdown document.",
+    "objects": [
+      {
+        "object_id": "source_doc",
+        "path": "inputs/source.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_read_traceability_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_read_traceability_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/source.md",
+      "role": "source",
+      "description": "Markdown source containing explicit document links."
+    }
+  ],
+  "allowed_actions": [
+    "read_file",
+    "compute_hash",
+    "validate_artifact"
+  ],
+  "success_criteria": [
+    "All explicit markdown links in inputs/source.md are listed with label and target.",
+    "No source file is modified.",
+    "Evidence includes source path, file hash, and extracted link observations."
+  ],
+  "failure_criteria": [
+    "A markdown link is omitted or fabricated.",
+    "A source file is modified.",
+    "Evidence lacks provenance for the source document."
+  ],
+  "side_effect_classes": [
+    "READ_ONLY"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "stage": {
+    "domain": "TBD",
+    "side_effects": [
+      "READ_ONLY",
+      "SIMULATED"
+    ]
+  }
+}

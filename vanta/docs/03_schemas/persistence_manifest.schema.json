@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Persistence Manifest",
+  "type": "object",
+  "description": "Fixture-Local SQLite Persistence v0 episode lifecycle and accepted-pointer record.",
+  "required": [
+    "storage_schema_version",
+    "episode_id",
+    "task_id",
+    "lifecycle",
+    "runtime_manifest",
+    "runtime_version",
+    "schema_version",
+    "hash_policy_version",
+    "accepted_state_artifact_id",
+    "journal_artifact_id",
+    "rollback_status",
+    "recovery_status",
+    "idempotency_keys",
+    "created_sequence",
+    "updated_sequence"
+  ],
+  "properties": {
+    "storage_schema_version": {
+      "type": "string",
+      "const": "persistence-v0"
+    },
+    "episode_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": [
+        "created",
+        "running",
+        "prepared",
+        "committed",
+        "aborted",
+        "rejected",
+        "rollback_pending",
+        "rolled_back",
+        "recovery_required"
+      ]
+    },
+    "runtime_manifest": {
+      "type": "object"
+    },
+    "runtime_version": {
+      "type": "string"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "hash_policy_version": {
+      "type": "string",
+      "const": "canonical-json-sha256-v1"
+    },
+    "accepted_state_artifact_id": {
+      "type": ["string", "null"]
+    },
+    "journal_artifact_id": {
+      "type": ["string", "null"]
+    },
+    "rollback_status": {
+      "type": "string"
+    },
+    "recovery_status": {
+      "type": "string"
+    },
+    "idempotency_keys": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "created_sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated_sequence": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "additionalProperties": false
+}

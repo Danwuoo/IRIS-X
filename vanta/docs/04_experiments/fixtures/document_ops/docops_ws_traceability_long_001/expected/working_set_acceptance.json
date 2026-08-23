@@ -1,0 +1,61 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_ws_traceability_long_001",
+  "active_goal_ref": "task:docops_ws_traceability_long_001",
+  "budget": {
+    "max_context_chars": 280
+  },
+  "required_refs": [
+    "state:traceability_long",
+    "constraint:read_only",
+    "artifact:source"
+  ],
+  "relevant_refs": [
+    "state:traceability_long",
+    "constraint:read_only",
+    "artifact:source"
+  ],
+  "irrelevant_refs": [
+    "artifact:noise"
+  ],
+  "omission_trap_refs": [
+    "artifact:source"
+  ],
+  "candidate_refs": [
+    {
+      "ref_id": "artifact:noise",
+      "kind": "artifact",
+      "role": "irrelevant",
+      "required": false,
+      "source": "fixture",
+      "path": "inputs/noise.md"
+    },
+    {
+      "ref_id": "state:traceability_long",
+      "kind": "canonical_state",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "task.json#/initial_state",
+      "content": "Goal: extract links from inputs/source.md."
+    },
+    {
+      "ref_id": "constraint:read_only",
+      "kind": "constraint",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "task.json#/side_effect_classes",
+      "content": "Allowed side effect: READ_ONLY. Do not modify source files."
+    },
+    {
+      "ref_id": "artifact:source",
+      "kind": "artifact",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "inputs/source.md",
+      "content": "Selected source path is inputs/source.md; validate traceability_links."
+    }
+  ]
+}

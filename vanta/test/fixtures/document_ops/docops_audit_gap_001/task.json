@@ -1,0 +1,69 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_audit_gap_001",
+  "task_type": "document_ops",
+  "prompt": "Validate a supplied Episode Journal with missing audit references and require targeted recovery to repair the audit refs from supplied artifacts.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_audit_gap_001_initial",
+    "task_id": "docops_audit_gap_001",
+    "task_intent": "Detect an audit gap in supplied journal metadata and repair evidence and verifier references.",
+    "objects": [
+      {
+        "object_id": "audit_journal",
+        "path": "inputs/incomplete_journal.json",
+        "kind": "json"
+      },
+      {
+        "object_id": "audit_artifacts",
+        "path": "inputs/audit_artifacts.json",
+        "kind": "json"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_audit_gap_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_audit_gap_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/incomplete_journal.json",
+      "role": "journal",
+      "description": "Episode Journal missing evidence and verifier refs."
+    },
+    {
+      "path": "inputs/audit_artifacts.json",
+      "role": "artifacts",
+      "description": "Evidence and verifier artifacts that can repair the missing refs."
+    }
+  ],
+  "allowed_actions": [
+    "validate_artifact"
+  ],
+  "success_criteria": [
+    "The audit validator detects missing evidence and verifier refs.",
+    "The runtime rejects the incomplete journal as an audit gap.",
+    "Targeted Recovery writes a repaired audit record with refs restored.",
+    "The repaired audit record passes the audit checklist."
+  ],
+  "failure_criteria": [
+    "The incomplete journal is treated as audit-complete.",
+    "The missing refs are ignored in recovery.",
+    "Recovery fabricates refs that are absent from supplied artifacts."
+  ],
+  "side_effect_classes": [
+    "READ_ONLY"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal",
+    "recovery_decision"
+  ]
+}

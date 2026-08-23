@@ -1,0 +1,33 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_rollback_failure_001",
+  "expected_runtime_status": "rejected",
+  "expected_task_success": true,
+  "expected_failure_labels": [
+    "F_EXEC",
+    "F_EXEC_ROLLBACK_FAILURE"
+  ],
+  "expected_recovery_policy": "reconstruct_rollback_from_diff",
+  "expected_rollback_status": "failed",
+  "acceptance_checks": [
+    "rollback_failure_detected",
+    "missing_backup_rejected"
+  ],
+  "recovery_assertions": [
+    "source_restored_from_diff",
+    "recovery_record_written"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "apply_reversible_patch",
+        "action_payload": {
+          "path": "inputs/rollback.md",
+          "find": "Recovery boundary: original wording.",
+          "replace": "Recovery boundary: changed wording.",
+          "drop_backup_after_write": true
+        }
+      }
+    ]
+  }
+}

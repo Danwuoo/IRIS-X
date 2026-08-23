@@ -1,0 +1,337 @@
+{
+  "baseline": "blind_retry_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+  "experiment_id": "experiment_004_targeted_recovery",
+  "fixture_count": 3,
+  "metrics": {
+    "blind_retry": {
+      "audit_gap_closure_rate": 0.0,
+      "compensation_policy_accuracy": 0.0,
+      "failure_label_accuracy": 0.0,
+      "item_count": 3,
+      "recovery_compute_cost": {
+        "mean_action_attempts": 1.0,
+        "mean_estimated_input_tokens": 1807.3333333333333,
+        "mean_estimated_output_tokens": 80.0,
+        "mean_model_call_count": 1.0,
+        "mean_prompt_chars": 7228.0,
+        "mean_response_chars": 319.3333333333333
+      },
+      "recovery_success_rate": 0.0,
+      "repeated_failure_rate": 1.0,
+      "rollback_recovery_success": 0.0,
+      "targeted_recovery_success": 0.0
+    },
+    "compute_matching": {
+      "budget_matched": true,
+      "fixture_count": 3,
+      "matched_fixture_count": 3
+    },
+    "targeted_recovery": {
+      "audit_gap_closure_rate": 1.0,
+      "compensation_policy_accuracy": 1.0,
+      "failure_label_accuracy": 1.0,
+      "item_count": 3,
+      "recovery_compute_cost": {
+        "mean_action_attempts": 1.0,
+        "mean_estimated_input_tokens": 1807.3333333333333,
+        "mean_estimated_output_tokens": 80.0,
+        "mean_model_call_count": 1.0,
+        "mean_prompt_chars": 7228.0,
+        "mean_response_chars": 319.3333333333333
+      },
+      "recovery_success_rate": 1.0,
+      "repeated_failure_rate": 0.0,
+      "rollback_recovery_success": 1.0,
+      "targeted_recovery_success": 1.0
+    }
+  },
+  "schema_version": "stage1-mvp-v0",
+  "status": "completed",
+  "tasks": [
+    {
+      "blind_retry": {
+        "attempt_count": 1,
+        "budget_usage": {
+          "estimated_input_tokens": 1720,
+          "estimated_output_tokens": 75,
+          "max_action_attempts": 1,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 6880,
+          "response_chars": 300
+        },
+        "failure_label_accuracy": false,
+        "recovery_success": false,
+        "repeated_failure": true,
+        "status": "rejected",
+        "targeted_recovery_success": false
+      },
+      "compute_match": true,
+      "expected_failure_labels": [
+        "F_EXEC",
+        "F_EXEC_AUDIT_GAP"
+      ],
+      "expected_recovery_policy": "repair_audit_refs",
+      "expected_rollback_status": "not_applicable",
+      "targeted_recovery": {
+        "adapter_error": null,
+        "budget_usage": {
+          "estimated_input_tokens": 1720,
+          "estimated_output_tokens": 75,
+          "max_action_attempts": 1,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 6880,
+          "response_chars": 300
+        },
+        "confidence": 0.98,
+        "failure_label_accuracy": true,
+        "failure_labels": [
+          "F_EXEC",
+          "F_EXEC_AUDIT_GAP"
+        ],
+        "initial_rollback_status": "not_applicable",
+        "initial_status": "rejected",
+        "primary_failure_label": "F_EXEC_AUDIT_GAP",
+        "recovery_outcome": {
+          "artifact_path": ".vanta_recovery/repaired_audit.json",
+          "details": {
+            "artifacts_path": "inputs/audit_artifacts.json",
+            "audit": {
+              "checklist": {
+                "commit_audit": true,
+                "episode_metadata": true,
+                "evidence_audit": true,
+                "replay_metadata": true,
+                "rollback_memory_boundary": true,
+                "state_audit": true,
+                "step_audit": true,
+                "verifier_audit": true
+              },
+              "complete": true,
+              "missing": []
+            },
+            "journal_path": "inputs/incomplete_journal.json",
+            "repaired_journal": {
+              "commit_status": "committed",
+              "episode_id": "episode_docops_audit_gap_001_supplied",
+              "evidence_refs": [
+                "evidence_step_episode_docops_audit_gap_001_validate_artifact"
+              ],
+              "memory_write_effects": [],
+              "rollback_status": "not_applicable",
+              "runtime_manifest": {
+                "language": "elixir",
+                "language_version": "1.19.0",
+                "otp_version": "28.0",
+                "runtime": "vanta_phase4_fixture",
+                "runtime_version": "0.1.0",
+                "schema_contracts": [
+                  "execution_step.schema.json",
+                  "evidence_packet.schema.json",
+                  "verifier_output.schema.json",
+                  "episode_journal.schema.json"
+                ],
+                "schema_version": "stage1-mvp-v0",
+                "side_effect_classes_allowed": [
+                  "READ_ONLY",
+                  "SIMULATED",
+                  "REVERSIBLE",
+                  "COMPENSABLE"
+                ],
+                "tool_environment": {
+                  "fixture": "docops_audit_gap_001"
+                }
+              },
+              "schema_version": "stage1-mvp-v0",
+              "state_hashes": [
+                "sha256:state-before",
+                "sha256:state-after"
+              ],
+              "steps": [
+                {
+                  "action_payload": {
+                    "artifacts_path": "inputs/audit_artifacts.json",
+                    "path": "inputs/incomplete_journal.json",
+                    "validation": "episode_audit_refs"
+                  },
+                  "action_type": "validate_artifact",
+                  "dependency_edges": [],
+                  "episode_id": "episode_docops_audit_gap_001_supplied",
+                  "expected_effect": "Validate supplied audit references without mutation.",
+                  "parent_step_id": null,
+                  "postconditions": [
+                    "source_files_preserved_unless_explicitly_allowed"
+                  ],
+                  "preconditions": [
+                    "fixture_workspace_exists",
+                    "action_is_allowed"
+                  ],
+                  "rollback_policy": "not_applicable",
+                  "schema_version": "stage1-mvp-v0",
+                  "side_effect_class": "READ_ONLY",
+                  "status": "committed",
+                  "step_id": "step_episode_docops_audit_gap_001_validate_artifact",
+                  "verifier_requirements": [
+                    "schema_valid",
+                    "evidence_complete",
+                    "side_effect_allowed",
+                    "provenance_present"
+                  ]
+                }
+              ],
+              "task_id": "docops_audit_gap_001",
+              "verifier_output_refs": [
+                "verifier_step_episode_docops_audit_gap_001_validate_artifact"
+              ]
+            }
+          },
+          "policy": "repair_audit_refs",
+          "schema_version": "stage1-mvp-v0",
+          "success": true
+        },
+        "recovery_policy": "repair_audit_refs",
+        "recovery_success": true,
+        "repeated_failure": false,
+        "targeted_recovery_success": true
+      },
+      "task_id": "docops_audit_gap_001"
+    },
+    {
+      "blind_retry": {
+        "attempt_count": 1,
+        "budget_usage": {
+          "estimated_input_tokens": 1717,
+          "estimated_output_tokens": 72,
+          "max_action_attempts": 1,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 6865,
+          "response_chars": 288
+        },
+        "failure_label_accuracy": false,
+        "recovery_success": false,
+        "repeated_failure": true,
+        "status": "rejected",
+        "targeted_recovery_success": false
+      },
+      "compute_match": true,
+      "expected_failure_labels": [
+        "F_EXEC",
+        "F_EXEC_COMPENSATION_REQUIRED"
+      ],
+      "expected_recovery_policy": "produce_compensation_record",
+      "expected_rollback_status": "compensation_required",
+      "targeted_recovery": {
+        "adapter_error": null,
+        "budget_usage": {
+          "estimated_input_tokens": 1717,
+          "estimated_output_tokens": 72,
+          "max_action_attempts": 1,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 6865,
+          "response_chars": 288
+        },
+        "confidence": 0.99,
+        "failure_label_accuracy": true,
+        "failure_labels": [
+          "F_EXEC",
+          "F_EXEC_COMPENSATION_REQUIRED"
+        ],
+        "initial_rollback_status": "compensation_required",
+        "initial_status": "rejected",
+        "primary_failure_label": "F_EXEC_COMPENSATION_REQUIRED",
+        "recovery_outcome": {
+          "artifact_path": ".vanta_recovery/compensation_record.json",
+          "details": {
+            "compensation_hint": "Write a compensation record that references fixture-compensable-001.",
+            "compensation_status": "compensation_completed",
+            "external_action_executed": false,
+            "receipt_id": "fixture-compensable-001"
+          },
+          "policy": "produce_compensation_record",
+          "schema_version": "stage1-mvp-v0",
+          "success": true
+        },
+        "recovery_policy": "produce_compensation_record",
+        "recovery_success": true,
+        "repeated_failure": false,
+        "targeted_recovery_success": true
+      },
+      "task_id": "docops_compensable_action_001"
+    },
+    {
+      "blind_retry": {
+        "attempt_count": 1,
+        "budget_usage": {
+          "estimated_input_tokens": 1985,
+          "estimated_output_tokens": 93,
+          "max_action_attempts": 1,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 7939,
+          "response_chars": 370
+        },
+        "failure_label_accuracy": false,
+        "recovery_success": false,
+        "repeated_failure": true,
+        "status": "rejected",
+        "targeted_recovery_success": false
+      },
+      "compute_match": true,
+      "expected_failure_labels": [
+        "F_EXEC",
+        "F_EXEC_ROLLBACK_FAILURE"
+      ],
+      "expected_recovery_policy": "reconstruct_rollback_from_diff",
+      "expected_rollback_status": "failed",
+      "targeted_recovery": {
+        "adapter_error": null,
+        "budget_usage": {
+          "estimated_input_tokens": 1985,
+          "estimated_output_tokens": 93,
+          "max_action_attempts": 1,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 7939,
+          "response_chars": 370
+        },
+        "confidence": 0.98,
+        "failure_label_accuracy": true,
+        "failure_labels": [
+          "F_EXEC",
+          "F_EXEC_ROLLBACK_FAILURE",
+          "F_EXEC_AUDIT_GAP"
+        ],
+        "initial_rollback_status": "failed",
+        "initial_status": "rejected",
+        "primary_failure_label": "F_EXEC_ROLLBACK_FAILURE",
+        "recovery_outcome": {
+          "artifact_path": ".vanta_recovery/rollback_reconstruction.json",
+          "details": {
+            "after_hash": "sha256:05eaf47b6db35e3599d6fd55d840b5591427c0fe215da4b939338d14a68852b8",
+            "before_hash": "sha256:851e9f4439a086642d255a6366c214293f3f0fae2feabae50b265c49497bbfab",
+            "recovered_hash": "sha256:851e9f4439a086642d255a6366c214293f3f0fae2feabae50b265c49497bbfab",
+            "restored_path": "inputs/rollback.md"
+          },
+          "policy": "reconstruct_rollback_from_diff",
+          "schema_version": "stage1-mvp-v0",
+          "success": true
+        },
+        "recovery_policy": "reconstruct_rollback_from_diff",
+        "recovery_success": true,
+        "repeated_failure": false,
+        "targeted_recovery_success": true
+      },
+      "task_id": "docops_rollback_failure_001"
+    }
+  ],
+  "treatment": "targeted_recovery_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget"
+}

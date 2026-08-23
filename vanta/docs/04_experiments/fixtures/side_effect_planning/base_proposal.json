@@ -1,0 +1,105 @@
+{
+  "proposal_id": "{{proposal_id}}",
+  "surface_id": "PS1-LC-SIDEFX-COMMITTABLE-DOCOPS-001",
+  "gate_policy_version": "PS1-LC-SIDEFX-GATE-001",
+  "side_effect_class": "COMMITTABLE",
+  "fixture_id": "{{fixture_id}}",
+  "planned_action": "commit_fixture_document_candidate",
+  "runtime_dispatch_allowed": false,
+  "target_identity": {
+    "workspace_id": "copied-{{fixture_id}}",
+    "workspace_root": "workspace/{{fixture_id}}",
+    "source_artifact_path": "workspace/{{fixture_id}}/inputs/source.md",
+    "source_artifact_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "candidate_artifact_path": "workspace/{{fixture_id}}/candidates/candidate.md",
+    "candidate_artifact_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "proposed_commit_target": "workspace/{{fixture_id}}/committed/document.md",
+    "target_kind": "fixture_local_document",
+    "source_fixture_mutation": false
+  },
+  "source_artifact_ref": {
+    "path": "workspace/{{fixture_id}}/inputs/source.md",
+    "content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "candidate_artifact_ref": {
+    "path": "workspace/{{fixture_id}}/candidates/candidate.md",
+    "content_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "generation_step_ref": "planning-step-001"
+  },
+  "proposed_commit_target": "workspace/{{fixture_id}}/committed/document.md",
+  "expected_effect": {
+    "kind": "fixture_document_commit",
+    "artifact_manifest_update": true,
+    "irreversible": false,
+    "memory_write": false
+  },
+  "preconditions": {
+    "source_hash_required": true,
+    "candidate_hash_required": true,
+    "target_path_guard_required": true,
+    "document_contract_required": true,
+    "duplicate_guard_required": true
+  },
+  "postconditions": {
+    "committed_artifact_hash_required": true,
+    "target_path_required": true,
+    "manifest_entry_required": true,
+    "audit_refs_required": true
+  },
+  "approval_policy_ref": "PS1-G8-APPROVAL-BOUNDARY-DRAFT-v1",
+  "approval_record_requirement": [
+    "approver_type",
+    "approver_identity",
+    "scope",
+    "timestamp",
+    "target_identity",
+    "policy_version",
+    "approval_result"
+  ],
+  "idempotency_key": "sidefx-plan:{{fixture_id}}:source-a:candidate-b:target-document",
+  "duplicate_guard": {
+    "strategy": "reject_existing_or_conflicting_key",
+    "target_scope": "workspace/{{fixture_id}}/committed/document.md"
+  },
+  "pre_effect_evidence_requirements": [
+    "source_hash",
+    "candidate_hash",
+    "candidate_diff",
+    "target_path_safety",
+    "idempotency_key",
+    "duplicate_guard",
+    "policy_refs"
+  ],
+  "post_effect_evidence_requirements": [
+    "committed_artifact_hash",
+    "target_path",
+    "manifest_diff",
+    "post_state_hash",
+    "audit_refs"
+  ],
+  "verifier_policy_ref": "PS1-G8-COMMITTABLE-DOCOPS-VERIFIER-DRAFT-v1",
+  "rollback_or_compensation_statement": "fixture_commit_restore",
+  "rollback_or_compensation_details": {
+    "strict_rollback_claimed": true,
+    "pre_effect_backup_required": true,
+    "restore_evidence_required": true
+  },
+  "journal_requirements": [
+    "execution_step_ref",
+    "evidence_packet_ref",
+    "verifier_output_ref",
+    "approval_record_ref",
+    "commit_status",
+    "rollback_or_compensation_ref"
+  ],
+  "rejection_conditions": [
+    "missing_target_identity",
+    "missing_approval_boundary",
+    "missing_duplicate_guard",
+    "missing_rollback_or_compensation_statement",
+    "path_escape",
+    "source_fixture_mutation",
+    "irreversible_misclassification",
+    "memory_write_smuggling"
+  ]
+}

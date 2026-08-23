@@ -1,0 +1,2 @@
+-Verifier gate: TODO.
++Verifier gate: Evidence Packet reviewed before commit.

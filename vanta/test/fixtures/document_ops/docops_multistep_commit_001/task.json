@@ -1,0 +1,65 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_multistep_commit_001",
+  "task_type": "document_ops",
+  "prompt": "Inspect the fixture input directory, simulate a verifier-gate wording edit, and compute the same candidate diff without modifying the source file.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_multistep_commit_001_initial",
+    "task_id": "docops_multistep_commit_001",
+    "task_intent": "Exercise a multi-step Document Ops commit path without mutating source files.",
+    "objects": [
+      {
+        "object_id": "workflow_doc",
+        "path": "inputs/workflow.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_multistep_commit_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_multistep_commit_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/workflow.md",
+      "role": "source",
+      "description": "Markdown workflow excerpt with a verifier-gate placeholder."
+    }
+  ],
+  "allowed_actions": [
+    "list_files",
+    "compute_hash",
+    "simulate_patch",
+    "compute_diff",
+    "validate_artifact"
+  ],
+  "success_criteria": [
+    "The fixture input directory is inspected before edit planning.",
+    "The simulated diff replaces the verifier-gate TODO with Evidence Packet reviewed before commit.",
+    "The computed candidate diff matches the simulated diff.",
+    "The source file remains unchanged.",
+    "The Episode Journal records every committed step with evidence and verifier references."
+  ],
+  "failure_criteria": [
+    "The source file is modified.",
+    "The action sequence skips the initial directory inspection.",
+    "The simulated and computed diffs disagree.",
+    "Any committed step lacks evidence or verifier output references."
+  ],
+  "side_effect_classes": [
+    "READ_ONLY",
+    "SIMULATED"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

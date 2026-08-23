@@ -1,0 +1,56 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_inspect_001",
+  "task_type": "document_ops",
+  "prompt": "Inspect the markdown document structure without modifying the source file.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_struct_inspect_001_initial",
+    "task_id": "docops_struct_inspect_001",
+    "task_intent": "Parse document structure and selector targets without mutation.",
+    "objects": [
+      {
+        "object_id": "spec_doc",
+        "path": "inputs/spec.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_struct_inspect_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_struct_inspect_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/spec.md",
+      "role": "source",
+      "description": "Markdown document with nested Stage 1 sections."
+    }
+  ],
+  "allowed_actions": [
+    "inspect_document_structure"
+  ],
+  "success_criteria": [
+    "The structure summary includes headings and section line ranges.",
+    "Selector results resolve the Scope heading and Evidence section.",
+    "The source file remains unchanged."
+  ],
+  "failure_criteria": [
+    "The source file is modified.",
+    "The structure summary omits requested selector results."
+  ],
+  "side_effect_classes": [
+    "READ_ONLY"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

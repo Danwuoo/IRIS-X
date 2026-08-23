@@ -1,0 +1,21 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_traceability_multisource_001",
+    "expected_runtime_status":  "committed",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "traceability_links_exact",
+                              "read_only"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "validate_artifact",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/source_a.md",
+                                                                       "validation":  "traceability_links"
+                                                                   }
+                                            }
+                                        ]
+                        }
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_apply_reversible_001",
+  "expected_runtime_status": "committed",
+  "expected_task_success": true,
+  "expected_rollback_status": "available",
+  "acceptance_checks": [
+    "diff_exact_match",
+    "backup_metadata_exists",
+    "rollback_metadata_sufficient"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "apply_reversible_structured_edit",
+        "action_payload": {
+          "path": "inputs/glossary.md",
+          "selector": {
+            "type": "line_range",
+            "start_line": 3,
+            "end_line": 3
+          },
+          "operation": "replace",
+          "replacement": "Verifier Runtime: runtime verifier for action feasibility, evidence sufficiency, and final correctness where applicable.",
+          "backup_policy": "fixture_backup_restore"
+        }
+      }
+    ]
+  }
+}

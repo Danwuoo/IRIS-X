@@ -1,0 +1,83 @@
+﻿{
+    "packet_id":  "PS1-LB-PACKET-20260530-141649-BATCH-001",
+    "status":  "Not yet run",
+    "label_policy_version":  "PS1-LB-LABEL-001",
+    "review_mode":  "double_human_adjudicated",
+    "evidence_sufficiency_score":  {
+                                       "item_ids":  [
+                                                        "lb20260530-es-001",
+                                                        "lb20260530-es-002",
+                                                        "lb20260530-es-003",
+                                                        "lb20260530-es-004",
+                                                        "lb20260530-es-005",
+                                                        "lb20260530-es-006",
+                                                        "lb20260530-es-007",
+                                                        "lb20260530-es-008"
+                                                    ],
+                                       "adjudication_required_when":  [
+                                                                          "any reviewer marks needs_review",
+                                                                          "raw labels differ by two or more levels",
+                                                                          "reviewers split across 0-2 versus 3-4 acceptability boundary"
+                                                                      ],
+                                       "records":  [
+
+                                                   ],
+                                       "unresolved_needs_review_count":  "Not yet run"
+                                   },
+    "context_omission_error_rate":  {
+                                        "item_ids":  [
+                                                         "lb20260530-ws-001-context_arm_A",
+                                                         "lb20260530-ws-001-context_arm_B",
+                                                         "lb20260530-ws-002-context_arm_A",
+                                                         "lb20260530-ws-002-context_arm_B",
+                                                         "lb20260530-ws-003-context_arm_A",
+                                                         "lb20260530-ws-003-context_arm_B",
+                                                         "lb20260530-ws-004-context_arm_A",
+                                                         "lb20260530-ws-004-context_arm_B",
+                                                         "lb20260530-ws-005-context_arm_A",
+                                                         "lb20260530-ws-005-context_arm_B",
+                                                         "lb20260530-ws-006-context_arm_A",
+                                                         "lb20260530-ws-006-context_arm_B"
+                                                     ],
+                                        "adjudication_required_when":  [
+                                                                           "reviewers disagree on task_critical",
+                                                                           "reviewers disagree on critical_omission",
+                                                                           "reviewers disagree on denominator",
+                                                                           "any reviewer marks needs_review"
+                                                                       ],
+                                        "records":  [
+
+                                                    ],
+                                        "unresolved_needs_review_count":  "Not yet run"
+                                    },
+    "working_set_relevance_score":  {
+                                        "item_ids":  [
+                                                         "lb20260530-ws-001-context_arm_A",
+                                                         "lb20260530-ws-001-context_arm_B",
+                                                         "lb20260530-ws-002-context_arm_A",
+                                                         "lb20260530-ws-002-context_arm_B",
+                                                         "lb20260530-ws-003-context_arm_A",
+                                                         "lb20260530-ws-003-context_arm_B",
+                                                         "lb20260530-ws-004-context_arm_A",
+                                                         "lb20260530-ws-004-context_arm_B",
+                                                         "lb20260530-ws-005-context_arm_A",
+                                                         "lb20260530-ws-005-context_arm_B",
+                                                         "lb20260530-ws-006-context_arm_A",
+                                                         "lb20260530-ws-006-context_arm_B"
+                                                     ],
+                                        "adjudication_required_when":  [
+                                                                           "reviewers disagree on task_critical",
+                                                                           "reviewers disagree on supporting versus irrelevant or harmful",
+                                                                           "any reviewer marks harmful",
+                                                                           "any reviewer marks needs_review"
+                                                                       ],
+                                        "records":  [
+
+                                                    ],
+                                        "unresolved_needs_review_count":  "Not yet run"
+                                    },
+    "fixture_oracle_exposure":  {
+                                    "primary_labelers":  "withheld until labels are frozen",
+                                    "adjudicator":  "allowed only after primary labels are frozen and must be recorded per adjudication record"
+                                }
+}

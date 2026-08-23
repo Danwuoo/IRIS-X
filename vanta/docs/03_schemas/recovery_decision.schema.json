@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Recovery Decision",
+  "type": "object",
+  "description": "Failure classification and targeted recovery proposal for Phase 4 recovery experiments.",
+  "required": [
+    "schema_version",
+    "decision_id",
+    "task_id",
+    "episode_id",
+    "failure_labels",
+    "primary_failure_label",
+    "recovery_policy",
+    "confidence",
+    "required_evidence_refs",
+    "budget_usage"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "decision_id": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "episode_id": {
+      "type": "string"
+    },
+    "failure_labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "primary_failure_label": {
+      "type": "string"
+    },
+    "recovery_policy": {
+      "type": "string",
+      "enum": [
+        "reconstruct_rollback_from_diff",
+        "repair_audit_refs",
+        "produce_compensation_record",
+        "no_recovery"
+      ]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "required_evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "budget_usage": {
+      "type": "object",
+      "required": [
+        "model_call_count",
+        "prompt_chars",
+        "response_chars",
+        "estimated_input_tokens",
+        "estimated_output_tokens"
+      ],
+      "properties": {
+        "model_call_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "prompt_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "response_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "estimated_input_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "estimated_output_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_prompt_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_response_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_action_attempts": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "adapter_error": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

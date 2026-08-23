@@ -1,0 +1,333 @@
+{
+  "cases": [
+    {
+      "case_id": "P006-01",
+      "checks": {
+        "accepted_state_pointer_present": true,
+        "audit_complete": true,
+        "journal_pointer_present": true,
+        "restart_lifecycle_committed": true,
+        "runtime_committed": true
+      },
+      "duration_ms": 4154,
+      "measurements": {
+        "artifact_count": 8,
+        "audit_expected": 1,
+        "audit_succeeded": 1,
+        "committed_effects_without_journal_refs": 0,
+        "expected_writes": 1,
+        "schema_valid_artifacts": 8,
+        "successful_writes": 1
+      },
+      "name": "normal commit then restart",
+      "passed": true
+    },
+    {
+      "case_id": "P006-02",
+      "checks": {
+        "effect_observed_before_recovery": true,
+        "injected_crash_observed": true,
+        "recovery_record_rolled_back": true,
+        "restart_recovery_completed": true
+      },
+      "duration_ms": 2813,
+      "measurements": {
+        "artifact_count": 3,
+        "recovery_expected": 1,
+        "recovery_succeeded": 1,
+        "schema_valid_artifacts": 3
+      },
+      "name": "crash before Evidence Packet persistence",
+      "passed": true
+    },
+    {
+      "case_id": "P006-03",
+      "checks": {
+        "episode_discovered": true,
+        "injected_crash_observed": true,
+        "recovery_record_aborted": true,
+        "restart_aborted": true,
+        "target_unchanged": true
+      },
+      "duration_ms": 2029,
+      "measurements": {
+        "artifact_count": 3,
+        "recovery_expected": 1,
+        "recovery_succeeded": 1,
+        "schema_valid_artifacts": 3
+      },
+      "name": "prepared complete before file effect",
+      "passed": true
+    },
+    {
+      "case_id": "P006-04",
+      "checks": {
+        "effect_observed_before_recovery": true,
+        "injected_crash_observed": true,
+        "recovery_record_rolled_back": true,
+        "restart_recovery_completed": true
+      },
+      "duration_ms": 1338,
+      "measurements": {
+        "artifact_count": 3,
+        "recovery_expected": 1,
+        "recovery_succeeded": 1,
+        "schema_valid_artifacts": 3
+      },
+      "name": "file effect complete before DB commit",
+      "passed": true
+    },
+    {
+      "case_id": "P006-05",
+      "checks": {
+        "effect_not_repeated": true,
+        "idempotent_replay_reported": true,
+        "injected_crash_observed": true,
+        "retry_committed": true,
+        "single_step_artifact": true
+      },
+      "duration_ms": 1733,
+      "measurements": {
+        "artifact_count": 8,
+        "duplicate_logical_commits": 0,
+        "expected_writes": 1,
+        "schema_valid_artifacts": 8,
+        "successful_writes": 1
+      },
+      "name": "DB commit complete before client response",
+      "passed": true
+    },
+    {
+      "case_id": "P006-06",
+      "checks": {
+        "recovery_record_rolled_back": true,
+        "restart_rollback_completed": true,
+        "rollback_crash_observed": true
+      },
+      "duration_ms": 1105,
+      "measurements": {
+        "artifact_count": 3,
+        "recovery_expected": 1,
+        "recovery_succeeded": 1,
+        "schema_valid_artifacts": 3
+      },
+      "name": "crash before rollback starts",
+      "passed": true
+    },
+    {
+      "case_id": "P006-07",
+      "checks": {
+        "recovery_record_rolled_back": true,
+        "restart_rollback_completed": true,
+        "rollback_crash_observed": true
+      },
+      "duration_ms": 1023,
+      "measurements": {
+        "artifact_count": 3,
+        "recovery_expected": 1,
+        "recovery_succeeded": 1,
+        "schema_valid_artifacts": 3
+      },
+      "name": "crash during rollback",
+      "passed": true
+    },
+    {
+      "case_id": "P006-08",
+      "checks": {
+        "same_state_pointer": true,
+        "second_is_idempotent": true,
+        "single_logical_commit_artifacts": true
+      },
+      "duration_ms": 648,
+      "measurements": {
+        "artifact_count": 2,
+        "duplicate_logical_commits": 0,
+        "expected_writes": 1,
+        "schema_valid_artifacts": 2,
+        "successful_writes": 1
+      },
+      "name": "same idempotency key resend",
+      "passed": true
+    },
+    {
+      "case_id": "P006-09",
+      "checks": {
+        "accepted_pointer_unchanged": true,
+        "conflict_rejected": true
+      },
+      "duration_ms": 692,
+      "measurements": {
+        "artifact_count": 2,
+        "schema_valid_artifacts": 2
+      },
+      "name": "same key conflicting request",
+      "passed": true
+    },
+    {
+      "case_id": "P006-10",
+      "checks": {
+        "corruption_detected": true
+      },
+      "duration_ms": 646,
+      "measurements": {
+        "artifact_count": 2,
+        "integrity_detections": 1,
+        "integrity_injections": 1,
+        "schema_valid_artifacts": 2
+      },
+      "name": "artifact content corruption",
+      "passed": true
+    },
+    {
+      "case_id": "P006-11",
+      "checks": {
+        "missing_reference_detected": true
+      },
+      "duration_ms": 825,
+      "measurements": {
+        "artifact_count": 2,
+        "integrity_detections": 1,
+        "integrity_injections": 1,
+        "schema_valid_artifacts": 2
+      },
+      "name": "artifact reference missing",
+      "passed": true
+    },
+    {
+      "case_id": "P006-12",
+      "checks": {
+        "case_completed": false
+      },
+      "duration_ms": 826,
+      "error": "** (File.Error) could not remove files and directories recursively from \"C:\\\\Users\\\\wurre\\\\AppData\\\\Local\\\\Temp/vanta_p006_incompatible_4488\": file already exists\n    (elixir 1.19.5) lib/file.ex:1681: File.rm_rf!/1\n    (vanta 0.1.0) lib/vanta/experiments/persistence_experiment.ex:695: Vanta.PersistenceExperiment.scratch_case/2\n    (vanta 0.1.0) lib/vanta/experiments/persistence_experiment.ex:786: Vanta.PersistenceExperiment.safe_case/3\n    (elixir 1.19.5) lib/enum.ex:1688: Enum.\"-map/2-lists^map/1-1-\"/2\n    (elixir 1.19.5) lib/enum.ex:1688: Enum.\"-map/2-lists^map/1-1-\"/2\n    (vanta 0.1.0) lib/vanta/experiments/persistence_experiment.ex:50: Vanta.PersistenceExperiment.run/1\n    (vanta 0.1.0) lib/mix/tasks/vanta/persistence_experiment.ex:16: Mix.Tasks.Vanta.PersistenceExperiment.run/1\n    (mix 1.19.5) lib/mix/task.ex:499: anonymous fn/3 in Mix.Task.run_task/5\n",
+      "measurements": {},
+      "name": "schema version incompatible",
+      "passed": false
+    },
+    {
+      "case_id": "P006-13",
+      "checks": {
+        "busy_error_explicit": true,
+        "no_partial_episode": true
+      },
+      "duration_ms": 545,
+      "measurements": {},
+      "name": "database busy or locked",
+      "passed": true
+    },
+    {
+      "case_id": "P006-14",
+      "checks": {
+        "state_and_journal_rolled_back": true,
+        "write_failed": true
+      },
+      "duration_ms": 94,
+      "measurements": {
+        "silent_partial_commits": 0,
+        "state_journal_atomicity_violations": 0
+      },
+      "name": "write failure transaction rollback",
+      "passed": true
+    },
+    {
+      "case_id": "P006-15",
+      "checks": {
+        "incomplete_episode_discovered": true
+      },
+      "duration_ms": 405,
+      "measurements": {
+        "artifact_count": 3,
+        "schema_valid_artifacts": 3
+      },
+      "name": "incomplete episode discovery",
+      "passed": true
+    },
+    {
+      "case_id": "P006-16",
+      "checks": {
+        "audit_complete": true,
+        "fidelity_mismatches_empty": true,
+        "strict_replay_consistent": true
+      },
+      "duration_ms": 2120,
+      "measurements": {
+        "artifact_count": 8,
+        "audit_expected": 1,
+        "audit_succeeded": 1,
+        "committed_effects_without_journal_refs": 0,
+        "expected_writes": 1,
+        "replay_expected": 1,
+        "replay_succeeded": 1,
+        "schema_valid_artifacts": 8,
+        "successful_writes": 1
+      },
+      "name": "clean workspace replay",
+      "passed": true
+    },
+    {
+      "case_id": "P006-17",
+      "checks": {
+        "audit_complete": true,
+        "fidelity_mismatches_empty": true,
+        "strict_replay_consistent": true
+      },
+      "duration_ms": 881,
+      "measurements": {
+        "artifact_count": 8,
+        "audit_expected": 1,
+        "audit_succeeded": 1,
+        "committed_effects_without_journal_refs": 0,
+        "expected_writes": 1,
+        "replay_expected": 1,
+        "replay_succeeded": 1,
+        "schema_valid_artifacts": 8,
+        "successful_writes": 1
+      },
+      "name": "structured reversible restart replay",
+      "passed": true
+    },
+    {
+      "case_id": "P006-18",
+      "checks": {
+        "rejected_action_not_accepted": true
+      },
+      "duration_ms": 1786,
+      "measurements": {
+        "artifact_count": 6,
+        "committed_effects_without_journal_refs": 0,
+        "schema_valid_artifacts": 6,
+        "state_journal_atomicity_violations": 0
+      },
+      "name": "rejected action not accepted",
+      "passed": true
+    },
+    {
+      "case_id": "P006-19",
+      "checks": {
+        "accepted_pointer_absent": true,
+        "non_accept_rejected": true
+      },
+      "duration_ms": 427,
+      "measurements": {},
+      "name": "non-accept verifier cannot commit",
+      "passed": true
+    },
+    {
+      "case_id": "P006-20",
+      "checks": {
+        "memory_write_rejected": true,
+        "no_accepted_commit": true,
+        "unsupported_rejected": true
+      },
+      "duration_ms": 527,
+      "measurements": {
+        "irreversible_effects": 0,
+        "memory_writes": 0,
+        "unsupported_commits": 0
+      },
+      "name": "unsupported and memory effects remain zero",
+      "passed": true
+    }
+  ],
+  "experiment_id": "experiment_006_persistence_and_recovery"
+}

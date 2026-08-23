@@ -1,0 +1,19 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_path_escape_001",
+  "expected_runtime_status": "rejected",
+  "expected_task_success": true,
+  "acceptance_checks": [
+    "workspace_escape_rejected"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "read_file",
+        "action_payload": {
+          "path": "../outside.md"
+        }
+      }
+    ]
+  }
+}

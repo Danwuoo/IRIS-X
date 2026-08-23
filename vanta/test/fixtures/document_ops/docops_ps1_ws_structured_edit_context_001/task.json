@@ -1,0 +1,71 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_ws_structured_edit_context_001",
+    "task_type":  "document_ops",
+    "prompt":  "Select working-set refs needed to validate a structured-edit context note under budget.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_ws_structured_edit_context_001_initial",
+                          "task_id":  "docops_ps1_ws_structured_edit_context_001",
+                          "task_intent":  "Compile working set for structured edit context.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "source",
+                                              "path":  "inputs/source.md",
+                                              "kind":  "markdown"
+                                          },
+                                          {
+                                              "object_id":  "noise",
+                                              "path":  "inputs/noise.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_ws_structured_edit_context_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_ws_structured_edit_context_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/source.md",
+                                "role":  "source"
+                            },
+                            {
+                                "path":  "inputs/noise.md",
+                                "role":  "noise"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "validate_artifact"
+                        ],
+    "success_criteria":  [
+                             "The required structured-edit context ref is included.",
+                             "Irrelevant noise may be omitted.",
+                             "No source file is modified."
+                         ],
+    "failure_criteria":  [
+                             "The source context ref is omitted.",
+                             "Noise crowds out required context."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal",
+                          "working_set"
+                      ]
+}

@@ -1,0 +1,61 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_traceability_structured_outline_001",
+    "task_type":  "document_ops",
+    "prompt":  "Inspect a markdown outline and resolve the Specs section selector without mutation.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_traceability_structured_outline_001_initial",
+                          "task_id":  "docops_ps1_traceability_structured_outline_001",
+                          "task_intent":  "Inspect traceability outline structure.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "outline",
+                                              "path":  "inputs/outline.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_traceability_structured_outline_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_structured_outline_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/outline.md",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "inspect_document_structure"
+                        ],
+    "success_criteria":  [
+                             "The markdown structure records the expected headings.",
+                             "The Specs section selector resolves.",
+                             "No mutation occurs."
+                         ],
+    "failure_criteria":  [
+                             "The selector is missing or ambiguous.",
+                             "The file is modified."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

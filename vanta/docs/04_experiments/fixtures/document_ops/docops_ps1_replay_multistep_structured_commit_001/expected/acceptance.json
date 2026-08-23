@@ -1,0 +1,40 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_replay_multistep_structured_commit_001",
+    "expected_runtime_status":  "committed",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "diff_exact_match",
+                              "audit_complete",
+                              "replay_consistent"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "compute_hash",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/plan.md"
+                                                                   }
+                                            },
+                                            {
+                                                "action_type":  "simulate_structured_edit",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/plan.md",
+                                                                       "selector":  {
+                                                                                        "type":  "line_range",
+                                                                                        "start_line":  2,
+                                                                                        "end_line":  2
+                                                                                    },
+                                                                       "operation":  "insert_after",
+                                                                       "replacement":  "Audit: required before commit."
+                                                                   }
+                                            },
+                                            {
+                                                "action_type":  "validate_artifact",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/plan.md"
+                                                                   }
+                                            }
+                                        ]
+                        }
+}

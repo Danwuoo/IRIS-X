@@ -1,0 +1,5 @@
+{
+  "evidence_id": "fixture_evidence_packet_001",
+  "summary": "Evidence Packet fixture ref required for Phase 5 context selection.",
+  "source_path": "inputs/evidence_packet.json"
+}

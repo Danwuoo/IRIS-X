@@ -1,0 +1,24 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_terms_alias_conflict_001",
+    "expected_runtime_status":  "committed",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "terminology_inconsistencies_exact",
+                              "read_only"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "validate_artifact",
+                                                "action_payload":  {
+                                                                       "paths":  [
+                                                                                     "inputs/term_a.md",
+                                                                                     "inputs/term_b.md"
+                                                                                 ],
+                                                                       "validation":  "terminology_consistency"
+                                                                   }
+                                            }
+                                        ]
+                        }
+}

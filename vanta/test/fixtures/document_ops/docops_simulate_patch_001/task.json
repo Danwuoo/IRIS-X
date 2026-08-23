@@ -1,0 +1,62 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_simulate_patch_001",
+  "task_type": "document_ops",
+  "prompt": "Simulate a markdown edit that replaces a Stage 1 TBD environment note with Document Ops, but do not modify the source file.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_simulate_patch_001_initial",
+    "task_id": "docops_simulate_patch_001",
+    "task_intent": "Simulate a controlled spec edit without writing to source.",
+    "objects": [
+      {
+        "object_id": "spec_doc",
+        "path": "inputs/spec.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_simulate_patch_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_simulate_patch_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/spec.md",
+      "role": "source",
+      "description": "Markdown spec excerpt with a placeholder environment."
+    }
+  ],
+  "allowed_actions": [
+    "read_file",
+    "compute_hash",
+    "simulate_patch",
+    "compute_diff",
+    "validate_artifact"
+  ],
+  "success_criteria": [
+    "The simulated diff replaces TBD with Document Ops.",
+    "The source file remains unchanged.",
+    "Evidence includes pre-state hash, post-state hash, action reference, diff observation, provenance, and runtime context."
+  ],
+  "failure_criteria": [
+    "The source file is modified.",
+    "The simulated diff changes unrelated text.",
+    "Evidence omits the diff observation."
+  ],
+  "side_effect_classes": [
+    "READ_ONLY",
+    "SIMULATED"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

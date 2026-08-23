@@ -1,0 +1,60 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_terms_contract_inline_001",
+    "task_type":  "document_ops",
+    "prompt":  "Validate that the terminology note contains required canonical terms.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_terms_contract_inline_001_initial",
+                          "task_id":  "docops_ps1_terms_contract_inline_001",
+                          "task_intent":  "Validate inline terminology contract.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "terms",
+                                              "path":  "inputs/terms.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_terms_contract_inline_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_terms_contract_inline_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/terms.md",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "validate_document_contract"
+                        ],
+    "success_criteria":  [
+                             "The inline contract passes.",
+                             "The source remains read-only."
+                         ],
+    "failure_criteria":  [
+                             "Required canonical terms are missing.",
+                             "The source is modified."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

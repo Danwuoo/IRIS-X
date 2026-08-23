@@ -1,0 +1,27 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_contract_fail_001",
+  "expected_runtime_status": "committed",
+  "expected_task_success": true,
+  "acceptance_checks": [
+    "contract_fail_recorded"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "validate_document_contract",
+        "action_payload": {
+          "path": "inputs/spec.md",
+          "inline_contract": {
+            "required_headings": [
+              {
+                "text": "Rollback",
+                "level": 2
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

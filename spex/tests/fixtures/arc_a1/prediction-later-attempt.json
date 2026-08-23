@@ -1,0 +1,7 @@
+{
+  "task_id": "single",
+  "attempts": [
+    {"attempt": 1, "outputs": [[[2, 0], [0, 1]]]},
+    {"attempt": 2, "outputs": [[[2, 0], [0, 2]]]}
+  ]
+}

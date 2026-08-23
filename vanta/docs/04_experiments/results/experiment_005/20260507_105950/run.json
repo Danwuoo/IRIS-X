@@ -1,0 +1,1167 @@
+{
+  "baseline": "raw_trace_bounded_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+  "experiment_id": "experiment_005_working_set_compiler",
+  "fixture_count": 5,
+  "metrics": {
+    "baseline": {
+      "context_omission_error_rate": 0.9333333333333332,
+      "item_count": 5,
+      "long_task_stability": 1.0,
+      "memory_writes": 0,
+      "task_success_rate": 1.0,
+      "unsupported_commits": 0,
+      "working_set_budget_adherence": 1.0,
+      "working_set_provenance_completeness": 0.6,
+      "working_set_relevance_score": 0.1
+    },
+    "compute_matching": {
+      "budget_matched": true,
+      "fixture_count": 5,
+      "matched_fixture_count": 5
+    },
+    "gate": {
+      "local_smoke_pass": true
+    },
+    "treatment": {
+      "context_omission_error_rate": 0.0,
+      "item_count": 5,
+      "long_task_stability": 1.0,
+      "memory_writes": 0,
+      "task_success_rate": 1.0,
+      "unsupported_commits": 0,
+      "working_set_budget_adherence": 1.0,
+      "working_set_provenance_completeness": 1.0,
+      "working_set_relevance_score": 1.0
+    }
+  },
+  "schema_version": "stage1-mvp-v0",
+  "status": "completed",
+  "tasks": [
+    {
+      "baseline": {
+        "action_sequence": {
+          "actions": [
+            {
+              "action_payload": {
+                "path": "inputs/evidence_packet.json"
+              },
+              "action_type": "validate_artifact"
+            }
+          ]
+        },
+        "arm": "baseline",
+        "context": {
+          "arm": "raw_trace_bounded",
+          "artifact_id": "raw_trace_docops_ws_evidence_packet_001",
+          "budget_adhered": true,
+          "dropped_refs": [
+            {
+              "content_hash": "sha256:3218c6316b7d5048a0470b52b75b368eb5f0439f3ff98bfb20f28c995c5f2fea",
+              "kind": "artifact",
+              "path": "inputs/noise.md",
+              "ref_id": "artifact:noise",
+              "required": false,
+              "role": "irrelevant",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:9d332f68afd00f0da65a0ee3e51bcbba215dc23c8f71a9ac59b8c7d62c48379f",
+              "kind": "canonical_state",
+              "path": "task.json#/initial_state",
+              "ref_id": "state:evidence_packet",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:9f6b676524d2f5cce6396958978484f5b56cc70536ee95b85c37cea7f291d778",
+              "kind": "evidence",
+              "path": "inputs/evidence_packet.json",
+              "ref_id": "evidence:fixture_packet",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+              "kind": "constraint",
+              "path": "task.json#/side_effect_classes",
+              "ref_id": "constraint:read_only",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            }
+          ],
+          "estimated_tokens": 0,
+          "estimation_method": "ceil(chars / 4)",
+          "included_refs": [],
+          "max_context_chars": 260,
+          "selected_context_chars": 0
+        },
+        "context_metrics": {
+          "budget_adherent": true,
+          "context_omission_error_rate": 1.0,
+          "long_task_stable": true,
+          "provenance_completeness": 0.0,
+          "working_set_relevance_score": 0.0
+        },
+        "invalid_actions": 0,
+        "memory_write_count": 0,
+        "planner_budget_usage": {
+          "estimated_input_tokens": 1008,
+          "estimated_output_tokens": 27,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 4031,
+          "response_chars": 105
+        },
+        "status": "committed",
+        "task_success": true,
+        "total_actions": 1,
+        "unsupported_commit": false
+      },
+      "compute_match": true,
+      "irrelevant_refs": [
+        "artifact:noise"
+      ],
+      "omission_trap_refs": [
+        "evidence:fixture_packet"
+      ],
+      "relevant_refs": [
+        "state:evidence_packet",
+        "evidence:fixture_packet",
+        "constraint:read_only"
+      ],
+      "required_refs": [
+        "state:evidence_packet",
+        "evidence:fixture_packet",
+        "constraint:read_only"
+      ],
+      "task_id": "docops_ws_evidence_packet_001",
+      "treatment": {
+        "action_sequence": {
+          "actions": [
+            {
+              "action_payload": {
+                "path": "inputs/evidence_packet.json"
+              },
+              "action_type": "validate_artifact"
+            }
+          ]
+        },
+        "arm": "treatment",
+        "context": {
+          "omitted_refs": [
+            {
+              "kind": "artifact",
+              "omit_reason": "budget_exceeded",
+              "path": "inputs/noise.md",
+              "ref_id": "artifact:noise"
+            }
+          ],
+          "selected_refs": [
+            {
+              "content_hash": "sha256:9d332f68afd00f0da65a0ee3e51bcbba215dc23c8f71a9ac59b8c7d62c48379f",
+              "kind": "canonical_state",
+              "path": "task.json#/initial_state",
+              "ref_id": "state:evidence_packet"
+            },
+            {
+              "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+              "kind": "constraint",
+              "path": "task.json#/side_effect_classes",
+              "ref_id": "constraint:read_only"
+            },
+            {
+              "content_hash": "sha256:9f6b676524d2f5cce6396958978484f5b56cc70536ee95b85c37cea7f291d778",
+              "kind": "evidence",
+              "path": "inputs/evidence_packet.json",
+              "ref_id": "evidence:fixture_packet"
+            }
+          ],
+          "type": "working_set",
+          "working_set": {
+            "active_goal_ref": "task:docops_ws_evidence_packet_001",
+            "canonical_state_ref": "state:evidence_packet",
+            "constraint_refs": [
+              "constraint:read_only"
+            ],
+            "evidence_refs": [
+              "evidence:fixture_packet"
+            ],
+            "memory_refs": [],
+            "omitted_context_notes": [
+              "omitted artifact:noise (artifact): budget_exceeded"
+            ],
+            "provenance": {
+              "included_refs": [
+                {
+                  "content_hash": "sha256:9d332f68afd00f0da65a0ee3e51bcbba215dc23c8f71a9ac59b8c7d62c48379f",
+                  "kind": "canonical_state",
+                  "path": "task.json#/initial_state",
+                  "ref_id": "state:evidence_packet",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                },
+                {
+                  "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+                  "kind": "constraint",
+                  "path": "task.json#/side_effect_classes",
+                  "ref_id": "constraint:read_only",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                },
+                {
+                  "content_hash": "sha256:9f6b676524d2f5cce6396958978484f5b56cc70536ee95b85c37cea7f291d778",
+                  "kind": "evidence",
+                  "path": "inputs/evidence_packet.json",
+                  "ref_id": "evidence:fixture_packet",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                }
+              ]
+            },
+            "recovery_context_refs": [],
+            "schema_version": "stage1-mvp-v0",
+            "selection_policy": "working_set_compiler_v0/reference_backed_required_first",
+            "selection_rationale": "Required refs selected before optional refs; optional refs sorted by stable kind priority and ref_id.",
+            "token_budget": {
+              "budget_adhered": true,
+              "estimated_tokens": 34,
+              "estimation_method": "ceil(chars / 4)",
+              "max_context_chars": 260,
+              "selected_context_chars": 133
+            },
+            "working_set_id": "working_set_docops_ws_evidence_packet_001"
+          }
+        },
+        "context_metrics": {
+          "budget_adherent": true,
+          "context_omission_error_rate": 0.0,
+          "long_task_stable": true,
+          "provenance_completeness": 1.0,
+          "working_set_relevance_score": 1.0
+        },
+        "invalid_actions": 0,
+        "memory_write_count": 0,
+        "planner_budget_usage": {
+          "estimated_input_tokens": 1408,
+          "estimated_output_tokens": 27,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 5631,
+          "response_chars": 105
+        },
+        "status": "committed",
+        "task_success": true,
+        "total_actions": 1,
+        "unsupported_commit": false
+      }
+    },
+    {
+      "baseline": {
+        "action_sequence": {
+          "actions": [
+            {
+              "action_payload": {
+                "path": "inputs/source.md"
+              },
+              "action_type": "validate_artifact"
+            }
+          ]
+        },
+        "arm": "baseline",
+        "context": {
+          "arm": "raw_trace_bounded",
+          "artifact_id": "raw_trace_docops_ws_irrelevant_context_001",
+          "budget_adhered": true,
+          "dropped_refs": [
+            {
+              "content_hash": "sha256:be4fa1933f75eec3a0827d07365aa07e66fde5fd54575c9d5bbe005f78be3870",
+              "kind": "canonical_state",
+              "path": "task.json#/initial_state",
+              "ref_id": "state:irrelevant_context",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:749ee120ff3c1e80fab2245f563de62f8eefb7afed6dab8f485801a361f8db7a",
+              "kind": "artifact",
+              "path": "inputs/source.md",
+              "ref_id": "artifact:source",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+              "kind": "constraint",
+              "path": "task.json#/side_effect_classes",
+              "ref_id": "constraint:read_only",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            }
+          ],
+          "estimated_tokens": 58,
+          "estimation_method": "ceil(chars / 4)",
+          "included_refs": [
+            {
+              "content_hash": "sha256:61da94058c7186cd40a015b33d6aa8cc6919121dfd76f2616533ba37a1ee7072",
+              "kind": "artifact",
+              "path": "inputs/noise.md",
+              "ref_id": "artifact:noise",
+              "required": false,
+              "role": "irrelevant",
+              "source": "fixture"
+            }
+          ],
+          "max_context_chars": 240,
+          "selected_context_chars": 232
+        },
+        "context_metrics": {
+          "budget_adherent": true,
+          "context_omission_error_rate": 1.0,
+          "long_task_stable": true,
+          "provenance_completeness": 1.0,
+          "working_set_relevance_score": 0.0
+        },
+        "invalid_actions": 0,
+        "memory_write_count": 0,
+        "planner_budget_usage": {
+          "estimated_input_tokens": 1064,
+          "estimated_output_tokens": 24,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 4255,
+          "response_chars": 94
+        },
+        "status": "committed",
+        "task_success": true,
+        "total_actions": 1,
+        "unsupported_commit": false
+      },
+      "compute_match": true,
+      "irrelevant_refs": [
+        "artifact:noise"
+      ],
+      "omission_trap_refs": [],
+      "relevant_refs": [
+        "state:irrelevant_context",
+        "artifact:source",
+        "constraint:read_only"
+      ],
+      "required_refs": [
+        "state:irrelevant_context",
+        "artifact:source",
+        "constraint:read_only"
+      ],
+      "task_id": "docops_ws_irrelevant_context_001",
+      "treatment": {
+        "action_sequence": {
+          "actions": [
+            {
+              "action_payload": {
+                "path": "inputs/source.md"
+              },
+              "action_type": "validate_artifact"
+            }
+          ]
+        },
+        "arm": "treatment",
+        "context": {
+          "omitted_refs": [
+            {
+              "kind": "artifact",
+              "omit_reason": "budget_exceeded",
+              "path": "inputs/noise.md",
+              "ref_id": "artifact:noise"
+            }
+          ],
+          "selected_refs": [
+            {
+              "content_hash": "sha256:be4fa1933f75eec3a0827d07365aa07e66fde5fd54575c9d5bbe005f78be3870",
+              "kind": "canonical_state",
+              "path": "task.json#/initial_state",
+              "ref_id": "state:irrelevant_context"
+            },
+            {
+              "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+              "kind": "constraint",
+              "path": "task.json#/side_effect_classes",
+              "ref_id": "constraint:read_only"
+            },
+            {
+              "content_hash": "sha256:749ee120ff3c1e80fab2245f563de62f8eefb7afed6dab8f485801a361f8db7a",
+              "kind": "artifact",
+              "path": "inputs/source.md",
+              "ref_id": "artifact:source"
+            }
+          ],
+          "type": "working_set",
+          "working_set": {
+            "active_goal_ref": "task:docops_ws_irrelevant_context_001",
+            "canonical_state_ref": "state:irrelevant_context",
+            "constraint_refs": [
+              "constraint:read_only"
+            ],
+            "evidence_refs": [],
+            "memory_refs": [],
+            "omitted_context_notes": [
+              "omitted artifact:noise (artifact): budget_exceeded"
+            ],
+            "provenance": {
+              "included_refs": [
+                {
+                  "content_hash": "sha256:be4fa1933f75eec3a0827d07365aa07e66fde5fd54575c9d5bbe005f78be3870",
+                  "kind": "canonical_state",
+                  "path": "task.json#/initial_state",
+                  "ref_id": "state:irrelevant_context",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                },
+                {
+                  "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+                  "kind": "constraint",
+                  "path": "task.json#/side_effect_classes",
+                  "ref_id": "constraint:read_only",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                },
+                {
+                  "content_hash": "sha256:749ee120ff3c1e80fab2245f563de62f8eefb7afed6dab8f485801a361f8db7a",
+                  "kind": "artifact",
+                  "path": "inputs/source.md",
+                  "ref_id": "artifact:source",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                }
+              ]
+            },
+            "recovery_context_refs": [],
+            "schema_version": "stage1-mvp-v0",
+            "selection_policy": "working_set_compiler_v0/reference_backed_required_first",
+            "selection_rationale": "Required refs selected before optional refs; optional refs sorted by stable kind priority and ref_id.",
+            "token_budget": {
+              "budget_adhered": true,
+              "estimated_tokens": 26,
+              "estimation_method": "ceil(chars / 4)",
+              "max_context_chars": 240,
+              "selected_context_chars": 102
+            },
+            "working_set_id": "working_set_docops_ws_irrelevant_context_001"
+          }
+        },
+        "context_metrics": {
+          "budget_adherent": true,
+          "context_omission_error_rate": 0.0,
+          "long_task_stable": true,
+          "provenance_completeness": 1.0,
+          "working_set_relevance_score": 1.0
+        },
+        "invalid_actions": 0,
+        "memory_write_count": 0,
+        "planner_budget_usage": {
+          "estimated_input_tokens": 1356,
+          "estimated_output_tokens": 24,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 5421,
+          "response_chars": 94
+        },
+        "status": "committed",
+        "task_success": true,
+        "total_actions": 1,
+        "unsupported_commit": false
+      }
+    },
+    {
+      "baseline": {
+        "action_sequence": {
+          "actions": [
+            {
+              "action_payload": {
+                "path": "inputs/late_source.md"
+              },
+              "action_type": "validate_artifact"
+            }
+          ]
+        },
+        "arm": "baseline",
+        "context": {
+          "arm": "raw_trace_bounded",
+          "artifact_id": "raw_trace_docops_ws_omission_trap_001",
+          "budget_adhered": true,
+          "dropped_refs": [
+            {
+              "content_hash": "sha256:63c18ce698343da94502e49b7bfbd67d90fe35837bbe80fa7bf3d59ce5b83da8",
+              "kind": "canonical_state",
+              "path": "task.json#/initial_state",
+              "ref_id": "state:omission_trap",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:b7b8909edc82976cc0f5e3a302c5919dc50bef9a18d600b0f9f097b9150b355b",
+              "kind": "artifact",
+              "path": "inputs/late_source.md",
+              "ref_id": "artifact:late_source",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+              "kind": "constraint",
+              "path": "task.json#/side_effect_classes",
+              "ref_id": "constraint:read_only",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            }
+          ],
+          "estimated_tokens": 58,
+          "estimation_method": "ceil(chars / 4)",
+          "included_refs": [
+            {
+              "content_hash": "sha256:3eff6ed412c8714373750879d8dfc54fb4862d0859178a8a96d0770322f9991f",
+              "kind": "artifact",
+              "path": "inputs/noise.md",
+              "ref_id": "artifact:noise",
+              "required": false,
+              "role": "irrelevant",
+              "source": "fixture"
+            }
+          ],
+          "max_context_chars": 250,
+          "selected_context_chars": 232
+        },
+        "context_metrics": {
+          "budget_adherent": true,
+          "context_omission_error_rate": 1.0,
+          "long_task_stable": true,
+          "provenance_completeness": 1.0,
+          "working_set_relevance_score": 0.0
+        },
+        "invalid_actions": 0,
+        "memory_write_count": 0,
+        "planner_budget_usage": {
+          "estimated_input_tokens": 1065,
+          "estimated_output_tokens": 25,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 4260,
+          "response_chars": 99
+        },
+        "status": "committed",
+        "task_success": true,
+        "total_actions": 1,
+        "unsupported_commit": false
+      },
+      "compute_match": true,
+      "irrelevant_refs": [
+        "artifact:noise"
+      ],
+      "omission_trap_refs": [
+        "artifact:late_source"
+      ],
+      "relevant_refs": [
+        "state:omission_trap",
+        "artifact:late_source",
+        "constraint:read_only"
+      ],
+      "required_refs": [
+        "state:omission_trap",
+        "artifact:late_source",
+        "constraint:read_only"
+      ],
+      "task_id": "docops_ws_omission_trap_001",
+      "treatment": {
+        "action_sequence": {
+          "actions": [
+            {
+              "action_payload": {
+                "path": "inputs/late_source.md"
+              },
+              "action_type": "validate_artifact"
+            }
+          ]
+        },
+        "arm": "treatment",
+        "context": {
+          "omitted_refs": [
+            {
+              "kind": "artifact",
+              "omit_reason": "budget_exceeded",
+              "path": "inputs/noise.md",
+              "ref_id": "artifact:noise"
+            }
+          ],
+          "selected_refs": [
+            {
+              "content_hash": "sha256:63c18ce698343da94502e49b7bfbd67d90fe35837bbe80fa7bf3d59ce5b83da8",
+              "kind": "canonical_state",
+              "path": "task.json#/initial_state",
+              "ref_id": "state:omission_trap"
+            },
+            {
+              "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+              "kind": "constraint",
+              "path": "task.json#/side_effect_classes",
+              "ref_id": "constraint:read_only"
+            },
+            {
+              "content_hash": "sha256:b7b8909edc82976cc0f5e3a302c5919dc50bef9a18d600b0f9f097b9150b355b",
+              "kind": "artifact",
+              "path": "inputs/late_source.md",
+              "ref_id": "artifact:late_source"
+            }
+          ],
+          "type": "working_set",
+          "working_set": {
+            "active_goal_ref": "task:docops_ws_omission_trap_001",
+            "canonical_state_ref": "state:omission_trap",
+            "constraint_refs": [
+              "constraint:read_only"
+            ],
+            "evidence_refs": [],
+            "memory_refs": [],
+            "omitted_context_notes": [
+              "omitted artifact:noise (artifact): budget_exceeded"
+            ],
+            "provenance": {
+              "included_refs": [
+                {
+                  "content_hash": "sha256:63c18ce698343da94502e49b7bfbd67d90fe35837bbe80fa7bf3d59ce5b83da8",
+                  "kind": "canonical_state",
+                  "path": "task.json#/initial_state",
+                  "ref_id": "state:omission_trap",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                },
+                {
+                  "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+                  "kind": "constraint",
+                  "path": "task.json#/side_effect_classes",
+                  "ref_id": "constraint:read_only",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                },
+                {
+                  "content_hash": "sha256:b7b8909edc82976cc0f5e3a302c5919dc50bef9a18d600b0f9f097b9150b355b",
+                  "kind": "artifact",
+                  "path": "inputs/late_source.md",
+                  "ref_id": "artifact:late_source",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                }
+              ]
+            },
+            "recovery_context_refs": [],
+            "schema_version": "stage1-mvp-v0",
+            "selection_policy": "working_set_compiler_v0/reference_backed_required_first",
+            "selection_rationale": "Required refs selected before optional refs; optional refs sorted by stable kind priority and ref_id.",
+            "token_budget": {
+              "budget_adhered": true,
+              "estimated_tokens": 29,
+              "estimation_method": "ceil(chars / 4)",
+              "max_context_chars": 250,
+              "selected_context_chars": 116
+            },
+            "working_set_id": "working_set_docops_ws_omission_trap_001"
+          }
+        },
+        "context_metrics": {
+          "budget_adherent": true,
+          "context_omission_error_rate": 0.0,
+          "long_task_stable": true,
+          "provenance_completeness": 1.0,
+          "working_set_relevance_score": 1.0
+        },
+        "invalid_actions": 0,
+        "memory_write_count": 0,
+        "planner_budget_usage": {
+          "estimated_input_tokens": 1364,
+          "estimated_output_tokens": 25,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 5454,
+          "response_chars": 99
+        },
+        "status": "committed",
+        "task_success": true,
+        "total_actions": 1,
+        "unsupported_commit": false
+      }
+    },
+    {
+      "baseline": {
+        "action_sequence": {
+          "actions": [
+            {
+              "action_payload": {
+                "path": "inputs/recovery_context.md"
+              },
+              "action_type": "validate_artifact"
+            }
+          ]
+        },
+        "arm": "baseline",
+        "context": {
+          "arm": "raw_trace_bounded",
+          "artifact_id": "raw_trace_docops_ws_recovery_context_001",
+          "budget_adhered": true,
+          "dropped_refs": [
+            {
+              "content_hash": "sha256:c1bb926c98836b031423f4474465b01b905ea5c5e035df2c4bed0a0113abacf7",
+              "kind": "recovery_context",
+              "path": "inputs/recovery_context.md",
+              "ref_id": "recovery:fixture_context",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+              "kind": "constraint",
+              "path": "task.json#/side_effect_classes",
+              "ref_id": "constraint:read_only",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            }
+          ],
+          "estimated_tokens": 63,
+          "estimation_method": "ceil(chars / 4)",
+          "included_refs": [
+            {
+              "content_hash": "sha256:0ef630e2e432c50b958659385cf6c38a2b97c7436f92b164a3b178f89f94cde7",
+              "kind": "artifact",
+              "path": "inputs/noise.md",
+              "ref_id": "artifact:noise",
+              "required": false,
+              "role": "irrelevant",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:57ba8522f8649bafd6ded07aa630e9250aeb0375784f48a0be6f0c3c3168c606",
+              "kind": "canonical_state",
+              "path": "task.json#/initial_state",
+              "ref_id": "state:recovery_context",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            }
+          ],
+          "max_context_chars": 270,
+          "selected_context_chars": 250
+        },
+        "context_metrics": {
+          "budget_adherent": true,
+          "context_omission_error_rate": 0.6666666666666666,
+          "long_task_stable": true,
+          "provenance_completeness": 1.0,
+          "working_set_relevance_score": 0.5
+        },
+        "invalid_actions": 0,
+        "memory_write_count": 0,
+        "planner_budget_usage": {
+          "estimated_input_tokens": 1116,
+          "estimated_output_tokens": 26,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 4463,
+          "response_chars": 104
+        },
+        "status": "committed",
+        "task_success": true,
+        "total_actions": 1,
+        "unsupported_commit": false
+      },
+      "compute_match": true,
+      "irrelevant_refs": [
+        "artifact:noise"
+      ],
+      "omission_trap_refs": [
+        "recovery:fixture_context"
+      ],
+      "relevant_refs": [
+        "state:recovery_context",
+        "recovery:fixture_context",
+        "constraint:read_only"
+      ],
+      "required_refs": [
+        "state:recovery_context",
+        "recovery:fixture_context",
+        "constraint:read_only"
+      ],
+      "task_id": "docops_ws_recovery_context_001",
+      "treatment": {
+        "action_sequence": {
+          "actions": [
+            {
+              "action_payload": {
+                "path": "inputs/recovery_context.md"
+              },
+              "action_type": "validate_artifact"
+            }
+          ]
+        },
+        "arm": "treatment",
+        "context": {
+          "omitted_refs": [
+            {
+              "kind": "artifact",
+              "omit_reason": "budget_exceeded",
+              "path": "inputs/noise.md",
+              "ref_id": "artifact:noise"
+            }
+          ],
+          "selected_refs": [
+            {
+              "content_hash": "sha256:57ba8522f8649bafd6ded07aa630e9250aeb0375784f48a0be6f0c3c3168c606",
+              "kind": "canonical_state",
+              "path": "task.json#/initial_state",
+              "ref_id": "state:recovery_context"
+            },
+            {
+              "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+              "kind": "constraint",
+              "path": "task.json#/side_effect_classes",
+              "ref_id": "constraint:read_only"
+            },
+            {
+              "content_hash": "sha256:c1bb926c98836b031423f4474465b01b905ea5c5e035df2c4bed0a0113abacf7",
+              "kind": "recovery_context",
+              "path": "inputs/recovery_context.md",
+              "ref_id": "recovery:fixture_context"
+            }
+          ],
+          "type": "working_set",
+          "working_set": {
+            "active_goal_ref": "task:docops_ws_recovery_context_001",
+            "canonical_state_ref": "state:recovery_context",
+            "constraint_refs": [
+              "constraint:read_only"
+            ],
+            "evidence_refs": [],
+            "memory_refs": [],
+            "omitted_context_notes": [
+              "omitted artifact:noise (artifact): budget_exceeded"
+            ],
+            "provenance": {
+              "included_refs": [
+                {
+                  "content_hash": "sha256:57ba8522f8649bafd6ded07aa630e9250aeb0375784f48a0be6f0c3c3168c606",
+                  "kind": "canonical_state",
+                  "path": "task.json#/initial_state",
+                  "ref_id": "state:recovery_context",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                },
+                {
+                  "content_hash": "sha256:b4df5449cb7c1b640a9f6612d7b726532972e9aae209f15c1852b301f770d9e1",
+                  "kind": "constraint",
+                  "path": "task.json#/side_effect_classes",
+                  "ref_id": "constraint:read_only",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                },
+                {
+                  "content_hash": "sha256:c1bb926c98836b031423f4474465b01b905ea5c5e035df2c4bed0a0113abacf7",
+                  "kind": "recovery_context",
+                  "path": "inputs/recovery_context.md",
+                  "ref_id": "recovery:fixture_context",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                }
+              ]
+            },
+            "recovery_context_refs": [
+              "recovery:fixture_context"
+            ],
+            "schema_version": "stage1-mvp-v0",
+            "selection_policy": "working_set_compiler_v0/reference_backed_required_first",
+            "selection_rationale": "Required refs selected before optional refs; optional refs sorted by stable kind priority and ref_id.",
+            "token_budget": {
+              "budget_adhered": true,
+              "estimated_tokens": 33,
+              "estimation_method": "ceil(chars / 4)",
+              "max_context_chars": 270,
+              "selected_context_chars": 131
+            },
+            "working_set_id": "working_set_docops_ws_recovery_context_001"
+          }
+        },
+        "context_metrics": {
+          "budget_adherent": true,
+          "context_omission_error_rate": 0.0,
+          "long_task_stable": true,
+          "provenance_completeness": 1.0,
+          "working_set_relevance_score": 1.0
+        },
+        "invalid_actions": 0,
+        "memory_write_count": 0,
+        "planner_budget_usage": {
+          "estimated_input_tokens": 1414,
+          "estimated_output_tokens": 26,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 5656,
+          "response_chars": 104
+        },
+        "status": "committed",
+        "task_success": true,
+        "total_actions": 1,
+        "unsupported_commit": false
+      }
+    },
+    {
+      "baseline": {
+        "action_sequence": {
+          "actions": [
+            {
+              "action_payload": {
+                "path": "inputs/source.md"
+              },
+              "action_type": "validate_artifact"
+            }
+          ]
+        },
+        "arm": "baseline",
+        "context": {
+          "arm": "raw_trace_bounded",
+          "artifact_id": "raw_trace_docops_ws_traceability_long_001",
+          "budget_adhered": true,
+          "dropped_refs": [
+            {
+              "content_hash": "sha256:70106d58247a1781c7935290203124cd3f3b89843a5740b89ac02acde7e8518e",
+              "kind": "artifact",
+              "path": "inputs/noise.md",
+              "ref_id": "artifact:noise",
+              "required": false,
+              "role": "irrelevant",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:1f907ba1ddc1d0ee4653318bd09184e2204257cdac9b3e7d3a8eb34426eec512",
+              "kind": "canonical_state",
+              "path": "task.json#/initial_state",
+              "ref_id": "state:traceability_long",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:ac10c53ef69b6bcdf7b592c4124830f0ad60d2470c6ad66b1fd0fb1146f13083",
+              "kind": "constraint",
+              "path": "task.json#/side_effect_classes",
+              "ref_id": "constraint:read_only",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            },
+            {
+              "content_hash": "sha256:f45a1fc355d233ff90ec1d12bf44a7c6d80a273d777af5c2bbea4e193f9f538a",
+              "kind": "artifact",
+              "path": "inputs/source.md",
+              "ref_id": "artifact:source",
+              "required": true,
+              "role": "required",
+              "source": "fixture"
+            }
+          ],
+          "estimated_tokens": 0,
+          "estimation_method": "ceil(chars / 4)",
+          "included_refs": [],
+          "max_context_chars": 280,
+          "selected_context_chars": 0
+        },
+        "context_metrics": {
+          "budget_adherent": true,
+          "context_omission_error_rate": 1.0,
+          "long_task_stable": true,
+          "provenance_completeness": 0.0,
+          "working_set_relevance_score": 0.0
+        },
+        "invalid_actions": 0,
+        "memory_write_count": 0,
+        "planner_budget_usage": {
+          "estimated_input_tokens": 1032,
+          "estimated_output_tokens": 24,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 4126,
+          "response_chars": 94
+        },
+        "status": "committed",
+        "task_success": true,
+        "total_actions": 1,
+        "unsupported_commit": false
+      },
+      "compute_match": true,
+      "irrelevant_refs": [
+        "artifact:noise"
+      ],
+      "omission_trap_refs": [
+        "artifact:source"
+      ],
+      "relevant_refs": [
+        "state:traceability_long",
+        "constraint:read_only",
+        "artifact:source"
+      ],
+      "required_refs": [
+        "state:traceability_long",
+        "constraint:read_only",
+        "artifact:source"
+      ],
+      "task_id": "docops_ws_traceability_long_001",
+      "treatment": {
+        "action_sequence": {
+          "actions": [
+            {
+              "action_payload": {
+                "path": "inputs/source.md"
+              },
+              "action_type": "validate_artifact"
+            }
+          ]
+        },
+        "arm": "treatment",
+        "context": {
+          "omitted_refs": [
+            {
+              "kind": "artifact",
+              "omit_reason": "budget_exceeded",
+              "path": "inputs/noise.md",
+              "ref_id": "artifact:noise"
+            }
+          ],
+          "selected_refs": [
+            {
+              "content_hash": "sha256:1f907ba1ddc1d0ee4653318bd09184e2204257cdac9b3e7d3a8eb34426eec512",
+              "kind": "canonical_state",
+              "path": "task.json#/initial_state",
+              "ref_id": "state:traceability_long"
+            },
+            {
+              "content_hash": "sha256:ac10c53ef69b6bcdf7b592c4124830f0ad60d2470c6ad66b1fd0fb1146f13083",
+              "kind": "constraint",
+              "path": "task.json#/side_effect_classes",
+              "ref_id": "constraint:read_only"
+            },
+            {
+              "content_hash": "sha256:f45a1fc355d233ff90ec1d12bf44a7c6d80a273d777af5c2bbea4e193f9f538a",
+              "kind": "artifact",
+              "path": "inputs/source.md",
+              "ref_id": "artifact:source"
+            }
+          ],
+          "type": "working_set",
+          "working_set": {
+            "active_goal_ref": "task:docops_ws_traceability_long_001",
+            "canonical_state_ref": "state:traceability_long",
+            "constraint_refs": [
+              "constraint:read_only"
+            ],
+            "evidence_refs": [],
+            "memory_refs": [],
+            "omitted_context_notes": [
+              "omitted artifact:noise (artifact): budget_exceeded"
+            ],
+            "provenance": {
+              "included_refs": [
+                {
+                  "content_hash": "sha256:1f907ba1ddc1d0ee4653318bd09184e2204257cdac9b3e7d3a8eb34426eec512",
+                  "kind": "canonical_state",
+                  "path": "task.json#/initial_state",
+                  "ref_id": "state:traceability_long",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                },
+                {
+                  "content_hash": "sha256:ac10c53ef69b6bcdf7b592c4124830f0ad60d2470c6ad66b1fd0fb1146f13083",
+                  "kind": "constraint",
+                  "path": "task.json#/side_effect_classes",
+                  "ref_id": "constraint:read_only",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                },
+                {
+                  "content_hash": "sha256:f45a1fc355d233ff90ec1d12bf44a7c6d80a273d777af5c2bbea4e193f9f538a",
+                  "kind": "artifact",
+                  "path": "inputs/source.md",
+                  "ref_id": "artifact:source",
+                  "required": true,
+                  "role": "required",
+                  "source": "fixture"
+                }
+              ]
+            },
+            "recovery_context_refs": [],
+            "schema_version": "stage1-mvp-v0",
+            "selection_policy": "working_set_compiler_v0/reference_backed_required_first",
+            "selection_rationale": "Required refs selected before optional refs; optional refs sorted by stable kind priority and ref_id.",
+            "token_budget": {
+              "budget_adhered": true,
+              "estimated_tokens": 43,
+              "estimation_method": "ceil(chars / 4)",
+              "max_context_chars": 280,
+              "selected_context_chars": 171
+            },
+            "working_set_id": "working_set_docops_ws_traceability_long_001"
+          }
+        },
+        "context_metrics": {
+          "budget_adherent": true,
+          "context_omission_error_rate": 0.0,
+          "long_task_stable": true,
+          "provenance_completeness": 1.0,
+          "working_set_relevance_score": 1.0
+        },
+        "invalid_actions": 0,
+        "memory_write_count": 0,
+        "planner_budget_usage": {
+          "estimated_input_tokens": 1434,
+          "estimated_output_tokens": 24,
+          "max_prompt_chars": 20000,
+          "max_response_chars": 12000,
+          "model_call_count": 1,
+          "prompt_chars": 5735,
+          "response_chars": 94
+        },
+        "status": "committed",
+        "task_success": true,
+        "total_actions": 1,
+        "unsupported_commit": false
+      }
+    }
+  ],
+  "treatment": "working_set_compiler_v0_reference_backed_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget"
+}

@@ -1,0 +1,153 @@
+{
+  "approval_collection_status": "Not authorized",
+  "artifact_contract": {
+    "contract_status": "planning-only scaffold",
+    "label_packet_ref": "not_applicable.md",
+    "machine_schema": "not added in this batch",
+    "output_root_pattern": "docs/04_experiments/results/side_effect_planning/<timestamp>/",
+    "required_files": [
+      "run.json",
+      "summary.md",
+      "fixture_inventory.md",
+      "commit_plan_inventory.md",
+      "approval_boundary_report.md",
+      "rollback_compensation_report.md",
+      "schema_impact_ref.md",
+      "not_applicable.md"
+    ]
+  },
+  "artifact_contract_version": "PS1-G8-side-effect-planning-scaffold-v0",
+  "artifact_refs": {
+    "approval_boundary_report": "approval_boundary_report.md",
+    "commit_plan_inventory": "commit_plan_inventory.md",
+    "fixture_inventory": "fixture_inventory.md",
+    "label_packet_or_stub": "not_applicable.md",
+    "rollback_compensation_report": "rollback_compensation_report.md",
+    "run": "run.json",
+    "schema_impact_ref": "schema_impact_ref.md",
+    "summary": "summary.md"
+  },
+  "artifact_root": "docs/04_experiments/results/side_effect_planning/20260701_201804",
+  "claim_boundary": {
+    "claim_level": "planning artifact only",
+    "h5_validation": "not claimed",
+    "production_deployment": "not approved",
+    "runtime_approval": "not collected",
+    "runtime_execution_authorization": "Not authorized",
+    "side_effect_safety": "not claimed"
+  },
+  "executed_side_effect_counts": {
+    "COMMITTABLE": 0,
+    "IRREVERSIBLE": 0,
+    "MEMORY_WRITE": 0
+  },
+  "experiment_id": "side_effect_planning",
+  "future_action_placeholder": {
+    "name": "commit_fixture_document_candidate",
+    "present_in_allowed_actions": false,
+    "present_in_current_action_set": false,
+    "runtime_dispatch_allowed": false,
+    "side_effect_class": "COMMITTABLE",
+    "status": "planning placeholder only"
+  },
+  "future_fixture_families": [
+    {
+      "expected_planning_result": "future planning record with target identity, hashes, approval boundary, duplicate guard, verifier requirements, and rollback or compensation statement",
+      "family": "valid_fixture_local_commit_proposal",
+      "runnable_fixture_status": "not_added"
+    },
+    {
+      "expected_planning_result": "planning review rejection candidate",
+      "family": "missing_target_identity",
+      "runnable_fixture_status": "not_added"
+    },
+    {
+      "expected_planning_result": "blocked_missing_approval candidate",
+      "family": "missing_approval_boundary",
+      "runnable_fixture_status": "not_added"
+    },
+    {
+      "expected_planning_result": "planning review rejection candidate",
+      "family": "missing_duplicate_guard",
+      "runnable_fixture_status": "not_added"
+    },
+    {
+      "expected_planning_result": "blocked_missing_compensation_policy candidate",
+      "family": "missing_rollback_or_compensation_statement",
+      "runnable_fixture_status": "not_added"
+    },
+    {
+      "expected_planning_result": "blocked_path_escape candidate",
+      "family": "path_escape_or_source_fixture_mutation",
+      "runnable_fixture_status": "not_added"
+    },
+    {
+      "expected_planning_result": "blocked_irreversible_misclassification candidate",
+      "family": "irreversible_misclassification",
+      "runnable_fixture_status": "not_added"
+    },
+    {
+      "expected_planning_result": "blocked_memory_write candidate",
+      "family": "memory_write_smuggling",
+      "runnable_fixture_status": "not_added"
+    }
+  ],
+  "gate_policy_version": "PS1-LC-SIDEFX-GATE-001",
+  "generated_at": "2026-07-01T12:18:04Z",
+  "generation_mode": "planning-only scaffold",
+  "implementation_status": "Not authorized",
+  "plan_id": "PS1-LC-SIDEFX-PLAN-001",
+  "planning_boundary": {
+    "approval_records_collected": 0,
+    "authorized_runtime_actions_added": [],
+    "boundary": "planning-only",
+    "external_targets_allowed": false,
+    "fixture_oracles_are_runtime_approvals": false,
+    "labels_are_runtime_approvals": false,
+    "memory_stores_allowed": false,
+    "production_targets_allowed": false,
+    "runtime_dispatch": "Not authorized",
+    "source_fixture_mutation_allowed": false,
+    "target_scope": "future copied fixture workspace artifacts only"
+  },
+  "planning_stub_inventory": [
+    {
+      "approval_record_status": "not_collected",
+      "execution_status": "not_executed",
+      "gate_policy_version": "PS1-LC-SIDEFX-GATE-001",
+      "proposal_record_status": "stub_only",
+      "rollback_or_compensation_status": "future_requirement_only",
+      "runtime_action_added": false,
+      "side_effect_class": "COMMITTABLE",
+      "status": "Not authorized",
+      "stub_id": "sidefx_docops_commit_proposal_stub_001",
+      "surface_id": "PS1-LC-SIDEFX-COMMITTABLE-DOCOPS-001",
+      "target_scope": "future copied fixture workspace only"
+    }
+  ],
+  "planning_surface_id": "PS1-LC-SIDEFX-COMMITTABLE-DOCOPS-001",
+  "process_integrity_floors": {
+    "approval_as_label_count": 0,
+    "approval_record_count": 0,
+    "external_target_count": 0,
+    "memory_write_count": 0,
+    "production_target_count": 0,
+    "runtime_action_added_count": 0,
+    "runtime_committable_execution_count": 0,
+    "runtime_irreversible_execution_count": 0,
+    "schema_change_count": 0,
+    "source_fixture_mutation_count": 0,
+    "unsupported_commit_count": 0
+  },
+  "report_label": "side_effect_planning_draft",
+  "run_status": "Not yet run",
+  "runtime_execution_status": "Not authorized",
+  "schema_change_status": "no schema changes",
+  "schema_version": "stage1-mvp-v0",
+  "source_documents": [
+    "docs/02_specs/Post_Stage_1_Side_Effect_Planning_Draft_Spec.md",
+    "docs/03_schemas/Post_Stage_1_Side_Effect_Schema_Impact_Review.md",
+    "docs/04_experiments/Post_Stage_1_Side_Effect_Evaluation_Plan.md",
+    "docs/00_manifest/Side_Effect_Escalation_Gate.md"
+  ]
+}

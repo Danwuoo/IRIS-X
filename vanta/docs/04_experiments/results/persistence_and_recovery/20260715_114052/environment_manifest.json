@@ -1,0 +1,9 @@
+{
+  "elixir_version": "1.19.5",
+  "os_type": "{:win32, :nt}",
+  "otp_version": "28",
+  "runtime": "vanta",
+  "runtime_version": "0.1.0",
+  "sqlite_driver": "0.38.0",
+  "system_architecture": "x86_64-pc-windows"
+}

@@ -1,0 +1,74 @@
+{
+  "evidence_packets": [
+    {
+      "schema_version": "stage1-mvp-v0",
+      "evidence_id": "evidence_step_episode_docops_audit_gap_001_validate_artifact",
+      "episode_id": "episode_docops_audit_gap_001_supplied",
+      "step_id": "step_episode_docops_audit_gap_001_validate_artifact",
+      "pre_state_hash": "sha256:state-before",
+      "pre_state_summary": "Audit supplied journal references.",
+      "action_ref": "step_episode_docops_audit_gap_001_validate_artifact",
+      "observation": {
+        "kind": "validate_artifact",
+        "validation": "episode_audit_refs",
+        "audit_complete": false,
+        "mutated": false
+      },
+      "post_state_summary": "Audit supplied journal references.",
+      "post_state_hash": "sha256:state-after",
+      "verifier_result": {},
+      "confidence": 1.0,
+      "disagreement": {},
+      "violated_constraints": [
+        "audit_gap_detected"
+      ],
+      "failure_logits": {},
+      "credit_hints": {
+        "failure_class": "F_EXEC_AUDIT_GAP"
+      },
+      "provenance": {
+        "source": "fixture_workspace",
+        "paths": [
+          "inputs/incomplete_journal.json",
+          "inputs/audit_artifacts.json"
+        ]
+      },
+      "runtime_context": {
+        "runtime": "vanta_phase4_fixture",
+        "schema_version": "stage1-mvp-v0",
+        "side_effect_class": "READ_ONLY"
+      }
+    }
+  ],
+  "verifier_outputs": [
+    {
+      "schema_version": "stage1-mvp-v0",
+      "verifier_output_id": "verifier_step_episode_docops_audit_gap_001_validate_artifact",
+      "episode_id": "episode_docops_audit_gap_001_supplied",
+      "step_id": "step_episode_docops_audit_gap_001_validate_artifact",
+      "evidence_refs": [
+        "evidence_step_episode_docops_audit_gap_001_validate_artifact"
+      ],
+      "decision": "accept",
+      "verification_scope": [
+        "preconditions",
+        "postconditions",
+        "evidence_sufficiency",
+        "policy_constraints",
+        "side_effect_safety",
+        "state_consistency"
+      ],
+      "validity_score": 1.0,
+      "confidence": 1.0,
+      "calibration_state": {
+        "method": "fixture_oracle"
+      },
+      "disagreement": {},
+      "risk_score": 0.1,
+      "violated_constraints": [],
+      "required_extra_evidence": [],
+      "failure_logits": {},
+      "credit_hints": {}
+    }
+  ]
+}

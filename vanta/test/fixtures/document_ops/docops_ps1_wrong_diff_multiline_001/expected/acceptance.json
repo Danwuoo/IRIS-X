@@ -1,0 +1,22 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_wrong_diff_multiline_001",
+    "expected_runtime_status":  "rejected",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "diff_mismatch_rejected",
+                              "read_only_preserved"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "simulate_patch",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/spec.md",
+                                                                       "find":  "First controlled environment: TBD.\nVerifier: final answer only.",
+                                                                       "replace":  "First controlled environment: Wrong Domain.\nVerifier: final answer only."
+                                                                   }
+                                            }
+                                        ]
+                        }
+}

@@ -1,0 +1,9 @@
+{
+  "inconsistencies": [
+    {
+      "canonical": "Evidence Packet",
+      "observed": "evidence package",
+      "path": "inputs/term_b.md"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "status": "resolved",
+  "target": {
+    "kind": "json_path",
+    "json_path": "$.stage.domain",
+    "value": "TBD"
+  }
+}

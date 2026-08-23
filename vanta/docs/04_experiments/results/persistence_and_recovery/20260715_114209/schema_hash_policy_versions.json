@@ -1,0 +1,6 @@
+{
+  "hash_policy_version": "canonical-json-sha256-v1",
+  "runtime_schema_version": "stage1-mvp-v0",
+  "schema_authority": "docs/03_schemas/*.schema.json",
+  "storage_schema_version": "persistence-v0"
+}

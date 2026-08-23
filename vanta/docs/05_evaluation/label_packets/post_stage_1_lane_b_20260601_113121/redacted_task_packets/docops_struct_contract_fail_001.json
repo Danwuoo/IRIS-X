@@ -1,0 +1,68 @@
+﻿{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_struct_contract_fail_001",
+    "task_type":  "document_ops",
+    "prompt":  "Validate the markdown source against an inline contract and record the expected contract failure list.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_struct_contract_fail_001_initial",
+                          "task_id":  "docops_struct_contract_fail_001",
+                          "task_intent":  "Record a failing contract result without treating the observation as a verifier failure.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "source_doc",
+                                              "path":  "inputs/spec.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_struct_contract_fail_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_struct_contract_fail_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/spec.md"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "validate_document_contract"
+                        ],
+    "success_criteria":  [
+                             "The contract result is fail.",
+                             "The failure list names the missing Rollback heading.",
+                             "The runtime accepts the complete observed failure result as evidence."
+                         ],
+    "failure_criteria":  [
+                             "The contract failure list is omitted.",
+                             "The source file is modified."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ],
+    "redaction":  {
+                      "removed_fields":  [
+                                             "input_artifacts.role",
+                                             "input_artifacts.description"
+                                         ],
+                      "reason":  "Primary Lane B labelers must not see fixture oracle role fields before label freeze.",
+                      "source_task_path":  "docs/04_experiments/fixtures/document_ops/docops_struct_contract_fail_001/task.json"
+                  }
+}

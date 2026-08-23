@@ -1,0 +1,388 @@
+[
+  {
+    "actual": {
+      "approval_record_collected": false,
+      "completeness_checks": {
+        "approval_boundary_complete": true,
+        "duplicate_guard_present": true,
+        "idempotency_key_present": true,
+        "rollback_or_compensation_declared": true,
+        "target_identity_complete": true
+      },
+      "decision": "rejected",
+      "reason_codes": [
+        "irreversible_misclassification"
+      ],
+      "report_label": "blocked_irreversible_misclassification",
+      "runtime_execution_attempted": false,
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "audit_complete": true,
+    "audit_refs": {
+      "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_irreversible_misclassification.json",
+      "proposal_hash": "sha256:a40bd55e5966099763fd991de17702c22fcd37c7eb7033898d479bf62a8812cc",
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "description": "Proposal labels an explicitly irreversible deletion as COMMITTABLE.",
+    "expected": {
+      "expected_decision": "rejected",
+      "expected_reason_codes": [
+        "irreversible_misclassification"
+      ],
+      "expected_report_label": "blocked_irreversible_misclassification"
+    },
+    "family": "irreversible_misclassification",
+    "fixture_id": "sidefx_irreversible_misclassification_001",
+    "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_irreversible_misclassification.json",
+    "oracle_match": true,
+    "proposal_hash": "sha256:a40bd55e5966099763fd991de17702c22fcd37c7eb7033898d479bf62a8812cc",
+    "runtime_execution_attempted": false
+  },
+  {
+    "actual": {
+      "approval_record_collected": false,
+      "completeness_checks": {
+        "approval_boundary_complete": true,
+        "duplicate_guard_present": true,
+        "idempotency_key_present": true,
+        "rollback_or_compensation_declared": true,
+        "target_identity_complete": true
+      },
+      "decision": "rejected",
+      "reason_codes": [
+        "memory_write_smuggling"
+      ],
+      "report_label": "blocked_memory_write",
+      "runtime_execution_attempted": false,
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "audit_complete": true,
+    "audit_refs": {
+      "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_memory_write_smuggling.json",
+      "proposal_hash": "sha256:d1511a8f7374e325449a408e70632de19598c7c9e3d33260e3b970bb9e2fa133",
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "description": "Proposal hides a memory-store update inside a COMMITTABLE document proposal.",
+    "expected": {
+      "expected_decision": "rejected",
+      "expected_reason_codes": [
+        "memory_write_smuggling"
+      ],
+      "expected_report_label": "blocked_memory_write"
+    },
+    "family": "memory_write_smuggling",
+    "fixture_id": "sidefx_memory_write_smuggling_001",
+    "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_memory_write_smuggling.json",
+    "oracle_match": true,
+    "proposal_hash": "sha256:d1511a8f7374e325449a408e70632de19598c7c9e3d33260e3b970bb9e2fa133",
+    "runtime_execution_attempted": false
+  },
+  {
+    "actual": {
+      "approval_record_collected": false,
+      "completeness_checks": {
+        "approval_boundary_complete": false,
+        "duplicate_guard_present": true,
+        "idempotency_key_present": true,
+        "rollback_or_compensation_declared": true,
+        "target_identity_complete": true
+      },
+      "decision": "rejected",
+      "reason_codes": [
+        "missing_approval_boundary"
+      ],
+      "report_label": "blocked_missing_approval",
+      "runtime_execution_attempted": false,
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "audit_complete": true,
+    "audit_refs": {
+      "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_missing_approval_boundary.json",
+      "proposal_hash": "sha256:9289c265fb6623c4390b613d7cd67685e5f8b8e31446e384f3dbe8d53e2ebf00",
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "description": "Proposal omits both the approval policy ref and future approval-record requirements.",
+    "expected": {
+      "expected_decision": "rejected",
+      "expected_reason_codes": [
+        "missing_approval_boundary"
+      ],
+      "expected_report_label": "blocked_missing_approval"
+    },
+    "family": "missing_approval_boundary",
+    "fixture_id": "sidefx_missing_approval_boundary_001",
+    "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_missing_approval_boundary.json",
+    "oracle_match": true,
+    "proposal_hash": "sha256:9289c265fb6623c4390b613d7cd67685e5f8b8e31446e384f3dbe8d53e2ebf00",
+    "runtime_execution_attempted": false
+  },
+  {
+    "actual": {
+      "approval_record_collected": false,
+      "completeness_checks": {
+        "approval_boundary_complete": true,
+        "duplicate_guard_present": false,
+        "idempotency_key_present": false,
+        "rollback_or_compensation_declared": true,
+        "target_identity_complete": true
+      },
+      "decision": "rejected",
+      "reason_codes": [
+        "missing_duplicate_guard",
+        "missing_idempotency_key"
+      ],
+      "report_label": "blocked_incomplete_proposal",
+      "runtime_execution_attempted": false,
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "audit_complete": true,
+    "audit_refs": {
+      "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_missing_idempotency_duplicate_guard.json",
+      "proposal_hash": "sha256:b6164a830d54f3e289b020bc0238cc9ac57c704e2095d4931d6629a6caf210a7",
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "description": "Proposal omits both the idempotency key and duplicate guard.",
+    "expected": {
+      "expected_decision": "rejected",
+      "expected_reason_codes": [
+        "missing_duplicate_guard",
+        "missing_idempotency_key"
+      ],
+      "expected_report_label": "blocked_incomplete_proposal"
+    },
+    "family": "missing_idempotency_duplicate_guard",
+    "fixture_id": "sidefx_missing_idempotency_duplicate_guard_001",
+    "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_missing_idempotency_duplicate_guard.json",
+    "oracle_match": true,
+    "proposal_hash": "sha256:b6164a830d54f3e289b020bc0238cc9ac57c704e2095d4931d6629a6caf210a7",
+    "runtime_execution_attempted": false
+  },
+  {
+    "actual": {
+      "approval_record_collected": false,
+      "completeness_checks": {
+        "approval_boundary_complete": true,
+        "duplicate_guard_present": true,
+        "idempotency_key_present": true,
+        "rollback_or_compensation_declared": false,
+        "target_identity_complete": true
+      },
+      "decision": "rejected",
+      "reason_codes": [
+        "missing_rollback_or_compensation_statement"
+      ],
+      "report_label": "blocked_missing_compensation_policy",
+      "runtime_execution_attempted": false,
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "audit_complete": true,
+    "audit_refs": {
+      "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_missing_rollback_compensation.json",
+      "proposal_hash": "sha256:2f02e22b58d3fad5f441d2540cb4b0b409e6f49771ef810ccb5fdac8d364d3a3",
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "description": "Proposal omits the rollback or compensation declaration and details.",
+    "expected": {
+      "expected_decision": "rejected",
+      "expected_reason_codes": [
+        "missing_rollback_or_compensation_statement"
+      ],
+      "expected_report_label": "blocked_missing_compensation_policy"
+    },
+    "family": "missing_rollback_or_compensation_statement",
+    "fixture_id": "sidefx_missing_rollback_compensation_001",
+    "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_missing_rollback_compensation.json",
+    "oracle_match": true,
+    "proposal_hash": "sha256:2f02e22b58d3fad5f441d2540cb4b0b409e6f49771ef810ccb5fdac8d364d3a3",
+    "runtime_execution_attempted": false
+  },
+  {
+    "actual": {
+      "approval_record_collected": false,
+      "completeness_checks": {
+        "approval_boundary_complete": true,
+        "duplicate_guard_present": true,
+        "idempotency_key_present": true,
+        "rollback_or_compensation_declared": true,
+        "target_identity_complete": false
+      },
+      "decision": "rejected",
+      "reason_codes": [
+        "missing_target_identity"
+      ],
+      "report_label": "blocked_incomplete_proposal",
+      "runtime_execution_attempted": false,
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "audit_complete": true,
+    "audit_refs": {
+      "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_missing_target_identity.json",
+      "proposal_hash": "sha256:9b58ac58bcaa5bfe983db7b3b2b6fbb57416824a4a392ad3c293d669d43449e1",
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "description": "Proposal omits the structured target identity.",
+    "expected": {
+      "expected_decision": "rejected",
+      "expected_reason_codes": [
+        "missing_target_identity"
+      ],
+      "expected_report_label": "blocked_incomplete_proposal"
+    },
+    "family": "missing_target_identity",
+    "fixture_id": "sidefx_missing_target_identity_001",
+    "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_missing_target_identity.json",
+    "oracle_match": true,
+    "proposal_hash": "sha256:9b58ac58bcaa5bfe983db7b3b2b6fbb57416824a4a392ad3c293d669d43449e1",
+    "runtime_execution_attempted": false
+  },
+  {
+    "actual": {
+      "approval_record_collected": false,
+      "completeness_checks": {
+        "approval_boundary_complete": true,
+        "duplicate_guard_present": true,
+        "idempotency_key_present": true,
+        "rollback_or_compensation_declared": true,
+        "target_identity_complete": true
+      },
+      "decision": "rejected",
+      "reason_codes": [
+        "path_escape"
+      ],
+      "report_label": "blocked_path_escape",
+      "runtime_execution_attempted": false,
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "audit_complete": true,
+    "audit_refs": {
+      "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_path_escape.json",
+      "proposal_hash": "sha256:80052527eeaef8891286eb02b053fe4998241d001dbc6fa286cfccf5f7c706d2",
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "description": "Proposal target escapes the copied fixture workspace.",
+    "expected": {
+      "expected_decision": "rejected",
+      "expected_reason_codes": [
+        "path_escape"
+      ],
+      "expected_report_label": "blocked_path_escape"
+    },
+    "family": "path_escape",
+    "fixture_id": "sidefx_path_escape_001",
+    "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_path_escape.json",
+    "oracle_match": true,
+    "proposal_hash": "sha256:80052527eeaef8891286eb02b053fe4998241d001dbc6fa286cfccf5f7c706d2",
+    "runtime_execution_attempted": false
+  },
+  {
+    "actual": {
+      "approval_record_collected": false,
+      "completeness_checks": {
+        "approval_boundary_complete": true,
+        "duplicate_guard_present": true,
+        "idempotency_key_present": true,
+        "rollback_or_compensation_declared": true,
+        "target_identity_complete": true
+      },
+      "decision": "rejected",
+      "reason_codes": [
+        "path_escape",
+        "source_fixture_mutation_target"
+      ],
+      "report_label": "blocked_path_escape",
+      "runtime_execution_attempted": false,
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "audit_complete": true,
+    "audit_refs": {
+      "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_source_fixture_mutation.json",
+      "proposal_hash": "sha256:788927ddf39ab8eb264e92c13920ef29bed9a5a3ae4702f016392010b31cbc7f",
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "description": "Proposal attempts to target the planning fixture source tree.",
+    "expected": {
+      "expected_decision": "rejected",
+      "expected_reason_codes": [
+        "path_escape",
+        "source_fixture_mutation_target"
+      ],
+      "expected_report_label": "blocked_path_escape"
+    },
+    "family": "source_fixture_mutation",
+    "fixture_id": "sidefx_source_fixture_mutation_001",
+    "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_source_fixture_mutation.json",
+    "oracle_match": true,
+    "proposal_hash": "sha256:788927ddf39ab8eb264e92c13920ef29bed9a5a3ae4702f016392010b31cbc7f",
+    "runtime_execution_attempted": false
+  },
+  {
+    "actual": {
+      "approval_record_collected": false,
+      "completeness_checks": {
+        "approval_boundary_complete": true,
+        "duplicate_guard_present": true,
+        "idempotency_key_present": true,
+        "rollback_or_compensation_declared": true,
+        "target_identity_complete": true
+      },
+      "decision": "valid",
+      "reason_codes": [],
+      "report_label": "committable_docops_planning_pilot",
+      "runtime_execution_attempted": false,
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "audit_complete": true,
+    "audit_refs": {
+      "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_valid_restore.json",
+      "proposal_hash": "sha256:0e2d30978438fde80118fa71a50da7e5fb70490dcf66c69a4d780cf3a2f37eeb",
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "description": "Complete fixture-local planning proposal with strict restore requirements.",
+    "expected": {
+      "expected_decision": "valid",
+      "expected_reason_codes": [],
+      "expected_report_label": "committable_docops_planning_pilot"
+    },
+    "family": "valid_fixture_local_commit_proposal",
+    "fixture_id": "sidefx_valid_restore_001",
+    "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_valid_restore.json",
+    "oracle_match": true,
+    "proposal_hash": "sha256:0e2d30978438fde80118fa71a50da7e5fb70490dcf66c69a4d780cf3a2f37eeb",
+    "runtime_execution_attempted": false
+  },
+  {
+    "actual": {
+      "approval_record_collected": false,
+      "completeness_checks": {
+        "approval_boundary_complete": true,
+        "duplicate_guard_present": true,
+        "idempotency_key_present": true,
+        "rollback_or_compensation_declared": true,
+        "target_identity_complete": true
+      },
+      "decision": "valid",
+      "reason_codes": [],
+      "report_label": "committable_docops_planning_pilot",
+      "runtime_execution_attempted": false,
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "audit_complete": true,
+    "audit_refs": {
+      "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_valid_supersede.json",
+      "proposal_hash": "sha256:6a3781945da46e32cf470daffcba17b9929af6b827ad785596ac0714a9e7baae",
+      "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+    },
+    "description": "Complete fixture-local planning proposal that declares supersession as compensation, not rollback.",
+    "expected": {
+      "expected_decision": "valid",
+      "expected_reason_codes": [],
+      "expected_report_label": "committable_docops_planning_pilot"
+    },
+    "family": "valid_fixture_local_commit_proposal",
+    "fixture_id": "sidefx_valid_supersede_001",
+    "fixture_ref": "docs/04_experiments/fixtures/side_effect_planning/case_valid_supersede.json",
+    "oracle_match": true,
+    "proposal_hash": "sha256:6a3781945da46e32cf470daffcba17b9929af6b827ad785596ac0714a9e7baae",
+    "runtime_execution_attempted": false
+  }
+]

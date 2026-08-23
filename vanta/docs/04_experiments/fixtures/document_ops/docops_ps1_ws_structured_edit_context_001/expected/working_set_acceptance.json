@@ -1,0 +1,71 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_ws_structured_edit_context_001",
+    "active_goal_ref":  "task:docops_ps1_ws_structured_edit_context_001",
+    "budget":  {
+                   "max_context_chars":  320
+               },
+    "required_refs":  [
+                          "state:structured_edit_context",
+                          "constraint:read_only",
+                          "artifact:source"
+                      ],
+    "relevant_refs":  [
+                          "state:structured_edit_context",
+                          "constraint:read_only",
+                          "artifact:source",
+                          "selector:line_range"
+                      ],
+    "irrelevant_refs":  [
+                            "artifact:noise"
+                        ],
+    "omission_trap_refs":  [
+                               "artifact:source"
+                           ],
+    "candidate_refs":  [
+                           {
+                               "ref_id":  "artifact:noise",
+                               "kind":  "artifact",
+                               "role":  "irrelevant",
+                               "required":  false,
+                               "source":  "fixture",
+                               "path":  "inputs/noise.md"
+                           },
+                           {
+                               "ref_id":  "state:structured_edit_context",
+                               "kind":  "canonical_state",
+                               "role":  "required",
+                               "required":  true,
+                               "source":  "fixture",
+                               "path":  "task.json#/initial_state",
+                               "content":  "Goal: validate structured edit context without mutation."
+                           },
+                           {
+                               "ref_id":  "constraint:read_only",
+                               "kind":  "constraint",
+                               "role":  "required",
+                               "required":  true,
+                               "source":  "fixture",
+                               "path":  "task.json#/side_effect_classes",
+                               "content":  "Allowed side effect: READ_ONLY. Do not apply the edit."
+                           },
+                           {
+                               "ref_id":  "selector:line_range",
+                               "kind":  "constraint",
+                               "role":  "relevant",
+                               "required":  false,
+                               "source":  "fixture",
+                               "path":  "task.json#/prompt",
+                               "content":  "Structured edit selector family: line_range."
+                           },
+                           {
+                               "ref_id":  "artifact:source",
+                               "kind":  "artifact",
+                               "role":  "required",
+                               "required":  true,
+                               "source":  "fixture",
+                               "path":  "inputs/source.md",
+                               "content":  "Selected source path is inputs/source.md; validate the context note."
+                           }
+                       ]
+}

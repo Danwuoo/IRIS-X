@@ -1,0 +1,21 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_ws_structured_edit_context_001",
+    "expected_runtime_status":  "committed",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "working_set_required_refs_included",
+                              "budget_adherent",
+                              "read_only"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "validate_artifact",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/source.md"
+                                                                   }
+                                            }
+                                        ]
+                        }
+}

@@ -1,0 +1,12 @@
+{
+    "links":  [
+                  {
+                      "label":  "Runtime Spec",
+                      "target":  "../specs/runtime.md"
+                  },
+                  {
+                      "label":  "Verifier Guide",
+                      "target":  "../eval/verifier.md"
+                  }
+              ]
+}

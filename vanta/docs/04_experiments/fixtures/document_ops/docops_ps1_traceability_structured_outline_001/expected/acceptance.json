@@ -1,0 +1,27 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_traceability_structured_outline_001",
+    "expected_runtime_status":  "committed",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "structure_subset_match",
+                              "selector_resolved"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "inspect_document_structure",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/outline.md",
+                                                                       "selectors":  [
+                                                                                         {
+                                                                                             "type":  "section",
+                                                                                             "heading":  "Specs",
+                                                                                             "level":  2
+                                                                                         }
+                                                                                     ]
+                                                                   }
+                                            }
+                                        ]
+                        }
+}

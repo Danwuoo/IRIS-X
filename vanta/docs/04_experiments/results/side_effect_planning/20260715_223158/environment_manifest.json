@@ -1,0 +1,10 @@
+{
+  "elixir_version": "1.19.5",
+  "fixture_root": "docs/04_experiments/fixtures/side_effect_planning",
+  "generated_at": "2026-07-15T14:31:58Z",
+  "os_type": "{:win32, :nt}",
+  "otp_release": "28",
+  "post_run_fixture_hash": "sha256:6d1721f5f8db80f8e77f6c56fca4b13bd4c97f544a4151061369c1b3a34d510e",
+  "pre_run_fixture_hash": "sha256:6d1721f5f8db80f8e77f6c56fca4b13bd4c97f544a4151061369c1b3a34d510e",
+  "validator_version": "PS1-G8-committable-docops-proposal-validator-v1"
+}

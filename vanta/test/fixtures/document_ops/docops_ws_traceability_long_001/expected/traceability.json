@@ -1,0 +1,12 @@
+{
+  "links": [
+    {
+      "label": "Evidence Packet",
+      "target": "../specs/evidence.md"
+    },
+    {
+      "label": "Working Set",
+      "target": "../specs/working-set.md"
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "adjudication": {
+    "record_path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/adjudication_placeholders.json",
+    "required_triggers": [
+      "any reviewer marks needs_review",
+      "ordinal labels differ by two or more levels",
+      "evidence labels split across 0-2 versus 3-4",
+      "reviewers disagree on task_critical, critical_omission, harmful, or metric denominator"
+    ],
+    "status": "completed_no_records_required"
+  },
+  "artifact_paths": {
+    "adjudication_placeholders": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/adjudication_placeholders.json",
+    "coordinator_primary_label_packet_freeze": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/coordinator_primary_label_packet_freeze.json",
+    "evidence_sufficiency_items": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/evidence_sufficiency_items.jsonl",
+    "label_report": "docs/05_evaluation/Post_Stage_1_Lane_B_20260601_113121_Label_Report_Skeleton.md",
+    "label_report_skeleton": "docs/05_evaluation/Post_Stage_1_Lane_B_20260601_113121_Label_Report_Skeleton.md",
+    "label_results_import_summary": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/label_results_import_summary.json",
+    "label_results_primary_filled": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/label_results_primary_filled.json",
+    "label_results_template": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/label_results_template.json",
+    "packet_manifest": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/packet_manifest.json",
+    "packet_readme": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/README.md",
+    "redacted_task_packets": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/redacted_task_packets/",
+    "working_set_context_items": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/working_set_context_items.jsonl"
+  },
+  "blinding_boundary": {
+    "coordinator_only_before_label_freeze": [
+      "source run.json",
+      "source summary.md",
+      "source fixture_inventory.md",
+      "original fixture task.json files",
+      "Lane A run report",
+      "Lane A closure"
+    ],
+    "fixture_oracle_exposure_for_adjudication": "Allowed only after primary labels are frozen and must be recorded per adjudication record.",
+    "visible_to_primary_labelers": [
+      "item JSONL records in this packet",
+      "redacted task packet paths and fixture input artifact paths referenced by each item",
+      "redacted candidate-ref inventories without fixture oracle role fields",
+      "blinded context arm names context_arm_A and context_arm_B",
+      "evidence packet, action, verifier output, and journal fields copied into evidence item records"
+    ],
+    "withheld_until_label_freeze": [
+      "fixture oracle role fields required_refs, relevant_refs, irrelevant_refs, and omission_trap_refs",
+      "expected_runtime_status and expected_label_source",
+      "expected failure labels",
+      "original input_artifacts.role and input_artifacts.description fields from fixture task.json files",
+      "task success flags from the source run",
+      "aggregate Lane A metric values for the item under review",
+      "context arm identity mapping from blinded arm name to baseline or treatment",
+      "post-run focused repair notes when judging the measured artifact"
+    ]
+  },
+  "candidate_sample_selection": {
+    "context_omission_error_rate": "All six working_set_long_context tasks from the accepted source run, with two blinded context arms per task.",
+    "evidence_sufficiency_score": "One treatment evidence unit from each major Lane A stratum, including the repaired selector-missing rejection artifact and one working-set long-context fixture.",
+    "working_set_relevance_score": "Same twelve working-set/context items used for omission labeling."
+  },
+  "claim_boundary": {
+    "allowed_after_report": "`20260601_113121` active packet Lane B labeled evaluation evidence for the named packet and metrics only",
+    "disallowed_after_report": [
+      "human-labeled broader evaluation evidence beyond this named packet",
+      "new accepted_by_closure status beyond the Lane A source closure",
+      "H1-H5 validation",
+      "full Context OS validation",
+      "production readiness",
+      "runtime approval or human-in-the-loop verifier claim",
+      "replacing the measured Lane A aggregate metrics with label results",
+      "model-only baseline claims for OpenClaw local harness results"
+    ]
+  },
+  "label_collection_status": "complete_reported",
+  "label_import_summary": {
+    "adjudication_record_count": 0,
+    "adjudication_required_count": 0,
+    "claim_boundary": "Import validation summary only. It supports the packet-local Lane B label report under PS1-LB-LABEL-001; it is not broad validation, runtime approval, full Context OS validation, or an H1-H5 validation claim.",
+    "fixture_oracle_exposed_before_freeze": false,
+    "needs_review_count": 0,
+    "raw_label_counts": {
+      "evidence_sufficiency_score": 16,
+      "working_set_context": 24
+    },
+    "result_path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/label_results_primary_filled.json",
+    "review_coverage": {
+      "context_omission_error_rate": {
+        "expected_item_count": 12,
+        "fully_reviewed_item_count": 12,
+        "missing_item_ids": []
+      },
+      "evidence_sufficiency_score": {
+        "expected_item_count": 8,
+        "fully_reviewed_item_count": 8,
+        "missing_item_ids": []
+      },
+      "working_set_relevance_score": {
+        "expected_item_count": 12,
+        "fully_reviewed_item_count": 12,
+        "missing_item_ids": []
+      }
+    },
+    "status": "reported",
+    "summary_path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/label_results_import_summary.json",
+    "unhandled_adjudication_required_count": 0,
+    "validation_status": "ok"
+  },
+  "label_policy_version": "PS1-LB-LABEL-001",
+  "metric_scope": {
+    "context_omission_error_rate": {
+      "item_count": 12,
+      "label_source": "human",
+      "label_status": "complete_reported",
+      "review_mode": "double_human_adjudicated"
+    },
+    "evidence_sufficiency_score": {
+      "item_count": 8,
+      "label_source": "human",
+      "label_status": "complete_reported",
+      "review_mode": "double_human_adjudicated"
+    },
+    "working_set_relevance_score": {
+      "item_count": 12,
+      "label_source": "human",
+      "label_status": "complete_reported",
+      "review_mode": "double_human_adjudicated"
+    }
+  },
+  "packet_id": "PS1-LB-PACKET-20260601-113121-BATCH-001",
+  "packet_status": "active_packet_complete_reported",
+  "report_status": "reported_from_validated_primary_labels",
+  "source_run": {
+    "closure_path": "docs/00_manifest/Post_Stage_1_Lane_A_20260601_113121_Closure.md",
+    "closure_status": "accepted_by_closure",
+    "experiment_id": "post_stage_1_larger_sample",
+    "fixture_inventory_path": "docs/04_experiments/results/post_stage_1_larger_sample/20260601_113121/fixture_inventory.md",
+    "run_json_path": "docs/04_experiments/results/post_stage_1_larger_sample/20260601_113121/run.json",
+    "run_report_path": "docs/05_evaluation/Post_Stage_1_Lane_A_20260601_113121_Run_Report.md",
+    "run_status": "completed",
+    "run_timestamp": "20260601_113121",
+    "sample_frame": "PS1-LA-SAMPLE-002",
+    "summary_path": "docs/04_experiments/results/post_stage_1_larger_sample/20260601_113121/summary.md",
+    "threshold_status": "pass_acceptance_candidate"
+  },
+  "supersedes": {
+    "packet_id": "PS1-LB-PACKET-20260530-141649-BATCH-001",
+    "packet_path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260530_141649/",
+    "reason": "The prior packet was prepared from a non-accepted Lane A run whose selector-missing item contained the pre-repair committed artifact. No labels had been collected, so the active packet is rebuilt from the accepted closure run."
+  }
+}

@@ -1,0 +1,72 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_terms_clean_canonical_001",
+    "task_type":  "document_ops",
+    "prompt":  "Confirm canonical Evidence Packet terminology stays consistent across two clean notes.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_terms_clean_canonical_001_initial",
+                          "task_id":  "docops_ps1_terms_clean_canonical_001",
+                          "task_intent":  "Confirm no terminology inconsistency.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "a",
+                                              "path":  "inputs/a.md",
+                                              "kind":  "markdown"
+                                          },
+                                          {
+                                              "object_id":  "b",
+                                              "path":  "inputs/b.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_terms_clean_canonical_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_terms_clean_canonical_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/a.md",
+                                "role":  "source"
+                            },
+                            {
+                                "path":  "inputs/b.md",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "list_files",
+                            "read_file",
+                            "compute_hash",
+                            "validate_artifact"
+                        ],
+    "success_criteria":  [
+                             "No terminology inconsistencies are reported.",
+                             "No source file is modified."
+                         ],
+    "failure_criteria":  [
+                             "A clean canonical usage is flagged.",
+                             "A source file is modified."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

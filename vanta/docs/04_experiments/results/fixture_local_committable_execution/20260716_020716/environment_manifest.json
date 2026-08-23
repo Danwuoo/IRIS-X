@@ -1,0 +1,9 @@
+{
+  "architecture": "x86_64-pc-windows",
+  "elixir": "1.19.5",
+  "failure_model": "deterministic durable-protocol-boundary injection",
+  "os": "{:win32, :nt}",
+  "otp": "28",
+  "runtime": "0.1.0",
+  "sqlite_driver": "exqlite"
+}

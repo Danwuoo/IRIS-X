@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Verifier Output",
+  "type": "object",
+  "description": "Verifier decision and diagnostics. Verifier Runtime is not limited to final-answer judging.",
+  "required": [
+    "schema_version",
+    "verifier_output_id",
+    "episode_id",
+    "step_id",
+    "evidence_refs",
+    "decision",
+    "verification_scope",
+    "validity_score",
+    "confidence",
+    "risk_score",
+    "violated_constraints",
+    "required_extra_evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "verifier_output_id": {
+      "type": "string"
+    },
+    "episode_id": {
+      "type": "string"
+    },
+    "step_id": {
+      "type": "string"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "accept",
+        "reject",
+        "abstain",
+        "request_evidence"
+      ],
+      "description": "Verifier action for the item under review."
+    },
+    "verification_scope": {
+      "type": "array",
+      "description": "Aspects checked by this verifier output.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "preconditions",
+          "postconditions",
+          "evidence_sufficiency",
+          "policy_constraints",
+          "side_effect_safety",
+          "state_consistency",
+          "final_answer_correctness"
+        ]
+      }
+    },
+    "validity_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "calibration_state": {
+      "type": "object"
+    },
+    "disagreement": {
+      "type": "object"
+    },
+    "risk_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "violated_constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_extra_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "failure_logits": {
+      "type": "object"
+    },
+    "credit_hints": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

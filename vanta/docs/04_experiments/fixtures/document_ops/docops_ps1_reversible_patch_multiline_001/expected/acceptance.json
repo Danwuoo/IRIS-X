@@ -1,0 +1,23 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_reversible_patch_multiline_001",
+    "expected_runtime_status":  "committed",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "diff_exact_match",
+                              "backup_metadata_exists"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "apply_reversible_patch",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/scope.md",
+                                                                       "find":  "First controlled environment: TBD.\nVerifier: final answer only.",
+                                                                       "replace":  "First controlled environment: Document Ops.\nVerifier: runtime verifier."
+                                                                   }
+                                            }
+                                        ]
+                        },
+    "expected_rollback_status":  "available"
+}

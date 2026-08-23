@@ -1,0 +1,27 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_insert_before_001",
+  "expected_runtime_status": "committed",
+  "expected_task_success": true,
+  "acceptance_checks": [
+    "selector_resolution_matches",
+    "simulated_source_hash_unchanged"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "simulate_structured_edit",
+        "action_payload": {
+          "path": "inputs/checklist.md",
+          "selector": {
+            "type": "line_range",
+            "start_line": 3,
+            "end_line": 3
+          },
+          "operation": "insert_before",
+          "replacement": "Evidence gate"
+        }
+      }
+    ]
+  }
+}

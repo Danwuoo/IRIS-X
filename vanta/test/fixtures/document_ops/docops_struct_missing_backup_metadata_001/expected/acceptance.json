@@ -1,0 +1,29 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_missing_backup_metadata_001",
+  "expected_runtime_status": "rejected",
+  "expected_task_success": true,
+  "expected_rollback_status": "unavailable",
+  "expected_failure_labels": [
+    "backup_metadata_missing"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "apply_reversible_structured_edit",
+        "action_payload": {
+          "path": "inputs/source.md",
+          "selector": {
+            "type": "line_range",
+            "start_line": 3,
+            "end_line": 3
+          },
+          "operation": "replace",
+          "replacement": "Backup metadata omitted.",
+          "backup_policy": "fixture_backup_restore",
+          "fault_injection": "omit_backup_metadata"
+        }
+      }
+    ]
+  }
+}

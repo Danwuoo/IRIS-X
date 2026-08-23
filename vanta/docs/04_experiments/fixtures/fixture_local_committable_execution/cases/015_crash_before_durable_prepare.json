@@ -1,0 +1,1 @@
+{"fixture_id":"G10-015","family":"crash_window","scenario":"crash_before_durable_prepare","expected_outcome":"recovered_aborted"}

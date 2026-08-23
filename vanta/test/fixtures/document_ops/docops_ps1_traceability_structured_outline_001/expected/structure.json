@@ -1,0 +1,29 @@
+{
+    "structure":  {
+                      "format":  "markdown",
+                      "line_count":  7,
+                      "headings":  [
+                                       {
+                                           "level":  1,
+                                           "text":  "Document Map",
+                                           "line":  1
+                                       },
+                                       {
+                                           "level":  2,
+                                           "text":  "Manifest",
+                                           "line":  3
+                                       },
+                                       {
+                                           "level":  2,
+                                           "text":  "Specs",
+                                           "line":  6
+                                       }
+                                   ]
+                  },
+    "selector_results":  [
+                             {
+                                 "status":  "resolved",
+                                 "match_count":  1
+                             }
+                         ]
+}

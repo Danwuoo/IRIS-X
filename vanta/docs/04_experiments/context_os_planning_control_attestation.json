@@ -1,0 +1,31 @@
+{
+  "attestation_id": "PS1-LC-CTX-CONTROL-ATTEST-001",
+  "attestation_type": "coordinator_control_attestation",
+  "authorized_on": "2026-07-19",
+  "authorization_source": "user_authorized_in_codex_task",
+  "source_run": "20260601_113121",
+  "source_run_native_metadata": false,
+  "scope": "artifact_backed_post_freeze_evaluation_only",
+  "controls": {
+    "openclaw_agent": "vanta-verifier",
+    "tool_policy": "embedded_context_only"
+  },
+  "adapter_policy_source": {
+    "path": "lib/vanta/adapters/open_claw_context_planner_adapter.ex",
+    "sha256": "sha256:a7b13a832eae5c02970bf7159859d15f4e9e9a098d5dfa3e76804fd5ef486541",
+    "required_policy_fragments": [
+      "Do not use OpenClaw tools.",
+      "Use only the task JSON and embedded context",
+      "paths supported by the embedded context or task input_artifacts"
+    ]
+  },
+  "provenance_boundary": "These two controls were not serialized in the source Lane A run.json. This post-hoc coordinator attestation records the user's explicit authorization for the G7 artifact-backed evaluation pilot and must not be described as source-run-native measured metadata.",
+  "non_authority": [
+    "no model rerun authority",
+    "no OpenClaw measured rerun authority",
+    "no Context OS runtime implementation authority",
+    "no runtime action or schema authority",
+    "no memory or side-effect authority",
+    "no closure authority"
+  ]
+}

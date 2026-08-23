@@ -1,0 +1,61 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_ws_omission_trap_001",
+  "active_goal_ref": "task:docops_ws_omission_trap_001",
+  "budget": {
+    "max_context_chars": 250
+  },
+  "required_refs": [
+    "state:omission_trap",
+    "artifact:late_source",
+    "constraint:read_only"
+  ],
+  "relevant_refs": [
+    "state:omission_trap",
+    "artifact:late_source",
+    "constraint:read_only"
+  ],
+  "irrelevant_refs": [
+    "artifact:noise"
+  ],
+  "omission_trap_refs": [
+    "artifact:late_source"
+  ],
+  "candidate_refs": [
+    {
+      "ref_id": "artifact:noise",
+      "kind": "artifact",
+      "role": "irrelevant",
+      "required": false,
+      "source": "fixture",
+      "path": "inputs/noise.md"
+    },
+    {
+      "ref_id": "state:omission_trap",
+      "kind": "canonical_state",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "task.json#/initial_state",
+      "content": "Goal: validate the late source path."
+    },
+    {
+      "ref_id": "artifact:late_source",
+      "kind": "artifact",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "inputs/late_source.md",
+      "content": "Required late source path: inputs/late_source.md."
+    },
+    {
+      "ref_id": "constraint:read_only",
+      "kind": "constraint",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "task.json#/side_effect_classes",
+      "content": "Allowed side effect: READ_ONLY."
+    }
+  ]
+}

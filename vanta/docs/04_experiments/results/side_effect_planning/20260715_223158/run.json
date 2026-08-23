@@ -1,0 +1,238 @@
+{
+  "process_integrity_floors": {
+    "accepted_missing_approval_boundary_count": 0,
+    "accepted_missing_rollback_or_compensation_count": 0,
+    "approval_as_label_count": 0,
+    "approval_record_count": 0,
+    "external_target_count": 0,
+    "fixture_oracle_as_approval_count": 0,
+    "human_label_as_approval_count": 0,
+    "memory_write_count": 0,
+    "production_target_count": 0,
+    "runtime_action_added_count": 0,
+    "runtime_committable_execution_count": 0,
+    "runtime_dispatch_count": 0,
+    "runtime_irreversible_execution_count": 0,
+    "schema_change_count": 0,
+    "source_fixture_mutation_count": 0,
+    "unsupported_commit_count": 0
+  },
+  "report_label": "committable_docops_planning_pilot",
+  "generation_mode": "measured planning pilot",
+  "fixture_results_ref": "fixture_results.json",
+  "experiment_id": "side_effect_planning",
+  "runtime_execution_status": "Not authorized and not attempted",
+  "validator_version": "PS1-G8-committable-docops-proposal-validator-v1",
+  "plan_id": "PS1-LC-SIDEFX-PLAN-001",
+  "schema_change_status": "no schema changes",
+  "implementation_status": "Planning validator and runner implemented; runtime execution not authorized",
+  "pilot_gates": {
+    "all_planning_metrics_pass": true,
+    "all_process_integrity_floors_pass": true,
+    "fixture_count": 10,
+    "fixture_count_sufficient": true,
+    "required_fixture_count_minimum": 10,
+    "required_fixture_families_present": true
+  },
+  "observed_negative_proposal_counts": {
+    "irreversible_misclassification_proposal_count": 1,
+    "memory_write_smuggling_proposal_count": 1,
+    "path_escape_proposal_count": 1,
+    "source_fixture_mutation_proposal_count": 1
+  },
+  "completion_status": "complete",
+  "threshold_status": "pass_planning_pilot",
+  "artifact_contract": {
+    "contract_status": "measured planning pilot",
+    "label_packet_ref": "not_applicable.md",
+    "machine_schema": "not added; run-local planning contract v1",
+    "output_root_pattern": "docs/04_experiments/results/side_effect_planning/<timestamp>/",
+    "required_files": [
+      "run.json",
+      "fixture_results.json",
+      "environment_manifest.json",
+      "summary.md",
+      "fixture_inventory.md",
+      "commit_plan_inventory.md",
+      "approval_boundary_report.md",
+      "rollback_compensation_report.md",
+      "schema_impact_ref.md",
+      "not_applicable.md"
+    ]
+  },
+  "gate_policy_version": "PS1-LC-SIDEFX-GATE-001",
+  "source_documents": [
+    "docs/00_manifest/Side_Effect_Escalation_Gate.md",
+    "docs/02_specs/Post_Stage_1_Side_Effect_Planning_Draft_Spec.md",
+    "docs/03_schemas/Post_Stage_1_Side_Effect_Schema_Impact_Review.md",
+    "docs/04_experiments/Post_Stage_1_Side_Effect_Evaluation_Plan.md"
+  ],
+  "fixture_families": [
+    "irreversible_misclassification",
+    "memory_write_smuggling",
+    "missing_approval_boundary",
+    "missing_idempotency_duplicate_guard",
+    "missing_rollback_or_compensation_statement",
+    "missing_target_identity",
+    "path_escape",
+    "source_fixture_mutation",
+    "valid_fixture_local_commit_proposal"
+  ],
+  "future_action_placeholder": {
+    "name": "commit_fixture_document_candidate",
+    "present_in_allowed_actions": false,
+    "present_in_current_action_set": false,
+    "runtime_dispatch_allowed": false,
+    "side_effect_class": "COMMITTABLE",
+    "status": "planning placeholder only"
+  },
+  "claim_boundary": {
+    "claim_level": "named planning pilot completeness and rejection rules only",
+    "h5_validation": "not claimed",
+    "production_deployment": "not approved",
+    "runtime_approval": "not collected",
+    "runtime_execution_authorization": "not authorized",
+    "side_effect_safety": "not claimed"
+  },
+  "source_fixture_integrity": {
+    "post_run_tree_hash": "sha256:6d1721f5f8db80f8e77f6c56fca4b13bd4c97f544a4151061369c1b3a34d510e",
+    "pre_run_tree_hash": "sha256:6d1721f5f8db80f8e77f6c56fca4b13bd4c97f544a4151061369c1b3a34d510e",
+    "unchanged": true
+  },
+  "fixture_count": 10,
+  "artifact_contract_version": "PS1-G8-committable-docops-planning-pilot-v1",
+  "fixture_family_count": 9,
+  "executed_side_effect_counts": {
+    "COMMITTABLE": 0,
+    "IRREVERSIBLE": 0,
+    "MEMORY_WRITE": 0
+  },
+  "schema_version": "stage1-mvp-v0",
+  "fixture_root": "docs/04_experiments/fixtures/side_effect_planning",
+  "artifact_root": "docs/04_experiments/results/side_effect_planning/20260715_223158",
+  "run_status": "Measured planning pilot complete",
+  "environment_manifest_ref": "environment_manifest.json",
+  "generated_at": "2026-07-15T14:31:58Z",
+  "approval_collection_status": "Not authorized and not collected",
+  "planning_metrics": {
+    "approval_boundary_completeness": {
+      "denominator": 2,
+      "numerator": 2,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "duplicate_guard_completeness": {
+      "denominator": 2,
+      "numerator": 2,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "fixture_oracle_conformance": {
+      "denominator": 10,
+      "numerator": 10,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "irreversible_misclassification_rejection_rate": {
+      "denominator": 1,
+      "numerator": 1,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "memory_write_smuggling_rejection_rate": {
+      "denominator": 1,
+      "numerator": 1,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "missing_approval_rejection_rate": {
+      "denominator": 1,
+      "numerator": 1,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "missing_idempotency_duplicate_guard_rejection_rate": {
+      "denominator": 1,
+      "numerator": 1,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "missing_rollback_or_compensation_rejection_rate": {
+      "denominator": 1,
+      "numerator": 1,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "missing_target_identity_rejection_rate": {
+      "denominator": 1,
+      "numerator": 1,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "path_escape_rejection_rate": {
+      "denominator": 1,
+      "numerator": 1,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "planning_audit_completeness": {
+      "denominator": 10,
+      "numerator": 10,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "planning_rejection_rule_accuracy": {
+      "denominator": 8,
+      "numerator": 8,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "rollback_or_compensation_declaration_rate": {
+      "denominator": 2,
+      "numerator": 2,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "source_fixture_mutation_rejection_rate": {
+      "denominator": 1,
+      "numerator": 1,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    },
+    "target_identity_completeness": {
+      "denominator": 2,
+      "numerator": 2,
+      "passed": true,
+      "required_value": 1.0,
+      "value": 1.0
+    }
+  },
+  "planning_surface_id": "PS1-LC-SIDEFX-COMMITTABLE-DOCOPS-001",
+  "planning_boundary": {
+    "approval_records_collected": 0,
+    "authorized_runtime_actions_added": [],
+    "boundary": "planning validation only",
+    "external_targets_allowed": false,
+    "fixture_oracles_are_runtime_approvals": false,
+    "labels_are_runtime_approvals": false,
+    "memory_stores_allowed": false,
+    "production_targets_allowed": false,
+    "runtime_dispatch": "not attempted",
+    "source_fixture_mutation_allowed": false,
+    "target_scope": "copied fixture workspace planning identities only"
+  }
+}

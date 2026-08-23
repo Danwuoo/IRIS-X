@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Benchmark Task",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "task_type",
+    "prompt",
+    "initial_state",
+    "input_artifacts",
+    "allowed_actions",
+    "success_criteria",
+    "failure_criteria",
+    "side_effect_classes",
+    "required_logs"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "document_ops"
+      ]
+    },
+    "prompt": {
+      "type": "string"
+    },
+    "initial_state": {
+      "type": "object"
+    },
+    "input_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "role"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "allowed_actions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "read_file",
+          "list_files",
+          "compute_hash",
+          "simulate_patch",
+          "inspect_document_structure",
+          "validate_document_contract",
+          "simulate_structured_edit",
+          "apply_reversible_structured_edit",
+          "compute_diff",
+          "apply_reversible_patch",
+          "record_compensable_action",
+          "commit_fixture_document_candidate",
+          "validate_artifact"
+        ]
+      }
+    },
+    "success_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "failure_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_logs": {
+      "type": "array",
+      "description": "Runtime artifacts required for evaluating this task, such as execution steps, evidence packets, verifier outputs, and episode journal entries.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "side_effect_classes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "READ_ONLY",
+          "SIMULATED",
+          "REVERSIBLE",
+          "COMPENSABLE",
+          "COMMITTABLE",
+          "IRREVERSIBLE",
+          "MEMORY_WRITE"
+        ]
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_compensable_action_001",
+  "expected_runtime_status": "rejected",
+  "expected_task_success": true,
+  "expected_failure_labels": [
+    "F_EXEC",
+    "F_EXEC_COMPENSATION_REQUIRED"
+  ],
+  "expected_recovery_policy": "produce_compensation_record",
+  "expected_rollback_status": "compensation_required",
+  "acceptance_checks": [
+    "compensation_required_detected",
+    "rollback_not_claimed"
+  ],
+  "recovery_assertions": [
+    "compensation_record_written",
+    "compensation_policy_matches"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "record_compensable_action",
+        "action_payload": {
+          "receipt_id": "fixture-compensable-001",
+          "result_summary": "Fixture-local receipt for a compensable document operation boundary.",
+          "compensation_hint": "Write a compensation record that references fixture-compensable-001."
+        }
+      }
+    ]
+  }
+}

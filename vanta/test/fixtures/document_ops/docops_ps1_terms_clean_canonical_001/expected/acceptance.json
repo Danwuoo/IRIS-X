@@ -1,0 +1,24 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_terms_clean_canonical_001",
+    "expected_runtime_status":  "committed",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "terminology_no_inconsistencies",
+                              "read_only"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "validate_artifact",
+                                                "action_payload":  {
+                                                                       "paths":  [
+                                                                                     "inputs/a.md",
+                                                                                     "inputs/b.md"
+                                                                                 ],
+                                                                       "validation":  "terminology_consistency"
+                                                                   }
+                                            }
+                                        ]
+                        }
+}

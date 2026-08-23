@@ -1,0 +1,19 @@
+{
+  "fixture_id": "sidefx_valid_supersede_001",
+  "family": "valid_fixture_local_commit_proposal",
+  "description": "Complete fixture-local planning proposal that declares supersession as compensation, not rollback.",
+  "proposal_overrides": {
+    "rollback_or_compensation_statement": "fixture_commit_supersede",
+    "rollback_or_compensation_details": {
+      "strict_rollback_claimed": false,
+      "superseding_record_required": true,
+      "prior_commit_marked_superseded": true
+    }
+  },
+  "remove_fields": [],
+  "oracle": {
+    "expected_decision": "valid",
+    "expected_report_label": "committable_docops_planning_pilot",
+    "expected_reason_codes": []
+  }
+}

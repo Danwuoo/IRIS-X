@@ -1,0 +1,30 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_struct_backup_files_dropped_001",
+    "expected_runtime_status":  "rejected",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "backup_files_missing_rejected",
+                              "rollback_failure_recorded"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "apply_reversible_structured_edit",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/note.md",
+                                                                       "selector":  {
+                                                                                        "type":  "line_range",
+                                                                                        "start_line":  2,
+                                                                                        "end_line":  2
+                                                                                    },
+                                                                       "operation":  "replace",
+                                                                       "replacement":  "Verifier Runtime: runtime verifier.",
+                                                                       "backup_policy":  "fixture_backup_restore",
+                                                                       "fault_injection":  "drop_backup_files"
+                                                                   }
+                                            }
+                                        ]
+                        },
+    "expected_rollback_status":  "failed"
+}

@@ -1,0 +1,18 @@
+{
+  "fixture_id": "sidefx_source_fixture_mutation_001",
+  "family": "source_fixture_mutation",
+  "description": "Proposal attempts to target the planning fixture source tree.",
+  "proposal_overrides": {
+    "target_identity": {
+      "proposed_commit_target": "docs/04_experiments/fixtures/side_effect_planning/base_proposal.json",
+      "source_fixture_mutation": true
+    },
+    "proposed_commit_target": "docs/04_experiments/fixtures/side_effect_planning/base_proposal.json"
+  },
+  "remove_fields": [],
+  "oracle": {
+    "expected_decision": "rejected",
+    "expected_report_label": "blocked_path_escape",
+    "expected_reason_codes": ["path_escape", "source_fixture_mutation_target"]
+  }
+}

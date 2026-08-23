@@ -1,0 +1,12 @@
+{
+  "fixture_id": "sidefx_missing_approval_boundary_001",
+  "family": "missing_approval_boundary",
+  "description": "Proposal omits both the approval policy ref and future approval-record requirements.",
+  "proposal_overrides": {},
+  "remove_fields": ["approval_policy_ref", "approval_record_requirement"],
+  "oracle": {
+    "expected_decision": "rejected",
+    "expected_report_label": "blocked_missing_approval",
+    "expected_reason_codes": ["missing_approval_boundary"]
+  }
+}

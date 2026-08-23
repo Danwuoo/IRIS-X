@@ -1,0 +1,62 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_traceability_missing_target_001",
+    "task_type":  "document_ops",
+    "prompt":  "Extract a link whose target may not exist without fabricating a replacement.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_traceability_missing_target_001_initial",
+                          "task_id":  "docops_ps1_traceability_missing_target_001",
+                          "task_intent":  "Extract traceability refs without existence inference.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "note",
+                                              "path":  "inputs/note.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_traceability_missing_target_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_missing_target_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/note.md",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "read_file",
+                            "compute_hash",
+                            "validate_artifact"
+                        ],
+    "success_criteria":  [
+                             "The explicit missing-target link is listed exactly.",
+                             "No target existence claim is introduced."
+                         ],
+    "failure_criteria":  [
+                             "The target is rewritten.",
+                             "The link is omitted."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

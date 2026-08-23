@@ -1,0 +1,61 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_reversible_json_path_replace_001",
+    "task_type":  "document_ops",
+    "prompt":  "Apply a reversible JSON-path structured edit for the controlled domain field.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_reversible_json_path_replace_001_initial",
+                          "task_id":  "docops_ps1_reversible_json_path_replace_001",
+                          "task_intent":  "Replace JSON path with reversible structured edit.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "config",
+                                              "path":  "inputs/config.json",
+                                              "kind":  "json"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_reversible_json_path_replace_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_reversible_json_path_replace_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/config.json",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "apply_reversible_structured_edit"
+                        ],
+    "success_criteria":  [
+                             "The JSON path selector resolves.",
+                             "Backup metadata is present.",
+                             "The edit remains fixture-local."
+                         ],
+    "failure_criteria":  [
+                             "The selector is missing.",
+                             "Backup metadata is missing."
+                         ],
+    "side_effect_classes":  [
+                                "REVERSIBLE"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

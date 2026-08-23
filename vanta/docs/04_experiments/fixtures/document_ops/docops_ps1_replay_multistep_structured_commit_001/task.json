@@ -1,0 +1,65 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_replay_multistep_structured_commit_001",
+    "task_type":  "document_ops",
+    "prompt":  "Run a multi-step structured simulation and read-only validation for replay and audit coverage.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_replay_multistep_structured_commit_001_initial",
+                          "task_id":  "docops_ps1_replay_multistep_structured_commit_001",
+                          "task_intent":  "Replay multi-step structured simulated commit.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "plan",
+                                              "path":  "inputs/plan.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_replay_multistep_structured_commit_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_replay_multistep_structured_commit_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/plan.md",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "compute_hash",
+                            "simulate_structured_edit",
+                            "validate_artifact"
+                        ],
+    "success_criteria":  [
+                             "The structured simulated edit produces the expected diff.",
+                             "The episode remains audit-complete and replay-consistent.",
+                             "No source mutation occurs."
+                         ],
+    "failure_criteria":  [
+                             "The simulated diff is wrong.",
+                             "The source is modified.",
+                             "Replay diverges from the episode journal."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY",
+                                "SIMULATED"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

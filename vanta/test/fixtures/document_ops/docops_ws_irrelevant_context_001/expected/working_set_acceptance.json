@@ -1,0 +1,59 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_ws_irrelevant_context_001",
+  "active_goal_ref": "task:docops_ws_irrelevant_context_001",
+  "budget": {
+    "max_context_chars": 240
+  },
+  "required_refs": [
+    "state:irrelevant_context",
+    "artifact:source",
+    "constraint:read_only"
+  ],
+  "relevant_refs": [
+    "state:irrelevant_context",
+    "artifact:source",
+    "constraint:read_only"
+  ],
+  "irrelevant_refs": [
+    "artifact:noise"
+  ],
+  "omission_trap_refs": [],
+  "candidate_refs": [
+    {
+      "ref_id": "artifact:noise",
+      "kind": "artifact",
+      "role": "irrelevant",
+      "required": false,
+      "source": "fixture",
+      "path": "inputs/noise.md"
+    },
+    {
+      "ref_id": "state:irrelevant_context",
+      "kind": "canonical_state",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "task.json#/initial_state",
+      "content": "Goal: validate inputs/source.md."
+    },
+    {
+      "ref_id": "artifact:source",
+      "kind": "artifact",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "inputs/source.md",
+      "content": "Relevant source path: inputs/source.md."
+    },
+    {
+      "ref_id": "constraint:read_only",
+      "kind": "constraint",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "task.json#/side_effect_classes",
+      "content": "Allowed side effect: READ_ONLY."
+    }
+  ]
+}

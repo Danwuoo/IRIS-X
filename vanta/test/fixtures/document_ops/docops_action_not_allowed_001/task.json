@@ -1,0 +1,57 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_action_not_allowed_001",
+  "task_type": "document_ops",
+  "prompt": "Reject a simulated patch proposal in a read-only Document Ops fixture.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_action_not_allowed_001_initial",
+    "task_id": "docops_action_not_allowed_001",
+    "task_intent": "Ensure disallowed mutating or simulated actions cannot enter the Stage 1 commit path.",
+    "objects": [
+      {
+        "object_id": "source_doc",
+        "path": "inputs/source.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_action_not_allowed_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_action_not_allowed_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/source.md",
+      "role": "source",
+      "description": "Read-only markdown source with an edit-looking placeholder."
+    }
+  ],
+  "allowed_actions": [
+    "read_file",
+    "compute_hash",
+    "validate_artifact"
+  ],
+  "success_criteria": [
+    "The runtime rejects the simulate_patch proposal before commit.",
+    "No source file is modified.",
+    "The journal records a rejected action path."
+  ],
+  "failure_criteria": [
+    "A disallowed action is committed.",
+    "A source file is modified.",
+    "The rejected proposal is missing from audit output."
+  ],
+  "side_effect_classes": [
+    "READ_ONLY"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "episode_journal"
+  ]
+}

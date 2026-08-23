@@ -1,0 +1,22 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_simulate_patch_001",
+  "expected_runtime_status": "committed",
+  "expected_task_success": true,
+  "acceptance_checks": [
+    "diff_exact_match",
+    "simulated_source_hash_unchanged"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "simulate_patch",
+        "action_payload": {
+          "path": "inputs/spec.md",
+          "find": "First controlled environment: TBD.",
+          "replace": "First controlled environment: Document Ops."
+        }
+      }
+    ]
+  }
+}

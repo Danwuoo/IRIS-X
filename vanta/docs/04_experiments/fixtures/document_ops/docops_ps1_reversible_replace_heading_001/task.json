@@ -1,0 +1,60 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_reversible_replace_heading_001",
+    "task_type":  "document_ops",
+    "prompt":  "Apply a reversible structured heading replacement.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_reversible_replace_heading_001_initial",
+                          "task_id":  "docops_ps1_reversible_replace_heading_001",
+                          "task_intent":  "Replace heading through reversible structured edit.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "terms",
+                                              "path":  "inputs/terms.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_reversible_replace_heading_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_reversible_replace_heading_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/terms.md",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "apply_reversible_structured_edit"
+                        ],
+    "success_criteria":  [
+                             "The heading is replaced.",
+                             "Backup metadata is present."
+                         ],
+    "failure_criteria":  [
+                             "The wrong line is changed.",
+                             "Rollback metadata is missing."
+                         ],
+    "side_effect_classes":  [
+                                "REVERSIBLE"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

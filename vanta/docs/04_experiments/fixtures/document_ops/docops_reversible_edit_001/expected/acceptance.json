@@ -1,0 +1,23 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_reversible_edit_001",
+  "expected_runtime_status": "committed",
+  "expected_task_success": true,
+  "acceptance_checks": [
+    "diff_exact_match",
+    "backup_metadata_exists",
+    "rollback_metadata_sufficient"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "apply_reversible_patch",
+        "action_payload": {
+          "path": "inputs/glossary.md",
+          "find": "Verifier Runtime: final-answer checker for a completed task.",
+          "replace": "Verifier Runtime: runtime verifier for action feasibility, evidence sufficiency, and final correctness where applicable."
+        }
+      }
+    ]
+  }
+}

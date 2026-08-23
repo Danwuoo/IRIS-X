@@ -1,0 +1,32 @@
+# Fixture Inventory
+
+| Fixture | Scenario | Expected | Observed | Status |
+| --- | --- | --- | --- | --- |
+| `G10-001` | `valid_approved_commit` | `committed` | `committed` | pass |
+| `G10-002` | `missing_approval` | `rejected` | `rejected` | pass |
+| `G10-003` | `denied_approval` | `rejected` | `rejected` | pass |
+| `G10-004` | `expired_approval` | `rejected` | `rejected` | pass |
+| `G10-005` | `wrong_scope_approval` | `rejected` | `rejected` | pass |
+| `G10-006` | `approval_target_mismatch` | `rejected` | `rejected` | pass |
+| `G10-007` | `approval_candidate_hash_mismatch` | `rejected` | `rejected` | pass |
+| `G10-008` | `verifier_reject` | `rejected` | `rejected` | pass |
+| `G10-009` | `verifier_request_evidence` | `rejected` | `rejected` | pass |
+| `G10-010` | `missing_evidence` | `rejected` | `committed` | fail |
+| `G10-011` | `path_escape` | `rejected` | `rejected` | pass |
+| `G10-012` | `source_fixture_mutation` | `rejected` | `rejected` | pass |
+| `G10-013` | `duplicate_same_request` | `committed_idempotent` | `committed_idempotent` | pass |
+| `G10-014` | `conflict_same_key_different_request` | `conflict_rejected` | `conflict_rejected` | pass |
+| `G10-015` | `crash_before_durable_prepare` | `recovered_aborted` | `recovered_aborted` | pass |
+| `G10-016` | `crash_after_prepare_before_effect` | `recovered_aborted` | `recovered_aborted` | pass |
+| `G10-017` | `crash_after_effect_before_db_commit` | `recovered_rolled_back` | `recovered_rolled_back` | pass |
+| `G10-018` | `crash_after_db_commit_before_response` | `committed_idempotent` | `committed_idempotent` | pass |
+| `G10-019` | `restart_recovery` | `recovered_rolled_back` | `recovered_rolled_back` | pass |
+| `G10-020` | `rollback_success` | `rolled_back` | `rolled_back` | pass |
+| `G10-021` | `rollback_failure` | `recovery_required` | `recovery_required` | pass |
+| `G10-022` | `corrupted_approval_ref` | `rejected` | `rejected` | pass |
+| `G10-023` | `missing_approval_ref` | `rejected` | `rejected` | pass |
+| `G10-024` | `corrupted_evidence_ref` | `rolled_back` | `rolled_back` | pass |
+| `G10-025` | `missing_journal_refs` | `rolled_back` | `rolled_back` | pass |
+| `G10-026` | `irreversible_misclassification` | `rejected` | `rejected` | pass |
+| `G10-027` | `memory_write_smuggling` | `rejected` | `rejected` | pass |
+| `G10-028` | `strict_replay_mismatch` | `mismatch_detected` | `mismatch_detected` | pass |

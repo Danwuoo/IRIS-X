@@ -1,0 +1,12 @@
+{
+  "fixture_id": "sidefx_missing_idempotency_duplicate_guard_001",
+  "family": "missing_idempotency_duplicate_guard",
+  "description": "Proposal omits both the idempotency key and duplicate guard.",
+  "proposal_overrides": {},
+  "remove_fields": ["idempotency_key", "duplicate_guard"],
+  "oracle": {
+    "expected_decision": "rejected",
+    "expected_report_label": "blocked_incomplete_proposal",
+    "expected_reason_codes": ["missing_duplicate_guard", "missing_idempotency_key"]
+  }
+}

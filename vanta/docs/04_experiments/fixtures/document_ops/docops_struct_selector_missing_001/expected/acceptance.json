@@ -1,0 +1,26 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_selector_missing_001",
+  "expected_runtime_status": "rejected",
+  "expected_task_success": true,
+  "expected_failure_labels": [
+    "structured_selector_missing"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "simulate_structured_edit",
+        "action_payload": {
+          "path": "inputs/source.md",
+          "selector": {
+            "type": "section",
+            "heading": "Missing",
+            "level": 2
+          },
+          "operation": "replace",
+          "replacement": "## Missing\n\nReplacement."
+        }
+      }
+    ]
+  }
+}

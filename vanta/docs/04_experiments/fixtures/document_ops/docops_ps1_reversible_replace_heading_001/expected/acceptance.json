@@ -1,0 +1,29 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_reversible_replace_heading_001",
+    "expected_runtime_status":  "committed",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "diff_exact_match",
+                              "backup_metadata_exists"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "apply_reversible_structured_edit",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/terms.md",
+                                                                       "selector":  {
+                                                                                        "type":  "heading",
+                                                                                        "text":  "Draft Terms",
+                                                                                        "level":  1
+                                                                                    },
+                                                                       "operation":  "replace",
+                                                                       "replacement":  "# Canonical Terms",
+                                                                       "backup_policy":  "fixture_backup_restore"
+                                                                   }
+                                            }
+                                        ]
+                        },
+    "expected_rollback_status":  "available"
+}

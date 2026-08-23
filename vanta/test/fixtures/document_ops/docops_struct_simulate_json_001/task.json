@@ -1,0 +1,55 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_simulate_json_001",
+  "task_type": "document_ops",
+  "prompt": "Simulate a JSON-path structured edit without modifying the source file.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_struct_simulate_json_001_initial",
+    "task_id": "docops_struct_simulate_json_001",
+    "task_intent": "Produce candidate JSON content for a json_path replacement.",
+    "objects": [
+      {
+        "object_id": "spec_json",
+        "path": "inputs/spec.json",
+        "kind": "json"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_struct_simulate_json_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_struct_simulate_json_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/spec.json",
+      "role": "source"
+    }
+  ],
+  "allowed_actions": [
+    "simulate_structured_edit"
+  ],
+  "success_criteria": [
+    "The JSON path selector resolves.",
+    "The candidate content replaces TBD with Document Ops.",
+    "The source file remains unchanged."
+  ],
+  "failure_criteria": [
+    "The source file is modified.",
+    "The JSON path selector is missing."
+  ],
+  "side_effect_classes": [
+    "SIMULATED"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

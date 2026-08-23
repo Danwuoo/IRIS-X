@@ -1,0 +1,54 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_insert_after_001",
+  "task_type": "document_ops",
+  "prompt": "Simulate inserting a structured line after a selected line without modifying the source.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_struct_insert_after_001_initial",
+    "task_id": "docops_struct_insert_after_001",
+    "task_intent": "Exercise insert_after structured edit semantics.",
+    "objects": [
+      {
+        "object_id": "checklist_doc",
+        "path": "inputs/checklist.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_struct_insert_after_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_struct_insert_after_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/checklist.md",
+      "role": "source"
+    }
+  ],
+  "allowed_actions": [
+    "simulate_structured_edit"
+  ],
+  "success_criteria": [
+    "The insert_after operation produces candidate content.",
+    "The source file remains unchanged."
+  ],
+  "failure_criteria": [
+    "The source file is modified.",
+    "The selector is missing."
+  ],
+  "side_effect_classes": [
+    "SIMULATED"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

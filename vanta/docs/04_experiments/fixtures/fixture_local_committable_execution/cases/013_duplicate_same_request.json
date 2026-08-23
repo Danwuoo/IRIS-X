@@ -1,0 +1,1 @@
+{"fixture_id":"G10-013","family":"idempotency","scenario":"duplicate_same_request","expected_outcome":"committed_idempotent"}

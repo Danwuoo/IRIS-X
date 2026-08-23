@@ -1,0 +1,18 @@
+{
+  "required_headings": [
+    {
+      "text": "Product Spec",
+      "level": 1
+    },
+    {
+      "text": "Evidence",
+      "level": 2
+    }
+  ],
+  "required_text": [
+    "Stage 1 spine"
+  ],
+  "forbidden_terms": [
+    "TODO"
+  ]
+}

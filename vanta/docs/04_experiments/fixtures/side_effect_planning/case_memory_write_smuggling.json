@@ -1,0 +1,20 @@
+{
+  "fixture_id": "sidefx_memory_write_smuggling_001",
+  "family": "memory_write_smuggling",
+  "description": "Proposal hides a memory-store update inside a COMMITTABLE document proposal.",
+  "proposal_overrides": {
+    "target_identity": {
+      "target_kind": "memory_store"
+    },
+    "expected_effect": {
+      "kind": "memory_store_update",
+      "memory_write": true
+    }
+  },
+  "remove_fields": [],
+  "oracle": {
+    "expected_decision": "rejected",
+    "expected_report_label": "blocked_memory_write",
+    "expected_reason_codes": ["memory_write_smuggling"]
+  }
+}

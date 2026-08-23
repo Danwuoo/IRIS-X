@@ -1,0 +1,332 @@
+{
+  "cases": [
+    {
+      "case_id": "P006-01",
+      "checks": {
+        "accepted_state_pointer_present": true,
+        "audit_complete": true,
+        "journal_pointer_present": true,
+        "restart_lifecycle_committed": true,
+        "runtime_committed": true
+      },
+      "duration_ms": 5613,
+      "measurements": {
+        "artifact_count": 8,
+        "audit_expected": 1,
+        "audit_succeeded": 1,
+        "committed_effects_without_journal_refs": 0,
+        "expected_writes": 1,
+        "schema_valid_artifacts": 8,
+        "successful_writes": 1
+      },
+      "name": "normal commit then restart",
+      "passed": true
+    },
+    {
+      "case_id": "P006-02",
+      "checks": {
+        "effect_observed_before_recovery": true,
+        "injected_crash_observed": true,
+        "recovery_record_rolled_back": true,
+        "restart_recovery_completed": true
+      },
+      "duration_ms": 1098,
+      "measurements": {
+        "artifact_count": 3,
+        "recovery_expected": 1,
+        "recovery_succeeded": 1,
+        "schema_valid_artifacts": 3
+      },
+      "name": "crash before Evidence Packet persistence",
+      "passed": true
+    },
+    {
+      "case_id": "P006-03",
+      "checks": {
+        "episode_discovered": true,
+        "injected_crash_observed": true,
+        "recovery_record_aborted": true,
+        "restart_aborted": true,
+        "target_unchanged": true
+      },
+      "duration_ms": 1869,
+      "measurements": {
+        "artifact_count": 3,
+        "recovery_expected": 1,
+        "recovery_succeeded": 1,
+        "schema_valid_artifacts": 3
+      },
+      "name": "prepared complete before file effect",
+      "passed": true
+    },
+    {
+      "case_id": "P006-04",
+      "checks": {
+        "effect_observed_before_recovery": true,
+        "injected_crash_observed": true,
+        "recovery_record_rolled_back": true,
+        "restart_recovery_completed": true
+      },
+      "duration_ms": 2040,
+      "measurements": {
+        "artifact_count": 3,
+        "recovery_expected": 1,
+        "recovery_succeeded": 1,
+        "schema_valid_artifacts": 3
+      },
+      "name": "file effect complete before DB commit",
+      "passed": true
+    },
+    {
+      "case_id": "P006-05",
+      "checks": {
+        "effect_not_repeated": true,
+        "idempotent_replay_reported": true,
+        "injected_crash_observed": true,
+        "retry_committed": true,
+        "single_step_artifact": true
+      },
+      "duration_ms": 822,
+      "measurements": {
+        "artifact_count": 8,
+        "duplicate_logical_commits": 0,
+        "expected_writes": 1,
+        "schema_valid_artifacts": 8,
+        "successful_writes": 1
+      },
+      "name": "DB commit complete before client response",
+      "passed": true
+    },
+    {
+      "case_id": "P006-06",
+      "checks": {
+        "recovery_record_rolled_back": true,
+        "restart_rollback_completed": true,
+        "rollback_crash_observed": true
+      },
+      "duration_ms": 4298,
+      "measurements": {
+        "artifact_count": 3,
+        "recovery_expected": 1,
+        "recovery_succeeded": 1,
+        "schema_valid_artifacts": 3
+      },
+      "name": "crash before rollback starts",
+      "passed": true
+    },
+    {
+      "case_id": "P006-07",
+      "checks": {
+        "recovery_record_rolled_back": true,
+        "restart_rollback_completed": true,
+        "rollback_crash_observed": true
+      },
+      "duration_ms": 698,
+      "measurements": {
+        "artifact_count": 3,
+        "recovery_expected": 1,
+        "recovery_succeeded": 1,
+        "schema_valid_artifacts": 3
+      },
+      "name": "crash during rollback",
+      "passed": true
+    },
+    {
+      "case_id": "P006-08",
+      "checks": {
+        "same_state_pointer": true,
+        "second_is_idempotent": true,
+        "single_logical_commit_artifacts": true
+      },
+      "duration_ms": 146,
+      "measurements": {
+        "artifact_count": 2,
+        "duplicate_logical_commits": 0,
+        "expected_writes": 1,
+        "schema_valid_artifacts": 2,
+        "successful_writes": 1
+      },
+      "name": "same idempotency key resend",
+      "passed": true
+    },
+    {
+      "case_id": "P006-09",
+      "checks": {
+        "accepted_pointer_unchanged": true,
+        "conflict_rejected": true
+      },
+      "duration_ms": 246,
+      "measurements": {
+        "artifact_count": 2,
+        "schema_valid_artifacts": 2
+      },
+      "name": "same key conflicting request",
+      "passed": true
+    },
+    {
+      "case_id": "P006-10",
+      "checks": {
+        "corruption_detected": true
+      },
+      "duration_ms": 116,
+      "measurements": {
+        "artifact_count": 2,
+        "integrity_detections": 1,
+        "integrity_injections": 1,
+        "schema_valid_artifacts": 2
+      },
+      "name": "artifact content corruption",
+      "passed": true
+    },
+    {
+      "case_id": "P006-11",
+      "checks": {
+        "missing_reference_detected": true
+      },
+      "duration_ms": 161,
+      "measurements": {
+        "artifact_count": 2,
+        "integrity_detections": 1,
+        "integrity_injections": 1,
+        "schema_valid_artifacts": 2
+      },
+      "name": "artifact reference missing",
+      "passed": true
+    },
+    {
+      "case_id": "P006-12",
+      "checks": {
+        "incompatible_version_rejected": true
+      },
+      "duration_ms": 90,
+      "measurements": {},
+      "name": "schema version incompatible",
+      "passed": true
+    },
+    {
+      "case_id": "P006-13",
+      "checks": {
+        "busy_error_explicit": true,
+        "no_partial_episode": true
+      },
+      "duration_ms": 140,
+      "measurements": {},
+      "name": "database busy or locked",
+      "passed": true
+    },
+    {
+      "case_id": "P006-14",
+      "checks": {
+        "state_and_journal_rolled_back": true,
+        "write_failed": true
+      },
+      "duration_ms": 108,
+      "measurements": {
+        "silent_partial_commits": 0,
+        "state_journal_atomicity_violations": 0
+      },
+      "name": "write failure transaction rollback",
+      "passed": true
+    },
+    {
+      "case_id": "P006-15",
+      "checks": {
+        "incomplete_episode_discovered": true
+      },
+      "duration_ms": 375,
+      "measurements": {
+        "artifact_count": 3,
+        "schema_valid_artifacts": 3
+      },
+      "name": "incomplete episode discovery",
+      "passed": true
+    },
+    {
+      "case_id": "P006-16",
+      "checks": {
+        "audit_complete": true,
+        "fidelity_mismatches_empty": true,
+        "strict_replay_consistent": true
+      },
+      "duration_ms": 511,
+      "measurements": {
+        "artifact_count": 8,
+        "audit_expected": 1,
+        "audit_succeeded": 1,
+        "committed_effects_without_journal_refs": 0,
+        "expected_writes": 1,
+        "replay_expected": 1,
+        "replay_succeeded": 1,
+        "schema_valid_artifacts": 8,
+        "successful_writes": 1
+      },
+      "name": "clean workspace replay",
+      "passed": true
+    },
+    {
+      "case_id": "P006-17",
+      "checks": {
+        "audit_complete": true,
+        "fidelity_mismatches_empty": true,
+        "strict_replay_consistent": true
+      },
+      "duration_ms": 604,
+      "measurements": {
+        "artifact_count": 8,
+        "audit_expected": 1,
+        "audit_succeeded": 1,
+        "committed_effects_without_journal_refs": 0,
+        "expected_writes": 1,
+        "replay_expected": 1,
+        "replay_succeeded": 1,
+        "schema_valid_artifacts": 8,
+        "successful_writes": 1
+      },
+      "name": "structured reversible restart replay",
+      "passed": true
+    },
+    {
+      "case_id": "P006-18",
+      "checks": {
+        "rejected_action_not_accepted": true
+      },
+      "duration_ms": 354,
+      "measurements": {
+        "artifact_count": 6,
+        "committed_effects_without_journal_refs": 0,
+        "schema_valid_artifacts": 6,
+        "state_journal_atomicity_violations": 0
+      },
+      "name": "rejected action not accepted",
+      "passed": true
+    },
+    {
+      "case_id": "P006-19",
+      "checks": {
+        "accepted_pointer_absent": true,
+        "non_accept_rejected": true
+      },
+      "duration_ms": 55,
+      "measurements": {},
+      "name": "non-accept verifier cannot commit",
+      "passed": true
+    },
+    {
+      "case_id": "P006-20",
+      "checks": {
+        "memory_write_rejected": true,
+        "no_accepted_commit": true,
+        "unsupported_rejected": true
+      },
+      "duration_ms": 58,
+      "measurements": {
+        "irreversible_effects": 0,
+        "memory_writes": 0,
+        "unsupported_commits": 0
+      },
+      "name": "unsupported and memory effects remain zero",
+      "passed": true
+    }
+  ],
+  "experiment_id": "experiment_006_persistence_and_recovery"
+}

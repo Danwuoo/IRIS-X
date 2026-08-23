@@ -1,0 +1,59 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_compensable_action_001",
+  "task_type": "document_ops",
+  "prompt": "Record a fixture-local compensable action receipt and require targeted recovery to produce an explicit compensation record without claiming rollback.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_compensable_action_001_initial",
+    "task_id": "docops_compensable_action_001",
+    "task_intent": "Treat a compensable action as requiring compensation rather than strict rollback.",
+    "objects": [
+      {
+        "object_id": "compensation_context",
+        "path": "inputs/compensation_context.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_compensable_action_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_compensable_action_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/compensation_context.md",
+      "role": "context",
+      "description": "Local note describing the compensable fixture action."
+    }
+  ],
+  "allowed_actions": [
+    "record_compensable_action"
+  ],
+  "success_criteria": [
+    "The runtime does not claim strict rollback for the compensable action.",
+    "The Episode Journal records rollback_status compensation_required.",
+    "Targeted Recovery writes an explicit compensation record.",
+    "No external action is executed."
+  ],
+  "failure_criteria": [
+    "The compensable action is committed as if it were reversible.",
+    "Rollback is reported as completed.",
+    "Recovery omits the compensation record."
+  ],
+  "side_effect_classes": [
+    "COMPENSABLE"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal",
+    "recovery_decision"
+  ]
+}

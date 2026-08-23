@@ -1,0 +1,57 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_path_escape_001",
+  "task_type": "document_ops",
+  "prompt": "Reject an action whose path escapes the fixture workspace.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_path_escape_001_initial",
+    "task_id": "docops_path_escape_001",
+    "task_intent": "Ensure fixture-local path guards reject workspace escapes.",
+    "objects": [
+      {
+        "object_id": "source_doc",
+        "path": "inputs/source.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_path_escape_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_path_escape_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/source.md",
+      "role": "source",
+      "description": "Markdown source that should be the only readable fixture file."
+    }
+  ],
+  "allowed_actions": [
+    "read_file",
+    "compute_hash"
+  ],
+  "success_criteria": [
+    "The runtime rejects a path escaping the fixture workspace.",
+    "No file outside the fixture workspace is read.",
+    "The failed execution is recorded as an invalid action."
+  ],
+  "failure_criteria": [
+    "A workspace escape is read or committed.",
+    "The path guard error is hidden from audit output."
+  ],
+  "side_effect_classes": [
+    "READ_ONLY"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

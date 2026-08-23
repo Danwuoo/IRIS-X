@@ -1,0 +1,36 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_multistep_commit_001",
+  "expected_runtime_status": "committed",
+  "expected_task_success": true,
+  "acceptance_checks": [
+    "multi_step_sequence",
+    "diff_exact_match",
+    "simulated_source_hash_unchanged"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "list_files",
+        "action_payload": {
+          "path": "inputs"
+        }
+      },
+      {
+        "action_type": "simulate_patch",
+        "action_payload": {
+          "path": "inputs/workflow.md",
+          "find": "Verifier gate: TODO.",
+          "replace": "Verifier gate: Evidence Packet reviewed before commit."
+        }
+      },
+      {
+        "action_type": "compute_diff",
+        "action_payload": {
+          "path": "inputs/workflow.md",
+          "candidate_content": "# Commit Workflow\n\nStage 1 loop: state -> plan -> action -> evidence -> verify -> commit or abort.\n\nVerifier gate: Evidence Packet reviewed before commit.\n\nSource mutation: disallowed for this fixture.\n"
+        }
+      }
+    ]
+  }
+}

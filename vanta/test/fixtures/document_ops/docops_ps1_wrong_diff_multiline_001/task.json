@@ -1,0 +1,65 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_wrong_diff_multiline_001",
+    "task_type":  "document_ops",
+    "prompt":  "Reject a multiline simulated patch whose diff does not match the fixture oracle.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_wrong_diff_multiline_001_initial",
+                          "task_id":  "docops_ps1_wrong_diff_multiline_001",
+                          "task_intent":  "Reject wrong multiline diff.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "spec",
+                                              "path":  "inputs/spec.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_wrong_diff_multiline_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_wrong_diff_multiline_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/spec.md",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "read_file",
+                            "compute_hash",
+                            "simulate_patch",
+                            "compute_diff",
+                            "validate_artifact"
+                        ],
+    "success_criteria":  [
+                             "The wrong diff is rejected.",
+                             "No source file is modified."
+                         ],
+    "failure_criteria":  [
+                             "The wrong diff is accepted.",
+                             "The source file is modified."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY",
+                                "SIMULATED"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

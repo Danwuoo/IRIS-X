@@ -1,0 +1,161 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Working Set",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "working_set_id",
+    "active_goal_ref",
+    "canonical_state_ref",
+    "memory_refs",
+    "evidence_refs",
+    "constraint_refs",
+    "recovery_context_refs",
+    "selection_policy",
+    "selection_rationale",
+    "token_budget",
+    "provenance",
+    "omitted_context_notes"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this schema used by the runtime."
+    },
+    "working_set_id": {
+      "type": "string",
+      "description": "Stable identifier for this compiled working set artifact."
+    },
+    "active_goal_ref": {
+      "type": "string",
+      "description": "Reference to the active goal or task this working set serves."
+    },
+    "canonical_state_ref": {
+      "type": "string",
+      "description": "Reference to the accepted canonical state used as input."
+    },
+    "memory_refs": {
+      "type": "array",
+      "description": "References to selected memory items. This is not a full memory dump.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "description": "References to selected Evidence Packet records.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "constraint_refs": {
+      "type": "array",
+      "description": "References to selected runtime, policy, or task constraints.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "recovery_context_refs": {
+      "type": "array",
+      "description": "References to recovery context selected after a failure or verifier request.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "selection_policy": {
+      "type": "string",
+      "description": "Identifier or description of the policy used to select the working set."
+    },
+    "selection_rationale": {
+      "type": "string",
+      "description": "Short audit note for why the included references were selected."
+    },
+    "token_budget": {
+      "type": "object",
+      "description": "Budget metadata for compiling this working set.",
+      "required": [
+        "max_context_chars",
+        "selected_context_chars",
+        "estimated_tokens",
+        "estimation_method",
+        "budget_adhered"
+      ],
+      "properties": {
+        "max_context_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "selected_context_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "estimated_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "estimation_method": {
+          "type": "string"
+        },
+        "budget_adhered": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Source and version metadata for included working-set references.",
+      "required": [
+        "included_refs"
+      ],
+      "properties": {
+        "included_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "ref_id",
+              "kind",
+              "source",
+              "path",
+              "content_hash"
+            ],
+            "properties": {
+              "ref_id": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "content_hash": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              },
+              "required": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "omitted_context_notes": {
+      "type": "array",
+      "description": "Important known omissions or exclusions that may affect verification, recovery, or evaluation.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

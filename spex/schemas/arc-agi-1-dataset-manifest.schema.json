@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Danwuoo/spex/schemas/arc-agi-1-dataset-manifest.schema.json",
+  "title": "ARC-AGI-1 Stage 0 Dataset Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "canonical_source",
+    "dataset_manifest_sha256",
+    "files",
+    "generator",
+    "inventories",
+    "rules_snapshot",
+    "schema_version"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "arc-agi-1-dataset-manifest"
+    },
+    "canonical_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit",
+        "repository_url",
+        "tree"
+      ],
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "repository_url": {
+          "type": "string"
+        },
+        "tree": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      }
+    },
+    "dataset_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256",
+          "size_bytes",
+          "tier"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "tier": {
+            "enum": [
+              "training",
+              "public_evaluation"
+            ]
+          }
+        }
+      }
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "version"
+      ],
+      "properties": {
+        "path": {
+          "const": "scripts/arc_a1_substrate.py"
+        },
+        "version": {
+          "const": "0.1"
+        }
+      }
+    },
+    "inventories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "directory",
+          "exposure_status",
+          "id",
+          "scan_mode",
+          "task_file_count",
+          "task_file_glob",
+          "tier_label"
+        ],
+        "properties": {
+          "directory": {
+            "type": "string"
+          },
+          "exposure_status": {
+            "enum": [
+              "training",
+              "public-exposed"
+            ]
+          },
+          "id": {
+            "enum": [
+              "training",
+              "public_evaluation"
+            ]
+          },
+          "scan_mode": {
+            "const": "non-recursive"
+          },
+          "task_file_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "task_file_glob": {
+            "const": "*.json"
+          },
+          "tier_label": {
+            "enum": [
+              "training",
+              "public-exposed"
+            ]
+          }
+        }
+      }
+    },
+    "rules_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "schema_version": {
+      "const": "1.0"
+    }
+  }
+}

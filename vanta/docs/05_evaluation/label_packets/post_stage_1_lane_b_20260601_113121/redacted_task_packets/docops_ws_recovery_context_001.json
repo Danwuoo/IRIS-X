@@ -1,0 +1,73 @@
+﻿{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ws_recovery_context_001",
+    "task_type":  "document_ops",
+    "prompt":  "Validate the recovery context artifact selected for the current task.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ws_recovery_context_001_initial",
+                          "task_id":  "docops_ws_recovery_context_001",
+                          "task_intent":  "Include recovery context when compiling the working set.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "recovery_context",
+                                              "path":  "inputs/recovery_context.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ws_recovery_context_001",
+                                             "source":  "phase5_working_set_fixture"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/noise.md"
+                            },
+                            {
+                                "path":  "inputs/recovery_context.md"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "validate_artifact"
+                        ],
+    "success_criteria":  [
+                             "inputs/recovery_context.md exists.",
+                             "No source file is modified.",
+                             "Evidence includes recovery context path and file hash."
+                         ],
+    "failure_criteria":  [
+                             "Recovery context is omitted from the working set.",
+                             "A source file is modified.",
+                             "Evidence lacks provenance for recovery context."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "working_set",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ],
+    "redaction":  {
+                      "removed_fields":  [
+                                             "input_artifacts.role",
+                                             "input_artifacts.description"
+                                         ],
+                      "reason":  "Primary Lane B labelers must not see fixture oracle role fields before label freeze.",
+                      "source_task_path":  "docs/04_experiments/fixtures/document_ops/docops_ws_recovery_context_001/task.json"
+                  }
+}

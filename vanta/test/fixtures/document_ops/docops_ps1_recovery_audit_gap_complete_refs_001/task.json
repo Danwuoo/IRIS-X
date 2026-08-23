@@ -1,0 +1,69 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_recovery_audit_gap_complete_refs_001",
+    "task_type":  "document_ops",
+    "prompt":  "Repair an audit-gap episode by reconstructing evidence and verifier references from supplied artifacts.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_recovery_audit_gap_complete_refs_001_initial",
+                          "task_id":  "docops_ps1_recovery_audit_gap_complete_refs_001",
+                          "task_intent":  "Repair audit refs from supplied artifacts.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "journal",
+                                              "path":  "inputs/incomplete_journal.json",
+                                              "kind":  "json"
+                                          },
+                                          {
+                                              "object_id":  "artifacts",
+                                              "path":  "inputs/audit_artifacts.json",
+                                              "kind":  "json"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_recovery_audit_gap_complete_refs_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_recovery_audit_gap_complete_refs_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/incomplete_journal.json",
+                                "role":  "source"
+                            },
+                            {
+                                "path":  "inputs/audit_artifacts.json",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "validate_artifact"
+                        ],
+    "success_criteria":  [
+                             "The audit gap is detected before commit.",
+                             "Targeted recovery can repair evidence and verifier refs."
+                         ],
+    "failure_criteria":  [
+                             "The incomplete journal is accepted.",
+                             "Recovery fabricates refs not present in artifacts."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

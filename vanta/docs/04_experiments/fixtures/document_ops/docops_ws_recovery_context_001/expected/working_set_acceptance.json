@@ -1,0 +1,61 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_ws_recovery_context_001",
+  "active_goal_ref": "task:docops_ws_recovery_context_001",
+  "budget": {
+    "max_context_chars": 270
+  },
+  "required_refs": [
+    "state:recovery_context",
+    "recovery:fixture_context",
+    "constraint:read_only"
+  ],
+  "relevant_refs": [
+    "state:recovery_context",
+    "recovery:fixture_context",
+    "constraint:read_only"
+  ],
+  "irrelevant_refs": [
+    "artifact:noise"
+  ],
+  "omission_trap_refs": [
+    "recovery:fixture_context"
+  ],
+  "candidate_refs": [
+    {
+      "ref_id": "artifact:noise",
+      "kind": "artifact",
+      "role": "irrelevant",
+      "required": false,
+      "source": "fixture",
+      "path": "inputs/noise.md"
+    },
+    {
+      "ref_id": "state:recovery_context",
+      "kind": "canonical_state",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "task.json#/initial_state",
+      "content": "Goal: validate recovery context artifact."
+    },
+    {
+      "ref_id": "recovery:fixture_context",
+      "kind": "recovery_context",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "inputs/recovery_context.md",
+      "content": "Required recovery context path: inputs/recovery_context.md."
+    },
+    {
+      "ref_id": "constraint:read_only",
+      "kind": "constraint",
+      "role": "required",
+      "required": true,
+      "source": "fixture",
+      "path": "task.json#/side_effect_classes",
+      "content": "Allowed side effect: READ_ONLY."
+    }
+  ]
+}

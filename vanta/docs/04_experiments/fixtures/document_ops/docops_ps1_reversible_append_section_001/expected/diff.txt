@@ -1,0 +1,9 @@
+-Keep Document Ops fixture-local.
++Add audit trail before commit.
+-## Verification
++Keep Document Ops fixture-local.
+-Evidence Packet required.
++## Verification
+-
++Evidence Packet required.
++

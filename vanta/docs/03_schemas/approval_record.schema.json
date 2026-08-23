@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Fixture-Local Commit Approval Record",
+  "type": "object",
+  "description": "Standalone runtime approval artifact. It is distinct from Evidence Packet, Verifier Output, labels, fixture oracles, and Episode Journal.",
+  "required": [
+    "schema_version",
+    "approval_id",
+    "decision",
+    "approver_type",
+    "approver_identity",
+    "action_type",
+    "scope",
+    "issued_at",
+    "not_before",
+    "expires_at"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "approval_id": {"type": "string", "minLength": 1},
+    "decision": {"type": "string", "enum": ["approved", "denied"]},
+    "approver_type": {
+      "type": "string",
+      "enum": ["operator", "automatic_policy", "test_authority"]
+    },
+    "approver_identity": {"type": "string", "minLength": 1},
+    "action_type": {"const": "commit_fixture_document_candidate"},
+    "scope": {
+      "type": "object",
+      "required": ["action_type", "target_identity", "candidate_hash", "policy_version"],
+      "properties": {
+        "action_type": {"const": "commit_fixture_document_candidate"},
+        "target_identity": {"$ref": "#/definitions/targetIdentity"},
+        "candidate_hash": {"$ref": "#/definitions/sha256"},
+        "policy_version": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "issued_at": {"type": "string", "format": "date-time"},
+    "not_before": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "reason": {"type": "string"},
+    "provenance": {"type": "object"}
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "targetIdentity": {
+      "type": "object",
+      "required": [
+        "fixture_id",
+        "workspace_id",
+        "workspace_marker_path",
+        "source_path",
+        "candidate_path",
+        "committed_path"
+      ],
+      "properties": {
+        "fixture_id": {"type": "string", "minLength": 1},
+        "workspace_id": {"type": "string", "minLength": 1},
+        "workspace_marker_path": {"type": "string", "minLength": 1},
+        "source_path": {"type": "string", "minLength": 1},
+        "candidate_path": {"type": "string", "minLength": 1},
+        "committed_path": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  }
+}

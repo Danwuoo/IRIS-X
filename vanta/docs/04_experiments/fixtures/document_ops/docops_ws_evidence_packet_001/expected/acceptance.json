@@ -1,0 +1,20 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_ws_evidence_packet_001",
+  "expected_runtime_status": "committed",
+  "expected_task_success": true,
+  "acceptance_checks": [
+    "artifact_exists",
+    "read_only_no_mutation"
+  ],
+  "action_sequence": {
+    "actions": [
+      {
+        "action_type": "validate_artifact",
+        "action_payload": {
+          "path": "inputs/evidence_packet.json"
+        }
+      }
+    ]
+  }
+}

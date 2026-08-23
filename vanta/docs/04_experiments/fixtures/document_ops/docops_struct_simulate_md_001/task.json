@@ -1,0 +1,55 @@
+{
+  "schema_version": "stage1-mvp-v0",
+  "task_id": "docops_struct_simulate_md_001",
+  "task_type": "document_ops",
+  "prompt": "Simulate a selector-based markdown edit without modifying the source file.",
+  "initial_state": {
+    "schema_version": "stage1-mvp-v0",
+    "state_id": "state_docops_struct_simulate_md_001_initial",
+    "task_id": "docops_struct_simulate_md_001",
+    "task_intent": "Produce candidate content and diff for a markdown structured edit.",
+    "objects": [
+      {
+        "object_id": "notes_doc",
+        "path": "inputs/notes.md",
+        "kind": "markdown"
+      }
+    ],
+    "relations": [],
+    "events": [],
+    "uncertainty": {},
+    "provenance": {
+      "fixture": "docops_struct_simulate_md_001",
+      "source": "docs/04_experiments/fixtures/document_ops/docops_struct_simulate_md_001"
+    },
+    "state_hash": "sha256:fixture-initial"
+  },
+  "input_artifacts": [
+    {
+      "path": "inputs/notes.md",
+      "role": "source"
+    }
+  ],
+  "allowed_actions": [
+    "simulate_structured_edit"
+  ],
+  "success_criteria": [
+    "The simulated diff replaces the selected verifier wording.",
+    "The source file remains unchanged.",
+    "Evidence records before and after hashes plus selector resolution."
+  ],
+  "failure_criteria": [
+    "The source file is modified.",
+    "The selector resolution is omitted or ambiguous."
+  ],
+  "side_effect_classes": [
+    "SIMULATED"
+  ],
+  "required_logs": [
+    "canonical_state",
+    "execution_steps",
+    "evidence_packets",
+    "verifier_outputs",
+    "episode_journal"
+  ]
+}

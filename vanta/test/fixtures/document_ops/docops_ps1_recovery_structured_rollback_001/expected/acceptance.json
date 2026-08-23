@@ -1,0 +1,33 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_recovery_structured_rollback_001",
+    "expected_runtime_status":  "rejected",
+    "expected_task_success":  true,
+    "acceptance_checks":  [
+                              "backup_files_missing_rejected",
+                              "targeted_recovery_expected"
+                          ],
+    "action_sequence":  {
+                            "actions":  [
+                                            {
+                                                "action_type":  "apply_reversible_patch",
+                                                "action_payload":  {
+                                                                       "path":  "inputs/target.md",
+                                                                       "find":  "Current status: TBD.",
+                                                                       "replace":  "Current status: Document Ops.",
+                                                                       "drop_backup_after_write":  true
+                                                                   }
+                                            }
+                                        ]
+                        },
+    "expected_rollback_status":  "failed",
+    "expected_failure_labels":  [
+                                    "F_EXEC",
+                                    "F_EXEC_ROLLBACK_FAILURE"
+                                ],
+    "expected_recovery_policy":  "reconstruct_rollback_from_diff",
+    "recovery_assertions":  [
+                                "rollback_reconstruction_artifact_written",
+                                "source_hash_restored"
+                            ]
+}

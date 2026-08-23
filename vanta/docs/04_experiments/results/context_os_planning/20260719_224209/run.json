@@ -1,0 +1,521 @@
+{
+  "artifact_contract": {
+    "output_root_pattern": "docs/04_experiments/results/context_os_planning/<timestamp>/",
+    "required_files": [
+      "run.json",
+      "summary.md",
+      "fixture_inventory.md",
+      "context_artifact_inventory.md",
+      "label_packet_ref.md"
+    ]
+  },
+  "artifact_root": "docs/04_experiments/results/context_os_planning/20260719_224209",
+  "completion_status": "complete",
+  "controls": {
+    "action_attempt_limit": 6,
+    "baseline_arm_label": "raw_trace_bounded_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+    "context_budget": {
+      "global": null,
+      "global_null_semantics": "uses_frozen_per_fixture_budgets",
+      "per_fixture_chars": {
+        "docops_ps1_ws_structured_edit_context_001": 320,
+        "docops_ws_evidence_packet_001": 260,
+        "docops_ws_irrelevant_context_001": 240,
+        "docops_ws_omission_trap_001": 250,
+        "docops_ws_recovery_context_001": 270,
+        "docops_ws_traceability_long_001": 280
+      }
+    },
+    "context_planner_adapter": "Vanta.OpenClawContextPlannerAdapter",
+    "harness": "openclaw_agent_local",
+    "model": "openai-codex/gpt-5.4-mini",
+    "openclaw_agent": "vanta-verifier",
+    "openclaw_agent_provenance": "post_hoc_user_authorized_coordinator_control_attestation",
+    "prompt_character_budget": 20000,
+    "recovery_attempt_limit": 1,
+    "response_character_budget": 12000,
+    "response_format": "json_only",
+    "tool_policy": "embedded_context_only",
+    "tool_policy_provenance": "coordinator attestation plus adapter source hash and policy fragments",
+    "treatment_arm_label": "working_set_compiler_v0_reference_backed_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget"
+  },
+  "evaluation_fingerprint": "sha256:97bc3d8b263e998de460fae8d063c2d3d629b48cfee9daf4b6f4e14091516680",
+  "evaluation_mode": "artifact_backed_post_freeze_evaluation",
+  "experiment_id": "context_os_planning_evaluation_pilot",
+  "final_pilot_status": "pass_artifact_backed_evaluation_pilot",
+  "full_context_os_experiment_status": "Not yet run",
+  "gate_policy_version": "PS1-LC-CTX-GATE-001",
+  "generated_at": "2026-07-19T14:44:08Z",
+  "implementation_status": "evaluation tooling only; full Context OS implementation is not authorized",
+  "interpretation_boundaries": [
+    "This is an artifact-backed post-freeze evaluation of the existing 20260601_113121 Lane A run and active Lane B packet; it is not a new model run.",
+    "Lane A values are automated structural or fixture-oracle evidence, not human labels.",
+    "Lane B values are human-label evidence for the named active packet only; arm interpretation uses the coordinator-only memo after primary label freeze.",
+    "The OpenClaw arms include the local harness and must not be described as pure model-only.",
+    "The pilot does not implement or validate full Context OS, learned retrieval, ranking, compression, memory governance, or H3.",
+    "The pilot creates no runtime approval, runtime action, schema enum, side-effect, memory-write, production-readiness, or closure authority."
+  ],
+  "label_policy_version": "PS1-LB-LABEL-001",
+  "lane_a_structural_fixture_oracle_evidence": {
+    "context_artifact_records": [
+      {
+        "arm": "baseline",
+        "arm_label": "raw_trace_bounded_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:6198faad8e0b208f41aeb04a1aeb82c141b63663cd9ddfc519d10db5fc29b083",
+        "context_artifact_id": "raw_trace_docops_ps1_ws_structured_edit_context_001",
+        "context_budget_chars": 320,
+        "fixture_id": "docops_ps1_ws_structured_edit_context_001",
+        "selected_context_chars": 289,
+        "source_fixture_hash": "sha256:21cfce444edb131815a807aef9354da55e65b761d802e6e789096622697022d7",
+        "source_traceability_valid": true
+      },
+      {
+        "arm": "treatment",
+        "arm_label": "working_set_compiler_v0_reference_backed_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:45e35092c588544cb3b4895e060f598c8e5370ff2a83348340083e17674b17de",
+        "context_artifact_id": "working_set_docops_ps1_ws_structured_edit_context_001",
+        "context_budget_chars": 320,
+        "fixture_id": "docops_ps1_ws_structured_edit_context_001",
+        "selected_context_chars": 289,
+        "source_fixture_hash": "sha256:21cfce444edb131815a807aef9354da55e65b761d802e6e789096622697022d7",
+        "source_traceability_valid": true
+      },
+      {
+        "arm": "baseline",
+        "arm_label": "raw_trace_bounded_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:02703e3ca6c174ce0a29a29e4aba397934c84419aaca8312b5c2a0a77b830429",
+        "context_artifact_id": "raw_trace_docops_ws_evidence_packet_001",
+        "context_budget_chars": 260,
+        "fixture_id": "docops_ws_evidence_packet_001",
+        "selected_context_chars": 0,
+        "source_fixture_hash": "sha256:865c1bd54cbf0c0b561ac77728e02666ce608dc062c818c0d852df6aec47cd1d",
+        "source_traceability_valid": true
+      },
+      {
+        "arm": "treatment",
+        "arm_label": "working_set_compiler_v0_reference_backed_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:b2d66bf187b8bc4f8dd8a71e6a14f738e58dd79e0ba4a91f938ea0138df420da",
+        "context_artifact_id": "working_set_docops_ws_evidence_packet_001",
+        "context_budget_chars": 260,
+        "fixture_id": "docops_ws_evidence_packet_001",
+        "selected_context_chars": 133,
+        "source_fixture_hash": "sha256:865c1bd54cbf0c0b561ac77728e02666ce608dc062c818c0d852df6aec47cd1d",
+        "source_traceability_valid": true
+      },
+      {
+        "arm": "baseline",
+        "arm_label": "raw_trace_bounded_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:0f12fbd10cb18e21f45cb25455e763b8fd293a914c66355d4c5794524b79d97d",
+        "context_artifact_id": "raw_trace_docops_ws_irrelevant_context_001",
+        "context_budget_chars": 240,
+        "fixture_id": "docops_ws_irrelevant_context_001",
+        "selected_context_chars": 232,
+        "source_fixture_hash": "sha256:55dde5b4abf7e0ed6015f73637940ed8d3a6c7e2847fe4d0f8f412e36160a208",
+        "source_traceability_valid": true
+      },
+      {
+        "arm": "treatment",
+        "arm_label": "working_set_compiler_v0_reference_backed_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:e9651bc6821d6c0037e87ebf3e59b94759d78ef6078c9db9a196f42609eac129",
+        "context_artifact_id": "working_set_docops_ws_irrelevant_context_001",
+        "context_budget_chars": 240,
+        "fixture_id": "docops_ws_irrelevant_context_001",
+        "selected_context_chars": 102,
+        "source_fixture_hash": "sha256:55dde5b4abf7e0ed6015f73637940ed8d3a6c7e2847fe4d0f8f412e36160a208",
+        "source_traceability_valid": true
+      },
+      {
+        "arm": "baseline",
+        "arm_label": "raw_trace_bounded_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:ddf01157bd84cda5eb8d061650739075e74a1993dd05d1520927e255c82dfafd",
+        "context_artifact_id": "raw_trace_docops_ws_omission_trap_001",
+        "context_budget_chars": 250,
+        "fixture_id": "docops_ws_omission_trap_001",
+        "selected_context_chars": 232,
+        "source_fixture_hash": "sha256:e63701edfa0aaa2b48915860932ab568653fafbd0edfaa5129e6cce514687588",
+        "source_traceability_valid": true
+      },
+      {
+        "arm": "treatment",
+        "arm_label": "working_set_compiler_v0_reference_backed_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:14576fe61820577516a82d6654b84170101786baeac62203a84cc3f0fbd8cf90",
+        "context_artifact_id": "working_set_docops_ws_omission_trap_001",
+        "context_budget_chars": 250,
+        "fixture_id": "docops_ws_omission_trap_001",
+        "selected_context_chars": 116,
+        "source_fixture_hash": "sha256:e63701edfa0aaa2b48915860932ab568653fafbd0edfaa5129e6cce514687588",
+        "source_traceability_valid": true
+      },
+      {
+        "arm": "baseline",
+        "arm_label": "raw_trace_bounded_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:10a12fee6337ab0d710cd2e9694bf189386c2bad731d4836e0cbacb840554835",
+        "context_artifact_id": "raw_trace_docops_ws_recovery_context_001",
+        "context_budget_chars": 270,
+        "fixture_id": "docops_ws_recovery_context_001",
+        "selected_context_chars": 250,
+        "source_fixture_hash": "sha256:1168a7856e9144316241dea5fe55f8cbfd722cc352bda485117386eded0d4bba",
+        "source_traceability_valid": true
+      },
+      {
+        "arm": "treatment",
+        "arm_label": "working_set_compiler_v0_reference_backed_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:e5f870506e84a6dad6b66657c0b8aca9fe5d1cc1efd1952d038cc061aa2d1b87",
+        "context_artifact_id": "working_set_docops_ws_recovery_context_001",
+        "context_budget_chars": 270,
+        "fixture_id": "docops_ws_recovery_context_001",
+        "selected_context_chars": 131,
+        "source_fixture_hash": "sha256:1168a7856e9144316241dea5fe55f8cbfd722cc352bda485117386eded0d4bba",
+        "source_traceability_valid": true
+      },
+      {
+        "arm": "baseline",
+        "arm_label": "raw_trace_bounded_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:aecdc5bd93303930efd0e0eaaed8632c77d69ece5c918714e4503c200e465f14",
+        "context_artifact_id": "raw_trace_docops_ws_traceability_long_001",
+        "context_budget_chars": 280,
+        "fixture_id": "docops_ws_traceability_long_001",
+        "selected_context_chars": 0,
+        "source_fixture_hash": "sha256:0d8f69ec8f2ea02176b47fabb8a4b266cff738296b919c1a654b8971273966ce",
+        "source_traceability_valid": true
+      },
+      {
+        "arm": "treatment",
+        "arm_label": "working_set_compiler_v0_reference_backed_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "context_artifact_hash": "sha256:529cc1cb412d8d4923fdbbc4cc0b87c72225cfa6d35aa967b78c1d93d080366d",
+        "context_artifact_id": "working_set_docops_ws_traceability_long_001",
+        "context_budget_chars": 280,
+        "fixture_id": "docops_ws_traceability_long_001",
+        "selected_context_chars": 171,
+        "source_fixture_hash": "sha256:0d8f69ec8f2ea02176b47fabb8a4b266cff738296b919c1a654b8971273966ce",
+        "source_traceability_valid": true
+      }
+    ],
+    "fixture_count": 6,
+    "fixture_records": [
+      {
+        "baseline_context_artifact_id": "raw_trace_docops_ps1_ws_structured_edit_context_001",
+        "context_budget_chars": 320,
+        "fixture_hash": "sha256:21cfce444edb131815a807aef9354da55e65b761d802e6e789096622697022d7",
+        "fixture_id": "docops_ps1_ws_structured_edit_context_001",
+        "source_fixture_ref": "docs/04_experiments/fixtures/document_ops/docops_ps1_ws_structured_edit_context_001/",
+        "source_traceability_valid": true,
+        "treatment_context_artifact_id": "working_set_docops_ps1_ws_structured_edit_context_001"
+      },
+      {
+        "baseline_context_artifact_id": "raw_trace_docops_ws_evidence_packet_001",
+        "context_budget_chars": 260,
+        "fixture_hash": "sha256:865c1bd54cbf0c0b561ac77728e02666ce608dc062c818c0d852df6aec47cd1d",
+        "fixture_id": "docops_ws_evidence_packet_001",
+        "source_fixture_ref": "docs/04_experiments/fixtures/document_ops/docops_ws_evidence_packet_001/",
+        "source_traceability_valid": true,
+        "treatment_context_artifact_id": "working_set_docops_ws_evidence_packet_001"
+      },
+      {
+        "baseline_context_artifact_id": "raw_trace_docops_ws_irrelevant_context_001",
+        "context_budget_chars": 240,
+        "fixture_hash": "sha256:55dde5b4abf7e0ed6015f73637940ed8d3a6c7e2847fe4d0f8f412e36160a208",
+        "fixture_id": "docops_ws_irrelevant_context_001",
+        "source_fixture_ref": "docs/04_experiments/fixtures/document_ops/docops_ws_irrelevant_context_001/",
+        "source_traceability_valid": true,
+        "treatment_context_artifact_id": "working_set_docops_ws_irrelevant_context_001"
+      },
+      {
+        "baseline_context_artifact_id": "raw_trace_docops_ws_omission_trap_001",
+        "context_budget_chars": 250,
+        "fixture_hash": "sha256:e63701edfa0aaa2b48915860932ab568653fafbd0edfaa5129e6cce514687588",
+        "fixture_id": "docops_ws_omission_trap_001",
+        "source_fixture_ref": "docs/04_experiments/fixtures/document_ops/docops_ws_omission_trap_001/",
+        "source_traceability_valid": true,
+        "treatment_context_artifact_id": "working_set_docops_ws_omission_trap_001"
+      },
+      {
+        "baseline_context_artifact_id": "raw_trace_docops_ws_recovery_context_001",
+        "context_budget_chars": 270,
+        "fixture_hash": "sha256:1168a7856e9144316241dea5fe55f8cbfd722cc352bda485117386eded0d4bba",
+        "fixture_id": "docops_ws_recovery_context_001",
+        "source_fixture_ref": "docs/04_experiments/fixtures/document_ops/docops_ws_recovery_context_001/",
+        "source_traceability_valid": true,
+        "treatment_context_artifact_id": "working_set_docops_ws_recovery_context_001"
+      },
+      {
+        "baseline_context_artifact_id": "raw_trace_docops_ws_traceability_long_001",
+        "context_budget_chars": 280,
+        "fixture_hash": "sha256:0d8f69ec8f2ea02176b47fabb8a4b266cff738296b919c1a654b8971273966ce",
+        "fixture_id": "docops_ws_traceability_long_001",
+        "source_fixture_ref": "docs/04_experiments/fixtures/document_ops/docops_ws_traceability_long_001/",
+        "source_traceability_valid": true,
+        "treatment_context_artifact_id": "working_set_docops_ws_traceability_long_001"
+      }
+    ],
+    "label_source": "automated_structural_and_fixture_oracle",
+    "metric_label_sources": {
+      "context_omission_error_rate": "fixture_oracle",
+      "long_task_stability": "automated_structural_and_task_outcome",
+      "working_set_budget_adherence": "automated_structural",
+      "working_set_provenance_completeness": "automated_structural",
+      "working_set_relevance_score": "fixture_oracle"
+    },
+    "metrics": {
+      "baseline": {
+        "context_omission_error_rate": 0.7777777777777777,
+        "long_task_stability": 1.0,
+        "working_set_budget_adherence": 1.0,
+        "working_set_provenance_completeness": 0.6666666666666666,
+        "working_set_relevance_score": 0.21666666666666667
+      },
+      "treatment": {
+        "context_omission_error_rate": 0.0,
+        "long_task_stability": 1.0,
+        "working_set_budget_adherence": 1.0,
+        "working_set_provenance_completeness": 1.0,
+        "working_set_relevance_score": 0.9666666666666667
+      }
+    }
+  },
+  "lane_b_human_label_evidence": {
+    "blinded_arm_metrics": {
+      "Combined": {
+        "context_omission_error_rate": {
+          "denominator": 38,
+          "numerator": 14,
+          "rate_4dp": "0.3684"
+        },
+        "working_set_relevance_score": {
+          "denominator": 31,
+          "numerator": 24,
+          "rate_4dp": "0.7742"
+        }
+      },
+      "context_arm_A": {
+        "context_omission_error_rate": {
+          "denominator": 19,
+          "numerator": 14,
+          "rate_4dp": "0.7368"
+        },
+        "working_set_relevance_score": {
+          "denominator": 11,
+          "numerator": 5,
+          "rate_4dp": "0.4545"
+        }
+      },
+      "context_arm_B": {
+        "context_omission_error_rate": {
+          "denominator": 19,
+          "numerator": 0,
+          "rate_4dp": "0.0000"
+        },
+        "working_set_relevance_score": {
+          "denominator": 20,
+          "numerator": 19,
+          "rate_4dp": "0.9500"
+        }
+      }
+    },
+    "label_source": "human",
+    "packet_id": "PS1-LB-PACKET-20260601-113121-BATCH-001",
+    "post_freeze_true_arm_interpretation": {
+      "baseline": {
+        "arm_label": "raw_trace_bounded_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "blinded_arm": "context_arm_A",
+        "metrics": {
+          "context_omission_error_rate": {
+            "denominator": 19,
+            "numerator": 14,
+            "rate_4dp": "0.7368"
+          },
+          "working_set_relevance_score": {
+            "denominator": 11,
+            "numerator": 5,
+            "rate_4dp": "0.4545"
+          }
+        }
+      },
+      "treatment": {
+        "arm_label": "working_set_compiler_v0_reference_backed_openclaw_agent_local/openai-codex/gpt-5.4-mini_matched_budget",
+        "blinded_arm": "context_arm_B",
+        "metrics": {
+          "context_omission_error_rate": {
+            "denominator": 19,
+            "numerator": 0,
+            "rate_4dp": "0.0000"
+          },
+          "working_set_relevance_score": {
+            "denominator": 20,
+            "numerator": 19,
+            "rate_4dp": "0.9500"
+          }
+        }
+      }
+    },
+    "primary_label_freeze": "2026-06-05T21:40:44+08:00",
+    "raw_label_counts": {
+      "evidence_sufficiency_score": 16,
+      "working_set_context": 24
+    },
+    "relevance_interpretation": "must be read with omission; sparse or empty context can mislead",
+    "reviewer_visible_true_arm_identity_backfilled": false,
+    "small_sample_reporting": "raw_counts_only"
+  },
+  "metric_policy_version": "PS1-LA-METRIC-001",
+  "pilot_execution_counts": {
+    "external_target_accesses": 0,
+    "irreversible_effects": 0,
+    "memory_writes": 0,
+    "model_calls": 0,
+    "openclaw_measured_runs": 0,
+    "runtime_actions_dispatched": 0
+  },
+  "plan_id": "PS1-LC-CTX-PLAN-001",
+  "process_integrity_floors": {
+    "disallowed_side_effect_classes": 0,
+    "memory_writes": 0,
+    "unsupported_commits": 0
+  },
+  "report_label": "context_evaluation_pilot",
+  "schema_version": "PS1-G7-context-evaluation-pilot-v1",
+  "source_artifact_refs": [
+    {
+      "path": "docs/00_manifest/Context_OS_Expansion_Gate.md",
+      "sha256": "sha256:df9023c51fcf9ac48cf4a955d68a1417ae8bb7142e57370d762cf1f89ea64662"
+    },
+    {
+      "path": "docs/00_manifest/Post_Stage_1_Lane_A_20260601_113121_Closure.md",
+      "sha256": "sha256:e5a5b277699366ea815b38ba57bcb77281851969f7c42dd94dc572e691b2f290"
+    },
+    {
+      "path": "docs/03_schemas/working_set.schema.json",
+      "sha256": "sha256:c2b67a94027d0e670097bf85843d2d3823a737372c1d2ed8c92b5cf00f9c7459"
+    },
+    {
+      "path": "docs/04_experiments/Baseline_Identity_Plan.md",
+      "sha256": "sha256:ad1b349005e2149658a86cb9966e97196e50aa43e451752a51935ee1f90c85a1"
+    },
+    {
+      "path": "docs/04_experiments/Post_Stage_1_Context_OS_Evaluation_Plan.md",
+      "sha256": "sha256:34532d015a675dd4c563bd3804fb73a1a216b1682de6f7151af874ef046e9888"
+    },
+    {
+      "path": "docs/04_experiments/context_os_planning_control_attestation.json",
+      "sha256": "sha256:45538023d633355a226fd5b2de9adfe016253502ed24fbbfd0a585345c9a79d1"
+    },
+    {
+      "file_count": 5,
+      "path": "docs/04_experiments/fixtures/document_ops/docops_ps1_ws_structured_edit_context_001/",
+      "sha256": "sha256:21cfce444edb131815a807aef9354da55e65b761d802e6e789096622697022d7"
+    },
+    {
+      "file_count": 5,
+      "path": "docs/04_experiments/fixtures/document_ops/docops_ws_evidence_packet_001/",
+      "sha256": "sha256:865c1bd54cbf0c0b561ac77728e02666ce608dc062c818c0d852df6aec47cd1d"
+    },
+    {
+      "file_count": 5,
+      "path": "docs/04_experiments/fixtures/document_ops/docops_ws_irrelevant_context_001/",
+      "sha256": "sha256:55dde5b4abf7e0ed6015f73637940ed8d3a6c7e2847fe4d0f8f412e36160a208"
+    },
+    {
+      "file_count": 5,
+      "path": "docs/04_experiments/fixtures/document_ops/docops_ws_omission_trap_001/",
+      "sha256": "sha256:e63701edfa0aaa2b48915860932ab568653fafbd0edfaa5129e6cce514687588"
+    },
+    {
+      "file_count": 5,
+      "path": "docs/04_experiments/fixtures/document_ops/docops_ws_recovery_context_001/",
+      "sha256": "sha256:1168a7856e9144316241dea5fe55f8cbfd722cc352bda485117386eded0d4bba"
+    },
+    {
+      "file_count": 6,
+      "path": "docs/04_experiments/fixtures/document_ops/docops_ws_traceability_long_001/",
+      "sha256": "sha256:0d8f69ec8f2ea02176b47fabb8a4b266cff738296b919c1a654b8971273966ce"
+    },
+    {
+      "path": "docs/04_experiments/results/post_stage_1_larger_sample/20260601_113121/fixture_inventory.md",
+      "sha256": "sha256:869405ca8acfcedd95e7671f07f5bcc4d6bce2d79602e4ea13f47aa964a3da51"
+    },
+    {
+      "path": "docs/04_experiments/results/post_stage_1_larger_sample/20260601_113121/run.json",
+      "sha256": "sha256:2731099410b5cce7b548764c64e586721657a8a0697048bdb255c7276a1c5cd7"
+    },
+    {
+      "path": "docs/04_experiments/results/post_stage_1_larger_sample/20260601_113121/summary.md",
+      "sha256": "sha256:92078238e269a46cb6e10cf5d0e99a81a9cf44cc4ec583f0f4089c6749c2090b"
+    },
+    {
+      "path": "docs/05_evaluation/Post_Stage_1_Labeling_Scope_and_Adjudication_Policy.md",
+      "sha256": "sha256:2b0f1e023bd5c2833b7dc01932251ae79368acc7a465766196a46b963364cb19"
+    },
+    {
+      "path": "docs/05_evaluation/Post_Stage_1_Lane_A_20260601_113121_Run_Report.md",
+      "sha256": "sha256:ef9407f1b25cee82fe693a58db34dbdedc823dbd5c0775e3febf1d7971a42f31"
+    },
+    {
+      "path": "docs/05_evaluation/Post_Stage_1_Lane_B_20260601_113121_Label_Report_Skeleton.md",
+      "sha256": "sha256:295353a3aad75af679c8ab2046d47bb5ef72b8d127a89666bb0c53b2e6bfc815"
+    },
+    {
+      "path": "docs/05_evaluation/Post_Stage_1_Metric_Policy.md",
+      "sha256": "sha256:ba443b248e200f0ad7d65402135fbd336ca95d9fa60f1eef25647d8d51b77315"
+    },
+    {
+      "path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/README.md",
+      "sha256": "sha256:286bfaddc485526b079345b69996357f4b0b83947d5383e1ebbd2ca4d639b7b1"
+    },
+    {
+      "path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/adjudication_placeholders.json",
+      "sha256": "sha256:ae686b1e572ffc120c20dd1a9d4b70287d8a109711ffa9b2edacb68a257532ff"
+    },
+    {
+      "path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/coordinator_only_post_freeze_context_unblind_memo.md",
+      "sha256": "sha256:a9b693b43215b8609dc95fa02d8bb61428d108925dee6ea6a88f610bf7685d3f"
+    },
+    {
+      "path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/coordinator_primary_label_packet_freeze.json",
+      "sha256": "sha256:1fc2bca4b6639a1e297f50613feb04864e6564a162b51fb6cd86fe913c706b6f"
+    },
+    {
+      "path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/evidence_sufficiency_items.jsonl",
+      "sha256": "sha256:28a620ff5a121eb4cc8b28416b9b26d35177d28acf774a446ab6d1f04d55c992"
+    },
+    {
+      "path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/label_results_import_summary.json",
+      "sha256": "sha256:d1241acf94c1e2504a37ec11cb96c4d3d821e5bda4bc35d16a587f2c7eaeeb9d"
+    },
+    {
+      "path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/label_results_primary_filled.json",
+      "sha256": "sha256:3ab1744acc6d3565054421b8efc430674e0a79296446564f2efb0be4dfa216fc"
+    },
+    {
+      "path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/label_results_template.json",
+      "sha256": "sha256:f6643fb03b6ae7b7a35636d0d256e2318539740054078220d6d6e3244b1e4d4e"
+    },
+    {
+      "path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/packet_manifest.json",
+      "sha256": "sha256:73aed6614581eb72f886b45316a6cf52a6f7ce4e2f242f5d856349b4d4fc3879"
+    },
+    {
+      "file_count": 13,
+      "path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/redacted_task_packets/",
+      "sha256": "sha256:28aafdd651a4caa22e54bd3a45e947754d6b1c65112a142d34a1e2db15bafaac"
+    },
+    {
+      "path": "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/working_set_context_items.jsonl",
+      "sha256": "sha256:2ee29b211da40ff0b74b1ea9a35c3475f39a8196c4e5bed428567c6e892ec614"
+    },
+    {
+      "path": "lib/vanta/adapters/open_claw_context_planner_adapter.ex",
+      "sha256": "sha256:a7b13a832eae5c02970bf7159859d15f4e9e9a098d5dfa3e76804fd5ef486541"
+    }
+  ],
+  "source_run": {
+    "closure_ref": "docs/00_manifest/Post_Stage_1_Lane_A_20260601_113121_Closure.md",
+    "closure_status": "accepted_by_closure",
+    "experiment_id": "post_stage_1_larger_sample",
+    "original_model_run_reexecuted": false,
+    "run_id": "20260601_113121",
+    "run_ref": "docs/04_experiments/results/post_stage_1_larger_sample/20260601_113121/run.json",
+    "sample_frame": "PS1-LA-SAMPLE-002",
+    "threshold_status": "pass_acceptance_candidate"
+  },
+  "validation_errors": []
+}

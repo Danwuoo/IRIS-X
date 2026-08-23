@@ -1,0 +1,1606 @@
+﻿{
+    "result_format":  "PS1-LB-LABEL-RESULT-LOCAL-001",
+    "label_policy_version":  "PS1-LB-LABEL-001",
+    "packet_id":  "PS1-LB-PACKET-20260601-113121-BATCH-001",
+    "packet_manifest_path":  "docs/05_evaluation/label_packets/post_stage_1_lane_b_20260601_113121/packet_manifest.json",
+    "label_collection_status":  "complete_reported",
+    "review_mode":  "double_human_adjudicated",
+    "primary_label_freeze":  {
+                                 "status":  "frozen",
+                                 "frozen_at":  "2026-06-05T21:40:44+08:00",
+                                 "fixture_oracle_exposed_before_freeze":  false,
+                                 "oracle_exposure_notes":  "Primary labels were frozen after two independent reviewer labels per packet item were collected and before fixture oracle metadata, task.json oracle fields, arm identity mapping, Lane A item results, or post-run repair notes were exposed."
+                             },
+    "raw_labels":  {
+                       "evidence_sufficiency_score":  [
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-001",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_A",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.95,
+                                                              "rationale":  "The evidence records the read_file action, source path, file hash, all extracted markdown links, no mutation, provenance, runtime context, and an accepting verifier output with no extra evidence requested.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_read_traceability_001_001_read_file",
+                                                                                              "verifier_step_episode_docops_read_traceability_001_001_read_file"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-001",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_B",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.94,
+                                                              "rationale":  "The visible record contains the read_file observation with path, file hash, extracted links, non-mutation status, provenance, runtime context, commit linkage, and an accepting verifier with no requested extra evidence.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_read_traceability_001_001_read_file",
+                                                                                              "verifier_step_episode_docops_read_traceability_001_001_read_file"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-002",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_A",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.94,
+                                                              "rationale":  "The evidence records the inline contract, target path, file hash, parse status, missing required Rollback heading, no mutation, provenance, runtime context, and an accepting verifier output for recording the failed contract result.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_struct_contract_fail_001_001_validate_document_contract",
+                                                                                              "verifier_step_episode_docops_struct_contract_fail_001_001_validate_document_contract"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-002",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_B",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.93,
+                                                              "rationale":  "The evidence records the inline contract check, target path, file hash, parse diagnostics, required Rollback heading failure, non-mutation, provenance, runtime context, and verifier acceptance of the recorded failed contract result.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_struct_contract_fail_001_001_validate_document_contract",
+                                                                                              "verifier_step_episode_docops_struct_contract_fail_001_001_validate_document_contract"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-003",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_A",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.95,
+                                                              "rationale":  "The simulated patch evidence includes before and after hashes, candidate content, the exact diff from TBD to Document Ops, no source mutation, provenance, runtime context, and an accepting verifier output.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_simulate_patch_001_001_simulate_patch",
+                                                                                              "verifier_step_episode_docops_simulate_patch_001_001_simulate_patch"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-003",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_B",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.94,
+                                                              "rationale":  "The simulated patch packet includes before and after hashes, candidate content, exact diff, non-mutating status, provenance, runtime context, commit linkage, and an accepting verifier decision.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_simulate_patch_001_001_simulate_patch",
+                                                                                              "verifier_step_episode_docops_simulate_patch_001_001_simulate_patch"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-004",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_A",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.94,
+                                                              "rationale":  "The reversible structured edit evidence includes selector resolution, before and after hashes, diff, backup metadata, source hash after write, provenance, runtime context, and rollback availability in the commit record.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_struct_apply_reversible_001_001_apply_reversible_structured_edit",
+                                                                                              "verifier_step_episode_docops_struct_apply_reversible_001_001_apply_reversible_structured_edit"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-004",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_B",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.93,
+                                                              "rationale":  "The reversible structured edit evidence includes selector resolution, before and after hashes, diff, backup metadata, source hash after write, provenance, runtime context, and rollback availability in the commit record.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_struct_apply_reversible_001_001_apply_reversible_structured_edit",
+                                                                                              "verifier_step_episode_docops_struct_apply_reversible_001_001_apply_reversible_structured_edit"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-005",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_A",
+                                                              "raw_label_0_to_4_or_needs_review":  3,
+                                                              "confidence":  0.82,
+                                                              "rationale":  "The evidence is sufficient to show the section selector was missing and the source was not mutated, with path, before hash, selector resolution, provenance, and rejection. It is not fully complete because the verifier also flags missing after hash, candidate content, and diff/result-summary evidence.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_struct_selector_missing_001_001_simulate_structured_edit",
+                                                                                              "verifier_step_episode_docops_struct_selector_missing_001_001_simulate_structured_edit"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-005",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_B",
+                                                              "raw_label_0_to_4_or_needs_review":  3,
+                                                              "confidence":  0.81,
+                                                              "rationale":  "The visible evidence supports rejection for the missing selector and shows the source was not mutated, with path, before hash, selector resolution, provenance, and runtime context. It is not fully sufficient because the verifier flags missing after-hash, candidate-content, and diff or result-summary evidence.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_struct_selector_missing_001_001_simulate_structured_edit",
+                                                                                              "verifier_step_episode_docops_struct_selector_missing_001_001_simulate_structured_edit"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-006",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_A",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.93,
+                                                              "rationale":  "The evidence includes the wrong simulated candidate content, before and after hashes, the exact diff to Wrong Domain, no mutation, provenance, runtime context, and a verifier rejection for diff_mismatch.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_wrong_diff_001_001_simulate_patch",
+                                                                                              "verifier_step_episode_docops_wrong_diff_001_001_simulate_patch"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-006",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_B",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.92,
+                                                              "rationale":  "The packet gives the simulated candidate content, before and after hashes, exact diff, non-mutation status, provenance, runtime context, and a verifier rejection specifically tied to diff_mismatch.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_wrong_diff_001_001_simulate_patch",
+                                                                                              "verifier_step_episode_docops_wrong_diff_001_001_simulate_patch"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-007",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_A",
+                                                              "raw_label_0_to_4_or_needs_review":  3,
+                                                              "confidence":  0.8,
+                                                              "rationale":  "The evidence supports the rejection by showing the reversible patch, before and after hashes, diff, mutated source, backup metadata paths, runtime context, and rollback_status failed. It is mostly sufficient, but independent proof of missing backup artifacts and recovery completion is limited in the visible record.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_rollback_failure_001_001_apply_reversible_patch",
+                                                                                              "verifier_step_episode_docops_rollback_failure_001_001_apply_reversible_patch"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-007",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_B",
+                                                              "raw_label_0_to_4_or_needs_review":  3,
+                                                              "confidence":  0.78,
+                                                              "rationale":  "The evidence shows the reversible patch, before and after hashes, diff, mutation, backup metadata paths, runtime context, and failed rollback status. It is only mostly sufficient because the visible record gives limited independent proof of missing backup artifacts and recovery completion.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_rollback_failure_001_001_apply_reversible_patch",
+                                                                                              "verifier_step_episode_docops_rollback_failure_001_001_apply_reversible_patch"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-008",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_A",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.95,
+                                                              "rationale":  "The validate_artifact evidence records the selected evidence_packet.json path, existence, file hash, no mutation, provenance, runtime context, and an accepting verifier output with no extra evidence requested.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_ws_evidence_packet_001_001_validate_artifact",
+                                                                                              "verifier_step_episode_docops_ws_evidence_packet_001_001_validate_artifact"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                          },
+                                                          {
+                                                              "metric":  "evidence_sufficiency_score",
+                                                              "item_id":  "lb20260601-es-008",
+                                                              "label_source":  "human",
+                                                              "reviewer_id":  "reviewer_B",
+                                                              "raw_label_0_to_4_or_needs_review":  4,
+                                                              "confidence":  0.94,
+                                                              "rationale":  "The validate_artifact record includes the evidence_packet.json path, existence result, file hash, non-mutation status, provenance, runtime context, commit linkage, and verifier acceptance with no extra evidence requested.",
+                                                              "referenced_artifact_ids":  [
+                                                                                              "evidence_step_episode_docops_ws_evidence_packet_001_001_validate_artifact",
+                                                                                              "verifier_step_episode_docops_ws_evidence_packet_001_001_validate_artifact"
+                                                                                          ],
+                                                              "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                          }
+                                                      ],
+                       "working_set_context":  [
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-001-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "critical",
+                                                                        "omitted_task_critical_ref_ids":  [
+                                                                                                              "constraint:read_only",
+                                                                                                              "evidence:fixture_packet",
+                                                                                                              "state:evidence_packet"
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "constraint:read_only",
+                                                                                                                "evidence:fixture_packet",
+                                                                                                                "state:evidence_packet"
+                                                                                                            ],
+                                                                        "critical_omission":  true,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "evidence:fixture_packet",
+                                                                                                    "state:evidence_packet"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "evidence:fixture_packet",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:evidence_packet",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "absent_or_misleading",
+                                                       "confidence":  0.94,
+                                                       "rationale":  "No refs were selected, so the working set omits the evidence packet, canonical state, and read-only constraint needed to validate the selected Evidence Packet artifact.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ws_evidence_packet_001",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "evidence:fixture_packet",
+                                                                                       "state:evidence_packet"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-001-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "critical",
+                                                                        "omitted_task_critical_ref_ids":  [
+                                                                                                              "constraint:read_only",
+                                                                                                              "evidence:fixture_packet",
+                                                                                                              "state:evidence_packet"
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "constraint:read_only",
+                                                                                                                "evidence:fixture_packet",
+                                                                                                                "state:evidence_packet"
+                                                                                                            ],
+                                                                        "critical_omission":  true,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "evidence:fixture_packet",
+                                                                                                    "state:evidence_packet"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "evidence:fixture_packet",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:evidence_packet",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "absent_or_misleading",
+                                                       "confidence":  0.93,
+                                                       "rationale":  "No references were selected, so the packet omits the evidence packet, canonical state, and read-only constraint needed to validate the selected artifact; the remaining candidate is only noise.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ws_evidence_packet_001",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "evidence:fixture_packet",
+                                                                                       "state:evidence_packet"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-001-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "constraint:read_only",
+                                                                                                                "evidence:fixture_packet",
+                                                                                                                "state:evidence_packet"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "evidence:fixture_packet",
+                                                                                                    "state:evidence_packet"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "evidence:fixture_packet",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:evidence_packet",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "sufficient",
+                                                       "confidence":  0.95,
+                                                       "rationale":  "The selected refs include the evidence packet, canonical state, and read-only constraint; only the noise ref is omitted.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ws_evidence_packet_001",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "evidence:fixture_packet",
+                                                                                       "state:evidence_packet"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-001-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "constraint:read_only",
+                                                                                                                "evidence:fixture_packet",
+                                                                                                                "state:evidence_packet"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "evidence:fixture_packet",
+                                                                                                    "state:evidence_packet"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "evidence:fixture_packet",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:evidence_packet",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "sufficient",
+                                                       "confidence":  0.94,
+                                                       "rationale":  "The selected set includes the task-critical evidence packet, canonical state, and read-only constraint; only the irrelevant noise artifact is omitted.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ws_evidence_packet_001",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "evidence:fixture_packet",
+                                                                                       "state:evidence_packet"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-002-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "critical",
+                                                                        "omitted_task_critical_ref_ids":  [
+                                                                                                              "artifact:source",
+                                                                                                              "constraint:read_only",
+                                                                                                              "state:irrelevant_context"
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:irrelevant_context"
+                                                                                                            ],
+                                                                        "critical_omission":  true,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:irrelevant_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:irrelevant_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "absent_or_misleading",
+                                                       "confidence":  0.94,
+                                                       "rationale":  "The selected context contains only irrelevant noise and omits the relevant source artifact, canonical task state, and read-only constraint.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ws_irrelevant_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "state:irrelevant_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-002-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "critical",
+                                                                        "omitted_task_critical_ref_ids":  [
+                                                                                                              "artifact:source",
+                                                                                                              "constraint:read_only",
+                                                                                                              "state:irrelevant_context"
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:irrelevant_context"
+                                                                                                            ],
+                                                                        "critical_omission":  true,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:irrelevant_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:irrelevant_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "absent_or_misleading",
+                                                       "confidence":  0.93,
+                                                       "rationale":  "The selected context contains only irrelevant noise and omits the source artifact, canonical state, and read-only constraint required for the task.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ws_irrelevant_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "state:irrelevant_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-002-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:irrelevant_context"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:irrelevant_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:irrelevant_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "sufficient",
+                                                       "confidence":  0.95,
+                                                       "rationale":  "The selected refs include the relevant source artifact, canonical state, and read-only constraint; only the irrelevant noise ref is omitted.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ws_irrelevant_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "state:irrelevant_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-002-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:irrelevant_context"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:irrelevant_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:irrelevant_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "sufficient",
+                                                       "confidence":  0.94,
+                                                       "rationale":  "The selected references contain the required source artifact, canonical state, and read-only constraint; the only omitted candidate is irrelevant noise.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ws_irrelevant_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "state:irrelevant_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-003-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "critical",
+                                                                        "omitted_task_critical_ref_ids":  [
+                                                                                                              "artifact:late_source",
+                                                                                                              "constraint:read_only",
+                                                                                                              "state:omission_trap"
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:late_source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:omission_trap"
+                                                                                                            ],
+                                                                        "critical_omission":  true,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:late_source",
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:omission_trap"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:late_source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:omission_trap",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "absent_or_misleading",
+                                                       "confidence":  0.94,
+                                                       "rationale":  "The selected context contains only omission-trap noise and omits the late required source, canonical task state, and read-only constraint.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ws_omission_trap_001",
+                                                                                       "artifact:late_source",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "state:omission_trap"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-003-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "critical",
+                                                                        "omitted_task_critical_ref_ids":  [
+                                                                                                              "artifact:late_source",
+                                                                                                              "constraint:read_only",
+                                                                                                              "state:omission_trap"
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:late_source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:omission_trap"
+                                                                                                            ],
+                                                                        "critical_omission":  true,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:late_source",
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:omission_trap"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:late_source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:omission_trap",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "absent_or_misleading",
+                                                       "confidence":  0.93,
+                                                       "rationale":  "The selected context includes only the omission-trap noise and omits the late source, canonical task state, and read-only constraint needed for the task.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ws_omission_trap_001",
+                                                                                       "artifact:late_source",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "state:omission_trap"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-003-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:late_source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:omission_trap"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:late_source",
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:omission_trap"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:late_source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:omission_trap",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "sufficient",
+                                                       "confidence":  0.95,
+                                                       "rationale":  "The selected refs include the late required source, canonical state, and read-only constraint; only the irrelevant noise ref is omitted.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ws_omission_trap_001",
+                                                                                       "artifact:late_source",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "state:omission_trap"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-003-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:late_source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:omission_trap"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:late_source",
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:omission_trap"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:late_source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:omission_trap",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "sufficient",
+                                                       "confidence":  0.94,
+                                                       "rationale":  "The selected set includes the late required source, canonical state, and read-only constraint; only irrelevant noise is excluded.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ws_omission_trap_001",
+                                                                                       "artifact:late_source",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "state:omission_trap"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-004-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "critical",
+                                                                        "omitted_task_critical_ref_ids":  [
+                                                                                                              "constraint:read_only",
+                                                                                                              "recovery:fixture_context"
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "constraint:read_only",
+                                                                                                                "recovery:fixture_context",
+                                                                                                                "state:recovery_context"
+                                                                                                            ],
+                                                                        "critical_omission":  true,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "recovery:fixture_context",
+                                                                                                    "state:recovery_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "recovery:fixture_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:recovery_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "minimal",
+                                                       "confidence":  0.88,
+                                                       "rationale":  "The selected refs include canonical state but omit the recovery context artifact and read-only constraint; the included noise is irrelevant to validating the recovery context.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ws_recovery_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "recovery:fixture_context",
+                                                                                       "state:recovery_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-004-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "critical",
+                                                                        "omitted_task_critical_ref_ids":  [
+                                                                                                              "constraint:read_only",
+                                                                                                              "recovery:fixture_context"
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "constraint:read_only",
+                                                                                                                "recovery:fixture_context",
+                                                                                                                "state:recovery_context"
+                                                                                                            ],
+                                                                        "critical_omission":  true,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "recovery:fixture_context",
+                                                                                                    "state:recovery_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "recovery:fixture_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:recovery_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "minimal",
+                                                       "confidence":  0.87,
+                                                       "rationale":  "The selected refs include the canonical state but omit the recovery context artifact and read-only constraint; the included noise does not help validate the recovery context.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ws_recovery_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "recovery:fixture_context",
+                                                                                       "state:recovery_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-004-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "constraint:read_only",
+                                                                                                                "recovery:fixture_context",
+                                                                                                                "state:recovery_context"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "recovery:fixture_context",
+                                                                                                    "state:recovery_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "recovery:fixture_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:recovery_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "sufficient",
+                                                       "confidence":  0.95,
+                                                       "rationale":  "The selected refs include the recovery context artifact, canonical state, and read-only constraint; only the irrelevant noise ref is omitted.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ws_recovery_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "recovery:fixture_context",
+                                                                                       "state:recovery_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-004-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "constraint:read_only",
+                                                                                                                "recovery:fixture_context",
+                                                                                                                "state:recovery_context"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "constraint:read_only",
+                                                                                                    "recovery:fixture_context",
+                                                                                                    "state:recovery_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "recovery:fixture_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:recovery_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "sufficient",
+                                                       "confidence":  0.94,
+                                                       "rationale":  "The selected references include the recovery context artifact, canonical state, and read-only constraint; only the irrelevant noise artifact is omitted.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ws_recovery_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "constraint:read_only",
+                                                                                       "recovery:fixture_context",
+                                                                                       "state:recovery_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-005-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "critical",
+                                                                        "omitted_task_critical_ref_ids":  [
+                                                                                                              "artifact:source",
+                                                                                                              "constraint:read_only",
+                                                                                                              "state:traceability_long"
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:traceability_long"
+                                                                                                            ],
+                                                                        "critical_omission":  true,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:traceability_long"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:traceability_long",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "absent_or_misleading",
+                                                       "confidence":  0.94,
+                                                       "rationale":  "No refs were selected, so the working set omits the source document, canonical task state, and read-only constraint needed for traceability extraction.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ws_traceability_long_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "state:traceability_long"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-005-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "critical",
+                                                                        "omitted_task_critical_ref_ids":  [
+                                                                                                              "artifact:source",
+                                                                                                              "constraint:read_only",
+                                                                                                              "state:traceability_long"
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:traceability_long"
+                                                                                                            ],
+                                                                        "critical_omission":  true,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:traceability_long"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:traceability_long",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "absent_or_misleading",
+                                                       "confidence":  0.93,
+                                                       "rationale":  "No references were selected, so the packet omits the source document, canonical task state, and read-only constraint required for traceability extraction.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ws_traceability_long_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "state:traceability_long"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-005-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:traceability_long"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:traceability_long"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:traceability_long",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "sufficient",
+                                                       "confidence":  0.95,
+                                                       "rationale":  "The selected refs include the traceability source, canonical state, and read-only constraint; only the irrelevant noise ref is omitted.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ws_traceability_long_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "state:traceability_long"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-005-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "state:traceability_long"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "state:traceability_long"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:traceability_long",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "sufficient",
+                                                       "confidence":  0.94,
+                                                       "rationale":  "The selected references include the traceability source, canonical state, and read-only constraint; only irrelevant noise is omitted.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ws_traceability_long_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "state:traceability_long"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-006-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "selector:line_range",
+                                                                                                                "state:structured_edit_context"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "selector:line_range",
+                                                                                                    "state:structured_edit_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "selector:line_range",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:structured_edit_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "mostly_sufficient",
+                                                       "confidence":  0.9,
+                                                       "rationale":  "All task-critical structured-edit refs are present, including source, selector, canonical state, and read-only constraint. The packet also includes irrelevant noise, so relevance quality is mostly sufficient rather than fully clean.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ps1_ws_structured_edit_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "selector:line_range",
+                                                                                       "state:structured_edit_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-006-context_arm_A",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "selector:line_range",
+                                                                                                                "state:structured_edit_context"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "selector:line_range",
+                                                                                                    "state:structured_edit_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "selector:line_range",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:structured_edit_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "mostly_sufficient",
+                                                       "confidence":  0.89,
+                                                       "rationale":  "All task-critical structured-edit references are present, including source, selector, canonical state, and read-only constraint. The packet also includes irrelevant noise, so relevance quality is mostly sufficient rather than fully clean.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "raw_trace_docops_ps1_ws_structured_edit_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "selector:line_range",
+                                                                                       "state:structured_edit_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-006-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_A",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "selector:line_range",
+                                                                                                                "state:structured_edit_context"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "selector:line_range",
+                                                                                                    "state:structured_edit_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "selector:line_range",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:structured_edit_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "mostly_sufficient",
+                                                       "confidence":  0.9,
+                                                       "rationale":  "All task-critical structured-edit refs are present, including source, selector, canonical state, and read-only constraint. The packet also includes irrelevant noise, so relevance quality is mostly sufficient rather than fully clean.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ps1_ws_structured_edit_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "selector:line_range",
+                                                                                       "state:structured_edit_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:30:07+08:00"
+                                                   },
+                                                   {
+                                                       "metric":  "working_set_context",
+                                                       "item_id":  "lb20260601-ws-006-context_arm_B",
+                                                       "label_source":  "human",
+                                                       "reviewer_id":  "reviewer_B",
+                                                       "omission":  {
+                                                                        "omission_severity":  "none",
+                                                                        "omitted_task_critical_ref_ids":  [
+
+                                                                                                          ],
+                                                                        "task_critical_candidate_ref_ids":  [
+                                                                                                                "artifact:source",
+                                                                                                                "constraint:read_only",
+                                                                                                                "selector:line_range",
+                                                                                                                "state:structured_edit_context"
+                                                                                                            ],
+                                                                        "critical_omission":  false,
+                                                                        "denominator_ref_ids":  [
+                                                                                                    "artifact:noise",
+                                                                                                    "artifact:source",
+                                                                                                    "constraint:read_only",
+                                                                                                    "selector:line_range",
+                                                                                                    "state:structured_edit_context"
+                                                                                                ]
+                                                                    },
+                                                       "per_ref_relevance_labels":  [
+                                                                                        {
+                                                                                            "ref_id":  "artifact:noise",
+                                                                                            "relevance_label":  "irrelevant"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "artifact:source",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "constraint:read_only",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "selector:line_range",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        },
+                                                                                        {
+                                                                                            "ref_id":  "state:structured_edit_context",
+                                                                                            "relevance_label":  "task_critical"
+                                                                                        }
+                                                                                    ],
+                                                       "packet_relevance_quality":  "mostly_sufficient",
+                                                       "confidence":  0.89,
+                                                       "rationale":  "All task-critical structured-edit references are selected, including source, selector, canonical state, and read-only constraint. The included noise lowers relevance quality to mostly sufficient.",
+                                                       "referenced_artifact_ids":  [
+                                                                                       "working_set_docops_ps1_ws_structured_edit_context_001",
+                                                                                       "artifact:noise",
+                                                                                       "artifact:source",
+                                                                                       "constraint:read_only",
+                                                                                       "selector:line_range",
+                                                                                       "state:structured_edit_context"
+                                                                                   ],
+                                                       "labeled_at":  "2026-06-05T21:37:36+08:00"
+                                                   }
+                                               ]
+                   },
+    "secondary_reviews":  [
+
+                          ],
+    "adjudication_records":  [
+
+                             ],
+    "agreement_report":  {
+                             "status":  "small_sample_raw_counts",
+                             "method":  "Raw pairwise agreement counts only; first active packet sample is too small for stable agreement statistics.",
+                             "raw_agreement_counts":  {
+                                                          "evidence_sufficiency_score":  {
+                                                                                             "item_pairs":  8,
+                                                                                             "exact_raw_label_agreement":  8,
+                                                                                             "exact_raw_label_disagreement":  0,
+                                                                                             "acceptability_boundary_splits":  0
+                                                                                         },
+                                                          "working_set_context":  {
+                                                                                      "item_pairs":  12,
+                                                                                      "omission_exact_agreement":  12,
+                                                                                      "omission_exact_disagreement":  0,
+                                                                                      "per_ref_relevance_exact_agreement":  12,
+                                                                                      "per_ref_relevance_exact_disagreement":  0,
+                                                                                      "packet_relevance_quality_exact_agreement":  12,
+                                                                                      "packet_relevance_quality_exact_disagreement":  0,
+                                                                                      "harmful_disagreement":  0,
+                                                                                      "task_critical_or_denominator_disagreement":  0,
+                                                                                      "critical_omission_disagreement":  0
+                                                                                  }
+                                                      },
+                             "notes":  "Both primary reviewers agreed exactly on all evidence raw labels and all working-set omission, per-ref relevance, and packet relevance quality fields. Agreement is reported as raw counts because the packet has 8 evidence items and 12 working-set items."
+                         },
+    "reporting_boundary":  {
+                               "claim_level":  "20260601_113121 active packet Lane B labeled evaluation evidence reported from validated primary labels; no H1-H5, full Context OS, production readiness, runtime approval, or human-in-the-loop verifier claim.",
+                               "disallowed_claims":  [
+                                                         "human-labeled broader evaluation evidence beyond this named packet",
+                                                         "secondary review completed",
+                                                         "adjudication records required or completed",
+                                                         "stable inter-annotator agreement statistics",
+                                                         "H1-H5 validation",
+                                                         "full Context OS validation",
+                                                         "production readiness",
+                                                         "runtime approval or human-in-the-loop verifier claim"
+                                                     ]
+                           }
+}

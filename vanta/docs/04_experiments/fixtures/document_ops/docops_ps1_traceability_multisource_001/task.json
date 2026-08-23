@@ -1,0 +1,73 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_traceability_multisource_001",
+    "task_type":  "document_ops",
+    "prompt":  "Extract explicit links from the primary source while preserving fixture-local read-only behavior.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_traceability_multisource_001_initial",
+                          "task_id":  "docops_ps1_traceability_multisource_001",
+                          "task_intent":  "Extract traceability links from a multi-source fixture.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "primary",
+                                              "path":  "inputs/source_a.md",
+                                              "kind":  "markdown"
+                                          },
+                                          {
+                                              "object_id":  "support",
+                                              "path":  "inputs/source_b.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_traceability_multisource_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_multisource_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/source_a.md",
+                                "role":  "source"
+                            },
+                            {
+                                "path":  "inputs/source_b.md",
+                                "role":  "context"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "list_files",
+                            "read_file",
+                            "compute_hash",
+                            "validate_artifact"
+                        ],
+    "success_criteria":  [
+                             "All explicit markdown links in inputs/source_a.md are listed.",
+                             "No source file is modified.",
+                             "Evidence includes source path and file hash."
+                         ],
+    "failure_criteria":  [
+                             "A link is omitted or fabricated.",
+                             "Any source file is modified."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

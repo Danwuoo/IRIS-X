@@ -1,0 +1,25 @@
+schema_version: 1
+project:
+  id: eidos
+  name: Eidos
+  lifecycle: bootstrap
+documentation:
+  source_format: yaml
+  records_directory: docs/records
+  record_pattern: "*.yaml"
+  document_schema: docs/schema/document.schema.json
+  index: docs/index.json
+  index_schema: docs/schema/index.schema.json
+  authority_order:
+    - governance
+    - project
+    - specification
+    - decision
+    - proposal
+    - experiment
+    - note
+  commands:
+    build_index: python -m tools.docs.build_index
+    validate: python -m tools.docs.validate
+    test: python -m unittest discover -s tests -v
+

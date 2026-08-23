@@ -1,0 +1,62 @@
+{
+    "schema_version":  "stage1-mvp-v0",
+    "task_id":  "docops_ps1_traceability_cross_doc_refs_001",
+    "task_type":  "document_ops",
+    "prompt":  "Extract ordered cross-document markdown links from the routing note.",
+    "initial_state":  {
+                          "schema_version":  "stage1-mvp-v0",
+                          "state_id":  "state_docops_ps1_traceability_cross_doc_refs_001_initial",
+                          "task_id":  "docops_ps1_traceability_cross_doc_refs_001",
+                          "task_intent":  "Extract cross-document traceability refs.",
+                          "objects":  [
+                                          {
+                                              "object_id":  "routing",
+                                              "path":  "inputs/routing.md",
+                                              "kind":  "markdown"
+                                          }
+                                      ],
+                          "relations":  [
+
+                                        ],
+                          "events":  [
+
+                                     ],
+                          "uncertainty":  {
+
+                                          },
+                          "provenance":  {
+                                             "fixture":  "docops_ps1_traceability_cross_doc_refs_001",
+                                             "source":  "docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_cross_doc_refs_001"
+                                         },
+                          "state_hash":  "sha256:fixture-initial"
+                      },
+    "input_artifacts":  [
+                            {
+                                "path":  "inputs/routing.md",
+                                "role":  "source"
+                            }
+                        ],
+    "allowed_actions":  [
+                            "read_file",
+                            "compute_hash",
+                            "validate_artifact"
+                        ],
+    "success_criteria":  [
+                             "The two markdown links are extracted in source order.",
+                             "No mutation occurs."
+                         ],
+    "failure_criteria":  [
+                             "A link target is wrong.",
+                             "A source file is modified."
+                         ],
+    "side_effect_classes":  [
+                                "READ_ONLY"
+                            ],
+    "required_logs":  [
+                          "canonical_state",
+                          "execution_steps",
+                          "evidence_packets",
+                          "verifier_outputs",
+                          "episode_journal"
+                      ]
+}

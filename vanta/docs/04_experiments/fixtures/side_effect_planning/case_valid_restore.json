@@ -1,0 +1,12 @@
+{
+  "fixture_id": "sidefx_valid_restore_001",
+  "family": "valid_fixture_local_commit_proposal",
+  "description": "Complete fixture-local planning proposal with strict restore requirements.",
+  "proposal_overrides": {},
+  "remove_fields": [],
+  "oracle": {
+    "expected_decision": "valid",
+    "expected_report_label": "committable_docops_planning_pilot",
+    "expected_reason_codes": []
+  }
+}
