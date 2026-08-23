@@ -1,0 +1,492 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import io
+import os
+import time
+import typing
+from pathlib import Path
+from unittest.mock import AsyncMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
+import pytest
+from fastapi import FastAPI
+from httpx import ASGITransport
+from httpx import AsyncClient
+from httpx_sse import aconnect_sse
+
+from _utils.dask_utils import wait_job
+from nat.builder.workflow_builder import WorkflowBuilder
+from nat.data_models.api_server import ChatRequest
+from nat.data_models.api_server import ChatResponse
+from nat.data_models.api_server import Message
+from nat.data_models.config import Config
+from nat.data_models.config import GeneralConfig
+from nat.data_models.interactive import HumanPromptText
+from nat.data_models.interactive_http import ExecutionAcceptedInteraction
+from nat.front_ends.fastapi.execution_store import ExecutionStore
+from nat.front_ends.fastapi.fastapi_front_end_config import FastApiFrontEndConfig
+from nat.front_ends.fastapi.fastapi_front_end_plugin_worker import FastApiFrontEndPluginWorker
+from nat.front_ends.fastapi.routes.generate import _GenerateEndpointMethod
+from nat.front_ends.fastapi.routes.generate import _GenerateEndpointType
+from nat.front_ends.fastapi.routes.generate import add_generate_route
+from nat.front_ends.fastapi.routes.v1_chat_completions import add_v1_chat_completions_route
+from nat.object_store.in_memory_object_store import InMemoryObjectStoreConfig
+from nat.test.functions import EchoFunctionConfig
+from nat.test.functions import HeaderCaptureFunctionConfig
+from nat.test.functions import StreamingEchoFunctionConfig
+from nat.test.utils import build_nat_client
+from nat.utils.io.yaml_tools import yaml_dump
+from nat.utils.type_utils import override
+
+if typing.TYPE_CHECKING:
+    from dask.distributed import Client as DaskClient
+
+
+class CustomWorker(FastApiFrontEndPluginWorker):
+
+    @override
+    async def add_routes(self, app: FastAPI, builder: WorkflowBuilder):
+
+        await super().add_routes(app, builder)
+
+        # Add custom routes here
+        @app.get("/custom")
+        async def custom_route():
+            return {"message": "This is a custom route"}
+
+
+@pytest.mark.parametrize("fn_use_openai_api", [True, False])
+async def test_generate_and_openai_single(fn_use_openai_api: bool):
+
+    front_end_config = FastApiFrontEndConfig()
+
+    config = Config(
+        general=GeneralConfig(front_end=front_end_config),
+        workflow=EchoFunctionConfig(use_openai_api=fn_use_openai_api),
+    )
+
+    workflow_path = front_end_config.workflow.path
+    oai_path = front_end_config.workflow.openai_api_path
+
+    assert workflow_path is not None
+    assert oai_path is not None
+
+    async with build_nat_client(config) as client:
+
+        # Test both the function accepting OAI and also using the OAI API
+        if (fn_use_openai_api):
+            response = await client.post(
+                workflow_path, json=ChatRequest(messages=[Message(content="Hello", role="user")]).model_dump())
+
+            assert response.status_code == 200
+            assert ChatResponse.model_validate(response.json()).choices[0].message.content == "Hello"
+
+        else:
+            response = await client.post(workflow_path, json={"message": "Hello"})
+
+            assert response.status_code == 200
+            assert response.json() == {"value": "Hello"}
+
+        response = await client.post(oai_path,
+                                     json=ChatRequest(messages=[Message(content="Hello", role="user")]).model_dump())
+
+        assert response.status_code == 200
+        oai_response = ChatResponse.model_validate(response.json())
+
+        assert oai_response.choices[0].message.content == "Hello"
+
+
+@pytest.mark.parametrize("fn_use_openai_api", [True, False])
+async def test_generate_and_openai_stream(fn_use_openai_api: bool):
+
+    values = ["a", "b", "c", "d"]
+
+    front_end_config = FastApiFrontEndConfig()
+
+    config = Config(
+        general=GeneralConfig(front_end=front_end_config),
+        workflow=StreamingEchoFunctionConfig(use_openai_api=fn_use_openai_api),
+    )
+
+    workflow_path = front_end_config.workflow.path
+    oai_path = front_end_config.workflow.openai_api_path
+
+    assert workflow_path is not None
+    assert oai_path is not None
+
+    async with build_nat_client(config) as client:
+
+        response = []
+
+        if (fn_use_openai_api):
+            payload = ChatRequest(messages=[Message(content=x, role="user") for x in values]).model_dump()
+            async with aconnect_sse(client, "POST", f"{workflow_path}/stream", json=payload) as event_source:
+                async for sse in event_source.aiter_sse():
+                    response.append(sse.json()["value"])
+
+                assert event_source.response.status_code == 200
+                assert response == values
+
+        else:
+            async with aconnect_sse(client, "POST", f"{workflow_path}/stream",
+                                    json={"input_message": values}) as event_source:
+                async for sse in event_source.aiter_sse():
+                    response.append(sse.json()["value"])
+
+                assert event_source.response.status_code == 200
+                assert response == values
+
+
+async def test_custom_endpoint():
+
+    config = Config(
+        general=GeneralConfig(front_end=FastApiFrontEndConfig()),
+        workflow=EchoFunctionConfig(),
+    )
+
+    async with build_nat_client(config, worker_class=CustomWorker) as client:
+        response = await client.get("/custom")
+
+        assert response.status_code == 200
+        assert response.json() == {"message": "This is a custom route"}
+
+
+async def test_specified_endpoints():
+
+    config = Config(
+        general=GeneralConfig(front_end=FastApiFrontEndConfig(endpoints=[
+            # TODO(MDD): Uncomment this when the constant function is implemented
+            # FastApiFrontEndConfig.Endpoint(
+            #     path="/constant_get", method="GET", description="Constant function", function_name="constant"),
+            FastApiFrontEndConfig.Endpoint(
+                path="/echo_post", method="POST", description="Echo function", function_name="echo"),
+        ])),
+        functions={
+            "echo": EchoFunctionConfig(),  # "constant": ConstantFunctionConfig(response="Constant"),
+        },
+        workflow=EchoFunctionConfig(),
+    )
+
+    async with build_nat_client(config) as client:
+        # response = await client.get("/constant_get")
+
+        # assert response.status_code == 200
+        # assert response.json() == {"message": "Constant"}
+
+        response = await client.post("/echo_post", json={"message": "Hello"})
+
+        assert response.status_code == 200
+        assert response.json() == {"value": "Hello"}
+
+
+@pytest.mark.parametrize("use_sync_timeout", [True, False])
+@pytest.mark.parametrize("fn_use_openai_api", [True, False])
+async def test_generate_async(dask_client: "DaskClient", fn_use_openai_api: bool, use_sync_timeout: bool):
+    if (fn_use_openai_api):
+        pytest.skip("Async support for OpenAI API is not implemented yet")
+
+    front_end_config = FastApiFrontEndConfig()
+
+    config = Config(
+        general=GeneralConfig(front_end=front_end_config),
+        workflow=EchoFunctionConfig(use_openai_api=fn_use_openai_api),
+    )
+
+    job_id = f"test_generate_async_{use_sync_timeout}_{fn_use_openai_api}"
+
+    workflow_path = f"{front_end_config.workflow.path}/async"
+    # oai_path = front_end_config.workflow.openai_api_path
+    async with build_nat_client(config) as client:
+
+        # Test both the function accepting OAI and also using the OAI API
+        if (fn_use_openai_api):
+            # response = await client.post(
+            #     workflow_path, json=ChatRequest(messages=[Message(content="Hello", role="user")]).model_dump())
+
+            # assert response.status_code == 200
+            # assert ChatResponse.model_validate(response.json()).choices[0].message.content == "Hello"
+            assert True  # TODO: Implement async support in the EchoFunctionConfig
+
+        else:
+            payload = {"message": "Hello", "job_id": job_id}
+            if use_sync_timeout:
+                payload["sync_timeout"] = 10
+
+            response = await client.post(workflow_path, json=payload)
+
+            if use_sync_timeout:
+                assert response.status_code == 200
+                response_body = response.json()
+                assert response_body["job_id"] == job_id
+                assert response_body["status"] == "success"
+                assert response_body["output"] == {"value": "Hello"}
+            else:
+                assert response.status_code == 202
+                assert response.json() == {"job_id": job_id, "status": "submitted"}
+
+        expected_status_values = ("running", "success", "submitted")
+        status_path = f"{workflow_path}/job/{job_id}"
+
+        status = None
+        timeout = 10  # Wait for up to 10 seconds
+        deadline = time.time() + timeout
+        while status != "success":
+            response = await client.get(status_path)
+
+            assert response.status_code == 200
+            data = response.json()
+            status = data["status"]
+
+            assert status in expected_status_values
+            if status != "success":
+                assert time.time() < deadline, "Job did not complete in time"
+                wait_job(dask_client, job_id, timeout=timeout)
+
+
+@pytest.mark.usefixtures("restore_environ")
+async def test_generate_async_propagates_headers(dask_client: "DaskClient", tmp_path: Path):
+    custom_header_name = "x-custom-test-header"
+    custom_header_value = "test-header-value"
+    job_id = "test_headers"
+
+    front_end_config = FastApiFrontEndConfig()
+    config = Config(
+        general=GeneralConfig(front_end=front_end_config),
+        workflow=HeaderCaptureFunctionConfig(header_name=custom_header_name),
+    )
+
+    # In the fastapi front end the config file path is passed to the workers by setting the
+    # NAT_CONFIG_FILE environment variable
+    config_file = tmp_path / "config.yaml"
+    config_dict = config.model_dump(mode="json", by_alias=True, round_trip=True)
+    with open(config_file, "w") as fh:
+        yaml_dump(config_dict, fh)
+
+    os.environ["NAT_CONFIG_FILE"] = str(config_file)
+
+    workflow_path = f"{front_end_config.workflow.path}/async"
+
+    async with build_nat_client(config) as client:
+        response = await client.post(
+            workflow_path,
+            json={
+                "message": "ignored", "job_id": job_id
+            },
+            headers={custom_header_name: custom_header_value},
+        )
+
+        assert response.status_code == 202
+        assert response.json() == {"job_id": job_id, "status": "submitted"}
+
+        status_path = f"{workflow_path}/job/{job_id}"
+        status = None
+        data = {}
+        timeout = 10
+        deadline = time.time() + timeout
+        while status != "success":
+            response = await client.get(status_path)
+            assert response.status_code == 200
+            data = response.json()
+            status = data["status"]
+            assert status in ("running", "success", "submitted")
+            if status != "success":
+                assert time.time() < deadline, "Job did not complete in time"
+                wait_job(dask_client, job_id, timeout=timeout)
+
+        assert data["output"]["value"] == custom_header_value
+
+
+async def test_async_job_status_not_found():
+    front_end_config = FastApiFrontEndConfig()
+
+    config = Config(
+        general=GeneralConfig(front_end=front_end_config),
+        workflow=EchoFunctionConfig(use_openai_api=False),
+    )
+
+    workflow_path = f"{front_end_config.workflow.path}/async"
+
+    async with build_nat_client(config) as client:
+        status_path = f"{workflow_path}/job/non_existent_job"
+
+        response = await client.get(status_path)
+
+        assert response.status_code == 404
+
+
+async def test_static_file_endpoints():
+    # Configure the in-memory object store
+    object_store_name = "test_store"
+    file_path = "folder/testfile.txt"
+    file_content = b"Hello, world!"
+    updated_content = b"Updated content!"
+    content_type = "text/plain"
+
+    config = Config(
+        general=GeneralConfig(front_end=FastApiFrontEndConfig(object_store=object_store_name)),
+        object_stores={object_store_name: InMemoryObjectStoreConfig()},
+        workflow=EchoFunctionConfig(),  # Dummy workflow, not used here
+    )
+
+    async with build_nat_client(config) as client:
+        # POST: Upload a new file
+        response = await client.post(
+            f"/static/{file_path}",
+            files={"file": ("testfile.txt", io.BytesIO(file_content), content_type)},
+        )
+        assert response.status_code == 200
+        assert response.json()["filename"] == file_path
+
+        # GET: Retrieve the file
+        response = await client.get(f"/static/{file_path}")
+        assert response.status_code == 200
+        assert response.content == file_content
+        assert response.headers["content-type"].startswith(content_type)
+        assert response.headers["content-disposition"].endswith("testfile.txt")
+
+        # POST again: Should fail with 409 (already exists)
+        response = await client.post(
+            f"/static/{file_path}",
+            files={"file": ("testfile.txt", io.BytesIO(file_content), content_type)},
+        )
+        assert response.status_code == 409
+
+        # PUT: Upsert (update) the file
+        response = await client.put(
+            f"/static/{file_path}",
+            files={"file": ("testfile.txt", io.BytesIO(updated_content), content_type)},
+        )
+        assert response.status_code == 200
+        assert response.json()["filename"] == file_path
+
+        # GET: Retrieve the updated file
+        response = await client.get(f"/static/{file_path}")
+        assert response.status_code == 200
+        assert response.content == updated_content
+
+        # DELETE: Remove the file
+        response = await client.delete(f"/static/{file_path}")
+        assert response.status_code == 204
+
+        # DELETE: Delete again (idempotent but should still result in a 404)
+        response = await client.delete(f"/static/{file_path}")
+        assert response.status_code == 404
+
+        # GET: Should now 404
+        response = await client.get(f"/static/{file_path}")
+        assert response.status_code == 404
+
+
+async def test_health_endpoint():
+    """Test that the health endpoint returns healthy status."""
+    config = Config(
+        general=GeneralConfig(front_end=FastApiFrontEndConfig()),
+        workflow=EchoFunctionConfig(),
+    )
+
+    async with build_nat_client(config) as client:
+        response = await client.get("/health")
+
+        assert response.status_code == 200
+        assert response.json() == {"status": "healthy"}
+
+
+async def test_workflow_single_hitl_pause_returns_202():
+    """The workflow endpoint accepts ExecutionAcceptedInteraction as a valid response
+    when interactive mode is enabled and the workflow pauses for human input."""
+    app = FastAPI()
+    mock_session_manager = MagicMock()
+    mock_session_manager.get_workflow_input_schema.return_value = typing.Any
+    mock_session_manager.get_workflow_single_output_schema.return_value = None
+
+    await add_generate_route(
+        worker=MagicMock(),
+        app=app,
+        session_manager=mock_session_manager,
+        enable_interactive=True,
+        endpoint_path="/v1/workflow",
+        endpoint_type=_GenerateEndpointType.SINGLE,
+        endpoint_method=_GenerateEndpointMethod.POST,
+    )
+
+    store = ExecutionStore()
+    record = await store.create_execution()
+    await store.set_interaction_required(
+        execution_id=record.execution_id,
+        prompt=HumanPromptText(text="Confirm?"),
+        interaction_id="int-1",
+    )
+
+    mock_runner = AsyncMock()
+    mock_runner.start_non_streaming.return_value = record
+
+    with patch("nat.front_ends.fastapi.routes.common_utils._build_interactive_runner", return_value=mock_runner):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post("/v1/workflow", json={})
+
+    assert response.status_code == 202
+    body = ExecutionAcceptedInteraction.model_validate(response.json())
+    assert body.execution_id == record.execution_id
+    assert body.interaction_id == "int-1"
+    assert body.prompt == HumanPromptText(text="Confirm?")
+    assert body.status_url == f"/executions/{record.execution_id}"
+    assert body.response_url == f"/executions/{record.execution_id}/interactions/int-1/response"
+
+
+async def test_v1_chat_completions_hitl_pause_returns_202():
+    """The chat completions endpoint accepts ExecutionAcceptedInteraction as a valid response
+    when interactive mode is enabled and the workflow pauses for human input."""
+    app = FastAPI()
+    mock_session_manager = MagicMock()
+
+    await add_v1_chat_completions_route(
+        MagicMock(),
+        app,
+        path="/v1/chat/completions",
+        method="POST",
+        description="test",
+        session_manager=mock_session_manager,
+        enable_interactive=True,
+    )
+
+    store = ExecutionStore()
+    record = await store.create_execution()
+    await store.set_interaction_required(
+        execution_id=record.execution_id,
+        prompt=HumanPromptText(text="Confirm?"),
+        interaction_id="int-1",
+    )
+
+    mock_runner = AsyncMock()
+    mock_runner.start_non_streaming.return_value = record
+
+    with patch("nat.front_ends.fastapi.routes.v1_chat_completions._build_interactive_runner", return_value=mock_runner):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/v1/chat/completions",
+                json={"messages": [{
+                    "role": "user", "content": "test"
+                }]},
+            )
+
+    assert response.status_code == 202
+    body = ExecutionAcceptedInteraction.model_validate(response.json())
+    assert body.execution_id == record.execution_id
+    assert body.interaction_id == "int-1"
+    assert body.prompt == HumanPromptText(text="Confirm?")
+    assert body.status_url == f"/executions/{record.execution_id}"
+    assert body.response_url == f"/executions/{record.execution_id}/interactions/int-1/response"
