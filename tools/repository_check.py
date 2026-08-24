@@ -211,12 +211,17 @@ def check_snapshot_common(
     snapshot: Any,
     label: str,
     errors: list[str],
-) -> tuple[str, str | None]:
+) -> tuple[str | None, str | None]:
+    if not isinstance(snapshot, dict):
+        errors.append(f"{label}: must be an object")
+        return None, None
     required = {"id", "kind", "status", "event", "source_ref", "acquired_at_commit", "evidence_paths"}
     missing = sorted(required - snapshot.keys())
+    snapshot_id = snapshot.get("id")
+    valid_snapshot_id = snapshot_id if isinstance(snapshot_id, str) else None
     if missing:
         errors.append(f"{label}: missing fields: {', '.join(missing)}")
-        return "", None
+        return valid_snapshot_id, None
     if snapshot["status"] not in {"active", "superseded", "retired"}:
         errors.append(f"{label}.status: invalid value {snapshot['status']!r}")
     if snapshot["event"] not in SNAPSHOT_EVENTS:
@@ -227,13 +232,13 @@ def check_snapshot_common(
     match = SOURCE_REF_RE.fullmatch(str(snapshot.get("source_ref", "")))
     if match is None:
         errors.append(f"{label}.source_ref: must be '<40-character commit>:<relative-path>'")
-        return str(snapshot.get("id", "")), None
+        return valid_snapshot_id, None
     _, captured_path = match.groups()
     _, path_errors = safe_relative_path(captured_path, f"{label}.source_ref.path")
     if path_errors:
         errors.extend(path_errors)
-        return str(snapshot.get("id", "")), None
-    return str(snapshot.get("id", "")), captured_path
+        return valid_snapshot_id, None
+    return valid_snapshot_id, captured_path
 
 
 def check_source_record(record: Any, root: Path, context: ValidationContext, errors: list[str]) -> None:
@@ -369,6 +374,9 @@ def check_source_record(record: Any, root: Path, context: ValidationContext, err
             snapshot_id, source_ref_path = check_snapshot_common(
                 snapshot, snapshot_label, errors
             )
+            context.source_snapshots.append(
+                (current_path_text or "", snapshot, snapshot_label, source_ref_path)
+            )
             if snapshot.get("kind") != "git-tree":
                 errors.append(f"{snapshot_label}.kind: source snapshots require git-tree")
             tree_oid = snapshot.get("tree_oid")
@@ -381,12 +389,13 @@ def check_source_record(record: Any, root: Path, context: ValidationContext, err
                 errors,
                 allow_empty=False,
             )
-            if not isinstance(snapshot_id, str) or not ID_RE.fullmatch(snapshot_id):
-                errors.append(f"{snapshot_label}.id: invalid snapshot ID")
-            elif snapshot_id in context.snapshot_ids:
-                errors.append(f"{snapshot_label}: duplicate snapshot ID")
-            else:
-                context.snapshot_ids.add(snapshot_id)
+            if "id" in snapshot:
+                if not isinstance(snapshot_id, str) or not ID_RE.fullmatch(snapshot_id):
+                    errors.append(f"{snapshot_label}.id: invalid snapshot ID")
+                elif snapshot_id in context.snapshot_ids:
+                    errors.append(f"{snapshot_label}: duplicate snapshot ID")
+                else:
+                    context.snapshot_ids.add(snapshot_id)
             if snapshot.get("status") == "active":
                 active_count += 1
                 if active_snapshot is None:
@@ -398,12 +407,6 @@ def check_source_record(record: Any, root: Path, context: ValidationContext, err
             errors.append(f"{label}.active_snapshot_id: invalid stable ID {active_id!r}")
         elif active_snapshot.get("id") != active_id:
             errors.append(f"{label}.active_snapshot_id: points to a different snapshot")
-    for index, snapshot in enumerate(snapshots if isinstance(snapshots, list) else []):
-        if not isinstance(snapshot, dict):
-            continue
-        context.source_snapshots.append(
-            (current_path_text or "", snapshot, f"{label}.snapshots[{index}]", source_ref_path)
-        )
     if active_snapshot is not None and record["record_status"] == "active":
         context.active_source_records[current_path_text or ""] = record
 
@@ -540,6 +543,9 @@ def check_artifact_record(
             snapshot_id, source_ref_path = check_snapshot_common(
                 snapshot, snapshot_label, errors
             )
+            context.artifact_snapshots.append(
+                (current_path_text or "", snapshot, snapshot_label, source_ref_path)
+            )
             if snapshot.get("kind") != "blob":
                 errors.append(f"{snapshot_label}.kind: artifact snapshots require blob")
             snapshot_blob = snapshot.get("blob_oid")
@@ -558,12 +564,13 @@ def check_artifact_record(
                 errors,
                 allow_empty=False,
             )
-            if not isinstance(snapshot_id, str) or not ID_RE.fullmatch(snapshot_id):
-                errors.append(f"{snapshot_label}.id: invalid snapshot ID")
-            elif snapshot_id in context.snapshot_ids:
-                errors.append(f"{snapshot_label}: duplicate snapshot ID")
-            else:
-                context.snapshot_ids.add(snapshot_id)
+            if "id" in snapshot:
+                if not isinstance(snapshot_id, str) or not ID_RE.fullmatch(snapshot_id):
+                    errors.append(f"{snapshot_label}.id: invalid snapshot ID")
+                elif snapshot_id in context.snapshot_ids:
+                    errors.append(f"{snapshot_label}: duplicate snapshot ID")
+                else:
+                    context.snapshot_ids.add(snapshot_id)
             if snapshot.get("status") == "active":
                 active_count += 1
                 if active_snapshot is None:
@@ -575,11 +582,6 @@ def check_artifact_record(
             errors.append(f"{label}.active_snapshot_id: invalid stable ID {active_id!r}")
         elif active_snapshot.get("id") != active_id:
             errors.append(f"{label}.active_snapshot_id: points to a different snapshot")
-    for index, snapshot in enumerate(snapshots if isinstance(snapshots, list) else []):
-        if isinstance(snapshot, dict):
-            context.artifact_snapshots.append(
-                (current_path_text or "", snapshot, f"{label}.snapshots[{index}]", source_ref_path)
-            )
     if active_snapshot is not None and record["record_status"] == "active":
         context.active_artifact_records[current_path_text or ""] = record
 
@@ -1242,6 +1244,21 @@ def self_test() -> int:
             )
             assert any(fragment in error for error in found_errors), (label, found_errors)
 
+        def expect_errors(label: str, mutate: Any, *fragments: str) -> list[str]:
+            mutable_sources = json.loads(sources_path.read_text(encoding="utf-8"))
+            mutable_artifacts = json.loads(artifacts_path.read_text(encoding="utf-8"))
+            mutate(mutable_sources, mutable_artifacts)
+            found_errors, _ = validate_registries(
+                temporary,
+                mutable_sources,
+                mutable_artifacts,
+                verify_hashes=True,
+                check_generated=False,
+            )
+            for fragment in fragments:
+                assert any(fragment in error for error in found_errors), (label, found_errors)
+            return found_errors
+
         def expect_no_error(label: str, mutate: Any) -> None:
             mutable_sources = json.loads(sources_path.read_text(encoding="utf-8"))
             mutable_artifacts = json.loads(artifacts_path.read_text(encoding="utf-8"))
@@ -1290,6 +1307,134 @@ def self_test() -> int:
             lambda s, a: a["records"][0]["snapshots"][0].pop("source_ref"),
             "missing fields: source_ref",
         )
+
+        # Snapshot parse results must remain attached to the snapshot that produced
+        # them.  These arrangements used to reuse the final snapshot's source_ref.
+        def malformed_source_before_valid(sources: Any, artifacts: Any) -> None:
+            record = sources["records"][0]
+            original = dict(record["snapshots"][0])
+            malformed = dict(original)
+            malformed["status"] = "superseded"
+            malformed.pop("source_ref")
+            valid = {
+                **original,
+                "id": "snap.src.example.second-valid",
+                "status": "active",
+                "event": "refresh",
+            }
+            record["snapshots"] = [malformed, valid]
+            record["active_snapshot_id"] = valid["id"]
+
+        expect_error(
+            "source malformed before valid snapshot",
+            malformed_source_before_valid,
+            "snapshots[0]: missing fields: source_ref",
+        )
+
+        def source_mismatch_before_malformed(sources: Any, artifacts: Any) -> None:
+            record = sources["records"][0]
+            original = dict(record["snapshots"][0])
+            historical = {
+                **original,
+                "status": "superseded",
+                "event": "refresh",
+                "tree_oid": "1" * 40,
+            }
+            malformed = {
+                **original,
+                "id": "snap.src.example.malformed-active",
+                "status": "active",
+                "event": "refresh",
+            }
+            malformed.pop("source_ref")
+            record["snapshots"] = [historical, malformed]
+            record["active_snapshot_id"] = malformed["id"]
+
+        expect_errors(
+            "source historical mismatch before malformed snapshot",
+            source_mismatch_before_malformed,
+            "snapshots[0]: source identity mismatch",
+            "snapshots[1]: missing fields: source_ref",
+        )
+
+        def malformed_artifact_before_valid(sources: Any, artifacts: Any) -> None:
+            record = artifacts["records"][0]
+            original = dict(record["snapshots"][0])
+            malformed = dict(original)
+            malformed["status"] = "superseded"
+            malformed.pop("source_ref")
+            valid = {
+                **original,
+                "id": "snap.art.example.second-valid",
+                "status": "active",
+                "event": "refresh",
+            }
+            record["snapshots"] = [malformed, valid]
+            record["active_snapshot_id"] = valid["id"]
+
+        expect_error(
+            "artifact malformed before valid snapshot",
+            malformed_artifact_before_valid,
+            "snapshots[0]: missing fields: source_ref",
+        )
+
+        def artifact_mismatch_before_malformed(sources: Any, artifacts: Any) -> None:
+            record = artifacts["records"][0]
+            original = dict(record["snapshots"][0])
+            historical = {
+                **original,
+                "status": "superseded",
+                "event": "refresh",
+                "blob_oid": "5" * 40,
+            }
+            malformed = {
+                **original,
+                "id": "snap.art.example.malformed-active",
+                "status": "active",
+                "event": "refresh",
+            }
+            malformed.pop("source_ref")
+            record["snapshots"] = [historical, malformed]
+            record["active_snapshot_id"] = malformed["id"]
+
+        expect_errors(
+            "artifact historical mismatch before malformed snapshot",
+            artifact_mismatch_before_malformed,
+            "snapshots[0]: artifact identity mismatch",
+            "snapshots[1]: missing fields: source_ref",
+        )
+
+        # Missing shared snapshot fields are structural errors.  Retain a valid ID
+        # for duplicate tracking without also reporting it as invalid.
+        for registry_name in ("source", "artifact"):
+            for field in (
+                "id",
+                "kind",
+                "status",
+                "event",
+                "source_ref",
+                "acquired_at_commit",
+                "evidence_paths",
+            ):
+                def remove_required_snapshot_field(
+                    sources: Any,
+                    artifacts: Any,
+                    *,
+                    registry_name: str = registry_name,
+                    field: str = field,
+                ) -> None:
+                    registry = sources if registry_name == "source" else artifacts
+                    registry["records"][0]["snapshots"][0].pop(field)
+
+                required_field_errors = expect_errors(
+                    f"{registry_name} snapshot missing {field}",
+                    remove_required_snapshot_field,
+                    f"missing fields: {field}",
+                )
+                assert not any(
+                    "snapshots[0].id: invalid snapshot ID" in error
+                    for error in required_field_errors
+                ), (registry_name, field, required_field_errors)
 
         # Missing registered source is checked by temporarily moving the physical tree.
         missing_source_registry = json.loads(sources_path.read_text(encoding="utf-8"))
@@ -1486,6 +1631,45 @@ def self_test() -> int:
         )
         assert not refresh_errors, refresh_errors
         source_file.write_bytes(original_source_bytes)
+
+        def duplicate_source_snapshot_id(sources: Any, artifacts: Any) -> None:
+            record = sources["records"][0]
+            duplicate = {
+                **record["snapshots"][0],
+                "status": "superseded",
+                "event": "refresh",
+            }
+            record["snapshots"].append(duplicate)
+
+        expect_error(
+            "duplicate snapshot ID in source history",
+            duplicate_source_snapshot_id,
+            "duplicate snapshot ID",
+        )
+
+        def active_id_points_to_superseded_snapshot(sources: Any, artifacts: Any) -> None:
+            record = sources["records"][0]
+            original = dict(record["snapshots"][0])
+            superseded = {
+                **original,
+                "id": "snap.src.example.superseded",
+                "status": "superseded",
+                "event": "refresh",
+            }
+            active = {
+                **original,
+                "id": "snap.src.example.replacement-active",
+                "status": "active",
+                "event": "refresh",
+            }
+            record["snapshots"] = [superseded, active]
+            record["active_snapshot_id"] = superseded["id"]
+
+        expect_error(
+            "active ID points to superseded snapshot",
+            active_id_points_to_superseded_snapshot,
+            "active_snapshot_id: points to a different snapshot",
+        )
 
         def add_second_active_source_snapshot(sources: Any, artifacts: Any) -> None:
             first = sources["records"][0]["snapshots"][0]
