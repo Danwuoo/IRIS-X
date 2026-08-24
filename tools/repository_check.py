@@ -11,6 +11,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import unicodedata
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -206,12 +207,16 @@ def check_license(license_value: Any, label: str, root: Path, errors: list[str])
         errors.append(f"{label}.evidence: unknown license should not claim evidence")
 
 
-def check_snapshot_common(snapshot: Any, label: str, errors: list[str]) -> tuple[str, str]:
+def check_snapshot_common(
+    snapshot: Any,
+    label: str,
+    errors: list[str],
+) -> tuple[str, str | None]:
     required = {"id", "kind", "status", "event", "source_ref", "acquired_at_commit", "evidence_paths"}
     missing = sorted(required - snapshot.keys())
     if missing:
         errors.append(f"{label}: missing fields: {', '.join(missing)}")
-        return "", ""
+        return "", None
     if snapshot["status"] not in {"active", "superseded", "retired"}:
         errors.append(f"{label}.status: invalid value {snapshot['status']!r}")
     if snapshot["event"] not in SNAPSHOT_EVENTS:
@@ -222,10 +227,12 @@ def check_snapshot_common(snapshot: Any, label: str, errors: list[str]) -> tuple
     match = SOURCE_REF_RE.fullmatch(str(snapshot.get("source_ref", "")))
     if match is None:
         errors.append(f"{label}.source_ref: must be '<40-character commit>:<relative-path>'")
-        return "", ""
+        return str(snapshot.get("id", "")), None
     _, captured_path = match.groups()
     _, path_errors = safe_relative_path(captured_path, f"{label}.source_ref.path")
-    errors.extend(path_errors)
+    if path_errors:
+        errors.extend(path_errors)
+        return str(snapshot.get("id", "")), None
     return str(snapshot.get("id", "")), captured_path
 
 
@@ -359,8 +366,10 @@ def check_source_record(record: Any, root: Path, context: ValidationContext, err
             if not isinstance(snapshot, dict):
                 errors.append(f"{snapshot_label}: must be an object")
                 continue
-            snapshot_id, _ = check_snapshot_common(snapshot, snapshot_label, errors)
-            if snapshot["kind"] != "git-tree":
+            snapshot_id, source_ref_path = check_snapshot_common(
+                snapshot, snapshot_label, errors
+            )
+            if snapshot.get("kind") != "git-tree":
                 errors.append(f"{snapshot_label}.kind: source snapshots require git-tree")
             tree_oid = snapshot.get("tree_oid")
             if not isinstance(tree_oid, str) or not OID_RE.fullmatch(tree_oid):
@@ -380,29 +389,22 @@ def check_source_record(record: Any, root: Path, context: ValidationContext, err
                 context.snapshot_ids.add(snapshot_id)
             if snapshot.get("status") == "active":
                 active_count += 1
-                if snapshot_id == active_id:
+                if active_snapshot is None:
                     active_snapshot = snapshot
     if active_count != 1:
         errors.append(f"{label}: exactly one snapshot must have status active; found {active_count}")
-    if (
-        active_snapshot is not None
-        and isinstance(active_id, str)
-        and active_snapshot.get("id") != active_id
-    ):
-        errors.append(f"{label}.active_snapshot_id: points to a different snapshot")
-    elif (
-        active_snapshot is not None
-        and isinstance(active_id, str)
-        and active_snapshot.get("status") != "active"
-    ):
-        errors.append(
-            f"{label}.active_snapshot_id: points to a {active_snapshot.get('status')} snapshot"
-        )
+    elif active_snapshot is not None:
+        if not isinstance(active_id, str) or not ID_RE.fullmatch(active_id):
+            errors.append(f"{label}.active_snapshot_id: invalid stable ID {active_id!r}")
+        elif active_snapshot.get("id") != active_id:
+            errors.append(f"{label}.active_snapshot_id: points to a different snapshot")
     for index, snapshot in enumerate(snapshots if isinstance(snapshots, list) else []):
         if not isinstance(snapshot, dict):
             continue
-        context.source_snapshots.append((current_path_text or "", snapshot, f"{label}.snapshots[{index}]"))
-    if active_snapshot is not None:
+        context.source_snapshots.append(
+            (current_path_text or "", snapshot, f"{label}.snapshots[{index}]", source_ref_path)
+        )
+    if active_snapshot is not None and record["record_status"] == "active":
         context.active_source_records[current_path_text or ""] = record
 
     target = root / Path(*(current_path.parts if current_path else ()))
@@ -535,8 +537,10 @@ def check_artifact_record(
             if not isinstance(snapshot, dict):
                 errors.append(f"{snapshot_label}: must be an object")
                 continue
-            snapshot_id, _ = check_snapshot_common(snapshot, snapshot_label, errors)
-            if snapshot["kind"] != "blob":
+            snapshot_id, source_ref_path = check_snapshot_common(
+                snapshot, snapshot_label, errors
+            )
+            if snapshot.get("kind") != "blob":
                 errors.append(f"{snapshot_label}.kind: artifact snapshots require blob")
             snapshot_blob = snapshot.get("blob_oid")
             snapshot_digest = snapshot.get("sha256")
@@ -562,36 +566,21 @@ def check_artifact_record(
                 context.snapshot_ids.add(snapshot_id)
             if snapshot.get("status") == "active":
                 active_count += 1
-                if snapshot_id == active_id:
+                if active_snapshot is None:
                     active_snapshot = snapshot
     if active_count != 1:
         errors.append(f"{label}: exactly one snapshot must have status active; found {active_count}")
-    if (
-        active_id is not None
-        and isinstance(active_id, str)
-        and active_snapshot is None
-    ):
-        errors.append(f"{label}.active_snapshot_id: points to a non-active snapshot")
-    if (
-        active_snapshot is not None
-        and isinstance(active_id, str)
-        and active_snapshot.get("id") != active_id
-    ):
-        errors.append(f"{label}.active_snapshot_id: points to a different snapshot")
-    elif (
-        active_snapshot is not None
-        and isinstance(active_id, str)
-        and active_snapshot.get("status") != "active"
-    ):
-        errors.append(
-            f"{label}.active_snapshot_id: points to a {active_snapshot.get('status')} snapshot"
-        )
+    elif active_snapshot is not None:
+        if not isinstance(active_id, str) or not ID_RE.fullmatch(active_id):
+            errors.append(f"{label}.active_snapshot_id: invalid stable ID {active_id!r}")
+        elif active_snapshot.get("id") != active_id:
+            errors.append(f"{label}.active_snapshot_id: points to a different snapshot")
     for index, snapshot in enumerate(snapshots if isinstance(snapshots, list) else []):
         if isinstance(snapshot, dict):
             context.artifact_snapshots.append(
-                (current_path_text or "", snapshot, f"{label}.snapshots[{index}]")
+                (current_path_text or "", snapshot, f"{label}.snapshots[{index}]", source_ref_path)
             )
-    if active_snapshot is not None:
+    if active_snapshot is not None and record["record_status"] == "active":
         context.active_artifact_records[current_path_text or ""] = record
 
     target = root / Path(*(current_path.parts if current_path else ()))
@@ -617,8 +606,8 @@ class ValidationContext:
         self.all_artifact_current_paths: set[str] = set()
         self.source_paths: dict[str, dict[str, Any] | None] = {}
         self.artifact_paths: dict[str, Any] = {}
-        self.source_snapshots: list[tuple[str, dict[str, Any], str]] = []
-        self.artifact_snapshots: list[tuple[str, dict[str, Any], str]] = []
+        self.source_snapshots: list[tuple[str, dict[str, Any], str, str | None]] = []
+        self.artifact_snapshots: list[tuple[str, dict[str, Any], str, str | None]] = []
         self.active_source_records: dict[str, dict[str, Any]] = {}
         self.active_artifact_records: dict[str, dict[str, Any]] = {}
 
@@ -686,7 +675,9 @@ def validate_registries(
         errors.append(f"semantic snapshot check unavailable: {exc}")
         current_trees = {}
 
-    for path, snapshot, snapshot_label in context.source_snapshots:
+    for path, snapshot, snapshot_label, source_ref_path in context.source_snapshots:
+        if source_ref_path is None:
+            continue
         historical_tree = resolve_git_object(root, snapshot["source_ref"], "tree")
         current_tree = current_trees.get(path)
         recorded_tree = snapshot.get("tree_oid")
@@ -699,7 +690,11 @@ def validate_registries(
                 f"{snapshot_label}: source identity mismatch; "
                 f"{snapshot['source_ref']} resolves to {historical_tree}, registry says {recorded_tree}"
             )
-        if current_tree is not None and current_tree != recorded_tree:
+        if (
+            snapshot.get("status") == "active"
+            and current_tree is not None
+            and current_tree != recorded_tree
+        ):
             errors.append(
                 f"{snapshot_label}: current source tree differs from active snapshot: {path} "
                 f"is {current_tree}, expected {recorded_tree}"
@@ -725,7 +720,9 @@ def validate_registries(
             if actual_digest != fingerprint.get("sha256"):
                 errors.append(f"artifact SHA-256 mismatch: {path}")
 
-    for path, snapshot, snapshot_label in context.artifact_snapshots:
+    for path, snapshot, snapshot_label, source_ref_path in context.artifact_snapshots:
+        if source_ref_path is None:
+            continue
         resolved_blob = resolve_git_object(root, snapshot["source_ref"], "blob")
         if resolved_blob is None:
             errors.append(
@@ -922,11 +919,14 @@ def generated_source_index(records: Any) -> str:
             origin = "Unknown" if upstream is None else str(upstream)
             role = record.get("research_role", "Unknown")
             role = str(role).strip()
-            if not role.endswith((".", "!", "?")):
-                role += "."
+            while role and (
+                unicodedata.category(role[-1]).startswith("P") or role[-1].isspace()
+            ):
+                role = role[:-1]
+            role += "."
             lines.append(
                 f"- `{record.get('id')}` — `{record.get('path')}`; "
-                f"declared version `{version}`; upstream: {origin}; role: {role}."
+                f"declared version `{version}`; upstream: {origin}; role: {role}"
             )
         lines.append("")
     return "\n".join(lines).strip()
@@ -1280,6 +1280,16 @@ def self_test() -> int:
             lambda s, a: a["records"][0].__setitem__("related_source_id", "src.missing"),
             "unknown source relationship",
         )
+        expect_error(
+            "malformed source snapshot",
+            lambda s, a: s["records"][0]["snapshots"][0].pop("source_ref"),
+            "missing fields: source_ref",
+        )
+        expect_error(
+            "malformed artifact snapshot",
+            lambda s, a: a["records"][0]["snapshots"][0].pop("source_ref"),
+            "missing fields: source_ref",
+        )
 
         # Missing registered source is checked by temporarily moving the physical tree.
         missing_source_registry = json.loads(sources_path.read_text(encoding="utf-8"))
@@ -1438,6 +1448,45 @@ def self_test() -> int:
             "artifact identity mismatch",
         )
 
+        # A refresh must compare the working tree with its own active snapshot,
+        # while still resolving every superseded snapshot against its source_ref.
+        source_file = temporary / "sources" / "predecessors" / "example-source" / "file.txt"
+        original_source_bytes = source_file.read_bytes()
+        source_file.write_text("refreshed\n", encoding="utf-8")
+        run_git(
+            temporary,
+            ["add", "--force", "--", "sources/predecessors/example-source"],
+        )
+        run_git(temporary, ["commit", "--quiet", "-m", "self-test source refresh"])
+        refresh_commit = run_git(temporary, ["rev-parse", "HEAD"])
+        refresh_tree = run_git(
+            temporary,
+            ["rev-parse", f"{refresh_commit}:sources/predecessors/example-source"],
+        )
+        refreshed_sources = json.loads(sources_path.read_text(encoding="utf-8"))
+        refreshed_record = refreshed_sources["records"][0]
+        refreshed_record["snapshots"][0]["status"] = "superseded"
+        refreshed_record["active_snapshot_id"] = "snap.src.example.refresh"
+        refreshed_record["snapshots"].append({
+            "id": "snap.src.example.refresh",
+            "kind": "git-tree",
+            "status": "active",
+            "event": "refresh",
+            "source_ref": f"{refresh_commit}:sources/predecessors/example-source",
+            "tree_oid": refresh_tree,
+            "acquired_at_commit": refresh_commit,
+            "evidence_paths": [".git"],
+        })
+        refresh_errors, _ = validate_registries(
+            temporary,
+            refreshed_sources,
+            artifact_data,
+            verify_hashes=True,
+            check_generated=False,
+        )
+        assert not refresh_errors, refresh_errors
+        source_file.write_bytes(original_source_bytes)
+
         def add_second_active_source_snapshot(sources: Any, artifacts: Any) -> None:
             first = sources["records"][0]["snapshots"][0]
             sources["records"][0]["snapshots"].append({
@@ -1497,9 +1546,48 @@ def self_test() -> int:
             for error in present_deprecated_errors
         ), present_deprecated_errors
 
+        deprecated_wrong_active_registry = json.loads(sources_path.read_text(encoding="utf-8"))
+        deprecated_wrong_active_registry["records"][0]["record_status"] = "deprecated"
+        deprecated_wrong_active_registry["records"][0]["active_snapshot_id"] = (
+            "snap.src.example.wrong-active"
+        )
+        wrong_active_source_dir = (
+            temporary / "sources" / "predecessors" / "example-source"
+        )
+        hidden_wrong_active_source = temporary / ".self-test-wrong-active-source"
+        wrong_active_source_dir.rename(hidden_wrong_active_source)
+        try:
+            wrong_active_errors, _ = validate_registries(
+                temporary,
+                deprecated_wrong_active_registry,
+                artifact_data,
+                verify_hashes=True,
+                check_generated=False,
+            )
+        finally:
+            hidden_wrong_active_source.rename(wrong_active_source_dir)
+        assert any(
+            "active_snapshot_id: points to a different snapshot" in error
+            for error in wrong_active_errors
+        ), wrong_active_errors
+        assert not any("lifecycle:" in error for error in wrong_active_errors), (
+            wrong_active_errors
+        )
+
         expect_no_error(
             "normalized generated punctuation",
             lambda s, a: None,
+        )
+        punctuation_sources = json.loads(sources_path.read_text(encoding="utf-8"))
+        punctuation_sources["records"][0]["research_role"] = "Trailing punctuation?"
+        punctuation_index = generated_source_index(punctuation_sources["records"])
+        punctuation_lines = [
+            line for line in punctuation_index.splitlines() if "; role:" in line
+        ]
+        assert len(punctuation_lines) == 1, punctuation_lines
+        assert punctuation_lines[0].endswith("; role: Trailing punctuation."), punctuation_lines[0]
+        assert not any(line.endswith("..") for line in punctuation_lines), (
+            punctuation_lines
         )
 
         # Directly test semantic source-ref resolution failure.
