@@ -222,10 +222,12 @@ def check_snapshot_common(
     if missing:
         errors.append(f"{label}: missing fields: {', '.join(missing)}")
         return valid_snapshot_id, None
-    if snapshot["status"] not in {"active", "superseded", "retired"}:
-        errors.append(f"{label}.status: invalid value {snapshot['status']!r}")
-    if snapshot["event"] not in SNAPSHOT_EVENTS:
-        errors.append(f"{label}.event: invalid value {snapshot['event']!r}")
+    status = snapshot["status"]
+    if not isinstance(status, str) or status not in {"active", "superseded", "retired"}:
+        errors.append(f"{label}.status: invalid value {status!r}")
+    event = snapshot["event"]
+    if not isinstance(event, str) or event not in SNAPSHOT_EVENTS:
+        errors.append(f"{label}.event: invalid value {event!r}")
     acquired = snapshot["acquired_at_commit"]
     if not isinstance(acquired, str) or not OID_RE.fullmatch(acquired):
         errors.append(f"{label}.acquired_at_commit: must be a 40-character lowercase OID")
@@ -525,7 +527,7 @@ def check_artifact_record(
             errors.append(f"{label}.fingerprint.blob_oid: invalid Git blob OID")
         if not isinstance(digest, str) or not SHA256_RE.fullmatch(digest):
             errors.append(f"{label}.fingerprint.sha256: invalid SHA-256")
-        if not isinstance(size, int) or size < 0:
+        if not isinstance(size, int) or isinstance(size, bool) or size < 0:
             errors.append(f"{label}.fingerprint.bytes: invalid byte count")
 
     snapshots = record["snapshots"]
@@ -555,7 +557,11 @@ def check_artifact_record(
                 errors.append(f"{snapshot_label}.blob_oid: invalid Git blob OID")
             if not isinstance(snapshot_digest, str) or not SHA256_RE.fullmatch(snapshot_digest):
                 errors.append(f"{snapshot_label}.sha256: invalid SHA-256")
-            if not isinstance(snapshot_bytes, int) or snapshot_bytes < 0:
+            if (
+                not isinstance(snapshot_bytes, int)
+                or isinstance(snapshot_bytes, bool)
+                or snapshot_bytes < 0
+            ):
                 errors.append(f"{snapshot_label}.bytes: invalid byte count")
             check_evidence_list(
                 root,
@@ -1435,6 +1441,122 @@ def self_test() -> int:
                     "snapshots[0].id: invalid snapshot ID" in error
                     for error in required_field_errors
                 ), (registry_name, field, required_field_errors)
+
+        # Status and event share the snapshot parser, so test every JSON value
+        # category through both source and artifact records.  Only legal enum
+        # strings are acceptable; every value below must report a validation error.
+        invalid_enum_json_values = (
+            ("null", None),
+            ("bool", True),
+            ("number", 7),
+            ("string", "not-an-enum"),
+            ("array", []),
+            ("object", {"not": "an-enum"}),
+        )
+
+        def invalid_snapshot_enum_json_types(sources: Any, artifacts: Any) -> None:
+            for registry_name, registry in (
+                ("source", sources),
+                ("artifact", artifacts),
+            ):
+                record = registry["records"][0]
+                original = dict(record["snapshots"][0])
+                for field in ("status", "event"):
+                    for value_name, value in invalid_enum_json_values:
+                        snapshot = {
+                            **original,
+                            "id": f"snap.{registry_name}.example.{field}-{value_name}",
+                            "status": "superseded",
+                            "event": "refresh",
+                        }
+                        snapshot[field] = value
+                        record["snapshots"].append(snapshot)
+
+        enum_matrix_errors = expect_errors(
+            "source and artifact snapshot enum JSON type matrix",
+            invalid_snapshot_enum_json_types,
+            "source src.example.snapshots[1].status: invalid value",
+            "artifact art.example.snapshots[1].status: invalid value",
+        )
+        for record_label in ("source src.example", "artifact art.example"):
+            for index in range(1, 13):
+                field = "status" if index <= 6 else "event"
+                fragment = f"{record_label}.snapshots[{index}].{field}: invalid value"
+                assert any(fragment in error for error in enum_matrix_errors), (
+                    fragment,
+                    enum_matrix_errors,
+                )
+
+        # Exercise the remaining snapshot fields with JSON-representable wrong
+        # types.  The valid active snapshot stays in place so every malformed
+        # historical entry must produce validation errors rather than exceptions.
+        def invalid_source_snapshot_field_types(sources: Any, artifacts: Any) -> None:
+            record = sources["records"][0]
+            original = dict(record["snapshots"][0])
+            for index, (field, value) in enumerate((
+                ("id", []),
+                ("kind", {}),
+                ("source_ref", []),
+                ("acquired_at_commit", {}),
+                ("evidence_paths", {}),
+                ("tree_oid", []),
+            )):
+                snapshot = {
+                    **original,
+                    "id": f"snap.src.example.invalid-type-{index}",
+                    "status": "superseded",
+                    "event": "refresh",
+                }
+                snapshot[field] = value
+                record["snapshots"].append(snapshot)
+
+        expect_errors(
+            "source snapshot JSON field types",
+            invalid_source_snapshot_field_types,
+            "snapshots[1].id: invalid snapshot ID",
+            "snapshots[2].kind: source snapshots require git-tree",
+            "snapshots[3].source_ref: must be",
+            "snapshots[4].acquired_at_commit: must be",
+            "snapshots[5].evidence_paths: must be a list",
+            "snapshots[6].tree_oid: must be",
+        )
+
+        def invalid_artifact_snapshot_field_types(sources: Any, artifacts: Any) -> None:
+            record = artifacts["records"][0]
+            original = dict(record["snapshots"][0])
+            for index, (field, value) in enumerate((
+                ("id", {}),
+                ("kind", []),
+                ("source_ref", {}),
+                ("acquired_at_commit", []),
+                ("evidence_paths", {}),
+                ("blob_oid", []),
+                ("sha256", {}),
+                ("bytes", True),
+            )):
+                snapshot = {
+                    **original,
+                    "id": f"snap.art.example.invalid-type-{index}",
+                    "status": "superseded",
+                    "event": "refresh",
+                }
+                snapshot[field] = value
+                record["snapshots"].append(snapshot)
+            record["fingerprint"]["bytes"] = True
+
+        expect_errors(
+            "artifact snapshot JSON field types",
+            invalid_artifact_snapshot_field_types,
+            "snapshots[1].id: invalid snapshot ID",
+            "snapshots[2].kind: artifact snapshots require blob",
+            "snapshots[3].source_ref: must be",
+            "snapshots[4].acquired_at_commit: must be",
+            "snapshots[5].evidence_paths: must be a list",
+            "snapshots[6].blob_oid: invalid Git blob OID",
+            "snapshots[7].sha256: invalid SHA-256",
+            "snapshots[8].bytes: invalid byte count",
+            "fingerprint.bytes: invalid byte count",
+        )
 
         # Missing registered source is checked by temporarily moving the physical tree.
         missing_source_registry = json.loads(sources_path.read_text(encoding="utf-8"))
