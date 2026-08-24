@@ -11,6 +11,13 @@ python tools\repository_check.py
 
 The second command validates registry syntax, coverage, relationships, evidence paths, semantic Git snapshot identities, current source trees, PDF fingerprints, generated indexes, authored links, and top-level boundaries. `--no-verify-hashes` disables only current PDF byte/hash verification; historical Git identity resolution remains active.
 
+After a migration or preservation audit, run:
+
+```powershell
+python tools\migration_audit.py --help
+python tools\migration_audit.py
+```
+
 ## Add An External Source
 
 1. Confirm the owner wants a new reference and identify its conservative research role.
@@ -43,7 +50,7 @@ Follow the external-source flow, but place the tree under `sources/predecessors/
 
 ## Deprecate Or Remove Material
 
-Do not delete registry rows or rewrite history to hide provenance. Mark record status `deprecated` where supported, remove the physical item only with an owner decision, retain the last snapshot entry and reason, update indexes/counts, and explain the irreversible action in the change description.
+Do not delete registry rows or rewrite history to hide provenance. Mark record status `deprecated`, remove the physical item from its classified corpus path only with an owner decision, retain the final snapshot entry and retirement reason, update indexes and expected counts where applicable, and explain the irreversible action in the change description. A deprecated row is a registry tombstone: its former classified path must be absent while its snapshot history remains resolvable.
 
 ## Research Notes
 

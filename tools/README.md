@@ -7,4 +7,5 @@ Run from the repository root:
 ```powershell
 python tools\repository_check.py
 python tools\repository_check.py --self-test
+python tools\migration_audit.py
 ```

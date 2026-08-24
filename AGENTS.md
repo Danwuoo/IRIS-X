@@ -154,6 +154,18 @@ The repository currently includes material from several predecessor and external
   - operator-based composition;
   - evaluation-guided optimization.
 
+- `sources/external/agent_lightning/`
+  - stated framework for reinforcement-learning training of agents;
+  - retains real agent harnesses in its documented design.
+
+- `sources/external/frugalgpt/`
+  - stated techniques for budget-constrained LLM applications;
+  - model-selection and cascade concepts relevant to cost/performance tradeoffs.
+
+- `sources/external/routellm/`
+  - stated serving and evaluation framework for LLM routers;
+  - routes requests between stronger and cheaper models.
+
 This list describes why the material is present. It does not imply that all of these systems will become dependencies of IRIS-X.
 
 ## Repository Preparation Rules

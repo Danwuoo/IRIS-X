@@ -46,6 +46,11 @@ CLASSIFICATION_PREFIX = {
     "predecessor": "sources/predecessors/",
     "external-reference": "sources/external/",
 }
+PHYSICAL_SOURCE_ROOTS = {
+    "predecessor": Path("sources") / "predecessors",
+    "external-reference": Path("sources") / "external",
+}
+PHYSICAL_ARTIFACT_ROOT = Path("references") / "papers"
 ALLOWED_TOP_LEVEL_FILES = {".gitattributes", ".gitignore", "AGENTS.md", "README.md"}
 ALLOWED_TOP_LEVEL_DIRS = {
     ".git",
@@ -269,6 +274,15 @@ def check_source_record(record: Any, root: Path, context: ValidationContext, err
     if path_value != current_path:
         errors.append(f"{label}.path: must equal current_path")
 
+    current_path_text = current_path.as_posix() if current_path else None
+    if current_path_text:
+        if current_path_text in context.all_source_current_paths:
+            errors.append(
+                f"{label}: duplicate registered source current path {current_path_text}"
+            )
+        else:
+            context.all_source_current_paths.add(current_path_text)
+
     if record["record_status"] not in RECORD_STATUSES:
         errors.append(f"{label}.record_status: invalid value {record['record_status']!r}")
 
@@ -335,7 +349,7 @@ def check_source_record(record: Any, root: Path, context: ValidationContext, err
 
     snapshots = record["snapshots"]
     active_id = record["active_snapshot_id"]
-    active_seen = False
+    active_count = 0
     active_snapshot: dict[str, Any] | None = None
     if not isinstance(snapshots, list) or not snapshots:
         errors.append(f"{label}.snapshots: append-only history requires at least one entry")
@@ -364,17 +378,45 @@ def check_source_record(record: Any, root: Path, context: ValidationContext, err
                 errors.append(f"{snapshot_label}: duplicate snapshot ID")
             else:
                 context.snapshot_ids.add(snapshot_id)
-            if snapshot_id == active_id:
-                active_seen = True
-                active_snapshot = snapshot
-    if active_id is None or not isinstance(active_id, str) or not active_seen:
-        errors.append(f"{label}.active_snapshot_id: must identify a row-local snapshot")
-        active_snapshot = None
+            if snapshot.get("status") == "active":
+                active_count += 1
+                if snapshot_id == active_id:
+                    active_snapshot = snapshot
+    if active_count != 1:
+        errors.append(f"{label}: exactly one snapshot must have status active; found {active_count}")
+    if (
+        active_snapshot is not None
+        and isinstance(active_id, str)
+        and active_snapshot.get("id") != active_id
+    ):
+        errors.append(f"{label}.active_snapshot_id: points to a different snapshot")
+    elif (
+        active_snapshot is not None
+        and isinstance(active_id, str)
+        and active_snapshot.get("status") != "active"
+    ):
+        errors.append(
+            f"{label}.active_snapshot_id: points to a {active_snapshot.get('status')} snapshot"
+        )
+    for index, snapshot in enumerate(snapshots if isinstance(snapshots, list) else []):
+        if not isinstance(snapshot, dict):
+            continue
+        context.source_snapshots.append((current_path_text or "", snapshot, f"{label}.snapshots[{index}]"))
+    if active_snapshot is not None:
+        context.active_source_records[current_path_text or ""] = record
 
     target = root / Path(*(current_path.parts if current_path else ()))
-    if target.exists() and not target.is_dir():
-        errors.append(f"{label}.current_path: expected a directory")
-    context.source_paths[current_path.as_posix() if current_path else ""] = active_snapshot
+    if record["record_status"] == "active":
+        if not target.exists():
+            errors.append(f"physical inventory: active registered source is missing: {current_path_text}")
+        elif not target.is_dir():
+            errors.append(f"physical inventory: active registered source is not a directory: {current_path_text}")
+    elif target.exists():
+        errors.append(
+            f"lifecycle: deprecated source remains at classified corpus path {current_path_text}; "
+            "remove it after retaining its final snapshot"
+        )
+    context.source_paths[current_path_text or ""] = active_snapshot
 
 
 def check_artifact_record(
@@ -420,6 +462,14 @@ def check_artifact_record(
         errors.append(f"{label}.original_import_path: initial import filename expected")
     if path_value != current_path:
         errors.append(f"{label}.path: must equal current_path")
+    current_path_text = current_path.as_posix() if current_path else None
+    if current_path_text:
+        if current_path_text in context.all_artifact_current_paths:
+            errors.append(
+                f"{label}: duplicate registered artifact current path {current_path_text}"
+            )
+        else:
+            context.all_artifact_current_paths.add(current_path_text)
     if record["record_status"] not in RECORD_STATUSES:
         errors.append(f"{label}.record_status: invalid value")
 
@@ -475,7 +525,8 @@ def check_artifact_record(
 
     snapshots = record["snapshots"]
     active_id = record["active_snapshot_id"]
-    active_seen = False
+    active_count = 0
+    active_snapshot: dict[str, Any] | None = None
     if not isinstance(snapshots, list) or not snapshots:
         errors.append(f"{label}.snapshots: append-only history requires at least one entry")
     else:
@@ -509,15 +560,52 @@ def check_artifact_record(
                 errors.append(f"{snapshot_label}: duplicate snapshot ID")
             else:
                 context.snapshot_ids.add(snapshot_id)
-            if snapshot_id == active_id:
-                active_seen = True
-    if active_id is None or not isinstance(active_id, str) or not active_seen:
-        errors.append(f"{label}.active_snapshot_id: must identify a row-local snapshot")
+            if snapshot.get("status") == "active":
+                active_count += 1
+                if snapshot_id == active_id:
+                    active_snapshot = snapshot
+    if active_count != 1:
+        errors.append(f"{label}: exactly one snapshot must have status active; found {active_count}")
+    if (
+        active_id is not None
+        and isinstance(active_id, str)
+        and active_snapshot is None
+    ):
+        errors.append(f"{label}.active_snapshot_id: points to a non-active snapshot")
+    if (
+        active_snapshot is not None
+        and isinstance(active_id, str)
+        and active_snapshot.get("id") != active_id
+    ):
+        errors.append(f"{label}.active_snapshot_id: points to a different snapshot")
+    elif (
+        active_snapshot is not None
+        and isinstance(active_id, str)
+        and active_snapshot.get("status") != "active"
+    ):
+        errors.append(
+            f"{label}.active_snapshot_id: points to a {active_snapshot.get('status')} snapshot"
+        )
+    for index, snapshot in enumerate(snapshots if isinstance(snapshots, list) else []):
+        if isinstance(snapshot, dict):
+            context.artifact_snapshots.append(
+                (current_path_text or "", snapshot, f"{label}.snapshots[{index}]")
+            )
+    if active_snapshot is not None:
+        context.active_artifact_records[current_path_text or ""] = record
 
     target = root / Path(*(current_path.parts if current_path else ()))
-    if target.exists() and not target.is_file():
-        errors.append(f"{label}.current_path: expected a file")
-    context.artifact_paths[current_path.as_posix() if current_path else ""] = fingerprint
+    if record["record_status"] == "active":
+        if not target.exists():
+            errors.append(f"physical inventory: active registered artifact is missing: {current_path_text}")
+        elif not target.is_file():
+            errors.append(f"physical inventory: active registered artifact is not a file: {current_path_text}")
+    elif target.exists():
+        errors.append(
+            f"lifecycle: deprecated artifact remains at classified corpus path {current_path_text}; "
+            "remove it after retaining its final snapshot"
+        )
+    context.artifact_paths[current_path_text or ""] = fingerprint
 
 
 class ValidationContext:
@@ -525,8 +613,14 @@ class ValidationContext:
         self.record_ids: set[str] = set()
         self.snapshot_ids: set[str] = set()
         self.source_record_ids = source_record_ids
+        self.all_source_current_paths: set[str] = set()
+        self.all_artifact_current_paths: set[str] = set()
         self.source_paths: dict[str, dict[str, Any] | None] = {}
         self.artifact_paths: dict[str, Any] = {}
+        self.source_snapshots: list[tuple[str, dict[str, Any], str]] = []
+        self.artifact_snapshots: list[tuple[str, dict[str, Any], str]] = []
+        self.active_source_records: dict[str, dict[str, Any]] = {}
+        self.active_artifact_records: dict[str, dict[str, Any]] = {}
 
 
 def validate_registries(
@@ -584,31 +678,30 @@ def validate_registries(
     for record in artifact_records:
         check_artifact_record(record, root, context, errors)
 
+    errors.extend(check_physical_inventory(root, context))
+
     try:
         current_trees = current_git_tree_oids(root, list(context.source_paths))
     except (OSError, RuntimeError) as exc:
         errors.append(f"semantic snapshot check unavailable: {exc}")
         current_trees = {}
 
-    for path, snapshot in context.source_paths.items():
-        if not snapshot:
-            continue
+    for path, snapshot, snapshot_label in context.source_snapshots:
         historical_tree = resolve_git_object(root, snapshot["source_ref"], "tree")
+        current_tree = current_trees.get(path)
+        recorded_tree = snapshot.get("tree_oid")
         if historical_tree is None:
             errors.append(
-                f"source snapshot identity cannot resolve for {path}: {snapshot['source_ref']}"
+                f"{snapshot_label}: source identity cannot resolve: {snapshot['source_ref']}"
             )
-            continue
-        recorded_tree = snapshot.get("tree_oid")
-        if historical_tree is not None and historical_tree != recorded_tree:
+        elif historical_tree != recorded_tree:
             errors.append(
-                f"source snapshot identity mismatch for {path}: "
+                f"{snapshot_label}: source identity mismatch; "
                 f"{snapshot['source_ref']} resolves to {historical_tree}, registry says {recorded_tree}"
             )
-        current_tree = current_trees.get(path)
         if current_tree is not None and current_tree != recorded_tree:
             errors.append(
-                f"current source tree differs from active snapshot: {path} "
+                f"{snapshot_label}: current source tree differs from active snapshot: {path} "
                 f"is {current_tree}, expected {recorded_tree}"
             )
 
@@ -631,6 +724,33 @@ def validate_registries(
                 errors.append(f"artifact Git blob mismatch: {path}")
             if actual_digest != fingerprint.get("sha256"):
                 errors.append(f"artifact SHA-256 mismatch: {path}")
+
+    for path, snapshot, snapshot_label in context.artifact_snapshots:
+        resolved_blob = resolve_git_object(root, snapshot["source_ref"], "blob")
+        if resolved_blob is None:
+            errors.append(
+                f"{snapshot_label}: artifact identity cannot resolve: {snapshot['source_ref']}"
+            )
+            continue
+        recorded_blob = snapshot.get("blob_oid")
+        if resolved_blob != recorded_blob:
+            errors.append(
+                f"{snapshot_label}: artifact identity mismatch; "
+                f"{snapshot['source_ref']} resolves to {resolved_blob}, registry says {recorded_blob}"
+            )
+        try:
+            historical_bytes = read_git_blob(root, resolved_blob)
+        except (OSError, RuntimeError) as exc:
+            errors.append(f"{snapshot_label}: cannot read historical artifact bytes: {exc}")
+            continue
+        actual_digest = hashlib.sha256(historical_bytes).hexdigest()
+        if len(historical_bytes) != snapshot.get("bytes"):
+            errors.append(
+                f"{snapshot_label}: historical artifact byte count mismatch "
+                f"({len(historical_bytes)} != {snapshot.get('bytes')})"
+            )
+        if actual_digest != snapshot.get("sha256"):
+            errors.append(f"{snapshot_label}: historical artifact SHA-256 mismatch")
 
     warnings: list[str] = []
     if check_generated:
@@ -666,6 +786,89 @@ def resolve_git_object(root: Path, source_ref: str, expected_kind: str) -> str |
         return None
     kind_output = run_git(root, ["cat-file", "-t", value])
     return value if kind_output == expected_kind else None
+
+
+def read_git_blob(root: Path, object_id: str) -> bytes:
+    completed = subprocess.run(
+        ["git", "cat-file", "blob", object_id],
+        cwd=root,
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(completed.stderr.decode("utf-8", "replace").strip())
+    return completed.stdout
+
+
+def check_physical_inventory(root: Path, context: ValidationContext) -> list[str]:
+    errors: list[str] = []
+
+    for classification, relative_root in PHYSICAL_SOURCE_ROOTS.items():
+        boundary_root = root / relative_root
+        if not boundary_root.is_dir():
+            errors.append(f"physical inventory: missing source boundary {relative_root.as_posix()}/")
+            continue
+        physical_leaves = {
+            entry.name: entry for entry in boundary_root.iterdir() if entry.is_dir()
+        }
+        registered_by_leaf: dict[str, list[str]] = {}
+        for path, record in context.active_source_records.items():
+            record_path = PurePosixPath(path)
+            if (
+                len(record_path.parts) == 3
+                and record_path.parts[0] == relative_root.parts[0]
+                and record_path.parts[1] == relative_root.parts[1]
+            ):
+                registered_by_leaf.setdefault(record_path.parts[2], []).append(record["id"])
+        for leaf, ids in sorted(registered_by_leaf.items()):
+            if len(ids) > 1:
+                errors.append(
+                    f"physical inventory: source leaf {relative_root.as_posix()}/{leaf} "
+                    f"is claimed by multiple active records: {', '.join(sorted(ids))}"
+                )
+        for leaf in sorted(set(physical_leaves) - set(registered_by_leaf)):
+            if leaf != ".keep":
+                errors.append(
+                    f"physical inventory: unregistered {classification} directory "
+                    f"{relative_root.as_posix()}/{leaf}"
+                )
+        for leaf in sorted(set(registered_by_leaf) - set(physical_leaves)):
+            errors.append(
+                f"physical inventory: active registered source leaf is absent "
+                f"{relative_root.as_posix()}/{leaf}"
+            )
+
+    papers_root = root / PHYSICAL_ARTIFACT_ROOT
+    if not papers_root.is_dir():
+        errors.append(f"physical inventory: missing paper boundary {PHYSICAL_ARTIFACT_ROOT.as_posix()}/")
+    else:
+        physical_pdfs = {
+            entry.name: entry for entry in papers_root.iterdir() if entry.is_file() and entry.suffix.lower() == ".pdf"
+        }
+        non_pdf_files = [
+            entry.name
+            for entry in papers_root.iterdir()
+            if entry.is_file() and entry.suffix.lower() != ".pdf"
+        ]
+        for name in sorted(non_pdf_files):
+            errors.append(f"physical inventory: non-PDF file under references/papers/: {name}")
+        registered_by_name: dict[str, list[str]] = {}
+        for path, record in context.active_artifact_records.items():
+            name = PurePosixPath(path).name
+            registered_by_name.setdefault(name, []).append(record["id"])
+        for name, ids in sorted(registered_by_name.items()):
+            if len(ids) > 1:
+                errors.append(
+                    f"physical inventory: paper {name} is claimed by multiple active records: "
+                    f"{', '.join(sorted(ids))}"
+                )
+        for name in sorted(set(physical_pdfs) - set(registered_by_name)):
+            errors.append(f"physical inventory: unregistered PDF references/papers/{name}")
+        for name in sorted(set(registered_by_name) - set(physical_pdfs)):
+            errors.append(f"physical inventory: active registered PDF is absent references/papers/{name}")
+
+    return errors
 
 
 def current_git_tree_oids(root: Path, paths: list[str]) -> dict[str, str]:
@@ -718,6 +921,9 @@ def generated_source_index(records: Any) -> str:
             upstream = record.get("upstream_url")
             origin = "Unknown" if upstream is None else str(upstream)
             role = record.get("research_role", "Unknown")
+            role = str(role).strip()
+            if not role.endswith((".", "!", "?")):
+                role += "."
             lines.append(
                 f"- `{record.get('id')}` — `{record.get('path')}`; "
                 f"declared version `{version}`; upstream: {origin}; role: {role}."
@@ -872,6 +1078,7 @@ def build_self_repository(temporary: Path) -> None:
     original_blob = run_git(temporary, ["rev-parse", f"{commit}:example.pdf"])
 
     classified_root = temporary / "sources" / "predecessors"
+    external_root = temporary / "sources" / "external"
     papers_root = temporary / "references" / "papers"
     corpus_root = temporary / "corpus"
     research_root = temporary / "research" / "templates"
@@ -879,6 +1086,7 @@ def build_self_repository(temporary: Path) -> None:
     tools_root = temporary / "tools"
     docs_root = temporary / "docs"
     classified_root.mkdir(parents=True)
+    external_root.mkdir(parents=True)
     papers_root.mkdir(parents=True)
     corpus_root.mkdir()
     research_root.mkdir(parents=True)
@@ -900,6 +1108,7 @@ def build_self_repository(temporary: Path) -> None:
         encoding="utf-8",
     )
     (temporary / "tools" / "repository_check.py").touch()
+    (external_root / ".keep").write_text("", encoding="utf-8")
 
     source_record = {
         "id": "src.example",
@@ -1033,6 +1242,19 @@ def self_test() -> int:
             )
             assert any(fragment in error for error in found_errors), (label, found_errors)
 
+        def expect_no_error(label: str, mutate: Any) -> None:
+            mutable_sources = json.loads(sources_path.read_text(encoding="utf-8"))
+            mutable_artifacts = json.loads(artifacts_path.read_text(encoding="utf-8"))
+            mutate(mutable_sources, mutable_artifacts)
+            found_errors, _ = validate_registries(
+                temporary,
+                mutable_sources,
+                mutable_artifacts,
+                verify_hashes=True,
+                check_generated=False,
+            )
+            assert not found_errors, (label, found_errors)
+
         expect_error(
             "duplicate ID",
             lambda s, a: s["records"].append(dict(s["records"][0])),
@@ -1058,13 +1280,227 @@ def self_test() -> int:
             lambda s, a: a["records"][0].__setitem__("related_source_id", "src.missing"),
             "unknown source relationship",
         )
+
+        # Missing registered source is checked by temporarily moving the physical tree.
+        missing_source_registry = json.loads(sources_path.read_text(encoding="utf-8"))
+        missing_source_dir = temporary / "sources" / "predecessors" / "example-source"
+        hidden_missing_source = temporary / ".self-test-missing-source"
+        missing_source_dir.rename(hidden_missing_source)
+        try:
+            missing_errors, _ = validate_registries(
+                temporary,
+                missing_source_registry,
+                artifact_data,
+                verify_hashes=True,
+                check_generated=False,
+            )
+        finally:
+            hidden_missing_source.rename(missing_source_dir)
+        assert any(
+            "active registered source is missing" in error for error in missing_errors
+        ), missing_errors
+
+        # Keep evidence valid so the test proves the artifact-presence check itself.
+        missing_artifact_registry = json.loads(artifacts_path.read_text(encoding="utf-8"))
+        missing_artifact_registry["records"][0]["publication_identity_evidence"] = [".git"]
+        missing_pdf = temporary / "references" / "papers" / "example.pdf"
+        hidden_missing_pdf = temporary / ".self-test-missing.pdf"
+        missing_pdf.rename(hidden_missing_pdf)
+        try:
+            missing_artifact_errors, _ = validate_registries(
+                temporary,
+                source_data,
+                missing_artifact_registry,
+                verify_hashes=True,
+                check_generated=False,
+            )
+        finally:
+            hidden_missing_pdf.rename(missing_pdf)
+        assert any(
+            "active registered artifact is missing" in error
+            for error in missing_artifact_errors
+        ), missing_artifact_errors
+
+        unregistered_predecessor = (
+            temporary / "sources" / "predecessors" / "unregistered-source"
+        )
+        unregistered_predecessor.mkdir()
+        try:
+            errors_unregistered_pred, _ = validate_registries(
+                temporary,
+                source_data,
+                artifact_data,
+                verify_hashes=True,
+                check_generated=False,
+            )
+        finally:
+            unregistered_predecessor.rmdir()
+        assert any(
+            "unregistered predecessor directory" in error for error in errors_unregistered_pred
+        ), errors_unregistered_pred
+
+        unregistered_external = temporary / "sources" / "external" / "unregistered-source"
+        unregistered_external.mkdir()
+        try:
+            errors_unregistered_external, _ = validate_registries(
+                temporary,
+                source_data,
+                artifact_data,
+                verify_hashes=True,
+                check_generated=False,
+            )
+        finally:
+            unregistered_external.rmdir()
+        assert any(
+            "unregistered external-reference directory" in error
+            for error in errors_unregistered_external
+        ), errors_unregistered_external
+
+        unregistered_pdf = temporary / "references" / "papers" / "unregistered.pdf"
+        unregistered_pdf.write_bytes(b"%PDF-1.4\n")
+        try:
+            errors_unregistered_pdf, _ = validate_registries(
+                temporary,
+                source_data,
+                artifact_data,
+                verify_hashes=True,
+                check_generated=False,
+            )
+        finally:
+            unregistered_pdf.unlink()
+        assert any(
+            "unregistered PDF references/papers/unregistered.pdf" in error
+            for error in errors_unregistered_pdf
+        ), errors_unregistered_pdf
+
+        def append_bad_source_snapshot(sources: Any, artifacts: Any) -> None:
+            record = sources["records"][0]
+            record["snapshots"].append({
+                "id": "snap.src.example.bad-historical",
+                "kind": "git-tree",
+                "status": "superseded",
+                "event": "refresh",
+                "source_ref": f"{record['snapshots'][0]['acquired_at_commit']}:missing-source",
+                "tree_oid": "2" * 40,
+                "acquired_at_commit": record["snapshots"][0]["acquired_at_commit"],
+                "evidence_paths": [".git"],
+            })
+
         expect_error(
-            "missing inventory",
-            lambda s, a: s["records"][0]["snapshots"][0]["source_ref"].replace(
-                ":example-source", ":missing-source"
-            ),
-            "active snapshot",
-        ) if False else None
+            "invalid historical source snapshot",
+            append_bad_source_snapshot,
+            "source identity cannot resolve",
+        )
+
+        good_commit = json.loads(artifacts_path.read_text(encoding="utf-8"))["records"][0][
+            "snapshots"
+        ][0]["acquired_at_commit"]
+
+        def append_bad_artifact_snapshot(sources: Any, artifacts: Any) -> None:
+            record = artifacts["records"][0]
+            record["snapshots"].append({
+                "id": "snap.art.example.bad-historical",
+                "kind": "blob",
+                "status": "superseded",
+                "event": "refresh",
+                "source_ref": f"{good_commit}:missing.pdf",
+                "blob_oid": "3" * 40,
+                "sha256": "4" * 64,
+                "bytes": 99999,
+                "acquired_at_commit": good_commit,
+                "evidence_paths": [".git"],
+            })
+
+        expect_error(
+            "invalid historical artifact source ref",
+            append_bad_artifact_snapshot,
+            "artifact identity cannot resolve",
+        )
+
+        def append_wrong_metadata_artifact_snapshot(sources: Any, artifacts: Any) -> None:
+            record = artifacts["records"][0]
+            record["snapshots"].append({
+                "id": "snap.art.example.wrong-metadata",
+                "kind": "blob",
+                "status": "superseded",
+                "event": "refresh",
+                "source_ref": f"{good_commit}:example.pdf",
+                "blob_oid": "5" * 40,
+                "sha256": "6" * 64,
+                "bytes": 99999,
+                "acquired_at_commit": good_commit,
+                "evidence_paths": [".git"],
+            })
+
+        expect_error(
+            "invalid historical artifact metadata",
+            append_wrong_metadata_artifact_snapshot,
+            "artifact identity mismatch",
+        )
+
+        def add_second_active_source_snapshot(sources: Any, artifacts: Any) -> None:
+            first = sources["records"][0]["snapshots"][0]
+            sources["records"][0]["snapshots"].append({
+                **first,
+                "id": "snap.src.example.second-active",
+                "event": "refresh",
+            })
+
+        expect_error(
+            "multiple active snapshots",
+            add_second_active_source_snapshot,
+            "exactly one snapshot must have status active; found 2",
+        )
+
+        expect_error(
+            "no active snapshot",
+            lambda s, a: s["records"][0]["snapshots"][0].__setitem__("status", "superseded"),
+            "exactly one snapshot must have status active; found 0",
+        )
+
+        expect_error(
+            "active ID points to retired snapshot",
+            lambda s, a: s["records"][0]["snapshots"][0].__setitem__("status", "retired"),
+            "found 0",
+        )
+
+        deprecated_absent_registry = json.loads(sources_path.read_text(encoding="utf-8"))
+        deprecated_absent_registry["records"][0]["record_status"] = "deprecated"
+        deprecated_source_dir = temporary / "sources" / "predecessors" / "example-source"
+        hidden_deprecated_source = temporary / ".self-test-deprecated-source"
+        deprecated_source_dir.rename(hidden_deprecated_source)
+        try:
+            absent_deprecated_errors, _ = validate_registries(
+                temporary,
+                deprecated_absent_registry,
+                artifact_data,
+                verify_hashes=True,
+                check_generated=False,
+            )
+        finally:
+            hidden_deprecated_source.rename(deprecated_source_dir)
+        assert not any("lifecycle:" in error for error in absent_deprecated_errors), (
+            absent_deprecated_errors
+        )
+
+        deprecated_present_registry = json.loads(sources_path.read_text(encoding="utf-8"))
+        deprecated_present_registry["records"][0]["record_status"] = "deprecated"
+        present_deprecated_errors, _ = validate_registries(
+            temporary,
+            deprecated_present_registry,
+            artifact_data,
+            verify_hashes=True,
+            check_generated=False,
+        )
+        assert any(
+            "deprecated source remains at classified corpus path" in error
+            for error in present_deprecated_errors
+        ), present_deprecated_errors
+
+        expect_no_error(
+            "normalized generated punctuation",
+            lambda s, a: None,
+        )
 
         # Directly test semantic source-ref resolution failure.
         bad_semantic = json.loads(sources_path.read_text(encoding="utf-8"))
@@ -1079,7 +1515,7 @@ def self_test() -> int:
             check_generated=False,
         )
         assert any(
-            "snapshot identity cannot resolve" in error for error in semantic_errors
+            "source identity cannot resolve" in error for error in semantic_errors
         ), semantic_errors
 
         # Hash-skip behavior: altered bytes fail when checked but pass when skipped.
