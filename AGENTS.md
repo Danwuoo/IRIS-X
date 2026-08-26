@@ -292,7 +292,7 @@ Examples of areas that may require original IRIS-X research include:
 - how cost, reliability, and capability should be evaluated together;
 - how observations, claims, evaluations, and actions should interact.
 
-These are only orientation points. They are not yet the formal research questions of the project.
+These are only orientation points within the provisional project-level research problem documented in `research/problem-definition.md`; they are not final research questions or normative architecture requirements.
 
 ## Development Restraint
 

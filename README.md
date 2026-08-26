@@ -11,6 +11,7 @@ Root-level `AGENTS.md` controls how agents should work with this material. There
 - Read [corpus/PROVENANCE.md](corpus/PROVENANCE.md) for field meanings.
 - Use [corpus/sources.yaml](corpus/sources.yaml) and [corpus/artifacts.yaml](corpus/artifacts.yaml) for machine-readable inventory.
 - Track unresolved provenance work in [corpus/RECOVERY_QUEUE.md](corpus/RECOVERY_QUEUE.md).
+- Read [research/problem-definition.md](research/problem-definition.md) for the current provisional project-level research problem.
 - Begin research with [research/templates/research-note.md](research/templates/research-note.md).
 
 Validate the repository from its root:
