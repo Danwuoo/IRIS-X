@@ -1,12 +1,14 @@
 # IRIS-X Research Problem Definition
 
+## 1. Document Status and Scope
+
 - **ID:** `problem-2026-08-26-unified-research-proposition`
 - **Status:** exploratory — provisional project-level research problem definition
-- **Scope:** Defines what IRIS-X is trying to study, what progress means, and how the research program may evolve. It does **not** define a final architecture, framework stack, product boundary, or implementation plan.
+- **Scope:** Defines what IRIS-X is trying to study and what progress means. It does **not** define a final architecture, framework stack, product boundary, implementation plan, or fixed research roadmap.
 - **Repository phase:** research preparation / architecture research
 - **Authority:** IRIS-X-authored synthesis. This document may guide research prioritization, but its mechanisms and sub-hypotheses remain revisable through evidence and experiments.
 
-## 1. Purpose
+## 2. Purpose
 
 IRIS-X exists to study how agentic systems can complete clearly defined tasks with strong empirical performance while using no more capability and cost than is necessary, and while remaining reliable over repeated and long-running operation.
 
@@ -21,7 +23,7 @@ The central research concern is the relationship among:
 
 IRIS-X treats architecture as a downstream research result. Candidate mechanisms from predecessor work and external systems are hypotheses, evidence, reusable substrates, or experimental tools—not inherited requirements.
 
-## 2. Unified Research Proposition
+## 3. Unified Research Proposition
 
 > **IRIS-X studies how to construct, evaluate, and continuously improve agentic systems for clearly bounded tasks so that they achieve a target task success rate at the lowest sufficient lifecycle cost, while maintaining reliability across repeated execution, state accumulation, environmental change, system updates, and failure recovery. The primary optimization objective is overall cost-effectiveness rather than maximum one-shot capability.**
 
@@ -31,9 +33,9 @@ A shorter form is:
 
 This proposition is intentionally architecture-neutral.
 
-## 3. Primary Research Variables
+## 4. Primary Research Dimensions
 
-### 3.1 Task Success Rate
+### 4.1 Task Success Rate
 
 Task success rate is the primary outcome variable.
 
@@ -50,7 +52,7 @@ Research should distinguish, where relevant:
 
 A benchmark score may be evidence about task success for a defined benchmark task distribution, but it is not automatically evidence of broad capability or long-term reliability.
 
-### 3.2 Cost Sufficiency
+### 4.2 Cost Sufficiency
 
 IRIS-X is not a pure cost-minimization project.
 
@@ -98,7 +100,7 @@ Lifecycle cost may eventually include, depending on the research question:
 
 Low inference price alone is not sufficient evidence of low lifecycle cost.
 
-### 3.3 Long-Term Reliability
+### 4.3 Long-Term Reliability
 
 Long-term reliability is separate from one-shot task success.
 
@@ -122,7 +124,7 @@ The exact unit of long-term reliability is currently **Unclear**. It may need to
 
 These should not be silently treated as equivalent.
 
-### 3.4 Lifecycle Cost-Effectiveness
+### 4.4 Lifecycle Cost-Effectiveness
 
 Cost-effectiveness is the primary optimization principle.
 
@@ -136,13 +138,61 @@ A more appropriate early research representation is a trade-off surface or Paret
 
 This allows different system configurations to be compared without assuming in advance that one architecture family is correct.
 
-## 4. Core Research Question
+## 5. Research Questions
+
+### 5.1 Core Research Question
 
 The current primary research question is:
 
 > **For a clearly defined task distribution and operating environment, what is the minimum-sufficient agentic system configuration that can meet a target task success rate and long-term reliability requirement at the best lifecycle cost-effectiveness?**
 
 This is a project-level research question, not a commitment to a specific mechanism.
+
+### 5.2 Supporting Research Questions
+
+The unified problem decomposes into several supporting questions.
+
+#### RQ1 — Sufficient capability
+
+What capabilities are actually necessary for a given bounded task distribution, and which capabilities are expensive redundancy?
+
+#### RQ2 — Evidence of success
+
+What evidence is sufficient to justify treating an agent outcome as successful, and how should false success, unverified success, and partially verified success be distinguished?
+
+#### RQ3 — Cost accounting
+
+Which costs materially determine lifecycle cost-effectiveness, and how should design-time, runtime, verification, retry, escalation, maintenance, and failure costs be amortized and compared?
+
+#### RQ4 — Long-term reliability
+
+Which failure modes emerge only under repeated, stateful, long-running, shifted, or updated operation, and how should long-term reliability be measured without reducing it to one-shot benchmark accuracy?
+
+#### RQ5 — Failure attribution and intervention
+
+When performance is insufficient, how can we determine whether the appropriate response is to:
+
+- retry;
+- repair context or state;
+- invoke stronger verification;
+- escalate capability;
+- change tools;
+- reconfigure the workflow;
+- re-specialize or re-optimize;
+- retrain;
+- redesign the system?
+
+#### RQ6 — Design-time specialization versus runtime capability
+
+Under what conditions can design-time specialization, prompt/program optimization, workflow search, routing, or other structured mechanisms substitute for more expensive general-purpose runtime intelligence?
+
+#### RQ7 — Reliability of the specialization process
+
+Can IRIS-X eventually develop a repeatable methodology that, given a new task, reliably produces and maintains a cost-effective agentic configuration rather than depending on ad hoc manual agent engineering?
+
+This is a long-term research direction, not a current assumption.
+
+## 6. Candidate System Space
 
 Candidate system configurations may include, but are not limited to:
 
@@ -160,51 +210,19 @@ Candidate system configurations may include, but are not limited to:
 
 No configuration class is privileged by definition.
 
-## 5. Supporting Research Questions
+Low-cost, task-specific or specialist agents are an important strategic direction for IRIS-X, but they are not the project definition. A specialist is valuable only if specialization improves the relevant success–reliability–cost trade-off.
 
-The unified problem decomposes into several supporting questions.
+IRIS-X should therefore allow evidence to show that, for some tasks:
 
-### RQ1 — Sufficient capability
+- specialist systems are more cost-effective;
+- routing or escalation is more cost-effective;
+- generalist systems with tools are more cost-effective;
+- hybrid systems are more cost-effective;
+- specialization costs are not justified.
 
-What capabilities are actually necessary for a given bounded task distribution, and which capabilities are expensive redundancy?
+The research program succeeds by finding the better empirical frontier, not by proving that specialist agents must win.
 
-### RQ2 — Evidence of success
-
-What evidence is sufficient to justify treating an agent outcome as successful, and how should false success, unverified success, and partially verified success be distinguished?
-
-### RQ3 — Cost accounting
-
-Which costs materially determine lifecycle cost-effectiveness, and how should design-time, runtime, verification, retry, escalation, maintenance, and failure costs be amortized and compared?
-
-### RQ4 — Long-term reliability
-
-Which failure modes emerge only under repeated, stateful, long-running, shifted, or updated operation, and how should long-term reliability be measured without reducing it to one-shot benchmark accuracy?
-
-### RQ5 — Failure attribution and intervention
-
-When performance is insufficient, how can we determine whether the appropriate response is to:
-
-- retry;
-- repair context or state;
-- invoke stronger verification;
-- escalate capability;
-- change tools;
-- reconfigure the workflow;
-- re-specialize or re-optimize;
-- retrain;
-- redesign the system?
-
-### RQ6 — Design-time specialization versus runtime capability
-
-Under what conditions can design-time specialization, prompt/program optimization, workflow search, routing, or other structured mechanisms substitute for more expensive general-purpose runtime intelligence?
-
-### RQ7 — Reliability of the specialization process
-
-Can IRIS-X eventually develop a repeatable methodology that, given a new task, reliably produces and maintains a cost-effective agentic configuration rather than depending on ad hoc manual agent engineering?
-
-This is a long-term research direction, not a current assumption.
-
-## 6. Architecture-Neutrality and Predecessor Hypotheses
+## 7. Architecture Neutrality and Predecessor Hypotheses
 
 IRIS-X must not treat predecessor architecture decisions as inherited constraints.
 
@@ -231,23 +249,7 @@ A mechanism should survive in IRIS-X because comparison and experiments support 
 
 Hypotheses that were coupled in predecessor systems should also be separable where possible. For example, single-trunk cognition, canonical state representation, learned control, and explicit failure attribution should not automatically be accepted or rejected as one indivisible package.
 
-## 7. Specialist Agents as a Strategic Hypothesis
-
-Low-cost, task-specific or specialist agents are an important strategic direction for IRIS-X, but they are not the project definition.
-
-A specialist is valuable only if specialization improves the relevant success–reliability–cost trade-off.
-
-IRIS-X should therefore allow evidence to show that, for some tasks:
-
-- specialist systems are more cost-effective;
-- routing or escalation is more cost-effective;
-- generalist systems with tools are more cost-effective;
-- hybrid systems are more cost-effective;
-- specialization costs are not justified.
-
-The research program succeeds by finding the better empirical frontier, not by proving that specialist agents must win.
-
-## 8. Evaluation Principle
+## 8. Evaluation Principles
 
 Comparisons should be made against explicit task contracts, operating conditions, and resource envelopes.
 
@@ -273,88 +275,15 @@ Similarly:
 - verifier approval is not automatically empirical truth;
 - lower per-call inference price is not automatically lower lifecycle cost.
 
-## 9. Research Program Evolution
+## 9. Research Progression Constraints
 
-IRIS-X should evolve by reducing uncertainty rather than by prematurely filling an architecture roadmap.
+IRIS-X should progress by reducing uncertainty rather than by prematurely filling an architecture roadmap. This document does not prescribe a fixed sequence of research phases.
 
-### Phase 0 — Research Preparation
+Comparative research should expose overlapping concepts, incompatible assumptions, terminology collisions, failure models, and evidence gaps. Candidate mechanisms should remain explicit, falsifiable hypotheses until comparison and experiments provide support.
 
-Current phase.
+Experiments should distinguish competing hypotheses rather than merely demonstrate that a prototype can run. Architectural requirements should emerge only from supported constraints, and decisions about reusable substrate should remain separate from claims about IRIS-X-specific research contributions.
 
-Goals:
-
-- organize and preserve the corpus;
-- establish provenance;
-- make sources inspectable;
-- identify high-value evidence paths;
-- maintain clean boundaries between imported material and IRIS-X-authored research.
-
-### Phase 1 — Comparative Problem Decomposition
-
-Map overlapping concepts, incompatible assumptions, terminology collisions, failure models, and research gaps across the existing corpus.
-
-Outputs should emphasize:
-
-- comparative notes;
-- contradiction maps;
-- terminology maps;
-- evidence-status maps;
-- open questions.
-
-### Phase 2 — IRIS-X Research Hypotheses
-
-Form explicit, falsifiable IRIS-X hypotheses.
-
-Examples may concern:
-
-- sufficient capability;
-- cost-aware escalation;
-- verification;
-- failure attribution;
-- specialization;
-- state and memory;
-- optimization;
-- controlled execution.
-
-Candidate mechanisms remain hypotheses at this stage.
-
-### Phase 3 — Discriminating Experiments
-
-Design experiments that distinguish competing hypotheses rather than merely demonstrating that a prototype can run.
-
-Experiments should measure relevant combinations of:
-
-- task success;
-- cost;
-- reliability;
-- failure distribution;
-- recovery;
-- generalization or shift where relevant.
-
-### Phase 4 — Architectural Synthesis
-
-Only after hypotheses survive meaningful comparison and experiments should IRIS-X begin converting supported constraints into architectural requirements.
-
-Architecture is therefore a synthesis of research results, not the starting point of the project.
-
-### Phase 5 — Reusable System and Substrate Decisions
-
-Determine which mechanisms should be:
-
-- reused as commodity substrate;
-- adapted behind explicit boundaries;
-- implemented as IRIS-X-specific research contributions;
-- rejected or retained only as references.
-
-IRIS-X does not need to become a monolithic framework.
-
-### Phase 6 — Specialization and Optimization Science
-
-A mature IRIS-X research program may investigate whether agent construction itself can become systematic:
-
-> Given a new task distribution, can we identify, generate, evaluate, and maintain a minimum-sufficient agentic configuration with predictable cost-effectiveness and reliability?
-
-This is a long-term direction and remains **Not established**.
+The possibility of systematically identifying, generating, evaluating, and maintaining a minimum-sufficient agentic configuration for a new task distribution remains a long-term research direction and is **Not established**.
 
 ## 10. Evidence Basis
 
@@ -384,7 +313,7 @@ The following are intentionally unresolved:
 
 These uncertainties are research targets, not gaps to be filled by assumption.
 
-## 12. Decision Boundary
+## 12. Revision Boundary
 
 This document establishes a **provisional unified research problem**, not a final architecture or immutable thesis.
 
