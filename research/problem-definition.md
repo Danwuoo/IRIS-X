@@ -26,7 +26,7 @@ IRIS-X treats architecture as a downstream research result. Candidate mechanisms
 
 ## 3. Unified Research Proposition
 
-> **IRIS-X studies how to construct, evaluate, and improve agentic systems for clearly bounded task distributions so that they meet defined task-success and long-term-reliability requirements while minimizing lifecycle cost under explicit operating conditions and resource boundaries. The objective is not maximum one-shot capability, but the empirical success–reliability–cost trade-off and, where requirements are specified, the minimum lifecycle cost at which they can be satisfied.**
+> **IRIS-X studies how to construct, evaluate, and improve agentic systems for clearly bounded task distributions so that they meet defined task-success and long-term-reliability requirements while minimizing lifecycle cost under explicit operating conditions, resource envelopes, and lifecycle-cost accounting boundaries. The objective is not maximum one-shot capability, but the empirical success–reliability–cost trade-off and, where requirements are specified, the minimum lifecycle cost at which they can be satisfied.**
 
 A shorter form is:
 
@@ -34,11 +34,11 @@ A shorter form is:
 
 This proposition is intentionally architecture-neutral.
 
-## 4. Primary Research Dimensions
+## 4. Research Variables and Decision Structure
 
-### 4.1 Task Success Rate
+### 4.1 Task Success and Success Rate
 
-Task success rate is a primary outcome variable.
+Task success is defined at the level of an evaluated task instance. Task success rate aggregates task outcomes over a specified task distribution and evaluation sample, and is a primary system-level outcome variable.
 
 A task should have a sufficiently explicit contract to determine whether the requested outcome was actually achieved. For agentic tasks, success may require more than a plausible final answer; it may require correct external state changes and satisfied constraints. Evidence and verification determine what is justified about that outcome, but should not be silently treated as the outcome itself.
 
@@ -90,7 +90,7 @@ where:
 - \(\theta\) is a candidate agentic system configuration in the evaluated configuration space \(\Theta\);
 - \(S(\theta)\) is measured task success;
 - \(R(\theta)\) is the relevant reliability measurement or profile under the defined operating conditions;
-- \(C_{\text{lifecycle}}(\theta)\) is lifecycle cost within the declared accounting boundary and horizon.
+- \(C_{\text{lifecycle}}(\theta)\) is lifecycle cost within the declared lifecycle-cost accounting boundary and horizon.
 
 The reliability inequality is shorthand for satisfying the experiment-specific reliability requirements; it does not assume that every reliability dimension can be collapsed into one scalar. The exact measurement definitions and acceptable thresholds are **Not established** and should be developed empirically rather than assumed here. When \(S_{\min}\) or \(R_{\min}\) is unknown or unjustified, research should report the empirical Pareto frontier rather than claim a unique minimum-sufficient configuration.
 
@@ -112,13 +112,15 @@ Low inference price alone is not sufficient evidence of low lifecycle cost.
 
 Every experiment or comparison that makes a lifecycle-cost claim should state at least:
 
-- the accounting boundary, including which design-time, runtime, maintenance, and failure costs are included or excluded;
+- the lifecycle-cost accounting boundary, including which design-time, runtime, maintenance, and failure costs are included or excluded;
 - the cost unit or units being reported;
 - the deployment volume or workload assumption;
 - the evaluation or deployment horizon; and
 - the amortization assumptions applied to shared or up-front costs.
 
 These declarations define the comparison boundary without prematurely imposing one universal lifecycle-cost formula.
+
+A resource envelope constrains what a system may use, whereas a lifecycle-cost accounting boundary determines which costs are included in a comparison; these should not be treated as equivalent.
 
 ### 4.3 Long-Term Reliability
 
@@ -162,7 +164,7 @@ This allows different system configurations to be compared without assuming in a
 
 The current primary research question is:
 
-> **For a specified task distribution, operating environment, evaluation horizon, and resource boundary, which agentic system configurations can meet defined task-success and long-term-reliability requirements, and what is the minimum lifecycle cost at which those requirements can be satisfied?**
+> **For a specified task distribution, operating environment, evaluation horizon, resource envelope, and lifecycle-cost accounting boundary, which agentic system configurations can meet defined task-success and long-term-reliability requirements, and what is the minimum lifecycle cost at which those requirements can be satisfied?**
 
 This is a project-level research question, not a commitment to a specific mechanism or to the existence of a unique, stable optimum. If the requirements cannot yet be justified, the appropriate result is a feasibility boundary or empirical Pareto frontier rather than a single best configuration.
 
@@ -206,7 +208,7 @@ Under what conditions can design-time specialization, prompt/program optimizatio
 
 #### RQ7 — Reliability of the specialization process
 
-Can IRIS-X eventually develop a repeatable methodology that, given a new task, reliably produces and maintains agentic configurations that satisfy defined requirements at competitive lifecycle cost rather than depending on ad hoc manual agent engineering?
+Can IRIS-X eventually develop a repeatable methodology that, given a new task, reliably produces and maintains agentic configurations that satisfy defined requirements while achieving empirically favorable lifecycle cost relative to explicit baselines, rather than depending on ad hoc manual agent engineering?
 
 This is a long-term research direction, not a current assumption.
 
@@ -301,7 +303,7 @@ Comparative research should expose overlapping concepts, incompatible assumption
 
 Experiments should distinguish competing hypotheses rather than merely demonstrate that a prototype can run. Architectural requirements should emerge only from supported constraints, and decisions about reusable substrate should remain separate from claims about IRIS-X-specific research contributions.
 
-The possibility of systematically identifying, generating, evaluating, and maintaining agentic configurations that satisfy defined requirements at competitive lifecycle cost for a new task distribution remains a long-term research direction and is **Not established**.
+The possibility of systematically identifying, generating, evaluating, and maintaining agentic configurations for a new task distribution that satisfy defined requirements while achieving empirically favorable lifecycle cost relative to explicit baselines remains a long-term research direction and is **Not established**.
 
 ## 10. Evidence Basis
 
