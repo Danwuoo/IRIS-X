@@ -17,19 +17,20 @@ The project is not primarily about maximizing model capability, benchmark rank, 
 The central research concern is the relationship among:
 
 1. **task success rate**;
-2. **cost sufficiency**;
-3. **long-term reliability**; and
-4. **lifecycle cost-effectiveness**.
+2. **long-term reliability**; and
+3. **lifecycle cost**.
+
+**Cost sufficiency is a decision criterion, not a fourth outcome dimension:** subject to defined task-success and reliability requirements, IRIS-X seeks configurations that do not purchase unnecessary capability or incur unnecessary lifecycle cost. Where those requirements are not yet specified or justified, research should characterize the empirical success–reliability–cost trade-off rather than assume a single scalar objective.
 
 IRIS-X treats architecture as a downstream research result. Candidate mechanisms from predecessor work and external systems are hypotheses, evidence, reusable substrates, or experimental tools—not inherited requirements.
 
 ## 3. Unified Research Proposition
 
-> **IRIS-X studies how to construct, evaluate, and continuously improve agentic systems for clearly bounded tasks so that they achieve a target task success rate at the lowest sufficient lifecycle cost, while maintaining reliability across repeated execution, state accumulation, environmental change, system updates, and failure recovery. The primary optimization objective is overall cost-effectiveness rather than maximum one-shot capability.**
+> **IRIS-X studies how to construct, evaluate, and improve agentic systems for clearly bounded task distributions so that they meet defined task-success and long-term-reliability requirements while minimizing lifecycle cost under explicit operating conditions and resource boundaries. The objective is not maximum one-shot capability, but the empirical success–reliability–cost trade-off and, where requirements are specified, the minimum lifecycle cost at which they can be satisfied.**
 
 A shorter form is:
 
-> **How can we achieve sufficient and durable task success at the best lifecycle cost-effectiveness?**
+> **Which agentic system configurations can satisfy defined task-success and long-term-reliability requirements, and at what lifecycle cost?**
 
 This proposition is intentionally architecture-neutral.
 
@@ -37,52 +38,61 @@ This proposition is intentionally architecture-neutral.
 
 ### 4.1 Task Success Rate
 
-Task success rate is the primary outcome variable.
+Task success rate is a primary outcome variable.
 
-A task should have a sufficiently explicit contract to determine whether the requested outcome was actually achieved. For agentic tasks, success may require more than a plausible final answer; it may require correct external state changes, satisfied constraints, valid evidence, or successful verification.
+A task should have a sufficiently explicit contract to determine whether the requested outcome was actually achieved. For agentic tasks, success may require more than a plausible final answer; it may require correct external state changes and satisfied constraints. Evidence and verification determine what is justified about that outcome, but should not be silently treated as the outcome itself.
 
-Research should distinguish, where relevant:
+Research should therefore record at least two distinct axes where relevant:
 
-- actual task success;
-- partial success;
-- failed execution;
-- false or incorrectly believed success;
-- verified success;
-- success achieved only after retry or escalation.
+1. **Outcome status:** whether the requested result actually succeeded, partially succeeded, or failed under the task contract.
+2. **Epistemic/evidence status:** what the system or evaluator believes about the outcome, what evidence supports that belief, and whether the evidence is sufficient under the evaluation protocol.
+
+Their joint states include:
+
+| Actual outcome | Evidence or evaluation judgment | Joint interpretation |
+| --- | --- | --- |
+| Success | Sufficient evidence supports success | Verified or correctly recognized success |
+| Success | Success is claimed without sufficient evidence | Unverified success |
+| Success | Outcome is judged to be failure | False failure or unnecessary rejection |
+| Failure | Success is claimed or accepted | False or incorrectly believed success |
+| Failure | Sufficient evidence supports failure | Correctly recognized failure |
+
+Partial outcomes should retain their own task-contract status rather than be forced into a binary label. Retry, escalation, and recovery are execution-path attributes that should be recorded separately from both outcome and evidence status.
 
 A benchmark score may be evidence about task success for a defined benchmark task distribution, but it is not automatically evidence of broad capability or long-term reliability.
 
-### 4.2 Cost Sufficiency
+### 4.2 Cost Sufficiency as a Decision Criterion
 
 IRIS-X is not a pure cost-minimization project.
 
-The relevant question is the minimum cost sufficient to meet a required level of task success and reliability.
+The relevant question is how to minimize lifecycle cost subject to defined task-success and reliability requirements. A system or configuration may be sufficient for those requirements; cost itself is not the object that is sufficient.
 
 A provisional form is:
 
 \[
-\min C_{\text{lifecycle}}
+\min_{\theta \in \Theta} C_{\text{lifecycle}}(\theta)
 \]
 
 subject to:
 
 \[
-S \geq S_{\min}
+S(\theta) \geq S_{\min}
 \]
 
 and:
 
 \[
-R_{\text{long-term}} \geq R_{\min}
+R(\theta) \geq R_{\min}
 \]
 
 where:
 
-- \(S\) is measured task success;
-- \(R_{\text{long-term}}\) is long-term reliability under the defined operating conditions;
-- \(C_{\text{lifecycle}}\) is the relevant lifecycle cost.
+- \(\theta\) is a candidate agentic system configuration in the evaluated configuration space \(\Theta\);
+- \(S(\theta)\) is measured task success;
+- \(R(\theta)\) is the relevant reliability measurement or profile under the defined operating conditions;
+- \(C_{\text{lifecycle}}(\theta)\) is lifecycle cost within the declared accounting boundary and horizon.
 
-The exact measurement definitions are **Not established** and should be developed empirically rather than assumed here.
+The reliability inequality is shorthand for satisfying the experiment-specific reliability requirements; it does not assume that every reliability dimension can be collapsed into one scalar. The exact measurement definitions and acceptable thresholds are **Not established** and should be developed empirically rather than assumed here. When \(S_{\min}\) or \(R_{\min}\) is unknown or unjustified, research should report the empirical Pareto frontier rather than claim a unique minimum-sufficient configuration.
 
 Lifecycle cost may eventually include, depending on the research question:
 
@@ -100,21 +110,27 @@ Lifecycle cost may eventually include, depending on the research question:
 
 Low inference price alone is not sufficient evidence of low lifecycle cost.
 
+Every experiment or comparison that makes a lifecycle-cost claim should state at least:
+
+- the accounting boundary, including which design-time, runtime, maintenance, and failure costs are included or excluded;
+- the cost unit or units being reported;
+- the deployment volume or workload assumption;
+- the evaluation or deployment horizon; and
+- the amortization assumptions applied to shared or up-front costs.
+
+These declarations define the comparison boundary without prematurely imposing one universal lifecycle-cost formula.
+
 ### 4.3 Long-Term Reliability
 
 Long-term reliability is separate from one-shot task success.
 
-IRIS-X should study whether measured success remains stable across conditions such as:
+Long-term reliability is an umbrella term. Research should distinguish at least the following dimensions where relevant:
 
-- repeated execution;
-- long-running or stateful sessions;
-- accumulated memory or state;
-- tool and API changes;
-- distribution or environmental shift;
-- prompt, workflow, model, or configuration updates;
-- recovery after failures;
-- repeated optimization;
-- regression and drift.
+- **Operational reliability:** whether a fixed configuration remains stable across repeated executions under nominally equivalent conditions.
+- **Stateful reliability:** whether long-running sessions, accumulated memory, or other persistent state cause degradation or invalid behavior.
+- **Robustness:** whether performance persists under task-distribution, tool, API, or environmental shift.
+- **Change reliability / maintainability:** whether prompt, workflow, model, configuration, or optimization updates introduce regression or drift, and whether those changes can be maintained safely.
+- **Recovery reliability:** whether the system can recover from failure to a valid state or successful outcome.
 
 The exact unit of long-term reliability is currently **Unclear**. It may need to distinguish among:
 
@@ -124,9 +140,11 @@ The exact unit of long-term reliability is currently **Unclear**. It may need to
 
 These should not be silently treated as equivalent.
 
-### 4.4 Lifecycle Cost-Effectiveness
+It is **Not established** whether these reliability dimensions should or can be aggregated into a single metric. Experiments may need dimension-specific measurements and horizons rather than one universal reliability score.
 
-Cost-effectiveness is the primary optimization principle.
+### 4.4 Success–Reliability–Cost Trade-off
+
+The empirical relationship among task success, reliability, and lifecycle cost is the primary comparison space. Cost sufficiency supplies a constrained decision rule when requirements are defined; it is not an additional measured axis.
 
 IRIS-X should not initially collapse task success, reliability, and cost into a single scalar score unless evidence shows that such a reduction is valid for a specific research setting.
 
@@ -144,9 +162,9 @@ This allows different system configurations to be compared without assuming in a
 
 The current primary research question is:
 
-> **For a clearly defined task distribution and operating environment, what is the minimum-sufficient agentic system configuration that can meet a target task success rate and long-term reliability requirement at the best lifecycle cost-effectiveness?**
+> **For a specified task distribution, operating environment, evaluation horizon, and resource boundary, which agentic system configurations can meet defined task-success and long-term-reliability requirements, and what is the minimum lifecycle cost at which those requirements can be satisfied?**
 
-This is a project-level research question, not a commitment to a specific mechanism.
+This is a project-level research question, not a commitment to a specific mechanism or to the existence of a unique, stable optimum. If the requirements cannot yet be justified, the appropriate result is a feasibility boundary or empirical Pareto frontier rather than a single best configuration.
 
 ### 5.2 Supporting Research Questions
 
@@ -158,15 +176,15 @@ What capabilities are actually necessary for a given bounded task distribution, 
 
 #### RQ2 — Evidence of success
 
-What evidence is sufficient to justify treating an agent outcome as successful, and how should false success, unverified success, and partially verified success be distinguished?
+What evidence is sufficient to justify treating an actual agent outcome as successful, how should outcome status and epistemic/evidence status be measured independently, and how should their joint states—including false success, false failure, unverified success, and partially verified success—be distinguished?
 
 #### RQ3 — Cost accounting
 
-Which costs materially determine lifecycle cost-effectiveness, and how should design-time, runtime, verification, retry, escalation, maintenance, and failure costs be amortized and compared?
+Which costs materially determine lifecycle cost, and how should design-time, runtime, verification, retry, escalation, maintenance, and failure costs be bounded, measured, amortized, and compared across explicit workload volumes and evaluation horizons?
 
 #### RQ4 — Long-term reliability
 
-Which failure modes emerge only under repeated, stateful, long-running, shifted, or updated operation, and how should long-term reliability be measured without reducing it to one-shot benchmark accuracy?
+Which failure modes emerge under repeated, stateful, shifted, updated, or post-failure operation, how do operational, stateful, robustness, change, and recovery reliability differ, and how should they be measured without reducing them to one-shot benchmark accuracy?
 
 #### RQ5 — Failure attribution and intervention
 
@@ -188,7 +206,7 @@ Under what conditions can design-time specialization, prompt/program optimizatio
 
 #### RQ7 — Reliability of the specialization process
 
-Can IRIS-X eventually develop a repeatable methodology that, given a new task, reliably produces and maintains a cost-effective agentic configuration rather than depending on ad hoc manual agent engineering?
+Can IRIS-X eventually develop a repeatable methodology that, given a new task, reliably produces and maintains agentic configurations that satisfy defined requirements at competitive lifecycle cost rather than depending on ad hoc manual agent engineering?
 
 This is a long-term research direction, not a current assumption.
 
@@ -210,17 +228,17 @@ Candidate system configurations may include, but are not limited to:
 
 No configuration class is privileged by definition.
 
-Low-cost, task-specific or specialist agents are an important strategic direction for IRIS-X, but they are not the project definition. A specialist is valuable only if specialization improves the relevant success–reliability–cost trade-off.
+Low-cost, task-specific or specialist agents are an important strategic direction for IRIS-X, but they are not the project definition. A specialist is valuable only if specialization improves the relevant success–reliability–cost trade-off under a declared comparison boundary.
 
 IRIS-X should therefore allow evidence to show that, for some tasks:
 
-- specialist systems are more cost-effective;
-- routing or escalation is more cost-effective;
-- generalist systems with tools are more cost-effective;
-- hybrid systems are more cost-effective;
+- specialist systems provide non-dominated success–reliability–cost trade-offs;
+- routing or escalation provides non-dominated success–reliability–cost trade-offs;
+- generalist systems with tools provide non-dominated success–reliability–cost trade-offs;
+- hybrid systems provide non-dominated success–reliability–cost trade-offs;
 - specialization costs are not justified.
 
-The research program succeeds by finding the better empirical frontier, not by proving that specialist agents must win.
+The research program succeeds by characterizing and, where possible, improving the empirical frontier, not by proving that specialist agents must win.
 
 ## 7. Architecture Neutrality and Predecessor Hypotheses
 
@@ -283,7 +301,7 @@ Comparative research should expose overlapping concepts, incompatible assumption
 
 Experiments should distinguish competing hypotheses rather than merely demonstrate that a prototype can run. Architectural requirements should emerge only from supported constraints, and decisions about reusable substrate should remain separate from claims about IRIS-X-specific research contributions.
 
-The possibility of systematically identifying, generating, evaluating, and maintaining a minimum-sufficient agentic configuration for a new task distribution remains a long-term research direction and is **Not established**.
+The possibility of systematically identifying, generating, evaluating, and maintaining agentic configurations that satisfy defined requirements at competitive lifecycle cost for a new task distribution remains a long-term research direction and is **Not established**.
 
 ## 10. Evidence Basis
 
@@ -302,11 +320,13 @@ Predecessor and external materials motivate candidate research dimensions, but t
 
 The following are intentionally unresolved:
 
-- **Not established:** the final mathematical definition of lifecycle cost-effectiveness.
+- **Not established:** whether a single scalar lifecycle cost-effectiveness objective is valid for any given research setting.
+- **Not established:** how task-success and reliability requirements or thresholds should be selected and justified.
 - **Not established:** the minimum task-contract formalism required for valid comparisons.
-- **Unclear:** the appropriate unit and horizon for long-term reliability.
-- **Not established:** whether one reliability metric can apply across different task families.
-- **Not evaluated:** whether specialist agents provide the best lifecycle cost-effectiveness across the task classes IRIS-X will study.
+- **Unclear:** the appropriate units and horizons for each long-term reliability dimension.
+- **Not established:** whether the reliability dimensions can be aggregated or whether one reliability metric can apply across different task families.
+- **Not established:** which lifecycle-cost accounting boundaries and amortization assumptions are appropriate for different comparisons.
+- **Not evaluated:** whether specialist agents occupy the best success–reliability–cost frontier across the task classes IRIS-X will study.
 - **Not evaluated:** whether design-time optimization can systematically substitute for expensive runtime capability.
 - **Not established:** which predecessor mechanisms will survive IRIS-X experiments.
 - **Not established:** the final system architecture or runtime substrate.
@@ -320,9 +340,9 @@ This document establishes a **provisional unified research problem**, not a fina
 A future change should be justified when evidence shows that one or more of the following are wrong or insufficient:
 
 - task success rate is not the appropriate primary outcome;
-- lifecycle cost sufficiency is not a meaningful constraint;
+- constrained lifecycle-cost minimization is not a meaningful decision criterion;
 - long-term reliability cannot be operationalized usefully;
-- cost-effectiveness is not the correct top-level optimization principle;
+- the success–reliability–cost trade-off is not the correct top-level comparison space;
 - the bounded-task framing excludes an empirically important class of agentic intelligence research.
 
 Until such evidence exists, this problem definition can serve as the common orientation for IRIS-X comparative research, hypotheses, experiments, and later architectural synthesis.
