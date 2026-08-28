@@ -1,10 +1,12 @@
 # Temporary Phase 3 Research Operationalization Plan
 
-Status: **Temporary implementation plan**  
+Status: **Retired — Phase 3 decision gate reached on 2026-08-28**
 Scope: Research operationalization, comparative research, and first baseline experiment definition  
 Architecture authority: None  
 Research authority: `research/problem-definition.md` remains the provisional project-level research problem  
 Removal condition: Replace or retire this plan after the Phase 3 exit criteria are met and durable research/experiment artifacts describe the resulting operating baseline
+
+Closure artifacts: `research/task-distribution-selection.md`, `research/task-contract-docops-readonly-12.md`, `research/first-cycle-operationalization.md`, `research/candidate-mechanism-hypotheses.md`, and `experiments/exp-2026-08-28-docops-readonly-baseline/`. Retirement records completion of this plan only; it does not authorize Phase 4 or establish an architecture.
 
 ## Why Phase 3 Exists
 
@@ -305,6 +307,24 @@ Phase 5: supported constraints and architecture synthesis
 ```
 
 These later phase labels are provisional and are not commitments to a fixed roadmap.
+
+## Phase 3 Closure Check (2026-08-28)
+
+| Exit criterion | Status | Durable evidence |
+| --- | --- | --- |
+| Initial bounded task distribution selected with alternatives | Passed | `research/task-distribution-selection.md` |
+| Task/evaluation and operating contract defined | Passed | `research/task-contract-docops-readonly-12.md` |
+| First-cycle variables operationalized without universal metrics | Passed | `research/first-cycle-operationalization.md` |
+| Corpus mechanisms mapped to falsifiable hypotheses | Passed | `research/candidate-mechanism-hypotheses.md` |
+| Reproducible baseline defined | Passed | `experiments/exp-2026-08-28-docops-readonly-baseline/README.md` plus `inputs/` and `scripts/` |
+| Pilot executed or blocker recorded | Passed | Completed `runs/pilot-20260828-local-rerun-01/`; invalid first attempt preserved at `runs/pilot-20260828-local/` |
+| Navigation updated | Passed | `research/README.md` and `experiments/README.md` |
+| Imported source and papers unchanged | Passed | Run manifest source status plus final Git/source-boundary review |
+| Repository validation passes | Passed | Final execution of `python tools/repository_check.py`; command outcome is reported in the implementation handoff |
+| No disguised final architecture specification | Passed | All artifacts state task-local scope, uncertainty, and non-architecture boundaries |
+| Unresolved questions explicitly labeled | Passed | Research notes retain `Unknown`, `Unclear`, `Not established`, and `Not evaluated` items |
+
+All Phase 3 exit criteria are met. The decision gate permits consideration of a separately scoped mechanism experiment; it does not select one or begin Phase 4.
 
 ## Verification
 

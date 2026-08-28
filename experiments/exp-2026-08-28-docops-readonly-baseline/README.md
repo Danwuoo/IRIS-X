@@ -1,7 +1,7 @@
 # Experiment: Read-Only Document Ops Narrow Baseline
 
 - **Experiment ID:** `exp-2026-08-28-docops-readonly-baseline`
-- **Status:** defined; safe local pilot eligible
+- **Status:** defined; local pilot executed and reviewed
 - **Distribution:** `taskdist-2026-08-28-vanta-docops-readonly-12`
 - **Task contract:** `research/task-contract-docops-readonly-12.md`
 - **Operationalization:** `research/first-cycle-operationalization.md`
@@ -112,6 +112,11 @@ runs/<run-id>/
 
 The runner produces the first three artifacts. Interpretation is authored only after inspecting them.
 
+Recorded runs:
+
+- `runs/pilot-20260828-local/`: preserved invalid first attempt with an explicit failure record;
+- `runs/pilot-20260828-local-rerun-01/`: completed 72-episode pilot with separate manifest, raw episodes, aggregates, and reviewed interpretation.
+
 ## Stop and Invalid-Run Conditions
 
 Stop before execution if the manifest/configuration schema is invalid, a path escapes the repository, a source or oracle is missing, task IDs disagree, or the output directory exists. Stop during execution on imported input mutation or inability to persist a terminal record.
@@ -128,4 +133,3 @@ An environment/harness exception, source mutation, incomplete episode count, or 
 ## Blocked Model Baseline
 
 A cheap-versus-strong model comparison is **defined conceptually but not configured or run** in Phase 3. Exact provider/model snapshots, price basis, approved paid-use ceiling, and owner authorization are unavailable for this task. The intended future procedure is to add two frozen configurations that implement the same output/evidence protocol, then run this manifest/evaluator unchanged. Such a run would produce per-task outputs, evidence, usage, failures, and a success–reliability–cost vector. No API call is made by this experiment.
-
