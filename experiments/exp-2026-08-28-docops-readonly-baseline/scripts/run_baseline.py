@@ -653,7 +653,6 @@ def main() -> int:
             ),
         }
     )
-    write_json(output_dir / "results.json", results)
     run_manifest = {
         "schema_version": 1,
         "run_id": args.run_id,
@@ -682,7 +681,7 @@ def main() -> int:
         "source_status_after": source_status_after.splitlines(),
         "repetitions": args.repetitions,
         "expected_episode_count": expected_episode_count,
-        "network_access": false,
+        "network_access": False,
         "external_services": [],
         "paid_cost_usd": 0.0,
         "resource_envelope": {
@@ -696,6 +695,7 @@ def main() -> int:
         },
     }
     write_json(output_dir / "run-manifest.json", run_manifest)
+    write_json(output_dir / "results.json", results)
     print(
         f"baseline run: {results['run_status'].upper()} "
         f"({len(records)}/{expected_episode_count} episodes, output={relative_posix(output_dir, ROOT)})"
