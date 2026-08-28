@@ -51,4 +51,3 @@ All imported upstream revisions are `Unknown`. Source-reported gains are not tre
 - **Unclear:** whether 12 development fixtures support a defensible train/validation/test split; generated or independently authored tasks may be required.
 - **Unknown:** paid model costs, provider snapshots, and optimization budgets for future model-based experiments.
 - **Conflicting evidence:** none identified within the inspected mechanism paths; absence of conflict is not evidence of validity.
-

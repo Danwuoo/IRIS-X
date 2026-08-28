@@ -138,4 +138,3 @@ An episode is invalid if a manifest path escapes the repository, a selected sour
 - **Not established:** a justified partial-credit weighting; partial outcomes are counted, not collapsed into a scalar.
 - **Not evaluated:** human adjudication, inter-rater agreement, stochastic model variance, stateful reliability, recovery reliability, robustness under generated perturbation, or change reliability.
 - **Unknown:** real deployment workload and amortization volume.
-

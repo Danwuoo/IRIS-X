@@ -88,4 +88,3 @@ Every terminal episode records configuration, task, repetition, actual outcome, 
 - **Not established:** task-success or reliability thresholds and whether either baseline control is sufficient for any real use.
 - **Not evaluated:** stochastic variance, distribution shift, state persistence, recovery, maintenance, paid-model cost, or human adjudication.
 - **Not established:** a valid scalar combining success, any reliability dimension, and lifecycle cost.
-

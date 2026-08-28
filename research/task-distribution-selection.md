@@ -58,4 +58,3 @@ No weighted score is used. A candidate is selected only if it passes the necessa
 ## Alternatives Reconsideration Gate
 
 Reconsider the full 48-fixture frame only after copied-workspace execution and mutation containment can be tested as independent interventions. Reconsider ARC only after its recorded integrity/evaluator limitations are resolved for the intended claim. Reconsider external benchmark tasksets when dataset identity, model access, and cost authority are explicit.
-
