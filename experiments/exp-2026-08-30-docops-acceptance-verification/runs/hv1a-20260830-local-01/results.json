@@ -1,0 +1,97 @@
+{
+  "arms": {
+    "claim-only-v0": {
+      "accepted_success_count": 180,
+      "attempted_records": 180,
+      "decision_counts": {
+        "false_accept": 108,
+        "false_reject": 0,
+        "true_accept": 72,
+        "true_reject": 0
+      },
+      "finite_sample_rates": {
+        "false_accept": 0.6,
+        "false_reject": 0.0,
+        "true_accept": 0.4,
+        "true_reject": 0.0
+      },
+      "invalid_records": 0,
+      "rejected_success_count": 0,
+      "valid_records": 180,
+      "verification_cost_totals": {
+        "process_cpu_ms": 0.0,
+        "producer_output_bytes": 25887,
+        "terminal_record_bytes_excluding_self": 358936,
+        "verification_decision_artifact_bytes": 23220,
+        "wall_ms": 0.0
+      },
+      "verifier_error_invalid_count": 0
+    },
+    "independent-verify-v0": {
+      "accepted_success_count": 72,
+      "attempted_records": 180,
+      "decision_counts": {
+        "false_accept": 0,
+        "false_reject": 0,
+        "true_accept": 72,
+        "true_reject": 108
+      },
+      "finite_sample_rates": {
+        "false_accept": 0.0,
+        "false_reject": 0.0,
+        "true_accept": 0.4,
+        "true_reject": 0.6
+      },
+      "invalid_records": 0,
+      "rejected_success_count": 108,
+      "valid_records": 180,
+      "verification_cost_totals": {
+        "process_cpu_ms": 140.625,
+        "producer_output_bytes": 25887,
+        "terminal_record_bytes_excluding_self": 359343,
+        "verification_decision_artifact_bytes": 23364,
+        "wall_ms": 101.2129
+      },
+      "verifier_error_invalid_count": 0
+    }
+  },
+  "complete_record_count": 360,
+  "expected_record_count": 360,
+  "experiment_id": "exp-2026-08-30-docops-acceptance-verification",
+  "interpretation_boundary": "fixed oracle-backed development challenges; H-V1b and general verifier reliability not evaluated",
+  "paired_invariance": {
+    "mismatches": [],
+    "paired_actual_outcome_and_fixed_fields_identical": true
+  },
+  "raw_terminal_artifact_bytes": 772639,
+  "repeat_agreement": {
+    "all_arm_case_pairs_agree": true,
+    "disagreements": []
+  },
+  "run_id": "hv1a-20260830-local-01",
+  "run_status": "complete",
+  "schema_version": 1,
+  "source_preservation_failure": false,
+  "support_checks": {
+    "canonical_valid_outputs_not_newly_rejected": true,
+    "challenge_labels_excluded_from_verifier_interface": true,
+    "paired_actual_outcomes_identical": true,
+    "semantic_equivalent_valid_outputs_not_newly_rejected": true,
+    "treatment_false_accepts_lower_than_control": true
+  },
+  "support_status": "Supported — task-local",
+  "verifier_interface": {
+    "excluded_fields": [
+      "actual_outcome",
+      "challenge_metadata",
+      "expected_semantic_relation",
+      "expected_acceptance_label",
+      "invalid_case_flag"
+    ],
+    "passed_fields": [
+      "fixture",
+      "expected_relative_path",
+      "producer_output_json"
+    ]
+  }
+}

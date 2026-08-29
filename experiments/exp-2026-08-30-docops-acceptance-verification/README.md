@@ -1,7 +1,7 @@
 # Experiment: Independent Acceptance Verification
 
 - **Experiment ID:** `exp-2026-08-30-docops-acceptance-verification`
-- **Status:** defined; 60-case challenge set frozen; not yet run
+- **Status:** defined; local run executed and reviewed
 - **Hypothesis:** `H-V1a`
 - **Distribution:** `taskdist-2026-08-28-vanta-docops-readonly-12`
 - **Task contract:** `research/task-contract-docops-readonly-12.md`
@@ -100,6 +100,12 @@ python experiments\exp-2026-08-30-docops-acceptance-verification\scripts\run_exp
 
 Run directories are immutable. An invalid attempt is preserved with a failure
 record and is not cited as a completed result.
+
+Completed run:
+
+- `runs/hv1a-20260830-local-01/`: 360/360 valid paired-arm records;
+  reviewed `Supported — task-local` result. Treatment reduced false accepts
+  from 108 to zero in the fixed sample without rejecting the 72 valid records.
 
 ## Boundaries
 
