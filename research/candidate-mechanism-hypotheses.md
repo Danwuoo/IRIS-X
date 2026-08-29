@@ -36,6 +36,49 @@ All imported upstream revisions are `Unknown`. Source-reported gains are not tre
 | Confidence-based model cascade (`src.frugalgpt`) | Stop on a cheaper response when predicted quality is sufficient; escalate otherwise | Confidence scorer is calibrated on this task distribution; model outputs and costs are available | Lower model cost than always-strong with possible success loss and scorer overhead | Miscalibration, distribution shift, cascading latency, scorer training cost, correlated failures | Model adapters/cascade executor are substrate; sufficient stopping evidence is research | **H-C1:** A calibrated weak-to-strong cascade maintains the always-strong verified-success count within the observed finite sample while using fewer strong calls; the claim fails if any retained weak answer is a false success or total lifecycle cost is not reduced. Minimum experiment: weak/strong outputs frozen first, train scorer on disjoint tasks, replay thresholds. |
 | Prompt-level strong/weak routing (`src.routellm`) | Allocate more runtime capability to tasks predicted to need it | Router score transfers to the selected task/model pair; threshold is calibrated; first-turn features suffice | Fewer higher-capability invocations than always-strong, potentially lower runtime cost | Router transfer failure, threshold drift, routing overhead, first-turn/last-turn mismatch, training data dependence | Serving/router implementation is substrate; escalation evidence and task features are research | **H-R1:** A task-feature router between the Phase 3 narrow controls achieves the structured control's success with fewer structured-control invocations than always-structured. Minimum experiment: leave-one-task-family-out calibration and task-level routed outcomes/costs. |
 
+## Phase 4 Narrow Refinements
+
+The parent hypotheses above are preserved. The following sub-hypotheses isolate
+only the mechanisms authorized by the temporary Phase 4 plan; they do not
+silently replace or establish their parents.
+
+### H-M1a — Registered Source Snapshot Assertion
+
+> Resolving a run's `source_id` and `source_snapshot_id` through
+> `corpus/sources.yaml` and asserting that the observed Git source-tree OID
+> equals the registered snapshot tree OID will detect deliberately injected
+> source-identity mismatches that a record-only provenance path does not
+> detect, while accepting the valid registered identity.
+
+This tests only a narrow part of H-M1. It does not establish the complete
+manifest, terminal-record, or resource-ledger hypothesis.
+
+### H-V1a — Independent Acceptance Verification
+
+> Holding producer output, system claim, task bytes, evidence/path-hash
+> substrate, and actual-outcome adjudication fixed, requiring an independent
+> deterministic verification decision before accepting a claimed success will
+> reduce false-success acceptance relative to claim-only acceptance on frozen
+> invalid-output challenges, without rejecting semantically valid
+> claimed-success outputs in the evaluated finite sample.
+
+The existing H-V1 bundles evidence binding and independent verification.
+H-V1a isolates independent acceptance verification and does not inject missing
+hashes, stale hashes, or missing evidence.
+
+`H-V1b — evidence/provenance binding: deferred / not evaluated in this batch`
+
+### H-O1a — Structured Instrumentation Completeness
+
+> Holding task, control behavior, evaluator, resource envelope, and execution
+> policy fixed, structured profiling will reduce missingness for a predeclared
+> runtime-profile field set while preserving paired output and actual-outcome
+> behavior. Artifact-size and timing overhead must be measured descriptively
+> rather than assumed.
+
+This tests a narrow task-local part of H-O1 without adopting the NeMo Agent
+Toolkit as an IRIS-X dependency.
+
 ## Separation Rules for Later Experiments
 
 - Verification, retry/recovery, routing/escalation, prompt/program optimization, workflow optimization, and specialization remain separate interventions.
