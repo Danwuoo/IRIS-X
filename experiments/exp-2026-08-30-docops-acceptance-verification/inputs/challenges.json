@@ -1,0 +1,1977 @@
+{
+  "builder": "build_challenges.py:v1",
+  "case_count": 60,
+  "cases": [
+    {
+      "case_id": "docops_read_traceability_001--canonical-valid",
+      "case_order": 1,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 334,
+          "path": "inputs/source.md",
+          "role": "source",
+          "sha256": "d073f2e1a05f923cd4394c0590e768f8f4025f7f4380dda47fd2b057d2212f25"
+        }
+      ],
+      "evidence_envelope_sha256": "2207b4456fda8600820e47e1d054f7ebf9d2f106cc69413a5c8317eab95cbdbc",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "9b41b9ca2388e49458b3e32cf30fa5ce828d774cbc80527f45d4ac2549398df9",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_read_traceability_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 287,
+      "producer_output_json": "{\"links\":[{\"label\":\"Minimal Closed Loop Runtime Spec\",\"target\":\"../../../02_specs/Minimal_Closed_Loop_Runtime_Spec.md\"},{\"label\":\"Stage 0 Boundary Lock\",\"target\":\"../../../00_manifest/Stage_0_Boundary_Lock.md\"},{\"label\":\"Experiment 001\",\"target\":\"../../Experiment_001_Minimal_Loop.md\"}]}",
+      "producer_output_sha256": "71e97e23610c34cbb5b11e1f9ea56baf36e26209e1714993dfe99e60df98b0df",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_read_traceability_001",
+      "task_order": 1,
+      "task_sha256": "e3e34248f01f6bcd6bd94567dc6dc45c151eaa1d2f8e1dd71292183c012570b7"
+    },
+    {
+      "case_id": "docops_read_traceability_001--semantic-equivalent-valid",
+      "case_order": 2,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 334,
+          "path": "inputs/source.md",
+          "role": "source",
+          "sha256": "d073f2e1a05f923cd4394c0590e768f8f4025f7f4380dda47fd2b057d2212f25"
+        }
+      ],
+      "evidence_envelope_sha256": "2207b4456fda8600820e47e1d054f7ebf9d2f106cc69413a5c8317eab95cbdbc",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "9b41b9ca2388e49458b3e32cf30fa5ce828d774cbc80527f45d4ac2549398df9",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_read_traceability_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 374,
+      "producer_output_json": "{\n  \"links\": [\n    {\n      \"target\": \"../../../02_specs/Minimal_Closed_Loop_Runtime_Spec.md\",\n      \"label\": \"Minimal Closed Loop Runtime Spec\"\n    },\n    {\n      \"target\": \"../../../00_manifest/Stage_0_Boundary_Lock.md\",\n      \"label\": \"Stage 0 Boundary Lock\"\n    },\n    {\n      \"target\": \"../../Experiment_001_Minimal_Loop.md\",\n      \"label\": \"Experiment 001\"\n    }\n  ]\n}\n",
+      "producer_output_sha256": "3344cdde8952f3f3c6270104ae3a6bf31b41979bfbdef38ce87e89c5786dd1cf",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_read_traceability_001",
+      "task_order": 1,
+      "task_sha256": "e3e34248f01f6bcd6bd94567dc6dc45c151eaa1d2f8e1dd71292183c012570b7"
+    },
+    {
+      "case_id": "docops_read_traceability_001--omission-invalid",
+      "case_order": 3,
+      "challenge_metadata": {
+        "deterministic_transform": "removed first item from required list field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 334,
+          "path": "inputs/source.md",
+          "role": "source",
+          "sha256": "d073f2e1a05f923cd4394c0590e768f8f4025f7f4380dda47fd2b057d2212f25"
+        }
+      ],
+      "evidence_envelope_sha256": "2207b4456fda8600820e47e1d054f7ebf9d2f106cc69413a5c8317eab95cbdbc",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "9b41b9ca2388e49458b3e32cf30fa5ce828d774cbc80527f45d4ac2549398df9",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_read_traceability_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 177,
+      "producer_output_json": "{\"links\":[{\"label\":\"Stage 0 Boundary Lock\",\"target\":\"../../../00_manifest/Stage_0_Boundary_Lock.md\"},{\"label\":\"Experiment 001\",\"target\":\"../../Experiment_001_Minimal_Loop.md\"}]}",
+      "producer_output_sha256": "82e4aa8ef46d5ba3c0b622c6a5c2f6ab7ed075602da2c97745fc54bcd5055694",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_read_traceability_001",
+      "task_order": 1,
+      "task_sha256": "e3e34248f01f6bcd6bd94567dc6dc45c151eaa1d2f8e1dd71292183c012570b7"
+    },
+    {
+      "case_id": "docops_read_traceability_001--fabrication-invalid",
+      "case_order": 4,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 334,
+          "path": "inputs/source.md",
+          "role": "source",
+          "sha256": "d073f2e1a05f923cd4394c0590e768f8f4025f7f4380dda47fd2b057d2212f25"
+        }
+      ],
+      "evidence_envelope_sha256": "2207b4456fda8600820e47e1d054f7ebf9d2f106cc69413a5c8317eab95cbdbc",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "9b41b9ca2388e49458b3e32cf30fa5ce828d774cbc80527f45d4ac2549398df9",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_read_traceability_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 324,
+      "producer_output_json": "{\"links\":[{\"label\":\"Minimal Closed Loop Runtime Spec\",\"target\":\"../../../02_specs/Minimal_Closed_Loop_Runtime_Spec.md\"},{\"label\":\"Stage 0 Boundary Lock\",\"target\":\"../../../00_manifest/Stage_0_Boundary_Lock.md\"},{\"label\":\"Experiment 001\",\"target\":\"../../Experiment_001_Minimal_Loop.md\"},{\"__fabricated__\":\"h-v1a-synthetic\"}]}",
+      "producer_output_sha256": "bc8918690696792466547dc3566126c5f1014e7280165d483fe11a1bdf537131",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_read_traceability_001",
+      "task_order": 1,
+      "task_sha256": "e3e34248f01f6bcd6bd94567dc6dc45c151eaa1d2f8e1dd71292183c012570b7"
+    },
+    {
+      "case_id": "docops_read_traceability_001--corruption-invalid",
+      "case_order": 5,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 334,
+          "path": "inputs/source.md",
+          "role": "source",
+          "sha256": "d073f2e1a05f923cd4394c0590e768f8f4025f7f4380dda47fd2b057d2212f25"
+        }
+      ],
+      "evidence_envelope_sha256": "2207b4456fda8600820e47e1d054f7ebf9d2f106cc69413a5c8317eab95cbdbc",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "9b41b9ca2388e49458b3e32cf30fa5ce828d774cbc80527f45d4ac2549398df9",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_read_traceability_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 304,
+      "producer_output_json": "{\"links\":[{\"label\":\"Minimal Closed Loop Runtime Spec__h_v1a_corrupted\",\"target\":\"../../../02_specs/Minimal_Closed_Loop_Runtime_Spec.md\"},{\"label\":\"Stage 0 Boundary Lock\",\"target\":\"../../../00_manifest/Stage_0_Boundary_Lock.md\"},{\"label\":\"Experiment 001\",\"target\":\"../../Experiment_001_Minimal_Loop.md\"}]}",
+      "producer_output_sha256": "f08ea3b9154435f3ca9d050087f3ef72fa527f81b11266dbd544f382add29a2b",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_read_traceability_001",
+      "task_order": 1,
+      "task_sha256": "e3e34248f01f6bcd6bd94567dc6dc45c151eaa1d2f8e1dd71292183c012570b7"
+    },
+    {
+      "case_id": "docops_struct_inspect_001--canonical-valid",
+      "case_order": 6,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 99,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "58d9c630857144725028defe3ba4f3f58b86f15f73806b8e57f713e32d23f910"
+        }
+      ],
+      "evidence_envelope_sha256": "2490ae3ff045c84128564b5bbf4a15e11788cd38ac03ba3759ecb65438f5ef3b",
+      "expected_path": "expected/structure.json",
+      "expected_sha256": "5a51ed8cdbfd7010ef61b607554bf4fecaaaf39cff77b1e453f561f826a129ea",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_inspect_001",
+      "output_kind": "structure",
+      "producer_output_bytes": 306,
+      "producer_output_json": "{\"selector_results\":[{\"status\":\"resolved\",\"target\":{\"end_line\":5,\"start_line\":5}},{\"status\":\"resolved\",\"target\":{\"end_line\":11,\"start_line\":9}}],\"structure\":{\"headings\":[{\"level\":1,\"line\":1,\"text\":\"Product Spec\"},{\"level\":2,\"line\":5,\"text\":\"Scope\"},{\"level\":2,\"line\":9,\"text\":\"Evidence\"}],\"line_count\":11}}",
+      "producer_output_sha256": "6a7c84a38415b9581ccca4db4cfcea47fd3004bf55f1427ad2046755530e2b61",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_struct_inspect_001",
+      "task_order": 2,
+      "task_sha256": "ad19b711da03c46d35b0641d2fc345993c40645457ba1868d24e8d19682f3624"
+    },
+    {
+      "case_id": "docops_struct_inspect_001--semantic-equivalent-valid",
+      "case_order": 7,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 99,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "58d9c630857144725028defe3ba4f3f58b86f15f73806b8e57f713e32d23f910"
+        }
+      ],
+      "evidence_envelope_sha256": "2490ae3ff045c84128564b5bbf4a15e11788cd38ac03ba3759ecb65438f5ef3b",
+      "expected_path": "expected/structure.json",
+      "expected_sha256": "5a51ed8cdbfd7010ef61b607554bf4fecaaaf39cff77b1e453f561f826a129ea",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_inspect_001",
+      "output_kind": "structure",
+      "producer_output_bytes": 577,
+      "producer_output_json": "{\n  \"selector_results\": [\n    {\n      \"target\": {\n        \"end_line\": 5,\n        \"start_line\": 5\n      },\n      \"status\": \"resolved\"\n    },\n    {\n      \"target\": {\n        \"end_line\": 11,\n        \"start_line\": 9\n      },\n      \"status\": \"resolved\"\n    }\n  ],\n  \"structure\": {\n    \"headings\": [\n      {\n        \"line\": 1,\n        \"text\": \"Product Spec\",\n        \"level\": 1\n      },\n      {\n        \"line\": 5,\n        \"text\": \"Scope\",\n        \"level\": 2\n      },\n      {\n        \"line\": 9,\n        \"text\": \"Evidence\",\n        \"level\": 2\n      }\n    ],\n    \"line_count\": 11\n  }\n}\n",
+      "producer_output_sha256": "50c79339516a72b54233989774472f057fdc23d457cdee2c3af67bf351b8ebe6",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_struct_inspect_001",
+      "task_order": 2,
+      "task_sha256": "ad19b711da03c46d35b0641d2fc345993c40645457ba1868d24e8d19682f3624"
+    },
+    {
+      "case_id": "docops_struct_inspect_001--omission-invalid",
+      "case_order": 8,
+      "challenge_metadata": {
+        "deterministic_transform": "removed first item from required list field selector_results",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 99,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "58d9c630857144725028defe3ba4f3f58b86f15f73806b8e57f713e32d23f910"
+        }
+      ],
+      "evidence_envelope_sha256": "2490ae3ff045c84128564b5bbf4a15e11788cd38ac03ba3759ecb65438f5ef3b",
+      "expected_path": "expected/structure.json",
+      "expected_sha256": "5a51ed8cdbfd7010ef61b607554bf4fecaaaf39cff77b1e453f561f826a129ea",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_inspect_001",
+      "output_kind": "structure",
+      "producer_output_bytes": 245,
+      "producer_output_json": "{\"selector_results\":[{\"status\":\"resolved\",\"target\":{\"end_line\":11,\"start_line\":9}}],\"structure\":{\"headings\":[{\"level\":1,\"line\":1,\"text\":\"Product Spec\"},{\"level\":2,\"line\":5,\"text\":\"Scope\"},{\"level\":2,\"line\":9,\"text\":\"Evidence\"}],\"line_count\":11}}",
+      "producer_output_sha256": "36ad69a0af158d9b830fc128fd97a8175b468fdeb7ada624103a4e79909eb91e",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_struct_inspect_001",
+      "task_order": 2,
+      "task_sha256": "ad19b711da03c46d35b0641d2fc345993c40645457ba1868d24e8d19682f3624"
+    },
+    {
+      "case_id": "docops_struct_inspect_001--fabrication-invalid",
+      "case_order": 9,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field selector_results",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 99,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "58d9c630857144725028defe3ba4f3f58b86f15f73806b8e57f713e32d23f910"
+        }
+      ],
+      "evidence_envelope_sha256": "2490ae3ff045c84128564b5bbf4a15e11788cd38ac03ba3759ecb65438f5ef3b",
+      "expected_path": "expected/structure.json",
+      "expected_sha256": "5a51ed8cdbfd7010ef61b607554bf4fecaaaf39cff77b1e453f561f826a129ea",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_inspect_001",
+      "output_kind": "structure",
+      "producer_output_bytes": 343,
+      "producer_output_json": "{\"selector_results\":[{\"status\":\"resolved\",\"target\":{\"end_line\":5,\"start_line\":5}},{\"status\":\"resolved\",\"target\":{\"end_line\":11,\"start_line\":9}},{\"__fabricated__\":\"h-v1a-synthetic\"}],\"structure\":{\"headings\":[{\"level\":1,\"line\":1,\"text\":\"Product Spec\"},{\"level\":2,\"line\":5,\"text\":\"Scope\"},{\"level\":2,\"line\":9,\"text\":\"Evidence\"}],\"line_count\":11}}",
+      "producer_output_sha256": "38060bf8c56f9d4b9f844b8c4cc85b2b978188fb09ab43e451c511de1d8e9619",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_struct_inspect_001",
+      "task_order": 2,
+      "task_sha256": "ad19b711da03c46d35b0641d2fc345993c40645457ba1868d24e8d19682f3624"
+    },
+    {
+      "case_id": "docops_struct_inspect_001--corruption-invalid",
+      "case_order": 10,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field selector_results",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 99,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "58d9c630857144725028defe3ba4f3f58b86f15f73806b8e57f713e32d23f910"
+        }
+      ],
+      "evidence_envelope_sha256": "2490ae3ff045c84128564b5bbf4a15e11788cd38ac03ba3759ecb65438f5ef3b",
+      "expected_path": "expected/structure.json",
+      "expected_sha256": "5a51ed8cdbfd7010ef61b607554bf4fecaaaf39cff77b1e453f561f826a129ea",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_inspect_001",
+      "output_kind": "structure",
+      "producer_output_bytes": 323,
+      "producer_output_json": "{\"selector_results\":[{\"status\":\"resolved__h_v1a_corrupted\",\"target\":{\"end_line\":5,\"start_line\":5}},{\"status\":\"resolved\",\"target\":{\"end_line\":11,\"start_line\":9}}],\"structure\":{\"headings\":[{\"level\":1,\"line\":1,\"text\":\"Product Spec\"},{\"level\":2,\"line\":5,\"text\":\"Scope\"},{\"level\":2,\"line\":9,\"text\":\"Evidence\"}],\"line_count\":11}}",
+      "producer_output_sha256": "0e740c7ccdd51e0890bbc5f3263ffd980ea6264fe84387ebd0d89cde394a8506",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_struct_inspect_001",
+      "task_order": 2,
+      "task_sha256": "ad19b711da03c46d35b0641d2fc345993c40645457ba1868d24e8d19682f3624"
+    },
+    {
+      "case_id": "docops_ps1_traceability_multisource_001--canonical-valid",
+      "case_order": 11,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 106,
+          "path": "inputs/source_a.md",
+          "role": "source",
+          "sha256": "347fced6fe08cf71fa56adf92bec43ea2c5f42bfc688d0d02f6a9ccbef5059c6"
+        },
+        {
+          "bytes": 36,
+          "path": "inputs/source_b.md",
+          "role": "context",
+          "sha256": "2e1820baf6fc4533cd030e907e125814bc0d26a56e53caccb30bd66ea0501056"
+        }
+      ],
+      "evidence_envelope_sha256": "0745cb1f846facb3979efee9350f53ade7b5c2979c39c209f2465fa084b4ffe8",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "16002c644e38eb3a8b9f908b6461125d4c144d91d5a9fff262a8e532326b2917",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_multisource_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 125,
+      "producer_output_json": "{\"links\":[{\"label\":\"Runtime Spec\",\"target\":\"../specs/runtime.md\"},{\"label\":\"Verifier Guide\",\"target\":\"../eval/verifier.md\"}]}",
+      "producer_output_sha256": "9113887f12155de99ba8daae279412af07da12e81b6d1a521711c4add6e3b57c",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_multisource_001",
+      "task_order": 3,
+      "task_sha256": "3d5ed5c22b16fae3e4382cda46dab1d6011da3328ce6fabe702600ff6330bc55"
+    },
+    {
+      "case_id": "docops_ps1_traceability_multisource_001--semantic-equivalent-valid",
+      "case_order": 12,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 106,
+          "path": "inputs/source_a.md",
+          "role": "source",
+          "sha256": "347fced6fe08cf71fa56adf92bec43ea2c5f42bfc688d0d02f6a9ccbef5059c6"
+        },
+        {
+          "bytes": 36,
+          "path": "inputs/source_b.md",
+          "role": "context",
+          "sha256": "2e1820baf6fc4533cd030e907e125814bc0d26a56e53caccb30bd66ea0501056"
+        }
+      ],
+      "evidence_envelope_sha256": "0745cb1f846facb3979efee9350f53ade7b5c2979c39c209f2465fa084b4ffe8",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "16002c644e38eb3a8b9f908b6461125d4c144d91d5a9fff262a8e532326b2917",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_multisource_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 186,
+      "producer_output_json": "{\n  \"links\": [\n    {\n      \"target\": \"../specs/runtime.md\",\n      \"label\": \"Runtime Spec\"\n    },\n    {\n      \"target\": \"../eval/verifier.md\",\n      \"label\": \"Verifier Guide\"\n    }\n  ]\n}\n",
+      "producer_output_sha256": "dd7071178126284141b5dec1b5266cec8591d45267e96f857c3e784e02d83558",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_multisource_001",
+      "task_order": 3,
+      "task_sha256": "3d5ed5c22b16fae3e4382cda46dab1d6011da3328ce6fabe702600ff6330bc55"
+    },
+    {
+      "case_id": "docops_ps1_traceability_multisource_001--omission-invalid",
+      "case_order": 13,
+      "challenge_metadata": {
+        "deterministic_transform": "removed first item from required list field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 106,
+          "path": "inputs/source_a.md",
+          "role": "source",
+          "sha256": "347fced6fe08cf71fa56adf92bec43ea2c5f42bfc688d0d02f6a9ccbef5059c6"
+        },
+        {
+          "bytes": 36,
+          "path": "inputs/source_b.md",
+          "role": "context",
+          "sha256": "2e1820baf6fc4533cd030e907e125814bc0d26a56e53caccb30bd66ea0501056"
+        }
+      ],
+      "evidence_envelope_sha256": "0745cb1f846facb3979efee9350f53ade7b5c2979c39c209f2465fa084b4ffe8",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "16002c644e38eb3a8b9f908b6461125d4c144d91d5a9fff262a8e532326b2917",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_multisource_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 69,
+      "producer_output_json": "{\"links\":[{\"label\":\"Verifier Guide\",\"target\":\"../eval/verifier.md\"}]}",
+      "producer_output_sha256": "420660582e9410746b76dd858b5a833d97c09d83b41eb9ddd4d8e4096ee844f0",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_multisource_001",
+      "task_order": 3,
+      "task_sha256": "3d5ed5c22b16fae3e4382cda46dab1d6011da3328ce6fabe702600ff6330bc55"
+    },
+    {
+      "case_id": "docops_ps1_traceability_multisource_001--fabrication-invalid",
+      "case_order": 14,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 106,
+          "path": "inputs/source_a.md",
+          "role": "source",
+          "sha256": "347fced6fe08cf71fa56adf92bec43ea2c5f42bfc688d0d02f6a9ccbef5059c6"
+        },
+        {
+          "bytes": 36,
+          "path": "inputs/source_b.md",
+          "role": "context",
+          "sha256": "2e1820baf6fc4533cd030e907e125814bc0d26a56e53caccb30bd66ea0501056"
+        }
+      ],
+      "evidence_envelope_sha256": "0745cb1f846facb3979efee9350f53ade7b5c2979c39c209f2465fa084b4ffe8",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "16002c644e38eb3a8b9f908b6461125d4c144d91d5a9fff262a8e532326b2917",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_multisource_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 162,
+      "producer_output_json": "{\"links\":[{\"label\":\"Runtime Spec\",\"target\":\"../specs/runtime.md\"},{\"label\":\"Verifier Guide\",\"target\":\"../eval/verifier.md\"},{\"__fabricated__\":\"h-v1a-synthetic\"}]}",
+      "producer_output_sha256": "317ad02c643030aeba10c1de9df099a863d107a659d59bb98e7a6313372e48bd",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_multisource_001",
+      "task_order": 3,
+      "task_sha256": "3d5ed5c22b16fae3e4382cda46dab1d6011da3328ce6fabe702600ff6330bc55"
+    },
+    {
+      "case_id": "docops_ps1_traceability_multisource_001--corruption-invalid",
+      "case_order": 15,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 106,
+          "path": "inputs/source_a.md",
+          "role": "source",
+          "sha256": "347fced6fe08cf71fa56adf92bec43ea2c5f42bfc688d0d02f6a9ccbef5059c6"
+        },
+        {
+          "bytes": 36,
+          "path": "inputs/source_b.md",
+          "role": "context",
+          "sha256": "2e1820baf6fc4533cd030e907e125814bc0d26a56e53caccb30bd66ea0501056"
+        }
+      ],
+      "evidence_envelope_sha256": "0745cb1f846facb3979efee9350f53ade7b5c2979c39c209f2465fa084b4ffe8",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "16002c644e38eb3a8b9f908b6461125d4c144d91d5a9fff262a8e532326b2917",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_multisource_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 142,
+      "producer_output_json": "{\"links\":[{\"label\":\"Runtime Spec__h_v1a_corrupted\",\"target\":\"../specs/runtime.md\"},{\"label\":\"Verifier Guide\",\"target\":\"../eval/verifier.md\"}]}",
+      "producer_output_sha256": "a96bbce04267a1b9ccd90d7816fa1a02b33c5d62768a8b1756a2a9202d1b6cf8",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_multisource_001",
+      "task_order": 3,
+      "task_sha256": "3d5ed5c22b16fae3e4382cda46dab1d6011da3328ce6fabe702600ff6330bc55"
+    },
+    {
+      "case_id": "docops_ps1_traceability_cross_doc_refs_001--canonical-valid",
+      "case_order": 16,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 90,
+          "path": "inputs/routing.md",
+          "role": "source",
+          "sha256": "c2376a9161f223f2675423c3002d4637ae1667e70640e2064c52227321164b4a"
+        }
+      ],
+      "evidence_envelope_sha256": "0294f62eface337ce156269118baf4d3dbcbf144151a891934efd21d2221e120",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "edd0c35a0af2537842f0826c342199fafe6963e03dd9e82a27ef5a2122b5adcc",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_cross_doc_refs_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 103,
+      "producer_output_json": "{\"links\":[{\"label\":\"Glossary\",\"target\":\"glossary.md\"},{\"label\":\"Metric Policy\",\"target\":\"metrics.md\"}]}",
+      "producer_output_sha256": "3eb72dab5a4b77cc75cd128d30f821a90af3bd9ac5e5bd4e6f69d21fb9f32e18",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_cross_doc_refs_001",
+      "task_order": 4,
+      "task_sha256": "b95fa64fdbffff9cadaa34295fc5d4c202df87f80206e37440a92706e60379d8"
+    },
+    {
+      "case_id": "docops_ps1_traceability_cross_doc_refs_001--semantic-equivalent-valid",
+      "case_order": 17,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 90,
+          "path": "inputs/routing.md",
+          "role": "source",
+          "sha256": "c2376a9161f223f2675423c3002d4637ae1667e70640e2064c52227321164b4a"
+        }
+      ],
+      "evidence_envelope_sha256": "0294f62eface337ce156269118baf4d3dbcbf144151a891934efd21d2221e120",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "edd0c35a0af2537842f0826c342199fafe6963e03dd9e82a27ef5a2122b5adcc",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_cross_doc_refs_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 164,
+      "producer_output_json": "{\n  \"links\": [\n    {\n      \"target\": \"glossary.md\",\n      \"label\": \"Glossary\"\n    },\n    {\n      \"target\": \"metrics.md\",\n      \"label\": \"Metric Policy\"\n    }\n  ]\n}\n",
+      "producer_output_sha256": "fcba402489b8e42a1193e3ff91f88e93990ad2f691f8eccd467c7e590f70c07f",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_cross_doc_refs_001",
+      "task_order": 4,
+      "task_sha256": "b95fa64fdbffff9cadaa34295fc5d4c202df87f80206e37440a92706e60379d8"
+    },
+    {
+      "case_id": "docops_ps1_traceability_cross_doc_refs_001--omission-invalid",
+      "case_order": 18,
+      "challenge_metadata": {
+        "deterministic_transform": "removed first item from required list field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 90,
+          "path": "inputs/routing.md",
+          "role": "source",
+          "sha256": "c2376a9161f223f2675423c3002d4637ae1667e70640e2064c52227321164b4a"
+        }
+      ],
+      "evidence_envelope_sha256": "0294f62eface337ce156269118baf4d3dbcbf144151a891934efd21d2221e120",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "edd0c35a0af2537842f0826c342199fafe6963e03dd9e82a27ef5a2122b5adcc",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_cross_doc_refs_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 59,
+      "producer_output_json": "{\"links\":[{\"label\":\"Metric Policy\",\"target\":\"metrics.md\"}]}",
+      "producer_output_sha256": "e60cd38f3975bd1ee0de85d126e46aa611717a9247ba07db008870ac054b5c4f",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_cross_doc_refs_001",
+      "task_order": 4,
+      "task_sha256": "b95fa64fdbffff9cadaa34295fc5d4c202df87f80206e37440a92706e60379d8"
+    },
+    {
+      "case_id": "docops_ps1_traceability_cross_doc_refs_001--fabrication-invalid",
+      "case_order": 19,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 90,
+          "path": "inputs/routing.md",
+          "role": "source",
+          "sha256": "c2376a9161f223f2675423c3002d4637ae1667e70640e2064c52227321164b4a"
+        }
+      ],
+      "evidence_envelope_sha256": "0294f62eface337ce156269118baf4d3dbcbf144151a891934efd21d2221e120",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "edd0c35a0af2537842f0826c342199fafe6963e03dd9e82a27ef5a2122b5adcc",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_cross_doc_refs_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 140,
+      "producer_output_json": "{\"links\":[{\"label\":\"Glossary\",\"target\":\"glossary.md\"},{\"label\":\"Metric Policy\",\"target\":\"metrics.md\"},{\"__fabricated__\":\"h-v1a-synthetic\"}]}",
+      "producer_output_sha256": "7f85bb409caa0d3b4af4f1c2980cca8465b7ae66d100ee7ab2ab817e63af5eca",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_cross_doc_refs_001",
+      "task_order": 4,
+      "task_sha256": "b95fa64fdbffff9cadaa34295fc5d4c202df87f80206e37440a92706e60379d8"
+    },
+    {
+      "case_id": "docops_ps1_traceability_cross_doc_refs_001--corruption-invalid",
+      "case_order": 20,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 90,
+          "path": "inputs/routing.md",
+          "role": "source",
+          "sha256": "c2376a9161f223f2675423c3002d4637ae1667e70640e2064c52227321164b4a"
+        }
+      ],
+      "evidence_envelope_sha256": "0294f62eface337ce156269118baf4d3dbcbf144151a891934efd21d2221e120",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "edd0c35a0af2537842f0826c342199fafe6963e03dd9e82a27ef5a2122b5adcc",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_cross_doc_refs_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 120,
+      "producer_output_json": "{\"links\":[{\"label\":\"Glossary__h_v1a_corrupted\",\"target\":\"glossary.md\"},{\"label\":\"Metric Policy\",\"target\":\"metrics.md\"}]}",
+      "producer_output_sha256": "a9f0ccf3bf36377c995886d12f6ad2e08cdf2c9413760a013c7884e620e1bf84",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_cross_doc_refs_001",
+      "task_order": 4,
+      "task_sha256": "b95fa64fdbffff9cadaa34295fc5d4c202df87f80206e37440a92706e60379d8"
+    },
+    {
+      "case_id": "docops_ps1_traceability_missing_target_001--canonical-valid",
+      "case_order": 21,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 125,
+          "path": "inputs/note.md",
+          "role": "source",
+          "sha256": "ef136c64734a643efc2983765d1c7771a398d60e8a5a6ca47057d68cc51caa8b"
+        }
+      ],
+      "evidence_envelope_sha256": "75c5369edd720e79a003fe5f70bdde3da14bf909d5569e5e93facd6d459c0ecb",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "7d5ca284a3d6c874852a45043a1e8bc21f1ed586ed1165e63f707049ac1a357f",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_missing_target_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 82,
+      "producer_output_json": "{\"links\":[{\"label\":\"Future Closure\",\"target\":\"../00_manifest/Future_Closure.md\"}]}",
+      "producer_output_sha256": "2a5edff12765b874c7d5397f066e6e72651f0d759746fe772c0009e60b4f0bde",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_missing_target_001",
+      "task_order": 5,
+      "task_sha256": "1f94776fc6430ac5c1f7c00a7b1b800b0a339103d6f6fd86b2617a9c97235953"
+    },
+    {
+      "case_id": "docops_ps1_traceability_missing_target_001--semantic-equivalent-valid",
+      "case_order": 22,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 125,
+          "path": "inputs/note.md",
+          "role": "source",
+          "sha256": "ef136c64734a643efc2983765d1c7771a398d60e8a5a6ca47057d68cc51caa8b"
+        }
+      ],
+      "evidence_envelope_sha256": "75c5369edd720e79a003fe5f70bdde3da14bf909d5569e5e93facd6d459c0ecb",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "7d5ca284a3d6c874852a45043a1e8bc21f1ed586ed1165e63f707049ac1a357f",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_missing_target_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 117,
+      "producer_output_json": "{\n  \"links\": [\n    {\n      \"target\": \"../00_manifest/Future_Closure.md\",\n      \"label\": \"Future Closure\"\n    }\n  ]\n}\n",
+      "producer_output_sha256": "98a09d37f8ef405fd46937004d48c62c02c8b04cc90cbf0291bb2ec20ff887f1",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_missing_target_001",
+      "task_order": 5,
+      "task_sha256": "1f94776fc6430ac5c1f7c00a7b1b800b0a339103d6f6fd86b2617a9c97235953"
+    },
+    {
+      "case_id": "docops_ps1_traceability_missing_target_001--omission-invalid",
+      "case_order": 23,
+      "challenge_metadata": {
+        "deterministic_transform": "removed first item from required list field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 125,
+          "path": "inputs/note.md",
+          "role": "source",
+          "sha256": "ef136c64734a643efc2983765d1c7771a398d60e8a5a6ca47057d68cc51caa8b"
+        }
+      ],
+      "evidence_envelope_sha256": "75c5369edd720e79a003fe5f70bdde3da14bf909d5569e5e93facd6d459c0ecb",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "7d5ca284a3d6c874852a45043a1e8bc21f1ed586ed1165e63f707049ac1a357f",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_missing_target_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 12,
+      "producer_output_json": "{\"links\":[]}",
+      "producer_output_sha256": "c18fbf192f8697e91444b95581c52428956c16e66c17d27767529a3ecee80c7b",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_missing_target_001",
+      "task_order": 5,
+      "task_sha256": "1f94776fc6430ac5c1f7c00a7b1b800b0a339103d6f6fd86b2617a9c97235953"
+    },
+    {
+      "case_id": "docops_ps1_traceability_missing_target_001--fabrication-invalid",
+      "case_order": 24,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 125,
+          "path": "inputs/note.md",
+          "role": "source",
+          "sha256": "ef136c64734a643efc2983765d1c7771a398d60e8a5a6ca47057d68cc51caa8b"
+        }
+      ],
+      "evidence_envelope_sha256": "75c5369edd720e79a003fe5f70bdde3da14bf909d5569e5e93facd6d459c0ecb",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "7d5ca284a3d6c874852a45043a1e8bc21f1ed586ed1165e63f707049ac1a357f",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_missing_target_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 119,
+      "producer_output_json": "{\"links\":[{\"label\":\"Future Closure\",\"target\":\"../00_manifest/Future_Closure.md\"},{\"__fabricated__\":\"h-v1a-synthetic\"}]}",
+      "producer_output_sha256": "8bfe9802446e5c770b0169632c57d547680ba5086db9afb3ab3f2e512623eb54",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_missing_target_001",
+      "task_order": 5,
+      "task_sha256": "1f94776fc6430ac5c1f7c00a7b1b800b0a339103d6f6fd86b2617a9c97235953"
+    },
+    {
+      "case_id": "docops_ps1_traceability_missing_target_001--corruption-invalid",
+      "case_order": 25,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field links",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 125,
+          "path": "inputs/note.md",
+          "role": "source",
+          "sha256": "ef136c64734a643efc2983765d1c7771a398d60e8a5a6ca47057d68cc51caa8b"
+        }
+      ],
+      "evidence_envelope_sha256": "75c5369edd720e79a003fe5f70bdde3da14bf909d5569e5e93facd6d459c0ecb",
+      "expected_path": "expected/traceability.json",
+      "expected_sha256": "7d5ca284a3d6c874852a45043a1e8bc21f1ed586ed1165e63f707049ac1a357f",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_missing_target_001",
+      "output_kind": "traceability",
+      "producer_output_bytes": 99,
+      "producer_output_json": "{\"links\":[{\"label\":\"Future Closure__h_v1a_corrupted\",\"target\":\"../00_manifest/Future_Closure.md\"}]}",
+      "producer_output_sha256": "fb48525118333453224b56679885a5c3d0ccb62c31bd0aea10efa57968b079e2",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_missing_target_001",
+      "task_order": 5,
+      "task_sha256": "1f94776fc6430ac5c1f7c00a7b1b800b0a339103d6f6fd86b2617a9c97235953"
+    },
+    {
+      "case_id": "docops_ps1_traceability_structured_outline_001--canonical-valid",
+      "case_order": 26,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 94,
+          "path": "inputs/outline.md",
+          "role": "source",
+          "sha256": "9ab75969718b0e31fdbdd9d4db3e75265dc6797f771104a6417384340aa69df3"
+        }
+      ],
+      "evidence_envelope_sha256": "38fac466799d3b012e7f6b74b804405cfb1394c1925a714596cec73c96573ac9",
+      "expected_path": "expected/structure.json",
+      "expected_sha256": "e38746ebcd14b28b65612011a8e83390690e1437c4590bd695544247759ea542",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_structured_outline_001",
+      "output_kind": "structure",
+      "producer_output_bytes": 240,
+      "producer_output_json": "{\"selector_results\":[{\"match_count\":1,\"status\":\"resolved\"}],\"structure\":{\"format\":\"markdown\",\"headings\":[{\"level\":1,\"line\":1,\"text\":\"Document Map\"},{\"level\":2,\"line\":3,\"text\":\"Manifest\"},{\"level\":2,\"line\":6,\"text\":\"Specs\"}],\"line_count\":7}}",
+      "producer_output_sha256": "391ac7d2b7f108e694e0e8e30ed2a325bb9d2a95a2692a6aeb1267fe00eef425",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_structured_outline_001",
+      "task_order": 6,
+      "task_sha256": "d730c68d797af1fedf8bb71bafd3f737476026583b823ea88168247fc718680a"
+    },
+    {
+      "case_id": "docops_ps1_traceability_structured_outline_001--semantic-equivalent-valid",
+      "case_order": 27,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 94,
+          "path": "inputs/outline.md",
+          "role": "source",
+          "sha256": "9ab75969718b0e31fdbdd9d4db3e75265dc6797f771104a6417384340aa69df3"
+        }
+      ],
+      "evidence_envelope_sha256": "38fac466799d3b012e7f6b74b804405cfb1394c1925a714596cec73c96573ac9",
+      "expected_path": "expected/structure.json",
+      "expected_sha256": "e38746ebcd14b28b65612011a8e83390690e1437c4590bd695544247759ea542",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_structured_outline_001",
+      "output_kind": "structure",
+      "producer_output_bytes": 437,
+      "producer_output_json": "{\n  \"selector_results\": [\n    {\n      \"match_count\": 1,\n      \"status\": \"resolved\"\n    }\n  ],\n  \"structure\": {\n    \"headings\": [\n      {\n        \"line\": 1,\n        \"text\": \"Document Map\",\n        \"level\": 1\n      },\n      {\n        \"line\": 3,\n        \"text\": \"Manifest\",\n        \"level\": 2\n      },\n      {\n        \"line\": 6,\n        \"text\": \"Specs\",\n        \"level\": 2\n      }\n    ],\n    \"line_count\": 7,\n    \"format\": \"markdown\"\n  }\n}\n",
+      "producer_output_sha256": "848509f8c3a5c5959df7c0de0a9380cc2392d2052301eed8cd44d9de6c3df13c",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_structured_outline_001",
+      "task_order": 6,
+      "task_sha256": "d730c68d797af1fedf8bb71bafd3f737476026583b823ea88168247fc718680a"
+    },
+    {
+      "case_id": "docops_ps1_traceability_structured_outline_001--omission-invalid",
+      "case_order": 28,
+      "challenge_metadata": {
+        "deterministic_transform": "removed first item from required list field selector_results",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 94,
+          "path": "inputs/outline.md",
+          "role": "source",
+          "sha256": "9ab75969718b0e31fdbdd9d4db3e75265dc6797f771104a6417384340aa69df3"
+        }
+      ],
+      "evidence_envelope_sha256": "38fac466799d3b012e7f6b74b804405cfb1394c1925a714596cec73c96573ac9",
+      "expected_path": "expected/structure.json",
+      "expected_sha256": "e38746ebcd14b28b65612011a8e83390690e1437c4590bd695544247759ea542",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_structured_outline_001",
+      "output_kind": "structure",
+      "producer_output_bytes": 203,
+      "producer_output_json": "{\"selector_results\":[],\"structure\":{\"format\":\"markdown\",\"headings\":[{\"level\":1,\"line\":1,\"text\":\"Document Map\"},{\"level\":2,\"line\":3,\"text\":\"Manifest\"},{\"level\":2,\"line\":6,\"text\":\"Specs\"}],\"line_count\":7}}",
+      "producer_output_sha256": "d0217a2863929d26efcb31319bbd1d5eab9eb982c7b6478af180934b26dcc0e8",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_structured_outline_001",
+      "task_order": 6,
+      "task_sha256": "d730c68d797af1fedf8bb71bafd3f737476026583b823ea88168247fc718680a"
+    },
+    {
+      "case_id": "docops_ps1_traceability_structured_outline_001--fabrication-invalid",
+      "case_order": 29,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field selector_results",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 94,
+          "path": "inputs/outline.md",
+          "role": "source",
+          "sha256": "9ab75969718b0e31fdbdd9d4db3e75265dc6797f771104a6417384340aa69df3"
+        }
+      ],
+      "evidence_envelope_sha256": "38fac466799d3b012e7f6b74b804405cfb1394c1925a714596cec73c96573ac9",
+      "expected_path": "expected/structure.json",
+      "expected_sha256": "e38746ebcd14b28b65612011a8e83390690e1437c4590bd695544247759ea542",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_structured_outline_001",
+      "output_kind": "structure",
+      "producer_output_bytes": 277,
+      "producer_output_json": "{\"selector_results\":[{\"match_count\":1,\"status\":\"resolved\"},{\"__fabricated__\":\"h-v1a-synthetic\"}],\"structure\":{\"format\":\"markdown\",\"headings\":[{\"level\":1,\"line\":1,\"text\":\"Document Map\"},{\"level\":2,\"line\":3,\"text\":\"Manifest\"},{\"level\":2,\"line\":6,\"text\":\"Specs\"}],\"line_count\":7}}",
+      "producer_output_sha256": "0b32a3dcefc7dc3dbe3d35870001dd476794c0b31d129e8954ed51cafa997d80",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_structured_outline_001",
+      "task_order": 6,
+      "task_sha256": "d730c68d797af1fedf8bb71bafd3f737476026583b823ea88168247fc718680a"
+    },
+    {
+      "case_id": "docops_ps1_traceability_structured_outline_001--corruption-invalid",
+      "case_order": 30,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field selector_results",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 94,
+          "path": "inputs/outline.md",
+          "role": "source",
+          "sha256": "9ab75969718b0e31fdbdd9d4db3e75265dc6797f771104a6417384340aa69df3"
+        }
+      ],
+      "evidence_envelope_sha256": "38fac466799d3b012e7f6b74b804405cfb1394c1925a714596cec73c96573ac9",
+      "expected_path": "expected/structure.json",
+      "expected_sha256": "e38746ebcd14b28b65612011a8e83390690e1437c4590bd695544247759ea542",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_traceability_structured_outline_001",
+      "output_kind": "structure",
+      "producer_output_bytes": 246,
+      "producer_output_json": "{\"selector_results\":[{\"match_count\":1000004,\"status\":\"resolved\"}],\"structure\":{\"format\":\"markdown\",\"headings\":[{\"level\":1,\"line\":1,\"text\":\"Document Map\"},{\"level\":2,\"line\":3,\"text\":\"Manifest\"},{\"level\":2,\"line\":6,\"text\":\"Specs\"}],\"line_count\":7}}",
+      "producer_output_sha256": "faa1a7ffd1b5e52a2c4a5dc206777ca56ef0f18f88e778ca357ead43368ce8b8",
+      "stratum": "traceability-extraction",
+      "system_claim": "success",
+      "task_id": "docops_ps1_traceability_structured_outline_001",
+      "task_order": 6,
+      "task_sha256": "d730c68d797af1fedf8bb71bafd3f737476026583b823ea88168247fc718680a"
+    },
+    {
+      "case_id": "docops_detect_terms_001--canonical-valid",
+      "case_order": 31,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 109,
+          "path": "inputs/term_a.md",
+          "role": "source",
+          "sha256": "be22817465dfc784e808299b474bba8794d46fc1661f248f47afa09a64146886"
+        },
+        {
+          "bytes": 126,
+          "path": "inputs/term_b.md",
+          "role": "source",
+          "sha256": "c5cebf7b869effc32bc84f76dbc83fea6f614c0929e6f41ff38c605fde02eaf8"
+        }
+      ],
+      "evidence_envelope_sha256": "bb622de192ffeb926d160c81d4d167c988b88ee6e89456f0ddbba4b5f6778f5e",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "585e80449cd506af29a282375ac735e0cfb2e4fd097a1c5c564f4ed6f5b04432",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_detect_terms_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 109,
+      "producer_output_json": "{\"inconsistencies\":[{\"canonical\":\"Evidence Packet\",\"observed\":\"evidence package\",\"path\":\"inputs/term_b.md\"}]}",
+      "producer_output_sha256": "ce37c18547834707d0bccf0b686b0dec03ace9a1ef6a250ea4ed5736ee4f8ba3",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_detect_terms_001",
+      "task_order": 7,
+      "task_sha256": "a1663b32c0484b2783ca37c8a25ae66c552ae0b42f8b8c777999a9337e28b4c2"
+    },
+    {
+      "case_id": "docops_detect_terms_001--semantic-equivalent-valid",
+      "case_order": 32,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 109,
+          "path": "inputs/term_a.md",
+          "role": "source",
+          "sha256": "be22817465dfc784e808299b474bba8794d46fc1661f248f47afa09a64146886"
+        },
+        {
+          "bytes": 126,
+          "path": "inputs/term_b.md",
+          "role": "source",
+          "sha256": "c5cebf7b869effc32bc84f76dbc83fea6f614c0929e6f41ff38c605fde02eaf8"
+        }
+      ],
+      "evidence_envelope_sha256": "bb622de192ffeb926d160c81d4d167c988b88ee6e89456f0ddbba4b5f6778f5e",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "585e80449cd506af29a282375ac735e0cfb2e4fd097a1c5c564f4ed6f5b04432",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_detect_terms_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 152,
+      "producer_output_json": "{\n  \"inconsistencies\": [\n    {\n      \"path\": \"inputs/term_b.md\",\n      \"observed\": \"evidence package\",\n      \"canonical\": \"Evidence Packet\"\n    }\n  ]\n}\n",
+      "producer_output_sha256": "6a7ae9389722e45965a72525c0708321e972c31c3382e7fd402b3729ab2a3a5c",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_detect_terms_001",
+      "task_order": 7,
+      "task_sha256": "a1663b32c0484b2783ca37c8a25ae66c552ae0b42f8b8c777999a9337e28b4c2"
+    },
+    {
+      "case_id": "docops_detect_terms_001--omission-invalid",
+      "case_order": 33,
+      "challenge_metadata": {
+        "deterministic_transform": "removed first item from required list field inconsistencies",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 109,
+          "path": "inputs/term_a.md",
+          "role": "source",
+          "sha256": "be22817465dfc784e808299b474bba8794d46fc1661f248f47afa09a64146886"
+        },
+        {
+          "bytes": 126,
+          "path": "inputs/term_b.md",
+          "role": "source",
+          "sha256": "c5cebf7b869effc32bc84f76dbc83fea6f614c0929e6f41ff38c605fde02eaf8"
+        }
+      ],
+      "evidence_envelope_sha256": "bb622de192ffeb926d160c81d4d167c988b88ee6e89456f0ddbba4b5f6778f5e",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "585e80449cd506af29a282375ac735e0cfb2e4fd097a1c5c564f4ed6f5b04432",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_detect_terms_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 22,
+      "producer_output_json": "{\"inconsistencies\":[]}",
+      "producer_output_sha256": "f5f9203066a9902eeab2b91d30f6aba58929bf5aa21ae3842b14a821342c3412",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_detect_terms_001",
+      "task_order": 7,
+      "task_sha256": "a1663b32c0484b2783ca37c8a25ae66c552ae0b42f8b8c777999a9337e28b4c2"
+    },
+    {
+      "case_id": "docops_detect_terms_001--fabrication-invalid",
+      "case_order": 34,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field inconsistencies",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 109,
+          "path": "inputs/term_a.md",
+          "role": "source",
+          "sha256": "be22817465dfc784e808299b474bba8794d46fc1661f248f47afa09a64146886"
+        },
+        {
+          "bytes": 126,
+          "path": "inputs/term_b.md",
+          "role": "source",
+          "sha256": "c5cebf7b869effc32bc84f76dbc83fea6f614c0929e6f41ff38c605fde02eaf8"
+        }
+      ],
+      "evidence_envelope_sha256": "bb622de192ffeb926d160c81d4d167c988b88ee6e89456f0ddbba4b5f6778f5e",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "585e80449cd506af29a282375ac735e0cfb2e4fd097a1c5c564f4ed6f5b04432",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_detect_terms_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 146,
+      "producer_output_json": "{\"inconsistencies\":[{\"canonical\":\"Evidence Packet\",\"observed\":\"evidence package\",\"path\":\"inputs/term_b.md\"},{\"__fabricated__\":\"h-v1a-synthetic\"}]}",
+      "producer_output_sha256": "0dc6fec80419303213a44f5d88a6aa5690b83402d6277af98045acafe77e33b4",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_detect_terms_001",
+      "task_order": 7,
+      "task_sha256": "a1663b32c0484b2783ca37c8a25ae66c552ae0b42f8b8c777999a9337e28b4c2"
+    },
+    {
+      "case_id": "docops_detect_terms_001--corruption-invalid",
+      "case_order": 35,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field inconsistencies",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 109,
+          "path": "inputs/term_a.md",
+          "role": "source",
+          "sha256": "be22817465dfc784e808299b474bba8794d46fc1661f248f47afa09a64146886"
+        },
+        {
+          "bytes": 126,
+          "path": "inputs/term_b.md",
+          "role": "source",
+          "sha256": "c5cebf7b869effc32bc84f76dbc83fea6f614c0929e6f41ff38c605fde02eaf8"
+        }
+      ],
+      "evidence_envelope_sha256": "bb622de192ffeb926d160c81d4d167c988b88ee6e89456f0ddbba4b5f6778f5e",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "585e80449cd506af29a282375ac735e0cfb2e4fd097a1c5c564f4ed6f5b04432",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_detect_terms_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 126,
+      "producer_output_json": "{\"inconsistencies\":[{\"canonical\":\"Evidence Packet__h_v1a_corrupted\",\"observed\":\"evidence package\",\"path\":\"inputs/term_b.md\"}]}",
+      "producer_output_sha256": "b39304a2d5b372ecd99fc586209dd02fc8db2c62d5f205808f552d47cbe3bff3",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_detect_terms_001",
+      "task_order": 7,
+      "task_sha256": "a1663b32c0484b2783ca37c8a25ae66c552ae0b42f8b8c777999a9337e28b4c2"
+    },
+    {
+      "case_id": "docops_struct_contract_pass_001--canonical-valid",
+      "case_order": 36,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 81,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "95559a9798554d4a495e27072f586be8d9d4d6a66740353c8a044c39b2db971a"
+        },
+        {
+          "bytes": 251,
+          "path": "inputs/contract.json",
+          "role": "contract",
+          "sha256": "8e0a74143f6f084d3e69baa70031f642af405ce1b5d1f9fa6cef00fdc08d2a9f"
+        }
+      ],
+      "evidence_envelope_sha256": "61d99184b1f50b061fc5e06ba7f94c7ae4a1b4eb3ac3e0da26cd151df61dd828",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "96c1aa6572fb8cbdd99a7da361cf0b9e3d1333e44a3613ace991cf19faebe44d",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_contract_pass_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 29,
+      "producer_output_json": "{\"failures\":[],\"passed\":true}",
+      "producer_output_sha256": "01928bc3abc37101203d491bf3a9cf96b34259ee8d9282516e3d85b1a78d6a86",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_struct_contract_pass_001",
+      "task_order": 8,
+      "task_sha256": "fbbeb7f68a3d8aca8e4665dbf439ef649bf533850ae9f11250300b05338ba1d7"
+    },
+    {
+      "case_id": "docops_struct_contract_pass_001--semantic-equivalent-valid",
+      "case_order": 37,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 81,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "95559a9798554d4a495e27072f586be8d9d4d6a66740353c8a044c39b2db971a"
+        },
+        {
+          "bytes": 251,
+          "path": "inputs/contract.json",
+          "role": "contract",
+          "sha256": "8e0a74143f6f084d3e69baa70031f642af405ce1b5d1f9fa6cef00fdc08d2a9f"
+        }
+      ],
+      "evidence_envelope_sha256": "61d99184b1f50b061fc5e06ba7f94c7ae4a1b4eb3ac3e0da26cd151df61dd828",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "96c1aa6572fb8cbdd99a7da361cf0b9e3d1333e44a3613ace991cf19faebe44d",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_contract_pass_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 39,
+      "producer_output_json": "{\n  \"failures\": [],\n  \"passed\": true\n}\n",
+      "producer_output_sha256": "c0ac47fc7e3c18dd4d322d1af9ed42b84a24b963cf350db3af4d3aaa574175c3",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_struct_contract_pass_001",
+      "task_order": 8,
+      "task_sha256": "fbbeb7f68a3d8aca8e4665dbf439ef649bf533850ae9f11250300b05338ba1d7"
+    },
+    {
+      "case_id": "docops_struct_contract_pass_001--omission-invalid",
+      "case_order": 38,
+      "challenge_metadata": {
+        "deterministic_transform": "removed required top-level field failures (fallback for empty/non-list field)",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 81,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "95559a9798554d4a495e27072f586be8d9d4d6a66740353c8a044c39b2db971a"
+        },
+        {
+          "bytes": 251,
+          "path": "inputs/contract.json",
+          "role": "contract",
+          "sha256": "8e0a74143f6f084d3e69baa70031f642af405ce1b5d1f9fa6cef00fdc08d2a9f"
+        }
+      ],
+      "evidence_envelope_sha256": "61d99184b1f50b061fc5e06ba7f94c7ae4a1b4eb3ac3e0da26cd151df61dd828",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "96c1aa6572fb8cbdd99a7da361cf0b9e3d1333e44a3613ace991cf19faebe44d",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_contract_pass_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 15,
+      "producer_output_json": "{\"passed\":true}",
+      "producer_output_sha256": "11c11db30f4b3f6c758722ba3e27eea08145b7d212f6a157451e364b48475280",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_struct_contract_pass_001",
+      "task_order": 8,
+      "task_sha256": "fbbeb7f68a3d8aca8e4665dbf439ef649bf533850ae9f11250300b05338ba1d7"
+    },
+    {
+      "case_id": "docops_struct_contract_pass_001--fabrication-invalid",
+      "case_order": 39,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field failures",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 81,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "95559a9798554d4a495e27072f586be8d9d4d6a66740353c8a044c39b2db971a"
+        },
+        {
+          "bytes": 251,
+          "path": "inputs/contract.json",
+          "role": "contract",
+          "sha256": "8e0a74143f6f084d3e69baa70031f642af405ce1b5d1f9fa6cef00fdc08d2a9f"
+        }
+      ],
+      "evidence_envelope_sha256": "61d99184b1f50b061fc5e06ba7f94c7ae4a1b4eb3ac3e0da26cd151df61dd828",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "96c1aa6572fb8cbdd99a7da361cf0b9e3d1333e44a3613ace991cf19faebe44d",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_contract_pass_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 65,
+      "producer_output_json": "{\"failures\":[{\"__fabricated__\":\"h-v1a-synthetic\"}],\"passed\":true}",
+      "producer_output_sha256": "1a3e58b634802f0912b496f4241f7baa3a106141ee2bfbf717fb7762fd6b2a77",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_struct_contract_pass_001",
+      "task_order": 8,
+      "task_sha256": "fbbeb7f68a3d8aca8e4665dbf439ef649bf533850ae9f11250300b05338ba1d7"
+    },
+    {
+      "case_id": "docops_struct_contract_pass_001--corruption-invalid",
+      "case_order": 40,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field failures",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 81,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "95559a9798554d4a495e27072f586be8d9d4d6a66740353c8a044c39b2db971a"
+        },
+        {
+          "bytes": 251,
+          "path": "inputs/contract.json",
+          "role": "contract",
+          "sha256": "8e0a74143f6f084d3e69baa70031f642af405ce1b5d1f9fa6cef00fdc08d2a9f"
+        }
+      ],
+      "evidence_envelope_sha256": "61d99184b1f50b061fc5e06ba7f94c7ae4a1b4eb3ac3e0da26cd151df61dd828",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "96c1aa6572fb8cbdd99a7da361cf0b9e3d1333e44a3613ace991cf19faebe44d",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_contract_pass_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 64,
+      "producer_output_json": "{\"failures\":[{\"__corrupted__\":\"h-v1a-synthetic\"}],\"passed\":true}",
+      "producer_output_sha256": "873395bce8e6c7301c076b92463cb4dadbb7ae9f7353dc14ef6bc2634f2cb038",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_struct_contract_pass_001",
+      "task_order": 8,
+      "task_sha256": "fbbeb7f68a3d8aca8e4665dbf439ef649bf533850ae9f11250300b05338ba1d7"
+    },
+    {
+      "case_id": "docops_struct_contract_fail_001--canonical-valid",
+      "case_order": 41,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 41,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "bbd5d363f4c988dba11f4bf0113727214534096cf7dbd9d22bd8e7282ce81d8e"
+        }
+      ],
+      "evidence_envelope_sha256": "7e28792dfd5f743c77fdbf890591511106af2e11e3f843811afd1f8a5f90e984",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "ca27b13aaf6f1b630b820d4c8b19d15af22889dc7ec6d33644c27ed491e59bf4",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_contract_fail_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 104,
+      "producer_output_json": "{\"failures\":[{\"code\":\"required_heading_missing\",\"detail\":{\"level\":2,\"text\":\"Rollback\"}}],\"passed\":false}",
+      "producer_output_sha256": "22e1d20ca577e4865bbe4d96f18b6ab338620c4266ebb3c35785db9f21d187b4",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_struct_contract_fail_001",
+      "task_order": 9,
+      "task_sha256": "6599f92957b1a6c6d09ff68a09983350951eea5e3cf0fb5a07accfa1bd2da630"
+    },
+    {
+      "case_id": "docops_struct_contract_fail_001--semantic-equivalent-valid",
+      "case_order": 42,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 41,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "bbd5d363f4c988dba11f4bf0113727214534096cf7dbd9d22bd8e7282ce81d8e"
+        }
+      ],
+      "evidence_envelope_sha256": "7e28792dfd5f743c77fdbf890591511106af2e11e3f843811afd1f8a5f90e984",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "ca27b13aaf6f1b630b820d4c8b19d15af22889dc7ec6d33644c27ed491e59bf4",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_contract_fail_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 170,
+      "producer_output_json": "{\n  \"failures\": [\n    {\n      \"detail\": {\n        \"level\": 2,\n        \"text\": \"Rollback\"\n      },\n      \"code\": \"required_heading_missing\"\n    }\n  ],\n  \"passed\": false\n}\n",
+      "producer_output_sha256": "9bf326d72b0d384935180ffe13d97e2a1aa0b2b7f2de67094ae3cbba42ef65f5",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_struct_contract_fail_001",
+      "task_order": 9,
+      "task_sha256": "6599f92957b1a6c6d09ff68a09983350951eea5e3cf0fb5a07accfa1bd2da630"
+    },
+    {
+      "case_id": "docops_struct_contract_fail_001--omission-invalid",
+      "case_order": 43,
+      "challenge_metadata": {
+        "deterministic_transform": "removed first item from required list field failures",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 41,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "bbd5d363f4c988dba11f4bf0113727214534096cf7dbd9d22bd8e7282ce81d8e"
+        }
+      ],
+      "evidence_envelope_sha256": "7e28792dfd5f743c77fdbf890591511106af2e11e3f843811afd1f8a5f90e984",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "ca27b13aaf6f1b630b820d4c8b19d15af22889dc7ec6d33644c27ed491e59bf4",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_contract_fail_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 30,
+      "producer_output_json": "{\"failures\":[],\"passed\":false}",
+      "producer_output_sha256": "754cc18d23ff0e66d1ba6fc4a20aa73af8a822e7e4dda65439c061aa37612500",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_struct_contract_fail_001",
+      "task_order": 9,
+      "task_sha256": "6599f92957b1a6c6d09ff68a09983350951eea5e3cf0fb5a07accfa1bd2da630"
+    },
+    {
+      "case_id": "docops_struct_contract_fail_001--fabrication-invalid",
+      "case_order": 44,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field failures",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 41,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "bbd5d363f4c988dba11f4bf0113727214534096cf7dbd9d22bd8e7282ce81d8e"
+        }
+      ],
+      "evidence_envelope_sha256": "7e28792dfd5f743c77fdbf890591511106af2e11e3f843811afd1f8a5f90e984",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "ca27b13aaf6f1b630b820d4c8b19d15af22889dc7ec6d33644c27ed491e59bf4",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_contract_fail_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 141,
+      "producer_output_json": "{\"failures\":[{\"code\":\"required_heading_missing\",\"detail\":{\"level\":2,\"text\":\"Rollback\"}},{\"__fabricated__\":\"h-v1a-synthetic\"}],\"passed\":false}",
+      "producer_output_sha256": "d9aba1a76275f069f6c27c297d4030b35bb225d160f86f86629ee0842557674a",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_struct_contract_fail_001",
+      "task_order": 9,
+      "task_sha256": "6599f92957b1a6c6d09ff68a09983350951eea5e3cf0fb5a07accfa1bd2da630"
+    },
+    {
+      "case_id": "docops_struct_contract_fail_001--corruption-invalid",
+      "case_order": 45,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field failures",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 41,
+          "path": "inputs/spec.md",
+          "role": "source",
+          "sha256": "bbd5d363f4c988dba11f4bf0113727214534096cf7dbd9d22bd8e7282ce81d8e"
+        }
+      ],
+      "evidence_envelope_sha256": "7e28792dfd5f743c77fdbf890591511106af2e11e3f843811afd1f8a5f90e984",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "ca27b13aaf6f1b630b820d4c8b19d15af22889dc7ec6d33644c27ed491e59bf4",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_struct_contract_fail_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 121,
+      "producer_output_json": "{\"failures\":[{\"code\":\"required_heading_missing__h_v1a_corrupted\",\"detail\":{\"level\":2,\"text\":\"Rollback\"}}],\"passed\":false}",
+      "producer_output_sha256": "f829a0e133e21064d05b6b66cb333223289bbda681c404afad633ae6b5f63ca4",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_struct_contract_fail_001",
+      "task_order": 9,
+      "task_sha256": "6599f92957b1a6c6d09ff68a09983350951eea5e3cf0fb5a07accfa1bd2da630"
+    },
+    {
+      "case_id": "docops_ps1_terms_alias_conflict_001--canonical-valid",
+      "case_order": 46,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 52,
+          "path": "inputs/term_a.md",
+          "role": "source",
+          "sha256": "eaf4c6802d9a6a47beeb33c5eedf24ae61226e866b003a9be5e8e368c2dba9d3"
+        },
+        {
+          "bytes": 73,
+          "path": "inputs/term_b.md",
+          "role": "source",
+          "sha256": "97e82cd2fc13f5e3cb7f4ce2c30807a18dd074a31fda1f5252cf51c070a6f856"
+        }
+      ],
+      "evidence_envelope_sha256": "cc5ecb9ed7d87e12eb4242882ff584b321d1b9c4fa16f17027bd9647911f7599",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "d4ae70c52c73c173472633f2e710cfec5585f0e06e3dc692be4c3eca3d01b144",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_alias_conflict_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 109,
+      "producer_output_json": "{\"inconsistencies\":[{\"canonical\":\"Evidence Packet\",\"observed\":\"evidence package\",\"path\":\"inputs/term_b.md\"}]}",
+      "producer_output_sha256": "ce37c18547834707d0bccf0b686b0dec03ace9a1ef6a250ea4ed5736ee4f8ba3",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_alias_conflict_001",
+      "task_order": 10,
+      "task_sha256": "074af2de6a0f5fa8c4af05a8f6dc9cd4515c424949145b54d863690efb8607e7"
+    },
+    {
+      "case_id": "docops_ps1_terms_alias_conflict_001--semantic-equivalent-valid",
+      "case_order": 47,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 52,
+          "path": "inputs/term_a.md",
+          "role": "source",
+          "sha256": "eaf4c6802d9a6a47beeb33c5eedf24ae61226e866b003a9be5e8e368c2dba9d3"
+        },
+        {
+          "bytes": 73,
+          "path": "inputs/term_b.md",
+          "role": "source",
+          "sha256": "97e82cd2fc13f5e3cb7f4ce2c30807a18dd074a31fda1f5252cf51c070a6f856"
+        }
+      ],
+      "evidence_envelope_sha256": "cc5ecb9ed7d87e12eb4242882ff584b321d1b9c4fa16f17027bd9647911f7599",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "d4ae70c52c73c173472633f2e710cfec5585f0e06e3dc692be4c3eca3d01b144",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_alias_conflict_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 152,
+      "producer_output_json": "{\n  \"inconsistencies\": [\n    {\n      \"path\": \"inputs/term_b.md\",\n      \"observed\": \"evidence package\",\n      \"canonical\": \"Evidence Packet\"\n    }\n  ]\n}\n",
+      "producer_output_sha256": "6a7ae9389722e45965a72525c0708321e972c31c3382e7fd402b3729ab2a3a5c",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_alias_conflict_001",
+      "task_order": 10,
+      "task_sha256": "074af2de6a0f5fa8c4af05a8f6dc9cd4515c424949145b54d863690efb8607e7"
+    },
+    {
+      "case_id": "docops_ps1_terms_alias_conflict_001--omission-invalid",
+      "case_order": 48,
+      "challenge_metadata": {
+        "deterministic_transform": "removed first item from required list field inconsistencies",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 52,
+          "path": "inputs/term_a.md",
+          "role": "source",
+          "sha256": "eaf4c6802d9a6a47beeb33c5eedf24ae61226e866b003a9be5e8e368c2dba9d3"
+        },
+        {
+          "bytes": 73,
+          "path": "inputs/term_b.md",
+          "role": "source",
+          "sha256": "97e82cd2fc13f5e3cb7f4ce2c30807a18dd074a31fda1f5252cf51c070a6f856"
+        }
+      ],
+      "evidence_envelope_sha256": "cc5ecb9ed7d87e12eb4242882ff584b321d1b9c4fa16f17027bd9647911f7599",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "d4ae70c52c73c173472633f2e710cfec5585f0e06e3dc692be4c3eca3d01b144",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_alias_conflict_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 22,
+      "producer_output_json": "{\"inconsistencies\":[]}",
+      "producer_output_sha256": "f5f9203066a9902eeab2b91d30f6aba58929bf5aa21ae3842b14a821342c3412",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_alias_conflict_001",
+      "task_order": 10,
+      "task_sha256": "074af2de6a0f5fa8c4af05a8f6dc9cd4515c424949145b54d863690efb8607e7"
+    },
+    {
+      "case_id": "docops_ps1_terms_alias_conflict_001--fabrication-invalid",
+      "case_order": 49,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field inconsistencies",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 52,
+          "path": "inputs/term_a.md",
+          "role": "source",
+          "sha256": "eaf4c6802d9a6a47beeb33c5eedf24ae61226e866b003a9be5e8e368c2dba9d3"
+        },
+        {
+          "bytes": 73,
+          "path": "inputs/term_b.md",
+          "role": "source",
+          "sha256": "97e82cd2fc13f5e3cb7f4ce2c30807a18dd074a31fda1f5252cf51c070a6f856"
+        }
+      ],
+      "evidence_envelope_sha256": "cc5ecb9ed7d87e12eb4242882ff584b321d1b9c4fa16f17027bd9647911f7599",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "d4ae70c52c73c173472633f2e710cfec5585f0e06e3dc692be4c3eca3d01b144",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_alias_conflict_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 146,
+      "producer_output_json": "{\"inconsistencies\":[{\"canonical\":\"Evidence Packet\",\"observed\":\"evidence package\",\"path\":\"inputs/term_b.md\"},{\"__fabricated__\":\"h-v1a-synthetic\"}]}",
+      "producer_output_sha256": "0dc6fec80419303213a44f5d88a6aa5690b83402d6277af98045acafe77e33b4",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_alias_conflict_001",
+      "task_order": 10,
+      "task_sha256": "074af2de6a0f5fa8c4af05a8f6dc9cd4515c424949145b54d863690efb8607e7"
+    },
+    {
+      "case_id": "docops_ps1_terms_alias_conflict_001--corruption-invalid",
+      "case_order": 50,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field inconsistencies",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 52,
+          "path": "inputs/term_a.md",
+          "role": "source",
+          "sha256": "eaf4c6802d9a6a47beeb33c5eedf24ae61226e866b003a9be5e8e368c2dba9d3"
+        },
+        {
+          "bytes": 73,
+          "path": "inputs/term_b.md",
+          "role": "source",
+          "sha256": "97e82cd2fc13f5e3cb7f4ce2c30807a18dd074a31fda1f5252cf51c070a6f856"
+        }
+      ],
+      "evidence_envelope_sha256": "cc5ecb9ed7d87e12eb4242882ff584b321d1b9c4fa16f17027bd9647911f7599",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "d4ae70c52c73c173472633f2e710cfec5585f0e06e3dc692be4c3eca3d01b144",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_alias_conflict_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 126,
+      "producer_output_json": "{\"inconsistencies\":[{\"canonical\":\"Evidence Packet__h_v1a_corrupted\",\"observed\":\"evidence package\",\"path\":\"inputs/term_b.md\"}]}",
+      "producer_output_sha256": "b39304a2d5b372ecd99fc586209dd02fc8db2c62d5f205808f552d47cbe3bff3",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_alias_conflict_001",
+      "task_order": 10,
+      "task_sha256": "074af2de6a0f5fa8c4af05a8f6dc9cd4515c424949145b54d863690efb8607e7"
+    },
+    {
+      "case_id": "docops_ps1_terms_clean_canonical_001--canonical-valid",
+      "case_order": 51,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 41,
+          "path": "inputs/a.md",
+          "role": "source",
+          "sha256": "51a3ed395b680555bb51e28bd8af1f8c64cc780c402cbfe273457eb237a2d14e"
+        },
+        {
+          "bytes": 47,
+          "path": "inputs/b.md",
+          "role": "source",
+          "sha256": "7413f60f61f699383bbdd15d3af76825fab1bb3dd21665935b0e4b0d15d096b8"
+        }
+      ],
+      "evidence_envelope_sha256": "2c3b4f0bb6b9c791362514922628d7d9280ee58a80a93d2d98a521471bcf5d6e",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "548c2bddf67ba2c4d4bab034cb57dee145e81502124a783827ce3293a24ad491",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_clean_canonical_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 22,
+      "producer_output_json": "{\"inconsistencies\":[]}",
+      "producer_output_sha256": "f5f9203066a9902eeab2b91d30f6aba58929bf5aa21ae3842b14a821342c3412",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_clean_canonical_001",
+      "task_order": 11,
+      "task_sha256": "9f705d59af97a858e9588f9a55e6e502fcb6cdf5f55be2eb44449a57b7d0a490"
+    },
+    {
+      "case_id": "docops_ps1_terms_clean_canonical_001--semantic-equivalent-valid",
+      "case_order": 52,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 41,
+          "path": "inputs/a.md",
+          "role": "source",
+          "sha256": "51a3ed395b680555bb51e28bd8af1f8c64cc780c402cbfe273457eb237a2d14e"
+        },
+        {
+          "bytes": 47,
+          "path": "inputs/b.md",
+          "role": "source",
+          "sha256": "7413f60f61f699383bbdd15d3af76825fab1bb3dd21665935b0e4b0d15d096b8"
+        }
+      ],
+      "evidence_envelope_sha256": "2c3b4f0bb6b9c791362514922628d7d9280ee58a80a93d2d98a521471bcf5d6e",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "548c2bddf67ba2c4d4bab034cb57dee145e81502124a783827ce3293a24ad491",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_clean_canonical_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 28,
+      "producer_output_json": "{\n  \"inconsistencies\": []\n}\n",
+      "producer_output_sha256": "155f1aad46f8ceb593315f8364b59e91b20aac1eb02b404b121a7dd28ef8d094",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_clean_canonical_001",
+      "task_order": 11,
+      "task_sha256": "9f705d59af97a858e9588f9a55e6e502fcb6cdf5f55be2eb44449a57b7d0a490"
+    },
+    {
+      "case_id": "docops_ps1_terms_clean_canonical_001--omission-invalid",
+      "case_order": 53,
+      "challenge_metadata": {
+        "deterministic_transform": "removed required top-level field inconsistencies (fallback for empty/non-list field)",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 41,
+          "path": "inputs/a.md",
+          "role": "source",
+          "sha256": "51a3ed395b680555bb51e28bd8af1f8c64cc780c402cbfe273457eb237a2d14e"
+        },
+        {
+          "bytes": 47,
+          "path": "inputs/b.md",
+          "role": "source",
+          "sha256": "7413f60f61f699383bbdd15d3af76825fab1bb3dd21665935b0e4b0d15d096b8"
+        }
+      ],
+      "evidence_envelope_sha256": "2c3b4f0bb6b9c791362514922628d7d9280ee58a80a93d2d98a521471bcf5d6e",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "548c2bddf67ba2c4d4bab034cb57dee145e81502124a783827ce3293a24ad491",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_clean_canonical_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 2,
+      "producer_output_json": "{}",
+      "producer_output_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_clean_canonical_001",
+      "task_order": 11,
+      "task_sha256": "9f705d59af97a858e9588f9a55e6e502fcb6cdf5f55be2eb44449a57b7d0a490"
+    },
+    {
+      "case_id": "docops_ps1_terms_clean_canonical_001--fabrication-invalid",
+      "case_order": 54,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field inconsistencies",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 41,
+          "path": "inputs/a.md",
+          "role": "source",
+          "sha256": "51a3ed395b680555bb51e28bd8af1f8c64cc780c402cbfe273457eb237a2d14e"
+        },
+        {
+          "bytes": 47,
+          "path": "inputs/b.md",
+          "role": "source",
+          "sha256": "7413f60f61f699383bbdd15d3af76825fab1bb3dd21665935b0e4b0d15d096b8"
+        }
+      ],
+      "evidence_envelope_sha256": "2c3b4f0bb6b9c791362514922628d7d9280ee58a80a93d2d98a521471bcf5d6e",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "548c2bddf67ba2c4d4bab034cb57dee145e81502124a783827ce3293a24ad491",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_clean_canonical_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 58,
+      "producer_output_json": "{\"inconsistencies\":[{\"__fabricated__\":\"h-v1a-synthetic\"}]}",
+      "producer_output_sha256": "1854072022acd187a3dd0c7f0996684c916e494770fd1415163fdeb368d0b0e6",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_clean_canonical_001",
+      "task_order": 11,
+      "task_sha256": "9f705d59af97a858e9588f9a55e6e502fcb6cdf5f55be2eb44449a57b7d0a490"
+    },
+    {
+      "case_id": "docops_ps1_terms_clean_canonical_001--corruption-invalid",
+      "case_order": 55,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field inconsistencies",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 41,
+          "path": "inputs/a.md",
+          "role": "source",
+          "sha256": "51a3ed395b680555bb51e28bd8af1f8c64cc780c402cbfe273457eb237a2d14e"
+        },
+        {
+          "bytes": 47,
+          "path": "inputs/b.md",
+          "role": "source",
+          "sha256": "7413f60f61f699383bbdd15d3af76825fab1bb3dd21665935b0e4b0d15d096b8"
+        }
+      ],
+      "evidence_envelope_sha256": "2c3b4f0bb6b9c791362514922628d7d9280ee58a80a93d2d98a521471bcf5d6e",
+      "expected_path": "expected/inconsistencies.json",
+      "expected_sha256": "548c2bddf67ba2c4d4bab034cb57dee145e81502124a783827ce3293a24ad491",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_clean_canonical_001",
+      "output_kind": "inconsistencies",
+      "producer_output_bytes": 57,
+      "producer_output_json": "{\"inconsistencies\":[{\"__corrupted__\":\"h-v1a-synthetic\"}]}",
+      "producer_output_sha256": "08de6d0f64cb83b797ec9ddf403c1382b22daf7341dfba4a561abb25dc87ea73",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_clean_canonical_001",
+      "task_order": 11,
+      "task_sha256": "9f705d59af97a858e9588f9a55e6e502fcb6cdf5f55be2eb44449a57b7d0a490"
+    },
+    {
+      "case_id": "docops_ps1_terms_contract_inline_001--canonical-valid",
+      "case_order": 56,
+      "challenge_metadata": {
+        "deterministic_transform": "canonical compact sorted JSON",
+        "expected_semantic_relation": "equal",
+        "variant_id": "canonical-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 92,
+          "path": "inputs/terms.md",
+          "role": "source",
+          "sha256": "9c967cbdedd83f570a3fcb8e701d64ce966a685588a0fb88aa662f31a44dc467"
+        }
+      ],
+      "evidence_envelope_sha256": "0842080fad663343d2e610f9c8ab267a523f919f16716a9ecdbd4c4cd64cac7f",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "ad81f181d2c9a4e22bbf9053e29ebf78d7b9f2041cdd3df0bc76117f6ef43b27",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_contract_inline_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 29,
+      "producer_output_json": "{\"failures\":[],\"passed\":true}",
+      "producer_output_sha256": "01928bc3abc37101203d491bf3a9cf96b34259ee8d9282516e3d85b1a78d6a86",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_contract_inline_001",
+      "task_order": 12,
+      "task_sha256": "9e4b3508e457beae9fa2677346d6ef081ef6ff23db6301c22f1c3a5daf7e0474"
+    },
+    {
+      "case_id": "docops_ps1_terms_contract_inline_001--semantic-equivalent-valid",
+      "case_order": 57,
+      "challenge_metadata": {
+        "deterministic_transform": "reversed object insertion order and pretty formatting",
+        "expected_semantic_relation": "equal",
+        "variant_id": "semantic-equivalent-valid"
+      },
+      "evidence": [
+        {
+          "bytes": 92,
+          "path": "inputs/terms.md",
+          "role": "source",
+          "sha256": "9c967cbdedd83f570a3fcb8e701d64ce966a685588a0fb88aa662f31a44dc467"
+        }
+      ],
+      "evidence_envelope_sha256": "0842080fad663343d2e610f9c8ab267a523f919f16716a9ecdbd4c4cd64cac7f",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "ad81f181d2c9a4e22bbf9053e29ebf78d7b9f2041cdd3df0bc76117f6ef43b27",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_contract_inline_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 39,
+      "producer_output_json": "{\n  \"failures\": [],\n  \"passed\": true\n}\n",
+      "producer_output_sha256": "c0ac47fc7e3c18dd4d322d1af9ed42b84a24b963cf350db3af4d3aaa574175c3",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_contract_inline_001",
+      "task_order": 12,
+      "task_sha256": "9e4b3508e457beae9fa2677346d6ef081ef6ff23db6301c22f1c3a5daf7e0474"
+    },
+    {
+      "case_id": "docops_ps1_terms_contract_inline_001--omission-invalid",
+      "case_order": 58,
+      "challenge_metadata": {
+        "deterministic_transform": "removed required top-level field failures (fallback for empty/non-list field)",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "omission-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 92,
+          "path": "inputs/terms.md",
+          "role": "source",
+          "sha256": "9c967cbdedd83f570a3fcb8e701d64ce966a685588a0fb88aa662f31a44dc467"
+        }
+      ],
+      "evidence_envelope_sha256": "0842080fad663343d2e610f9c8ab267a523f919f16716a9ecdbd4c4cd64cac7f",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "ad81f181d2c9a4e22bbf9053e29ebf78d7b9f2041cdd3df0bc76117f6ef43b27",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_contract_inline_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 15,
+      "producer_output_json": "{\"passed\":true}",
+      "producer_output_sha256": "11c11db30f4b3f6c758722ba3e27eea08145b7d212f6a157451e364b48475280",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_contract_inline_001",
+      "task_order": 12,
+      "task_sha256": "9e4b3508e457beae9fa2677346d6ef081ef6ff23db6301c22f1c3a5daf7e0474"
+    },
+    {
+      "case_id": "docops_ps1_terms_contract_inline_001--fabrication-invalid",
+      "case_order": 59,
+      "challenge_metadata": {
+        "deterministic_transform": "appended deterministic fabricated item to list field failures",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "fabrication-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 92,
+          "path": "inputs/terms.md",
+          "role": "source",
+          "sha256": "9c967cbdedd83f570a3fcb8e701d64ce966a685588a0fb88aa662f31a44dc467"
+        }
+      ],
+      "evidence_envelope_sha256": "0842080fad663343d2e610f9c8ab267a523f919f16716a9ecdbd4c4cd64cac7f",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "ad81f181d2c9a4e22bbf9053e29ebf78d7b9f2041cdd3df0bc76117f6ef43b27",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_contract_inline_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 65,
+      "producer_output_json": "{\"failures\":[{\"__fabricated__\":\"h-v1a-synthetic\"}],\"passed\":true}",
+      "producer_output_sha256": "1a3e58b634802f0912b496f4241f7baa3a106141ee2bfbf717fb7762fd6b2a77",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_contract_inline_001",
+      "task_order": 12,
+      "task_sha256": "9e4b3508e457beae9fa2677346d6ef081ef6ff23db6301c22f1c3a5daf7e0474"
+    },
+    {
+      "case_id": "docops_ps1_terms_contract_inline_001--corruption-invalid",
+      "case_order": 60,
+      "challenge_metadata": {
+        "deterministic_transform": "corrupted first deterministic scalar/container under field failures",
+        "expected_semantic_relation": "unequal",
+        "variant_id": "corruption-invalid"
+      },
+      "evidence": [
+        {
+          "bytes": 92,
+          "path": "inputs/terms.md",
+          "role": "source",
+          "sha256": "9c967cbdedd83f570a3fcb8e701d64ce966a685588a0fb88aa662f31a44dc467"
+        }
+      ],
+      "evidence_envelope_sha256": "0842080fad663343d2e610f9c8ab267a523f919f16716a9ecdbd4c4cd64cac7f",
+      "expected_path": "expected/contract_result.json",
+      "expected_sha256": "ad81f181d2c9a4e22bbf9053e29ebf78d7b9f2041cdd3df0bc76117f6ef43b27",
+      "fixture_path": "sources/predecessors/vanta/docs/04_experiments/fixtures/document_ops/docops_ps1_terms_contract_inline_001",
+      "output_kind": "contract_result",
+      "producer_output_bytes": 64,
+      "producer_output_json": "{\"failures\":[{\"__corrupted__\":\"h-v1a-synthetic\"}],\"passed\":true}",
+      "producer_output_sha256": "873395bce8e6c7301c076b92463cb4dadbb7ae9f7353dc14ef6bc2634f2cb038",
+      "stratum": "terminology-consistency",
+      "system_claim": "success",
+      "task_id": "docops_ps1_terms_contract_inline_001",
+      "task_order": 12,
+      "task_sha256": "9e4b3508e457beae9fa2677346d6ef081ef6ff23db6301c22f1c3a5daf7e0474"
+    }
+  ],
+  "construction_validation": {
+    "all_relations_verified_before_freeze": true,
+    "semantic_equal_case_count": 24,
+    "semantic_unequal_case_count": 36
+  },
+  "contract_id": "contract-2026-08-28-docops-readonly-12",
+  "distribution_id": "taskdist-2026-08-28-vanta-docops-readonly-12",
+  "experiment_id": "exp-2026-08-30-docops-acceptance-verification",
+  "repetitions": 3,
+  "schema_version": 1,
+  "source_id": "src.vanta",
+  "source_snapshot_id": "snap.src.vanta.initial-import",
+  "task_manifest_path": "experiments/exp-2026-08-28-docops-readonly-baseline/inputs/task-manifest.json",
+  "task_manifest_sha256": "bd083cdac9649b952e43e67f400103cf7ee16d7d2cdc7f543c85ef1336386f26",
+  "variant_order": [
+    "canonical-valid",
+    "semantic-equivalent-valid",
+    "omission-invalid",
+    "fabrication-invalid",
+    "corruption-invalid"
+  ]
+}
