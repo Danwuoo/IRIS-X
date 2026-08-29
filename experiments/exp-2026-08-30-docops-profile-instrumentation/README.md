@@ -1,7 +1,7 @@
 # Experiment: Structured Instrumentation Completeness
 
 - **Experiment ID:** `exp-2026-08-30-docops-profile-instrumentation`
-- **Status:** defined; profile contract frozen; not yet run
+- **Status:** defined; local run executed and reviewed
 - **Hypothesis:** `H-O1a`
 - **Distribution:** `taskdist-2026-08-28-vanta-docops-readonly-12`
 - **Control behavior:** Phase 3 `structured-readonly-v0`
@@ -81,6 +81,12 @@ python experiments\exp-2026-08-30-docops-profile-instrumentation\scripts\run_exp
 
 Run directories are immutable. Invalid attempts are preserved and cannot be
 cited as completed results.
+
+Completed run:
+
+- `runs/ho1a-20260830-local-01/`: 72/72 valid episodes; reviewed
+  `Supported — task-local` result. Profile coverage increased from 0/612 to
+  612/612 field instances with all 36 paired behavior comparisons invariant.
 
 ## Boundaries
 
