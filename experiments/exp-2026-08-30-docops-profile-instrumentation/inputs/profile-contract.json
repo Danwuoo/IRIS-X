@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "profile_contract_id": "profile-contract-2026-08-30-docops-runtime-v1",
+  "experiment_id": "exp-2026-08-30-docops-profile-instrumentation",
+  "frozen_before_execution": true,
+  "required_fields": [
+    "schema_version",
+    "profile_contract_id",
+    "episode_id",
+    "task_id",
+    "repetition",
+    "arm",
+    "stages.invocation.stage_id",
+    "stages.invocation.wall_ms",
+    "stages.invocation.process_cpu_ms",
+    "stages.evaluation.stage_id",
+    "stages.evaluation.wall_ms",
+    "io.read_operation_count",
+    "io.bytes_read",
+    "output.serialized_output_bytes",
+    "terminal.status",
+    "instrumentation.event_count",
+    "profiler.error"
+  ],
+  "instrumentation_events": [
+    "episode_started",
+    "invocation_started",
+    "invocation_finished",
+    "evaluation_finished",
+    "episode_finished"
+  ],
+  "excluded_as_not_task_relevant": [
+    "model tokens",
+    "LLM call position",
+    "cache efficiency",
+    "network throughput",
+    "runtime forecast"
+  ]
+}
