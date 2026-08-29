@@ -1,7 +1,7 @@
 # Experiment: Registered Source Snapshot Assertion
 
 - **Experiment ID:** `exp-2026-08-30-source-snapshot-assertion`
-- **Status:** defined; not yet run
+- **Status:** defined; local run executed and reviewed
 - **Hypothesis:** `H-M1a`
 - **Distribution:** `taskdist-2026-08-28-vanta-docops-readonly-12`
 - **Registry:** `corpus/sources.yaml`
@@ -69,6 +69,12 @@ python experiments\exp-2026-08-30-source-snapshot-assertion\scripts\run_experime
 
 Run directories are immutable. If a run becomes invalid after writing
 artifacts, retain it with `failure.json` and rerun under a new ID.
+
+Completed run:
+
+- `runs/hm1a-20260830-local-01/`: 30/30 valid terminal records; reviewed
+  `Supported — task-local` result. The interpretation records the exact
+  task-local boundary and descriptive verification cost.
 
 ## Boundaries
 

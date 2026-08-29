@@ -20,6 +20,13 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[3]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from tools.source_snapshot_assertion import SourceSnapshotAssertionError  # noqa: E402
+from tools.source_snapshot_assertion import assert_registered_source_snapshot  # noqa: E402
+
+
 EXPERIMENT_ROOT = Path(__file__).resolve().parents[1]
 RUNS_ROOT = EXPERIMENT_ROOT / "runs"
 SOURCE_PREFIX = ROOT / "sources" / "predecessors" / "vanta" / "docs" / "04_experiments" / "fixtures" / "document_ops"
@@ -523,8 +530,23 @@ def main() -> int:
     manifest = load_json(manifest_path)
     configurations = load_json(configurations_path)
     tasks, configs = validate_definitions(manifest, configurations)
+    git_commit = git_output("rev-parse", "HEAD")
+    registry_path = ROOT / "corpus" / "sources.yaml"
+    try:
+        source_identity = assert_registered_source_snapshot(
+            ROOT,
+            registry_path,
+            manifest["source_id"],
+            manifest["source_snapshot_id"],
+            git_commit,
+        )
+    except SourceSnapshotAssertionError as exc:
+        raise DefinitionError(f"source snapshot assertion failed [{exc.code}]: {exc}") from exc
     if args.validate_only:
-        print("definition validation: PASS (12 tasks, 2 configurations)")
+        print(
+            "definition validation: PASS "
+            f"(12 tasks, 2 configurations, registered source tree {source_identity.observed_tree_oid})"
+        )
         return 0
     if not args.output_dir or not args.run_id:
         parser.error("--output-dir and --run-id are required unless --validate-only is used")
@@ -539,9 +561,7 @@ def main() -> int:
 
     started_at = utc_now()
     command = [sys.executable, *sys.argv]
-    git_commit = git_output("rev-parse", "HEAD")
     git_status_before = git_output("status", "--short")
-    source_tree = git_output("rev-parse", f"{git_commit}:sources/predecessors/vanta")
     source_status_before = git_output("status", "--short", "--", "sources", "references/papers")
     output_dir.mkdir(parents=True)
     raw_path = output_dir / "raw" / "episodes.jsonl"
@@ -676,7 +696,12 @@ def main() -> int:
         "contract_id": manifest["contract_id"],
         "source_id": manifest["source_id"],
         "source_snapshot_id": manifest["source_snapshot_id"],
-        "source_tree_oid_at_code_commit": source_tree,
+        "source_registry_path": relative_posix(registry_path, ROOT),
+        "source_registry_sha256": sha256_file(registry_path),
+        "source_registered_path": source_identity.source_path,
+        "source_registered_tree_oid": source_identity.registered_tree_oid,
+        "source_tree_oid_at_code_commit": source_identity.observed_tree_oid,
+        "source_snapshot_assertion": "passed",
         "source_status_before": source_status_before.splitlines(),
         "source_status_after": source_status_after.splitlines(),
         "repetitions": args.repetitions,
