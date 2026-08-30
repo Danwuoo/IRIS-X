@@ -11,8 +11,9 @@
 ## Research Question
 
 Does resolving the registered source snapshot and enforcing exact source-tree
-identity detect provenance mismatches that the Phase 3 record-only behavior
-would not reject?
+identity detect provenance mismatches that a conceptual record-only control
+does not reject, addressing the narrower Phase 3 registered-snapshot-to-tree
+equality gap?
 
 ## Arms
 
@@ -22,6 +23,14 @@ would not reject?
   and snapshot, validates the active/current relationship, obtains the source
   tree at the code commit, and fails closed on an unresolved or unequal
   identity.
+
+`record-only-v0` isolates the H-M1a mechanism; it is not a line-by-line copy of
+the Phase 3 baseline runner. That runner already performed definition checks,
+including requiring `source_id == src.vanta`. Its known provenance gap was
+narrower: the manifest recorded `source_snapshot_id` and the runner recorded
+`source_tree_oid_at_code_commit`, but it did not resolve the snapshot through
+`corpus/sources.yaml` or assert that the observed tree OID equaled the
+registered snapshot tree OID.
 
 The runner contains only the resolver/assertion needed for this experiment. It
 is not a general provenance framework.
@@ -75,6 +84,12 @@ Completed run:
 - `runs/hm1a-20260830-local-01/`: 30/30 valid terminal records; reviewed
   `Supported — task-local` result. The interpretation records the exact
   task-local boundary and descriptive verification cost.
+
+The treatment's 12/12 mismatch detections and the conceptual control's 12/12
+mismatch acceptances remain the measured experiment result. The control count
+must not be attributed to the Phase 3 runner as 12 actual false accepts. The
+post-result Phase 3 hardening specifically added the registered snapshot to
+observed/current source-tree OID equality assertion.
 
 ## Boundaries
 

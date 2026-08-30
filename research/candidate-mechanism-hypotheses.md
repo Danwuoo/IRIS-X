@@ -89,8 +89,12 @@ Toolkit as an IRIS-X dependency.
 
 ## Uncertainty
 
-- **Not established:** which mechanism improves the selected distribution or any broader task family.
-- **Not evaluated:** all H-* hypotheses except the Phase 3 narrow baseline question; the pilot is not a mechanism test.
+- **Supported — task-local:** H-M1a, H-V1a, and H-O1a under their respective
+  Phase 4 finite-sample experiment contracts.
+- **Not established:** the complete parent H-M1, H-V1, and H-O1 hypotheses;
+  improvement on any broader task family; or any architecture requirement.
+- **Not evaluated:** H-V1b, H-I1, H-P1, H-G1, H-W1, H-C1, H-R1, and the
+  remaining untested parts of the parent hypotheses.
 - **Unclear:** whether 12 development fixtures support a defensible train/validation/test split; generated or independently authored tasks may be required.
 - **Unknown:** paid model costs, provider snapshots, and optimization budgets for future model-based experiments.
 - **Conflicting evidence:** none identified within the inspected mechanism paths; absence of conflict is not evidence of validity.

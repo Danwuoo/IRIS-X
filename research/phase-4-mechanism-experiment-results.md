@@ -58,6 +58,14 @@ service, and left imported source clean.
 This does not establish the parent manifest/terminal-record/resource-ledger
 hypothesis or an architectural invariant.
 
+`record-only-v0` was a conceptual control that isolated registry resolution
+and equality enforcement; it was not a complete reproduction of the Phase 3
+baseline runner. The 12 control false accepts are therefore experiment-control
+results, not a claim that the Phase 3 runner would have accepted all 12 cases.
+Phase 3 already required `source_id == src.vanta`; its actual hardening added
+resolution of the manifest snapshot through `corpus/sources.yaml` and the
+registered snapshot to observed/current source-tree OID equality assertion.
+
 ## H-V1a — Independent Acceptance Verification
 
 **Exact hypothesis**
