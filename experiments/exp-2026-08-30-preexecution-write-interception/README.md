@@ -1,7 +1,7 @@
 # Experiment: Pre-execution Write Prevention
 
 - **Experiment ID:** `exp-2026-08-30-preexecution-write-interception`
-- **Status:** defined; frozen definition pending measured execution
+- **Status:** defined; local run executed and reviewed
 - **Hypothesis:** `H-I1a`
 - **Source snapshot:** `src.prime-intellect-verifiers-v1` /
   `snap.src.prime-intellect-verifiers-v1.initial-import`
@@ -99,6 +99,14 @@ python experiments\exp-2026-08-30-preexecution-write-interception\scripts\run_ex
 
 Run directories are immutable. Invalid attempts are preserved and cannot be
 cited as completed evidence.
+
+Completed run:
+
+- `runs/hi1a-20260830-local-01/`: 48/48 valid records;
+  `Supported — task-local`. Post-hoc executed and detected 18/18 prohibited
+  mutations after they occurred; treatment executed 0/18 prohibited primitives,
+  empirically prevented 18/18 mutations, and allowed all six positive-control
+  records.
 
 ## Boundaries
 

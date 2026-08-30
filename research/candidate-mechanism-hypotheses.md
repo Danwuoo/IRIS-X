@@ -93,9 +93,13 @@ establish parent H-V1 or broader provenance sufficiency.
 > mutations, whereas post-hoc checking can detect but cannot prevent those same
 > mutations after execution.
 
-H-V1b is complete. H-I1a is now defined and frozen in
-`exp-2026-08-30-preexecution-write-interception`; its measured result is not yet
-recorded.
+`Status: Supported — task-local` in
+`exp-2026-08-30-preexecution-write-interception` run
+`hi1a-20260830-local-01`: post-hoc executed and empirically mutated protected
+state for 18/18 prohibited episodes before detection; treatment executed 0/18
+prohibited mutation primitives and empirically preserved protected state in all
+18, while allowing all six positive-control records. This does not establish
+the complete parent H-I1 or broader tool safety.
 
 ### H-O1a — Structured Instrumentation Completeness
 
@@ -124,7 +128,8 @@ Toolkit as an IRIS-X dependency.
   improvement on any broader task family; or any architecture requirement.
 - **Supported — task-local:** H-V1b under its frozen finite-sample path/hash
   evidence contract.
-- **Defined/frozen; not yet evaluated:** H-I1a.
+- **Supported — task-local:** H-I1a under its frozen deterministic
+  copied-workspace mutation contract.
 - **Not evaluated:** the remaining parent H-I1 scope, H-P1, H-G1, H-W1, H-C1,
   H-R1, and the
   remaining untested parts of the parent hypotheses.
