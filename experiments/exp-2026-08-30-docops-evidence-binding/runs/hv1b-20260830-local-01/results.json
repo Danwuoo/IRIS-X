@@ -1,0 +1,104 @@
+{
+  "arms": {
+    "evidence-bound-v0": {
+      "actual_success_count": 288,
+      "attempted_records": 288,
+      "evidence_reason_counts": {
+        "byte_count_mismatch": 87,
+        "complete_correct_binding": 36,
+        "conflicting_duplicate": 36,
+        "hash_mismatch": 159,
+        "missing_required_entry": 93,
+        "path_outside_fixture": 21,
+        "undeclared_input_path": 72
+      },
+      "evidence_status_counts": {
+        "insufficient": 36,
+        "invalid_binding": 216,
+        "sufficient": 36
+      },
+      "false_rejection_complete_correct": 0,
+      "false_verified_success_acceptance": 0,
+      "invalid_records": 0,
+      "resource_totals": {
+        "decision_artifact_bytes": 55650,
+        "evidence_artifact_bytes": 60318,
+        "evidence_verification_process_cpu_ms": 187.5,
+        "evidence_verification_wall_ms": 230.65,
+        "terminal_record_bytes_excluding_self": 653222
+      },
+      "unverified_success_count": 252,
+      "valid_records": 288,
+      "verified_success_eligible_count": 36
+    },
+    "semantic-only-v0": {
+      "actual_success_count": 288,
+      "attempted_records": 288,
+      "evidence_reason_counts": {
+        "semantic_only_policy": 288
+      },
+      "evidence_status_counts": {
+        "not_assessed": 288
+      },
+      "false_rejection_complete_correct": 0,
+      "false_verified_success_acceptance": 252,
+      "invalid_records": 0,
+      "resource_totals": {
+        "decision_artifact_bytes": 50112,
+        "evidence_artifact_bytes": 60318,
+        "evidence_verification_process_cpu_ms": 0.0,
+        "evidence_verification_wall_ms": 0.0,
+        "terminal_record_bytes_excluding_self": 560817
+      },
+      "unverified_success_count": 0,
+      "valid_records": 288,
+      "verified_success_eligible_count": 288
+    }
+  },
+  "complete_record_count": 576,
+  "expected_record_count": 576,
+  "experiment_id": "exp-2026-08-30-docops-evidence-binding",
+  "interpretation_boundary": "frozen development tasks and path/hash evidence variants only; parent H-V1 not established",
+  "paired_invariance": {
+    "all_fixed_fields_identical": true,
+    "mismatches": []
+  },
+  "raw_terminal_artifact_bytes": 1306208,
+  "repeat_agreement": {
+    "all_arm_case_pairs_agree": true,
+    "disagreements": []
+  },
+  "run_id": "hv1b-20260830-local-01",
+  "run_status": "complete",
+  "schema_version": 1,
+  "source_preservation_failure": false,
+  "support_checks": {
+    "actual_outcome_success_and_arm_invariant": true,
+    "all_invalid_variants_denied": true,
+    "challenge_validity_labels_excluded_from_treatment_interface": true,
+    "complete_correct_accepted": true,
+    "repeat_agreement": true,
+    "semantic_verifier_accept_and_arm_invariant": true
+  },
+  "support_status": "Supported — task-local",
+  "verifier_interfaces": {
+    "evidence_verifier_fields": [
+      "fixture",
+      "required_inputs",
+      "supplied_evidence"
+    ],
+    "excluded_from_evidence_verifier": [
+      "case_id",
+      "variant_id",
+      "challenge_metadata",
+      "expected_evidence_validity",
+      "actual_outcome",
+      "semantic_verifier_decision"
+    ],
+    "semantic_verifier_fields": [
+      "fixture",
+      "expected_relative_path",
+      "producer_output_json"
+    ]
+  }
+}

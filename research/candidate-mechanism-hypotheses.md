@@ -78,7 +78,13 @@ This isolates evidence binding from H-V1a's semantic output discrimination. The
 frozen experiment keeps every main challenge output semantically correct and
 adjudicates actual outcome independently from evidence sufficiency.
 
-`Status: defined and frozen; measured result not yet recorded.`
+`Status: Supported — task-local` in
+`exp-2026-08-30-docops-evidence-binding` run
+`hv1b-20260830-local-01`: all 36 complete-correct treatment records were
+eligible for verified success, all 252 predefined invalid/insufficient
+treatment records were denied eligibility, all 288 treatment actual outcomes
+remained success, and the semantic verifier accepted all 288. This does not
+establish parent H-V1 or broader provenance sufficiency.
 
 ### H-I1a — Pre-execution Write Prevention
 
@@ -115,7 +121,8 @@ Toolkit as an IRIS-X dependency.
   Phase 4 finite-sample experiment contracts.
 - **Not established:** the complete parent H-M1, H-V1, and H-O1 hypotheses;
   improvement on any broader task family; or any architecture requirement.
-- **Defined/frozen; not yet evaluated:** H-V1b.
+- **Supported — task-local:** H-V1b under its frozen finite-sample path/hash
+  evidence contract.
 - **Not evaluated:** H-I1/H-I1a, H-P1, H-G1, H-W1, H-C1, H-R1, and the
   remaining untested parts of the parent hypotheses.
 - **Unclear:** whether 12 development fixtures support a defensible train/validation/test split; generated or independently authored tasks may be required.

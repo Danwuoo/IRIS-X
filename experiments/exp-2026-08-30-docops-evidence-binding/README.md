@@ -1,7 +1,7 @@
 # Experiment: Evidence / Provenance Binding
 
 - **Experiment ID:** `exp-2026-08-30-docops-evidence-binding`
-- **Status:** defined; frozen challenge pending measured execution
+- **Status:** defined; local run executed and reviewed
 - **Hypothesis:** `H-V1b`
 - **Distribution:** `taskdist-2026-08-28-vanta-docops-readonly-12`
 - **Task contract:** `research/task-contract-docops-readonly-12.md`
@@ -106,6 +106,13 @@ python experiments\exp-2026-08-30-docops-evidence-binding\scripts\run_experiment
 
 Run directories are immutable. Invalid attempts are preserved and cannot be
 cited as completed evidence.
+
+Completed run:
+
+- `runs/hv1b-20260830-local-01/`: 576/576 valid paired-arm records;
+  `Supported — task-local`. Treatment accepted all 36 complete-correct records,
+  denied eligibility to all 252 invalid/insufficient evidence records, and kept
+  every actual outcome at success.
 
 ## Boundaries
 
