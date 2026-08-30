@@ -93,8 +93,9 @@ establish parent H-V1 or broader provenance sufficiency.
 > mutations, whereas post-hoc checking can detect but cannot prevent those same
 > mutations after execution.
 
-This sub-hypothesis remains `Not evaluated` until H-V1b is completed and
-interpreted.
+H-V1b is complete. H-I1a is now defined and frozen in
+`exp-2026-08-30-preexecution-write-interception`; its measured result is not yet
+recorded.
 
 ### H-O1a — Structured Instrumentation Completeness
 
@@ -123,7 +124,9 @@ Toolkit as an IRIS-X dependency.
   improvement on any broader task family; or any architecture requirement.
 - **Supported — task-local:** H-V1b under its frozen finite-sample path/hash
   evidence contract.
-- **Not evaluated:** H-I1/H-I1a, H-P1, H-G1, H-W1, H-C1, H-R1, and the
+- **Defined/frozen; not yet evaluated:** H-I1a.
+- **Not evaluated:** the remaining parent H-I1 scope, H-P1, H-G1, H-W1, H-C1,
+  H-R1, and the
   remaining untested parts of the parent hypotheses.
 - **Unclear:** whether 12 development fixtures support a defensible train/validation/test split; generated or independently authored tasks may be required.
 - **Unknown:** paid model costs, provider snapshots, and optimization budgets for future model-based experiments.

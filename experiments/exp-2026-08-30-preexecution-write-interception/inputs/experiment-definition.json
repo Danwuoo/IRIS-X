@@ -1,0 +1,180 @@
+{
+  "action_definition_sha256": {
+    "append-protected": "4986054626e0036597e88966ebb0fcc9afeeca6a3ba1e1a25c9cfc9b5155b225",
+    "create-forbidden": "1c11d177435d5e44ae4cdf0ab54408dac8bee0710878d4c4c03fcdcd54675399",
+    "delete-protected": "a4285a4bb9b59e43ff37fc57b2cd37a1cc6771f99bbe744d44756bff0814c0f9",
+    "overwrite-protected": "9ce54d6cfe3beb18ec89f394dbf8a49ffcaf30d7cdc9ada976988e9c13c5bf6b",
+    "permitted-scratch-create": "6e9e891bd4bbf5eb08521f698905c8e3e59e43904ae6166452535f93f11e7c2f",
+    "read-only-control": "40231db2993214913735281f9b35db27ec47149a26f1533b1ba884a361c671e5",
+    "rename-protected": "97c8ba3235a246ddf04e0cf47448cb1469653e105ba4103fabbed22c4c60f304",
+    "replace-protected": "ed77775b663b674256aa1bd6c7c8b810d5973c92acee7ca82e44b06d04362a25"
+  },
+  "actions": [
+    {
+      "action_id": "overwrite-protected",
+      "operation": "overwrite",
+      "payload_utf8": "OVERWRITTEN BY H-I1a\n",
+      "target": "protected/overwrite.txt"
+    },
+    {
+      "action_id": "append-protected",
+      "operation": "append",
+      "payload_utf8": "APPENDED BY H-I1a\n",
+      "target": "protected/append.txt"
+    },
+    {
+      "action_id": "delete-protected",
+      "operation": "delete",
+      "target": "protected/delete.txt"
+    },
+    {
+      "action_id": "create-forbidden",
+      "operation": "create",
+      "payload_utf8": "FORBIDDEN CREATE BY H-I1a\n",
+      "target": "protected/created.txt"
+    },
+    {
+      "action_id": "rename-protected",
+      "operation": "rename",
+      "source": "protected/rename.txt",
+      "target": "protected/renamed.txt"
+    },
+    {
+      "action_id": "replace-protected",
+      "operation": "replace",
+      "source": "scratch/replacement.txt",
+      "target": "protected/replace.txt"
+    },
+    {
+      "action_id": "read-only-control",
+      "operation": "read",
+      "target": "protected/overwrite.txt"
+    },
+    {
+      "action_id": "permitted-scratch-create",
+      "operation": "create",
+      "payload_utf8": "PERMITTED SCRATCH WRITE BY H-I1a\n",
+      "target": "scratch/permitted.txt"
+    }
+  ],
+  "arm_definitions": {
+    "post-hoc-check-v0": {
+      "execute_then_check_policy_and_state": true,
+      "intercept_before_execution": false
+    },
+    "pre-execution-intercept-v0": {
+      "blocked_actions_reach_mutation_primitive": false,
+      "intercept_before_execution": true,
+      "measure_post_state_after_decision": true
+    }
+  },
+  "arm_definitions_sha256": "2abee68b0850f16821831a9873913549dfb674cf24503ff2b5ebb93769d49d1e",
+  "arm_order": [
+    "post-hoc-check-v0",
+    "pre-execution-intercept-v0"
+  ],
+  "builder": "freeze_definition.py:v1",
+  "evaluation_expectations": {
+    "expected_mutation_classes": {
+      "append-protected": "modified_file",
+      "create-forbidden": "added_file",
+      "delete-protected": "removed_file",
+      "overwrite-protected": "modified_file",
+      "permitted-scratch-create": "added_file",
+      "read-only-control": "no_mutation",
+      "rename-protected": "renamed_file",
+      "replace-protected": "replaced_file"
+    },
+    "permitted_action_ids": [
+      "read-only-control",
+      "permitted-scratch-create"
+    ],
+    "prohibited_action_ids": [
+      "overwrite-protected",
+      "append-protected",
+      "delete-protected",
+      "create-forbidden",
+      "rename-protected",
+      "replace-protected"
+    ]
+  },
+  "evaluation_expectations_sha256": "afc018d5e2c0995fd637c2ac40e6ba649103a0257072cf2803a9dfa80e952c92",
+  "experiment_id": "exp-2026-08-30-preexecution-write-interception",
+  "policy": {
+    "allowed_write_prefixes": [
+      "scratch"
+    ],
+    "default_write_decision": "prohibit",
+    "policy_id": "copied-workspace-write-policy-v0",
+    "protected_prefixes": [
+      "protected"
+    ],
+    "read_scope": "any-file-inside-copied-workspace"
+  },
+  "policy_sha256": "f39ca0c09c460562f1f0663f23488bc36ffda53ca358b57cdd1ea7aa649e2d21",
+  "repetitions": 3,
+  "schema_version": 1,
+  "source_id": "src.prime-intellect-verifiers-v1",
+  "source_snapshot_id": "snap.src.prime-intellect-verifiers-v1.initial-import",
+  "workspace_template_path": "experiments/exp-2026-08-30-preexecution-write-interception/inputs/workspace-template",
+  "workspace_template_snapshot": {
+    "directory_membership": {
+      ".": [
+        "protected",
+        "public",
+        "scratch"
+      ],
+      "protected": [
+        "append.txt",
+        "delete.txt",
+        "overwrite.txt",
+        "rename.txt",
+        "replace.txt"
+      ],
+      "public": [
+        "readme.txt"
+      ],
+      "scratch": [
+        "replacement.txt"
+      ]
+    },
+    "files": [
+      {
+        "bytes": 26,
+        "path": "protected/append.txt",
+        "sha256": "a9d6b8f0b644d796508a68edc084dd2d224b7e833640aebab3b958809154165c"
+      },
+      {
+        "bytes": 26,
+        "path": "protected/delete.txt",
+        "sha256": "3b8879d4ceeb9e9282593bc8f3b22fe2fbb13dbcaf2a2c346d4b969e632abd38"
+      },
+      {
+        "bytes": 29,
+        "path": "protected/overwrite.txt",
+        "sha256": "fb3e256a96c99e8c58d77ffb187d2dbbff7d4440ead3e200aa22574ad9f3a643"
+      },
+      {
+        "bytes": 26,
+        "path": "protected/rename.txt",
+        "sha256": "ca5a7ecc6a6902c7bd3e7eb35a9860af16ee3ebf2dfab8f03b46f62f71128123"
+      },
+      {
+        "bytes": 27,
+        "path": "protected/replace.txt",
+        "sha256": "b9522d5bd6e9d4b239b045137c1135b60428a11ae73cdf844f01457c2b3bac14"
+      },
+      {
+        "bytes": 23,
+        "path": "public/readme.txt",
+        "sha256": "4214da3642c05010471bbcb44fb128a1f002e1a6b54d1caefa391d7f8352c1e3"
+      },
+      {
+        "bytes": 20,
+        "path": "scratch/replacement.txt",
+        "sha256": "d6eac501ebd797fa2373412607366d148feaedd01cfb4506766f5a79e09f642a"
+      }
+    ]
+  },
+  "workspace_template_snapshot_sha256": "8b4e7d34695317eea85fb0ab0e775c60f01b20041b717cdf5364e57077d1bc40"
+}
