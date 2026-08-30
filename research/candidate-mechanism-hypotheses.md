@@ -66,7 +66,29 @@ The existing H-V1 bundles evidence binding and independent verification.
 H-V1a isolates independent acceptance verification and does not inject missing
 hashes, stale hashes, or missing evidence.
 
-`H-V1b — evidence/provenance binding: deferred / not evaluated in this batch`
+### H-V1b — Evidence / Provenance Binding
+
+> Holding actual output, actual outcome, system claim, task bytes, semantic
+> verifier behavior, and execution path fixed, evidence-bound verification will
+> distinguish success supported by complete path/hash evidence from success
+> accompanied by missing, stale, crossed, unrelated, conflicting, or otherwise
+> invalid evidence, while leaving actual outcome unchanged.
+
+This isolates evidence binding from H-V1a's semantic output discrimination. The
+frozen experiment keeps every main challenge output semantically correct and
+adjudicates actual outcome independently from evidence sufficiency.
+
+`Status: defined and frozen; measured result not yet recorded.`
+
+### H-I1a — Pre-execution Write Prevention
+
+> Holding the proposed action, copied-workspace starting state, policy, and
+> state oracle fixed, pre-execution interception will prevent prohibited state
+> mutations, whereas post-hoc checking can detect but cannot prevent those same
+> mutations after execution.
+
+This sub-hypothesis remains `Not evaluated` until H-V1b is completed and
+interpreted.
 
 ### H-O1a — Structured Instrumentation Completeness
 
@@ -93,7 +115,8 @@ Toolkit as an IRIS-X dependency.
   Phase 4 finite-sample experiment contracts.
 - **Not established:** the complete parent H-M1, H-V1, and H-O1 hypotheses;
   improvement on any broader task family; or any architecture requirement.
-- **Not evaluated:** H-V1b, H-I1, H-P1, H-G1, H-W1, H-C1, H-R1, and the
+- **Defined/frozen; not yet evaluated:** H-V1b.
+- **Not evaluated:** H-I1/H-I1a, H-P1, H-G1, H-W1, H-C1, H-R1, and the
   remaining untested parts of the parent hypotheses.
 - **Unclear:** whether 12 development fixtures support a defensible train/validation/test split; generated or independently authored tasks may be required.
 - **Unknown:** paid model costs, provider snapshots, and optimization budgets for future model-based experiments.
