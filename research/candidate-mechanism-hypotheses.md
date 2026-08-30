@@ -122,17 +122,13 @@ Toolkit as an IRIS-X dependency.
 
 ## Uncertainty
 
-- **Supported — task-local:** H-M1a, H-V1a, and H-O1a under their respective
-  Phase 4 finite-sample experiment contracts.
-- **Not established:** the complete parent H-M1, H-V1, and H-O1 hypotheses;
-  improvement on any broader task family; or any architecture requirement.
-- **Supported — task-local:** H-V1b under its frozen finite-sample path/hash
-  evidence contract.
-- **Supported — task-local:** H-I1a under its frozen deterministic
-  copied-workspace mutation contract.
-- **Not evaluated:** the remaining parent H-I1 scope, H-P1, H-G1, H-W1, H-C1,
-  H-R1, and the
-  remaining untested parts of the parent hypotheses.
+- **Supported — task-local:** H-M1a, H-V1a, H-O1a, H-V1b, and H-I1a under their
+  respective frozen finite-sample experiment contracts.
+- **Not established:** the complete parent H-M1, H-V1, H-O1, and H-I1
+  hypotheses; improvement on any broader task family; or any architecture
+  requirement.
+- **Not evaluated:** H-P1, H-G1, H-W1, H-C1, H-R1, and remaining untested parts
+  of the parent hypotheses.
 - **Unclear:** whether 12 development fixtures support a defensible train/validation/test split; generated or independently authored tasks may be required.
 - **Unknown:** paid model costs, provider snapshots, and optimization budgets for future model-based experiments.
 - **Conflicting evidence:** none identified within the inspected mechanism paths; absence of conflict is not evidence of validity.

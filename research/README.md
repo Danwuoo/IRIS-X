@@ -9,5 +9,6 @@ This area contains IRIS-X-authored analysis. IRIS-X remains in research preparat
 - Read [first-cycle-operationalization.md](first-cycle-operationalization.md) for task-local success, reliability, and lifecycle-cost observables.
 - Read [candidate-mechanism-hypotheses.md](candidate-mechanism-hypotheses.md) for corpus-grounded mechanisms and falsifiable hypotheses; it is not an architecture recommendation.
 - Read [phase-4-mechanism-experiment-results.md](phase-4-mechanism-experiment-results.md) for the reviewed, task-local H-M1a, H-V1a, and H-O1a results and their uncertainty boundaries.
+- Read [phase-4-evidence-interception-results.md](phase-4-evidence-interception-results.md) for the separate reviewed H-V1b evidence-binding and H-I1a copied-workspace interception results.
 
 Follow [AGENTS.md](AGENTS.md) when recording evidence, inference, and uncertainty.

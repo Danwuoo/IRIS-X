@@ -1,6 +1,6 @@
 # Temporary Phase 4 Evidence Binding and Interception Plan
 
-Status: **Active temporary plan — second scoped Phase 4 batch**  
+Status: **Retired — second scoped Phase 4 batch completed and validated**
 Date: **2026-08-30**  
 Scope: Phase 4 mechanism experiments only  
 Architecture authority: **None**  
@@ -708,3 +708,42 @@ temporary-plan retirement
 Do not automatically select another hypothesis.
 
 The next mechanism or architecture-synthesis decision requires owner review of the accumulated evidence.
+
+## 16. Retirement Record
+
+Retired on **2026-08-30** after completing exactly the authorized sequence.
+
+Durable closure artifacts:
+
+- scoped result summary:
+  [`research/phase-4-evidence-interception-results.md`](../../research/phase-4-evidence-interception-results.md);
+- H-V1b definition and reviewed run:
+  [`experiments/exp-2026-08-30-docops-evidence-binding/README.md`](../../experiments/exp-2026-08-30-docops-evidence-binding/README.md),
+  run `hv1b-20260830-local-01`;
+- H-I1a definition and reviewed run:
+  [`experiments/exp-2026-08-30-preexecution-write-interception/README.md`](../../experiments/exp-2026-08-30-preexecution-write-interception/README.md),
+  run `hi1a-20260830-local-01`;
+- maintained hypothesis status:
+  [`research/candidate-mechanism-hypotheses.md`](../../research/candidate-mechanism-hypotheses.md).
+
+Both runs were valid and received `Supported — task-local` status under their
+separate frozen contracts. No invalid attempt was produced. Required targeted
+tests, Python compilation, frozen-artifact reproducibility checks, registered
+source-snapshot validation, `python tools\repository_check.py`, and
+`git diff --check` passed before retirement. Imported source, papers, and prior
+completed run artifacts remained unchanged.
+
+Retirement closes only this temporary batch. It explicitly does **not**
+authorize:
+
+- another Phase 4 mechanism;
+- H-P1;
+- H-G1;
+- H-W1;
+- H-C1;
+- H-R1;
+- architecture synthesis;
+- Phase 5.
+
+Owner reassessment is required before any further research mechanism or phase
+transition.
