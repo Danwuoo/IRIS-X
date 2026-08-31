@@ -8,3 +8,9 @@ This area contains explicit, reproducible experiment definitions and reviewed ou
 - [exp-2026-08-30-docops-profile-instrumentation](exp-2026-08-30-docops-profile-instrumentation/README.md) records the frozen H-O1a profile contract and reviewed paired instrumentation run.
 - [exp-2026-08-30-docops-evidence-binding](exp-2026-08-30-docops-evidence-binding/README.md) records the frozen H-V1b path/hash evidence challenge and reviewed paired run.
 - [exp-2026-08-30-preexecution-write-interception](exp-2026-08-30-preexecution-write-interception/README.md) records the frozen H-I1a copied-workspace mutation/interception definition and reviewed paired run.
+- [exp-2026-08-31-process-lifetime-stability](exp-2026-08-31-process-lifetime-stability/README.md) records the separately frozen H-OR1a fresh/long-lived process comparison.
+- [exp-2026-08-31-reversible-cycle-state-stability](exp-2026-08-31-reversible-cycle-state-stability/README.md) records the separately frozen H-SR1a fresh/persistent copied-workspace cycle comparison.
+- [exp-2026-08-31-targeted-recovery-valid-state](exp-2026-08-31-targeted-recovery-valid-state/README.md) records the separately frozen H-RCV1a detect-only/targeted-recovery comparison.
+- [substrates/docops-robustness-v0](substrates/docops-robustness-v0/README.md) and [substrates/config-regression-v0](substrates/config-regression-v0/README.md) qualify robustness and change-reliability measurement sensitivity without claiming system performance.
+- [substrates/docops-generated-heldout-v0](substrates/docops-generated-heldout-v0/README.md) qualifies four IRIS-X-authored deterministic generator families using development-visible seeds only.
+- [substrates/model-specialization-v0](substrates/model-specialization-v0/README.md) qualifies provider-neutral success/failure terminal paths with deterministic fake candidates and zero model calls.
