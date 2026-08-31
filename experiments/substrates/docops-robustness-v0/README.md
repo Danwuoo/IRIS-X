@@ -12,4 +12,3 @@ python -m unittest discover -s experiments\substrates\docops-robustness-v0\tests
 ```
 
 Normal evidence is compact: a terminal record per case plus results and a run manifest. There are no copied source workspaces or model outputs.
-

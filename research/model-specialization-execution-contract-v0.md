@@ -82,4 +82,3 @@ The deterministic dry-run checks candidate loading/hash, public packaging, evalu
 - **Unclear:** Which future specialization mechanism, if any, should be tested first.
 - **Not established:** Model-specialization readiness by this contract alone, candidate quality, or lifecycle-cost advantage.
 - **Not evaluated:** H-P1, model candidates, optimization, workflow search, routing, fine-tuning, and blind evaluation.
-

@@ -11,4 +11,3 @@
     {"task_id": "cost-increase-001", "public_input": {"records": {"one": 19, "two": 23}, "selector": "two", "evidence_path": "cost.md#L3"}, "expected": {"answer": 23, "evidence": ["cost.md#L3"]}}
   ]
 }
-

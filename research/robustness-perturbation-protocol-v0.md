@@ -45,4 +45,3 @@ The qualification runner records builder identity, parameters, source/transforme
 - **Unclear:** Whether these four narrow families approximate real operational variation.
 - **Not established:** System robustness, general semantic equivalence, or task-distribution representativeness.
 - **Not evaluated:** Model candidates, prompts, workflows, and external providers.
-

@@ -1,11 +1,11 @@
 # Temporary Phase 4 Reliability Expansion and Specialization Substrate Plan
 
 Status: **Retired — reliability expansion and specialization substrate batch completed and validated**
-Date: **2026-08-31**  
-Scope: reliability expansion, broader task-frame qualification, held-out governance, and model-specialization substrate preparation  
-Architecture authority: **None**  
-Planning baseline: GitHub `main` = `36de9056efaff002dcdbb15f8335fcabf261a751` when this plan was prepared  
-Execution model: one large plan, multiple separately frozen work packages and experiments  
+Date: **2026-08-31**
+Scope: reliability expansion, broader task-frame qualification, held-out governance, and model-specialization substrate preparation
+Architecture authority: **None**
+Planning baseline: GitHub `main` = `36de9056efaff002dcdbb15f8335fcabf261a751` when this plan was prepared
+Execution model: one large plan, multiple separately frozen work packages and experiments
 Hard terminal boundary: **STOP before any H-P1/H-G1/H-W1/H-C1/H-R1 model-based experiment**
 
 Retirement record: all exit criteria were satisfied within their stated boundaries. The durable result and decision are recorded in [`research/phase-4-reliability-specialization-readiness.md`](../../research/phase-4-reliability-specialization-readiness.md). Retirement means this execution contract is complete; it does not authorize H-P1, H-G1, H-W1, H-C1, H-R1, architecture synthesis, or Phase 5.

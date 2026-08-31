@@ -40,4 +40,3 @@ A passing qualification means only: the regression measurement substrate detects
 - **Unclear:** Appropriate practical thresholds for multi-dimensional change decisions.
 - **Not established:** General maintainability, causal attribution beyond the injected faults, or production regression risk.
 - **Not evaluated:** External providers, model candidates, optimization, and deployment cost.
-

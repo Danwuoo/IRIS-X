@@ -12,4 +12,3 @@ python -m unittest discover -s experiments\substrates\config-regression-v0\tests
 ```
 
 The injected-failure result demonstrates measurement sensitivity only. It does not establish general maintainability.
-
