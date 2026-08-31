@@ -1,0 +1,74 @@
+{
+  "docops_ps1_reversible_append_section_001": {
+    "files": [
+      {
+        "bytes": 92,
+        "path": "inputs/notes.md",
+        "sha256": "bd64f25bab01dfd26708d9ab3185c84807a4c8ffdd9fceb9773d65d1066dc439"
+      }
+    ],
+    "manifest_sha256": "2a388283b686bb5b127949299b7fe0f8e95fa872bbc258ccaab4b8e1433a25ad",
+    "path_count": 1,
+    "total_bytes": 92
+  },
+  "docops_ps1_reversible_json_path_replace_001": {
+    "files": [
+      {
+        "bytes": 47,
+        "path": "inputs/config.json",
+        "sha256": "d452bd07d8bdc946dc439718575ceed298a31dee4e860f90ef39253e2ccc2ad0"
+      }
+    ],
+    "manifest_sha256": "1f03c774aa68b70ed3ab47a5dc3fac8c1a709b6b7847089a21419cf7adabfcd1",
+    "path_count": 1,
+    "total_bytes": 47
+  },
+  "docops_ps1_reversible_patch_multiline_001": {
+    "files": [
+      {
+        "bytes": 106,
+        "path": "inputs/scope.md",
+        "sha256": "aafcfaf4c672f4eaaa38f578968a1731ac3aeb3d9b9943a0b21ab4eae3480a73"
+      }
+    ],
+    "manifest_sha256": "33107de7ad744e059a2b71f18d58cdcdd84013167a3ea108edad0be8c64134ca",
+    "path_count": 1,
+    "total_bytes": 106
+  },
+  "docops_ps1_reversible_replace_heading_001": {
+    "files": [
+      {
+        "bytes": 60,
+        "path": "inputs/terms.md",
+        "sha256": "0b08dd7c7156b8510ac57e6c40c9552818f4fcce8dcad5f7a00ef85a058af484"
+      }
+    ],
+    "manifest_sha256": "8a5481c85ffbc4e1c18208aca98d1543769a234acad869e69af7507b80f5684f",
+    "path_count": 1,
+    "total_bytes": 60
+  },
+  "docops_reversible_edit_001": {
+    "files": [
+      {
+        "bytes": 81,
+        "path": "inputs/glossary.md",
+        "sha256": "6db7867520587f2643e098333cf775209b1ee99e9be492ba30441c733b3295c8"
+      }
+    ],
+    "manifest_sha256": "f29a6e53cb5efc7550d53f05f11c67b04fdccde625a07aa51b237682e56ab7f8",
+    "path_count": 1,
+    "total_bytes": 81
+  },
+  "docops_struct_apply_reversible_001": {
+    "files": [
+      {
+        "bytes": 73,
+        "path": "inputs/glossary.md",
+        "sha256": "fa7afd995ba1a288cf395a36b635b3771101dd83b0501a63727cf73fc6494b86"
+      }
+    ],
+    "manifest_sha256": "2b64011f34be5a0ed6f3854b1303840f6ec1649b5682d53b03e1335a5019e4df",
+    "path_count": 1,
+    "total_bytes": 73
+  }
+}
