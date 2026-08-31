@@ -1,0 +1,19 @@
+{
+  "candidate_executions": 0,
+  "claim_boundary": "Measurement-substrate qualification only; system robustness not established.",
+  "model_calls": 0,
+  "negative_sensitivity_cases_rejected": 1,
+  "negative_sensitivity_cases_total": 1,
+  "paid_api_calls": 0,
+  "positive_cases_passed": 4,
+  "positive_cases_total": 4,
+  "qualified_positive_families": [
+    "irrelevant-context-insertion-v0",
+    "equivalent-json-serialization-v0",
+    "order-permutation-under-set-contract-v0",
+    "equivalent-relative-path-presentation-v0"
+  ],
+  "schema_version": 1,
+  "status": "qualified",
+  "substrate_id": "docops-robustness-v0"
+}
