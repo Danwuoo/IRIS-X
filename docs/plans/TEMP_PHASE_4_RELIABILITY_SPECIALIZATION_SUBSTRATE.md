@@ -1,6 +1,6 @@
 # Temporary Phase 4 Reliability Expansion and Specialization Substrate Plan
 
-Status: **Retired — reliability expansion and specialization substrate batch completed and validated**  
+Status: **Retired — reliability expansion and specialization substrate batch completed and validated**
 Date: **2026-08-31**  
 Scope: reliability expansion, broader task-frame qualification, held-out governance, and model-specialization substrate preparation  
 Architecture authority: **None**  
