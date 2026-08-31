@@ -1,0 +1,32 @@
+{
+  "attempted_family_count": 4,
+  "candidate_executions": 0,
+  "different_seed_variation_passed": true,
+  "evidence_class": "development-visible",
+  "future_blind_set_materialized": false,
+  "hidden_oracle_separation_passed": true,
+  "invalid_generator_configuration_reason": "count must be an integer from 3 through 8",
+  "invalid_generator_configuration_rejected": true,
+  "leakage_audit_passed": true,
+  "model_calls": 0,
+  "oracle_determinism_passed": true,
+  "paid_api_calls": 0,
+  "public_input_sufficiency_passed": true,
+  "qualification_instance_count": 8,
+  "qualified_families": [
+    "traceability-extraction-v0",
+    "terminology-consistency-v0",
+    "path-action-guard-v0",
+    "structured-simulation-v0"
+  ],
+  "qualified_family_count": 4,
+  "same_seed_reproducibility_passed": true,
+  "schema_version": 1,
+  "status": "qualified",
+  "substrate_id": "docops-generated-heldout-v0",
+  "uncertainty": {
+    "difficulty_calibration": "Unclear",
+    "future_candidate_performance": "Not evaluated",
+    "real_world_representativeness": "Unclear"
+  }
+}

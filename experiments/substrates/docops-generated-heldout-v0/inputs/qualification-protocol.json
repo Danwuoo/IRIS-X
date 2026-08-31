@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "substrate_id": "docops-generated-heldout-v0",
+  "evidence_class": "development-visible",
+  "candidate_freeze_sha": "not_applicable_generator_qualification",
+  "families": {
+    "traceability-extraction-v0": [4101, 4102],
+    "terminology-consistency-v0": [4201, 4202],
+    "path-action-guard-v0": [4301, 4302],
+    "structured-simulation-v0": [4401, 4402]
+  },
+  "generator_config": {"count": 4},
+  "invalid_config_self_test": {"count": 0},
+  "future_blind_set_materialized": false
+}
+
