@@ -1,0 +1,17 @@
+{
+  "candidate_hashes_verified": true,
+  "candidate_paths_exercised": 2,
+  "candidate_visible_package_excludes_hidden_oracle": true,
+  "design_runtime_ledgers_separate": true,
+  "failed_terminal_paths_retained": 1,
+  "future_blind_set_materialized": false,
+  "generation_manifests_bind_candidate_sha": true,
+  "model_calls": 0,
+  "network_used": false,
+  "output_frozen_before_evaluation": true,
+  "paid_api_calls": 0,
+  "schema_version": 1,
+  "status": "qualified",
+  "successful_terminal_paths": 1,
+  "unknown_provider_cost_preserved": true
+}
