@@ -1,0 +1,11 @@
+{
+  "candidate_id": "deterministic-intentionally-faulty-v0",
+  "candidate_type": "experiment-local-deterministic",
+  "faults": {
+    "answer-regression-001": "alter_answer",
+    "evidence-regression-001": "drop_evidence"
+  },
+  "extra_cost_units": {
+    "cost-increase-001": 2
+  }
+}

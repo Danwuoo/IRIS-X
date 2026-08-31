@@ -1,0 +1,37 @@
+{
+  "baseline_candidate_id": "deterministic-baseline-v0",
+  "baseline_candidate_sha256": "7b265e7b56c95ec06c2622a9f24edbdc692f3c5e7845677e9db8376c44c944e8",
+  "candidate_id": "deterministic-intentionally-faulty-v0",
+  "candidate_sha256": "d6df6af73f40d146a57e45a54143633570820dd8a76eec86a86ffb59cc17da94",
+  "case_count": 4,
+  "claim_boundary": "The regression measurement substrate detects this injected regression; general maintainability is not established.",
+  "dimension_counts": {
+    "cost_decrease": 0,
+    "cost_increase": 1,
+    "evidence_regression": 1,
+    "improvement": 0,
+    "invalid_comparison": 0,
+    "regression": 1,
+    "unchanged_failure": 0,
+    "unchanged_success": 3
+  },
+  "evaluator_id": "exact-answer-required-evidence-v0",
+  "model_calls": 0,
+  "paid_api_calls": 0,
+  "required_injected_effects_detected": {
+    "cost_increase": true,
+    "evidence_regression": true,
+    "regression": true,
+    "unchanged_success": true
+  },
+  "runtime_envelope": {
+    "model_calls": 0,
+    "network": false,
+    "paid_api_calls": 0,
+    "retries": 0
+  },
+  "schema_version": 1,
+  "status": "qualified",
+  "task_frame_id": "config-regression-self-test-v0",
+  "task_source_generation_identity": "irisx-authored-regression-cases-v0"
+}
