@@ -49,6 +49,8 @@ class ExecutionContractTests(unittest.TestCase):
         self.assertTrue(success["verified_success_eligibility"])
         self.assertTrue(success["evaluator_invoked"])
         self.assertEqual(failure["terminal_execution_status"], "failed")
+        self.assertEqual(failure["actual_outcome"], "failure")
+        self.assertEqual(failure["empirical_evidence_status"], "sufficient")
         self.assertFalse(failure["evaluator_invoked"])
         self.assertIsNotNone(failure["error"])
         for record in (success, failure):
@@ -58,6 +60,33 @@ class ExecutionContractTests(unittest.TestCase):
             self.assertEqual(record["runtime_cost_ledger"]["provider_cost_usd"], "Unknown")
             self.assertEqual(record["model_calls"], 0)
             self.assertEqual(record["paid_api_calls"], 0)
+
+    def test_canonical_vocabulary_rejects_historical_placeholders(self) -> None:
+        record = dry_run.run_candidate(FAILURE_PATH, TASK)
+        dry_run.validate_terminal_semantics(record)
+        for field, forbidden in (
+            ("actual_outcome", "Unknown"),
+            ("empirical_evidence_status", "unavailable"),
+        ):
+            changed = dict(record)
+            changed[field] = forbidden
+            with self.assertRaises(ValueError):
+                dry_run.validate_terminal_semantics(changed)
+
+    def test_clear_failure_and_genuinely_unresolved_are_distinct(self) -> None:
+        failure = dry_run.adjudicate_terminal_noncompletion(completion_known=True)
+        unresolved = dry_run.adjudicate_terminal_noncompletion(completion_known=False)
+        self.assertEqual(failure["actual_outcome"], "failure")
+        self.assertEqual(failure["empirical_evidence_status"], "sufficient")
+        self.assertEqual(unresolved["actual_outcome"], "unresolved")
+        self.assertEqual(unresolved["empirical_evidence_status"], "unresolved")
+
+    def test_new_manifest_commit_fields_require_full_resolving_shas(self) -> None:
+        head = dry_run.git_head()
+        dry_run.require_full_commit_sha(head, "definition_commit")
+        dry_run.require_full_commit_sha(head, "code_commit")
+        with self.assertRaises(ValueError):
+            dry_run.require_full_commit_sha(head[:12], "definition_commit")
 
     def test_existing_run_directory_cannot_be_overwritten(self) -> None:
         with tempfile.TemporaryDirectory(prefix="irisx-specialization-run-") as temporary:

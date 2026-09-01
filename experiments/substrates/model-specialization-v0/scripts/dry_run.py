@@ -7,6 +7,7 @@ import argparse
 import copy
 import hashlib
 import json
+import re
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -19,6 +20,17 @@ SUBSTRATE = Path(__file__).resolve().parents[1]
 CANDIDATES = SUBSTRATE / "candidates"
 TASK_PATH = SUBSTRATE / "inputs" / "dry-run-task.json"
 RUNS = SUBSTRATE / "runs"
+ACTUAL_OUTCOMES = {"success", "partial", "failure", "unresolved"}
+EVIDENCE_STATUSES = {
+    "sufficient",
+    "insufficient",
+    "invalid_binding",
+    "not_assessed",
+    "unresolved",
+}
+ACCEPTANCE_DECISIONS = {"accept", "reject", "abstain", "not_applicable"}
+TERMINAL_EXECUTION_STATUSES = {"completed", "failed", "invalid"}
+FULL_COMMIT_SHA = re.compile(r"^[0-9a-f]{40}$")
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -54,6 +66,18 @@ def git_head() -> str:
         text=True,
         stdout=subprocess.PIPE,
     ).stdout.strip()
+
+
+def require_full_commit_sha(value: str, field: str) -> None:
+    if FULL_COMMIT_SHA.fullmatch(value) is None:
+        raise ValueError(f"{field} must be a full 40-character commit SHA")
+    subprocess.run(
+        ["git", "cat-file", "-e", f"{value}^{{commit}}"],
+        cwd=ROOT,
+        check=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
 
 
 def ensure_new_run(path: Path) -> None:
@@ -210,6 +234,33 @@ def evaluate_frozen_output(output: dict[str, Any], hidden_oracle: dict[str, Any]
     }
 
 
+def adjudicate_terminal_noncompletion(*, completion_known: bool) -> dict[str, Any]:
+    if completion_known:
+        return {
+            "actual_outcome": "failure",
+            "empirical_evidence_status": "sufficient",
+            "acceptance_decision": "not_applicable",
+            "verified_success_eligibility": False,
+        }
+    return {
+        "actual_outcome": "unresolved",
+        "empirical_evidence_status": "unresolved",
+        "acceptance_decision": "not_applicable",
+        "verified_success_eligibility": False,
+    }
+
+
+def validate_terminal_semantics(record: dict[str, Any]) -> None:
+    if record.get("actual_outcome") not in ACTUAL_OUTCOMES:
+        raise ValueError("actual_outcome is outside the canonical vocabulary")
+    if record.get("empirical_evidence_status") not in EVIDENCE_STATUSES:
+        raise ValueError("empirical_evidence_status is outside the canonical vocabulary")
+    if record.get("acceptance_decision") not in ACCEPTANCE_DECISIONS:
+        raise ValueError("acceptance_decision is outside the canonical vocabulary")
+    if record.get("terminal_execution_status") not in TERMINAL_EXECUTION_STATUSES:
+        raise ValueError("terminal_execution_status is outside the frozen vocabulary")
+
+
 def run_candidate(path: Path, task: dict[str, Any]) -> dict[str, Any]:
     identity = candidate_identity(path)
     if sha_file(path) != identity["candidate_sha256"]:
@@ -232,16 +283,11 @@ def run_candidate(path: Path, task: dict[str, Any]) -> dict[str, Any]:
         artifact_bytes = len(frozen_bytes)
     except Exception as exc:
         error = {"type": type(exc).__name__, "message": str(exc)}
-        evaluation = {
-            "actual_outcome": "Unknown",
-            "empirical_evidence_status": "unavailable",
-            "acceptance_decision": "not_applicable",
-            "verified_success_eligibility": False,
-        }
+        evaluation = adjudicate_terminal_noncompletion(completion_known=True)
         execution_state = "failed"
         artifact_bytes = 0
     wall = time.perf_counter_ns() - start
-    return {
+    record = {
         "schema_version": 1,
         "candidate_identity": identity,
         "generation_manifest": manifest,
@@ -260,6 +306,8 @@ def run_candidate(path: Path, task: dict[str, Any]) -> dict[str, Any]:
         "model_calls": 0,
         "paid_api_calls": 0,
     }
+    validate_terminal_semantics(record)
+    return record
 
 
 def main() -> int:
@@ -275,6 +323,9 @@ def main() -> int:
     ]
     success = records[0]
     failure = records[1]
+    frozen_commit = git_head()
+    require_full_commit_sha(frozen_commit, "definition_commit")
+    require_full_commit_sha(frozen_commit, "code_commit")
     passed = (
         success["terminal_execution_status"] == "completed"
         and success["verified_success_eligibility"]
@@ -341,7 +392,8 @@ def main() -> int:
             "schema_version": 1,
             "run_id": args.run_id,
             "created_at_utc": datetime.now(timezone.utc).isoformat(),
-            "code_commit": git_head(),
+            "definition_commit": frozen_commit,
+            "code_commit": frozen_commit,
             "runner_sha256": sha_file(Path(__file__)),
             "task_sha256": sha_file(TASK_PATH),
             "terminal_records_sha256": sha_file(terminal_path),

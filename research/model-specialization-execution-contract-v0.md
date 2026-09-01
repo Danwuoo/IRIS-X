@@ -68,11 +68,31 @@ artifact_bytes
 
 Actual zero use may be recorded as zero when directly observed. Unknown price remains `Unknown`, even when this local fake uses zero model calls.
 
+## Definition and code identity
+
+Every new run manifest records both `definition_commit` and `code_commit` as
+full 40-character Git commit SHAs. Each value must resolve to a commit in the
+execution repository. Abbreviated, missing, symbolic, or non-commit identities
+are invalid. The two fields may identify the same commit when the definition
+and implementation were frozen together.
+
 ## Terminal evidence
 
 Provider error, malformed output, timeout, tool failure, and explicit adapter failure become terminal records. There is no silent retry. Actual outcome, empirical evidence status, acceptance decision, verified-success eligibility, and execution state remain distinct.
 
-A failed candidate without frozen output is recorded as `actual_outcome: Unknown`, `empirical_evidence_status: unavailable`, `acceptance_decision: not_applicable`, `verified_success_eligibility: false`, and a failed terminal execution state. The evaluator is not invoked as if a result existed.
+A provider, adapter, timeout, tool, or deliberate fake failure that clearly
+establishes task non-completion without frozen candidate output is recorded as
+`actual_outcome: failure`, `empirical_evidence_status: sufficient`,
+`acceptance_decision: not_applicable`,
+`verified_success_eligibility: false`, and a failed terminal execution state.
+The evaluator is not invoked as if candidate output existed.
+
+Use `actual_outcome: unresolved` only when output existence or task completion
+genuinely cannot be adjudicated. Its evidence status must be one of the
+canonical Evaluation State Semantics v1 values and must describe the observed
+evidence rather than substitute a legacy availability label. New records must
+never emit `Unknown` as `actual_outcome` or `unavailable` as
+`empirical_evidence_status`.
 
 ## Qualification claim boundary
 
