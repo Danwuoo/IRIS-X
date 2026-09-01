@@ -1,0 +1,15 @@
+{
+  "code_commit": "b6899ffe6dd8b37eb55506345820224bb462e451",
+  "created_at_utc": "2026-09-01T14:33:52.986971+00:00",
+  "definition_commit": "b6899ffe6dd8b37eb55506345820224bb462e451",
+  "model_calls": 0,
+  "network_used": false,
+  "paid_api_calls": 0,
+  "run_id": "qualification-20260901-local-02",
+  "runner_sha256": "d2f572e8c83234174cf25b6383108e429239a870662f34d44130b61e054c2e00",
+  "schema_version": 1,
+  "status": "qualified",
+  "task_sha256": "24efa23d0d470acc79edc1006950c41cbe7517db50f581271439850757b2e6ad",
+  "terminal_records_bytes": 5155,
+  "terminal_records_sha256": "444c403676ca559afeea063e61eca4a98ac759010c3c9be52c48168dba130509"
+}

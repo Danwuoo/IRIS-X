@@ -16,3 +16,8 @@ contract. New qualifications use the corrected canonical outcome/evidence
 vocabulary and full `definition_commit`/`code_commit` identities; they
 supersede the historical run for future-execution readiness without rewriting
 it.
+
+The superseding future-readiness qualification is
+`runs/qualification-20260901-local-02`. It was executed from definition/code
+commit `b6899ffe6dd8b37eb55506345820224bb462e451` and records zero network,
+model, and paid API calls.
