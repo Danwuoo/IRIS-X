@@ -2,6 +2,7 @@
 
 This area contains explicit, reproducible experiment definitions and reviewed outputs.
 
+- [configurations/provider-model-baseline-v0.json](configurations/provider-model-baseline-v0.json) is the accepted machine-readable OpenAI/Codex baseline with explicit GPT-5.6 Terra `strong` and GPT-5.6 Luna `cheaper` roles. It authorizes no model call by itself.
 - [exp-2026-08-28-docops-readonly-baseline](exp-2026-08-28-docops-readonly-baseline/README.md) defines the Phase 3 fixed-distribution comparison of two local narrow controls. Its run artifacts keep definition, raw episodes, aggregates, and interpretation separate.
 - [exp-2026-08-30-source-snapshot-assertion](exp-2026-08-30-source-snapshot-assertion/README.md) records the H-M1a registered-snapshot assertion challenge and reviewed run.
 - [exp-2026-08-30-docops-acceptance-verification](exp-2026-08-30-docops-acceptance-verification/README.md) records the frozen H-V1a acceptance-policy challenge set and reviewed paired run.

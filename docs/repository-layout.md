@@ -8,7 +8,7 @@ Status: current operating baseline for research preparation; not an architecture
 | `sources/external/` | Preserved external reference implementations | Read-only by default |
 | `references/papers/` | Preserved paper artifacts | Read-only by default |
 | `research/` | IRIS-X-authored notes, synthesis, hypotheses, comparisons | Editable with scoped guidance |
-| `experiments/` | Explicit experiment definitions, inputs, runs, results | Editable with reproducibility guidance |
+| `experiments/` | Explicit experiment definitions, shared configuration inputs, runs, results | Editable with reproducibility guidance |
 | `docs/` | Repository operation, layout decisions, temporary plans | Editable |
 | `tools/` | Lightweight maintenance commands | Editable |
 | `corpus/` | Registries and provenance operations | Editable as structured records |
