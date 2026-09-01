@@ -1,0 +1,16 @@
+{
+  "api_key_fallback": "prohibited",
+  "authentication_mode": "chatgpt",
+  "authentication_status_observed": "Logged in using ChatGPT",
+  "billing_mode": "chatgpt-subscription",
+  "code_commit": "746932b070b9f76d85902d86a16d9845a6a680ad",
+  "created_at_utc": "2026-09-01T14:54:13.674919+00:00",
+  "definition_commit": "746932b070b9f76d85902d86a16d9845a6a680ad",
+  "dev_inventory_sha256": "ec27d6f3824477e6a75d4ef959618c5d50cbe126da2572c53d7d24cb62e3fdbd",
+  "provider_cost_usd": "Unknown",
+  "run_id": "design-20260901-chatgpt-01",
+  "schema_version": 1,
+  "seed_program_bytes": 1389,
+  "seed_program_sha256": "1736879afe750b63bb4fb1913e1520e08f658fd3d414424cb100a310765855bb",
+  "validation_inventory_sha256": "20afe2de8cff49300aa067e3b67f881c193f03d497b11891021d0503df622e4d"
+}
