@@ -107,13 +107,27 @@ python tools\model_baseline_check.py --check-local-catalog
 
 This validation performs no model call and authorizes no paid use.
 
+## Authentication and subscription accounting
+
+The shared baseline keeps authentication and billing as explicit per-run
+choices. H-P1a freezes them to `chatgpt` and `chatgpt-subscription` and
+prohibits API-key fallback. ChatGPT-subscription token and call observations
+are resource measurements, not a run-attributable provider bill. Unless direct
+monetary evidence is attributable to the exact run, `provider_cost_usd` is
+`Unknown`, the price basis states that no run-attributable subscription basis
+is available, and monetary lifecycle-cost advantage is `Not established`.
+
+Model-backed authorization is expressed as an experiment-local call/resource
+ceiling. This baseline does not impose or authorize an API-dollar spend
+ceiling, and the retired `$25` proposal is not reinstated.
+
 ## Boundaries
 
 This decision selects a provider/model operating baseline only. It does not:
 
 - rewrite completed Phase 4 results or their historical `Unknown` fields;
 - start or establish H-P1;
-- authorize a paid run without a separately recorded experiment scope and spend
-  ceiling;
+- authorize a model-backed run without a separately recorded experiment scope,
+  authentication/billing identity, and call/resource ceiling;
 - establish model quality, reliability, cost advantage, routing, specialization,
   or a final IRIS-X architecture.

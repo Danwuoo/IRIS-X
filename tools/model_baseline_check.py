@@ -110,8 +110,35 @@ def validate_baseline(value: dict[str, Any]) -> list[str]:
     require(isinstance(authorization, dict), "authorization must be an object")
     if isinstance(authorization, dict):
         require(
-            authorization.get("paid_model_calls_authorized_by_this_file") is False,
-            "shared baseline must not authorize paid model calls",
+            authorization.get("model_calls_authorized_by_this_file") is False,
+            "shared baseline must not authorize model calls",
+        )
+        required = authorization.get("required_before_model_run")
+        require(isinstance(required, list), "model-run prerequisites must be a list")
+        if isinstance(required, list):
+            require(
+                "experiment-local-call-resource-ceiling" in required,
+                "model runs must require an experiment-local call/resource ceiling",
+            )
+            require(
+                all("spend-ceiling" not in str(item) for item in required),
+                "baseline must not reinstate an API-dollar spend ceiling",
+            )
+
+    accounting = value.get("subscription_accounting")
+    require(isinstance(accounting, dict), "subscription_accounting must be an object")
+    if isinstance(accounting, dict):
+        require(
+            accounting.get("chatgpt_subscription_token_usage_is_provider_bill") is False,
+            "subscription token observations must not be treated as provider bill",
+        )
+        require(
+            accounting.get("api_price_table_is_actual_subscription_bill") is False,
+            "API price tables must not be treated as the subscription bill",
+        )
+        require(
+            accounting.get("unknown_provider_cost_value") == "Unknown",
+            "unknown provider cost must remain Unknown",
         )
     return errors
 

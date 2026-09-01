@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "baseline_id": "irisx-openai-codex-dual-model-v0",
+  "baseline_sha256": "a1a85c7464fbc090c2bf2e1682bee9a22957146e50abf11ab5c41f1544046d74",
+  "provider_id": "openai",
+  "execution_surface": "codex-cli",
+  "authentication_mode": "chatgpt",
+  "authentication_status_observed": "Logged in using ChatGPT",
+  "billing_mode": "chatgpt-subscription",
+  "api_key_fallback": "prohibited",
+  "api_key_environment_present_during_preflight": true,
+  "api_key_environment_removed_from_every_model_child": true,
+  "provider_cost_usd": "Unknown",
+  "price_basis": "no-run-attributable-chatgpt-subscription-price-basis-available",
+  "codex_cli_resolved_path": "C:\\Users\\wurre\\AppData\\Roaming\\npm\\codex.cmd",
+  "codex_cli_version": "codex-cli 0.147.0",
+  "catalog_checked_at": "2026-09-01T14:49:56.5180922Z",
+  "strong_model_id": "gpt-5.6-terra",
+  "cheaper_model_id": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "provider_snapshot_status": "no-date-versioned-immutable-provider-snapshot-listed",
+  "catalog_check_model_call_count": 0
+}

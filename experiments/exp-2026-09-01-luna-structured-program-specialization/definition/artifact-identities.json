@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "hash_algorithm": "sha256",
+  "artifacts": {
+    "provider_baseline": {"path": "experiments/configurations/provider-model-baseline-v0.json", "sha256": "a1a85c7464fbc090c2bf2e1682bee9a22957146e50abf11ab5c41f1544046d74", "bytes": 4062},
+    "experiment_definition": {"path": "definition/experiment-definition.json", "sha256": "06101bdeec56fcf42a9bc19252168cc4ba1ff208ba7460e686cb6a1c8900f471", "bytes": 4014},
+    "output_schema": {"path": "definition/output-schema.json", "sha256": "dde9b511ceaa4c0edcab7f3ff3f87f40ebdeae32fe6db12a50db55244bbc5277", "bytes": 3869},
+    "optimizer_output_schema": {"path": "definition/optimizer-output-schema.json", "sha256": "d6b46cf7af962845b633925e634cde6deb85bb1fad9b03db6111eae0dead7b56", "bytes": 311},
+    "selection_rule": {"path": "definition/selection-rule.json", "sha256": "e4af417bb57844fd4e44d1860a71eeb823e8fbca82ac455e94a7fb82820ea783", "bytes": 765},
+    "seed_program": {"path": "definition/seed-program.txt", "sha256": "1736879afe750b63bb4fb1913e1520e08f658fd3d414424cb100a310765855bb", "bytes": 1389},
+    "optimizer_program": {"path": "definition/optimizer-program.txt", "sha256": "4e741089714248919beab2d06ee01137fff807cf43352c43dd589e4d0571189b", "bytes": 1104},
+    "generator": {"path": "experiments/substrates/docops-generated-heldout-v0/scripts/generator.py", "sha256": "d4c989331ec4e7397907f3c5739dae924187a5a3a83e2a1a886ff0839ef43b92", "bytes": 12719}
+  }
+}

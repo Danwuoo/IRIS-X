@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-2026-09-01-luna-structured-program-specialization",
+  "hypothesis_id": "H-P1a",
+  "hypothesis": "Holding runtime model gpt-5.6-luna, reasoning effort medium, tool envelope, public task inputs, evaluator, generator, output contract, retry policy, and runtime execution envelope fixed, a structured-output program produced through bounded Terra-assisted design-time optimization improves post-freeze blind verified-success performance over the frozen unoptimized Luna seed program. Design-time optimization usage and runtime usage are reported separately.",
+  "primary_comparison": "C1-vs-C0",
+  "configurations": {
+    "C0": {"model_role": "cheaper", "model_id": "gpt-5.6-luna", "program": "definition/seed-program.txt", "analysis_role": "primary-control"},
+    "C1": {"model_role": "cheaper", "model_id": "gpt-5.6-luna", "program": "optimizer-generated-selection", "analysis_role": "primary-treatment"},
+    "C2": {"model_role": "strong", "model_id": "gpt-5.6-terra", "program": "definition/seed-program.txt", "analysis_role": "stronger-runtime-reference-only"}
+  },
+  "provider_identity": {
+    "provider_id": "openai",
+    "execution_surface": "codex-cli",
+    "authentication_mode": "chatgpt",
+    "billing_mode": "chatgpt-subscription",
+    "api_key_fallback": "prohibited",
+    "provider_cost_usd": "Unknown",
+    "price_basis": "no-run-attributable-chatgpt-subscription-price-basis-available"
+  },
+  "shared_runtime_envelope": {
+    "reasoning_effort": "medium",
+    "tool_envelope": [],
+    "candidate_workspace": "temporary-isolated-non-repository-allowlist-only",
+    "sandbox": "read-only",
+    "approval": "none",
+    "external_web_tools": "none",
+    "retry_count": 0,
+    "recovery_count": 0,
+    "routing": "none",
+    "escalation": "none",
+    "codex_ephemeral": true,
+    "ignore_user_config": true,
+    "ignore_rules": true,
+    "api_key_environment_removed_from_child": true,
+    "max_output_policy": "frozen-json-schema-and-codex-default-output-ceiling"
+  },
+  "task_contract": {
+    "families": ["traceability-extraction-v0", "terminology-consistency-v0", "path-action-guard-v0", "structured-simulation-v0"],
+    "generator_config": {"count": 4},
+    "generator_path": "experiments/substrates/docops-generated-heldout-v0/scripts/generator.py",
+    "output_schema": "definition/output-schema.json",
+    "candidate_program_size_ceiling_bytes": 12288,
+    "canonical_json": "utf8-sort-keys-compact-no-trailing-newline-for-hashes",
+    "split_sizes": {"dev_per_family": 6, "validation_per_family": 4, "blind_per_family": 8}
+  },
+  "optimizer": {
+    "model_id": "gpt-5.6-terra",
+    "reasoning_effort": "medium",
+    "replicates": ["opt-01", "opt-02"],
+    "maximum_rounds_per_replicate": 3,
+    "maximum_calls": 6,
+    "cross_replicate_feedback": "prohibited",
+    "validation_and_blind_visibility": "prohibited",
+    "sampling_seed_controlled": false,
+    "mutation_boundary": "program-prompt-layer-only",
+    "output_schema": "definition/optimizer-output-schema.json"
+  },
+  "resource_ceiling": {
+    "maximum_luna_calls": 344,
+    "maximum_terra_calls": 38,
+    "maximum_total_calls": 382,
+    "maximum_terra_optimizer_calls": 6,
+    "maximum_blind_schedule_entries": 96,
+    "allocation": {"seed_dev_luna": 24, "candidate_dev_luna": 144, "optimizer_terra": 6, "validation_luna": 112, "blind_c0_luna": 32, "blind_c1_luna": 32, "blind_c2_terra": 32},
+    "unused_calls_transferable": false
+  },
+  "selection_rule": "definition/selection-rule.json",
+  "blind_schedule_algorithm": "sort-by-sha256(master-seed||instance-id)-then-rotate-C0-C1-C2-by-index-mod-3",
+  "interpretation_labels": ["Supported — task-local", "Mixed evidence", "Rejected — task-local"],
+  "definition_commit_binding": "all run and generation manifests record the earlier full definition/code commit",
+  "invalidity_and_subscription_continuation": "docs/plans/TEMP_PHASE_4_FINAL_MODEL_SPECIALIZATION_AND_CLOSURE.md sections 15 and 20",
+  "architecture_authority": "None"
+}

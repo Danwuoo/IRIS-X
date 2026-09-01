@@ -31,6 +31,13 @@
     "tool_envelope": "experiment-local",
     "sandbox_and_approval_policy": "experiment-local"
   },
+  "subscription_accounting": {
+    "chatgpt_subscription_token_usage_is_provider_bill": false,
+    "api_price_table_is_actual_subscription_bill": false,
+    "unknown_provider_cost_value": "Unknown",
+    "monetary_lifecycle_cost_advantage_without_direct_evidence": "Not established",
+    "api_key_fallback_requires_separate_authorization": true
+  },
   "models": {
     "strong": {
       "role": "strong",
@@ -100,11 +107,12 @@
   ],
   "authorization": {
     "model_selection_accepted": true,
-    "paid_model_calls_authorized_by_this_file": false,
-    "required_before_paid_run": [
+    "model_calls_authorized_by_this_file": false,
+    "required_before_model_run": [
       "separately-frozen-experiment-definition",
-      "owner-approved-spend-ceiling",
-      "terminal-record-and-cost-ledger-paths"
+      "explicit-authentication-and-billing-mode",
+      "experiment-local-call-resource-ceiling",
+      "terminal-record-and-resource-ledger-paths"
     ]
   },
   "selection_evidence": {
