@@ -1,0 +1,121 @@
+{
+  "hidden_generation_state": {
+    "operation": {
+      "set_status": "rejected"
+    },
+    "records": [
+      {
+        "id": "R1",
+        "score": 2,
+        "status": "review"
+      },
+      {
+        "id": "R2",
+        "score": 11,
+        "status": "review"
+      },
+      {
+        "id": "R3",
+        "score": 4,
+        "status": "draft"
+      },
+      {
+        "id": "R4",
+        "score": 2,
+        "status": "ready"
+      }
+    ],
+    "selector": {
+      "id": "R4"
+    }
+  },
+  "hidden_oracle": {
+    "changed_paths": [
+      "records/3/status"
+    ],
+    "records": [
+      {
+        "id": "R1",
+        "score": 2,
+        "status": "review"
+      },
+      {
+        "id": "R2",
+        "score": 11,
+        "status": "review"
+      },
+      {
+        "id": "R3",
+        "score": 4,
+        "status": "draft"
+      },
+      {
+        "id": "R4",
+        "score": 2,
+        "status": "rejected"
+      }
+    ]
+  },
+  "manifest": {
+    "candidate_freeze_commit": null,
+    "candidate_freeze_sha": "not-applicable-preoptimization-split",
+    "candidate_visible_bundle_sha256": "626abf68ce318fceebb46c5f231558e6af320e1c03eddece6964d5775f8d5882",
+    "code_commit": "746932b070b9f76d85902d86a16d9845a6a680ad",
+    "definition_commit": "746932b070b9f76d85902d86a16d9845a6a680ad",
+    "evaluator_id": "hp1a-independent-exact-atomic-v0",
+    "evaluator_version_sha256": "63b0d4afd28201b4a7da56ba219e9761d85517ffd97342cdc00c9ec1cb55fe27",
+    "family_id": "structured-simulation-v0",
+    "family_slot": 3,
+    "generation_attempt": 1,
+    "generation_seed": 7838895865900195630,
+    "generation_valid": true,
+    "generator_config": {
+      "count": 4
+    },
+    "generator_id": "structured-simulation-v0",
+    "generator_version_sha256": "d4c989331ec4e7397907f3c5739dae924187a5a3a83e2a1a886ff0839ef43b92",
+    "hidden_oracle_hash": "e637823b9f37d56b461722df358237ee199b7a3c699062126092bc7397611485",
+    "instance_id": "structured-simulation-v0-a08ad82da547408a",
+    "leakage_audit": {
+      "findings": [],
+      "passed": true
+    },
+    "oracle_deterministic": true,
+    "public_input_hash": "a08ad82da547408ab051bf2bd9f11b88aa4eaeb2ddf87e82e725e0054aa82fd7",
+    "public_input_sufficient": true,
+    "same_seed_reproducible": true,
+    "schema_version": 1,
+    "split": "validation"
+  },
+  "public_input": {
+    "proposed_operation": {
+      "set_status": "rejected"
+    },
+    "records": [
+      {
+        "id": "R1",
+        "score": 2,
+        "status": "review"
+      },
+      {
+        "id": "R2",
+        "score": 11,
+        "status": "review"
+      },
+      {
+        "id": "R3",
+        "score": 4,
+        "status": "draft"
+      },
+      {
+        "id": "R4",
+        "score": 2,
+        "status": "ready"
+      }
+    ],
+    "request": "simulate_without_mutating_input_and_return_records_and_changed_paths",
+    "selector": {
+      "id": "R4"
+    }
+  }
+}

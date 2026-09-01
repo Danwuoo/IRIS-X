@@ -1,0 +1,121 @@
+{
+  "hidden_generation_state": {
+    "operation": {
+      "set_status": "approved"
+    },
+    "records": [
+      {
+        "id": "R1",
+        "score": 3,
+        "status": "review"
+      },
+      {
+        "id": "R2",
+        "score": 18,
+        "status": "review"
+      },
+      {
+        "id": "R3",
+        "score": 8,
+        "status": "ready"
+      },
+      {
+        "id": "R4",
+        "score": 14,
+        "status": "ready"
+      }
+    ],
+    "selector": {
+      "id": "R1"
+    }
+  },
+  "hidden_oracle": {
+    "changed_paths": [
+      "records/0/status"
+    ],
+    "records": [
+      {
+        "id": "R1",
+        "score": 3,
+        "status": "approved"
+      },
+      {
+        "id": "R2",
+        "score": 18,
+        "status": "review"
+      },
+      {
+        "id": "R3",
+        "score": 8,
+        "status": "ready"
+      },
+      {
+        "id": "R4",
+        "score": 14,
+        "status": "ready"
+      }
+    ]
+  },
+  "manifest": {
+    "candidate_freeze_commit": null,
+    "candidate_freeze_sha": "not-applicable-preoptimization-split",
+    "candidate_visible_bundle_sha256": "e6e46c0a4205692e551f22a7ba275131d8a841a84ea58610ce1ae2256b447a82",
+    "code_commit": "746932b070b9f76d85902d86a16d9845a6a680ad",
+    "definition_commit": "746932b070b9f76d85902d86a16d9845a6a680ad",
+    "evaluator_id": "hp1a-independent-exact-atomic-v0",
+    "evaluator_version_sha256": "63b0d4afd28201b4a7da56ba219e9761d85517ffd97342cdc00c9ec1cb55fe27",
+    "family_id": "structured-simulation-v0",
+    "family_slot": 6,
+    "generation_attempt": 1,
+    "generation_seed": 8136372127623770523,
+    "generation_valid": true,
+    "generator_config": {
+      "count": 4
+    },
+    "generator_id": "structured-simulation-v0",
+    "generator_version_sha256": "d4c989331ec4e7397907f3c5739dae924187a5a3a83e2a1a886ff0839ef43b92",
+    "hidden_oracle_hash": "9c0045ed4eaddd1fd9fe41c5f40ff24d39960dd181c1372adca49d307d2860c3",
+    "instance_id": "structured-simulation-v0-7e7bbe3da46cb403",
+    "leakage_audit": {
+      "findings": [],
+      "passed": true
+    },
+    "oracle_deterministic": true,
+    "public_input_hash": "7e7bbe3da46cb403188dac2cacb84e128c8a2df6f549b1cf08e3a6ce94a5e7f0",
+    "public_input_sufficient": true,
+    "same_seed_reproducible": true,
+    "schema_version": 1,
+    "split": "dev"
+  },
+  "public_input": {
+    "proposed_operation": {
+      "set_status": "approved"
+    },
+    "records": [
+      {
+        "id": "R1",
+        "score": 3,
+        "status": "review"
+      },
+      {
+        "id": "R2",
+        "score": 18,
+        "status": "review"
+      },
+      {
+        "id": "R3",
+        "score": 8,
+        "status": "ready"
+      },
+      {
+        "id": "R4",
+        "score": 14,
+        "status": "ready"
+      }
+    ],
+    "request": "simulate_without_mutating_input_and_return_records_and_changed_paths",
+    "selector": {
+      "id": "R1"
+    }
+  }
+}
