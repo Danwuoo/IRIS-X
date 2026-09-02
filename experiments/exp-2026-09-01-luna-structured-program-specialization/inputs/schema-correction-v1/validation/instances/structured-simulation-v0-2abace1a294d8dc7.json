@@ -1,0 +1,121 @@
+{
+  "hidden_generation_state": {
+    "operation": {
+      "set_status": "approved"
+    },
+    "records": [
+      {
+        "id": "R1",
+        "score": 19,
+        "status": "review"
+      },
+      {
+        "id": "R2",
+        "score": 3,
+        "status": "review"
+      },
+      {
+        "id": "R3",
+        "score": 13,
+        "status": "draft"
+      },
+      {
+        "id": "R4",
+        "score": 19,
+        "status": "review"
+      }
+    ],
+    "selector": {
+      "id": "R2"
+    }
+  },
+  "hidden_oracle": {
+    "changed_paths": [
+      "records/1/status"
+    ],
+    "records": [
+      {
+        "id": "R1",
+        "score": 19,
+        "status": "review"
+      },
+      {
+        "id": "R2",
+        "score": 3,
+        "status": "approved"
+      },
+      {
+        "id": "R3",
+        "score": 13,
+        "status": "draft"
+      },
+      {
+        "id": "R4",
+        "score": 19,
+        "status": "review"
+      }
+    ]
+  },
+  "manifest": {
+    "candidate_freeze_commit": null,
+    "candidate_freeze_sha": "not-applicable-preoptimization-split",
+    "candidate_visible_bundle_sha256": "b682cec4657bcf907cd5a6b1eab2bfe27d09726fa42a74055ebd286a42be59f0",
+    "code_commit": "ad280660d3101fb849752e0b08374f742643b981",
+    "definition_commit": "ad280660d3101fb849752e0b08374f742643b981",
+    "evaluator_id": "hp1a-independent-exact-atomic-v0",
+    "evaluator_version_sha256": "be0170242750f463bdcec2aa2269f1d2f00ad139fa81f4c1d736ab071df45f1b",
+    "family_id": "structured-simulation-v0",
+    "family_slot": 4,
+    "generation_attempt": 1,
+    "generation_seed": 8150554884553716813,
+    "generation_valid": true,
+    "generator_config": {
+      "count": 4
+    },
+    "generator_id": "structured-simulation-v0",
+    "generator_version_sha256": "d4c989331ec4e7397907f3c5739dae924187a5a3a83e2a1a886ff0839ef43b92",
+    "hidden_oracle_hash": "eee67532e4160f7ac07580098f6f0342dc8d4d682aedee45175579e30938fe83",
+    "instance_id": "structured-simulation-v0-2abace1a294d8dc7",
+    "leakage_audit": {
+      "findings": [],
+      "passed": true
+    },
+    "oracle_deterministic": true,
+    "public_input_hash": "2abace1a294d8dc7b0c56f9c288c995e8d16dcbce74f69378e249725e08587bf",
+    "public_input_sufficient": true,
+    "same_seed_reproducible": true,
+    "schema_version": 1,
+    "split": "validation"
+  },
+  "public_input": {
+    "proposed_operation": {
+      "set_status": "approved"
+    },
+    "records": [
+      {
+        "id": "R1",
+        "score": 19,
+        "status": "review"
+      },
+      {
+        "id": "R2",
+        "score": 3,
+        "status": "review"
+      },
+      {
+        "id": "R3",
+        "score": 13,
+        "status": "draft"
+      },
+      {
+        "id": "R4",
+        "score": 19,
+        "status": "review"
+      }
+    ],
+    "request": "simulate_without_mutating_input_and_return_records_and_changed_paths",
+    "selector": {
+      "id": "R2"
+    }
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "hidden_generation_state": {
+    "operation": {
+      "set_status": "rejected"
+    },
+    "records": [
+      {
+        "id": "R1",
+        "score": 14,
+        "status": "ready"
+      },
+      {
+        "id": "R2",
+        "score": 16,
+        "status": "draft"
+      },
+      {
+        "id": "R3",
+        "score": 13,
+        "status": "draft"
+      },
+      {
+        "id": "R4",
+        "score": 14,
+        "status": "draft"
+      }
+    ],
+    "selector": {
+      "id": "R1"
+    }
+  },
+  "hidden_oracle": {
+    "changed_paths": [
+      "records/0/status"
+    ],
+    "records": [
+      {
+        "id": "R1",
+        "score": 14,
+        "status": "rejected"
+      },
+      {
+        "id": "R2",
+        "score": 16,
+        "status": "draft"
+      },
+      {
+        "id": "R3",
+        "score": 13,
+        "status": "draft"
+      },
+      {
+        "id": "R4",
+        "score": 14,
+        "status": "draft"
+      }
+    ]
+  },
+  "manifest": {
+    "candidate_freeze_commit": null,
+    "candidate_freeze_sha": "not-applicable-preoptimization-split",
+    "candidate_visible_bundle_sha256": "905f5f9d97380ead0acb30ab093f69433829699c2b0d40f7954a4bc545368977",
+    "code_commit": "ad280660d3101fb849752e0b08374f742643b981",
+    "definition_commit": "ad280660d3101fb849752e0b08374f742643b981",
+    "evaluator_id": "hp1a-independent-exact-atomic-v0",
+    "evaluator_version_sha256": "be0170242750f463bdcec2aa2269f1d2f00ad139fa81f4c1d736ab071df45f1b",
+    "family_id": "structured-simulation-v0",
+    "family_slot": 2,
+    "generation_attempt": 1,
+    "generation_seed": 7772826332616160934,
+    "generation_valid": true,
+    "generator_config": {
+      "count": 4
+    },
+    "generator_id": "structured-simulation-v0",
+    "generator_version_sha256": "d4c989331ec4e7397907f3c5739dae924187a5a3a83e2a1a886ff0839ef43b92",
+    "hidden_oracle_hash": "a62d76e58c4d0ea9c2b88ff7060d50f6aa8ad517f9556e41fe096caa5d378767",
+    "instance_id": "structured-simulation-v0-1161a7880b6fad2d",
+    "leakage_audit": {
+      "findings": [],
+      "passed": true
+    },
+    "oracle_deterministic": true,
+    "public_input_hash": "1161a7880b6fad2da535dbd1290fbaf1d65051e02d5c5b5afa1aee13d46ff1b0",
+    "public_input_sufficient": true,
+    "same_seed_reproducible": true,
+    "schema_version": 1,
+    "split": "validation"
+  },
+  "public_input": {
+    "proposed_operation": {
+      "set_status": "rejected"
+    },
+    "records": [
+      {
+        "id": "R1",
+        "score": 14,
+        "status": "ready"
+      },
+      {
+        "id": "R2",
+        "score": 16,
+        "status": "draft"
+      },
+      {
+        "id": "R3",
+        "score": 13,
+        "status": "draft"
+      },
+      {
+        "id": "R4",
+        "score": 14,
+        "status": "draft"
+      }
+    ],
+    "request": "simulate_without_mutating_input_and_return_records_and_changed_paths",
+    "selector": {
+      "id": "R1"
+    }
+  }
+}

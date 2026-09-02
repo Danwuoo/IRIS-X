@@ -27,6 +27,8 @@
     "blind_preparer": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/scripts/prepare_blind.py", "sha256": "19e20373d5b9337d3cbb6037de2af649be7b79ed9c0fb77d69caa427e847923f", "bytes": 8192},
     "blind_runner": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/scripts/run_blind.py", "sha256": "9262a987025bc39391b9ef3bc8f0b4916c572df754c043fe0c909958964c15fc", "bytes": 15932},
     "experiment_validator": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/scripts/validate_experiment.py", "sha256": "4da49205c96f460b64712d5e96ef4db0bc4568ee87fcadd1f3a6c98540a733eb", "bytes": 7242},
+    "corrected_dev_inventory": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/inputs/schema-correction-v1/dev/inventory.json", "sha256": "50c72857f2a4fd45e01feae11821ebe9bf5bff997e09e69f7c937f20bf7d63bf", "bytes": 35278},
+    "corrected_validation_inventory": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/inputs/schema-correction-v1/validation/inventory.json", "sha256": "0d8796a18785a949d539d8fe7161c771056e7c5f944ac063c27dd94106457bf9", "bytes": 24075},
     "controlling_plan": {"path": "docs/plans/TEMP_PHASE_4_FINAL_MODEL_SPECIALIZATION_AND_CLOSURE.md", "sha256": "9e2ac0aabcae9a89ed92d9145ec787f4d6ee1920b5344be703498c6435aaf76c", "bytes": 55632}
   }
 }

@@ -1,0 +1,112 @@
+{
+  "hidden_generation_state": {
+    "dictionary": {
+      "artifact": [
+        "artefact"
+      ],
+      "evidence": [
+        "proof-item",
+        "evidences"
+      ],
+      "workflow": [
+        "work-flow"
+      ]
+    },
+    "documents": [
+      {
+        "id": "NOTE-1",
+        "text": "The artefact is recorded with token N971."
+      },
+      {
+        "id": "NOTE-2",
+        "text": "The workflow is recorded with token N311."
+      },
+      {
+        "id": "NOTE-3",
+        "text": "The workflow is recorded with token N843."
+      },
+      {
+        "id": "NOTE-4",
+        "text": "The evidences is recorded with token N259."
+      }
+    ]
+  },
+  "hidden_oracle": {
+    "violations": [
+      {
+        "canonical": "artifact",
+        "document_id": "NOTE-1",
+        "observed": "artefact"
+      },
+      {
+        "canonical": "evidence",
+        "document_id": "NOTE-4",
+        "observed": "evidences"
+      }
+    ]
+  },
+  "manifest": {
+    "candidate_freeze_commit": null,
+    "candidate_freeze_sha": "not-applicable-preoptimization-split",
+    "candidate_visible_bundle_sha256": "5400f7e85f7c3f598a7e59e00e3e4ba24ea0e115e22caa44fb76e69e11aee454",
+    "code_commit": "ad280660d3101fb849752e0b08374f742643b981",
+    "definition_commit": "ad280660d3101fb849752e0b08374f742643b981",
+    "evaluator_id": "hp1a-independent-exact-atomic-v0",
+    "evaluator_version_sha256": "be0170242750f463bdcec2aa2269f1d2f00ad139fa81f4c1d736ab071df45f1b",
+    "family_id": "terminology-consistency-v0",
+    "family_slot": 5,
+    "generation_attempt": 1,
+    "generation_seed": 18101639776293636444,
+    "generation_valid": true,
+    "generator_config": {
+      "count": 4
+    },
+    "generator_id": "terminology-consistency-v0",
+    "generator_version_sha256": "d4c989331ec4e7397907f3c5739dae924187a5a3a83e2a1a886ff0839ef43b92",
+    "hidden_oracle_hash": "363a3e1bcde883423e64a1167cd70004310d7615b40e75ee3dc421df33f7c233",
+    "instance_id": "terminology-consistency-v0-79ce1f7985077cc0",
+    "leakage_audit": {
+      "findings": [],
+      "passed": true
+    },
+    "oracle_deterministic": true,
+    "public_input_hash": "79ce1f7985077cc0a94e8f3709d8595657b2e9213b5e453cdc463b08b4ba32f2",
+    "public_input_sufficient": true,
+    "same_seed_reproducible": true,
+    "schema_version": 1,
+    "split": "dev"
+  },
+  "public_input": {
+    "canonical_dictionary": {
+      "artifact": [
+        "artefact"
+      ],
+      "evidence": [
+        "proof-item",
+        "evidences"
+      ],
+      "workflow": [
+        "work-flow"
+      ]
+    },
+    "documents": [
+      {
+        "id": "NOTE-1",
+        "text": "The artefact is recorded with token N971."
+      },
+      {
+        "id": "NOTE-2",
+        "text": "The workflow is recorded with token N311."
+      },
+      {
+        "id": "NOTE-3",
+        "text": "The workflow is recorded with token N843."
+      },
+      {
+        "id": "NOTE-4",
+        "text": "The evidences is recorded with token N259."
+      }
+    ],
+    "request": "report_noncanonical_term_occurrences"
+  }
+}
