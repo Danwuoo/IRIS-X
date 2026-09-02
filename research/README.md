@@ -12,6 +12,7 @@ This area contains IRIS-X-authored analysis. IRIS-X remains in research preparat
 - Read [phase-4-evidence-interception-results.md](phase-4-evidence-interception-results.md) for the separate reviewed H-V1b evidence-binding and H-I1a copied-workspace interception results.
 - Read [evaluation-state-semantics-v1.md](evaluation-state-semantics-v1.md), [document-ops-task-frame-v1.md](document-ops-task-frame-v1.md), and [reliability-protocol-v0.md](reliability-protocol-v0.md) for the final Phase 4 evaluation and dimension-specific reliability contracts.
 - Read [phase-4-reliability-specialization-readiness.md](phase-4-reliability-specialization-readiness.md) for the consolidated H-OR1a, H-SR1a, H-RCV1a, robustness/change-substrate, held-out, generated-task, and specialization-readiness decision.
-- Read [heldout-evaluation-protocol-v0.md](heldout-evaluation-protocol-v0.md) and [model-specialization-execution-contract-v0.md](model-specialization-execution-contract-v0.md) before designing any future specialization experiment; they do not authorize H-P1 execution.
+- Read [phase-4-closure.md](phase-4-closure.md) for the accumulated Phase 3/4 synthesis, valid H-P1a result, bounded Terra reference, uncertainty boundary, and explicit Phase 4 closure decision. It does not synthesize architecture or begin Phase 5.
+- Read [heldout-evaluation-protocol-v0.md](heldout-evaluation-protocol-v0.md) and [model-specialization-execution-contract-v0.md](model-specialization-execution-contract-v0.md) as the preserved governance and substrate contracts used to design H-P1a; their earlier future-tense statements remain historical and do not independently authorize another experiment.
 
 Follow [AGENTS.md](AGENTS.md) when recording evidence, inference, and uncertainty.

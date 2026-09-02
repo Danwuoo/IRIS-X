@@ -1,6 +1,6 @@
 # H-P1a Luna structured-program specialization
 
-Status: schema-corrected definition / new-run admission in progress
+Status: complete valid H-P1a experiment / Phase 4 closure evidence
 
 This experiment executes the bounded H-P1a contract in
 `docs/plans/TEMP_PHASE_4_FINAL_MODEL_SPECIALIZATION_AND_CLOSURE.md`. The
@@ -11,6 +11,15 @@ The experiment uses the ChatGPT subscription path through Codex CLI. API-key
 fallback, retries, recovery, routing, escalation, external web tools, and
 candidate repository access are prohibited. Provider monetary cost remains
 `Unknown` unless directly attributable evidence becomes available.
+
+The valid replacement design run is `design-20260902-chatgpt-03`; its selected
+C1 is `opt-02-r01`, SHA-256
+`8bf10ea83da6c6096405d1c12a045c9830f5d4a6dc2ebefeff538a9fc5eeec1b`.
+Blind run `blind-20260902-chatgpt-03` completed all 96 frozen schedule entries
+exactly once. The reviewed result is `Supported — task-local`: C1 achieved
+32/32 blind verified successes versus C0's 18/32. C2 is retained only as the
+bounded Terra seed-program reference documented in the reviewed
+interpretation and `research/phase-4-closure.md`.
 
 Run scripts only in the committed gate order described by the controlling
 plan. Run directories and raw records are append-only.

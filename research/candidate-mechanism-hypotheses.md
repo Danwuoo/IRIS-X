@@ -112,23 +112,46 @@ the complete parent H-I1 or broader tool safety.
 This tests a narrow task-local part of H-O1 without adopting the NeMo Agent
 Toolkit as an IRIS-X dependency.
 
+### H-P1a — Luna Structured-Program Specialization
+
+> Holding runtime model `gpt-5.6-luna`, reasoning effort `medium`, tool
+> envelope, public task inputs, evaluator, generator, output contract, retry
+> policy, and runtime execution envelope fixed, a structured-output program
+> produced through bounded Terra-assisted design-time optimization improves
+> post-freeze blind verified-success performance over the frozen unoptimized
+> Luna seed program. Design-time optimization usage and runtime usage are
+> reported separately.
+
+`Status: Supported — task-local` in
+`exp-2026-09-01-luna-structured-program-specialization`, design run
+`design-20260902-chatgpt-03`, and blind run
+`blind-20260902-chatgpt-03`: C1 achieved 32/32 blind verified successes versus
+C0's 18/32, with 14 paired C1 wins, zero paired C0 wins, and zero C1 false
+successes versus 14 for C0. C1 was optimizer-generated, selected once on the
+frozen validation set, and committed before blind generation. This supports
+only H-P1a under the frozen four-family finite sample. It does not establish
+parent H-P1, a monetary lifecycle-cost advantage, or general Luna/Terra
+equivalence.
+
 ## Separation Rules for Later Experiments
 
 - Verification, retry/recovery, routing/escalation, prompt/program optimization, workflow optimization, and specialization remain separate interventions.
 - A gain from a deterministic tool or verifier is a system/configuration gain, not model-weight capability.
 - Design-time optimization cost is reported separately before any amortization assumption.
 - A verifier or reward score is evidence under its contract, not empirical truth by definition.
-- No mechanism above is recommended as IRIS-X architecture. Phase 4 may test one row at a time after the Phase 3 decision gate.
+- No mechanism above is recommended as IRIS-X architecture. The completed Phase 4 evidence is synthesized in `phase-4-closure.md`; any architecture synthesis requires separate authorization.
 
 ## Uncertainty
 
-- **Supported — task-local:** H-M1a, H-V1a, H-O1a, H-V1b, and H-I1a under their
-  respective frozen finite-sample experiment contracts.
-- **Not established:** the complete parent H-M1, H-V1, H-O1, and H-I1
+- **Supported — task-local:** H-M1a, H-V1a, H-O1a, H-V1b, H-I1a, and H-P1a
+  under their respective frozen finite-sample experiment contracts.
+- **Not established:** the complete parent H-M1, H-V1, H-O1, H-I1, and H-P1
   hypotheses; improvement on any broader task family; or any architecture
   requirement.
-- **Not evaluated:** H-P1, H-G1, H-W1, H-C1, H-R1, and remaining untested parts
-  of the parent hypotheses.
+- **Not evaluated:** H-G1, H-W1, H-C1, H-R1, and remaining untested parts of
+  the parent hypotheses.
 - **Unclear:** whether 12 development fixtures support a defensible train/validation/test split; generated or independently authored tasks may be required.
-- **Unknown:** paid model costs, provider snapshots, and optimization budgets for future model-based experiments.
+- **Unknown:** actual ChatGPT subscription cost attributable to H-P1a and an
+  immutable provider snapshot. H-P1a's observed call/token/time budgets are
+  recorded separately from monetary cost.
 - **Conflicting evidence:** none identified within the inspected mechanism paths; absence of conflict is not evidence of validity.
