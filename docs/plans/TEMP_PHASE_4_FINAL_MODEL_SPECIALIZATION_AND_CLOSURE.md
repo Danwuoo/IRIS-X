@@ -1,6 +1,6 @@
 # Temporary Phase 4 Final Model Specialization and Closure Plan
 
-Status: **Temporary — controlling execution plan; not yet executed**  
+Status: **Retired — execution complete; see retirement record in Section 27**
 Date: **2026-09-01**  
 Scope: **specialization schema cleanup, H-P1a, accumulated-evidence synthesis, and Phase 4 closure only**  
 Architecture authority: **None**  
@@ -1352,3 +1352,28 @@ After a valid H-P1a interpretation, bounded Terra-reference comparison, accumula
 **STOP.**
 
 Do not turn the closure evidence into an architecture in this plan. Do not implement an architecture. Do not start Phase 5. A future owner instruction must separately authorize architecture synthesis.
+
+---
+
+## 27. Retirement record
+
+- **Retired on:** 2026-09-03 Asia/Taipei
+- **Actual starting main:** `a859399eafb294ea03290123c285c127426dfb5b`
+- **Valid design run:** `design-20260902-chatgpt-03`
+- **Valid blind run:** `blind-20260902-chatgpt-03`
+- **Definition/code commit:** `9815003b02aa5868a7582960db97cd1138e5709e`
+- **Candidate-freeze commit:** `6ef4c9d09e6124a9cb6c47f6b12427be29dea19e`
+- **Blind-authorization commit:** `20f8c229aa2bf8bfd1b4fb8ffcaf4bc815e28523`
+- **Blind-result commit:** `972b6b99b0b7f99e9738721a42015b49197fb216`
+- **Durable closure commit:** `f8536893d693c3d851ef6ef02d1d5c0792ae8689`
+- **H-P1a result:** `Supported — task-local`
+- **Terra reference:** `Observed finite-sample runtime-capability substitution — task-local`
+- **Validation record:** `docs/phase-4-closure-validation.md`
+
+All exit criteria were checked before retirement. The exact closure decision is:
+
+```text
+Phase 4 complete — evidence sufficient to begin architecture synthesis
+```
+
+This retirement ends the authority of this temporary execution plan. It does not itself authorize or perform architecture synthesis, architecture implementation, or Phase 5. Those require a new owner-authorized scope. The hard stop remains in force.
