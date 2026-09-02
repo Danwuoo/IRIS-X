@@ -62,8 +62,8 @@
     "output_schema": "definition/optimizer-output-schema.json"
   },
   "resource_ceiling": {
-    "scope": "design-20260901-chatgpt-02-independent-attempt",
-    "authorization": "definition/run-authorizations/design-20260901-chatgpt-02.json",
+    "scope": "design-20260902-chatgpt-03-independent-attempt",
+    "authorization": "definition/run-authorizations/design-20260902-chatgpt-03.json",
     "maximum_luna_calls": 344,
     "maximum_terra_calls": 38,
     "maximum_total_calls": 382,
@@ -81,11 +81,18 @@
     "preflight_api_calls": 0,
     "preflight_record_must_predate_first_formal_invocation": true
   },
-  "preserved_invalid_attempt": {
-    "run_id": "design-20260901-chatgpt-01",
-    "immutable_tree_sha": "653ab82f1eb1a4d8f99e09c50ca54ae25bcb1a98",
-    "reuse_or_overwrite": "prohibited"
-  },
+  "preserved_invalid_attempts": [
+    {
+      "run_id": "design-20260901-chatgpt-01",
+      "immutable_tree_sha": "653ab82f1eb1a4d8f99e09c50ca54ae25bcb1a98",
+      "reuse_or_overwrite": "prohibited"
+    },
+    {
+      "run_id": "design-20260901-chatgpt-02",
+      "immutable_tree_sha": "49b98340d2c10951dd04d42c564cec114582dd65",
+      "reuse_or_overwrite": "prohibited"
+    }
+  ],
   "selection_rule": "definition/selection-rule.json",
   "blind_schedule_algorithm": "sort-by-sha256(master-seed||instance-id)-then-rotate-C0-C1-C2-by-index-mod-3",
   "interpretation_labels": ["Supported — task-local", "Mixed evidence", "Rejected — task-local"],

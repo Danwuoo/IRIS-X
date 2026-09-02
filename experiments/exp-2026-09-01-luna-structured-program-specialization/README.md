@@ -16,8 +16,10 @@ Run scripts only in the committed gate order described by the controlling
 plan. Run directories and raw records are append-only.
 
 The first model-backed attempt, `design-20260901-chatgpt-01`, is immutable and
-blocked after deterministic provider schema rejection. The independently
-authorized replacement identity is `design-20260901-chatgpt-02`. Every frozen
+blocked after deterministic provider schema rejection. The second identity,
+`design-20260901-chatgpt-02`, is also immutable after a zero-model-call
+pre-invocation adapter path-binding failure. The independently authorized
+replacement identity is `design-20260902-chatgpt-03`. Every frozen
 structured-output schema must pass `scripts/schema_preflight.py` under the
 committed provider-subset policy before the replacement run is admitted. The
 preflight uses zero model, network, and API calls and is a temporal-drift guard,
