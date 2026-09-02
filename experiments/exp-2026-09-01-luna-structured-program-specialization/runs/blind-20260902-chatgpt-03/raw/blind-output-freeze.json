@@ -1,0 +1,681 @@
+{
+  "entry_count": 96,
+  "evaluator_opened_after_freeze": true,
+  "frozen_at_utc": "2026-09-02T16:15:48.089328+00:00",
+  "records": [
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-001",
+      "output_sha256": "498445f236901c32ebf57dbc626244071f09549f3b0f548b6dd7a796c16b6e53",
+      "raw_event_stream_sha256": "5f71ea7398e39f989a4838287deccd0041ee06281bfb057a87bf793cbfa943a6",
+      "schedule_index": 1,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-002",
+      "output_sha256": "3edfe354b5a5f74660c15bf5aaa0f820b18d07c997f82ec6f8d1d178ca526a70",
+      "raw_event_stream_sha256": "ef6761b11dd11cfdc4bf54e84bd93c26c7434bce0b7d7581bf7e72d219abac27",
+      "schedule_index": 2,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-003",
+      "output_sha256": "381040d53784ce957d0fad75d3ff4b03a7d707ba6921cebce5df4b6c84a3a8a6",
+      "raw_event_stream_sha256": "b5fc91fe347d7cad80a34142ca036b48ebd0366180ed525b058f3089484f76a5",
+      "schedule_index": 3,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-004",
+      "output_sha256": "8e97a807760921f95b7dfd45562ba87f079f4ec97a97cd38feea824385a05ce1",
+      "raw_event_stream_sha256": "acb9dd2e4b758b0fc6ce45fd2fcdd81001e5e52161d846781c787a1946502f71",
+      "schedule_index": 4,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-005",
+      "output_sha256": "4c776eac7d4921926c0758e3ba29793f7a81770436c534f1c73304b966f10201",
+      "raw_event_stream_sha256": "cf46ccfc1650f45e7d9388f850ffe1ac3bae7bcf6d40090429589df2871cfc0b",
+      "schedule_index": 5,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-006",
+      "output_sha256": "4c776eac7d4921926c0758e3ba29793f7a81770436c534f1c73304b966f10201",
+      "raw_event_stream_sha256": "8bdf8c233a1178a16bf7ed2e137e090a9131656dd6b1d217d5d4d94a261a4c87",
+      "schedule_index": 6,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-007",
+      "output_sha256": "849664f60e88f6b5409c8f09327b278845aa79597405dd1d19d2e50d0f55b510",
+      "raw_event_stream_sha256": "34fc8f30f1b22a31e1fe0a5f0e186f54320aad95f5f216197376dd16e73394e1",
+      "schedule_index": 7,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-008",
+      "output_sha256": "849664f60e88f6b5409c8f09327b278845aa79597405dd1d19d2e50d0f55b510",
+      "raw_event_stream_sha256": "43810eb715e7ada6c4b11630ad63bbe465a3bc2da095d7f9c78d7e93504f170a",
+      "schedule_index": 8,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-009",
+      "output_sha256": "40b5337e14472ddacbffe6ff55c9b9ce5efce14f15515ea18a04f70e5a1c1110",
+      "raw_event_stream_sha256": "71e7e3832d40ac2df5566b276c2d066e3b2703cbb1ed6a0a26e5c054772bbbde",
+      "schedule_index": 9,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-010",
+      "output_sha256": "135876fc7104942d3dc702e79b03d2b9ae240969a6d193889631cf981d3eba78",
+      "raw_event_stream_sha256": "df3c7b52cb64cd34371ef3c70a8d98eeafcca103cd8d2877b277499cc5d03e55",
+      "schedule_index": 10,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-011",
+      "output_sha256": "135876fc7104942d3dc702e79b03d2b9ae240969a6d193889631cf981d3eba78",
+      "raw_event_stream_sha256": "ebd850b071a1007bca80172863e0a2156ef820e5178903bf3174e56d6ea31211",
+      "schedule_index": 11,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-012",
+      "output_sha256": "135876fc7104942d3dc702e79b03d2b9ae240969a6d193889631cf981d3eba78",
+      "raw_event_stream_sha256": "93816ce2b4674171c6b4f28a78dccba2e3acae34532dc9f06f92c461066732fb",
+      "schedule_index": 12,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-013",
+      "output_sha256": "ce3a4a2d24b11d15830eae8fd56223cbdeffa2298788f0987476f591cf51a775",
+      "raw_event_stream_sha256": "e6fdc0b8c4d61145913e0e93b7fac4e6c439532be27cfe571b5efb9a8b535b8d",
+      "schedule_index": 13,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-014",
+      "output_sha256": "9bcf316059b1e99230000fd59a63da40f098279ba3d873c058d23727a232c6ab",
+      "raw_event_stream_sha256": "fd70032bb8e863a3b22938ece6485d5ffdccaae30464c164f803b27dfebd4341",
+      "schedule_index": 14,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-015",
+      "output_sha256": "68a335bd9e780feeead666cfbbfc36ba409798aab5ba012647c56e93f933c5e8",
+      "raw_event_stream_sha256": "3bf08eb26b80c811b75b530fd30567d5b1eced9fd1d7be6f19a450d4df64c572",
+      "schedule_index": 15,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-016",
+      "output_sha256": "8e5768b1ac7c41b077407901ad4aa70a4b147fbd2e9cc016eab6ac99eddc896a",
+      "raw_event_stream_sha256": "9812293eccb1ce217f4042e059b08f03e185615be9675b5773c13a9070a49eec",
+      "schedule_index": 16,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-017",
+      "output_sha256": "8e5768b1ac7c41b077407901ad4aa70a4b147fbd2e9cc016eab6ac99eddc896a",
+      "raw_event_stream_sha256": "8e677eb6d171c749c16faf7b7b7cea58947eceff1b62ad6a5d4261393cc1a27f",
+      "schedule_index": 17,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-018",
+      "output_sha256": "8e5768b1ac7c41b077407901ad4aa70a4b147fbd2e9cc016eab6ac99eddc896a",
+      "raw_event_stream_sha256": "15e7708c475993c05b53ab89614ec2050c567907286c53fe0abec7bac287d312",
+      "schedule_index": 18,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-019",
+      "output_sha256": "b82c43024e935945301836392205e80e74863833d6690aa48576ab370d3df4b2",
+      "raw_event_stream_sha256": "b37fd5bd42c3b9442344f7978bd923eab03a8f0b176ce6659acefcca7c92b9f9",
+      "schedule_index": 19,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-020",
+      "output_sha256": "81334952069393b171d5e370d54ffb5694dfdbf6917f2f5e6da60a38ee72db53",
+      "raw_event_stream_sha256": "e36135b5d0543e425576c8f75956e716a79f24dc223c2207cc1f30f46254bf5a",
+      "schedule_index": 20,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-021",
+      "output_sha256": "b82c43024e935945301836392205e80e74863833d6690aa48576ab370d3df4b2",
+      "raw_event_stream_sha256": "b280a7bf66d39551183f5417e42c98ecda12510f1265dfada7d105c4c1ad52cc",
+      "schedule_index": 21,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-022",
+      "output_sha256": "ab3c99bb273e7ef20935ec9f9d5ce413806a58d41fecc02c5227b50a70c87b5c",
+      "raw_event_stream_sha256": "b884b6f6d152ea60c05e0c05f506fb523421a5142dfa8921c63d1e2080ef3fe8",
+      "schedule_index": 22,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-023",
+      "output_sha256": "ab3c99bb273e7ef20935ec9f9d5ce413806a58d41fecc02c5227b50a70c87b5c",
+      "raw_event_stream_sha256": "f83df19eb0baf02aaac8ab8b3d2db82491e03e7c32b225e4421d19f11dfe512d",
+      "schedule_index": 23,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-024",
+      "output_sha256": "ab3c99bb273e7ef20935ec9f9d5ce413806a58d41fecc02c5227b50a70c87b5c",
+      "raw_event_stream_sha256": "dcdc60405709690ab4eb98e5326f77160105e75071785da63ad23094abcaacb6",
+      "schedule_index": 24,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-025",
+      "output_sha256": "473e30eb0687cf5b6456a5437b31c22f109a3a3493c8b1ab14f8a6324d8a721d",
+      "raw_event_stream_sha256": "1a585de3f9c92342c1ce01cae480c61d213f2199d61f19887a413c602d2705bc",
+      "schedule_index": 25,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-026",
+      "output_sha256": "473e30eb0687cf5b6456a5437b31c22f109a3a3493c8b1ab14f8a6324d8a721d",
+      "raw_event_stream_sha256": "eb8556bbcc7b80e0980a153e17612143e602891b34d4940a0a495680644a318c",
+      "schedule_index": 26,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-027",
+      "output_sha256": "473e30eb0687cf5b6456a5437b31c22f109a3a3493c8b1ab14f8a6324d8a721d",
+      "raw_event_stream_sha256": "017f251933b3c480bfda44a1286ba9ec17492deed1b1ad9bfd726e340adddced",
+      "schedule_index": 27,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-028",
+      "output_sha256": "f2bab448bc222df20ffadde477007dbdef960e4ba992503ac3953c084d2cde63",
+      "raw_event_stream_sha256": "b252c60bcd2980b4443b056bf7081945ddd150a56d3410ac9694c527ae5f71e9",
+      "schedule_index": 28,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-029",
+      "output_sha256": "f2bab448bc222df20ffadde477007dbdef960e4ba992503ac3953c084d2cde63",
+      "raw_event_stream_sha256": "2926e89efbef8da91779b59c5481761127a94c60f4a1c887f6b4632c79d1470f",
+      "schedule_index": 29,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-030",
+      "output_sha256": "f2bab448bc222df20ffadde477007dbdef960e4ba992503ac3953c084d2cde63",
+      "raw_event_stream_sha256": "3d2ed98a4e4b9ef009784692571e168cd027e87c87352285b46385881a4595be",
+      "schedule_index": 30,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-031",
+      "output_sha256": "94792d8a172591123f94c27e2c4a879280412300bc238231d1a3036792618d81",
+      "raw_event_stream_sha256": "701116c5d57baefe00ef3e8f5b16e9ace73f197a6718a382ac780a922bb66c8e",
+      "schedule_index": 31,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-032",
+      "output_sha256": "94792d8a172591123f94c27e2c4a879280412300bc238231d1a3036792618d81",
+      "raw_event_stream_sha256": "6e2302cef5306376f221531e2fa8a10341955776e8ae72632dbc41d692a31b6a",
+      "schedule_index": 32,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-033",
+      "output_sha256": "35b75881b5bfd7955eb7cf978df30c23c999114cb7b9b01de26ad8b02b3d1a05",
+      "raw_event_stream_sha256": "b963d7c2a1999c1c14a11c78daa6768ac5bec7dc7f2582e408426c75d873ca78",
+      "schedule_index": 33,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-034",
+      "output_sha256": "59f04e146092e88a51d57396715d998b311ef5ba98a2d585fd4901e2255c9dc6",
+      "raw_event_stream_sha256": "9d325d538bd51ba94202a00e98bac5d235a7c7c42f593d35f628ded9884d057b",
+      "schedule_index": 34,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-035",
+      "output_sha256": "59f04e146092e88a51d57396715d998b311ef5ba98a2d585fd4901e2255c9dc6",
+      "raw_event_stream_sha256": "efe6b38002aca89cf92199797abd0d268becd0478575188270fe55f0eee5c3f1",
+      "schedule_index": 35,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-036",
+      "output_sha256": "59f04e146092e88a51d57396715d998b311ef5ba98a2d585fd4901e2255c9dc6",
+      "raw_event_stream_sha256": "254de9f0b46d45d2f58f0c322e867445b8f987c6c325f6c314b36ec3afaa5e82",
+      "schedule_index": 36,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-037",
+      "output_sha256": "cd12f5ff9440cf20c926ef71287418f55b0d2c4f16f2a3ff4c027beb94cce457",
+      "raw_event_stream_sha256": "4bb1658b055d80357548286cade13ecdab759d2f8da0f2ce6d4d2df229672a4c",
+      "schedule_index": 37,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-038",
+      "output_sha256": "3d9baf0e5bcd5deaa1271cae177fa99c758fa523c93f51abf42644c2f854efd0",
+      "raw_event_stream_sha256": "64a4626f1da7bfc204dea8421ce4e3819f32d0dc9f2e449cf385422b1bf98c2f",
+      "schedule_index": 38,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-039",
+      "output_sha256": "dd99177d28e68ce7b962f0b31916f2cb049018a5b66577dba8139af08b377a2f",
+      "raw_event_stream_sha256": "875bd76e67db6b3fee55e4e005a66799973b68ed569bcdcb6ee7b2cf41cde49f",
+      "schedule_index": 39,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-040",
+      "output_sha256": "6c1713ec3e679a7784994a45be9bcb366fd1e1fa3dceb1d5480b34d81d9f3428",
+      "raw_event_stream_sha256": "064698674476f5da53415288cf29c4cc3ce7fb47421316371495b5511d0e363d",
+      "schedule_index": 40,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-041",
+      "output_sha256": "6c1713ec3e679a7784994a45be9bcb366fd1e1fa3dceb1d5480b34d81d9f3428",
+      "raw_event_stream_sha256": "0c2d7864f68e8a392ea1ab913c0a00be53769ea9c3bf1d29e27e4b12e897fc81",
+      "schedule_index": 41,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-042",
+      "output_sha256": "6c1713ec3e679a7784994a45be9bcb366fd1e1fa3dceb1d5480b34d81d9f3428",
+      "raw_event_stream_sha256": "0ffdfb811be8537801573effa0044c2b2a3d0502762125a65e3ee7d9144629c1",
+      "schedule_index": 42,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-043",
+      "output_sha256": "89932bf035cf11fcba9d90911cb94f2a8978f46b92a522ab5a303523e36d7739",
+      "raw_event_stream_sha256": "b7bb283290f38629338d7a7cfd8b37e80a42c377070b422a755300972773b886",
+      "schedule_index": 43,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-044",
+      "output_sha256": "89932bf035cf11fcba9d90911cb94f2a8978f46b92a522ab5a303523e36d7739",
+      "raw_event_stream_sha256": "a0f04cb444c12b43822e73333e8a35cd5e254efa034d74f74c27f8d7b721fc6f",
+      "schedule_index": 44,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-045",
+      "output_sha256": "89932bf035cf11fcba9d90911cb94f2a8978f46b92a522ab5a303523e36d7739",
+      "raw_event_stream_sha256": "f1b25fcdf9f2792798310d0ed5e2875528505ee148413d483c46d8f697b59800",
+      "schedule_index": 45,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-046",
+      "output_sha256": "00e1607c325b21785735b339669bbea328ad0dccdbbe7e9ced4a33997c767407",
+      "raw_event_stream_sha256": "fa67b86db1d735203c993dc004a6f9bc32965c7e9838b3e24a273ccbe4970b80",
+      "schedule_index": 46,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-047",
+      "output_sha256": "00e1607c325b21785735b339669bbea328ad0dccdbbe7e9ced4a33997c767407",
+      "raw_event_stream_sha256": "a34fbec1bbb4986bc980a9ba1fd20291fb968caf07d1c81d1b2a2b80da0b7546",
+      "schedule_index": 47,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-048",
+      "output_sha256": "00e1607c325b21785735b339669bbea328ad0dccdbbe7e9ced4a33997c767407",
+      "raw_event_stream_sha256": "c6b8350d43fca15da89ba6a3509e4db238a232c3bd5cb971882cc20d0324610b",
+      "schedule_index": 48,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-049",
+      "output_sha256": "23d6a957aa1c652fad4568ded07a21fce9510f2bc32bfe71e3953810b6339e70",
+      "raw_event_stream_sha256": "37d7ec5d06c56c01a0f9e660e307d25f266357d49d4733a7b154eb1eb3226f69",
+      "schedule_index": 49,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-050",
+      "output_sha256": "23d6a957aa1c652fad4568ded07a21fce9510f2bc32bfe71e3953810b6339e70",
+      "raw_event_stream_sha256": "a8cc259024d3d18ff7fedf91306cdf3b6cb0dd9a2485f9f34997173d29ae2d53",
+      "schedule_index": 50,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-051",
+      "output_sha256": "23d6a957aa1c652fad4568ded07a21fce9510f2bc32bfe71e3953810b6339e70",
+      "raw_event_stream_sha256": "aefa7e94f32531e5b46112767fda26c549b7dba0fca3cfc01f716ef3d3fdf6e5",
+      "schedule_index": 51,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-052",
+      "output_sha256": "5a0f75c694d9b3d24c02d0e58cd56ae64b6ed6a46d326e50768b88054c7a0285",
+      "raw_event_stream_sha256": "6159e693ba528e5e5025d163ed0e87560198a0fde333e9cef4b372f2fbec5e0e",
+      "schedule_index": 52,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-053",
+      "output_sha256": "5a0f75c694d9b3d24c02d0e58cd56ae64b6ed6a46d326e50768b88054c7a0285",
+      "raw_event_stream_sha256": "cfd8c337432c0a4c15dc6a339268b77ce91806b8e0733de105a2b49829e56486",
+      "schedule_index": 53,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-054",
+      "output_sha256": "5a0f75c694d9b3d24c02d0e58cd56ae64b6ed6a46d326e50768b88054c7a0285",
+      "raw_event_stream_sha256": "f5bec51c634d24d83a2f4a9195342fa3590a2034a2bf32e760d1d0ed36958540",
+      "schedule_index": 54,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-055",
+      "output_sha256": "827ca4764ce3b6fbf895471aee8aedbfeabff7831c8cf9a81297d4bd07f9f7f5",
+      "raw_event_stream_sha256": "48bc302890b0d2d0bdfb37f30d53a353f4679e597fb6ba78eead89188889d741",
+      "schedule_index": 55,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-056",
+      "output_sha256": "0acb1521a5d50e64ee43d7fc2c7447475abedb21ff3914f3f515e372973516a8",
+      "raw_event_stream_sha256": "0017e7900d00fb7441c8e463ee14ec44c94ff77e6671f633e4eb2f5ed9cd1385",
+      "schedule_index": 56,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-057",
+      "output_sha256": "0acb1521a5d50e64ee43d7fc2c7447475abedb21ff3914f3f515e372973516a8",
+      "raw_event_stream_sha256": "9e7a586a289b06e7e6f080b892c990748d38af1b3ba2f2a36d2fce7232bbebd3",
+      "schedule_index": 57,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-058",
+      "output_sha256": "49ddfa906c55f5c5f9ea381f7c3dbb38215c593f5d4995fd0a019c8df0e2bc2c",
+      "raw_event_stream_sha256": "57b9fc4b8ead0b5b4f6acbb6c3234dc77bef93cbf1a6239c6daa830438d4f5bd",
+      "schedule_index": 58,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-059",
+      "output_sha256": "49ddfa906c55f5c5f9ea381f7c3dbb38215c593f5d4995fd0a019c8df0e2bc2c",
+      "raw_event_stream_sha256": "8a169f39bc51c8a3164354ce0c49a1225b9ab7868471a80b8b3e07f13647b4c2",
+      "schedule_index": 59,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-060",
+      "output_sha256": "49ddfa906c55f5c5f9ea381f7c3dbb38215c593f5d4995fd0a019c8df0e2bc2c",
+      "raw_event_stream_sha256": "2b69dd0705005abc9bc6fadccea2c7ab3ebc323505b50d7adc635319b49633f3",
+      "schedule_index": 60,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-061",
+      "output_sha256": "a78ed1477091c8ffae90b3d889a8c5aeb95f3cf0e4c1c25c19f602cc10a923b3",
+      "raw_event_stream_sha256": "a8eb65d30f4d904b4ffa2840596f3d4c658273162b0f1f6f54dfa7c77181ae49",
+      "schedule_index": 61,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-062",
+      "output_sha256": "a78ed1477091c8ffae90b3d889a8c5aeb95f3cf0e4c1c25c19f602cc10a923b3",
+      "raw_event_stream_sha256": "c6225b91438cbc8a68ed5f3ddbabcb5b0397e5c89556117ed9712c2060f4025c",
+      "schedule_index": 62,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-063",
+      "output_sha256": "a78ed1477091c8ffae90b3d889a8c5aeb95f3cf0e4c1c25c19f602cc10a923b3",
+      "raw_event_stream_sha256": "7e883e99c63e1a5ac7e76dd75225ea561ca228f1ebe18d916e7ecd471fe630d7",
+      "schedule_index": 63,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-064",
+      "output_sha256": "cd626a5d3e4fddb7bc2ef88d881e7eab14b9b75a02975845ac859fdb370c8122",
+      "raw_event_stream_sha256": "598ced8c3b035e7a04c846e805484ce927498f603e3f2d0de94b15e1019cca8f",
+      "schedule_index": 64,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-065",
+      "output_sha256": "ebed0f123e5d64f73361a5a294fbfe41a0640b3057b9de3e3a070eed38b95de7",
+      "raw_event_stream_sha256": "6c5a2e429cc7edb97a438f2638ecb37817a404c999cbe02fa755c612948fbb21",
+      "schedule_index": 65,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-066",
+      "output_sha256": "cd626a5d3e4fddb7bc2ef88d881e7eab14b9b75a02975845ac859fdb370c8122",
+      "raw_event_stream_sha256": "9b285823bd9fcee27eabaa079739fa3d025f41166c9446b138d40449ded8a4e5",
+      "schedule_index": 66,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-067",
+      "output_sha256": "698496cdbc4a21844b6f4988e463dff3ecfe97ac2e2ac2b433fd6fd465271385",
+      "raw_event_stream_sha256": "f4f7373e3a54717761c7642573df5cee79d5120958c9a9318280a5998e519c14",
+      "schedule_index": 67,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-068",
+      "output_sha256": "4ffbcfe688bdbdbb454ec0b8f79c0c58e1621817a17a782a5cf3495f4aac1a54",
+      "raw_event_stream_sha256": "9639faf69363eabe286d4a3d21064a0217d65b306559de2b6b9e824d0ef7e687",
+      "schedule_index": 68,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-069",
+      "output_sha256": "4ffbcfe688bdbdbb454ec0b8f79c0c58e1621817a17a782a5cf3495f4aac1a54",
+      "raw_event_stream_sha256": "f5d89b27a78819eaecdfeb3fd9983719f045c609a0d61d58f92ba5936eb3a6a2",
+      "schedule_index": 69,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-070",
+      "output_sha256": "71b633544db4e5479ea7488e3e370c9c6e4eaae6488681ade6351b77425c7f4e",
+      "raw_event_stream_sha256": "4168e97b319aa62ac9d3417fcbcf4306ea800984c11692a7824c32054b13efb7",
+      "schedule_index": 70,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-071",
+      "output_sha256": "71b633544db4e5479ea7488e3e370c9c6e4eaae6488681ade6351b77425c7f4e",
+      "raw_event_stream_sha256": "17abf7f1c6ca45925e3e5d85b8be461a6c643bb797edb5dcb5d94a1e56a0f154",
+      "schedule_index": 71,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-072",
+      "output_sha256": "71b633544db4e5479ea7488e3e370c9c6e4eaae6488681ade6351b77425c7f4e",
+      "raw_event_stream_sha256": "06a58cea177aa93187fd6feb6b1e87e5ddc35b97f7a29bb06400fdc8b0bd2283",
+      "schedule_index": 72,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-073",
+      "output_sha256": "55df1ac25685d06481fb9a8aa5873e86ae223f186ef2dd70fe84344fda89307e",
+      "raw_event_stream_sha256": "5a54f2cf1b2ea707b0b409d29d271c743d2778682468ff30321d5a67fa3c765b",
+      "schedule_index": 73,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-074",
+      "output_sha256": "55df1ac25685d06481fb9a8aa5873e86ae223f186ef2dd70fe84344fda89307e",
+      "raw_event_stream_sha256": "765d9c093940218e40b6efdff5f133ee1b9ae1f0ae9a2fe0ccdda1eba7826f49",
+      "schedule_index": 74,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-075",
+      "output_sha256": "55df1ac25685d06481fb9a8aa5873e86ae223f186ef2dd70fe84344fda89307e",
+      "raw_event_stream_sha256": "142cf84f503b0cbad8dfb7aa2a0513f5ca02edb24876c161334826797f86b2dc",
+      "schedule_index": 75,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-076",
+      "output_sha256": "5ee70fd028644f2777ca2f1f9b90b698f85dc4e8f717980995d98ab29cf4b4ae",
+      "raw_event_stream_sha256": "fd0142a35637dc9313484e3f08eabc25353356d31685bc2020a26a44652f1ab8",
+      "schedule_index": 76,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-077",
+      "output_sha256": "5ee70fd028644f2777ca2f1f9b90b698f85dc4e8f717980995d98ab29cf4b4ae",
+      "raw_event_stream_sha256": "26ecab1d50984d3d272011d3cd4e8e7d2e04e635cca7bb1840ca80f89f10453d",
+      "schedule_index": 77,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-078",
+      "output_sha256": "4289372e509ff83ad1608279273882216b389b22d2d4d372282bb291ac171e3f",
+      "raw_event_stream_sha256": "261085e82659e32219014baa1e060b0b5cb772bfc1b7e83698746561a50ac098",
+      "schedule_index": 78,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-079",
+      "output_sha256": "68a15a0ba6ae9b8950eadb56e6218c15d1caee7591ff04b259cca61281d2a4cd",
+      "raw_event_stream_sha256": "8c1a315795063c9c85a8b87426e228d763aa93ae27c0e529d154947b3fe6e1cb",
+      "schedule_index": 79,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-080",
+      "output_sha256": "68a15a0ba6ae9b8950eadb56e6218c15d1caee7591ff04b259cca61281d2a4cd",
+      "raw_event_stream_sha256": "f4f7710267b613d2139435d0013c48e10db180cfb4c9c3fa49d65c54512d32aa",
+      "schedule_index": 80,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-081",
+      "output_sha256": "68a15a0ba6ae9b8950eadb56e6218c15d1caee7591ff04b259cca61281d2a4cd",
+      "raw_event_stream_sha256": "8725fe0ef5a2df722eb06d077353fa8762b75d9bbf92268398e850fd56f39514",
+      "schedule_index": 81,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-082",
+      "output_sha256": "d500ca97cd660d26668b96e8be35d9dd34f0e6bbd2936aa9ed6f70dc21497399",
+      "raw_event_stream_sha256": "68eaaac69c70f8886ad6dfb8a725c3656f7d41fca88b5ac20596a62638f1f073",
+      "schedule_index": 82,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-083",
+      "output_sha256": "d500ca97cd660d26668b96e8be35d9dd34f0e6bbd2936aa9ed6f70dc21497399",
+      "raw_event_stream_sha256": "3126f9be5ba1fda3d8dbf74909aea3ac7f540aba92fad52bbe33f77f35473583",
+      "schedule_index": 83,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-084",
+      "output_sha256": "d500ca97cd660d26668b96e8be35d9dd34f0e6bbd2936aa9ed6f70dc21497399",
+      "raw_event_stream_sha256": "b0e3ee39ae7792a4df2bd48db55b3bb4af98a88a7e9cd36865a90b119b28e35a",
+      "schedule_index": 84,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-085",
+      "output_sha256": "d326da0dae69badd048f9594dcfd6918b368ee340f4627046e49d3537940d4fb",
+      "raw_event_stream_sha256": "31734c119b9989535f5d550319f2e61bd4ba54865c6ba2aa9a964d64af4ff356",
+      "schedule_index": 85,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-086",
+      "output_sha256": "d326da0dae69badd048f9594dcfd6918b368ee340f4627046e49d3537940d4fb",
+      "raw_event_stream_sha256": "f69ba39fd5d8b7114a7ac558047c3d5100774efba6607b56c42b418e507cb173",
+      "schedule_index": 86,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-087",
+      "output_sha256": "f1e0573a1347c1e2216c01a4698c366cb2ed4085d91aff277b4929eebad118e5",
+      "raw_event_stream_sha256": "ca55761a4aa2bdab1f2d969b359b09f3a22de7a9c63393dbfe7bd65fff9b2404",
+      "schedule_index": 87,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-088",
+      "output_sha256": "1a34a5d599594ae03b02260216ecf1532a09e56c08c9712cc9f893903a772c3d",
+      "raw_event_stream_sha256": "355900d9fb9abb4537ee3e26fa8bb537dded4dfaa77fb86d144910d9686d5071",
+      "schedule_index": 88,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-089",
+      "output_sha256": "1a34a5d599594ae03b02260216ecf1532a09e56c08c9712cc9f893903a772c3d",
+      "raw_event_stream_sha256": "700480124b166d2682ef48afc255a623aa738ecf38d4f0375a47cd111cfd62ca",
+      "schedule_index": 89,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-090",
+      "output_sha256": "1a34a5d599594ae03b02260216ecf1532a09e56c08c9712cc9f893903a772c3d",
+      "raw_event_stream_sha256": "58f9540c218c456f4279e3507955847f49569a0b1e6b1f898beb5c053064fc26",
+      "schedule_index": 90,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-091",
+      "output_sha256": "5e89db2246d2cd2839f0e81b90dae624b7513ec2530dc1de26509b474ef91aa8",
+      "raw_event_stream_sha256": "220ad797feca46ed84d79ea737d8d3c9c56ac22a3c7f506ab73775fafbf7c638",
+      "schedule_index": 91,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-092",
+      "output_sha256": "ef59ca3fdb3cf88fd9190d3baece631898bd47fb6914d1de0f09a2ad37bf6943",
+      "raw_event_stream_sha256": "b4c4649486cea87f727b76526f8b30f3d8ba66479c87aa927f6e65f987757d22",
+      "schedule_index": 92,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-093",
+      "output_sha256": "5e89db2246d2cd2839f0e81b90dae624b7513ec2530dc1de26509b474ef91aa8",
+      "raw_event_stream_sha256": "9210f5d84eac7763950a6a41136015deaea1f36731ffc0ee67f09fcbf714bd6c",
+      "schedule_index": 93,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-094",
+      "output_sha256": "fea9f78e917659f12b78f3ee7f0b6c2550e093087d7488338ab1e5241bf58df3",
+      "raw_event_stream_sha256": "58d431f4b933fd6abf04b90eceec2590c433d9e80130f7c20027f498f196acbe",
+      "schedule_index": 94,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-095",
+      "output_sha256": "fea9f78e917659f12b78f3ee7f0b6c2550e093087d7488338ab1e5241bf58df3",
+      "raw_event_stream_sha256": "f4e2a207f66d61101e56a7563878de7fe7a4229bd76ab9ac7760288764cb9a8f",
+      "schedule_index": 95,
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "blind-blind-20260902-chatgpt-03-096",
+      "output_sha256": "ba3bdeceb70c337037eab8e3ae04ca73ca2416fb33e226cea9fa8909b710034f",
+      "raw_event_stream_sha256": "f4f1a003584e0059f6770020ed61c1d05f68051996e1df48946e7e9e01769fed",
+      "schedule_index": 96,
+      "terminal_execution_status": "completed"
+    }
+  ],
+  "schedule_sha256": "0c9b5de755fc81bb704781267c8891b8d89551891a289488e530b445c640de76",
+  "schema_version": 1
+}

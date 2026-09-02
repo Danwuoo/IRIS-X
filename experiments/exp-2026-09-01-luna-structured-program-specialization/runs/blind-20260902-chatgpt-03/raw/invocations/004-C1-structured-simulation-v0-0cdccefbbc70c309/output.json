@@ -1,0 +1,1 @@
+{"schema_version":1,"instance_id":"structured-simulation-v0-0cdccefbbc70c309","family_id":"structured-simulation-v0","answer":{"records":[{"id":"R1","status":"review","score":17},{"id":"R2","status":"draft","score":6},{"id":"R3","status":"draft","score":8},{"id":"R4","status":"approved","score":15}],"changed_paths":["records/3/status"]}}
