@@ -12,6 +12,7 @@ from typing import Any
 
 from common import (
     EXPERIMENT,
+    FROZEN_INPUTS_PATH,
     ROOT,
     SEED_PROGRAM_PATH,
     canonical_bytes,
@@ -91,12 +92,12 @@ def main() -> int:
         assert_equal(manifest["authentication_mode"], "chatgpt", "authentication mode")
         assert_equal(manifest["billing_mode"], "chatgpt-subscription", "billing mode")
         assert_equal(manifest["provider_cost_usd"], "Unknown", "provider cost")
-    reproduce_split(EXPERIMENT / "inputs" / "dev")
-    reproduce_split(EXPERIMENT / "inputs" / "validation")
+    reproduce_split(FROZEN_INPUTS_PATH / "dev")
+    reproduce_split(FROZEN_INPUTS_PATH / "validation")
     reproduce_split(blind / "blind-generation")
     inventories = [
-        load_json(EXPERIMENT / "inputs" / "dev" / "inventory.json"),
-        load_json(EXPERIMENT / "inputs" / "validation" / "inventory.json"),
+        load_json(FROZEN_INPUTS_PATH / "dev" / "inventory.json"),
+        load_json(FROZEN_INPUTS_PATH / "validation" / "inventory.json"),
         load_json(blind / "blind-generation" / "inventory.json"),
     ]
     for field in ("generation_seed", "instance_id", "public_input_hash"):

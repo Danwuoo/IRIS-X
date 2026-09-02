@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "instance_id", "family_id", "answer"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "instance_id": {"type": "string"},
+    "family_id": {"type": "string", "const": "traceability-extraction-v0"},
+    "answer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["direct_references"],
+      "properties": {
+        "direct_references": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

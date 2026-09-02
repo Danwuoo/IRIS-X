@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "policy_id": "openai-structured-outputs-preflight-v1",
+  "status": "frozen-static-admission-policy",
+  "official_source": "https://developers.openai.com/api/docs/guides/structured-outputs",
+  "official_source_observed_date": "2026-09-01",
+  "provider_subset_requirements": {
+    "root_type": "object",
+    "root_any_of": "prohibited",
+    "all_object_properties_required": true,
+    "all_objects_additional_properties_false": true,
+    "explicit_type_on_declared_properties_except_anyOf_or_ref": true,
+    "known_unsupported_keywords": ["allOf", "not", "dependentRequired", "dependentSchemas", "if", "then", "else"],
+    "allowed_schema_keywords": ["$schema", "$defs", "$ref", "type", "properties", "required", "additionalProperties", "items", "enum", "const", "anyOf", "description", "title"],
+    "maximum_object_properties": 5000,
+    "maximum_nesting_levels": 10,
+    "maximum_property_definition_enum_const_string_characters": 120000,
+    "maximum_total_enum_values": 1000
+  },
+  "local_failure_regression_guards": [
+    "reject-top-level-or-nested-allOf-before-invocation",
+    "reject-const-or-enum-property-without-explicit-type-before-invocation"
+  ],
+  "limitations": [
+    "static-preflight-does-not-make-provider-aliases-immutable",
+    "static-preflight-does-not-consume-or-probe-a-provider-model-call",
+    "provider-temporal-drift-remains-possible-and-must-be-recorded-if-observed"
+  ]
+}

@@ -12,6 +12,7 @@ from typing import Any
 
 from common import (
     EXPERIMENT,
+    FROZEN_INPUTS_PATH,
     SEED_PROGRAM_PATH,
     canonical_bytes,
     generate_split,
@@ -35,8 +36,8 @@ def committed_bytes(commit: str, path: Path) -> bytes:
 
 def cross_split_audit(blind_inventory: dict[str, Any]) -> dict[str, Any]:
     inventories = {
-        "dev": load_json(EXPERIMENT / "inputs" / "dev" / "inventory.json"),
-        "validation": load_json(EXPERIMENT / "inputs" / "validation" / "inventory.json"),
+        "dev": load_json(FROZEN_INPUTS_PATH / "dev" / "inventory.json"),
+        "validation": load_json(FROZEN_INPUTS_PATH / "validation" / "inventory.json"),
         "blind": blind_inventory,
     }
     dimensions = {

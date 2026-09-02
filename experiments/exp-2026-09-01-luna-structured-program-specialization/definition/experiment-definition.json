@@ -1,5 +1,7 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "definition_revision": "schema-correction-v1",
+  "definition_status": "corrected-and-refrozen-before-new-run",
   "experiment_id": "exp-2026-09-01-luna-structured-program-specialization",
   "hypothesis_id": "H-P1a",
   "hypothesis": "Holding runtime model gpt-5.6-luna, reasoning effort medium, tool envelope, public task inputs, evaluator, generator, output contract, retry policy, and runtime execution envelope fixed, a structured-output program produced through bounded Terra-assisted design-time optimization improves post-freeze blind verified-success performance over the frozen unoptimized Luna seed program. Design-time optimization usage and runtime usage are reported separately.",
@@ -39,10 +41,13 @@
     "families": ["traceability-extraction-v0", "terminology-consistency-v0", "path-action-guard-v0", "structured-simulation-v0"],
     "generator_config": {"count": 4},
     "generator_path": "experiments/substrates/docops-generated-heldout-v0/scripts/generator.py",
-    "output_schema": "definition/output-schema.json",
+    "shared_semantic_output_schema": "definition/output-schema.json",
+    "provider_output_schema_manifest": "definition/provider-schema-manifest.json",
+    "provider_runtime_output_schemas": "family-specific-exact-frozen-schemas",
     "candidate_program_size_ceiling_bytes": 12288,
     "canonical_json": "utf8-sort-keys-compact-no-trailing-newline-for-hashes",
-    "split_sizes": {"dev_per_family": 6, "validation_per_family": 4, "blind_per_family": 8}
+    "split_sizes": {"dev_per_family": 6, "validation_per_family": 4, "blind_per_family": 8},
+    "frozen_preblind_inputs_root": "inputs/schema-correction-v1"
   },
   "optimizer": {
     "model_id": "gpt-5.6-terra",
@@ -57,13 +62,29 @@
     "output_schema": "definition/optimizer-output-schema.json"
   },
   "resource_ceiling": {
+    "scope": "design-20260901-chatgpt-02-independent-attempt",
+    "authorization": "definition/run-authorizations/design-20260901-chatgpt-02.json",
     "maximum_luna_calls": 344,
     "maximum_terra_calls": 38,
     "maximum_total_calls": 382,
     "maximum_terra_optimizer_calls": 6,
     "maximum_blind_schedule_entries": 96,
     "allocation": {"seed_dev_luna": 24, "candidate_dev_luna": 144, "optimizer_terra": 6, "validation_luna": 112, "blind_c0_luna": 32, "blind_c1_luna": 32, "blind_c2_terra": 32},
-    "unused_calls_transferable": false
+    "unused_calls_transferable": false,
+    "prior_attempt_calls_charged_to_this_ceiling": false
+  },
+  "formal_run_admission": {
+    "provider_schema_preflight_required": true,
+    "provider_schema_preflight_script": "scripts/schema_preflight.py",
+    "preflight_model_calls": 0,
+    "preflight_network_calls": 0,
+    "preflight_api_calls": 0,
+    "preflight_record_must_predate_first_formal_invocation": true
+  },
+  "preserved_invalid_attempt": {
+    "run_id": "design-20260901-chatgpt-01",
+    "immutable_tree_sha": "653ab82f1eb1a4d8f99e09c50ca54ae25bcb1a98",
+    "reuse_or_overwrite": "prohibited"
   },
   "selection_rule": "definition/selection-rule.json",
   "blind_schedule_algorithm": "sort-by-sha256(master-seed||instance-id)-then-rotate-C0-C1-C2-by-index-mod-3",

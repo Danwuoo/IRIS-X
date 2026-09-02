@@ -4,9 +4,10 @@
   "additionalProperties": false,
   "required": ["schema_version", "instance_id", "family_id", "answer"],
   "properties": {
-    "schema_version": {"const": 1},
-    "instance_id": {"type": "string", "minLength": 1},
+    "schema_version": {"type": "integer", "const": 1},
+    "instance_id": {"type": "string"},
     "family_id": {
+      "type": "string",
       "enum": [
         "traceability-extraction-v0",
         "terminology-consistency-v0",
@@ -14,106 +15,82 @@
         "structured-simulation-v0"
       ]
     },
-    "answer": {"type": "object"}
-  },
-  "allOf": [
-    {
-      "if": {"properties": {"family_id": {"const": "traceability-extraction-v0"}}, "required": ["family_id"]},
-      "then": {
-        "properties": {
-          "answer": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["direct_references"],
-            "properties": {
-              "direct_references": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+    "answer": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["direct_references"],
+          "properties": {
+            "direct_references": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["violations"],
+          "properties": {
+            "violations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["document_id", "observed", "canonical"],
+                "properties": {
+                  "document_id": {"type": "string"},
+                  "observed": {"type": "string"},
+                  "canonical": {"type": "string"}
+                }
+              }
             }
           }
-        }
-      }
-    },
-    {
-      "if": {"properties": {"family_id": {"const": "terminology-consistency-v0"}}, "required": ["family_id"]},
-      "then": {
-        "properties": {
-          "answer": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["violations"],
-            "properties": {
-              "violations": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": ["document_id", "observed", "canonical"],
-                  "properties": {
-                    "document_id": {"type": "string"},
-                    "observed": {"type": "string"},
-                    "canonical": {"type": "string"}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["decisions"],
+          "properties": {
+            "decisions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["proposal_id", "decision", "canonical_path", "reason"],
+                "properties": {
+                  "proposal_id": {"type": "string"},
+                  "decision": {"type": "string", "enum": ["allow", "deny"]},
+                  "canonical_path": {"type": ["string", "null"]},
+                  "reason": {
+                    "type": "string",
+                    "enum": ["policy_allows", "absolute_path", "root_escape", "empty_path", "protected_or_unallowed_root"]
                   }
                 }
               }
             }
           }
-        }
-      }
-    },
-    {
-      "if": {"properties": {"family_id": {"const": "path-action-guard-v0"}}, "required": ["family_id"]},
-      "then": {
-        "properties": {
-          "answer": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["decisions"],
-            "properties": {
-              "decisions": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": ["proposal_id", "decision", "canonical_path", "reason"],
-                  "properties": {
-                    "proposal_id": {"type": "string"},
-                    "decision": {"enum": ["allow", "deny"]},
-                    "canonical_path": {"type": ["string", "null"]},
-                    "reason": {"enum": ["policy_allows", "absolute_path", "root_escape", "empty_path", "protected_or_unallowed_root"]}
-                  }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["records", "changed_paths"],
+          "properties": {
+            "records": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "status", "score"],
+                "properties": {
+                  "id": {"type": "string"},
+                  "status": {"type": "string"},
+                  "score": {"type": "integer"}
                 }
               }
-            }
+            },
+            "changed_paths": {"type": "array", "items": {"type": "string"}}
           }
         }
-      }
-    },
-    {
-      "if": {"properties": {"family_id": {"const": "structured-simulation-v0"}}, "required": ["family_id"]},
-      "then": {
-        "properties": {
-          "answer": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["records", "changed_paths"],
-            "properties": {
-              "records": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": ["id", "status", "score"],
-                  "properties": {
-                    "id": {"type": "string"},
-                    "status": {"type": "string"},
-                    "score": {"type": "integer"}
-                  }
-                }
-              },
-              "changed_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
-            }
-          }
-        }
-      }
+      ]
     }
-  ]
+  }
 }

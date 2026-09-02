@@ -13,6 +13,7 @@ from jsonschema import Draft202012Validator
 
 from common import (
     EXPERIMENT,
+    FROZEN_INPUTS_PATH,
     OPTIMIZER_SCHEMA_PATH,
     SEED_PROGRAM_PATH,
     append_jsonl,
@@ -24,8 +25,11 @@ from common import (
     invoke_codex,
     load_json,
     load_jsonl,
+    provider_output_schema_path,
+    require_schema_admission,
     selection_key,
     sha_bytes,
+    sha_file,
     summarize_records,
     utc_now,
     validate_program,
@@ -56,7 +60,7 @@ def require_chatgpt_auth() -> str:
 
 
 def load_instances(split: str) -> list[dict[str, Any]]:
-    root = EXPERIMENT / "inputs" / split
+    root = FROZEN_INPUTS_PATH / split
     return [load_json(path) for path in instance_paths(root)]
 
 
@@ -102,7 +106,7 @@ def evaluate_candidate_batch(
             model_role="cheaper",
             program_bytes=program_bytes,
             payload=candidate_bundle(instance),
-            output_schema_path=EXPERIMENT / "definition" / "output-schema.json",
+            output_schema_path=provider_output_schema_path(instance["manifest"]["family_id"]),
             definition_commit=definition_commit,
             code_commit=code_commit,
             artifact_dir=artifact_dir,
@@ -242,7 +246,16 @@ def main() -> int:
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--definition-commit", required=True)
     parser.add_argument("--code-commit", required=True)
+    parser.add_argument("--schema-admission-record", type=Path, required=True)
     args = parser.parse_args()
+    admission = require_schema_admission(
+        args.schema_admission_record, args.run_id, args.definition_commit, args.code_commit
+    )
+    authorization_path = (
+        EXPERIMENT / "definition" / "run-authorizations" / f"{args.run_id}.json"
+    )
+    authorization = load_json(authorization_path)
+    ceiling = authorization["independent_resource_ceiling"]
     run_root = EXPERIMENT / "design" / args.run_id
     if run_root.exists():
         raise FileExistsError(f"design run already exists: {run_root}")
@@ -269,10 +282,16 @@ def main() -> int:
             "billing_mode": "chatgpt-subscription",
             "api_key_fallback": "prohibited",
             "provider_cost_usd": "Unknown",
+            "schema_admission_record": args.schema_admission_record.relative_to(EXPERIMENT).as_posix(),
+            "schema_admission_record_sha256": sha_file(args.schema_admission_record),
+            "schema_preflight_status": admission["status"],
+            "resource_authorization": authorization_path.relative_to(EXPERIMENT).as_posix(),
+            "resource_authorization_sha256": sha_file(authorization_path),
+            "independent_resource_ceiling": ceiling,
             "seed_program_sha256": sha_bytes(seed),
             "seed_program_bytes": len(seed),
-            "dev_inventory_sha256": sha_bytes((EXPERIMENT / "inputs" / "dev" / "inventory.json").read_bytes()),
-            "validation_inventory_sha256": sha_bytes((EXPERIMENT / "inputs" / "validation" / "inventory.json").read_bytes()),
+            "dev_inventory_sha256": sha_bytes((FROZEN_INPUTS_PATH / "dev" / "inventory.json").read_bytes()),
+            "validation_inventory_sha256": sha_bytes((FROZEN_INPUTS_PATH / "validation" / "inventory.json").read_bytes()),
         },
     )
     candidate_programs: dict[str, bytes] = {"seed": seed}
@@ -377,7 +396,7 @@ def main() -> int:
                 model_role="cheaper",
                 program_bytes=program,
                 payload=candidate_bundle(instance),
-                output_schema_path=EXPERIMENT / "definition" / "output-schema.json",
+                output_schema_path=provider_output_schema_path(instance["manifest"]["family_id"]),
                 definition_commit=args.definition_commit,
                 code_commit=args.code_commit,
                 artifact_dir=artifact_dir,
@@ -461,7 +480,16 @@ def main() -> int:
     optimizer_records = load_jsonl(run_root / "optimizer-terminal-records.jsonl")
     luna_calls = sum(row["model_calls"] for row in dev_records + validation_records)
     terra_calls = sum(row["model_calls"] for row in optimizer_records)
-    if luna_calls > 280 or terra_calls > 6 or luna_calls + terra_calls > 286:
+    design_luna_ceiling = (
+        ceiling["allocation"]["seed_dev_luna"]
+        + ceiling["allocation"]["candidate_dev_luna"]
+        + ceiling["allocation"]["validation_luna"]
+    )
+    if (
+        luna_calls > design_luna_ceiling
+        or terra_calls > ceiling["maximum_terra_optimizer_calls"]
+        or luna_calls + terra_calls > design_luna_ceiling + ceiling["maximum_terra_optimizer_calls"]
+    ):
         raise RuntimeError("design-time call ceiling exceeded")
     write_json_new(
         run_root / "design-ledger.json",

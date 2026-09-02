@@ -48,6 +48,46 @@ class HPIaContractTests(unittest.TestCase):
             value["extra"] = True
             self.assertTrue(list(validator.iter_errors(value)))
 
+    def test_exact_family_provider_schemas_are_preflight_clean(self) -> None:
+        paths = common.frozen_provider_schema_paths()
+        self.assertEqual(len(paths), 6)
+        for schema_id, path in paths.items():
+            self.assertEqual(common.provider_schema_findings(common.load_json(path)), [], schema_id)
+        examples = {
+            "traceability-extraction-v0": {"direct_references": ["DOC-2"]},
+            "terminology-consistency-v0": {"violations": []},
+            "path-action-guard-v0": {"decisions": []},
+            "structured-simulation-v0": {"records": [], "changed_paths": []},
+        }
+        for family_id, answer in examples.items():
+            schema = common.load_json(common.provider_output_schema_path(family_id))
+            value = {"schema_version": 1, "instance_id": "i", "family_id": family_id, "answer": answer}
+            self.assertFalse(list(Draft202012Validator(schema).iter_errors(value)))
+
+    def test_preflight_rejects_prior_deterministic_provider_errors(self) -> None:
+        all_of_schema = {
+            "type": "object",
+            "properties": {"value": {"type": "string"}},
+            "required": ["value"],
+            "additionalProperties": False,
+            "allOf": [],
+        }
+        findings = common.provider_schema_findings(all_of_schema)
+        self.assertTrue(any("allOf" in finding for finding in findings))
+        missing_type = {
+            "type": "object",
+            "properties": {"schema_version": {"const": 1}},
+            "required": ["schema_version"],
+            "additionalProperties": False,
+        }
+        findings = common.provider_schema_findings(missing_type)
+        self.assertTrue(any("missing-explicit-type" in finding for finding in findings))
+
+    def test_optimizer_schema_const_has_explicit_integer_type(self) -> None:
+        schema = common.load_json(common.OPTIMIZER_SCHEMA_PATH)
+        self.assertEqual(schema["properties"]["schema_version"], {"type": "integer", "const": 1})
+        self.assertEqual(common.provider_schema_findings(schema), [])
+
     def test_clear_terminal_failure_is_canonical(self) -> None:
         record = {
             "actual_outcome": "failure",

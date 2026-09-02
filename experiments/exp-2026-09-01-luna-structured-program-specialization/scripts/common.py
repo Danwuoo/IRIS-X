@@ -33,8 +33,11 @@ GENERATOR_PATH = (
 BASELINE_PATH = ROOT / "experiments" / "configurations" / "provider-model-baseline-v0.json"
 OUTPUT_SCHEMA_PATH = DEFINITION / "output-schema.json"
 OPTIMIZER_SCHEMA_PATH = DEFINITION / "optimizer-output-schema.json"
+PROVIDER_SCHEMA_MANIFEST_PATH = DEFINITION / "provider-schema-manifest.json"
+PROVIDER_SCHEMA_POLICY_PATH = DEFINITION / "provider-structured-output-policy.json"
 SEED_PROGRAM_PATH = DEFINITION / "seed-program.txt"
 EXECUTION_IDENTITY_PATH = DEFINITION / "execution-identity.json"
+FROZEN_INPUTS_PATH = EXPERIMENT / "inputs" / "schema-correction-v1"
 FAMILIES = (
     "traceability-extraction-v0",
     "terminology-consistency-v0",
@@ -56,6 +59,7 @@ HEX_256 = re.compile(r"^[0-9a-f]{64}$")
 MAX_PROGRAM_BYTES = 12_288
 MODEL_IDS = {"C0": "gpt-5.6-luna", "C1": "gpt-5.6-luna", "C2": "gpt-5.6-terra"}
 MODEL_ROLES = {"C0": "cheaper", "C1": "cheaper", "C2": "strong"}
+SUPPORTED_PROVIDER_TYPES = {"string", "number", "boolean", "integer", "object", "array", "null"}
 
 
 def utc_now() -> str:
@@ -80,6 +84,162 @@ def sha_file(path: Path) -> str:
 
 def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def resolve_experiment_artifact_path(value: str) -> Path:
+    path = Path(value)
+    if path.is_absolute():
+        return path
+    if path.parts and path.parts[0] in {"experiments", "research", "docs", "tools"}:
+        return ROOT / path
+    return EXPERIMENT / path
+
+
+def provider_output_schema_path(family_id: str) -> Path:
+    if family_id not in FAMILIES:
+        raise ValueError(f"unknown family {family_id}")
+    manifest = load_json(PROVIDER_SCHEMA_MANIFEST_PATH)
+    relative = manifest["task_runtime_schemas"][family_id]
+    path = resolve_experiment_artifact_path(relative)
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    return path
+
+
+def frozen_provider_schema_paths() -> dict[str, Path]:
+    manifest = load_json(PROVIDER_SCHEMA_MANIFEST_PATH)
+    paths = {
+        "shared-semantic": resolve_experiment_artifact_path(manifest["shared_semantic_schema"]),
+        "optimizer-runtime": resolve_experiment_artifact_path(manifest["optimizer_runtime_schema"]),
+    }
+    paths.update(
+        {
+            f"task-runtime:{family_id}": resolve_experiment_artifact_path(relative)
+            for family_id, relative in manifest["task_runtime_schemas"].items()
+        }
+    )
+    return paths
+
+
+def provider_schema_findings(schema: Any) -> list[str]:
+    """Validate the frozen OpenAI Structured Outputs subset without a model call."""
+    findings: list[str] = []
+    try:
+        Draft202012Validator.check_schema(schema)
+    except Exception as exc:  # jsonschema exposes several schema-error subclasses
+        findings.append(f"draft-2020-12-invalid:{type(exc).__name__}:{exc}")
+        return findings
+    policy = load_json(PROVIDER_SCHEMA_POLICY_PATH)["provider_subset_requirements"]
+    allowed = set(policy["allowed_schema_keywords"])
+    forbidden = set(policy["known_unsupported_keywords"])
+    property_count = 0
+    string_characters = 0
+    enum_values = 0
+
+    def location(parts: tuple[str, ...]) -> str:
+        return "$" + "".join(f"/{part}" for part in parts)
+
+    def walk(node: Any, parts: tuple[str, ...], depth: int, declared_property: bool = False) -> None:
+        nonlocal property_count, string_characters, enum_values
+        where = location(parts)
+        if not isinstance(node, dict):
+            findings.append(f"{where}:schema-node-must-be-object")
+            return
+        unknown = sorted(set(node) - allowed)
+        for keyword in unknown:
+            findings.append(f"{where}:unsupported-keyword:{keyword}")
+        for keyword in sorted(forbidden & set(node)):
+            findings.append(f"{where}:known-unsupported-keyword:{keyword}")
+        if depth > int(policy["maximum_nesting_levels"]):
+            findings.append(f"{where}:nesting-limit-exceeded:{depth}")
+        node_type = node.get("type")
+        types = {node_type} if isinstance(node_type, str) else set(node_type or [])
+        if node_type is not None and (not types or not types <= SUPPORTED_PROVIDER_TYPES):
+            findings.append(f"{where}:unsupported-type:{node_type!r}")
+        if declared_property and node_type is None and "anyOf" not in node and "$ref" not in node:
+            findings.append(f"{where}:declared-property-missing-explicit-type")
+        if "enum" in node:
+            enum = node["enum"]
+            enum_values += len(enum) if isinstance(enum, list) else 0
+            if isinstance(enum, list):
+                string_characters += sum(len(value) for value in enum if isinstance(value, str))
+        if isinstance(node.get("const"), str):
+            string_characters += len(node["const"])
+        properties = node.get("properties")
+        if "object" in types:
+            if not isinstance(properties, dict):
+                findings.append(f"{where}:object-properties-must-be-object")
+                properties = {}
+            required = node.get("required")
+            if not isinstance(required, list) or set(required) != set(properties):
+                findings.append(f"{where}:all-object-properties-must-be-required")
+            if node.get("additionalProperties") is not False:
+                findings.append(f"{where}:additionalProperties-must-be-false")
+        if isinstance(properties, dict):
+            property_count += len(properties)
+            string_characters += sum(len(name) for name in properties)
+            for name, child in properties.items():
+                walk(child, parts + ("properties", name), depth + 1, True)
+        if "array" in types:
+            if "items" not in node:
+                findings.append(f"{where}:array-items-required")
+            else:
+                walk(node["items"], parts + ("items",), depth + 1)
+        if "anyOf" in node:
+            branches = node["anyOf"]
+            if not isinstance(branches, list) or not branches:
+                findings.append(f"{where}:anyOf-must-be-nonempty-array")
+            else:
+                for index, child in enumerate(branches):
+                    walk(child, parts + ("anyOf", str(index)), depth + 1)
+        definitions = node.get("$defs")
+        if isinstance(definitions, dict):
+            string_characters += sum(len(name) for name in definitions)
+            for name, child in definitions.items():
+                walk(child, parts + ("$defs", name), depth + 1)
+
+    if not isinstance(schema, dict) or schema.get("type") != policy["root_type"]:
+        findings.append("$:root-type-must-be-object")
+    if isinstance(schema, dict) and "anyOf" in schema:
+        findings.append("$:root-anyOf-prohibited")
+    walk(schema, (), 1)
+    if property_count > int(policy["maximum_object_properties"]):
+        findings.append(f"$:object-property-limit-exceeded:{property_count}")
+    if string_characters > int(policy["maximum_property_definition_enum_const_string_characters"]):
+        findings.append(f"$:schema-string-limit-exceeded:{string_characters}")
+    if enum_values > int(policy["maximum_total_enum_values"]):
+        findings.append(f"$:enum-value-limit-exceeded:{enum_values}")
+    return sorted(set(findings))
+
+
+def require_schema_admission(
+    record_path: Path, run_id: str, definition_commit: str, code_commit: str
+) -> dict[str, Any]:
+    record = load_json(record_path)
+    if record.get("status") != "pass" or record.get("admitted") is not True:
+        raise ValueError("provider schema preflight did not pass")
+    expected = {
+        "run_id": run_id,
+        "definition_commit": definition_commit,
+        "code_commit": code_commit,
+        "model_calls": 0,
+        "network_calls": 0,
+        "api_calls": 0,
+    }
+    for field, value in expected.items():
+        if record.get(field) != value:
+            raise ValueError(f"schema admission mismatch for {field}")
+    observed = record.get("schemas", {})
+    paths = frozen_provider_schema_paths()
+    if set(observed) != set(paths):
+        raise ValueError("schema admission coverage drift")
+    for schema_id, path in paths.items():
+        row = observed[schema_id]
+        if row.get("path") != path.relative_to(ROOT).as_posix():
+            raise ValueError(f"schema admission path drift for {schema_id}")
+        if row.get("sha256") != sha_file(path) or row.get("findings") != []:
+            raise ValueError(f"schema admission hash/findings drift for {schema_id}")
+    return record
 
 
 def write_json_new(path: Path, value: Any) -> None:
@@ -291,13 +451,14 @@ def generate_split(
 
 def candidate_bundle(instance: dict[str, Any]) -> dict[str, Any]:
     manifest = instance["manifest"]
+    schema_path = provider_output_schema_path(manifest["family_id"])
     return {
         "schema_version": 1,
         "instance_id": manifest["instance_id"],
         "family_id": manifest["family_id"],
         "public_input_hash": manifest["public_input_hash"],
         "public_input": instance["public_input"],
-        "required_output_schema": load_json(OUTPUT_SCHEMA_PATH),
+        "required_output_schema": load_json(schema_path),
     }
 
 
@@ -361,7 +522,8 @@ def output_evaluation(instance: dict[str, Any], raw_output: bytes | None) -> dic
             "candidate_answer": None,
             "development_feedback": {"reason": f"malformed-json:{type(exc).__name__}"},
         }
-    errors = sorted(Draft202012Validator(load_json(OUTPUT_SCHEMA_PATH)).iter_errors(parsed), key=lambda e: list(e.path))
+    schema = load_json(provider_output_schema_path(instance["manifest"]["family_id"]))
+    errors = sorted(Draft202012Validator(schema).iter_errors(parsed), key=lambda e: list(e.path))
     binding = (
         isinstance(parsed, dict)
         and parsed.get("instance_id") == instance["manifest"]["instance_id"]
@@ -535,6 +697,12 @@ def invoke_codex(
 ) -> dict[str, Any]:
     require_commit(definition_commit, "definition_commit")
     require_commit(code_commit, "code_commit")
+    schema_findings = provider_schema_findings(load_json(output_schema_path))
+    if schema_findings:
+        raise ValueError(
+            f"formal invocation blocked by provider schema preflight for {output_schema_path}: "
+            + "; ".join(schema_findings)
+        )
     identity = load_json(EXECUTION_IDENTITY_PATH)
     codex_path = identity["codex_cli_resolved_path"]
     if not Path(codex_path).exists():

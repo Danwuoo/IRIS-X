@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "authorization_id": "hp1a-schema-correction-independent-resource-authorization-20260901-01",
+  "run_id": "design-20260901-chatgpt-02",
+  "authorized_by": "owner-instruction-2026-09-01",
+  "authorization_scope": "one-new-schema-corrected-H-P1a-attempt-through-blind-closure",
+  "definition_commit_binding": "the-new-schema-correction-definition-commit-containing-this-authorization",
+  "independent_resource_ceiling": {
+    "maximum_luna_calls": 344,
+    "maximum_terra_calls": 38,
+    "maximum_total_calls": 382,
+    "maximum_terra_optimizer_calls": 6,
+    "maximum_blind_schedule_entries": 96,
+    "allocation": {
+      "seed_dev_luna": 24,
+      "candidate_dev_luna": 144,
+      "optimizer_terra": 6,
+      "validation_luna": 112,
+      "blind_c0_luna": 32,
+      "blind_c1_luna": 32,
+      "blind_c2_terra": 32
+    },
+    "unused_calls_transferable": false
+  },
+  "prior_attempt": {
+    "run_id": "design-20260901-chatgpt-01",
+    "status": "incomplete-blocked",
+    "immutable_tree_sha": "653ab82f1eb1a4d8f99e09c50ca54ae25bcb1a98",
+    "luna_attempts": 24,
+    "terra_attempts": 2,
+    "charged_to_new_ceiling": false,
+    "usage_transferable_to_new_attempt": false
+  },
+  "admission_requirements": {
+    "provider_schema_preflight": "pass-before-first-formal-invocation",
+    "full_definition_and_code_commit": "required-and-pushed",
+    "frozen_dev_and_validation": "required-and-pushed",
+    "authentication_mode": "chatgpt",
+    "billing_mode": "chatgpt-subscription",
+    "api_key_fallback": "prohibited",
+    "retries": 0,
+    "recovery": 0,
+    "routing": "none",
+    "escalation": "none"
+  },
+  "provider_cost_usd": "Unknown",
+  "monetary_lifecycle_cost_advantage": "Not established"
+}

@@ -2,3 +2,8 @@
 *.md text eol=lf
 *.yaml text eol=lf
 *.py text eol=lf
+
+# Preserve byte-identical H-P1a definitions and evidence across Windows checkouts.
+experiments/exp-2026-09-01-luna-structured-program-specialization/**/*.json text eol=lf
+experiments/exp-2026-09-01-luna-structured-program-specialization/**/*.jsonl text eol=lf
+experiments/exp-2026-09-01-luna-structured-program-specialization/**/*.txt text eol=lf
