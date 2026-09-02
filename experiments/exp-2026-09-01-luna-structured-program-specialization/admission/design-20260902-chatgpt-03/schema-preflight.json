@@ -1,0 +1,63 @@
+{
+  "admitted": true,
+  "api_calls": 0,
+  "artifact_identities_sha256": "c20af65eea0180df6f8f70267622a078e8d24de2899d24e0865f1a9778054b1d",
+  "artifact_identity_count": 27,
+  "authorization_path": "experiments/exp-2026-09-01-luna-structured-program-specialization/definition/run-authorizations/design-20260902-chatgpt-03.json",
+  "authorization_sha256": "6b33aeb999c208ef7ad18da484d58f0fc6dc0c0272349e3250c10d91deb2783e",
+  "code_commit": "9815003b02aa5868a7582960db97cd1138e5709e",
+  "definition_commit": "9815003b02aa5868a7582960db97cd1138e5709e",
+  "execution_surface": "codex-cli",
+  "model_calls": 0,
+  "network_calls": 0,
+  "observed_at_utc": "2026-09-02T10:35:27.036060+00:00",
+  "official_source": "https://developers.openai.com/api/docs/guides/structured-outputs",
+  "policy_path": "experiments/exp-2026-09-01-luna-structured-program-specialization/definition/provider-structured-output-policy.json",
+  "policy_sha256": "f635e31214e8a61a8dca78104135f1569c07ef4e11159c4fb13463a09c81dd9d",
+  "preflight_id": "provider-schema-preflight-design-20260902-chatgpt-03",
+  "prior_attempt_immutable_tree_sha": "49b98340d2c10951dd04d42c564cec114582dd65",
+  "provider_id": "openai",
+  "provider_temporal_drift_eliminated": false,
+  "provider_temporal_drift_limitation": "static preflight cannot make provider aliases or server validation immutable",
+  "run_id": "design-20260902-chatgpt-03",
+  "schema_version": 1,
+  "schemas": {
+    "optimizer-runtime": {
+      "bytes": 294,
+      "findings": [],
+      "path": "experiments/exp-2026-09-01-luna-structured-program-specialization/definition/optimizer-output-schema.json",
+      "sha256": "7dc4fded92dd15b56dbc8051eff8f1b21c3de532c6bd6f56ced339073df9ea9c"
+    },
+    "shared-semantic": {
+      "bytes": 3050,
+      "findings": [],
+      "path": "experiments/exp-2026-09-01-luna-structured-program-specialization/definition/output-schema.json",
+      "sha256": "baef63c27643e1c801e87e47d49a69bd9d2b158147ef64693943cc4e905a0dac"
+    },
+    "task-runtime:path-action-guard-v0": {
+      "bytes": 1190,
+      "findings": [],
+      "path": "experiments/exp-2026-09-01-luna-structured-program-specialization/definition/provider-output-schemas/path-action-guard-v0.json",
+      "sha256": "26717fcfd877d3cf700b471696c906cdb87becea85ff106f5b1decd2b52fa020"
+    },
+    "task-runtime:structured-simulation-v0": {
+      "bytes": 998,
+      "findings": [],
+      "path": "experiments/exp-2026-09-01-luna-structured-program-specialization/definition/provider-output-schemas/structured-simulation-v0.json",
+      "sha256": "0a0d87d589b040b456a8783b3b2afc544617bb3fca4b52567113ad7ce1fb380b"
+    },
+    "task-runtime:terminology-consistency-v0": {
+      "bytes": 945,
+      "findings": [],
+      "path": "experiments/exp-2026-09-01-luna-structured-program-specialization/definition/provider-output-schemas/terminology-consistency-v0.json",
+      "sha256": "d5a3d0498fb126ef00adb6afc741fc3870a3a719737e849d8c0dafbb26b206c0"
+    },
+    "task-runtime:traceability-extraction-v0": {
+      "bytes": 612,
+      "findings": [],
+      "path": "experiments/exp-2026-09-01-luna-structured-program-specialization/definition/provider-output-schemas/traceability-extraction-v0.json",
+      "sha256": "9d2e1105d619002daf088193a1aeeba7ff94c583a0fb5c85ed6682a5101296ba"
+    }
+  },
+  "status": "pass"
+}
