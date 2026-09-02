@@ -1,0 +1,11 @@
+{
+  "all_32_slots_valid": true,
+  "all_generation_attempts_once": true,
+  "authorized": true,
+  "authorized_before_model_calls": true,
+  "candidate_modification_prohibited": true,
+  "cross_split_audit_passed": true,
+  "leakage_audit_passed": true,
+  "schedule_entries": 96,
+  "schedule_sha256": "0c9b5de755fc81bb704781267c8891b8d89551891a289488e530b445c640de76"
+}

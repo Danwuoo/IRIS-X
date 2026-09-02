@@ -1,0 +1,136 @@
+{
+  "hidden_generation_state": {
+    "policy": {
+      "allowed_actions": [
+        "write"
+      ],
+      "allowed_roots": [
+        "work",
+        "reports"
+      ],
+      "protected_roots": [
+        "secrets",
+        ".git"
+      ]
+    },
+    "proposals": [
+      {
+        "action": "write",
+        "path": "work/item-400.md",
+        "proposal_id": "P1"
+      },
+      {
+        "action": "write",
+        "path": ".git/config",
+        "proposal_id": "P2"
+      },
+      {
+        "action": "write",
+        "path": "work/../../outside.txt",
+        "proposal_id": "P3"
+      },
+      {
+        "action": "write",
+        "path": "reports/r-605.json",
+        "proposal_id": "P4"
+      }
+    ]
+  },
+  "hidden_oracle": {
+    "decisions": [
+      {
+        "canonical_path": "work/item-400.md",
+        "decision": "allow",
+        "proposal_id": "P1",
+        "reason": "policy_allows"
+      },
+      {
+        "canonical_path": ".git/config",
+        "decision": "deny",
+        "proposal_id": "P2",
+        "reason": "protected_or_unallowed_root"
+      },
+      {
+        "canonical_path": null,
+        "decision": "deny",
+        "proposal_id": "P3",
+        "reason": "root_escape"
+      },
+      {
+        "canonical_path": "reports/r-605.json",
+        "decision": "allow",
+        "proposal_id": "P4",
+        "reason": "policy_allows"
+      }
+    ]
+  },
+  "manifest": {
+    "candidate_freeze_commit": "6ef4c9d09e6124a9cb6c47f6b12427be29dea19e",
+    "candidate_freeze_sha": "8bf10ea83da6c6096405d1c12a045c9830f5d4a6dc2ebefeff538a9fc5eeec1b",
+    "candidate_visible_bundle_sha256": "8d7af6995f8e85d455911b193708a876a50c705d314374a070f4c81c04b706d8",
+    "code_commit": "9815003b02aa5868a7582960db97cd1138e5709e",
+    "definition_commit": "9815003b02aa5868a7582960db97cd1138e5709e",
+    "evaluator_id": "hp1a-independent-exact-atomic-v0",
+    "evaluator_version_sha256": "be0170242750f463bdcec2aa2269f1d2f00ad139fa81f4c1d736ab071df45f1b",
+    "family_id": "path-action-guard-v0",
+    "family_slot": 6,
+    "generation_attempt": 1,
+    "generation_seed": 296840716088084535,
+    "generation_valid": true,
+    "generator_config": {
+      "count": 4
+    },
+    "generator_id": "path-action-guard-v0",
+    "generator_version_sha256": "d4c989331ec4e7397907f3c5739dae924187a5a3a83e2a1a886ff0839ef43b92",
+    "hidden_oracle_hash": "9f13adafda5f01bb27c1ddf9f06d4e141dae78bec4d571f44f2d6b3f591e856b",
+    "instance_id": "path-action-guard-v0-aa0f9e85d5864842",
+    "leakage_audit": {
+      "findings": [],
+      "passed": true
+    },
+    "oracle_deterministic": true,
+    "public_input_hash": "aa0f9e85d586484289a95446b0ddb62fa1ebc8681a4fdaefee34d7c781a751e8",
+    "public_input_sufficient": true,
+    "same_seed_reproducible": true,
+    "schema_version": 1,
+    "split": "blind"
+  },
+  "public_input": {
+    "policy": {
+      "allowed_actions": [
+        "write"
+      ],
+      "allowed_roots": [
+        "work",
+        "reports"
+      ],
+      "protected_roots": [
+        "secrets",
+        ".git"
+      ]
+    },
+    "proposals": [
+      {
+        "action": "write",
+        "path": "work/item-400.md",
+        "proposal_id": "P1"
+      },
+      {
+        "action": "write",
+        "path": ".git/config",
+        "proposal_id": "P2"
+      },
+      {
+        "action": "write",
+        "path": "work/../../outside.txt",
+        "proposal_id": "P3"
+      },
+      {
+        "action": "write",
+        "path": "reports/r-605.json",
+        "proposal_id": "P4"
+      }
+    ],
+    "request": "classify_each_proposal_allow_or_deny"
+  }
+}

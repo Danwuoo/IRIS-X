@@ -1,0 +1,80 @@
+{
+  "hidden_generation_state": {
+    "reference_graph": {
+      "DOC-1": [
+        "DOC-4"
+      ],
+      "DOC-2": [
+        "DOC-1"
+      ],
+      "DOC-3": [
+        "DOC-2"
+      ],
+      "DOC-4": [
+        "DOC-2",
+        "DOC-3"
+      ]
+    },
+    "target": "DOC-1"
+  },
+  "hidden_oracle": {
+    "direct_references": [
+      "DOC-4"
+    ]
+  },
+  "manifest": {
+    "candidate_freeze_commit": "6ef4c9d09e6124a9cb6c47f6b12427be29dea19e",
+    "candidate_freeze_sha": "8bf10ea83da6c6096405d1c12a045c9830f5d4a6dc2ebefeff538a9fc5eeec1b",
+    "candidate_visible_bundle_sha256": "44b9c04d890559d59b067ef3db649fd0ea38436e8ae0cb80c3c36b29a080ab5e",
+    "code_commit": "9815003b02aa5868a7582960db97cd1138e5709e",
+    "definition_commit": "9815003b02aa5868a7582960db97cd1138e5709e",
+    "evaluator_id": "hp1a-independent-exact-atomic-v0",
+    "evaluator_version_sha256": "be0170242750f463bdcec2aa2269f1d2f00ad139fa81f4c1d736ab071df45f1b",
+    "family_id": "traceability-extraction-v0",
+    "family_slot": 7,
+    "generation_attempt": 1,
+    "generation_seed": 13490595397233330563,
+    "generation_valid": true,
+    "generator_config": {
+      "count": 4
+    },
+    "generator_id": "traceability-extraction-v0",
+    "generator_version_sha256": "d4c989331ec4e7397907f3c5739dae924187a5a3a83e2a1a886ff0839ef43b92",
+    "hidden_oracle_hash": "432ad520fb04005d17d19fc4a084a5ebf4f1bc72c2604c13721b122a2be9b825",
+    "instance_id": "traceability-extraction-v0-3430bafdee2b0669",
+    "leakage_audit": {
+      "findings": [],
+      "passed": true
+    },
+    "oracle_deterministic": true,
+    "public_input_hash": "3430bafdee2b0669bcd458245d1c7996163ec8c3c5bd368d33ac1cd85088aaea",
+    "public_input_sufficient": true,
+    "same_seed_reproducible": true,
+    "schema_version": 1,
+    "split": "blind"
+  },
+  "public_input": {
+    "documents": [
+      {
+        "id": "DOC-1",
+        "markdown": "# DOC-1\n\nGenerated topic token: T1922.\n\nReferences: DOC-4\n"
+      },
+      {
+        "id": "DOC-2",
+        "markdown": "# DOC-2\n\nGenerated topic token: T7211.\n\nReferences: DOC-1\n"
+      },
+      {
+        "id": "DOC-3",
+        "markdown": "# DOC-3\n\nGenerated topic token: T1897.\n\nReferences: DOC-2\n"
+      },
+      {
+        "id": "DOC-4",
+        "markdown": "# DOC-4\n\nGenerated topic token: T1164.\n\nReferences: DOC-2, DOC-3\n"
+      }
+    ],
+    "request": {
+      "operation": "extract_direct_references",
+      "target_document_id": "DOC-1"
+    }
+  }
+}
