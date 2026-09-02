@@ -23,7 +23,7 @@
     "shared_adapter_evaluator": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/scripts/common.py", "sha256": "be0170242750f463bdcec2aa2269f1d2f00ad139fa81f4c1d736ab071df45f1b", "bytes": 39541},
     "split_generator": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/scripts/generate_split.py", "sha256": "5dd7c192d7d29d1fa94f26b116a56ab7938156e0b792eebe050c2f4b8cea1a4d", "bytes": 1366},
     "schema_preflight": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/scripts/schema_preflight.py", "sha256": "49b24f3e1007411891afe57ceb5b17d8d5f47cae12d8819b1ae6d7a0a10b303d", "bytes": 5466},
-    "design_runner": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/scripts/run_design.py", "sha256": "e6fd93b41da136995c924eb0bce30920adee0340f039d98050c93c343de4ee97", "bytes": 23450},
+    "design_runner": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/scripts/run_design.py", "sha256": "ef25978dda581f791c8a99e41be9624a8e74dd750ce224523d93301ba69aede4", "bytes": 23504},
     "blind_preparer": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/scripts/prepare_blind.py", "sha256": "19e20373d5b9337d3cbb6037de2af649be7b79ed9c0fb77d69caa427e847923f", "bytes": 8192},
     "blind_runner": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/scripts/run_blind.py", "sha256": "9262a987025bc39391b9ef3bc8f0b4916c572df754c043fe0c909958964c15fc", "bytes": 15932},
     "experiment_validator": {"path": "experiments/exp-2026-09-01-luna-structured-program-specialization/scripts/validate_experiment.py", "sha256": "4da49205c96f460b64712d5e96ef4db0bc4568ee87fcadd1f3a6c98540a733eb", "bytes": 7242},

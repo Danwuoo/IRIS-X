@@ -248,8 +248,9 @@ def main() -> int:
     parser.add_argument("--code-commit", required=True)
     parser.add_argument("--schema-admission-record", type=Path, required=True)
     args = parser.parse_args()
+    schema_admission_record = args.schema_admission_record.resolve()
     admission = require_schema_admission(
-        args.schema_admission_record, args.run_id, args.definition_commit, args.code_commit
+        schema_admission_record, args.run_id, args.definition_commit, args.code_commit
     )
     authorization_path = (
         EXPERIMENT / "definition" / "run-authorizations" / f"{args.run_id}.json"
@@ -282,8 +283,8 @@ def main() -> int:
             "billing_mode": "chatgpt-subscription",
             "api_key_fallback": "prohibited",
             "provider_cost_usd": "Unknown",
-            "schema_admission_record": args.schema_admission_record.relative_to(EXPERIMENT).as_posix(),
-            "schema_admission_record_sha256": sha_file(args.schema_admission_record),
+            "schema_admission_record": schema_admission_record.relative_to(EXPERIMENT).as_posix(),
+            "schema_admission_record_sha256": sha_file(schema_admission_record),
             "schema_preflight_status": admission["status"],
             "resource_authorization": authorization_path.relative_to(EXPERIMENT).as_posix(),
             "resource_authorization_sha256": sha_file(authorization_path),
