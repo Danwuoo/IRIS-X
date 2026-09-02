@@ -1,0 +1,680 @@
+{
+  "batch_id": "validation-complete-pool",
+  "frozen_at_utc": "2026-09-02T11:30:45.259221+00:00",
+  "invocation_count": 112,
+  "records": [
+    {
+      "invocation_id": "validation-seed-001-traceability-extraction-v0-39ec88a879df92e3",
+      "output_sha256": "cc13120f2448cf23c574cc19673585446ab038019a424cf522ba52aa3cc9e76f",
+      "raw_event_stream_sha256": "45c87faf25b6b60498970b9a082ea342d84b45365a0774028c70159cc066dc18",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-002-traceability-extraction-v0-2f7f9b24ebdfeb80",
+      "output_sha256": "fccf7dc7930ae28ee2d12d806468bd556aea9fe1a077097979638630b7769222",
+      "raw_event_stream_sha256": "9dc83dc608b9391f610d29e2e3e3b70d81494a0839596c51bf8afa78b18fcf36",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-003-traceability-extraction-v0-f01ea9130388200d",
+      "output_sha256": "edeb2fd35c812cd698cc0e1d03222ffdf7a121f50d840269d402f5a9e19cc6c1",
+      "raw_event_stream_sha256": "f0f337e79d7100b7351a981b3daa2d278bbc46040f162f7fc9b04691cfb117f8",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-004-traceability-extraction-v0-4e3979f781990c4b",
+      "output_sha256": "c9addd448e02feed3aa43d45f9cccd06d6d31b24c725422cbc379aee8984ea54",
+      "raw_event_stream_sha256": "806a276274d3e55f12b978f287f7b69f20fa79cfc3ec22ee061c3d7268f691c9",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-005-terminology-consistency-v0-8b19720f13b5bc81",
+      "output_sha256": "b073f6f91803b3551b5fd62a7f4841eb1ccbf4be54bb55ea410daabf8d04c928",
+      "raw_event_stream_sha256": "48d566c2f2feaf14c3a7ced8aa6a0b2bdb362cdb72a22b672b67f92c3d2ff34d",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-006-terminology-consistency-v0-865f55793fdeaa22",
+      "output_sha256": "ae8eacc70d85384b2815f75a79df5474ef55e1ba8c476448bc6feb4bbb2f7bc4",
+      "raw_event_stream_sha256": "0b2b9a0debefb441ae2a52eb10da672ef02dd35e9604c8d3fdfe1d6dfdf16bfa",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-007-terminology-consistency-v0-c4ed589ea8d66ca6",
+      "output_sha256": "cb47be96132ef43dfcc1d93f894eb06361c381f6fbe3d1bf80d91e8cfda3b55b",
+      "raw_event_stream_sha256": "dda02ab7d3cc43dd6190d418b7fc5d15821a8691949a726aa74a581e96d36517",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-008-terminology-consistency-v0-94683370a736ac1f",
+      "output_sha256": "72a61e47bf9949320364f78b99e96d8a34dae01951e8c022e2c0ea939f6237c3",
+      "raw_event_stream_sha256": "c758b4026163e17709d44e6009545c4ad7d7f41e581b5baa9e11086e960aa98d",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-009-path-action-guard-v0-f549e301e642b37c",
+      "output_sha256": "93dd039460bbb09623156b68ce2cc0726191ac1f4977b85aee8d2c989bfbb123",
+      "raw_event_stream_sha256": "46e4578638f026ec4717fe2c9aa1ed38b3762182d50d910ccee2f416a4abdec0",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-010-path-action-guard-v0-99156ff1a2b25cd9",
+      "output_sha256": "78f21c8603d0ebd8f7ba604d2bf0fc51e941ad1c9c8acac711b105a2a166756a",
+      "raw_event_stream_sha256": "439c9c9f60048fd95726ecd8eb9a1fbc0cff63173e25d9aa04b6a4117c36704e",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-011-path-action-guard-v0-bcf0348257426955",
+      "output_sha256": "f455e14687ee2cb96c6c497592235ec70ed832836b39c54f15240e497a544c50",
+      "raw_event_stream_sha256": "3d24585c6feec8a3ca0a0d0abab0dc18dbc4498ddfb3318506509dd9a6a268b9",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-012-path-action-guard-v0-0b5c10bcdafa4c61",
+      "output_sha256": "6904789ef32e74f87aa1c39f8fe7162062d286572483a5a13818ab7abcd5ffeb",
+      "raw_event_stream_sha256": "73871bce4cdfbf6c2b9b44ed4d6d353726e7ecc47e942881a8dbd8ad287a4a29",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-013-structured-simulation-v0-470170b341c2bc34",
+      "output_sha256": "db53b72b0f5b9e9d33a723d3ccbcf4d049a66e5422745e83393318fe2532d8ce",
+      "raw_event_stream_sha256": "6e9f25af36be4b24703fa83b22545bc959889e337a3fb426e10c7e9de96af2d5",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-014-structured-simulation-v0-1161a7880b6fad2d",
+      "output_sha256": "d2d3b6eac7751e1f3d4867959c50bae94446214329c0e496397de60192ff6a15",
+      "raw_event_stream_sha256": "cba7b9a01440e284c159bc0dab600cbcce33fb44282d8ab52a5d180e8949eb50",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-015-structured-simulation-v0-a08ad82da547408a",
+      "output_sha256": "ea306934893beb6a83a565c32cad1e2f7868ba012cbd914426cd22a4ef57a4bb",
+      "raw_event_stream_sha256": "bc89f28f15244886bc4786deaa6e3ac88ddc4e83bf93792ab09830ce2aeb7f66",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-seed-016-structured-simulation-v0-2abace1a294d8dc7",
+      "output_sha256": "637fbfc919723c02b8c72eea40159ad5c7f3f7a1cef2627a1a4be87c9ad2f02d",
+      "raw_event_stream_sha256": "0b42a6b908e31366a47ebe13500718efc836698f452d82474122534fb4ce2b7c",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-001-traceability-extraction-v0-39ec88a879df92e3",
+      "output_sha256": "cc13120f2448cf23c574cc19673585446ab038019a424cf522ba52aa3cc9e76f",
+      "raw_event_stream_sha256": "7d6f8d058f0b4f76f69dee770bc73f004a84ef77cf476c77d0447f1536d17cdb",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-002-traceability-extraction-v0-2f7f9b24ebdfeb80",
+      "output_sha256": "fccf7dc7930ae28ee2d12d806468bd556aea9fe1a077097979638630b7769222",
+      "raw_event_stream_sha256": "e85034f6781aa69c117564ed41363be4ee3d36c509c39d06b14107b3ce746614",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-003-traceability-extraction-v0-f01ea9130388200d",
+      "output_sha256": "edeb2fd35c812cd698cc0e1d03222ffdf7a121f50d840269d402f5a9e19cc6c1",
+      "raw_event_stream_sha256": "ba21dbe6f6466bfddad543d410b13e4ba5ab7dfc52ffacbadcc2e4f7623370cc",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-004-traceability-extraction-v0-4e3979f781990c4b",
+      "output_sha256": "c9addd448e02feed3aa43d45f9cccd06d6d31b24c725422cbc379aee8984ea54",
+      "raw_event_stream_sha256": "8219f5f677acdffaa49350c240467aceaa8f525d69a1cfc013a7932f5c478e2d",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-005-terminology-consistency-v0-8b19720f13b5bc81",
+      "output_sha256": "b073f6f91803b3551b5fd62a7f4841eb1ccbf4be54bb55ea410daabf8d04c928",
+      "raw_event_stream_sha256": "83d32a6aa739ebd71019122e523ec0250703e76f3e026f7d9cea6009c5ba09e0",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-006-terminology-consistency-v0-865f55793fdeaa22",
+      "output_sha256": "ae8eacc70d85384b2815f75a79df5474ef55e1ba8c476448bc6feb4bbb2f7bc4",
+      "raw_event_stream_sha256": "1ce78da5e42f125dde321353db1d77a006f5775f40f1239f9fc6fb11207de747",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-007-terminology-consistency-v0-c4ed589ea8d66ca6",
+      "output_sha256": "cb47be96132ef43dfcc1d93f894eb06361c381f6fbe3d1bf80d91e8cfda3b55b",
+      "raw_event_stream_sha256": "7b015fd69732d660ca08411cb32cfd7589bbaa2e73aeda3e5b350c74fbd7f6e1",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-008-terminology-consistency-v0-94683370a736ac1f",
+      "output_sha256": "72a61e47bf9949320364f78b99e96d8a34dae01951e8c022e2c0ea939f6237c3",
+      "raw_event_stream_sha256": "45f29ece7adab5bd1f47a2f38331f6dd446b95c09dcd145fca438d5561dd15d8",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-009-path-action-guard-v0-f549e301e642b37c",
+      "output_sha256": "adeec7f0230dea9a4ca6a62c485ba910ff3174c7640acd7e67813e1fa28986d1",
+      "raw_event_stream_sha256": "d0a3d87b7dcecf7dd619c1c648bc90a60d61bcdedf3e7e1d7f86723fc0b3a7a8",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-010-path-action-guard-v0-99156ff1a2b25cd9",
+      "output_sha256": "bd5a5f2fe6b57e834facb540adcd7ef072641424c7d712083fd78253f2b77024",
+      "raw_event_stream_sha256": "a2a5d98426184aa96efd77f290e22a2b7cf4d733294129c968377ed704642b84",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-011-path-action-guard-v0-bcf0348257426955",
+      "output_sha256": "98d961e60a60bc7b02cf8a5cf7c003fd8e617003833a86d68ebeec6aecfe2baf",
+      "raw_event_stream_sha256": "c72fabcb08771fc67fb5d9f5c1c427e91e3340fba300f4ef0c4c4476453ec645",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-012-path-action-guard-v0-0b5c10bcdafa4c61",
+      "output_sha256": "1ca44bfb72c415bf0947a09673d07b12d5294b4358680678b24eec25e3fd7290",
+      "raw_event_stream_sha256": "506fae237d7e028c69cf689efe46a6cb87aefa5a98ad5de9372a8631c6b8eeda",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-013-structured-simulation-v0-470170b341c2bc34",
+      "output_sha256": "a0aa75df6343d9e12eb9cf6b6088a77cd78432d8239102ddb52899d85f56cd2d",
+      "raw_event_stream_sha256": "360405830ea19dd31d818bbc19397d68dfa03d1059d79e9b1a628ebe795727d3",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-014-structured-simulation-v0-1161a7880b6fad2d",
+      "output_sha256": "fe329ef3f0a615125aa62efad908c7465bea896dbee2c547c20639b6ab158806",
+      "raw_event_stream_sha256": "db299d2a5f1f813d25144f6633a22639e56beaffbc5426ee08b33c22cfbb6352",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-015-structured-simulation-v0-a08ad82da547408a",
+      "output_sha256": "b1a1a4246b8f37e57d2ea7c062e09423e5a6c41f1778d804aadad71b68ffa35e",
+      "raw_event_stream_sha256": "ba666ff9e55b2923430c167098d0f6f6e6c6c03d0d5f8702fe0ef26269158e58",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r03-016-structured-simulation-v0-2abace1a294d8dc7",
+      "output_sha256": "239b10bb7e87abb7f3265f38c73b871d3108e491013f3f730b4ae75b74da515a",
+      "raw_event_stream_sha256": "e709835bccfe019b803a4730db162c5f94a2c8cb7debb465b4ccd9bad641f116",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-001-traceability-extraction-v0-39ec88a879df92e3",
+      "output_sha256": "cc13120f2448cf23c574cc19673585446ab038019a424cf522ba52aa3cc9e76f",
+      "raw_event_stream_sha256": "bbb781397a35096a5a30142de916008c0bea4546a2b1b1c8f28bd3fa78d1c3b1",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-002-traceability-extraction-v0-2f7f9b24ebdfeb80",
+      "output_sha256": "fccf7dc7930ae28ee2d12d806468bd556aea9fe1a077097979638630b7769222",
+      "raw_event_stream_sha256": "c1e5d62ed6f1433d0861319186fe6e4c34005374bb6af7872bfc3732bb3a823d",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-003-traceability-extraction-v0-f01ea9130388200d",
+      "output_sha256": "edeb2fd35c812cd698cc0e1d03222ffdf7a121f50d840269d402f5a9e19cc6c1",
+      "raw_event_stream_sha256": "48399102c73e373dbea2bbe5f7242212909703e0205ba34b7b546d35f3616ab5",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-004-traceability-extraction-v0-4e3979f781990c4b",
+      "output_sha256": "c9addd448e02feed3aa43d45f9cccd06d6d31b24c725422cbc379aee8984ea54",
+      "raw_event_stream_sha256": "80f36105455ecc31182966712c17394f807a492b6fef69aa66ebe1ad46280b12",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-005-terminology-consistency-v0-8b19720f13b5bc81",
+      "output_sha256": "b073f6f91803b3551b5fd62a7f4841eb1ccbf4be54bb55ea410daabf8d04c928",
+      "raw_event_stream_sha256": "301c498b3fa7b0096fe4907b34ac760b4b69440fa7a66daae94cacd821cad45b",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-006-terminology-consistency-v0-865f55793fdeaa22",
+      "output_sha256": "ae8eacc70d85384b2815f75a79df5474ef55e1ba8c476448bc6feb4bbb2f7bc4",
+      "raw_event_stream_sha256": "87ad8129550f3514f0062dc27befec04f083a1f98c1b8c616e167b793f64a1d8",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-007-terminology-consistency-v0-c4ed589ea8d66ca6",
+      "output_sha256": "cb47be96132ef43dfcc1d93f894eb06361c381f6fbe3d1bf80d91e8cfda3b55b",
+      "raw_event_stream_sha256": "8a9d4218043c2c066098808ec46b8f8ccbdfa9f134dd69ecda4b6f96ac896c91",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-008-terminology-consistency-v0-94683370a736ac1f",
+      "output_sha256": "72a61e47bf9949320364f78b99e96d8a34dae01951e8c022e2c0ea939f6237c3",
+      "raw_event_stream_sha256": "23ba3b42376c2fcf72d4609d461b300ca23647c68875796882fa37f7c282e185",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-009-path-action-guard-v0-f549e301e642b37c",
+      "output_sha256": "93dd039460bbb09623156b68ce2cc0726191ac1f4977b85aee8d2c989bfbb123",
+      "raw_event_stream_sha256": "dd44bf3c1244bd34200609aa058cd59c16542c8ef14d8ad29afcfe91bf701a69",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-010-path-action-guard-v0-99156ff1a2b25cd9",
+      "output_sha256": "3d47b85fadea7d3150190c3679103b530e575342d727c17c9afd1d4bf35876fb",
+      "raw_event_stream_sha256": "a9056a428b74b6661b612954b9a21ed3c14460ad8fa8df33ed7eeb41ca79e4f1",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-011-path-action-guard-v0-bcf0348257426955",
+      "output_sha256": "f455e14687ee2cb96c6c497592235ec70ed832836b39c54f15240e497a544c50",
+      "raw_event_stream_sha256": "f53c1b650a59d89e4f8ab05931a38101a995a59cff90597bb2230d0beb9858ec",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-012-path-action-guard-v0-0b5c10bcdafa4c61",
+      "output_sha256": "1ca44bfb72c415bf0947a09673d07b12d5294b4358680678b24eec25e3fd7290",
+      "raw_event_stream_sha256": "f3ff339b32fdebd6e09517bbe6d0a6dd5a0016d2df4933ad5077590521198458",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-013-structured-simulation-v0-470170b341c2bc34",
+      "output_sha256": "a0aa75df6343d9e12eb9cf6b6088a77cd78432d8239102ddb52899d85f56cd2d",
+      "raw_event_stream_sha256": "a36781821a5bc4afe8554dda315e70cea318212cddd18f59fcef99742f71acea",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-014-structured-simulation-v0-1161a7880b6fad2d",
+      "output_sha256": "fe329ef3f0a615125aa62efad908c7465bea896dbee2c547c20639b6ab158806",
+      "raw_event_stream_sha256": "391f70e2ae7dcca473ed713fa89a35b15304302e544733d06491cae191b8f169",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-015-structured-simulation-v0-a08ad82da547408a",
+      "output_sha256": "b1a1a4246b8f37e57d2ea7c062e09423e5a6c41f1778d804aadad71b68ffa35e",
+      "raw_event_stream_sha256": "697307f5273eee6ea4983b33db54198fff0ed886ce606ebff2ee4fef8be15b0f",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r03-016-structured-simulation-v0-2abace1a294d8dc7",
+      "output_sha256": "239b10bb7e87abb7f3265f38c73b871d3108e491013f3f730b4ae75b74da515a",
+      "raw_event_stream_sha256": "6cd9be263bdc8e394616e1317a3aabb46fc9bf981e01aa714b8bcd8e8073fc6f",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-001-traceability-extraction-v0-39ec88a879df92e3",
+      "output_sha256": "cc13120f2448cf23c574cc19673585446ab038019a424cf522ba52aa3cc9e76f",
+      "raw_event_stream_sha256": "00389e28abfa809861af0ec8f06506fe2ab32d2403f10d824115f8541089f24e",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-002-traceability-extraction-v0-2f7f9b24ebdfeb80",
+      "output_sha256": "fccf7dc7930ae28ee2d12d806468bd556aea9fe1a077097979638630b7769222",
+      "raw_event_stream_sha256": "63a59d0bdf50118f5abf744a685dc296444f1931db4335ae1b6a468994868ccf",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-003-traceability-extraction-v0-f01ea9130388200d",
+      "output_sha256": "edeb2fd35c812cd698cc0e1d03222ffdf7a121f50d840269d402f5a9e19cc6c1",
+      "raw_event_stream_sha256": "49642d53a63e3007cd0db400c64e569e47b9a66761059f521a5bc20bf2ba0df0",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-004-traceability-extraction-v0-4e3979f781990c4b",
+      "output_sha256": "c9addd448e02feed3aa43d45f9cccd06d6d31b24c725422cbc379aee8984ea54",
+      "raw_event_stream_sha256": "bf6a7d29f4b9101ff6461ec17fde02d8241db11a91ef452301b9a262cb1f42a6",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-005-terminology-consistency-v0-8b19720f13b5bc81",
+      "output_sha256": "b073f6f91803b3551b5fd62a7f4841eb1ccbf4be54bb55ea410daabf8d04c928",
+      "raw_event_stream_sha256": "9b9bb488d09876c4bacbf55d218e8cc7321ed58502e01d188b85903c137a0ac4",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-006-terminology-consistency-v0-865f55793fdeaa22",
+      "output_sha256": "ae8eacc70d85384b2815f75a79df5474ef55e1ba8c476448bc6feb4bbb2f7bc4",
+      "raw_event_stream_sha256": "419167ae279468f0c926cbc55d58cdf3afb8f764191db84f50b3266bce353e02",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-007-terminology-consistency-v0-c4ed589ea8d66ca6",
+      "output_sha256": "cb47be96132ef43dfcc1d93f894eb06361c381f6fbe3d1bf80d91e8cfda3b55b",
+      "raw_event_stream_sha256": "657c061bbc9b015437f597a40a065852feca2908c351e07fcbe1c3adc723c90d",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-008-terminology-consistency-v0-94683370a736ac1f",
+      "output_sha256": "72a61e47bf9949320364f78b99e96d8a34dae01951e8c022e2c0ea939f6237c3",
+      "raw_event_stream_sha256": "c6c738ba0a4fa77c07e6f5f21dcfcc2ef1ee705391c2b87a06a709f517526856",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-009-path-action-guard-v0-f549e301e642b37c",
+      "output_sha256": "93dd039460bbb09623156b68ce2cc0726191ac1f4977b85aee8d2c989bfbb123",
+      "raw_event_stream_sha256": "a11865c89b873389820303b95a7167fd78506823b22fd56df507f74b23a95913",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-010-path-action-guard-v0-99156ff1a2b25cd9",
+      "output_sha256": "3d47b85fadea7d3150190c3679103b530e575342d727c17c9afd1d4bf35876fb",
+      "raw_event_stream_sha256": "b198342bd8230c8b5274e766407c38a2497acd597f75d1e7e79a96bf50c90203",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-011-path-action-guard-v0-bcf0348257426955",
+      "output_sha256": "f455e14687ee2cb96c6c497592235ec70ed832836b39c54f15240e497a544c50",
+      "raw_event_stream_sha256": "024f93acad51a0bb5e21f585f80558fb4be23293a72c2a26e547adc9b7611fa6",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-012-path-action-guard-v0-0b5c10bcdafa4c61",
+      "output_sha256": "1ca44bfb72c415bf0947a09673d07b12d5294b4358680678b24eec25e3fd7290",
+      "raw_event_stream_sha256": "457697064065761f795572d5931618049b4fa1c08a9be4ca8c74cc9b9b65f18f",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-013-structured-simulation-v0-470170b341c2bc34",
+      "output_sha256": "a0aa75df6343d9e12eb9cf6b6088a77cd78432d8239102ddb52899d85f56cd2d",
+      "raw_event_stream_sha256": "94a3c49e7947f29b8a16a6a275958e834be0b38803feb10c632fea19d7ac6d36",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-014-structured-simulation-v0-1161a7880b6fad2d",
+      "output_sha256": "fe329ef3f0a615125aa62efad908c7465bea896dbee2c547c20639b6ab158806",
+      "raw_event_stream_sha256": "d844535df5974c6ad4ebce8824ca8cdfdaca30d1cce6dff1f64ede3a339f17d3",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-015-structured-simulation-v0-a08ad82da547408a",
+      "output_sha256": "b1a1a4246b8f37e57d2ea7c062e09423e5a6c41f1778d804aadad71b68ffa35e",
+      "raw_event_stream_sha256": "178e663ecdca54966398ac697201c85164211fd5c5b41f8be3a108d48af82cb1",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r02-016-structured-simulation-v0-2abace1a294d8dc7",
+      "output_sha256": "239b10bb7e87abb7f3265f38c73b871d3108e491013f3f730b4ae75b74da515a",
+      "raw_event_stream_sha256": "872e41b779db1696a04c3cca93038b88dfb3e107b776fef3a37f971b5c164d7d",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-001-traceability-extraction-v0-39ec88a879df92e3",
+      "output_sha256": "cc13120f2448cf23c574cc19673585446ab038019a424cf522ba52aa3cc9e76f",
+      "raw_event_stream_sha256": "b4fc8587c2defb635b50dda63cf0a93180adc5e6b74763db5022ca638e7ac53a",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-002-traceability-extraction-v0-2f7f9b24ebdfeb80",
+      "output_sha256": "fccf7dc7930ae28ee2d12d806468bd556aea9fe1a077097979638630b7769222",
+      "raw_event_stream_sha256": "86bc6618b3e1e735bb69a61efd84376a3c30c8a3347659055bf65f808bd31f4d",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-003-traceability-extraction-v0-f01ea9130388200d",
+      "output_sha256": "edeb2fd35c812cd698cc0e1d03222ffdf7a121f50d840269d402f5a9e19cc6c1",
+      "raw_event_stream_sha256": "9c6b25d59ee0b6372dfe6fdcdc7a3a2218bea26116bc483d175c922437e3a42f",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-004-traceability-extraction-v0-4e3979f781990c4b",
+      "output_sha256": "c9addd448e02feed3aa43d45f9cccd06d6d31b24c725422cbc379aee8984ea54",
+      "raw_event_stream_sha256": "a19bc270ab23961336aa42235a3aa37d614bba079187f6fc68a2fbe276b734e0",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-005-terminology-consistency-v0-8b19720f13b5bc81",
+      "output_sha256": "b073f6f91803b3551b5fd62a7f4841eb1ccbf4be54bb55ea410daabf8d04c928",
+      "raw_event_stream_sha256": "17d6642086d3303edadd5602d4f3093433c88f70f025d0b803ef4cb2caf56466",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-006-terminology-consistency-v0-865f55793fdeaa22",
+      "output_sha256": "ae8eacc70d85384b2815f75a79df5474ef55e1ba8c476448bc6feb4bbb2f7bc4",
+      "raw_event_stream_sha256": "874124d2d4a4546e19ae1976ad956595e0cc719477469d7e89f36ccd149c1c6e",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-007-terminology-consistency-v0-c4ed589ea8d66ca6",
+      "output_sha256": "cb47be96132ef43dfcc1d93f894eb06361c381f6fbe3d1bf80d91e8cfda3b55b",
+      "raw_event_stream_sha256": "80cc1fb821c80a4b03fd43a2aecb2eb7330bc98d0bc10d356a137ce544eb0799",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-008-terminology-consistency-v0-94683370a736ac1f",
+      "output_sha256": "72a61e47bf9949320364f78b99e96d8a34dae01951e8c022e2c0ea939f6237c3",
+      "raw_event_stream_sha256": "bdef9c8455b223701ca63a983f943eaa063e195d98ceed694fa48b8e54c267c3",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-009-path-action-guard-v0-f549e301e642b37c",
+      "output_sha256": "93dd039460bbb09623156b68ce2cc0726191ac1f4977b85aee8d2c989bfbb123",
+      "raw_event_stream_sha256": "9c903caf1af08f69e85d45b771f9c764fdd5ec0673558309f3825e924c94530f",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-010-path-action-guard-v0-99156ff1a2b25cd9",
+      "output_sha256": "3d47b85fadea7d3150190c3679103b530e575342d727c17c9afd1d4bf35876fb",
+      "raw_event_stream_sha256": "4ad875ba6331d606be5fbd77dee850e9052c7f6c6bf3c89aff7220308eaf0682",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-011-path-action-guard-v0-bcf0348257426955",
+      "output_sha256": "f455e14687ee2cb96c6c497592235ec70ed832836b39c54f15240e497a544c50",
+      "raw_event_stream_sha256": "495296b578f1a7003eb62555e5083601586ff3c26e58dec217ab76f4a9258077",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-012-path-action-guard-v0-0b5c10bcdafa4c61",
+      "output_sha256": "1ca44bfb72c415bf0947a09673d07b12d5294b4358680678b24eec25e3fd7290",
+      "raw_event_stream_sha256": "dad8e62f3b310f1df32ee95fc5c3bf91363470aa3df2ffe9bef1b6b033b5bc36",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-013-structured-simulation-v0-470170b341c2bc34",
+      "output_sha256": "a0aa75df6343d9e12eb9cf6b6088a77cd78432d8239102ddb52899d85f56cd2d",
+      "raw_event_stream_sha256": "0c79164250b9f061157d5744642d2cfce2ebbb5619fca9658227af6719c87122",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-014-structured-simulation-v0-1161a7880b6fad2d",
+      "output_sha256": "fe329ef3f0a615125aa62efad908c7465bea896dbee2c547c20639b6ab158806",
+      "raw_event_stream_sha256": "c4babb552a69d88519afa31a9c8c9354458763a17f1ef6b525e760036e217922",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-015-structured-simulation-v0-a08ad82da547408a",
+      "output_sha256": "b1a1a4246b8f37e57d2ea7c062e09423e5a6c41f1778d804aadad71b68ffa35e",
+      "raw_event_stream_sha256": "22c0e4eecf486f2df8abcf6817fee40f2095b66cefbce432c2800f238596eb72",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-02-r01-016-structured-simulation-v0-2abace1a294d8dc7",
+      "output_sha256": "239b10bb7e87abb7f3265f38c73b871d3108e491013f3f730b4ae75b74da515a",
+      "raw_event_stream_sha256": "3482e46d1efd9b382eead9575391a5b7bac4237520e6122cdc811bc5190f553d",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-001-traceability-extraction-v0-39ec88a879df92e3",
+      "output_sha256": "cc13120f2448cf23c574cc19673585446ab038019a424cf522ba52aa3cc9e76f",
+      "raw_event_stream_sha256": "98352256a0b1c077cba07b9067764d65206e57f67adb849853d0605ea2609df2",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-002-traceability-extraction-v0-2f7f9b24ebdfeb80",
+      "output_sha256": "fccf7dc7930ae28ee2d12d806468bd556aea9fe1a077097979638630b7769222",
+      "raw_event_stream_sha256": "c854eee59de17158f2b317db0c093f9bdafb7292d13417dca449088c09f88711",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-003-traceability-extraction-v0-f01ea9130388200d",
+      "output_sha256": "edeb2fd35c812cd698cc0e1d03222ffdf7a121f50d840269d402f5a9e19cc6c1",
+      "raw_event_stream_sha256": "3252d873d24af98e3f8e04f47cff34bfe701d4270e461325fe55dc3e8739538c",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-004-traceability-extraction-v0-4e3979f781990c4b",
+      "output_sha256": "c9addd448e02feed3aa43d45f9cccd06d6d31b24c725422cbc379aee8984ea54",
+      "raw_event_stream_sha256": "c8f73b0ec23122e035373156245b32e07f0bce3be745edc0a3590ad6e53cbf06",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-005-terminology-consistency-v0-8b19720f13b5bc81",
+      "output_sha256": "b073f6f91803b3551b5fd62a7f4841eb1ccbf4be54bb55ea410daabf8d04c928",
+      "raw_event_stream_sha256": "ca12aa804b87b1db5440d98d02b0765a7c79bb3ad09c99700cbb81c8bbc4ce06",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-006-terminology-consistency-v0-865f55793fdeaa22",
+      "output_sha256": "ae8eacc70d85384b2815f75a79df5474ef55e1ba8c476448bc6feb4bbb2f7bc4",
+      "raw_event_stream_sha256": "ce8629ee520009931eb127e0a68d126741e3608826714df6dbe920c4c48d6dcf",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-007-terminology-consistency-v0-c4ed589ea8d66ca6",
+      "output_sha256": "cb47be96132ef43dfcc1d93f894eb06361c381f6fbe3d1bf80d91e8cfda3b55b",
+      "raw_event_stream_sha256": "fb84202e49e0092dc6e2b56f7fcc64f1e1cc92a3533780bcb5cb0337c70d90b1",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-008-terminology-consistency-v0-94683370a736ac1f",
+      "output_sha256": "72a61e47bf9949320364f78b99e96d8a34dae01951e8c022e2c0ea939f6237c3",
+      "raw_event_stream_sha256": "5a5b10fd6cfe85708293890a6387852ac9a38f06010ac69d610eeb928a17e72c",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-009-path-action-guard-v0-f549e301e642b37c",
+      "output_sha256": "93dd039460bbb09623156b68ce2cc0726191ac1f4977b85aee8d2c989bfbb123",
+      "raw_event_stream_sha256": "a5bad685cfea0c7c758d7c799de062a24811edd2c6788be0f5127679cf3f9634",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-010-path-action-guard-v0-99156ff1a2b25cd9",
+      "output_sha256": "3d47b85fadea7d3150190c3679103b530e575342d727c17c9afd1d4bf35876fb",
+      "raw_event_stream_sha256": "b3c41a1d6013dd314687b6b029d2ccef2182eba637714daa8aa8c9b37ce30d04",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-011-path-action-guard-v0-bcf0348257426955",
+      "output_sha256": "f455e14687ee2cb96c6c497592235ec70ed832836b39c54f15240e497a544c50",
+      "raw_event_stream_sha256": "3874869117b20eb4be5b4d535e322547a0fc5c82844290abd82c5a4460b8a311",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-012-path-action-guard-v0-0b5c10bcdafa4c61",
+      "output_sha256": "1ca44bfb72c415bf0947a09673d07b12d5294b4358680678b24eec25e3fd7290",
+      "raw_event_stream_sha256": "2a0a2a970140cb03f47b6bb99e8cef29276d8a313a3d942b6c733fe69595f0f2",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-013-structured-simulation-v0-470170b341c2bc34",
+      "output_sha256": "a0aa75df6343d9e12eb9cf6b6088a77cd78432d8239102ddb52899d85f56cd2d",
+      "raw_event_stream_sha256": "f09a1304ffbfc56174246d31891d1f4142489a807b6dc9193e7832e0fa47a680",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-014-structured-simulation-v0-1161a7880b6fad2d",
+      "output_sha256": "fe329ef3f0a615125aa62efad908c7465bea896dbee2c547c20639b6ab158806",
+      "raw_event_stream_sha256": "25d84247f22ccd659aa9fb9931104f70c0c06c7eb1b3c99fcd0680d6c920a103",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-015-structured-simulation-v0-a08ad82da547408a",
+      "output_sha256": "b1a1a4246b8f37e57d2ea7c062e09423e5a6c41f1778d804aadad71b68ffa35e",
+      "raw_event_stream_sha256": "3124206c875feff0e289829a7896510234672f4e8ef66d68562b3957b7560318",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r02-016-structured-simulation-v0-2abace1a294d8dc7",
+      "output_sha256": "239b10bb7e87abb7f3265f38c73b871d3108e491013f3f730b4ae75b74da515a",
+      "raw_event_stream_sha256": "d8fc5cb09141dec8efd79a519ec48e7359e26a05748214636ca4e24e0aeb0e74",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-001-traceability-extraction-v0-39ec88a879df92e3",
+      "output_sha256": "cc13120f2448cf23c574cc19673585446ab038019a424cf522ba52aa3cc9e76f",
+      "raw_event_stream_sha256": "72e4da843e854f8cfbf4a1c360b3f13bc29027efc43a2a05eac133307022ab3a",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-002-traceability-extraction-v0-2f7f9b24ebdfeb80",
+      "output_sha256": "fccf7dc7930ae28ee2d12d806468bd556aea9fe1a077097979638630b7769222",
+      "raw_event_stream_sha256": "b2d7587cea21452eb9cc869ee2269363636054329d6010eb7712199c59bdc363",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-003-traceability-extraction-v0-f01ea9130388200d",
+      "output_sha256": "edeb2fd35c812cd698cc0e1d03222ffdf7a121f50d840269d402f5a9e19cc6c1",
+      "raw_event_stream_sha256": "23baf1777b0475bb71b9deb29e4bdca714348f353d8d39c8bd8e8482c19a7249",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-004-traceability-extraction-v0-4e3979f781990c4b",
+      "output_sha256": "c9addd448e02feed3aa43d45f9cccd06d6d31b24c725422cbc379aee8984ea54",
+      "raw_event_stream_sha256": "69c7f1b34cf54bb3cdedf19a16f164ca20810deb993e511de21df4481b27350c",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-005-terminology-consistency-v0-8b19720f13b5bc81",
+      "output_sha256": "b073f6f91803b3551b5fd62a7f4841eb1ccbf4be54bb55ea410daabf8d04c928",
+      "raw_event_stream_sha256": "2ece72ab26f089d311ac6755b3c37e5bd9c16bab004f13b4b3f74ec127d91741",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-006-terminology-consistency-v0-865f55793fdeaa22",
+      "output_sha256": "ae8eacc70d85384b2815f75a79df5474ef55e1ba8c476448bc6feb4bbb2f7bc4",
+      "raw_event_stream_sha256": "1694aceec630783fff40acc436e5872f02f7251317e0df88ee62db760fa23023",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-007-terminology-consistency-v0-c4ed589ea8d66ca6",
+      "output_sha256": "cb47be96132ef43dfcc1d93f894eb06361c381f6fbe3d1bf80d91e8cfda3b55b",
+      "raw_event_stream_sha256": "6362354f51d4f98e0e20f8a57f2a28308da261ff6c318c9ae14ee8624a1ea9e0",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-008-terminology-consistency-v0-94683370a736ac1f",
+      "output_sha256": "72a61e47bf9949320364f78b99e96d8a34dae01951e8c022e2c0ea939f6237c3",
+      "raw_event_stream_sha256": "252bd496bb1eaea9d330199aee3a431b6bf155572a303afc8b6f51c28d53e89a",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-009-path-action-guard-v0-f549e301e642b37c",
+      "output_sha256": "93dd039460bbb09623156b68ce2cc0726191ac1f4977b85aee8d2c989bfbb123",
+      "raw_event_stream_sha256": "469819f2b8ca9d1f47b6f825f48ab4917bfaf6f7bbd8c475f17d4e17b0087578",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-010-path-action-guard-v0-99156ff1a2b25cd9",
+      "output_sha256": "3d47b85fadea7d3150190c3679103b530e575342d727c17c9afd1d4bf35876fb",
+      "raw_event_stream_sha256": "dd5b0c45a9c78b575fdaaf481adde01ad27f85987ff09646de6ab14efe43dbf1",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-011-path-action-guard-v0-bcf0348257426955",
+      "output_sha256": "d8d51c7dea1960270ac83a29595d91928941275b57bef02d40cbcab72099ded5",
+      "raw_event_stream_sha256": "c5c848d445074795d690cf2bb58104c958251b5b646378c509b0947df8fc6825",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-012-path-action-guard-v0-0b5c10bcdafa4c61",
+      "output_sha256": "0ec1217533126021c59a008e2402ba96520cad42ebcdfcfaa0c021665be4ce76",
+      "raw_event_stream_sha256": "1f3bc22b224f1c61e01ce53f9738987253397b99f69f5338fa73066919f044b9",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-013-structured-simulation-v0-470170b341c2bc34",
+      "output_sha256": "a0aa75df6343d9e12eb9cf6b6088a77cd78432d8239102ddb52899d85f56cd2d",
+      "raw_event_stream_sha256": "76eea306d79f93592337160f8f126c4fb0b205f2930dcee5f8244c9df01a2604",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-014-structured-simulation-v0-1161a7880b6fad2d",
+      "output_sha256": "fe329ef3f0a615125aa62efad908c7465bea896dbee2c547c20639b6ab158806",
+      "raw_event_stream_sha256": "81fc0106e405d813581ed79c300431a166e8ea0b0fde659f39d7329b2b34775b",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-015-structured-simulation-v0-a08ad82da547408a",
+      "output_sha256": "b1a1a4246b8f37e57d2ea7c062e09423e5a6c41f1778d804aadad71b68ffa35e",
+      "raw_event_stream_sha256": "abe991456ef8740b885919f4700abf96fcc6e4249e93f0d6c14ddca030c967dc",
+      "terminal_execution_status": "completed"
+    },
+    {
+      "invocation_id": "validation-opt-01-r01-016-structured-simulation-v0-2abace1a294d8dc7",
+      "output_sha256": "239b10bb7e87abb7f3265f38c73b871d3108e491013f3f730b4ae75b74da515a",
+      "raw_event_stream_sha256": "e8274b16ec742dc126cad0bbe6c7ad5b18d3e48d093ce3e5b7f9ba0939295937",
+      "terminal_execution_status": "completed"
+    }
+  ],
+  "schema_version": 1
+}

@@ -1,0 +1,4 @@
+{"type":"thread.started","thread_id":"01a061bb-0b49-7a91-852b-94fbd912eac9"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"schema_version\":1,\"instance_id\":\"terminology-consistency-v0-97040c5c4dd81fca\",\"family_id\":\"terminology-consistency-v0\",\"answer\":{\"violations\":[{\"document_id\":\"NOTE-2\",\"observed\":\"work-flow\",\"canonical\":\"workflow\"}]}}"}}
+{"type":"turn.completed","usage":{"input_tokens":16039,"cached_input_tokens":0,"cache_write_input_tokens":0,"output_tokens":124,"reasoning_output_tokens":50}}

@@ -1,0 +1,4 @@
+{"type":"thread.started","thread_id":"01a061d7-24a5-7732-9d35-e6bc6fa23eca"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"schema_version\":1,\"instance_id\":\"path-action-guard-v0-0b5c10bcdafa4c61\",\"family_id\":\"path-action-guard-v0\",\"answer\":{\"decisions\":[{\"proposal_id\":\"P1\",\"decision\":\"deny\",\"canonical_path\":\".git/config\",\"reason\":\"protected_or_unallowed_root\"},{\"proposal_id\":\"P2\",\"decision\":\"deny\",\"canonical_path\":null,\"reason\":\"root_escape\"},{\"proposal_id\":\"P3\",\"decision\":\"deny\",\"canonical_path\":\"secrets/token.txt\",\"reason\":\"protected_or_unallowed_root\"},{\"proposal_id\":\"P4\",\"decision\":\"allow\",\"canonical_path\":\"work/item-179.md\",\"reason\":\"policy_allows\"}]}}"}}
+{"type":"turn.completed","usage":{"input_tokens":16073,"cached_input_tokens":13056,"cache_write_input_tokens":0,"output_tokens":230,"reasoning_output_tokens":76}}
