@@ -1,6 +1,6 @@
 # Temporary Post Phase 4 Architecture Synthesis and Minimal Slice Plan
 
-Status: **Active**
+Status: **Retired — execution complete; see Section 12**
 
 Date: **2026-09-04 Asia/Taipei**
 
@@ -159,3 +159,27 @@ After the architecture synthesis, exactly one minimal executable slice, validati
 **STOP.**
 
 Do not continue into broad Phase 5 implementation, productionization, workflow search, routing, cascade, fine-tuning, architecture search, or additional model experiments without a new owner-authorized scope.
+
+## 12. Retirement record
+
+- **Retired on:** 2026-09-04 Asia/Taipei
+- **Actual starting main:** `7ae6c6dfd643e79165d26b32cb5b9f82e897806d`
+- **Plan activation:** `98fba46a22e92515eda945f132d8fd042055df48`
+- **Authority reconciliation:** `4c982773d0a1a88f3979718366369716d29a1ce6`
+- **Durable synthesis:** `e6c22dd5e2b40dee511894a6f38761d248bcaced`
+- **Frozen slice contract:** `27fea795337a3bf85c8d99cafdf1f73baeaea703`
+- **Executable slice implementation:** `2061caf794fbe07c4fd185232af7191d27007f07`
+- **Durable handoff:** `263f33cb5bae90b222fabd4c496a5fe6db26c8ab`
+- **Architecture status:** provisional candidate; not production-stable or final
+- **Slice result:** local deterministic verified success
+- **New boundary tests:** 9/9 passed
+- **Repository validation:** passed with 13 sources and 7 paper artifacts
+- **Preservation:** `sources/`, `references/papers/`, and all 16 pre-existing run directories remained unchanged; the 823-file run manifest retained SHA-1 `bb18819d893450e18ea5608e691c02ad6f1f96e0`
+- **H-G1/H-W1/H-C1/H-R1:** `Not evaluated`
+- **Push:** not authorized and not performed
+
+All exit criteria were satisfied before retirement. The additional all-suite regression sweep found the same Phase 4 frozen-plan hash mismatch already present at the starting baseline; it is documented in the durable handoff and was not repaired because the retired Phase 4 plan and historical evidence are preserved.
+
+This retirement ends the authority of this temporary plan. It does not authorize another slice, broad Phase 5 implementation, productionization, routing, cascade, workflow search, fine-tuning, architecture search, recovery implementation, or another model experiment.
+
+**STOP.**
