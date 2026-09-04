@@ -1,6 +1,6 @@
 # Repository Layout
 
-Status: current operating baseline for research preparation; not an architecture decision.
+Status: current operating baseline for post-Phase-4 architecture synthesis; filesystem boundaries are unchanged and this is not an architecture decision.
 
 | Path | Role | Editability |
 |---|---|---|
