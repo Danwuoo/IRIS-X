@@ -8,17 +8,17 @@ IRIS-X is a clean research workspace for rethinking reliable, low-cost, task-spe
 
 The project is not intended to combine several existing repositories into a larger framework. The repositories collected here are research predecessors, external references, implementation examples, and experimental substrates. Their useful ideas, constraints, failure cases, and engineering patterns may inform IRIS-X, but IRIS-X should develop its own coherent architecture rather than inherit the structure of any one source project.
 
-The repository has completed its initial research-preparation work and the
-Phase 4 evidence program. Current work is owner-authorized post-Phase-4
-architecture synthesis and minimal architecture development. Any architecture
+The repository has completed its initial research-preparation work, the Phase 4
+evidence program, and the first post-Phase-4 synthesis. Current work is
+owner-authorized Phase 5 provisional architecture development. Any architecture
 produced in this stage remains provisional, revisable, and not production-stable.
 
 ## Current Objective
 
-Convert the completed Phase 3/4 evidence into explicitly justified candidate
-architectural constraints, synthesize the smallest provisional architecture
-that can preserve those constraints, and test the boundaries through one thin
-local and deterministic executable slice.
+Extract the already-supported execution trust boundaries into the smallest
+provisional IRIS-X-authored core, preserve the existing deterministic mutation
+slice, and test interface reuse through one additional deterministic read-only
+path under the current owner-authorized batch.
 
 At this stage, the main goals are to:
 
@@ -27,7 +27,7 @@ At this stage, the main goals are to:
 - separate IRIS-X research contribution from reusable commodity substrate;
 - preserve uncertainty and define falsifiers for provisional choices;
 - implement and validate only the minimum executable path needed to exercise
-  the supported trust boundaries;
+  the supported trust boundaries across exactly the authorized paths;
 - keep unresolved mechanisms as extension points rather than silently making
   them core features.
 
@@ -181,9 +181,9 @@ This list describes why the material is present. It does not imply that all of t
 ## Repository Preparation Rules
 
 When organizing the repository or corpus, prefer research enablement over
-feature development. During the current post-Phase-4 stage, retain the same
-restraint: evidence-backed synthesis and a minimal reversible slice are more
-valuable than framework breadth.
+feature development. During the current Phase 5 provisional architecture stage,
+retain the same restraint: evidence-backed boundaries and minimal reversible
+implementation are more valuable than framework breadth.
 
 Good work includes:
 
@@ -236,9 +236,10 @@ experiments/
 docs/
 tools/
 corpus/
+irisx/
 ```
 
-Use `research/AGENTS.md` for analysis rules and `experiments/AGENTS.md` for experiment discipline. Do not introduce another broad hierarchy without an immediate operational purpose.
+Use `research/AGENTS.md` for analysis rules and `experiments/AGENTS.md` for experiment discipline. `irisx/` is reserved for provisional IRIS-X-authored architecture code and is not a production-stable SDK or framework. Do not introduce another broad hierarchy without an immediate operational purpose.
 
 Research documents should make their status clear when useful, for example:
 
@@ -333,12 +334,13 @@ If later experimentation uses one of them, keep the boundary explicit enough tha
 
 ## Near-Term Work
 
-During post-Phase-4 architecture synthesis, prioritize:
+During the current Phase 5 batch, prioritize:
 
 - evidence-to-constraint traceability;
 - candidate interfaces with explicit trust and failure boundaries;
 - separation of outcome, claims, evidence, acceptance, and execution state;
-- local deterministic validation of the smallest useful vertical slice;
+- local deterministic validation of the core boundary across the preserved
+  mutation slice and exactly one read-only integration path;
 - preservation checks and a durable unresolved-decision backlog.
 
 Validate repository organization from the root:
@@ -367,11 +369,11 @@ IRIS-X should preserve these distinctions while the project is still forming.
 
 ## Status
 
-**Current status: Post-Phase-4 architecture synthesis / minimal architecture development.**
+**Current status: Phase 5 — provisional architecture development.**
 
 The repository is not a stable architecture, framework, production runtime, or
 product. Candidate architecture produced in this stage is provisional.
 
-The immediate objective is to synthesize evidence-backed constraints and
-validate one minimal executable boundary slice without prematurely constraining
-what IRIS-X may become.
+The current authorized batch extracts and validates core execution boundaries
+only. It does not authorize broad implementation or productionization, and it
+must not prematurely constrain what IRIS-X may become.

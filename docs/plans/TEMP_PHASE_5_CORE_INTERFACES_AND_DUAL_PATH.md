@@ -1,12 +1,12 @@
 # TEMP Phase 5 — Core Execution Interfaces and Dual-Path Integration
 
-Status: **Temporary — controlling execution plan; owner-authorized Phase 5 Batch 1**  
-Date: **2026-09-04 Asia/Taipei**  
-Repository: **Danwuoo/IRIS-X**  
-Required baseline `main`: **`59367c3c50a9e089bdc476cc490c3dc9111edf07`**  
-Phase: **Phase 5 — provisional architecture development**  
-Batch goal: **extract the evidence-backed execution boundaries into a minimal IRIS-X core interface layer and prove reuse across two deterministic execution paths**  
-Architecture authority: **Provisional only; no final architecture claim**  
+Status: **Temporary — controlling execution plan; owner-authorized Phase 5 Batch 1**
+Date: **2026-09-04 Asia/Taipei**
+Repository: **Danwuoo/IRIS-X**
+Required baseline `main`: **`59367c3c50a9e089bdc476cc490c3dc9111edf07`**
+Phase: **Phase 5 — provisional architecture development**
+Batch goal: **extract the evidence-backed execution boundaries into a minimal IRIS-X core interface layer and prove reuse across two deterministic execution paths**
+Architecture authority: **Provisional only; no final architecture claim**
 Hard terminal boundary: **STOP after this batch is validated, handed off, retired, and pushed**
 
 ---
