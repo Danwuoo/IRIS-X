@@ -1,11 +1,17 @@
 # Temporary Post Phase 4 Architecture Synthesis and Minimal Slice Plan
 
-Status: **Active**  
-Date: **2026-09-04 Asia/Taipei**  
-Scope: **post-Phase-4 architecture synthesis and exactly one local deterministic executable vertical slice**  
-Architecture authority: **Provisional candidate only**  
-Actual starting `main`: `7ae6c6dfd643e79165d26b32cb5b9f82e897806d`  
-Known Phase 4 baseline: `7ae6c6dfd643e79165d26b32cb5b9f82e897806d`  
+Status: **Active**
+
+Date: **2026-09-04 Asia/Taipei**
+
+Scope: **post-Phase-4 architecture synthesis and exactly one local deterministic executable vertical slice**
+
+Architecture authority: **Provisional candidate only**
+
+Actual starting `main`: `7ae6c6dfd643e79165d26b32cb5b9f82e897806d`
+
+Known Phase 4 baseline: `7ae6c6dfd643e79165d26b32cb5b9f82e897806d`
+
 Hard terminal boundary: **retire this plan and STOP after synthesis, one slice, validation, and durable handoff**
 
 The committed bytes of this plan control this bounded batch together with all applicable `AGENTS.md` files. Repository artifacts remain the source of truth. Phase 4 is closed and will not be reopened by this plan.
