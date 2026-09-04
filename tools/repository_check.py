@@ -58,6 +58,7 @@ ALLOWED_TOP_LEVEL_DIRS = {
     "corpus",
     "docs",
     "experiments",
+    "irisx",
     "references",
     "research",
     "sources",

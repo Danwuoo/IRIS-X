@@ -2,7 +2,7 @@
 
 Status: executable qualification slice for the provisional post-Phase-4 candidate architecture
 
-This directory contains exactly one local deterministic vertical slice. It operationalizes identity and artifact binding, pre-execution policy, a replaceable executor adapter, independent semantic and evidence verification, separate adjudication fields, and structured terminal observations. It is not a production runtime or a new mechanism experiment.
+This directory contains the original local deterministic mutation slice. It now uses the provisional `irisx.core` records, interfaces, and execution ordering while keeping its in-memory state, prefix policy, `set` adapter, semantic oracle, contract parsing, and CLI rendering local. It is not a production runtime or a new mechanism experiment.
 
 The committed fixture freezes:
 
@@ -22,4 +22,4 @@ python experiments\substrates\minimal-reliable-execution-v0\scripts\run_slice.py
 python -m unittest discover -s experiments\substrates\minimal-reliable-execution-v0\tests -v
 ```
 
-The implementation boundary and its evidence basis are documented in `research/post-phase-4-architecture-synthesis.md`. Recovery remains an explicit unimplemented extension point.
+The core depends on no experiment code; dependency flows from this substrate to `irisx.core`. The implementation boundary and its evidence basis are documented in `research/post-phase-4-architecture-synthesis.md`. Recovery remains an explicit unimplemented extension point.
