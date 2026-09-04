@@ -84,7 +84,7 @@ def bind_execution(
 
 
 def evidence_binding(
-    required: Sequence[EvidenceRef], supplied: Sequence[EvidenceRef]
+    required: Sequence[BoundEvidenceRequirement], supplied: Sequence[EvidenceRef]
 ) -> tuple[str, tuple[str, ...]]:
     required_by_role = {item.role: item for item in required}
     supplied_by_role: dict[str, list[EvidenceRef]] = {}
@@ -94,7 +94,17 @@ def evidence_binding(
         expected = required_by_role.get(item.role)
         if expected is None:
             reasons.append("unexpected_evidence_role")
-        elif item != expected:
+        elif (
+            item.role,
+            item.artifact_id,
+            item.path,
+            item.sha256,
+        ) != (
+            expected.role,
+            expected.artifact_id,
+            expected.path,
+            expected.sha256,
+        ):
             reasons.append(f"{item.role}_binding_mismatch")
     for role in required_by_role:
         matches = supplied_by_role.get(role, [])
@@ -137,7 +147,6 @@ def execute(
     supplied_identity: ExecutionIdentity,
     request: ExecutionRequest,
     state: MutableMapping[str, Any],
-    expected_evidence: Sequence[EvidenceRef],
     executor: ExecutorAdapter,
     verifier: IndependentVerifier,
     policy_gate: PolicyGate | None = None,
@@ -207,7 +216,7 @@ def execute(
         observe("policy_not_required", decision=policy.decision, timing=policy.timing)
 
     try:
-        raw_result = executor.execute(context, request, state, expected_evidence)
+        raw_result = executor.execute(context, request, state)
         if raw_result.executor_calls != 1:
             raise ValueError("executor adapter must report exactly one call")
         if raw_result.mutation_primitive_calls not in {0, 1}:
@@ -241,9 +250,7 @@ def execute(
         mutation_primitive_calls=raw_result.mutation_primitive_calls,
     )
     try:
-        verification = verifier.verify(
-            context, request, raw_result, before_state, dict(state), expected_evidence
-        )
+        verification = verifier.verify(context, request, raw_result, before_state, dict(state))
     except Exception as exc:
         verification = VerificationResult(
             False,

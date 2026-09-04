@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Mapping, MutableMapping, Protocol, Sequence, runtime_checkable
+from typing import Any, Mapping, MutableMapping, Protocol, runtime_checkable
 
 from .records import (
-    EvidenceRef,
     ExecutionContext,
     ExecutionRequest,
     PolicyDecision,
@@ -26,7 +25,6 @@ class ExecutorAdapter(Protocol):
         context: ExecutionContext,
         request: ExecutionRequest,
         state: MutableMapping[str, Any],
-        expected_evidence: Sequence[EvidenceRef],
     ) -> RawResult: ...
 
 
@@ -39,6 +37,4 @@ class IndependentVerifier(Protocol):
         raw_result: RawResult,
         before_state: Mapping[str, Any],
         after_state: Mapping[str, Any],
-        expected_evidence: Sequence[EvidenceRef],
     ) -> VerificationResult: ...
-

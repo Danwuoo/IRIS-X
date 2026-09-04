@@ -2,7 +2,7 @@
 
 Status: deterministic read-only integration path for the provisional Phase 5 core
 
-This substrate adds exactly one second execution path: a lookup of one record in a small in-memory map. It binds immutable task-contract and program bytes, uses `irisx.core.execute`, invokes a fixture-local `ReadOnlyLookupAdapter` exactly once, independently verifies the result and required evidence, and records identical before/after state hashes.
+This substrate is the existing second execution path: a lookup of one record in a small in-memory map. It binds immutable task-contract and program bytes, including the contract-declared evidence requirements, uses `irisx.core.execute`, invokes a fixture-local `ReadOnlyLookupAdapter` exactly once, independently verifies supplied evidence against the bound context, and records identical before/after state hashes.
 
 The request is explicitly read-only, so mutation prevention is not required and no policy gate is invoked. The path performs zero model, network, API, retry, route, escalation, recovery, persistence, or workflow-search actions. It writes no run directory and makes no claim beyond local deterministic interface reuse.
 

@@ -2,7 +2,7 @@
 
 Status: executable qualification slice for the provisional post-Phase-4 candidate architecture
 
-This directory contains the original local deterministic mutation slice. It now uses the provisional `irisx.core` records, interfaces, and execution ordering while keeping its in-memory state, prefix policy, `set` adapter, semantic oracle, contract parsing, and CLI rendering local. It is not a production runtime or a new mechanism experiment.
+This directory contains the original local deterministic mutation slice. It uses the provisional `irisx.core` records, interfaces, and execution ordering while keeping its in-memory state, prefix policy, `set` adapter, semantic oracle, contract parsing, and CLI rendering local. Contract-declared evidence requirements are immutable in the bound execution context; neither this caller, its adapter, nor its verifier supplies an independent expectation set. It is not a production runtime or a new mechanism experiment.
 
 The committed fixture freezes:
 

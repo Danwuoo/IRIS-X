@@ -7,7 +7,6 @@ import argparse
 import copy
 import json
 import sys
-from dataclasses import replace
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Mapping, MutableMapping, Sequence
 
@@ -194,9 +193,7 @@ class LocalSetAdapter:
         context: ExecutionContext,
         request: ExecutionRequest,
         state: MutableMapping[str, Any],
-        expected_evidence: Sequence[EvidenceRef],
     ) -> RawResult:
-        del context
         if request.operation != "set":
             raise ValueError("local adapter supports only set")
         self.primitive_calls += 1
@@ -204,8 +201,13 @@ class LocalSetAdapter:
         state[request.target] = applied
         reported = applied if self.reported_value is None else self.reported_value
         evidence = tuple(
-            replace(item, sha256=self.evidence_hash_overrides.get(item.role, item.sha256))
-            for item in expected_evidence
+            EvidenceRef(
+                item.role,
+                item.artifact_id,
+                item.path,
+                self.evidence_hash_overrides.get(item.role, item.sha256),
+            )
+            for item in context.evidence_requirements
         )
         return RawResult(
             producer_claim=self.producer_claim,
@@ -229,15 +231,16 @@ class SetResultVerifier:
         raw_result: RawResult,
         before_state: Mapping[str, Any],
         after_state: Mapping[str, Any],
-        expected_evidence: Sequence[EvidenceRef],
     ) -> VerificationResult:
-        del context, before_state
+        del before_state
         semantic_reasons: list[str] = []
         if after_state.get(self.success_condition["path"]) != self.success_condition["equals"]:
             semantic_reasons.append("post_state_condition_mismatch")
         if raw_result.reported_value != after_state.get(request.target):
             semantic_reasons.append("reported_value_state_mismatch")
-        evidence_status, evidence_reasons = evidence_binding(expected_evidence, raw_result.evidence)
+        evidence_status, evidence_reasons = evidence_binding(
+            context.evidence_requirements, raw_result.evidence
+        )
         return VerificationResult(
             semantic_valid=not semantic_reasons,
             semantic_reasons=tuple(semantic_reasons or ["independent_post_state_match"]),
@@ -245,19 +248,6 @@ class SetResultVerifier:
             evidence_reasons=evidence_reasons,
             observed_post_state_sha256=state_sha256(after_state),
         )
-
-
-def expected_evidence(
-    contract: dict[str, Any], core_contract: TaskContract
-) -> tuple[EvidenceRef, ...]:
-    hashes = {
-        "task_contract": core_contract.content_sha256,
-        "program": core_contract.expected_program_sha256,
-    }
-    return tuple(
-        EvidenceRef(row["role"], row["artifact_id"], row["path"], hashes[row["role"]])
-        for row in contract["evidence_requirements"]
-    )
 
 
 def validate_terminal_record(record: dict[str, Any]) -> None:
@@ -330,7 +320,6 @@ def execute_slice(
         supplied_identity=identity or declared_identity(contract),
         request=request,
         state=state,
-        expected_evidence=expected_evidence(contract, core_contract),
         policy_gate=PrefixPolicyGate(contract["policy"]),
         executor=adapter or LocalSetAdapter(),
         verifier=SetResultVerifier(contract["success_condition"]),

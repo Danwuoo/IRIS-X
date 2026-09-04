@@ -7,9 +7,8 @@ import argparse
 import copy
 import json
 import sys
-from dataclasses import replace
 from pathlib import Path
-from typing import Any, Mapping, MutableMapping, Sequence
+from typing import Any, Mapping, MutableMapping
 
 
 SUBSTRATE = Path(__file__).resolve().parents[1]
@@ -34,7 +33,6 @@ from irisx.core.records import (  # noqa: E402
     RawResult,
     TaskContract,
     VerificationResult,
-    sha256_bytes,
 )
 
 
@@ -85,19 +83,6 @@ def declared_identity(contract: Mapping[str, Any]) -> ExecutionIdentity:
     )
 
 
-def expected_evidence(
-    contract: Mapping[str, Any], core_contract: TaskContract
-) -> tuple[EvidenceRef, ...]:
-    hashes = {
-        "task_contract": core_contract.content_sha256,
-        "program": core_contract.expected_program_sha256,
-    }
-    return tuple(
-        EvidenceRef(row["role"], row["artifact_id"], row["path"], hashes[row["role"]])
-        for row in contract["evidence_requirements"]
-    )
-
-
 class ReadOnlyLookupAdapter:
     """Different concrete adapter: one map lookup and no mutation primitive."""
 
@@ -111,16 +96,19 @@ class ReadOnlyLookupAdapter:
         context: ExecutionContext,
         request: ExecutionRequest,
         state: MutableMapping[str, Any],
-        expected_evidence_refs: Sequence[EvidenceRef],
     ) -> RawResult:
-        del context
         if request.operation != "lookup" or request.requires_mutation_prevention:
             raise ValueError("read-only adapter accepts only a classified lookup")
         self.lookup_calls += 1
         result = copy.deepcopy(state[request.target])
         evidence = tuple(
-            replace(item, sha256=self.evidence_hash_overrides.get(item.role, item.sha256))
-            for item in expected_evidence_refs
+            EvidenceRef(
+                item.role,
+                item.artifact_id,
+                item.path,
+                self.evidence_hash_overrides.get(item.role, item.sha256),
+            )
+            for item in context.evidence_requirements
         )
         return RawResult("success", result, evidence, 1, 0)
 
@@ -136,9 +124,7 @@ class LookupVerifier:
         raw_result: RawResult,
         before_state: Mapping[str, Any],
         after_state: Mapping[str, Any],
-        expected_evidence_refs: Sequence[EvidenceRef],
     ) -> VerificationResult:
-        del context
         reasons: list[str] = []
         if before_state != after_state:
             reasons.append("read_only_state_changed")
@@ -147,7 +133,7 @@ class LookupVerifier:
         if raw_result.reported_value != self.success_condition["equals"]:
             reasons.append("success_condition_mismatch")
         evidence_status, evidence_reasons = evidence_binding(
-            expected_evidence_refs, raw_result.evidence
+            context.evidence_requirements, raw_result.evidence
         )
         return VerificationResult(
             not reasons,
@@ -192,7 +178,6 @@ def execute_lookup(
         supplied_identity=identity or declared_identity(contract),
         request=request,
         state=state,
-        expected_evidence=expected_evidence(contract, core_contract),
         executor=adapter or ReadOnlyLookupAdapter(),
         verifier=LookupVerifier(contract["success_condition"]),
         policy_gate=policy_gate,
