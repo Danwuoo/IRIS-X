@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "task_id": "task.readonly-record-lookup.v0",
+  "contract_id": "contract.readonly-record-lookup.v0",
+  "program": {
+    "program_id": "program.deterministic-readonly-lookup.v0",
+    "path": "inputs/lookup-program.txt",
+    "sha256": "8962a8a2478d1664ff4f69b7abc47ef158738b505fb05b59277908004dbae181"
+  },
+  "execution": {
+    "execution_id": "execution.readonly-core-integration.v0",
+    "configuration_id": "configuration.local-readonly.v0"
+  },
+  "request": {
+    "action_id": "action.lookup-alpha.v0",
+    "operation": "lookup",
+    "target": "records/alpha",
+    "value": null
+  },
+  "initial_state": {
+    "records/alpha": {
+      "label": "Alpha",
+      "value": 17
+    },
+    "records/beta": {
+      "label": "Beta",
+      "value": 23
+    }
+  },
+  "success_condition": {
+    "target": "records/alpha",
+    "equals": {
+      "label": "Alpha",
+      "value": 17
+    }
+  },
+  "evidence_requirements": [
+    {
+      "role": "task_contract",
+      "artifact_id": "contract.readonly-record-lookup.v0",
+      "path": "inputs/task-contract.json"
+    },
+    {
+      "role": "program",
+      "artifact_id": "program.deterministic-readonly-lookup.v0",
+      "path": "inputs/lookup-program.txt"
+    }
+  ]
+}

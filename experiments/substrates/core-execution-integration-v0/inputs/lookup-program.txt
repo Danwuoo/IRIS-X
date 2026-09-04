@@ -1,0 +1,4 @@
+IRIS-X deterministic read-only lookup program v0.
+Read exactly one contract-selected record from the supplied in-memory state.
+Return task-contract and program evidence without modifying state.
+Do not retry, route, escalate, recover, persist, access a network, or call a model.
