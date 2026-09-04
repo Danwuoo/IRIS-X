@@ -1,6 +1,6 @@
 # TEMP Phase 5 — Contract-Bound Evidence
 
-Status: **Temporary — controlling execution plan; owner-authorized Phase 5 Batch 2**
+Status: **Retired — Phase 5 Batch 2 complete; see Section 15**
 
 - **Date:** 2026-09-05 Asia/Taipei
 - **Phase:** Phase 5 — provisional architecture development
@@ -166,3 +166,32 @@ This is a provisional local architecture-development result only.
 After implementation, focused and full validation, preservation proof, durable handoff, separate plan retirement, normal push, and local/remote synchronization, **STOP**.
 
 This plan authorizes no Phase 5 Batch 3 or additional feature.
+
+## 15. Retirement record
+
+- **Retired on:** 2026-09-05 Asia/Taipei
+- **Required and actual starting main:** `1ccc6505c0c1e2d418fcc09c36b2e1a330d47ac0`
+- **Plan activation:** `602474290e28cd0fe8662003b2634f39c1b3b854`
+- **Evidence-requirement representation and binding:** `47fee90a51b9200d7446b89c2ab3782d19d2a50a`
+- **Contract-derived execution interfaces:** `9d4a93308a4494bf52bfb363f4b9b67337d4e4a8`
+- **Adversarial and regression coverage:** `a6d61056e442ac0256130279d9c9ba0bceca796e`
+- **Durable handoff:** `5b1ca2822addfbd5298e754c993042461d385112`
+- **Focused tests:** 35/35 passed (13 core, 13 mutation, 9 read-only)
+- **Regression sweep:** 93 tests across 15 experiment/substrate directories; 92 passed, one unchanged baseline-known failure remained, and zero errored
+- **Repository validation:** passed with 13 sources and 7 paper artifacts
+- **Preservation:** protected source, paper, research, run, prior-plan, prior-handoff, and all four frozen-input identities remained unchanged
+- **H-G1/H-W1/H-C1/H-R1:** `Not evaluated`
+- **History:** no amend, rebase, squash, force-push, or other history rewrite
+- **Push:** normal push follows this retirement commit; final local/remote identity is reported in the owner-facing response
+
+The exact allowed conclusion is:
+
+> Phase 5 Batch 2 complete — evidence expectations are contract-bound within the provisional IRIS-X execution context, eliminating caller-substitutable expected-evidence authority across the two existing deterministic paths.
+
+Remaining uncertainty includes general or causal provenance, authenticated remote evidence, mutable evidence sources, universal evidence sufficiency, general verifier correctness, production security, adversarial resistance, and final architecture correctness. These remain `Not established` or `Not evaluated`.
+
+No provider/model/network/API runtime mechanism, persistence, retry, recovery, routing, cascade, escalation, workflow search, optimizer, training, multi-agent system, architecture search, production infrastructure, or additional execution path was implemented, evaluated, or run.
+
+This retirement completes Batch 2 only. Phase 5 remains open, and this plan authorizes no further Phase 5 batch.
+
+**STOP.**
