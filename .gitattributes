@@ -11,3 +11,7 @@ experiments/exp-2026-09-01-luna-structured-program-specialization/**/*.txt text 
 # Keep the frozen minimal-slice contract and program byte-identical.
 experiments/substrates/minimal-reliable-execution-v0/**/*.json text eol=lf
 experiments/substrates/minimal-reliable-execution-v0/**/*.txt text eol=lf
+
+# Keep the deterministic read-only integration inputs byte-identical.
+experiments/substrates/core-execution-integration-v0/**/*.json text eol=lf
+experiments/substrates/core-execution-integration-v0/**/*.txt text eol=lf
