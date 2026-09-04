@@ -4,6 +4,8 @@ from .execution import BindingError, bind_execution, evidence_binding, execute
 from .interfaces import ExecutorAdapter, IndependentVerifier, PolicyGate
 from .records import (
     UNKNOWN,
+    BoundEvidenceRequirement,
+    EvidenceRequirement,
     EvidenceRef,
     ExecutionContext,
     ExecutionIdentity,
@@ -21,6 +23,8 @@ from .records import (
 __all__ = [
     "UNKNOWN",
     "BindingError",
+    "BoundEvidenceRequirement",
+    "EvidenceRequirement",
     "EvidenceRef",
     "ExecutionContext",
     "ExecutionIdentity",

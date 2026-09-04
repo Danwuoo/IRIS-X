@@ -28,6 +28,7 @@ from irisx.core.records import (  # noqa: E402
     ACTUAL_OUTCOMES,
     EVIDENCE_STATUSES,
     TERMINAL_EXECUTION_STATUSES,
+    EvidenceRequirement,
     EvidenceRef,
     ExecutionContext,
     ExecutionIdentity,
@@ -317,6 +318,9 @@ def execute_slice(
         execution_id=contract["execution"]["execution_id"],
         configuration_id=contract["execution"]["configuration_id"],
         content=contract_bytes,
+        evidence_requirements=tuple(
+            EvidenceRequirement(**row) for row in contract["evidence_requirements"]
+        ),
     )
     request = ExecutionRequest(**contract["request"], requires_mutation_prevention=True)
     state = copy.deepcopy(contract["initial_state"])

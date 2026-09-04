@@ -38,6 +38,43 @@ def _require_sha256(value: str, label: str) -> None:
 
 
 @dataclass(frozen=True)
+class EvidenceRequirement:
+    """An evidence declaration carried by the immutable task contract."""
+
+    role: str
+    artifact_id: str
+    path: str
+
+    def __post_init__(self) -> None:
+        _require_identity(self.role, "role")
+        _require_identity(self.artifact_id, "artifact_id")
+        _require_identity(self.path, "path")
+
+
+@dataclass(frozen=True)
+class BoundEvidenceRequirement:
+    """A contract declaration bound to exact execution-context bytes."""
+
+    requirement: EvidenceRequirement
+    sha256: str
+
+    def __post_init__(self) -> None:
+        _require_sha256(self.sha256, "sha256")
+
+    @property
+    def role(self) -> str:
+        return self.requirement.role
+
+    @property
+    def artifact_id(self) -> str:
+        return self.requirement.artifact_id
+
+    @property
+    def path(self) -> str:
+        return self.requirement.path
+
+
+@dataclass(frozen=True)
 class TaskContract:
     task_id: str
     contract_id: str
@@ -46,6 +83,7 @@ class TaskContract:
     execution_id: str
     configuration_id: str
     content: bytes
+    evidence_requirements: tuple[EvidenceRequirement, ...]
 
     def __post_init__(self) -> None:
         for label in (
@@ -59,6 +97,20 @@ class TaskContract:
         _require_sha256(self.expected_program_sha256, "expected_program_sha256")
         if not isinstance(self.content, bytes):
             raise TypeError("contract content must be exact bytes")
+        if not isinstance(self.evidence_requirements, tuple) or not all(
+            isinstance(item, EvidenceRequirement) for item in self.evidence_requirements
+        ):
+            raise TypeError("evidence_requirements must be an immutable tuple")
+        roles = tuple(item.role for item in self.evidence_requirements)
+        if len(set(roles)) != len(roles):
+            raise ValueError("evidence requirement roles must be unique")
+        if set(roles) != {"task_contract", "program"}:
+            raise ValueError("task_contract and program evidence requirements are required")
+        requirements = {item.role: item for item in self.evidence_requirements}
+        if requirements["task_contract"].artifact_id != self.contract_id:
+            raise ValueError("task_contract requirement must identify this contract")
+        if requirements["program"].artifact_id != self.expected_program_id:
+            raise ValueError("program requirement must identify the expected program")
 
     @property
     def content_sha256(self) -> str:
@@ -108,6 +160,7 @@ class ExecutionContext:
     contract: TaskContract
     program: ProgramArtifact
     identity: ExecutionIdentity
+    evidence_requirements: tuple[BoundEvidenceRequirement, ...]
 
 
 @dataclass(frozen=True)
@@ -269,4 +322,3 @@ class TerminalRecord:
             raise ValueError("recovery is not implemented in this provisional core")
         if self.silent_retry or self.resource_ledger.retry_count:
             raise ValueError("implicit or explicit retry is not implemented")
-

@@ -9,6 +9,7 @@ from typing import Any, Mapping, MutableMapping, Sequence
 
 from .interfaces import ExecutorAdapter, IndependentVerifier, PolicyGate
 from .records import (
+    BoundEvidenceRequirement,
     EvidenceRef,
     ExecutionContext,
     ExecutionIdentity,
@@ -61,7 +62,25 @@ def bind_execution(
         raise BindingError("program_identity_mismatch")
     if program.content_sha256 != contract.expected_program_sha256:
         raise BindingError("program_hash_mismatch")
-    return ExecutionContext(contract=contract, program=program, identity=supplied_identity)
+    program_requirement = next(
+        item for item in contract.evidence_requirements if item.role == "program"
+    )
+    if program_requirement.path != program.path:
+        raise BindingError("program_evidence_path_mismatch")
+    hashes = {
+        "task_contract": contract.content_sha256,
+        "program": program.content_sha256,
+    }
+    evidence_requirements = tuple(
+        BoundEvidenceRequirement(item, hashes[item.role])
+        for item in contract.evidence_requirements
+    )
+    return ExecutionContext(
+        contract=contract,
+        program=program,
+        identity=supplied_identity,
+        evidence_requirements=evidence_requirements,
+    )
 
 
 def evidence_binding(

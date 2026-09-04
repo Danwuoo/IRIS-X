@@ -25,6 +25,7 @@ from irisx.core.execution import (  # noqa: E402
 )
 from irisx.core.interfaces import PolicyGate  # noqa: E402
 from irisx.core.records import (  # noqa: E402
+    EvidenceRequirement,
     EvidenceRef,
     ExecutionContext,
     ExecutionIdentity,
@@ -172,13 +173,16 @@ def execute_lookup(
         contract["program"]["program_id"], contract["program"]["path"], program_path.read_bytes()
     )
     core_contract = TaskContract(
-        contract["task_id"],
-        contract["contract_id"],
-        contract["program"]["program_id"],
-        contract["program"]["sha256"],
-        contract["execution"]["execution_id"],
-        contract["execution"]["configuration_id"],
-        contract_bytes,
+        task_id=contract["task_id"],
+        contract_id=contract["contract_id"],
+        expected_program_id=contract["program"]["program_id"],
+        expected_program_sha256=contract["program"]["sha256"],
+        execution_id=contract["execution"]["execution_id"],
+        configuration_id=contract["execution"]["configuration_id"],
+        content=contract_bytes,
+        evidence_requirements=tuple(
+            EvidenceRequirement(**row) for row in contract["evidence_requirements"]
+        ),
     )
     request = ExecutionRequest(**contract["request"], requires_mutation_prevention=False)
     state = copy.deepcopy(contract["initial_state"])
