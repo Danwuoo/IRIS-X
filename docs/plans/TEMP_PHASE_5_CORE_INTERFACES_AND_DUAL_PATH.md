@@ -1,6 +1,6 @@
 # TEMP Phase 5 — Core Execution Interfaces and Dual-Path Integration
 
-Status: **Temporary — controlling execution plan; owner-authorized Phase 5 Batch 1**
+Status: **Retired — Phase 5 Batch 1 complete; see Section 21**
 Date: **2026-09-04 Asia/Taipei**
 Repository: **Danwuoo/IRIS-X**
 Required baseline `main`: **`59367c3c50a9e089bdc476cc490c3dc9111edf07`**
@@ -563,3 +563,34 @@ After the core layer is implemented, the original mutation path is migrated/pres
 Do not begin another Phase 5 batch under this plan.
 
 A future owner instruction must separately authorize the next Phase 5 scope.
+
+---
+
+## 21. Retirement record
+
+- **Retired on:** 2026-09-04 Asia/Taipei
+- **Required and actual starting main:** `59367c3c50a9e089bdc476cc490c3dc9111edf07`
+- **Plan activation:** `da5633f7488269b49b438364533edb0a116a17b5`
+- **Phase 5 authority and layout:** `66a62d7cdad7c8613ddffce0b1667fccc9a412fd`
+- **Core records and interfaces:** `c900533b6228fd10a6886c4f634a8d95f858abfd`
+- **Core execution and mutation-path migration:** `4bc26af29097011b26bedd8e066465ba079ac0cc`
+- **Read-only integration path:** `17347c1a6bb0d00ca6a6b7a16b4fd5b182a51b50`
+- **Read-only frozen-input checkout rule:** `6364f252877aca18602c19bdcf0d7631d109c4c7`
+- **Durable handoff:** `961bdd10999a76bbc30652ac438c76a19e64cfc3`
+- **Core status:** provisional; not production-stable or final
+- **Execution paths:** exactly one preserved deterministic mutation path and exactly one deterministic read-only path
+- **Focused tests:** 23/23 passed (5 core, 9 mutation, 9 read-only)
+- **Regression sweep:** 89 tests across 15 experiment/substrate test directories; 88 passed, one baseline-known failure reproduced, zero errors, and no new failure
+- **Repository validation:** passed with 13 sources and 7 paper artifacts
+- **Preservation:** `sources/`, `references/papers/`, `research/`, all 16 pre-existing run directories and 823 run files, all eight pre-existing retired plans, the post-Phase-4 durable handoff, and both original frozen mutation inputs retained their baseline identities
+- **H-G1/H-W1/H-C1/H-R1:** `Not evaluated`
+- **History:** no amend, rebase, squash, force push, or other history rewrite
+- **Push:** normal push follows this retirement commit; the final local/remote SHAs and result are reported in the owner-facing final response
+
+All exit criteria were satisfied before retirement. The sole regression failure remains the pre-existing Phase 4 retired-plan hash assertion documented in `docs/phase-5-core-interfaces-handoff.md`; no historical artifact or assertion was changed to repair it.
+
+No model/provider integration, model call, network/API call, persistence, retry, automatic recovery, route, cascade, escalation, workflow engine/search, optimizer, fine-tuning, training, multi-agent system, architecture search, production infrastructure, or extra execution path was implemented, evaluated, or run.
+
+This retirement completes Phase 5 Batch 1 only. Phase 5 as a whole remains open and requires a new owner-authorized scope for any further batch.
+
+**STOP.**
