@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import dataclasses
 import hashlib
+import inspect
 import unittest
 
 from irisx.core.interfaces import ExecutorAdapter, IndependentVerifier, PolicyGate
-from irisx.core.execution import bind_execution
+from irisx.core.execution import BindingError, bind_execution, execute
 from irisx.core.records import (
     UNKNOWN,
     EvidenceRequirement,
@@ -18,11 +19,13 @@ from irisx.core.records import (
 
 
 def requirements(
-    contract_id: str = "contract", program_id: str = "program"
+    contract_id: str = "contract",
+    program_id: str = "program",
+    program_path: str = "program.txt",
 ) -> tuple[EvidenceRequirement, ...]:
     return (
         EvidenceRequirement("task_contract", contract_id, "task-contract.json"),
-        EvidenceRequirement("program", program_id, "program.txt"),
+        EvidenceRequirement("program", program_id, program_path),
     )
 
 
@@ -98,6 +101,39 @@ class CoreRecordInvariantTests(unittest.TestCase):
         bound = {item.role: item for item in context.evidence_requirements}
         self.assertEqual(bound["task_contract"].sha256, contract.content_sha256)
         self.assertEqual(bound["program"].sha256, program.content_sha256)
+
+    def test_evidence_requirements_are_immutable_after_contract_construction(self) -> None:
+        contract = task_contract()
+        with self.assertRaises(dataclasses.FrozenInstanceError):
+            contract.evidence_requirements = ()  # type: ignore[misc]
+        with self.assertRaises(dataclasses.FrozenInstanceError):
+            contract.evidence_requirements[0].path = "crossed"  # type: ignore[misc]
+
+    def test_program_requirement_path_must_match_bound_artifact(self) -> None:
+        program_content = b"program bytes"
+        contract = TaskContract(
+            task_id="task",
+            contract_id="contract",
+            expected_program_id="program",
+            expected_program_sha256=hashlib.sha256(program_content).hexdigest(),
+            execution_id="execution",
+            configuration_id="configuration",
+            content=b"contract bytes",
+            evidence_requirements=requirements(program_path="crossed-program.txt"),
+        )
+        with self.assertRaisesRegex(BindingError, "program_evidence_path_mismatch"):
+            bind_execution(
+                contract,
+                ProgramArtifact("program", "program.txt", program_content),
+                ExecutionIdentity("task", "contract", "program", "execution", "configuration"),
+            )
+
+    def test_public_execution_signatures_have_no_expected_evidence_parameter(self) -> None:
+        for callable_value in (execute, ExecutorAdapter.execute, IndependentVerifier.verify):
+            with self.subTest(callable=callable_value):
+                parameters = inspect.signature(callable_value).parameters
+                self.assertNotIn("expected_evidence", parameters)
+                self.assertNotIn("expected_evidence_refs", parameters)
 
     def test_resource_unknowns_and_observed_zeroes_stay_distinct(self) -> None:
         ledger = ResourceLedger(artifact_reads=2, executor_calls=1)

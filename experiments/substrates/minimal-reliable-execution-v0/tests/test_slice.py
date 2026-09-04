@@ -5,6 +5,7 @@ import json
 import sys
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 
@@ -25,6 +26,16 @@ def write_contract(directory: Path, value: dict) -> Path:
     path = directory / "task-contract.json"
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     return path
+
+
+class EvidenceTransformAdapter(run_slice.LocalSetAdapter):
+    def __init__(self, transform) -> None:
+        super().__init__()
+        self.transform = transform
+
+    def execute(self, context, request, state):
+        raw = super().execute(context, request, state)
+        return replace(raw, evidence=tuple(self.transform(raw.evidence)))
 
 
 class MinimalReliableExecutionSliceTests(unittest.TestCase):
@@ -76,6 +87,48 @@ class MinimalReliableExecutionSliceTests(unittest.TestCase):
         self.assertEqual(record["acceptance_decision"], "reject")
         self.assertFalse(record["verified_success_eligibility"])
         self.assertEqual(record["joint_interpretation"], "unverified_success")
+
+    def test_missing_required_evidence_is_insufficient(self) -> None:
+        adapter = EvidenceTransformAdapter(
+            lambda evidence: (item for item in evidence if item.role != "program")
+        )
+        record = run_slice.execute_slice(adapter=adapter)
+        self.assertEqual(record["actual_outcome"], "success")
+        self.assertEqual(record["empirical_evidence_status"], "insufficient")
+        self.assertEqual(record["acceptance_decision"], "reject")
+        self.assertFalse(record["verified_success_eligibility"])
+
+    def test_crossed_artifact_or_path_evidence_is_invalid(self) -> None:
+        variants = {
+            "artifact": lambda item: replace(item, artifact_id="program.crossed.v0"),
+            "path": lambda item: replace(item, path="inputs/crossed-program.txt"),
+        }
+        for name, change in variants.items():
+            def transform(evidence, change=change):
+                return tuple(change(item) if item.role == "program" else item for item in evidence)
+
+            with self.subTest(name=name):
+                record = run_slice.execute_slice(adapter=EvidenceTransformAdapter(transform))
+                self.assertEqual(record["actual_outcome"], "success")
+                self.assertEqual(record["empirical_evidence_status"], "invalid_binding")
+                self.assertFalse(record["verified_success_eligibility"])
+
+    def test_duplicate_supplied_evidence_is_invalid(self) -> None:
+        adapter = EvidenceTransformAdapter(lambda evidence: (*evidence, evidence[0]))
+        record = run_slice.execute_slice(adapter=adapter)
+        self.assertEqual(record["actual_outcome"], "success")
+        self.assertEqual(record["empirical_evidence_status"], "invalid_binding")
+        self.assertFalse(record["verified_success_eligibility"])
+
+    def test_invalid_contract_evidence_declaration_fails_before_executor(self) -> None:
+        contract = load_contract()
+        contract["evidence_requirements"][1]["artifact_id"] = "program.crossed.v0"
+        adapter = run_slice.LocalSetAdapter()
+        with tempfile.TemporaryDirectory(prefix="irisx-contract-evidence-") as temporary:
+            path = write_contract(Path(temporary), contract)
+            with self.assertRaisesRegex(run_slice.ContractError, "program evidence identity is crossed"):
+                run_slice.execute_slice(path, adapter=adapter)
+        self.assertEqual(adapter.primitive_calls, 0)
 
     def test_prohibited_mutation_is_denied_before_primitive_and_state_is_unchanged(self) -> None:
         contract = load_contract()
