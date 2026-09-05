@@ -1,0 +1,121 @@
+{
+  "acceptance_decision": "accept",
+  "actual_outcome": "success",
+  "empirical_evidence_status": "sufficient",
+  "evidence": [
+    {
+      "artifact_id": "contract-model-record-selection-alpha-run-03-v0",
+      "path": "definition/qualification-run-03-contract.json",
+      "role": "task_contract",
+      "sha256": "2cae29982a5482298e2ee87fed64f824743a4cd1e43955906d8e2e932f2defb4"
+    },
+    {
+      "artifact_id": "program-model-record-selection-json-v0",
+      "path": "inputs/model-program.txt",
+      "role": "program",
+      "sha256": "0803fdc4fc92cae03e1c736e372a8a60bd4039f2cdab996420664e7b36368e36"
+    }
+  ],
+  "execution_identity": {
+    "configuration_id": "openai-codex-luna-medium-readonly-zero-retry-run-03-v0",
+    "execution_id": "qualification-20260905-03"
+  },
+  "joint_interpretation": "verified_success",
+  "observations": [
+    {
+      "contract_id": "contract-model-record-selection-alpha-run-03-v0",
+      "sequence": 1,
+      "stage": "contract_loaded",
+      "task_id": "model-record-selection-alpha-v0"
+    },
+    {
+      "program_sha256": "0803fdc4fc92cae03e1c736e372a8a60bd4039f2cdab996420664e7b36368e36",
+      "sequence": 2,
+      "stage": "execution_identity_bound"
+    },
+    {
+      "decision": "not_required",
+      "sequence": 3,
+      "stage": "policy_not_required",
+      "timing": "not_applicable"
+    },
+    {
+      "executor_calls": 1,
+      "mutation_primitive_calls": 0,
+      "sequence": 4,
+      "stage": "executor_completed"
+    },
+    {
+      "evidence_status": "sufficient",
+      "semantic_valid": true,
+      "sequence": 5,
+      "stage": "independent_verification_completed"
+    },
+    {
+      "acceptance_decision": "accept",
+      "actual_outcome": "success",
+      "sequence": 6,
+      "stage": "adjudication_completed"
+    }
+  ],
+  "policy_decision": {
+    "decision": "not_required",
+    "mutation_primitive_executed": false,
+    "reasons": [
+      "read_only_request"
+    ],
+    "timing": "not_applicable"
+  },
+  "producer_claim": "success",
+  "program_identity": {
+    "content_bytes": 418,
+    "content_sha256": "0803fdc4fc92cae03e1c736e372a8a60bd4039f2cdab996420664e7b36368e36",
+    "path": "inputs/model-program.txt",
+    "program_id": "program-model-record-selection-json-v0"
+  },
+  "recovery": {
+    "action_id": null,
+    "attempted": false,
+    "result": "not_applicable",
+    "silent_retry": false,
+    "target_failure_state": null
+  },
+  "resource_ledger": {
+    "artifact_reads": 2,
+    "escalation_count": 0,
+    "executor_calls": 1,
+    "model_calls": 1,
+    "network_calls": "Unknown",
+    "paid_api_calls": 0,
+    "provider_cost_usd": "Unknown",
+    "recovery_count": 0,
+    "retry_count": 0,
+    "route_count": 0,
+    "tool_calls": 0,
+    "wall_time_ns": 3489073800
+  },
+  "schema_version": 1,
+  "side_effects": {
+    "changed_paths": [],
+    "mutation_primitive_executed": false,
+    "state_after_sha256": "a5e53e0f8bdc6def70a3eec03a8d361d61c18b45ba312f5fb9adcee1a0fd4a62",
+    "state_before_sha256": "a5e53e0f8bdc6def70a3eec03a8d361d61c18b45ba312f5fb9adcee1a0fd4a62"
+  },
+  "task_identity": {
+    "contract_id": "contract-model-record-selection-alpha-run-03-v0",
+    "task_id": "model-record-selection-alpha-v0"
+  },
+  "terminal_execution_status": "completed",
+  "verification": {
+    "evidence_reasons": [
+      "complete_correct_binding"
+    ],
+    "evidence_status": "sufficient",
+    "observed_post_state_sha256": "a5e53e0f8bdc6def70a3eec03a8d361d61c18b45ba312f5fb9adcee1a0fd4a62",
+    "semantic_reasons": [
+      "deterministic_record_selection_match"
+    ],
+    "semantic_valid": true
+  },
+  "verified_success_eligibility": true
+}
