@@ -1,6 +1,6 @@
 # TEMP Phase 5 — Model Execution Tool Compatibility Repair
 
-- **Status:** Temporary — controlling repair plan
+- **Status:** Retired — compatibility repair completed
 - **Authorization:** Owner-authorized follow-up to repair the Batch 4 qualification tool
 - **Date:** 2026-09-05 Asia/Taipei
 - **Repository:** Danwuoo/IRIS-X
@@ -77,3 +77,26 @@ fallback, escalation, recovery, persistence, workflow engine/search,
 optimizer, fine-tuning, training, multi-agent work, architecture search, model
 judge, non-deterministic verifier, external action, production server/UI/API,
 or H-G1/H-W1/H-C1/H-R1 evaluation is authorized.
+
+## Retirement record
+
+- **Retired:** 2026-09-05 Asia/Taipei
+- **Plan activation:** `ae5fbce70f8e55263ae590a1666c065053af0b75`
+- **Tool repair:** `663fdcdffa73305496107a3ed0b86d32f9b90616`
+- **Durable handoff:** `2a8a0e5050f7a466c7ba8646e844366cbcbaa74d`
+- **Model calls:** 0
+- **Transport started by strict probe:** false
+- **Qualification tests:** 20/20 PASS
+- **Focused tests:** 70/70 PASS
+- **Full inventory:** 141 total, 140 passed, the same one historical failure,
+  0 errors, 0 skips, and 0 new failures
+
+The unsupported `tools.view_image=false` override was replaced by
+`--disable view_image`. The exact Codex CLI 0.147.0 config arguments now pass a
+real strict-config loader probe before ordinary preflight continues. Both
+historical qualification runs remain byte-identical and correctly adjudicated.
+
+The authoritative repair result and preservation proof are in
+`docs/phase-5-model-execution-tool-compatibility-repair-handoff.md`. This plan
+is no longer active. No live qualification was attempted and Batch 5 was not
+started.
