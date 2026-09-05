@@ -1,6 +1,6 @@
 # TEMP Phase 5 — Model Execution Admission Hardening
 
-Status: **Temporary — controlling execution plan; owner-authorized Phase 5 Batch 5**  
+Status: **Retired — Phase 5 Batch 5 completed and handed off**  
 Date: **2026-09-05 Asia/Taipei**  
 Repository: **Danwuoo/IRIS-X**  
 Required baseline `main`: **`21f0150aed8b8555b69dc1094a1c3d7a6441732b`**  
@@ -810,3 +810,42 @@ Do not start Batch 6.
 Do not run a model simply because the current environment is admitted.
 
 Any future model execution or Phase 5 Batch 6 requires separate owner authorization.
+
+---
+
+## Retirement record
+
+Phase 5 Batch 5 completed within this plan's exact zero-model-call boundary.
+The preserved Run 01 configuration is deterministically rejected for
+`reserved_provider_configuration_incompatible`; Run 02 is rejected for
+`unsupported_config_field:tools.view_image`; and Run 03 is admitted under the
+exact frozen `codex-cli-0.147.0-run-03-admission-v0` profile. The current local
+environment is also admitted by zero-call checks. Admission authorizes no model
+execution.
+
+- required and actual starting SHA:
+  `21f0150aed8b8555b69dc1094a1c3d7a6441732b`;
+- plan activation:
+  `da744ee59d76cf5c610a160d1af11c4241d4ee1e`;
+- authority alignment:
+  `b2443365a32e3d4b2ca7bd272dda407e525f5ba5`;
+- compatibility profile and checker:
+  `710ebc9e8631bb9b76131ad394b6481eb5fc0125`;
+- historical replay tests:
+  `5951744381fd1d98e4e26f8e6a147a32ea8577ce`;
+- current-environment admission record:
+  `22f175b1515aa44d9bc993c0e62c40d1a962c427`;
+- durable handoff:
+  `a0a7ebc2a48dafc345602430b13195f34eb15ec3`;
+- focused validation: 99/99 PASS;
+- full inventory: 170 total, 169 passed, the same one historical Phase 4
+  frozen-plan hash failure, 0 errors, 0 skips, and 0 new failures/errors;
+- provider attempts/model calls: `0/0`;
+- no new run directory and no `irisx.core` change;
+- retirement commit and final local/remote synchronization: reported in the
+  owner-facing final response because they occur after this record is written.
+
+The durable result is
+`docs/phase-5-model-execution-admission-handoff.md`. Batch 5 is closed. H-G1,
+H-W1, H-C1, and H-R1 remain `Not evaluated`. Do not start Batch 6 and do not
+run a model without new owner authorization.
