@@ -1,0 +1,191 @@
+{
+  "call_ceiling": {
+    "escalations": 0,
+    "http_request_retries": 0,
+    "manual_retries": 0,
+    "provider_invocations": 1,
+    "recovery_actions": 0,
+    "routes": 0,
+    "stream_reconnect_retries": 0
+  },
+  "call_ledger": {
+    "escalations": 0,
+    "model_calls": 1,
+    "provider_attempts": 1,
+    "recovery_actions": 0,
+    "retries": 0,
+    "routes": 0
+  },
+  "candidate_identity": {
+    "configuration_id": "openai-codex-luna-medium-readonly-v0",
+    "contract_id": "contract-model-record-selection-alpha-v0",
+    "contract_sha256": "77598da50097ef10f0ff42da1b119ee73d67d21a286a26e6381ae09254364070",
+    "execution_id": "qualification-20260905-01",
+    "program_id": "program-model-record-selection-json-v0",
+    "program_sha256": "0803fdc4fc92cae03e1c736e372a8a60bd4039f2cdab996420664e7b36368e36",
+    "prompt_sha256": "b3d7aa200d23c6791fbe453bd83e5b8b91700abae58b8bc67794150320a8a52b",
+    "task_id": "model-record-selection-alpha-v0"
+  },
+  "changed_paths": [],
+  "code_commit": "b7cb5db1334ba20ec9d19c43af2ffb31a2edce93",
+  "definition_commit": "b7cb5db1334ba20ec9d19c43af2ffb31a2edce93",
+  "execution_envelope": {
+    "approval_policy": "never",
+    "apps": "disabled",
+    "browser_and_computer_use": "disabled",
+    "image_and_view_image_tools": "disabled",
+    "multi_agent": "disabled",
+    "output_schema_path": "definition/output-schema.json",
+    "sandbox_mode": "read-only",
+    "shell_tool": "disabled",
+    "skills_and_goals": "disabled",
+    "task_side_effect_class": "read-only",
+    "tool_attempt_policy": "any observed tool attempt invalidates qualification",
+    "web_search": "disabled",
+    "workspace": "isolated-temporary-directory"
+  },
+  "immutable_artifacts": [
+    {
+      "bytes": 1823,
+      "path": "runs/qualification-20260905-01/attempt-start.json",
+      "sha256": "633dca513fa1d8ada2cc862b2123913f3c8c4df519056b607db0ab8d85b61de5"
+    },
+    {
+      "bytes": 0,
+      "path": "runs/qualification-20260905-01/provider-events.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 217,
+      "path": "runs/qualification-20260905-01/provider-stderr.txt",
+      "sha256": "4cf1ac52b2ecccadc6d5d889db31c8a4437cfb3fe107f20ef93f17fe86cb27f0"
+    },
+    {
+      "bytes": 0,
+      "path": "runs/qualification-20260905-01/raw-output.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2771,
+      "path": "runs/qualification-20260905-01/terminal-record.json",
+      "sha256": "d7e09cbe9a2fbdf497fa72aaa4af16db6c6bc46cc9f7aa1c8a4c745d1fd7a696"
+    },
+    {
+      "bytes": 661,
+      "path": "runs/qualification-20260905-01/resource-record.json",
+      "sha256": "7cb63e3fb888d672e5b59911b55ca4485ff7f0c30f02da07a96b801236a00d4b"
+    }
+  ],
+  "provider_capture": {
+    "command": [
+      "C:\\Users\\wurre\\AppData\\Roaming\\npm\\codex.cmd",
+      "exec",
+      "--strict-config",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--model",
+      "gpt-5.6-luna",
+      "--config",
+      "model_reasoning_effort=\"medium\"",
+      "--config",
+      "approval_policy=\"never\"",
+      "--config",
+      "web_search=\"disabled\"",
+      "--config",
+      "tools.web_search=false",
+      "--config",
+      "tools.view_image=false",
+      "--config",
+      "apps._default.enabled=false",
+      "--config",
+      "agents.enabled=false",
+      "--config",
+      "model_providers.openai.request_max_retries=0",
+      "--config",
+      "model_providers.openai.stream_max_retries=0",
+      "--disable",
+      "shell_tool",
+      "--disable",
+      "multi_agent",
+      "--disable",
+      "multi_agent_v2",
+      "--disable",
+      "apps",
+      "--disable",
+      "browser_use",
+      "--disable",
+      "computer_use",
+      "--disable",
+      "image_generation",
+      "--disable",
+      "skill_search",
+      "--disable",
+      "goals",
+      "--json",
+      "--ephemeral",
+      "--sandbox",
+      "read-only",
+      "--skip-git-repo-check",
+      "--cd",
+      "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-model-qualification-ukf0n5w7",
+      "--output-schema",
+      "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-model-qualification-ukf0n5w7\\output-schema.json",
+      "--output-last-message",
+      "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-model-qualification-ukf0n5w7\\raw-output.txt",
+      "-"
+    ],
+    "ended_at": "2026-09-05T10:22:54.788801+00:00",
+    "event_audit": {
+      "event_types": [],
+      "tool_attempt_count": 0,
+      "tool_attempted": false,
+      "tool_event_hashes": []
+    },
+    "event_final_message": null,
+    "process_return_code": 1,
+    "prompt_bytes": 655,
+    "prompt_sha256": "b3d7aa200d23c6791fbe453bd83e5b8b91700abae58b8bc67794150320a8a52b",
+    "provider_event_parse_errors": 0,
+    "raw_output_matches_event_message": false,
+    "raw_output_present": false,
+    "started_at": "2026-09-05T10:22:54.637319+00:00",
+    "timed_out": false,
+    "usage": {
+      "cache_write_input_tokens": "Unknown",
+      "cached_input_tokens": "Unknown",
+      "input_tokens": "Unknown",
+      "output_tokens": "Unknown",
+      "reasoning_tokens": "Unknown"
+    },
+    "wall_time_ns": 151339400
+  },
+  "provider_configuration": {
+    "api_key_fallback": "not-used-child-environment-sanitized",
+    "authentication_mode": "chatgpt",
+    "billing_mode": "chatgpt-subscription",
+    "catalog_checked_at": "2026-09-05T10:22:54.634405+00:00",
+    "codex_cli_resolved_path": "C:\\Users\\wurre\\AppData\\Roaming\\npm\\codex.cmd",
+    "codex_cli_version": "codex-cli 0.147.0",
+    "execution_surface": "codex-cli",
+    "model_id": "gpt-5.6-luna",
+    "model_role": "cheaper",
+    "provider_baseline_id": "irisx-openai-codex-dual-model-v0",
+    "provider_baseline_sha256": "a1a85c7464fbc090c2bf2e1682bee9a22957146e50abf11ab5c41f1544046d74",
+    "provider_id": "openai",
+    "reasoning_effort": "medium"
+  },
+  "required_starting_sha": "0d738fec43bafc72b5f6ca0f1ca39a6426b0b751",
+  "run_id": "qualification-20260905-01",
+  "schema_version": 1,
+  "state_after_sha256": "a5e53e0f8bdc6def70a3eec03a8d361d61c18b45ba312f5fb9adcee1a0fd4a62",
+  "state_before_sha256": "a5e53e0f8bdc6def70a3eec03a8d361d61c18b45ba312f5fb9adcee1a0fd4a62",
+  "terminal_semantics": {
+    "acceptance_decision": "reject",
+    "actual_outcome": "failure",
+    "empirical_evidence_status": "not_assessed",
+    "joint_interpretation": "correctly_recognized_failure",
+    "producer_claim": null,
+    "terminal_execution_status": "failed",
+    "verified_success_eligibility": false
+  }
+}
