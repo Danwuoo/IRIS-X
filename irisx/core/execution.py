@@ -21,6 +21,7 @@ from .records import (
     TaskContract,
     TerminalRecord,
     VerificationResult,
+    adjudicate,
     sha256_bytes,
 )
 
@@ -124,18 +125,6 @@ def changed_paths(before: Mapping[str, Any], after: Mapping[str, Any]) -> tuple[
     return tuple(sorted(path for path in set(before) | set(after) if before.get(path) != after.get(path)))
 
 
-def joint_interpretation(actual: str, evidence: str, acceptance: str, eligible: bool) -> str:
-    if actual == "success" and evidence == "sufficient" and acceptance == "accept" and eligible:
-        return "verified_success"
-    if actual == "success" and evidence != "sufficient":
-        return "unverified_success"
-    if actual in {"partial", "failure"} and acceptance == "accept":
-        return "false_success"
-    if actual == "failure" and acceptance == "reject":
-        return "correctly_recognized_failure"
-    return "unresolved"
-
-
 def _resource_ledger(*, artifact_reads: int, executor_calls: int) -> ResourceLedger:
     return ResourceLedger(artifact_reads=artifact_reads, executor_calls=executor_calls)
 
@@ -172,10 +161,12 @@ def execute(
         verification = VerificationResult(
             False, (reason,), "invalid_binding", (reason,), state_sha256(state)
         )
+        adjudication = adjudicate(verification, terminal_execution_status="rejected")
         return TerminalRecord(
-            supplied_identity, contract, program, "failure", None,
-            verification.evidence_status, "reject", False,
-            "correctly_recognized_failure", "rejected",
+            supplied_identity, contract, program, adjudication.actual_outcome, None,
+            verification.evidence_status, adjudication.acceptance_decision,
+            adjudication.verified_success_eligibility,
+            adjudication.joint_interpretation, "rejected",
             PolicyDecision("not_evaluated", ("binding_failed_before_policy",), "not_applicable"),
             before_sha, state_sha256(state), changed_paths(before_state, state),
             verification, (), tuple(observations),
@@ -203,10 +194,12 @@ def execute(
                 ("no_execution_evidence_produced",),
                 state_sha256(state),
             )
+            adjudication = adjudicate(verification, terminal_execution_status="rejected")
             return TerminalRecord(
-                supplied_identity, contract, program, "failure", None,
-                verification.evidence_status, "reject", False,
-                "correctly_recognized_failure", "rejected", policy,
+                supplied_identity, contract, program, adjudication.actual_outcome, None,
+                verification.evidence_status, adjudication.acceptance_decision,
+                adjudication.verified_success_eligibility,
+                adjudication.joint_interpretation, "rejected", policy,
                 before_sha, state_sha256(state), changed_paths(before_state, state),
                 verification, (), tuple(observations),
                 _resource_ledger(artifact_reads=artifact_reads, executor_calls=0),
@@ -235,10 +228,12 @@ def execute(
             ("no_result_to_verify",),
             after_sha,
         )
+        adjudication = adjudicate(verification, terminal_execution_status="failed")
         return TerminalRecord(
-            supplied_identity, contract, program, "failure", None,
-            verification.evidence_status, "reject", False,
-            "correctly_recognized_failure", "failed", executed_policy,
+            supplied_identity, contract, program, adjudication.actual_outcome, None,
+            verification.evidence_status, adjudication.acceptance_decision,
+            adjudication.verified_success_eligibility,
+            adjudication.joint_interpretation, "failed", executed_policy,
             before_sha, after_sha, changed, verification, (), tuple(observations),
             _resource_ledger(artifact_reads=artifact_reads, executor_calls=1),
         )
@@ -269,18 +264,20 @@ def execute(
             evidence_status=verification.evidence_status,
         )
 
-    actual = "success" if verification.semantic_valid else "failure"
-    acceptance = (
-        "accept"
-        if verification.semantic_valid and verification.evidence_status == "sufficient"
-        else "reject"
+    adjudication = adjudicate(
+        verification,
+        terminal_execution_status=terminal_status,
     )
-    eligible = actual == "success" and acceptance == "accept"
-    observe("adjudication_completed", actual_outcome=actual, acceptance_decision=acceptance)
+    observe(
+        "adjudication_completed",
+        actual_outcome=adjudication.actual_outcome,
+        acceptance_decision=adjudication.acceptance_decision,
+    )
     return TerminalRecord(
-        supplied_identity, contract, program, actual, raw_result.producer_claim,
-        verification.evidence_status, acceptance, eligible,
-        joint_interpretation(actual, verification.evidence_status, acceptance, eligible),
+        supplied_identity, contract, program, adjudication.actual_outcome,
+        raw_result.producer_claim, verification.evidence_status,
+        adjudication.acceptance_decision, adjudication.verified_success_eligibility,
+        adjudication.joint_interpretation,
         terminal_status, executed_policy, before_sha, state_sha256(state),
         changed_paths(before_state, state), verification, raw_result.evidence,
         tuple(observations),

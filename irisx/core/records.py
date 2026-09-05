@@ -229,6 +229,45 @@ class VerificationResult:
 
 
 @dataclass(frozen=True)
+class AdjudicationResult:
+    """Canonical terminal semantics for the currently supported verifier result."""
+
+    actual_outcome: str
+    acceptance_decision: str
+    verified_success_eligibility: bool
+    joint_interpretation: str
+
+
+def adjudicate(
+    verification: VerificationResult,
+    *,
+    terminal_execution_status: str,
+) -> AdjudicationResult:
+    """Derive bounded terminal semantics from authoritative execution inputs."""
+
+    if terminal_execution_status not in TERMINAL_EXECUTION_STATUSES:
+        raise ValueError("terminal_execution_status is outside the provisional vocabulary")
+    actual_outcome = "success" if verification.semantic_valid else "failure"
+    accepted = (
+        verification.semantic_valid
+        and verification.evidence_status == "sufficient"
+        and terminal_execution_status == "completed"
+    )
+    if accepted:
+        joint_interpretation = "verified_success"
+    elif verification.semantic_valid:
+        joint_interpretation = "unverified_success"
+    else:
+        joint_interpretation = "correctly_recognized_failure"
+    return AdjudicationResult(
+        actual_outcome=actual_outcome,
+        acceptance_decision="accept" if accepted else "reject",
+        verified_success_eligibility=accepted,
+        joint_interpretation=joint_interpretation,
+    )
+
+
+@dataclass(frozen=True)
 class Observation:
     sequence: int
     stage: str

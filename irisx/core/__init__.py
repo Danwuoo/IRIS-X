@@ -4,6 +4,7 @@ from .execution import BindingError, bind_execution, evidence_binding, execute
 from .interfaces import ExecutorAdapter, IndependentVerifier, PolicyGate
 from .records import (
     UNKNOWN,
+    AdjudicationResult,
     BoundEvidenceRequirement,
     EvidenceRequirement,
     EvidenceRef,
@@ -18,10 +19,12 @@ from .records import (
     TaskContract,
     TerminalRecord,
     VerificationResult,
+    adjudicate,
 )
 
 __all__ = [
     "UNKNOWN",
+    "AdjudicationResult",
     "BindingError",
     "BoundEvidenceRequirement",
     "EvidenceRequirement",
@@ -40,6 +43,7 @@ __all__ = [
     "TaskContract",
     "TerminalRecord",
     "VerificationResult",
+    "adjudicate",
     "bind_execution",
     "evidence_binding",
     "execute",
