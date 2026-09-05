@@ -112,16 +112,44 @@ class ModelExecutionQualificationTests(unittest.TestCase):
             "C:/frozen/codex.cmd",
             Path("C:/isolated"),
             Path("C:/isolated/schema.json"),
+            Path("C:/isolated/model-catalog.json"),
             Path("C:/isolated/output.txt"),
         )
         self.assertEqual(command[0:2], ["C:/frozen/codex.cmd", "exec"])
         self.assertIn("gpt-5.6-luna", command)
         self.assertIn('model_reasoning_effort="medium"', command)
-        self.assertIn("model_providers.openai.request_max_retries=0", command)
-        self.assertIn("model_providers.openai.stream_max_retries=0", command)
+        self.assertIn(
+            "model_catalog_json="
+            + json.dumps(str(Path("C:/isolated/model-catalog.json"))),
+            command,
+        )
+        self.assertIn('model_provider="irisx_openai_no_retry"', command)
+        self.assertIn(
+            'model_providers.irisx_openai_no_retry.name="OpenAI"', command
+        )
+        self.assertIn(
+            "model_providers.irisx_openai_no_retry.requires_openai_auth=true",
+            command,
+        )
+        self.assertIn(
+            "model_providers.irisx_openai_no_retry.request_max_retries=0",
+            command,
+        )
+        self.assertIn(
+            "model_providers.irisx_openai_no_retry.stream_max_retries=0",
+            command,
+        )
+        self.assertIn(
+            "model_providers.irisx_openai_no_retry.supports_websockets=false",
+            command,
+        )
+        self.assertNotIn("model_providers.openai.request_max_retries=0", command)
         self.assertIn('web_search="disabled"', command)
         self.assertIn("tools.web_search=false", command)
         self.assertIn("shell_tool", command)
+        self.assertIn("apply_patch_freeform", command)
+        self.assertIn("tool_search", command)
+        self.assertIn("responses_websockets", command)
         self.assertIn("multi_agent", command)
         self.assertEqual(command.count("--sandbox"), 1)
         self.assertEqual(command[command.index("--sandbox") + 1], "read-only")
@@ -137,7 +165,54 @@ class ModelExecutionQualificationTests(unittest.TestCase):
         self.assertEqual(errors, 0)
         self.assertEqual(qualification.final_agent_message(events), '{"selected_id":"alpha"}')
         self.assertEqual(qualification.extract_usage(events)["input_tokens"], 100)
-        self.assertFalse(qualification.audit_provider_events(events)["tool_attempted"])
+        audit = qualification.audit_provider_events(events)
+        self.assertFalse(audit["tool_attempted"])
+        self.assertEqual(audit["retry_event_count"], 0)
+        self.assertEqual(audit["route_event_count"], 0)
+        self.assertEqual(audit["fallback_event_count"], 0)
+
+    def test_retry_route_and_fallback_events_are_detected(self) -> None:
+        events = [
+            {"type": "stream.retry", "message": "Reconnecting..."},
+            {"type": "model_reroute", "from_model": "a", "to_model": "b"},
+            {"type": "warning", "message": "Falling back from WebSockets"},
+        ]
+        audit = qualification.audit_provider_events(events)
+        self.assertEqual(audit["retry_event_count"], 1)
+        self.assertEqual(audit["route_event_count"], 1)
+        self.assertEqual(audit["fallback_event_count"], 1)
+
+    def test_repair_definition_uses_custom_provider_without_api_key_fields(self) -> None:
+        identity, contract = qualification.validate_frozen_definition()
+        provider = contract["provider_configuration"]
+        self.assertEqual(provider["provider_id"], "openai")
+        self.assertEqual(
+            provider["codex_model_provider_config_id"], "irisx_openai_no_retry"
+        )
+        self.assertIsNone(identity["codex_model_provider_base_url"])
+        arguments = qualification.codex_config_arguments(
+            Path("C:/isolated/model-catalog.json")
+        )
+        rendered = "\n".join(arguments)
+        self.assertNotIn("env_key", rendered)
+        self.assertNotIn("experimental_bearer_token", rendered)
+        self.assertNotIn("base_url", rendered)
+        catalog = json.loads(qualification.MODEL_CATALOG_PATH.read_bytes())
+        self.assertEqual(len(catalog["models"]), 1)
+        model = catalog["models"][0]
+        self.assertEqual(model["shell_type"], "disabled")
+        self.assertIsNone(model["apply_patch_tool_type"])
+        self.assertFalse(model["supports_search_tool"])
+        self.assertEqual(model["experimental_supported_tools"], [])
+
+    def test_original_failed_run_remains_valid_and_immutable(self) -> None:
+        original = SUBSTRATE / "runs" / qualification.ORIGINAL_RUN_ID
+        result = qualification.validate_run_artifacts(original)
+        self.assertEqual(result["run_id"], qualification.ORIGINAL_RUN_ID)
+        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(
+            result["terminal_semantics"]["terminal_execution_status"], "failed"
+        )
 
     def test_correct_output_becomes_verified_success(self) -> None:
         record, runner = run_fixture('{"selected_id":"alpha"}')

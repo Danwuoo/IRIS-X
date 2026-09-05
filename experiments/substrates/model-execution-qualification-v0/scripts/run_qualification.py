@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Preflight, run once, or validate the frozen Batch 4 qualification."""
+"""Preflight, run once, or validate the frozen Batch 4 repair qualification."""
 
 from __future__ import annotations
 
@@ -46,18 +46,28 @@ from irisx.core.records import (  # noqa: E402
 )
 
 
-CONTRACT_PATH = SUBSTRATE / "definition" / "qualification-contract.json"
-IDENTITY_PATH = SUBSTRATE / "definition" / "execution-identity.json"
+CONTRACT_PATH = SUBSTRATE / "definition" / "qualification-repair-contract.json"
+IDENTITY_PATH = SUBSTRATE / "definition" / "repair-execution-identity.json"
 OUTPUT_SCHEMA_PATH = SUBSTRATE / "definition" / "output-schema.json"
+PREFLIGHT_OBSERVATION_PATH = SUBSTRATE / "definition" / "repair-preflight-observation.json"
+MODEL_CATALOG_PATH = SUBSTRATE / "definition" / "tool-free-luna-model-catalog.json"
 BASELINE_PATH = REPOSITORY_ROOT / "experiments" / "configurations" / "provider-model-baseline-v0.json"
-RUN_ID = "qualification-20260905-01"
+ORIGINAL_RUN_ID = "qualification-20260905-01"
+RUN_ID = "qualification-20260905-02"
 RUN_DIR = SUBSTRATE / "runs" / RUN_ID
+CODEX_PROVIDER_CONFIG_ID = "irisx_openai_no_retry"
+CODEX_PROVIDER_NAME = "OpenAI"
 API_ENVIRONMENT_NAMES = (
     "OPENAI_API_KEY",
+    "AZURE_OPENAI_API_KEY",
     "CODEX_API_KEY",
+    "OPENAI_KEY",
+    "OPENAI_ORGANIZATION",
     "OPENAI_ORG_ID",
+    "OPENAI_PROJECT",
     "OPENAI_PROJECT_ID",
     "OPENAI_BASE_URL",
+    "AZURE_OPENAI_ENDPOINT",
 )
 FULL_SHA = re.compile(r"[0-9a-f]{40}")
 Runner = Callable[..., subprocess.CompletedProcess[str]]
@@ -136,8 +146,26 @@ def codex_environment() -> dict[str, str]:
     return child
 
 
-def codex_config_arguments() -> list[str]:
+def codex_config_arguments(model_catalog_path: Path) -> list[str]:
     return [
+        "--config",
+        f"model_catalog_json={json.dumps(str(model_catalog_path))}",
+        "--config",
+        f'model_provider="{CODEX_PROVIDER_CONFIG_ID}"',
+        "--config",
+        f'model_providers.{CODEX_PROVIDER_CONFIG_ID}.name="{CODEX_PROVIDER_NAME}"',
+        "--config",
+        f"model_providers.{CODEX_PROVIDER_CONFIG_ID}.requires_openai_auth=true",
+        "--config",
+        f'model_providers.{CODEX_PROVIDER_CONFIG_ID}.wire_api="responses"',
+        "--config",
+        f"model_providers.{CODEX_PROVIDER_CONFIG_ID}.request_max_retries=0",
+        "--config",
+        f"model_providers.{CODEX_PROVIDER_CONFIG_ID}.stream_max_retries=0",
+        "--config",
+        f"model_providers.{CODEX_PROVIDER_CONFIG_ID}.supports_websockets=false",
+        "--config",
+        f"model_providers.{CODEX_PROVIDER_CONFIG_ID}.supports_standalone_web_search=false",
         "--config",
         'model_reasoning_effort="medium"',
         "--config",
@@ -152,12 +180,12 @@ def codex_config_arguments() -> list[str]:
         "apps._default.enabled=false",
         "--config",
         "agents.enabled=false",
-        "--config",
-        "model_providers.openai.request_max_retries=0",
-        "--config",
-        "model_providers.openai.stream_max_retries=0",
         "--disable",
         "shell_tool",
+        "--disable",
+        "apply_patch_freeform",
+        "--disable",
+        "js_repl",
         "--disable",
         "multi_agent",
         "--disable",
@@ -165,7 +193,15 @@ def codex_config_arguments() -> list[str]:
         "--disable",
         "apps",
         "--disable",
+        "plugins",
+        "--disable",
+        "plugin_hooks",
+        "--disable",
+        "tool_search",
+        "--disable",
         "browser_use",
+        "--disable",
+        "in_app_browser",
         "--disable",
         "computer_use",
         "--disable",
@@ -174,6 +210,12 @@ def codex_config_arguments() -> list[str]:
         "skill_search",
         "--disable",
         "goals",
+        "--disable",
+        "responses_websockets",
+        "--disable",
+        "responses_websockets_v2",
+        "--disable",
+        "remote_compaction_v2",
     ]
 
 
@@ -211,6 +253,11 @@ def validate_frozen_definition() -> tuple[dict[str, Any], dict[str, Any]]:
         (SUBSTRATE / identity["program_path"], identity["program_sha256"]),
         (SUBSTRATE / identity["task_input_path"], identity["task_input_sha256"]),
         (SUBSTRATE / identity["output_schema_path"], identity["output_schema_sha256"]),
+        (
+            SUBSTRATE / identity["preflight_observation_path"],
+            identity["preflight_observation_sha256"],
+        ),
+        (SUBSTRATE / identity["model_catalog_path"], identity["model_catalog_sha256"]),
         (BASELINE_PATH, identity["provider_baseline_sha256"]),
     )
     for path, expected in expected_files:
@@ -236,6 +283,47 @@ def validate_frozen_definition() -> tuple[dict[str, Any], dict[str, Any]]:
     )
     if observed_provider != expected_provider:
         raise QualificationError("provider/model configuration differs from the accepted cheaper role")
+    if (
+        provider["codex_model_provider_config_id"] != CODEX_PROVIDER_CONFIG_ID
+        or provider["codex_model_provider_name"] != CODEX_PROVIDER_NAME
+        or identity["codex_model_provider_config_id"] != CODEX_PROVIDER_CONFIG_ID
+        or identity["codex_model_provider_name"] != CODEX_PROVIDER_NAME
+        or identity["codex_model_provider_base_url"] is not None
+    ):
+        raise QualificationError("repair provider configuration differs from the frozen custom slot")
+    if identity["retry_configuration"] != {
+        "http_request_retries": 0,
+        "stream_reconnect_retries": 0,
+        "websocket_transport": False,
+        "transport_fallback": False,
+    }:
+        raise QualificationError("repair retry/transport configuration drifted")
+    catalog = load_json(SUBSTRATE / identity["model_catalog_path"])
+    if len(catalog.get("models", [])) != 1:
+        raise QualificationError("repair catalog must contain exactly one model")
+    catalog_model = catalog["models"][0]
+    if (
+        catalog_model.get("slug") != identity["model_id"]
+        or catalog_model.get("shell_type") != "disabled"
+        or catalog_model.get("apply_patch_tool_type") is not None
+        or catalog_model.get("supports_search_tool") is not False
+        or catalog_model.get("experimental_supported_tools") != []
+    ):
+        raise QualificationError("repair model catalog does not enforce the zero-tool envelope")
+    if identity["codex_cli_source_observation"] != {
+        "repository": "openai/codex",
+        "tag": "rust-v0.147.0",
+        "commit": "be6e8eac029b183056b7e4402879f15d2c85f61b",
+        "chatgpt_codex_base_url": "https://chatgpt.com/backend-api/codex",
+        "request_retry_zero_semantics": "one-initial-request-attempt-no-retry",
+        "stream_retry_zero_semantics": "no-stream-reconnect",
+        "websocket_fallback_control": "provider-websocket-support-false",
+    }:
+        raise QualificationError("Codex CLI source observation drifted")
+    if identity["official_codex_config_reference"] != (
+        "https://learn.chatgpt.com/docs/config-file/config-reference"
+    ):
+        raise QualificationError("official Codex config reference drifted")
     ceiling = contract["call_ceiling"]
     if ceiling != {
         "provider_invocations": 1,
@@ -259,7 +347,13 @@ def preflight() -> dict[str, Any]:
     if auth_status != "Logged in using ChatGPT":
         raise QualificationError(f"provider execution unavailable: auth status is {auth_status!r}")
 
-    debug_command = [codex_path, "debug", *codex_config_arguments(), "models", "--bundled"]
+    debug_command = [
+        codex_path,
+        "debug",
+        *codex_config_arguments(MODEL_CATALOG_PATH),
+        "models",
+        "--bundled",
+    ]
     catalog = json.loads(run_checked(debug_command, env=child_env))
     records = {
         row.get("slug"): row
@@ -276,12 +370,84 @@ def preflight() -> dict[str, Any]:
     }
     if identity["reasoning_effort"] not in efforts:
         raise QualificationError("accepted medium reasoning effort is absent from the local catalog")
+
+    doctor_command = [
+        codex_path,
+        "doctor",
+        "--json",
+        "--config",
+        f'model="{identity["model_id"]}"',
+        *codex_config_arguments(MODEL_CATALOG_PATH),
+    ]
+    doctor_completed = subprocess.run(
+        doctor_command,
+        cwd=REPOSITORY_ROOT,
+        check=False,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=child_env,
+    )
+    doctor_output = doctor_completed.stdout.strip()
+    if not doctor_output:
+        raise QualificationError(
+            "Codex doctor returned no JSON: " + doctor_completed.stderr.strip()
+        )
+    doctor = json.loads(doctor_output)
+    checks = doctor.get("checks")
+    if not isinstance(checks, Mapping):
+        raise QualificationError("Codex doctor did not return a check map")
+    config_check = checks.get("config.load", {})
+    auth_check = checks.get("auth.credentials", {})
+    reachability_check = checks.get("network.provider_reachability", {})
+    websocket_check = checks.get("network.websocket_reachability", {})
+    config_details = config_check.get("details", {})
+    auth_details = auth_check.get("details", {})
+    reachability_details = reachability_check.get("details", {})
+    websocket_details = websocket_check.get("details", {})
+    if (
+        config_check.get("status") != "ok"
+        or config_details.get("model provider") != CODEX_PROVIDER_CONFIG_ID
+        or config_details.get("model") != identity["model_id"]
+    ):
+        raise QualificationError("Codex doctor did not load the frozen repair provider/model")
+    if (
+        auth_check.get("status") != "ok"
+        or auth_details.get("stored auth mode") != "chatgpt"
+        or auth_details.get("stored ChatGPT tokens") != "true"
+    ):
+        raise QualificationError("Codex doctor did not confirm ChatGPT authentication")
+    if (
+        reachability_check.get("status") != "ok"
+        or reachability_details.get("reachability mode") != "ChatGPT auth"
+    ):
+        raise QualificationError("Codex doctor did not resolve the ChatGPT provider endpoint")
+    if (
+        websocket_check.get("status") != "ok"
+        or websocket_details.get("model provider") != CODEX_PROVIDER_CONFIG_ID
+        or websocket_details.get("provider name") != CODEX_PROVIDER_NAME
+        or websocket_details.get("supports websockets") != "false"
+        or websocket_details.get("wire API") != "responses"
+    ):
+        raise QualificationError("Codex doctor did not confirm the frozen non-WebSocket provider")
     return {
         "schema_version": 1,
         "checked_at": utc_now(),
         "provider_baseline_id": identity["provider_baseline_id"],
         "provider_baseline_sha256": identity["provider_baseline_sha256"],
         "provider_id": identity["provider_id"],
+        "codex_model_provider_config_id": CODEX_PROVIDER_CONFIG_ID,
+        "codex_model_provider_name": CODEX_PROVIDER_NAME,
+        "codex_model_provider_base_url": None,
+        "codex_chatgpt_endpoint_resolution": identity[
+            "codex_chatgpt_endpoint_resolution"
+        ],
+        "doctor_provider_endpoint_observation": reachability_details.get(
+            "ChatGPT base URL", UNKNOWN
+        ),
+        "doctor_websocket_support": False,
         "execution_surface": identity["execution_surface"],
         "codex_cli_resolved_path": codex_path,
         "codex_cli_version": version,
@@ -297,6 +463,9 @@ def preflight() -> dict[str, Any]:
         "api_key_environment_removed_from_child": all(
             name not in child_env for name in API_ENVIRONMENT_NAMES
         ),
+        "http_request_retries": 0,
+        "stream_reconnect_retries": 0,
+        "doctor_reachability_probe_made": True,
         "provider_cost_usd": UNKNOWN,
         "zero_model_calls": True,
     }
@@ -318,6 +487,7 @@ def build_provider_command(
     codex_path: str,
     workspace: Path,
     output_schema_path: Path,
+    model_catalog_path: Path,
     raw_output_path: Path,
 ) -> list[str]:
     return [
@@ -328,7 +498,7 @@ def build_provider_command(
         "--ignore-rules",
         "--model",
         "gpt-5.6-luna",
-        *codex_config_arguments(),
+        *codex_config_arguments(model_catalog_path),
         "--json",
         "--ephemeral",
         "--sandbox",
@@ -363,6 +533,9 @@ def parse_provider_events(content: bytes) -> tuple[list[dict[str, Any]], int]:
 def audit_provider_events(events: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     event_types: list[str] = []
     tool_event_hashes: list[str] = []
+    retry_event_hashes: list[str] = []
+    route_event_hashes: list[str] = []
+    fallback_event_hashes: list[str] = []
     allowed_item_types = {"agent_message", "reasoning"}
     for event in events:
         event_type = str(event.get("type", ""))
@@ -383,11 +556,31 @@ def audit_provider_events(events: Sequence[Mapping[str, Any]]) -> dict[str, Any]
         )
         if toolish:
             tool_event_hashes.append(sha256_bytes(canonical_json_bytes(event)))
+        retryish = any(token in event_type.lower() for token in ("retry", "reconnect")) or any(
+            token in encoded for token in ("reconnecting...", "stream disconnected - retrying")
+        )
+        routeish = any(token in event_type.lower() for token in ("reroute", "routing")) or any(
+            token in encoded for token in ('"model_reroute"', '"model.reroute"')
+        )
+        fallbackish = "fallback" in event_type.lower() or "falling back" in encoded
+        event_hash = sha256_bytes(canonical_json_bytes(event))
+        if retryish:
+            retry_event_hashes.append(event_hash)
+        if routeish:
+            route_event_hashes.append(event_hash)
+        if fallbackish:
+            fallback_event_hashes.append(event_hash)
     return {
         "event_types": event_types,
         "tool_attempt_count": len(tool_event_hashes),
         "tool_attempted": bool(tool_event_hashes),
         "tool_event_hashes": tool_event_hashes,
+        "retry_event_count": len(retry_event_hashes),
+        "retry_event_hashes": retry_event_hashes,
+        "route_event_count": len(route_event_hashes),
+        "route_event_hashes": route_event_hashes,
+        "fallback_event_count": len(fallback_event_hashes),
+        "fallback_event_hashes": fallback_event_hashes,
     }
 
 
@@ -482,11 +675,14 @@ class CodexModelExecutorAdapter:
             workspace = Path(temporary)
             schema_copy = workspace / "output-schema.json"
             schema_copy.write_bytes(OUTPUT_SCHEMA_PATH.read_bytes())
+            model_catalog_copy = workspace / "model-catalog.json"
+            model_catalog_copy.write_bytes(MODEL_CATALOG_PATH.read_bytes())
             raw_output_temp = workspace / "raw-output.txt"
             command = build_provider_command(
                 str(self.preflight_record["codex_cli_resolved_path"]),
                 workspace,
                 schema_copy,
+                model_catalog_copy,
                 raw_output_temp,
             )
             attempt_start = {
@@ -497,7 +693,10 @@ class CodexModelExecutorAdapter:
                 "code_commit": self.code_commit,
                 "provider_attempt": 1,
                 "model_calls_committed_ceiling": 1,
+                "preserved_prior_logical_attempts": 1,
+                "batch_4_lineage_logical_attempt_ceiling": 2,
                 "retry_count": 0,
+                "codex_model_provider_config_id": CODEX_PROVIDER_CONFIG_ID,
                 "command": command,
                 "api_key_environment_removed_from_child": True,
             }
@@ -551,10 +750,10 @@ class CodexModelExecutorAdapter:
             network_calls=UNKNOWN,
             paid_api_calls=0,
             tool_calls=event_audit["tool_attempt_count"],
-            retry_count=0,
-            route_count=0,
+            retry_count=event_audit["retry_event_count"],
+            route_count=event_audit["route_event_count"],
             escalation_count=0,
-            recovery_count=0,
+            recovery_count=event_audit["fallback_event_count"],
             wall_time_ns=wall_time_ns,
             provider_cost_usd=UNKNOWN,
         )
@@ -591,6 +790,12 @@ class CodexModelExecutorAdapter:
             failure_reasons.append("provider_event_stream_malformed")
         if event_audit["tool_attempted"]:
             failure_reasons.append("prohibited_tool_attempt")
+        if event_audit["retry_event_count"]:
+            failure_reasons.append("prohibited_retry_observed")
+        if event_audit["route_event_count"]:
+            failure_reasons.append("prohibited_route_observed")
+        if event_audit["fallback_event_count"]:
+            failure_reasons.append("prohibited_transport_fallback_observed")
         if event_message is not None and file_message is not None and not self.capture[
             "raw_output_matches_event_message"
         ]:
@@ -737,6 +942,8 @@ def finalize_run(
     resource_record = {
         "schema_version": 1,
         "run_id": RUN_ID,
+        "preserved_prior_logical_attempts": 1,
+        "batch_4_lineage_logical_attempts_after_run": 2,
         "provider_attempts": 1,
         "model_calls": ledger["model_calls"],
         "network_calls": ledger["network_calls"],
@@ -776,6 +983,19 @@ def finalize_run(
             "provider_baseline_sha256": identity["provider_baseline_sha256"],
             "provider_id": identity["provider_id"],
             "execution_surface": identity["execution_surface"],
+            "codex_model_provider_config_id": identity[
+                "codex_model_provider_config_id"
+            ],
+            "codex_model_provider_name": identity["codex_model_provider_name"],
+            "codex_model_provider_base_url": identity[
+                "codex_model_provider_base_url"
+            ],
+            "codex_chatgpt_endpoint_resolution": identity[
+                "codex_chatgpt_endpoint_resolution"
+            ],
+            "codex_cli_source_observation": identity[
+                "codex_cli_source_observation"
+            ],
             "model_role": identity["model_role"],
             "model_id": identity["model_id"],
             "reasoning_effort": identity["reasoning_effort"],
@@ -785,6 +1005,12 @@ def finalize_run(
             "codex_cli_resolved_path": preflight_record["codex_cli_resolved_path"],
             "codex_cli_version": preflight_record["codex_cli_version"],
             "catalog_checked_at": preflight_record["checked_at"],
+            "doctor_provider_endpoint_observation": preflight_record[
+                "doctor_provider_endpoint_observation"
+            ],
+            "http_request_retries": 0,
+            "stream_reconnect_retries": 0,
+            "websocket_transport": False,
         },
         "candidate_identity": {
             "task_id": identity["task_id"],
@@ -799,8 +1025,10 @@ def finalize_run(
         "execution_envelope": contract["execution_envelope"],
         "call_ceiling": contract["call_ceiling"],
         "call_ledger": {
+            "preserved_prior_logical_attempts": 1,
             "provider_attempts": 1,
             "model_calls": terminal["resource_ledger"]["model_calls"],
+            "batch_4_lineage_logical_attempts": 2,
             "retries": terminal["resource_ledger"]["retry_count"],
             "routes": terminal["resource_ledger"]["route_count"],
             "escalations": terminal["resource_ledger"]["escalation_count"],
@@ -851,6 +1079,8 @@ def validate_run_artifacts(run_dir: Path = RUN_DIR) -> dict[str, Any]:
     manifest = load_json(run_dir / "run-manifest.json")
     terminal = load_json(run_dir / "terminal-record.json")
     resources = load_json(run_dir / "resource-record.json")
+    if manifest["run_id"] != run_dir.name or resources["run_id"] != run_dir.name:
+        raise QualificationError("run identity does not match its immutable directory")
     for record in manifest["immutable_artifacts"]:
         path = SUBSTRATE / record["path"]
         content = path.read_bytes()
@@ -859,9 +1089,19 @@ def validate_run_artifacts(run_dir: Path = RUN_DIR) -> dict[str, Any]:
     ledger = terminal["resource_ledger"]
     if resources["model_calls"] != 1 or ledger["model_calls"] != 1:
         raise QualificationError("observed provider invocation must record one model call")
-    for field in ("retry_count", "route_count", "escalation_count", "recovery_count"):
-        if resources[field] != 0 or ledger[field] != 0:
-            raise QualificationError(f"excluded mechanism count is nonzero: {field}")
+    excluded_counts = {
+        field: resources[field]
+        for field in ("retry_count", "route_count", "escalation_count", "recovery_count")
+    }
+    for field, count in excluded_counts.items():
+        if ledger[field] != count:
+            raise QualificationError(f"terminal/resource disagreement: {field}")
+    if any(excluded_counts.values()) and (
+        terminal["actual_outcome"] != "failure"
+        or terminal["acceptance_decision"] != "reject"
+        or terminal["verified_success_eligibility"] is not False
+    ):
+        raise QualificationError("excluded mechanism use did not fail closed")
     if resources["network_calls"] != UNKNOWN or ledger["network_calls"] != UNKNOWN:
         raise QualificationError("unexposed transport count must remain Unknown")
     if terminal["side_effects"]["state_before_sha256"] != terminal["side_effects"][
@@ -875,6 +1115,7 @@ def validate_run_artifacts(run_dir: Path = RUN_DIR) -> dict[str, Any]:
         "artifact_count": len(required),
         "terminal_semantics": manifest["terminal_semantics"],
         "resource_record": resources,
+        "excluded_mechanism_counts": excluded_counts,
         "status": "PASS",
     }
 
@@ -888,6 +1129,7 @@ def main() -> int:
     parser.add_argument("--write-preflight", type=Path)
     parser.add_argument("--definition-commit")
     parser.add_argument("--code-commit")
+    parser.add_argument("--run-id", choices=(ORIGINAL_RUN_ID, RUN_ID), default=RUN_ID)
     args = parser.parse_args()
 
     try:
@@ -898,7 +1140,15 @@ def main() -> int:
             print(json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True))
             return 0
         if args.validate_run:
-            print(json.dumps(validate_run_artifacts(), ensure_ascii=False, indent=2, sort_keys=True))
+            run_dir = SUBSTRATE / "runs" / args.run_id
+            print(
+                json.dumps(
+                    validate_run_artifacts(run_dir),
+                    ensure_ascii=False,
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
             return 0
         if not args.definition_commit or not args.code_commit:
             raise QualificationError("live mode requires both full freeze commit identities")

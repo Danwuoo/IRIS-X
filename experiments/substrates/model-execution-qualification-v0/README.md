@@ -1,9 +1,9 @@
 # Model Execution Qualification v0
 
-- **Status:** frozen qualification substrate for Phase 5 Batch 4
+- **Status:** frozen Batch 4 evidence plus owner-authorized corrective qualification
 - **Scope:** exactly one model-backed read-only `ExecutorAdapter` path
 - **Provider/configuration:** OpenAI through Codex CLI, `gpt-5.6-luna`, medium reasoning
-- **Run ceiling:** one provider invocation, zero retries, routes, escalations, or recovery actions
+- **Repair ceiling:** one additional provider invocation, zero retries, routes, escalations, or recovery actions
 - **Verifier:** deterministic fixture-local JSON/oracle comparison; no model judge
 - **Architecture status:** provisional; not a general provider layer or production runtime
 
@@ -12,6 +12,16 @@ IRIS-X identity, contract-bound evidence, independent-verification, canonical
 adjudication, terminal-record, and resource-accounting boundaries. Provider-
 specific code stays in `scripts/run_qualification.py`; `irisx.core` contains no
 OpenAI, Codex, or Luna type.
+
+The immutable original attempt is `runs/qualification-20260905-01/`. It failed
+closed during config loading because Codex CLI 0.147.0 rejects overriding the
+reserved built-in provider ID `openai`. The corrective run is separately
+frozen as `qualification-20260905-02`; it uses the custom Codex configuration
+slot `irisx_openai_no_retry` while retaining `openai` as the upstream provider
+identity. The slot requires OpenAI authentication, has no API-key/base-URL
+fallback, fixes HTTP and SSE retry counts at zero, and disables WebSockets.
+The frozen repair model catalog retains the accepted Luna alias and medium
+reasoning level while declaring no shell, patch, search, or experimental tool.
 
 ## Frozen task
 
@@ -35,6 +45,7 @@ The adapter runs Codex in an isolated temporary directory with:
 - `--ignore-user-config`, `--ignore-rules`, `--ephemeral`;
 - `--sandbox read-only` and `approval_policy="never"`;
 - shell, web search, apps, and multi-agent facilities disabled;
+- patch, plugin, tool-search, and WebSocket transport facilities disabled;
 - HTTP-request and stream-reconnect retry counts fixed at zero;
 - an output schema and a prompt that forbids every tool;
 - API-key environment variables removed from the child process; and
@@ -54,6 +65,7 @@ python tools\model_baseline_check.py
 python tools\model_baseline_check.py --check-local-catalog
 python -m unittest discover -s experiments\substrates\model-execution-qualification-v0\tests -v
 python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --preflight
+python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --validate-run --run-id qualification-20260905-01
 ```
 
 None of those commands may execute `codex exec`.
@@ -66,7 +78,7 @@ Only after the definition/code freeze is committed and the tree is clean:
 python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --live --definition-commit <full-definition-commit> --code-commit <full-clean-head>
 ```
 
-The command refuses an existing run directory, a dirty tree, non-full or
+The repair command refuses an existing run directory, a dirty tree, non-full or
 unresolvable commit identities, mismatched frozen artifacts, unavailable Luna
 catalog entry, non-ChatGPT auth, or any API-key fallback requirement. It makes
 at most one `codex exec` subprocess invocation and has no retry branch.

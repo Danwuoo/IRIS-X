@@ -9,17 +9,19 @@ IRIS-X is a clean research workspace for rethinking reliable, low-cost, task-spe
 The project is not intended to combine several existing repositories into a larger framework. The repositories collected here are research predecessors, external references, implementation examples, and experimental substrates. Their useful ideas, constraints, failure cases, and engineering patterns may inform IRIS-X, but IRIS-X should develop its own coherent architecture rather than inherit the structure of any one source project.
 
 The repository has completed its initial research-preparation work, the Phase 4
-evidence program, and the first post-Phase-4 synthesis. Current work is
-owner-authorized Phase 5 provisional architecture development. Any architecture
-produced in this stage remains provisional, revisable, and not production-stable.
+evidence program, and the first post-Phase-4 synthesis. Current work is an
+owner-authorized corrective continuation of Phase 5 Batch 4, limited to one
+model-execution qualification repair. Any architecture produced in this stage
+remains provisional, revisable, and not production-stable.
 
 ## Current Objective
 
 Harden the provisional IRIS-X-authored core while preserving the
 already-supported execution trust boundaries. The current owner-authorized
-batch qualifies exactly one model-backed execution path through those
-boundaries while keeping provider-specific implementation outside core and
-retaining deterministic independent verification.
+work is limited to repairing and qualifying the frozen model-backed execution
+path without reopening the preserved Batch 4 failure evidence or starting
+Batch 5. Provider-specific implementation remains outside core, with
+deterministic independent verification retained.
 
 At this stage, the main goals are to:
 
