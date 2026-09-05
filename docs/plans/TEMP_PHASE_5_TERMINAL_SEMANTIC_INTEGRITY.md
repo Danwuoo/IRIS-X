@@ -574,3 +574,46 @@ After canonical adjudication, TerminalRecord consistency enforcement, validation
 **STOP.**
 
 Do not start Phase 5 Batch 4 under this plan.
+
+---
+
+## 27. Retirement record
+
+- **Retired on:** 2026-09-05 Asia/Taipei
+- **Required and actual starting `main`:** `954b95d0126ac057789d1eee5584ec7bef391614`
+- **Plan activation:** `45828999ff39e7617a21e308ef6c5f4cda40027f`
+- **Authority alignment:** `0e7ec248480ac6598b56c53e161b4abe100d2361`
+- **Canonical adjudication:** `587e3a12767caa31bcdfc5b6436687ba78fa7c47`
+- **Terminal consistency enforcement and proof:** `fd3b179ec7515f435f941b18055077f1ad8a6c81`
+- **Validated implementation head:** `fd3b179ec7515f435f941b18055077f1ad8a6c81`
+- **Durable handoff:** `30c5e75fb83e0b0c4efd7b17ff63f7d27c6a312d`
+- **Focused tests:** 50/50 passed (28 core, 13 mutation, 9 read-only)
+- **Regression sweep:** 93 tests across 15 experiment/substrate directories; 92 passed, the one unchanged baseline-known failure remained, and zero errored
+- **Repository validation:** passed with 13 registered sources and 7 paper artifacts
+- **Compilation and CLIs:** required Python compilation and both deterministic CLIs passed; terminal schema remained version 1
+- **Preservation:** protected source, paper, research, run, prior-plan, prior-handoff, and all four frozen-input identities remained unchanged; no run directory or third execution path was added
+- **H-G1/H-W1/H-C1/H-R1:** `Not evaluated`
+- **History:** no amend, rebase, squash, force-push, or other history rewrite
+- **Push:** normal push follows this retirement commit; final local/remote identity and ahead/behind are reported in the owner-facing response
+
+The exact allowed conclusion is:
+
+> **Phase 5 Batch 3 complete — terminal outcome, evidence, acceptance, verified-success eligibility, and joint interpretation are canonically derived and consistency-checked across the existing provisional deterministic execution paths.**
+
+Remaining uncertainty includes `partial` and `unresolved` semantics,
+probabilistic confidence, human disagreement, multi-verifier consensus, general
+verifier correctness, production reliability, and final architecture
+correctness. These remain `Not established` or `Not evaluated`; the exact core
+function and record shapes remain provisional.
+
+No provider/model adapter, model call, network/API behavior, paid API, external
+action, persistence, retry, recovery, routing, cascade, escalation, workflow
+machinery/search, optimizer integration, fine-tuning, training, multi-agent
+logic, architecture search, production infrastructure, telemetry system,
+ontology redesign, additional execution path, or new run was implemented,
+evaluated, or run.
+
+This retirement completes Phase 5 Batch 3 only. Phase 5 remains open, and this
+plan authorizes no Phase 5 Batch 4.
+
+**STOP.**
