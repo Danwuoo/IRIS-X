@@ -912,3 +912,44 @@ After:
 Do not start Phase 5 Batch 5.
 
 A future owner instruction must separately authorize the next batch.
+
+---
+
+## 28. Retirement record — 2026-09-05 Asia/Taipei
+
+- **Status:** Retired after the owner-authorized Phase 5 Batch 4 lifecycle.
+- **Required and actual starting SHA:** `0d738fec43bafc72b5f6ca0f1ca39a6426b0b751`.
+- **Definition/code freeze SHA:** `b7cb5db1334ba20ec9d19c43af2ffb31a2edce93`.
+- **Run-evidence commit:** `d85320d57007677be747924426270feb79cc92e2`.
+- **Durable handoff commit:** `cf2a57aa54444860bc29e59f6b32c99967d4e69d`.
+- **One-call ceiling:** consumed by exactly one frozen Codex CLI live attempt.
+- **Provider outcome:** Codex CLI returned exit code 1 while loading the frozen
+  configuration because the built-in `openai` provider ID could not be
+  overridden to set request and stream retries to zero. No provider event or
+  model result was emitted. No retry occurred.
+- **Terminal outcome:** `failure`; producer claim `null`; evidence
+  `not_assessed`; acceptance `reject`; verified-success eligibility `false`;
+  joint interpretation `correctly_recognized_failure`; terminal execution
+  `failed`.
+- **Resource outcome:** one logical model invocation attempt; zero retries,
+  routes, escalations, recovery actions, paid API calls, and tool calls;
+  transport request count, token usage, and provider cost remain `Unknown`;
+  adapter wall time was 151,339,400 ns.
+- **Validation:** 65/65 focused tests passed. The full experiment/substrate
+  sweep ran 108 tests across 16 directories: 107 passed, the sole known retired
+  Phase 4 plan-hash assertion failed unchanged, and zero errored.
+- **Preservation:** protected sources, papers, research, prior runs, prior
+  retired plans, prior handoffs, and all four deterministic Phase 5 inputs were
+  preserved. Exactly one new Batch 4 run directory was added.
+- **Allowed conclusion:** **Phase 5 Batch 4 complete with provider-execution
+  failure — the frozen model-backed qualification path preserved fail-closed
+  execution, evidence, and terminal accounting boundaries, but successful
+  model-backed execution was not established.**
+- **Remaining uncertainty:** successful model-backed execution, model
+  correctness, provider portability, model reliability, monetary cost
+  advantage, production readiness, and final architecture correctness remain
+  `Not established` or `Not evaluated`. H-G1, H-W1, H-C1, and H-R1 remain
+  `Not evaluated`.
+- **Phase status:** Phase 5 remains open.
+- **Authority boundary:** this retired plan authorizes no Batch 5. A new owner
+  instruction is required for any further batch.
