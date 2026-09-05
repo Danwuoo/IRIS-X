@@ -15,10 +15,10 @@ produced in this stage remains provisional, revisable, and not production-stable
 
 ## Current Objective
 
-Extract the already-supported execution trust boundaries into the smallest
-provisional IRIS-X-authored core, preserve the existing deterministic mutation
-slice, and test interface reuse through one additional deterministic read-only
-path under the current owner-authorized batch.
+Harden the provisional IRIS-X-authored core while preserving the
+already-supported execution trust boundaries. The current owner-authorized
+batch is limited to terminal adjudication integrity across the two existing
+deterministic paths.
 
 At this stage, the main goals are to:
 
