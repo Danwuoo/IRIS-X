@@ -17,8 +17,9 @@ produced in this stage remains provisional, revisable, and not production-stable
 
 Harden the provisional IRIS-X-authored core while preserving the
 already-supported execution trust boundaries. The current owner-authorized
-batch is limited to terminal adjudication integrity across the two existing
-deterministic paths.
+batch qualifies exactly one model-backed execution path through those
+boundaries while keeping provider-specific implementation outside core and
+retaining deterministic independent verification.
 
 At this stage, the main goals are to:
 
