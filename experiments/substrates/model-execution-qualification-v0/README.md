@@ -1,9 +1,9 @@
 # Model Execution Qualification v0
 
-- **Status:** frozen Batch 4 evidence plus repaired Codex 0.147.0-compatible tool
+- **Status:** frozen Batch 4 evidence plus Batch 5 zero-call admission hardening
 - **Scope:** exactly one model-backed read-only `ExecutorAdapter` path
 - **Provider/configuration:** OpenAI through Codex CLI, `gpt-5.6-luna`, medium reasoning
-- **Repair ceiling:** one additional provider invocation, zero retries, routes, escalations, or recovery actions
+- **Current Batch 5 ceiling:** zero provider/model calls; admission only
 - **Verifier:** deterministic fixture-local JSON/oracle comparison; no model judge
 - **Architecture status:** provisional; not a general provider layer or production runtime
 
@@ -27,10 +27,19 @@ does not alter either run: it replaces the unsupported `tools.view_image`
 override with the 0.147.0-supported `--disable view_image` feature flag.
 
 Owner-authorized formal run `qualification-20260905-03` has its own contract,
-identity, and preflight observation. It preserves two prior logical attempts,
-permits one new invocation with zero retries, and must be launched only from
-its clean committed definition/code freeze. Its result is not inferred from
-launch; collection and adjudication remain a separate later lifecycle step.
+identity, and preflight observation. It preserved two prior logical attempts,
+permitted one new invocation with zero retries, and was launched only from its
+clean committed definition/code freeze. Its result was not inferred from
+launch; collection and adjudication occurred in a separate later lifecycle
+step.
+
+Run 03 subsequently completed as the only accepted model-backed configuration
+in this lineage. Batch 5 does not reopen or replay that run live. The frozen
+profile at `admission/codex-cli-0.147.0-run-03-profile.json` and the static
+checker at `scripts/check_admission.py` bind the exact historical command,
+definition, provider baseline, catalog, and environment policy. Provider-
+specific admission remains local to this substrate and authorizes no future
+model execution.
 
 ## Frozen task
 
@@ -78,6 +87,10 @@ From the repository root:
 ```powershell
 python tools\model_baseline_check.py
 python tools\model_baseline_check.py --check-local-catalog
+python experiments\substrates\model-execution-qualification-v0\scripts\check_admission.py --replay-run-01
+python experiments\substrates\model-execution-qualification-v0\scripts\check_admission.py --replay-run-02
+python experiments\substrates\model-execution-qualification-v0\scripts\check_admission.py --replay-run-03
+python experiments\substrates\model-execution-qualification-v0\scripts\check_admission.py --current
 python -m unittest discover -s experiments\substrates\model-execution-qualification-v0\tests -v
 python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --check-strict-config
 python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --preflight
@@ -87,18 +100,27 @@ python experiments\substrates\model-execution-qualification-v0\scripts\run_quali
 
 None of those commands may execute `codex exec` or start a model turn.
 
-## Single live invocation
+Run 01 and Run 02 intentionally return a nonzero admission exit status because
+they are rejected. Run 03 and a compatible current environment return zero.
+Current-environment records under `admission/results/` are authored static
+preflight artifacts, not model-run evidence; no Batch 5 run directory exists.
 
-Only after the definition/code freeze is committed and the tree is clean:
+## Preserved Batch 4 live-invocation procedure
+
+The following describes the already-consumed Batch 4 procedure and is retained
+only to preserve the substrate history:
 
 ```powershell
 python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --live --definition-commit <full-definition-commit> --code-commit <full-clean-head>
 ```
 
-The repair command refuses an existing run directory, a dirty tree, non-full or
+The qualification command refuses an existing run directory, a dirty tree, non-full or
 unresolvable commit identities, mismatched frozen artifacts, unavailable Luna
 catalog entry, non-ChatGPT auth, or any API-key fallback requirement. It makes
 at most one `codex exec` subprocess invocation and has no retry branch.
 
 After that attempt, tests inspect the immutable run artifacts; they never invoke
 the provider again.
+
+Batch 5 authorizes no use of `--live`, no new run directory, and no model call,
+even when the static admission result is `admitted`.
