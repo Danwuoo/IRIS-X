@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "authored-factual-interpretation",
+  "run_id": "qualification-20260905-02",
+  "interpreted_at": "2026-09-05 Asia/Taipei",
+  "definition_commit": "2fe2a3183ee631fe57929b41e354211295a23ce3",
+  "code_commit": "2fe2a3183ee631fe57929b41e354211295a23ce3",
+  "repair_call_ceiling_consumed": true,
+  "preserved_prior_logical_attempts": 1,
+  "repair_logical_provider_attempts": 1,
+  "repair_logical_model_invocation_attempts": 1,
+  "batch_4_lineage_logical_attempts": 2,
+  "manual_retries": 0,
+  "automatic_retries": 0,
+  "routes": 0,
+  "escalations": 0,
+  "recovery_actions": 0,
+  "provider_event_observed": false,
+  "model_result_observed": false,
+  "failure_classification": "codex-local-strict-config-rejection-before-model-result",
+  "failure_detail": "Codex CLI 0.147.0 rejected the frozen tools.view_image override as an unknown configuration field under exec --strict-config.",
+  "provider_transport_request_count": "Unknown",
+  "token_usage": "Unknown",
+  "provider_cost_usd": "Unknown",
+  "deterministic_verification": {
+    "semantic_valid": false,
+    "semantic_reason": "executor_failure:ExecutorAdapterError",
+    "evidence_status": "not_assessed",
+    "evidence_reason": "no_result_to_verify"
+  },
+  "canonical_adjudication": {
+    "actual_outcome": "failure",
+    "producer_claim": null,
+    "acceptance_decision": "reject",
+    "verified_success_eligibility": false,
+    "joint_interpretation": "correctly_recognized_failure",
+    "terminal_execution_status": "failed"
+  },
+  "read_only_state": {
+    "before_sha256": "a5e53e0f8bdc6def70a3eec03a8d361d61c18b45ba312f5fb9adcee1a0fd4a62",
+    "after_sha256": "a5e53e0f8bdc6def70a3eec03a8d361d61c18b45ba312f5fb9adcee1a0fd4a62",
+    "changed_paths": []
+  },
+  "raw_artifact_hashes": {
+    "attempt-start.json": "67f3e085deed532a4e50965503f633b0467dd739467ae7ece2ac7aa8cc55a2bd",
+    "provider-events.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "provider-stderr.txt": "74cb00300ed4a4c23ba979d30d34218cd356e4bfb55b81f10a3dc832d52c56c7",
+    "raw-output.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "resource-record.json": "734470c0fd615f60dc24d939666ac591b3cb75e3b58603b5198f929802e0d996",
+    "run-manifest.json": "cd14c407e2e13d89da2b6f09daec92e5697c1c98152eec79114224c736a3249c",
+    "terminal-record.json": "c94fa8373814853e6de56f60599bfc936c242802539f8856a4e1612847831b0e"
+  },
+  "allowed_conclusion": "The owner-authorized Batch 4 corrective attempt preserved fail-closed identity, evidence, deterministic verification, adjudication, terminal, and resource-accounting boundaries, but successful model-backed execution qualification remains not established. No further attempt is authorized in this batch."
+}
