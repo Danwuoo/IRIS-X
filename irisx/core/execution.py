@@ -9,6 +9,7 @@ from typing import Any, Mapping, MutableMapping, Sequence
 
 from .interfaces import ExecutorAdapter, IndependentVerifier, PolicyGate
 from .records import (
+    AdapterResourceReport,
     BoundEvidenceRequirement,
     EvidenceRef,
     ExecutionContext,
@@ -28,6 +29,14 @@ from .records import (
 
 class BindingError(ValueError):
     """Declared execution or artifact identity failed closed."""
+
+
+class ExecutorAdapterError(RuntimeError):
+    """One adapter invocation failed after directly observed resource use."""
+
+    def __init__(self, message: str, *, resource_report: AdapterResourceReport) -> None:
+        super().__init__(message)
+        self.resource_report = resource_report
 
 
 def canonical_json_bytes(value: Any) -> bytes:
@@ -125,8 +134,27 @@ def changed_paths(before: Mapping[str, Any], after: Mapping[str, Any]) -> tuple[
     return tuple(sorted(path for path in set(before) | set(after) if before.get(path) != after.get(path)))
 
 
-def _resource_ledger(*, artifact_reads: int, executor_calls: int) -> ResourceLedger:
-    return ResourceLedger(artifact_reads=artifact_reads, executor_calls=executor_calls)
+def _resource_ledger(
+    *,
+    artifact_reads: int,
+    executor_calls: int,
+    report: AdapterResourceReport | None = None,
+) -> ResourceLedger:
+    observed = report or AdapterResourceReport()
+    return ResourceLedger(
+        artifact_reads=artifact_reads,
+        executor_calls=executor_calls,
+        model_calls=observed.model_calls,
+        network_calls=observed.network_calls,
+        paid_api_calls=observed.paid_api_calls,
+        tool_calls=observed.tool_calls,
+        retry_count=observed.retry_count,
+        route_count=observed.route_count,
+        escalation_count=observed.escalation_count,
+        recovery_count=observed.recovery_count,
+        wall_time_ns=observed.wall_time_ns,
+        provider_cost_usd=observed.provider_cost_usd,
+    )
 
 
 def execute(
@@ -208,6 +236,7 @@ def execute(
         policy = PolicyDecision("not_required", ("read_only_request",), "not_applicable")
         observe("policy_not_required", decision=policy.decision, timing=policy.timing)
 
+    raw_result = None
     try:
         raw_result = executor.execute(context, request, state)
         if raw_result.executor_calls != 1:
@@ -229,13 +258,22 @@ def execute(
             after_sha,
         )
         adjudication = adjudicate(verification, terminal_execution_status="failed")
+        resource_report = (
+            exc.resource_report
+            if isinstance(exc, ExecutorAdapterError)
+            else raw_result.resource_report if raw_result is not None else None
+        )
         return TerminalRecord(
             supplied_identity, contract, program, adjudication.actual_outcome, None,
             verification.evidence_status, adjudication.acceptance_decision,
             adjudication.verified_success_eligibility,
             adjudication.joint_interpretation, "failed", executed_policy,
             before_sha, after_sha, changed, verification, (), tuple(observations),
-            _resource_ledger(artifact_reads=artifact_reads, executor_calls=1),
+            _resource_ledger(
+                artifact_reads=artifact_reads,
+                executor_calls=1,
+                report=resource_report,
+            ),
         )
 
     executed_policy = replace(policy, mutation_primitive_executed=raw_result.mutation_primitive_calls > 0)
@@ -281,7 +319,11 @@ def execute(
         terminal_status, executed_policy, before_sha, state_sha256(state),
         changed_paths(before_state, state), verification, raw_result.evidence,
         tuple(observations),
-        _resource_ledger(artifact_reads=artifact_reads, executor_calls=raw_result.executor_calls),
+        _resource_ledger(
+            artifact_reads=artifact_reads,
+            executor_calls=raw_result.executor_calls,
+            report=raw_result.resource_report,
+        ),
     )
 
 

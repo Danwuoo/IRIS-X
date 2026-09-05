@@ -202,12 +202,55 @@ class EvidenceRef:
 
 
 @dataclass(frozen=True)
+class AdapterResourceReport:
+    """Directly observed resource use reported by one executor adapter."""
+
+    model_calls: int = 0
+    network_calls: int | str = 0
+    paid_api_calls: int = 0
+    tool_calls: int = 0
+    retry_count: int = 0
+    route_count: int = 0
+    escalation_count: int = 0
+    recovery_count: int = 0
+    wall_time_ns: int | str = UNKNOWN
+    provider_cost_usd: float | str = UNKNOWN
+
+    def __post_init__(self) -> None:
+        counted = (
+            self.model_calls,
+            self.paid_api_calls,
+            self.tool_calls,
+            self.retry_count,
+            self.route_count,
+            self.escalation_count,
+            self.recovery_count,
+        )
+        if any(not isinstance(value, int) or value < 0 for value in counted):
+            raise ValueError("adapter resource counts must be non-negative integers")
+        if self.network_calls != UNKNOWN and (
+            not isinstance(self.network_calls, int) or self.network_calls < 0
+        ):
+            raise ValueError("network_calls must be a non-negative integer or Unknown")
+        if self.wall_time_ns != UNKNOWN and (
+            not isinstance(self.wall_time_ns, int) or self.wall_time_ns < 0
+        ):
+            raise ValueError("wall_time_ns must be a non-negative integer or Unknown")
+        if self.provider_cost_usd != UNKNOWN and (
+            not isinstance(self.provider_cost_usd, (int, float))
+            or self.provider_cost_usd < 0
+        ):
+            raise ValueError("provider_cost_usd must be non-negative or Unknown")
+
+
+@dataclass(frozen=True)
 class RawResult:
     producer_claim: str
     reported_value: Any
     evidence: tuple[EvidenceRef, ...]
     executor_calls: int
     mutation_primitive_calls: int
+    resource_report: AdapterResourceReport = field(default_factory=AdapterResourceReport)
 
     def __post_init__(self) -> None:
         if self.executor_calls < 0 or self.mutation_primitive_calls < 0:
@@ -284,7 +327,7 @@ class ResourceLedger:
     artifact_reads: int
     executor_calls: int
     model_calls: int = 0
-    network_calls: int = 0
+    network_calls: int | str = 0
     paid_api_calls: int = 0
     tool_calls: int = 0
     retry_count: int = 0
@@ -299,7 +342,6 @@ class ResourceLedger:
             self.artifact_reads,
             self.executor_calls,
             self.model_calls,
-            self.network_calls,
             self.paid_api_calls,
             self.tool_calls,
             self.retry_count,
@@ -309,6 +351,10 @@ class ResourceLedger:
         )
         if any(not isinstance(value, int) or value < 0 for value in counted):
             raise ValueError("resource counts must be non-negative integers")
+        if self.network_calls != UNKNOWN and (
+            not isinstance(self.network_calls, int) or self.network_calls < 0
+        ):
+            raise ValueError("network_calls must be a non-negative integer or Unknown")
 
 
 @dataclass(frozen=True)

@@ -59,6 +59,9 @@
     "shell_tool": "disabled",
     "web_search": "disabled",
     "apps": "disabled",
+    "browser_and_computer_use": "disabled",
+    "image_and_view_image_tools": "disabled",
+    "skills_and_goals": "disabled",
     "multi_agent": "disabled",
     "output_schema_path": "definition/output-schema.json",
     "tool_attempt_policy": "any observed tool attempt invalidates qualification"

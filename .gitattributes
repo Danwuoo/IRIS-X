@@ -15,3 +15,8 @@ experiments/substrates/minimal-reliable-execution-v0/**/*.txt text eol=lf
 # Keep the deterministic read-only integration inputs byte-identical.
 experiments/substrates/core-execution-integration-v0/**/*.json text eol=lf
 experiments/substrates/core-execution-integration-v0/**/*.txt text eol=lf
+
+# Keep the frozen model-execution qualification byte-identical.
+experiments/substrates/model-execution-qualification-v0/**/*.json text eol=lf
+experiments/substrates/model-execution-qualification-v0/**/*.jsonl text eol=lf
+experiments/substrates/model-execution-qualification-v0/**/*.txt text eol=lf

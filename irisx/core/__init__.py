@@ -1,9 +1,16 @@
 """Evidence-backed provisional execution boundaries for IRIS-X."""
 
-from .execution import BindingError, bind_execution, evidence_binding, execute
+from .execution import (
+    BindingError,
+    ExecutorAdapterError,
+    bind_execution,
+    evidence_binding,
+    execute,
+)
 from .interfaces import ExecutorAdapter, IndependentVerifier, PolicyGate
 from .records import (
     UNKNOWN,
+    AdapterResourceReport,
     AdjudicationResult,
     BoundEvidenceRequirement,
     EvidenceRequirement,
@@ -24,8 +31,10 @@ from .records import (
 
 __all__ = [
     "UNKNOWN",
+    "AdapterResourceReport",
     "AdjudicationResult",
     "BindingError",
+    "ExecutorAdapterError",
     "BoundEvidenceRequirement",
     "EvidenceRequirement",
     "EvidenceRef",
