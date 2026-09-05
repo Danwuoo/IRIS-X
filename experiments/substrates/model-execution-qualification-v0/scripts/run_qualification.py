@@ -46,14 +46,15 @@ from irisx.core.records import (  # noqa: E402
 )
 
 
-CONTRACT_PATH = SUBSTRATE / "definition" / "qualification-repair-contract.json"
-IDENTITY_PATH = SUBSTRATE / "definition" / "repair-execution-identity.json"
+CONTRACT_PATH = SUBSTRATE / "definition" / "qualification-run-03-contract.json"
+IDENTITY_PATH = SUBSTRATE / "definition" / "run-03-execution-identity.json"
 OUTPUT_SCHEMA_PATH = SUBSTRATE / "definition" / "output-schema.json"
-PREFLIGHT_OBSERVATION_PATH = SUBSTRATE / "definition" / "repair-preflight-observation.json"
+PREFLIGHT_OBSERVATION_PATH = SUBSTRATE / "definition" / "run-03-preflight-observation.json"
 MODEL_CATALOG_PATH = SUBSTRATE / "definition" / "tool-free-luna-model-catalog.json"
 BASELINE_PATH = REPOSITORY_ROOT / "experiments" / "configurations" / "provider-model-baseline-v0.json"
 ORIGINAL_RUN_ID = "qualification-20260905-01"
-RUN_ID = "qualification-20260905-02"
+REPAIR_RUN_ID = "qualification-20260905-02"
+RUN_ID = "qualification-20260905-03"
 RUN_DIR = SUBSTRATE / "runs" / RUN_ID
 CODEX_PROVIDER_CONFIG_ID = "irisx_openai_no_retry"
 CODEX_PROVIDER_NAME = "OpenAI"
@@ -375,6 +376,14 @@ def validate_frozen_definition() -> tuple[dict[str, Any], dict[str, Any]]:
         "transport_fallback": False,
     }:
         raise QualificationError("repair retry/transport configuration drifted")
+    if identity["strict_config_compatibility"] != {
+        "target_version": EXPECTED_CODEX_CLI_VERSION,
+        "method": "app-server-strict-config-listen-off",
+        "model_calls": 0,
+        "transport_started": False,
+        "view_image_disable_form": "features.view_image=false",
+    }:
+        raise QualificationError("strict-config compatibility identity drifted")
     catalog = load_json(SUBSTRATE / identity["model_catalog_path"])
     if len(catalog.get("models", [])) != 1:
         raise QualificationError("repair catalog must contain exactly one model")
@@ -787,8 +796,8 @@ class CodexModelExecutorAdapter:
                 "code_commit": self.code_commit,
                 "provider_attempt": 1,
                 "model_calls_committed_ceiling": 1,
-                "preserved_prior_logical_attempts": 1,
-                "batch_4_lineage_logical_attempt_ceiling": 2,
+                "preserved_prior_logical_attempts": 2,
+                "batch_4_lineage_logical_attempt_ceiling": 3,
                 "retry_count": 0,
                 "codex_model_provider_config_id": CODEX_PROVIDER_CONFIG_ID,
                 "command": command,
@@ -1036,8 +1045,8 @@ def finalize_run(
     resource_record = {
         "schema_version": 1,
         "run_id": RUN_ID,
-        "preserved_prior_logical_attempts": 1,
-        "batch_4_lineage_logical_attempts_after_run": 2,
+        "preserved_prior_logical_attempts": 2,
+        "batch_4_lineage_logical_attempts_after_run": 3,
         "provider_attempts": 1,
         "model_calls": ledger["model_calls"],
         "network_calls": ledger["network_calls"],
@@ -1119,10 +1128,10 @@ def finalize_run(
         "execution_envelope": contract["execution_envelope"],
         "call_ceiling": contract["call_ceiling"],
         "call_ledger": {
-            "preserved_prior_logical_attempts": 1,
+            "preserved_prior_logical_attempts": 2,
             "provider_attempts": 1,
             "model_calls": terminal["resource_ledger"]["model_calls"],
-            "batch_4_lineage_logical_attempts": 2,
+            "batch_4_lineage_logical_attempts": 3,
             "retries": terminal["resource_ledger"]["retry_count"],
             "routes": terminal["resource_ledger"]["route_count"],
             "escalations": terminal["resource_ledger"]["escalation_count"],
@@ -1224,7 +1233,11 @@ def main() -> int:
     parser.add_argument("--write-preflight", type=Path)
     parser.add_argument("--definition-commit")
     parser.add_argument("--code-commit")
-    parser.add_argument("--run-id", choices=(ORIGINAL_RUN_ID, RUN_ID), default=RUN_ID)
+    parser.add_argument(
+        "--run-id",
+        choices=(ORIGINAL_RUN_ID, REPAIR_RUN_ID, RUN_ID),
+        default=RUN_ID,
+    )
     args = parser.parse_args()
 
     try:

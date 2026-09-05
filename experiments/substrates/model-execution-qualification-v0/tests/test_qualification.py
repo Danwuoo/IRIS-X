@@ -218,9 +218,18 @@ class ModelExecutionQualificationTests(unittest.TestCase):
         self.assertEqual(audit["route_event_count"], 1)
         self.assertEqual(audit["fallback_event_count"], 1)
 
-    def test_repair_definition_uses_custom_provider_without_api_key_fields(self) -> None:
+    def test_formal_definition_uses_custom_provider_without_api_key_fields(self) -> None:
         identity, contract = qualification.validate_frozen_definition()
         provider = contract["provider_configuration"]
+        self.assertEqual(identity["execution_id"], "qualification-20260905-03")
+        self.assertEqual(
+            contract["lineage_call_ceiling"],
+            {
+                "preserved_prior_attempts": 2,
+                "new_formal_attempts": 1,
+                "maximum_total_logical_attempts": 3,
+            },
+        )
         self.assertEqual(provider["provider_id"], "openai")
         self.assertEqual(
             provider["codex_model_provider_config_id"], "irisx_openai_no_retry"
@@ -241,14 +250,21 @@ class ModelExecutionQualificationTests(unittest.TestCase):
         self.assertFalse(model["supports_search_tool"])
         self.assertEqual(model["experimental_supported_tools"], [])
 
-    def test_original_failed_run_remains_valid_and_immutable(self) -> None:
-        original = SUBSTRATE / "runs" / qualification.ORIGINAL_RUN_ID
-        result = qualification.validate_run_artifacts(original)
-        self.assertEqual(result["run_id"], qualification.ORIGINAL_RUN_ID)
-        self.assertEqual(result["status"], "PASS")
-        self.assertEqual(
-            result["terminal_semantics"]["terminal_execution_status"], "failed"
-        )
+    def test_prior_failed_runs_remain_valid_and_immutable(self) -> None:
+        for run_id in (
+            qualification.ORIGINAL_RUN_ID,
+            qualification.REPAIR_RUN_ID,
+        ):
+            with self.subTest(run_id=run_id):
+                result = qualification.validate_run_artifacts(
+                    SUBSTRATE / "runs" / run_id
+                )
+                self.assertEqual(result["run_id"], run_id)
+                self.assertEqual(result["status"], "PASS")
+                self.assertEqual(
+                    result["terminal_semantics"]["terminal_execution_status"],
+                    "failed",
+                )
 
     def test_correct_output_becomes_verified_success(self) -> None:
         record, runner = run_fixture('{"selected_id":"alpha"}')

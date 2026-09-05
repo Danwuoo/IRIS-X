@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "task_id": "model-record-selection-alpha-v0",
+  "contract_id": "contract-model-record-selection-alpha-run-03-v0",
+  "program": {
+    "program_id": "program-model-record-selection-json-v0",
+    "path": "inputs/model-program.txt",
+    "sha256": "0803fdc4fc92cae03e1c736e372a8a60bd4039f2cdab996420664e7b36368e36"
+  },
+  "execution": {
+    "execution_id": "qualification-20260905-03",
+    "configuration_id": "openai-codex-luna-medium-readonly-zero-retry-run-03-v0"
+  },
+  "request": {
+    "action_id": "select-alpha-run-03-v0",
+    "operation": "select_record",
+    "target": "task_input",
+    "value": {
+      "label": "Alpha"
+    }
+  },
+  "task_input": {
+    "path": "inputs/task-input.json",
+    "sha256": "05ebad722aadac9355907534581ca01e331df412541ae7260a58a0a9d25e88a1"
+  },
+  "success_condition": {
+    "selected_id": "alpha"
+  },
+  "evidence_requirements": [
+    {
+      "role": "task_contract",
+      "artifact_id": "contract-model-record-selection-alpha-run-03-v0",
+      "path": "definition/qualification-run-03-contract.json"
+    },
+    {
+      "role": "program",
+      "artifact_id": "program-model-record-selection-json-v0",
+      "path": "inputs/model-program.txt"
+    }
+  ],
+  "provider_configuration": {
+    "provider_baseline_id": "irisx-openai-codex-dual-model-v0",
+    "provider_baseline_sha256": "a1a85c7464fbc090c2bf2e1682bee9a22957146e50abf11ab5c41f1544046d74",
+    "provider_id": "openai",
+    "execution_surface": "codex-cli",
+    "codex_model_provider_config_id": "irisx_openai_no_retry",
+    "codex_model_provider_name": "OpenAI",
+    "model_catalog_path": "definition/tool-free-luna-model-catalog.json",
+    "model_catalog_sha256": "d743f4bd8e92951ce1c9d3d126b7dc086c3d34279a92f92badf902b8bbcdc921",
+    "model_role": "cheaper",
+    "model_id": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "authentication_mode_required": "chatgpt",
+    "billing_mode_required": "chatgpt-subscription",
+    "api_key_fallback": "prohibited",
+    "provider_cost_usd": "Unknown"
+  },
+  "execution_envelope": {
+    "task_side_effect_class": "read-only",
+    "workspace": "isolated-temporary-directory",
+    "sandbox_mode": "read-only",
+    "approval_policy": "never",
+    "shell_and_patch_tools": "disabled",
+    "web_and_tool_search": "disabled",
+    "apps_and_plugins": "disabled",
+    "browser_and_computer_use": "disabled",
+    "image_and_view_image_tools": "disabled",
+    "skills_and_goals": "disabled",
+    "multi_agent": "disabled",
+    "model_declared_shell": "disabled",
+    "model_declared_apply_patch": null,
+    "model_declared_search_support": false,
+    "model_declared_experimental_tools": [],
+    "websocket_transport": "disabled",
+    "transport_fallback": "disabled",
+    "strict_config_probe": "app-server-strict-config-listen-off",
+    "strict_config_probe_model_calls": 0,
+    "strict_config_probe_transport_started": false,
+    "output_schema_path": "definition/output-schema.json",
+    "tool_attempt_policy": "any observed tool attempt invalidates qualification",
+    "retry_route_fallback_policy": "any observed retry, reroute, or fallback invalidates qualification"
+  },
+  "call_ceiling": {
+    "provider_invocations": 1,
+    "http_request_retries": 0,
+    "stream_reconnect_retries": 0,
+    "manual_retries": 0,
+    "routes": 0,
+    "escalations": 0,
+    "recovery_actions": 0
+  },
+  "lineage_call_ceiling": {
+    "preserved_prior_attempts": 2,
+    "new_formal_attempts": 1,
+    "maximum_total_logical_attempts": 3
+  },
+  "resource_accounting": {
+    "logical_model_calls_after_invocation": 1,
+    "transport_network_calls": "Unknown",
+    "paid_api_calls": 0,
+    "provider_cost_usd": "Unknown",
+    "token_usage": "record-if-exposed",
+    "wall_time": "measure-at-adapter-boundary"
+  },
+  "run_artifacts": {
+    "run_id": "qualification-20260905-03",
+    "run_directory": "runs/qualification-20260905-03",
+    "run_manifest": "runs/qualification-20260905-03/run-manifest.json",
+    "provider_events": "runs/qualification-20260905-03/provider-events.jsonl",
+    "raw_output": "runs/qualification-20260905-03/raw-output.txt",
+    "provider_stderr": "runs/qualification-20260905-03/provider-stderr.txt",
+    "terminal_record": "runs/qualification-20260905-03/terminal-record.json",
+    "resource_record": "runs/qualification-20260905-03/resource-record.json"
+  },
+  "freeze_requirements": {
+    "required_original_baseline_sha": "0d738fec43bafc72b5f6ca0f1ca39a6426b0b751",
+    "required_starting_sha": "43d2d2936ad41cfb3ea21e8d6a7db7aae995df6a",
+    "run_03_plan_activation_commit": "a625bde59e85f6cf995a7843c4eb0aee1e09ec9e",
+    "tool_compatibility_repair_commit": "663fdcdffa73305496107a3ed0b86d32f9b90616",
+    "definition_commit": "required-full-committed-sha-at-invocation",
+    "code_commit": "required-full-clean-head-sha-at-invocation",
+    "uncommitted_definition_or_code_permitted": false
+  }
+}

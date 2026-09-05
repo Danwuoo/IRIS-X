@@ -26,6 +26,12 @@ Both live attempts remain immutable failures. The subsequent tool-only repair
 does not alter either run: it replaces the unsupported `tools.view_image`
 override with the 0.147.0-supported `--disable view_image` feature flag.
 
+Owner-authorized formal run `qualification-20260905-03` has its own contract,
+identity, and preflight observation. It preserves two prior logical attempts,
+permits one new invocation with zero retries, and must be launched only from
+its clean committed definition/code freeze. Its result is not inferred from
+launch; collection and adjudication remain a separate later lifecycle step.
+
 ## Frozen task
 
 The prompt combines exact bytes from `inputs/model-program.txt` with canonical
@@ -76,6 +82,7 @@ python -m unittest discover -s experiments\substrates\model-execution-qualificat
 python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --check-strict-config
 python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --preflight
 python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --validate-run --run-id qualification-20260905-01
+python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --validate-run --run-id qualification-20260905-02
 ```
 
 None of those commands may execute `codex exec` or start a model turn.
