@@ -238,6 +238,26 @@ class ModelExecutionAdmissionTests(unittest.TestCase):
         self.assertIn("OPENAI_API_KEY", record["api_key_environment_names_present_in_parent"])
         self.assertFalse(record["api_key_fallback_present"])
 
+    def test_authored_current_record_is_admitted_and_zero_call(self) -> None:
+        record_path = SUBSTRATE / "admission" / "results" / "current-environment.json"
+        record = admission.load_object(record_path)
+        self.assertEqual(record["status"], "admitted")
+        self.assertEqual(record["reasons"], [])
+        self.assertEqual(record["provider_attempts"], 0)
+        self.assertEqual(record["live_model_calls"], 0)
+        self.assertFalse(record["future_model_execution_authorized"])
+
+    def test_authored_current_record_binds_profile_without_secret_fields(self) -> None:
+        record_path = SUBSTRATE / "admission" / "results" / "current-environment.json"
+        record = admission.load_object(record_path)
+        self.assertEqual(
+            record["compatibility_profile_sha256"],
+            admission.sha256_bytes(admission.PROFILE_PATH.read_bytes()),
+        )
+        self.assertFalse(record["api_key_fallback_present"])
+        self.assertNotIn("api_key_value", record)
+        self.assertNotIn("token_value", record)
+
     def test_missing_cli_is_unsupported_without_model_call(self) -> None:
         with mock.patch.object(admission.baseline_check, "validate_baseline", return_value=[]), mock.patch.object(
             admission.baseline_check, "resolve_codex_command", side_effect=OSError("missing")
