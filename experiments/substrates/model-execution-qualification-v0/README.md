@@ -1,6 +1,6 @@
 # Model Execution Qualification v0
 
-- **Status:** frozen Batch 4 evidence plus owner-authorized corrective qualification
+- **Status:** frozen Batch 4 evidence plus repaired Codex 0.147.0-compatible tool
 - **Scope:** exactly one model-backed read-only `ExecutorAdapter` path
 - **Provider/configuration:** OpenAI through Codex CLI, `gpt-5.6-luna`, medium reasoning
 - **Repair ceiling:** one additional provider invocation, zero retries, routes, escalations, or recovery actions
@@ -22,6 +22,9 @@ identity. The slot requires OpenAI authentication, has no API-key/base-URL
 fallback, fixes HTTP and SSE retry counts at zero, and disables WebSockets.
 The frozen repair model catalog retains the accepted Luna alias and medium
 reasoning level while declaring no shell, patch, search, or experimental tool.
+Both live attempts remain immutable failures. The subsequent tool-only repair
+does not alter either run: it replaces the unsupported `tools.view_image`
+override with the 0.147.0-supported `--disable view_image` feature flag.
 
 ## Frozen task
 
@@ -51,6 +54,12 @@ The adapter runs Codex in an isolated temporary directory with:
 - API-key environment variables removed from the child process; and
 - JSONL auditing that invalidates any observed tool attempt.
 
+Before auth/catalog diagnostics, preflight now loads the exact live config
+overrides through `codex app-server --strict-config --listen off` in an
+isolated temporary `CODEX_HOME`. Codex 0.147.0 reaches a frozen no-transport
+sentinel only after strict parsing succeeds. This exercises the same strict
+config loader without starting a model turn or transport.
+
 Codex CLI's provider transport count is not exposed, so the terminal resource
 ledger records `network_calls` as `Unknown`. The one adapter-controlled logical
 model invocation is recorded as `model_calls: 1`; token usage is preserved only
@@ -64,11 +73,12 @@ From the repository root:
 python tools\model_baseline_check.py
 python tools\model_baseline_check.py --check-local-catalog
 python -m unittest discover -s experiments\substrates\model-execution-qualification-v0\tests -v
+python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --check-strict-config
 python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --preflight
 python experiments\substrates\model-execution-qualification-v0\scripts\run_qualification.py --validate-run --run-id qualification-20260905-01
 ```
 
-None of those commands may execute `codex exec`.
+None of those commands may execute `codex exec` or start a model turn.
 
 ## Single live invocation
 

@@ -146,13 +146,49 @@ class ModelExecutionQualificationTests(unittest.TestCase):
         self.assertNotIn("model_providers.openai.request_max_retries=0", command)
         self.assertIn('web_search="disabled"', command)
         self.assertIn("tools.web_search=false", command)
+        self.assertNotIn("tools.view_image=false", command)
         self.assertIn("shell_tool", command)
         self.assertIn("apply_patch_freeform", command)
         self.assertIn("tool_search", command)
         self.assertIn("responses_websockets", command)
+        self.assertIn("view_image", command)
+        self.assertEqual(command[command.index("view_image") - 1], "--disable")
         self.assertIn("multi_agent", command)
         self.assertEqual(command.count("--sandbox"), 1)
         self.assertEqual(command[command.index("--sandbox") + 1], "read-only")
+
+    def test_strict_config_probe_matches_live_config_without_model_execution(self) -> None:
+        catalog = Path("C:/isolated/model-catalog.json")
+        arguments = qualification.codex_config_arguments(catalog)
+        command = qualification.build_strict_config_probe_command(
+            "C:/frozen/codex.cmd", catalog
+        )
+        self.assertEqual(command[0:2], ["C:/frozen/codex.cmd", "app-server"])
+        self.assertIn("--strict-config", command)
+        self.assertEqual(command[command.index("--listen") + 1], "off")
+        self.assertNotIn("exec", command)
+        self.assertEqual(command[-len(arguments) :], arguments)
+
+    def test_strict_config_probe_accepts_only_post_load_sentinel(self) -> None:
+        accepted = subprocess.CompletedProcess(
+            ["codex", "app-server"],
+            1,
+            stdout="",
+            stderr=(
+                "WARNING: isolated CODEX_HOME has no path aliases\n"
+                + qualification.STRICT_CONFIG_PROBE_SENTINEL
+                + "\n"
+            ),
+        )
+        qualification.validate_strict_config_probe_result(accepted)
+        rejected = subprocess.CompletedProcess(
+            ["codex", "app-server"],
+            1,
+            stdout="",
+            stderr="Error: unknown configuration field `tools.view_image`\n",
+        )
+        with self.assertRaises(qualification.QualificationError):
+            qualification.validate_strict_config_probe_result(rejected)
 
     def test_api_key_fallback_is_absent_from_child_environment(self) -> None:
         child = qualification.codex_environment()

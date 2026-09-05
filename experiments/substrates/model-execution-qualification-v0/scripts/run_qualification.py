@@ -57,6 +57,10 @@ RUN_ID = "qualification-20260905-02"
 RUN_DIR = SUBSTRATE / "runs" / RUN_ID
 CODEX_PROVIDER_CONFIG_ID = "irisx_openai_no_retry"
 CODEX_PROVIDER_NAME = "OpenAI"
+EXPECTED_CODEX_CLI_VERSION = "codex-cli 0.147.0"
+STRICT_CONFIG_PROBE_SENTINEL = (
+    "Error: no transport configured; use --listen or enable remote control"
+)
 API_ENVIRONMENT_NAMES = (
     "OPENAI_API_KEY",
     "AZURE_OPENAI_API_KEY",
@@ -175,8 +179,6 @@ def codex_config_arguments(model_catalog_path: Path) -> list[str]:
         "--config",
         "tools.web_search=false",
         "--config",
-        "tools.view_image=false",
-        "--config",
         "apps._default.enabled=false",
         "--config",
         "agents.enabled=false",
@@ -206,6 +208,8 @@ def codex_config_arguments(model_catalog_path: Path) -> list[str]:
         "computer_use",
         "--disable",
         "image_generation",
+        "--disable",
+        "view_image",
         "--disable",
         "skill_search",
         "--disable",
@@ -243,6 +247,79 @@ def run_checked(command: Sequence[str], *, env: Mapping[str, str] | None = None)
         detail = (completed.stderr or completed.stdout).strip()
         raise QualificationError(f"zero-call command failed ({completed.returncode}): {detail}")
     return completed.stdout.strip() or completed.stderr.strip()
+
+
+def build_strict_config_probe_command(
+    codex_path: str, model_catalog_path: Path
+) -> list[str]:
+    """Load the live config through strict parsing without starting a model turn."""
+
+    return [
+        codex_path,
+        "app-server",
+        "--strict-config",
+        "--listen",
+        "off",
+        "--config",
+        'model="gpt-5.6-luna"',
+        *codex_config_arguments(model_catalog_path),
+    ]
+
+
+def validate_strict_config_probe_result(
+    completed: subprocess.CompletedProcess[str],
+) -> None:
+    """Accept only the 0.147.0 sentinel reached after strict config succeeds."""
+
+    stdout = completed.stdout.strip()
+    stderr = completed.stderr.strip()
+    stderr_lines = [line.strip() for line in stderr.splitlines() if line.strip()]
+    if (
+        completed.returncode != 1
+        or stdout
+        or not stderr_lines
+        or stderr_lines[-1] != STRICT_CONFIG_PROBE_SENTINEL
+    ):
+        detail = stderr or stdout or "no diagnostic"
+        raise QualificationError(
+            "Codex strict-config compatibility probe failed "
+            f"({completed.returncode}): {detail}"
+        )
+
+
+def strict_config_compatibility_probe(
+    codex_path: str, model_catalog_path: Path
+) -> dict[str, Any]:
+    """Exercise the exact config loader with isolated state and no transport."""
+
+    command = build_strict_config_probe_command(codex_path, model_catalog_path)
+    with tempfile.TemporaryDirectory(prefix="irisx-codex-config-probe-") as temporary:
+        child_env = codex_environment()
+        child_env["CODEX_HOME"] = temporary
+        completed = subprocess.run(
+            command,
+            cwd=REPOSITORY_ROOT,
+            check=False,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=child_env,
+        )
+    validate_strict_config_probe_result(completed)
+    return {
+        "schema_version": 1,
+        "status": "PASS",
+        "method": "app-server-strict-config-listen-off",
+        "codex_cli_version_required": EXPECTED_CODEX_CLI_VERSION,
+        "post_config_sentinel": STRICT_CONFIG_PROBE_SENTINEL,
+        "pre_sentinel_diagnostic_lines": max(
+            0, len([line for line in completed.stderr.splitlines() if line.strip()]) - 1
+        ),
+        "model_calls": 0,
+        "transport_started": False,
+    }
 
 
 def validate_frozen_definition() -> tuple[dict[str, Any], dict[str, Any]]:
@@ -343,6 +420,14 @@ def preflight() -> dict[str, Any]:
     codex_path = resolve_codex_command()
     child_env = codex_environment()
     version = run_checked([codex_path, "--version"], env=child_env)
+    if version != EXPECTED_CODEX_CLI_VERSION:
+        raise QualificationError(
+            "Codex CLI version differs from the frozen compatibility target: "
+            f"expected {EXPECTED_CODEX_CLI_VERSION!r}, observed {version!r}"
+        )
+    strict_config_probe = strict_config_compatibility_probe(
+        codex_path, MODEL_CATALOG_PATH
+    )
     auth_status = run_checked([codex_path, "login", "status"], env=child_env)
     if auth_status != "Logged in using ChatGPT":
         raise QualificationError(f"provider execution unavailable: auth status is {auth_status!r}")
@@ -465,6 +550,15 @@ def preflight() -> dict[str, Any]:
         ),
         "http_request_retries": 0,
         "stream_reconnect_retries": 0,
+        "strict_config_compatibility": strict_config_probe["status"],
+        "strict_config_probe_method": strict_config_probe["method"],
+        "strict_config_probe_pre_sentinel_diagnostic_lines": strict_config_probe[
+            "pre_sentinel_diagnostic_lines"
+        ],
+        "strict_config_probe_model_calls": strict_config_probe["model_calls"],
+        "strict_config_probe_transport_started": strict_config_probe[
+            "transport_started"
+        ],
         "doctor_reachability_probe_made": True,
         "provider_cost_usd": UNKNOWN,
         "zero_model_calls": True,
@@ -1124,6 +1218,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--preflight", action="store_true")
+    mode.add_argument("--check-strict-config", action="store_true")
     mode.add_argument("--live", action="store_true")
     mode.add_argument("--validate-run", action="store_true")
     parser.add_argument("--write-preflight", type=Path)
@@ -1138,6 +1233,24 @@ def main() -> int:
             if args.write_preflight is not None:
                 write_new(args.write_preflight, pretty_json_bytes(record))
             print(json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True))
+            return 0
+        if args.check_strict_config:
+            validate_frozen_definition()
+            codex_path = resolve_codex_command()
+            version = run_checked([codex_path, "--version"], env=codex_environment())
+            if version != EXPECTED_CODEX_CLI_VERSION:
+                raise QualificationError(
+                    "Codex CLI version differs from the frozen compatibility target: "
+                    f"expected {EXPECTED_CODEX_CLI_VERSION!r}, observed {version!r}"
+                )
+            print(
+                json.dumps(
+                    strict_config_compatibility_probe(codex_path, MODEL_CATALOG_PATH),
+                    ensure_ascii=False,
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
             return 0
         if args.validate_run:
             run_dir = SUBSTRATE / "runs" / args.run_id
