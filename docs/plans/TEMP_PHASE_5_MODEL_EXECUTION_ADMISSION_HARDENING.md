@@ -1,6 +1,6 @@
 # TEMP Phase 5 — Model Execution Admission Hardening
 
-Status: **Retired — Phase 5 Batch 5 completed and handed off**  
+Status: **Retired — Phase 5 Batch 5 completed and handed off**
 Date: **2026-09-05 Asia/Taipei**  
 Repository: **Danwuoo/IRIS-X**  
 Required baseline `main`: **`21f0150aed8b8555b69dc1094a1c3d7a6441732b`**  
@@ -836,7 +836,7 @@ execution.
 - current-environment admission record:
   `22f175b1515aa44d9bc993c0e62c40d1a962c427`;
 - durable handoff:
-  `a0a7ebc2a48dafc345602430b13195f34eb15ec3`;
+  `a0a7ebc86cc403f04287cea8266425c52cd46476`;
 - focused validation: 99/99 PASS;
 - full inventory: 170 total, 169 passed, the same one historical Phase 4
   frozen-plan hash failure, 0 errors, 0 skips, and 0 new failures/errors;
