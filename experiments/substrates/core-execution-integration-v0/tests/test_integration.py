@@ -57,6 +57,7 @@ class CoreExecutionReadOnlyIntegrationTests(unittest.TestCase):
         self.assertTrue(record["verified_success_eligibility"])
         self.assertEqual(record["joint_interpretation"], "verified_success")
         self.assertEqual(record["terminal_execution_status"], "completed")
+        self.assertEqual(record["schema_version"], 1)
         self.assertEqual(adapter.lookup_calls, 1)
 
     def test_read_only_path_preserves_state_identity(self) -> None:

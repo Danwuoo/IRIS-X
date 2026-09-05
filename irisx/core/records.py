@@ -350,13 +350,18 @@ class TerminalRecord:
         _require_sha256(self.state_after_sha256, "state_after_sha256")
         if self.empirical_evidence_status != self.verification.evidence_status:
             raise ValueError("terminal evidence status must come from independent verification")
-        expected_eligibility = (
-            self.actual_outcome == "success"
-            and self.empirical_evidence_status == "sufficient"
-            and self.acceptance_decision == "accept"
+        canonical = adjudicate(
+            self.verification,
+            terminal_execution_status=self.terminal_execution_status,
         )
-        if self.verified_success_eligibility != expected_eligibility:
-            raise ValueError("verified-success eligibility is inconsistent")
+        if self.actual_outcome != canonical.actual_outcome:
+            raise ValueError("terminal actual outcome is inconsistent with canonical adjudication")
+        if self.acceptance_decision != canonical.acceptance_decision:
+            raise ValueError("terminal acceptance is inconsistent with canonical adjudication")
+        if self.verified_success_eligibility != canonical.verified_success_eligibility:
+            raise ValueError("verified-success eligibility is inconsistent with canonical adjudication")
+        if self.joint_interpretation != canonical.joint_interpretation:
+            raise ValueError("joint interpretation is inconsistent with canonical adjudication")
         if self.recovery_attempted or self.recovery_action_id is not None:
             raise ValueError("recovery is not implemented in this provisional core")
         if self.silent_retry or self.resource_ledger.retry_count:

@@ -66,6 +66,7 @@ class MinimalReliableExecutionSliceTests(unittest.TestCase):
         self.assertEqual(record["empirical_evidence_status"], "invalid_binding")
         self.assertEqual(record["acceptance_decision"], "reject")
         self.assertFalse(record["verified_success_eligibility"])
+        self.assertEqual(record["joint_interpretation"], "correctly_recognized_failure")
         self.assertEqual(record["terminal_execution_status"], "rejected")
         self.assertEqual(adapter.primitive_calls, 0)
         self.assertFalse(record["side_effects"]["mutation_primitive_executed"])
@@ -78,6 +79,7 @@ class MinimalReliableExecutionSliceTests(unittest.TestCase):
         self.assertFalse(record["verification"]["semantic_valid"])
         self.assertEqual(record["acceptance_decision"], "reject")
         self.assertFalse(record["verified_success_eligibility"])
+        self.assertEqual(record["joint_interpretation"], "correctly_recognized_failure")
 
     def test_stale_program_evidence_denies_eligibility_without_rewriting_outcome(self) -> None:
         adapter = run_slice.LocalSetAdapter(evidence_hash_overrides={"program": "0" * 64})
@@ -97,6 +99,7 @@ class MinimalReliableExecutionSliceTests(unittest.TestCase):
         self.assertEqual(record["empirical_evidence_status"], "insufficient")
         self.assertEqual(record["acceptance_decision"], "reject")
         self.assertFalse(record["verified_success_eligibility"])
+        self.assertEqual(record["joint_interpretation"], "unverified_success")
 
     def test_crossed_artifact_or_path_evidence_is_invalid(self) -> None:
         variants = {
@@ -183,6 +186,7 @@ class MinimalReliableExecutionSliceTests(unittest.TestCase):
     def test_terminal_record_preserves_separate_semantics_and_zero_or_unknown_resources(self) -> None:
         record = run_slice.execute_slice()
         run_slice.validate_terminal_record(record)
+        self.assertEqual(record["schema_version"], 1)
         self.assertNotIn("status", record)
         self.assertIn("actual_outcome", record)
         self.assertIn("producer_claim", record)
