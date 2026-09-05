@@ -1,6 +1,6 @@
 # TEMP Phase 5 — Model Execution Qualification Repair
 
-- **Status:** Temporary — controlling execution plan
+- **Status:** Retired — lifecycle completed with correctly adjudicated repair failure
 - **Authorization:** Owner-authorized corrective continuation of Phase 5 Batch 4
 - **Date:** 2026-09-05 Asia/Taipei
 - **Repository:** Danwuoo/IRIS-X
@@ -165,3 +165,30 @@ fine-tuning, training, multi-agent work, architecture search, model judge,
 non-deterministic verifier, external action, production server/UI/API, or
 H-G1/H-W1/H-C1/H-R1 evaluation is authorized.
 
+## Retirement record
+
+- **Retired:** 2026-09-05 Asia/Taipei
+- **Definition/code freeze:** `2fe2a3183ee631fe57929b41e354211295a23ce3`
+- **Run-evidence commit:** `39f7d2c2344bfd701e30e165d5f30bf913aa07e7`
+- **Durable handoff commit:** `1776407c59a5ef202b012e1d9aea1d651c9ad698`
+- **Repair run:** `qualification-20260905-02`
+- **Repair attempts / retries:** 1 / 0
+- **Terminal result:** failure, reject, not eligible, correctly recognized failure
+- **Qualification result:** successful model-backed execution remains not established
+
+The frozen live command failed local `exec --strict-config` validation because
+Codex CLI 0.147.0 did not recognize `tools.view_image`. No provider event or
+model result was observed. The one-call repair ceiling was consumed; no changed
+command was submitted and no retry, route, fallback, escalation, or recovery
+was performed. Raw artifacts, truthful resource accounting, deterministic
+verification, and canonical adjudication are preserved in the repair run.
+
+Post-run focused validation passed 68/68 tests. The full 139-test inventory had
+138 passes, the same sole historical Phase 4 retired-plan hash failure, zero
+errors, zero skips, and zero new failures. The authoritative result and
+preservation proof are in
+`docs/phase-5-model-execution-qualification-repair-handoff.md`.
+
+This plan is no longer active. Any additional provider attempt or correction
+requires new owner authorization and a newly frozen plan. Batch 5 was not
+started.
