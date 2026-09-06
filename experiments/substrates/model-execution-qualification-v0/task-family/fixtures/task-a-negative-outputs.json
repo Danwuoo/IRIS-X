@@ -1,0 +1,62 @@
+{
+  "cases": [
+    {
+      "expected_reason": "deterministic_filter_selection_match",
+      "expected_success": true,
+      "name": "correct",
+      "output": "{\"selected_ids\":[\"b\",\"d\"]}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "provider_output_malformed_json",
+      "expected_success": false,
+      "name": "malformed_json",
+      "output": "not-json",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "selected_ids_oracle_mismatch",
+      "expected_success": false,
+      "name": "schema_valid_semantically_wrong",
+      "output": "{\"selected_ids\":[\"a\",\"d\"]}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "filter_output_schema_mismatch",
+      "expected_success": false,
+      "name": "missing_result",
+      "output": "{}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "selected_ids_oracle_mismatch",
+      "expected_success": false,
+      "name": "extra_result",
+      "output": "{\"selected_ids\":[\"b\",\"d\",\"x\"]}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "selected_ids_order_mismatch",
+      "expected_success": false,
+      "name": "wrong_order",
+      "output": "{\"selected_ids\":[\"d\",\"b\"]}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "filter_output_schema_mismatch",
+      "expected_success": false,
+      "name": "wrong_output_schema",
+      "output": "{\"selected_ids\":[\"b\",\"d\"],\"extra\":true}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "selected_ids_oracle_mismatch",
+      "expected_success": false,
+      "name": "producer_success_semantic_failure",
+      "output": "{\"selected_ids\":[\"b\",\"c\"]}",
+      "producer_claim": "success"
+    }
+  ],
+  "schema_version": 1,
+  "task_key": "A"
+}

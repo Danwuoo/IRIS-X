@@ -1,9 +1,9 @@
 # Model Execution Qualification v0
 
-- **Status:** frozen Batch 4 evidence plus Batch 5 zero-call admission hardening
-- **Scope:** exactly one model-backed read-only `ExecutorAdapter` path
+- **Status:** frozen Batch 4 evidence, completed Batch 5 admission hardening, and active Batch 6 task-family qualification
+- **Scope:** one admitted provider profile reused across exactly three new bounded read-only task families
 - **Provider/configuration:** OpenAI through Codex CLI, `gpt-5.6-luna`, medium reasoning
-- **Current Batch 5 ceiling:** zero provider/model calls; admission only
+- **Current Batch 6 ceiling:** maximum three model calls; one independently authorized call per task; zero retries
 - **Verifier:** deterministic fixture-local JSON/oracle comparison; no model judge
 - **Architecture status:** provisional; not a general provider layer or production runtime
 
@@ -40,6 +40,28 @@ checker at `scripts/check_admission.py` bind the exact historical command,
 definition, provider baseline, catalog, and environment policy. Provider-
 specific admission remains local to this substrate and authorizes no future
 model execution.
+
+## Batch 6 task family
+
+The owner-authorized Batch 6 surface is under `task-family/`. Task A performs
+ordered threshold filtering, Task B performs grouped integer aggregation, and
+Task C performs top-N ranking with an explicit ID-ascending tie-break. Each has
+its own immutable contract, input, program, output schema, deterministic
+oracle, verifier identity, execution identity, evidence paths, and run
+directory. `scripts/model_adapter.py` is the single provider-specific adapter
+shared by the three tasks; shared adapter reuse grants no cross-task authority.
+
+Before any live task, all task-family executable artifacts and offline negative
+fixtures/tests are committed under one definition/code freeze SHA. The runner
+requires a separately committed current admission snapshot, a clean launch
+HEAD, and byte-identical frozen executable paths. It enforces Task A/B/C order,
+one immutable evidence commit between tasks, and no retry, route, fallback,
+escalation, recovery, tool use, or state mutation.
+
+The 27 offline synthetic outputs cover correct, malformed, schema-valid wrong,
+missing, extra, wrong-order or wrong-aggregate, producer-claimed-success
+failure, and Task C tie-break-violation cases. They use the real deterministic
+verifiers and canonical core adjudication without a model call.
 
 ## Frozen task
 

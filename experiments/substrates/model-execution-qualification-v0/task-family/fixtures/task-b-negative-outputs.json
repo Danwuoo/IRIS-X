@@ -1,0 +1,62 @@
+{
+  "cases": [
+    {
+      "expected_reason": "deterministic_aggregation_match",
+      "expected_success": true,
+      "name": "correct",
+      "output": "{\"total\":43}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "provider_output_malformed_json",
+      "expected_success": false,
+      "name": "malformed_json",
+      "output": "not-json",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "aggregation_total_oracle_mismatch",
+      "expected_success": false,
+      "name": "schema_valid_semantically_wrong",
+      "output": "{\"total\":42}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "aggregation_output_schema_mismatch",
+      "expected_success": false,
+      "name": "missing_result",
+      "output": "{}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "aggregation_output_schema_mismatch",
+      "expected_success": false,
+      "name": "extra_result",
+      "output": "{\"total\":43,\"extra\":0}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "aggregation_total_oracle_mismatch",
+      "expected_success": false,
+      "name": "wrong_aggregate",
+      "output": "{\"total\":50}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "aggregation_total_type_mismatch",
+      "expected_success": false,
+      "name": "wrong_output_schema",
+      "output": "{\"total\":\"43\"}",
+      "producer_claim": "success"
+    },
+    {
+      "expected_reason": "aggregation_total_oracle_mismatch",
+      "expected_success": false,
+      "name": "producer_success_semantic_failure",
+      "output": "{\"total\":44}",
+      "producer_claim": "success"
+    }
+  ],
+  "schema_version": 1,
+  "task_key": "B"
+}
