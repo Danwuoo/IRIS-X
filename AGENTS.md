@@ -9,19 +9,21 @@ IRIS-X is a clean research workspace for rethinking reliable, low-cost, task-spe
 The project is not intended to combine several existing repositories into a larger framework. The repositories collected here are research predecessors, external references, implementation examples, and experimental substrates. Their useful ideas, constraints, failure cases, and engineering patterns may inform IRIS-X, but IRIS-X should develop its own coherent architecture rather than inherit the structure of any one source project.
 
 The repository has completed its initial research-preparation work, the Phase 4
-evidence program, the first post-Phase-4 synthesis, and Phase 5 Batch 4. Current
-work is owner-authorized Phase 5 Batch 5 admission hardening for the exact
-qualified Codex CLI configuration. Any architecture produced in this stage
+evidence program, the first post-Phase-4 synthesis, and Phase 5 Batch 5. Current
+work is owner-authorized Phase 5 Batch 6 task-family qualification for the exact
+admitted Codex CLI configuration. Any architecture produced in this stage
 remains provisional, revisable, and not production-stable.
 
 ## Current Objective
 
-Harden model-execution admission for the exact qualified Codex CLI 0.147.0
-configuration using zero-model-call deterministic checks derived from the
-preserved Batch 4 admission failures and successful Run 03. Batch 5 is
-admission-only: no new model execution is authorized. Provider-specific
-admission remains outside core, and successful Run 03 remains the only
-qualified model-backed configuration in this lineage.
+Phase 5 Batch 6 is qualifying the already-admitted model-backed execution
+profile across three semantically distinct deterministic task families while
+testing cross-task isolation and preserving the existing core trust boundaries.
+The batch permits maximum three separately frozen live model calls and requires
+zero retries, routes, fallbacks, escalations, or recovery actions. The
+deterministic verifier remains authoritative, admission is required before live
+execution, and provider-specific code remains outside core. Batch 6 does not
+authorize routing, model comparison, persistence, or model-judge work.
 
 At this stage, the main goals are to:
 
@@ -345,7 +347,9 @@ During the current Phase 5 batch, prioritize:
 - local deterministic validation of the core boundary across the preserved
   mutation slice and exactly one read-only integration path;
 - exact, fail-closed admission checks for the frozen Codex CLI 0.147.0 Run 03
-  execution profile without any provider/model invocation;
+  execution profile before each authorized task-family invocation;
+- three independently frozen deterministic task families with cross-task
+  identity, evidence, program, schema, and verifier isolation;
 - preservation checks and a durable unresolved-decision backlog.
 
 Validate repository organization from the root:
@@ -379,6 +383,7 @@ IRIS-X should preserve these distinctions while the project is still forming.
 The repository is not a stable architecture, framework, production runtime, or
 product. Candidate architecture produced in this stage is provisional.
 
-The current authorized batch hardens admission for one frozen provider-specific
-execution profile outside core. It authorizes zero provider/model calls, no new
-model run, and no broad implementation or productionization.
+The current authorized batch reuses one frozen provider-specific execution
+profile across exactly three bounded read-only deterministic-verifier task
+families. It authorizes at most one model call per task and three total, with no
+retry or mechanism expansion and no broad implementation or productionization.
