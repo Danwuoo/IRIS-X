@@ -1,0 +1,5 @@
+Execute one frozen read-only ordered-ranking task.
+
+Use only the task JSON included in this prompt. Sort records by score descending. When scores tie, apply the declared tie_break rule "id_ascending" by sorting IDs in ascending ordinal string order. Keep only the first limit records and assign consecutive integer ranks starting at 1.
+
+Do not call tools, inspect files, browse, delegate, retry, route, fall back, escalate, recover, or perform external actions. Return exactly one JSON object with exactly one field named "ranked" whose value is an ordered array of objects containing exactly "id" and "rank". Return no markdown or explanatory text.

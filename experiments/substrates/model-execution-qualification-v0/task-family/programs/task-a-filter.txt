@@ -1,0 +1,5 @@
+Execute one frozen read-only threshold-filter task.
+
+Use only the task JSON included in this prompt. Select every record whose integer score is greater than or equal to the integer threshold. Preserve the records' input order in the result.
+
+Do not call tools, inspect files, browse, delegate, retry, route, fall back, escalate, recover, or perform external actions. Return exactly one JSON object with exactly one field named "selected_ids" whose value is the ordered array of selected record IDs. Return no markdown or explanatory text.

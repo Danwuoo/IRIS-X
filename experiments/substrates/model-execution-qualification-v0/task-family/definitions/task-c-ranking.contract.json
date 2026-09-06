@@ -1,0 +1,109 @@
+{
+  "admission_requirement": {
+    "profile_id": "codex-cli-0.147.0-run-03-admission-v0",
+    "profile_path": "admission/codex-cli-0.147.0-run-03-profile.json",
+    "profile_sha256": "ab21119f80141456e7327e276fa3e470abf288cf6a3535ac5fceeace68302033",
+    "required_status": "admitted"
+  },
+  "call_ceiling": {
+    "escalations": 0,
+    "fallbacks": 0,
+    "http_request_retries": 0,
+    "manual_retries": 0,
+    "provider_invocations": 1,
+    "recovery_actions": 0,
+    "routes": 0,
+    "stream_reconnect_retries": 0,
+    "tool_calls": 0
+  },
+  "contract_id": "contract-task-family-ranking-top-n-v0",
+  "deterministic_oracle": {
+    "expected_output": {
+      "ranked": [
+        {
+          "id": "b",
+          "rank": 1
+        },
+        {
+          "id": "c",
+          "rank": 2
+        }
+      ]
+    },
+    "oracle_id": "oracle-score-desc-id-ascending-top-n-v0"
+  },
+  "evidence_requirements": [
+    {
+      "artifact_id": "contract-task-family-ranking-top-n-v0",
+      "path": "task-family/definitions/task-c-ranking.contract.json",
+      "role": "task_contract"
+    },
+    {
+      "artifact_id": "program-task-family-ranking-top-n-v0",
+      "path": "task-family/programs/task-c-ranking.txt",
+      "role": "program"
+    }
+  ],
+  "execution": {
+    "configuration_id": "openai-codex-luna-medium-readonly-zero-retry-run-03-v0",
+    "execution_id": "task-family-20260906-c-ranking"
+  },
+  "execution_envelope": {
+    "approval_policy": "never",
+    "model_tools": "disabled",
+    "sandbox_mode": "read-only",
+    "task_side_effect_class": "read-only",
+    "workspace": "isolated-temporary-directory"
+  },
+  "freeze_requirement": {
+    "definition_code_freeze_sha": "required-runtime-full-sha",
+    "post_freeze_executable_change_permitted": false,
+    "required_starting_sha": "cd2b3f60a802a3f0438dc38792fd58b45bde820e"
+  },
+  "output_schema": {
+    "path": "task-family/schemas/task-c-ranking.schema.json",
+    "schema_id": "schema-task-family-ranking-top-n-v0",
+    "sha256": "4b61b9089ac175bf94687df8e1b4f7f4168ad9dfc02877681375870730412f18"
+  },
+  "program": {
+    "path": "task-family/programs/task-c-ranking.txt",
+    "program_id": "program-task-family-ranking-top-n-v0",
+    "sha256": "1dc285bccd14dcf156accc3ef68b57b63d9d5eab0bb741556668e69516f4266d"
+  },
+  "provider_configuration": {
+    "api_key_fallback": "prohibited",
+    "authentication_mode": "chatgpt",
+    "billing_mode": "chatgpt-subscription",
+    "codex_model_provider_config_id": "irisx_openai_no_retry",
+    "execution_surface": "codex-cli",
+    "model_id": "gpt-5.6-luna",
+    "model_role": "cheaper",
+    "provider_baseline_id": "irisx-openai-codex-dual-model-v0",
+    "provider_baseline_sha256": "a1a85c7464fbc090c2bf2e1682bee9a22957146e50abf11ab5c41f1544046d74",
+    "provider_cost_usd": "Unknown",
+    "provider_id": "openai",
+    "reasoning_effort": "medium"
+  },
+  "request": {
+    "action_id": "task-family-ranking-top-n-v0",
+    "operation": "rank_records",
+    "target": "task_input",
+    "value": {
+      "limit_source": "task_input.limit",
+      "ordering": "score_descending",
+      "tie_break": "id_ascending"
+    }
+  },
+  "run_artifacts": {
+    "run_directory": "task-family/runs/task-family-20260906-c-ranking",
+    "run_id": "task-family-20260906-c-ranking"
+  },
+  "schema_version": 1,
+  "semantic_family": "ordered-ranking-transformation",
+  "task_id": "task-family-ranking-top-n-v0",
+  "task_input": {
+    "path": "task-family/inputs/task-c-ranking.json",
+    "sha256": "fd7a8059f74c3076a509b7550377014e46856b6d3a17038e94b3cd4a31c55814"
+  },
+  "verifier_id": "ordered-ranking-verifier-v0"
+}

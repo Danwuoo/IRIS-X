@@ -1,0 +1,22 @@
+{
+  "limit": 2,
+  "records": [
+    {
+      "id": "a",
+      "score": 18
+    },
+    {
+      "id": "b",
+      "score": 31
+    },
+    {
+      "id": "c",
+      "score": 31
+    },
+    {
+      "id": "d",
+      "score": 22
+    }
+  ],
+  "tie_break": "id_ascending"
+}

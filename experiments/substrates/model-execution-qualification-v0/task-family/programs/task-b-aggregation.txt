@@ -1,0 +1,5 @@
+Execute one frozen read-only grouped-aggregation task.
+
+Use only the task JSON included in this prompt. Sum the integer amount of every record whose region exactly equals target_region.
+
+Do not call tools, inspect files, browse, delegate, retry, route, fall back, escalate, recover, or perform external actions. Return exactly one JSON object with exactly one integer field named "total". Return no markdown or explanatory text.

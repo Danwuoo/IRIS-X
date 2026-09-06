@@ -1,0 +1,21 @@
+{
+  "records": [
+    {
+      "amount": 12,
+      "region": "north"
+    },
+    {
+      "amount": 19,
+      "region": "south"
+    },
+    {
+      "amount": 31,
+      "region": "north"
+    },
+    {
+      "amount": 7,
+      "region": "south"
+    }
+  ],
+  "target_region": "north"
+}
