@@ -1,0 +1,67 @@
+{
+  "admission_profile_id": "codex-cli-0.147.0-run-03-admission-v0",
+  "admission_profile_sha256": "ab21119f80141456e7327e276fa3e470abf288cf6a3535ac5fceeace68302033",
+  "admission_record_path": "experiments/substrates/model-execution-qualification-v0/task-family/admission/current-environment-20260906.json",
+  "admission_record_sha256": "7abfa9dc397578516f806bf1841bbc21248fe6a73ba521239c311db040f9b640",
+  "admission_status": "admitted",
+  "call_ledger": {
+    "escalations": 0,
+    "fallbacks": 0,
+    "model_calls": 1,
+    "provider_attempts": 1,
+    "recovery_actions": 0,
+    "retries": 0,
+    "routes": 0,
+    "tool_calls": 0
+  },
+  "canonical_adjudication": {
+    "acceptance_decision": "accept",
+    "actual_outcome": "success",
+    "empirical_evidence_status": "sufficient",
+    "joint_interpretation": "verified_success",
+    "producer_claim": "success",
+    "terminal_execution_status": "completed",
+    "verified_success_eligibility": true
+  },
+  "classification": "verified_success",
+  "definition_code_freeze_sha": "2320858ba1f5dc5d7c68ba426278106c565ac6b4",
+  "deterministic_verification": {
+    "evidence_reasons": [
+      "complete_correct_binding"
+    ],
+    "evidence_status": "sufficient",
+    "observed_post_state_sha256": "3d2d941751536363f029124b4376bca7a5acbea890445ff8b9727602e784506e",
+    "semantic_reasons": [
+      "deterministic_aggregation_match"
+    ],
+    "semantic_valid": true
+  },
+  "launch_head": "9ef207b922c0b4dcb5fce61dce984bb0dfe02a22",
+  "provider_cost_usd": "Unknown",
+  "raw_artifact_hashes": {
+    "attempt-start.json": "7a06b6031c59d4bee9c78c668ea5b27bc3f27874779c2a914b5f09899b316384",
+    "provider-events.jsonl": "80d718a16715812c0ddb457bb392e41987d059f44bde47e2ada9490c718978dd",
+    "provider-stderr.txt": "91aff1c3142d8c2f0adb55edab0c9823d742cde6d3a2be0f583ed4b8de73858a",
+    "raw-output.txt": "0b8a389282e2a945b0faa96fd9ec7d925a4f3a1a5ece30e599ea222bc2dfdec2",
+    "resource-record.json": "67bce95a709ec1f570e2456cceba666c4354de3f82ed2f4fd9cc7e4061f6dc2a",
+    "run-manifest.json": "d08fc047ccc882560c6d59b00141c0a1f2815cb021dfedf5e67d654fa7b2dde5",
+    "terminal-record.json": "0f6f55237883d58bf2dfab79be9ddea1eec708acf52b6e60b0080a54db084b62"
+  },
+  "read_only_state": {
+    "after_sha256": "3d2d941751536363f029124b4376bca7a5acbea890445ff8b9727602e784506e",
+    "before_sha256": "3d2d941751536363f029124b4376bca7a5acbea890445ff8b9727602e784506e",
+    "changed_paths": []
+  },
+  "run_id": "task-family-20260906-b-aggregation",
+  "schema_version": 1,
+  "status": "derived-factual-interpretation",
+  "task_key": "B",
+  "token_usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 0,
+    "input_tokens": 4130,
+    "output_tokens": 36,
+    "reasoning_tokens": 19
+  },
+  "wall_time_ns": 3555293200
+}

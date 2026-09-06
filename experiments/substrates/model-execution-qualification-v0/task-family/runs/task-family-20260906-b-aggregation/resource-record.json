@@ -1,0 +1,26 @@
+{
+  "escalation_count": 0,
+  "fallback_count": 0,
+  "model_calls": 1,
+  "network_calls": "Unknown",
+  "paid_api_calls": 0,
+  "price_basis": "no-run-attributable-chatgpt-subscription-price-basis-available",
+  "provider_attempts": 1,
+  "provider_cost_usd": "Unknown",
+  "recovery_count": 0,
+  "retry_count": 0,
+  "route_count": 0,
+  "run_id": "task-family-20260906-b-aggregation",
+  "schema_version": 1,
+  "task_key": "B",
+  "token_usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 0,
+    "input_tokens": 4130,
+    "output_tokens": 36,
+    "reasoning_tokens": 19
+  },
+  "tool_calls": 0,
+  "transport_request_count": "Unknown",
+  "wall_time_ns": 3555293200
+}

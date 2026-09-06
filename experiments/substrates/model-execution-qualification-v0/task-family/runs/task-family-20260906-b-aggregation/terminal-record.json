@@ -1,0 +1,121 @@
+{
+  "acceptance_decision": "accept",
+  "actual_outcome": "success",
+  "empirical_evidence_status": "sufficient",
+  "evidence": [
+    {
+      "artifact_id": "contract-task-family-aggregation-region-v0",
+      "path": "task-family/definitions/task-b-aggregation.contract.json",
+      "role": "task_contract",
+      "sha256": "4eb1ace0cc27e967895d0572a034ec5c52481fd96fa2aaaa932d43daaa991b31"
+    },
+    {
+      "artifact_id": "program-task-family-aggregation-region-v0",
+      "path": "task-family/programs/task-b-aggregation.txt",
+      "role": "program",
+      "sha256": "54eee9495c249d68cc309a0569f4673ee3b32d82b653e860afcc0841efd605d1"
+    }
+  ],
+  "execution_identity": {
+    "configuration_id": "openai-codex-luna-medium-readonly-zero-retry-run-03-v0",
+    "execution_id": "task-family-20260906-b-aggregation"
+  },
+  "joint_interpretation": "verified_success",
+  "observations": [
+    {
+      "contract_id": "contract-task-family-aggregation-region-v0",
+      "sequence": 1,
+      "stage": "contract_loaded",
+      "task_id": "task-family-aggregation-region-v0"
+    },
+    {
+      "program_sha256": "54eee9495c249d68cc309a0569f4673ee3b32d82b653e860afcc0841efd605d1",
+      "sequence": 2,
+      "stage": "execution_identity_bound"
+    },
+    {
+      "decision": "not_required",
+      "sequence": 3,
+      "stage": "policy_not_required",
+      "timing": "not_applicable"
+    },
+    {
+      "executor_calls": 1,
+      "mutation_primitive_calls": 0,
+      "sequence": 4,
+      "stage": "executor_completed"
+    },
+    {
+      "evidence_status": "sufficient",
+      "semantic_valid": true,
+      "sequence": 5,
+      "stage": "independent_verification_completed"
+    },
+    {
+      "acceptance_decision": "accept",
+      "actual_outcome": "success",
+      "sequence": 6,
+      "stage": "adjudication_completed"
+    }
+  ],
+  "policy_decision": {
+    "decision": "not_required",
+    "mutation_primitive_executed": false,
+    "reasons": [
+      "read_only_request"
+    ],
+    "timing": "not_applicable"
+  },
+  "producer_claim": "success",
+  "program_identity": {
+    "content_bytes": 429,
+    "content_sha256": "54eee9495c249d68cc309a0569f4673ee3b32d82b653e860afcc0841efd605d1",
+    "path": "task-family/programs/task-b-aggregation.txt",
+    "program_id": "program-task-family-aggregation-region-v0"
+  },
+  "recovery": {
+    "action_id": null,
+    "attempted": false,
+    "result": "not_applicable",
+    "silent_retry": false,
+    "target_failure_state": null
+  },
+  "resource_ledger": {
+    "artifact_reads": 2,
+    "escalation_count": 0,
+    "executor_calls": 1,
+    "model_calls": 1,
+    "network_calls": "Unknown",
+    "paid_api_calls": 0,
+    "provider_cost_usd": "Unknown",
+    "recovery_count": 0,
+    "retry_count": 0,
+    "route_count": 0,
+    "tool_calls": 0,
+    "wall_time_ns": 3555293200
+  },
+  "schema_version": 1,
+  "side_effects": {
+    "changed_paths": [],
+    "mutation_primitive_executed": false,
+    "state_after_sha256": "3d2d941751536363f029124b4376bca7a5acbea890445ff8b9727602e784506e",
+    "state_before_sha256": "3d2d941751536363f029124b4376bca7a5acbea890445ff8b9727602e784506e"
+  },
+  "task_identity": {
+    "contract_id": "contract-task-family-aggregation-region-v0",
+    "task_id": "task-family-aggregation-region-v0"
+  },
+  "terminal_execution_status": "completed",
+  "verification": {
+    "evidence_reasons": [
+      "complete_correct_binding"
+    ],
+    "evidence_status": "sufficient",
+    "observed_post_state_sha256": "3d2d941751536363f029124b4376bca7a5acbea890445ff8b9727602e784506e",
+    "semantic_reasons": [
+      "deterministic_aggregation_match"
+    ],
+    "semantic_valid": true
+  },
+  "verified_success_eligibility": true
+}
