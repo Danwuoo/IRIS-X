@@ -1,6 +1,6 @@
 # TEMP Phase 5 — Architecture Consolidation and Capability Trigger Review
 
-Status: **Temporary — controlling execution plan; owner-authorized Phase 5 Batch 7**  
+Status: **Retired — Phase 5 closed by Decision A; see Section 30**
 Date: **2026-09-06 Asia/Taipei**  
 Repository: **Danwuoo/IRIS-X**  
 Required baseline `main`: **`979c443ece39b5631ac8afddabb25229aea958a8`**  
@@ -815,3 +815,67 @@ Do not start Phase 5 Batch 8.
 Do not start Phase 6.
 
 Any future execution requires separate owner authorization.
+
+---
+
+## 30. Retirement record
+
+- **Retirement date:** 2026-09-06 Asia/Taipei
+- **Required and observed starting baseline:**
+  `979c443ece39b5631ac8afddabb25229aea958a8`
+- **Decision:** **Decision A — Close Phase 5**
+- **Durable handoff:**
+  `docs/phase-5-architecture-consolidation-handoff.md` at
+  `3aa4beae4d9557d535f337cefe0dd9ac5dab1872`
+- **Model/provider calls authorized and performed:** `0` / `0`
+
+The plan was executed through these pre-retirement commits:
+
+| Purpose | Commit |
+| --- | --- |
+| Activate controlling plan | `aba95f35c5c3f0154c690e97babc3e9f751054aa` |
+| Align repository authority | `ecd247e06440ff829829fd96b12e7aecfc429ec9` |
+| Consolidate architecture evidence | `f66b188aa7673776f3fb39a719853f2e7df80b61` |
+| Review capability triggers | `627dfbf8dc4bc95aae8ddc2598b806e09109af81` |
+| Record architecture state | `3d3a05fbc4207a6154796c071d5fa25246a4328a` |
+| Finalize closure authority wording | `e7f4f42b7d4a0e25df462a4f0092217c50eca6f1` |
+| Record durable handoff | `3aa4beae4d9557d535f337cefe0dd9ac5dab1872` |
+
+The support matrix separates evidence-backed invariants from the current
+dataclass/protocol/JSON/local-filesystem/in-memory substrate. Provider-specific
+code outside core remains a provisional implementation choice. General
+recovery, persistence, nondeterministic verification, routing,
+escalation/cascade, automated specialization, workflow search, and
+external/irreversible actions remain not evaluated.
+
+Every reviewed deferred capability trigger—H-G1, H-W1, H-C1, H-R1,
+persistence, nondeterministic verification/model judging,
+external-action/interception, and recovery/retry—was `Not triggered`. No next
+experiment is warranted by the current evidence.
+
+Deterministic validation before retirement recorded:
+
+- repository check: PASS, 13 sources and 7 artifacts checked;
+- focused suites: 125/125 PASS;
+- full discovered inventory: 196 run, 195 pass, 1 failure, 0 errors, 0
+  skipped;
+- sole failure: the unchanged historical Phase 4 frozen-plan hash mismatch in
+  `HPIaContractTests.test_frozen_artifact_hashes_match_exact_bytes`;
+- Batch 7 introduced zero new failures or errors.
+
+Preservation checks found no changes to imported sources, papers,
+`irisx/core`, experiment configurations, provider baseline, admission records,
+historical runs, Batch 6 evidence, historical Phase 5 plans, historical
+handoffs, or the preserved Phase 4 plan. The tracked run inventory remained 22
+run instances and 871 files with manifest SHA-256
+`2263bb7c26b93f5dd4cfb46857c36628bcb29b57ad2c2343d490746c2334f6b5`.
+
+The owner-directed future two-turn launch/collection procedure is recorded in
+`AGENTS.md` and `docs/phase-5-architecture-state.md`. It is a development
+procedure, not evaluated evidence for reliability architecture, persistence,
+workflow, recovery, or any research result.
+
+No model process, next experiment, Batch 8, or Phase 6 was started. The full
+retirement commit SHA, final local/remote SHA, clean-tree state, and
+ahead/behind result are reported after the normal push in the owner-facing
+final report.
