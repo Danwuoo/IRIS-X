@@ -10,18 +10,18 @@ The project is not intended to combine several existing repositories into a larg
 
 The repository has completed its initial research-preparation work, the Phase 4
 evidence program, the first post-Phase-4 synthesis, and Phase 5 Batch 1 through
-Batch 6. Current work is owner-authorized Phase 5 Batch 7 architecture
-consolidation and capability-trigger review. Any architecture produced in this
-stage remains provisional, revisable, and not production-stable.
+Batch 7. Phase 5 is closed by the Batch 7 architecture consolidation and
+capability-trigger review. No next phase, experiment, or model execution is
+currently authorized. The architecture remains provisional, revisable, and not
+production-stable.
 
 ## Current Objective
 
-Phase 5 Batch 7 is consolidating Batch 1 through Batch 6 evidence, reviewing
-every deferred capability trigger, and deciding whether Phase 5 can close or
-whether exactly one next experiment is directly evidence-triggered. Batch 7
-authorizes no model/provider execution and no new runtime mechanism. The
-architecture state and any closure decision remain bounded by the observed
-deterministic local and admitted model-backed evidence.
+Phase 5 Batch 7 consolidated Batch 1 through Batch 6 evidence and reviewed every
+deferred capability trigger. Decision A closed Phase 5 because the provisional
+architecture state is explicit and no additional mechanism is presently
+evidence-triggered. Batch 7 made no model/provider call and added no runtime
+mechanism. Any future work requires a new owner-authorized scope.
 
 At this stage, the main goals are to:
 
@@ -392,11 +392,11 @@ IRIS-X should preserve these distinctions while the project is still forming.
 
 ## Status
 
-**Current status: Phase 5 Batch 7 — provisional architecture consolidation and capability-trigger review.**
+**Current status: Phase 5 complete — provisional architecture state recorded.**
 
 The repository is not a stable architecture, framework, production runtime, or
 product. Candidate architecture produced in this stage is provisional.
 
-The current authorized batch makes no model/provider calls, implements no new
-runtime mechanism, and decides Phase 5 closure versus one directly triggered
-experiment from the preserved evidence only.
+Batch 7 made no model/provider calls, implemented no new runtime mechanism, and
+closed Phase 5 without selecting or starting a next experiment. Phase 6 and a
+Phase 5 Batch 8 are not authorized.
