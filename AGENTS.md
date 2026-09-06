@@ -337,7 +337,7 @@ If later experimentation uses one of them, keep the boundary explicit enough tha
 
 ## Near-Term Work
 
-During the current Phase 5 batch, prioritize:
+The closed Phase 5 state preserves:
 
 - Batch 1 through Batch 6 evidence-to-constraint traceability;
 - an explicit provisional support matrix with scope and falsifiers;
