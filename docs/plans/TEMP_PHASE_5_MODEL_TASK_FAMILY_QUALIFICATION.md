@@ -1070,3 +1070,69 @@ After all authorized task-family execution is complete or correctly stopped, imm
 Do not start Phase 5 Batch 7.
 
 Do not add routing, persistence, model comparison, model judge, recovery, or another task family without separate owner authorization.
+
+---
+
+## Retirement record
+
+Phase 5 Batch 6 completed within this plan's exact task-semantic-diversity
+boundary. The already-admitted Codex CLI 0.147.0 / GPT-5.6 Luna medium profile
+was reused for exactly one independently authorized live call in each of the
+three frozen task families. Task A, Task B, and Task C each completed with a
+healthy provider result and canonical `verified_success`. Architecture exercise
+acceptance and full three-task-family qualification are established.
+
+- required and actual starting SHA:
+  `cd2b3f60a802a3f0438dc38792fd58b45bde820e`;
+- plan activation:
+  `b9903c825504746d802a1186fc2fb9eacb70673c`;
+- authority alignment:
+  `ffdafa39cbf431010de64551ab45a7d19d5cdcd0`;
+- task-family definition freeze:
+  `272f54db77688378a798460010fd16f064be555c`;
+- shared provider-specific adapter extraction:
+  `bebdaeb90e57a4ade24f8ccc8023c10c42c2013c`;
+- definition/code freeze SHA and offline semantics/isolation tests:
+  `2320858ba1f5dc5d7c68ba426278106c565ac6b4`;
+- admitted current-environment snapshot:
+  `ddf9d1f9f924fcd877eb91bdfea96f645fd846ae`;
+- Task A evidence:
+  `9ef207b922c0b4dcb5fce61dce984bb0dfe02a22`;
+- Task B evidence:
+  `83782d34529b8d9ec2febed24d7899e696a91f44`;
+- Task C evidence:
+  `cf52d4c1b2ad3ab3f01379ff25987977f9cabe81`;
+- derived batch summary:
+  `81c2d48bc0c8b7390a464e7bd063666b63103342`;
+- durable handoff:
+  `b610dfd047b4cffeafdaca5ccbf2c2ee1cbb45c3`;
+- admission profile/hash:
+  `codex-cli-0.147.0-run-03-admission-v0` /
+  `ab21119f80141456e7327e276fa3e470abf288cf6a3535ac5fceeace68302033`;
+- admission snapshot hash and status:
+  `7abfa9dc397578516f806bf1841bbc21248fe6a73ba521239c311db040f9b640` /
+  `admitted`;
+- per-task and batch model-call ledger: Task A `1`, Task B `1`, Task C `1`,
+  total `3`; retries, routes, fallbacks, escalations, recovery actions, and tool
+  calls all `0`;
+- semantic outcomes: `3 / 3 verified_success`, semantic failures `0`, systemic
+  failures `0`;
+- offline corpus: 27/27 expected outcomes PASS, including Task C tie-break
+  violation rejection;
+- cross-task isolation: 12/12 PASS;
+- focused validation: 125/125 PASS;
+- full inventory: 196 total, 195 passed, the same one historical Phase 4
+  frozen-plan hash failure, 0 errors, 0 skips, and 0 new failures/errors;
+- executable task-family surface changes after freeze: `0`;
+- protected prior source, paper, research, core, historical definition, and
+  historical run trees: unchanged;
+- new immutable run evidence: exactly three directories and 24 files; no prior
+  run overwritten;
+- no `irisx.core` change and no provider-specific core coupling;
+- retirement commit and final local/remote synchronization: reported in the
+  owner-facing final response because they occur after this record is written.
+
+The durable result is
+`docs/phase-5-model-task-family-qualification-handoff.md`. Batch 6 is closed.
+H-G1, H-W1, H-C1, and H-R1 remain `Not evaluated`. Do not start Batch 7 or add
+another task family or mechanism without new owner authorization.
