@@ -1,0 +1,121 @@
+{
+  "acceptance_decision": "accept",
+  "actual_outcome": "success",
+  "empirical_evidence_status": "sufficient",
+  "evidence": [
+    {
+      "artifact_id": "contract-task-family-ranking-top-n-v0",
+      "path": "task-family/definitions/task-c-ranking.contract.json",
+      "role": "task_contract",
+      "sha256": "902042c0b3f7198b8cecdc856d40652bd56fc6ca58aa4b5ac3da5791f5759e3e"
+    },
+    {
+      "artifact_id": "program-task-family-ranking-top-n-v0",
+      "path": "task-family/programs/task-c-ranking.txt",
+      "role": "program",
+      "sha256": "1dc285bccd14dcf156accc3ef68b57b63d9d5eab0bb741556668e69516f4266d"
+    }
+  ],
+  "execution_identity": {
+    "configuration_id": "openai-codex-luna-medium-readonly-zero-retry-run-03-v0",
+    "execution_id": "task-family-20260906-c-ranking"
+  },
+  "joint_interpretation": "verified_success",
+  "observations": [
+    {
+      "contract_id": "contract-task-family-ranking-top-n-v0",
+      "sequence": 1,
+      "stage": "contract_loaded",
+      "task_id": "task-family-ranking-top-n-v0"
+    },
+    {
+      "program_sha256": "1dc285bccd14dcf156accc3ef68b57b63d9d5eab0bb741556668e69516f4266d",
+      "sequence": 2,
+      "stage": "execution_identity_bound"
+    },
+    {
+      "decision": "not_required",
+      "sequence": 3,
+      "stage": "policy_not_required",
+      "timing": "not_applicable"
+    },
+    {
+      "executor_calls": 1,
+      "mutation_primitive_calls": 0,
+      "sequence": 4,
+      "stage": "executor_completed"
+    },
+    {
+      "evidence_status": "sufficient",
+      "semantic_valid": true,
+      "sequence": 5,
+      "stage": "independent_verification_completed"
+    },
+    {
+      "acceptance_decision": "accept",
+      "actual_outcome": "success",
+      "sequence": 6,
+      "stage": "adjudication_completed"
+    }
+  ],
+  "policy_decision": {
+    "decision": "not_required",
+    "mutation_primitive_executed": false,
+    "reasons": [
+      "read_only_request"
+    ],
+    "timing": "not_applicable"
+  },
+  "producer_claim": "success",
+  "program_identity": {
+    "content_bytes": 650,
+    "content_sha256": "1dc285bccd14dcf156accc3ef68b57b63d9d5eab0bb741556668e69516f4266d",
+    "path": "task-family/programs/task-c-ranking.txt",
+    "program_id": "program-task-family-ranking-top-n-v0"
+  },
+  "recovery": {
+    "action_id": null,
+    "attempted": false,
+    "result": "not_applicable",
+    "silent_retry": false,
+    "target_failure_state": null
+  },
+  "resource_ledger": {
+    "artifact_reads": 2,
+    "escalation_count": 0,
+    "executor_calls": 1,
+    "model_calls": 1,
+    "network_calls": "Unknown",
+    "paid_api_calls": 0,
+    "provider_cost_usd": "Unknown",
+    "recovery_count": 0,
+    "retry_count": 0,
+    "route_count": 0,
+    "tool_calls": 0,
+    "wall_time_ns": 6018089400
+  },
+  "schema_version": 1,
+  "side_effects": {
+    "changed_paths": [],
+    "mutation_primitive_executed": false,
+    "state_after_sha256": "11851ecf7e4517a80b30b1d7797973d7fe403f3a7bf55ce1282ee57c4f5750d6",
+    "state_before_sha256": "11851ecf7e4517a80b30b1d7797973d7fe403f3a7bf55ce1282ee57c4f5750d6"
+  },
+  "task_identity": {
+    "contract_id": "contract-task-family-ranking-top-n-v0",
+    "task_id": "task-family-ranking-top-n-v0"
+  },
+  "terminal_execution_status": "completed",
+  "verification": {
+    "evidence_reasons": [
+      "complete_correct_binding"
+    ],
+    "evidence_status": "sufficient",
+    "observed_post_state_sha256": "11851ecf7e4517a80b30b1d7797973d7fe403f3a7bf55ce1282ee57c4f5750d6",
+    "semantic_reasons": [
+      "deterministic_ordered_ranking_match"
+    ],
+    "semantic_valid": true
+  },
+  "verified_success_eligibility": true
+}
