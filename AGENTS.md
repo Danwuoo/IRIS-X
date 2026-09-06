@@ -9,30 +9,28 @@ IRIS-X is a clean research workspace for rethinking reliable, low-cost, task-spe
 The project is not intended to combine several existing repositories into a larger framework. The repositories collected here are research predecessors, external references, implementation examples, and experimental substrates. Their useful ideas, constraints, failure cases, and engineering patterns may inform IRIS-X, but IRIS-X should develop its own coherent architecture rather than inherit the structure of any one source project.
 
 The repository has completed its initial research-preparation work, the Phase 4
-evidence program, the first post-Phase-4 synthesis, and Phase 5 Batch 5. Current
-work is owner-authorized Phase 5 Batch 6 task-family qualification for the exact
-admitted Codex CLI configuration. Any architecture produced in this stage
-remains provisional, revisable, and not production-stable.
+evidence program, the first post-Phase-4 synthesis, and Phase 5 Batch 1 through
+Batch 6. Current work is owner-authorized Phase 5 Batch 7 architecture
+consolidation and capability-trigger review. Any architecture produced in this
+stage remains provisional, revisable, and not production-stable.
 
 ## Current Objective
 
-Phase 5 Batch 6 is qualifying the already-admitted model-backed execution
-profile across three semantically distinct deterministic task families while
-testing cross-task isolation and preserving the existing core trust boundaries.
-The batch permits maximum three separately frozen live model calls and requires
-zero retries, routes, fallbacks, escalations, or recovery actions. The
-deterministic verifier remains authoritative, admission is required before live
-execution, and provider-specific code remains outside core. Batch 6 does not
-authorize routing, model comparison, persistence, or model-judge work.
+Phase 5 Batch 7 is consolidating Batch 1 through Batch 6 evidence, reviewing
+every deferred capability trigger, and deciding whether Phase 5 can close or
+whether exactly one next experiment is directly evidence-triggered. Batch 7
+authorizes no model/provider execution and no new runtime mechanism. The
+architecture state and any closure decision remain bounded by the observed
+deterministic local and admitted model-backed evidence.
 
 At this stage, the main goals are to:
 
 - preserve the completed Phase 4 closure and its task-local evidence boundaries;
-- map observed evidence to candidate constraints and minimal interfaces;
+- consolidate Phase 5 evidence without strengthening historical conclusions;
+- separate supported invariants from current provisional Python/substrate shapes;
+- review deferred capabilities against explicit evidence triggers;
 - separate IRIS-X research contribution from reusable commodity substrate;
 - preserve uncertainty and define falsifiers for provisional choices;
-- implement and validate only the minimum executable path needed to exercise
-  the supported trust boundaries across exactly the authorized paths;
 - keep unresolved mechanisms as extension points rather than silently making
   them core features.
 
@@ -341,15 +339,12 @@ If later experimentation uses one of them, keep the boundary explicit enough tha
 
 During the current Phase 5 batch, prioritize:
 
-- evidence-to-constraint traceability;
-- candidate interfaces with explicit trust and failure boundaries;
-- separation of outcome, claims, evidence, acceptance, and execution state;
-- local deterministic validation of the core boundary across the preserved
-  mutation slice and exactly one read-only integration path;
-- exact, fail-closed admission checks for the frozen Codex CLI 0.147.0 Run 03
-  execution profile before each authorized task-family invocation;
-- three independently frozen deterministic task families with cross-task
-  identity, evidence, program, schema, and verifier isolation;
+- Batch 1 through Batch 6 evidence-to-constraint traceability;
+- an explicit provisional support matrix with scope and falsifiers;
+- separation of evidence-backed invariants from replaceable substrate choices;
+- deferred-capability trigger review without mechanism implementation;
+- an explicit Phase 5 closure decision;
+- zero model/provider calls and preservation of all prior evidence;
 - preservation checks and a durable unresolved-decision backlog.
 
 Validate repository organization from the root:
@@ -359,6 +354,25 @@ python tools\repository_check.py
 ```
 
 Do not begin large implementation work merely because the source material is available.
+
+## Owner-Directed Future Model Execution Procedure
+
+This is a development and usage procedure required by the owner. It is not an
+evaluated reliability architecture, persistence mechanism, workflow engine, or
+research result.
+
+Any future separately authorized model execution must use two owner-separated
+turns. The launch turn must freeze and commit definition/code, pass deterministic
+admission/preflight, verify a clean tree, start the model process in the
+background with stdout/stderr outside the repository, record PID, launch time,
+freeze SHA, and log paths, perform exactly one immediate launch confirmation,
+and then stop. After that confirmation it must not poll, wait, sleep/recheck,
+tail logs, watch output paths, inspect partial artifacts, infer a result, or
+report final model output, even if the process has already exited.
+
+Only a later explicit owner collection request may inspect completion/output,
+preserve raw artifacts, adjudicate, commit evidence, and continue the authorized
+lifecycle.
 
 ## Decision Standard
 
@@ -378,12 +392,11 @@ IRIS-X should preserve these distinctions while the project is still forming.
 
 ## Status
 
-**Current status: Phase 5 — provisional architecture development.**
+**Current status: Phase 5 Batch 7 — provisional architecture consolidation and capability-trigger review.**
 
 The repository is not a stable architecture, framework, production runtime, or
 product. Candidate architecture produced in this stage is provisional.
 
-The current authorized batch reuses one frozen provider-specific execution
-profile across exactly three bounded read-only deterministic-verifier task
-families. It authorizes at most one model call per task and three total, with no
-retry or mechanism expansion and no broad implementation or productionization.
+The current authorized batch makes no model/provider calls, implements no new
+runtime mechanism, and decides Phase 5 closure versus one directly triggered
+experiment from the preserved evidence only.
