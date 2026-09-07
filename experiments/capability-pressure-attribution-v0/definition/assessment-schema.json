@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "record_type": "capability-pressure-assessment-v0",
+  "status": "research-local-provisional",
+  "required_fields": [
+    "assessment_id",
+    "case_id",
+    "suite",
+    "fixture_role",
+    "evidence_class",
+    "source_refs",
+    "observed_conditions",
+    "shortfall_axes",
+    "failure_stage",
+    "attribution_status",
+    "attribution_reasons",
+    "candidate_interventions",
+    "capability_trigger_candidates",
+    "trigger_results",
+    "architecture_research_decision",
+    "conflicts",
+    "unknowns"
+  ],
+  "source_ref_required_fields": [
+    "path",
+    "sha256"
+  ],
+  "source_ref_path_policy": "repository-relative-no-parent-segments",
+  "assessment_id_prefix": "assessment:",
+  "case_id_prefixes": [
+    "pressure-",
+    "attribution-",
+    "replay-"
+  ],
+  "suite_values": [
+    "synthetic_pressure",
+    "attribution_boundaries",
+    "historical_replay"
+  ],
+  "fixture_roles": [
+    "negative_control",
+    "near_trigger",
+    "synthetic_positive",
+    "collision_boundary",
+    "historical_replay"
+  ]
+}

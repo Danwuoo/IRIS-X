@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "suite": "historical_replay",
+  "cases": [
+    {
+      "case_id": "replay-phase5-batch4-configuration-lineage",
+      "fixture_role": "historical_replay",
+      "replay_kind": "phase5_batch4_configuration_failures",
+      "evidence_class": "direct_repository_evidence",
+      "source_refs": [
+        {"path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-01/terminal-record.json", "sha256": "d7e09cbe9a2fbdf497fa72aaa4af16db6c6bc46cc9f7aa1c8a4c745d1fd7a696"},
+        {"path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-01/interpretation.json", "sha256": "ba8522f38fa9dbaeb65f6bd0aa59832708eb9d0b939022585ad821deb8007b65"},
+        {"path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-01/provider-stderr.txt", "sha256": "4cf1ac52b2ecccadc6d5d889db31c8a4437cfb3fe107f20ef93f17fe86cb27f0"},
+        {"path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-02/terminal-record.json", "sha256": "c94fa8373814853e6de56f60599bfc936c242802539f8856a4e1612847831b0e"},
+        {"path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-02/interpretation.json", "sha256": "4fc5855d66bc31be56636fdb2fb3761244a4c2bcaf56474ca7f7796fc5c0802b"},
+        {"path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-02/provider-stderr.txt", "sha256": "74cb00300ed4a4c23ba979d30d34218cd356e4bfb55b81f10a3dc832d52c56c7"}
+      ],
+      "expected_attribution": {
+        "shortfall_axes": ["task_success", "evidence"],
+        "failure_stage": "admission_configuration",
+        "attribution_status": "directly_supported"
+      },
+      "expected_trigger_results": {
+        "H-C1": "not_triggered",
+        "general_recovery_retry": "not_triggered"
+      },
+      "expected_historical_distinctions": {
+        "model_capability_failure": "Not established",
+        "retry_requirement": "Not established",
+        "escalation_requirement": "Not established",
+        "lineage_logical_attempts": 2,
+        "retry_count": 0,
+        "route_count": 0,
+        "escalation_count": 0,
+        "recovery_count": 0
+      }
+    },
+    {
+      "case_id": "replay-phase5-batch6-shared-allocation-family",
+      "fixture_role": "historical_replay",
+      "replay_kind": "phase5_batch6_shared_allocation_success",
+      "evidence_class": "direct_repository_evidence",
+      "source_refs": [
+        {"path": "experiments/substrates/model-execution-qualification-v0/task-family/admission/current-environment-20260906.json", "sha256": "7abfa9dc397578516f806bf1841bbc21248fe6a73ba521239c311db040f9b640"},
+        {"path": "experiments/substrates/model-execution-qualification-v0/task-family/summaries/batch-6-summary.json", "sha256": "7f045a2f604843e9d41c4e02274b2a6758d0677c15be0dfcfeb824ef2c5ec05c"},
+        {"path": "experiments/substrates/model-execution-qualification-v0/task-family/runs/task-family-20260906-a-filter/terminal-record.json", "sha256": "1536719c3da17a7ac12cab6c83e2c431cba387d4efe4f0e7c437f239f7c2014c"},
+        {"path": "experiments/substrates/model-execution-qualification-v0/task-family/runs/task-family-20260906-b-aggregation/terminal-record.json", "sha256": "0f6f55237883d58bf2dfab79be9ddea1eec708acf52b6e60b0080a54db084b62"},
+        {"path": "experiments/substrates/model-execution-qualification-v0/task-family/runs/task-family-20260906-c-ranking/terminal-record.json", "sha256": "017be5556ce0eccd665eeed94bb7236bba1a555a5cea2f5498e17054384b34bb"}
+      ],
+      "expected_attribution": {
+        "shortfall_axes": [],
+        "failure_stage": "unknown",
+        "attribution_status": "not_attributable"
+      },
+      "expected_trigger_results": {
+        "H-R1": "not_triggered",
+        "H-C1": "not_triggered",
+        "general_recovery_retry": "not_triggered",
+        "runtime_persistence": "not_triggered"
+      },
+      "expected_historical_distinctions": {
+        "semantic_task_count": 3,
+        "shared_admitted_allocation_count": 1,
+        "verified_successes": 3,
+        "retry_count": 0,
+        "route_count": 0,
+        "escalation_count": 0,
+        "recovery_count": 0,
+        "read_only": true
+      }
+    }
+  ]
+}
