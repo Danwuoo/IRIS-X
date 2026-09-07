@@ -59,4 +59,3 @@ The candidate shortfall axes and failure stages are provisional research
 labels. They are intentionally outside `irisx/core`. The experiment is not a
 router, retry loop, recovery runtime, persistence mechanism, workflow engine,
 model judge, specialization system, action executor, or architecture planner.
-
