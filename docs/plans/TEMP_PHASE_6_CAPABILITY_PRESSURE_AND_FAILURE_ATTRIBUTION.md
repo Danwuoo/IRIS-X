@@ -1,6 +1,6 @@
 # TEMP Phase 6 — Capability Pressure and Failure Attribution Foundation
 
-Status: **Temporary — controlling execution plan; owner-authorized Phase 6 Batch 1**  
+Status: **Retired — Phase 6 Batch 1 complete; see retirement record**  
 Date: **2026-09-07 Asia/Taipei**  
 Repository: **Danwuoo/IRIS-X**  
 Required baseline `main`: **`4aa7256e2237e997425e8712638334088056037d`**  
@@ -1356,3 +1356,86 @@ without evidence**, not if it makes the architecture larger.
 No model process, provider execution, routing system, recovery loop, persistence
 runtime, workflow engine, model judge, specialization engine, external action,
 or Phase 6 Batch 2 is authorized by this plan.
+
+---
+
+## 32. Retirement record
+
+- **Retirement date:** 2026-09-08 Asia/Taipei
+- **Required and observed starting baseline:**
+  `4aa7256e2237e997425e8712638334088056037d`
+- **Definition/code freeze and execution SHA:**
+  `9b46fb55bbbe400823efcd08b3b09d74196e869b`
+- **Authoritative offline-run evidence commit:**
+  `89dc196357c991ece19f10ab6fbfbb5c8d83cb34`
+- **Research/result commit:**
+  `904053c271cf6091786213dbea2d6b7cc0d9e0f4`
+- **Durable handoff:**
+  `docs/phase-6-capability-pressure-attribution-handoff.md` at
+  `90fa347617b6840f30cf4c21f38059ff667477ed`
+- **Model/provider calls authorized and performed:** `0 / 0`
+- **Paid API calls / model subprocesses:** `0 / 0`
+- **Final result:** **Result A — Foundation established**
+
+The plan was executed through these pre-retirement commits:
+
+| Purpose | Commit |
+| --- | --- |
+| Activate owner-provided controlling plan | `38b9db1ec7f9460fc0861f22caeeac3f9124ef9b` |
+| Record Phase 6 research framing | `8852de2302f4377727e263342d999340fa6b22e8` |
+| Define gates and fixtures | `d5175af152a7d8423d5e2b7cca2b2d51e2e65840` |
+| Implement offline assessment substrate | `136c7423c8091c5cdca00cba1fcf8f52d998b483` |
+| Add focused tests | `b29f4f3f8adf7b025cc3f4a7869684182f49e61e` |
+| Finalize definition/code freeze | `9b46fb55bbbe400823efcd08b3b09d74196e869b` |
+| Preserve authoritative offline run | `89dc196357c991ece19f10ab6fbfbb5c8d83cb34` |
+| Interpret Batch 1 evidence | `904053c271cf6091786213dbea2d6b7cc0d9e0f4` |
+| Record durable handoff | `90fa347617b6840f30cf4c21f38059ff667477ed` |
+
+The authoritative offline run recorded 34 valid assessments: 24 synthetic
+pressure cases, eight attribution collision/boundary cases, and two selected
+Phase 5 historical replays. All 34 matched their frozen expectations. The
+primary pressure suite passed 8/8 negative controls, 8/8 near-trigger cases,
+and 8/8 synthetic positive cases. Both intentional ambiguities remained
+ambiguous, both historical replays matched, and conflicts were zero.
+
+Every direct-evidence capability trigger remains `Not triggered`. Synthetic
+positive fixtures recognized all eight gate predicates but did not mutate or
+imply the direct-evidence trigger ledger.
+
+Deterministic validation before retirement recorded:
+
+- definition/schema suite: 9/9 PASS;
+- trigger-gate suite: 8/8 PASS;
+- attribution suite: 8/8 PASS;
+- historical replay suite: 5/5 PASS;
+- determinism suite: 5/5 PASS;
+- focused Batch 1 total: 35/35 PASS;
+- existing model-qualification suite: 75/75 PASS;
+- authoritative run hash, freeze-byte, source-reference, replay, and
+  deterministic-regeneration validation: PASS;
+- repository check: PASS, 13 sources and 7 artifacts checked;
+- full discovered inventory: 231 run, 230 pass, one failure, zero errors, zero
+  skipped;
+- sole failure: the unchanged historical Phase 4 frozen-plan hash contract in
+  `HPIaContractTests.test_frozen_artifact_hashes_match_exact_bytes`;
+- new failures or errors: zero.
+
+Preservation checks found zero changes under `sources/`, `references/papers/`,
+or `irisx/core/` from the required baseline. The historical Batch 4 and Batch 6
+artifacts used by replay remain byte-identical to their recorded SHA-256
+references. No historical plan, handoff, evidence file, or model run was
+rewritten. No deferred mechanism or external framework dependency was added.
+
+The exact next recommendation is a separately owner-authorized,
+mechanism-free pressure-sampling definition batch: freeze a bounded set of
+deterministically verifiable tasks under one unchanged admitted allocation and
+predeclare how a real task-level miss will be distinguished from admission,
+identity, and verifier failures. Collect direct failure-pressure evidence
+before comparing a stronger allocation or testing retry. This is a
+recommendation only and does not authorize Phase 6 Batch 2 or model execution.
+
+The retirement commit is the Batch 1 lifecycle boundary. Its own full SHA, the
+normal push result, final local/remote SHA, clean-tree state, and ahead/behind
+result are necessarily reported after the commit and normal push in the
+owner-facing final report; a commit cannot contain its own final identity or a
+future push observation.
