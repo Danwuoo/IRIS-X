@@ -1,0 +1,87 @@
+{
+  "ambiguous_cases_preserved": 2,
+  "attribution_boundary_case_count": 8,
+  "authority": "derived_data_only_per_case_and_historical_sources_remain_authoritative",
+  "case_count": 34,
+  "conflicts": [],
+  "direct_evidence_triggers_by_gate": {
+    "H-C1": [],
+    "H-G1": [],
+    "H-R1": [],
+    "H-W1": [],
+    "external_action_interception": [],
+    "general_recovery_retry": [],
+    "nondeterministic_verifier": [],
+    "runtime_persistence": []
+  },
+  "expectations_matched": 34,
+  "historical_replay_case_count": 2,
+  "historical_replay_conflicts": 0,
+  "historical_replays_matched": 2,
+  "invalid_assessments": 0,
+  "model_calls": 0,
+  "model_subprocesses": 0,
+  "near_trigger_cases_passed": 8,
+  "negative_controls_passed": 8,
+  "paid_api_calls": 0,
+  "provider_calls": 0,
+  "result_category": "Result A — Foundation established",
+  "schema_version": 1,
+  "synthetic_positive_triggers_passed": 8,
+  "synthetic_pressure_case_count": 24,
+  "synthetic_triggers_by_gate": {
+    "H-C1": [
+      "attribution-cheaper-miss-stronger-success-ambiguous",
+      "pressure-h-c1-positive"
+    ],
+    "H-G1": [
+      "pressure-h-g1-positive"
+    ],
+    "H-R1": [
+      "pressure-h-r1-positive"
+    ],
+    "H-W1": [
+      "attribution-control-flow-not-escalation",
+      "pressure-h-w1-positive"
+    ],
+    "external_action_interception": [
+      "pressure-external-positive"
+    ],
+    "general_recovery_retry": [
+      "pressure-recovery-positive"
+    ],
+    "nondeterministic_verifier": [
+      "attribution-verifier-rejects-correct-output",
+      "pressure-verifier-positive"
+    ],
+    "runtime_persistence": [
+      "attribution-restart-continuity-not-workflow",
+      "pressure-persistence-positive"
+    ]
+  },
+  "unknowns": [
+    {
+      "case_id": "attribution-cheaper-miss-stronger-success-ambiguous",
+      "items": [
+        "unique causal failure stage"
+      ]
+    },
+    {
+      "case_id": "attribution-transient-symptom-ambiguous",
+      "items": [
+        "failure stage",
+        "retry benefit",
+        "retry safety"
+      ]
+    },
+    {
+      "case_id": "replay-phase5-batch4-configuration-lineage",
+      "items": [
+        "escalation requirement: Not established",
+        "model capability failure: Not established",
+        "retry requirement: Not established"
+      ]
+    }
+  ],
+  "valid_assessments": 34
+}

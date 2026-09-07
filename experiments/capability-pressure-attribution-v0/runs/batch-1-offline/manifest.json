@@ -1,0 +1,155 @@
+{
+  "assessment_schema_sha256": "270e1d600e375db66151836993194458765ce6cbeae241168257135e4937bc7a",
+  "attribution_vocabulary_sha256": "2eb075863b2e400cd5e71d1436691b974405c80cabc15dfe2f88358d03f31346",
+  "authority": "immutable_authoritative_offline_research_instrument_run",
+  "batch": "Batch 1",
+  "commands_or_procedures": [
+    "python experiments\\capability-pressure-attribution-v0\\scripts\\validate_definitions.py",
+    "python -m unittest discover -s experiments\\capability-pressure-attribution-v0\\tests -v",
+    "python tools\\repository_check.py",
+    "python experiments\\capability-pressure-attribution-v0\\scripts\\assess_pressure.py --output-dir experiments\\capability-pressure-attribution-v0\\runs\\batch-1-offline --starting-sha 4aa7256e2237e997425e8712638334088056037d --freeze-sha 9b46fb55bbbe400823efcd08b3b09d74196e869b"
+  ],
+  "definition_code_freeze_sha": "9b46fb55bbbe400823efcd08b3b09d74196e869b",
+  "definition_code_inventory": [
+    {
+      "path": "experiments/capability-pressure-attribution-v0/definition/assessment-schema.json",
+      "sha256": "270e1d600e375db66151836993194458765ce6cbeae241168257135e4937bc7a"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/definition/attribution-vocabulary.json",
+      "sha256": "2eb075863b2e400cd5e71d1436691b974405c80cabc15dfe2f88358d03f31346"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/definition/trigger-gates.json",
+      "sha256": "c7d03c6c8c3f9fe2fb56b07264fe21e6a9c6db0212b762b0f6bbb9be951055d6"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/fixtures/attribution-boundaries/attribution-cases.json",
+      "sha256": "6393fecebf8d56c9d1de25bb0907bbc702af5732641ac4a5d46e6f03ed9b8905"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/fixtures/phase-5-replay/replay-cases.json",
+      "sha256": "7f0c5ff4c53e52f8a21c9324c343fbe49bba13ea4e65cca3d72308b6dd30cdd7"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/fixtures/synthetic-pressure/trigger-cases.json",
+      "sha256": "0097a5af6e347467d702f0adf83b648d5ac4ab4ba1ca577185fa7ab0dcd2acb2"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/scripts/assess_pressure.py",
+      "sha256": "636c890f2841c353c1f3afe15011a07e3f72e7f75d40ca05bdea6b15ff6cb2c7"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/scripts/summarize_assessments.py",
+      "sha256": "3b22a9ab5abaf3082f11e31fbe3031f5ac104e4be9fbb34aed30caff76f14c20"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/scripts/validate_definitions.py",
+      "sha256": "b4cabac4e9ccd64aab22c1fef28f0be5744e40cc9a9df55aad095e52eb2b18ac"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/tests/test_definition_integrity.py",
+      "sha256": "86cad315c9ec57e875aaa046b90615770aed4d091b87bec2769f759319d0a828"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/tests/test_determinism.py",
+      "sha256": "25e552fdf26d375441fa5242354e20f6bae2bef382f53633852fb626f2035485"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/tests/test_failure_attribution.py",
+      "sha256": "5ee2964121f37b954ccaa58cf549575e93aed5dcaab3f2c6e1d07c7b8c2e80d5"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/tests/test_phase5_replay.py",
+      "sha256": "3438bc48e6149a4eb06a7872ccf7da9645c7cdc3fad0d95a07d2647242905572"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/tests/test_trigger_gates.py",
+      "sha256": "e94ce86dc465b10c135c17e317012e35a0faaa8a7515a63f2e71ef96c05d53d5"
+    }
+  ],
+  "definition_code_inventory_sha256": "10a571293e786117a665fdbdb45e3b8fdd1172cdc03d6c037ce75b8b96af7dcc",
+  "execution_sha": "9b46fb55bbbe400823efcd08b3b09d74196e869b",
+  "fixture_inventory": [
+    {
+      "path": "experiments/capability-pressure-attribution-v0/fixtures/synthetic-pressure/trigger-cases.json",
+      "sha256": "0097a5af6e347467d702f0adf83b648d5ac4ab4ba1ca577185fa7ab0dcd2acb2"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/fixtures/attribution-boundaries/attribution-cases.json",
+      "sha256": "6393fecebf8d56c9d1de25bb0907bbc702af5732641ac4a5d46e6f03ed9b8905"
+    },
+    {
+      "path": "experiments/capability-pressure-attribution-v0/fixtures/phase-5-replay/replay-cases.json",
+      "sha256": "7f0c5ff4c53e52f8a21c9324c343fbe49bba13ea4e65cca3d72308b6dd30cdd7"
+    }
+  ],
+  "fixture_inventory_sha256": "7d42679ea62413ce60e7ccd23d262d23d37c9b1fe6834ff60cc9bec6538aba23",
+  "gate_definition_sha256": "c7d03c6c8c3f9fe2fb56b07264fe21e6a9c6db0212b762b0f6bbb9be951055d6",
+  "historical_replay_sources": [
+    {
+      "path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-01/interpretation.json",
+      "sha256": "ba8522f38fa9dbaeb65f6bd0aa59832708eb9d0b939022585ad821deb8007b65"
+    },
+    {
+      "path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-01/provider-stderr.txt",
+      "sha256": "4cf1ac52b2ecccadc6d5d889db31c8a4437cfb3fe107f20ef93f17fe86cb27f0"
+    },
+    {
+      "path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-01/terminal-record.json",
+      "sha256": "d7e09cbe9a2fbdf497fa72aaa4af16db6c6bc46cc9f7aa1c8a4c745d1fd7a696"
+    },
+    {
+      "path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-02/interpretation.json",
+      "sha256": "4fc5855d66bc31be56636fdb2fb3761244a4c2bcaf56474ca7f7796fc5c0802b"
+    },
+    {
+      "path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-02/provider-stderr.txt",
+      "sha256": "74cb00300ed4a4c23ba979d30d34218cd356e4bfb55b81f10a3dc832d52c56c7"
+    },
+    {
+      "path": "experiments/substrates/model-execution-qualification-v0/runs/qualification-20260905-02/terminal-record.json",
+      "sha256": "c94fa8373814853e6de56f60599bfc936c242802539f8856a4e1612847831b0e"
+    },
+    {
+      "path": "experiments/substrates/model-execution-qualification-v0/task-family/admission/current-environment-20260906.json",
+      "sha256": "7abfa9dc397578516f806bf1841bbc21248fe6a73ba521239c311db040f9b640"
+    },
+    {
+      "path": "experiments/substrates/model-execution-qualification-v0/task-family/runs/task-family-20260906-a-filter/terminal-record.json",
+      "sha256": "1536719c3da17a7ac12cab6c83e2c431cba387d4efe4f0e7c437f239f7c2014c"
+    },
+    {
+      "path": "experiments/substrates/model-execution-qualification-v0/task-family/runs/task-family-20260906-b-aggregation/terminal-record.json",
+      "sha256": "0f6f55237883d58bf2dfab79be9ddea1eec708acf52b6e60b0080a54db084b62"
+    },
+    {
+      "path": "experiments/substrates/model-execution-qualification-v0/task-family/runs/task-family-20260906-c-ranking/terminal-record.json",
+      "sha256": "017be5556ce0eccd665eeed94bb7236bba1a555a5cea2f5498e17054384b34bb"
+    },
+    {
+      "path": "experiments/substrates/model-execution-qualification-v0/task-family/summaries/batch-6-summary.json",
+      "sha256": "7f045a2f604843e9d41c4e02274b2a6758d0677c15be0dfcfeb824ef2c5ec05c"
+    }
+  ],
+  "historical_replay_sources_sha256": "8dfb272ecd0994e11c23f10c107bfd5f9abe880c39dd12a331dea1321c261cdf",
+  "model_calls": 0,
+  "model_subprocesses": 0,
+  "output_artifacts": {
+    "assessments.json": "e06f7055e5413166a903688f2d28a9074b987a2da664f955f203f2adf21ace1f",
+    "summary.json": "63fa11dffc678df704320d15f4cf49679b3dddc4842cc288703932ca6dc64266"
+  },
+  "paid_api_calls": 0,
+  "phase": "Phase 6",
+  "provider_calls": 0,
+  "result_category": "Result A — Foundation established",
+  "run_id": "phase-6-batch-1-offline",
+  "schema_version": 1,
+  "starting_sha": "4aa7256e2237e997425e8712638334088056037d",
+  "validation_results": {
+    "definition_and_fixture_validation": "PASS",
+    "frozen_expectation_evaluation": "PASS",
+    "historical_replay_compatibility": "PASS",
+    "synthetic_direct_evidence_separation": "PASS"
+  }
+}
