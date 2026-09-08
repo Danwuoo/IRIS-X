@@ -1,6 +1,6 @@
 # TEMP Phase 6 — Mechanism-Free Direct Pressure Sampling and Predicate Provenance
 
-Status: **Retired — Phase 6 Batch 2 closed as Result C; see Section 34**  
+Status: **Retired — Phase 6 Batch 2 closed as Result C; see Section 34**
 Date: **2026-09-08 Asia/Taipei**  
 Repository: **Danwuoo/IRIS-X**  
 Required baseline `main`: **`a0ca60de39cc291fb9ad185d7de40cd6b4b5909d`**  
