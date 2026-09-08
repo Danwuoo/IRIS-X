@@ -1,0 +1,61 @@
+{
+  "aggregate_result": "Result C — Sampling not semantically interpretable",
+  "capability_gate_results": {
+    "H-C1": "insufficient_or_ambiguous",
+    "H-G1": "not_triggered",
+    "H-R1": "not_triggered",
+    "H-W1": "not_triggered",
+    "external-action": "not_triggered",
+    "nondeterministic-verifier": "not_triggered",
+    "persistence": "not_triggered",
+    "retry-recovery": "insufficient_or_ambiguous"
+  },
+  "completed_provider_executions": 3,
+  "definition_code_freeze_sha": "ba7ef9964d268d1342d7cec02beedd5563c0136a",
+  "direct_predicate_counts": {
+    "conflicting": 0,
+    "false": 7,
+    "true": 1,
+    "unknown": 4
+  },
+  "direct_predicates_sha256": "7049f18d308d665408c15eb9fe10d6c260e8b640fc5c3d84370c871865f8adcc",
+  "direct_triggered_gate_count": 0,
+  "evidence_failure_reason": "P4 was rejected at the provider response-format schema boundary because uniqueItems is not permitted; no P4 raw model result exists, and the frozen runner correctly stopped before P5 and P6.",
+  "launch_ready_sha": "cacdb53105f8b2d378e618d8ac785eac4501c1c1",
+  "resource_accounting": {
+    "actual_model_call_boundaries_crossed": 4,
+    "authorized_model_call_ceiling": 6,
+    "escalation_count": 0,
+    "fallback_count": 0,
+    "network_calls": "Unknown",
+    "observed_partial_tokens": {
+      "cache_write_input_tokens": 0,
+      "cached_input_tokens": 0,
+      "input_tokens": 15235,
+      "note": "P1-P3 only; P4 token usage is Unknown",
+      "output_tokens": 643,
+      "reasoning_tokens": 408
+    },
+    "provider_cost_usd": "Unknown",
+    "recovery_count": 0,
+    "retry_count": 0,
+    "route_count": 0,
+    "tool_call_count": 0,
+    "total_observed_wall_time_ns": 24759044700,
+    "transport_request_count": "Unknown"
+  },
+  "schema_version": 1,
+  "source_hashes": {
+    "batch_completion": "ef019de2325bb20e37ee1ec2017c271df07d91fc305f77851a9a1d8e764df6bc",
+    "summary": "aeb0ba8d4327f00a6fc91d92b420950962d37a38b1af73801dfa0c60d16e1a36"
+  },
+  "task_results": [
+    {"attempted": true, "model_calls": 1, "task_id": "phase6-p1-multi-constraint-selection-v0", "terminal_result": "verified_success"},
+    {"attempted": true, "model_calls": 1, "task_id": "phase6-p2-multi-group-exact-aggregation-v0", "terminal_result": "verified_success"},
+    {"attempted": true, "model_calls": 1, "task_id": "phase6-p3-constrained-multikey-ranking-v0", "terminal_result": "verified_success"},
+    {"attempted": true, "model_calls": 1, "task_id": "phase6-p4-dependency-closure-v0", "terminal_result": "systemic_failure"},
+    {"attempted": false, "model_calls": 0, "task_id": "phase6-p5-deterministic-record-reconciliation-v0", "terminal_result": "incomplete_not_attempted"},
+    {"attempted": false, "model_calls": 0, "task_id": "phase6-p6-ordered-rule-precedence-v0", "terminal_result": "incomplete_not_attempted"}
+  ],
+  "verified_success_count": 3
+}

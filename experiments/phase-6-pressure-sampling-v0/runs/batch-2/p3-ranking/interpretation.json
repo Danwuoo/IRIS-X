@@ -1,0 +1,20 @@
+{
+  "attribution_status": "not_attributable",
+  "candidate_intervention": "none",
+  "capability_trigger_predicate": "none",
+  "failure_stage": "not_applicable",
+  "model_intrinsic_capability_failure": "Not established",
+  "raw_observation": {
+    "raw_output_sha256": "7093710d9827434ef20ec0f141030bb0c5b88bd5cd4b6da6842b132702fd1cd7",
+    "terminal_record_sha256": "f13dba8c00035cac4d202e70f78d4f639db788e2381d7c6630465d042f7b0b8a",
+    "verification_record_sha256": "5abb489dd8b892d875c991a399d845d515a0d0e215a6b14a2a8057d20e7d6c41"
+  },
+  "research_decision": "bounded task-level verified success; no broader capability inference",
+  "schema_validation": "pass",
+  "schema_version": 1,
+  "semantic_verification": "pass_exact_deterministic_oracle",
+  "shortfall_axis": "not_applicable",
+  "structured_output_parse": "pass",
+  "task_id": "phase6-p3-constrained-multikey-ranking-v0",
+  "terminal_interpretation": "verified_success"
+}

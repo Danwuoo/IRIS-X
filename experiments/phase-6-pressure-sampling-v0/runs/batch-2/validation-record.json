@@ -1,0 +1,70 @@
+{
+  "admission_integrity": {
+    "attempt_commands_match_admitted_profile": "PASS (4/4)",
+    "record_sha256": "7abfa9dc397578516f806bf1841bbc21248fe6a73ba521239c311db040f9b640",
+    "status": "PASS"
+  },
+  "collection_evidence_commit": "3e240434a72b9fe48d0456ad039d91048169a5d4",
+  "definition_validation": {
+    "derivation_rules": 12,
+    "negative_cases": 48,
+    "status": "PASS",
+    "tasks": 6
+  },
+  "derived_artifacts": {
+    "adjudication_summary_sha256": "ee2ba2c639a7b78b0b43f06a804582639ff1be6b3e1267691b8d15b0ee261a34",
+    "direct_predicates_regeneration": "PASS_byte_identical",
+    "direct_predicates_sha256": "7049f18d308d665408c15eb9fe10d6c260e8b640fc5c3d84370c871865f8adcc",
+    "summary_regeneration": "PASS_byte_identical",
+    "summary_sha256": "aeb0ba8d4327f00a6fc91d92b420950962d37a38b1af73801dfa0c60d16e1a36"
+  },
+  "direct_predicate_provenance": {
+    "gate_trigger_count": 0,
+    "resolved_records": 8,
+    "source_refs_hash_and_pointer_validation": "PASS",
+    "status": "PASS",
+    "unknown_records": 4
+  },
+  "focused_validation": {
+    "batch_2": "PASS 27/27",
+    "phase_5_model_qualification_and_task_family": "PASS 75/75",
+    "phase_6_batch_1": "PASS 35/35",
+    "repository_check": "PASS (13 sources, 7 artifacts, hashes checked)"
+  },
+  "freeze_integrity": {
+    "definition_code_freeze_sha": "ba7ef9964d268d1342d7cec02beedd5563c0136a",
+    "executable_definition_diff_to_launch_ready": [],
+    "status": "PASS"
+  },
+  "full_repository_inventory": {
+    "directories": 19,
+    "errors": 0,
+    "failures": 1,
+    "new_failures_or_errors": 0,
+    "passed": 257,
+    "status": "PASS_WITH_KNOWN_HISTORICAL_FAILURE",
+    "tests": 258
+  },
+  "historical_phase_4_failure": {
+    "expected_sha256": "9e2ac0aabcae9a89ed92d9145ec787f4d6ee1920b5344be703498c6435aaf76c",
+    "observed_sha256": "4f3e47a6fa8af63dee6d4397d995a917a216ce70791416909e76a5448697246b",
+    "status": "unchanged",
+    "test": "HPIaContractTests.test_frozen_artifact_hashes_match_exact_bytes"
+  },
+  "preservation": {
+    "experiments/capability-pressure-attribution-v0": "bbd024379bd00d4b9420872f8d94c9a76b2117f1",
+    "experiments/substrates/model-execution-qualification-v0": "4e868e10c07b1de7db34f04435281a37289c6b13",
+    "irisx/core": "773856fec635535f28c5df37c19bc7914f3a3f64",
+    "references/papers": "ed29ebcde3f01b00a0e49eb33eef1688566dcad3",
+    "sources": "10e28d83184c789fc468ca1edc3bebf42ba40b46",
+    "status": "PASS_all_match_required_baseline"
+  },
+  "raw_output_reverification": "PASS P1-P3; P4 not assessed because no result exists",
+  "schema_version": 1,
+  "staging_hash_validation": {
+    "available_files": 38,
+    "collection_record_sha256": "d91bc2a16b4b3cc64c0ad184699680d03f2762f3225dcb62307d6d82dfa72412",
+    "exact_byte_copy": "PASS",
+    "staging_inventory_sha256": "5037ac06e91dfb6fdbb63eab147ace630d71f9efdbe667f60a66dd7d909188c9"
+  }
+}
