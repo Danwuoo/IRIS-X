@@ -1,6 +1,6 @@
 # TEMP Phase 6 — Mechanism-Free Direct Pressure Sampling and Predicate Provenance
 
-Status: **Temporary — controlling execution plan; owner-authorized Phase 6 Batch 2**  
+Status: **Retired — Phase 6 Batch 2 closed as Result C; see Section 34**  
 Date: **2026-09-08 Asia/Taipei**  
 Repository: **Danwuoo/IRIS-X**  
 Required baseline `main`: **`a0ca60de39cc291fb9ad185d7de40cd6b4b5909d`**  
@@ -1101,3 +1101,67 @@ A later explicit owner request is required for TURN B.
 After Batch 2 eventually completes and is pushed:
 
 > **STOP. Do not start a stronger-allocation comparison, retry experiment, routing experiment, workflow experiment, or Phase 6 Batch 3 without separate owner authorization.**
+
+---
+
+## 34. Retirement record — 2026-09-08 Asia/Taipei
+
+Phase 6 Batch 2 completed its authorized TURN A/TURN B lifecycle and is
+retired as:
+
+> **Result C — Sampling not semantically interpretable.**
+
+The original runner produced three verified successes, then P4 failed at the
+provider response-format schema boundary because `uniqueItems` was reported as
+not permitted. No P4 raw model result existed, and the fixed systemic-stop
+policy left P5 and P6 unattempted. No task was retried, rerun, repaired, or
+replaced. The available staging bytes were preserved exactly, including the
+explicit missing-output evidence.
+
+Actual lifecycle lineage:
+
+| Purpose | Commit |
+| --- | --- |
+| Required Batch 2 baseline | `a0ca60de39cc291fb9ad185d7de40cd6b4b5909d` |
+| Activate controlling plan | `08547ecbfea2646548efdc6d7c15519ca8af0776` |
+| Definition/code freeze | `ba7ef9964d268d1342d7cec02beedd5563c0136a` |
+| Admission and launch-ready metadata | `cacdb53105f8b2d378e618d8ac785eac4501c1c1` |
+| Preserve immutable TURN A staging evidence | `3e240434a72b9fe48d0456ad039d91048169a5d4` |
+| Validate and adjudicate pressure observations | `7340167a466ce013a96bf2b0cb1834cca73ed863` |
+| Record Batch 2 research result | `a7adb31e2c4fa44bdf26f050f4e32453c9540b77` |
+| Record durable handoff | `11d0ca86ed39b46484d56d9c5bd6f7e2d530de5d` |
+| Retire controlling plan | this normal commit; full SHA is reported in the owner-facing final response |
+
+Resource and terminal result:
+
+```text
+authorized logical model-call ceiling: 6
+actual logical model-call boundaries crossed: 4
+completed usable provider/model results: 3
+verified successes: 3/6
+semantic misses: 0
+systemic failures: 1
+incomplete/not attempted: 2
+retry / route / fallback / escalation / recovery / tool counts: 0 / 0 / 0 / 0 / 0 / 0
+```
+
+No capability gate became `triggered_by_direct_evidence`. H-C1 and general
+recovery/retry remain `insufficient_or_ambiguous` because required task or
+comparison observations are absent; every other gate is `not_triggered`.
+
+Validation passed for freeze and admission integrity, 38-file staging hash
+preservation, P1–P3 exact semantic re-verification, predicate provenance,
+byte-identical derived regeneration, Batch 2 focused tests (27/27), Phase 6
+Batch 1 tests (35/35), Phase 5 model qualification/task-family tests (75/75),
+and repository validation. The full inventory ran 258 tests: 257 passed, the
+one unchanged historical Phase 4 hash assertion failed, and zero errors or new
+failures occurred.
+
+The exact next recommendation is separately owner-authorized repair and
+requalification of only the non-semantic sampling path: deterministically
+cover provider response-schema admissibility and make missing-output systemic
+evidence collectable without fabricating a raw answer. This retirement does
+not authorize a rerun, mechanism experiment, use of expired Batch 2 allowance,
+or Phase 6 Batch 3.
+
+**Phase 6 Batch 3: NOT started.**
