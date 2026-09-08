@@ -1,0 +1,26 @@
+{
+  "attempted": [
+    {
+      "task_key": "p1-selection",
+      "terminal_status": "verified_success"
+    },
+    {
+      "task_key": "p2-aggregation",
+      "terminal_status": "verified_success"
+    },
+    {
+      "task_key": "p3-ranking",
+      "terminal_status": "verified_success"
+    },
+    {
+      "task_key": "p4-dependency",
+      "terminal_status": "systemic_failure"
+    }
+  ],
+  "batch_id": "phase-6-batch-2-direct-pressure-sampling-v0",
+  "completed_at": "2026-09-08T14:08:31.745406+00:00",
+  "definition_code_freeze_sha": "ba7ef9964d268d1342d7cec02beedd5563c0136a",
+  "launch_ready_sha": "cacdb53105f8b2d378e618d8ac785eac4501c1c1",
+  "schema_version": 1,
+  "stopped_on_systemic_or_safety_failure": true
+}

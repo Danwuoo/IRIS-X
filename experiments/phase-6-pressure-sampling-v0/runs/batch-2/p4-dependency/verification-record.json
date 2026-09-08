@@ -1,0 +1,13 @@
+{
+  "deterministic_oracle_id": "oracle-phase6-p4-dependency-v0",
+  "reasons": [
+    "provider_process_failed",
+    "provider_output_missing",
+    "provider_final_message_missing"
+  ],
+  "schema_version": 1,
+  "semantic_valid": false,
+  "status": "not_assessed",
+  "task_id": "phase6-p4-dependency-closure-v0",
+  "verifier_integrity_valid": true
+}
