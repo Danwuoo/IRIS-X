@@ -1130,7 +1130,8 @@ Actual lifecycle lineage:
 | Validate and adjudicate pressure observations | `7340167a466ce013a96bf2b0cb1834cca73ed863` |
 | Record Batch 2 research result | `a7adb31e2c4fa44bdf26f050f4e32453c9540b77` |
 | Record durable handoff | `11d0ca86ed39b46484d56d9c5bd6f7e2d530de5d` |
-| Retire controlling plan | this normal commit; full SHA is reported in the owner-facing final response |
+| Retire controlling plan | `ad73b692f159be9360a22d8f960cf3c557982a89` |
+| Normalize retirement status formatting | `32f89f2164d2dab22c6dd76533a05d7b4ef43e78` |
 
 Resource and terminal result:
 
