@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    {"id": "source-a", "prerequisites": []},
+    {"id": "source-b", "prerequisites": []},
+    {"id": "normalize-a", "prerequisites": ["source-a"]},
+    {"id": "normalize-b", "prerequisites": ["source-b"]},
+    {"id": "join", "prerequisites": ["normalize-a", "normalize-b"]},
+    {"id": "quality-a", "prerequisites": ["normalize-a"]},
+    {"id": "quality-b", "prerequisites": ["normalize-b"]},
+    {"id": "validate", "prerequisites": ["join", "quality-a", "quality-b"]},
+    {"id": "summarize", "prerequisites": ["validate"]},
+    {"id": "package", "prerequisites": ["summarize"]},
+    {"id": "signoff", "prerequisites": ["summarize"]},
+    {"id": "release", "prerequisites": ["package", "signoff"]}
+  ],
+  "ordering": "topological_then_lexical_available_node",
+  "target_ids": ["release"]
+}
+

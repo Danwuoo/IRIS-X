@@ -1,0 +1,13 @@
+{
+  "conflict_result": "insufficient_or_ambiguous",
+  "negative_control_semantics": "insufficient_by_itself",
+  "policy_id": "negative-control-non-veto-v0",
+  "prohibitions": [
+    "negative_control_forces_not_triggered",
+    "negative_control_overrides_separately_proven_positive",
+    "contradiction_silently_reduced_to_false"
+  ],
+  "schema_version": 1,
+  "separately_proven_positive_remains_positive": true
+}
+

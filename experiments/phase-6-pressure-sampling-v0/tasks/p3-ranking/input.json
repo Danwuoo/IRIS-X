@@ -1,0 +1,22 @@
+{
+  "candidates": [
+    {"active": true, "completed_jobs": 41, "compliance": true, "id": "c01", "latency_ms": 120, "score": 94, "years": 4},
+    {"active": true, "completed_jobs": 55, "compliance": true, "id": "c02", "latency_ms": 105, "score": 92, "years": 3},
+    {"active": true, "completed_jobs": 51, "compliance": true, "id": "c03", "latency_ms": 105, "score": 92, "years": 5},
+    {"active": true, "completed_jobs": 51, "compliance": true, "id": "c04", "latency_ms": 105, "score": 92, "years": 4},
+    {"active": false, "completed_jobs": 80, "compliance": true, "id": "c05", "latency_ms": 90, "score": 99, "years": 8},
+    {"active": true, "completed_jobs": 37, "compliance": false, "id": "c06", "latency_ms": 80, "score": 97, "years": 6},
+    {"active": true, "completed_jobs": 70, "compliance": true, "id": "c07", "latency_ms": 130, "score": 94, "years": 1},
+    {"active": true, "completed_jobs": 29, "compliance": true, "id": "c08", "latency_ms": 100, "score": 94, "years": 2},
+    {"active": true, "completed_jobs": 60, "compliance": true, "id": "c09", "latency_ms": 115, "score": 91, "years": 7},
+    {"active": true, "completed_jobs": 45, "compliance": true, "id": "c10", "latency_ms": 95, "score": 92, "years": 3},
+    {"active": true, "completed_jobs": 45, "compliance": true, "id": "c11", "latency_ms": 95, "score": 92, "years": 3},
+    {"active": true, "completed_jobs": 35, "compliance": true, "id": "c12", "latency_ms": 110, "score": 90, "years": 2},
+    {"active": true, "completed_jobs": 66, "compliance": true, "id": "c13", "latency_ms": 140, "score": 95, "years": 9},
+    {"active": true, "completed_jobs": 48, "compliance": true, "id": "c14", "latency_ms": 102, "score": 93, "years": 6}
+  ],
+  "eligibility": {"active": true, "compliance": true, "minimum_years": 2},
+  "rank_order": ["score_desc", "latency_ms_asc", "completed_jobs_desc", "id_asc"],
+  "top_n": 5
+}
+

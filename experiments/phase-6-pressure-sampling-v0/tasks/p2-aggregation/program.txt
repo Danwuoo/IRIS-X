@@ -1,0 +1,2 @@
+Keep only records whose status, kind, and voided fields exactly match all conditions. For every group in group_order, compute count, total_cents, min_cents, and max_cents using exact integer-cent arithmetic. Emit groups in group_order. Return exactly one JSON object with only groups. Each group item must contain only group, count, total_cents, min_cents, and max_cents. Do not include explanations or Markdown.
+

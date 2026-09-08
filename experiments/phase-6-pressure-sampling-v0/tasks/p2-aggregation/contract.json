@@ -1,0 +1,18 @@
+{
+  "contract_id": "contract-phase6-p2-multi-group-aggregation-v0",
+  "deterministic_oracle_id": "oracle-phase6-p2-aggregation-v0",
+  "expected_output_cardinality": 4,
+  "features": {
+    "exact_arithmetic_required": true,
+    "join_required": false,
+    "multi_hop_dependency_required": false,
+    "ordering_key_count": 1,
+    "precedence_depth": 0,
+    "record_count": 16,
+    "rule_count": 3
+  },
+  "program_id": "program-phase6-p2-aggregation-v0",
+  "semantic_family": "multi-group-exact-aggregation",
+  "task_id": "phase6-p2-multi-group-exact-aggregation-v0"
+}
+

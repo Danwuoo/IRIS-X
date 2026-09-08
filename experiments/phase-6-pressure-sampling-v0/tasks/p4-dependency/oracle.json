@@ -1,0 +1,16 @@
+{
+  "ordered_ids": [
+    "source-a",
+    "normalize-a",
+    "quality-a",
+    "source-b",
+    "normalize-b",
+    "join",
+    "quality-b",
+    "validate",
+    "summarize",
+    "package",
+    "signoff",
+    "release"
+  ]
+}

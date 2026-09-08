@@ -1,0 +1,342 @@
+{
+  "allocation": {
+    "model": "gpt-5.6-luna",
+    "profile_id": "codex-cli-0.147.0-run-03-admission-v0",
+    "profile_path": "experiments/substrates/model-execution-qualification-v0/admission/codex-cli-0.147.0-run-03-profile.json",
+    "profile_sha256": "ab21119f80141456e7327e276fa3e470abf288cf6a3535ac5fceeace68302033",
+    "provider_slot": "irisx_openai_no_retry",
+    "reasoning_effort": "medium"
+  },
+  "definition_artifacts": {
+    "direct-predicate-schema.json": {
+      "bytes": 501,
+      "path": "definition/direct-predicate-schema.json",
+      "sha256": "92cac7f58a4264cc02090da62c4ae1e39bf362f1baf3e53becdd9665d6496183"
+    },
+    "failure-attribution-rules.json": {
+      "bytes": 1909,
+      "path": "definition/failure-attribution-rules.json",
+      "sha256": "7973575300b287f4fc2e3c4c07fb747f037b9c3f12bd0fb37308ba56cac066e7"
+    },
+    "launch-policy.json": {
+      "bytes": 961,
+      "path": "definition/launch-policy.json",
+      "sha256": "5c55966d1f3bac903b0d092fe0d4b539357d185fe6f7b9e66cbfd9e92ec0fc2e"
+    },
+    "negative-control-policy.json": {
+      "bytes": 414,
+      "path": "definition/negative-control-policy.json",
+      "sha256": "c09af802ff7a737fec73678e7b5d45cd6901f647498637ea7913a30cd567dc37"
+    },
+    "predicate-derivation-rules.json": {
+      "bytes": 7816,
+      "path": "definition/predicate-derivation-rules.json",
+      "sha256": "e1d9c20fbb62e85c27cd72b56ebc04e75ff8491c41b06e61b0d2e2244a18a3d1"
+    },
+    "task-feature-schema.json": {
+      "bytes": 402,
+      "path": "definition/task-feature-schema.json",
+      "sha256": "92c882e3f661e812a52edee0b6856c5abffd74c5f4c13627c546d4d1fb620533"
+    }
+  },
+  "protected_tree_ids_at_baseline": {
+    "experiments/capability-pressure-attribution-v0": "bbd024379bd00d4b9420872f8d94c9a76b2117f1",
+    "experiments/substrates/model-execution-qualification-v0": "4e868e10c07b1de7db34f04435281a37289c6b13",
+    "irisx/core": "773856fec635535f28c5df37c19bc7914f3a3f64",
+    "references/papers": "ed29ebcde3f01b00a0e49eb33eef1688566dcad3",
+    "sources": "10e28d83184c789fc468ca1edc3bebf42ba40b46"
+  },
+  "required_baseline_sha": "a0ca60de39cc291fb9ad185d7de40cd6b4b5909d",
+  "sample_id": "phase-6-pressure-sampling-v0",
+  "schema_version": 1,
+  "tasks": [
+    {
+      "artifacts": {
+        "contract.json": {
+          "bytes": 622,
+          "path": "tasks/p1-selection/contract.json",
+          "sha256": "eb51b54651aff4603ec59b97ebd555dbae38c987a1a10ddd9fc4496c2320bbab"
+        },
+        "input.json": {
+          "bytes": 2475,
+          "path": "tasks/p1-selection/input.json",
+          "sha256": "b768157300afd84881574d6252d928bfdb3a139645e5bdebf5f6cf1f9a804ec2"
+        },
+        "oracle.json": {
+          "bytes": 115,
+          "path": "tasks/p1-selection/oracle.json",
+          "sha256": "40829113201570268f4a1dd510a1cfe4d067e044651ee33f6d1a861cb9787e53"
+        },
+        "output-schema.json": {
+          "bytes": 266,
+          "path": "tasks/p1-selection/output-schema.json",
+          "sha256": "c114fbfe0ffc150a7183298ff2c680fd372013cd428ed7c2cde747bdcd330938"
+        },
+        "program.txt": {
+          "bytes": 513,
+          "path": "tasks/p1-selection/program.txt",
+          "sha256": "898c7f46951776e7abbc71ab04d07182292a2abb718eaa53d652bf4f8f400381"
+        }
+      },
+      "contract_id": "contract-phase6-p1-multi-constraint-selection-v0",
+      "features": {
+        "deterministic_oracle_id": "oracle-phase6-p1-selection-v0",
+        "exact_arithmetic_required": false,
+        "expected_output_cardinality": 8,
+        "input_bytes": 2475,
+        "join_required": false,
+        "multi_hop_dependency_required": false,
+        "ordering_key_count": 3,
+        "precedence_depth": 0,
+        "record_count": 16,
+        "rule_count": 6,
+        "semantic_family": "multi-constraint-selection",
+        "task_id": "phase6-p1-multi-constraint-selection-v0"
+      },
+      "program_id": "program-phase6-p1-selection-v0",
+      "prompt_bytes": 3836,
+      "prompt_sha256": "5c83fc538956934e6b442c2ac1173935b299e6c0bef815b59f74bfa8a97c51ae",
+      "task_key": "p1-selection"
+    },
+    {
+      "artifacts": {
+        "contract.json": {
+          "bytes": 567,
+          "path": "tasks/p2-aggregation/contract.json",
+          "sha256": "6ab6e026bb6e51b04980ee6095fe9853f8c356ff9a568008c5312c092bd2cee1"
+        },
+        "input.json": {
+          "bytes": 1935,
+          "path": "tasks/p2-aggregation/input.json",
+          "sha256": "3a9da10961fd11c300864571214f2144aac2237157d4fba1f76799150e996de8"
+        },
+        "oracle.json": {
+          "bytes": 542,
+          "path": "tasks/p2-aggregation/oracle.json",
+          "sha256": "56c2d036370f5c46e9127f0dc5a12871b987c2ccc19daf268fd1f7b6dad585b4"
+        },
+        "output-schema.json": {
+          "bytes": 680,
+          "path": "tasks/p2-aggregation/output-schema.json",
+          "sha256": "d474c636a079e54e1af7c1f4625c73c4ebee6432ce3aff4826002c0f9507fbdf"
+        },
+        "program.txt": {
+          "bytes": 414,
+          "path": "tasks/p2-aggregation/program.txt",
+          "sha256": "38a2d25cfda6737bc47a3bd49d24aa875005fba6d0d7b84b54816b410785f5a9"
+        }
+      },
+      "contract_id": "contract-phase6-p2-multi-group-aggregation-v0",
+      "features": {
+        "deterministic_oracle_id": "oracle-phase6-p2-aggregation-v0",
+        "exact_arithmetic_required": true,
+        "expected_output_cardinality": 4,
+        "input_bytes": 1935,
+        "join_required": false,
+        "multi_hop_dependency_required": false,
+        "ordering_key_count": 1,
+        "precedence_depth": 0,
+        "record_count": 16,
+        "rule_count": 3,
+        "semantic_family": "multi-group-exact-aggregation",
+        "task_id": "phase6-p2-multi-group-exact-aggregation-v0"
+      },
+      "program_id": "program-phase6-p2-aggregation-v0",
+      "prompt_bytes": 3095,
+      "prompt_sha256": "e47058b9ec16cf9976285125ebd007e50d12b83ce88a43a89604172ab595b672",
+      "task_key": "p2-aggregation"
+    },
+    {
+      "artifacts": {
+        "contract.json": {
+          "bytes": 554,
+          "path": "tasks/p3-ranking/contract.json",
+          "sha256": "4d6c9c4525661a4eb6441c8f0f0dfea782896107a5dc6c188d098ea0ad73c918"
+        },
+        "input.json": {
+          "bytes": 1890,
+          "path": "tasks/p3-ranking/input.json",
+          "sha256": "844b44fcf09dcab82d021189022e035270b80cc64ac1523a9b9c52d6974541b4"
+        },
+        "oracle.json": {
+          "bytes": 261,
+          "path": "tasks/p3-ranking/oracle.json",
+          "sha256": "abcc282fa88d5ce9802c7c3ccf1990c1d7786ea63e33187778733b491c0aa968"
+        },
+        "output-schema.json": {
+          "bytes": 467,
+          "path": "tasks/p3-ranking/output-schema.json",
+          "sha256": "687e9acd3e62ff096b6fbdda87e371388874116a0b464722c6667ef511307d78"
+        },
+        "program.txt": {
+          "bytes": 401,
+          "path": "tasks/p3-ranking/program.txt",
+          "sha256": "27d98e7a627a27d7eeb4d15281d4c0b8174d73a843ca82b00f83afc08a3545ed"
+        }
+      },
+      "contract_id": "contract-phase6-p3-constrained-ranking-v0",
+      "features": {
+        "deterministic_oracle_id": "oracle-phase6-p3-ranking-v0",
+        "exact_arithmetic_required": false,
+        "expected_output_cardinality": 5,
+        "input_bytes": 1890,
+        "join_required": false,
+        "multi_hop_dependency_required": false,
+        "ordering_key_count": 4,
+        "precedence_depth": 0,
+        "record_count": 14,
+        "rule_count": 3,
+        "semantic_family": "constrained-multikey-ranking",
+        "task_id": "phase6-p3-constrained-multikey-ranking-v0"
+      },
+      "program_id": "program-phase6-p3-ranking-v0",
+      "prompt_bytes": 3037,
+      "prompt_sha256": "2818af52989b2e54fd9f2fb3e6b1abdaa145f493a62a22c129912adf23d2a24e",
+      "task_key": "p3-ranking"
+    },
+    {
+      "artifacts": {
+        "contract.json": {
+          "bytes": 539,
+          "path": "tasks/p4-dependency/contract.json",
+          "sha256": "eeb78c5085ef1e2212391eec9f023af036da07661d15afa29979e522ac1107c9"
+        },
+        "input.json": {
+          "bytes": 807,
+          "path": "tasks/p4-dependency/input.json",
+          "sha256": "9579076792eddd87662e0e761639255ae226af2d62812bff7739dfd18e10a3d1"
+        },
+        "oracle.json": {
+          "bytes": 220,
+          "path": "tasks/p4-dependency/oracle.json",
+          "sha256": "40d7ff1f94905aed238e1864dc1497e5c17c532869093da6ad137bf0db0cd201"
+        },
+        "output-schema.json": {
+          "bytes": 285,
+          "path": "tasks/p4-dependency/output-schema.json",
+          "sha256": "33f071cb32a8274727fd65452dc755f22774b6c3a48fbc63debce17d8bcbe66e"
+        },
+        "program.txt": {
+          "bytes": 383,
+          "path": "tasks/p4-dependency/program.txt",
+          "sha256": "62ed5618925bd4768539277182e28b06b23ac873ef69a97b2cfa59e71c948ee4"
+        }
+      },
+      "contract_id": "contract-phase6-p4-dependency-closure-v0",
+      "features": {
+        "deterministic_oracle_id": "oracle-phase6-p4-dependency-v0",
+        "exact_arithmetic_required": false,
+        "expected_output_cardinality": 12,
+        "input_bytes": 807,
+        "join_required": false,
+        "multi_hop_dependency_required": true,
+        "ordering_key_count": 2,
+        "precedence_depth": 6,
+        "record_count": 12,
+        "rule_count": 2,
+        "semantic_family": "dependency-closure",
+        "task_id": "phase6-p4-dependency-closure-v0"
+      },
+      "program_id": "program-phase6-p4-dependency-v0",
+      "prompt_bytes": 1644,
+      "prompt_sha256": "483ba875474da4bf9852714a26a9994eb36c445255b5da20ea0723a5937ba526",
+      "task_key": "p4-dependency"
+    },
+    {
+      "artifacts": {
+        "contract.json": {
+          "bytes": 582,
+          "path": "tasks/p5-reconciliation/contract.json",
+          "sha256": "c3c4627fca94aac36df0dc04094b681b19e56c11b802fcdc3727cadf385efcbc"
+        },
+        "input.json": {
+          "bytes": 1089,
+          "path": "tasks/p5-reconciliation/input.json",
+          "sha256": "64c323575af56d8075138381f9198cb4982c18b32f9b523c67eec18e88bd8e0d"
+        },
+        "oracle.json": {
+          "bytes": 710,
+          "path": "tasks/p5-reconciliation/oracle.json",
+          "sha256": "fb46ec3d65588b96ea7c522f567f85e7c6b640378f2d0b0642a3b22f9145a0be"
+        },
+        "output-schema.json": {
+          "bytes": 1019,
+          "path": "tasks/p5-reconciliation/output-schema.json",
+          "sha256": "6c676063f44bdd47d7633d2756cb89a4099f1b6103c3da35fe5212ff5d9860cc"
+        },
+        "program.txt": {
+          "bytes": 621,
+          "path": "tasks/p5-reconciliation/program.txt",
+          "sha256": "074cc555ded8a1d3241b75b4855bae2910e6d67986d5c6fd41c1843b942ff54e"
+        }
+      },
+      "contract_id": "contract-phase6-p5-record-reconciliation-v0",
+      "features": {
+        "deterministic_oracle_id": "oracle-phase6-p5-reconciliation-v0",
+        "exact_arithmetic_required": true,
+        "expected_output_cardinality": 12,
+        "input_bytes": 1089,
+        "join_required": true,
+        "multi_hop_dependency_required": false,
+        "ordering_key_count": 1,
+        "precedence_depth": 1,
+        "record_count": 24,
+        "rule_count": 2,
+        "semantic_family": "deterministic-record-reconciliation",
+        "task_id": "phase6-p5-deterministic-record-reconciliation-v0"
+      },
+      "program_id": "program-phase6-p5-reconciliation-v0",
+      "prompt_bytes": 2180,
+      "prompt_sha256": "187fd102b11e7b7ca5b25602e69152c3d06e7d753ea4ae4e2498b60508af7177",
+      "task_key": "p5-reconciliation"
+    },
+    {
+      "artifacts": {
+        "contract.json": {
+          "bytes": 556,
+          "path": "tasks/p6-rule-precedence/contract.json",
+          "sha256": "8572ef55275e11a353aa7829bc8f779a1f80f00f7db4edc305951964c2d8a3cd"
+        },
+        "input.json": {
+          "bytes": 2318,
+          "path": "tasks/p6-rule-precedence/input.json",
+          "sha256": "9f9bf4c9728bba9f477f71c4ad62c17e066a85298df803e99624a324b6d17d5c"
+        },
+        "oracle.json": {
+          "bytes": 1444,
+          "path": "tasks/p6-rule-precedence/oracle.json",
+          "sha256": "7f8a0d512a05429c897f007392c646af4f0c59a50f62826a88f0bb0c3ff3b92a"
+        },
+        "output-schema.json": {
+          "bytes": 561,
+          "path": "tasks/p6-rule-precedence/output-schema.json",
+          "sha256": "048d63d6d02b1892261a5b27a1890ea9a2eefe626dd50753f5a43cff7cd7c8f1"
+        },
+        "program.txt": {
+          "bytes": 335,
+          "path": "tasks/p6-rule-precedence/program.txt",
+          "sha256": "6c631ae3666897182020a907d96bcbcb3e6384dceccac98091433099f923767a"
+        }
+      },
+      "contract_id": "contract-phase6-p6-rule-precedence-v0",
+      "features": {
+        "deterministic_oracle_id": "oracle-phase6-p6-rule-precedence-v0",
+        "exact_arithmetic_required": true,
+        "expected_output_cardinality": 12,
+        "input_bytes": 2318,
+        "join_required": false,
+        "multi_hop_dependency_required": false,
+        "ordering_key_count": 1,
+        "precedence_depth": 6,
+        "record_count": 12,
+        "rule_count": 6,
+        "semantic_family": "ordered-rule-precedence",
+        "task_id": "phase6-p6-ordered-rule-precedence-v0"
+      },
+      "program_id": "program-phase6-p6-rule-precedence-v0",
+      "prompt_bytes": 3447,
+      "prompt_sha256": "7ac0e7ce7635429db48bda705d22becbcb36877e6d24a9a211bc7fe41274afdb",
+      "task_key": "p6-rule-precedence"
+    }
+  ]
+}

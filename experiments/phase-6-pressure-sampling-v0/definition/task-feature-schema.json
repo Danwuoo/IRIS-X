@@ -1,0 +1,20 @@
+{
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "semantic_family",
+    "input_bytes",
+    "record_count",
+    "rule_count",
+    "join_required",
+    "multi_hop_dependency_required",
+    "exact_arithmetic_required",
+    "ordering_key_count",
+    "precedence_depth",
+    "expected_output_cardinality",
+    "deterministic_oracle_id"
+  ],
+  "schema_version": 1,
+  "type": "object"
+}
+

@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "classifications": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {"class": {"type": "string"}, "id": {"type": "string"}, "reason_id": {"type": "string"}, "rule_id": {"type": "string"}},
+        "required": ["id", "class", "rule_id", "reason_id"],
+        "type": "object"
+      },
+      "maxItems": 12,
+      "minItems": 12,
+      "type": "array"
+    }
+  },
+  "required": ["classifications"],
+  "type": "object"
+}

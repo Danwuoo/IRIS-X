@@ -1,0 +1,276 @@
+{
+  "corpus_id": "phase-6-batch-2-verifier-negative-corpus-v0",
+  "schema_version": 1,
+  "tasks": [
+    {
+      "cases": [
+        {
+          "case_id": "correct",
+          "expected_status": "verified_success",
+          "raw_output": "{\"selected_ids\":[\"r04\",\"r09\",\"r01\",\"r10\",\"r12\",\"r13\",\"r15\",\"r07\"]}"
+        },
+        {
+          "case_id": "malformed-json",
+          "expected_status": "malformed_json",
+          "raw_output": "{not-json"
+        },
+        {
+          "case_id": "schema-invalid",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"selected_ids\": \"wrong-type\"}"
+        },
+        {
+          "case_id": "semantic-error",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"selected_ids\": [\"wrong-id\", \"r09\", \"r01\", \"r10\", \"r12\", \"r13\", \"r15\", \"r07\"]}"
+        },
+        {
+          "case_id": "missing-result",
+          "expected_status": "missing_result",
+          "raw_output": ""
+        },
+        {
+          "case_id": "extra-result",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"selected_ids\": [\"r04\", \"r09\", \"r01\", \"r10\", \"r12\", \"r13\", \"r15\", \"r07\"], \"unexpected\": true}"
+        },
+        {
+          "case_id": "wrong-order",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"selected_ids\": [\"r09\", \"r04\", \"r01\", \"r10\", \"r12\", \"r13\", \"r15\", \"r07\"]}"
+        },
+        {
+          "case_id": "cross-task-shape",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"foreign_result\":[]}"
+        }
+      ],
+      "task_key": "p1-selection"
+    },
+    {
+      "cases": [
+        {
+          "case_id": "correct",
+          "expected_status": "verified_success",
+          "raw_output": "{\"groups\":[{\"count\":3,\"group\":\"alpha\",\"max_cents\":3000,\"min_cents\":1250,\"total_cents\":6000},{\"count\":3,\"group\":\"beta\",\"max_cents\":3499,\"min_cents\":501,\"total_cents\":5600},{\"count\":3,\"group\":\"delta\",\"max_cents\":4100,\"min_cents\":2200,\"total_cents\":9050},{\"count\":3,\"group\":\"gamma\",\"max_cents\":3300,\"min_cents\":750,\"total_cents\":6550}]}"
+        },
+        {
+          "case_id": "malformed-json",
+          "expected_status": "malformed_json",
+          "raw_output": "{not-json"
+        },
+        {
+          "case_id": "schema-invalid",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"groups\": \"wrong-type\"}"
+        },
+        {
+          "case_id": "semantic-error",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"groups\": [{\"count\": 3, \"group\": \"alpha\", \"max_cents\": 3000, \"min_cents\": 1250, \"total_cents\": 6001}, {\"count\": 3, \"group\": \"beta\", \"max_cents\": 3499, \"min_cents\": 501, \"total_cents\": 5600}, {\"count\": 3, \"group\": \"delta\", \"max_cents\": 4100, \"min_cents\": 2200, \"total_cents\": 9050}, {\"count\": 3, \"group\": \"gamma\", \"max_cents\": 3300, \"min_cents\": 750, \"total_cents\": 6550}]}"
+        },
+        {
+          "case_id": "missing-result",
+          "expected_status": "missing_result",
+          "raw_output": ""
+        },
+        {
+          "case_id": "extra-result",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"groups\": [{\"count\": 3, \"group\": \"alpha\", \"max_cents\": 3000, \"min_cents\": 1250, \"total_cents\": 6000}, {\"count\": 3, \"group\": \"beta\", \"max_cents\": 3499, \"min_cents\": 501, \"total_cents\": 5600}, {\"count\": 3, \"group\": \"delta\", \"max_cents\": 4100, \"min_cents\": 2200, \"total_cents\": 9050}, {\"count\": 3, \"group\": \"gamma\", \"max_cents\": 3300, \"min_cents\": 750, \"total_cents\": 6550}], \"unexpected\": true}"
+        },
+        {
+          "case_id": "wrong-order",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"groups\": [{\"count\": 3, \"group\": \"beta\", \"max_cents\": 3499, \"min_cents\": 501, \"total_cents\": 5600}, {\"count\": 3, \"group\": \"alpha\", \"max_cents\": 3000, \"min_cents\": 1250, \"total_cents\": 6000}, {\"count\": 3, \"group\": \"delta\", \"max_cents\": 4100, \"min_cents\": 2200, \"total_cents\": 9050}, {\"count\": 3, \"group\": \"gamma\", \"max_cents\": 3300, \"min_cents\": 750, \"total_cents\": 6550}]}"
+        },
+        {
+          "case_id": "cross-task-shape",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"foreign_result\":[]}"
+        }
+      ],
+      "task_key": "p2-aggregation"
+    },
+    {
+      "cases": [
+        {
+          "case_id": "correct",
+          "expected_status": "verified_success",
+          "raw_output": "{\"ranked\":[{\"id\":\"c13\",\"rank\":1},{\"id\":\"c08\",\"rank\":2},{\"id\":\"c01\",\"rank\":3},{\"id\":\"c14\",\"rank\":4},{\"id\":\"c10\",\"rank\":5}]}"
+        },
+        {
+          "case_id": "malformed-json",
+          "expected_status": "malformed_json",
+          "raw_output": "{not-json"
+        },
+        {
+          "case_id": "schema-invalid",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"ranked\": \"wrong-type\"}"
+        },
+        {
+          "case_id": "semantic-error",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"ranked\": [{\"id\": \"wrong-id\", \"rank\": 1}, {\"id\": \"c08\", \"rank\": 2}, {\"id\": \"c01\", \"rank\": 3}, {\"id\": \"c14\", \"rank\": 4}, {\"id\": \"c10\", \"rank\": 5}]}"
+        },
+        {
+          "case_id": "missing-result",
+          "expected_status": "missing_result",
+          "raw_output": ""
+        },
+        {
+          "case_id": "extra-result",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"ranked\": [{\"id\": \"c13\", \"rank\": 1}, {\"id\": \"c08\", \"rank\": 2}, {\"id\": \"c01\", \"rank\": 3}, {\"id\": \"c14\", \"rank\": 4}, {\"id\": \"c10\", \"rank\": 5}], \"unexpected\": true}"
+        },
+        {
+          "case_id": "wrong-order",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"ranked\": [{\"id\": \"c08\", \"rank\": 2}, {\"id\": \"c13\", \"rank\": 1}, {\"id\": \"c01\", \"rank\": 3}, {\"id\": \"c14\", \"rank\": 4}, {\"id\": \"c10\", \"rank\": 5}]}"
+        },
+        {
+          "case_id": "cross-task-shape",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"foreign_result\":[]}"
+        }
+      ],
+      "task_key": "p3-ranking"
+    },
+    {
+      "cases": [
+        {
+          "case_id": "correct",
+          "expected_status": "verified_success",
+          "raw_output": "{\"ordered_ids\":[\"source-a\",\"normalize-a\",\"quality-a\",\"source-b\",\"normalize-b\",\"join\",\"quality-b\",\"validate\",\"summarize\",\"package\",\"signoff\",\"release\"]}"
+        },
+        {
+          "case_id": "malformed-json",
+          "expected_status": "malformed_json",
+          "raw_output": "{not-json"
+        },
+        {
+          "case_id": "schema-invalid",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"ordered_ids\": \"wrong-type\"}"
+        },
+        {
+          "case_id": "semantic-error",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"ordered_ids\": [\"source-a\", \"normalize-a\", \"quality-a\", \"source-b\", \"normalize-b\", \"join\", \"quality-b\", \"validate\", \"summarize\", \"package\", \"signoff\", \"wrong-id\"]}"
+        },
+        {
+          "case_id": "missing-result",
+          "expected_status": "missing_result",
+          "raw_output": ""
+        },
+        {
+          "case_id": "extra-result",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"ordered_ids\": [\"source-a\", \"normalize-a\", \"quality-a\", \"source-b\", \"normalize-b\", \"join\", \"quality-b\", \"validate\", \"summarize\", \"package\", \"signoff\", \"release\"], \"unexpected\": true}"
+        },
+        {
+          "case_id": "wrong-order",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"ordered_ids\": [\"normalize-a\", \"source-a\", \"quality-a\", \"source-b\", \"normalize-b\", \"join\", \"quality-b\", \"validate\", \"summarize\", \"package\", \"signoff\", \"release\"]}"
+        },
+        {
+          "case_id": "cross-task-shape",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"foreign_result\":[]}"
+        }
+      ],
+      "task_key": "p4-dependency"
+    },
+    {
+      "cases": [
+        {
+          "case_id": "correct",
+          "expected_status": "verified_success",
+          "raw_output": "{\"matched\":[\"a01\",\"a03\",\"a04\",\"a06\",\"a07\"],\"mismatched\":[{\"delta_cents\":50,\"id\":\"a02\",\"left_cents\":800,\"right_cents\":750},{\"delta_cents\":-2,\"id\":\"a05\",\"left_cents\":999,\"right_cents\":1001},{\"delta_cents\":50,\"id\":\"a08\",\"left_cents\":2100,\"right_cents\":2050}],\"unmatched_left\":[{\"amount_cents\":3300,\"id\":\"a09\"},{\"amount_cents\":450,\"id\":\"a10\"}],\"unmatched_right\":[{\"amount_cents\":700,\"id\":\"a11\"},{\"amount_cents\":1200,\"id\":\"a12\"}]}"
+        },
+        {
+          "case_id": "malformed-json",
+          "expected_status": "malformed_json",
+          "raw_output": "{not-json"
+        },
+        {
+          "case_id": "schema-invalid",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"matched\": \"wrong-type\"}"
+        },
+        {
+          "case_id": "semantic-error",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"matched\": [\"a01\", \"a03\", \"a04\", \"a06\", \"a07\"], \"mismatched\": [{\"delta_cents\": 51, \"id\": \"a02\", \"left_cents\": 800, \"right_cents\": 750}, {\"delta_cents\": -2, \"id\": \"a05\", \"left_cents\": 999, \"right_cents\": 1001}, {\"delta_cents\": 50, \"id\": \"a08\", \"left_cents\": 2100, \"right_cents\": 2050}], \"unmatched_left\": [{\"amount_cents\": 3300, \"id\": \"a09\"}, {\"amount_cents\": 450, \"id\": \"a10\"}], \"unmatched_right\": [{\"amount_cents\": 700, \"id\": \"a11\"}, {\"amount_cents\": 1200, \"id\": \"a12\"}]}"
+        },
+        {
+          "case_id": "missing-result",
+          "expected_status": "missing_result",
+          "raw_output": ""
+        },
+        {
+          "case_id": "extra-result",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"matched\": [\"a01\", \"a03\", \"a04\", \"a06\", \"a07\"], \"mismatched\": [{\"delta_cents\": 50, \"id\": \"a02\", \"left_cents\": 800, \"right_cents\": 750}, {\"delta_cents\": -2, \"id\": \"a05\", \"left_cents\": 999, \"right_cents\": 1001}, {\"delta_cents\": 50, \"id\": \"a08\", \"left_cents\": 2100, \"right_cents\": 2050}], \"unmatched_left\": [{\"amount_cents\": 3300, \"id\": \"a09\"}, {\"amount_cents\": 450, \"id\": \"a10\"}], \"unmatched_right\": [{\"amount_cents\": 700, \"id\": \"a11\"}, {\"amount_cents\": 1200, \"id\": \"a12\"}], \"unexpected\": true}"
+        },
+        {
+          "case_id": "wrong-order",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"matched\": [\"a07\", \"a06\", \"a04\", \"a03\", \"a01\"], \"mismatched\": [{\"delta_cents\": 50, \"id\": \"a02\", \"left_cents\": 800, \"right_cents\": 750}, {\"delta_cents\": -2, \"id\": \"a05\", \"left_cents\": 999, \"right_cents\": 1001}, {\"delta_cents\": 50, \"id\": \"a08\", \"left_cents\": 2100, \"right_cents\": 2050}], \"unmatched_left\": [{\"amount_cents\": 3300, \"id\": \"a09\"}, {\"amount_cents\": 450, \"id\": \"a10\"}], \"unmatched_right\": [{\"amount_cents\": 700, \"id\": \"a11\"}, {\"amount_cents\": 1200, \"id\": \"a12\"}]}"
+        },
+        {
+          "case_id": "cross-task-shape",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"foreign_result\":[]}"
+        }
+      ],
+      "task_key": "p5-reconciliation"
+    },
+    {
+      "cases": [
+        {
+          "case_id": "correct",
+          "expected_status": "verified_success",
+          "raw_output": "{\"classifications\":[{\"class\":\"blocked\",\"id\":\"q01\",\"reason_id\":\"fraud-threshold\",\"rule_id\":\"R1\"},{\"class\":\"priority\",\"id\":\"q02\",\"reason_id\":\"vip-high-value\",\"rule_id\":\"R2\"},{\"class\":\"collections\",\"id\":\"q03\",\"reason_id\":\"overdue-30\",\"rule_id\":\"R3\"},{\"class\":\"review\",\"id\":\"q04\",\"reason_id\":\"foreign-high-value\",\"rule_id\":\"R4\"},{\"class\":\"express\",\"id\":\"q05\",\"reason_id\":\"expedite-requested\",\"rule_id\":\"R5\"},{\"class\":\"standard\",\"id\":\"q06\",\"reason_id\":\"default\",\"rule_id\":\"R6\"},{\"class\":\"blocked\",\"id\":\"q07\",\"reason_id\":\"fraud-threshold\",\"rule_id\":\"R1\"},{\"class\":\"priority\",\"id\":\"q08\",\"reason_id\":\"vip-high-value\",\"rule_id\":\"R2\"},{\"class\":\"collections\",\"id\":\"q09\",\"reason_id\":\"overdue-30\",\"rule_id\":\"R3\"},{\"class\":\"review\",\"id\":\"q10\",\"reason_id\":\"foreign-high-value\",\"rule_id\":\"R4\"},{\"class\":\"blocked\",\"id\":\"q11\",\"reason_id\":\"fraud-threshold\",\"rule_id\":\"R1\"},{\"class\":\"priority\",\"id\":\"q12\",\"reason_id\":\"vip-high-value\",\"rule_id\":\"R2\"}]}"
+        },
+        {
+          "case_id": "malformed-json",
+          "expected_status": "malformed_json",
+          "raw_output": "{not-json"
+        },
+        {
+          "case_id": "schema-invalid",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"classifications\": \"wrong-type\"}"
+        },
+        {
+          "case_id": "semantic-error",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"classifications\": [{\"class\": \"blocked\", \"id\": \"q01\", \"reason_id\": \"fraud-threshold\", \"rule_id\": \"R6\"}, {\"class\": \"priority\", \"id\": \"q02\", \"reason_id\": \"vip-high-value\", \"rule_id\": \"R2\"}, {\"class\": \"collections\", \"id\": \"q03\", \"reason_id\": \"overdue-30\", \"rule_id\": \"R3\"}, {\"class\": \"review\", \"id\": \"q04\", \"reason_id\": \"foreign-high-value\", \"rule_id\": \"R4\"}, {\"class\": \"express\", \"id\": \"q05\", \"reason_id\": \"expedite-requested\", \"rule_id\": \"R5\"}, {\"class\": \"standard\", \"id\": \"q06\", \"reason_id\": \"default\", \"rule_id\": \"R6\"}, {\"class\": \"blocked\", \"id\": \"q07\", \"reason_id\": \"fraud-threshold\", \"rule_id\": \"R1\"}, {\"class\": \"priority\", \"id\": \"q08\", \"reason_id\": \"vip-high-value\", \"rule_id\": \"R2\"}, {\"class\": \"collections\", \"id\": \"q09\", \"reason_id\": \"overdue-30\", \"rule_id\": \"R3\"}, {\"class\": \"review\", \"id\": \"q10\", \"reason_id\": \"foreign-high-value\", \"rule_id\": \"R4\"}, {\"class\": \"blocked\", \"id\": \"q11\", \"reason_id\": \"fraud-threshold\", \"rule_id\": \"R1\"}, {\"class\": \"priority\", \"id\": \"q12\", \"reason_id\": \"vip-high-value\", \"rule_id\": \"R2\"}]}"
+        },
+        {
+          "case_id": "missing-result",
+          "expected_status": "missing_result",
+          "raw_output": ""
+        },
+        {
+          "case_id": "extra-result",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"classifications\": [{\"class\": \"blocked\", \"id\": \"q01\", \"reason_id\": \"fraud-threshold\", \"rule_id\": \"R1\"}, {\"class\": \"priority\", \"id\": \"q02\", \"reason_id\": \"vip-high-value\", \"rule_id\": \"R2\"}, {\"class\": \"collections\", \"id\": \"q03\", \"reason_id\": \"overdue-30\", \"rule_id\": \"R3\"}, {\"class\": \"review\", \"id\": \"q04\", \"reason_id\": \"foreign-high-value\", \"rule_id\": \"R4\"}, {\"class\": \"express\", \"id\": \"q05\", \"reason_id\": \"expedite-requested\", \"rule_id\": \"R5\"}, {\"class\": \"standard\", \"id\": \"q06\", \"reason_id\": \"default\", \"rule_id\": \"R6\"}, {\"class\": \"blocked\", \"id\": \"q07\", \"reason_id\": \"fraud-threshold\", \"rule_id\": \"R1\"}, {\"class\": \"priority\", \"id\": \"q08\", \"reason_id\": \"vip-high-value\", \"rule_id\": \"R2\"}, {\"class\": \"collections\", \"id\": \"q09\", \"reason_id\": \"overdue-30\", \"rule_id\": \"R3\"}, {\"class\": \"review\", \"id\": \"q10\", \"reason_id\": \"foreign-high-value\", \"rule_id\": \"R4\"}, {\"class\": \"blocked\", \"id\": \"q11\", \"reason_id\": \"fraud-threshold\", \"rule_id\": \"R1\"}, {\"class\": \"priority\", \"id\": \"q12\", \"reason_id\": \"vip-high-value\", \"rule_id\": \"R2\"}], \"unexpected\": true}"
+        },
+        {
+          "case_id": "wrong-order",
+          "expected_status": "semantic_miss",
+          "raw_output": "{\"classifications\": [{\"class\": \"priority\", \"id\": \"q02\", \"reason_id\": \"vip-high-value\", \"rule_id\": \"R2\"}, {\"class\": \"blocked\", \"id\": \"q01\", \"reason_id\": \"fraud-threshold\", \"rule_id\": \"R1\"}, {\"class\": \"collections\", \"id\": \"q03\", \"reason_id\": \"overdue-30\", \"rule_id\": \"R3\"}, {\"class\": \"review\", \"id\": \"q04\", \"reason_id\": \"foreign-high-value\", \"rule_id\": \"R4\"}, {\"class\": \"express\", \"id\": \"q05\", \"reason_id\": \"expedite-requested\", \"rule_id\": \"R5\"}, {\"class\": \"standard\", \"id\": \"q06\", \"reason_id\": \"default\", \"rule_id\": \"R6\"}, {\"class\": \"blocked\", \"id\": \"q07\", \"reason_id\": \"fraud-threshold\", \"rule_id\": \"R1\"}, {\"class\": \"priority\", \"id\": \"q08\", \"reason_id\": \"vip-high-value\", \"rule_id\": \"R2\"}, {\"class\": \"collections\", \"id\": \"q09\", \"reason_id\": \"overdue-30\", \"rule_id\": \"R3\"}, {\"class\": \"review\", \"id\": \"q10\", \"reason_id\": \"foreign-high-value\", \"rule_id\": \"R4\"}, {\"class\": \"blocked\", \"id\": \"q11\", \"reason_id\": \"fraud-threshold\", \"rule_id\": \"R1\"}, {\"class\": \"priority\", \"id\": \"q12\", \"reason_id\": \"vip-high-value\", \"rule_id\": \"R2\"}]}"
+        },
+        {
+          "case_id": "cross-task-shape",
+          "expected_status": "schema_invalid",
+          "raw_output": "{\"foreign_result\":[]}"
+        }
+      ],
+      "task_key": "p6-rule-precedence"
+    }
+  ]
+}
