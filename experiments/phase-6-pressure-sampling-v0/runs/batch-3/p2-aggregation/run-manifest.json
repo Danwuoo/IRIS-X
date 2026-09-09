@@ -1,0 +1,49 @@
+{
+  "admission_record_sha256": "7abfa9dc397578516f806bf1841bbc21248fe6a73ba521239c311db040f9b640",
+  "artifacts": [
+    {
+      "bytes": 3440,
+      "path": "attempt-start.json",
+      "sha256": "7db39456e8cf7ffa030bb6877ff40317b1d22b4f44887a81cfd69f2c97f1fcf0"
+    },
+    {
+      "bytes": 254,
+      "path": "predicate-source-map.json",
+      "sha256": "66da073bcc5890c58770e9425d071c0c4f650b09d1fde4811e52ae4d1c604582"
+    },
+    {
+      "bytes": 724,
+      "path": "provider-events.jsonl",
+      "sha256": "447dd16fb971bafc3811462df70b30695499e6fcb8b305803201e1564de23693"
+    },
+    {
+      "bytes": 158,
+      "path": "provider-stderr.txt",
+      "sha256": "973876caf37714e82fa475fae8985eb265b47d0c9c65ace16adc5fedf9d9cc6d"
+    },
+    {
+      "bytes": 333,
+      "path": "raw-output.txt",
+      "sha256": "71cd8fb5529cd8df2421ac6fa7a7ef32c2df86e15bc079beee5446b938b29f3c"
+    },
+    {
+      "bytes": 748,
+      "path": "resource-record.json",
+      "sha256": "8cc7df56673b0a78c689755845e93a5e38dea9240689308a43b771d109565273"
+    },
+    {
+      "bytes": 1141,
+      "path": "terminal-record.json",
+      "sha256": "920be7ad5888e1bf61f906a20fa7efc3c7989b92f14016b9abea602f4a63569c"
+    },
+    {
+      "bytes": 302,
+      "path": "verification-record.json",
+      "sha256": "976fda2a1e6a440719fe462adb146721dcedc8e4083bcf0400e25dba187cf5ce"
+    }
+  ],
+  "definition_code_freeze_sha": "3cdbec8e46fc923f591138809f587e59446e8109",
+  "launch_ready_sha": "8a7d8524311ce71f5210b6b0df6937c3c9414700",
+  "schema_version": 1,
+  "task_id": "phase6-p2-multi-group-exact-aggregation-v0"
+}

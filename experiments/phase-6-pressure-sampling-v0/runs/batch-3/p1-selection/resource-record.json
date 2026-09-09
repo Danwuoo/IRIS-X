@@ -1,0 +1,28 @@
+{
+  "escalation_count": 0,
+  "fallback_count": 0,
+  "invocation_boundary_crossed": true,
+  "model_call_boundaries": 1,
+  "model_inference_execution": "Unknown",
+  "network_calls": "Unknown",
+  "paid_api_calls": 0,
+  "provider_acceptance": true,
+  "provider_cost_usd": "Unknown",
+  "provider_stderr_bytes": 158,
+  "recovery_count": 0,
+  "retry_count": 0,
+  "route_count": 0,
+  "schema_version": 2,
+  "task_id": "phase6-p1-multi-constraint-selection-v0",
+  "token_usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 0,
+    "input_tokens": 5158,
+    "output_tokens": 204,
+    "reasoning_tokens": 163
+  },
+  "tool_calls": 0,
+  "transport_request_count": "Unknown",
+  "usable_result_observed": true,
+  "wall_time_ns": 7057756000
+}

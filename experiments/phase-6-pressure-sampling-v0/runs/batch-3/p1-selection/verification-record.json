@@ -1,0 +1,11 @@
+{
+  "deterministic_oracle_id": "oracle-phase6-p1-selection-v0",
+  "reasons": [
+    "exact_deterministic_oracle_match"
+  ],
+  "schema_version": 1,
+  "semantic_valid": true,
+  "status": "verified_success",
+  "task_id": "phase6-p1-multi-constraint-selection-v0",
+  "verifier_integrity_valid": true
+}

@@ -1,0 +1,11 @@
+{
+  "deterministic_oracle_id": "oracle-phase6-p4-dependency-v0",
+  "reasons": [
+    "deterministic_oracle_mismatch"
+  ],
+  "schema_version": 1,
+  "semantic_valid": false,
+  "status": "semantic_miss",
+  "task_id": "phase6-p4-dependency-closure-v0",
+  "verifier_integrity_valid": true
+}
