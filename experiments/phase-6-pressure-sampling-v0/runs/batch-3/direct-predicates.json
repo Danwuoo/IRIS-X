@@ -1,0 +1,43 @@
+{
+  "batch3_direct_pressure_observation": {
+    "attribution_status": "Conflicting evidence at capability-predicate authority layer",
+    "derivation_rule_id": "rule-hc1-any-semantic-miss-v0",
+    "derivation_rule_sha256": "d4ff649f2495c87d181712097382ed467a5a772651f38b52ef48956aec3d5bc9",
+    "evidence_class": "direct_repository_evidence",
+    "observation_locator": "/attribution/task_level_pressure_observed",
+    "observed_value": true,
+    "predicate_id": "cheaper_admitted_configuration_misses_requirement",
+    "predicate_value": "unknown",
+    "source_path": "runs/batch-3/p4-dependency/terminal-record.json",
+    "source_sha256": "a0ca487abef319e6be0157582c2ada82a37d7d4846deaf5bc455342651789edb"
+  },
+  "frozen_rule_binding_audit": {
+    "conflicts": [
+      "the frozen task-level pressure rule binds runs/batch-2 rather than runs/batch-3",
+      "the frozen any-semantic-miss rule uses operator equals; mixed false/true task observations would derive conflicting rather than any_equals true"
+    ],
+    "frozen_evaluation_path": "frozen-predicate-evaluation.json",
+    "frozen_evaluation_sha256": "ed732583f3920172a31ef0b2f2c36343c72af6c5d5dce8566cba01f5b1d3c38b",
+    "frozen_rules_path": "definition/predicate-derivation-rules.json",
+    "frozen_rules_sha256": "e1d9c20fbb62e85c27cd72b56ebc04e75ff8491c41b06e61b0d2e2244a18a3d1",
+    "status": "Conflicting evidence"
+  },
+  "gate_results": {
+    "H-C1": "insufficient_or_ambiguous",
+    "H-G1": "not_triggered",
+    "H-R1": "not_triggered",
+    "H-W1": "not_triggered",
+    "external-action": "not_triggered",
+    "nondeterministic-verifier": "not_triggered",
+    "persistence": "not_triggered",
+    "retry-recovery": "insufficient_or_ambiguous"
+  },
+  "notes": {
+    "H-C1": "Batch 3 directly observed one frozen-configuration semantic miss, but the frozen predicate binding is conflicting and no stronger-candidate or tradeoff comparison exists.",
+    "H-R1": "Task heterogeneity is observed, but only one allocation was used and no feature-dependent allocation comparison exists.",
+    "retry-recovery": "No retry occurred and no independently observed retry or recovery benefit exists."
+  },
+  "provenance_status": "Conflicting evidence",
+  "schema_version": 2,
+  "trigger_count": 0
+}

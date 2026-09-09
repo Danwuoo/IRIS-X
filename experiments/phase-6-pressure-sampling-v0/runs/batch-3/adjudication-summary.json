@@ -1,0 +1,48 @@
+{
+  "aggregate_result": "Result D — Provenance or authority conflict",
+  "capability_predicate_inference_authoritative": false,
+  "capability_trigger_count": 0,
+  "collection_commit": "565280f71de59a4d01932fd4cdede8ec46ae6f93",
+  "conflicts": [
+    "frozen direct-pressure rule sources Batch 2 terminal paths rather than Batch 3",
+    "frozen any-semantic-miss rule uses equals instead of any_equals"
+  ],
+  "direct_observations": [
+    "all six intended tasks completed with provider-accepted usable structured results",
+    "five tasks exactly matched their deterministic oracles",
+    "P4 produced a valid dependency order that violated the frozen lexical tie-break and did not equal the exact oracle",
+    "no systemic, safety, identity, verifier-integrity, or collection failure occurred"
+  ],
+  "model_call_boundaries": 6,
+  "provider_acceptances": 6,
+  "result_reason": "The task sample completed and one task-level semantic shortfall is directly supported, but the frozen Batch 3 capability-predicate authority cannot bind that observation safely.",
+  "sample_completion": "complete",
+  "schema_version": 1,
+  "semantic_result_interpretable": true,
+  "supported_conclusions": [
+    "the repaired sampling path completed the six-task sample",
+    "the frozen Luna/medium configuration satisfied five sampled tasks",
+    "the frozen Luna/medium configuration exhibited a P4 deterministic lexical tie-break shortfall",
+    "no capability mechanism was triggered by authoritative direct evidence"
+  ],
+  "systemic_failures": 0,
+  "tasks": {
+    "p1-selection": "verified_success",
+    "p2-aggregation": "verified_success",
+    "p3-ranking": "verified_success",
+    "p4-dependency": "semantic_miss",
+    "p5-reconciliation": "verified_success",
+    "p6-rule-precedence": "verified_success"
+  },
+  "unsupported_conclusions": [
+    "intrinsic model capability failure",
+    "general model capability",
+    "retry or recovery benefit",
+    "stronger-model benefit",
+    "routing or escalation benefit",
+    "provider portability",
+    "production readiness"
+  ],
+  "usable_results": 6,
+  "verified_successes": 5
+}

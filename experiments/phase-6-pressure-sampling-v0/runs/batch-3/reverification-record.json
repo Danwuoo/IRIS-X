@@ -1,0 +1,83 @@
+{
+  "admission_integrity": "PASS_all_6_attempt_commands_match_admitted_profile",
+  "aggregate": {
+    "model_call_boundaries": 6,
+    "provider_acceptances": 6,
+    "semantic_misses": 1,
+    "systemic_failures": 0,
+    "usable_results": 6,
+    "verified_successes": 5
+  },
+  "definition_code_freeze_sha": "3cdbec8e46fc923f591138809f587e59446e8109",
+  "forbidden_mechanism_counts": {
+    "escalations": 0,
+    "fallbacks": 0,
+    "recoveries": 0,
+    "retries": 0,
+    "routes": 0,
+    "tool_calls": 0
+  },
+  "launch_ready_sha": "8a7d8524311ce71f5210b6b0df6937c3c9414700",
+  "model_inference_execution": "Unknown",
+  "procedure": "independent tasks.verify_raw_output over each preserved raw-output byte sequence; provider event parsing; raw/final-event equality; terminal/resource/admission identity comparison",
+  "resource_observations": {
+    "cached_input_tokens": 0,
+    "input_tokens": 29732,
+    "output_tokens": 1609,
+    "provider_cost_usd": "Unknown",
+    "reasoning_tokens": 869,
+    "wall_time_ns": 49396075100
+  },
+  "schema_version": 1,
+  "tasks": [
+    {
+      "model_call_boundaries": 1,
+      "provider_acceptance": true,
+      "raw_output_sha256": "11bfd322fb006c772d177b67abe28ce7dcc778e51eab8ea773cdb27d9f0ef7c1",
+      "reverified_status": "verified_success",
+      "task_id": "phase6-p1-multi-constraint-selection-v0",
+      "usable_result_observed": true
+    },
+    {
+      "model_call_boundaries": 1,
+      "provider_acceptance": true,
+      "raw_output_sha256": "71cd8fb5529cd8df2421ac6fa7a7ef32c2df86e15bc079beee5446b938b29f3c",
+      "reverified_status": "verified_success",
+      "task_id": "phase6-p2-multi-group-exact-aggregation-v0",
+      "usable_result_observed": true
+    },
+    {
+      "model_call_boundaries": 1,
+      "provider_acceptance": true,
+      "raw_output_sha256": "7093710d9827434ef20ec0f141030bb0c5b88bd5cd4b6da6842b132702fd1cd7",
+      "reverified_status": "verified_success",
+      "task_id": "phase6-p3-constrained-multikey-ranking-v0",
+      "usable_result_observed": true
+    },
+    {
+      "model_call_boundaries": 1,
+      "provider_acceptance": true,
+      "raw_output_sha256": "7ad28f627d4da19aeafe5c9f15c5cf9341d177b1fe6e4539a48f3018cfc064c5",
+      "reverified_status": "semantic_miss",
+      "task_id": "phase6-p4-dependency-closure-v0",
+      "usable_result_observed": true
+    },
+    {
+      "model_call_boundaries": 1,
+      "provider_acceptance": true,
+      "raw_output_sha256": "c96605bba5ff12963492a7ef0adfeb7fd9a26e0681bbbc1266b847d30417f3e8",
+      "reverified_status": "verified_success",
+      "task_id": "phase6-p5-deterministic-record-reconciliation-v0",
+      "usable_result_observed": true
+    },
+    {
+      "model_call_boundaries": 1,
+      "provider_acceptance": true,
+      "raw_output_sha256": "a0d870bd40fd7362ec139ea60ba2b1d53124437f6024cecac991082a604a6109",
+      "reverified_status": "verified_success",
+      "task_id": "phase6-p6-ordered-rule-precedence-v0",
+      "usable_result_observed": true
+    }
+  ],
+  "verification_integrity": "PASS_all_6_terminal_statuses_match_independent_reverification"
+}

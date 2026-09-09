@@ -1,0 +1,35 @@
+{
+  "attribution_status": "no_shortfall_observed",
+  "candidate_intervention": "Not evaluated",
+  "capability_trigger_predicate": {
+    "authority_status": "not_applicable",
+    "observation_mapping": "not_applicable",
+    "predicate_id": "none",
+    "predicate_value_for_batch3_gate_authority": "not_applicable"
+  },
+  "direct_observation": {
+    "observation": "valid structured output exactly matched the deterministic oracle",
+    "raw_output_path": "raw-output.txt",
+    "raw_output_sha256": "c96605bba5ff12963492a7ef0adfeb7fd9a26e0681bbbc1266b847d30417f3e8",
+    "terminal_record_path": "terminal-record.json",
+    "terminal_record_sha256": "7382d4dd63f07e9c9f125236b6d08111d52111ec64c1c4e68a1a34afddbb1577",
+    "terminal_status": "verified_success",
+    "verification_record_path": "verification-record.json",
+    "verification_record_sha256": "4073bd6a035fb0cc009d4d5a015348c3add20bfa1baca7d7dc78e169a912aaf9"
+  },
+  "failure_stage_evidence": "not_applicable",
+  "intrinsic_model_capability_failure": "Not established",
+  "research_decision": "verified success; no task-level pressure observed",
+  "schema_version": 1,
+  "semantic_family": "deterministic-record-reconciliation",
+  "shortfall_axis": "not_applicable",
+  "task_id": "phase6-p5-deterministic-record-reconciliation-v0",
+  "task_key": "p5-reconciliation",
+  "unsupported_conclusions": [
+    "intrinsic model capability failure",
+    "retry benefit",
+    "stronger-model benefit",
+    "routing benefit",
+    "escalation benefit"
+  ]
+}
