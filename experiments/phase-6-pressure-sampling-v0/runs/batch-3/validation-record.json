@@ -1,0 +1,82 @@
+{
+  "adjudication_commit": "86eedd23bfbce08cfe17be7def34be30305af09c",
+  "admission_integrity": {
+    "attempt_commands_match_admitted_profile": "PASS (6/6)",
+    "record_sha256": "7abfa9dc397578516f806bf1841bbc21248fe6a73ba521239c311db040f9b640",
+    "status": "PASS"
+  },
+  "definition_code_freeze_sha": "3cdbec8e46fc923f591138809f587e59446e8109",
+  "definition_validation": {
+    "derivation_rules": 12,
+    "negative_cases": 48,
+    "provider_schema_policy_id": "codex-cli-0.147.0-response-schema-closed-world-v0",
+    "provider_schemas": 6,
+    "status": "PASS",
+    "tasks": 6
+  },
+  "derived_artifacts": {
+    "adjudication_summary_sha256": "8cebd9ef4298d31a89d76a04adb99a34b22cbf9690ae3b9139a09692199db8c7",
+    "direct_predicates_sha256": "3cde3266fadd38e61a479a69da7338eb53de036ecc60ccd0323f09570587205c",
+    "frozen_predicate_evaluation_regeneration": "PASS_byte_identical",
+    "frozen_predicate_evaluation_sha256": "ed732583f3920172a31ef0b2f2c36343c72af6c5d5dce8566cba01f5b1d3c38b",
+    "reverification_record_sha256": "d24c2db52521733aa86e0361410b02da013aec90f2ab896f6533359ec8100b8c",
+    "summary_regeneration": "PASS_byte_identical",
+    "summary_sha256": "cfcb2731beb13439bc9f174e837b80652becc8dfb4fc1c9aa6df8d0fb65f31d1"
+  },
+  "direct_predicate_provenance": {
+    "batch_3_p4_observation_hash_and_pointer_validation": "PASS",
+    "capability_trigger_count": 0,
+    "frozen_rule_binding": "Conflicting evidence",
+    "frozen_source_refs_hash_and_pointer_validation": "PASS",
+    "status": "PASS_conflict_preserved_without_manual_override"
+  },
+  "focused_validation": {
+    "batch_3": "PASS 41/41",
+    "phase_5_model_qualification_and_task_family": "PASS 75/75",
+    "phase_6_batch_1": "PASS 35/35",
+    "repository_check": "PASS (13 sources, 7 artifacts, hashes checked)"
+  },
+  "freeze_integrity": {
+    "executable_definition_diff_to_current": [],
+    "freeze_to_launch_ready_diff": [
+      "runs/batch-3/admission-record.json",
+      "runs/batch-3/launch-manifest.json"
+    ],
+    "launch_ready_sha": "8a7d8524311ce71f5210b6b0df6937c3c9414700",
+    "status": "PASS"
+  },
+  "full_repository_inventory": {
+    "directories": 19,
+    "errors": 0,
+    "failures": 1,
+    "new_failures_or_errors": 0,
+    "passed": 271,
+    "status": "PASS_WITH_KNOWN_HISTORICAL_FAILURE",
+    "tests": 272
+  },
+  "historical_phase_4_failure": {
+    "expected_sha256": "9e2ac0aabcae9a89ed92d9145ec787f4d6ee1920b5344be703498c6435aaf76c",
+    "observed_sha256": "4f3e47a6fa8af63dee6d4397d995a917a216ce70791416909e76a5448697246b",
+    "status": "unchanged",
+    "test": "HPIaContractTests.test_frozen_artifact_hashes_match_exact_bytes"
+  },
+  "live_model_calls_during_validation": 0,
+  "preservation": {
+    "batch_2_evidence_and_conclusions": "PASS_byte_identical_to_07a71392a59f78e41ca32f1c9c377e2a43be41e6",
+    "batch_2_handoff_blob_sha1": "1185e6ca3bf3d3b8def7ea13b09a42cca927725b",
+    "batch_2_research_blob_sha1": "cbcacd2552e5297e77128d31820e2a9dce739e66",
+    "batch_2_run_tree_sha1": "4589cf38e5cd7c9a6cd035a5f1cb0814b0b2434c",
+    "irisx_core": "PASS_unchanged",
+    "references_papers": "PASS_unchanged",
+    "sources": "PASS_unchanged"
+  },
+  "raw_output_reverification": "PASS 6/6 usable results; P1-P3 and P5-P6 verified_success; P4 semantic_miss",
+  "required_baseline_sha": "07a71392a59f78e41ca32f1c9c377e2a43be41e6",
+  "schema_version": 1,
+  "staging_hash_validation": {
+    "aggregate_sha256": "7ff65cb707e2775e96d0d9f6963e594c3173618431ff4c6f80b2bf15c6c62c53",
+    "collection_record_sha256": "02404e86e1ce7e8084209460109894bb0f5f6c4444ce48828b4ec794d2bfd5ba",
+    "exact_byte_copy": "PASS 57/57",
+    "staging_inventory_sha256": "11b65811a633c42984dc6593ec4c9c3efcdcda828e74f6d7e9725df683fb0cc0"
+  }
+}
