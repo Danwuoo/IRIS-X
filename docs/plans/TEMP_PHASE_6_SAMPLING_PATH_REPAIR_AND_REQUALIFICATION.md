@@ -232,7 +232,7 @@ state: **Phase 6 Batch 4: NOT started.**
 | Validation | `7f891abd4110ff451f5cc944fc0bcd7730ca9ef1` |
 | Research result | `105578fd8ccaa2d4ddc5cbc3dd8741b4a7b6cb21` |
 | Durable handoff | `cdb4408b48f6cccf9417ce11384e69d2b2ce7409` |
-| Retirement | This commit; bound by the immediately following identity commit |
+| Retirement | `924a7629100ef545f037a76b573de07486616e1e` |
 
 **Phase 6 Batch 4: NOT authorized.**
 
@@ -269,7 +269,7 @@ Actual lifecycle lineage:
 | Validate Batch 3 evidence | `7f891abd4110ff451f5cc944fc0bcd7730ca9ef1` |
 | Record Batch 3 research result | `105578fd8ccaa2d4ddc5cbc3dd8741b4a7b6cb21` |
 | Record durable handoff | `cdb4408b48f6cccf9417ce11384e69d2b2ce7409` |
-| Retire controlling plan | This commit; bound by the immediately following identity commit |
+| Retire controlling plan | `924a7629100ef545f037a76b573de07486616e1e` |
 
 Resource and terminal result:
 
