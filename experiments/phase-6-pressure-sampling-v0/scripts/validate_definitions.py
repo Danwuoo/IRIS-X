@@ -19,9 +19,10 @@ if str(SCRIPT_DIR) not in sys.path:
 
 import derive_direct_predicates as predicates  # noqa: E402
 import pressure_tasks as tasks  # noqa: E402
+import provider_schema  # noqa: E402
 
 
-BASELINE_SHA = "a0ca60de39cc291fb9ad185d7de40cd6b4b5909d"
+BASELINE_SHA = "07a71392a59f78e41ca32f1c9c377e2a43be41e6"
 PROFILE_PATH = REPOSITORY_ROOT / "experiments/substrates/model-execution-qualification-v0/admission/codex-cli-0.147.0-run-03-profile.json"
 PROFILE_SHA256 = "ab21119f80141456e7327e276fa3e470abf288cf6a3535ac5fceeace68302033"
 MANIFEST_PATH = EXPERIMENT_ROOT / "definition/sample-manifest.json"
@@ -52,6 +53,7 @@ def definition_artifacts() -> dict[str, dict[str, Any]]:
         "task-feature-schema.json", "direct-predicate-schema.json",
         "predicate-derivation-rules.json", "failure-attribution-rules.json",
         "negative-control-policy.json", "launch-policy.json",
+        "provider-response-schema-policy.json",
     )
     result = {}
     for name in names:
@@ -154,7 +156,9 @@ def validate() -> dict[str, Any]:
     _require(len({task.contract["task_id"] for task in loaded.values()}) == 6, "task IDs are not unique")
     _require(len({task.contract["semantic_family"] for task in loaded.values()}) == 6, "semantic families are not distinct")
     validate_task_constraints(loaded)
+    provider_schema_policy = provider_schema.load_policy()
     for key, task in loaded.items():
+        provider_schema.validate_provider_schema(task.schema, policy=provider_schema_policy)
         _require(task.oracle == tasks.derive_oracle(key, task.task_input), f"oracle mismatch: {key}")
         _require(json.dumps(task.oracle, sort_keys=True) not in task.program, f"oracle leaked into program: {key}")
         _require(tasks.verify_raw_output(task, json.dumps(task.oracle))["semantic_valid"], f"oracle rejected: {key}")
@@ -172,7 +176,13 @@ def validate() -> dict[str, Any]:
     expected_gates = {"H-G1", "H-W1", "H-C1", "H-R1", "persistence", "nondeterministic-verifier", "external-action", "retry-recovery"}
     _require({gate["gate_id"] for gate in rule_definitions["gates"]} == expected_gates, "gate inventory mismatch")
     launch_policy = tasks.load_object(EXPERIMENT_ROOT / "definition/launch-policy.json")
+    _require(launch_policy["policy_id"] == "phase-6-batch-3-launch-policy-v0", "launch policy identity drift")
     _require(launch_policy["profile_id"] == "codex-cli-0.147.0-run-03-admission-v0", "profile identity drift")
+    _require(launch_policy["provider_schema_preflight_required"] is True, "provider schema preflight disabled")
+    _require(
+        launch_policy["provider_response_schema_policy_id"] == provider_schema_policy["policy_id"],
+        "provider schema policy binding drift",
+    )
     for field in ("retries", "routes", "fallbacks", "recovery_actions", "external_actions", "model_judges", "stronger_allocations"):
         _require(launch_policy[field] == 0, f"forbidden launch policy count: {field}")
     _require(launch_policy["batch_model_call_ceiling"] == 6, "batch call ceiling drift")
@@ -192,6 +202,8 @@ def validate() -> dict[str, Any]:
         "status": "PASS", "task_count": len(loaded),
         "negative_case_count": sum(len(row["cases"]) for row in corpus["tasks"]),
         "derivation_rule_count": len(rule_definitions["rules"]),
+        "provider_schema_policy_id": provider_schema_policy["policy_id"],
+        "provider_schema_valid_count": len(loaded),
         "protected_tree_count": len(PROTECTED_PATHS),
     }
 

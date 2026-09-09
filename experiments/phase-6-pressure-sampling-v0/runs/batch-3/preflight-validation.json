@@ -1,0 +1,45 @@
+{
+  "batch": "Phase 6 Batch 3",
+  "definition_validation": {
+    "negative_cases": 48,
+    "provider_schema_policy_id": "codex-cli-0.147.0-response-schema-closed-world-v0",
+    "provider_schemas": 6,
+    "status": "PASS",
+    "tasks": 6
+  },
+  "focused_validation": {
+    "batch_3": "PASS 41/41",
+    "phase_5_model_qualification_and_task_family": "PASS 75/75",
+    "phase_6_batch_1": "PASS 35/35",
+    "repository_check": "PASS (13 sources, 7 artifacts, hashes checked)"
+  },
+  "full_repository_inventory": {
+    "directories": 19,
+    "errors": 0,
+    "failures": 1,
+    "new_failures_or_errors": 0,
+    "passed": 271,
+    "status": "PASS_WITH_KNOWN_HISTORICAL_FAILURE",
+    "tests": 272
+  },
+  "historical_phase_4_failure": {
+    "expected_sha256": "9e2ac0aabcae9a89ed92d9145ec787f4d6ee1920b5344be703498c6435aaf76c",
+    "observed_sha256": "4f3e47a6fa8af63dee6d4397d995a917a216ce70791416909e76a5448697246b",
+    "status": "unchanged",
+    "test": "HPIaContractTests.test_frozen_artifact_hashes_match_exact_bytes"
+  },
+  "live_model_calls": 0,
+  "observed_at": "2026-09-09T11:34:09.2163637Z",
+  "preservation": {
+    "batch_2_evidence_and_conclusions": "PASS_byte_identical_to_07a71392a59f78e41ca32f1c9c377e2a43be41e6",
+    "batch_2_run_tree_sha1": "4589cf38e5cd7c9a6cd035a5f1cb0814b0b2434c",
+    "batch_2_research_blob_sha1": "cbcacd2552e5297e77128d31820e2a9dce739e66",
+    "batch_2_handoff_blob_sha1": "1185e6ca3bf3d3b8def7ea13b09a42cca927725b",
+    "batch_2_plan_blob_sha1": "db5c67c087dd32cc665dabe33997b4f9a25d433f",
+    "irisx_core": "PASS_unchanged",
+    "references_papers": "PASS_unchanged",
+    "sources": "PASS_unchanged"
+  },
+  "required_baseline_sha": "07a71392a59f78e41ca32f1c9c377e2a43be41e6",
+  "schema_version": 1
+}

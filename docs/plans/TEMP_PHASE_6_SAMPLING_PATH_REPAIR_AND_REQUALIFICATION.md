@@ -1,6 +1,6 @@
 # TEMP Phase 6 — Batch 3 Sampling Path Repair and Requalification
 
-Status: **Active — owner-authorized; TURN A repair, freeze, admission, and launch pending**  
+Status: **Active — TURN A repair and zero-call validation complete; definition/code freeze pending**
 Date: **2026-09-09 Asia/Taipei**  
 Repository: **Danwuoo/IRIS-X**  
 Required baseline `main`: **`07a71392a59f78e41ca32f1c9c377e2a43be41e6`**  
@@ -223,7 +223,7 @@ state: **Phase 6 Batch 4: NOT started.**
 | Purpose | Commit |
 | --- | --- |
 | Required Batch 3 baseline | `07a71392a59f78e41ca32f1c9c377e2a43be41e6` |
-| Activate controlling plan | Pending |
+| Activate controlling plan | `0f24ddb1b7806b8b572fa5c81718f53dcb825047` |
 | Definition/code freeze | Pending |
 | Admission and launch-ready metadata | Pending |
 | TURN A launch identity | Pending |

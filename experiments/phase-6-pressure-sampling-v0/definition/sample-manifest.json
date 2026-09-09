@@ -19,9 +19,9 @@
       "sha256": "7973575300b287f4fc2e3c4c07fb747f037b9c3f12bd0fb37308ba56cac066e7"
     },
     "launch-policy.json": {
-      "bytes": 961,
+      "bytes": 1100,
       "path": "definition/launch-policy.json",
-      "sha256": "5c55966d1f3bac903b0d092fe0d4b539357d185fe6f7b9e66cbfd9e92ec0fc2e"
+      "sha256": "ccc4a9c0552b3a112db271ed842db68ac335ad6904306643018832fcbd9a224d"
     },
     "negative-control-policy.json": {
       "bytes": 414,
@@ -32,6 +32,11 @@
       "bytes": 7816,
       "path": "definition/predicate-derivation-rules.json",
       "sha256": "e1d9c20fbb62e85c27cd72b56ebc04e75ff8491c41b06e61b0d2e2244a18a3d1"
+    },
+    "provider-response-schema-policy.json": {
+      "bytes": 824,
+      "path": "definition/provider-response-schema-policy.json",
+      "sha256": "1a2ffbe4234fd6e5b10fbc43c0fffba0ae5d4a4eea3c3acebf5dcca70cc519b6"
     },
     "task-feature-schema.json": {
       "bytes": 402,
@@ -46,7 +51,7 @@
     "references/papers": "ed29ebcde3f01b00a0e49eb33eef1688566dcad3",
     "sources": "10e28d83184c789fc468ca1edc3bebf42ba40b46"
   },
-  "required_baseline_sha": "a0ca60de39cc291fb9ad185d7de40cd6b4b5909d",
+  "required_baseline_sha": "07a71392a59f78e41ca32f1c9c377e2a43be41e6",
   "sample_id": "phase-6-pressure-sampling-v0",
   "schema_version": 1,
   "tasks": [
@@ -212,9 +217,9 @@
           "sha256": "40d7ff1f94905aed238e1864dc1497e5c17c532869093da6ad137bf0db0cd201"
         },
         "output-schema.json": {
-          "bytes": 285,
+          "bytes": 263,
           "path": "tasks/p4-dependency/output-schema.json",
-          "sha256": "33f071cb32a8274727fd65452dc755f22774b6c3a48fbc63debce17d8bcbe66e"
+          "sha256": "ce91ca253bee5b89668c177bc75cbaed8fd9e0f1a5f97325f478ba994e487fdf"
         },
         "program.txt": {
           "bytes": 383,

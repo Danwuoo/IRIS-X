@@ -1,0 +1,35 @@
+{
+  "admitted_profile_id": "codex-cli-0.147.0-run-03-admission-v0",
+  "evidence_bindings": [
+    {
+      "observation": "provider rejected uniqueItems at /properties/ordered_ids/uniqueItems",
+      "source_path": "runs/batch-2/p4-dependency/provider-events.jsonl",
+      "source_sha256": "fc723f4cf6eec2dbad306de1bd0a64b012d4a682142ad497935c6de5efc9799e"
+    }
+  ],
+  "known_unsupported_keywords": [
+    "uniqueItems"
+  ],
+  "policy_id": "codex-cli-0.147.0-response-schema-closed-world-v0",
+  "schema_version": 1,
+  "supported_keywords": [
+    "$schema",
+    "additionalProperties",
+    "items",
+    "maxItems",
+    "minItems",
+    "minimum",
+    "properties",
+    "required",
+    "type"
+  ],
+  "supported_type_values": [
+    "array",
+    "boolean",
+    "integer",
+    "null",
+    "number",
+    "object",
+    "string"
+  ]
+}

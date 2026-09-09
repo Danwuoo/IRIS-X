@@ -17,6 +17,7 @@ import pressure_tasks as tasks  # noqa: E402
 class LaunchPolicyTests(unittest.TestCase):
     def test_exact_allocation_and_resource_ceiling(self) -> None:
         policy = tasks.load_object(ROOT / "definition/launch-policy.json")
+        self.assertEqual(policy["policy_id"], "phase-6-batch-3-launch-policy-v0")
         self.assertEqual(policy["profile_id"], "codex-cli-0.147.0-run-03-admission-v0")
         self.assertEqual(policy["provider_slot"], "irisx_openai_no_retry")
         self.assertEqual((policy["model"], policy["reasoning_effort"]), ("gpt-5.6-luna", "medium"))
@@ -27,6 +28,11 @@ class LaunchPolicyTests(unittest.TestCase):
             self.assertEqual(policy[field], 0, field)
         self.assertEqual(policy["model_tools"], "disabled")
         self.assertFalse(policy["websocket_transport"])
+        self.assertTrue(policy["provider_schema_preflight_required"])
+        self.assertEqual(
+            policy["provider_response_schema_policy_id"],
+            "codex-cli-0.147.0-response-schema-closed-world-v0",
+        )
 
     def test_runner_has_one_provider_subprocess_site_and_no_retry_loop(self) -> None:
         source = (SCRIPTS / "run_pressure_batch.py").read_text(encoding="utf-8")
@@ -42,6 +48,10 @@ class LaunchPolicyTests(unittest.TestCase):
         self.assertEqual(len(provider_calls), 2)  # git helper plus exactly one task invocation site
         self.assertNotIn("retry_task", source)
         self.assertNotIn("fallback_model", source)
+        self.assertIn("model_call_boundaries", source)
+        self.assertIn("provider_acceptance", source)
+        self.assertIn("usable_result_observed", source)
+        self.assertIn('"model_inference_execution": "Unknown"', source)
 
     def test_runner_task_order_is_fixed(self) -> None:
         self.assertEqual(len(tasks.TASK_KEYS), 6)

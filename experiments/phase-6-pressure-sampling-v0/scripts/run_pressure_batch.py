@@ -31,9 +31,10 @@ import validate_definitions  # noqa: E402
 
 PROFILE_PATH = REPOSITORY_ROOT / "experiments/substrates/model-execution-qualification-v0/admission/codex-cli-0.147.0-run-03-profile.json"
 ALLOWED_POST_FREEZE_PATHS = {
-    "experiments/phase-6-pressure-sampling-v0/runs/batch-2/admission-record.json",
-    "experiments/phase-6-pressure-sampling-v0/runs/batch-2/launch-manifest.json",
+    "experiments/phase-6-pressure-sampling-v0/runs/batch-3/admission-record.json",
+    "experiments/phase-6-pressure-sampling-v0/runs/batch-3/launch-manifest.json",
 }
+EXPECTED_BATCH_ID = "phase-6-batch-3-sampling-path-requalification-v0"
 
 
 class BatchRunError(RuntimeError):
@@ -70,10 +71,27 @@ def _extended_audit(events: list[Mapping[str, Any]]) -> dict[str, Any]:
     return audit
 
 
+def observed_provider_acceptance(
+    events: list[Mapping[str, Any]], *, final_message: str | None
+) -> bool | str:
+    """Return only what the provider event stream directly establishes."""
+    if final_message is not None:
+        return True
+    for event in events:
+        if event.get("type") not in {"error", "turn.failed"}:
+            continue
+        encoded = json.dumps(event, ensure_ascii=False, sort_keys=True).lower()
+        if "invalid_request_error" in encoded or "invalid_json_schema" in encoded:
+            return False
+    return "Unknown"
+
+
 def require_launch_state(manifest: Mapping[str, Any]) -> tuple[str, dict[str, Any]]:
     if git("status", "--porcelain"):
         raise BatchRunError("launch requires a clean tree")
     launch_ready_sha = git("rev-parse", "HEAD")
+    if manifest.get("batch_id") != EXPECTED_BATCH_ID:
+        raise BatchRunError("Batch 3 launch manifest identity mismatch")
     freeze_sha = manifest["definition_code_freeze_sha"]
     git("merge-base", "--is-ancestor", freeze_sha, launch_ready_sha)
     changed = set(filter(None, git("diff", "--name-only", f"{freeze_sha}..{launch_ready_sha}").splitlines()))
@@ -178,6 +196,7 @@ def execute_task(
     audit = _extended_audit(events)
     event_message = qualified.final_agent_message(events)
     file_message = output_bytes.decode("utf-8", errors="replace") if output_bytes is not None else None
+    provider_acceptance = observed_provider_acceptance(events, final_message=event_message)
     forbidden = {
         "tool_calls": audit["tool_attempt_count"],
         "retries": audit["retry_event_count"],
@@ -213,6 +232,7 @@ def execute_task(
         **verification,
     })
     semantic_miss = not systemic_reasons and not verification["semantic_valid"]
+    usable_result_observed = bool(file_message and file_message.strip()) and not systemic_reasons
     attribution = (
         {
             "failure_stage": "systemic_execution_failure",
@@ -244,6 +264,9 @@ def execute_task(
         "identity_binding_valid": True,
         "evidence_binding_sufficient": True,
         "usable_model_result": bool(file_message and file_message.strip()) and not systemic_reasons,
+        "provider_acceptance": provider_acceptance,
+        "usable_result_observed": usable_result_observed,
+        "model_inference_execution": "Unknown",
         "model_call_boundary_crossed": model_call_crossed,
         "verification": {
             "verifier_integrity_valid": True,
@@ -255,9 +278,13 @@ def execute_task(
     }
     write_json(task_root / "terminal-record.json", terminal)
     resources = {
-        "schema_version": 1,
+        "schema_version": 2,
         "task_id": task.contract["task_id"],
-        "model_calls": 1 if model_call_crossed else 0,
+        "invocation_boundary_crossed": model_call_crossed,
+        "model_call_boundaries": 1 if model_call_crossed else 0,
+        "provider_acceptance": provider_acceptance,
+        "usable_result_observed": usable_result_observed,
+        "model_inference_execution": "Unknown",
         "network_calls": "Unknown",
         "transport_request_count": "Unknown",
         "provider_cost_usd": "Unknown",
@@ -330,7 +357,7 @@ def main() -> int:
         })
         return 0 if not stopped else 2
     except Exception as exc:
-        print(f"Phase 6 Batch 2 runner: FAIL ({type(exc).__name__}: {exc})", file=sys.stderr)
+        print(f"Phase 6 Batch 3 runner: FAIL ({type(exc).__name__}: {exc})", file=sys.stderr)
         return 1
 
 

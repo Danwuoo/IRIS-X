@@ -22,6 +22,7 @@ class DefinitionIntegrityTests(unittest.TestCase):
         self.assertEqual(result["status"], "PASS")
         self.assertEqual(result["task_count"], 6)
         self.assertEqual(result["negative_case_count"], 48)
+        self.assertEqual(result["provider_schema_valid_count"], 6)
 
     def test_exact_oracles_are_derived_from_inputs(self) -> None:
         for key in tasks.TASK_KEYS:
@@ -66,4 +67,3 @@ class DefinitionIntegrityTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

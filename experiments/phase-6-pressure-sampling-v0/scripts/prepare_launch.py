@@ -22,7 +22,7 @@ import pressure_tasks as tasks  # noqa: E402
 import validate_definitions  # noqa: E402
 
 
-RUN_META = EXPERIMENT_ROOT / "runs/batch-2"
+RUN_META = EXPERIMENT_ROOT / "runs/batch-3"
 ADMISSION_PATH = RUN_META / "admission-record.json"
 LAUNCH_MANIFEST_PATH = RUN_META / "launch-manifest.json"
 
@@ -74,7 +74,8 @@ def main() -> int:
         staging = args.staging_root.resolve()
         manifest = {
             "schema_version": 1,
-            "batch_id": "phase-6-batch-2-direct-pressure-sampling-v0",
+            "batch_id": "phase-6-batch-3-sampling-path-requalification-v0",
+            "required_baseline_sha": "07a71392a59f78e41ca32f1c9c377e2a43be41e6",
             "definition_code_freeze_sha": args.freeze_sha,
             "launch_ready_commit_resolution": "git_head_at_runner_start",
             "task_order": list(tasks.TASK_KEYS),
@@ -96,6 +97,10 @@ def main() -> int:
                 "sample_manifest_sha256": tasks.sha256_bytes(sample_manifest_path.read_bytes()),
                 "launch_policy_path": policy_path.relative_to(REPOSITORY_ROOT).as_posix(),
                 "launch_policy_sha256": tasks.sha256_bytes(policy_path.read_bytes()),
+                "provider_schema_policy_path": "experiments/phase-6-pressure-sampling-v0/definition/provider-response-schema-policy.json",
+                "provider_schema_policy_sha256": tasks.sha256_bytes(
+                    (EXPERIMENT_ROOT / "definition/provider-response-schema-policy.json").read_bytes()
+                ),
             },
             "external_staging": {
                 "staging_root": str(staging),
@@ -117,6 +122,7 @@ def main() -> int:
                 "model_tools": 0,
             },
             "collection_status": "not_performed",
+            "repository_run_path": "experiments/phase-6-pressure-sampling-v0/runs/batch-3",
         }
         write_new(LAUNCH_MANIFEST_PATH, manifest)
         print(json.dumps({
@@ -127,10 +133,9 @@ def main() -> int:
         }, indent=2, sort_keys=True))
         return 0
     except (LaunchPreparationError, OSError, KeyError, ValueError, json.JSONDecodeError, subprocess.SubprocessError) as exc:
-        print(f"Phase 6 Batch 2 launch preparation: FAIL ({exc})", file=sys.stderr)
+        print(f"Phase 6 Batch 3 launch preparation: FAIL ({exc})", file=sys.stderr)
         return 1
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

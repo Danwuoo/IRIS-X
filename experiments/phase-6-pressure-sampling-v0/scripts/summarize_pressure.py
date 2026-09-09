@@ -25,8 +25,11 @@ def build_summary(collected: Path) -> dict:
             terminals.append(tasks.load_object(task_dir / "terminal-record.json"))
             resources.append(tasks.load_object(task_dir / "resource-record.json"))
     pressure_ids = [row["task_id"] for row in terminals if row["semantic_miss"]]
+    provider_acceptance = [
+        row.get("provider_acceptance", "Unknown") for row in resources
+    ]
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "authorized_task_count": 6,
         "attempted_task_count": len(terminals),
         "verified_success_count": sum(row["verified_success"] for row in terminals),
@@ -35,7 +38,16 @@ def build_summary(collected: Path) -> dict:
         "identity_failure_count": 0,
         "verifier_integrity_failure_count": 0,
         "unresolved_count": 6 - len(terminals),
-        "total_model_calls": sum(row["model_calls"] for row in resources),
+        "total_model_call_boundaries": sum(
+            row.get("model_call_boundaries", row.get("model_calls", 0)) for row in resources
+        ),
+        "provider_accepted_count": sum(value is True for value in provider_acceptance),
+        "provider_rejected_count": sum(value is False for value in provider_acceptance),
+        "provider_acceptance_unknown_count": sum(value == "Unknown" for value in provider_acceptance),
+        "usable_result_count": sum(
+            bool(row.get("usable_result_observed", False)) for row in resources
+        ),
+        "model_inference_execution": "Unknown",
         "total_retries": sum(row["retry_count"] for row in resources),
         "total_routes": sum(row["route_count"] for row in resources),
         "total_fallbacks": sum(row["fallback_count"] for row in resources),
@@ -61,7 +73,7 @@ def main() -> int:
             print(payload.decode("utf-8"), end="")
         return 0
     except (OSError, ValueError, KeyError, json.JSONDecodeError) as exc:
-        print(f"Phase 6 Batch 2 summary: FAIL ({exc})", file=sys.stderr)
+        print(f"Phase 6 Batch 3 summary: FAIL ({exc})", file=sys.stderr)
         return 1
 
 

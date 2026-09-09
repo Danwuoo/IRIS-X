@@ -447,7 +447,7 @@ def sample_manifest() -> dict[str, Any]:
     return {
         "schema_version": 1,
         "sample_id": "phase-6-pressure-sampling-v0",
-        "required_baseline": "a0ca60de39cc291fb9ad185d7de40cd6b4b5909d",
+        "required_baseline": "07a71392a59f78e41ca32f1c9c377e2a43be41e6",
         "profile_id": "codex-cli-0.147.0-run-03-admission-v0",
         "task_count": len(TASK_KEYS),
         "tasks": [task_manifest_record(load_task(key)) for key in TASK_KEYS],
@@ -457,7 +457,7 @@ def sample_manifest() -> dict[str, Any]:
 def negative_corpus() -> dict[str, Any]:
     return {
         "schema_version": 1,
-        "corpus_id": "phase-6-batch-2-verifier-negative-corpus-v0",
+        "corpus_id": "phase-6-batch-3-verifier-negative-corpus-v0",
         "tasks": [
             {"task_key": key, "cases": negative_cases(load_task(key))} for key in TASK_KEYS
         ],
