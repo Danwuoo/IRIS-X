@@ -1,6 +1,6 @@
 # TEMP Phase 6 — Batch 3 Sampling Path Repair and Requalification
 
-Status: **Active — TURN A repair and zero-call validation complete; definition/code freeze pending**
+Status: **Retired — Phase 6 Batch 3 closed as Result D; see Section 13**
 Date: **2026-09-09 Asia/Taipei**  
 Repository: **Danwuoo/IRIS-X**  
 Required baseline `main`: **`07a71392a59f78e41ca32f1c9c377e2a43be41e6`**  
@@ -224,12 +224,85 @@ state: **Phase 6 Batch 4: NOT started.**
 | --- | --- |
 | Required Batch 3 baseline | `07a71392a59f78e41ca32f1c9c377e2a43be41e6` |
 | Activate controlling plan | `0f24ddb1b7806b8b572fa5c81718f53dcb825047` |
-| Definition/code freeze | Pending |
-| Admission and launch-ready metadata | Pending |
-| TURN A launch identity | Pending |
-| TURN B evidence collection | Pending |
-| Research result | Pending |
-| Durable handoff | Pending |
-| Retirement | Pending |
+| Definition/code freeze | `3cdbec8e46fc923f591138809f587e59446e8109` |
+| Admission and launch-ready metadata | `8a7d8524311ce71f5210b6b0df6937c3c9414700` |
+| TURN A launch identity | PID `10388`; staging root `C:\Users\wurre\AppData\Local\Temp\irisx-phase-6-batch-3-turn-a-20260909T114125Z` |
+| TURN B immutable evidence collection | `565280f71de59a4d01932fd4cdede8ec46ae6f93` |
+| Adjudication | `86eedd23bfbce08cfe17be7def34be30305af09c` |
+| Validation | `7f891abd4110ff451f5cc944fc0bcd7730ca9ef1` |
+| Research result | `105578fd8ccaa2d4ddc5cbc3dd8741b4a7b6cb21` |
+| Durable handoff | `cdb4408b48f6cccf9417ce11384e69d2b2ce7409` |
+| Retirement | This commit; bound by the immediately following identity commit |
 
 **Phase 6 Batch 4: NOT authorized.**
+
+## 13. Retirement record — 2026-09-09 Asia/Taipei
+
+Phase 6 Batch 3 completed its authorized repair, requalification, TURN A, and
+TURN B lifecycle and is retired as:
+
+> **Result D — Provenance or authority conflict.**
+
+The repaired sampling path completed all six frozen tasks under the exact
+admitted allocation. P1, P2, P3, P5, and P6 were verified successes. P4
+produced a usable, schema-valid result but missed the exact deterministic
+oracle by violating the frozen lexical tie-break. This is a directly supported
+frozen-configuration task-level shortfall, not an intrinsic model capability
+failure.
+
+The intended capability inference cannot be made safely because the frozen
+predicate definition binds task terminal observations to Batch 2 rather than
+Batch 3 and its named any-semantic-miss rule uses `equals` rather than an
+any-match operator. The conflict was preserved without changing frozen code,
+rewriting evidence, or manually asserting a predicate Boolean.
+
+Actual lifecycle lineage:
+
+| Purpose | Commit |
+| --- | --- |
+| Required Batch 3 baseline | `07a71392a59f78e41ca32f1c9c377e2a43be41e6` |
+| Activate controlling plan | `0f24ddb1b7806b8b572fa5c81718f53dcb825047` |
+| Definition/code freeze | `3cdbec8e46fc923f591138809f587e59446e8109` |
+| Admission and launch-ready metadata | `8a7d8524311ce71f5210b6b0df6937c3c9414700` |
+| Preserve immutable TURN A staging evidence | `565280f71de59a4d01932fd4cdede8ec46ae6f93` |
+| Adjudicate Batch 3 pressure evidence | `86eedd23bfbce08cfe17be7def34be30305af09c` |
+| Validate Batch 3 evidence | `7f891abd4110ff451f5cc944fc0bcd7730ca9ef1` |
+| Record Batch 3 research result | `105578fd8ccaa2d4ddc5cbc3dd8741b4a7b6cb21` |
+| Record durable handoff | `cdb4408b48f6cccf9417ce11384e69d2b2ce7409` |
+| Retire controlling plan | This commit; bound by the immediately following identity commit |
+
+Resource and terminal result:
+
+```text
+authorized model-call ceiling: 6
+actual invocation boundaries crossed: 6
+provider acceptances / usable results: 6 / 6
+verified successes: 5/6
+semantic misses: 1
+system/evidence failures: 0
+incomplete/not attempted: 0
+retry / route / fallback / escalation / recovery / tool counts: 0 / 0 / 0 / 0 / 0 / 0
+```
+
+No capability gate became `triggered_by_direct_evidence`. H-C1 and general
+recovery/retry remain `insufficient_or_ambiguous`; all other gates are
+`not_triggered`.
+
+Validation passed for the repaired definition and provider schemas, freeze and
+admission integrity, all 57 staged file hashes, independent deterministic
+reverification, Batch 3 focused tests (41/41), Phase 6 Batch 1 tests (35/35),
+Phase 5 model qualification/task-family tests (75/75), repository check, and
+byte-identical deterministic regeneration. The complete inventory ran 272
+tests: 271 passed, the one unchanged historical Phase 4 hash assertion failed,
+zero errors occurred, and there were zero new failures or errors.
+
+Batch 2 evidence and its Result C conclusion remain byte-identical to the
+required baseline. `irisx/core`, imported sources, papers, and historical runs
+were not modified.
+
+The exact next recommendation is a separately owner-authorized,
+zero-model-call-only correction of the research-local Batch 3 predicate source
+binding and any-miss operator, followed by validation against the preserved
+Batch 3 evidence. This result does not authorize mechanism implementation.
+
+**Phase 6 Batch 4: NOT started.**
