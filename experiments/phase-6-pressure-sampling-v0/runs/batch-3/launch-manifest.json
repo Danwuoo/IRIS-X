@@ -1,0 +1,57 @@
+{
+  "admission": {
+    "cli_path": "C:\\Users\\wurre\\AppData\\Roaming\\npm\\codex.cmd",
+    "cli_version": "codex-cli 0.147.0",
+    "configuration_id": "openai-codex-luna-medium-readonly-zero-retry-run-03-v0",
+    "model": "gpt-5.6-luna",
+    "profile_id": "codex-cli-0.147.0-run-03-admission-v0",
+    "profile_sha256": "ab21119f80141456e7327e276fa3e470abf288cf6a3535ac5fceeace68302033",
+    "provider_slot": "irisx_openai_no_retry",
+    "reasoning_effort": "medium",
+    "record_path": "experiments/phase-6-pressure-sampling-v0/runs/batch-3/admission-record.json",
+    "record_sha256": "7abfa9dc397578516f806bf1841bbc21248fe6a73ba521239c311db040f9b640",
+    "status": "admitted"
+  },
+  "batch_id": "phase-6-batch-3-sampling-path-requalification-v0",
+  "collection_status": "not_performed",
+  "definition_bindings": {
+    "launch_policy_path": "experiments/phase-6-pressure-sampling-v0/definition/launch-policy.json",
+    "launch_policy_sha256": "ccc4a9c0552b3a112db271ed842db68ac335ad6904306643018832fcbd9a224d",
+    "provider_schema_policy_path": "experiments/phase-6-pressure-sampling-v0/definition/provider-response-schema-policy.json",
+    "provider_schema_policy_sha256": "1a2ffbe4234fd6e5b10fbc43c0fffba0ae5d4a4eea3c3acebf5dcca70cc519b6",
+    "sample_manifest_path": "experiments/phase-6-pressure-sampling-v0/definition/sample-manifest.json",
+    "sample_manifest_sha256": "6d1d04bdef1f66b3faecc97552114914d2ffde0d662e623dd3c5d1cf2c1a1cba"
+  },
+  "definition_code_freeze_sha": "3cdbec8e46fc923f591138809f587e59446e8109",
+  "external_staging": {
+    "batch_completion_path": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-phase-6-batch-3-turn-a-20260909T114125Z\\batch-completion.json",
+    "per_task_provider_events_path": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-phase-6-batch-3-turn-a-20260909T114125Z\\{task_key}\\provider-events.jsonl",
+    "per_task_provider_stderr_path": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-phase-6-batch-3-turn-a-20260909T114125Z\\{task_key}\\provider-stderr.txt",
+    "per_task_raw_output_path": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-phase-6-batch-3-turn-a-20260909T114125Z\\{task_key}\\raw-output.txt",
+    "runner_stderr_path": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-phase-6-batch-3-turn-a-20260909T114125Z\\runner-stderr.txt",
+    "runner_stdout_path": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-phase-6-batch-3-turn-a-20260909T114125Z\\runner-stdout.txt",
+    "staging_root": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-phase-6-batch-3-turn-a-20260909T114125Z"
+  },
+  "launch_ready_commit_resolution": "git_head_at_runner_start",
+  "repository_run_path": "experiments/phase-6-pressure-sampling-v0/runs/batch-3",
+  "required_baseline_sha": "07a71392a59f78e41ca32f1c9c377e2a43be41e6",
+  "resource_ceiling": {
+    "escalations": 0,
+    "fallbacks": 0,
+    "model_calls": 6,
+    "model_tools": 0,
+    "per_task_model_calls": 1,
+    "recovery_actions": 0,
+    "retries": 0,
+    "routes": 0
+  },
+  "schema_version": 1,
+  "task_order": [
+    "p1-selection",
+    "p2-aggregation",
+    "p3-ranking",
+    "p4-dependency",
+    "p5-reconciliation",
+    "p6-rule-precedence"
+  ]
+}
