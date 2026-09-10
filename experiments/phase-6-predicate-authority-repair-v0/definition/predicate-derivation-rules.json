@@ -1,0 +1,253 @@
+{
+  "authority_id": "phase-6-post-batch-3-predicate-provenance-authority-v1",
+  "evaluator_path": "experiments/phase-6-pressure-sampling-v0/scripts/derive_direct_predicates.py",
+  "evaluator_sha256": "7978320f97144d774b2e0f7a9a4e4e2c9e3e4d19ff4d6e6700f3184429a9c74a",
+  "gates": [
+    {
+      "gate_id": "H-G1",
+      "required_predicates": [
+        "automated_specialization_required"
+      ]
+    },
+    {
+      "gate_id": "H-W1",
+      "required_predicates": [
+        "simple_fixed_control_flow_insufficient"
+      ]
+    },
+    {
+      "gate_id": "H-C1",
+      "required_predicates": [
+        "cheaper_admitted_configuration_misses_requirement",
+        "stronger_candidate_resolves_miss",
+        "decision_relevant_tradeoff_established"
+      ]
+    },
+    {
+      "gate_id": "H-R1",
+      "required_predicates": [
+        "heterogeneous_task_features",
+        "multiple_admissible_allocations_compared",
+        "feature_dependent_allocation_changes_target_frontier"
+      ]
+    },
+    {
+      "gate_id": "persistence",
+      "required_predicates": [
+        "runtime_state_continuity_required"
+      ]
+    },
+    {
+      "gate_id": "nondeterministic-verifier",
+      "required_predicates": [
+        "deterministic_oracle_insufficient"
+      ]
+    },
+    {
+      "gate_id": "external-action",
+      "required_predicates": [
+        "external_or_irreversible_action_required"
+      ]
+    },
+    {
+      "gate_id": "retry-recovery",
+      "required_predicates": [
+        "bounded_retry_or_recovery_benefit_compared"
+      ]
+    }
+  ],
+  "historical_batch3_classification": "Result D — Provenance or authority conflict",
+  "required_baseline_sha": "fc42646466b697e5723d6ae2db58fafcb8e13448",
+  "rules": [
+    {
+      "derivation_rule_id": "rule-hg1-authoring-v0",
+      "derivation_rule_sha256": "3c6e8415fce7d7566542bcb8c1ea6b33bf82eb508d4881df0cd84b83bf53d79d",
+      "expected": "automated",
+      "gate_id": "H-G1",
+      "operator": "equals",
+      "predicate_id": "automated_specialization_required",
+      "sources": [
+        {
+          "path": "definition/launch-policy.json",
+          "pointer": "/task_authoring"
+        }
+      ]
+    },
+    {
+      "derivation_rule_id": "rule-hw1-fixed-flow-v0",
+      "derivation_rule_sha256": "301c48deddfd4163979b79bbf77e286bce225732b1474ce0d9dd40aac0cabbd6",
+      "expected": false,
+      "gate_id": "H-W1",
+      "operator": "equals",
+      "predicate_id": "simple_fixed_control_flow_insufficient",
+      "sources": [
+        {
+          "path": "definition/launch-policy.json",
+          "pointer": "/single_fixed_control_flow"
+        }
+      ]
+    },
+    {
+      "derivation_rule_id": "rule-hc1-any-semantic-miss-batch3-v1",
+      "derivation_rule_sha256": "0249c7593d17d994b157900c288d5e1fa5e98b7ef9aedc89b5c3fe85e519b7ad",
+      "expected": true,
+      "gate_id": "H-C1",
+      "operator": "any_equals",
+      "predicate_id": "cheaper_admitted_configuration_misses_requirement",
+      "sources": [
+        {
+          "path": "runs/batch-3/p1-selection/terminal-record.json",
+          "pointer": "/attribution/task_level_pressure_observed"
+        },
+        {
+          "path": "runs/batch-3/p2-aggregation/terminal-record.json",
+          "pointer": "/attribution/task_level_pressure_observed"
+        },
+        {
+          "path": "runs/batch-3/p3-ranking/terminal-record.json",
+          "pointer": "/attribution/task_level_pressure_observed"
+        },
+        {
+          "path": "runs/batch-3/p4-dependency/terminal-record.json",
+          "pointer": "/attribution/task_level_pressure_observed"
+        },
+        {
+          "path": "runs/batch-3/p5-reconciliation/terminal-record.json",
+          "pointer": "/attribution/task_level_pressure_observed"
+        },
+        {
+          "path": "runs/batch-3/p6-rule-precedence/terminal-record.json",
+          "pointer": "/attribution/task_level_pressure_observed"
+        }
+      ]
+    },
+    {
+      "derivation_rule_id": "rule-hc1-stronger-absent-batch3-v1",
+      "derivation_rule_sha256": "054317a121fc679d15dac47de6f72aa3a338d2c4ec7a3fd26d5a1a47a6b44ce1",
+      "expected": true,
+      "gate_id": "H-C1",
+      "operator": "equals",
+      "predicate_id": "stronger_candidate_resolves_miss",
+      "sources": [
+        {
+          "path": "runs/batch-3/comparison-observation.json",
+          "pointer": "/stronger_candidate_resolves_miss"
+        }
+      ]
+    },
+    {
+      "derivation_rule_id": "rule-hc1-tradeoff-absent-batch3-v1",
+      "derivation_rule_sha256": "aec224528d3de0fc6717a001aedf7abc73b443c34cb20bb0313083b7c832d824",
+      "expected": true,
+      "gate_id": "H-C1",
+      "operator": "equals",
+      "predicate_id": "decision_relevant_tradeoff_established",
+      "sources": [
+        {
+          "path": "runs/batch-3/comparison-observation.json",
+          "pointer": "/decision_relevant_tradeoff_established"
+        }
+      ]
+    },
+    {
+      "derivation_rule_id": "rule-hr1-feature-heterogeneity-v0",
+      "derivation_rule_sha256": "e24c24279db1577dadf4e34f36687dd242c63b786bf794efefb5b94527a75f82",
+      "expected": 6,
+      "gate_id": "H-R1",
+      "operator": "distinct_count_at_least",
+      "predicate_id": "heterogeneous_task_features",
+      "sources": [
+        {
+          "path": "definition/sample-manifest.json",
+          "pointer": "/tasks/*/features/semantic_family"
+        }
+      ]
+    },
+    {
+      "derivation_rule_id": "rule-hr1-allocation-count-v0",
+      "derivation_rule_sha256": "d3fe407457d4b54a93ec5640075a1f75293f1eb871e039f642d658d097edf9d5",
+      "expected": 2,
+      "gate_id": "H-R1",
+      "operator": "integer_at_least",
+      "predicate_id": "multiple_admissible_allocations_compared",
+      "sources": [
+        {
+          "path": "definition/launch-policy.json",
+          "pointer": "/allocation_count"
+        }
+      ]
+    },
+    {
+      "derivation_rule_id": "rule-hr1-frontier-absent-v0",
+      "derivation_rule_sha256": "31f4f841cbb7067951be1bc50eaabd96d7332d474e540d662e6003ef167989c3",
+      "expected": 2,
+      "gate_id": "H-R1",
+      "operator": "integer_at_least",
+      "predicate_id": "feature_dependent_allocation_changes_target_frontier",
+      "sources": [
+        {
+          "path": "definition/launch-policy.json",
+          "pointer": "/allocation_count"
+        }
+      ]
+    },
+    {
+      "derivation_rule_id": "rule-persistence-scope-v0",
+      "derivation_rule_sha256": "459cc070775a62f3d244ee2d2e35fc1a3dcfec781a250fcf1d2892971007de60",
+      "expected": true,
+      "gate_id": "persistence",
+      "operator": "equals",
+      "predicate_id": "runtime_state_continuity_required",
+      "sources": [
+        {
+          "path": "definition/launch-policy.json",
+          "pointer": "/runtime_state_continuity_required"
+        }
+      ]
+    },
+    {
+      "derivation_rule_id": "rule-verifier-integrity-v0",
+      "derivation_rule_sha256": "17600ad3f2af792ae77f3568a39a7174021904264e2284d296641f82e127bfe1",
+      "expected": false,
+      "gate_id": "nondeterministic-verifier",
+      "operator": "any_equals",
+      "predicate_id": "deterministic_oracle_insufficient",
+      "sources": [
+        {
+          "path": "definition/launch-policy.json",
+          "pointer": "/deterministic_oracle_required"
+        }
+      ]
+    },
+    {
+      "derivation_rule_id": "rule-external-action-scope-v0",
+      "derivation_rule_sha256": "539f1c6d25e73ff64f21a15fcfa3c89b938970a1242d56a124694d4f9858b614",
+      "expected": 1,
+      "gate_id": "external-action",
+      "operator": "integer_at_least",
+      "predicate_id": "external_or_irreversible_action_required",
+      "sources": [
+        {
+          "path": "definition/launch-policy.json",
+          "pointer": "/external_actions"
+        }
+      ]
+    },
+    {
+      "derivation_rule_id": "rule-retry-comparison-absent-batch3-v1",
+      "derivation_rule_sha256": "c6fcc6684a4ac5cf9b5a3657c3fe6d1503f652a2495bb9b714a9bb1eb318716a",
+      "expected": true,
+      "gate_id": "retry-recovery",
+      "operator": "equals",
+      "predicate_id": "bounded_retry_or_recovery_benefit_compared",
+      "sources": [
+        {
+          "path": "runs/batch-3/comparison-observation.json",
+          "pointer": "/bounded_retry_or_recovery_benefit_compared"
+        }
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "source_experiment_path": "experiments/phase-6-pressure-sampling-v0"
+}
