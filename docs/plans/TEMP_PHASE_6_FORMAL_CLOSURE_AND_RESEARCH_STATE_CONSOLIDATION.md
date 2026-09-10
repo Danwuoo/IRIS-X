@@ -220,7 +220,7 @@ Lifecycle lineage:
 | Record formal closure research result | `ac60993cfffce789cc890bf1fbc06d1027254ed0` |
 | Synchronize durable current research state | `9a7c887aedb5f43cbf0aa983316301d0581483a1` |
 | Record durable closure handoff | `d74bcc55ec909f95c2f86fca17630ed9d1f5ce1b` |
-| Retire controlling plan | this semantic retirement commit; bound after commit |
+| Retire controlling plan | `8976b80c5d130f13cafe255a4034928be7f9f698` |
 
 Final gate state:
 
