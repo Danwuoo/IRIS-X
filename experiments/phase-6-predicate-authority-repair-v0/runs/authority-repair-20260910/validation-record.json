@@ -1,0 +1,89 @@
+{
+  "artifact_sha256": {
+    "direct-predicates.json": "b9c83b45129c4bc689f688606d689a28577b094c8a90d7dadff134fd61ffc5b1",
+    "gate-adjudication.json": "185b6867ad1d51ef26b1d0e661ff7f4dac9d03ed6b2af9775b4319c1c6174c5e",
+    "manifest.json": "5ae0df5993d9c97c2b0fd18d6989c6510cf1414d955019b902e7e086a51448b1"
+  },
+  "authority_id": "phase-6-post-batch-3-predicate-provenance-authority-v1",
+  "definition_test_freeze_sha": "6beafccc2595808bcfac3ba8796a581156d76592",
+  "deterministic_regeneration": {
+    "direct_predicates_byte_identical": true,
+    "double_regeneration_byte_identical": true,
+    "gate_adjudication_byte_identical": true,
+    "manifest_byte_identical": true
+  },
+  "focused_validation": [
+    {
+      "command": "python -m unittest discover -s experiments\\phase-6-predicate-authority-repair-v0\\tests -v",
+      "errors": 0,
+      "failures": 0,
+      "tests": 10
+    },
+    {
+      "command": "python experiments\\phase-6-predicate-authority-repair-v0\\scripts\\validate_repair.py",
+      "result": "PASS"
+    },
+    {
+      "command": "python experiments\\phase-6-pressure-sampling-v0\\scripts\\validate_definitions.py",
+      "result": "PASS"
+    },
+    {
+      "command": "python -m unittest discover -s experiments\\phase-6-pressure-sampling-v0\\tests -v",
+      "errors": 0,
+      "failures": 0,
+      "tests": 41
+    },
+    {
+      "command": "python -m unittest discover -s experiments\\capability-pressure-attribution-v0\\tests -v",
+      "errors": 0,
+      "failures": 0,
+      "tests": 35
+    },
+    {
+      "command": "python -m unittest discover -s experiments\\substrates\\model-execution-qualification-v0\\tests -v",
+      "errors": 0,
+      "failures": 0,
+      "tests": 75
+    },
+    {
+      "command": "python tools\\repository_check.py",
+      "result": "PASS — 13 sources, 7 artifacts, hashes checked"
+    }
+  ],
+  "full_discovered_inventory": {
+    "discovered_test_directories": 20,
+    "errors": 0,
+    "failures": 1,
+    "known_historical_failure": {
+      "observed_sha256": "4f3e47a6fa8af63dee6d4397d995a917a216ce70791416909e76a5448697246b",
+      "path": "docs/plans/TEMP_PHASE_4_FINAL_MODEL_SPECIALIZATION_AND_CLOSURE.md",
+      "recorded_sha256": "9e2ac0aabcae9a89ed92d9145ec787f4d6ee1920b5344be703498c6435aaf76c",
+      "test": "HPIaContractTests.test_frozen_artifact_hashes_match_exact_bytes",
+      "unchanged_from_baseline": true
+    },
+    "new_errors": 0,
+    "new_failures": 0,
+    "passed": 281,
+    "tests": 282
+  },
+  "gate_count": 8,
+  "historical_batch3_classification": "Result D — Provenance or authority conflict",
+  "model_provider_calls": 0,
+  "preservation": {
+    "baseline_sha": "fc42646466b697e5723d6ae2db58fafcb8e13448",
+    "protected_paths_checked": 9,
+    "protected_paths_unchanged": true
+  },
+  "provenance_checks": {
+    "batch3_terminal_sources_hash_bound": 6,
+    "batch3_terminal_sources_pointer_bound": 6,
+    "bad_pointer_fails_closed": true,
+    "contradictory_observation_fails_closed": true,
+    "derivation_rule_hash_drift_fails_closed": true,
+    "manual_boolean_override_rejected": true,
+    "source_hash_drift_fails_closed": true
+  },
+  "schema_version": 1,
+  "status": "PASS",
+  "triggered_by_direct_evidence_count": 0
+}

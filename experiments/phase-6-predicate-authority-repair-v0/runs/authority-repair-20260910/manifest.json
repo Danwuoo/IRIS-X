@@ -1,0 +1,50 @@
+{
+  "authority_definition_path": "experiments/phase-6-predicate-authority-repair-v0/definition/predicate-derivation-rules.json",
+  "authority_definition_sha256": "65fd34bb8c25c3de62a8a3e559c2cf86c2fea98ee7459a7e07079819965f13a1",
+  "authority_id": "phase-6-post-batch-3-predicate-provenance-authority-v1",
+  "definition_test_freeze_sha": "6beafccc2595808bcfac3ba8796a581156d76592",
+  "evaluator_path": "experiments/phase-6-pressure-sampling-v0/scripts/derive_direct_predicates.py",
+  "evaluator_sha256": "7978320f97144d774b2e0f7a9a4e4e2c9e3e4d19ff4d6e6700f3184429a9c74a",
+  "historical_batch3_classification": "Result D — Provenance or authority conflict",
+  "model_provider_calls": 0,
+  "preserved_batch3_terminal_sources": [
+    {
+      "observed_value": false,
+      "path": "runs/batch-3/p1-selection/terminal-record.json",
+      "pointer_or_field": "/attribution/task_level_pressure_observed",
+      "sha256": "0b7f527167a010388747ea910c59818fcdfacae35ebf15b161bcbca52e1dc4ca"
+    },
+    {
+      "observed_value": false,
+      "path": "runs/batch-3/p2-aggregation/terminal-record.json",
+      "pointer_or_field": "/attribution/task_level_pressure_observed",
+      "sha256": "920be7ad5888e1bf61f906a20fa7efc3c7989b92f14016b9abea602f4a63569c"
+    },
+    {
+      "observed_value": false,
+      "path": "runs/batch-3/p3-ranking/terminal-record.json",
+      "pointer_or_field": "/attribution/task_level_pressure_observed",
+      "sha256": "adca3dab6d07464943c99cd0281da0b8089ac0190502d9ece212890b66e4ee66"
+    },
+    {
+      "observed_value": true,
+      "path": "runs/batch-3/p4-dependency/terminal-record.json",
+      "pointer_or_field": "/attribution/task_level_pressure_observed",
+      "sha256": "a0ca487abef319e6be0157582c2ada82a37d7d4846deaf5bc455342651789edb"
+    },
+    {
+      "observed_value": false,
+      "path": "runs/batch-3/p5-reconciliation/terminal-record.json",
+      "pointer_or_field": "/attribution/task_level_pressure_observed",
+      "sha256": "7382d4dd63f07e9c9f125236b6d08111d52111ec64c1c4e68a1a34afddbb1577"
+    },
+    {
+      "observed_value": false,
+      "path": "runs/batch-3/p6-rule-precedence/terminal-record.json",
+      "pointer_or_field": "/attribution/task_level_pressure_observed",
+      "sha256": "e5e32bfe87bb57ce228de3b144329f2c5bffaa42aecdc8b7f2fc8cba7ffb4cc2"
+    }
+  ],
+  "required_baseline_sha": "fc42646466b697e5723d6ae2db58fafcb8e13448",
+  "schema_version": 1
+}
