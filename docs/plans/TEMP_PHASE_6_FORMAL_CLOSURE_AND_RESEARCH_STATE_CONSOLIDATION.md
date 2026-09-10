@@ -1,6 +1,6 @@
 # TEMP Phase 6 — Formal Closure and Research-State Consolidation
 
-Status: **Active — owner-authorized closure scope**  
+Status: **Retired — Decision A; Phase 6 formally closed**  
 Date: **2026-09-10 Asia/Taipei**  
 Repository: **Danwuoo/IRIS-X**  
 Required and actual baseline `main`: **`de7a8471806c284d76c6c49bc52bedaabb1509c9`**  
@@ -198,4 +198,91 @@ No future recommendation in a closure record constitutes authorization.
 
 ## 12. Retirement record
 
-Pending closure adjudication and durable handoff.
+Retirement date: **2026-09-10 Asia/Taipei**
+
+The bounded closure scope is retired as:
+
+> **Decision A — Close Phase 6.**
+
+Direct repository review established a coherent path from bounded real-task
+observation through conservative attribution, provenance-bound
+capability-pressure derivation, and safe gate adjudication. The separately
+repaired post-Batch-3 authority has no remaining material conflict on its
+bounded surface. No deferred mechanism is triggered by current direct
+evidence.
+
+Lifecycle lineage:
+
+| Purpose | Commit |
+| --- | --- |
+| Required and actual baseline | `de7a8471806c284d76c6c49bc52bedaabb1509c9` |
+| Activate closure plan | `62fa465e7eff1f65c0b8300e56241989c50fa31f` |
+| Record formal closure research result | `ac60993cfffce789cc890bf1fbc06d1027254ed0` |
+| Synchronize durable current research state | `9a7c887aedb5f43cbf0aa983316301d0581483a1` |
+| Record durable closure handoff | `d74bcc55ec909f95c2f86fca17630ed9d1f5ce1b` |
+| Retire controlling plan | this semantic retirement commit; bound after commit |
+
+Final gate state:
+
+| Gate | Status | Architecture experiment triggered |
+| --- | --- | --- |
+| H-G1 automated specialization | `not_triggered` | No |
+| H-W1 workflow machinery/search | `not_triggered` | No |
+| H-C1 cascade/escalation | `insufficient_or_ambiguous` | No |
+| H-R1 routing/allocation | `not_triggered` | No |
+| Runtime persistence | `not_triggered` | No |
+| Nondeterministic verifier/model judge | `not_triggered` | No |
+| External-action/interception expansion | `not_triggered` | No |
+| General retry/recovery | `insufficient_or_ambiguous` | No |
+
+Direct-evidence triggered gates: **`0 / 8`**.
+
+H-C1 retains cheaper miss=`true`, stronger resolution=`unknown`, and
+decision-relevant trade-off=`unknown`. Retry/recovery retains one observed P4
+semantic miss, no treatment or comparison, and benefit=`unknown`.
+
+Validation completed with:
+
+- authority-repair focused tests: 10/10 PASS;
+- existing Phase 6 sampling tests: 41/41 PASS;
+- Phase 6 Batch 1 tests: 35/35 PASS;
+- Phase 5 model qualification/task-family tests: 75/75 PASS;
+- repaired-authority validation and double regeneration: PASS;
+- Phase 6 definition/provider-schema validation: PASS;
+- repository check: PASS — 13 sources, 7 artifacts, hashes checked;
+- full established inventory: 282 tests, 281 passed, one unchanged historical
+  Phase 4 hash failure, zero errors;
+- new failures/errors: `0 / 0`.
+
+Preservation checks found zero changes to Batch 1, Batch 2, Batch 3, or
+post-Batch-3 repair evidence; the original Batch 3 predicate authority and
+Result D lifecycle; historical Phase 4/5 evidence; `irisx/core/`; `sources/`;
+or `references/papers/`. The known historical Phase 4 hash mismatch remains
+visible and was not rebaselined.
+
+Closure-scope accounting:
+
+```text
+model calls: 0
+provider calls: 0
+retry: 0
+rerun: 0
+route: 0
+fallback: 0
+escalation: 0
+recovery: 0
+model judge: 0
+external actions: 0
+new sampling: 0
+```
+
+Normal push and final clean local/remote synchronization are performed after
+the retirement identity is bound and are reported in the owner-facing final
+report; a commit cannot contain its own final identity or a future push
+observation.
+
+```text
+Phase 6: CLOSED
+Phase 6 Batch 4: NOT selected / NOT started / NOT authorized
+Next phase/experiment: NOT selected / NOT started / NOT authorized
+```
