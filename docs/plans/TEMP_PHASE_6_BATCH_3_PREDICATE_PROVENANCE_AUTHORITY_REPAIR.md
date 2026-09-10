@@ -1,6 +1,6 @@
 # TEMP Phase 6 — Post-Batch-3 Predicate/Provenance Authority Repair
 
-Status: **Retired — Result A; authority repaired and re-derived**  
+Status: **Retired — Result A; authority repaired and re-derived**
 Date: **2026-09-10 Asia/Taipei**  
 Repository: **Danwuoo/IRIS-X**  
 Required and actual baseline `main`: **`fc42646466b697e5723d6ae2db58fafcb8e13448`**  
@@ -143,7 +143,7 @@ result and handoff exist, and this plan is retired. Do not begin Phase 6 Batch
 | Deterministic derived evidence and validation | `4f6b426c8721569cf264187a2709a47e14e01e91` |
 | Research result | `c27cb195e16de6c4b969121182238130b7e28671` |
 | Durable handoff | `ea318a16dafcdcc94cacaaa5ffd26b7011b5b3b4` |
-| Retirement | this semantic retirement commit; full SHA is reported in the final closure report |
+| Retirement | `8ef37a752f9906bc20684f468875f59aa8bb6474` |
 
 **Phase 6 Batch 4: NOT started / NOT authorized.**
 
