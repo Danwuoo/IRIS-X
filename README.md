@@ -1,6 +1,6 @@
 # IRIS-X Corpus Workspace
 
-IRIS-X is currently in **research preparation**. It separates preserved predecessors, external references, paper artifacts, and IRIS-X-authored work. It is not a merged framework, product, runtime, or final architecture.
+IRIS-X has completed **Phase 6 formal research closure**. It separates preserved predecessors, external references, paper artifacts, and IRIS-X-authored work. The current architecture remains provisional; this is not a merged framework, product, production runtime, or final architecture. No next phase, experiment, or model execution is authorized.
 
 Root-level `AGENTS.md` controls how agents should work with this material. There are 13 imported sources and 7 paper artifacts. Imported trees live under `sources/`; PDFs live under `references/papers/`; editable work zones are `research/`, `experiments/`, `docs/`, and `tools/`.
 
@@ -12,6 +12,8 @@ Root-level `AGENTS.md` controls how agents should work with this material. There
 - Use [corpus/sources.yaml](corpus/sources.yaml) and [corpus/artifacts.yaml](corpus/artifacts.yaml) for machine-readable inventory.
 - Track unresolved provenance work in [corpus/RECOVERY_QUEUE.md](corpus/RECOVERY_QUEUE.md).
 - Read [research/problem-definition.md](research/problem-definition.md) for the current provisional project-level research problem.
+- Read [docs/phase-6-research-state.md](docs/phase-6-research-state.md) for the durable current closure state and final eight-gate ledger.
+- Read [research/phase-6-formal-closure-and-research-state.md](research/phase-6-formal-closure-and-research-state.md) for the Phase 6 evidence synthesis and Decision A.
 - Read [docs/decisions/0002-openai-codex-model-baseline.md](docs/decisions/0002-openai-codex-model-baseline.md) and [experiments/configurations/provider-model-baseline-v0.json](experiments/configurations/provider-model-baseline-v0.json) for the accepted OpenAI/Codex dual-model operating baseline.
 - Begin research with [research/templates/research-note.md](research/templates/research-note.md).
 

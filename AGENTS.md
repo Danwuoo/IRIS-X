@@ -9,26 +9,31 @@ IRIS-X is a clean research workspace for rethinking reliable, low-cost, task-spe
 The project is not intended to combine several existing repositories into a larger framework. The repositories collected here are research predecessors, external references, implementation examples, and experimental substrates. Their useful ideas, constraints, failure cases, and engineering patterns may inform IRIS-X, but IRIS-X should develop its own coherent architecture rather than inherit the structure of any one source project.
 
 The repository has completed its initial research-preparation work, the Phase 4
-evidence program, the first post-Phase-4 synthesis, and Phase 5 Batch 1 through
-Batch 7. Phase 5 is closed by the Batch 7 architecture consolidation and
-capability-trigger review. No next phase, experiment, or model execution is
-currently authorized. The architecture remains provisional, revisable, and not
-production-stable.
+evidence program, the first post-Phase-4 synthesis, Phase 5, and Phase 6. Phase
+6 is closed by the formal evidence-chain and research-state consolidation at
+`research/phase-6-formal-closure-and-research-state.md`. No next phase,
+experiment, or model execution is currently authorized. The architecture
+remains provisional, revisable, and not production-stable.
 
 ## Current Objective
 
-Phase 5 Batch 7 consolidated Batch 1 through Batch 6 evidence and reviewed every
-deferred capability trigger. Decision A closed Phase 5 because the provisional
-architecture state is explicit and no additional mechanism is presently
-evidence-triggered. Batch 7 made no model/provider call and added no runtime
-mechanism. Any future work requires a new owner-authorized scope.
+Decision A closed Phase 6 after direct review of Batch 1 through Batch 3 and the
+post-Batch-3 predicate/provenance authority repair. The preserved chain now
+supports bounded real-task observation, conservative failure attribution,
+provenance-bound capability-pressure derivation, and safe gate adjudication.
+Current direct evidence triggers zero of eight deferred capability gates. The
+closure made no model/provider call and added no runtime mechanism. Any future
+work requires a new owner-authorized scope.
 
 At this stage, the main goals are to:
 
-- preserve the completed Phase 4 closure and its task-local evidence boundaries;
-- consolidate Phase 5 evidence without strengthening historical conclusions;
-- separate supported invariants from current provisional Python/substrate shapes;
-- review deferred capabilities against explicit evidence triggers;
+- preserve the completed Phase 4, Phase 5, and Phase 6 evidence boundaries;
+- preserve Batch 2 Result C, Batch 3 historical Result D, and the separate
+  post-Batch-3 Result A authority repair without retrospective reclassification;
+- keep sampled task/configuration pressure separate from intrinsic model
+  incapability and intervention benefit;
+- preserve all-eight-gate status, including `unknown` and
+  `insufficient_or_ambiguous`, without converting them to false or triggered;
 - separate IRIS-X research contribution from reusable commodity substrate;
 - preserve uncertainty and define falsifiers for provisional choices;
 - keep unresolved mechanisms as extension points rather than silently making
@@ -337,15 +342,17 @@ If later experimentation uses one of them, keep the boundary explicit enough tha
 
 ## Near-Term Work
 
-The closed Phase 5 state preserves:
+The closed Phase 6 state preserves:
 
-- Batch 1 through Batch 6 evidence-to-constraint traceability;
-- an explicit provisional support matrix with scope and falsifiers;
-- separation of evidence-backed invariants from replaceable substrate choices;
-- deferred-capability trigger review without mechanism implementation;
-- an explicit Phase 5 closure decision;
-- zero model/provider calls and preservation of all prior evidence;
-- preservation checks and a durable unresolved-decision backlog.
+- the Batch 1 deterministic capability-pressure and failure-attribution
+  instrument;
+- Batch 2 Result C as an interpretable sampling-path negative result;
+- Batch 3 Result D and all six direct terminal observations;
+- the separately repaired provenance-bound predicate authority;
+- one bounded sampled task/configuration-level pressure predicate;
+- an all-eight-gate ledger with zero direct-evidence triggers;
+- explicit uncertainty around repeatability and every intervention benefit;
+- zero closure-scope model/provider calls and preservation of prior evidence.
 
 Validate repository organization from the root:
 
@@ -392,11 +399,11 @@ IRIS-X should preserve these distinctions while the project is still forming.
 
 ## Status
 
-**Current status: Phase 5 complete — provisional architecture state recorded.**
+**Current status: Phase 6 complete — formal closure and durable research state recorded.**
 
 The repository is not a stable architecture, framework, production runtime, or
 product. Candidate architecture produced in this stage is provisional.
 
-Batch 7 made no model/provider calls, implemented no new runtime mechanism, and
-closed Phase 5 without selecting or starting a next experiment. Phase 6 and a
-Phase 5 Batch 8 are not authorized.
+Phase 6 closure made no model/provider calls, implemented no new runtime
+mechanism, and selected or started no next experiment. Phase 6 Batch 4 and the
+next phase/experiment are not authorized.

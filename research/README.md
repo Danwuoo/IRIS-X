@@ -1,8 +1,10 @@
 # Research Work Area
 
-This area contains IRIS-X-authored analysis. IRIS-X is in owner-authorized post-Phase-4 architecture synthesis and minimal architecture development; candidate architecture remains provisional and not production-stable.
+This area contains IRIS-X-authored analysis. Phase 6 is formally closed; the candidate architecture remains provisional and not production-stable, and no next phase or experiment is authorized.
 
 - Read [problem-definition.md](problem-definition.md) for the current provisional, revisable project-level research problem.
+- Read [phase-6-formal-closure-and-research-state.md](phase-6-formal-closure-and-research-state.md) for the authoritative Phase 6 evidence-chain synthesis, all-eight-gate adjudication, preserved uncertainty, and closure Decision A.
+- Read [phase-6-predicate-provenance-authority-repair.md](phase-6-predicate-provenance-authority-repair.md) for the separately identified post-Batch-3 authority repair; Batch 3 remains historically Result D.
 - Use [templates/research-note.md](templates/research-note.md) for comparative notes, hypotheses, and research observations.
 - Read [task-distribution-selection.md](task-distribution-selection.md) for the evidence-backed first-cycle task choice and deferred alternatives.
 - Read [task-contract-docops-readonly-12.md](task-contract-docops-readonly-12.md) for the selected distribution's outcome, evidence, execution, and operating contract.

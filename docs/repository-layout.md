@@ -1,6 +1,6 @@
 # Repository Layout
 
-Status: current operating baseline for Phase 5 provisional architecture development; this remains a provisional organization rather than a final architecture decision.
+Status: current operating baseline after Phase 6 formal closure; this remains a provisional organization rather than a final architecture decision. No next phase, experiment, or model execution is authorized.
 
 | Path | Role | Editability |
 |---|---|---|
