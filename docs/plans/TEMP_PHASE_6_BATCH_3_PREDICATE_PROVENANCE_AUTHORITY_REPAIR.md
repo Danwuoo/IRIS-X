@@ -1,6 +1,6 @@
 # TEMP Phase 6 — Post-Batch-3 Predicate/Provenance Authority Repair
 
-Status: **Active — owner-authorized zero-model-call authority repair**  
+Status: **Retired — Result A; authority repaired and re-derived**  
 Date: **2026-09-10 Asia/Taipei**  
 Repository: **Danwuoo/IRIS-X**  
 Required and actual baseline `main`: **`fc42646466b697e5723d6ae2db58fafcb8e13448`**  
@@ -138,11 +138,74 @@ result and handoff exist, and this plan is retired. Do not begin Phase 6 Batch
 | Purpose | Commit |
 | --- | --- |
 | Required baseline | `fc42646466b697e5723d6ae2db58fafcb8e13448` |
-| Activate controlling plan | pending |
-| Definition/test freeze | pending |
-| Deterministic derived evidence and validation | pending |
-| Research result | pending |
-| Durable handoff | pending |
-| Retirement | pending |
+| Activate controlling plan | `e58c8225645b3b2f7d23bfea00f374aa5f64d3b6` |
+| Definition/test freeze | `6beafccc2595808bcfac3ba8796a581156d76592` |
+| Deterministic derived evidence and validation | `4f6b426c8721569cf264187a2709a47e14e01e91` |
+| Research result | `c27cb195e16de6c4b969121182238130b7e28671` |
+| Durable handoff | `ea318a16dafcdcc94cacaaa5ffd26b7011b5b3b4` |
+| Retirement | this semantic retirement commit; full SHA is reported in the final closure report |
+
+**Phase 6 Batch 4: NOT started / NOT authorized.**
+
+## 9. Retirement record — 2026-09-10 Asia/Taipei
+
+This bounded post-Batch-3 repair is retired as:
+
+> **Result A — Authority repaired and re-derived.**
+
+The new authority
+`phase-6-post-batch-3-predicate-provenance-authority-v1` binds all six
+preserved Batch 3 terminal observations by exact `runs/batch-3/` path,
+SHA-256, `/attribution/task_level_pressure_observed` pointer, and observed
+value. The existing evaluator's directly inspected and tested `any_equals`
+semantics derive the mixed observation vector
+`[false, false, false, true, false, false]` as:
+
+```text
+cheaper_admitted_configuration_misses_requirement = true
+```
+
+No Boolean was manually substituted. Missing stronger-candidate, trade-off,
+and retry/recovery comparison observations remain `unknown`.
+
+Final gate adjudication for this scope:
+
+| Gate | Status | Architecture experiment triggered |
+| --- | --- | --- |
+| H-G1 automated specialization | `not_triggered` | No |
+| H-W1 workflow machinery/search | `not_triggered` | No |
+| H-C1 cascade/escalation | `insufficient_or_ambiguous` | No |
+| H-R1 routing/allocation | `not_triggered` | No |
+| Runtime persistence | `not_triggered` | No |
+| Nondeterministic verifier/model judge | `not_triggered` | No |
+| External-action/interception expansion | `not_triggered` | No |
+| General recovery/retry | `insufficient_or_ambiguous` | No |
+
+Direct-evidence triggered gates: **0 / 8**. H-C1's first prerequisite is
+satisfied, but H-C1 is not triggered because stronger-candidate resolution and
+a decision-relevant trade-off remain unobserved. Retry/recovery is not
+triggered because no treatment or independently verified benefit exists.
+
+Validation passed for the 10 new focused tests, repaired-authority validator,
+41 existing Phase 6 sampling tests, 35 Phase 6 Batch 1 tests, 75 Phase 5 model
+qualification/task-family tests, definition/provider-schema validation,
+repository validation, source/rule provenance, and byte-identical double
+regeneration. The full discovered inventory ran 282 tests: 281 passed, the one
+unchanged historical Phase 4 frozen-plan hash assertion failed, zero errors
+occurred, and there were zero new failures/errors.
+
+The Batch 2 and Batch 3 run trees, original Batch 3 predicate definition,
+original Batch 3 direct predicates and frozen evaluation, Batch 3 Result D
+note/handoff/retired plan, `irisx/core`, `sources`, `references/papers`, and
+prior historical evidence match their required baseline identities. Batch 3
+remains historically Result D.
+
+Model/provider calls, retries, reruns, routes, fallbacks, escalations,
+recoveries, model judges, external actions, and capability mechanisms performed
+by this repair: **`0`**.
+
+The currently authorized Phase 6 work now has a coherent bounded closure
+condition, but no future experiment is authorized. Any intervention comparison
+or architecture work requires a new owner-authorized scope.
 
 **Phase 6 Batch 4: NOT started / NOT authorized.**
