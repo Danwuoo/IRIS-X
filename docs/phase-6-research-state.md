@@ -98,4 +98,3 @@ Model execution: NOT authorized
 
 Any future sampling, repeatability test, treatment comparison, mechanism
 experiment, or architecture work requires a new owner-authorized scope.
-

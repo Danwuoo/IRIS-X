@@ -1,11 +1,11 @@
 # TEMP Phase 6 — Formal Closure and Research-State Consolidation
 
-Status: **Retired — Decision A; Phase 6 formally closed**  
-Date: **2026-09-10 Asia/Taipei**  
-Repository: **Danwuoo/IRIS-X**  
-Required and actual baseline `main`: **`de7a8471806c284d76c6c49bc52bedaabb1509c9`**  
-Scope: **zero-model-call Phase 6 evidence review, closure adjudication, and durable current-state synchronization**  
-Model/provider call ceiling: **`0 / 0`**  
+Status: **Retired — Decision A; Phase 6 formally closed**
+Date: **2026-09-10 Asia/Taipei**
+Repository: **Danwuoo/IRIS-X**
+Required and actual baseline `main`: **`de7a8471806c284d76c6c49bc52bedaabb1509c9`**
+Scope: **zero-model-call Phase 6 evidence review, closure adjudication, and durable current-state synchronization**
+Model/provider call ceiling: **`0 / 0`**
 Architecture authority: **no mechanism, intervention experiment, Batch 4, or next phase is authorized**
 
 ## 1. Bounded question
