@@ -16,7 +16,7 @@
   "program_definition": {
     "version": "protocol-irisx-core-formulation-v1",
     "path": "research/core-formulation-program/protocol.md",
-    "accepted_commit": null,
+    "accepted_commit": "78aa594914a31f1259641acd8c167f5b7c76f8a5",
     "commit_rule": "Set to the exact owner-accepted commit containing the protocol, prompts, and initial state before Stage 1 starts; never infer it from the Phase evidence baseline."
   },
   "protocol": {

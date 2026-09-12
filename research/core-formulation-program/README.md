@@ -5,8 +5,10 @@
 - **Supersedes:** `irisx-core-formulation-v0`; no stage was executed under v0
 - **Phase 1–6 evidence baseline:**
   `8f8f264b841369918f6bab21c3a749a27f51dc57`
-- **Program-definition baseline:** the owner-accepted commit containing these
-  files; it must be pinned explicitly before Stage 1
+- **Program-definition baseline:**
+  `78aa594914a31f1259641acd8c167f5b7c76f8a5`
+- **State-pin authority:** the commit containing this populated baseline; pass
+  its exact SHA separately to Stage 1
 - **Research execution:** not authorized by these files
 
 This directory defines a five-stage, GPT-5.6 Sol-led research program for
