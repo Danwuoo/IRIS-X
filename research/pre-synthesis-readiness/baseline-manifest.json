@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "manifest_type": "iris-x-pre-synthesis-readiness-baseline",
+  "generated_at": "2026-09-12T23:22:09.9585444+08:00",
+  "repository": "Danwuoo/IRIS-X",
+  "branch": "main",
+  "execution_start_commit": "db053dcc9c614965bcaeeb96d28ebd6a57c967fa",
+  "execution_start_clean": true,
+  "planning_baseline_context": "dabda8a2fbe3adb820535043161fd27c7787608e",
+  "model_provider_calls_authorized": 0,
+  "model_provider_calls_performed": 0,
+  "research_state": "pre_synthesis_readiness_only",
+  "foundational_synthesis_started": false,
+  "foundational_synthesis_authorized": false,
+  "registered_counts": {
+    "sources": 13,
+    "artifacts": 7
+  },
+  "protected_tree_identities": {
+    "sources": "10e28d83184c789fc468ca1edc3bebf42ba40b46",
+    "references/papers": "ed29ebcde3f01b00a0e49eb33eef1688566dcad3",
+    "experiments": "5466b4513ff5d78c23d80fd77d7b79ccd893f1be"
+  },
+  "critical_files": [
+    {
+      "role": "root_governance",
+      "path": "AGENTS.md",
+      "git_blob_oid": "eb02261281f4d56135f9243c6670420bccdd84d1",
+      "sha256": "a8b6f47b7ef6056935e402c5c904f47963cf4a409f3183b8b92ebb3963e36d2a"
+    },
+    {
+      "role": "research_governance",
+      "path": "research/AGENTS.md",
+      "git_blob_oid": "3a38374b77b581e9f6aa577ea8c7986975dbe473",
+      "sha256": "74f9b7231646c116b739d60f12f66129e97633f6fa7ed4759105430527e43db3"
+    },
+    {
+      "role": "experiments_governance",
+      "path": "experiments/AGENTS.md",
+      "git_blob_oid": "6df7541c637fe397704836b16bebbd85af2549ab",
+      "sha256": "05716b39ece6472553654878637ac48dd4fe205e06f2b5d860a504c447e56893"
+    },
+    {
+      "role": "controlling_plan",
+      "path": "docs/plans/TEMP_PRE_SYNTHESIS_READINESS_FOR_SINGLE_ULTRA_SESSION.md",
+      "git_blob_oid": "3c8f275350668e873a1aaea4828bdcc22f0fd004",
+      "sha256": "c3e80e0fdd81e33dd202c0ba4173fb0f7947c31456697d18e2f702fe52b34ad8"
+    },
+    {
+      "role": "source_registry",
+      "path": "corpus/sources.yaml",
+      "git_blob_oid": "d59d6eda1f61c3bbf687255a336d3150753f1519",
+      "sha256": "78bef9386eeeff4084ed3a5b00199503ddfb0265a08e9fde39f1faa2e9407dc4"
+    },
+    {
+      "role": "artifact_registry",
+      "path": "corpus/artifacts.yaml",
+      "git_blob_oid": "79716a7269fdb2caa99eb58ec2666db47df787cf",
+      "sha256": "b1b5ea5ecce49f31134f49a89ce2bb37c365aea09f40eb02393440e6883743c7"
+    },
+    {
+      "role": "provisional_problem_prior",
+      "path": "research/problem-definition.md",
+      "git_blob_oid": "53d0196a33f328fb6281f836bec90d3b50495698",
+      "sha256": "2ad153794ac0241e9ecffb39928e5bbc4a54da603bb520c7005f146a7195f617"
+    },
+    {
+      "role": "phase_4_closure",
+      "path": "research/phase-4-closure.md",
+      "git_blob_oid": "5e292b07cef02d6a84aa88fde2035c3736b23fe1",
+      "sha256": "b578566f41c23c2bcba975c740ffc48a5a7578a99e87b7a599dc5c5f09be6fff"
+    },
+    {
+      "role": "post_phase_4_synthesis",
+      "path": "research/post-phase-4-architecture-synthesis.md",
+      "git_blob_oid": "9834823106fd838224f0d9685f4ece7c42de30b1",
+      "sha256": "5e4cff884d307542b641a910724ede18112ed8e494e4a10348b2f031f496060a"
+    },
+    {
+      "role": "phase_5_architecture_consolidation",
+      "path": "research/phase-5-architecture-consolidation.md",
+      "git_blob_oid": "5429cea89e5b3514f48b4b8fbd7402d642a5e286",
+      "sha256": "3b674295728435aad0832c5713e44380799f48b2647a1685ca9628e530e9a3d4"
+    },
+    {
+      "role": "phase_5_gate_review",
+      "path": "research/phase-5-capability-trigger-review.md",
+      "git_blob_oid": "e40a24d47df40fbf3837caab5dde54a4d8a7e017",
+      "sha256": "ac2bec06438ef7ab1479354d77bcdbe05f405803d49229c75a689212879d9141"
+    },
+    {
+      "role": "phase_5_current_state",
+      "path": "docs/phase-5-architecture-state.md",
+      "git_blob_oid": "c227a3632f637d06d46c3f82e25356925465fad9",
+      "sha256": "12a26aa973e2db68d5fefab7971ab7bf9c1da76f88991c561234a1da2f5ef391"
+    },
+    {
+      "role": "phase_6_formal_closure",
+      "path": "research/phase-6-formal-closure-and-research-state.md",
+      "git_blob_oid": "5ae773154d87ebc1702dab336563cbd89157e6f1",
+      "sha256": "52e549f81ad2ff7d440378835e6f285109bff88d4b4c4372135e5e190ec49ed0"
+    },
+    {
+      "role": "phase_6_current_state",
+      "path": "docs/phase-6-research-state.md",
+      "git_blob_oid": "3673f7fce8d5c246515f66d652eb5fdffc095188",
+      "sha256": "d2c755a7ce24f8da1129337a5f7f3c5cf62f0d235d1280c55717e85667151cdd"
+    },
+    {
+      "role": "phase_6_closure_handoff",
+      "path": "docs/phase-6-formal-closure-handoff.md",
+      "git_blob_oid": "39f94d51f016b99d188f9f9af8b9d51fd09f9f8b",
+      "sha256": "20384818c6521e664a6a3d05946888128ce81ba8390f74c7ddb75aaef49d7913"
+    }
+  ],
+  "identity_boundary": "Hashes identify local repository bytes at readiness execution start; they do not establish immutable upstream or provider behavior."
+}

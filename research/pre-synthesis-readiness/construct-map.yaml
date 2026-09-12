@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "map_type": "source-sensitive-construct-navigation",
+  "evidence_class_vocabulary": ["source_stated", "directly_observed", "readiness_inference", "unknown"],
+  "normalization_policy": "Do not collapse distinct constructs unless the later synthesis justifies equivalence against primary authorities.",
+  "non_authority": "This map exposes usages, collisions, and open normalization questions; it supplies no canonical definitions and selects no research formulation.",
+  "constructs": [
+    {
+      "construct_id": "construct.capability",
+      "label": "capability",
+      "source_specific_meanings": [
+        {"scope": "IRIS-X current state", "evidence_class": "directly_observed", "meaning": "Ability of a frozen task/configuration to satisfy an admitted requirement under a stated verifier; not automatically intrinsic model ability.", "unit_of_analysis": "task/configuration/observation", "primary_references": ["research/phase-6-formal-closure-and-research-state.md", "experiments/phase-6-pressure-sampling-v0/runs/batch-3/p4-dependency/terminal-record.json"]},
+        {"scope": "routing and cascade sources", "evidence_class": "source_stated", "meaning": "Performance differences among model choices used for routing or cascade decisions.", "unit_of_analysis": "request-model choice", "primary_references": ["sources/external/routellm/README.md", "sources/external/frugalgpt/README.md"]},
+        {"scope": "NVIDIA SLM paper", "evidence_class": "source_stated", "meaning": "Task-relative model sufficiency argued as an economic deployment choice.", "unit_of_analysis": "model or model system for a task distribution", "primary_references": ["references/papers/NVIDIA_SLM_paper.pdf"]}
+      ],
+      "measurement_or_operationalization": "Task- and source-specific: acceptance predicates, evaluator scores, or comparative routing outcomes; no shared capability scale is established.",
+      "related_non_equivalent_terms": ["task success", "benchmark performance", "configuration sufficiency", "general intelligence"],
+      "collision_or_overload": "Model-intrinsic, system-level, configuration-level, and single-observation uses can be silently conflated.",
+      "unresolved_normalization_question": "Which capability predicates remain stable across prompts, tools, tasks, and time without becoming vacuous?"
+    },
+    {
+      "construct_id": "construct.sufficient-capability",
+      "label": "sufficient capability",
+      "source_specific_meanings": [
+        {"scope": "provisional problem prior", "evidence_class": "source_stated", "meaning": "Capability adequate for a bounded task under reliability and cost constraints, rather than maximal general capability.", "unit_of_analysis": "bounded task/system", "primary_references": ["research/problem-definition.md"]},
+        {"scope": "Phase 6 predicates", "evidence_class": "directly_observed", "meaning": "A frozen admitted configuration either satisfies or misses a task requirement; intervention benefit remains separately unknown.", "unit_of_analysis": "frozen task/configuration", "primary_references": ["experiments/phase-6-predicate-authority-repair-v0/runs/authority-repair-20260910/direct-predicates.json"]}
+      ],
+      "measurement_or_operationalization": "Observed requirement satisfaction under a frozen contract and verifier is available; distribution-level sufficiency criteria are not established.",
+      "related_non_equivalent_terms": ["cheap model", "small model", "admitted configuration", "successful sample"],
+      "collision_or_overload": "Sufficiency may describe one sample, an empirical distribution, or a justified deployment policy.",
+      "unresolved_normalization_question": "What evidence and horizon justify moving from observed success to a sufficiency claim?"
+    },
+    {
+      "construct_id": "construct.task-success",
+      "label": "task success",
+      "source_specific_meanings": [
+        {"scope": "Phase 4-6 direct evidence", "evidence_class": "directly_observed", "meaning": "Satisfaction of frozen task-specific acceptance criteria, sometimes distinct from evidence validity or policy compliance.", "unit_of_analysis": "terminal task result", "primary_references": ["experiments/phase-6-pressure-sampling-v0/runs/batch-3/p4-dependency/terminal-record.json", "experiments/exp-2026-08-30-docops-acceptance-verification/runs/hv1a-20260830-local-01/results.json"]},
+        {"scope": "benchmark sources", "evidence_class": "source_stated", "meaning": "Evaluator score, pass/fail, reward, or aggregate benchmark performance.", "unit_of_analysis": "benchmark example or dataset", "primary_references": ["sources/external/aflow/benchmarks/README.md", "sources/external/prime_intellect_verifiers_v1/README.md"]}
+      ],
+      "measurement_or_operationalization": "Frozen acceptance criteria, terminal status, deterministic oracle comparisons, or source-specific evaluator scores.",
+      "related_non_equivalent_terms": ["verified success", "claimed success", "reward", "reliability"],
+      "collision_or_overload": "An action outcome can be successful while its claim is unsupported, or a score can improve without stronger reliability evidence.",
+      "unresolved_normalization_question": "Which success predicates are comparable across deterministic tasks, learned judges, and human evaluation?"
+    },
+    {
+      "construct_id": "construct.reliability",
+      "label": "reliability",
+      "source_specific_meanings": [
+        {"scope": "IRIS-X Phase 4", "evidence_class": "directly_observed", "meaning": "A bounded family of acceptance, evidence, interception, observability, replay, restoration, and recovery properties under deterministic fixtures.", "unit_of_analysis": "mechanism-property pair", "primary_references": ["research/phase-4-closure.md", "research/phase-4-mechanism-experiment-results.md", "research/phase-4-evidence-interception-results.md"]},
+        {"scope": "provisional problem prior", "evidence_class": "source_stated", "meaning": "Justified task success and controlled behavior across execution, evidence, recovery, and cost boundaries.", "unit_of_analysis": "agent system over a bounded task", "primary_references": ["research/problem-definition.md"]}
+      ],
+      "measurement_or_operationalization": "Phase 4 measures distinct mechanism properties with separate fixture-specific counts; no canonical aggregate metric exists.",
+      "related_non_equivalent_terms": ["accuracy", "repeatability", "task success", "safety", "availability"],
+      "collision_or_overload": "A single umbrella word spans distinct properties with different falsifiers and time horizons.",
+      "unresolved_normalization_question": "Should reliability remain a vector of properties rather than a scalar outcome?"
+    },
+    {
+      "construct_id": "construct.evidence",
+      "label": "evidence",
+      "source_specific_meanings": [
+        {"scope": "SPEX", "evidence_class": "source_stated", "meaning": "Registered observations, artifacts, runs, and adjudication inputs bounded by comparison rules.", "unit_of_analysis": "claim-supporting record or run", "primary_references": ["sources/predecessors/spex/docs/current/PROJECT-STATE.md", "sources/predecessors/spex/src/spex_arc/runner/arc_a1.py"]},
+        {"scope": "Eidos", "evidence_class": "source_stated", "meaning": "Typed provenance-bearing support constrained by authority and knowledge-state rules.", "unit_of_analysis": "research record or claim relation", "primary_references": ["sources/predecessors/eidos/README.md", "sources/predecessors/eidos/docs/schema/eidos.schema.json"]},
+        {"scope": "IRIS-X experiments", "evidence_class": "directly_observed", "meaning": "Committed deterministic artifacts and terminal records used to support bounded claims.", "unit_of_analysis": "experiment output or terminal record", "primary_references": ["experiments/AGENTS.md", "research/phase-6-formal-closure-and-research-state.md"]}
+      ],
+      "measurement_or_operationalization": "Typed records, paths, hashes, observations, and declared claim-support relationships; evidential sufficiency remains claim-dependent.",
+      "related_non_equivalent_terms": ["artifact", "observation", "claim", "proof", "trace"],
+      "collision_or_overload": "The existence of an artifact is not identical to its relevance, authority, validity, or independence.",
+      "unresolved_normalization_question": "What minimal evidence relation makes a claim auditable without importing a heavy ontology?"
+    },
+    {
+      "construct_id": "construct.verification",
+      "label": "verification",
+      "source_specific_meanings": [
+        {"scope": "VANTA and IRIS-X", "evidence_class": "source_stated", "meaning": "Checking effects or claims against acceptance criteria and independently grounded state.", "unit_of_analysis": "action/result assertion", "primary_references": ["sources/predecessors/vanta/docs/02_specs/Evidence_Packet_and_Verifier_Runtime.md", "experiments/exp-2026-08-30-docops-acceptance-verification/runs/hv1a-20260830-local-01/results.json"]},
+        {"scope": "verifier frameworks", "evidence_class": "source_stated", "meaning": "Task-specific scoring or reward computation for rollouts.", "unit_of_analysis": "rollout or task answer", "primary_references": ["sources/external/prime_intellect_verifiers_v1/README.md"]}
+      ],
+      "measurement_or_operationalization": "Agreement with independent state, acceptance predicates, or task-specific scoring logic, with independence explicitly tracked.",
+      "related_non_equivalent_terms": ["validation", "evaluation", "assertion", "observation"],
+      "collision_or_overload": "Independent state verification and benchmark reward are both called verification but justify different claims.",
+      "unresolved_normalization_question": "When must the verifier be authority-independent from the producer?"
+    },
+    {
+      "construct_id": "construct.provenance",
+      "label": "provenance",
+      "source_specific_meanings": [
+        {"scope": "corpus governance", "evidence_class": "directly_observed", "meaning": "Local identity, source location, origin notes, and known limits for preserved material.", "unit_of_analysis": "registered source or artifact", "primary_references": ["corpus/PROVENANCE.md", "corpus/sources.yaml", "corpus/artifacts.yaml"]},
+        {"scope": "Phase 6 predicate repair", "evidence_class": "directly_observed", "meaning": "Binding a derived predicate to the correct producing observation and exact path.", "unit_of_analysis": "predicate-source relationship", "primary_references": ["experiments/phase-6-predicate-authority-repair-v0/runs/authority-repair-20260910/direct-predicates.json"]}
+      ],
+      "measurement_or_operationalization": "Stable IDs, repository paths, hashes, snapshots, and predicate-source mappings.",
+      "related_non_equivalent_terms": ["identity", "authority", "lineage", "citation"],
+      "collision_or_overload": "Knowing where bytes came from does not establish that they are authoritative for a scientific predicate.",
+      "unresolved_normalization_question": "How much lineage is necessary for reproducible adjudication across mutable upstream sources?"
+    },
+    {
+      "construct_id": "construct.authority",
+      "label": "authority",
+      "source_specific_meanings": [
+        {"scope": "Eidos", "evidence_class": "source_stated", "meaning": "A governed relationship determining which records can support or supersede claims.", "unit_of_analysis": "claim-record relation", "primary_references": ["sources/predecessors/eidos/README.md"]},
+        {"scope": "Phase 6 repair", "evidence_class": "directly_observed", "meaning": "The direct terminal record that is permitted to determine a predicate, distinct from historical synthesis paths.", "unit_of_analysis": "predicate and direct evidence path", "primary_references": ["research/phase-6-predicate-provenance-authority-repair.md", "experiments/phase-6-predicate-authority-repair-v0/runs/authority-repair-20260910/gate-adjudication.json"]}
+      ],
+      "measurement_or_operationalization": "Explicit authority rules and source maps determine which artifact may set a predicate; authority does not itself measure truth.",
+      "related_non_equivalent_terms": ["provenance", "truth", "recency", "consensus"],
+      "collision_or_overload": "A later or more polished document is not necessarily the primary authority for an observation.",
+      "unresolved_normalization_question": "How should authority conflicts be represented without hiding historical decisions?"
+    },
+    {
+      "construct_id": "construct.failure",
+      "label": "failure",
+      "source_specific_meanings": [
+        {"scope": "VANTA", "evidence_class": "source_stated", "meaning": "Typed execution, policy, evidence, commit, replay, or recovery failure modes.", "unit_of_analysis": "execution transition or obligation", "primary_references": ["sources/predecessors/vanta/docs/02_specs/Failure_Taxonomy_v0.md"]},
+        {"scope": "Phase 6", "evidence_class": "directly_observed", "meaning": "Task miss, provider/system failure, or configuration failure retained as different loci rather than one negative label.", "unit_of_analysis": "sample attempt or terminal record", "primary_references": ["research/phase-6-direct-pressure-sampling.md", "experiments/phase-6-pressure-sampling-v0/runs/batch-3/p4-dependency/terminal-record.json"]}
+      ],
+      "measurement_or_operationalization": "Typed failure locus/stage, terminal status, acceptance mismatch, or unavailability of a usable output.",
+      "related_non_equivalent_terms": ["semantic miss", "systemic failure", "rejection", "unknown outcome"],
+      "collision_or_overload": "Failure at provider, configuration, execution, verification, and task-semantic layers has different causal force.",
+      "unresolved_normalization_question": "Which failure taxonomy supports intervention decisions without over-attributing model incapability?"
+    },
+    {
+      "construct_id": "construct.attribution",
+      "label": "attribution",
+      "source_specific_meanings": [
+        {"scope": "IRIS predecessor", "evidence_class": "source_stated", "meaning": "Credit or blame assignment across internal state, actions, and outcomes.", "unit_of_analysis": "component/action/outcome relation", "primary_references": ["sources/predecessors/iris/docs/04_Credit_Assignment_and_Recovery.md"]},
+        {"scope": "Phase 6 instrument", "evidence_class": "directly_observed", "meaning": "Conservative classification of where an observed shortfall occurred while withholding unsupported intrinsic or intervention claims.", "unit_of_analysis": "observed sample shortfall", "primary_references": ["research/phase-6-capability-pressure-and-failure-attribution.md", "experiments/capability-pressure-attribution-v0/runs/batch-1-offline/assessments.json"]}
+      ],
+      "measurement_or_operationalization": "Phase 6 records conservative failure locus and support level; counterfactual causal attribution is not currently measured.",
+      "related_non_equivalent_terms": ["diagnosis", "causation", "credit assignment", "classification"],
+      "collision_or_overload": "Locating a failure stage is weaker than proving a causal mechanism or intrinsic incapability.",
+      "unresolved_normalization_question": "What counterfactual evidence is required before attribution can justify an intervention?"
+    },
+    {
+      "construct_id": "construct.state",
+      "label": "state",
+      "source_specific_meanings": [
+        {"scope": "IRIS predecessor", "evidence_class": "source_stated", "meaning": "Explicit internal cognitive and task state used for control and reasoning.", "unit_of_analysis": "agent state representation", "primary_references": ["sources/predecessors/iris/IRIS-X.md", "sources/predecessors/iris/docs/01_Architecture_Constitution.md", "sources/predecessors/iris/docs/02_State_IR_Spec.md"]},
+        {"scope": "Prime Agent", "evidence_class": "source_stated", "meaning": "Persistent session, context, tool, and execution lifecycle state.", "unit_of_analysis": "agent session", "primary_references": ["sources/external/prime_agent/README.md", "sources/external/prime_agent/packages/coding-agent/docs/architecture.md"]},
+        {"scope": "VANTA/IRIS-X", "evidence_class": "source_stated", "meaning": "External mutable state whose changes must be observed, committed, replayed, or restored.", "unit_of_analysis": "controlled resource state", "primary_references": ["sources/predecessors/vanta/docs/02_specs/Commit_Abort_Replay_Semantics.md", "experiments/exp-2026-08-31-reversible-cycle-state-stability/runs/hsr1a-20260901-local-01/results.json"]}
+      ],
+      "measurement_or_operationalization": "Depending on scope: serialized internal records, session persistence, external resource snapshots, or exact restoration equality.",
+      "related_non_equivalent_terms": ["context", "memory", "world state", "research state"],
+      "collision_or_overload": "Internal cognition, session persistence, external resource state, and governance status are not interchangeable.",
+      "unresolved_normalization_question": "Which state boundaries materially affect reliability claims?"
+    },
+    {
+      "construct_id": "construct.recovery",
+      "label": "recovery",
+      "source_specific_meanings": [
+        {"scope": "VANTA", "evidence_class": "source_stated", "meaning": "Rollback, replay, compensation, or restoration after controlled execution failures.", "unit_of_analysis": "failed execution and state transition", "primary_references": ["sources/predecessors/vanta/docs/02_specs/Commit_Abort_Replay_Semantics.md"]},
+        {"scope": "Phase 4 H-RCV1a", "evidence_class": "directly_observed", "meaning": "Fixture-specific restoration to required state after five deterministic failure modes.", "unit_of_analysis": "injected failure case", "primary_references": ["experiments/exp-2026-08-31-targeted-recovery-valid-state/runs/hrcv1a-20260901-local-01/results.json"]}
+      ],
+      "measurement_or_operationalization": "Restoration success, residual drift, valid terminal state, and task completion after an injected failure.",
+      "related_non_equivalent_terms": ["retry", "rollback", "replanning", "error handling"],
+      "collision_or_overload": "Retry can repeat a failure; restoration can repair state without correcting the underlying task result.",
+      "unresolved_normalization_question": "Which recoveries improve end-to-end task outcomes and lifecycle cost beyond deterministic fixtures?"
+    },
+    {
+      "construct_id": "construct.specialization",
+      "label": "specialization",
+      "source_specific_meanings": [
+        {"scope": "Phase 4 H-P1a", "evidence_class": "directly_observed", "meaning": "A smaller task-specific configuration plus independent verification outperformed a weaker control on a finite deterministic corpus.", "unit_of_analysis": "fixed configuration over 32 items", "primary_references": ["experiments/exp-2026-09-01-luna-structured-program-specialization/runs/blind-20260902-chatgpt-03/results.json", "research/phase-4-mechanism-experiment-results.md"]},
+        {"scope": "DSPy/optimization sources", "evidence_class": "source_stated", "meaning": "Programs, prompts, demonstrations, or workflows adapted to a task objective.", "unit_of_analysis": "program or workflow", "primary_references": ["sources/external/dspy/README.md", "sources/external/gepa/README.md"]}
+      ],
+      "measurement_or_operationalization": "Configuration-level task accuracy under a frozen comparison; mechanism-specific training or transfer measures vary by source.",
+      "related_non_equivalent_terms": ["fine-tuning", "prompt optimization", "small model", "task-specific configuration"],
+      "collision_or_overload": "Specialization can denote model training, program design, prompting, tool configuration, or a narrow evaluation distribution.",
+      "unresolved_normalization_question": "Which specialization mechanism is responsible for an observed gain, and how durable is it under task drift?"
+    },
+    {
+      "construct_id": "construct.routing-allocation",
+      "label": "routing and allocation",
+      "source_specific_meanings": [
+        {"scope": "RouteLLM", "evidence_class": "source_stated", "meaning": "Selecting between stronger and cheaper models per request using learned routing signals.", "unit_of_analysis": "request", "primary_references": ["sources/external/routellm/README.md", "sources/external/routellm/routellm/controller.py"]},
+        {"scope": "FrugalGPT", "evidence_class": "source_stated", "meaning": "Budget-aware sequential model calls, scoring, and cascades.", "unit_of_analysis": "query and cascade stage", "primary_references": ["sources/external/frugalgpt/README.md", "sources/external/frugalgpt/src/FrugalGPT/llmcascade.py"]},
+        {"scope": "Phase 5-6 gates", "evidence_class": "directly_observed", "meaning": "Deferred mechanism family whose trigger requires direct comparative intervention evidence.", "unit_of_analysis": "evidence gate", "primary_references": ["research/phase-5-capability-trigger-review.md", "experiments/phase-6-predicate-authority-repair-v0/runs/authority-repair-20260910/gate-adjudication.json"]}
+      ],
+      "measurement_or_operationalization": "Per-request selection/cascade outcomes and cost-quality curves in sources; IRIS-X intervention benefit remains unknown.",
+      "related_non_equivalent_terms": ["cascade", "escalation", "dispatch", "provider selection"],
+      "collision_or_overload": "A routing framework's claimed utility is not direct evidence that routing benefits the current IRIS-X task/configuration.",
+      "unresolved_normalization_question": "What comparative evidence and cost boundary should trigger runtime allocation?"
+    },
+    {
+      "construct_id": "construct.workflow",
+      "label": "workflow",
+      "source_specific_meanings": [
+        {"scope": "AFlow", "evidence_class": "source_stated", "meaning": "Executable code composition of agent operators subject to search and benchmark evaluation.", "unit_of_analysis": "workflow candidate", "primary_references": ["sources/external/aflow/README.md"]},
+        {"scope": "DSPy", "evidence_class": "source_stated", "meaning": "Declarative LM program composed from typed signatures and modules.", "unit_of_analysis": "LM program", "primary_references": ["sources/external/dspy/README.md"]},
+        {"scope": "IRIS-X governance", "evidence_class": "readiness_inference", "meaning": "Sometimes a procedure or evidence lifecycle rather than executable agent code.", "unit_of_analysis": "research or execution procedure", "primary_references": ["AGENTS.md", "experiments/AGENTS.md"]}
+      ],
+      "measurement_or_operationalization": "Executable candidate score where optimized; otherwise procedural conformance, with no shared workflow measure.",
+      "related_non_equivalent_terms": ["program", "architecture", "protocol", "runbook"],
+      "collision_or_overload": "Workflow may mean an optimized executable graph or merely an ordered research procedure.",
+      "unresolved_normalization_question": "Which workflow properties are scientific variables versus commodity orchestration?"
+    },
+    {
+      "construct_id": "construct.optimization",
+      "label": "optimization",
+      "source_specific_meanings": [
+        {"scope": "DSPy/GEPA/AFlow", "evidence_class": "source_stated", "meaning": "Design-time search or mutation over prompts, demonstrations, programs, code, or workflows using evaluator feedback.", "unit_of_analysis": "candidate program/configuration", "primary_references": ["sources/external/dspy/README.md", "sources/external/gepa/README.md", "sources/external/aflow/README.md"]},
+        {"scope": "Agent Lightning", "evidence_class": "source_stated", "meaning": "Policy improvement through reinforcement-learning signals gathered from agent execution.", "unit_of_analysis": "policy over trajectories", "primary_references": ["sources/external/agent_lightning/README.md"]}
+      ],
+      "measurement_or_operationalization": "Evaluator improvement over candidates, Pareto fronts, rollout efficiency, or policy reward, all source-specific.",
+      "related_non_equivalent_terms": ["adaptation", "learning", "search", "routing"],
+      "collision_or_overload": "Offline design search and online intervention have different evidence, stability, and cost properties.",
+      "unresolved_normalization_question": "What is optimized, over which horizon, and against which reliability constraints?"
+    },
+    {
+      "construct_id": "construct.cost",
+      "label": "cost",
+      "source_specific_meanings": [
+        {"scope": "routing/cascade papers", "evidence_class": "source_stated", "meaning": "Usually inference price, token consumption, or budget under a quality target.", "unit_of_analysis": "request or benchmark workload", "primary_references": ["references/papers/FrugalGPT_paper.pdf", "references/papers/ROUTELLM_paper.pdf"]},
+        {"scope": "Phase 4 H-P1a", "evidence_class": "directly_observed", "meaning": "Measured local execution and verification work, with provider monetary cost unavailable.", "unit_of_analysis": "configuration over fixed corpus", "primary_references": ["experiments/exp-2026-09-01-luna-structured-program-specialization/runs/blind-20260902-chatgpt-03/results.json"]}
+      ],
+      "measurement_or_operationalization": "API price, tokens, latency, compute, or local execution counts depending on source; components must not be silently combined.",
+      "related_non_equivalent_terms": ["price", "latency", "tokens", "engineering effort", "risk"],
+      "collision_or_overload": "Cheaper inference is not necessarily lower total lifecycle cost.",
+      "unresolved_normalization_question": "Which cost components and externalities belong inside a decision-relevant boundary?"
+    },
+    {
+      "construct_id": "construct.lifecycle-cost",
+      "label": "lifecycle cost",
+      "source_specific_meanings": [
+        {"scope": "IRIS-X provisional framing", "evidence_class": "source_stated", "meaning": "Inference plus verification, retries, failures, recovery, instrumentation, optimization, maintenance, and human oversight over time.", "unit_of_analysis": "task system over a deployment or research horizon", "primary_references": ["research/problem-definition.md", "research/post-phase-4-architecture-synthesis.md"]},
+        {"scope": "current evidence", "evidence_class": "unknown", "meaning": "Not comprehensively measured; Phase 4 specialization did not establish a monetary lifecycle advantage.", "unit_of_analysis": "not yet established", "primary_references": ["research/phase-4-closure.md"]}
+      ],
+      "measurement_or_operationalization": "Not established as a complete measure; proposed components include inference, verification, retry, failure, recovery, maintenance, and oversight.",
+      "related_non_equivalent_terms": ["inference cost", "provider price", "latency", "token count"],
+      "collision_or_overload": "Broad lifecycle rhetoric can obscure which components were actually measured.",
+      "unresolved_normalization_question": "What minimal longitudinal accounting is scientifically tractable without hiding transfer and maintenance costs?"
+    },
+    {
+      "construct_id": "construct.intervention-point",
+      "label": "intervention point",
+      "source_specific_meanings": [
+        {"scope": "Phase 4 prevention/recovery evidence", "evidence_class": "directly_observed", "meaning": "A mechanism may act before mutation, after detection, or during recovery, producing non-equivalent outcomes.", "unit_of_analysis": "execution lifecycle stage", "primary_references": ["experiments/exp-2026-08-30-preexecution-write-interception/runs/hi1a-20260830-local-01/results.json", "experiments/exp-2026-08-31-targeted-recovery-valid-state/runs/hrcv1a-20260901-local-01/results.json"]},
+        {"scope": "optimization/routing sources", "evidence_class": "source_stated", "meaning": "Mechanisms may intervene at design time, per request, between cascade calls, or after feedback.", "unit_of_analysis": "optimization or runtime decision", "primary_references": ["sources/external/gepa/README.md", "sources/external/routellm/README.md", "sources/external/frugalgpt/README.md"]}
+      ],
+      "measurement_or_operationalization": "Lifecycle stage plus observable state change: prevention before mutation, detection after observation, or restoration after failure.",
+      "related_non_equivalent_terms": ["prevention", "detection", "retry", "recovery", "design-time optimization"],
+      "collision_or_overload": "Interventions with similar goals can differ materially in whether harm already occurred and what evidence they require.",
+      "unresolved_normalization_question": "Which intervention points dominate under different failure, verification, and cost conditions?"
+    }
+  ]
+}
