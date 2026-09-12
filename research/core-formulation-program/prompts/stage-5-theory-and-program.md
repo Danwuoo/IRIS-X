@@ -1,12 +1,14 @@
-# GPT-6 Deep Research Prompt — Stage 5: Theory and Experimental Program Formation
+# GPT-5.6 Sol Research Prompt — Stage 5: Theory and Experimental Program Formation
 
 ## Intended use
 
 Run only after Stage 4 selected a primary formulation and its consolidation was
-accepted by the owner. Use a fresh GPT-6 Deep Research task with the highest
-owner-approved research and reasoning settings. Do not substitute another
-model silently. Record model metadata only when exposed by the task
-environment; otherwise write `Unknown`.
+accepted by the owner. Use a fresh Codex research task with exact model
+`gpt-5.6-sol` and Codex app-native reasoning setting `ultra`. Do not use the
+`gpt-5.6` alias, substitute another model, or silently downgrade to `max`.
+Record the immutable launch-record identity and keep requested configuration
+separate from model metadata exposed by the task environment; unavailable
+runtime metadata is `Unknown`.
 
 Replace every angle-bracket field before starting.
 
@@ -29,6 +31,8 @@ Required accepted inputs:
   `<ACCEPTED_STAGE_4_HANDOFF_FILE_OR_EXACT_CONTENT>`
 - accepted primary formulation, subordinate-role map, rejection ledger, and
   evidence matrices: `<STAGE_4_REPORT_AND_MANIFESTS>`
+- owner-authorized immutable launch record:
+  `<OWNER_AUTHORIZED_LAUNCH_RECORD>`
 - owner-accepted program/state commit: `<PROGRAM_STATE_COMMIT_SHA>`
 - Phase 1–6 evidence baseline:
   `8f8f264b841369918f6bab21c3a749a27f51dc57`
@@ -38,7 +42,9 @@ accepted handoff, Stage 4 decision, and all original authorities needed for
 decisive evidence. Read pre-program records from the Phase evidence baseline
 and program records from the program/state commit; never conflate them. Confirm
 that Stage 4 selected a primary formulation and the owner accepted
-consolidation. If not, stop as `BLOCKED`. Do not rely on earlier chat history.
+consolidation. If not, stop as `BLOCKED`. Confirm that the launch record
+specifies exact model `gpt-5.6-sol` and Codex reasoning `ultra`; otherwise stop
+as `BLOCKED`. Do not rely on earlier chat history.
 
 ### Exact question
 
@@ -56,9 +62,10 @@ research questions, hypotheses, and discriminating experimental program?
    unification.
 3. Specify units and levels of analysis, actors, mechanisms, contexts,
    outcomes, time horizons, scope, and boundary conditions.
-4. Present the explanatory or causal structure. Mark each link as supported,
-   contradicted, inferred, assumed, or unknown, and identify plausible rival
-   structures.
+4. Present the explanatory or causal structure. Classify every claim using the
+   common evidence classes, and separately mark each proposed link's relation
+   status as supported, contradicted, assumed, or unknown. Identify plausible
+   rival structures.
 5. Derive a small coherent set of research questions. Each must be necessary
    to assess the thesis and not merely request implementation description.
 6. Derive directional, falsifiable hypotheses with units, treatments or
@@ -129,10 +136,11 @@ cross-stage criteria. Return `BLOCKED` if any central construct lacks an
 operational path, hypotheses cannot discriminate rivals, or the proposed
 program is merely an implementation roadmap.
 
-Do not execute research, run code or experiments, invoke experimental
-models/providers, modify the repository, declare the thesis empirically true,
-create Phase 7, or promote state. Even a passing report remains a candidate for
-separate consolidation and owner acceptance.
+Do not execute the proposed experimental program, conduct additional empirical
+research, run code or experiments, invoke experimental models/providers,
+modify the repository, declare the thesis empirically true, create Phase 7, or
+promote state. Even a passing report remains a candidate for separate
+consolidation and owner acceptance.
 
 Finish with exactly:
 

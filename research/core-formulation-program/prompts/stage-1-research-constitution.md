@@ -1,12 +1,12 @@
-# GPT-6 Deep Research Prompt — Stage 1: Research Constitution and Scope Lock
+# GPT-5.6 Sol Research Prompt — Stage 1: Research Constitution and Scope Lock
 
 ## Intended use
 
-Run this as the first independent GPT-6 Deep Research task. Use the highest
-owner-approved research and reasoning settings and allow enough time for full
-repository inspection. Do not substitute a different model silently. Record
-model metadata only when exposed by the task environment; otherwise write
-`Unknown`.
+Run this as the first independent Codex research task using exact model
+`gpt-5.6-sol` with reasoning setting `max`. Do not use the `gpt-5.6` alias or
+substitute another model. Record the immutable launch-record identity and keep
+requested configuration separate from model metadata exposed by the task
+environment; unavailable runtime metadata is `Unknown`.
 
 ## Prompt
 
@@ -19,6 +19,9 @@ Repository: `Danwuoo/IRIS-X`
 Owner-accepted program-definition commit:
 `<OWNER_ACCEPTED_PROGRAM_DEFINITION_COMMIT>`
 
+Owner-authorized immutable launch record:
+`<OWNER_AUTHORIZED_LAUNCH_RECORD>`
+
 Phase 1–6 evidence baseline:
 `8f8f264b841369918f6bab21c3a749a27f51dc57`
 
@@ -30,7 +33,7 @@ Read these authorities before doing any analysis:
 4. `research/core-formulation-program/state/current-state.json`
 5. `research/problem-definition.md`
 6. `research/phase-4-closure.md`
-7. `docs/phase-5-architecture.md`
+7. `docs/phase-5-architecture-state.md`
 8. `docs/phase-6-research-state.md`
 9. `research/phase-6-formal-closure-and-research-state.md`
 10. `corpus/README.md`, `corpus/sources.yaml`, and
@@ -39,10 +42,12 @@ Read these authorities before doing any analysis:
 Read items 1–4 from the owner-accepted program-definition commit. Read the
 pre-program authorities and artifacts from the Phase evidence baseline unless
 the protocol explicitly says otherwise. Never conflate the two refs. If the
-program-definition placeholder has not been replaced with an exact commit,
+program-definition or launch-record placeholder has not been replaced, or the
+launch record does not specify exact model `gpt-5.6-sol` and reasoning `max`,
 stop as `BLOCKED`.
 
-Verify both repository baselines and record inaccessible or changed authorities.
+Verify both repository baselines, the frozen task configuration, and record
+inaccessible or changed authorities.
 Do not rely on earlier chat history. Treat the cumulative state as the only
 compact downstream-authoritative memory, and verify important statements
 against original authorities.

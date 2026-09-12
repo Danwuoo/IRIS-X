@@ -1,22 +1,37 @@
 # IRIS-X Core Research Formulation Program
 
-- **Status:** protocol accepted / research not started
-- **Program ID:** `irisx-core-formulation-v0`
+- **Status:** amended protocol accepted / research not started
+- **Program ID:** `irisx-core-formulation-v1`
+- **Supersedes:** `irisx-core-formulation-v0`; no stage was executed under v0
 - **Phase 1–6 evidence baseline:**
   `8f8f264b841369918f6bab21c3a749a27f51dc57`
 - **Program-definition baseline:** the owner-accepted commit containing these
   files; it must be pinned explicitly before Stage 1
 - **Research execution:** not authorized by these files
 
-This directory defines a five-stage, GPT-6-led research program for discovering
-and defending the core IRIS-X research formulation. It is a research protocol,
-not Phase 7, an experiment, a model run, an architecture decision, or a final
-thesis.
+This directory defines a five-stage, GPT-5.6 Sol-led research program for
+discovering and defending the core IRIS-X research formulation. It is a
+research protocol, not Phase 7, an experiment, authorization for a research
+task or model run, an architecture decision, or a final thesis.
 
-The program uses five independent Deep Research tasks. Each task receives a
+The program uses five independent Codex research tasks. Each task receives a
 clean conversational context and the cumulative authoritative state. After a
 stage report is frozen, a separate, bounded consolidation task proposes the
 state update. Only an owner-accepted consolidation may advance the program.
+
+## Model policy
+
+| Task | Exact model | Reasoning setting |
+| --- | --- | --- |
+| Stage 1 | `gpt-5.6-sol` | `max` |
+| Stages 2–5 | `gpt-5.6-sol` | `ultra` |
+| Post-stage consolidation | `gpt-5.6-sol` | `max` |
+
+`max` is a public GPT-5.6 Sol API reasoning effort. `ultra` is the Codex
+app-native reasoning setting used by this program and must not be represented
+as an API `reasoning.effort` value. The exact configured model and setting must
+be frozen in the launch record. No alias substitution, model substitution, or
+silent downgrade from `ultra` to `max` is permitted.
 
 ## Files
 
@@ -48,6 +63,11 @@ flowchart TD
     O3 --> R4["Stage 4 research"] --> C4["Consolidation 4"] --> O4["Owner decision"]
     O4 --> R5["Stage 5 research"] --> C5["Consolidation 5"] --> O5["Owner decision"]
 ```
+
+Each research (`R`) and consolidation (`C`) node itself expands into the
+owner-separated launch and later collection turns required by root `AGENTS.md`.
+The launch turn cannot inspect output; collection requires a later explicit
+owner request.
 
 Creating or reading these files does not authorize any arrow in this sequence.
 Each research task and each state promotion requires separate owner direction.

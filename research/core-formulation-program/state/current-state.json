@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "program_id": "irisx-core-formulation-v0",
+  "program_id": "irisx-core-formulation-v1",
   "program_status": "designed_not_started",
   "evidence_baseline": {
     "repository": "Danwuoo/IRIS-X",
@@ -14,29 +14,45 @@
     ]
   },
   "program_definition": {
-    "version": "protocol-irisx-core-formulation-v0",
+    "version": "protocol-irisx-core-formulation-v1",
     "path": "research/core-formulation-program/protocol.md",
     "accepted_commit": null,
     "commit_rule": "Set to the exact owner-accepted commit containing the protocol, prompts, and initial state before Stage 1 starts; never infer it from the Phase evidence baseline."
   },
   "protocol": {
-    "id": "protocol-irisx-core-formulation-v0",
+    "id": "protocol-irisx-core-formulation-v1",
     "path": "research/core-formulation-program/protocol.md",
     "status": "accepted_design"
   },
+  "revision": {
+    "supersedes": "protocol-irisx-core-formulation-v0",
+    "reason": "Owner-directed pre-execution amendment from GPT-6 Deep Research wording to exact GPT-5.6 Sol Codex research-task configurations.",
+    "prior_stage_execution_count": 0
+  },
+  "model_policy": {
+    "exact_model_id": "gpt-5.6-sol",
+    "alias_permitted": false,
+    "stage_1_reasoning": "max",
+    "stage_2_through_5_reasoning": "ultra",
+    "consolidation_reasoning": "max",
+    "ultra_semantics": "Codex app-native reasoning setting; not an API reasoning.effort value.",
+    "fallback_policy": "blocked_no_substitution_or_silent_downgrade"
+  },
   "owner_constraints": [
-    "Use five independent GPT-6 Deep Research tasks, one per research stage.",
+    "Use five independent Codex research tasks with exact model gpt-5.6-sol, one per research stage.",
+    "Use reasoning max for Stage 1, Codex app-native ultra for Stages 2–5, and max for every post-stage consolidation.",
+    "Require an immutable owner-authorized launch record and prohibit alias substitution, model substitution, or silent reasoning downgrade.",
     "Maintain a cumulative authoritative state instead of relying on chat memory.",
     "Run an independent state-consolidation step after each frozen stage result.",
     "Require owner acceptance before state promotion or stage advancement.",
     "Do not begin Phase 7, run experiments, invoke experimental models/providers, or implement architecture under this program definition."
   ],
   "stages": [
-    {"id": 1, "name": "Research Constitution and Scope Lock", "status": "not_started"},
-    {"id": 2, "name": "Evidence and Corpus Reconstruction", "status": "not_started"},
-    {"id": 3, "name": "Problem Discovery and External Challenge", "status": "not_started"},
-    {"id": 4, "name": "Formulation Adjudication", "status": "not_started"},
-    {"id": 5, "name": "Theory and Experimental Program Formation", "status": "not_started"}
+    {"id": 1, "name": "Research Constitution and Scope Lock", "model": "gpt-5.6-sol", "reasoning": "max", "status": "not_started"},
+    {"id": 2, "name": "Evidence and Corpus Reconstruction", "model": "gpt-5.6-sol", "reasoning": "ultra", "status": "not_started"},
+    {"id": 3, "name": "Problem Discovery and External Challenge", "model": "gpt-5.6-sol", "reasoning": "ultra", "status": "not_started"},
+    {"id": 4, "name": "Formulation Adjudication", "model": "gpt-5.6-sol", "reasoning": "ultra", "status": "not_started"},
+    {"id": 5, "name": "Theory and Experimental Program Formation", "model": "gpt-5.6-sol", "reasoning": "ultra", "status": "not_started"}
   ],
   "foundation_records": [
     {
@@ -119,6 +135,12 @@
       "status": "accepted",
       "decision": "Update authoritative state only through a post-stage consolidation task and owner acceptance.",
       "reason": "Separate research production from downstream-memory promotion."
+    },
+    {
+      "id": "decision.model-policy-v1",
+      "status": "accepted",
+      "decision": "Use exact model gpt-5.6-sol with max for Stage 1 and consolidation and Codex app-native ultra for Stages 2–5; prohibit substitution and silent downgrade.",
+      "reason": "Owner-directed protocol amendment before any research stage was executed."
     }
   ],
   "terminology_registry": [],

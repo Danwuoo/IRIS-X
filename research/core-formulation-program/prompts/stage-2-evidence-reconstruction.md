@@ -1,11 +1,13 @@
-# GPT-6 Deep Research Prompt — Stage 2: Evidence and Corpus Reconstruction
+# GPT-5.6 Sol Research Prompt — Stage 2: Evidence and Corpus Reconstruction
 
 ## Intended use
 
 Run only after Stage 1 consolidation has been accepted by the owner. Use a
-fresh GPT-6 Deep Research task with the highest owner-approved research and
-reasoning settings. Do not substitute another model silently. Record model
-metadata only when exposed by the task environment; otherwise write `Unknown`.
+fresh Codex research task with exact model `gpt-5.6-sol` and Codex app-native
+reasoning setting `ultra`. Do not use the `gpt-5.6` alias, substitute another
+model, or silently downgrade to `max`. Record the immutable launch-record
+identity and keep requested configuration separate from model metadata exposed
+by the task environment; unavailable runtime metadata is `Unknown`.
 
 Replace every angle-bracket field with the accepted artifact before starting.
 
@@ -25,6 +27,8 @@ Required accepted inputs:
   `<ACCEPTED_CURRENT_STATE_FILE_OR_EXACT_CONTENT>`
 - accepted Stage 1 consolidation and handoff:
   `<ACCEPTED_STAGE_1_HANDOFF_FILE_OR_EXACT_CONTENT>`
+- owner-authorized immutable launch record:
+  `<OWNER_AUTHORIZED_LAUNCH_RECORD>`
 - owner-accepted program/state commit: `<PROGRAM_STATE_COMMIT_SHA>`
 - Phase 1–6 evidence baseline:
   `8f8f264b841369918f6bab21c3a749a27f51dc57`
@@ -34,7 +38,8 @@ accepted current state, and the accepted Stage 1 handoff from the program/state
 commit. Read pre-program records from the Phase evidence baseline. Confirm that
 Stage 1 is owner-accepted and that the handoff defines the Stage 2 input
 manifest. If not, stop as `BLOCKED`. Never conflate the two refs and do not rely
-on earlier chat history.
+on earlier chat history. Confirm that the launch record specifies exact model
+`gpt-5.6-sol` and Codex reasoning `ultra`; otherwise stop as `BLOCKED`.
 
 ### Exact question
 
@@ -48,7 +53,9 @@ Inspect the original authorities named by the Stage 1 manifest, including:
 - all Phase 1–6 research, closure, handoff, architecture, and experiment
   records required by that manifest;
 - all experiment artifacts required to verify direct observations;
-- all 13 entries in `corpus/sources.yaml` and their available source records;
+- all 13 entries in `corpus/sources.yaml`, their available source records, and
+  the original files needed to evaluate material claims without requiring an
+  indiscriminate line-by-line audit of every imported repository;
 - all 7 registered paper artifacts in `corpus/artifacts.yaml` and their
   available paper records;
 - the provisional `research/problem-definition.md` as a historical candidate,

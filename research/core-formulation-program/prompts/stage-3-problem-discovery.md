@@ -1,13 +1,15 @@
-# GPT-6 Deep Research Prompt — Stage 3: Problem Discovery and External Challenge
+# GPT-5.6 Sol Research Prompt — Stage 3: Problem Discovery and External Challenge
 
 ## Intended use
 
-Run only after Stage 2 consolidation is owner-accepted. Use a fresh GPT-6 Deep
-Research task with the highest owner-approved research and reasoning settings.
-This is the program's main external-research stage; allocate depth to opposing
-literature and primary-source verification, not repetitive summaries. Do not
-substitute another model silently. Record model metadata only when exposed by
-the task environment; otherwise write `Unknown`.
+Run only after Stage 2 consolidation is owner-accepted. Use a fresh Codex
+research task with exact model `gpt-5.6-sol` and Codex app-native reasoning
+setting `ultra`. This is the program's main external-research stage; allocate
+depth to opposing literature and primary-source verification, not repetitive
+summaries. Do not use the `gpt-5.6` alias, substitute another model, or silently
+downgrade to `max`. Record the immutable launch-record identity and keep
+requested configuration separate from model metadata exposed by the task
+environment; unavailable runtime metadata is `Unknown`.
 
 Replace every angle-bracket field before starting.
 
@@ -30,6 +32,8 @@ Required accepted inputs:
   `<ACCEPTED_STAGE_2_HANDOFF_FILE_OR_EXACT_CONTENT>`
 - frozen Stage 2 evidence atlas and manifests:
   `<STAGE_2_REPORT_AND_MANIFESTS>`
+- owner-authorized immutable launch record:
+  `<OWNER_AUTHORIZED_LAUNCH_RECORD>`
 - owner-accepted program/state commit: `<PROGRAM_STATE_COMMIT_SHA>`
 - Phase 1–6 evidence baseline:
   `8f8f264b841369918f6bab21c3a749a27f51dc57`
@@ -39,7 +43,9 @@ accepted handoff, and original evidence authorities needed to verify Stage 2
 claims. Read pre-program records from the Phase evidence baseline and program
 records from the program/state commit; never conflate them. Confirm Stage 2
 owner acceptance and baseline consistency. If either is absent, stop as
-`BLOCKED`. Do not rely on earlier chat history.
+`BLOCKED`. Confirm that the launch record specifies exact model
+`gpt-5.6-sol` and Codex reasoning `ultra`; otherwise stop as `BLOCKED`. Do not
+rely on earlier chat history.
 
 ### Exact question
 

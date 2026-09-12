@@ -1,12 +1,13 @@
-# GPT-6 Prompt — Post-Stage State Consolidation
+# GPT-5.6 Sol Prompt — Post-Stage State Consolidation
 
 ## Intended use
 
 Run this prompt in a fresh task only after one research-stage report has been
 frozen. This is a bounded audit and memory-promotion task, not Deep Research.
-Use GPT-6 with the highest owner-approved reasoning setting. Do not substitute
-a different model silently. Record model metadata only when the task
-environment exposes it; otherwise write `Unknown`.
+Use exact model `gpt-5.6-sol` with reasoning setting `max`. Do not use the
+`gpt-5.6` alias or substitute another model. Record the immutable launch-record
+identity and keep requested configuration separate from model metadata exposed
+by the task environment; unavailable runtime metadata is `Unknown`.
 
 Replace every value in angle brackets before starting. If a required input is
 missing, stop with `CONSOLIDATION_RESULT: BLOCKED`.
@@ -29,6 +30,8 @@ Required inputs:
   `<EVIDENCE_MANIFEST_FILE_OR_EXACT_CONTENT>`
 - stage number: `<STAGE_NUMBER>`
 - stage acceptance gate: `<COPY_EXACT_GATE_FROM_PROTOCOL>`
+- owner-authorized immutable launch record:
+  `<OWNER_AUTHORIZED_LAUNCH_RECORD>`
 - owner-accepted program/state commit: `<PROGRAM_STATE_COMMIT_SHA>`
 - Phase 1–6 evidence baseline:
   `8f8f264b841369918f6bab21c3a749a27f51dc57`
@@ -39,6 +42,8 @@ pre-program records and never conflate the two refs. Do not rely on earlier
 chat history, unstated project knowledge, or personal memory. The pre-stage
 state is the only compact state with downstream authority. The frozen report
 is immutable input, not authority merely because it exists.
+Confirm that the launch record specifies exact model `gpt-5.6-sol` and
+reasoning `max`; otherwise stop as `BLOCKED`.
 
 ### Authorization boundary
 
@@ -50,8 +55,8 @@ scope, and claim classification. You must not:
 - silently repair, reinterpret, or rewrite the frozen report;
 - resolve a conflict by preference or guess;
 - alter historical phase classifications or invalid-attempt records;
-- modify the repository, run code, invoke research/experimental models, design
-  the next stage, or begin Phase 7;
+- modify the repository, run code, invoke any additional research or
+  experimental model, design the next stage, or begin Phase 7;
 - declare the next stage authorized.
 
 If the report requires substantive repair, return `BLOCKED` and state exactly

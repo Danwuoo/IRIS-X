@@ -2,8 +2,10 @@
 
 ## 1. Status and purpose
 
-- **ID:** `protocol-irisx-core-formulation-v0`
-- **Status:** decision / accepted research-program protocol
+- **ID:** `protocol-irisx-core-formulation-v1`
+- **Status:** decision / accepted amended research-program protocol
+- **Supersedes:** `protocol-irisx-core-formulation-v0`; no stage was executed
+  under v0
 - **Phase 1–6 evidence baseline:**
   `8f8f264b841369918f6bab21c3a749a27f51dc57`
 - **Program-definition baseline:** the owner-accepted commit containing this
@@ -33,12 +35,14 @@ The owner has selected the following structure:
 
 1. five large research stages rather than one monolithic task;
 2. one independent conversational task per stage;
-3. GPT-6 as the lead research model for every stage;
-4. a cumulative authoritative state rather than reliance on conversational
+3. exact model ID `gpt-5.6-sol` for every research and consolidation task;
+4. `max` reasoning for Stage 1 and consolidation, and Codex app-native `ultra`
+   reasoning for Stages 2 through 5;
+5. a cumulative authoritative state rather than reliance on conversational
    memory;
-5. a separate state-consolidation step after each research stage;
-6. owner acceptance before state promotion or progression;
-7. one eventual primary research formulation, unless Stage 4 finds that no
+6. a separate state-consolidation step after each research stage;
+7. owner acceptance before state promotion or progression;
+8. one eventual primary research formulation, unless Stage 4 finds that no
    candidate satisfies the frozen criteria.
 
 Independence between research and consolidation is procedural, not an
@@ -108,7 +112,39 @@ requirement by default.
 
 ## 4. Model and task topology
 
-Each research stage is a fresh GPT-6 Deep Research task. The task must receive:
+These are Codex research tasks using repository inspection and, where
+authorized by the stage, external research tools. Calling them research tasks
+does not claim that `gpt-5.6-sol` is a distinct specialized Deep Research model.
+
+The frozen task configuration is:
+
+| Task | Exact model ID | Required reasoning setting |
+| --- | --- | --- |
+| Stage 1 | `gpt-5.6-sol` | `max` |
+| Stage 2 | `gpt-5.6-sol` | `ultra` |
+| Stage 3 | `gpt-5.6-sol` | `ultra` |
+| Stage 4 | `gpt-5.6-sol` | `ultra` |
+| Stage 5 | `gpt-5.6-sol` | `ultra` |
+| Every post-stage consolidation | `gpt-5.6-sol` | `max` |
+
+The public GPT-5.6 Sol API documents `max` as a `reasoning.effort` value.
+`ultra` in this protocol is the Codex app-native reasoning setting; it must be
+recorded as an execution-environment setting and never translated into or
+reported as API `reasoning.effort=ultra`. Use the exact model ID, not the
+`gpt-5.6` alias. If the required model or reasoning setting is unavailable,
+the task is `BLOCKED`; do not substitute another model or silently downgrade
+`ultra` to `max`.
+
+Before launch, the owner-authorized launch record must freeze the requested
+model, reasoning setting, task prompt, program/state commit, and Phase evidence
+baseline, together with every launch fact required by root `AGENTS.md`,
+including freeze SHA, PID, launch time, and stdout/stderr paths outside the
+repository. Each report records requested configuration and any model metadata
+actually exposed by the execution environment separately. Missing runtime
+metadata remains `Unknown`; a missing launch record or an observed conflict
+with it blocks acceptance.
+
+Each research stage is a fresh Codex research task. The task must receive:
 
 1. the stage prompt;
 2. this protocol;
@@ -116,7 +152,8 @@ Each research stage is a fresh GPT-6 Deep Research task. The task must receive:
 4. the latest accepted prior-stage handoff, when one exists;
 5. the exact owner-accepted program-definition commit and the declared Phase
    1–6 evidence baseline as separate authorities;
-6. only the stage-specific additional inputs.
+6. the immutable owner-authorized launch record for that task;
+7. only the stage-specific additional inputs.
 
 The Phase evidence baseline governs pre-program research records and artifacts.
 The program-definition commit governs this protocol, prompts, and cumulative
@@ -133,11 +170,19 @@ After the stage report is frozen, a separate consolidation task receives only:
 - the pre-stage cumulative state;
 - the frozen stage report;
 - its evidence/source manifest;
-- the stage acceptance criteria.
+- the stage acceptance criteria;
+- the consolidation task's immutable owner-authorized launch record.
 
 The consolidator may verify cited evidence narrowly. It may not conduct the
 next research stage, add substantive findings absent from the report, repair
 the report silently, or advance the program.
+
+Every research and consolidation invocation is a separate owner-authorized
+model execution and must obey the owner-directed launch/collection procedure in
+root `AGENTS.md`. The launch turn does not inspect task output. Only a later
+explicit owner collection request may freeze and inspect the result. This
+protocol, an accepted consolidation, or a next-stage input manifest does not by
+itself authorize either launch or collection.
 
 ## 5. Cumulative authoritative state
 
@@ -178,7 +223,8 @@ has no downstream authority and must be retrieved or treated as unknown.
 
 Every stage report must contain:
 
-1. stage identity, task identity, dates, model, and repository baseline;
+1. stage identity, task identity, dates, requested model/reasoning, immutable
+   launch-record identity, observed model metadata, and repository baseline;
 2. the exact question answered;
 3. inclusion, exclusion, and search boundaries;
 4. source and artifact coverage ledger;
@@ -198,6 +244,8 @@ The proposed delta has no authority until a separate consolidation accepts it.
 
 A stage can pass only when all of the following are true:
 
+- the immutable launch record matches the stage's exact model and reasoning
+  policy, and no observed model metadata conflicts with it;
 - every substantive conclusion has a stable evidence pointer;
 - source-stated claims are not presented as direct observations;
 - inference is separated from evidence;
@@ -349,10 +397,13 @@ experiment is authorized.
 
 ## 10. Prompt-design basis
 
-The stage prompts are intentionally complete and explicit. Official OpenAI
-Deep Research guidance states that research expects a fully formed prompt and
-does not itself supply missing context or a clarification step. The protocol
-therefore freezes inputs, source policy, output contracts, and acceptance
-criteria before each task:
+The stage prompts are intentionally complete and explicit. The program adopts
+the fully formed prompt principle from official OpenAI Deep Research guidance
+as a methodological design rule; this does not relabel GPT-5.6 Sol as a
+specialized Deep Research model. Official OpenAI documentation identifies
+`gpt-5.6-sol` and its public reasoning efforts through `max`. The protocol
+therefore freezes model identity, Codex reasoning configuration, inputs,
+source policy, output contracts, and acceptance criteria before each task:
 
+- <https://developers.openai.com/api/docs/models/gpt-5.6-sol>
 - <https://developers.openai.com/api/docs/guides/deep-research>

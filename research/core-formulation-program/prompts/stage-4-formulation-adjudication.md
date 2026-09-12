@@ -1,11 +1,13 @@
-# GPT-6 Deep Research Prompt — Stage 4: Formulation Adjudication
+# GPT-5.6 Sol Research Prompt — Stage 4: Formulation Adjudication
 
 ## Intended use
 
-Run only after Stage 3 consolidation is owner-accepted. Use a fresh GPT-6 Deep
-Research task with the highest owner-approved research and reasoning settings.
-Do not substitute another model silently. Record model metadata only when
-exposed by the task environment; otherwise write `Unknown`.
+Run only after Stage 3 consolidation is owner-accepted. Use a fresh Codex
+research task with exact model `gpt-5.6-sol` and Codex app-native reasoning
+setting `ultra`. Do not use the `gpt-5.6` alias, substitute another model, or
+silently downgrade to `max`. Record the immutable launch-record identity and
+keep requested configuration separate from model metadata exposed by the task
+environment; unavailable runtime metadata is `Unknown`.
 
 Replace every angle-bracket field before starting.
 
@@ -30,6 +32,8 @@ Required accepted inputs:
   `<ACCEPTED_STAGE_1_RUBRIC>`
 - frozen Stage 3 candidate dossiers and evidence matrices:
   `<STAGE_3_REPORT_AND_MANIFESTS>`
+- owner-authorized immutable launch record:
+  `<OWNER_AUTHORIZED_LAUNCH_RECORD>`
 - owner-accepted program/state commit: `<PROGRAM_STATE_COMMIT_SHA>`
 - Phase 1–6 evidence baseline:
   `8f8f264b841369918f6bab21c3a749a27f51dc57`
@@ -39,7 +43,9 @@ accepted handoff, rubric, candidate dossiers, and decisive original evidence.
 Read pre-program records from the Phase evidence baseline and program records
 from the program/state commit; never conflate them. Confirm owner acceptance
 through Stage 3 and baseline consistency. If a required input is missing, stop
-as `BLOCKED`. Do not rely on chat history.
+as `BLOCKED`. Confirm that the launch record specifies exact model
+`gpt-5.6-sol` and Codex reasoning `ultra`; otherwise stop as `BLOCKED`. Do not
+rely on chat history.
 
 ### Exact question
 
