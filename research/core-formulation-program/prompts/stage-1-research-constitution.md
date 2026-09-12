@@ -19,6 +19,9 @@ Repository: `Danwuoo/IRIS-X`
 Owner-accepted program-definition commit:
 `<OWNER_ACCEPTED_PROGRAM_DEFINITION_COMMIT>`
 
+Owner-accepted current-state pin commit:
+`<OWNER_ACCEPTED_CURRENT_STATE_COMMIT>`
+
 Owner-authorized immutable launch record:
 `<OWNER_AUTHORIZED_LAUNCH_RECORD>`
 
@@ -39,15 +42,18 @@ Read these authorities before doing any analysis:
 10. `corpus/README.md`, `corpus/sources.yaml`, and
     `corpus/artifacts.yaml`
 
-Read items 1–4 from the owner-accepted program-definition commit. Read the
-pre-program authorities and artifacts from the Phase evidence baseline unless
-the protocol explicitly says otherwise. Never conflate the two refs. If the
-program-definition or launch-record placeholder has not been replaced, or the
-launch record does not specify exact model `gpt-5.6-sol` and reasoning `max`,
-stop as `BLOCKED`.
+Read items 1–3 from the owner-accepted program-definition commit. Read item 4
+from the owner-accepted current-state pin commit and confirm that its
+`program_definition.accepted_commit` equals the exact program-definition
+commit. Read the pre-program authorities and artifacts from the Phase evidence
+baseline unless the protocol explicitly says otherwise. Never conflate these
+refs. If either commit or the launch-record placeholder has not been replaced,
+or the launch record does not specify exact model `gpt-5.6-sol` and reasoning
+`max`, stop as `BLOCKED`.
 
-Verify both repository baselines, the frozen task configuration, and record
-inaccessible or changed authorities.
+Verify the program-definition commit, current-state pin commit, Phase evidence
+baseline, frozen task configuration, and record inaccessible or changed
+authorities.
 Do not rely on earlier chat history. Treat the cumulative state as the only
 compact downstream-authoritative memory, and verify important statements
 against original authorities.

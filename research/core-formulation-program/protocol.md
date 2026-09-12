@@ -160,6 +160,14 @@ The program-definition commit governs this protocol, prompts, and cumulative
 state. A task must never assume they are the same commit. Later accepted state
 promotions must also be identified by an immutable artifact or exact commit.
 
+Because a Git commit cannot contain its own hash, initial pinning uses two
+commits: the program-definition commit freezes the protocol, prompts, and
+unpromoted initial state; a later state-pin commit sets
+`program_definition.accepted_commit` to that exact definition SHA. Stage 1
+reads the protocol and prompt from the definition commit and the pinned current
+state from the separately identified state-pin commit. These commits must not
+be conflated.
+
 The task must not depend on earlier chat history or personal memory. The stage
 prompt must be sufficiently complete before research begins; unanswered
 requirements are handled as open questions or blockers, not filled by guess.
