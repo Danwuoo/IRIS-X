@@ -12,7 +12,7 @@ Root-level `AGENTS.md` controls how agents should work with this material. There
 - Use [corpus/sources.yaml](corpus/sources.yaml) and [corpus/artifacts.yaml](corpus/artifacts.yaml) for machine-readable inventory.
 - Track unresolved provenance work in [corpus/RECOVERY_QUEUE.md](corpus/RECOVERY_QUEUE.md).
 - Read [research/problem-definition.md](research/problem-definition.md) for the current provisional project-level research problem.
-- Read [research/core-formulation-program/README.md](research/core-formulation-program/README.md) for the accepted five-stage GPT-6 research-formulation protocol, cumulative-state design, and prompts. The research itself is not started or authorized by those files.
+- Read [research/core-formulation-program/README.md](research/core-formulation-program/README.md) for the accepted five-stage GPT-5.6 Sol research-formulation protocol, cumulative-state design, and prompts. The research itself is not started or authorized by those files.
 - Read [docs/phase-6-research-state.md](docs/phase-6-research-state.md) for the durable current closure state and final eight-gate ledger.
 - Read [research/phase-6-formal-closure-and-research-state.md](research/phase-6-formal-closure-and-research-state.md) for the Phase 6 evidence synthesis and Decision A.
 - Read [docs/decisions/0002-openai-codex-model-baseline.md](docs/decisions/0002-openai-codex-model-baseline.md) and [experiments/configurations/provider-model-baseline-v0.json](experiments/configurations/provider-model-baseline-v0.json) for the accepted OpenAI/Codex dual-model operating baseline.
