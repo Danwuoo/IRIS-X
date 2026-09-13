@@ -9,25 +9,42 @@ IRIS-X is a clean research workspace for rethinking reliable, low-cost, task-spe
 The project is not intended to combine several existing repositories into a larger framework. The repositories collected here are research predecessors, external references, implementation examples, and experimental substrates. Their useful ideas, constraints, failure cases, and engineering patterns may inform IRIS-X, but IRIS-X should develop its own coherent architecture rather than inherit the structure of any one source project.
 
 The repository has completed its initial research-preparation work, the Phase 4
-evidence program, the first post-Phase-4 synthesis, Phase 5, and Phase 6. Phase
-6 is closed by the formal evidence-chain and research-state consolidation at
-`research/phase-6-formal-closure-and-research-state.md`. No next phase,
-experiment, or model execution is currently authorized. The architecture
-remains provisional, revisable, and not production-stable.
+evidence program, the first post-Phase-4 synthesis, Phase 5, Phase 6, and the
+foundational research synthesis at
+`research/foundational-research-synthesis.md`. Phase 6 remains closed by the
+historical evidence-chain and research-state consolidation at
+`research/phase-6-formal-closure-and-research-state.md`; the durable
+post-synthesis state is recorded at
+`docs/post-foundational-synthesis-research-state.md`. No Phase 7, experiment,
+or follow-on model execution is currently authorized. The research formulation
+and architecture remain provisional, revisable, and not production-stable.
 
 ## Current Objective
 
-Decision A closed Phase 6 after direct review of Batch 1 through Batch 3 and the
-post-Batch-3 predicate/provenance authority repair. The preserved chain now
-supports bounded real-task observation, conservative failure attribution,
-provenance-bound capability-pressure derivation, and safe gate adjudication.
-Current direct evidence triggers zero of eight deferred capability gates. The
-closure made no model/provider call and added no runtime mechanism. Any future
-work requires a new owner-authorized scope.
+The foundational synthesis adjudicated the preserved Phase 1–6 chain without
+rewriting its historical evidence. The bounded foundational core is
+**evidence-governed warranted agency**. **Minimum-sufficient configuration**
+followed by **failure-directed intervention** is an emerging, ordered research
+program whose two constructs and evidence requirements remain separate.
+**Temporal and state-transition reliability** is deferred until a
+continuity-dependent task supplies direct pressure. This plural formulation is
+provisional and falsifiable, not a final architecture or permanent thesis.
+
+Current direct evidence still triggers zero of eight deferred capability gates.
+The synthesis was authored in one owner-authorized GPT-5.6 Sol Ultra session;
+it launched no model/provider execution from the repository and dispatched no
+follow-on model task. No Phase 7 or experiment is authorized. Any future work
+requires a new owner-authorized scope.
 
 At this stage, the main goals are to:
 
 - preserve the completed Phase 4, Phase 5, and Phase 6 evidence boundaries;
+- preserve the bounded warranted-agency core without promoting it beyond its
+  declared task, configuration, verifier, action, and horizon boundaries;
+- test the emerging configuration-sufficiency and failure-directed-
+  intervention program through discriminating evidence rather than a feature
+  roadmap;
+- defer temporal reliability until continuity necessity is directly observed;
 - preserve Batch 2 Result C, Batch 3 historical Result D, and the separate
   post-Batch-3 Result A authority repair without retrospective reclassification;
 - keep sampled task/configuration pressure separate from intrinsic model
@@ -43,7 +60,8 @@ Do **not** expand this stage into broad architecture implementation,
 productionization, routing, cascades, workflow search, fine-tuning, or
 architecture search without a new owner-authorized scope.
 
-Do **not** prematurely define a final research question, final system architecture, or final product boundary.
+Do **not** treat the provisional thesis, research questions, hypotheses,
+system architecture, or product boundary as final.
 
 ## Working Direction
 
@@ -342,6 +360,11 @@ If later experimentation uses one of them, keep the boundary explicit enough tha
 
 ## Near-Term Work
 
+The durable post-synthesis state preserves a bounded warranted-agency core, an
+emerging configuration-sufficiency and failure-directed-intervention program,
+and deferred temporal reliability. None authorizes implementation or an
+experiment.
+
 The closed Phase 6 state preserves:
 
 - the Batch 1 deterministic capability-pressure and failure-attribution
@@ -399,11 +422,15 @@ IRIS-X should preserve these distinctions while the project is still forming.
 
 ## Status
 
-**Current status: Phase 6 complete — formal closure and durable research state recorded.**
+**Current status: foundational synthesis complete — durable post-synthesis
+research state recorded; Phase 6 preserved as historical authority.**
 
 The repository is not a stable architecture, framework, production runtime, or
-product. Candidate architecture produced in this stage is provisional.
+product. The foundational formulation, research questions, hypotheses, and
+candidate architecture are provisional and falsifiable.
 
-Phase 6 closure made no model/provider calls, implemented no new runtime
-mechanism, and selected or started no next experiment. Phase 6 Batch 4 and the
-next phase/experiment are not authorized.
+The foundational synthesis was authored in one owner-authorized GPT-5.6 Sol
+Ultra session. It launched no repository model/provider execution, dispatched
+no follow-on model task, implemented no runtime mechanism, and authorized or
+started no experiment. Phase 7 and the next phase/experiment are not
+authorized.
