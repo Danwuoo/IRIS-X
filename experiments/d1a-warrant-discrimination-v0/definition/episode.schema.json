@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "episode.schema.json",
+  "title": "D1a canonical episode",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "episode_id",
+    "task_family_id",
+    "task_instance_id",
+    "task_contract_digest",
+    "producer_configuration_id",
+    "producer_output_digest",
+    "producer_claim",
+    "producer_score_or_calibrated_probability",
+    "actual_outcome",
+    "actual_outcome_oracle_id",
+    "evidence_items",
+    "evidence_validity",
+    "evidence_binding",
+    "authority_required",
+    "authority_policy_id",
+    "authority_mapping",
+    "authorization_conformance",
+    "semantic_verifier_id",
+    "semantic_verifier_decision",
+    "semantic_verifier_confidence_or_not_measured",
+    "independent_disagreement_record",
+    "policy_decisions",
+    "commitment_record",
+    "action_outcome",
+    "resource_record",
+    "provenance",
+    "meta"
+  ],
+  "properties": {
+    "episode_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$"},
+    "task_family_id": {"type": "string", "minLength": 1},
+    "task_instance_id": {"type": "string", "minLength": 1},
+    "task_contract_digest": {"$ref": "#/$defs/digest"},
+    "producer_configuration_id": {"type": "string", "minLength": 1},
+    "producer_output_digest": {"$ref": "#/$defs/digest"},
+    "producer_claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "content_digest"],
+      "properties": {
+        "status": {"enum": ["success", "failure", "unknown"]},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "producer_score_or_calibrated_probability": {
+      "oneOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"const": "unknown"}]
+    },
+    "actual_outcome": {"enum": ["success", "failure", "unknown"]},
+    "actual_outcome_oracle_id": {"type": "string", "minLength": 1},
+    "evidence_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_id", "digest", "required", "relevant"],
+        "properties": {
+          "evidence_id": {"type": "string", "minLength": 1},
+          "digest": {"$ref": "#/$defs/digest"},
+          "required": {"type": "boolean"},
+          "relevant": {"type": "boolean"}
+        }
+      }
+    },
+    "evidence_validity": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidenceAssessment"}
+    },
+    "evidence_binding": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_id", "status"],
+        "properties": {
+          "evidence_id": {"type": "string", "minLength": 1},
+          "status": {"enum": ["bound", "non_binding", "absent", "unknown"]}
+        }
+      }
+    },
+    "authority_required": {"type": "boolean"},
+    "authority_policy_id": {"type": "string", "minLength": 1},
+    "authority_mapping": {
+      "enum": ["canonical", "unauthorized_principal", "missing", "ambiguous", "not_applicable", "unknown"]
+    },
+    "authorization_conformance": {
+      "enum": ["conformant", "nonconformant", "not_applicable", "unknown"]
+    },
+    "semantic_verifier_id": {"type": "string", "minLength": 1},
+    "semantic_verifier_decision": {"enum": ["accept", "reject", "disagreement", "error", "unknown"]},
+    "semantic_verifier_confidence_or_not_measured": {
+      "oneOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"enum": ["not_measured", "unknown"]}]
+    },
+    "independent_disagreement_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reference_decision"],
+      "properties": {
+        "status": {"enum": ["agreement", "disagreement", "error", "unknown"]},
+        "reference_decision": {"enum": ["accept", "reject", "unknown"]}
+      }
+    },
+    "policy_decisions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "P0": {"$ref": "#/$defs/policyDecision"},
+        "P1": {"$ref": "#/$defs/policyDecision"},
+        "P2": {"$ref": "#/$defs/policyDecision"},
+        "P3": {"$ref": "#/$defs/policyDecision"}
+      }
+    },
+    "commitment_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["consequential_action_exposed", "action_class", "reversible"],
+      "properties": {
+        "consequential_action_exposed": {"type": "boolean"},
+        "action_class": {"type": "string", "minLength": 1},
+        "reversible": {"oneOf": [{"type": "boolean"}, {"const": "not_applicable"}]}
+      }
+    },
+    "action_outcome": {"enum": ["success", "failure", "not_applicable", "unknown"]},
+    "resource_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_units", "semantic_verification_units", "evidence_verification_units",
+        "authority_adjudication_units", "base_adjudication_units", "provider_model_calls",
+        "retries", "latency_ms", "latency_credible", "human_manual_cost"
+      ],
+      "properties": {
+        "execution_units": {"$ref": "#/$defs/nonnegativeOrUnknown"},
+        "semantic_verification_units": {"$ref": "#/$defs/nonnegativeOrUnknown"},
+        "evidence_verification_units": {"$ref": "#/$defs/nonnegativeOrUnknown"},
+        "authority_adjudication_units": {"$ref": "#/$defs/nonnegativeOrUnknown"},
+        "base_adjudication_units": {"$ref": "#/$defs/nonnegativeOrUnknown"},
+        "provider_model_calls": {"$ref": "#/$defs/nonnegativeIntegerOrUnknown"},
+        "retries": {"$ref": "#/$defs/nonnegativeIntegerOrUnknown"},
+        "latency_ms": {"$ref": "#/$defs/nonnegativeOrUnknown"},
+        "latency_credible": {"type": "boolean"},
+        "human_manual_cost": {"$ref": "#/$defs/nonnegativeOrUnknown"}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fixture_only", "source_bundle_ids", "sealed_input_digest"],
+      "properties": {
+        "fixture_only": {"type": "boolean"},
+        "source_bundle_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "sealed_input_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["region_ids", "semantic_input_digest", "raw_outcome_digest", "audit_resolution_improved", "decomposition_assessment"],
+      "properties": {
+        "region_ids": {"type": "array", "items": {"enum": ["R1", "R2", "R3", "R4", "R5", "control"]}, "uniqueItems": true},
+        "semantic_input_digest": {"$ref": "#/$defs/digest"},
+        "raw_outcome_digest": {"$ref": "#/$defs/digest"},
+        "audit_resolution_improved": {"type": "boolean"},
+        "decomposition_assessment": {"enum": ["not_applicable", "exhaustive", "not_exhausted", "unknown"]}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nonnegativeOrUnknown": {
+      "oneOf": [{"type": "number", "minimum": 0}, {"const": "unknown"}]
+    },
+    "nonnegativeIntegerOrUnknown": {
+      "oneOf": [{"type": "integer", "minimum": 0}, {"const": "unknown"}]
+    },
+    "evidenceAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "status"],
+      "properties": {
+        "evidence_id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["valid", "invalid", "absent", "unknown"]}
+      }
+    },
+    "policyDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "reason"],
+      "properties": {
+        "decision": {"enum": ["accept_commit", "reject", "abstain"]},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://iris-x.local/d1a/calibration-bundle.schema.json",
+  "allOf": [
+    {"$ref": "https://iris-x.local/d1a/custodian-attestation.schema.json#/$defs/baseBundle"},
+    {
+      "type": "object",
+      "properties": {
+        "custodian_role": {"const": "calibration"},
+        "role_payload": {
+          "type": "object", "additionalProperties": false,
+          "required": ["calibration_status", "producer_configuration_id", "configuration_identity_path", "score_construction_path", "score_excludes_warrant_authority_labels", "calibration_split_path", "heldout_split_path", "splits_disjoint", "heldout_d1_outcomes_observed", "sample_size", "diagnostics_path", "thresholds_path", "thresholds_frozen_before_heldout", "unavailability_reason"],
+          "properties": {
+            "calibration_status": {"enum": ["available", "P0_unavailable"]},
+            "producer_configuration_id": {"type": "string", "minLength": 3},
+            "configuration_identity_path": {"$ref": "https://iris-x.local/d1a/custodian-attestation.schema.json#/$defs/safePath"},
+            "score_construction_path": {"$ref": "https://iris-x.local/d1a/custodian-attestation.schema.json#/$defs/safePath"},
+            "score_excludes_warrant_authority_labels": {"const": true},
+            "calibration_split_path": {"$ref": "https://iris-x.local/d1a/custodian-attestation.schema.json#/$defs/safePath"},
+            "heldout_split_path": {"$ref": "https://iris-x.local/d1a/custodian-attestation.schema.json#/$defs/safePath"},
+            "splits_disjoint": {"const": true},
+            "heldout_d1_outcomes_observed": {"const": false},
+            "sample_size": {"type": "integer", "minimum": 0},
+            "diagnostics_path": {"$ref": "https://iris-x.local/d1a/custodian-attestation.schema.json#/$defs/safePath"},
+            "thresholds_path": {"$ref": "https://iris-x.local/d1a/custodian-attestation.schema.json#/$defs/safePath"},
+            "thresholds_frozen_before_heldout": {"const": true},
+            "unavailability_reason": {"oneOf": [{"type": "string", "minLength": 3}, {"type": "null"}]}
+          },
+          "allOf": [
+            {"if": {"properties": {"calibration_status": {"const": "available"}}}, "then": {"properties": {"sample_size": {"minimum": 1}, "unavailability_reason": {"type": "null"}}}},
+            {"if": {"properties": {"calibration_status": {"const": "P0_unavailable"}}}, "then": {"properties": {"unavailability_reason": {"type": "string", "minLength": 3}}}}
+          ]
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

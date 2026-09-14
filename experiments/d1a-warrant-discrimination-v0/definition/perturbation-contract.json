@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "contract_version": "d1a-v0",
+  "status": "future_assignment_contract_only",
+  "permitted_inputs": [
+    "sealed_task_instance_ids_without_hidden_outcome_labels",
+    "sealed_public_evidence_factor_definitions",
+    "sealed_public_authority_factor_definitions",
+    "pre_frozen_sampling_seed_or_assignment_table_identity"
+  ],
+  "prohibited_inputs": [
+    "actual_outcome_labels",
+    "action_outcome_labels",
+    "hidden_oracle_material",
+    "semantic_verifier_internals",
+    "policy_outputs"
+  ],
+  "permitted_outputs": [
+    "evidence_validity_binding_assignment",
+    "authority_mapping_assignment",
+    "declared_logical_exclusion"
+  ],
+  "prohibited_outputs": [
+    "actual_outcome",
+    "action_outcome",
+    "semantic_verifier_decision",
+    "authorization_policy"
+  ],
+  "required_invariants": [
+    "task_and_producer_output_digests_unchanged_across_outcome_fixed_perturbations",
+    "semantic_input_and_raw_outcome_digests_unchanged_across_authority_perturbations",
+    "logical_exclusions_frozen_before_results",
+    "assignment_never_relabels_task_truth"
+  ],
+  "implementation_present": false,
+  "reason": "real assignments require independently sealed assets and are not fabricated by the coordinator"
+}

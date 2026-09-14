@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "contract_version": "d1a-v0",
+  "decisions": ["accept_commit", "reject", "abstain"],
+  "policies": {
+    "P0": {
+      "name": "calibrated_outcome_baseline",
+      "allowed_fields": ["producer_score_or_calibrated_probability"],
+      "forbidden_fields": ["semantic_verifier_decision", "evidence_items", "evidence_validity", "evidence_binding", "authority_required", "authority_mapping", "authorization_conformance"],
+      "requires_admitted_calibration": true,
+      "unavailable_reason": "P0_unavailable"
+    },
+    "P1": {
+      "name": "semantic_verification_only",
+      "allowed_fields": ["producer_claim", "semantic_verifier_decision"],
+      "forbidden_fields": ["evidence_items", "evidence_validity", "evidence_binding", "authority_required", "authority_mapping", "authorization_conformance"],
+      "disagreement_rule": "abstain",
+      "error_unknown_rule": "abstain"
+    },
+    "P2": {
+      "name": "evidence_bound",
+      "allowed_fields": ["producer_claim", "semantic_verifier_decision", "evidence_items", "evidence_validity", "evidence_binding"],
+      "forbidden_fields": ["authority_required", "authority_mapping", "authorization_conformance"],
+      "invalid_evidence_rule": "reject",
+      "nonbinding_absent_unknown_rule": "abstain"
+    },
+    "P3": {
+      "name": "authority_aware_f1",
+      "allowed_fields": ["producer_claim", "semantic_verifier_decision", "evidence_items", "evidence_validity", "evidence_binding", "authority_required", "authority_mapping", "authorization_conformance"],
+      "forbidden_fields": [],
+      "nonconformant_rule": "reject",
+      "missing_ambiguous_unknown_rule": "abstain",
+      "no_authority_reduction": "return P2 output bit-for-bit"
+    }
+  },
+  "ground_truth_statement": "policy decisions are not ground truth"
+}

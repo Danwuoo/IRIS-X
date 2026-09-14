@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://iris-x.local/d1a/custodian-attestation.schema.json",
+  "title": "D1a custodian information-boundary attestation",
+  "$ref": "#/$defs/attestation",
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "safePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*(?:^|/)\\.(?:/|$))[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+    },
+    "provenanceIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["custodian_id", "authoring_session_id", "identity_kind"],
+      "properties": {
+        "custodian_id": {"type": "string", "minLength": 3},
+        "authoring_session_id": {"type": "string", "minLength": 3},
+        "identity_kind": {"enum": ["human", "independent_model_session", "institutional_process", "other_traced_process"]},
+        "organization": {"type": "string", "minLength": 1}
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "media_type"],
+      "properties": {
+        "path": {"$ref": "#/$defs/safePath"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "media_type": {"type": "string", "minLength": 1}
+      }
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundle_id", "custodian_role", "purpose"],
+      "properties": {
+        "bundle_id": {"type": "string", "minLength": 3},
+        "custodian_role": {"enum": ["task_oracle", "authority_policy", "semantic_verifier", "calibration", "analysis", "public_definition"]},
+        "purpose": {"type": "string", "minLength": 3}
+      }
+    },
+    "independenceEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "evidence_kind", "reviewer_id"],
+      "properties": {
+        "path": {"$ref": "#/$defs/safePath"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "evidence_kind": {"enum": ["independent_authoring_record", "access_log", "institutional_separation_record", "external_review_record"]},
+        "reviewer_id": {"type": "string", "minLength": 3}
+      }
+    },
+    "attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attestation_id",
+        "attested_by",
+        "attested_at",
+        "independent_authorship_claim",
+        "coordinator_session_not_used_for_authorship",
+        "prohibited_information_observed",
+        "statements"
+      ],
+      "properties": {
+        "attestation_id": {"type": "string", "minLength": 3},
+        "attested_by": {"type": "string", "minLength": 3},
+        "attested_at": {"type": "string", "format": "date-time"},
+        "independent_authorship_claim": {"type": "boolean"},
+        "coordinator_session_not_used_for_authorship": {"type": "boolean"},
+        "prohibited_information_observed": {"type": "boolean"},
+        "statements": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 3}}
+      }
+    },
+    "baseBundle": {
+      "type": "object",
+      "required": [
+        "schema_version", "d1_contract_version", "bundle_id", "bundle_version",
+        "custodian_role", "provenance_identity", "created_at", "assets",
+        "declared_dependencies", "observed_dependencies", "prohibited_dependencies",
+        "information_observed_before_freeze", "information_not_observed_before_freeze",
+        "independence_evidence", "seal", "post_seal_mutations", "version_history",
+        "attestation", "role_payload"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "d1_contract_version": {"const": "d1a-v0"},
+        "bundle_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$"},
+        "bundle_version": {"type": "integer", "minimum": 1},
+        "custodian_role": {"enum": ["task_oracle", "authority_policy", "semantic_verifier", "calibration", "analysis"]},
+        "provenance_identity": {"$ref": "#/$defs/provenanceIdentity"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "assets": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/asset"}},
+        "declared_dependencies": {"type": "array", "items": {"$ref": "#/$defs/dependency"}},
+        "observed_dependencies": {"type": "array", "items": {"$ref": "#/$defs/dependency"}},
+        "prohibited_dependencies": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 3}, "uniqueItems": true},
+        "information_observed_before_freeze": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "information_not_observed_before_freeze": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "independence_evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/independenceEvidence"}},
+        "seal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "sealed_at", "manifest_sha256"],
+          "properties": {
+            "status": {"enum": ["sealed", "unsealed"]},
+            "sealed_at": {"oneOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]},
+            "manifest_sha256": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]}
+          }
+        },
+        "post_seal_mutations": {"type": "array", "items": {"type": "object"}},
+        "version_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["bundle_version", "bundle_id", "manifest_sha256"],
+            "properties": {
+              "bundle_version": {"type": "integer", "minimum": 1},
+              "bundle_id": {"type": "string", "minLength": 3},
+              "manifest_sha256": {"$ref": "#/$defs/digest"}
+            }
+          }
+        },
+        "attestation": {"$ref": "#/$defs/attestation"}
+      }
+    }
+  }
+}

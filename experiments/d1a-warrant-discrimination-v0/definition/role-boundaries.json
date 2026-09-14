@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "contract_version": "d1a-v0",
+  "roles": {
+    "task_oracle": {
+      "may_observe": ["task_contract", "permitted_state", "actual_outcome_rule", "post_state_oracle"],
+      "must_not_observe_before_freeze": ["perturbation_assignment", "policy_decisions", "heldout_producer_outputs"],
+      "must_not_define": ["authority_policy", "semantic_verifier_result"]
+    },
+    "authority_policy": {
+      "may_observe": ["legitimate_principals", "proposition_classes", "action_classes", "institutional_task_rules"],
+      "must_not_observe_before_freeze": ["realized_correctness", "policy_scores", "heldout_outcomes"],
+      "must_not_define": ["actual_outcome", "action_outcome"]
+    },
+    "semantic_verifier": {
+      "may_observe": ["task_semantics", "disjoint_development_material", "public_verifier_interface"],
+      "must_not_observe_before_freeze": ["heldout_oracle_labels", "authority_map", "perturbation_labels", "policy_outputs"],
+      "must_not_define": ["authorization_conformance"]
+    },
+    "calibration": {
+      "may_observe": ["exact_producer_configuration", "disjoint_calibration_outcomes", "permitted_producer_task_features"],
+      "must_not_observe_before_freeze": ["heldout_d1_outcomes", "d1_warrant_labels", "authority_labels", "policy_outputs"],
+      "must_not_define": ["semantic_verifier_result", "authorization_conformance"]
+    },
+    "analysis": {
+      "may_observe": ["sealed_admitted_inputs", "frozen_policy_outputs", "frozen_outcome_vector"],
+      "must_not_observe_before_freeze": ["unsealed_heldout_results"],
+      "must_not_define": ["oracle_revision", "verifier_revision", "authority_revision", "threshold_revision", "interpretation_revision"]
+    },
+    "perturbation_implementer": {
+      "may_observe": ["frozen_factor_definitions", "public_asset_interfaces"],
+      "must_not_observe_before_freeze": ["hidden_oracle_labels", "verifier_internals"],
+      "must_not_define": ["actual_outcome", "action_outcome", "authorization_policy"]
+    }
+  },
+  "minimum_cross_role_rules": [
+    "task_oracle and semantic_verifier require distinct authorship identities and authoring sessions",
+    "authority_policy must be ex ante and independent of realized correctness",
+    "analysis must be frozen after component seals and before heldout results",
+    "coordinator-authored meta-fixtures never satisfy a real-role requirement"
+  ]
+}

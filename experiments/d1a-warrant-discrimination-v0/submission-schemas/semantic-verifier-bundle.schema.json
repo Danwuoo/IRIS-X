@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://iris-x.local/d1a/semantic-verifier-bundle.schema.json",
+  "allOf": [
+    {"$ref": "https://iris-x.local/d1a/custodian-attestation.schema.json#/$defs/baseBundle"},
+    {
+      "type": "object",
+      "properties": {
+        "custodian_role": {"const": "semantic_verifier"},
+        "role_payload": {
+          "type": "object", "additionalProperties": false,
+          "required": ["verifier_id", "verifier_version", "verifier_path", "semantic_scope_path", "development_material_path", "development_heldout_disjoint", "heldout_oracle_labels_observed", "authority_map_observed", "perturbation_labels_observed", "policy_outputs_observed", "failure_cases", "known_blind_spots"],
+          "properties": {
+            "verifier_id": {"type": "string", "minLength": 3},
+            "verifier_version": {"type": "string", "minLength": 1},
+            "verifier_path": {"$ref": "https://iris-x.local/d1a/custodian-attestation.schema.json#/$defs/safePath"},
+            "semantic_scope_path": {"$ref": "https://iris-x.local/d1a/custodian-attestation.schema.json#/$defs/safePath"},
+            "development_material_path": {"$ref": "https://iris-x.local/d1a/custodian-attestation.schema.json#/$defs/safePath"},
+            "development_heldout_disjoint": {"const": true},
+            "heldout_oracle_labels_observed": {"const": false},
+            "authority_map_observed": {"const": false},
+            "perturbation_labels_observed": {"const": false},
+            "policy_outputs_observed": {"const": false},
+            "failure_cases": {
+              "type": "object", "additionalProperties": false,
+              "required": ["false_accept", "false_reject", "disagreement", "error", "unknown"],
+              "properties": {
+                "false_accept": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+                "false_reject": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+                "disagreement": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+                "error": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+                "unknown": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+              }
+            },
+            "known_blind_spots": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 3}}
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}
