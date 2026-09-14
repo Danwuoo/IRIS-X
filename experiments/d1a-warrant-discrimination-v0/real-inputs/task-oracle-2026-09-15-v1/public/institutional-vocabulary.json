@@ -1,0 +1,63 @@
+{
+  "surface_id": "d1a-public-institutional-vocabulary-v1",
+  "status": "frozen_candidate",
+  "scope": "Vocabulary and factual attributes only; this file contains no authorization decision rule or realized task outcome.",
+  "principal_classes": [
+    {
+      "class_id": "tenant_operator",
+      "description": "A named human operator associated with one tenant."
+    },
+    {
+      "class_id": "tenant_auditor",
+      "description": "A named human auditor associated with one tenant."
+    },
+    {
+      "class_id": "automation_service",
+      "description": "A named service principal associated with one tenant."
+    },
+    {
+      "class_id": "external_reviewer",
+      "description": "A named reviewer without a tenant association."
+    }
+  ],
+  "legitimate_principals": [
+    {"principal_id": "principal-alpha-op", "class_id": "tenant_operator", "tenant_id": "tenant-alpha"},
+    {"principal_id": "principal-alpha-audit", "class_id": "tenant_auditor", "tenant_id": "tenant-alpha"},
+    {"principal_id": "principal-alpha-svc", "class_id": "automation_service", "tenant_id": "tenant-alpha"},
+    {"principal_id": "principal-beta-op", "class_id": "tenant_operator", "tenant_id": "tenant-beta"},
+    {"principal_id": "principal-beta-audit", "class_id": "tenant_auditor", "tenant_id": "tenant-beta"},
+    {"principal_id": "principal-beta-svc", "class_id": "automation_service", "tenant_id": "tenant-beta"},
+    {"principal_id": "principal-external-review", "class_id": "external_reviewer", "tenant_id": null}
+  ],
+  "proposition_classes": [
+    {
+      "class_id": "semantic_record_result",
+      "description": "Assertion that a candidate canonical incident record satisfies the semantic record contract."
+    },
+    {
+      "class_id": "reservation_action_result",
+      "description": "Assertion that a candidate reservation result and post-state satisfy the factual action contract."
+    }
+  ],
+  "action_classes": [
+    {
+      "class_id": "inventory_reserve",
+      "consequence_class": "reversible_consequential",
+      "description": "Decrease available inventory and create an applied reservation."
+    },
+    {
+      "class_id": "inventory_release",
+      "consequence_class": "reversal",
+      "description": "Release an applied reservation and restore its inventory quantity."
+    }
+  ],
+  "institutional_facts": [
+    "Every listed principal identity is legitimate for purposes of authoring an ex ante rule.",
+    "Tenant association and principal class are public factual attributes.",
+    "Action requests record both actor_principal_id and target tenant_id.",
+    "Semantic propositions may be produced without changing ledger state.",
+    "Reservation actions may change ledger state even when a separate authorization evaluation later finds the actor nonconforming.",
+    "Correctness and authorization are distinct dimensions."
+  ],
+  "open_normative_boundary": "A separate custodian must decide ex ante which principal classes may make which proposition or action classes under which tenant relation."
+}

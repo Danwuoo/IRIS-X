@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "contract_version": "d1a-v0",
+  "role": "semantic_verifier",
+  "may_observe": [
+    "task_semantics",
+    "disjoint_development_material",
+    "public_verifier_interface"
+  ],
+  "must_not_observe_before_freeze": [
+    "heldout_oracle_labels",
+    "authority_map",
+    "perturbation_labels",
+    "policy_outputs"
+  ],
+  "must_not_define": [
+    "authorization_conformance"
+  ],
+  "cross_role_rule": "The verifier requires an authorship identity and session distinct from the Task/Oracle custodian for any intended F1-C claim."
+}

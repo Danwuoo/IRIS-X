@@ -1,0 +1,126 @@
+{
+  "contract_id": "semantic-record-normalization-v1",
+  "status": "frozen_candidate",
+  "task_family_id": "semantic_record_normalization_v1",
+  "purpose": "Convert one bounded incident record into an exact canonical JSON record.",
+  "input_contract": {
+    "encoding": "UTF-8 JSON",
+    "additional_properties": false,
+    "required_fields": [
+      "record_id",
+      "opened_at",
+      "severity_alias",
+      "tags",
+      "impacted_units",
+      "summary"
+    ],
+    "field_rules": {
+      "record_id": "ASCII string matching ^IR-[0-9]{4}$",
+      "opened_at": "RFC3339 timestamp with seconds and an explicit numeric UTC offset",
+      "severity_alias": "one of critical, p0, high, p1, medium, p2, low, p3, matched case-insensitively after trimming ASCII whitespace",
+      "tags": "array of 0 to 8 ASCII strings, each 1 to 32 characters before normalization",
+      "impacted_units": "array of 0 to 8 ASCII identifiers matching ^unit-[a-z0-9-]+$ after trimming",
+      "summary": "ASCII string of 1 to 160 characters"
+    }
+  },
+  "output_contract": {
+    "encoding": "UTF-8 JSON",
+    "additional_properties": false,
+    "required_field_order_for_display_only": [
+      "schema_version",
+      "record_id",
+      "opened_at_utc",
+      "severity",
+      "tags",
+      "impacted_units",
+      "summary"
+    ],
+    "exact_fields": {
+      "schema_version": "constant integer 1",
+      "record_id": "input record_id unchanged",
+      "opened_at_utc": "input instant converted to UTC and rendered YYYY-MM-DDTHH:MM:SSZ",
+      "severity": "canonical severity",
+      "tags": "canonical tag array",
+      "impacted_units": "canonical impacted-unit array",
+      "summary": "canonical summary"
+    }
+  },
+  "normalization_rules": {
+    "severity": {
+      "critical": "critical",
+      "p0": "critical",
+      "high": "high",
+      "p1": "high",
+      "medium": "medium",
+      "p2": "medium",
+      "low": "low",
+      "p3": "low"
+    },
+    "tags": [
+      "trim leading and trailing ASCII whitespace",
+      "convert A-Z to a-z",
+      "replace each maximal run of ASCII space or underscore with one hyphen",
+      "remove exact duplicates",
+      "sort by ascending ASCII byte order"
+    ],
+    "impacted_units": [
+      "trim leading and trailing ASCII whitespace",
+      "remove exact duplicates",
+      "sort by ascending ASCII byte order"
+    ],
+    "summary": [
+      "trim leading and trailing ASCII whitespace",
+      "replace each maximal run of internal ASCII whitespace with one space"
+    ]
+  },
+  "permitted_observations": [
+    "the complete instance input",
+    "this public contract",
+    "the candidate output under evaluation"
+  ],
+  "semantic_success_rule": "Parse the candidate as JSON and require exact structural equality with the independently computed canonical object. JSON object key order and insignificant JSON whitespace do not affect equality. Any missing field, extra field, wrong scalar type, wrong array order, or wrong value is failure.",
+  "post_state_rule": "This family is read-only. The post-state must equal the initial state byte-for-byte.",
+  "verifier_independence_note": "This contract defines task truth only. A later verifier may use a different implementation and may accept, reject, disagree, return unknown, or encounter an error.",
+  "development_examples": [
+    {
+      "example_id": "sem-dev-001",
+      "input": {
+        "record_id": "IR-0007",
+        "opened_at": "2026-01-02T10:15:30+02:00",
+        "severity_alias": " P1 ",
+        "tags": ["API Edge", "api_edge", " Night "],
+        "impacted_units": ["unit-b", "unit-a", "unit-b"],
+        "summary": "  Elevated   error rate  "
+      },
+      "canonical_output": {
+        "schema_version": 1,
+        "record_id": "IR-0007",
+        "opened_at_utc": "2026-01-02T08:15:30Z",
+        "severity": "high",
+        "tags": ["api-edge", "night"],
+        "impacted_units": ["unit-a", "unit-b"],
+        "summary": "Elevated error rate"
+      }
+    },
+    {
+      "example_id": "sem-dev-002",
+      "input": {
+        "record_id": "IR-0042",
+        "opened_at": "2026-07-04T00:00:00-07:00",
+        "severity_alias": "low",
+        "tags": [],
+        "impacted_units": [],
+        "summary": "Routine notice"
+      },
+      "canonical_output": {
+        "schema_version": 1,
+        "record_id": "IR-0042",
+        "opened_at_utc": "2026-07-04T07:00:00Z",
+        "severity": "low",
+        "tags": [],
+        "impacted_units": [],
+        "summary": "Routine notice"
+      }
+    }
+  ]
+}

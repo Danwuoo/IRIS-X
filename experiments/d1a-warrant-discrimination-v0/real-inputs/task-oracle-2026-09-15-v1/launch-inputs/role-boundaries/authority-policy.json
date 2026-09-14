@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "contract_version": "d1a-v0",
+  "role": "authority_policy",
+  "may_observe": [
+    "legitimate_principals",
+    "proposition_classes",
+    "action_classes",
+    "institutional_task_rules"
+  ],
+  "must_not_observe_before_freeze": [
+    "realized_correctness",
+    "policy_scores",
+    "heldout_outcomes"
+  ],
+  "must_not_define": [
+    "actual_outcome",
+    "action_outcome"
+  ],
+  "cross_role_rule": "The policy must be ex ante and independent of realized correctness."
+}

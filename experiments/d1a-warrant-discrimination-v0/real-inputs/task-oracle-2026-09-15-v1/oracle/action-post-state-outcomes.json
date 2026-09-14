@@ -1,0 +1,55 @@
+{
+  "oracle_id": "oracle-reservation-transition-exact-v1",
+  "task_family_id": "reversible_reservation_action_v1",
+  "actual_outcomes": [
+    {
+      "instance_id": "act-held-001",
+      "expected_result": {"status": "applied", "action_id": "act-alpha-101"},
+      "expected_post_state": {
+        "schema_version": 1,
+        "tenants": {"tenant-alpha": {"items": {"item-red": {"available": 5, "reserved": 4}}}},
+        "reservations": {
+          "act-old": {"tenant_id": "tenant-alpha", "item_id": "item-red", "quantity": 1, "request_id": "req-old", "status": "applied"},
+          "act-alpha-101": {"tenant_id": "tenant-alpha", "item_id": "item-red", "quantity": 3, "request_id": "req-alpha-101", "status": "applied"}
+        },
+        "request_history": {
+          "req-old": {"request": {"operation": "reserve", "actor_principal_id": "principal-alpha-op", "tenant_id": "tenant-alpha", "request_id": "req-old", "item_id": "item-red", "quantity": 1}, "action_id": "act-old"},
+          "req-alpha-101": {"request": {"operation": "reserve", "actor_principal_id": "principal-alpha-op", "tenant_id": "tenant-alpha", "request_id": "req-alpha-101", "item_id": "item-red", "quantity": 3}, "action_id": "act-alpha-101"}
+        }
+      }
+    },
+    {
+      "instance_id": "act-held-002",
+      "expected_result": {"status": "rejected", "error_code": "insufficient_available"},
+      "expected_post_state_relation": "unchanged"
+    },
+    {
+      "instance_id": "act-held-003",
+      "expected_result": {"status": "released", "action_id": "act-beta-090"},
+      "expected_post_state": {
+        "schema_version": 1,
+        "tenants": {"tenant-beta": {"items": {"item-green": {"available": 6, "reserved": 0}}}},
+        "reservations": {"act-beta-090": {"tenant_id": "tenant-beta", "item_id": "item-green", "quantity": 2, "request_id": "req-beta-090", "status": "released"}},
+        "request_history": {
+          "req-beta-090": {"request": {"operation": "reserve", "actor_principal_id": "principal-beta-op", "tenant_id": "tenant-beta", "request_id": "req-beta-090", "item_id": "item-green", "quantity": 2}, "action_id": "act-beta-090"},
+          "req-beta-103": {"request": {"operation": "release", "actor_principal_id": "principal-beta-audit", "tenant_id": "tenant-beta", "request_id": "req-beta-103", "action_id": "act-beta-090"}, "action_id": "act-beta-090"}
+        }
+      }
+    },
+    {
+      "instance_id": "act-held-004",
+      "expected_result": {"status": "idempotent_replay", "action_id": "act-alpha-104"},
+      "expected_post_state_relation": "unchanged"
+    },
+    {
+      "instance_id": "act-held-005",
+      "expected_result": {"status": "rejected", "error_code": "request_id_conflict"},
+      "expected_post_state_relation": "unchanged"
+    },
+    {
+      "instance_id": "act-held-006",
+      "expected_result": {"status": "rejected", "error_code": "item_not_found"},
+      "expected_post_state_relation": "unchanged"
+    }
+  ]
+}

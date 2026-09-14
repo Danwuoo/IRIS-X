@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "manifest_id": "d1a-semantic-verifier-disclosure-20260915-v1",
+  "role": "semantic_verifier",
+  "created_at": "2026-09-15T01:04:13+08:00",
+  "task_oracle_bundle_id": "d1a-task-oracle-2026-09-15-v1",
+  "task_oracle_manifest_sha256": "62fa935d7f02843cab2615dda8b9455d79c8bbcc9f6307841a9ddb95e1977564",
+  "development_material_rule": "The disclosed public development examples are disjoint from the sealed held-out instances. The custodian may create additional synthetic development cases solely from the public contracts and must preserve that disjointness.",
+  "allowed_files": [
+    {
+      "source_path": "experiments/d1a-warrant-discrimination-v0/real-inputs/task-oracle-2026-09-15-v1/public/semantic-record-contract.json",
+      "workspace_path": "input/public/semantic-record-contract.json",
+      "sha256": "67f24a25f9c169c58fd851a4250edb057842c8e413c11c7b92c16080606e9c2d",
+      "purpose": "Public semantic input/output contract, permitted observations, and disjoint development examples"
+    },
+    {
+      "source_path": "experiments/d1a-warrant-discrimination-v0/real-inputs/task-oracle-2026-09-15-v1/public/reversible-reservation-contract.json",
+      "workspace_path": "input/public/reversible-reservation-contract.json",
+      "sha256": "a74ff17aae3f965c70ae74255c5637ba958692bd8d2b9d627f4fd836e3688940",
+      "purpose": "Public action input/result/post-state semantics, permitted observations, and disjoint development examples"
+    },
+    {
+      "source_path": "experiments/d1a-warrant-discrimination-v0/custodian-packets/semantic-verifier-custodian.md",
+      "workspace_path": "input/contracts/semantic-verifier-custodian.md",
+      "sha256": "27e6132184cbf3ea8cf5d6def6f0d9b59feda3b796572d88b17ebcfb789e18e4",
+      "purpose": "Role packet"
+    },
+    {
+      "source_path": "experiments/d1a-warrant-discrimination-v0/submission-schemas/semantic-verifier-bundle.schema.json",
+      "workspace_path": "input/contracts/semantic-verifier-bundle.schema.json",
+      "sha256": "921d8280e3f15c0478ead868afe86b57c8e85a093e374324cb000b4888d14b7e",
+      "purpose": "Role output schema"
+    },
+    {
+      "source_path": "experiments/d1a-warrant-discrimination-v0/submission-schemas/custodian-attestation.schema.json",
+      "workspace_path": "input/contracts/custodian-attestation.schema.json",
+      "sha256": "feb26a27d6bdc59da23334ce23f6976c5728a3db841f2a3f1c818dcea7317ce8",
+      "purpose": "Shared base bundle and attestation schema"
+    },
+    {
+      "source_path": "experiments/d1a-warrant-discrimination-v0/definition/provenance-contract.json",
+      "workspace_path": "input/contracts/provenance-contract.json",
+      "sha256": "d6b686c86c4ccee0ef23e22b5614eb0ab2a85eb46bf02a3cb1a651f10470970c",
+      "purpose": "Canonical sealing and provenance rules"
+    },
+    {
+      "source_path": "experiments/d1a-warrant-discrimination-v0/real-inputs/task-oracle-2026-09-15-v1/launch-inputs/role-boundaries/semantic-verifier.json",
+      "workspace_path": "input/contracts/role-boundary.json",
+      "sha256": "7888e7d267ae65fbff6e056f549dee9a48492259dd79a761858290b0a3cff916",
+      "purpose": "Minimum role-specific information boundary"
+    }
+  ],
+  "prohibited_categories": [
+    "held-out task instances",
+    "held-out oracle labels",
+    "authority maps or authority-policy output",
+    "evidence or authority assignment",
+    "comparator decisions",
+    "analysis output",
+    "the other child workspace"
+  ],
+  "seal": {
+    "status": "sealed",
+    "digest_rule": "sha256 of canonical JSON after removing seal.manifest_sha256",
+    "manifest_sha256": "af48f165a6b43eccbc58c9de6163f69f0f8001ea9532ba983339e4927f7de571"
+  }
+}
