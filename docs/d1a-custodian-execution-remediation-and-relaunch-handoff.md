@@ -1,7 +1,8 @@
 # D1a Custodian Execution Remediation and Relaunch Handoff
 
 - Terminal state: `remediation_in_progress`
-- Status: **fourth exact-path repair frozen; admission A4 pending**
+- Status: **exact-path admission A4 passed; fresh B3/C3 workspaces staged;
+  launch pending**
 - Starting SHA: `586142b3652b68f60b09f43b0d8bf766a8b99da5`
 - Branch / starting authority: `main` and `origin/main` both matched the
   starting SHA; the worktree was clean.
@@ -160,6 +161,37 @@ HTTP response. Admission A4 will qualify the full model-visible path.
 - Admission A4 workspace:
   `C:\Users\wurre\.codex\external-runs\d1a-execution-admission-canary-20260915-a4`.
 
+Admission A4 passed the complete final model-visible path. Terra/high read and
+hashed the disclosed sentinel, created and read back an output file, hashed it,
+updated it, read and hashed the replacement, wrote a terminal capability
+record, read it back, and hashed it. The same final outer profile had already
+denied the model-free sibling-path write while permitting in-workspace
+create/hash, establishing the host write boundary without asking the model to
+attempt a prohibited write.
+
+- Admission A4 launch timestamp: `2026-09-15T22:02:49.9511087+08:00`.
+- Admission A4 completion timestamp: `2026-09-15T22:05:03.5370911+08:00`.
+- Admission A4 PID: `17516`.
+- Admission A4 CLI thread ID:
+  `01a0a561-edb4-73c0-a35b-bd774c1e0117`.
+- Admission A4 prompt SHA-256:
+  `ca7e623c050f78bdb5f61d3f2c5be9cf5f5ee319a19e32f9ab2a6569a070d310`.
+- Admission A4 stdout SHA-256:
+  `65552abd8380c3690c847b9e2187f72d8c805460aacf409edb8c01fea0574ffd`.
+- Admission A4 stderr SHA-256:
+  `5692892533628fd44304b4dd3bb067e3b0e12027824788794d5c479167052bdd`.
+- Sentinel SHA-256:
+  `de0e43a1aed6d167f11dc4266d67fc3e20d25f24d59f2294d43833795c448614`.
+- First output SHA-256:
+  `9d9264a88d653ccf778b7b57c0bce62c86a977e3306647acaeab6d2f2b4ff8d4`.
+- Updated output SHA-256:
+  `ec5d6efdb009165a9f64b334eb5f8f8e7b9256af0565a5556c2a0e490bf16ec2`.
+- Terminal capability record SHA-256:
+  `b2506779779687ea7ab35e2ddcc5c8663766a04c2de64df889b4bf9f48d0dfa5`.
+- Terminal state: `execution_capability_qualified`.
+- Token usage: 110,940 input; 78,336 cached input; 1,791 output; 423
+  reasoning output.
+
 ## Semantic C2 contract review
 
 Verdict: `no_material_contract_defect`
@@ -174,7 +206,7 @@ independent verifier without new hidden information or changed task truth.
 
 Task/Oracle v1 changed by this review: **no**.
 
-## Exact-path admission result
+## Historical exact-path admission A1 result
 
 - Canary identity: `d1a-execution-canary-terra-high-20260915-a1`.
 - Model / effort: `gpt-5.6-terra` / `high`.
@@ -217,8 +249,11 @@ Task/Oracle v1 changed by this review: **no**.
 
 ## Fresh custodian launch disposition
 
-Exact-path admission did not pass, so neither fresh custodian was launched.
-The frozen but unused identities and paths are retained for provenance only:
+Exact-path admission A4 passed. The two workspaces below were freshly staged
+from the frozen disclosure manifests; every one of the seven allowed source
+digests per role matched after staging, each `input/` tree was marked read-only,
+and each `output/` directory was empty. Launch remained pending at this
+pre-launch commit:
 
 - Authority authoring-session ID:
   `d1a-authority-terra-high-20260915-b3`.
@@ -227,8 +262,9 @@ The frozen but unused identities and paths are retained for provenance only:
 - Authority prompt SHA-256:
   `46a10212d7290e2d4b60b913290fd0dbd1a799211a9a42affb8bbd98f68d9464`.
 - Authority model / effort: `gpt-5.6-terra` / `high`.
-- Authority PID / immediate state / launch timestamp: not applicable; not
-  launched.
+- Authority disclosure-manifest file SHA-256:
+  `fa779ce0235937d4553e4321239ad12ed703b7cc48a30c20d768597b565dfaeb`.
+- Authority PID / immediate state / launch timestamp: pending.
 - Semantic-verifier authoring-session ID:
   `d1a-semantic-verifier-terra-high-20260915-c3`.
 - Semantic-verifier workspace:
@@ -236,18 +272,21 @@ The frozen but unused identities and paths are retained for provenance only:
 - Semantic-verifier prompt SHA-256:
   `d77550a90dbd9c12c34db5f3bceb2eafc1f6c0b7079143cc32f67ada9fa9f590`.
 - Semantic-verifier model / effort: `gpt-5.6-terra` / `high`.
-- Semantic-verifier PID / immediate state / launch timestamp: not applicable;
-  not launched.
+- Semantic disclosure-manifest file SHA-256:
+  `a84c2790f2fa11ff47cef3ab5f10d2957878a1fe89d3a8bc930e3213088a6aea`.
+- Semantic-verifier PID / immediate state / launch timestamp: pending.
 
 ## Accounting and stop boundary
 
 ```text
 prior failed custodian model calls: 4
-new admission-canary model calls: 1
+new admission session attempts: 4 (A1-A4)
+new completed admission model responses: 2 (A1 and A4)
+pre-model/runtime failures: 2 (A2 startup; A3 service network)
 new Authority custodian calls: 0
 new Semantic-verifier custodian calls: 0
-new repository-initiated model calls: 1
-cumulative custodian/remediation calls: 5
+new repository-initiated model session attempts: 4
+cumulative custodian/remediation session attempts: 8
 retries: 0
 fallbacks: 0
 routes: 0
@@ -257,11 +296,12 @@ subagents: 0
 D1b producer calls: 0
 ```
 
-No fresh custodian process or substantive child output exists to monitor or
-collect. No Task/Oracle asset changed. D1a empirical qualification remains
-`Not established`; F1-B/C/D/E and wider novelty remain unchanged or not
-established; D1b and Phase 7 remain unauthorized.
+No Task/Oracle asset changed: `git diff` reports zero paths under the frozen
+Task/Oracle bundle between its freeze SHA and this launch-preparation state.
+D1a empirical qualification remains `Not established`; F1-B/C/D/E and wider
+novelty remain unchanged or not established; D1b and Phase 7 remain
+unauthorized.
 
-Next action requires a new owner-authorized execution-path remediation scope.
-TURN-B custodian collection is not applicable because no fresh custodian was
-launched.
+Next action in this owner-authorized TURN-A scope: launch B3 and C3 once each,
+record one immediate confirmation per child, and stop without monitoring or
+collection.
