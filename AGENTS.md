@@ -1,436 +1,127 @@
-# AGENTS.md
-
-## Project
-
-**IRIS-X — Reliable Agentic Intelligence Research Workspace**
-
-IRIS-X is a clean research workspace for rethinking reliable, low-cost, task-specific agent systems.
-
-The project is not intended to combine several existing repositories into a larger framework. The repositories collected here are research predecessors, external references, implementation examples, and experimental substrates. Their useful ideas, constraints, failure cases, and engineering patterns may inform IRIS-X, but IRIS-X should develop its own coherent architecture rather than inherit the structure of any one source project.
-
-The repository has completed its initial research-preparation work, the Phase 4
-evidence program, the first post-Phase-4 synthesis, Phase 5, Phase 6, and the
-foundational research synthesis at
-`research/foundational-research-synthesis.md`. Phase 6 remains closed by the
-historical evidence-chain and research-state consolidation at
-`research/phase-6-formal-closure-and-research-state.md`; the durable
-post-synthesis state is recorded at
-`docs/post-foundational-synthesis-research-state.md`. No Phase 7, experiment,
-or follow-on model execution is currently authorized. The research formulation
-and architecture remain provisional, revisable, and not production-stable.
-
-## Current Objective
-
-The foundational synthesis adjudicated the preserved Phase 1–6 chain without
-rewriting its historical evidence. The bounded foundational core is
-**evidence-governed warranted agency**. **Minimum-sufficient configuration**
-followed by **failure-directed intervention** is an emerging, ordered research
-program whose two constructs and evidence requirements remain separate.
-**Temporal and state-transition reliability** is deferred until a
-continuity-dependent task supplies direct pressure. This plural formulation is
-provisional and falsifiable, not a final architecture or permanent thesis.
-
-Current direct evidence still triggers zero of eight deferred capability gates.
-The synthesis was authored in one owner-authorized GPT-5.6 Sol Ultra session;
-it launched no model/provider execution from the repository and dispatched no
-follow-on model task. No Phase 7 or experiment is authorized. Any future work
-requires a new owner-authorized scope.
-
-At this stage, the main goals are to:
-
-- preserve the completed Phase 4, Phase 5, and Phase 6 evidence boundaries;
-- preserve the bounded warranted-agency core without promoting it beyond its
-  declared task, configuration, verifier, action, and horizon boundaries;
-- test the emerging configuration-sufficiency and failure-directed-
-  intervention program through discriminating evidence rather than a feature
-  roadmap;
-- defer temporal reliability until continuity necessity is directly observed;
-- preserve Batch 2 Result C, Batch 3 historical Result D, and the separate
-  post-Batch-3 Result A authority repair without retrospective reclassification;
-- keep sampled task/configuration pressure separate from intrinsic model
-  incapability and intervention benefit;
-- preserve all-eight-gate status, including `unknown` and
-  `insufficient_or_ambiguous`, without converting them to false or triggered;
-- separate IRIS-X research contribution from reusable commodity substrate;
-- preserve uncertainty and define falsifiers for provisional choices;
-- keep unresolved mechanisms as extension points rather than silently making
-  them core features.
-
-Do **not** expand this stage into broad architecture implementation,
-productionization, routing, cascades, workflow search, fine-tuning, or
-architecture search without a new owner-authorized scope.
-
-Do **not** treat the provisional thesis, research questions, hypotheses,
-system architecture, or product boundary as final.
-
-## Working Direction
-
-The broad direction is **Reliable Agentic Intelligence**, with particular interest in agent systems that can achieve strong performance on bounded or specific tasks without requiring unnecessarily expensive general-purpose intelligence.
-
-Useful themes currently include:
-
-- task-specific or specialist agents;
-- minimum-sufficient capability rather than maximum capability;
-- cost-aware execution and escalation;
-- epistemic reliability and provenance;
-- empirical measurement and evaluation;
-- controlled actions and verifiable state changes;
-- failure attribution and recovery;
-- runtime instrumentation;
-- agent, prompt, workflow, and configuration optimization;
-- design-time specialization versus runtime escalation;
-- long-running and stateful agent execution.
-
-These are research directions, not yet normative architecture requirements.
-
-## Research Philosophy
-
-IRIS-X should distinguish between three kinds of material:
-
-1. **Ideas worth absorbing**
-   - conceptual principles;
-   - useful abstractions;
-   - experimental findings;
-   - failure modes;
-   - evaluation methods;
-   - architectural constraints.
-
-2. **Mechanisms worth reusing or adapting**
-   - runtimes;
-   - evaluators;
-   - tracing systems;
-   - optimization methods;
-   - workflow engines;
-   - tool interfaces;
-   - persistence mechanisms.
-
-3. **Assumptions that should not be inherited automatically**
-   - repository boundaries;
-   - framework-specific object models;
-   - product-oriented abstractions;
-   - benchmark-specific assumptions;
-   - implementation choices that only exist for historical reasons.
-
-An imported project is evidence and reference material, not authority over IRIS-X.
-
-## Current Research Corpus
-
-The repository currently includes material from several predecessor and external projects. Their approximate research roles are:
-
-### Predecessor work
-
-- `sources/predecessors/iris/`
-  - internal-state reasoning;
-  - cognitive architecture;
-  - state representation;
-  - learned control;
-  - attribution and recovery.
-
-- `sources/predecessors/eidos/`
-  - epistemic governance;
-  - provenance;
-  - authority;
-  - typed research records;
-  - conflict and knowledge-state discipline.
-
-- `sources/predecessors/spex/`
-  - measurement;
-  - evidence;
-  - evaluation;
-  - comparison boundaries;
-  - adjudication;
-  - empirical claim discipline.
-
-- `sources/predecessors/vanta/`
-  - controlled execution;
-  - execution IR;
-  - side-effect classification;
-  - verification;
-  - commit, rollback, replay, and recovery.
-
-### External references
-
-- `sources/external/prime_agent/`
-  - stateful agent runtime;
-  - tool and session lifecycle;
-  - context handling;
-  - recursive or long-running agent execution.
-
-- `sources/external/prime_intellect_verifiers_v1/`
-  - tasksets;
-  - harnesses;
-  - traces;
-  - rollouts;
-  - evaluation and reinforcement-learning interfaces.
-
-- `sources/external/NeMo-Agent-Toolkit-develop/`
-  - framework-agnostic instrumentation;
-  - profiling;
-  - observability;
-  - evaluation;
-  - optimization;
-  - runtime performance mechanisms.
-
-- `sources/external/dspy/`
-  - declarative LM programs;
-  - signatures;
-  - modules;
-  - optimizers;
-  - program-level abstraction.
-
-- `sources/external/gepa/`
-  - reflective optimization;
-  - trace-informed mutation;
-  - Pareto-efficient search;
-  - prompt, code, configuration, and agent-architecture optimization.
-
-- `sources/external/aflow/`
-  - automatic agentic workflow generation;
-  - code-represented workflow search;
-  - operator-based composition;
-  - evaluation-guided optimization.
-
-- `sources/external/agent_lightning/`
-  - stated framework for reinforcement-learning training of agents;
-  - retains real agent harnesses in its documented design.
-
-- `sources/external/frugalgpt/`
-  - stated techniques for budget-constrained LLM applications;
-  - model-selection and cascade concepts relevant to cost/performance tradeoffs.
-
-- `sources/external/routellm/`
-  - stated serving and evaluation framework for LLM routers;
-  - routes requests between stronger and cheaper models.
-
-This list describes why the material is present. It does not imply that all of these systems will become dependencies of IRIS-X.
-
-## Repository Preparation Rules
-
-When organizing the repository or corpus, prefer research enablement over
-feature development. During the current Phase 5 provisional architecture stage,
-retain the same restraint: evidence-backed boundaries and minimal reversible
-implementation are more valuable than framework breadth.
-
-Good work includes:
-
-- adding source manifests or provenance records;
-- documenting where imported material came from;
-- recording upstream repository and commit information;
-- separating imported source from IRIS-X-authored research;
-- creating indexes and navigation documents;
-- identifying duplicate or overlapping concepts;
-- writing comparative notes;
-- creating terminology maps;
-- cataloging schemas, interfaces, evaluators, runtimes, and optimization mechanisms;
-- identifying obvious licensing or provenance concerns;
-- documenting unresolved questions;
-- creating small scripts that help inspect or index the corpus.
-
-Avoid:
-
-- implementing a new agent runtime;
-- merging imported projects into one codebase;
-- rewriting predecessor projects under a common abstraction;
-- choosing a final framework stack;
-- creating a final IRIS-X ontology too early;
-- declaring a final research thesis without supporting analysis;
-- turning exploratory notes into normative architecture;
-- treating benchmark success as proof of general capability;
-- treating an imported framework as the default architecture.
-
-## Source Preservation
-
-Material under `sources/` and `references/papers/` is preserved source material. Scoped rules are in `sources/AGENTS.md`.
-
-Unless a task explicitly requires modifying an imported project:
-
-- preserve imported files as faithfully as practical;
-- avoid stylistic cleanup inside imported trees;
-- avoid refactoring imported implementations;
-- do not silently rewrite upstream documentation;
-- keep IRIS-X-specific analysis outside imported source trees where possible.
-
-If an imported source must be modified for repository hygiene, clearly distinguish the modification from upstream content.
-
-## IRIS-X Authored Material
-
-New IRIS-X material belongs in these editable zones:
-
-```text
-research/
-experiments/
-docs/
-tools/
-corpus/
-irisx/
-```
-
-Use `research/AGENTS.md` for analysis rules and `experiments/AGENTS.md` for experiment discipline. `irisx/` is reserved for provisional IRIS-X-authored architecture code and is not a production-stable SDK or framework. Do not introduce another broad hierarchy without an immediate operational purpose.
-
-Research documents should make their status clear when useful, for example:
-
-- exploratory;
-- comparative;
-- hypothesis;
-- experiment;
-- result;
-- decision;
-- deprecated.
-
-Do not introduce a heavy governance system merely because predecessor projects used one. Governance should be added only when the research workflow requires it.
-
-## Research Method
-
-When studying the corpus:
-
-1. inspect the original source before summarizing it;
-2. distinguish stated behavior from inferred intent;
-3. preserve provenance;
-4. record uncertainty explicitly;
-5. compare mechanisms at the level of problems solved, not only API shape;
-6. separate research contribution from commodity infrastructure;
-7. look for incompatible assumptions, not only similarities;
-8. identify failure cases and negative evidence;
-9. avoid concluding that a concept belongs in IRIS-X merely because multiple frameworks implement it;
-10. prefer falsifiable observations over architectural enthusiasm.
-
-When evidence is incomplete, use labels such as:
-
-- `Unknown`
-- `Unclear`
-- `Not established`
-- `Not evaluated`
-- `Conflicting evidence`
-
-Do not fill gaps with confident guesses.
-
-## Working Mental Model
-
-A useful provisional distinction is:
-
-```text
-IRIS-X research contribution
-        vs.
-commodity / reusable substrate
-```
-
-Examples of likely substrate include:
-
-- model-provider adapters;
-- basic tool dispatch;
-- session management;
-- tracing transport;
-- generic workflow execution;
-- persistence infrastructure.
-
-Examples of areas that may require original IRIS-X research include:
-
-- what constitutes sufficient capability for a bounded task;
-- what evidence justifies trusting an agent result;
-- when a cheap specialist should stop, retry, escalate, or be redesigned;
-- how failures should be attributed;
-- how cost, reliability, and capability should be evaluated together;
-- how observations, claims, evaluations, and actions should interact.
-
-These orientation points are not independently normative research questions or architecture requirements. The current provisional project-level research problem is documented in `research/problem-definition.md` and remains revisable through evidence.
-
-## Development Restraint
-
-Do not optimize for visible code volume.
-
-At the current stage, a well-structured comparison, source map, or research note can be more valuable than an implementation.
-
-Before adding a new abstraction, ask:
-
-- What concrete problem does it solve?
-- Which existing source already addresses that problem?
-- Is the proposed abstraction a research contribution or only integration glue?
-- What evidence would show that the abstraction is necessary?
-- Can the question be answered through a smaller experiment first?
-
-Prefer small, reversible research steps.
-
-## External Frameworks
-
-Do not assume IRIS-X must directly depend on any imported external framework.
-
-Prime Agent, NeMo Agent Toolkit, verifiers, DSPy, GEPA, AFlow, and similar projects should initially be treated as reference implementations or candidate substrates.
-
-If later experimentation uses one of them, keep the boundary explicit enough that IRIS-X concepts do not become indistinguishable from framework-specific types.
-
-## Near-Term Work
-
-The durable post-synthesis state preserves a bounded warranted-agency core, an
-emerging configuration-sufficiency and failure-directed-intervention program,
-and deferred temporal reliability. None authorizes implementation or an
-experiment.
-
-The closed Phase 6 state preserves:
-
-- the Batch 1 deterministic capability-pressure and failure-attribution
-  instrument;
-- Batch 2 Result C as an interpretable sampling-path negative result;
-- Batch 3 Result D and all six direct terminal observations;
-- the separately repaired provenance-bound predicate authority;
-- one bounded sampled task/configuration-level pressure predicate;
-- an all-eight-gate ledger with zero direct-evidence triggers;
-- explicit uncertainty around repeatability and every intervention benefit;
-- zero closure-scope model/provider calls and preservation of prior evidence.
-
-Validate repository organization from the root:
+# IRIS-X Repository Governance
+
+## Purpose and Current State
+
+IRIS-X is a research workspace concerned broadly with task- and
+domain-specialized AI systems. Its final research question, architecture,
+training strategy, platform design, and product boundary are open.
+
+The repository is in a research-reset and direction-selection state. It has no
+active thesis, phase, experiment, implementation program, or preferred follow-on
+research question. Historical IRIS-X work is preserved as research lineage, not
+as automatic authority for future work.
+
+Beginning a new major research program, model/provider execution, experiment,
+architecture effort, or product implementation requires explicit owner
+authorization with a new scope. Do not infer authorization from a historical
+plan, handoff, synthesis, decision, prototype, or experiment package.
+
+## Repository Boundaries
+
+| Path | Classification | Default treatment |
+| --- | --- | --- |
+| `sources/` | Preserved imported source and reference implementations | Read-only; follow `sources/AGENTS.md` |
+| `references/papers/` | Preserved reference artifacts | Read-only |
+| `corpus/` | Provenance registries and recovery records | Preserve identities and history; edit only for concrete provenance work |
+| `experiments/` | Historical definitions, inputs, machinery, raw records, results, and qualification packages | Preserve evidence and reproducibility; follow `experiments/AGENTS.md` |
+| `research/` | Historical IRIS-X interpretations plus neutral research scaffolding | Use the indexes and follow `research/AGENTS.md` |
+| `docs/` | Current repository guidance and historical operational records | Treat handoffs, closures, state files, and plans as historical unless a current index says otherwise |
+| `tools/` | Reusable maintenance utilities and historical research-specific helpers | Check `tools/README.md` before use |
+| `irisx/` | Preserved historical prototype code | Not a current or production architecture |
+
+The active neutral surface consists primarily of the root entry points, scoped
+governance files, current directory indexes, provenance machinery, and reusable
+repository checks. A file's physical presence does not make its claims current.
+
+## Authority and Historical Material
+
+Historical research records preserve what was proposed, observed, inferred, or
+decided at the time. Do not silently revise them to fit a new direction. Do not
+promote them into current requirements merely because they use words such as
+`current`, `active`, `foundational`, `controlling`, or `authoritative` within
+their original historical context.
+
+Prior syntheses, problem definitions, hypotheses, specifications, phase
+records, operating baselines, and candidate architectures are historical inputs
+unless explicitly re-adopted by the owner in a new scope. No prior concept or
+synthesis is the default center of IRIS-X after the reset.
+
+When historical and current guidance appear to conflict, preserve the
+historical record and follow the current root and directory-level governance.
+Record any later re-adoption as a new decision rather than retroactively editing
+the old record.
+
+## Preservation and Provenance
+
+- Do not modify imported material under `sources/` or preserved artifacts under
+  `references/` except for an explicitly authorized hygiene or provenance fix.
+- Preserve `corpus/` registry IDs, snapshot histories, hashes, source refs,
+  evidence paths, and unresolved provenance fields.
+- Preserve experiment definitions, inputs, raw outputs, terminal records,
+  manifests, hashes, reviewed results, failure records, and interpretation
+  boundaries.
+- Do not normalize or rewrite old empirical data. A historical result must not
+  be reclassified to support a new interpretation.
+- Keep historical paths stable when manifests, hashes, validators, or evidence
+  ledgers depend on them. Prefer indexes and status clarification over moves that
+  would damage reproducibility.
+- When uncertain whether material is evidence, infrastructure, historical
+  interpretation, or noise, preserve it and label the uncertainty.
+
+Git history and the reset snapshot tag preserve recovery, but they do not make
+destructive edits acceptable by default.
+
+## Research Discipline
+
+Before drawing a conclusion:
+
+1. inspect the original source or empirical record;
+2. distinguish source-stated behavior, direct observation, inference, and
+   unknowns;
+3. cite stable corpus IDs and exact evidence paths where applicable;
+4. preserve negative evidence, incompatible assumptions, scope limits, and
+   failure cases;
+5. compare mechanisms by the problem they solve, not only by API shape;
+6. separate IRIS-X research contribution from commodity or reusable substrate;
+7. define uncertainty and falsifiers instead of filling gaps with confident
+   guesses.
+
+Use `Unknown`, `Unclear`, `Not established`, `Not evaluated`, or `Conflicting
+evidence` when those labels are accurate.
+
+Imported projects are evidence and reference material, not authority over
+IRIS-X. Repetition of a concept across multiple projects does not establish that
+the concept belongs in a future IRIS-X design.
+
+## Working Rules
+
+- Keep new IRIS-X-authored work within `research/`, `experiments/`, `docs/`,
+  `tools/`, `corpus/`, or `irisx/` as appropriate; do not create a broad new
+  hierarchy without an immediate, authorized purpose.
+- Prefer small, reversible changes and research-enabling organization over code
+  volume or framework integration.
+- Do not launch a model/provider process, start an experiment, or extend a
+  historical prototype without explicit owner authorization.
+- Do not treat a successful tool call, benchmark score, low inference price, or
+  historical decision as proof of general reliability or present suitability.
+- Keep temporary plans and session handoffs out of current navigation. If they
+  must be preserved at fixed paths, classify them through the historical index.
+- Update links and indexes when current documentation moves. Do not rewrite
+  preserved scientific records solely to modernize their links.
+
+## Validation
+
+Run from the repository root after repository or provenance changes:
 
 ```powershell
+python tools\repository_check.py --self-test
 python tools\repository_check.py
 ```
 
-Do not begin large implementation work merely because the source material is available.
+Use focused tests for any historical machinery that was intentionally touched.
+If a check encodes a retired governance assumption, distinguish that governance
+check from evidence-integrity checks. Update only the former when justified;
+never alter empirical records merely to obtain a passing result.
 
-## Owner-Directed Future Model Execution Procedure
-
-This is a development and usage procedure required by the owner. It is not an
-evaluated reliability architecture, persistence mechanism, workflow engine, or
-research result.
-
-Any future separately authorized model execution must use two owner-separated
-turns. The launch turn must freeze and commit definition/code, pass deterministic
-admission/preflight, verify a clean tree, start the model process in the
-background with stdout/stderr outside the repository, record PID, launch time,
-freeze SHA, and log paths, perform exactly one immediate launch confirmation,
-and then stop. After that confirmation it must not poll, wait, sleep/recheck,
-tail logs, watch output paths, inspect partial artifacts, infer a result, or
-report final model output, even if the process has already exited.
-
-Only a later explicit owner collection request may inspect completion/output,
-preserve raw artifacts, adjudicate, commit evidence, and continue the authorized
-lifecycle.
-
-## Decision Standard
-
-Architecture decisions should emerge from research, comparison, and experiments.
-
-A useful implementation in a predecessor repository is not automatically a requirement.
-
-A popular external framework is not automatically the correct substrate.
-
-A high benchmark score is not automatically evidence of reliability.
-
-A low inference price is not automatically low lifecycle cost.
-
-A successful tool execution is not automatically evidence that the underlying reasoning was correct.
-
-IRIS-X should preserve these distinctions while the project is still forming.
-
-## Status
-
-**Current status: foundational synthesis complete — durable post-synthesis
-research state recorded; Phase 6 preserved as historical authority.**
-
-The repository is not a stable architecture, framework, production runtime, or
-product. The foundational formulation, research questions, hypotheses, and
-candidate architecture are provisional and falsifiable.
-
-The foundational synthesis was authored in one owner-authorized GPT-5.6 Sol
-Ultra session. It launched no repository model/provider execution, dispatched
-no follow-on model task, implemented no runtime mechanism, and authorized or
-started no experiment. Phase 7 and the next phase/experiment are not
-authorized.
+The repository reset and its preservation choices are recorded in
+`docs/research-reset-2026-09-16.md`.

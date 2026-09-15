@@ -1,21 +1,22 @@
 # Repository Layout
 
-Status: current operating baseline after Phase 6 formal closure; this remains a provisional organization rather than a final architecture decision. No next phase, experiment, or model execution is authorized.
+Status: neutral operating layout after the 2026-09-16 research reset.
 
 | Path | Role | Editability |
-|---|---|---|
+| --- | --- | --- |
 | `sources/predecessors/` | Preserved predecessor snapshots | Read-only by default |
 | `sources/external/` | Preserved external reference implementations | Read-only by default |
-| `references/papers/` | Preserved paper artifacts | Read-only by default |
-| `research/` | IRIS-X-authored notes, synthesis, hypotheses, comparisons | Editable with scoped guidance |
-| `experiments/` | Explicit experiment definitions, shared configuration inputs, runs, results | Editable with reproducibility guidance |
-| `docs/` | Repository operation, layout decisions, temporary plans | Editable |
-| `tools/` | Lightweight maintenance commands | Editable |
-| `corpus/` | Registries and provenance operations | Editable as structured records |
-| `irisx/` | Minimal provisional IRIS-X-authored architecture code | Editable within owner-authorized architecture scope |
+| `references/papers/` | Preserved paper artifacts | Read-only |
+| `corpus/` | Provenance registries and recovery records | Structured provenance edits only |
+| `research/` | Historical IRIS-X research plus neutral scaffolding | New work requires an authorized scope |
+| `experiments/` | Preserved experiment packages and empirical records | Evidence-preserving changes only unless a new experiment is authorized |
+| `docs/` | Current repository guidance and preserved operational history | Editable with historical records preserved |
+| `tools/` | Reusable maintenance and classified historical helpers | Editable with dependent evidence considered |
+| `irisx/` | Preserved historical prototype used by prior tests/substrates | Not a current architecture |
 
-The filesystem boundary is deliberately shallow. Imported leaf names remain unchanged so original import paths stay easy to audit. New research must not create parallel copies of imported code or papers inside authored areas.
+Imported leaf names and evidence-sensitive authored paths remain stable for
+auditability and reproducibility. Current directory indexes determine active
+navigation; physical presence alone does not confer authority.
 
-The `irisx/` package is not a production-stable SDK or framework. Experiment substrates may depend on it, but it must not depend on `experiments/` or imported source trees. Imported implementations remain separate reference material and are never architecture authority.
-
-Root-level operational documentation describes the workspace. It does not define an agent runtime, shared framework, product boundary, final ontology, or final research question.
+The layout does not define a runtime, framework, ontology, product boundary,
+provider/model baseline, final research question, or preferred next program.

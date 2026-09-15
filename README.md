@@ -1,27 +1,35 @@
-# IRIS-X Corpus Workspace
+# IRIS-X
 
-IRIS-X has completed **Phase 6 formal research closure**. It separates preserved predecessors, external references, paper artifacts, and IRIS-X-authored work. The current architecture remains provisional; this is not a merged framework, product, production runtime, or final architecture. No next phase, experiment, or model execution is authorized.
+IRIS-X is a research workspace concerned broadly with task- and
+domain-specialized AI systems. The repository is currently in a
+**research-reset / direction-selection state**: no previous thesis, research
+program, architecture, training strategy, or product boundary is automatically
+active.
 
-Root-level `AGENTS.md` controls how agents should work with this material. There are 13 imported sources and 7 paper artifacts. Imported trees live under `sources/`; PDFs live under `references/papers/`; editable work zones are `research/`, `experiments/`, `docs/`, and `tools/`.
+The workspace contains several distinct kinds of material:
 
-## Navigation
+| Path | Contents |
+| --- | --- |
+| [`sources/`](sources/README.md) | Preserved predecessor and external source snapshots |
+| [`references/`](references/README.md) | Preserved papers and reference artifacts |
+| [`corpus/`](corpus/README.md) | Provenance registries, source identities, and recovery records |
+| [`experiments/`](experiments/README.md) | Preserved historical experiments, qualification packages, and empirical records |
+| [`research/`](research/README.md) | Historical IRIS-X research lineage and neutral research scaffolding |
+| [`docs/`](docs/README.md) | Current repository guidance and indexed operational history |
+| [`tools/`](tools/README.md) | Repository maintenance utilities and classified historical helpers |
+| [`irisx/`](irisx/README.md) | Preserved historical prototype code; not a current architecture |
 
-- Read [docs/repository-layout.md](docs/repository-layout.md) for zone ownership and editability.
-- Read [corpus/README.md](corpus/README.md) for the corpus map.
-- Read [corpus/PROVENANCE.md](corpus/PROVENANCE.md) for field meanings.
-- Use [corpus/sources.yaml](corpus/sources.yaml) and [corpus/artifacts.yaml](corpus/artifacts.yaml) for machine-readable inventory.
-- Track unresolved provenance work in [corpus/RECOVERY_QUEUE.md](corpus/RECOVERY_QUEUE.md).
-- Read [research/problem-definition.md](research/problem-definition.md) for the current provisional project-level research problem.
-- Read [docs/phase-6-research-state.md](docs/phase-6-research-state.md) for the durable current closure state and final eight-gate ledger.
-- Read [research/phase-6-formal-closure-and-research-state.md](research/phase-6-formal-closure-and-research-state.md) for the Phase 6 evidence synthesis and Decision A.
-- Read [docs/decisions/0002-openai-codex-model-baseline.md](docs/decisions/0002-openai-codex-model-baseline.md) and [experiments/configurations/provider-model-baseline-v0.json](experiments/configurations/provider-model-baseline-v0.json) for the accepted OpenAI/Codex dual-model operating baseline.
-- Begin research with [research/templates/research-note.md](research/templates/research-note.md).
+Historical conclusions remain available for inspection, but their original
+status language does not make them current project authority. New research or
+implementation requires a separately authorized scope.
 
-Validate the repository from its root:
+Start with [`AGENTS.md`](AGENTS.md) for repository governance and
+[`docs/research-reset-2026-09-16.md`](docs/research-reset-2026-09-16.md) for the
+reset record.
+
+Validate repository integrity from the root:
 
 ```powershell
+python tools\repository_check.py --self-test
 python tools\repository_check.py
-python tools\model_baseline_check.py --check-local-catalog
 ```
-
-Registries use a JSON-compatible YAML subset. Semantic Git checks also use the local Git executable. The layout is an evolving research-workspace baseline, not a final IRIS-X design.
