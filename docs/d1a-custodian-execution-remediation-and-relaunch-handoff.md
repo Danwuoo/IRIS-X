@@ -1,7 +1,7 @@
 # D1a Custodian Execution Remediation and Relaunch Handoff
 
-- Terminal state: `execution_admission_still_blocked`
-- Status: **exact-path admission failed; no custodian launched**
+- Terminal state: `remediation_in_progress`
+- Status: **second exact-path repair frozen; admission A2 pending**
 - Starting SHA: `586142b3652b68f60b09f43b0d8bf766a8b99da5`
 - Branch / starting authority: `main` and `origin/main` both matched the
   starting SHA; the worktree was clean.
@@ -47,6 +47,15 @@ override as the unique cause. The admission canary below directly falsified the
 narrow hypothesis that pinning the newer desktop CLI and removing inherited
 Codex control variables would by itself restore allowed hashing.
 
+Model-free remediation probing subsequently established that the same pinned
+CLI can place a command under the Windows restricted-token `:workspace`
+profile: a file was created and hashed inside the exact workspace while a
+sibling-path write was denied and no sibling file appeared. This supports a
+second narrow repair: remove the defective inner policy layer with
+`--dangerously-bypass-approvals-and-sandbox`, while enforcing the write root in
+an outer OS sandbox created by the same pinned executable. Admission A2 will
+test the complete nested model-visible path before either real launch.
+
 ## Narrow execution-substrate repair attempted
 
 - Pin the exact desktop-bundled Codex executable at version
@@ -65,6 +74,26 @@ Codex control variables would by itself restore allowed hashing.
 
 The exact frozen configuration is
 `experiments/d1a-warrant-discrimination-v0/execution-remediation-2026-09-15-v1/launch-configuration.json`.
+
+## Second exact-path repair frozen for admission A2
+
+- Outer command: pinned Codex `sandbox -P :workspace -C <workspace>`.
+- Outer enforcement: Windows restricted token; exact isolated workspace is the
+  only write root; managed requirements are not included.
+- Inner command: the same pinned Codex `exec` with
+  `--dangerously-bypass-approvals-and-sandbox`, `--ignore-user-config`, and
+  `--ignore-rules`.
+- Inner working directory: the same exact isolated workspace.
+- Rationale: the bypass removes the model-visible command-policy layer that
+  directly rejected A1 before execution; the outer restricted token retains a
+  host-enforced filesystem boundary.
+- Model-free boundary result: inside create/hash passed; outside sibling write
+  was denied; outside file remained absent.
+- Admission A2 identity:
+  `d1a-execution-canary-terra-high-20260915-a2`.
+- Admission A2 workspace:
+  `C:\Users\wurre\.codex\external-runs\d1a-execution-admission-canary-20260915-a2`.
+- Admission A2 status: pending after this repair freeze is committed.
 
 ## Semantic C2 contract review
 

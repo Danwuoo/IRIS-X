@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "configuration_id": "d1a-custodian-exact-path-remediation-20260915-v1",
+  "configuration_id": "d1a-custodian-exact-path-remediation-20260915-v2",
   "status": "frozen_for_admission",
   "execution_surface": {
     "path": "C:\\Users\\wurre\\AppData\\Local\\OpenAI\\Codex\\bin\\bffc5354119c8421\\codex.exe",
@@ -11,9 +11,22 @@
   "reasoning_effort": "high",
   "model_provider": "openai",
   "service_tier": "default",
-  "sandbox": "workspace-write",
-  "approval_policy": "never",
-  "rules": "ignored",
+  "outer_execution": {
+    "command": "codex sandbox",
+    "permissions_profile": ":workspace",
+    "implementation": "Windows restricted token",
+    "working_directory": "exact isolated child workspace",
+    "write_root": "exact isolated child workspace",
+    "network": "disabled for child shell commands",
+    "managed_config": "not included"
+  },
+  "inner_execution": {
+    "command": "codex exec",
+    "sandbox": "danger-full-access via --dangerously-bypass-approvals-and-sandbox",
+    "approval_policy": "bypassed by the same flag",
+    "rules": "ignored",
+    "working_directory": "same exact isolated child workspace"
+  },
   "user_config": "ignored",
   "session_storage": "ephemeral",
   "environment_policy": {
@@ -52,7 +65,7 @@
     "tool_suggest",
     "hooks"
   ],
-  "admission_workspace": "C:\\Users\\wurre\\.codex\\external-runs\\d1a-execution-admission-canary-20260915-a1",
+  "admission_workspace": "C:\\Users\\wurre\\.codex\\external-runs\\d1a-execution-admission-canary-20260915-a2",
   "custodian_run_root": "C:\\Users\\wurre\\.codex\\external-runs\\d1a-custodians-20260915-remediation-b3c3",
   "launcher": "tools/d1a_custodian_exact_path.ps1"
 }

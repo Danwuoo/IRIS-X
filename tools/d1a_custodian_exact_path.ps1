@@ -72,23 +72,22 @@ $disabledFeatures = @(
     'hooks'
 )
 
-$argumentList = @(
+$innerArgumentList = @(
     'exec',
+    '--dangerously-bypass-approvals-and-sandbox',
     '--strict-config',
     '--ignore-user-config',
     '--ignore-rules',
     '--model', 'gpt-5.6-terra',
     '--config', 'model_provider="openai"',
     '--config', 'model_reasoning_effort="high"',
-    '--config', 'approval_policy="never"',
     '--config', 'service_tier="default"',
-    '--sandbox', 'workspace-write',
     '--cd', $resolvedWorkspace
 )
 foreach ($feature in $disabledFeatures) {
-    $argumentList += @('--disable', $feature)
+    $innerArgumentList += @('--disable', $feature)
 }
-$argumentList += @(
+$innerArgumentList += @(
     '--skip-git-repo-check',
     '--ephemeral',
     '--json',
@@ -96,6 +95,20 @@ $argumentList += @(
     '--output-last-message', $LastMessagePath,
     '-'
 )
+
+# The inner exec bypasses Codex's model-visible command-policy layer because
+# retained B1/C1/B2/C2 evidence and admission A1 show that layer enforcing
+# read-only / command denials despite an accepted workspace-write profile. The
+# same pinned Codex binary is therefore used a second time as an outer Windows
+# restricted-token sandbox. This OS boundary is the authority enforcement:
+# inner writes are limited to the isolated workspace even though the inner
+# process is configured with the bypass flag.
+$argumentList = @(
+    'sandbox',
+    '-P', ':workspace',
+    '-C', $resolvedWorkspace,
+    $resolvedExecutable
+) + $innerArgumentList
 
 $childEnvironment = @{
     'CODEX_HOME' = 'C:\Users\wurre\.codex'
@@ -140,9 +153,10 @@ if ($Mode -eq 'Admission') {
         executable_sha256 = $actualExecutableSha256
         executable_version = $actualVersion
         workspace = $resolvedWorkspace
-        sandbox = 'workspace-write'
-        approval_policy = 'never'
-        rules = 'ignored'
+        outer_sandbox = 'windows-restricted-token/:workspace'
+        inner_sandbox = 'danger-full-access-via-bypass'
+        inner_approval_policy = 'bypassed'
+        inner_rules = 'ignored'
     } | ConvertTo-Json -Depth 4
     exit $process.ExitCode
 }
@@ -165,7 +179,8 @@ $immediateState = if ($process.HasExited) {
     executable_sha256 = $actualExecutableSha256
     executable_version = $actualVersion
     workspace = $resolvedWorkspace
-    sandbox = 'workspace-write'
-    approval_policy = 'never'
-    rules = 'ignored'
+    outer_sandbox = 'windows-restricted-token/:workspace'
+    inner_sandbox = 'danger-full-access-via-bypass'
+    inner_approval_policy = 'bypassed'
+    inner_rules = 'ignored'
 } | ConvertTo-Json -Depth 4
