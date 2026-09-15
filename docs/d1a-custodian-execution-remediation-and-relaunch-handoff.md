@@ -1,7 +1,7 @@
 # D1a Custodian Execution Remediation and Relaunch Handoff
 
 - Terminal state: `remediation_in_progress`
-- Status: **second exact-path repair frozen; admission A2 pending**
+- Status: **third exact-path repair frozen; admission A3 pending**
 - Starting SHA: `586142b3652b68f60b09f43b0d8bf766a8b99da5`
 - Branch / starting authority: `main` and `origin/main` both matched the
   starting SHA; the worktree was clean.
@@ -94,6 +94,37 @@ The exact frozen configuration is
 - Admission A2 workspace:
   `C:\Users\wurre\.codex\external-runs\d1a-execution-admission-canary-20260915-a2`.
 - Admission A2 status: pending after this repair freeze is committed.
+
+Admission A2 then exited before model inference or a model-visible tool call.
+The outer restricted token correctly made the real user `CODEX_HOME` read-only,
+but inner Codex startup attempted to create its arg0 aliases and open
+`state_5.sqlite` there. Startup failed with access denied and read-only database
+errors, stdout remained empty, and no canary output was created. This is direct
+evidence of a runtime-state/write-root mismatch, not a Terra capability result.
+
+The third repair assigns each child an isolated `.codex-home` under its exact
+workspace. Before launch, the launcher copies only the existing `auth.json`
+into that directory. Authentication remains available while arg0, state
+database, authentication refresh, and other runtime writes remain inside the same
+outer `:workspace` boundary. No credential is placed in `output/` or the
+repository. Admission A3 will be the next short model-backed check.
+
+- Admission A2 prompt SHA-256:
+  `79dce8b2df1d8abe797de20550f03dd7bdf3bc9e3d7cd8142e4375f000d28af7`.
+- Admission A2 launch timestamp: `2026-09-15T21:52:31.0396112+08:00`.
+- Admission A2 PID: `14604`.
+- Admission A2 completion timestamp: `2026-09-15T21:52:33.2548414+08:00`.
+- Admission A2 exit code: `1`.
+- Admission A2 stdout SHA-256:
+  `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.
+- Admission A2 stderr SHA-256:
+  `15a2ac95ca6100de0a0d055855c1d39903e0bb405ca5e447d36a5b569b0e4f71`.
+- Admission A2 backend/model-visible call evidence: none; stdout was empty and
+  initialization failed before the in-process app-server client was created.
+- Admission A3 identity:
+  `d1a-execution-canary-terra-high-20260915-a3`.
+- Admission A3 workspace:
+  `C:\Users\wurre\.codex\external-runs\d1a-execution-admission-canary-20260915-a3`.
 
 ## Semantic C2 contract review
 

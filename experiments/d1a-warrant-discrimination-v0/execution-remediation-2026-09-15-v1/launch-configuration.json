@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "configuration_id": "d1a-custodian-exact-path-remediation-20260915-v2",
+  "configuration_id": "d1a-custodian-exact-path-remediation-20260915-v3",
   "status": "frozen_for_admission",
   "execution_surface": {
     "path": "C:\\Users\\wurre\\AppData\\Local\\OpenAI\\Codex\\bin\\bffc5354119c8421\\codex.exe",
@@ -30,7 +30,10 @@
   "user_config": "ignored",
   "session_storage": "ephemeral",
   "environment_policy": {
-    "preserve": ["CODEX_HOME"],
+    "isolated_codex_home": "<exact child workspace>\\.codex-home",
+    "authentication_bootstrap": "copy existing auth.json into isolated CODEX_HOME before sandbox launch",
+    "runtime_state_location": "inside exact child workspace",
+    "preserve": [],
     "remove": [
       "CODEX_APP_TOOLS_PIPE_PATH",
       "CODEX_CI",
@@ -65,7 +68,7 @@
     "tool_suggest",
     "hooks"
   ],
-  "admission_workspace": "C:\\Users\\wurre\\.codex\\external-runs\\d1a-execution-admission-canary-20260915-a2",
+  "admission_workspace": "C:\\Users\\wurre\\.codex\\external-runs\\d1a-execution-admission-canary-20260915-a3",
   "custodian_run_root": "C:\\Users\\wurre\\.codex\\external-runs\\d1a-custodians-20260915-remediation-b3c3",
   "launcher": "tools/d1a_custodian_exact_path.ps1"
 }

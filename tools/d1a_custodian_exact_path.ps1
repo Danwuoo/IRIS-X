@@ -25,6 +25,7 @@ $ErrorActionPreference = 'Stop'
 $codexExecutable = 'C:\Users\wurre\AppData\Local\OpenAI\Codex\bin\bffc5354119c8421\codex.exe'
 $expectedExecutableSha256 = '081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575'
 $expectedVersion = 'codex-cli 0.154.0-alpha.6.2'
+$sourceCodexHome = 'C:\Users\wurre\.codex'
 
 $resolvedWorkspace = (Resolve-Path -LiteralPath $Workspace).Path
 $resolvedPrompt = (Resolve-Path -LiteralPath $PromptPath).Path
@@ -45,6 +46,18 @@ if (Test-Path -LiteralPath $StderrPath) {
 if (Test-Path -LiteralPath $LastMessagePath) {
     throw "Last-message path already exists: $LastMessagePath"
 }
+
+$sourceAuth = Join-Path $sourceCodexHome 'auth.json'
+$isolatedCodexHome = Join-Path $resolvedWorkspace '.codex-home'
+$isolatedAuth = Join-Path $isolatedCodexHome 'auth.json'
+if (-not (Test-Path -LiteralPath $sourceAuth -PathType Leaf)) {
+    throw "Codex authentication record does not exist: $sourceAuth"
+}
+if (Test-Path -LiteralPath $isolatedCodexHome) {
+    throw "Isolated CODEX_HOME already exists: $isolatedCodexHome"
+}
+New-Item -ItemType Directory -Path $isolatedCodexHome | Out-Null
+Copy-Item -LiteralPath $sourceAuth -Destination $isolatedAuth
 
 $actualExecutableSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $resolvedExecutable).Hash.ToLowerInvariant()
 $actualVersion = (& $resolvedExecutable --version 2>&1 | Out-String).Trim()
@@ -111,7 +124,7 @@ $argumentList = @(
 ) + $innerArgumentList
 
 $childEnvironment = @{
-    'CODEX_HOME' = 'C:\Users\wurre\.codex'
+    'CODEX_HOME' = $isolatedCodexHome
     'CODEX_APP_TOOLS_PIPE_PATH' = $null
     'CODEX_CI' = $null
     'CODEX_INTERNAL_ORIGINATOR_OVERRIDE' = $null
@@ -153,6 +166,7 @@ if ($Mode -eq 'Admission') {
         executable_sha256 = $actualExecutableSha256
         executable_version = $actualVersion
         workspace = $resolvedWorkspace
+        isolated_codex_home = $isolatedCodexHome
         outer_sandbox = 'windows-restricted-token/:workspace'
         inner_sandbox = 'danger-full-access-via-bypass'
         inner_approval_policy = 'bypassed'
@@ -179,6 +193,7 @@ $immediateState = if ($process.HasExited) {
     executable_sha256 = $actualExecutableSha256
     executable_version = $actualVersion
     workspace = $resolvedWorkspace
+    isolated_codex_home = $isolatedCodexHome
     outer_sandbox = 'windows-restricted-token/:workspace'
     inner_sandbox = 'danger-full-access-via-bypass'
     inner_approval_policy = 'bypassed'
