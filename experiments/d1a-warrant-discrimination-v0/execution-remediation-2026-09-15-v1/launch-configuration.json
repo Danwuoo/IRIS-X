@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "configuration_id": "d1a-custodian-exact-path-remediation-20260915-v1",
+  "status": "frozen_for_admission",
+  "execution_surface": {
+    "path": "C:\\Users\\wurre\\AppData\\Local\\OpenAI\\Codex\\bin\\bffc5354119c8421\\codex.exe",
+    "version": "codex-cli 0.154.0-alpha.6.2",
+    "sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575"
+  },
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "high",
+  "model_provider": "openai",
+  "service_tier": "default",
+  "sandbox": "workspace-write",
+  "approval_policy": "never",
+  "rules": "ignored",
+  "user_config": "ignored",
+  "session_storage": "ephemeral",
+  "environment_policy": {
+    "preserve": ["CODEX_HOME"],
+    "remove": [
+      "CODEX_APP_TOOLS_PIPE_PATH",
+      "CODEX_CI",
+      "CODEX_INTERNAL_ORIGINATOR_OVERRIDE",
+      "CODEX_MCP_NODE_PATH",
+      "CODEX_PERMISSION_PROFILE",
+      "CODEX_SAGE_BACKFILL_TRACKER_TAB_REUSE",
+      "CODEX_SESSION_ID",
+      "CODEX_SHELL",
+      "CODEX_THREAD_ID",
+      "CODEX_VERSION",
+      "OPENAI_API_KEY",
+      "OPENAI_MODEL",
+      "AZURE_OPENAI_API_KEY",
+      "ANTHROPIC_API_KEY",
+      "GOOGLE_API_KEY"
+    ]
+  },
+  "disabled_features": [
+    "multi_agent",
+    "multi_agent_v2",
+    "apps",
+    "browser_use",
+    "browser_use_external",
+    "browser_use_full_cdp_access",
+    "computer_use",
+    "in_app_browser",
+    "image_generation",
+    "plugins",
+    "remote_plugin",
+    "skill_search",
+    "tool_suggest",
+    "hooks"
+  ],
+  "admission_workspace": "C:\\Users\\wurre\\.codex\\external-runs\\d1a-execution-admission-canary-20260915-a1",
+  "custodian_run_root": "C:\\Users\\wurre\\.codex\\external-runs\\d1a-custodians-20260915-remediation-b3c3",
+  "launcher": "tools/d1a_custodian_exact_path.ps1"
+}
