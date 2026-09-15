@@ -1,8 +1,8 @@
 # D1a Custodian Execution Remediation and Relaunch Handoff
 
-- Terminal state: `remediation_in_progress`
-- Status: **exact-path admission A4 passed; fresh B3/C3 workspaces staged;
-  launch pending**
+- Terminal state: `fresh_custodians_launched_stop`
+- Status: **exact-path admission A4 passed; fresh B3/C3 custodians launched;
+  one immediate confirmation each; monitoring stopped**
 - Starting SHA: `586142b3652b68f60b09f43b0d8bf766a8b99da5`
 - Branch / starting authority: `main` and `origin/main` both matched the
   starting SHA; the worktree was clean.
@@ -252,8 +252,8 @@ Task/Oracle v1 changed by this review: **no**.
 Exact-path admission A4 passed. The two workspaces below were freshly staged
 from the frozen disclosure manifests; every one of the seven allowed source
 digests per role matched after staging, each `input/` tree was marked read-only,
-and each `output/` directory was empty. Launch remained pending at this
-pre-launch commit:
+and each `output/` directory was empty. They were launched from pre-launch
+freeze SHA `38f7a96f6c649acf96b67af4c35614760f96a3f2`:
 
 - Authority authoring-session ID:
   `d1a-authority-terra-high-20260915-b3`.
@@ -264,7 +264,12 @@ pre-launch commit:
 - Authority model / effort: `gpt-5.6-terra` / `high`.
 - Authority disclosure-manifest file SHA-256:
   `fa779ce0235937d4553e4321239ad12ed703b7cc48a30c20d768597b565dfaeb`.
-- Authority PID / immediate state / launch timestamp: pending.
+- Authority launch timestamp: `2026-09-15T22:08:32.4649643+08:00`.
+- Authority PID: `6132`.
+- Authority immediate confirmation timestamp:
+  `2026-09-15T22:08:32.4884341+08:00`.
+- Authority immediate state:
+  `process_created_running_at_immediate_confirmation`.
 - Semantic-verifier authoring-session ID:
   `d1a-semantic-verifier-terra-high-20260915-c3`.
 - Semantic-verifier workspace:
@@ -274,7 +279,20 @@ pre-launch commit:
 - Semantic-verifier model / effort: `gpt-5.6-terra` / `high`.
 - Semantic disclosure-manifest file SHA-256:
   `a84c2790f2fa11ff47cef3ab5f10d2957878a1fe89d3a8bc930e3213088a6aea`.
-- Semantic-verifier PID / immediate state / launch timestamp: pending.
+- Semantic launch timestamp: `2026-09-15T22:08:47.3442823+08:00`.
+- Semantic PID: `15056`.
+- Semantic immediate confirmation timestamp:
+  `2026-09-15T22:08:47.3703315+08:00`.
+- Semantic immediate state:
+  `process_created_running_at_immediate_confirmation`.
+
+Both launches used the exact A4-qualified configuration: pinned Codex
+0.154.0-alpha.6.2, Terra/high, isolated per-child `CODEX_HOME`, pinned CA
+bundle, outer Windows restricted-token `d1a_external` profile extending
+`:workspace` with network enabled, and inner
+`--dangerously-bypass-approvals-and-sandbox --ignore-user-config
+--ignore-rules`. Retries, fallbacks, routes, escalations, and subagents were
+all zero at launch.
 
 ## Accounting and stop boundary
 
@@ -283,10 +301,10 @@ prior failed custodian model calls: 4
 new admission session attempts: 4 (A1-A4)
 new completed admission model responses: 2 (A1 and A4)
 pre-model/runtime failures: 2 (A2 startup; A3 service network)
-new Authority custodian calls: 0
-new Semantic-verifier custodian calls: 0
-new repository-initiated model session attempts: 4
-cumulative custodian/remediation session attempts: 8
+new Authority custodian calls: 1
+new Semantic-verifier custodian calls: 1
+new repository-initiated model session attempts: 6
+cumulative custodian/remediation session attempts: 10
 retries: 0
 fallbacks: 0
 routes: 0
@@ -302,6 +320,9 @@ D1a empirical qualification remains `Not established`; F1-B/C/D/E and wider
 novelty remain unchanged or not established; D1b and Phase 7 remain
 unauthorized.
 
-Next action in this owner-authorized TURN-A scope: launch B3 and C3 once each,
-record one immediate confirmation per child, and stop without monitoring or
-collection.
+No monitoring / no collection after launch. After each child's one immediate
+confirmation, its process, logs, output paths, bundle paths, and terminal
+messages were not inspected. The second launch did not recheck the first.
+
+Next action: owner-authorized TURN-B collection of B3 and C3. Until then, do
+not infer either custodian's completion or substantive result.
