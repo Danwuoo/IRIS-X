@@ -1,7 +1,7 @@
 # D1a Custodian Execution Remediation and Relaunch Handoff
 
 - Terminal state: `remediation_in_progress`
-- Status: **third exact-path repair frozen; admission A3 pending**
+- Status: **fourth exact-path repair frozen; admission A4 pending**
 - Starting SHA: `586142b3652b68f60b09f43b0d8bf766a8b99da5`
 - Branch / starting authority: `main` and `origin/main` both matched the
   starting SHA; the worktree was clean.
@@ -125,6 +125,40 @@ repository. Admission A3 will be the next short model-backed check.
   `d1a-execution-canary-terra-high-20260915-a3`.
 - Admission A3 workspace:
   `C:\Users\wurre\.codex\external-runs\d1a-execution-admission-canary-20260915-a3`.
+
+Admission A3 passed runtime initialization and created a Codex thread, directly
+confirming the isolated `CODEX_HOME` repair. The outer built-in `:workspace`
+profile then denied all WebSocket and HTTPS service connections. No model
+response or model-visible tool call occurred. The coordinator interrupted the
+single canary after approximately 120 seconds to avoid an unbounded failed
+session; no output artifact was created.
+
+- Admission A3 prompt SHA-256:
+  `8ec9138b5bff6e7c12c8356d99b0b2917b385ef0fa6f42a76329667cb38b576d`.
+- Admission A3 CLI thread ID:
+  `01a0a55b-aab9-7090-b906-e5a2ed6763db`.
+- Admission A3 stdout SHA-256:
+  `e574363d5656d672c4f43ab2d50be58362e754a7583ad8661298ae1367a63fc8`.
+- Admission A3 stderr SHA-256:
+  `ea6dc41c9d9c189e518538c31b643600496a7fd2170f01560dbcbfdbbd5b8bfa`.
+- Admission A3 terminal disposition: coordinator-interrupted network-blocked
+  admission; no model response and no scientific evidence.
+
+Model-free A4 preflight defined `d1a_external` as `extends = ":workspace"`
+with `network.enabled = true`. Under that profile, in-workspace create/hash
+succeeded, an outside sibling write was denied, and a TCP connection to
+`chatgpt.com:443` succeeded. Windows restricted-token processes could not use
+the system certificate store, so the final configuration supplies Codex's
+documented `CODEX_CA_CERTIFICATE` and `SSL_CERT_FILE` variables with a pinned
+local certifi bundle. A sandboxed HTTPS probe completed TLS and received an
+HTTP response. Admission A4 will qualify the full model-visible path.
+
+- CA bundle SHA-256:
+  `bbc7e9c01d7551bb8a159b5dedd989b8ee3ce105aff522b68eb1b01bf854cab0`.
+- Admission A4 identity:
+  `d1a-execution-canary-terra-high-20260915-a4`.
+- Admission A4 workspace:
+  `C:\Users\wurre\.codex\external-runs\d1a-execution-admission-canary-20260915-a4`.
 
 ## Semantic C2 contract review
 

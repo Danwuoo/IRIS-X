@@ -26,6 +26,8 @@ $codexExecutable = 'C:\Users\wurre\AppData\Local\OpenAI\Codex\bin\bffc5354119c84
 $expectedExecutableSha256 = '081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575'
 $expectedVersion = 'codex-cli 0.154.0-alpha.6.2'
 $sourceCodexHome = 'C:\Users\wurre\.codex'
+$caBundle = 'C:\Users\wurre\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\site-packages\pip\_vendor\certifi\cacert.pem'
+$expectedCaBundleSha256 = 'bbc7e9c01d7551bb8a159b5dedd989b8ee3ce105aff522b68eb1b01bf854cab0'
 
 $resolvedWorkspace = (Resolve-Path -LiteralPath $Workspace).Path
 $resolvedPrompt = (Resolve-Path -LiteralPath $PromptPath).Path
@@ -61,11 +63,15 @@ Copy-Item -LiteralPath $sourceAuth -Destination $isolatedAuth
 
 $actualExecutableSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $resolvedExecutable).Hash.ToLowerInvariant()
 $actualVersion = (& $resolvedExecutable --version 2>&1 | Out-String).Trim()
+$actualCaBundleSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $caBundle).Hash.ToLowerInvariant()
 if ($actualExecutableSha256 -ne $expectedExecutableSha256) {
     throw "Codex executable digest drift: $actualExecutableSha256"
 }
 if ($actualVersion -ne $expectedVersion) {
     throw "Codex executable version drift: $actualVersion"
+}
+if ($actualCaBundleSha256 -ne $expectedCaBundleSha256) {
+    throw "CA bundle digest drift: $actualCaBundleSha256"
 }
 
 $disabledFeatures = @(
@@ -118,7 +124,9 @@ $innerArgumentList += @(
 # process is configured with the bypass flag.
 $argumentList = @(
     'sandbox',
-    '-P', ':workspace',
+    '-c', 'permissions.d1a_external.extends=":workspace"',
+    '-c', 'permissions.d1a_external.network.enabled=true',
+    '-P', 'd1a_external',
     '-C', $resolvedWorkspace,
     $resolvedExecutable
 ) + $innerArgumentList
@@ -135,6 +143,8 @@ $childEnvironment = @{
     'CODEX_SHELL' = $null
     'CODEX_THREAD_ID' = $null
     'CODEX_VERSION' = $null
+    'CODEX_CA_CERTIFICATE' = $caBundle
+    'SSL_CERT_FILE' = $caBundle
     'OPENAI_API_KEY' = $null
     'OPENAI_MODEL' = $null
     'AZURE_OPENAI_API_KEY' = $null
@@ -165,9 +175,11 @@ if ($Mode -eq 'Admission') {
         executable = $resolvedExecutable
         executable_sha256 = $actualExecutableSha256
         executable_version = $actualVersion
+        ca_bundle = $caBundle
+        ca_bundle_sha256 = $actualCaBundleSha256
         workspace = $resolvedWorkspace
         isolated_codex_home = $isolatedCodexHome
-        outer_sandbox = 'windows-restricted-token/:workspace'
+        outer_sandbox = 'windows-restricted-token/d1a_external(:workspace+network)'
         inner_sandbox = 'danger-full-access-via-bypass'
         inner_approval_policy = 'bypassed'
         inner_rules = 'ignored'
@@ -192,9 +204,11 @@ $immediateState = if ($process.HasExited) {
     executable = $resolvedExecutable
     executable_sha256 = $actualExecutableSha256
     executable_version = $actualVersion
+    ca_bundle = $caBundle
+    ca_bundle_sha256 = $actualCaBundleSha256
     workspace = $resolvedWorkspace
     isolated_codex_home = $isolatedCodexHome
-    outer_sandbox = 'windows-restricted-token/:workspace'
+    outer_sandbox = 'windows-restricted-token/d1a_external(:workspace+network)'
     inner_sandbox = 'danger-full-access-via-bypass'
     inner_approval_policy = 'bypassed'
     inner_rules = 'ignored'
