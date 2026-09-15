@@ -1,6 +1,7 @@
 # D1a Custodian Execution Remediation and Relaunch Handoff
 
-- Status: **remediation definition frozen; admission pending**
+- Terminal state: `execution_admission_still_blocked`
+- Status: **exact-path admission failed; no custodian launched**
 - Starting SHA: `586142b3652b68f60b09f43b0d8bf766a8b99da5`
 - Branch / starting authority: `main` and `origin/main` both matched the
   starting SHA; the worktree was clean.
@@ -40,11 +41,13 @@
 | Working directory/write root | Each child read its disclosure from the intended external workspace, and the preflight named that workspace as writable; the tool router still rejected `output/` patches. | Directly observed |
 
 The highest supported diagnosis is an **effective nested child launch-path
-isolation/enforcement defect after CLI configuration parsing**. The retained
-evidence does not justify attributing it to Terra or choosing one undocumented
-internal override as the unique cause.
+enforcement defect after CLI configuration parsing**. The retained evidence
+does not justify attributing it to Terra or choosing one undocumented internal
+override as the unique cause. The admission canary below directly falsified the
+narrow hypothesis that pinning the newer desktop CLI and removing inherited
+Codex control variables would by itself restore allowed hashing.
 
-## Narrow execution-substrate repair
+## Narrow execution-substrate repair attempted
 
 - Pin the exact desktop-bundled Codex executable at version
   `0.154.0-alpha.6.2` and SHA-256
@@ -77,17 +80,94 @@ independent verifier without new hidden information or changed task truth.
 
 Task/Oracle v1 changed by this review: **no**.
 
-## Admission and launch record
+## Exact-path admission result
 
-This section will be completed only from the authorized canary result and the
-single immediate confirmation of each fresh child. No scientific child output
-will be inspected during TURN A.
+- Canary identity: `d1a-execution-canary-terra-high-20260915-a1`.
+- Model / effort: `gpt-5.6-terra` / `high`.
+- Prompt SHA-256:
+  `55283b494219e4dde47767abc94129dd448055425cfec035b79ea2182efc6641`.
+- Workspace:
+  `C:\Users\wurre\.codex\external-runs\d1a-execution-admission-canary-20260915-a1`.
+- Executable / version:
+  `C:\Users\wurre\AppData\Local\OpenAI\Codex\bin\bffc5354119c8421\codex.exe`
+  / `codex-cli 0.154.0-alpha.6.2`.
+- Executable SHA-256:
+  `081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575`.
+- Sandbox / approval / rules: `workspace-write` / `never` /
+  `--ignore-rules`.
+- User config: ignored; ChatGPT auth retained through `CODEX_HOME`; API-key
+  fallback and surrounding Codex app/session/permission environment variables
+  removed as enumerated in the frozen launch configuration.
+- Launch timestamp: `2026-09-15T21:16:26.4917662+08:00`.
+- PID: `8224`.
+- Completion timestamp: `2026-09-15T21:16:43.9418779+08:00`.
+- CLI thread ID: `01a0a536-31f9-7701-be08-8b51f21b2447`.
+- Launcher process exit code: `0`; this was not accepted as capability success.
+- Model terminal state: `execution_capability_blocked`.
+- Direct failure: the first model-visible command, combining a read of
+  `input/admission-sentinel.txt` with PowerShell `Get-FileHash`, was rejected
+  before execution as `blocked by policy`.
+- Required output `output/terminal-capability-record.json`: absent.
+- Required `output/capability.txt`: absent.
+- Admission result: **failed**. Read/hash, create/read/hash, update/hash, and
+  outside-root enforcement could not all be demonstrated.
+- Canary stdout SHA-256:
+  `9092552966b922cb6bbf2e85063d20922044cdf069b741d82433fff591ce0eaf`.
+- Canary stderr SHA-256:
+  `6542306ba98d84dc944e0838f5bf2b191e151d3c8aef23c4c350be6319c67860`.
+- Canary last-message SHA-256:
+  `9c37a36636fb6057c19c3f6d0380364e24a405a9a355446ec95775aaca37ef15`.
+- Token usage: 27,963 input; 13,056 cached input; 349 output; 178 reasoning
+  output.
+- Canary retries: `0`; the canary was not rerun.
 
-- Admission canary: pending.
-- Authority child: pending.
-- Semantic-verifier child: pending.
-- New model calls: `0 / 3`.
-- Prior failed custodian calls preserved: `4`.
-- Cumulative custodian/remediation calls: `4`.
-- Next action if admission passes: launch both fresh custodians and stop for an
-  owner-authorized TURN-B collection.
+## Fresh custodian launch disposition
+
+Exact-path admission did not pass, so neither fresh custodian was launched.
+The frozen but unused identities and paths are retained for provenance only:
+
+- Authority authoring-session ID:
+  `d1a-authority-terra-high-20260915-b3`.
+- Authority workspace:
+  `C:\Users\wurre\.codex\external-runs\d1a-custodians-20260915-remediation-b3c3\authority-custodian`.
+- Authority prompt SHA-256:
+  `46a10212d7290e2d4b60b913290fd0dbd1a799211a9a42affb8bbd98f68d9464`.
+- Authority model / effort: `gpt-5.6-terra` / `high`.
+- Authority PID / immediate state / launch timestamp: not applicable; not
+  launched.
+- Semantic-verifier authoring-session ID:
+  `d1a-semantic-verifier-terra-high-20260915-c3`.
+- Semantic-verifier workspace:
+  `C:\Users\wurre\.codex\external-runs\d1a-custodians-20260915-remediation-b3c3\semantic-verifier-custodian`.
+- Semantic-verifier prompt SHA-256:
+  `d77550a90dbd9c12c34db5f3bceb2eafc1f6c0b7079143cc32f67ada9fa9f590`.
+- Semantic-verifier model / effort: `gpt-5.6-terra` / `high`.
+- Semantic-verifier PID / immediate state / launch timestamp: not applicable;
+  not launched.
+
+## Accounting and stop boundary
+
+```text
+prior failed custodian model calls: 4
+new admission-canary model calls: 1
+new Authority custodian calls: 0
+new Semantic-verifier custodian calls: 0
+new repository-initiated model calls: 1
+cumulative custodian/remediation calls: 5
+retries: 0
+fallbacks: 0
+routes: 0
+escalations: 0
+model judges: 0
+subagents: 0
+D1b producer calls: 0
+```
+
+No fresh custodian process or substantive child output exists to monitor or
+collect. No Task/Oracle asset changed. D1a empirical qualification remains
+`Not established`; F1-B/C/D/E and wider novelty remain unchanged or not
+established; D1b and Phase 7 remain unauthorized.
+
+Next action requires a new owner-authorized execution-path remediation scope.
+TURN-B custodian collection is not applicable because no fresh custodian was
+launched.
