@@ -1,9 +1,12 @@
 # TEMP — D1a Custodian Relaunch Correction
 
-Status: **Owner-authorized / launched — collection pending**
+Status: **Owner-authorized / launched — TURN-B collected; no admissible assets**
 Date: **2026-09-15 Asia/Taipei**  
 Starting repository SHA: **`8bafbe3c26c0b6ed9362906a8742fa005f6fa77a`**  
 Frozen Task/Oracle SHA: **`2c8fe1cc4a34484e25f3f87907ec26d78bbc9c22`**
+
+Collection outcome is recorded in
+`docs/d1a-custodian-turn-b-collection-failure-report.md`.
 
 ## Authority and scope
 
