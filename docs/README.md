@@ -3,7 +3,7 @@
 This directory contains only current product-era guidance.
 
 - [`product/product-scope.md`](product/product-scope.md) defines the adopted
-  product boundary and the authorized P1 slice.
+  product boundary, P1 foundation, and current P2 admission status.
 - [`product/non-goals.md`](product/non-goals.md) records durable exclusions and
   guards against technique- or framework-led scope drift.
 - [`product/contracts.md`](product/contracts.md) defines the eight P1 contract

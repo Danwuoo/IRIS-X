@@ -2,7 +2,7 @@
 
 Status: active P1 plus P2 admission-only layout as of 2026-09-17.
 
-| Path | Role | P1 state |
+| Path | Role | Current state |
 | --- | --- | --- |
 | `PRODUCT_THESIS.md` | Canonical product authority | Adopted and byte-verified |
 | `docs/product/` | Product scope, contracts, package format, non-goals, and admission | P1 contracts plus P2 admission documented |

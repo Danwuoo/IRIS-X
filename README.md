@@ -43,20 +43,20 @@ identical inputs produces identical canonical contracts and package bytes.
 | Path | Purpose |
 | --- | --- |
 | [`PRODUCT_THESIS.md`](PRODUCT_THESIS.md) | Adopted product thesis |
-| [`docs/product/`](docs/product/README.md) | Current product scope and non-goals |
+| [`docs/product/`](docs/product/README.md) | Current product scope, contracts, package, and P2 admission |
 | [`docs/development/`](docs/development/README.md) | Operating model and data/execution policy |
 | [`docs/decisions/`](docs/decisions/README.md) | Current decisions |
-| [`src/irisx/`](src/irisx/) | P1 contracts, CLI, reference flow, and package verification |
-| [`tests/`](tests/README.md) | Active repository and product-contract tests |
+| [`src/irisx/`](src/irisx/) | P1 contracts/reference flow/package verification and P2 admission validation |
+| [`tests/`](tests/README.md) | Active P1 and P2 admission tests |
 | [`trials/`](trials/README.md) | P2 admission package and reserved real Engineering Trials |
 | [`research/`](research/README.md) | Conditional product-driven research |
 | [`archive/`](archive/README.md) | Read-only catalog of the pre-product repository |
 | [`tools/`](tools/README.md) | Active offline repository validation |
 
-Start with [`AGENTS.md`](AGENTS.md) and
-[`docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md`](docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md).
-The current policy and P1 contract documentation is indexed from
-[`docs/README.md`](docs/README.md).
+Start with [`AGENTS.md`](AGENTS.md) and the
+[`current decisions index`](docs/decisions/README.md).
+The current product, development, decision, contract, and P2 admission
+documentation is indexed from [`docs/README.md`](docs/README.md).
 
 Validate the active repository from the repository root:
 
