@@ -10,9 +10,11 @@ versioned **Domain Package**.
 
 P0 repository-transition scaffolding is complete. P1 implements only the
 provider-neutral product-contract layer and deterministic offline qualification
-flow authorized on 2026-09-17. It does not select or implement the first real
-domain, provider/model, specialization backend, budget, deployment form, or
-detailed production architecture. Those choices remain explicitly undecided.
+flow authorized on 2026-09-17. P2 repository work has started, but Decision
+0003 records it as admission-blocked because no first real domain, workload,
+data authorization, provider/model, specialization backend, budget, deployment
+form, or detailed production architecture has been selected. The current P2
+scope is the admission package and its offline validation only.
 
 ## Authority order
 
@@ -35,9 +37,9 @@ has no authority over active work.
 | `docs/product/` | Product documentation created by an authorized scope |
 | `docs/development/` | Development and validation guidance |
 | `docs/decisions/` | Current, dated product and repository decisions |
-| `src/irisx/` | P1 contracts, offline reference flow, CLI, and package verification |
+| `src/irisx/` | P1 contracts/reference flow/package verification and P2 admission validation |
 | `tests/` | Tests for the active product and repository surface |
-| `trials/` | Engineering Trial definitions and results once authorized |
+| `trials/` | P2 admission package; real Engineering Trials only after later authorization |
 | `research/` | Conditional research opened by explicit product pressure |
 | `tools/` | Active repository utilities only |
 | `archive/` | Read-only catalog pointing to immutable Git history |
@@ -51,11 +53,11 @@ paths. Do not recreate a legacy root merely to preserve history.
 
 ## Working rules
 
-- Keep P1 changes limited to provider-neutral contracts, deterministic offline
-  qualification, packaging, documentation, and validation.
-- Do not start P2–P4, a real domain Engineering Trial, a model/provider process,
-  paid or network execution, or a production runtime without explicit owner
-  authorization for that scope.
+- Keep the current P2 work limited to provider-neutral admission contracts,
+  deterministic offline validation, documentation, and tests.
+- Do not execute a real domain Engineering Trial, start P3/P4, select or call a
+  model/provider, use paid or network execution, or build a production runtime
+  without a later explicit owner authorization for that scope.
 - Treat the conceptual decomposition in the thesis as product responsibilities,
   not as settled services, classes, packages, or deployment boundaries.
 - Record material current decisions under `docs/decisions/`.

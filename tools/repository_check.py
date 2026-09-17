@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic offline validation for the IRIS-X active P1 repository."""
+"""Deterministic offline validation for the active IRIS-X repository."""
 
 from __future__ import annotations
 
@@ -47,11 +47,13 @@ REQUIRED_PATHS = {
     "docs/README.md",
     "docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md",
     "docs/decisions/0002-adopt-p1-contract-and-serialization-foundation.md",
+    "docs/decisions/0003-record-p2-admission-block.md",
     "docs/decisions/README.md",
     "docs/development/data-and-execution-policy.md",
     "docs/development/operating-model.md",
     "docs/development/README.md",
     "docs/product/non-goals.md",
+    "docs/product/p2-admission.md",
     "docs/product/contracts.md",
     "docs/product/domain-package.md",
     "docs/product/product-scope.md",
@@ -60,6 +62,7 @@ REQUIRED_PATHS = {
     "research/README.md",
     "src/irisx/__init__.py",
     "src/irisx/__main__.py",
+    "src/irisx/admission.py",
     "src/irisx/artifacts.py",
     "src/irisx/bindings.py",
     "src/irisx/bundle.py",
@@ -72,6 +75,7 @@ REQUIRED_PATHS = {
     "src/irisx/package.py",
     "tests/README.md",
     "tests/support.py",
+    "tests/test_admission.py",
     "tests/test_contracts.py",
     "tests/test_engine.py",
     "tests/test_reference_flow.py",
@@ -80,6 +84,8 @@ REQUIRED_PATHS = {
     "tools/irisx_build_backend.py",
     "tools/repository_check.py",
     "trials/README.md",
+    "trials/p2-admission/README.md",
+    "trials/p2-admission/admission.json",
 }
 
 ALLOWED_TOP_LEVEL_FILES = {
@@ -279,6 +285,24 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "symbolic links",
             "matching a value digest alone is insufficient",
         ),
+        "docs/decisions/0003-record-p2-admission-block.md": (
+            "admission-blocked",
+            "mutually exclusive",
+            "admitted or executed",
+            "No network/provider/paid/sensitive-data execution",
+        ),
+        "docs/product/p2-admission.md": (
+            "admission_blocked",
+            "Unknown",
+            "Synthetic fixtures",
+            "promotion",
+        ),
+        "trials/p2-admission/README.md": (
+            "admission-blocked",
+            "One owner choice",
+            "Acceptance and falsification",
+            "synthetic evidence presented as real",
+        ),
     }
     for path, terms in required_terms.items():
         text = (root / path).read_text(encoding="utf-8")
@@ -443,6 +467,13 @@ def validate(root: Path) -> list[str]:
     tracked = validate_active_surface(root, issues)
     validate_links(root, tracked, issues)
     validate_archive(root, issues)
+    try:
+        sys.path.insert(0, str(root / "src"))
+        from irisx.admission import validate_admission_file
+
+        validate_admission_file(root / "trials/p2-admission/admission.json", root)
+    except Exception as exc:  # validator must report rather than crash on admission corruption
+        issues.append(f"P2 admission package validation failed: {exc}")
     return issues
 
 

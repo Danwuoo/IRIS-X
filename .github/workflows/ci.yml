@@ -26,3 +26,4 @@ jobs:
       - run: irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run
       - run: irisx package build --run .irisx/ci/run --output .irisx/ci/package
       - run: irisx package verify .irisx/ci/package
+      - run: irisx admission validate trials/p2-admission/admission.json

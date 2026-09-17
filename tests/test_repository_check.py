@@ -15,7 +15,7 @@ SPEC.loader.exec_module(REPOSITORY_CHECK)
 
 
 class RepositoryCheckTests(unittest.TestCase):
-    def test_p1_repository_is_valid(self) -> None:
+    def test_active_repository_is_valid(self) -> None:
         self.assertEqual(REPOSITORY_CHECK.validate(ROOT), [])
 
     def test_policy_set_preserves_product_boundaries(self) -> None:

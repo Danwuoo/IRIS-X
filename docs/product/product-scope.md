@@ -1,6 +1,6 @@
 # Product Scope
 
-Status: current P1 policy, grounded in
+Status: current product policy through P2 admission, grounded in
 [`PRODUCT_THESIS.md`](../../PRODUCT_THESIS.md) and
 [`Decision 0001`](../decisions/0001-adopt-product-oriented-domain-ai-specialization.md).
 
@@ -41,9 +41,11 @@ reproducible Domain Package builder/verifier. The P1 qualification fixture is
 explicitly not a real Engineering Trial and cannot support a product-effectiveness
 claim.
 
-The first real domain and workload, provider/model, specialization backend,
+P2 repository work has started at the admission layer, but the first real
+domain and workload, data rights, provider/model, specialization backend,
 budget, deployment form, external execution, and detailed production
-architecture remain undecided. P2 must supply a separately authorized Domain
-Specification and real workload through the contracts in
+architecture remain undecided. Decision 0003 therefore marks P2
+admission-blocked. A later admitted trial must supply a separately authorized
+Domain Specification and real workload through the contracts in
 [`contracts.md`](contracts.md), changing a contract only through a reviewed
 schema-version decision rather than by accidental fixture-specific drift.

@@ -9,7 +9,7 @@ import zipfile
 
 
 NAME = "irisx"
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 DIST_INFO = f"{NAME}-{VERSION}.dist-info"
 WHEEL_NAME = f"{NAME}-{VERSION}-py3-none-any.whl"
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,7 +21,7 @@ def _metadata() -> bytes:
         "Metadata-Version: 2.4\n"
         "Name: irisx\n"
         f"Version: {VERSION}\n"
-        "Summary: Provider-neutral product contracts and offline qualification flow for IRIS-X\n"
+        "Summary: Provider-neutral product contracts, offline qualification, and P2 admission validation for IRIS-X\n"
         "Requires-Python: >=3.11\n"
         "License-Expression: LicenseRef-Proprietary\n"
         "\n"

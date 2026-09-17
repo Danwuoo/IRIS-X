@@ -9,3 +9,6 @@ unless a new decision explicitly re-adopts them.
 - [`0002-adopt-p1-contract-and-serialization-foundation.md`](0002-adopt-p1-contract-and-serialization-foundation.md)
   adopts the zero-runtime-dependency Python foundation, canonical JSON
   contracts, offline qualification adapter, and closed-world package format.
+- [`0003-record-p2-admission-block.md`](0003-record-p2-admission-block.md)
+  records that P2 has started but is admission-blocked, defines the authorized
+  admission-only scope, and identifies the owner decisions still required.

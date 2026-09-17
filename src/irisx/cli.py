@@ -1,4 +1,4 @@
-"""IRIS-X P1 command-line interface."""
+"""IRIS-X provider-neutral contract and admission command-line interface."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 import sys
 
+from .admission import admission_summary, validate_admission_file
 from .errors import IrisxError, ValidationError
 from .fixture import prepare_fixture, run_trial, validate_specification, validate_trial
 from .package import build_package, verify_package
@@ -16,7 +17,7 @@ def _path(value: str) -> Path:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="irisx", description="IRIS-X P1 offline product-contract reference CLI")
+    parser = argparse.ArgumentParser(prog="irisx", description="IRIS-X offline product-contract and admission CLI")
     subcommands = parser.add_subparsers(dest="command", required=True)
 
     fixture = subcommands.add_parser("fixture", help="manage the synthetic offline qualification fixture")
@@ -44,6 +45,11 @@ def build_parser() -> argparse.ArgumentParser:
     package_build.add_argument("--output", required=True, type=_path)
     package_verify = package_sub.add_parser("verify", help="independently verify every package artifact")
     package_verify.add_argument("path", type=_path)
+
+    admission = subcommands.add_parser("admission", help="P2 admission package operations")
+    admission_sub = admission.add_subparsers(dest="admission_command", required=True)
+    admission_validate = admission_sub.add_parser("validate", help="validate the blocked P2 admission snapshot")
+    admission_validate.add_argument("path", type=_path)
     return parser
 
 
@@ -66,6 +72,12 @@ def execute(args: argparse.Namespace) -> str:
     if args.command == "package" and args.package_command == "verify":
         manifest = verify_package(args.path)
         return f"verified Domain Package: {manifest.content_digest}"
+    if args.command == "admission" and args.admission_command == "validate":
+        summary = admission_summary(validate_admission_file(args.path))
+        return (
+            f"valid P2 admission: {summary['status']} "
+            f"({len(summary['unresolved_gates'])} unresolved gates; execution/promotion/package ineligible)"
+        )
     raise ValidationError("unsupported command")
 
 

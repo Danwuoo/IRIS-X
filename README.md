@@ -15,7 +15,9 @@ deterministic offline reference flow. The included synthetic fixture qualifies
 validation, evaluation, selection, packaging, and corruption detection; it is
 not a real domain Engineering Trial or evidence of product effectiveness. The
 first real domain, provider/model, backend, budget, deployment form, and
-detailed production architecture remain undecided.
+detailed production architecture remain undecided. P2 has started at the
+admission layer, but Decision 0003 marks it admission-blocked and authorizes no
+real trial execution.
 
 ## Quickstart
 
@@ -30,6 +32,7 @@ irisx trial validate .irisx/quickstart/fixture/trial.json
 irisx trial run --trial .irisx/quickstart/fixture/trial.json --output .irisx/quickstart/run
 irisx package build --run .irisx/quickstart/run --output .irisx/quickstart/package
 irisx package verify .irisx/quickstart/package
+irisx admission validate trials/p2-admission/admission.json
 ```
 
 Every generated file remains under ignored `.irisx/`. Repeating the flow with
@@ -45,7 +48,7 @@ identical inputs produces identical canonical contracts and package bytes.
 | [`docs/decisions/`](docs/decisions/README.md) | Current decisions |
 | [`src/irisx/`](src/irisx/) | P1 contracts, CLI, reference flow, and package verification |
 | [`tests/`](tests/README.md) | Active repository and product-contract tests |
-| [`trials/`](trials/README.md) | Reserved real Engineering Trials; none started in P1 |
+| [`trials/`](trials/README.md) | P2 admission package and reserved real Engineering Trials |
 | [`research/`](research/README.md) | Conditional product-driven research |
 | [`archive/`](archive/README.md) | Read-only catalog of the pre-product repository |
 | [`tools/`](tools/README.md) | Active offline repository validation |

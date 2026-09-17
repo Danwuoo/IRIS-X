@@ -1,0 +1,292 @@
+{
+  "schema": "irisx/p2-admission",
+  "schema_version": "1.0",
+  "artifact_id": "first-real-domain-admission",
+  "version": "1.0.0",
+  "content_digest": "sha256:d77c429bca22c3ac1e74fe04e3fb19f4489f348571fe8a10a1762962eb9700f9",
+  "payload": {
+    "status": "admission_blocked",
+    "scope": {
+      "authorized": "P2 admission preparation only",
+      "real_trial_execution": false,
+      "external_execution": false,
+      "paid_execution": false,
+      "production_deployment": false
+    },
+    "authority_refs": [
+      {
+        "path": "AGENTS.md",
+        "content_digest": "sha256:682fcd3b7c32ac5cd376460cadff2e24abfdab90b5b419b2ab9420d0298ed965"
+      },
+      {
+        "path": "PRODUCT_THESIS.md",
+        "content_digest": "sha256:373105e33a500c821ea7ca1f5d45a077ec2d6f381250cf79859cbfa6a83d7a63"
+      },
+      {
+        "path": "docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md",
+        "content_digest": "sha256:1157b4136472483adcfc42b8aa0dea2e2e0d191a54189017b35a07c3661aff39"
+      },
+      {
+        "path": "docs/decisions/0002-adopt-p1-contract-and-serialization-foundation.md",
+        "content_digest": "sha256:eff9e3e5d22f2f24b685cd91334f3b1d511c35927a9d8f851c8be12e63b78624"
+      },
+      {
+        "path": "docs/decisions/0003-record-p2-admission-block.md",
+        "content_digest": "sha256:dc5da87f600d5a0b6ac6e5528f63f8abdca9ea7f98954963f74ac1973e0f624b"
+      }
+    ],
+    "decision_options": [
+      {
+        "option_id": "local-offline-real-domain",
+        "label": "Local/offline real-domain trial",
+        "execution_mode": "local_offline",
+        "requires": [
+          "real-domain-and-workload",
+          "data-rights-and-provenance",
+          "baseline",
+          "specialization-intervention",
+          "evaluation-and-acceptance",
+          "deployment-target"
+        ],
+        "effect": "Admit one real-domain trial with no provider calls, no network execution, and an exact zero-USD paid-execution limit."
+      },
+      {
+        "option_id": "authorized-external-provider",
+        "label": "Explicitly authorized provider trial",
+        "execution_mode": "external_provider",
+        "requires": [
+          "real-domain-and-workload",
+          "data-rights-and-provenance",
+          "baseline",
+          "specialization-intervention",
+          "evaluation-and-acceptance",
+          "external-execution",
+          "provider-model-and-budget",
+          "deployment-target"
+        ],
+        "effect": "Admit one bounded trial only for the named provider/model, permitted data, maximum budget, retention, and stop conditions."
+      },
+      {
+        "option_id": "defer-p2",
+        "label": "Defer the first real trial",
+        "execution_mode": "none",
+        "requires": [],
+        "effect": "Keep P2 admission-blocked and authorize no real trial work or execution."
+      }
+    ],
+    "owner_selection": {
+      "state": "unknown",
+      "option_id": null
+    },
+    "gates": [
+      {
+        "gate_id": "real-domain-and-workload",
+        "status": "unknown",
+        "owner_decision": "Unknown",
+        "evidence_refs": []
+      },
+      {
+        "gate_id": "data-rights-and-provenance",
+        "status": "unknown",
+        "owner_decision": "Unknown",
+        "evidence_refs": []
+      },
+      {
+        "gate_id": "baseline",
+        "status": "unknown",
+        "owner_decision": "Unknown",
+        "evidence_refs": []
+      },
+      {
+        "gate_id": "specialization-intervention",
+        "status": "unknown",
+        "owner_decision": "Unknown",
+        "evidence_refs": []
+      },
+      {
+        "gate_id": "evaluation-and-acceptance",
+        "status": "unknown",
+        "owner_decision": "Unknown",
+        "evidence_refs": []
+      },
+      {
+        "gate_id": "external-execution",
+        "status": "unknown",
+        "owner_decision": "Unknown",
+        "evidence_refs": []
+      },
+      {
+        "gate_id": "provider-model-and-budget",
+        "status": "unknown",
+        "owner_decision": "Unknown",
+        "evidence_refs": []
+      },
+      {
+        "gate_id": "deployment-target",
+        "status": "unknown",
+        "owner_decision": "Unknown",
+        "evidence_refs": []
+      }
+    ],
+    "execution_authorization": {
+      "state": "unknown",
+      "mode": "unknown",
+      "provider": null,
+      "model": null,
+      "permitted_data_classes": [],
+      "maximum_budget": {
+        "state": "unknown",
+        "value": null,
+        "unit": "usd"
+      },
+      "stop_conditions": [
+        "any execution before a later owner decision",
+        "any unexpected network, provider, credential, cost, or data disclosure"
+      ],
+      "retention": "Unknown"
+    },
+    "trial_draft": {
+      "contract_schema": "irisx/engineering-trial",
+      "artifact_id": "first-real-domain-trial",
+      "version": "0.1.0-draft",
+      "name": "First bounded real-domain vertical slice",
+      "goal": "Determine whether one owner-approved intervention produces a minimum-sufficient configuration that satisfies the real workload and operating requirements and can be packaged reproducibly.",
+      "qualification_fixture": false,
+      "required_evidence_class": "real",
+      "provided_evidence_class": "unknown",
+      "domain_specification_ref": {
+        "state": "unknown",
+        "kind": "irisx/domain-specification",
+        "artifact_id": null,
+        "version": null,
+        "content_digest": null
+      },
+      "workload_ref": {
+        "state": "unknown",
+        "kind": "irisx/workload-definition",
+        "artifact_id": null,
+        "version": null,
+        "content_digest": null
+      },
+      "requirement_set_ref": {
+        "state": "unknown",
+        "kind": "irisx/requirement-set",
+        "artifact_id": null,
+        "version": null,
+        "content_digest": null
+      },
+      "evaluator_ref": {
+        "state": "unknown",
+        "kind": "irisx/evaluator-definition",
+        "artifact_id": null,
+        "version": null,
+        "content_digest": null
+      },
+      "baseline_configuration_ref": {
+        "state": "unknown",
+        "kind": "irisx/candidate-configuration",
+        "artifact_id": null,
+        "version": null,
+        "content_digest": null
+      },
+      "candidate_configuration_refs": [
+        {
+          "state": "unknown",
+          "kind": "irisx/candidate-configuration",
+          "artifact_id": null,
+          "version": null,
+          "content_digest": null
+        }
+      ],
+      "directory": "trials/first-real-domain",
+      "acceptance_criteria": [
+        {
+          "criterion_id": "authorized-real-evidence",
+          "statement": "The frozen workload is real and representative, and every retained source has verified provenance, rights, permitted use, sensitivity, and retention."
+        },
+        {
+          "criterion_id": "same-frozen-workload",
+          "statement": "Baseline and candidate are evaluated against the exact same frozen workload and evaluator identities."
+        },
+        {
+          "criterion_id": "baseline-and-candidate-comparable",
+          "statement": "Each trial configuration has one complete result with exact trial, workload, evaluator, configuration, and case bindings."
+        },
+        {
+          "criterion_id": "hard-requirements-satisfied",
+          "statement": "The selected candidate satisfies every declared hard quality, safety, and operational requirement."
+        },
+        {
+          "criterion_id": "resource-use-accounted",
+          "statement": "Latency, provider/network use, monetary cost, and other authorized resource measures are observed or explicitly unknown and remain within approved limits."
+        },
+        {
+          "criterion_id": "selection-reproducible",
+          "statement": "Selection can be independently recomputed from retained case, metric, requirement, and configuration evidence."
+        },
+        {
+          "criterion_id": "domain-package-verifiable",
+          "statement": "A versioned Domain Package is closed-world, independently verifiable, non-stale, and explicit about deployment metadata and limitations."
+        }
+      ],
+      "falsifiers": [
+        {
+          "criterion_id": "unrepresentative-workload",
+          "statement": "The workload cannot be justified as representative of the declared real task distribution."
+        },
+        {
+          "criterion_id": "missing-rights-or-provenance",
+          "statement": "Any source lacks exact provenance, ownership, permitted-use, sensitivity, or retention evidence."
+        },
+        {
+          "criterion_id": "synthetic-evidence-presented-as-real",
+          "statement": "Synthetic, qualification, or fabricated cases are used to claim real-domain effectiveness."
+        },
+        {
+          "criterion_id": "unauthorized-external-execution",
+          "statement": "Any network, provider, credential, or external service is used outside exact owner authorization."
+        },
+        {
+          "criterion_id": "unapproved-provider-model-or-budget",
+          "statement": "The provider/model is unnamed or substituted, or execution lacks or exceeds the approved maximum budget."
+        },
+        {
+          "criterion_id": "stale-or-wrong-reference",
+          "statement": "Any domain, workload, requirement, evaluator, configuration, result, decision, or package reference is missing, stale, or wrong."
+        },
+        {
+          "criterion_id": "hard-requirement-failure",
+          "statement": "No candidate satisfies every hard requirement under the authorized workload and operating constraints."
+        },
+        {
+          "criterion_id": "non-reproducible-selection-or-package",
+          "statement": "The decision or Domain Package cannot be independently reproduced and verified from retained authorized evidence."
+        }
+      ],
+      "stop_conditions": [
+        "any admission gate required by the selected path remains Unknown",
+        "any source rights, provenance, sensitivity, or retention term is missing",
+        "any external execution, provider/model, or spend is not exactly authorized",
+        "the approved budget or data boundary would be exceeded",
+        "a reference or content digest is stale, missing, or inconsistent",
+        "synthetic or P1 qualification evidence would be used as real P2 evidence"
+      ],
+      "unknowns": [
+        "real-domain-and-workload",
+        "data-rights-and-provenance",
+        "baseline",
+        "specialization-intervention",
+        "evaluation-and-acceptance",
+        "external-execution",
+        "provider-model-and-budget",
+        "deployment-target"
+      ]
+    },
+    "eligibility": {
+      "engineering_trial_execution": false,
+      "promotion": false,
+      "domain_package": false,
+      "reason": "No owner execution path is selected and all eight admission gates remain Unknown."
+    }
+  }
+}

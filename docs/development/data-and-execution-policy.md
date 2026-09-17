@@ -1,8 +1,9 @@
 # Data and Execution Policy
 
-Status: current P1 policy. This policy establishes safe defaults; it does not
-authorize a provider, model, dataset, trial, or product runtime. Execution work
-also follows the [`Development Operating Model`](operating-model.md).
+Status: current repository policy through P2 admission. This policy establishes
+safe defaults; it does not authorize a provider, model, dataset, trial, or
+product runtime. Execution work also follows the
+[`Development Operating Model`](operating-model.md).
 
 ## Secrets and credentials
 
@@ -40,7 +41,7 @@ also follows the [`Development Operating Model`](operating-model.md).
 ## External execution and budgets
 
 Ordinary P0/P1 validation and the P1 qualification fixture are deterministic and
-offline. They may inspect local files
+offline. P2 admission validation is likewise deterministic and offline. They may inspect local files
 and Git objects but must not call a provider/model, access an external service,
 start paid compute, or transmit domain data.
 

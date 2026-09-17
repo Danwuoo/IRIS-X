@@ -11,7 +11,10 @@ documentation is:
   semantics;
 - [`domain-package.md`](domain-package.md) defines the P1 package layout and
   independent verification boundary.
+- [`p2-admission.md`](p2-admission.md) defines the blocked first-real-domain
+  admission snapshot, owner decision gates, and offline validator.
 
-P1 contracts are intentionally provider- and technique-neutral. P2 must adapt a
-real authorized domain to these contracts without treating fixture details as
+P1 contracts remain provider- and technique-neutral. P2 has started only at
+the admission layer and remains blocked under Decision 0003. A later authorized
+real domain must adapt to these contracts without treating fixture details as
 architecture.
