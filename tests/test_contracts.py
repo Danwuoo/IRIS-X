@@ -8,8 +8,8 @@ import unittest
 import support  # noqa: F401
 
 from irisx.canonical import canonical_bytes
-from irisx.artifacts import load_artifact
-from irisx.bindings import validate_source_collection_bindings, validate_trial_bindings
+from irisx.artifacts import artifact_ref, load_artifact, make_artifact
+from irisx.bindings import validate_p1_package_trial, validate_source_collection_bindings, validate_trial_bindings
 from irisx.contracts import (
     CandidateConfiguration,
     DomainPackageManifest,
@@ -162,6 +162,47 @@ class ContractTests(unittest.TestCase):
                 workload = WorkloadDefinition("wrong-provenance-workload", "1.0.0", payload)
                 with self.assertRaisesRegex(ValidationError, "source locator mismatch"):
                     validate_source_collection_bindings(specification, workload, cases)
+
+    def test_qualification_evaluator_must_keep_the_offline_profile(self) -> None:
+        trial = load_contract(self.fixture / "trial.json", EngineeringTrial)
+        specification = load_contract(self.fixture / "specification.json", DomainSpecification)
+        workload = load_contract(self.fixture / "workload.json", WorkloadDefinition)
+        requirements = load_contract(self.fixture / "requirements.json", RequirementSet)
+        evaluator = load_artifact(self.fixture / "evaluator.json", kind="irisx/evaluator-definition")
+        evaluator_payload = copy.deepcopy(evaluator["payload"])
+        evaluator_payload["offline"] = False
+        changed_evaluator = make_artifact(
+            evaluator["schema"], evaluator["artifact_id"], evaluator["version"], evaluator_payload
+        )
+        workload_payload = copy.deepcopy(workload.payload)
+        workload_payload["evaluator_ref"] = artifact_ref(changed_evaluator)
+        changed_workload = WorkloadDefinition(workload.artifact_id, workload.version, workload_payload)
+        specification_payload = copy.deepcopy(specification.payload)
+        specification_payload["workload_ref"] = changed_workload.ref()
+        changed_specification = DomainSpecification(
+            specification.artifact_id, specification.version, specification_payload
+        )
+        trial_payload = copy.deepcopy(trial.payload)
+        trial_payload["domain_specification_ref"] = changed_specification.ref()
+        trial_payload["workload_ref"] = changed_workload.ref()
+        trial_payload["evaluator_ref"] = artifact_ref(changed_evaluator)
+        changed_trial = EngineeringTrial(trial.artifact_id, trial.version, trial_payload)
+        with self.assertRaisesRegex(ValidationError, "deterministic offline profile"):
+            validate_trial_bindings(
+                changed_trial,
+                changed_specification,
+                changed_workload,
+                requirements,
+                changed_evaluator,
+            )
+
+    def test_p1_package_rejects_non_qualification_trial(self) -> None:
+        trial = load_contract(self.fixture / "trial.json", EngineeringTrial)
+        payload = copy.deepcopy(trial.payload)
+        payload["qualification_fixture"] = False
+        changed = EngineeringTrial("non-qualification-trial", "1.0.0", payload)
+        with self.assertRaisesRegex(ValidationError, "require a qualification_fixture trial"):
+            validate_p1_package_trial(changed)
 
 
 if __name__ == "__main__":

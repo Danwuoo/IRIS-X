@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .bindings import validate_qualification_result_evidence
 from .contracts import (
     CandidateConfiguration,
     EngineeringTrial,
@@ -200,6 +201,7 @@ def select_configuration(
     _assert_comparable(trial, all_results)
     for result in all_results:
         validate_result_evidence(result, workload)
+        validate_qualification_result_evidence(trial, result)
     expected_baseline = trial.payload["baseline_configuration_ref"]
     if baseline.payload["configuration_ref"] != expected_baseline:
         raise ValidationError("baseline result does not bind the trial baseline configuration")

@@ -9,12 +9,47 @@ from .canonical import digest_value
 from .contracts import (
     DomainSpecification,
     EngineeringTrial,
+    EvaluationResult,
     RequirementSet,
     SelectionDecision,
     WorkloadDefinition,
     assert_binding,
 )
 from .errors import ValidationError
+
+
+QUALIFICATION_EVALUATOR_PROFILE = {
+    "method": "exact-label-match",
+    "aggregate": ["accuracy", "critical_failures", "segment_accuracy"],
+    "offline": True,
+}
+
+
+def validate_p1_package_trial(trial: EngineeringTrial) -> None:
+    """Keep the P1 package builder on the authorized qualification track."""
+
+    if trial.payload["qualification_fixture"] is not True:
+        raise ValidationError("P1 Domain Packages require a qualification_fixture trial")
+
+
+def validate_qualification_result_evidence(
+    trial: EngineeringTrial,
+    result: EvaluationResult,
+) -> None:
+    """Fail closed when qualification evidence reports external execution."""
+
+    if trial.payload["qualification_fixture"] is not True:
+        return
+    expected = {
+        "network_calls": {"state": "observed", "value": 0, "unit": "count"},
+        "provider_calls": {"state": "observed", "value": 0, "unit": "count"},
+        "monetary_cost": {"state": "observed", "value": 0, "unit": "usd"},
+    }
+    for name, observation in expected.items():
+        if result.payload["resource_use"].get(name) != observation:
+            raise ValidationError(f"qualification resource_use.{name} must be observed zero")
+    if result.payload["metrics"].get("monetary_cost") != expected["monetary_cost"]:
+        raise ValidationError("qualification metrics.monetary_cost must be observed zero")
 
 
 def validate_trial_bindings(
@@ -37,6 +72,8 @@ def validate_trial_bindings(
         raise ValidationError("trial.evaluator_ref: stale or substituted evaluator")
     if workload.payload["evaluator_ref"] != evaluator_ref:
         raise ValidationError("workload.evaluator_ref: stale or substituted evaluator")
+    if trial.payload["qualification_fixture"] is True and evaluator["payload"] != QUALIFICATION_EVALUATOR_PROFILE:
+        raise ValidationError("qualification evaluator must use the exact deterministic offline profile")
 
 
 def validate_decision_bindings(

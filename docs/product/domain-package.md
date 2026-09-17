@@ -57,6 +57,13 @@ Manifest paths use canonical relative POSIX syntax and are resolved beneath the
 package root. Backslashes, absolute paths, traversal, and symbolic links are
 rejected so verification has the same boundary on Windows and POSIX systems.
 
+The P1 verifier requires `deployment/metadata.json` to be the exact
+non-deployable qualification placeholder bound to the selected configuration.
+It also requires `known-limitations.json`; its sorted limitation set must equal
+both the manifest list and the limitations recomputed from the specification,
+selected configuration, selected result, and decision. These fixed artifacts
+cannot be removed or converted into production claims by re-signing a manifest.
+
 Identical canonical inputs produce identical directory contents. P1 packages
 contain no model weights, customer data, external resources, secrets, or real
 deployment configuration. The deployment document is an explicit non-deployable

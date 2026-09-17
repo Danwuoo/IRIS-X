@@ -6,7 +6,12 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from .artifacts import artifact_ref, make_artifact, validate_artifact
-from .bindings import validate_decision_bindings, validate_source_collection_bindings, validate_trial_bindings
+from .bindings import (
+    validate_decision_bindings,
+    validate_p1_package_trial,
+    validate_source_collection_bindings,
+    validate_trial_bindings,
+)
 from .bundle import Document, document_ref, load_bundle, load_document, require_contract, resolve_ref
 from .canonical import digest_bytes, read_json, write_json
 from .contracts import (
@@ -28,6 +33,8 @@ from .errors import ValidationError
 
 
 RefKey = tuple[str, str, str, str]
+
+P1_DEPLOYMENT_NOTES = "P1 does not select a deployment form or production runtime."
 
 
 def _ref_key(ref: dict[str, Any]) -> RefKey:
@@ -71,6 +78,20 @@ def _semantic_decision_fields(decision: SelectionDecision) -> dict[str, Any]:
         "tie_break_rule",
     )
     return {field: decision.payload[field] for field in fields}
+
+
+def _expected_limitations(
+    specification: DomainSpecification,
+    selected_configuration: CandidateConfiguration,
+    selected_result: EvaluationResult,
+    decision: SelectionDecision,
+) -> list[str]:
+    return sorted(set(
+        specification.payload["known_limitations"]
+        + selected_configuration.payload["known_limitations"]
+        + selected_result.payload["known_limitations"]
+        + decision.payload["known_limitations"]
+    ))
 
 
 def _validate_selection_evidence(
@@ -184,6 +205,7 @@ def build_package(run_dir: Path, output: Path) -> DomainPackageManifest:
     assert isinstance(requirements, RequirementSet)
     assert isinstance(trial, EngineeringTrial)
     assert isinstance(decision, SelectionDecision)
+    validate_p1_package_trial(trial)
     evaluator_document = resolve_ref(run_index, workload.payload["evaluator_ref"], "workload.evaluator_ref")
     if not isinstance(evaluator_document, dict):
         raise ValidationError("evaluator must be a supporting artifact")
@@ -212,15 +234,10 @@ def build_package(run_dir: Path, output: Path) -> DomainPackageManifest:
             "status": "placeholder",
             "deployable": False,
             "configuration_ref": selected_configuration.ref(),
-            "notes": "P1 does not select a deployment form or production runtime.",
+            "notes": P1_DEPLOYMENT_NOTES,
         },
     )
-    limitation_values = sorted(set(
-        specification.payload["known_limitations"]
-        + selected_configuration.payload["known_limitations"]
-        + selected_result.payload["known_limitations"]
-        + decision.payload["known_limitations"]
-    ))
+    limitation_values = _expected_limitations(specification, selected_configuration, selected_result, decision)
     limitations = make_artifact(
         "irisx/known-limitations",
         "qualification-known-limitations",
@@ -281,6 +298,45 @@ def _expect_document(documents: dict[str, Document], relative: str, expected: ty
     return document
 
 
+def _expect_artifact(documents: dict[str, Document], relative: str, kind: str) -> dict[str, Any]:
+    document = documents.get(relative)
+    if not isinstance(document, dict):
+        raise ValidationError(f"{relative}: expected {kind}")
+    return validate_artifact(document, kind=kind)
+
+
+def _validate_p1_deployment_metadata(
+    deployment: dict[str, Any],
+    selected_configuration: CandidateConfiguration,
+) -> None:
+    expected_payload = {
+        "status": "placeholder",
+        "deployable": False,
+        "configuration_ref": selected_configuration.ref(),
+        "notes": P1_DEPLOYMENT_NOTES,
+    }
+    if (
+        deployment["artifact_id"] != "qualification-deployment-placeholder"
+        or deployment["version"] != "1.0.0"
+        or deployment["payload"] != expected_payload
+    ):
+        raise ValidationError("deployment/metadata.json must be the exact non-deployable P1 placeholder")
+
+
+def _validate_p1_limitations(
+    limitations: dict[str, Any],
+    manifest: DomainPackageManifest,
+    expected: list[str],
+) -> None:
+    if (
+        limitations["artifact_id"] != "qualification-known-limitations"
+        or limitations["version"] != "1.0.0"
+        or limitations["payload"] != {"limitations": expected}
+        or manifest.payload["known_limitations"] != expected
+    ):
+        raise ValidationError("known-limitations.json and manifest limitations must match the selected evidence")
+
+
 def verify_package(root: Path) -> DomainPackageManifest:
     if not root.is_dir():
         raise ValidationError(f"package directory does not exist: {root}")
@@ -324,12 +380,11 @@ def verify_package(root: Path) -> DomainPackageManifest:
     assert isinstance(requirements, RequirementSet)
     assert isinstance(decision, SelectionDecision)
     assert isinstance(trial, EngineeringTrial)
-    evaluator_document = resolve_ref(package_index, manifest.payload["evaluator_ref"], "manifest.evaluator_ref")
-    deployment_document = resolve_ref(package_index, manifest.payload["deployment_metadata_ref"], "manifest.deployment_metadata_ref")
-    if not isinstance(evaluator_document, dict) or not isinstance(deployment_document, dict):
-        raise ValidationError("supporting package artifacts have invalid types")
-    evaluator = validate_artifact(evaluator_document, kind="irisx/evaluator-definition")
-    deployment = validate_artifact(deployment_document, kind="irisx/deployment-metadata")
+    validate_p1_package_trial(trial)
+    evaluator = _expect_artifact(documents, "evaluation/evaluator.json", "irisx/evaluator-definition")
+    deployment = _expect_artifact(documents, "deployment/metadata.json", "irisx/deployment-metadata")
+    cases_document = _expect_artifact(documents, "evaluation/cases.json", "irisx/source-collection")
+    limitations = _expect_artifact(documents, "known-limitations.json", "irisx/known-limitations")
 
     refs = manifest.payload
     for field, target in (
@@ -360,14 +415,8 @@ def verify_package(root: Path) -> DomainPackageManifest:
             component = resolve_ref(package_index, ref, f"configuration.components.{component_name}")
             if not isinstance(component, dict):
                 raise ValidationError(f"configuration component {component_name} has invalid type")
-    if deployment["payload"].get("configuration_ref") != selected_configuration.ref():
-        raise ValidationError("deployment metadata configuration binding failed")
-
-    cases_document = next(
-        (document for document in documents.values() if isinstance(document, dict) and document["schema"] == "irisx/source-collection"),
-        None,
-    )
-    if cases_document is None:
-        raise ValidationError("package cases artifact is missing")
+    _validate_p1_deployment_metadata(deployment, selected_configuration)
+    limitation_values = _expected_limitations(specification, selected_configuration, selected_result, decision)
+    _validate_p1_limitations(limitations, manifest, limitation_values)
     validate_source_collection_bindings(specification, workload, cases_document)
     return manifest

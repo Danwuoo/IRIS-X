@@ -61,3 +61,9 @@ verification. Workload input/expected refs bind the source collection case ID,
 field, locator, media type, source identity, and digest. Segment-derived metrics
 use a closed `accuracy.<segment>` namespace defined by the frozen workload, so
 an invented segment cannot become requirement or objective evidence.
+
+P1 package construction is restricted to the authorized qualification fixture.
+Its evaluator and resource evidence must prove deterministic offline execution
+with zero network, provider, and monetary use. Independent verification also
+requires the exact non-deployable metadata placeholder and a limitations
+artifact whose content agrees with the manifest and selected evidence.

@@ -12,7 +12,8 @@ from unittest import mock
 import support  # noqa: F401
 
 from irisx import cli
-from irisx.canonical import digest_bytes
+from irisx.artifacts import artifact_ref, make_artifact, write_artifact
+from irisx.canonical import digest_bytes, read_json
 from irisx.contracts import (
     CandidateConfiguration,
     DomainPackageManifest,
@@ -174,6 +175,71 @@ class ReferenceFlowTests(unittest.TestCase):
             target.write_bytes(target.read_bytes() + b" ")
             with self.assertRaisesRegex(ValidationError, "digest mismatch"):
                 verify_package(root / "package")
+
+    def test_package_rejects_resigned_deployable_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            prepare_fixture(root / "fixture")
+            run_trial(root / "fixture/trial.json", root / "run")
+            build_package(root / "run", root / "package")
+            deployment_path = root / "package/deployment/metadata.json"
+            deployment = read_json(deployment_path)
+            payload = copy.deepcopy(deployment["payload"])
+            payload.update({"deployable": True, "status": "production-ready"})
+            changed = make_artifact(deployment["schema"], deployment["artifact_id"], deployment["version"], payload)
+            write_artifact(deployment_path, changed)
+            manifest_path = root / "package/manifest.json"
+            manifest = load_contract(manifest_path, DomainPackageManifest)
+            manifest_payload = copy.deepcopy(manifest.payload)
+            manifest_payload["deployment_metadata_ref"] = artifact_ref(changed)
+            for entry in manifest_payload["artifacts"]:
+                if entry["path"] == "deployment/metadata.json":
+                    entry["content_digest"] = digest_bytes(deployment_path.read_bytes())
+            DomainPackageManifest(manifest.artifact_id, manifest.version, manifest_payload).write(manifest_path)
+            with self.assertRaisesRegex(ValidationError, "non-deployable P1 placeholder"):
+                verify_package(root / "package")
+
+    def test_package_rejects_missing_limitations_artifact_after_resigning(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            prepare_fixture(root / "fixture")
+            run_trial(root / "fixture/trial.json", root / "run")
+            build_package(root / "run", root / "package")
+            (root / "package/known-limitations.json").unlink()
+            manifest_path = root / "package/manifest.json"
+            manifest = load_contract(manifest_path, DomainPackageManifest)
+            manifest_payload = copy.deepcopy(manifest.payload)
+            manifest_payload["artifacts"] = [
+                entry for entry in manifest_payload["artifacts"]
+                if entry["path"] != "known-limitations.json"
+            ]
+            DomainPackageManifest(manifest.artifact_id, manifest.version, manifest_payload).write(manifest_path)
+            with self.assertRaisesRegex(ValidationError, "known-limitations.json"):
+                verify_package(root / "package")
+
+    def test_package_build_rejects_resigned_external_execution_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            prepare_fixture(root / "fixture")
+            run_trial(root / "fixture/trial.json", root / "run")
+            result_path = root / "run/results/qualification-candidate-result.json"
+            result = load_contract(result_path, EvaluationResult)
+            result_payload = copy.deepcopy(result.payload)
+            result_payload["resource_use"]["network_calls"]["value"] = 1
+            changed = EvaluationResult(result.artifact_id, result.version, result_payload)
+            changed.write(result_path)
+            decision_path = root / "run/decision.json"
+            decision = load_contract(decision_path, SelectionDecision)
+            decision_payload = copy.deepcopy(decision.payload)
+            decision_payload["considered_result_refs"] = [
+                changed.ref() if ref == result.ref() else ref
+                for ref in decision_payload["considered_result_refs"]
+            ]
+            decision_payload["eligible_result_refs"] = [changed.ref()]
+            decision_payload["selected_result_ref"] = changed.ref()
+            SelectionDecision(decision.artifact_id, decision.version, decision_payload).write(decision_path)
+            with self.assertRaisesRegex(ValidationError, "qualification resource_use.network_calls"):
+                build_package(root / "run", root / "package")
 
     def test_package_build_rejects_missing_decision_result_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

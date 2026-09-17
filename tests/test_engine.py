@@ -140,6 +140,22 @@ class SelectionTests(unittest.TestCase):
         )
         self.assertEqual(decision.payload["outcome"], "no_promotion")
 
+    def test_qualification_rejects_external_execution_evidence(self) -> None:
+        for field in ("network_calls", "provider_calls", "monetary_cost"):
+            with self.subTest(field=field):
+                payload = copy.deepcopy(self.candidate.payload)
+                payload["resource_use"][field]["value"] = 1
+                result = EvaluationResult(f"non-offline-{field.replace('_', '-')}", "1.0.0", payload)
+                with self.assertRaisesRegex(ValidationError, f"qualification resource_use.{field}"):
+                    select_configuration(
+                        self.trial,
+                        self.workload,
+                        self.requirements,
+                        self.baseline,
+                        [result],
+                        self.configurations,
+                    )
+
     def test_nonexistent_segment_metric_is_never_valid_evidence(self) -> None:
         payload = copy.deepcopy(self.candidate.payload)
         payload["metrics"]["accuracy.phantom"] = {"state": "observed", "value": 1.0, "unit": "ratio"}

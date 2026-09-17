@@ -82,6 +82,12 @@ segment set. Every workload segment aggregate is required, and extra segment
 names are invalid evidence. This restriction applies only to the segment
 accuracy namespace; other provider-neutral metrics remain extensible.
 
+P1 Domain Package construction accepts only a `qualification_fixture` trial.
+For that profile, the evaluator is the exact deterministic offline evaluator,
+and every result must record observed zero network calls, provider calls, and
+monetary cost. Re-signing an internally consistent graph cannot turn external
+execution into valid P1 qualification evidence.
+
 Hard requirements gate eligibility. Soft requirements and declared objectives
 guide selection without collapsing quality, critical failures, latency,
 monetary/resource cost, complexity, maintainability, and operating constraints
