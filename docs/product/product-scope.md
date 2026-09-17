@@ -1,6 +1,6 @@
 # Product Scope
 
-Status: current P0 policy, grounded in
+Status: current P1 policy, grounded in
 [`PRODUCT_THESIS.md`](../../PRODUCT_THESIS.md) and
 [`Decision 0001`](../decisions/0001-adopt-product-oriented-domain-ai-specialization.md).
 
@@ -32,10 +32,18 @@ quality, cost, latency, complexity, maintainability, privacy, and resource
 constraints. Minimum-sufficient configurations are preferred over unnecessary
 capability or architecture.
 
-## P0 boundary
+## P1 authorized scope
 
-P0 establishes authority, policy, repository layout, archival recovery, and
-offline validation. It does not implement product contracts or runtime code.
-The first domain and workload, provider/model, backend, budget, deployment form,
-schemas, APIs, and detailed architecture remain undecided. Each requires a
-later owner-authorized scope and, where material, a current decision record.
+P0 established authority, policy, repository layout, archival recovery, and
+offline validation. P1 adds versioned contracts, canonical JSON, a deterministic
+synthetic qualification fixture, provider-neutral selection semantics, and a
+reproducible Domain Package builder/verifier. The P1 qualification fixture is
+explicitly not a real Engineering Trial and cannot support a product-effectiveness
+claim.
+
+The first real domain and workload, provider/model, specialization backend,
+budget, deployment form, external execution, and detailed production
+architecture remain undecided. P2 must supply a separately authorized Domain
+Specification and real workload through the contracts in
+[`contracts.md`](contracts.md), changing a contract only through a reviewed
+schema-version decision rather than by accidental fixture-specific drift.

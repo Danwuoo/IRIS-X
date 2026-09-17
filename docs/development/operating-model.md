@@ -1,6 +1,6 @@
 # Development Operating Model
 
-Status: current P0 policy. See the current
+Status: current P1 policy. See the current
 [`Product Scope`](../product/product-scope.md) and
 [`Data and Execution Policy`](data-and-execution-policy.md).
 
@@ -41,5 +41,7 @@ Research should preserve uncertainty and return a usable rule, method, or
 negative result to product engineering; it does not create an indefinite
 parallel program by default.
 
-The first domain, provider/model, backend, budget, deployment form, product
-contracts, runtime, and detailed architecture remain undecided after P0.
+P1 implements the contract and offline qualification foundation described in
+Decision 0002. The first real domain, provider/model, backend, budget,
+deployment form, production runtime, and detailed architecture remain undecided.
+P2 is not authorized by the presence of P1 contracts or fixture artifacts.

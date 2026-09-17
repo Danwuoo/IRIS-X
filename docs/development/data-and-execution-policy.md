@@ -1,6 +1,6 @@
 # Data and Execution Policy
 
-Status: current P0 policy. This policy establishes safe defaults; it does not
+Status: current P1 policy. This policy establishes safe defaults; it does not
 authorize a provider, model, dataset, trial, or product runtime. Execution work
 also follows the [`Development Operating Model`](operating-model.md).
 
@@ -39,7 +39,8 @@ also follows the [`Development Operating Model`](operating-model.md).
 
 ## External execution and budgets
 
-Ordinary P0 validation is deterministic and offline. It may inspect local files
+Ordinary P0/P1 validation and the P1 qualification fixture are deterministic and
+offline. They may inspect local files
 and Git objects but must not call a provider/model, access an external service,
 start paid compute, or transmit domain data.
 

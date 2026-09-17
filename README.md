@@ -10,10 +10,30 @@ it starts from a **Domain Specification**, follows **Build–Measure–Select**,
 uses **Engineering Trials** to decide which interventions earn promotion, and
 produces a versioned **Domain Package**.
 
-P0 establishes product authority, repository boundaries, and a Git-native cold
-archive. It does not implement product contracts or runtime behavior. The first
-domain, provider/model, backend, budget, deployment form, and detailed
-architecture remain undecided.
+P1 now supplies the minimal provider-neutral product contracts and a bounded,
+deterministic offline reference flow. The included synthetic fixture qualifies
+validation, evaluation, selection, packaging, and corruption detection; it is
+not a real domain Engineering Trial or evidence of product effectiveness. The
+first real domain, provider/model, backend, budget, deployment form, and
+detailed production architecture remain undecided.
+
+## Quickstart
+
+IRIS-X requires Python 3.11 or later and has no third-party runtime dependencies.
+Install the local CLI, then run the complete synthetic flow:
+
+```powershell
+python -m pip install --no-build-isolation -e .
+irisx fixture prepare --output .irisx/quickstart/fixture
+irisx spec validate .irisx/quickstart/fixture/specification.json
+irisx trial validate .irisx/quickstart/fixture/trial.json
+irisx trial run --trial .irisx/quickstart/fixture/trial.json --output .irisx/quickstart/run
+irisx package build --run .irisx/quickstart/run --output .irisx/quickstart/package
+irisx package verify .irisx/quickstart/package
+```
+
+Every generated file remains under ignored `.irisx/`. Repeating the flow with
+identical inputs produces identical canonical contracts and package bytes.
 
 ## Active repository
 
@@ -23,21 +43,23 @@ architecture remain undecided.
 | [`docs/product/`](docs/product/README.md) | Current product scope and non-goals |
 | [`docs/development/`](docs/development/README.md) | Operating model and data/execution policy |
 | [`docs/decisions/`](docs/decisions/README.md) | Current decisions |
-| [`src/irisx/`](src/irisx/README.md) | Reserved product source location |
-| [`tests/`](tests/README.md) | Active validation and future product tests |
-| [`trials/`](trials/README.md) | Future Engineering Trials |
+| [`src/irisx/`](src/irisx/) | P1 contracts, CLI, reference flow, and package verification |
+| [`tests/`](tests/README.md) | Active repository and product-contract tests |
+| [`trials/`](trials/README.md) | Reserved real Engineering Trials; none started in P1 |
 | [`research/`](research/README.md) | Conditional product-driven research |
 | [`archive/`](archive/README.md) | Read-only catalog of the pre-product repository |
 | [`tools/`](tools/README.md) | Active offline repository validation |
 
 Start with [`AGENTS.md`](AGENTS.md) and
 [`docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md`](docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md).
-The concise P0 policy set is indexed from [`docs/README.md`](docs/README.md).
+The current policy and P1 contract documentation is indexed from
+[`docs/README.md`](docs/README.md).
 
-Validate P0 from the repository root:
+Validate the active repository from the repository root:
 
 ```powershell
 python tools\repository_check.py --self-test
 python tools\repository_check.py
 python -m unittest discover -s tests -v
+git diff --check
 ```

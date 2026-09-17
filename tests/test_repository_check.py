@@ -15,10 +15,10 @@ SPEC.loader.exec_module(REPOSITORY_CHECK)
 
 
 class RepositoryCheckTests(unittest.TestCase):
-    def test_p0_repository_is_valid(self) -> None:
+    def test_p1_repository_is_valid(self) -> None:
         self.assertEqual(REPOSITORY_CHECK.validate(ROOT), [])
 
-    def test_policy_set_preserves_p0_boundaries(self) -> None:
+    def test_policy_set_preserves_product_boundaries(self) -> None:
         paths = (
             "docs/product/product-scope.md",
             "docs/product/non-goals.md",
@@ -34,6 +34,7 @@ class RepositoryCheckTests(unittest.TestCase):
             "Engineering Trial",
             "remain undecided",
             "owner authorization",
+            "P1",
         ):
             self.assertIn(term, combined)
 
@@ -47,10 +48,16 @@ class RepositoryCheckTests(unittest.TestCase):
             ".irisx/",
             "provenance",
             "maximum budget",
-            "Ordinary P0 validation is deterministic and offline",
+            "P1 qualification fixture are deterministic and",
             "Any external or paid execution requires explicit owner authorization",
         ):
             self.assertIn(term, policy)
+
+    def test_p0_archive_identities_are_unchanged(self) -> None:
+        self.assertEqual(REPOSITORY_CHECK.ARCHIVE_TAG, "archive/pre-product-transition-2026-09-17")
+        self.assertEqual(REPOSITORY_CHECK.TAG_OBJECT, "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d")
+        self.assertEqual(REPOSITORY_CHECK.SOURCE_COMMIT, "83207e48cc44ce26d0bcb0c98006facfc4f01844")
+        self.assertEqual(REPOSITORY_CHECK.ROOT_TREE, "623066ca75243af5e68f53d8674508d4470ce2cd")
 
 
 if __name__ == "__main__":

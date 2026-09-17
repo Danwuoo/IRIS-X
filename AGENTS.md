@@ -8,11 +8,11 @@ domain AI specialization. The product begins with a **Domain Specification**,
 uses **Build–Measure–Select** and **Engineering Trials**, and produces a
 versioned **Domain Package**.
 
-P0 is repository-transition scaffolding only. It does not select or implement
-the first domain, provider/model, backend, budget, deployment form, or detailed
-architecture. Those choices remain explicitly undecided and require a later
-owner-authorized scope. Do not infer them from the thesis, archive, or directory
-names.
+P0 repository-transition scaffolding is complete. P1 implements only the
+provider-neutral product-contract layer and deterministic offline qualification
+flow authorized on 2026-09-17. It does not select or implement the first real
+domain, provider/model, specialization backend, budget, deployment form, or
+detailed production architecture. Those choices remain explicitly undecided.
 
 ## Authority order
 
@@ -35,7 +35,7 @@ has no authority over active work.
 | `docs/product/` | Product documentation created by an authorized scope |
 | `docs/development/` | Development and validation guidance |
 | `docs/decisions/` | Current, dated product and repository decisions |
-| `src/irisx/` | Product implementation location; P0 contains no runtime |
+| `src/irisx/` | P1 contracts, offline reference flow, CLI, and package verification |
 | `tests/` | Tests for the active product and repository surface |
 | `trials/` | Engineering Trial definitions and results once authorized |
 | `research/` | Conditional research opened by explicit product pressure |
@@ -51,9 +51,11 @@ paths. Do not recreate a legacy root merely to preserve history.
 
 ## Working rules
 
-- Keep P0 changes limited to authority, archival, layout, and validation.
-- Do not start P1–P4, a model/provider process, an Engineering Trial, or a
-  product runtime without explicit owner authorization for that scope.
+- Keep P1 changes limited to provider-neutral contracts, deterministic offline
+  qualification, packaging, documentation, and validation.
+- Do not start P2–P4, a real domain Engineering Trial, a model/provider process,
+  paid or network execution, or a production runtime without explicit owner
+  authorization for that scope.
 - Treat the conceptual decomposition in the thesis as product responsibilities,
   not as settled services, classes, packages, or deployment boundaries.
 - Record material current decisions under `docs/decisions/`.

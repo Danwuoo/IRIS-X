@@ -1,7 +1,7 @@
 # Development
 
-P0 establishes a clean product-era repository and deterministic offline
-validation. It does not begin product implementation.
+P0 established a clean product-era repository. P1 adds deterministic offline
+product contracts, a bounded qualification flow, and package verification.
 
 Current policies:
 
@@ -10,9 +10,10 @@ Current policies:
 - [`data-and-execution-policy.md`](data-and-execution-policy.md) defines safe
   handling and execution boundaries.
 
-Before future work, identify the owner-authorized scope and record any material
-choice in `docs/decisions/`. Do not select a domain, provider/model, backend,
-budget, deployment form, or detailed architecture by implication.
+Before P2 or later work, identify the owner-authorized scope and record any
+material choice in `docs/decisions/`. Do not select a real domain,
+provider/model, backend, budget, deployment form, or detailed architecture by
+implication.
 
 Current validation:
 

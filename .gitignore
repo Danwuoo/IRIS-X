@@ -14,5 +14,6 @@ Thumbs.db
 # Common local build and coverage outputs.
 build/
 dist/
+*.egg-info/
 .coverage
 htmlcov/

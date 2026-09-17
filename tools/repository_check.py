@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic offline validation for the IRIS-X P0 product transition."""
+"""Deterministic offline validation for the IRIS-X active P1 repository."""
 
 from __future__ import annotations
 
@@ -35,35 +35,81 @@ ARCHIVED_ROOTS = (
 REQUIRED_PATHS = {
     ".gitattributes",
     ".gitignore",
+    ".github/workflows/ci.yml",
     "AGENTS.md",
     "PRODUCT_THESIS.md",
     "README.md",
+    "pyproject.toml",
     "archive/AGENTS.md",
     "archive/README.md",
     "archive/manifest.json",
     "archive/path-index.tsv",
     "docs/README.md",
     "docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md",
+    "docs/decisions/0002-adopt-p1-contract-and-serialization-foundation.md",
     "docs/decisions/README.md",
     "docs/development/data-and-execution-policy.md",
     "docs/development/operating-model.md",
     "docs/development/README.md",
     "docs/product/non-goals.md",
+    "docs/product/contracts.md",
+    "docs/product/domain-package.md",
     "docs/product/product-scope.md",
     "docs/product/README.md",
     "docs/repository-layout.md",
     "research/README.md",
-    "src/irisx/README.md",
+    "src/irisx/__init__.py",
+    "src/irisx/__main__.py",
+    "src/irisx/artifacts.py",
+    "src/irisx/bundle.py",
+    "src/irisx/canonical.py",
+    "src/irisx/cli.py",
+    "src/irisx/contracts.py",
+    "src/irisx/engine.py",
+    "src/irisx/errors.py",
+    "src/irisx/fixture.py",
+    "src/irisx/package.py",
     "tests/README.md",
+    "tests/support.py",
+    "tests/test_contracts.py",
+    "tests/test_engine.py",
+    "tests/test_reference_flow.py",
     "tests/test_repository_check.py",
     "tools/README.md",
+    "tools/irisx_build_backend.py",
     "tools/repository_check.py",
     "trials/README.md",
 }
 
-ALLOWED_EXECUTABLES = {
-    "tests/test_repository_check.py",
-    "tools/repository_check.py",
+ALLOWED_TOP_LEVEL_FILES = {
+    ".gitattributes",
+    ".gitignore",
+    "AGENTS.md",
+    "PRODUCT_THESIS.md",
+    "README.md",
+    "pyproject.toml",
+}
+ALLOWED_TOP_LEVEL_DIRECTORIES = {
+    ".github",
+    "archive",
+    "docs",
+    "research",
+    "src",
+    "tests",
+    "tools",
+    "trials",
+}
+LEGACY_ROOTS = {"corpus", "experiments", "irisx", "references", "sources"}
+FORBIDDEN_RUNTIME_IMPORTS = {
+    "aiohttp",
+    "anthropic",
+    "boto3",
+    "google.generativeai",
+    "httpx",
+    "openai",
+    "requests",
+    "socket",
+    "urllib",
 }
 
 REPRESENTATIVE_CATEGORIES = {
@@ -121,12 +167,14 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def tracked_paths(root: Path) -> set[str]:
-    raw = git(root, "ls-files", "-z")
+def active_paths(root: Path) -> set[str]:
+    """Return non-ignored files in the working surface, including new P1 files."""
+
+    raw = git(root, "ls-files", "--cached", "--others", "--exclude-standard", "-z")
     return {
         item.decode("utf-8")
         for item in raw.split(b"\0")
-        if item
+        if item and (root / item.decode("utf-8")).is_file()
     }
 
 
@@ -136,12 +184,20 @@ def add(condition: bool, message: str, issues: list[str]) -> None:
 
 
 def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
-    tracked = tracked_paths(root)
-    add(REQUIRED_PATHS <= tracked, f"missing tracked paths: {sorted(REQUIRED_PATHS - tracked)}", issues)
-    add(tracked <= REQUIRED_PATHS, f"unexpected tracked active paths: {sorted(tracked - REQUIRED_PATHS)}", issues)
+    tracked = active_paths(root)
+    add(REQUIRED_PATHS <= tracked, f"missing active paths: {sorted(REQUIRED_PATHS - tracked)}", issues)
 
     for path in REQUIRED_PATHS:
         add((root / path).is_file(), f"required active file missing: {path}", issues)
+
+    for path in sorted(tracked):
+        parts = Path(path).parts
+        top = parts[0]
+        allowed = path in ALLOWED_TOP_LEVEL_FILES or top in ALLOWED_TOP_LEVEL_DIRECTORIES
+        add(allowed, f"unexpected top-level active path: {path}", issues)
+        add(top not in LEGACY_ROOTS, f"legacy root returned to active surface: {path}", issues)
+        add(top != ".irisx", f"generated local output is active: {path}", issues)
+        add("__pycache__" not in parts and not path.endswith((".pyc", ".pyo")), f"generated Python cache is active: {path}", issues)
 
     thesis = (root / "PRODUCT_THESIS.md").read_bytes()
     add(sha256(thesis) == THESIS_SHA256, "PRODUCT_THESIS.md SHA-256 mismatch", issues)
@@ -178,14 +234,14 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "Domain Package",
             "Build–Measure–Select",
             "Engineering Trial",
-            "remain undecided",
+            "P1",
         ),
         "docs/product/non-goals.md": (
             "general-purpose agent framework",
             "fine-tuning",
             "benchmark leaderboard",
             "framework aggregation",
-            "does not define",
+            "P1 does not select a real domain",
         ),
         "docs/development/operating-model.md": (
             "Product engineering is the default",
@@ -193,7 +249,7 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "Engineering Trial",
             "owner-authorized scope",
             "Research is conditional",
-            "remain undecided",
+            "P1",
         ),
         "docs/development/data-and-execution-policy.md": (
             "Secrets and credentials",
@@ -226,10 +282,11 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
 
     for path in sorted(tracked):
         if Path(path).suffix.lower() in EXECUTABLE_SUFFIXES:
-            add(path in ALLOWED_EXECUTABLES, f"unexpected active executable: {path}", issues)
+            allowed_prefix = path.startswith(("src/irisx/", "tests/", "tools/"))
+            add(allowed_prefix, f"unexpected active executable: {path}", issues)
 
-    legacy_import_roots = {"corpus", "experiments", "irisx", "references", "sources"}
-    for path in sorted(ALLOWED_EXECUTABLES & tracked):
+    python_paths = {path for path in tracked if path.endswith(".py")}
+    for path in sorted(python_paths):
         source = (root / path).read_text(encoding="utf-8")
         try:
             tree = ast.parse(source, filename=path)
@@ -244,10 +301,16 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
                 names = [node.module]
             for name in names:
                 add(
-                    name.split(".", 1)[0] not in legacy_import_roots,
+                    name.split(".", 1)[0] not in {"corpus", "experiments", "references", "sources"},
                     f"active Python imports archived module {name!r} in {path}",
                     issues,
                 )
+                if path.startswith("src/irisx/"):
+                    add(
+                        not any(name == forbidden or name.startswith(forbidden + ".") for forbidden in FORBIDDEN_RUNTIME_IMPORTS),
+                        f"P1 runtime imports provider/network integration {name!r} in {path}",
+                        issues,
+                    )
 
     return tracked
 

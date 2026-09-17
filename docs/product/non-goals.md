@@ -1,6 +1,6 @@
 # Product Non-Goals
 
-Status: current P0 policy, grounded in the non-goals and product principles of
+Status: current P1 policy, grounded in the non-goals and product principles of
 [`PRODUCT_THESIS.md`](../../PRODUCT_THESIS.md) and
 [`Decision 0001`](../decisions/0001-adopt-product-oriented-domain-ai-specialization.md).
 
@@ -20,7 +20,8 @@ an authorized Engineering Trial and measured product value. Historical presence,
 popularity, conceptual appeal, or successful installation is not promotion
 evidence.
 
-P0 also does not define Domain Specification or Domain Package contracts,
-runtime behavior, a first domain, a provider/model, a backend, a budget, a
-deployment form, or a detailed architecture. These exclusions prevent P0 policy
-from silently becoming P1 design.
+P1 does not select a real domain, execute a provider/model, integrate a
+specialization backend, train or fine-tune a model, build retrieval or routing,
+use customer data, access a network service, spend money, define a production
+runtime, or begin P2–P4. Its fixed lookup adapter exists only to qualify the
+contract flow and is not a proposed product backend.
