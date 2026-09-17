@@ -8,7 +8,7 @@ from typing import Any
 
 from .artifacts import artifact_ref, make_artifact, validate_artifact, write_artifact
 from .bundle import load_bundle, resolve_ref, require_contract
-from .canonical import digest_value, read_json, write_json
+from .canonical import digest_value, read_json
 from .contracts import (
     CandidateConfiguration,
     DomainSpecification,
@@ -18,6 +18,7 @@ from .contracts import (
     WorkloadDefinition,
     assert_binding,
     load_contract,
+    resolve_logical_path,
 )
 from .engine import requirement_verdicts, select_configuration
 from .errors import ValidationError
@@ -186,7 +187,7 @@ def validate_specification(path: Path) -> DomainSpecification:
         raise ValidationError("specification evidence binding failed")
     resolve_ref(index, workload.payload["evaluator_ref"], "workload.evaluator_ref")
     for ref in specification.payload["material_refs"]:
-        source_path = path.parent / ref["locator"]
+        source_path = resolve_logical_path(path.parent, ref["locator"], "specification.material_refs.locator")
         source = validate_artifact(read_json(source_path))
         if digest_value(source["payload"]) != ref["content_digest"]:
             raise ValidationError(f"material source digest mismatch: {ref['source_id']}")
@@ -204,7 +205,8 @@ def validate_trial(path: Path) -> EngineeringTrial:
     assert_binding(specification.payload["workload_ref"], workload, "specification.workload_ref")
     assert_binding(specification.payload["requirement_set_ref"], requirements, "specification.requirement_set_ref")
     for ref in specification.payload["material_refs"]:
-        source = validate_artifact(read_json(path.parent / ref["locator"]))
+        source_path = resolve_logical_path(path.parent, ref["locator"], "specification.material_refs.locator")
+        source = validate_artifact(read_json(source_path))
         if digest_value(source["payload"]) != ref["content_digest"]:
             raise ValidationError(f"material source digest mismatch: {ref['source_id']}")
     if workload.payload["evaluator_ref"] != trial.payload["evaluator_ref"]:
@@ -340,5 +342,6 @@ def run_trial(trial_path: Path, output: Path) -> dict[str, Any]:
     )
     write_artifact(output / "verdicts.json", verdict_artifact)
     summary = {"outcome": decision.payload["outcome"], "decision_digest": decision.content_digest, "results": [item.content_digest for item in results]}
-    write_json(output / "run-summary.json", summary)
+    summary_artifact = make_artifact("irisx/run-summary", "qualification-run-summary", "1.0.0", summary)
+    write_artifact(output / "run-summary.json", summary_artifact)
     return summary

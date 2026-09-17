@@ -23,6 +23,9 @@ def requirement_verdicts(result: EvaluationResult, requirements: RequirementSet)
         if observation is None or observation["state"] != "observed":
             state = "unknown"
             observed = None
+        elif observation["unit"] != requirement["unit"]:
+            state = "unit_mismatch"
+            observed = None
         else:
             observed = observation["value"]
             comparator = requirement["comparator"]
@@ -62,17 +65,34 @@ def validate_result_evidence(result: EvaluationResult, workload: WorkloadDefinit
     if set(actual) != set(expected):
         raise ValidationError("result cases do not exactly match the frozen workload")
     for case_id, outcome in actual.items():
-        if outcome["segment"] != expected[case_id]["segment"]:
+        workload_case = expected[case_id]
+        if outcome["segment"] != workload_case["segment"]:
             raise ValidationError(f"result case segment mismatch: {case_id}")
+        derived_critical = bool(workload_case["critical"] and not outcome["passed"])
+        if outcome["critical_failure"] is not derived_critical:
+            raise ValidationError(f"result critical_failure is inconsistent with workload criticality: {case_id}")
+        if outcome["score"] != (1 if outcome["passed"] else 0):
+            raise ValidationError(f"result score is inconsistent with passed state: {case_id}")
     metrics = result.payload["metrics"]
     accuracy = metrics.get("accuracy")
     critical = metrics.get("critical_failures")
     expected_accuracy = sum(item["passed"] for item in actual.values()) / len(actual)
-    expected_critical = sum(item["critical_failure"] for item in actual.values())
+    expected_critical = sum(
+        expected[case_id]["critical"] and not outcome["passed"]
+        for case_id, outcome in actual.items()
+    )
     if accuracy != {"state": "observed", "value": expected_accuracy, "unit": "ratio"}:
         raise ValidationError("result accuracy is missing or inconsistent with case outcomes")
     if critical != {"state": "observed", "value": expected_critical, "unit": "count"}:
         raise ValidationError("result critical_failures is missing or inconsistent with case outcomes")
+    segments = {item["segment"] for item in workload.payload["cases"]}
+    for segment in segments:
+        outcomes = [item for item in actual.values() if item["segment"] == segment]
+        expected_segment_accuracy = sum(item["passed"] for item in outcomes) / len(outcomes)
+        metric_name = f"accuracy.{segment}"
+        expected_observation = {"state": "observed", "value": expected_segment_accuracy, "unit": "ratio"}
+        if metrics.get(metric_name) != expected_observation:
+            raise ValidationError(f"result {metric_name} is missing or inconsistent with case outcomes")
 
 
 def _assert_comparable(trial: EngineeringTrial, results: list[EvaluationResult]) -> None:
@@ -95,14 +115,18 @@ def _assert_comparable(trial: EngineeringTrial, results: list[EvaluationResult])
         seen.add(configuration_digest)
 
 
-def _objective_value(result: EvaluationResult, requirement: dict[str, Any]) -> tuple[int, float]:
+def _objective_value(result: EvaluationResult, requirement: dict[str, Any]) -> float | None:
     observation = result.payload["metrics"].get(requirement["metric"])
-    if observation is None or observation["state"] != "observed":
-        return (1, 0.0)
+    if (
+        observation is None
+        or observation["state"] != "observed"
+        or observation["unit"] != requirement["unit"]
+    ):
+        return None
     value = float(observation["value"])
     if requirement["objective"] == "maximize":
         value = -value
-    return (0, value)
+    return value
 
 
 def _strictly_better(candidate: EvaluationResult, baseline: EvaluationResult, requirements: RequirementSet) -> bool:
@@ -114,6 +138,8 @@ def _strictly_better(candidate: EvaluationResult, baseline: EvaluationResult, re
     for requirement in objectives:
         candidate_value = _objective_value(candidate, requirement)
         baseline_value = _objective_value(baseline, requirement)
+        if candidate_value is None or baseline_value is None:
+            return False
         if candidate_value > baseline_value:
             return False
         if candidate_value < baseline_value:

@@ -100,10 +100,42 @@ def validate_source_ref(value: Any, path: str) -> dict[str, Any]:
     _identifier(obj["source_id"], f"{path}.source_id")
     _string(obj["media_type"], f"{path}.media_type")
     _digest(obj["content_digest"], f"{path}.content_digest")
-    locator = _string(obj["locator"], f"{path}.locator")
-    if "://" in locator or locator.startswith(("/", "\\")) or ".." in PurePosixPath(locator).parts:
-        _fail(f"{path}.locator", "must be a bounded relative logical locator")
+    validate_logical_path(obj["locator"], f"{path}.locator")
     return obj
+
+
+def validate_logical_path(value: Any, path: str) -> str:
+    """Validate a portable POSIX-style relative logical path."""
+
+    value = _string(value, path)
+    pure = PurePosixPath(value)
+    if (
+        "\\" in value
+        or ":" in value
+        or value.startswith("/")
+        or value.endswith("/")
+        or "//" in value
+        or pure.is_absolute()
+        or pure.parts in {(), (".",)}
+        or any(part in {"", ".", ".."} for part in pure.parts)
+        or pure.as_posix() != value
+    ):
+        _fail(path, "must be a canonical relative POSIX logical path without traversal")
+    return value
+
+
+def resolve_logical_path(root: Path, value: Any, path: str) -> Path:
+    """Resolve a validated logical path and prove it remains under root."""
+
+    logical = validate_logical_path(value, path)
+    root_resolved = root.resolve()
+    candidate = root_resolved.joinpath(*PurePosixPath(logical).parts).resolve()
+    try:
+        candidate.relative_to(root_resolved)
+    except ValueError as exc:
+        _fail(path, "resolves outside the expected root")
+        raise AssertionError from exc
+    return candidate
 
 
 def validate_observation(value: Any, path: str) -> dict[str, Any]:
@@ -372,13 +404,29 @@ class SelectionDecision(VersionedContract):
             refs = _list(payload[field], f"{path}.{field}")
             for index, ref in enumerate(refs):
                 validate_ref(ref, f"{path}.{field}[{index}]", kind=EvaluationResult.SCHEMA)
+            identities = {(ref["kind"], ref["artifact_id"], ref["version"], ref["content_digest"]) for ref in refs}
+            if len(identities) != len(refs):
+                _fail(f"{path}.{field}", "must not contain duplicate result references")
+        considered = {
+            (ref["kind"], ref["artifact_id"], ref["version"], ref["content_digest"])
+            for ref in payload["considered_result_refs"]
+        }
+        eligible = {
+            (ref["kind"], ref["artifact_id"], ref["version"], ref["content_digest"])
+            for ref in payload["eligible_result_refs"]
+        }
+        baseline_identity = tuple(payload["baseline_result_ref"][field] for field in ("kind", "artifact_id", "version", "content_digest"))
+        if baseline_identity not in considered:
+            _fail(f"{path}.baseline_result_ref", "must also appear in considered_result_refs")
+        if not eligible <= considered:
+            _fail(f"{path}.eligible_result_refs", "must be a subset of considered_result_refs")
         selected_config = payload["selected_configuration_ref"]
         selected_result = payload["selected_result_ref"]
         if payload["outcome"] == "promote":
             validate_ref(selected_config, f"{path}.selected_configuration_ref", kind=CandidateConfiguration.SCHEMA)
             validate_ref(selected_result, f"{path}.selected_result_ref", kind=EvaluationResult.SCHEMA)
-            eligible_digests = {item["content_digest"] for item in payload["eligible_result_refs"]}
-            if selected_result["content_digest"] not in eligible_digests:
+            selected_identity = tuple(selected_result[field] for field in ("kind", "artifact_id", "version", "content_digest"))
+            if selected_identity not in eligible:
                 _fail(f"{path}.selected_result_ref", "must be an eligible result")
         elif selected_config is not None or selected_result is not None:
             _fail(path, "non-promote outcomes must not select a configuration or result")
@@ -416,10 +464,9 @@ class DomainPackageManifest(VersionedContract):
             artifact_path = f"{path}.artifacts[{index}]"
             artifact = _object(value, artifact_path)
             _exact(artifact, {"path", "kind", "content_digest"}, artifact_path)
-            relative = _string(artifact["path"], f"{artifact_path}.path")
-            pure = PurePosixPath(relative)
-            if pure.is_absolute() or ".." in pure.parts or relative == "manifest.json":
-                _fail(f"{artifact_path}.path", "must be a safe relative non-manifest path")
+            relative = validate_logical_path(artifact["path"], f"{artifact_path}.path")
+            if relative == "manifest.json":
+                _fail(f"{artifact_path}.path", "must not name the manifest itself")
             if relative in seen:
                 _fail(f"{artifact_path}.path", "must be unique")
             seen.add(relative)

@@ -11,6 +11,7 @@ from unittest import mock
 import support  # noqa: F401
 
 from irisx import cli
+from irisx.contracts import EvaluationResult, SelectionDecision, load_contract
 from irisx.errors import ValidationError
 from irisx.fixture import prepare_fixture, run_trial, validate_trial
 from irisx.package import build_package, verify_package
@@ -56,9 +57,52 @@ class ReferenceFlowTests(unittest.TestCase):
             prepare_fixture(root / "fixture")
             run_trial(root / "fixture/trial.json", root / "run")
             build_package(root / "run", root / "package")
-            target = root / "package/evaluation/result.json"
+            target = root / "package/evaluation/results/qualification-candidate-result.json"
             target.write_bytes(target.read_bytes() + b" ")
             with self.assertRaisesRegex(ValidationError, "digest mismatch"):
+                verify_package(root / "package")
+
+    def test_package_build_rejects_missing_decision_result_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            prepare_fixture(root / "fixture")
+            run_trial(root / "fixture/trial.json", root / "run")
+            (root / "run/results/qualification-baseline-result.json").unlink()
+            with self.assertRaisesRegex(ValidationError, "referenced evidence is missing"):
+                build_package(root / "run", root / "package")
+
+    def test_package_build_rejects_missing_eligible_result_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            prepare_fixture(root / "fixture")
+            run_trial(root / "fixture/trial.json", root / "run")
+            (root / "run/results/qualification-candidate-result.json").unlink()
+            with self.assertRaisesRegex(ValidationError, "referenced evidence is missing"):
+                build_package(root / "run", root / "package")
+
+    def test_package_build_recomputes_declared_eligibility(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            prepare_fixture(root / "fixture")
+            run_trial(root / "fixture/trial.json", root / "run")
+            decision = load_contract(root / "run/decision.json", SelectionDecision)
+            baseline = load_contract(root / "run/results/qualification-baseline-result.json", EvaluationResult)
+            payload = dict(decision.payload)
+            payload["eligible_result_refs"] = [baseline.ref(), *decision.payload["eligible_result_refs"]]
+            falsified = SelectionDecision(decision.artifact_id, decision.version, payload)
+            falsified.write(root / "run/decision.json")
+            with self.assertRaisesRegex(ValidationError, "selection decision semantics"):
+                build_package(root / "run", root / "package")
+
+    def test_package_verify_rejects_unencapsulated_baseline_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            prepare_fixture(root / "fixture")
+            run_trial(root / "fixture/trial.json", root / "run")
+            build_package(root / "run", root / "package")
+            baseline = root / "package/evaluation/results/qualification-baseline-result.json"
+            baseline.unlink()
+            with self.assertRaisesRegex(ValidationError, "missing declared files"):
                 verify_package(root / "package")
 
     def test_trial_validation_rejects_substituted_evidence(self) -> None:

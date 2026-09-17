@@ -94,6 +94,29 @@ class ContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationError, "unexpected fields"):
             CandidateConfiguration.from_dict(value)
 
+    def test_source_locator_rejects_windows_traversal(self) -> None:
+        workload = load_contract(self.fixture / "workload.json", WorkloadDefinition)
+        payload = copy.deepcopy(workload.payload)
+        payload["cases"][0]["input_ref"]["locator"] = "..\\outside.json"
+        with self.assertRaisesRegex(ValidationError, "canonical relative POSIX logical path"):
+            WorkloadDefinition("invalid-workload", "1.0.0", payload)
+
+    def test_manifest_path_rejects_windows_traversal(self) -> None:
+        manifest = load_contract(self.package / "manifest.json", DomainPackageManifest)
+        payload = copy.deepcopy(manifest.payload)
+        payload["artifacts"][0]["path"] = "..\\outside.json"
+        with self.assertRaisesRegex(ValidationError, "canonical relative POSIX logical path"):
+            DomainPackageManifest("invalid-package", "1.0.0", payload)
+
+    def test_decision_eligible_refs_must_be_considered(self) -> None:
+        decision = load_contract(self.run / "decision.json", SelectionDecision)
+        payload = copy.deepcopy(decision.payload)
+        outside = copy.deepcopy(payload["eligible_result_refs"][0])
+        outside["content_digest"] = "sha256:" + "0" * 64
+        payload["eligible_result_refs"] = [outside]
+        with self.assertRaisesRegex(ValidationError, "must be a subset"):
+            SelectionDecision("invalid-selection", "1.0.0", payload)
+
 
 if __name__ == "__main__":
     unittest.main()

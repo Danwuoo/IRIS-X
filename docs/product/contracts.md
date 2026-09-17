@@ -24,7 +24,11 @@ An artifact reference contains `kind`, `artifact_id`, `version`, and
 
 Source material is represented by an explicit `source_id`, media type, exact
 content digest, and bounded logical locator. Contracts do not embed arbitrary
-domain datasets.
+domain datasets. Source locators and package artifact paths are canonical,
+relative POSIX logical paths: backslashes, drive/absolute paths, empty or dot
+segments, repeated separators, and `..` traversal are invalid. Any locator used
+for filesystem access is resolved and checked to remain inside its declared
+root.
 
 ## Contract families
 
@@ -49,7 +53,15 @@ uses only bounded workflow and validation artifacts.
 Numeric evidence has one of three explicit states: `observed`, `unknown`, or
 `not_evaluated`. Only `observed` carries a numeric value, so an observed zero
 cannot be confused with missing evidence. A missing or non-observed hard metric
-does not satisfy its requirement.
+does not satisfy its requirement. Measurement units are part of the evidence:
+an observation whose unit differs from the RequirementSet unit is not compared,
+cannot satisfy a hard requirement, and cannot establish Pareto dominance.
+
+For case evidence, `critical_failure` is derived from the frozen
+`WorkloadDefinition` (`case.critical` and `outcome.passed`), never trusted as an
+independent claim. Overall accuracy, critical-failure count, case score, and all
+declared segment accuracy aggregates are recomputed from individual outcomes;
+missing or forged derived evidence fails closed.
 
 Hard requirements gate eligibility. Soft requirements and declared objectives
 guide selection without collapsing quality, critical failures, latency,

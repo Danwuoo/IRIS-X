@@ -262,6 +262,19 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "offline",
             "external or paid execution",
         ),
+        "docs/product/contracts.md": (
+            "Measurement units",
+            "critical_failure",
+            "segment accuracy",
+            "relative POSIX logical paths",
+        ),
+        "docs/product/domain-package.md": (
+            "baseline_result_ref",
+            "considered_result_refs",
+            "eligible_result_refs",
+            "recomputes",
+            "symbolic links",
+        ),
     }
     for path, terms in required_terms.items():
         text = (root / path).read_text(encoding="utf-8")

@@ -40,3 +40,16 @@ implementation. JSON Schema publication, signed manifests, uncertainty models,
 multiple-candidate Pareto-front reporting, real adapters, production deployment,
 and long-term package transport are deferred until authorized product pressure
 justifies them.
+
+## P1 verification hardening
+
+The accepted P1 package boundary includes the full selection evidence graph,
+not only the promoted result. A package carries all baseline/considered/eligible
+results, trial configurations, and referenced components. Verification resolves
+every exact reference and independently recomputes derived case and segment
+metrics, hard-requirement eligibility, Pareto filtering, and the selection
+outcome. Measurement units must match before numeric comparison.
+
+All source locators and manifest artifact paths use canonical relative POSIX
+logical paths and are containment-checked at filesystem resolution time. This
+rule is cross-platform and explicitly rejects Windows backslash traversal.

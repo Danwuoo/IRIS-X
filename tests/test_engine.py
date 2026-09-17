@@ -7,7 +7,7 @@ import unittest
 
 import support  # noqa: F401
 
-from irisx.contracts import CandidateConfiguration, EngineeringTrial, EvaluationResult, RequirementSet, load_contract
+from irisx.contracts import CandidateConfiguration, EngineeringTrial, EvaluationResult, RequirementSet, WorkloadDefinition, load_contract
 from irisx.engine import requirement_verdicts, select_configuration, satisfies_hard_requirements
 from irisx.errors import ValidationError
 from irisx.fixture import prepare_fixture, run_trial
@@ -23,6 +23,7 @@ class SelectionTests(unittest.TestCase):
         run_trial(fixture / "trial.json", self.run)
         self.trial = load_contract(self.run / "trial.json", EngineeringTrial)
         self.requirements = load_contract(self.run / "requirements.json", RequirementSet)
+        self.workload = load_contract(self.run / "workload.json", WorkloadDefinition)
         self.baseline_config = load_contract(self.run / "baseline.json", CandidateConfiguration)
         self.candidate_config = load_contract(self.run / "candidate.json", CandidateConfiguration)
         self.baseline = load_contract(self.run / "results/qualification-baseline-result.json", EvaluationResult)
@@ -96,6 +97,48 @@ class SelectionTests(unittest.TestCase):
         workload = load_contract(self.run / "workload.json")
         with self.assertRaisesRegex(ValidationError, "cases do not exactly match"):
             select_configuration(self.trial, workload, self.requirements, self.baseline, [incomplete], self.configurations)
+
+    def test_critical_failure_is_derived_from_frozen_workload(self) -> None:
+        payload = copy.deepcopy(self.baseline.payload)
+        critical_case = next(item for item in payload["cases"] if item["case_id"] == "case-03")
+        critical_case["critical_failure"] = False
+        payload["metrics"]["critical_failures"]["value"] = 0
+        spoofed = EvaluationResult("spoofed-critical-result", "1.0.0", payload)
+        with self.assertRaisesRegex(ValidationError, "critical_failure is inconsistent"):
+            select_configuration(self.trial, self.workload, self.requirements, spoofed, [self.candidate], self.configurations)
+
+    def test_forged_segment_aggregate_fails_closed(self) -> None:
+        payload = copy.deepcopy(self.candidate.payload)
+        payload["metrics"]["accuracy.edge"]["value"] = 0.5
+        forged = EvaluationResult("forged-segment-result", "1.0.0", payload)
+        with self.assertRaisesRegex(ValidationError, "accuracy.edge is missing or inconsistent"):
+            select_configuration(self.trial, self.workload, self.requirements, self.baseline, [forged], self.configurations)
+
+    def test_hard_requirement_rejects_incompatible_unit(self) -> None:
+        payload = copy.deepcopy(self.candidate.payload)
+        payload["metrics"]["accuracy"]["unit"] = "percent"
+        mismatched = EvaluationResult("unit-mismatch-result", "1.0.0", payload)
+        verdict = next(item for item in requirement_verdicts(mismatched, self.requirements) if item["metric"] == "accuracy")
+        self.assertEqual(verdict["state"], "unit_mismatch")
+        self.assertFalse(satisfies_hard_requirements(mismatched, self.requirements))
+
+    def test_objective_does_not_compare_incompatible_units(self) -> None:
+        baseline_payload = copy.deepcopy(self.candidate.payload)
+        baseline_payload["configuration_ref"] = self.baseline_config.ref()
+        baseline_payload["metrics"]["latency_ms"]["value"] = 11
+        eligible_baseline = EvaluationResult("eligible-unit-baseline", "1.0.0", baseline_payload)
+        candidate_payload = copy.deepcopy(self.candidate.payload)
+        candidate_payload["metrics"]["latency_ms"]["unit"] = "seconds"
+        mismatched_candidate = EvaluationResult("mismatched-objective-result", "1.0.0", candidate_payload)
+        decision = select_configuration(
+            self.trial,
+            self.workload,
+            self.requirements,
+            eligible_baseline,
+            [mismatched_candidate],
+            self.configurations,
+        )
+        self.assertEqual(decision.payload["outcome"], "no_promotion")
 
 
 if __name__ == "__main__":
