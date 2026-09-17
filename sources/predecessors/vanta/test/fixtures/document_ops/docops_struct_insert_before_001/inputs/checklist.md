@@ -1,3 +1,0 @@
-# Checklist
-
-Commit gate

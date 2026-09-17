@@ -1,9 +1,0 @@
-{
-  "train": [
-    {"input": [[1]], "output": [[1]]}
-  ],
-  "test": [
-    {"input": [[2]], "output": [[2]]},
-    {"input": [[3, 3]], "output": [[3, 3]]}
-  ]
-}

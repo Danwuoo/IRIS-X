@@ -1,4 +1,0 @@
-{"type":"thread.started","thread_id":"01a061b6-fe5b-7532-98cb-47c509aaae7c"}
-{"type":"turn.started"}
-{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"schema_version\":1,\"instance_id\":\"path-action-guard-v0-111dde258a501b57\",\"family_id\":\"path-action-guard-v0\",\"answer\":{\"decisions\":[{\"proposal_id\":\"P1\",\"decision\":\"allow\",\"canonical_path\":\"work/item-766.md\",\"reason\":\"policy_allows\"},{\"proposal_id\":\"P2\",\"decision\":\"allow\",\"canonical_path\":\"reports/r-211.json\",\"reason\":\"policy_allows\"},{\"proposal_id\":\"P3\",\"decision\":\"deny\",\"canonical_path\":null,\"reason\":\"root_escape\"},{\"proposal_id\":\"P4\",\"decision\":\"deny\",\"canonical_path\":null,\"reason\":\"protected_or_unallowed_root\"}]}}"}}
-{"type":"turn.completed","usage":{"input_tokens":16085,"cached_input_tokens":0,"cache_write_input_tokens":0,"output_tokens":200,"reasoning_output_tokens":53}}

@@ -1,1 +1,0 @@
-{"ranked":[{"id":"b","rank":1},{"id":"c","rank":2}]}

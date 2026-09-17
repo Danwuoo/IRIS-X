@@ -1,5 +1,0 @@
-Execute one frozen read-only record-selection task.
-
-Use only the task JSON included in this prompt. Do not call tools, inspect files, browse, delegate, retry, route, escalate, recover, or perform external actions.
-
-Find the record whose label is exactly "Alpha". Return exactly one JSON object with exactly one string field named "selected_id" containing that record's id. Return no markdown and no explanatory text.

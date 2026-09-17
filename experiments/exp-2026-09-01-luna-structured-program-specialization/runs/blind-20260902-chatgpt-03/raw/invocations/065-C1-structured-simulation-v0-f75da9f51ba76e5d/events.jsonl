@@ -1,4 +1,0 @@
-{"type":"thread.started","thread_id":"01a062e2-ebb2-7fe1-b6fb-406a74c9d47c"}
-{"type":"turn.started"}
-{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"schema_version\":1,\"instance_id\":\"structured-simulation-v0-f75da9f51ba76e5d\",\"family_id\":\"structured-simulation-v0\",\"answer\":{\"records\":[{\"id\":\"R1\",\"status\":\"approved\",\"score\":6},{\"id\":\"R2\",\"status\":\"ready\",\"score\":17},{\"id\":\"R3\",\"status\":\"review\",\"score\":19},{\"id\":\"R4\",\"status\":\"ready\",\"score\":19}],\"changed_paths\":[\"records/0/status\"]}}"}}
-{"type":"turn.completed","usage":{"input_tokens":15950,"cached_input_tokens":0,"cache_write_input_tokens":0,"output_tokens":169,"reasoning_output_tokens":55}}

@@ -1,4 +1,5 @@
-# IRIS-X workspace hygiene; imported trees retain their own tracked files.
+# IRIS-X active workspace hygiene.
+.irisx/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -6,3 +7,9 @@ __pycache__/
 node_modules/
 .DS_Store
 Thumbs.db
+
+# Common local build and coverage outputs.
+build/
+dist/
+.coverage
+htmlcov/

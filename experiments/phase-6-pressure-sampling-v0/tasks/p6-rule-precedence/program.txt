@@ -1,2 +1,0 @@
-For each record, evaluate rules strictly in rules_in_precedence_order and apply only the first matching rule. Return records in input order. For each record return its id, the exact class, rule_id, and reason_id from the winning rule. Return exactly one JSON object with only classifications. Do not include explanations or Markdown.
-

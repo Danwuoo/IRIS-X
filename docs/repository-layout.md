@@ -1,22 +1,25 @@
-# Repository Layout
+# Product-Era Repository Layout
 
-Status: neutral operating layout after the 2026-09-16 research reset.
+Status: active P0 layout as of 2026-09-17.
 
-| Path | Role | Editability |
+| Path | Role | P0 state |
 | --- | --- | --- |
-| `sources/predecessors/` | Preserved predecessor snapshots | Read-only by default |
-| `sources/external/` | Preserved external reference implementations | Read-only by default |
-| `references/papers/` | Preserved paper artifacts | Read-only |
-| `corpus/` | Provenance registries and recovery records | Structured provenance edits only |
-| `research/` | Historical IRIS-X research plus neutral scaffolding | New work requires an authorized scope |
-| `experiments/` | Preserved experiment packages and empirical records | Evidence-preserving changes only unless a new experiment is authorized |
-| `docs/` | Current repository guidance and preserved operational history | Editable with historical records preserved |
-| `tools/` | Reusable maintenance and classified historical helpers | Editable with dependent evidence considered |
-| `irisx/` | Preserved historical prototype used by prior tests/substrates | Not a current architecture |
+| `PRODUCT_THESIS.md` | Canonical product authority | Adopted and byte-verified |
+| `docs/product/` | Product requirements and concepts | Reserved |
+| `docs/development/` | Development guidance | P0 guidance only |
+| `docs/decisions/` | Current decisions | Product direction recorded |
+| `src/irisx/` | Product implementation | Reserved; no P1 contracts/runtime |
+| `tests/` | Active tests | Repository-transition coverage only |
+| `trials/` | Engineering Trials | Reserved; no trial selected or run |
+| `research/` | Product-driven research | Conditional; no question opened |
+| `tools/` | Current utilities | Offline repository validator only |
+| `archive/` | Git-native historical catalog | Read-only |
+| `.irisx/` | Generated local outputs | Ignored |
 
-Imported leaf names and evidence-sensitive authored paths remain stable for
-auditability and reproducibility. Current directory indexes determine active
-navigation; physical presence alone does not confer authority.
+The first domain, provider/model, backend, budget, deployment form, and detailed
+architecture are undecided. This layout reserves homes for future work without
+settling those choices or implementing P1.
 
-The layout does not define a runtime, framework, ontology, product boundary,
-provider/model baseline, final research question, or preferred next program.
+Historical payload is not deep-moved into `archive/`. Its original tree is
+addressed by the annotated tag `archive/pre-product-transition-2026-09-17`;
+the active `archive/` directory contains only recovery metadata.

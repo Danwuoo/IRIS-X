@@ -1,4 +1,0 @@
-{"type":"thread.started","thread_id":"01a061bd-9432-7821-a8fb-e613e90baa53"}
-{"type":"turn.started"}
-{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"schema_version\":1,\"instance_id\":\"traceability-extraction-v0-6b1335b9eee49939\",\"family_id\":\"traceability-extraction-v0\",\"answer\":{\"direct_references\":[\"DOC-1\",\"DOC-2\",\"DOC-4\"]}}"}}
-{"type":"turn.completed","usage":{"input_tokens":16026,"cached_input_tokens":13056,"cache_write_input_tokens":0,"output_tokens":87,"reasoning_output_tokens":20}}

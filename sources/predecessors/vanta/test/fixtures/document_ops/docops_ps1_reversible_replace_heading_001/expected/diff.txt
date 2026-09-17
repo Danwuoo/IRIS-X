@@ -1,2 +1,0 @@
--# Draft Terms
-+# Canonical Terms

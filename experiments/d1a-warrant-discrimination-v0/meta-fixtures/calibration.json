@@ -1,9 +1,0 @@
-{
-  "schema_version": 1,
-  "fixture_only": true,
-  "admitted": true,
-  "producer_configuration_id": "meta-producer-v0",
-  "accept_threshold": 0.75,
-  "reject_threshold": 0.25,
-  "threshold_status": "synthetic_pre_frozen_for_instrument_test_only"
-}

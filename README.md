@@ -1,35 +1,42 @@
 # IRIS-X
 
-IRIS-X is a research workspace concerned broadly with task- and
-domain-specialized AI systems. The repository is currently in a
-**research-reset / direction-selection state**: no previous thesis, research
-program, architecture, training strategy, or product boundary is automatically
-active.
+IRIS-X is a product-oriented platform for turning domain material, real
+workloads, explicit requirements, and operating constraints into measured,
+deployable domain AI configurations.
 
-The workspace contains several distinct kinds of material:
+The current product authority is [`PRODUCT_THESIS.md`](PRODUCT_THESIS.md).
+IRIS-X treats domain specialization as an engineering configuration problem:
+it starts from a **Domain Specification**, follows **Build–Measure–Select**,
+uses **Engineering Trials** to decide which interventions earn promotion, and
+produces a versioned **Domain Package**.
 
-| Path | Contents |
+P0 establishes product authority, repository boundaries, and a Git-native cold
+archive. It does not implement product contracts or runtime behavior. The first
+domain, provider/model, backend, budget, deployment form, and detailed
+architecture remain undecided.
+
+## Active repository
+
+| Path | Purpose |
 | --- | --- |
-| [`sources/`](sources/README.md) | Preserved predecessor and external source snapshots |
-| [`references/`](references/README.md) | Preserved papers and reference artifacts |
-| [`corpus/`](corpus/README.md) | Provenance registries, source identities, and recovery records |
-| [`experiments/`](experiments/README.md) | Preserved historical experiments, qualification packages, and empirical records |
-| [`research/`](research/README.md) | Historical IRIS-X research lineage and neutral research scaffolding |
-| [`docs/`](docs/README.md) | Current repository guidance and indexed operational history |
-| [`tools/`](tools/README.md) | Repository maintenance utilities and classified historical helpers |
-| [`irisx/`](irisx/README.md) | Preserved historical prototype code; not a current architecture |
+| [`PRODUCT_THESIS.md`](PRODUCT_THESIS.md) | Adopted product thesis |
+| [`docs/product/`](docs/product/README.md) | Future product requirements and concepts |
+| [`docs/development/`](docs/development/README.md) | Current development guidance |
+| [`docs/decisions/`](docs/decisions/README.md) | Current decisions |
+| [`src/irisx/`](src/irisx/README.md) | Reserved product source location |
+| [`tests/`](tests/README.md) | Active validation and future product tests |
+| [`trials/`](trials/README.md) | Future Engineering Trials |
+| [`research/`](research/README.md) | Conditional product-driven research |
+| [`archive/`](archive/README.md) | Read-only catalog of the pre-product repository |
+| [`tools/`](tools/README.md) | Active offline repository validation |
 
-Historical conclusions remain available for inspection, but their original
-status language does not make them current project authority. New research or
-implementation requires a separately authorized scope.
+Start with [`AGENTS.md`](AGENTS.md) and
+[`docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md`](docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md).
 
-Start with [`AGENTS.md`](AGENTS.md) for repository governance and
-[`docs/research-reset-2026-09-16.md`](docs/research-reset-2026-09-16.md) for the
-reset record.
-
-Validate repository integrity from the root:
+Validate P0 from the repository root:
 
 ```powershell
 python tools\repository_check.py --self-test
 python tools\repository_check.py
+python -m unittest discover -s tests -v
 ```

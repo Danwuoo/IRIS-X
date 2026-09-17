@@ -1,3 +1,0 @@
-# Runtime Notes
-
-Present section.

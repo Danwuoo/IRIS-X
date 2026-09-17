@@ -1,1 +1,0 @@
-{"aggregate_score_observed":false,"architecture_selection":false,"event_id":"A1-DQL-000","event_type":"log-initialization","note":"Historical development-query use before this log was created is Unknown. This initialization event records no task query, model call, score, or architecture decision.","task_ids":[],"tier":"public-exposed","timestamp":"2026-08-05"}

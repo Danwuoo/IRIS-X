@@ -1,4 +1,0 @@
-{"type":"thread.started","thread_id":"01a05d77-0681-7373-8076-fac94620aeae"}
-{"type":"turn.started"}
-{"type":"error","message":"{\n  \"type\": \"error\",\n  \"error\": {\n    \"type\": \"invalid_request_error\",\n    \"code\": \"invalid_json_schema\",\n    \"message\": \"Invalid schema for response_format 'codex_output_schema': In context=(), 'allOf' is not permitted.\",\n    \"param\": \"text.format.schema\"\n  },\n  \"status\": 400\n}"}
-{"type":"turn.failed","error":{"message":"{\n  \"type\": \"error\",\n  \"error\": {\n    \"type\": \"invalid_request_error\",\n    \"code\": \"invalid_json_schema\",\n    \"message\": \"Invalid schema for response_format 'codex_output_schema': In context=(), 'allOf' is not permitted.\",\n    \"param\": \"text.format.schema\"\n  },\n  \"status\": 400\n}"}}

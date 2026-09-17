@@ -1,7 +1,0 @@
-{
-  "authoritative_source": "terminal-record.json",
-  "derivation_deferred_to_turn_b": true,
-  "schema_version": 1,
-  "task_id": "phase6-p2-multi-group-exact-aggregation-v0",
-  "task_level_pressure_pointer": "/attribution/task_level_pressure_observed"
-}

@@ -1,6 +1,0 @@
-{
-  "candidate_id": "deterministic-baseline-v0",
-  "candidate_type": "experiment-local-deterministic",
-  "faults": {},
-  "extra_cost_units": {}
-}

@@ -1,2 +1,0 @@
-Compute the full transitive prerequisite closure for every target_id, including the targets. Emit each included node exactly once in a valid topological order. Whenever more than one included node currently has all prerequisites satisfied, choose the lexicographically smallest node ID. Return exactly one JSON object with only ordered_ids. Do not include explanations or Markdown.
-

@@ -1,4 +1,0 @@
-{"type":"thread.started","thread_id":"01a08159-522b-7a31-8d45-a11234eb6205"}
-{"type":"turn.started"}
-{"type":"error","message":"{\n  \"error\": {\n    \"message\": \"Invalid schema for response_format 'codex_output_schema': In context=('properties', 'ordered_ids'), 'uniqueItems' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"text.format.schema\",\n    \"code\": \"invalid_json_schema\"\n  }\n}"}
-{"type":"turn.failed","error":{"message":"{\n  \"error\": {\n    \"message\": \"Invalid schema for response_format 'codex_output_schema': In context=('properties', 'ordered_ids'), 'uniqueItems' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"text.format.schema\",\n    \"code\": \"invalid_json_schema\"\n  }\n}"}}

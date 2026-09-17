@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "archive": {
+    "name": "pre-product-transition-2026-09-17",
+    "tag": "archive/pre-product-transition-2026-09-17",
+    "tag_kind": "annotated",
+    "tag_object": "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d",
+    "source_commit": "83207e48cc44ce26d0bcb0c98006facfc4f01844",
+    "root_tree": "623066ca75243af5e68f53d8674508d4470ce2cd",
+    "payload_location": "Git objects reachable from the annotated tag at original paths"
+  },
+  "path_index": {
+    "path": "archive/path-index.tsv",
+    "format": "UTF-8 TSV with LF endings; header followed by git ls-tree -r order",
+    "tracked_path_count": 9537,
+    "byte_count": 1553760,
+    "sha256": "0b0fa411bc9adb915c67b547d1e72f1d6e69d29dc4f7ab5905d31104826274dc"
+  },
+  "archived_roots": [
+    {
+      "path": "corpus/",
+      "mode": "040000",
+      "type": "tree",
+      "object_id": "aa54951e521d9edb39c4df7155e97c91c0a6a973",
+      "tracked_path_count": 5
+    },
+    {
+      "path": "docs/",
+      "mode": "040000",
+      "type": "tree",
+      "object_id": "07926514156811087dc48117f93c160647a091c2",
+      "tracked_path_count": 64
+    },
+    {
+      "path": "experiments/",
+      "mode": "040000",
+      "type": "tree",
+      "object_id": "16fd965beeda73d46ddacf9a14e1707419f75ef2",
+      "tracked_path_count": 2645
+    },
+    {
+      "path": "irisx/",
+      "mode": "040000",
+      "type": "tree",
+      "object_id": "c819c1da6c7c7f5ce20951987a75eef99d8d1a1c",
+      "tracked_path_count": 8
+    },
+    {
+      "path": "references/",
+      "mode": "040000",
+      "type": "tree",
+      "object_id": "a3dbcfaf24ef3f57d76551e612ccaeccfbb9a91e",
+      "tracked_path_count": 8
+    },
+    {
+      "path": "research/",
+      "mode": "040000",
+      "type": "tree",
+      "object_id": "a1342938c86d2f9df5746ee2bf92e1383237c920",
+      "tracked_path_count": 43
+    },
+    {
+      "path": "sources/",
+      "mode": "040000",
+      "type": "tree",
+      "object_id": "10e28d83184c789fc468ca1edc3bebf42ba40b46",
+      "tracked_path_count": 6752
+    },
+    {
+      "path": "tools/",
+      "mode": "040000",
+      "type": "tree",
+      "object_id": "b6c272e25942b45b215af09edb878ede2b884c68",
+      "tracked_path_count": 8
+    }
+  ],
+  "archived_root_files": [
+    {
+      "path": ".gitattributes",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "af9defc9e3342d5b50fa201cfdc510f8730ec4ba"
+    },
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "56d7b1d9755f1f6f7af39c0cceffa77a6f16798e"
+    },
+    {
+      "path": "AGENTS.md",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "264345e2b6bcbea6a9c51d6db54467265e6259c5"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "d57166ccade82e657be52a166a6f106ce0ea6e96"
+    }
+  ],
+  "representative_recovery": [
+    {
+      "category": "historical documentation",
+      "path": "docs/research-reset-2026-09-16.md",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "4fa5ed24176b8d8891880c266d7bfe8a4f169e0b",
+      "sha256": "6beb5c7aab67d80dd3b3daa8bd726d33e89bc799605d4ce92c38d8e9b28d8ed9"
+    },
+    {
+      "category": "historical research",
+      "path": "research/foundational-research-synthesis.md",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "4de4b57e3a7b5dff3be84f54d7752742c9fbf898",
+      "sha256": "b88cf300e44f395c9147c33f46bc5ccfa75e5efb2a37b56dd6559d24269ef706"
+    },
+    {
+      "category": "historical experiment result",
+      "path": "experiments/exp-2026-08-28-docops-readonly-baseline/runs/pilot-20260828-local-rerun-01/results.json",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "35c0419626a4c572d7815c5eba36bc1ac253f7f0",
+      "sha256": "ff7273172611a187d81e535443a1b6ac31a76c5ae94d4453e0881d0e61e9049f"
+    },
+    {
+      "category": "imported source snapshot",
+      "path": "sources/external/dspy/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "fe73d8cc8973045e34397b852c6f40670380c363",
+      "sha256": "9b2fa5d078b4e4aafe6f8a91d5677c735427e149a235708d98a18c28db8efdea"
+    },
+    {
+      "category": "corpus registry",
+      "path": "corpus/sources.yaml",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "d59d6eda1f61c3bbf687255a336d3150753f1519",
+      "sha256": "78bef9386eeeff4084ed3a5b00199503ddfb0265a08e9fde39f1faa2e9407dc4"
+    },
+    {
+      "category": "reference artifact",
+      "path": "references/papers/AFLOW_paper.pdf",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "32a9e0a3ced4efd77b0d920ad96b4a75b71ac544",
+      "sha256": "9be15f695f11dd5bc634c1c026bd2270eff3d3c4a53c4d9b51c012b7bd03d521"
+    },
+    {
+      "category": "historical prototype",
+      "path": "irisx/core/execution.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "f9f30d9007d8279d96862154ab9acdbcda468b65",
+      "sha256": "6a7524d8eed1f0325dd175d1f03bd7fed4fbad627ef1ca558c088213523cc7f6"
+    },
+    {
+      "category": "historical tool",
+      "path": "tools/repository_check.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "613342b800f2c8c8fa0cf00669f45df6ba0bb8cc",
+      "sha256": "784015616d00d1db3186e80affbbf7107659aacb29b8c951dd2c7fcaf2cc772f"
+    }
+  ],
+  "recovery_commands": [
+    "git show archive/pre-product-transition-2026-09-17:<path>",
+    "git worktree add --detach ..\\IRIS-X-pre-product-transition archive/pre-product-transition-2026-09-17",
+    "git archive --format=zip --output=..\\IRIS-X-pre-product-transition.zip archive/pre-product-transition-2026-09-17",
+    "git restore --source=archive/pre-product-transition-2026-09-17 --staged --worktree -- <path>"
+  ]
+}

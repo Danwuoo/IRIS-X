@@ -1,4 +1,0 @@
-IRIS-X minimal deterministic specialization program v0.
-Apply exactly one contract-authorized state transition.
-Return producer evidence for the task contract and program artifacts.
-Do not retry, route, escalate, recover, access a network, or call a model.

@@ -1,22 +1,13 @@
-# Keep generated corpus index sections readable as UTF-8 text across platforms.
+# Normalize active text artifacts while leaving archived blobs immutable in Git.
 *.md text eol=lf
-*.yaml text eol=lf
+*.json text eol=lf
 *.py text eol=lf
+*.tsv text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
 
-# Preserve byte-identical H-P1a definitions and evidence across Windows checkouts.
-experiments/exp-2026-09-01-luna-structured-program-specialization/**/*.json text eol=lf
-experiments/exp-2026-09-01-luna-structured-program-specialization/**/*.jsonl text eol=lf
-experiments/exp-2026-09-01-luna-structured-program-specialization/**/*.txt text eol=lf
+# The path index is generated deterministically from Git tree identities.
+archive/path-index.tsv text eol=lf
 
-# Keep the frozen minimal-slice contract and program byte-identical.
-experiments/substrates/minimal-reliable-execution-v0/**/*.json text eol=lf
-experiments/substrates/minimal-reliable-execution-v0/**/*.txt text eol=lf
-
-# Keep the deterministic read-only integration inputs byte-identical.
-experiments/substrates/core-execution-integration-v0/**/*.json text eol=lf
-experiments/substrates/core-execution-integration-v0/**/*.txt text eol=lf
-
-# Keep the frozen model-execution qualification byte-identical.
-experiments/substrates/model-execution-qualification-v0/**/*.json text eol=lf
-experiments/substrates/model-execution-qualification-v0/**/*.jsonl text eol=lf
-experiments/substrates/model-execution-qualification-v0/**/*.txt text eol=lf
+# Preserve intentional Markdown hard breaks in the adopted, byte-fixed thesis.
+PRODUCT_THESIS.md whitespace=-blank-at-eol

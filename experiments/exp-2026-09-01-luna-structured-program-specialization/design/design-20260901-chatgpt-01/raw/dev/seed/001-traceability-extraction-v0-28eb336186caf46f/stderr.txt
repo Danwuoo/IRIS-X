@@ -1,2 +1,0 @@
-2026-09-01T14:54:14.375357Z ERROR codex_models_manager::manager: failed to load models cache: missing field `supports_parallel_tool_calls` at line 97 column 5
-2026-09-01T14:54:14.966319Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell

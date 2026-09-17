@@ -1,3 +1,0 @@
-# Source
-
-Fixture-local source.

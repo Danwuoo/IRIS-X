@@ -1,1 +1,0 @@
-{"schema_version":1,"instance_id":"terminology-consistency-v0-79ce1f7985077cc0","family_id":"terminology-consistency-v0","answer":{"violations":[{"document_id":"NOTE-1","observed":"artefact","canonical":"artifact"},{"document_id":"NOTE-4","observed":"evidences","canonical":"evidence"}]}}

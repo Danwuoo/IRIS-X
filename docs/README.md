@@ -1,23 +1,14 @@
 # Documentation
 
-This directory separates current repository guidance from preserved operational
-history.
+This directory contains only current product-era guidance.
 
-Current guidance:
+- [`product/`](product/README.md) is reserved for product requirements and
+  concepts adopted by later scopes.
+- [`development/`](development/README.md) describes the active development
+  boundary and validation.
+- [`decisions/`](decisions/README.md) contains dated current decisions.
+- [`repository-layout.md`](repository-layout.md) defines the P0 layout.
 
-- [`repository-layout.md`](repository-layout.md) — neutral path and editability map;
-- [`maintenance.md`](maintenance.md) — repository and provenance maintenance;
-- [`research-reset-2026-09-16.md`](research-reset-2026-09-16.md) — reset record;
-- [`decisions/README.md`](decisions/README.md) — current versus historical decisions.
-
-Historical navigation:
-
-- [`history/README.md`](history/README.md) — phase states, closure records,
-  handoffs, launch/relaunch records, and failure reports;
-- [`plans/README.md`](plans/README.md) — completed, retired, abandoned, or
-  otherwise non-current execution plans.
-
-Historical files are retained at original paths where path identity supports
-manifests, hashes, tests, evidence ledgers, or reproducibility. Their location
-does not make them active instructions. No historical handoff or plan authorizes
-new research, model execution, or implementation.
+Pre-product documentation remains at its original paths in the cold-archive
+tag and is cataloged under [`../archive/`](../archive/README.md). It is not
+active guidance.

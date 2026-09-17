@@ -1,4 +1,0 @@
-{"type":"thread.started","thread_id":"01a085fa-bdb0-7123-be0a-90d29a1cf4e0"}
-{"type":"turn.started"}
-{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"ranked\":[{\"id\":\"c13\",\"rank\":1},{\"id\":\"c08\",\"rank\":2},{\"id\":\"c01\",\"rank\":3},{\"id\":\"c14\",\"rank\":4},{\"id\":\"c10\",\"rank\":5}]}"}}
-{"type":"turn.completed","usage":{"input_tokens":5015,"cached_input_tokens":0,"cache_write_input_tokens":0,"output_tokens":177,"reasoning_output_tokens":114}}

@@ -1,2 +1,0 @@
-Retain only candidates that are active, compliance is true, and years is at least minimum_years. Sort eligible candidates by score descending, latency_ms ascending, completed_jobs descending, then id ascending. Return exactly top_n candidates with one-based consecutive ranks. Return one JSON object with only ranked; each item must contain only id and rank. Do not include explanations or Markdown.
-

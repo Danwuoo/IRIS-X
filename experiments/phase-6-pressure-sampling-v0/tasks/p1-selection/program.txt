@@ -1,2 +1,0 @@
-Apply every constraint in the task input to every record. A record is selected only when active is true, its region is allowed, its score is at least the minimum, its category is not excluded, its balance_cents is at most the maximum, and the disqualifying sanctions_hold condition is false. Order selected records by score descending, then balance_cents ascending, then id ascending. Return exactly one JSON object with only selected_ids, an array of IDs in that order. Do not include explanations or Markdown.
-
