@@ -30,6 +30,14 @@ segments, repeated separators, and `..` traversal are invalid. Any locator used
 for filesystem access is resolved and checked to remain inside its declared
 root.
 
+The P1 source-collection profile binds the Domain Specification material ref to
+the exact collection artifact identity, JSON media type, payload digest, and
+`cases.json` locator. Every frozen workload case must appear exactly once in the
+collection. Its segment and criticality metadata must agree, while input and
+expected refs must bind the matching case ID and field through the canonical
+`cases.json/<case-id>/<input|expected>` locator, source identity, media type,
+and value digest.
+
 ## Contract families
 
 | Contract | Required payload boundary |
@@ -48,6 +56,12 @@ Configuration components may independently reference `model`,
 `validation` artifacts. No component is universally mandatory; the P1 fixture
 uses only bounded workflow and validation artifacts.
 
+An EngineeringTrial is valid only against the exact Domain Specification,
+WorkloadDefinition, RequirementSet, and evaluator used for execution or package
+verification. The specification must in turn bind the same workload and
+requirements, and the workload must bind the same evaluator. Re-signing results
+or decisions cannot replace or bypass these authority links.
+
 ## Evidence and selection semantics
 
 Numeric evidence has one of three explicit states: `observed`, `unknown`, or
@@ -62,6 +76,11 @@ For case evidence, `critical_failure` is derived from the frozen
 independent claim. Overall accuracy, critical-failure count, case score, and all
 declared segment accuracy aggregates are recomputed from individual outcomes;
 missing or forged derived evidence fails closed.
+
+The `accuracy.<segment>` namespace is closed by the frozen workload's exact
+segment set. Every workload segment aggregate is required, and extra segment
+names are invalid evidence. This restriction applies only to the segment
+accuracy namespace; other provider-neutral metrics remain extensible.
 
 Hard requirements gate eligibility. Soft requirements and declared objectives
 guide selection without collapsing quality, critical failures, latency,

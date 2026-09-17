@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import copy
 import io
 from pathlib import Path
 import socket
@@ -11,7 +12,19 @@ from unittest import mock
 import support  # noqa: F401
 
 from irisx import cli
-from irisx.contracts import EvaluationResult, SelectionDecision, load_contract
+from irisx.canonical import digest_bytes
+from irisx.contracts import (
+    CandidateConfiguration,
+    DomainPackageManifest,
+    DomainSpecification,
+    EngineeringTrial,
+    EvaluationResult,
+    RequirementSet,
+    SelectionDecision,
+    WorkloadDefinition,
+    load_contract,
+)
+from irisx.engine import select_configuration
 from irisx.errors import ValidationError
 from irisx.fixture import prepare_fixture, run_trial, validate_trial
 from irisx.package import build_package, verify_package
@@ -23,6 +36,106 @@ def tree_bytes(root: Path) -> dict[str, bytes]:
         for path in sorted(root.rglob("*"))
         if path.is_file()
     }
+
+
+def rewrite_evidence_graph(
+    root: Path,
+    *,
+    packaged: bool,
+    nonexistent_trial_requirement: bool = False,
+    wrong_locator_field: str | None = None,
+) -> None:
+    """Re-sign an adversarial but structurally valid run or package graph."""
+
+    if packaged:
+        specification_path = root / "domain/specification.json"
+        workload_path = root / "evaluation/workload.json"
+        requirements_path = root / "evaluation/requirements.json"
+        trial_path = root / "trial/trial.json"
+        decision_path = root / "selection/decision.json"
+        baseline_config_path = root / "specialization/configurations/qualification-baseline.json"
+        candidate_config_path = root / "specialization/configurations/qualification-candidate.json"
+        baseline_result_path = root / "evaluation/results/qualification-baseline-result.json"
+        candidate_result_path = root / "evaluation/results/qualification-candidate-result.json"
+    else:
+        specification_path = root / "specification.json"
+        workload_path = root / "workload.json"
+        requirements_path = root / "requirements.json"
+        trial_path = root / "trial.json"
+        decision_path = root / "decision.json"
+        baseline_config_path = root / "baseline.json"
+        candidate_config_path = root / "candidate.json"
+        baseline_result_path = root / "results/qualification-baseline-result.json"
+        candidate_result_path = root / "results/qualification-candidate-result.json"
+
+    specification = load_contract(specification_path, DomainSpecification)
+    workload = load_contract(workload_path, WorkloadDefinition)
+    requirements = load_contract(requirements_path, RequirementSet)
+    trial = load_contract(trial_path, EngineeringTrial)
+    baseline_config = load_contract(baseline_config_path, CandidateConfiguration)
+    candidate_config = load_contract(candidate_config_path, CandidateConfiguration)
+    baseline_result = load_contract(baseline_result_path, EvaluationResult)
+    candidate_result = load_contract(candidate_result_path, EvaluationResult)
+
+    if wrong_locator_field is not None:
+        workload_payload = copy.deepcopy(workload.payload)
+        workload_payload["cases"][0][f"{wrong_locator_field}_ref"]["locator"] = f"unrelated/location/{wrong_locator_field}"
+        workload = WorkloadDefinition(workload.artifact_id, workload.version, workload_payload)
+        specification_payload = copy.deepcopy(specification.payload)
+        specification_payload["workload_ref"] = workload.ref()
+        specification = DomainSpecification(specification.artifact_id, specification.version, specification_payload)
+
+    trial_payload = copy.deepcopy(trial.payload)
+    trial_payload["domain_specification_ref"] = specification.ref()
+    trial_payload["workload_ref"] = workload.ref()
+    if nonexistent_trial_requirement:
+        missing_requirement_ref = copy.deepcopy(requirements.ref())
+        missing_requirement_ref["artifact_id"] = "nonexistent-requirements"
+        missing_requirement_ref["content_digest"] = "sha256:" + "0" * 64
+        trial_payload["requirement_set_ref"] = missing_requirement_ref
+    else:
+        trial_payload["requirement_set_ref"] = requirements.ref()
+    trial = EngineeringTrial(trial.artifact_id, trial.version, trial_payload)
+
+    rebuilt_results: list[EvaluationResult] = []
+    for original in (baseline_result, candidate_result):
+        payload = copy.deepcopy(original.payload)
+        payload["trial_ref"] = trial.ref()
+        payload["workload_ref"] = workload.ref()
+        rebuilt_results.append(EvaluationResult(original.artifact_id, original.version, payload))
+    baseline_result, candidate_result = rebuilt_results
+    configurations = {
+        baseline_config.content_digest: baseline_config,
+        candidate_config.content_digest: candidate_config,
+    }
+    decision = select_configuration(
+        trial,
+        workload,
+        requirements,
+        baseline_result,
+        [candidate_result],
+        configurations,
+    )
+
+    specification.write(specification_path)
+    workload.write(workload_path)
+    trial.write(trial_path)
+    baseline_result.write(baseline_result_path)
+    candidate_result.write(candidate_result_path)
+    decision.write(decision_path)
+
+    if packaged:
+        manifest_path = root / "manifest.json"
+        manifest = load_contract(manifest_path, DomainPackageManifest)
+        manifest_payload = copy.deepcopy(manifest.payload)
+        manifest_payload["domain_specification_ref"] = specification.ref()
+        manifest_payload["workload_ref"] = workload.ref()
+        manifest_payload["selection_decision_ref"] = decision.ref()
+        manifest_payload["measured_result_ref"] = candidate_result.ref()
+        for entry in manifest_payload["artifacts"]:
+            artifact_path = root.joinpath(*entry["path"].split("/"))
+            entry["content_digest"] = digest_bytes(artifact_path.read_bytes())
+        DomainPackageManifest(manifest.artifact_id, manifest.version, manifest_payload).write(manifest_path)
 
 
 class ReferenceFlowTests(unittest.TestCase):
@@ -104,6 +217,46 @@ class ReferenceFlowTests(unittest.TestCase):
             baseline.unlink()
             with self.assertRaisesRegex(ValidationError, "missing declared files"):
                 verify_package(root / "package")
+
+    def test_build_rejects_rebuilt_graph_with_nonexistent_trial_requirement(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            prepare_fixture(root / "fixture")
+            run_trial(root / "fixture/trial.json", root / "run")
+            rewrite_evidence_graph(root / "run", packaged=False, nonexistent_trial_requirement=True)
+            with self.assertRaisesRegex(ValidationError, "trial.requirement_set_ref"):
+                build_package(root / "run", root / "package")
+
+    def test_verify_rejects_rebuilt_package_with_nonexistent_trial_requirement(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            prepare_fixture(root / "fixture")
+            run_trial(root / "fixture/trial.json", root / "run")
+            build_package(root / "run", root / "package")
+            rewrite_evidence_graph(root / "package", packaged=True, nonexistent_trial_requirement=True)
+            with self.assertRaisesRegex(ValidationError, "trial.requirement_set_ref"):
+                verify_package(root / "package")
+
+    def test_build_rejects_rebuilt_graph_with_wrong_source_locator(self) -> None:
+        for field in ("input", "expected"):
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                prepare_fixture(root / "fixture")
+                run_trial(root / "fixture/trial.json", root / "run")
+                rewrite_evidence_graph(root / "run", packaged=False, wrong_locator_field=field)
+                with self.assertRaisesRegex(ValidationError, "source locator mismatch"):
+                    build_package(root / "run", root / "package")
+
+    def test_verify_rejects_rebuilt_package_with_wrong_source_locator(self) -> None:
+        for field in ("input", "expected"):
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                prepare_fixture(root / "fixture")
+                run_trial(root / "fixture/trial.json", root / "run")
+                build_package(root / "run", root / "package")
+                rewrite_evidence_graph(root / "package", packaged=True, wrong_locator_field=field)
+                with self.assertRaisesRegex(ValidationError, "source locator mismatch"):
+                    verify_package(root / "package")
 
     def test_trial_validation_rejects_substituted_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

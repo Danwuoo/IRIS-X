@@ -61,6 +61,7 @@ REQUIRED_PATHS = {
     "src/irisx/__init__.py",
     "src/irisx/__main__.py",
     "src/irisx/artifacts.py",
+    "src/irisx/bindings.py",
     "src/irisx/bundle.py",
     "src/irisx/canonical.py",
     "src/irisx/cli.py",
@@ -267,6 +268,8 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "critical_failure",
             "segment accuracy",
             "relative POSIX logical paths",
+            "cases.json/<case-id>/<input|expected>",
+            "accuracy.<segment>",
         ),
         "docs/product/domain-package.md": (
             "baseline_result_ref",
@@ -274,6 +277,7 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "eligible_result_refs",
             "recomputes",
             "symbolic links",
+            "matching a value digest alone is insufficient",
         ),
     }
     for path, terms in required_terms.items():

@@ -46,6 +46,13 @@ requirements, eligibility, Pareto filtering, and deterministic selection from
 the packaged evidence instead of trusting the decision declaration. Missing,
 extra, malformed, substituted, or corrupt content is rejected.
 
+Before recomputation, build and verification prove that the EngineeringTrial's
+domain specification, workload, requirement set, and evaluator refs exactly
+match the packaged artifacts being used. Decision and result trial/workload/
+evaluator refs must agree with that same graph. Workload case refs are resolved
+against the packaged source collection with exact case-and-field provenance;
+matching a value digest alone is insufficient.
+
 Manifest paths use canonical relative POSIX syntax and are resolved beneath the
 package root. Backslashes, absolute paths, traversal, and symbolic links are
 rejected so verification has the same boundary on Windows and POSIX systems.

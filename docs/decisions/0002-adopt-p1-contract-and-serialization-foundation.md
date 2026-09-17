@@ -53,3 +53,11 @@ outcome. Measurement units must match before numeric comparison.
 All source locators and manifest artifact paths use canonical relative POSIX
 logical paths and are containment-checked at filesystem resolution time. This
 rule is cross-platform and explicitly rejects Windows backslash traversal.
+
+Trial authority bindings and source provenance are also verification invariants.
+The trial, specification, workload, requirements, evaluator, decisions, and
+results must form one exact reference graph in both package build and independent
+verification. Workload input/expected refs bind the source collection case ID,
+field, locator, media type, source identity, and digest. Segment-derived metrics
+use a closed `accuracy.<segment>` namespace defined by the frozen workload, so
+an invented segment cannot become requirement or objective evidence.

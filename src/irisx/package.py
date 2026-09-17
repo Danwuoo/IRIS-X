@@ -6,8 +6,9 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from .artifacts import artifact_ref, make_artifact, validate_artifact
+from .bindings import validate_decision_bindings, validate_source_collection_bindings, validate_trial_bindings
 from .bundle import Document, document_ref, load_bundle, load_document, require_contract, resolve_ref
-from .canonical import digest_bytes, digest_value, read_json, write_json
+from .canonical import digest_bytes, read_json, write_json
 from .contracts import (
     CandidateConfiguration,
     DomainPackageManifest,
@@ -163,7 +164,7 @@ def _validate_selection_evidence(
         "decision.selected_configuration_ref",
     )
     assert_binding(selected_result.payload["configuration_ref"], selected_configuration, "selected_result.configuration_ref")
-    if not satisfies_hard_requirements(selected_result, requirements):
+    if not satisfies_hard_requirements(selected_result, requirements, workload):
         raise ValidationError("selected result does not satisfy every hard requirement")
     return selected_configuration, selected_result, considered, configurations
 
@@ -183,18 +184,17 @@ def build_package(run_dir: Path, output: Path) -> DomainPackageManifest:
     assert isinstance(requirements, RequirementSet)
     assert isinstance(trial, EngineeringTrial)
     assert isinstance(decision, SelectionDecision)
-    assert_binding(specification.payload["workload_ref"], workload, "specification.workload_ref")
-    assert_binding(specification.payload["requirement_set_ref"], requirements, "specification.requirement_set_ref")
-    assert_binding(decision.payload["trial_ref"], trial, "decision.trial_ref")
-    selected_configuration, selected_result, considered_results, configurations = _validate_selection_evidence(
-        decision, trial, workload, requirements, run_index
-    )
-
     evaluator_document = resolve_ref(run_index, workload.payload["evaluator_ref"], "workload.evaluator_ref")
     if not isinstance(evaluator_document, dict):
         raise ValidationError("evaluator must be a supporting artifact")
     evaluator = validate_artifact(evaluator_document, kind="irisx/evaluator-definition")
     cases = validate_artifact(read_json(run_dir / "cases.json"), kind="irisx/source-collection")
+    validate_trial_bindings(trial, specification, workload, requirements, evaluator)
+    validate_decision_bindings(decision, trial, workload, evaluator)
+    validate_source_collection_bindings(specification, workload, cases)
+    selected_configuration, selected_result, considered_results, configurations = _validate_selection_evidence(
+        decision, trial, workload, requirements, run_index
+    )
     supporting: dict[RefKey, dict[str, Any]] = {}
     for configuration in configurations:
         for component_name, ref in configuration.payload["components"].items():
@@ -340,9 +340,8 @@ def verify_package(root: Path) -> DomainPackageManifest:
     ):
         if refs[field] != target.ref():
             raise ValidationError(f"manifest.{field}: stale or substituted artifact")
-    assert_binding(specification.payload["workload_ref"], workload, "specification.workload_ref")
-    assert_binding(specification.payload["requirement_set_ref"], requirements, "specification.requirement_set_ref")
-    assert_binding(decision.payload["trial_ref"], trial, "decision.trial_ref")
+    validate_trial_bindings(trial, specification, workload, requirements, evaluator)
+    validate_decision_bindings(decision, trial, workload, evaluator)
     selected_configuration, selected_result, _, configurations = _validate_selection_evidence(
         decision, trial, workload, requirements, package_index
     )
@@ -370,16 +369,5 @@ def verify_package(root: Path) -> DomainPackageManifest:
     )
     if cases_document is None:
         raise ValidationError("package cases artifact is missing")
-    for ref in specification.payload["material_refs"]:
-        if ref["locator"] != "cases.json" or digest_value(cases_document["payload"]) != ref["content_digest"]:
-            raise ValidationError("package material source binding failed")
-    case_by_id = {item.get("case_id"): item for item in cases_document["payload"].get("cases", [])}
-    for case in workload.payload["cases"]:
-        source = case_by_id.get(case["case_id"])
-        if source is None:
-            raise ValidationError(f"package source case is missing: {case['case_id']}")
-        for field in ("input", "expected"):
-            ref = case[f"{field}_ref"]
-            if digest_value(source.get(field)) != ref["content_digest"]:
-                raise ValidationError(f"package source digest mismatch: {case['case_id']}/{field}")
+    validate_source_collection_bindings(specification, workload, cases_document)
     return manifest

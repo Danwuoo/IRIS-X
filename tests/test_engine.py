@@ -140,6 +140,37 @@ class SelectionTests(unittest.TestCase):
         )
         self.assertEqual(decision.payload["outcome"], "no_promotion")
 
+    def test_nonexistent_segment_metric_is_never_valid_evidence(self) -> None:
+        payload = copy.deepcopy(self.candidate.payload)
+        payload["metrics"]["accuracy.phantom"] = {"state": "observed", "value": 1.0, "unit": "ratio"}
+        result = EvaluationResult("phantom-segment-result", "1.0.0", payload)
+        requirement_payload = copy.deepcopy(self.requirements.payload)
+        requirement_payload["requirements"].append(
+            {
+                "requirement_id": "phantom-segment",
+                "metric": "accuracy.phantom",
+                "comparator": ">=",
+                "threshold": 1.0,
+                "hard": True,
+                "objective": "maximize",
+                "unit": "ratio",
+                "description": "Invalid segment evidence must fail closed.",
+            }
+        )
+        requirements = RequirementSet("phantom-requirements", "1.0.0", requirement_payload)
+        verdict = next(item for item in requirement_verdicts(result, requirements, self.workload) if item["metric"] == "accuracy.phantom")
+        self.assertEqual(verdict["state"], "invalid_metric")
+        self.assertFalse(satisfies_hard_requirements(result, requirements, self.workload))
+        with self.assertRaisesRegex(ValidationError, "segment accuracy namespace"):
+            select_configuration(
+                self.trial,
+                self.workload,
+                requirements,
+                self.baseline,
+                [result],
+                self.configurations,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

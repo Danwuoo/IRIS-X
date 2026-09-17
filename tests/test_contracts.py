@@ -8,6 +8,8 @@ import unittest
 import support  # noqa: F401
 
 from irisx.canonical import canonical_bytes
+from irisx.artifacts import load_artifact
+from irisx.bindings import validate_source_collection_bindings, validate_trial_bindings
 from irisx.contracts import (
     CandidateConfiguration,
     DomainPackageManifest,
@@ -116,6 +118,50 @@ class ContractTests(unittest.TestCase):
         payload["eligible_result_refs"] = [outside]
         with self.assertRaisesRegex(ValidationError, "must be a subset"):
             SelectionDecision("invalid-selection", "1.0.0", payload)
+
+    def test_all_trial_authority_bindings_fail_closed_when_stale(self) -> None:
+        trial = load_contract(self.fixture / "trial.json", EngineeringTrial)
+        specification = load_contract(self.fixture / "specification.json", DomainSpecification)
+        workload = load_contract(self.fixture / "workload.json", WorkloadDefinition)
+        requirements = load_contract(self.fixture / "requirements.json", RequirementSet)
+        evaluator = load_artifact(self.fixture / "evaluator.json", kind="irisx/evaluator-definition")
+        targets = {
+            "domain_specification_ref": specification.ref(),
+            "workload_ref": workload.ref(),
+            "requirement_set_ref": requirements.ref(),
+            "evaluator_ref": {
+                "kind": evaluator["schema"],
+                "artifact_id": evaluator["artifact_id"],
+                "version": evaluator["version"],
+                "content_digest": evaluator["content_digest"],
+            },
+        }
+        for field, target in targets.items():
+            with self.subTest(field=field):
+                payload = copy.deepcopy(trial.payload)
+                stale = copy.deepcopy(target)
+                stale["content_digest"] = "sha256:" + "0" * 64
+                payload[field] = stale
+                changed = EngineeringTrial(f"stale-{field.replace('_ref', '').replace('_', '-')}", "1.0.0", payload)
+                with self.assertRaises(ValidationError):
+                    validate_trial_bindings(changed, specification, workload, requirements, evaluator)
+
+    def test_source_provenance_rejects_wrong_case_and_field_locators(self) -> None:
+        specification = load_contract(self.fixture / "specification.json", DomainSpecification)
+        original = load_contract(self.fixture / "workload.json", WorkloadDefinition)
+        cases = load_artifact(self.fixture / "cases.json", kind="irisx/source-collection")
+        cases_to_check = (
+            ("input_ref", "cases.json/case-02/input"),
+            ("input_ref", "cases.json/case-01/expected"),
+            ("expected_ref", "unrelated/location/expected"),
+        )
+        for ref_field, locator in cases_to_check:
+            with self.subTest(ref_field=ref_field, locator=locator):
+                payload = copy.deepcopy(original.payload)
+                payload["cases"][0][ref_field]["locator"] = locator
+                workload = WorkloadDefinition("wrong-provenance-workload", "1.0.0", payload)
+                with self.assertRaisesRegex(ValidationError, "source locator mismatch"):
+                    validate_source_collection_bindings(specification, workload, cases)
 
 
 if __name__ == "__main__":

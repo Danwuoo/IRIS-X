@@ -7,6 +7,7 @@ import shutil
 from typing import Any
 
 from .artifacts import artifact_ref, make_artifact, validate_artifact, write_artifact
+from .bindings import resolve_case_source, validate_source_collection_bindings, validate_trial_bindings
 from .bundle import load_bundle, resolve_ref, require_contract
 from .canonical import digest_value, read_json
 from .contracts import (
@@ -16,7 +17,6 @@ from .contracts import (
     EvaluationResult,
     RequirementSet,
     WorkloadDefinition,
-    assert_binding,
     load_contract,
     resolve_logical_path,
 )
@@ -111,7 +111,7 @@ def prepare_fixture(output: Path) -> None:
         {
             "name": "Synthetic P1 qualification domain",
             "description": "A deliberately non-real domain used only for deterministic product-contract qualification.",
-            "material_refs": [_source_ref("qualification-source", "cases.json", cases_artifact["payload"])],
+            "material_refs": [_source_ref("qualification-cases", "cases.json", cases_artifact["payload"])],
             "workload_ref": workload.ref(),
             "requirement_set_ref": requirements.ref(),
             "operating_constraints": ["offline-only", "no-provider-or-model-calls", "zero-paid-execution"],
@@ -177,6 +177,18 @@ def prepare_fixture(output: Path) -> None:
         contract.write(output / name)
 
 
+def _load_source_collection(root: Path, specification: DomainSpecification) -> dict[str, Any]:
+    collections: list[dict[str, Any]] = []
+    for position, ref in enumerate(specification.payload["material_refs"]):
+        source_path = resolve_logical_path(root, ref["locator"], f"specification.material_refs[{position}].locator")
+        source = validate_artifact(read_json(source_path))
+        if source["schema"] == "irisx/source-collection":
+            collections.append(source)
+    if len(collections) != 1:
+        raise ValidationError("qualification specification must resolve exactly one source collection")
+    return collections[0]
+
+
 def validate_specification(path: Path) -> DomainSpecification:
     specification = load_contract(path, DomainSpecification)
     assert isinstance(specification, DomainSpecification)
@@ -186,11 +198,8 @@ def validate_specification(path: Path) -> DomainSpecification:
     if workload.ref() != specification.payload["workload_ref"] or requirements.ref() != specification.payload["requirement_set_ref"]:
         raise ValidationError("specification evidence binding failed")
     resolve_ref(index, workload.payload["evaluator_ref"], "workload.evaluator_ref")
-    for ref in specification.payload["material_refs"]:
-        source_path = resolve_logical_path(path.parent, ref["locator"], "specification.material_refs.locator")
-        source = validate_artifact(read_json(source_path))
-        if digest_value(source["payload"]) != ref["content_digest"]:
-            raise ValidationError(f"material source digest mismatch: {ref['source_id']}")
+    cases = _load_source_collection(path.parent, specification)
+    validate_source_collection_bindings(specification, workload, cases)
     return specification
 
 
@@ -202,16 +211,12 @@ def validate_trial(path: Path) -> EngineeringTrial:
     workload = require_contract(resolve_ref(index, trial.payload["workload_ref"], "trial.workload_ref"), WorkloadDefinition, "trial.workload_ref")
     requirements = require_contract(resolve_ref(index, trial.payload["requirement_set_ref"], "trial.requirement_set_ref"), RequirementSet, "trial.requirement_set_ref")
     baseline = require_contract(resolve_ref(index, trial.payload["baseline_configuration_ref"], "trial.baseline_configuration_ref"), CandidateConfiguration, "trial.baseline_configuration_ref")
-    assert_binding(specification.payload["workload_ref"], workload, "specification.workload_ref")
-    assert_binding(specification.payload["requirement_set_ref"], requirements, "specification.requirement_set_ref")
-    for ref in specification.payload["material_refs"]:
-        source_path = resolve_logical_path(path.parent, ref["locator"], "specification.material_refs.locator")
-        source = validate_artifact(read_json(source_path))
-        if digest_value(source["payload"]) != ref["content_digest"]:
-            raise ValidationError(f"material source digest mismatch: {ref['source_id']}")
-    if workload.payload["evaluator_ref"] != trial.payload["evaluator_ref"]:
-        raise ValidationError("trial evaluator does not match frozen workload evaluator")
-    resolve_ref(index, trial.payload["evaluator_ref"], "trial.evaluator_ref")
+    evaluator = resolve_ref(index, trial.payload["evaluator_ref"], "trial.evaluator_ref")
+    if not isinstance(evaluator, dict):
+        raise ValidationError("trial evaluator must be a supporting artifact")
+    validate_trial_bindings(trial, specification, workload, requirements, evaluator)
+    cases = _load_source_collection(path.parent, specification)
+    validate_source_collection_bindings(specification, workload, cases)
     for index_number, ref in enumerate(trial.payload["candidate_configuration_refs"]):
         require_contract(resolve_ref(index, ref, f"trial.candidate_configuration_refs[{index_number}]"), CandidateConfiguration, f"trial.candidate_configuration_refs[{index_number}]")
     for configuration in [baseline, *(resolve_ref(index, ref, "trial.candidate") for ref in trial.payload["candidate_configuration_refs"])]:
@@ -219,20 +224,6 @@ def validate_trial(path: Path) -> EngineeringTrial:
         for component_name, component_ref in configuration.payload["components"].items():
             resolve_ref(index, component_ref, f"configuration.components.{component_name}")
     return trial
-
-
-def _resolve_case_source(cases_artifact: dict[str, Any], case_id: str, field: str, ref: dict[str, Any]) -> Any:
-    cases = cases_artifact["payload"]["cases"]
-    matches = [item for item in cases if item.get("case_id") == case_id]
-    if len(matches) != 1:
-        raise ValidationError(f"case source missing or duplicated: {case_id}")
-    value = matches[0].get(field)
-    if digest_value(value) != ref["content_digest"]:
-        raise ValidationError(f"source digest mismatch for {case_id}/{field}")
-    expected_locator = f"cases.json/{case_id}/{field}"
-    if ref["locator"] != expected_locator:
-        raise ValidationError(f"source locator mismatch for {case_id}/{field}")
-    return value
 
 
 def _evaluate(
@@ -254,8 +245,8 @@ def _evaluate(
     segment_totals: dict[str, list[int]] = {}
     for case in workload.payload["cases"]:
         case_id = case["case_id"]
-        _resolve_case_source(cases_artifact, case_id, "input", case["input_ref"])
-        expected = _resolve_case_source(cases_artifact, case_id, "expected", case["expected_ref"])
+        resolve_case_source(cases_artifact, case, "input")
+        expected = resolve_case_source(cases_artifact, case, "expected")
         if case_id not in predictions:
             raise ValidationError(f"missing bounded prediction for {case_id}")
         passed = predictions[case_id] == expected["label"]
@@ -338,7 +329,7 @@ def run_trial(trial_path: Path, output: Path) -> dict[str, Any]:
         "irisx/requirement-verdicts",
         "qualification-verdicts",
         "1.0.0",
-        {result.artifact_id: requirement_verdicts(result, requirements) for result in results},
+        {result.artifact_id: requirement_verdicts(result, requirements, workload) for result in results},
     )
     write_artifact(output / "verdicts.json", verdict_artifact)
     summary = {"outcome": decision.payload["outcome"], "decision_digest": decision.content_digest, "results": [item.content_digest for item in results]}

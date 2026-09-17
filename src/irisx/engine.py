@@ -15,27 +15,48 @@ from .contracts import (
 from .errors import ValidationError
 
 
-def requirement_verdicts(result: EvaluationResult, requirements: RequirementSet) -> list[dict[str, Any]]:
+def _metric_is_valid_for_result(
+    result: EvaluationResult,
+    metric: str,
+    workload: WorkloadDefinition | None,
+) -> bool:
+    if not metric.startswith("accuracy."):
+        return True
+    if workload is None:
+        return False
+    segment = metric.removeprefix("accuracy.")
+    return segment in {item["segment"] for item in workload.payload["cases"]}
+
+
+def requirement_verdicts(
+    result: EvaluationResult,
+    requirements: RequirementSet,
+    workload: WorkloadDefinition | None = None,
+) -> list[dict[str, Any]]:
     verdicts: list[dict[str, Any]] = []
     metrics = result.payload["metrics"]
     for requirement in requirements.payload["requirements"]:
-        observation = metrics.get(requirement["metric"])
-        if observation is None or observation["state"] != "observed":
-            state = "unknown"
-            observed = None
-        elif observation["unit"] != requirement["unit"]:
-            state = "unit_mismatch"
+        if not _metric_is_valid_for_result(result, requirement["metric"], workload):
+            state = "invalid_metric"
             observed = None
         else:
-            observed = observation["value"]
-            comparator = requirement["comparator"]
-            threshold = requirement["threshold"]
-            passed = {
-                ">=": observed >= threshold,
-                "<=": observed <= threshold,
-                "==": observed == threshold,
-            }[comparator]
-            state = "pass" if passed else "fail"
+            observation = metrics.get(requirement["metric"])
+            if observation is None or observation["state"] != "observed":
+                state = "unknown"
+                observed = None
+            elif observation["unit"] != requirement["unit"]:
+                state = "unit_mismatch"
+                observed = None
+            else:
+                observed = observation["value"]
+                comparator = requirement["comparator"]
+                threshold = requirement["threshold"]
+                passed = {
+                    ">=": observed >= threshold,
+                    "<=": observed <= threshold,
+                    "==": observed == threshold,
+                }[comparator]
+                state = "pass" if passed else "fail"
         verdicts.append(
             {
                 "requirement_id": requirement["requirement_id"],
@@ -50,8 +71,12 @@ def requirement_verdicts(result: EvaluationResult, requirements: RequirementSet)
     return verdicts
 
 
-def satisfies_hard_requirements(result: EvaluationResult, requirements: RequirementSet) -> bool:
-    hard = [item for item in requirement_verdicts(result, requirements) if item["hard"]]
+def satisfies_hard_requirements(
+    result: EvaluationResult,
+    requirements: RequirementSet,
+    workload: WorkloadDefinition | None = None,
+) -> bool:
+    hard = [item for item in requirement_verdicts(result, requirements, workload) if item["hard"]]
     return bool(hard) and all(item["state"] == "pass" for item in hard)
 
 
@@ -86,6 +111,9 @@ def validate_result_evidence(result: EvaluationResult, workload: WorkloadDefinit
     if critical != {"state": "observed", "value": expected_critical, "unit": "count"}:
         raise ValidationError("result critical_failures is missing or inconsistent with case outcomes")
     segments = {item["segment"] for item in workload.payload["cases"]}
+    segment_metrics = {name.removeprefix("accuracy.") for name in metrics if name.startswith("accuracy.")}
+    if segment_metrics != segments:
+        raise ValidationError("result segment accuracy namespace does not exactly match the frozen workload")
     for segment in segments:
         outcomes = [item for item in actual.values() if item["segment"] == segment]
         expected_segment_accuracy = sum(item["passed"] for item in outcomes) / len(outcomes)
@@ -115,7 +143,13 @@ def _assert_comparable(trial: EngineeringTrial, results: list[EvaluationResult])
         seen.add(configuration_digest)
 
 
-def _objective_value(result: EvaluationResult, requirement: dict[str, Any]) -> float | None:
+def _objective_value(
+    result: EvaluationResult,
+    requirement: dict[str, Any],
+    workload: WorkloadDefinition,
+) -> float | None:
+    if not _metric_is_valid_for_result(result, requirement["metric"], workload):
+        return None
     observation = result.payload["metrics"].get(requirement["metric"])
     if (
         observation is None
@@ -129,15 +163,20 @@ def _objective_value(result: EvaluationResult, requirement: dict[str, Any]) -> f
     return value
 
 
-def _strictly_better(candidate: EvaluationResult, baseline: EvaluationResult, requirements: RequirementSet) -> bool:
+def _strictly_better(
+    candidate: EvaluationResult,
+    baseline: EvaluationResult,
+    requirements: RequirementSet,
+    workload: WorkloadDefinition,
+) -> bool:
     objectives = [
         req for req in requirements.payload["requirements"]
         if req["objective"] in {"minimize", "maximize"}
     ]
     better = False
     for requirement in objectives:
-        candidate_value = _objective_value(candidate, requirement)
-        baseline_value = _objective_value(baseline, requirement)
+        candidate_value = _objective_value(candidate, requirement, workload)
+        baseline_value = _objective_value(baseline, requirement, workload)
         if candidate_value is None or baseline_value is None:
             return False
         if candidate_value > baseline_value:
@@ -169,19 +208,19 @@ def select_configuration(
     if actual_candidates != expected_candidates:
         raise ValidationError("candidate results do not exactly match the trial candidates")
 
-    eligible = [item for item in all_results if satisfies_hard_requirements(item, requirements)]
+    eligible = [item for item in all_results if satisfies_hard_requirements(item, requirements, workload)]
     eligible_candidates = [item for item in candidates if item in eligible]
     baseline_eligible = baseline in eligible
     selected: EvaluationResult | None = None
     promotion_candidates = eligible_candidates if not baseline_eligible else [
-        item for item in eligible_candidates if _strictly_better(item, baseline, requirements)
+        item for item in eligible_candidates if _strictly_better(item, baseline, requirements, workload)
     ]
     if promotion_candidates:
         pareto_front = [
             item
             for item in promotion_candidates
             if not any(
-                other is not item and _strictly_better(other, item, requirements)
+                other is not item and _strictly_better(other, item, requirements, workload)
                 for other in promotion_candidates
             )
         ]
