@@ -5,8 +5,8 @@ Status: active P0 layout as of 2026-09-17.
 | Path | Role | P0 state |
 | --- | --- | --- |
 | `PRODUCT_THESIS.md` | Canonical product authority | Adopted and byte-verified |
-| `docs/product/` | Product requirements and concepts | Reserved |
-| `docs/development/` | Development guidance | P0 guidance only |
+| `docs/product/` | Product scope, non-goals, and future requirements | P0 policy set; contracts reserved |
+| `docs/development/` | Operating model and data/execution policy | P0 policy set; runtime reserved |
 | `docs/decisions/` | Current decisions | Product direction recorded |
 | `src/irisx/` | Product implementation | Reserved; no P1 contracts/runtime |
 | `tests/` | Active tests | Repository-transition coverage only |

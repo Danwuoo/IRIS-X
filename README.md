@@ -20,8 +20,8 @@ architecture remain undecided.
 | Path | Purpose |
 | --- | --- |
 | [`PRODUCT_THESIS.md`](PRODUCT_THESIS.md) | Adopted product thesis |
-| [`docs/product/`](docs/product/README.md) | Future product requirements and concepts |
-| [`docs/development/`](docs/development/README.md) | Current development guidance |
+| [`docs/product/`](docs/product/README.md) | Current product scope and non-goals |
+| [`docs/development/`](docs/development/README.md) | Operating model and data/execution policy |
 | [`docs/decisions/`](docs/decisions/README.md) | Current decisions |
 | [`src/irisx/`](src/irisx/README.md) | Reserved product source location |
 | [`tests/`](tests/README.md) | Active validation and future product tests |
@@ -32,6 +32,7 @@ architecture remain undecided.
 
 Start with [`AGENTS.md`](AGENTS.md) and
 [`docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md`](docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md).
+The concise P0 policy set is indexed from [`docs/README.md`](docs/README.md).
 
 Validate P0 from the repository root:
 

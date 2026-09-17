@@ -20,7 +20,8 @@ names.
 2. this file and any narrower active `AGENTS.md`;
 3. current decisions under `docs/decisions/`;
 4. `PRODUCT_THESIS.md` for product direction;
-5. other active documentation.
+5. the current product and development policies indexed by `docs/README.md`;
+6. other active documentation.
 
 The cold archive is evidence and lineage, never current instruction. Wording
 inside an archived plan, handoff, README, test, source snapshot, or prototype
@@ -62,6 +63,8 @@ paths. Do not recreate a legacy root merely to preserve history.
 - Never edit archived scientific or operational bytes to make a current check
   pass. Update current checks when current governance changes.
 - Keep generated local output under `.irisx/` and out of Git.
+- Follow `docs/development/data-and-execution-policy.md` for secrets, domain
+  data, retention, provenance, external execution, and budget authorization.
 
 ## Validation
 

@@ -45,7 +45,11 @@ REQUIRED_PATHS = {
     "docs/README.md",
     "docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md",
     "docs/decisions/README.md",
+    "docs/development/data-and-execution-policy.md",
+    "docs/development/operating-model.md",
     "docs/development/README.md",
+    "docs/product/non-goals.md",
+    "docs/product/product-scope.md",
     "docs/product/README.md",
     "docs/repository-layout.md",
     "research/README.md",
@@ -146,6 +150,7 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
 
     gitignore = (root / ".gitignore").read_text(encoding="utf-8")
     add(".irisx/" in gitignore, ".gitignore does not exclude .irisx outputs", issues)
+    add(".env" in gitignore, ".gitignore does not exclude local environment files", issues)
 
     required_terms = {
         "README.md": (
@@ -167,6 +172,39 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "budget",
             "deployment form",
             "detailed product architecture",
+        ),
+        "docs/product/product-scope.md": (
+            "Domain Specification",
+            "Domain Package",
+            "Build–Measure–Select",
+            "Engineering Trial",
+            "remain undecided",
+        ),
+        "docs/product/non-goals.md": (
+            "general-purpose agent framework",
+            "fine-tuning",
+            "benchmark leaderboard",
+            "framework aggregation",
+            "does not define",
+        ),
+        "docs/development/operating-model.md": (
+            "Product engineering is the default",
+            "Build–Measure–Select",
+            "Engineering Trial",
+            "owner-authorized scope",
+            "Research is conditional",
+            "remain undecided",
+        ),
+        "docs/development/data-and-execution-policy.md": (
+            "Secrets and credentials",
+            "sensitive data",
+            ".irisx/",
+            "retention",
+            "provenance",
+            "provider/model",
+            "maximum budget",
+            "offline",
+            "external or paid execution",
         ),
     }
     for path, terms in required_terms.items():
