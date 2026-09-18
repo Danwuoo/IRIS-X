@@ -1,8 +1,10 @@
 # Product Scope
 
-Status: current product policy through P2 admission, grounded in
+Status: current product policy through the first P2 trial admission, grounded in
 [`PRODUCT_THESIS.md`](../../PRODUCT_THESIS.md) and
-[`Decision 0001`](../decisions/0001-adopt-product-oriented-domain-ai-specialization.md).
+[`Decision 0001`](../decisions/0001-adopt-product-oriented-domain-ai-specialization.md),
+with the bounded trial scope selected by
+[`Decision 0004`](../decisions/0004-admit-first-p2-arc-agi-2-engineering-trial.md).
 
 ## Product boundary
 
@@ -41,11 +43,20 @@ reproducible Domain Package builder/verifier. The P1 qualification fixture is
 explicitly not a real Engineering Trial and cannot support a product-effectiveness
 claim.
 
-P2 repository work has started at the admission layer, but the first real
-domain and workload, data rights, provider/model, specialization backend,
-budget, deployment form, external execution, and detailed production
-architecture remain undecided. Decision 0003 therefore marks P2
-admission-blocked. A later admitted trial must supply a separately authorized
-Domain Specification and real workload through the contracts in
-[`contracts.md`](contracts.md), changing a contract only through a reviewed
-schema-version decision rather than by accidental fixture-specific drift.
+Decision 0003 and its blocked admission snapshot remain historical evidence.
+Decision 0004 now selects ARC-AGI-2 as the first real domain, the complete
+official public evaluation split as the frozen workload, the official public
+training split as the only specialization material, a local/offline path with
+zero external paid-execution budget, one static `prompts_programs`
+intervention, a five-percentage-point acceptance threshold, and a
+self-contained single-machine offline research-solver package as the deployment
+target.
+
+The admitted scope covers the minimum repository implementation, exact official
+source materialization, deterministic offline validation, and preflight work.
+The concrete local model/solver identity and execution envelope remain
+unbound, detailed production architecture remains undecided, and the real run
+requires a separate explicit owner execution authorization. Trial artifacts
+must use the contracts in [`contracts.md`](contracts.md), changing a contract
+only through a reviewed schema-version decision rather than accidental
+fixture-specific drift.

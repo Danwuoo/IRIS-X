@@ -10,11 +10,13 @@ versioned **Domain Package**.
 
 P0 repository-transition scaffolding is complete. P1 implements only the
 provider-neutral product-contract layer and deterministic offline qualification
-flow authorized on 2026-09-17. P2 repository work has started, but Decision
-0003 records it as admission-blocked because no first real domain, workload,
-data authorization, provider/model, specialization backend, budget, deployment
-form, or detailed production architecture has been selected. The current P2
-scope is the admission package and its offline validation only.
+flow authorized on 2026-09-17. Decision 0003 and the P2 admission snapshot
+remain historical evidence of the prior blocked state. Decision 0004 selects
+the first real trial as ARC-AGI-2 on the local/offline path and authorizes its
+repository implementation, official-source materialization, offline validation,
+and preflight work. It does not authorize the real model/solver run, which still
+requires a separate explicit owner authorization after all bindings and gates
+are satisfied.
 
 ## Authority order
 
@@ -37,9 +39,9 @@ has no authority over active work.
 | `docs/product/` | Product documentation created by an authorized scope |
 | `docs/development/` | Development and validation guidance |
 | `docs/decisions/` | Current, dated product and repository decisions |
-| `src/irisx/` | P1 contracts/reference flow/package verification and P2 admission validation |
+| `src/irisx/` | P1 contracts/reference flow/package verification, historical P2 admission validation, and authorized ARC-AGI-2 trial implementation |
 | `tests/` | Tests for the active product and repository surface |
-| `trials/` | P2 admission package; real Engineering Trials only after later authorization |
+| `trials/` | Historical P2 admission package and the admitted ARC-AGI-2 trial workspace; real execution only after separate authorization |
 | `research/` | Conditional research opened by explicit product pressure |
 | `tools/` | Active repository utilities only |
 | `archive/` | Read-only catalog pointing to immutable Git history |
@@ -53,11 +55,22 @@ paths. Do not recreate a legacy root merely to preserve history.
 
 ## Working rules
 
-- Keep the current P2 work limited to provider-neutral admission contracts,
-  deterministic offline validation, documentation, and tests.
-- Do not execute a real domain Engineering Trial, start P3/P4, select or call a
-  model/provider, use paid or network execution, or build a production runtime
-  without a later explicit owner authorization for that scope.
+- Keep current P2 work within Decision 0004: the minimum ARC-AGI-2 Trial 001
+  implementation, official-source materialization, deterministic offline
+  validation, preflight, documentation, and tests. Do not broaden it into a
+  general framework or production runtime.
+- Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
+  historical blocked-state evidence. Never reinterpret or mutate that v1.0
+  snapshot into an authorization token.
+- Do not execute the real ARC-AGI-2 model/solver trial without a later explicit
+  owner execution authorization and all Decision 0004 preflight gates. Do not
+  start P3/P4, select or call an external provider/model, use third-party ARC
+  data, perform networked trial execution, spend external funds, or build a
+  production runtime.
+- A network fetch, if implemented for the approved `arcprize/ARC-AGI-2`
+  upstream at commit `f3283f727488ad98fe575ea6a5ac981e4a188e49`, must be a
+  deliberate source-materialization command separated from trial execution;
+  default tests and validation remain offline.
 - Treat the conceptual decomposition in the thesis as product responsibilities,
   not as settled services, classes, packages, or deployment boundaries.
 - Record material current decisions under `docs/decisions/`.

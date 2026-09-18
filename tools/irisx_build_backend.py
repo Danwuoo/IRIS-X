@@ -21,7 +21,7 @@ def _metadata() -> bytes:
         "Metadata-Version: 2.4\n"
         "Name: irisx\n"
         f"Version: {VERSION}\n"
-        "Summary: Provider-neutral product contracts, offline qualification, and P2 admission validation for IRIS-X\n"
+        "Summary: Provider-neutral contracts, offline qualification, and bounded ARC-AGI-2 trial evidence for IRIS-X\n"
         "Requires-Python: >=3.11\n"
         "License-Expression: LicenseRef-Proprietary\n"
         "\n"

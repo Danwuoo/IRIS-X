@@ -10,5 +10,9 @@ unless a new decision explicitly re-adopts them.
   adopts the zero-runtime-dependency Python foundation, canonical JSON
   contracts, offline qualification adapter, and closed-world package format.
 - [`0003-record-p2-admission-block.md`](0003-record-p2-admission-block.md)
-  records that P2 has started but is admission-blocked, defines the authorized
-  admission-only scope, and identifies the owner decisions still required.
+  records the historical P2 admission block, defines its admission-only scope,
+  and identifies the owner decisions that were required.
+- [`0004-admit-first-p2-arc-agi-2-engineering-trial.md`](0004-admit-first-p2-arc-agi-2-engineering-trial.md)
+  selects the local/offline ARC-AGI-2 trial, authorizes its bounded repository
+  implementation and preflight work, and keeps the real run behind a separate
+  explicit execution authorization.

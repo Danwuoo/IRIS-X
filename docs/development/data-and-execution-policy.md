@@ -1,8 +1,9 @@
 # Data and Execution Policy
 
-Status: current repository policy through P2 admission. This policy establishes
-safe defaults; it does not authorize a provider, model, dataset, trial, or
-product runtime. Execution work also follows the
+Status: current repository policy through the first P2 trial admission. This
+policy establishes safe defaults; dataset and trial scope require a current
+decision, and provider, model, real trial execution, and product runtime require
+their stated authorization gates. Execution work also follows the
 [`Development Operating Model`](operating-model.md).
 
 ## Secrets and credentials
@@ -41,9 +42,19 @@ product runtime. Execution work also follows the
 ## External execution and budgets
 
 Ordinary P0/P1 validation and the P1 qualification fixture are deterministic and
-offline. P2 admission validation is likewise deterministic and offline. They may inspect local files
-and Git objects but must not call a provider/model, access an external service,
-start paid compute, or transmit domain data.
+offline. Historical P2 admission validation and default Decision 0004 tests,
+validation, and preflight are likewise deterministic and offline. They may
+inspect local files and Git objects but must not call a provider/model, access
+an external service, start paid compute, or transmit domain data.
+
+Decision 0004 permits an implementation to expose one deliberate source-
+materialization command for the approved official `arcprize/ARC-AGI-2`
+upstream at commit `f3283f727488ad98fe575ea6a5ac981e4a188e49`. Any network
+fetch through that command is source acquisition, not trial execution; it must
+remain structurally separate, accept no third-party ARC source, verify the
+pinned identity and per-file digests, and keep raw material local and
+disposable. It does not authorize network access during tests, validation,
+preflight, specialization construction, or the Engineering Trial.
 
 Any external or paid execution requires explicit owner authorization that
 identifies the purpose and scope, provider/model or service, permitted data,
@@ -56,3 +67,9 @@ External execution must use a deliberate command or authorized Engineering
 Trial path separate from default tests and repository validation. Unexpected
 network activity, cost, credential use, or data disclosure is a stop condition
 and must be reported.
+
+For the admitted ARC-AGI-2 Trial 001, external provider use, networked trial
+execution, and external paid execution are prohibited, and the maximum external
+paid-execution budget is USD 0. The real local model/solver run still requires
+the separate explicit owner authorization and passed preflight required by
+Decision 0004.

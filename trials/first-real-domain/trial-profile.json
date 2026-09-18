@@ -1,0 +1,33 @@
+{
+  "acceptance": {
+    "absolute_arc_score_improvement": 0.05,
+    "all_hard_requirements": true
+  },
+  "authority": {
+    "content_digest": "sha256:1fa8dac045964b5afd00b1ee8295f2b2457397a894bc7e628e777a9d1d570510",
+    "path": "docs/decisions/0004-admit-first-p2-arc-agi-2-engineering-trial.md"
+  },
+  "baseline_candidate_difference": "prompts_programs only",
+  "domain": "ARC-AGI-2",
+  "evaluation": {
+    "attempts_per_test_input": 2,
+    "expected_task_count": 120,
+    "frozen": true,
+    "segment": "public_eval",
+    "split": "official public evaluation"
+  },
+  "execution": {
+    "external_paid_budget_usd": 0,
+    "network": false,
+    "provider": false,
+    "run_authorized": false
+  },
+  "schema": "irisx/arc-agi-2-static-trial-profile",
+  "source": {
+    "commit": "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+    "repository": "arcprize/ARC-AGI-2",
+    "training_split": "official public training"
+  },
+  "trial_id": "arc-agi-2-trial-001",
+  "version": "1.0.0"
+}

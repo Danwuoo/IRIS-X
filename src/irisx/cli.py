@@ -1,4 +1,4 @@
-"""IRIS-X provider-neutral contract and admission command-line interface."""
+"""IRIS-X contract, admission, and bounded trial command-line interface."""
 
 from __future__ import annotations
 
@@ -7,6 +7,18 @@ from pathlib import Path
 import sys
 
 from .admission import admission_summary, validate_admission_file
+from .arc_agi_2 import (
+    build_p2_package,
+    materialize_source,
+    preflight_trial as preflight_arc_trial,
+    prepare_trial as prepare_arc_trial,
+    select_run as select_arc_run,
+    validate_run_results as validate_arc_results,
+    validate_source as validate_arc_source,
+    validate_trial_bundle as validate_arc_trial,
+    verify_p2_package,
+)
+from .artifacts import write_artifact
 from .errors import IrisxError, ValidationError
 from .fixture import prepare_fixture, run_trial, validate_specification, validate_trial
 from .package import build_package, verify_package
@@ -17,7 +29,10 @@ def _path(value: str) -> Path:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="irisx", description="IRIS-X offline product-contract and admission CLI")
+    parser = argparse.ArgumentParser(
+        prog="irisx",
+        description="IRIS-X product-contract, admission, and bounded trial evidence CLI",
+    )
     subcommands = parser.add_subparsers(dest="command", required=True)
 
     fixture = subcommands.add_parser("fixture", help="manage the synthetic offline qualification fixture")
@@ -50,6 +65,45 @@ def build_parser() -> argparse.ArgumentParser:
     admission_sub = admission.add_subparsers(dest="admission_command", required=True)
     admission_validate = admission_sub.add_parser("validate", help="validate the blocked P2 admission snapshot")
     admission_validate.add_argument("path", type=_path)
+
+    arc = subcommands.add_parser("arc-agi-2", help="manage the bounded local/offline ARC-AGI-2 Trial 001 path")
+    arc_sub = arc.add_subparsers(dest="arc_command", required=True)
+    arc_source = arc_sub.add_parser("source", help="official pinned-source operations")
+    arc_source_sub = arc_source.add_subparsers(dest="source_command", required=True)
+    arc_materialize = arc_source_sub.add_parser(
+        "materialize",
+        help="deliberately acquire only the fixed official repository and commit (networked source acquisition)",
+    )
+    arc_materialize.add_argument("--output", required=True, type=_path)
+    arc_source_validate = arc_source_sub.add_parser("validate", help="validate the preserved source offline")
+    arc_source_validate.add_argument("path", type=_path)
+
+    arc_trial = arc_sub.add_parser("trial", help="prepare and validate Trial 001 without executing a solver")
+    arc_trial_sub = arc_trial.add_subparsers(dest="arc_trial_command", required=True)
+    arc_prepare = arc_trial_sub.add_parser("prepare", help="build isolated views and the existing P1 contract graph offline")
+    arc_prepare.add_argument("--source", required=True, type=_path)
+    arc_prepare.add_argument("--output", required=True, type=_path)
+    arc_validate = arc_trial_sub.add_parser("validate", help="validate contracts, isolation, identity, and evaluator bindings offline")
+    arc_validate.add_argument("path", type=_path)
+    arc_preflight = arc_trial_sub.add_parser("preflight", help="fail closed unless every technical and owner-authorization gate passes")
+    arc_preflight.add_argument("path", type=_path)
+    arc_preflight.add_argument("--output", type=_path)
+
+    arc_result = arc_sub.add_parser("result", help="future result-evidence operations; never executes a model or solver")
+    arc_result_sub = arc_result.add_subparsers(dest="result_command", required=True)
+    arc_result_validate = arc_result_sub.add_parser("validate", help="independently recompute and validate stored result evidence")
+    arc_result_validate.add_argument("path", type=_path)
+
+    arc_select = arc_sub.add_parser("select", help="recompute generic selection and the separate P2 acceptance gate")
+    arc_select.add_argument("path", type=_path)
+
+    arc_package = arc_sub.add_parser("package", help="P2 package operations")
+    arc_package_sub = arc_package.add_subparsers(dest="arc_package_command", required=True)
+    arc_package_build = arc_package_sub.add_parser("build", help="build a P2 package only from accepted, preflighted evidence")
+    arc_package_build.add_argument("--run", required=True, type=_path)
+    arc_package_build.add_argument("--output", required=True, type=_path)
+    arc_package_verify = arc_package_sub.add_parser("verify", help="independently verify a closed-world P2 package")
+    arc_package_verify.add_argument("path", type=_path)
     return parser
 
 
@@ -78,6 +132,46 @@ def execute(args: argparse.Namespace) -> str:
             f"valid P2 admission: {summary['status']} "
             f"({len(summary['unresolved_gates'])} unresolved gates; execution/promotion/package ineligible)"
         )
+    if args.command == "arc-agi-2" and args.arc_command == "source":
+        if args.source_command == "materialize":
+            source = materialize_source(args.output)
+            return f"materialized pinned official ARC-AGI-2 source: {source['payload']['head_commit']}"
+        if args.source_command == "validate":
+            source = validate_arc_source(args.path)
+            return f"valid pinned official ARC-AGI-2 source: {source['content_digest']}"
+    if args.command == "arc-agi-2" and args.arc_command == "trial":
+        if args.arc_trial_command == "prepare":
+            trial = prepare_arc_trial(args.source, args.output)
+            return f"prepared offline ARC-AGI-2 Trial 001: {trial.content_digest}"
+        if args.arc_trial_command == "validate":
+            trial = validate_arc_trial(args.path)
+            return f"valid offline ARC-AGI-2 Trial 001: {trial.content_digest}"
+        if args.arc_trial_command == "preflight":
+            report = preflight_arc_trial(args.path)
+            if args.output is not None:
+                write_artifact(args.output, report)
+            if not report["payload"]["ready"]:
+                raise ValidationError(
+                    "ARC-AGI-2 Trial 001 preflight blocked: "
+                    + ", ".join(report["payload"]["blockers"])
+                )
+            return f"ARC-AGI-2 Trial 001 preflight ready: {report['content_digest']}"
+    if args.command == "arc-agi-2" and args.arc_command == "result" and args.result_command == "validate":
+        baseline, candidate = validate_arc_results(args.path)
+        return f"valid ARC-AGI-2 result evidence: {baseline.content_digest} {candidate.content_digest}"
+    if args.command == "arc-agi-2" and args.arc_command == "select":
+        decision, acceptance = select_arc_run(args.path)
+        return (
+            f"ARC-AGI-2 selection: {decision.payload['outcome']}; "
+            f"P2 accepted={str(acceptance['payload']['accepted']).lower()}"
+        )
+    if args.command == "arc-agi-2" and args.arc_command == "package":
+        if args.arc_package_command == "build":
+            manifest = build_p2_package(args.run, args.output)
+            return f"built verified ARC-AGI-2 Domain Package: {manifest.content_digest}"
+        if args.arc_package_command == "verify":
+            manifest = verify_p2_package(args.path)
+            return f"verified ARC-AGI-2 Domain Package: {manifest.content_digest}"
     raise ValidationError("unsupported command")
 
 

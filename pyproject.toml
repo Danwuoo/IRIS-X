@@ -6,7 +6,7 @@ backend-path = ["tools"]
 [project]
 name = "irisx"
 version = "0.2.0"
-description = "Provider-neutral product contracts, offline qualification, and P2 admission validation for IRIS-X"
+description = "Provider-neutral contracts, offline qualification, and bounded ARC-AGI-2 trial evidence for IRIS-X"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Proprietary"}

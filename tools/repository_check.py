@@ -48,8 +48,10 @@ REQUIRED_PATHS = {
     "docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md",
     "docs/decisions/0002-adopt-p1-contract-and-serialization-foundation.md",
     "docs/decisions/0003-record-p2-admission-block.md",
+    "docs/decisions/0004-admit-first-p2-arc-agi-2-engineering-trial.md",
     "docs/decisions/README.md",
     "docs/development/data-and-execution-policy.md",
+    "docs/development/arc-agi-2-trial-001.md",
     "docs/development/operating-model.md",
     "docs/development/README.md",
     "docs/product/non-goals.md",
@@ -63,6 +65,7 @@ REQUIRED_PATHS = {
     "src/irisx/__init__.py",
     "src/irisx/__main__.py",
     "src/irisx/admission.py",
+    "src/irisx/arc_agi_2.py",
     "src/irisx/artifacts.py",
     "src/irisx/bindings.py",
     "src/irisx/bundle.py",
@@ -76,6 +79,7 @@ REQUIRED_PATHS = {
     "tests/README.md",
     "tests/support.py",
     "tests/test_admission.py",
+    "tests/test_arc_agi_2.py",
     "tests/test_contracts.py",
     "tests/test_engine.py",
     "tests/test_reference_flow.py",
@@ -86,6 +90,8 @@ REQUIRED_PATHS = {
     "trials/README.md",
     "trials/p2-admission/README.md",
     "trials/p2-admission/admission.json",
+    "trials/first-real-domain/README.md",
+    "trials/first-real-domain/trial-profile.json",
 }
 
 ALLOWED_TOP_LEVEL_FILES = {
@@ -269,6 +275,14 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "offline",
             "external or paid execution",
         ),
+        "docs/development/arc-agi-2-trial-001.md": (
+            "Networked source acquisition",
+            "All remaining commands are offline",
+            "exactly two",
+            "0.05",
+            "There is deliberately no real-run command",
+            "Official README discrepancy",
+        ),
         "docs/product/contracts.md": (
             "Measurement units",
             "critical_failure",
@@ -290,6 +304,18 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "mutually exclusive",
             "admitted or executed",
             "No network/provider/paid/sensitive-data execution",
+        ),
+        "docs/decisions/0004-admit-first-p2-arc-agi-2-engineering-trial.md": (
+            "Status: Accepted",
+            "ARC-AGI-2",
+            "arcprize/ARC-AGI-2",
+            "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+            "official public training split",
+            "official public evaluation split",
+            "third-party ARC data",
+            "USD 0",
+            "candidate ARC score - baseline ARC score >= 0.05",
+            "separate explicit owner authorization",
         ),
         "docs/product/p2-admission.md": (
             "admission_blocked",
@@ -320,6 +346,29 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
         text = (root / path).read_text(encoding="utf-8")
         for claim in stale_claims:
             add(claim not in text, f"stale authority claim in {path}: {claim}", issues)
+
+    current_authority_terms = {
+        "AGENTS.md": (
+            "Decision 0004",
+            "ARC-AGI-2",
+            "separate explicit owner authorization",
+            "historical blocked-state evidence",
+        ),
+        "README.md": (
+            "Decision 0004",
+            "ARC-AGI-2",
+            "separate explicit owner authorization",
+        ),
+        "docs/repository-layout.md": (
+            "Decision 0004",
+            "ARC-AGI-2",
+            "real run requires a separate explicit owner authorization",
+        ),
+    }
+    for path, terms in current_authority_terms.items():
+        text = (root / path).read_text(encoding="utf-8")
+        for term in terms:
+            add(term in text, f"{path} is missing current authority term: {term}", issues)
 
     for path in sorted(tracked):
         if Path(path).suffix.lower() in EXECUTABLE_SUFFIXES:
@@ -470,10 +519,27 @@ def validate(root: Path) -> list[str]:
     try:
         sys.path.insert(0, str(root / "src"))
         from irisx.admission import validate_admission_file
+        from irisx.arc_agi_2 import (
+            DECISION_PATH,
+            DECISION_SHA256,
+            EVALUATION_TASK_COUNT,
+            OFFICIAL_REPOSITORY,
+            PINNED_COMMIT,
+            TRAINING_TASK_COUNT,
+        )
 
         validate_admission_file(root / "trials/p2-admission/admission.json", root)
+        profile = json.loads((root / "trials/first-real-domain/trial-profile.json").read_text(encoding="utf-8"))
+        add(profile.get("domain") == "ARC-AGI-2", "ARC-AGI-2 static profile domain mismatch", issues)
+        add(profile.get("source", {}).get("repository") == OFFICIAL_REPOSITORY, "ARC-AGI-2 static profile repository mismatch", issues)
+        add(profile.get("source", {}).get("commit") == PINNED_COMMIT, "ARC-AGI-2 static profile commit mismatch", issues)
+        add(profile.get("evaluation", {}).get("expected_task_count") == EVALUATION_TASK_COUNT, "ARC-AGI-2 static profile evaluation count mismatch", issues)
+        add(TRAINING_TASK_COUNT == 1000, "ARC-AGI-2 implementation training count mismatch", issues)
+        add(profile.get("authority") == {"path": DECISION_PATH, "content_digest": DECISION_SHA256}, "ARC-AGI-2 static profile authority mismatch", issues)
+        decision_digest = "sha256:" + sha256((root / DECISION_PATH).read_bytes())
+        add(decision_digest == DECISION_SHA256, "ARC-AGI-2 Decision 0004 byte identity mismatch", issues)
     except Exception as exc:  # validator must report rather than crash on admission corruption
-        issues.append(f"P2 admission package validation failed: {exc}")
+        issues.append(f"P2 admission or ARC-AGI-2 profile validation failed: {exc}")
     return issues
 
 

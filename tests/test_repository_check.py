@@ -53,6 +53,19 @@ class RepositoryCheckTests(unittest.TestCase):
         ):
             self.assertIn(term, policy)
 
+    def test_decision_0004_is_current_authority_without_run_authorization(self) -> None:
+        decision = (
+            ROOT / "docs/decisions/0004-admit-first-p2-arc-agi-2-engineering-trial.md"
+        ).read_text(encoding="utf-8")
+        for term in (
+            "Status: Accepted",
+            "ARC-AGI-2",
+            "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+            "candidate ARC score - baseline ARC score >= 0.05",
+            "separate explicit owner authorization",
+        ):
+            self.assertIn(term, decision)
+
     def test_p0_archive_identities_are_unchanged(self) -> None:
         self.assertEqual(REPOSITORY_CHECK.ARCHIVE_TAG, "archive/pre-product-transition-2026-09-17")
         self.assertEqual(REPOSITORY_CHECK.TAG_OBJECT, "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d")

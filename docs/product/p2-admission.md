@@ -1,7 +1,9 @@
 # P2 Admission Contract
 
-Status: current, admission-blocked under
-[`Decision 0003`](../decisions/0003-record-p2-admission-block.md).
+Status: historical blocked snapshot under
+[`Decision 0003`](../decisions/0003-record-p2-admission-block.md), retained by
+current
+[`Decision 0004`](../decisions/0004-admit-first-p2-arc-agi-2-engineering-trial.md).
 
 ## Purpose
 
@@ -16,17 +18,21 @@ Domain Specification
 → versioned Domain Package
 ```
 
-The repository does not yet contain the owner approvals or real evidence needed
-to run that slice. The tracked admission package makes those omissions explicit
-without manufacturing trial results or changing the provider-neutral P1
-contracts.
+At the time of Decision 0003, the repository did not contain the owner approvals
+or real evidence needed to run that slice. The tracked admission package makes
+those historical omissions explicit without manufacturing trial results or
+changing the provider-neutral P1 contracts. Decision 0004 later selected the
+local/offline ARC-AGI-2 path and resolved the policy choices needed to begin its
+bounded repository implementation, but did not rewrite this snapshot or
+authorize a real model/solver run.
 
 ## Admission snapshot
 
 [`trials/p2-admission/admission.json`](../../trials/p2-admission/admission.json)
 uses the `irisx/p2-admission` schema version `1.0`. It is a strict,
-digest-bound snapshot with exact local authority-file hashes. Its validator
-checks:
+digest-bound snapshot with exact captured authority-file hashes. Its validator
+keeps Decisions 0001–0003 and `PRODUCT_THESIS.md` byte-bound while recognizing
+that current `AGENTS.md` is superseded by Decision 0004. It checks:
 
 - the current `admission_blocked` state and admission-only scope;
 - the exact, mutually exclusive owner options;
@@ -46,8 +52,8 @@ Validate it offline from the repository root:
 python -m irisx admission validate trials/p2-admission/admission.json
 ```
 
-A valid result confirms that the block is represented consistently. It does
-not admit or run a trial.
+A valid result confirms that the historical block is represented consistently.
+It does not supersede Decision 0004, admit a second trial, or authorize a run.
 
 ## Admission rule
 
@@ -56,9 +62,9 @@ execution, promotion, and Domain Package eligibility to remain false. This
 prevents a re-signed edit from converting the current decision snapshot into
 authorization.
 
-After a later owner decision resolves the required inputs, record that scope
-in a new decision, create the real artifacts under the reserved trial
-directory, validate their exact P1 contract bindings, and only then implement a
-deliberate real-trial execution path. Synthetic fixtures, missing provenance or
-rights, stale references, an unnamed provider/model, or an absent budget can
-never satisfy P2 admission.
+Decision 0004 is the later owner decision for the selected local/offline path.
+It authorizes creation of real artifacts under the reserved trial directory and
+a deliberate implementation and preflight path with exact P1 contract
+bindings. Synthetic fixtures, missing provenance or rights, stale references,
+an unbound local model/solver, or an absent execution envelope can never satisfy
+its run preflight. Real execution remains separately authorization-gated.
