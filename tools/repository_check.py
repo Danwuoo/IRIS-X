@@ -48,7 +48,10 @@ REQUIRED_PATHS = {
     "docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md",
     "docs/decisions/0002-adopt-p1-contract-and-serialization-foundation.md",
     "docs/decisions/0003-record-p2-admission-block.md",
+    "docs/decisions/0004-admit-first-p2-arc-agi-2-engineering-trial.md",
+    "docs/decisions/0005-authorize-kaggle-offline-handoff-for-arc-agi-2-trial-001.md",
     "docs/decisions/README.md",
+    "docs/development/arc-agi-2-kaggle-handoff.md",
     "docs/development/data-and-execution-policy.md",
     "docs/development/operating-model.md",
     "docs/development/README.md",
@@ -63,6 +66,8 @@ REQUIRED_PATHS = {
     "src/irisx/__init__.py",
     "src/irisx/__main__.py",
     "src/irisx/admission.py",
+    "src/irisx/arc_agi2.py",
+    "src/irisx/arc_package.py",
     "src/irisx/artifacts.py",
     "src/irisx/bindings.py",
     "src/irisx/bundle.py",
@@ -72,18 +77,27 @@ REQUIRED_PATHS = {
     "src/irisx/engine.py",
     "src/irisx/errors.py",
     "src/irisx/fixture.py",
+    "src/irisx/kaggle.py",
+    "src/irisx/kaggle_runner.py",
     "src/irisx/package.py",
+    "src/irisx/transport.py",
     "tests/README.md",
+    "tests/arc_support.py",
     "tests/support.py",
     "tests/test_admission.py",
+    "tests/test_arc_agi2.py",
     "tests/test_contracts.py",
     "tests/test_engine.py",
     "tests/test_reference_flow.py",
     "tests/test_repository_check.py",
+    "tests/test_kaggle_handoff.py",
+    "tests/test_transport.py",
     "tools/README.md",
     "tools/irisx_build_backend.py",
     "tools/repository_check.py",
     "trials/README.md",
+    "trials/first-real-domain/README.md",
+    "trials/first-real-domain/kaggle-notebook.ipynb",
     "trials/p2-admission/README.md",
     "trials/p2-admission/admission.json",
 }
@@ -291,6 +305,36 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "admitted or executed",
             "No network/provider/paid/sensitive-data execution",
         ),
+        "docs/decisions/0004-admit-first-p2-arc-agi-2-engineering-trial.md": (
+            "Status: Accepted",
+            "ARC-AGI-2",
+            "arcprize/ARC-AGI-2",
+            "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+            "official public training split",
+            "official public evaluation split",
+            "third-party ARC data",
+            "USD 0",
+            "candidate ARC score - baseline ARC score >= 0.05",
+            "separate explicit owner authorization",
+        ),
+        "docs/decisions/0005-authorize-kaggle-offline-handoff-for-arc-agi-2-trial-001.md": (
+            "Status: Accepted",
+            "Qwen/Qwen3.8-27B",
+            "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+            "NVIDIA RTX PRO 6000 96 GB",
+            "trial-input.zip",
+            "result-package.zip",
+            "network-disabled",
+            "separate explicit owner authorization",
+        ),
+        "docs/development/arc-agi-2-kaggle-handoff.md": (
+            "manual",
+            "private",
+            "Evaluator truth",
+            "quarantine",
+            "run_authorized: false",
+            "local scoring",
+        ),
         "docs/product/p2-admission.md": (
             "admission_blocked",
             "Unknown",
@@ -320,6 +364,33 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
         text = (root / path).read_text(encoding="utf-8")
         for claim in stale_claims:
             add(claim not in text, f"stale authority claim in {path}: {claim}", issues)
+
+    current_authority_terms = {
+        "AGENTS.md": (
+            "Decision 0004",
+            "Decision 0005",
+            "ARC-AGI-2",
+            "Qwen/Qwen3.8-27B",
+            "separate explicit owner authorization",
+            "historical blocked-state evidence",
+        ),
+        "README.md": (
+            "Decision 0004",
+            "Decision 0005",
+            "ARC-AGI-2",
+            "separate explicit owner authorization",
+        ),
+        "docs/repository-layout.md": (
+            "Decision 0004",
+            "Decision 0005",
+            "ARC-AGI-2",
+            "real run requires a separate explicit owner authorization",
+        ),
+    }
+    for path, terms in current_authority_terms.items():
+        text = (root / path).read_text(encoding="utf-8")
+        for term in terms:
+            add(term in text, f"{path} is missing current authority term: {term}", issues)
 
     for path in sorted(tracked):
         if Path(path).suffix.lower() in EXECUTABLE_SUFFIXES:

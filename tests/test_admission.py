@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import hashlib
 import io
 from pathlib import Path
 import unittest
@@ -37,6 +38,14 @@ class AdmissionTests(unittest.TestCase):
         self.assertFalse(summary["execution_eligible"])
         self.assertFalse(summary["promotion_eligible"])
         self.assertFalse(summary["domain_package_eligible"])
+
+    def test_historical_snapshot_does_not_claim_current_agents_bytes(self) -> None:
+        current_agents = (ROOT / "AGENTS.md").read_bytes()
+        self.assertNotEqual(
+            self.value["payload"]["authority_refs"][0]["content_digest"],
+            "sha256:" + hashlib.sha256(current_agents).hexdigest(),
+        )
+        validate_admission_file(ADMISSION, ROOT)
 
     def test_external_execution_cannot_be_self_authorized(self) -> None:
         changed = copy.deepcopy(self.value)

@@ -1,6 +1,6 @@
 # Development Operating Model
 
-Status: current repository policy through P2 admission. See the current
+Status: current repository policy through the Decision 0005 Kaggle handoff. See the current
 [`Product Scope`](../product/product-scope.md) and
 [`Data and Execution Policy`](data-and-execution-policy.md).
 
@@ -42,8 +42,15 @@ negative result to product engineering; it does not create an indefinite
 parallel program by default.
 
 P1 implements the contract and offline qualification foundation described in
-Decision 0002. Decision 0003 authorizes only the P2 admission package and its
-offline validation. The first real domain, provider/model, backend, budget,
-deployment form, production runtime, and detailed architecture remain
-undecided. A real P2 trial is not authorized by the presence of P1 contracts,
-fixture artifacts, or the admission package.
+Decision 0002. Decision 0003 and its admission package remain historical
+blocked-state evidence. Decision 0004 selects a bounded local/offline
+ARC-AGI-2 trial and authorizes its repository implementation, official-source
+materialization, offline validation, and preflight work. The concrete local
+model package and execution envelope remain preflight-gated. Decision 0005
+binds the frozen Qwen revision and selects a manual, private-Dataset,
+network-disabled Kaggle notebook on one NVIDIA RTX PRO 6000 96 GB; it leaves
+production runtime and detailed architecture undecided. A real P2 model run is not
+authorized by the presence of P1 contracts, fixture artifacts, the historical
+admission package, or the implementation alone; it requires the separate
+explicit authorization and passed preflight specified in Decisions 0004 and
+0005.

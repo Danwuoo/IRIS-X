@@ -30,6 +30,13 @@ AUTHORITY_PATHS = (
     "docs/decisions/0002-adopt-p1-contract-and-serialization-foundation.md",
     "docs/decisions/0003-record-p2-admission-block.md",
 )
+SNAPSHOT_AUTHORITY_DIGESTS = (
+    "sha256:682fcd3b7c32ac5cd376460cadff2e24abfdab90b5b419b2ab9420d0298ed965",
+    "sha256:373105e33a500c821ea7ca1f5d45a077ec2d6f381250cf79859cbfa6a83d7a63",
+    "sha256:1157b4136472483adcfc42b8aa0dea2e2e0d191a54189017b35a07c3661aff39",
+    "sha256:eff9e3e5d22f2f24b685cd91334f3b1d511c35927a9d8f851c8be12e63b78624",
+    "sha256:dc5da87f600d5a0b6ac6e5528f63f8abdca9ea7f98954963f74ac1973e0f624b",
+)
 DECISION_OPTIONS = (
     "local-offline-real-domain",
     "authorized-external-provider",
@@ -135,13 +142,37 @@ def _validate_unknown_ref(value: Any, path: str, kind: str) -> None:
 
 
 def _validate_authority_refs(value: Any, repository_root: Path) -> None:
+    """Validate the immutable Decision 0003 authority snapshot.
+
+    Decision 0004 intentionally supersedes the active blocked state without
+    rewriting this historical v1.0 artifact. These references therefore bind
+    the authority bytes captured by Decision 0003, not the evolving active
+    files at the same logical paths.
+    """
+
     refs = _list(value, "$.payload.authority_refs")
-    paths: list[str] = []
-    for index, ref in enumerate(refs):
-        _validate_file_ref(ref, f"$.payload.authority_refs[{index}]", repository_root)
-        paths.append(ref["path"])
-    if tuple(paths) != AUTHORITY_PATHS:
+    expected = tuple(zip(AUTHORITY_PATHS, SNAPSHOT_AUTHORITY_DIGESTS, strict=True))
+    if len(refs) != len(expected):
         _fail("$.payload.authority_refs", f"must list the exact ordered authority set {list(AUTHORITY_PATHS)}")
+    for index, ref in enumerate(refs):
+        path = f"$.payload.authority_refs[{index}]"
+        obj = _object(ref, path)
+        _exact(obj, {"path", "content_digest"}, path)
+        logical_path = validate_logical_path(obj["path"], f"{path}.path")
+        digest = _string(obj["content_digest"], f"{path}.content_digest")
+        if not DIGEST_RE.fullmatch(digest):
+            _fail(f"{path}.content_digest", "must be a lowercase sha256:<64 hex> digest")
+        expected_path, expected_digest = expected[index]
+        if logical_path != expected_path:
+            _fail("$.payload.authority_refs", f"must list the exact ordered authority set {list(AUTHORITY_PATHS)}")
+        if digest != expected_digest:
+            _fail(f"{path}.content_digest", "stale or wrong authority reference")
+        # Decision 0004 legitimately updates AGENTS.md while preserving every
+        # other authority artifact captured by Decision 0003 byte-for-byte.
+        if expected_path != "AGENTS.md":
+            target = repository_root.joinpath(*expected_path.split("/"))
+            if not target.is_file() or digest_bytes(target.read_bytes()) != expected_digest:
+                _fail(f"{path}.content_digest", "stale or wrong authority reference")
 
 
 def _validate_decision_options(value: Any) -> None:

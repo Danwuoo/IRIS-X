@@ -11,10 +11,12 @@ documentation is:
   semantics;
 - [`domain-package.md`](domain-package.md) defines the P1 package layout and
   independent verification boundary.
-- [`p2-admission.md`](p2-admission.md) defines the blocked first-real-domain
-  admission snapshot, owner decision gates, and offline validator.
+- [`p2-admission.md`](p2-admission.md) defines the historical blocked
+  first-real-domain snapshot, its offline validator, and its relationship to
+  current Decisions 0004 and 0005.
 
-P1 contracts remain provider- and technique-neutral. P2 has started only at
-the admission layer and remains blocked under Decision 0003. A later authorized
-real domain must adapt to these contracts without treating fixture details as
-architecture.
+P1 contracts remain provider- and technique-neutral. Decision 0004 admits the
+bounded ARC-AGI-2 Trial 001 implementation, and Decision 0005 narrowly selects
+the frozen Qwen revision and manual network-disabled Kaggle venue, without treating
+fixture details as architecture. Real model/solver execution remains separately
+authorization-gated.

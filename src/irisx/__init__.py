@@ -1,4 +1,4 @@
-"""IRIS-X product contracts, qualification flow, and P2 admission checks."""
+"""IRIS-X contracts, offline qualification, and admitted ARC trial tooling."""
 
 from .admission import admission_summary, validate_admission_file
 from .contracts import (
