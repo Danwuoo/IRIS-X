@@ -24,3 +24,7 @@ unless a new decision explicitly re-adopts them.
   supersedes the model ZIP transport with a provenance-bound unpacked model
   Dataset used directly from Kaggle's read-only input mount. It does not
   authorize the real run.
+- [`0007-bind-kaggle-extracted-trial-dataset.md`](0007-bind-kaggle-extracted-trial-dataset.md)
+  adapts the notebook to Kaggle's extracted Trial Dataset mount and binds
+  returned results to the verified trial manifest rather than unavailable ZIP
+  container bytes. It does not authorize the real run.

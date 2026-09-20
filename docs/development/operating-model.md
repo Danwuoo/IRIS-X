@@ -1,6 +1,6 @@
 # Development Operating Model
 
-Status: current repository policy through the Decision 0006 raw-model Kaggle handoff. See the current
+Status: current repository policy through the Decision 0007 extracted-trial Kaggle handoff. See the current
 [`Product Scope`](../product/product-scope.md) and
 [`Data and Execution Policy`](data-and-execution-policy.md).
 

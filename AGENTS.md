@@ -23,6 +23,9 @@ manual, private-Dataset, network-disabled Kaggle handoff on one NVIDIA RTX PRO
 authorize the real run. Decision 0006 supersedes only the model ZIP transport:
 the active path uses the unpacked, provenance-bound model tree directly from
 the private Kaggle Dataset. It also does not authorize the real run.
+Decision 0007 binds Kaggle's extracted trial Dataset at
+`/kaggle/input/datasets/danielwuu/trial-input` and uses its verified manifest
+digest as the returned-result identity. It also does not authorize the real run.
 
 ## Authority order
 
@@ -62,7 +65,7 @@ paths. Do not recreate a legacy root merely to preserve history.
 ## Working rules
 
 - Keep current P2 work within Decision 0004 as narrowly amended by Decisions
-  0005 and 0006: the minimum ARC-AGI-2 Trial 001 implementation, official
+  0005, 0006, and 0007: the minimum ARC-AGI-2 Trial 001 implementation, official
   source and raw-model materialization, manual Kaggle handoff, deterministic
   offline validation, quarantine import, local evaluation, preflight,
   documentation, and tests. Do not broaden it into a general framework or
@@ -71,7 +74,7 @@ paths. Do not recreate a legacy root merely to preserve history.
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.
 - Do not execute the real ARC-AGI-2 model/solver trial without a later explicit
-  owner execution authorization and all Decision 0004/0005/0006 preflight gates. Do
+  owner execution authorization and all Decision 0004/0005/0006/0007 preflight gates. Do
   not start P3/P4, call an external model provider, use third-party ARC data,
   enable notebook Internet during measured execution, automate Kaggle
   credentials or transport, spend external funds, fine-tune the selected model,

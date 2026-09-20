@@ -291,7 +291,7 @@ def _prediction_document(
     }
 
 
-def execute(trial_root: Path, model_root: Path, output: Path, trial_package_digest: str) -> None:
+def execute(trial_root: Path, model_root: Path, output: Path, trial_manifest_digest: str) -> None:
     working = Path("/kaggle/working").resolve()
     kaggle_input = Path("/kaggle/input").resolve()
     if not trial_root.resolve().is_relative_to(working):
@@ -381,7 +381,7 @@ def execute(trial_root: Path, model_root: Path, output: Path, trial_package_dige
         "package_id": binding["run_id"],
         "files": entries,
         "metadata": {
-            "trial_package_digest": trial_package_digest,
+            "trial_manifest_digest": trial_manifest_digest,
             "model_source_provenance_digest": binding["model_source_provenance_digest"],
             "model_dataset": binding["model_dataset"],
             "bundle_id": binding["bundle_id"],
@@ -410,9 +410,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--trial-root", required=True, type=Path)
     parser.add_argument("--model-root", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
-    parser.add_argument("--trial-package-digest", required=True)
+    parser.add_argument("--trial-manifest-digest", required=True)
     args = parser.parse_args(argv)
-    execute(args.trial_root, args.model_root, args.output, args.trial_package_digest)
+    execute(args.trial_root, args.model_root, args.output, args.trial_manifest_digest)
     return 0
 
 

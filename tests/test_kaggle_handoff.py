@@ -29,6 +29,7 @@ from irisx.kaggle import (
     create_model_provenance,
     evaluate_imported_run,
     import_quarantine,
+    outbound_manifest_digest,
     preflight,
     verify_outbound_package,
     verify_result_package,
@@ -63,10 +64,10 @@ class KaggleHandoffTests(unittest.TestCase):
         self.temporary.cleanup()
 
     def _result_metadata(self) -> dict:
-        outbound_manifest, outbound_digest = verify_outbound_package(self.outbound)
+        outbound_manifest, _ = verify_outbound_package(self.outbound)
         metadata = outbound_manifest["metadata"]
         return {
-            "trial_package_digest": outbound_digest,
+            "trial_manifest_digest": outbound_manifest_digest(outbound_manifest),
             "model_source_provenance_digest": metadata["model"]["source_provenance_digest"],
             "model_dataset": metadata["model_dataset"],
             "bundle_id": outbound_manifest["package_id"],
@@ -98,7 +99,8 @@ class KaggleHandoffTests(unittest.TestCase):
         runner = (ROOT / "src/irisx/kaggle_runner.py").read_text(encoding="utf-8")
         for term in ("/kaggle/input", "/kaggle/working", "NVIDIA RTX PRO 6000", "local_files_only=True", "TRANSFORMERS_OFFLINE"):
             self.assertIn(term, notebook + runner)
-        self.assertIn("Enter the preflight-bound trial-input.zip", notebook)
+        self.assertIn("/kaggle/input/datasets/danielwuu/trial-input", notebook)
+        self.assertIn("verify_and_copy_mounted_trial", notebook)
         self.assertIn("model-source-provenance", notebook + runner)
         self.assertIn("INPUT / 'datasets'", notebook)
         self.assertNotIn("model-package.zip", notebook + runner)

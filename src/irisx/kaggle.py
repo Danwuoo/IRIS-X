@@ -111,6 +111,12 @@ def _json_from_bytes(data: bytes, path: str) -> Any:
     return value
 
 
+def outbound_manifest_digest(manifest: dict[str, Any]) -> str:
+    """Identify extracted trial content independently of its ZIP container bytes."""
+
+    return digest_bytes(_json_bytes(manifest))
+
+
 def _regular_files(root: Path) -> list[Path]:
     paths: list[Path] = []
     for path in root.rglob("*"):
@@ -681,7 +687,7 @@ def verify_result_package(
     metadata = manifest["metadata"]
     outbound_meta = outbound_manifest["metadata"]
     expected = {
-        "trial_package_digest": outbound_digest,
+        "trial_manifest_digest": outbound_manifest_digest(outbound_manifest),
         "model_source_provenance_digest": outbound_meta["model"]["source_provenance_digest"],
         "model_dataset": outbound_meta["model_dataset"],
         "bundle_id": outbound_manifest["package_id"],
@@ -751,7 +757,7 @@ def import_quarantine(
                 "format_version": "1.0",
                 "run_id": run_id,
                 "quarantine_package_digest": result_digest,
-                "trial_package_digest": manifest["metadata"]["trial_package_digest"],
+                "trial_manifest_digest": manifest["metadata"]["trial_manifest_digest"],
                 "status": "validated-and-normalized",
             },
         )
@@ -922,6 +928,9 @@ def preflight(
             "authorization_blockers": ["separate explicit owner real-run authorization is absent"],
             "model_source_provenance_digest": model_provenance_digest,
             "trial_package_digest": outbound_digest,
+            "trial_manifest_digest": (
+                outbound_manifest_digest(outbound_manifest) if outbound_manifest is not None else None
+            ),
             "bindings": binding,
         },
     )

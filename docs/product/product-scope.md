@@ -1,6 +1,6 @@
 # Product Scope
 
-Status: current product policy through the Decision 0006 raw-model Kaggle handoff, grounded in
+Status: current product policy through the Decision 0007 extracted-trial Kaggle handoff, grounded in
 [`PRODUCT_THESIS.md`](../../PRODUCT_THESIS.md) and
 [`Decision 0001`](../decisions/0001-adopt-product-oriented-domain-ai-specialization.md),
 with the bounded trial scope selected by
@@ -9,6 +9,7 @@ with the bounded trial scope selected by
 Decision 0005 changes only the Trial 001 execution venue, manual transport, and
 frozen model binding. Decision 0006 changes its active representation from a
 ZIP archive to a provenance-bound unpacked model tree.
+Decision 0007 binds the extracted trial Dataset tree by its canonical manifest.
 
 ## Product boundary
 

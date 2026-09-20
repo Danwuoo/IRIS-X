@@ -1,6 +1,6 @@
 # ARC-AGI-2 Trial 001 Kaggle handoff
 
-Status: active under Decisions 0004, 0005, and 0006. The real run remains
+Status: active under Decisions 0004, 0005, 0006, and 0007. The real run remains
 unauthorized until a separate explicit owner instruction.
 
 ## Data flow
@@ -9,7 +9,8 @@ unauthorized until a separate explicit owner instruction.
 verified local ARC source + verified unpacked Qwen model source
   -> trial-input.zip (contracts, provenance, runner, notebook; no model bytes)
   -> two manually uploaded private immutable Kaggle Datasets
-  -> network-disabled notebook reads raw model files in place
+  -> Kaggle exposes the trial ZIP as an extracted tree
+  -> network-disabled notebook verifies that tree and reads raw model files in place
   -> result-package.zip (predictions and execution observations only)
   -> local quarantine verification, scoring, selection, and packaging
 ```
@@ -85,8 +86,11 @@ is readiness evidence, not execution authorization.
 3. Disable Internet and ensure no credentials are present.
 4. Open the notebook carried in the verified trial package or use the tracked
    `trials/first-real-domain/kaggle-notebook.ipynb` with the same digest.
-5. Enter the preflight-bound `trial-input.zip` SHA-256 when prompted.
-6. The notebook verifies the complete raw Dataset against provenance and loads
+5. The notebook reads the extracted trial tree directly from
+   `/kaggle/input/datasets/danielwuu/trial-input`, verifies its manifest and
+   complete closed-world membership, then copies only those small trial files
+   to `/kaggle/working`.
+6. The notebook verifies the complete raw model Dataset against provenance and loads
    it directly from `/kaggle/input`; it performs no 55 GB ZIP extraction or
    model copy.
 7. Download `/kaggle/working/result-package.zip` unchanged.

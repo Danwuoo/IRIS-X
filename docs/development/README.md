@@ -7,6 +7,7 @@ implementation and preflight, while real model/solver execution remains
 separately authorization-gated. Decision 0005 narrowly selects a manual,
 network-disabled Kaggle execution venue and the frozen Qwen3.8-27B revision;
 Decision 0006 uses its unpacked model Dataset directly under provenance checks.
+Decision 0007 verifies the Kaggle-extracted trial Dataset tree directly.
 
 Current policies:
 
@@ -17,10 +18,10 @@ Current policies:
 - [`arc-agi-2-kaggle-handoff.md`](arc-agi-2-kaggle-handoff.md) defines the
   trial ZIP plus unpacked-model handoff and local trust boundary.
 
-Decision 0004, as narrowly amended by Decisions 0005 and 0006, resolves the Decision 0003 owner-choice gates for one trial; the
+Decision 0004, as narrowly amended by Decisions 0005, 0006, and 0007, resolves the Decision 0003 owner-choice gates for one trial; the
 historical admission snapshot remains unchanged. Before the real P2 run, bind
 the concrete local model/solver and immutable execution envelope, pass every
-Decision 0004/0005/0006 preflight gate, and obtain a separate explicit owner execution
+Decision 0004/0005/0006/0007 preflight gate, and obtain a separate explicit owner execution
 authorization. Do not broaden the backend, provider/model, budget, deployment
 form, or detailed architecture by implication.
 

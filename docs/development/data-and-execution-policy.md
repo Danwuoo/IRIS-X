@@ -1,6 +1,6 @@
 # Data and Execution Policy
 
-Status: current repository policy through the Decision 0006 raw-model Kaggle handoff. This
+Status: current repository policy through the Decision 0007 extracted-trial Kaggle handoff. This
 policy establishes safe defaults; dataset and trial scope require a current
 decision, and provider, model, real trial execution, and product runtime require
 their stated authorization gates. Execution work also follows the
@@ -76,4 +76,4 @@ Datasets and the complete notebook output. Measured notebook execution remains
 network-disabled and credential-free. Evaluator truth, expected-output digests,
 scores, feedback, and third-party ARC material may not cross the outbound
 boundary. The real model/solver run still requires the separate explicit owner
-authorization and passed Decision 0004/0005/0006 preflight.
+authorization and passed Decision 0004/0005/0006/0007 preflight.

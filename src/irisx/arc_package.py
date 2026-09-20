@@ -96,12 +96,12 @@ def build_arc_package(
     )
     model_provenance = validate_model_source(model_source, require_git_identity=False)
     model_provenance_digest = model_provenance["content_digest"]
-    _, _, result_digest = verify_result_package(result_package, outbound_package, trial_root)
+    result_manifest, _, result_digest = verify_result_package(result_package, outbound_package, trial_root)
     import_evidence = read_json(run_dir / "import-evidence.json")
     if (
         not isinstance(import_evidence, dict)
         or import_evidence.get("quarantine_package_digest") != result_digest
-        or import_evidence.get("trial_package_digest") != digest_path(outbound_package)
+        or import_evidence.get("trial_manifest_digest") != result_manifest["metadata"]["trial_manifest_digest"]
         or import_evidence.get("status") != "validated-and-normalized"
     ):
         raise ValidationError("normalized run import evidence is stale or incomplete")
@@ -222,7 +222,7 @@ def verify_arc_package(
     )
     model_provenance = validate_model_source(root / "deployment/model-source", require_git_identity=False)
     model_provenance_digest = model_provenance["content_digest"]
-    _, result_contents, result_digest = verify_result_package(
+    result_manifest, result_contents, result_digest = verify_result_package(
         root / "evaluation/transport/result-package.zip",
         root / "evaluation/transport/trial-input.zip",
         trial_root,
@@ -231,7 +231,7 @@ def verify_arc_package(
     if (
         not isinstance(import_evidence, dict)
         or import_evidence.get("quarantine_package_digest") != result_digest
-        or import_evidence.get("trial_package_digest") != digest_path(root / "evaluation/transport/trial-input.zip")
+        or import_evidence.get("trial_manifest_digest") != result_manifest["metadata"]["trial_manifest_digest"]
         or import_evidence.get("status") != "validated-and-normalized"
     ):
         raise ValidationError("ARC Domain Package import evidence is stale or incomplete")

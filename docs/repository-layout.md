@@ -1,6 +1,6 @@
 # Product-Era Repository Layout
 
-Status: active P1 plus Decision 0005/0006 ARC-AGI-2 Kaggle handoff as of 2026-09-20.
+Status: active P1 plus Decision 0005/0006/0007 ARC-AGI-2 Kaggle handoff as of 2026-09-20.
 
 | Path | Role | Current state |
 | --- | --- | --- |
@@ -25,7 +25,8 @@ and the real run requires a separate explicit owner authorization.
 Decision 0005 replaces only the venue with a manual private-Dataset Kaggle
 handoff, selects the frozen Qwen revision, and keeps evaluator truth and all
 scoring on the repository host. Decision 0006 makes the provenance-bound
-unpacked model Dataset the active model representation.
+unpacked model Dataset the active model representation. Decision 0007 binds
+the Kaggle-extracted trial tree and its canonical manifest identity.
 
 Historical payload is not deep-moved into `archive/`. Its original tree is
 addressed by the annotated tag `archive/pre-product-transition-2026-09-17`;
