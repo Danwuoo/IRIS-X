@@ -23,6 +23,9 @@ model to `Qwen/Qwen3.8-27B` at revision
 `1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0` and authorizes only a manual,
 digest-bound, private-Dataset Kaggle handoff to one network-disabled NVIDIA RTX
 PRO 6000 96 GB notebook. Scoring and selection stay local.
+Decision 0006 replaces the model ZIP with the unpacked, provenance-bound model
+tree mounted read-only from the private Kaggle Dataset. The real run remains
+unauthorized until a later explicit owner instruction.
 
 ## Quickstart
 
@@ -40,7 +43,7 @@ irisx package verify .irisx/quickstart/package
 irisx admission validate trials/p2-admission/admission.json
 ```
 
-The Decision 0005 operational flow is documented in
+The Decision 0005/0006 operational flow is documented in
 [`docs/development/arc-agi-2-kaggle-handoff.md`](docs/development/arc-agi-2-kaggle-handoff.md).
 No default validation command downloads weights, uploads to Kaggle, or executes
 the real workload.

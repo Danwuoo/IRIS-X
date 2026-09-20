@@ -403,8 +403,8 @@ def prepare_trial(
             "revision": MODEL_REVISION,
             "license": MODEL_LICENSE,
             "weights_frozen": True,
-            "package_state": "unbound",
-            "model_package_digest": None,
+            "source_binding_state": "unbound",
+            "model_source_provenance_digest": None,
         },
     )
     test_input_count = sum(len(case["test"]) for case in solver_cases)

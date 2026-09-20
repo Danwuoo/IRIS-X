@@ -22,7 +22,7 @@ from .contracts import (
 )
 from .engine import select_configuration
 from .errors import ValidationError
-from .kaggle import verify_model_package, verify_result_package
+from .kaggle import model_source_layout, validate_model_source, verify_result_package
 from .transport import digest_path
 
 
@@ -40,10 +40,16 @@ def _ensure_empty(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
 
-def _copy_tree(source: Path, target: Path) -> None:
+def _copy_tree(source: Path, target: Path, *, excluded: set[str] | None = None) -> None:
+    excluded = excluded or set()
     for path in sorted(source.rglob("*"), key=lambda item: item.relative_to(source).as_posix()):
         relative = path.relative_to(source)
-        if ".git" in relative.parts or "__pycache__" in relative.parts or path.suffix in {".pyc", ".pyo"}:
+        if (
+            relative.as_posix() in excluded
+            or ".git" in relative.parts
+            or "__pycache__" in relative.parts
+            or path.suffix in {".pyc", ".pyo"}
+        ):
             continue
         destination = target / relative
         if path.is_symlink():
@@ -72,7 +78,7 @@ def build_arc_package(
     trial_root: Path,
     source_root: Path,
     run_dir: Path,
-    model_package: Path,
+    model_source: Path,
     outbound_package: Path,
     result_package: Path,
     output: Path,
@@ -88,7 +94,8 @@ def build_arc_package(
         source_root,
         profile=_source_profile or SourceProfile(require_git_identity=False),
     )
-    _, model_digest = verify_model_package(model_package)
+    model_provenance = validate_model_source(model_source, require_git_identity=False)
+    model_provenance_digest = model_provenance["content_digest"]
     _, _, result_digest = verify_result_package(result_package, outbound_package, trial_root)
     import_evidence = read_json(run_dir / "import-evidence.json")
     if (
@@ -120,8 +127,10 @@ def build_arc_package(
     shutil.copyfile(outbound_package, output / "evaluation/transport/trial-input.zip")
     shutil.copyfile(result_package, output / "evaluation/transport/result-package.zip")
     shutil.copyfile(run_dir / "import-evidence.json", output / "evaluation/transport/import-evidence.json")
-    (output / "deployment").mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(model_package, output / "deployment/model-package.zip")
+    model_bytes, model_provenance_path = model_source_layout(model_source)
+    _copy_tree(model_bytes, output / "deployment/model-source/source", excluded={"dataset-metadata.json"})
+    (output / "deployment/model-source").mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(model_provenance_path, output / "deployment/model-source/provenance.json")
     runner_source = Path(__file__).with_name("kaggle_runner.py")
     shutil.copyfile(runner_source, output / "deployment/kaggle_runner.py")
     candidate = load_contract(trial_root / "candidate.json", CandidateConfiguration)
@@ -134,7 +143,7 @@ def build_arc_package(
             "status": "trial-qualified-offline-research-package",
             "deployable": True,
             "configuration_ref": candidate.ref(),
-            "model_package_digest": model_digest,
+            "model_source_provenance_digest": model_provenance_digest,
             "runner_digest": digest_bytes(runner_source.read_bytes()),
             "target": "self-contained single-machine offline ARC-AGI-2 research solver package",
             "network_required": False,
@@ -211,7 +220,8 @@ def verify_arc_package(
         root / "source",
         profile=_source_profile or SourceProfile(require_git_identity=False),
     )
-    _, model_digest = verify_model_package(root / "deployment/model-package.zip")
+    model_provenance = validate_model_source(root / "deployment/model-source", require_git_identity=False)
+    model_provenance_digest = model_provenance["content_digest"]
     _, result_contents, result_digest = verify_result_package(
         root / "evaluation/transport/result-package.zip",
         root / "evaluation/transport/trial-input.zip",
@@ -227,7 +237,10 @@ def verify_arc_package(
         raise ValidationError("ARC Domain Package import evidence is stale or incomplete")
     deployment = validate_artifact(read_json(root / "deployment/metadata.json"), kind="irisx/deployment-metadata")
     runner_digest = digest_bytes((root / "deployment/kaggle_runner.py").read_bytes())
-    if deployment["payload"].get("model_package_digest") != model_digest or deployment["payload"].get("runner_digest") != runner_digest:
+    if (
+        deployment["payload"].get("model_source_provenance_digest") != model_provenance_digest
+        or deployment["payload"].get("runner_digest") != runner_digest
+    ):
         raise ValidationError("ARC deployment closure is stale or corrupted")
     if deployment["payload"].get("known_limitations") != ARC_LIMITATIONS or manifest.payload["known_limitations"] != ARC_LIMITATIONS:
         raise ValidationError("ARC Domain Package limitations are incomplete or substituted")

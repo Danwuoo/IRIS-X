@@ -9,7 +9,8 @@ trial and is not retained here.
 
 Decision 0005 selects the exact frozen Qwen3.8-27B revision and a manual,
 private-Dataset Kaggle handoff using one network-disabled NVIDIA RTX PRO 6000
-96 GB. The tracked [`first-real-domain/`](first-real-domain/) workspace contains
+96 GB. Decision 0006 uses the unpacked model Dataset directly under a complete
+provenance check. The tracked [`first-real-domain/`](first-real-domain/) workspace contains
 only the static notebook and instructions; model bytes, ARC bytes, handoff ZIPs,
 returned predictions, and evaluation evidence remain under `.irisx/`.
 

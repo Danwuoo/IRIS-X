@@ -19,8 +19,8 @@ This directory contains only current product-era guidance.
   governs secrets, domain data, local outputs, retention, provenance, budgets,
   and external/provider execution.
 - [`development/arc-agi-2-kaggle-handoff.md`](development/arc-agi-2-kaggle-handoff.md)
-  defines the manual Decision 0005 package, notebook, quarantine, local
-  evaluation, and preflight procedure.
+  defines the manual Decision 0005/0006 package, raw-model notebook,
+  quarantine, local evaluation, and preflight procedure.
 - [`decisions/`](decisions/README.md) contains dated current decisions.
 - [`repository-layout.md`](repository-layout.md) defines the active P1 plus
   admitted P2 ARC-AGI-2 layout.

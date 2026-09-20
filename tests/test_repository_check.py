@@ -81,6 +81,19 @@ class RepositoryCheckTests(unittest.TestCase):
         ):
             self.assertIn(term, decision)
 
+    def test_decision_0006_binds_the_direct_unpacked_model_without_run_authorization(self) -> None:
+        decision = (
+            ROOT / "docs/decisions/0006-use-unpacked-model-source-for-arc-agi-2-trial-001.md"
+        ).read_text(encoding="utf-8")
+        for term in (
+            "Status: Accepted",
+            "unpacked",
+            "model_source_provenance_digest",
+            "/kaggle/input/datasets/danielwuu/qwen38-27b",
+            "does not authorize the real model/solver run",
+        ):
+            self.assertIn(term, decision)
+
     def test_p0_archive_identities_are_unchanged(self) -> None:
         self.assertEqual(REPOSITORY_CHECK.ARCHIVE_TAG, "archive/pre-product-transition-2026-09-17")
         self.assertEqual(REPOSITORY_CHECK.TAG_OBJECT, "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d")

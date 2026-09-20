@@ -1,4 +1,4 @@
-"""Decision-0005 manual Kaggle handoff, quarantine import, and preflight."""
+"""Decision-0006 raw-model Kaggle handoff, quarantine import, and preflight."""
 
 from __future__ import annotations
 
@@ -28,18 +28,15 @@ from .contracts import CandidateConfiguration, EngineeringTrial, RequirementSet,
 from .engine import select_configuration
 from .errors import ValidationError
 from .transport import (
-    MODEL_LIMITS,
     RESULT_LIMITS,
     TRIAL_LIMITS,
     digest_path,
     extract_verified_zip,
     verify_zip,
     write_zip,
-    write_zip_from_paths,
 )
 
 
-MODEL_PACKAGE_KIND = "irisx/qwen-model-package"
 TRIAL_PACKAGE_KIND = "irisx/arc-agi-2-trial-input"
 RESULT_PACKAGE_KIND = "irisx/arc-agi-2-result-package"
 MODEL_REMOTE = "https://huggingface.co/Qwen/Qwen3.8-27B"
@@ -52,7 +49,8 @@ OUTBOUND_PATHS = {
     "components/candidate-prompts.json",
     "components/specialization.json",
     "bindings/model.json",
-    "bindings/model-package.json",
+    "bindings/model-source.json",
+    "bindings/model-source-provenance.json",
     "bindings/execution-envelope.json",
     "bindings/run.json",
     "runtime/dependencies.json",
@@ -118,11 +116,22 @@ def _regular_files(root: Path) -> list[Path]:
     for path in root.rglob("*"):
         if ".git" in path.relative_to(root).parts:
             continue
+        if path.relative_to(root).as_posix() == "dataset-metadata.json":
+            continue
         if path.is_symlink():
             raise ValidationError(f"symbolic links are prohibited in model sources: {path}")
         if path.is_file():
             paths.append(path)
     return sorted(paths, key=lambda path: path.relative_to(root).as_posix())
+
+
+def model_source_layout(root: Path) -> tuple[Path, Path]:
+    """Resolve either a materializer root or a directly unpacked model root."""
+
+    nested = root / "source"
+    if nested.is_dir():
+        return nested, root / "provenance.json"
+    return root, root.parent / f"{root.name}-provenance.json"
 
 
 def create_model_provenance(source: Path, output: Path, *, require_git_identity: bool = True) -> dict[str, Any]:
@@ -196,9 +205,9 @@ def materialize_model(output: Path) -> dict[str, Any]:
     return create_model_provenance(source, output / "provenance.json")
 
 
-def validate_model_source(root: Path, *, require_git_identity: bool = True) -> dict[str, Any]:
-    source = root / "source"
-    provenance = validate_artifact(read_json(root / "provenance.json"), kind="irisx/model-source-provenance")
+def validate_model_source(root: Path, *, require_git_identity: bool = False) -> dict[str, Any]:
+    source, provenance_path = model_source_layout(root)
+    provenance = validate_model_provenance(read_json(provenance_path))
     payload = provenance["payload"]
     identity = {
         "repository": MODEL_REPOSITORY,
@@ -214,9 +223,7 @@ def validate_model_source(root: Path, *, require_git_identity: bool = True) -> d
             raise ValidationError("model source remote is stale or substituted")
         if _git(source, "rev-parse", "HEAD") != MODEL_REVISION:
             raise ValidationError("model source revision is stale or substituted")
-    entries = payload.get("files")
-    if not isinstance(entries, list):
-        raise ValidationError("model source provenance files must be an array")
+    entries = payload["files"]
     declared = {entry.get("path"): entry for entry in entries if isinstance(entry, dict)}
     actual = {path.relative_to(source).as_posix(): path for path in _regular_files(source)}
     if len(declared) != len(entries) or set(declared) != set(actual):
@@ -232,64 +239,45 @@ def validate_model_source(root: Path, *, require_git_identity: bool = True) -> d
     return provenance
 
 
-def build_model_package(source_root: Path, output: Path, *, require_git_identity: bool = True) -> str:
-    provenance = validate_model_source(source_root, require_git_identity=require_git_identity)
-    files: dict[str, Path] = {}
-    for path in _regular_files(source_root / "source"):
-        logical = path.relative_to(source_root / "source").as_posix()
-        files[f"model/{logical}"] = path
-    return write_zip_from_paths(
-        output,
-        MODEL_PACKAGE_KIND,
-        "qwen3.8-27b-1d4bf0f2",
-        files,
-        {"provenance.json": _json_bytes(provenance)},
-        {
-            "repository": MODEL_REPOSITORY,
-            "revision": MODEL_REVISION,
-            "license": MODEL_LICENSE,
-            "weights_frozen": True,
-            "source_provenance_ref": artifact_ref(provenance),
-        },
-        limits=MODEL_LIMITS,
-    )
+def validate_model_provenance(value: Any) -> dict[str, Any]:
+    """Validate the portable identity and closed-world file map for raw model bytes."""
 
-
-def verify_model_package(path: Path) -> tuple[dict[str, Any], str]:
-    manifest, contents, package_digest = verify_zip(
-        path,
-        limits=MODEL_LIMITS,
-        package_kind=MODEL_PACKAGE_KIND,
-        capture_paths={"provenance.json", "model/config.json"},
-    )
-    metadata = manifest["metadata"]
-    expected = {
+    provenance = validate_artifact(value, kind="irisx/model-source-provenance")
+    payload = provenance["payload"]
+    identity = {
         "repository": MODEL_REPOSITORY,
+        "remote": MODEL_REMOTE,
         "revision": MODEL_REVISION,
         "license": MODEL_LICENSE,
         "weights_frozen": True,
     }
-    for field, value in expected.items():
-        if metadata.get(field) != value:
-            raise ValidationError(f"model package {field} binding is stale or substituted")
-    provenance = validate_artifact(_json_from_bytes(contents["provenance.json"], "provenance.json"), kind="irisx/model-source-provenance")
-    if metadata.get("source_provenance_ref") != artifact_ref(provenance):
-        raise ValidationError("model package provenance binding is stale")
-    entries = provenance["payload"].get("files")
-    if not isinstance(entries, list):
-        raise ValidationError("model package provenance files are malformed")
-    expected_paths = {"provenance.json", *(f"model/{entry['path']}" for entry in entries)}
-    declared_paths = {entry["path"] for entry in manifest["files"]}
-    if declared_paths != expected_paths:
-        raise ValidationError("model package does not exactly contain the provenanced model files")
-    declared_by_path = {entry["path"]: entry for entry in manifest["files"]}
+    if any(payload.get(field) != expected for field, expected in identity.items()):
+        raise ValidationError("model source provenance identity is stale or substituted")
+    entries = payload.get("files")
+    if not isinstance(entries, list) or not entries:
+        raise ValidationError("model source provenance files must be a non-empty array")
+    declared: set[str] = set()
     for entry in entries:
-        packaged = declared_by_path[f"model/{entry['path']}"]
-        if packaged["byte_size"] != entry["byte_size"] or packaged["content_digest"] != entry["content_digest"]:
-            raise ValidationError(f"model package provenance mismatch: {entry['path']}")
-    if "model/config.json" not in contents:
-        raise ValidationError("model package is missing config.json")
-    return manifest, package_digest
+        if not isinstance(entry, dict) or set(entry) != {"path", "byte_size", "content_digest"}:
+            raise ValidationError("model source provenance file entry is malformed")
+        logical = entry["path"]
+        if (
+            not isinstance(logical, str)
+            or not logical
+            or "\\" in logical
+            or logical.startswith("/")
+            or any(part in {"", ".", ".."} for part in logical.split("/"))
+            or logical in declared
+        ):
+            raise ValidationError("model source provenance contains an unsafe or duplicate path")
+        if isinstance(entry["byte_size"], bool) or not isinstance(entry["byte_size"], int) or entry["byte_size"] < 0:
+            raise ValidationError(f"model source provenance byte size is invalid: {logical}")
+        if not isinstance(entry["content_digest"], str) or not entry["content_digest"].startswith("sha256:"):
+            raise ValidationError(f"model source provenance digest is invalid: {logical}")
+        declared.add(logical)
+    if "config.json" not in declared:
+        raise ValidationError("model source provenance is missing config.json")
+    return provenance
 
 
 def _load_binding(path: Path) -> dict[str, Any]:
@@ -372,14 +360,15 @@ def _read_repo_file(root: Path, relative: str) -> bytes:
 
 def build_outbound_package(
     trial_root: Path,
-    model_package: Path,
+    model_source: Path,
     binding_path: Path,
     output: Path,
     *,
     repository_root: Path,
 ) -> str:
     validate_trial_bundle(trial_root)
-    _, model_digest = verify_model_package(model_package)
+    model_provenance = validate_model_source(model_source)
+    model_provenance_digest = model_provenance["content_digest"]
     binding = _load_binding(binding_path)
     runner = _read_repo_file(repository_root, "src/irisx/kaggle_runner.py")
     notebook = _read_repo_file(repository_root, "trials/first-real-domain/kaggle-notebook.ipynb")
@@ -390,7 +379,7 @@ def build_outbound_package(
     run_binding = {
         "bundle_id": binding["bundle_id"],
         "run_id": binding["bundle_id"],
-        "model_package_digest": model_digest,
+        "model_source_provenance_digest": model_provenance_digest,
         "model_dataset": binding["model_dataset"],
         "repository_revision": binding["repository"]["revision"],
         "repository_clean": binding["repository"]["clean"],
@@ -406,12 +395,12 @@ def build_outbound_package(
         "retention": binding["retention"],
     }
     model_binding = make_artifact(
-        "irisx/model-package-binding",
-        "qwen3.8-27b-trial-001-package",
+        "irisx/model-source-binding",
+        "qwen3.8-27b-trial-001-source",
         "1.0.0",
         {
             "model_ref": artifact_ref(validate_artifact(model, kind="irisx/model-descriptor")),
-            "package_digest": model_digest,
+            "source_provenance_ref": artifact_ref(model_provenance),
             "dataset": binding["model_dataset"],
         },
     )
@@ -423,7 +412,8 @@ def build_outbound_package(
         "components/candidate-prompts.json": (trial_root / "candidate-prompts.json").read_bytes(),
         "components/specialization.json": (trial_root / "specialization.json").read_bytes(),
         "bindings/model.json": (trial_root / "model.json").read_bytes(),
-        "bindings/model-package.json": _json_bytes(model_binding),
+        "bindings/model-source.json": _json_bytes(model_binding),
+        "bindings/model-source-provenance.json": _json_bytes(model_provenance),
         "bindings/execution-envelope.json": (trial_root / "execution-envelope.json").read_bytes(),
         "bindings/run.json": _json_bytes(run_binding),
         "runtime/dependencies.json": _json_bytes(binding["runtime_dependencies"]),
@@ -437,7 +427,11 @@ def build_outbound_package(
         files,
         {
             "arc_source": {"repository": ARC_REPOSITORY, "commit": ARC_COMMIT},
-            "model": {"repository": MODEL_REPOSITORY, "revision": MODEL_REVISION, "package_digest": model_digest},
+            "model": {
+                "repository": MODEL_REPOSITORY,
+                "revision": MODEL_REVISION,
+                "source_provenance_digest": model_provenance_digest,
+            },
             "model_dataset": binding["model_dataset"],
             "repository": binding["repository"],
             "notebook_digest": digest_bytes(notebook),
@@ -472,17 +466,36 @@ def verify_outbound_package(path: Path, *, expected_evaluation_count: int = PUBL
     candidate_prompts = validate_artifact(_json_from_bytes(contents["components/candidate-prompts.json"], "candidate-prompts.json"), kind="irisx/prompts-programs")
     specialization = validate_artifact(_json_from_bytes(contents["components/specialization.json"], "specialization.json"), kind="irisx/specialization-provenance")
     model = validate_artifact(_json_from_bytes(contents["bindings/model.json"], "model.json"), kind="irisx/model-descriptor")
-    model_binding = validate_artifact(_json_from_bytes(contents["bindings/model-package.json"], "model-package.json"), kind="irisx/model-package-binding")
+    model_binding = validate_artifact(
+        _json_from_bytes(contents["bindings/model-source.json"], "model-source.json"),
+        kind="irisx/model-source-binding",
+    )
+    model_provenance = validate_model_provenance(
+        _json_from_bytes(contents["bindings/model-source-provenance.json"], "model-source-provenance.json")
+    )
     envelope = validate_artifact(_json_from_bytes(contents["bindings/execution-envelope.json"], "execution-envelope.json"), kind="irisx/execution-envelope")
     run = _json_from_bytes(contents["bindings/run.json"], "run.json")
     dependencies = _json_from_bytes(contents["runtime/dependencies.json"], "dependencies.json")
     if model["payload"].get("repository") != MODEL_REPOSITORY or model["payload"].get("revision") != MODEL_REVISION:
         raise ValidationError("outbound model descriptor was substituted")
+    expected_model_metadata = {
+        "repository": MODEL_REPOSITORY,
+        "revision": MODEL_REVISION,
+        "source_provenance_digest": model_provenance["content_digest"],
+    }
+    if manifest["metadata"].get("model") != expected_model_metadata:
+        raise ValidationError("outbound model metadata is stale or substituted")
+    if set(model_binding["payload"]) != {"model_ref", "source_provenance_ref", "dataset"}:
+        raise ValidationError("outbound model source binding fields are incomplete or unexpected")
     if model_binding["payload"].get("model_ref") != artifact_ref(model):
-        raise ValidationError("outbound model package does not bind the model descriptor")
-    if model_binding["payload"].get("package_digest") != manifest["metadata"].get("model", {}).get("package_digest"):
-        raise ValidationError("outbound model package digest binding is stale")
+        raise ValidationError("outbound model source does not bind the model descriptor")
+    if model_binding["payload"].get("source_provenance_ref") != artifact_ref(model_provenance):
+        raise ValidationError("outbound model source provenance reference is stale")
+    if model_provenance["content_digest"] != manifest["metadata"].get("model", {}).get("source_provenance_digest"):
+        raise ValidationError("outbound model source provenance digest binding is stale")
     _validate_dataset_binding(model_binding["payload"].get("dataset"), "outbound model dataset")
+    if model_binding["payload"]["dataset"] != manifest["metadata"].get("model_dataset"):
+        raise ValidationError("outbound model Dataset binding is stale")
     for name, configuration, prompts in (
         ("baseline", baseline, baseline_prompts),
         ("candidate", candidate, candidate_prompts),
@@ -502,23 +515,29 @@ def verify_outbound_package(path: Path, *, expected_evaluation_count: int = PUBL
         raise ValidationError("outbound execution envelope must prohibit network and provider calls")
     expected_run = {
         "bundle_id": manifest["package_id"],
-        "model_package_digest": manifest["metadata"]["model"]["package_digest"],
+        "run_id": manifest["package_id"],
+        "model_source_provenance_digest": manifest["metadata"]["model"]["source_provenance_digest"],
         "model_dataset": manifest["metadata"]["model_dataset"],
         "repository_revision": manifest["metadata"]["repository"]["revision"],
+        "repository_clean": manifest["metadata"]["repository"]["clean"],
         "notebook_digest": manifest["metadata"]["notebook_digest"],
         "runner_digest": manifest["metadata"]["runner_digest"],
         "baseline_configuration_ref": baseline.ref(),
         "candidate_configuration_ref": candidate.ref(),
         "execution_envelope_ref": artifact_ref(envelope),
+        "retention": manifest["metadata"]["retention"],
     }
-    for field, expected in expected_run.items():
-        if run.get(field) != expected:
-            raise ValidationError(f"outbound run binding is stale: {field}")
+    if run != expected_run:
+        raise ValidationError("outbound run binding is stale or contains unexpected fields")
     if digest_bytes(contents["runtime/runner.py"]) != run["runner_digest"]:
         raise ValidationError("outbound runner source digest mismatch")
     if digest_bytes(contents["runtime/notebook.ipynb"]) != run["notebook_digest"]:
         raise ValidationError("outbound notebook source digest mismatch")
-    if not isinstance(dependencies, dict) or not all(isinstance(value, str) and value for value in dependencies.values()):
+    if (
+        not isinstance(dependencies, dict)
+        or set(dependencies) != {"python", "torch", "transformers", "source"}
+        or not all(isinstance(value, str) and value for value in dependencies.values())
+    ):
         raise ValidationError("outbound runtime dependencies are not fully bound")
     if dependencies != manifest["metadata"].get("runtime_dependencies"):
         raise ValidationError("outbound runtime dependency binding is stale")
@@ -663,7 +682,7 @@ def verify_result_package(
     outbound_meta = outbound_manifest["metadata"]
     expected = {
         "trial_package_digest": outbound_digest,
-        "model_package_digest": outbound_meta["model"]["package_digest"],
+        "model_source_provenance_digest": outbound_meta["model"]["source_provenance_digest"],
         "model_dataset": outbound_meta["model_dataset"],
         "bundle_id": outbound_manifest["package_id"],
         "repository_revision": outbound_meta["repository"]["revision"],
@@ -794,7 +813,7 @@ def evaluate_imported_run(trial_root: Path, run_dir: Path) -> dict[str, Any]:
 
 def preflight(
     trial_root: Path,
-    model_package: Path,
+    model_source: Path,
     outbound_package: Path,
     preflight_binding_path: Path,
 ) -> dict[str, Any]:
@@ -806,10 +825,11 @@ def preflight(
     except ValidationError as exc:
         blockers.append(f"trial_bundle:{exc}")
     try:
-        _, model_digest = verify_model_package(model_package)
+        model_provenance = validate_model_source(model_source)
+        model_provenance_digest = model_provenance["content_digest"]
     except ValidationError as exc:
-        blockers.append(f"model_package:{exc}")
-        model_digest = None
+        blockers.append(f"model_source:{exc}")
+        model_provenance_digest = None
     try:
         outbound_manifest, outbound_digest = verify_outbound_package(outbound_package)
     except ValidationError as exc:
@@ -882,8 +902,8 @@ def preflight(
             expected = metadata["repository"]["revision"] if field == "repository_revision" else metadata[field]
             if binding.get(field) != expected:
                 blockers.append(f"{field}:stale_or_substituted")
-        if model_digest != metadata["model"]["package_digest"]:
-            blockers.append("model_package_digest:stale_or_substituted")
+        if model_provenance_digest != metadata["model"]["source_provenance_digest"]:
+            blockers.append("model_source_provenance_digest:stale_or_substituted")
         if binding.get("model_dataset") != metadata["model_dataset"]:
             blockers.append("model_dataset:stale_or_substituted")
         if binding.get("runtime_dependencies") != metadata.get("runtime_dependencies"):
@@ -900,7 +920,7 @@ def preflight(
             "run_authorized": False,
             "technical_blockers": blockers,
             "authorization_blockers": ["separate explicit owner real-run authorization is absent"],
-            "model_package_digest": model_digest,
+            "model_source_provenance_digest": model_provenance_digest,
             "trial_package_digest": outbound_digest,
             "bindings": binding,
         },

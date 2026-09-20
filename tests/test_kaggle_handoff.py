@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
 
@@ -9,7 +10,7 @@ import support  # noqa: F401
 from arc_support import (
     dataset_binding,
     make_arc_source,
-    make_model_package,
+    make_model_source,
     observations,
     prediction_document,
     runner_logs,
@@ -24,12 +25,11 @@ from irisx.errors import ValidationError
 from irisx.kaggle import (
     RESULT_PATHS,
     build_outbound_package,
-    build_model_package,
     build_result_package,
+    create_model_provenance,
     evaluate_imported_run,
     import_quarantine,
     preflight,
-    verify_model_package,
     verify_outbound_package,
     verify_result_package,
 )
@@ -48,12 +48,12 @@ class KaggleHandoffTests(unittest.TestCase):
         self.source_profile = profile
         self.trial = self.root / "trial"
         prepare_trial(self.source, self.trial, profile=profile)
-        self.model_package = make_model_package(self.root)
+        self.model_source = make_model_source(self.root)
         self.binding = write_outbound_binding(self.root)
         self.outbound = self.root / "outbound/run-001/trial-input.zip"
         build_outbound_package(
             self.trial,
-            self.model_package,
+            self.model_source,
             self.binding,
             self.outbound,
             repository_root=ROOT,
@@ -67,7 +67,7 @@ class KaggleHandoffTests(unittest.TestCase):
         metadata = outbound_manifest["metadata"]
         return {
             "trial_package_digest": outbound_digest,
-            "model_package_digest": metadata["model"]["package_digest"],
+            "model_source_provenance_digest": metadata["model"]["source_provenance_digest"],
             "model_dataset": metadata["model_dataset"],
             "bundle_id": outbound_manifest["package_id"],
             "repository_revision": metadata["repository"]["revision"],
@@ -99,23 +99,17 @@ class KaggleHandoffTests(unittest.TestCase):
         for term in ("/kaggle/input", "/kaggle/working", "NVIDIA RTX PRO 6000", "local_files_only=True", "TRANSFORMERS_OFFLINE"):
             self.assertIn(term, notebook + runner)
         self.assertIn("Enter the preflight-bound trial-input.zip", notebook)
+        self.assertIn("model-source-provenance", notebook + runner)
+        self.assertIn("INPUT / 'datasets'", notebook)
+        self.assertNotIn("model-package.zip", notebook + runner)
         for prohibited in ("pip install", "kaggle api", "requests.get", "openai.", "anthropic."):
             self.assertNotIn(prohibited, (notebook + runner).lower())
 
-    def test_model_and_outbound_packages_are_deterministic_and_truth_free(self) -> None:
-        _, model_digest = verify_model_package(self.model_package)
-        self.assertTrue(model_digest.startswith("sha256:"))
-        second_model = self.root / "model-package-copy.zip"
-        build_model_package(self.root / "model-source", second_model, require_git_identity=False)
-        self.assertEqual(self.model_package.read_bytes(), second_model.read_bytes())
-        corrupted_model = self.root / "model-package-corrupt.zip"
-        corrupted_model.write_bytes(self.model_package.read_bytes() + b"unexpected")
-        with self.assertRaisesRegex(ValidationError, "trailing bytes"):
-            verify_model_package(corrupted_model)
+    def test_model_source_and_outbound_package_are_deterministic_and_truth_free(self) -> None:
         second = self.root / "outbound/run-001-copy/trial-input.zip"
         build_outbound_package(
             self.trial,
-            self.model_package,
+            self.model_source,
             self.binding,
             second,
             repository_root=ROOT,
@@ -127,6 +121,17 @@ class KaggleHandoffTests(unittest.TestCase):
         self.assertFalse(any(b"irisx/evaluation-result" in data for data in contents.values()))
         solver = read_json(self.trial / "solver-cases.json")
         self.assertTrue(all(set(pair) == {"input"} for case in solver["payload"]["cases"] for pair in case["test"]))
+
+    def test_direct_unpacked_model_root_and_sidecar_are_supported(self) -> None:
+        direct = self.root / "direct-model"
+        shutil.copytree(self.model_source / "source", direct)
+        write_json(direct / "dataset-metadata.json", {"id": "fixture-owner/qwen-model"})
+        sidecar = direct.parent / f"{direct.name}-provenance.json"
+        create_model_provenance(direct, sidecar, require_git_identity=False)
+        output = self.root / "direct/trial-input.zip"
+        build_outbound_package(self.trial, direct, self.binding, output, repository_root=ROOT)
+        manifest, _ = verify_outbound_package(output)
+        self.assertEqual(manifest["metadata"]["model"]["source_provenance_digest"], read_json(sidecar)["content_digest"])
 
     def test_outbound_rejects_undeclared_truth_stale_runner_and_public_dataset(self) -> None:
         manifest, contents, _ = verify_zip(self.outbound, limits=TRIAL_LIMITS)
@@ -151,7 +156,7 @@ class KaggleHandoffTests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationError, "private and immutable"):
             build_outbound_package(
                 self.trial,
-                self.model_package,
+                self.model_source,
                 public,
                 self.root / "public.zip",
                 repository_root=ROOT,
@@ -274,14 +279,14 @@ class KaggleHandoffTests(unittest.TestCase):
         }
         binding_path = self.root / "preflight.json"
         write_json(binding_path, binding)
-        report = preflight(self.trial, self.model_package, self.outbound, binding_path)
+        report = preflight(self.trial, self.model_source, self.outbound, binding_path)
         self.assertTrue(report["payload"]["technical_ready"])
         self.assertFalse(report["payload"]["run_authorized"])
         self.assertIn("owner", report["payload"]["authorization_blockers"][0])
 
         binding["hardware"]["gpu_model"] = "Tesla T4"
         write_json(binding_path, binding)
-        report = preflight(self.trial, self.model_package, self.outbound, binding_path)
+        report = preflight(self.trial, self.model_source, self.outbound, binding_path)
         self.assertFalse(report["payload"]["technical_ready"])
         self.assertTrue(any("hardware" in blocker for blocker in report["payload"]["technical_blockers"]))
 
@@ -294,7 +299,7 @@ class KaggleHandoffTests(unittest.TestCase):
             self.trial,
             self.source,
             run,
-            self.model_package,
+            self.model_source,
             self.outbound,
             result,
             package,
@@ -302,7 +307,7 @@ class KaggleHandoffTests(unittest.TestCase):
         )
         manifest = verify_arc_package(package, _source_profile=self.source_profile)
         self.assertEqual(manifest.payload["selected_configuration_ref"]["artifact_id"], "arc-agi-2-trial-001-candidate")
-        model_copy = package / "deployment/model-package.zip"
+        model_copy = package / "deployment/model-source/source/model.safetensors"
         model_copy.write_bytes(model_copy.read_bytes() + b"corrupt")
         with self.assertRaises(ValidationError):
             verify_arc_package(package, _source_profile=self.source_profile)
@@ -318,7 +323,7 @@ class KaggleHandoffTests(unittest.TestCase):
                 self.trial,
                 self.source,
                 run,
-                self.model_package,
+                self.model_source,
                 self.outbound,
                 result,
                 self.root / "ineligible-package",

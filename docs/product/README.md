@@ -13,10 +13,11 @@ documentation is:
   independent verification boundary.
 - [`p2-admission.md`](p2-admission.md) defines the historical blocked
   first-real-domain snapshot, its offline validator, and its relationship to
-  current Decisions 0004 and 0005.
+  current Decisions 0004, 0005, and 0006.
 
 P1 contracts remain provider- and technique-neutral. Decision 0004 admits the
-bounded ARC-AGI-2 Trial 001 implementation, and Decision 0005 narrowly selects
-the frozen Qwen revision and manual network-disabled Kaggle venue, without treating
+bounded ARC-AGI-2 Trial 001 implementation, Decision 0005 narrowly selects
+the frozen Qwen revision and manual network-disabled Kaggle venue, and Decision
+0006 binds the unpacked model source directly, without treating
 fixture details as architecture. Real model/solver execution remains separately
 authorization-gated.

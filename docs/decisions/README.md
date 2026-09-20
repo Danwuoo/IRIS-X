@@ -20,3 +20,7 @@ unless a new decision explicitly re-adopts them.
   replaces only the Trial 001 execution venue and transport boundary with a
   private, manual, ZIP-based Kaggle handoff while preserving local evaluation,
   frozen weights, zero paid spend, and the separate real-run authorization.
+- [`0006-use-unpacked-model-source-for-arc-agi-2-trial-001.md`](0006-use-unpacked-model-source-for-arc-agi-2-trial-001.md)
+  supersedes the model ZIP transport with a provenance-bound unpacked model
+  Dataset used directly from Kaggle's read-only input mount. It does not
+  authorize the real run.

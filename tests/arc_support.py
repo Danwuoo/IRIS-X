@@ -6,7 +6,7 @@ from typing import Any
 from irisx.arc_agi2 import SourceProfile, create_source_provenance
 from irisx.canonical import digest_bytes, write_json
 from irisx.contracts import CandidateConfiguration, load_contract
-from irisx.kaggle import build_model_package, create_model_provenance
+from irisx.kaggle import create_model_provenance
 
 
 def make_arc_source(root: Path, *, training_count: int = 2, evaluation_count: int = 120) -> SourceProfile:
@@ -44,16 +44,14 @@ def make_arc_source(root: Path, *, training_count: int = 2, evaluation_count: in
     return profile
 
 
-def make_model_package(root: Path) -> Path:
+def make_model_source(root: Path) -> Path:
     source = root / "model-source/source"
     source.mkdir(parents=True)
     write_json(source / "config.json", {"architectures": ["SyntheticQwenForCausalLM"]})
     (source / "README.md").write_text("---\nlicense: apache-2.0\n---\n", encoding="utf-8")
     (source / "model.safetensors").write_bytes(b"small synthetic model fixture")
     create_model_provenance(source, root / "model-source/provenance.json", require_git_identity=False)
-    package = root / "model-package.zip"
-    build_model_package(root / "model-source", package, require_git_identity=False)
-    return package
+    return root / "model-source"
 
 
 def dataset_binding(slug: str) -> dict[str, Any]:

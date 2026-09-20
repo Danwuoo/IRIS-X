@@ -50,6 +50,7 @@ REQUIRED_PATHS = {
     "docs/decisions/0003-record-p2-admission-block.md",
     "docs/decisions/0004-admit-first-p2-arc-agi-2-engineering-trial.md",
     "docs/decisions/0005-authorize-kaggle-offline-handoff-for-arc-agi-2-trial-001.md",
+    "docs/decisions/0006-use-unpacked-model-source-for-arc-agi-2-trial-001.md",
     "docs/decisions/README.md",
     "docs/development/arc-agi-2-kaggle-handoff.md",
     "docs/development/data-and-execution-policy.md",
@@ -327,6 +328,13 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "network-disabled",
             "separate explicit owner authorization",
         ),
+        "docs/decisions/0006-use-unpacked-model-source-for-arc-agi-2-trial-001.md": (
+            "Status: Accepted",
+            "unpacked",
+            "model_source_provenance_digest",
+            "/kaggle/input/datasets/danielwuu/qwen38-27b",
+            "separate explicit owner execution authorization",
+        ),
         "docs/development/arc-agi-2-kaggle-handoff.md": (
             "manual",
             "private",
@@ -369,6 +377,7 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
         "AGENTS.md": (
             "Decision 0004",
             "Decision 0005",
+            "Decision 0006",
             "ARC-AGI-2",
             "Qwen/Qwen3.8-27B",
             "separate explicit owner authorization",
@@ -377,12 +386,14 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
         "README.md": (
             "Decision 0004",
             "Decision 0005",
+            "Decision 0006",
             "ARC-AGI-2",
             "separate explicit owner authorization",
         ),
         "docs/repository-layout.md": (
             "Decision 0004",
             "Decision 0005",
+            "Decision 0006",
             "ARC-AGI-2",
             "real run requires a separate explicit owner authorization",
         ),

@@ -48,7 +48,7 @@ class ArcTrialTests(unittest.TestCase):
         self.assertEqual(model["payload"]["repository"], MODEL_REPOSITORY)
         self.assertEqual(model["payload"]["revision"], MODEL_REVISION)
         self.assertTrue(model["payload"]["weights_frozen"])
-        self.assertEqual(model["payload"]["package_state"], "unbound")
+        self.assertEqual(model["payload"]["source_binding_state"], "unbound")
 
     def test_solver_view_excludes_test_outputs_and_truth_is_local_only(self) -> None:
         solver = load_artifact(self.trial / "solver-cases.json", kind="irisx/arc-solver-cases")

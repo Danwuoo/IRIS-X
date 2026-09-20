@@ -1,6 +1,6 @@
 # Development Operating Model
 
-Status: current repository policy through the Decision 0005 Kaggle handoff. See the current
+Status: current repository policy through the Decision 0006 raw-model Kaggle handoff. See the current
 [`Product Scope`](../product/product-scope.md) and
 [`Data and Execution Policy`](data-and-execution-policy.md).
 
@@ -46,7 +46,7 @@ Decision 0002. Decision 0003 and its admission package remain historical
 blocked-state evidence. Decision 0004 selects a bounded local/offline
 ARC-AGI-2 trial and authorizes its repository implementation, official-source
 materialization, offline validation, and preflight work. The concrete local
-model package and execution envelope remain preflight-gated. Decision 0005
+raw model provenance and execution envelope remain preflight-gated. Decision 0005
 binds the frozen Qwen revision and selects a manual, private-Dataset,
 network-disabled Kaggle notebook on one NVIDIA RTX PRO 6000 96 GB; it leaves
 production runtime and detailed architecture undecided. A real P2 model run is not

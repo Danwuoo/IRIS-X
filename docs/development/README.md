@@ -5,7 +5,8 @@ product contracts, a bounded qualification flow, and package verification.
 Decision 0004 admits the bounded local/offline ARC-AGI-2 Trial 001 repository
 implementation and preflight, while real model/solver execution remains
 separately authorization-gated. Decision 0005 narrowly selects a manual,
-network-disabled Kaggle execution venue and the frozen Qwen3.8-27B revision.
+network-disabled Kaggle execution venue and the frozen Qwen3.8-27B revision;
+Decision 0006 uses its unpacked model Dataset directly under provenance checks.
 
 Current policies:
 
@@ -14,12 +15,12 @@ Current policies:
 - [`data-and-execution-policy.md`](data-and-execution-policy.md) defines safe
   handling and execution boundaries.
 - [`arc-agi-2-kaggle-handoff.md`](arc-agi-2-kaggle-handoff.md) defines the
-  offline ZIP handoff and local trust boundary.
+  trial ZIP plus unpacked-model handoff and local trust boundary.
 
-Decision 0004, as narrowly amended by Decision 0005, resolves the Decision 0003 owner-choice gates for one trial; the
+Decision 0004, as narrowly amended by Decisions 0005 and 0006, resolves the Decision 0003 owner-choice gates for one trial; the
 historical admission snapshot remains unchanged. Before the real P2 run, bind
 the concrete local model/solver and immutable execution envelope, pass every
-Decision 0004/0005 preflight gate, and obtain a separate explicit owner execution
+Decision 0004/0005/0006 preflight gate, and obtain a separate explicit owner execution
 authorization. Do not broaden the backend, provider/model, budget, deployment
 form, or detailed architecture by implication.
 

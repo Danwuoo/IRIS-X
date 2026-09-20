@@ -20,7 +20,9 @@ are satisfied. Decision 0005 narrowly replaces the execution venue with a
 manual, private-Dataset, network-disabled Kaggle handoff on one NVIDIA RTX PRO
 6000 96 GB and binds the frozen Trial 001 model to
 `Qwen/Qwen3.8-27B@1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0`. It does not
-authorize the real run.
+authorize the real run. Decision 0006 supersedes only the model ZIP transport:
+the active path uses the unpacked, provenance-bound model tree directly from
+the private Kaggle Dataset. It also does not authorize the real run.
 
 ## Authority order
 
@@ -59,9 +61,9 @@ paths. Do not recreate a legacy root merely to preserve history.
 
 ## Working rules
 
-- Keep current P2 work within Decision 0004 as narrowly amended by Decision
-  0005: the minimum ARC-AGI-2 Trial 001 implementation, official source and
-  model-package materialization, manual Kaggle ZIP handoff, deterministic
+- Keep current P2 work within Decision 0004 as narrowly amended by Decisions
+  0005 and 0006: the minimum ARC-AGI-2 Trial 001 implementation, official
+  source and raw-model materialization, manual Kaggle handoff, deterministic
   offline validation, quarantine import, local evaluation, preflight,
   documentation, and tests. Do not broaden it into a general framework or
   production runtime.
@@ -69,7 +71,7 @@ paths. Do not recreate a legacy root merely to preserve history.
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.
 - Do not execute the real ARC-AGI-2 model/solver trial without a later explicit
-  owner execution authorization and all Decision 0004/0005 preflight gates. Do
+  owner execution authorization and all Decision 0004/0005/0006 preflight gates. Do
   not start P3/P4, call an external model provider, use third-party ARC data,
   enable notebook Internet during measured execution, automate Kaggle
   credentials or transport, spend external funds, fine-tune the selected model,
@@ -81,8 +83,9 @@ paths. Do not recreate a legacy root merely to preserve history.
 - A model fetch, if invoked, may acquire only the Decision 0005 Qwen repository
   and revision. It must remain separate from tests, validation, packaging,
   preflight, Kaggle execution, and the real trial. Kaggle upload/download is
-  manual; evaluator truth and answer-derived metadata never enter an outbound
-  package or notebook.
+  manual; the private Dataset contains the unpacked model files bound by
+  Decision 0006 provenance. Evaluator truth and answer-derived metadata never
+  enter an outbound package or notebook.
 - Treat the conceptual decomposition in the thesis as product responsibilities,
   not as settled services, classes, packages, or deployment boundaries.
 - Record material current decisions under `docs/decisions/`.

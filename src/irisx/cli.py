@@ -13,14 +13,12 @@ from .artifacts import write_artifact
 from .errors import IrisxError, ValidationError
 from .fixture import prepare_fixture, run_trial, validate_specification, validate_trial
 from .kaggle import (
-    build_model_package,
     build_outbound_package,
     evaluate_imported_run,
     import_quarantine,
     materialize_model,
     preflight as kaggle_preflight,
     validate_model_source,
-    verify_model_package,
     verify_outbound_package,
     verify_result_package,
 )
@@ -76,17 +74,12 @@ def build_parser() -> argparse.ArgumentParser:
     arc_source_validate = arc_source_sub.add_parser("validate", help="validate a local pinned ARC source offline")
     arc_source_validate.add_argument("path", type=_path)
 
-    arc_model = arc_sub.add_parser("model", help="selected frozen Qwen model-package operations")
+    arc_model = arc_sub.add_parser("model", help="selected frozen Qwen raw-source operations")
     arc_model_sub = arc_model.add_subparsers(dest="arc_model_command", required=True)
     arc_model_materialize = arc_model_sub.add_parser("materialize", help="deliberately acquire the one selected model revision")
     arc_model_materialize.add_argument("--output", required=True, type=_path)
     arc_model_validate = arc_model_sub.add_parser("validate", help="validate a local selected model source offline")
     arc_model_validate.add_argument("path", type=_path)
-    arc_model_build = arc_model_sub.add_parser("package-build", help="build an immutable model-package.zip")
-    arc_model_build.add_argument("--source", required=True, type=_path)
-    arc_model_build.add_argument("--output", required=True, type=_path)
-    arc_model_verify = arc_model_sub.add_parser("package-verify", help="verify model-package.zip offline")
-    arc_model_verify.add_argument("path", type=_path)
 
     arc_trial = arc_sub.add_parser("trial", help="ARC trial construction, outbound transport, and preflight")
     arc_trial_sub = arc_trial.add_subparsers(dest="arc_trial_command", required=True)
@@ -97,14 +90,14 @@ def build_parser() -> argparse.ArgumentParser:
     arc_trial_validate.add_argument("path", type=_path)
     arc_outbound_build = arc_trial_sub.add_parser("outbound-build", help="build one closed-world trial-input.zip")
     arc_outbound_build.add_argument("--trial", required=True, type=_path)
-    arc_outbound_build.add_argument("--model-package", required=True, type=_path)
+    arc_outbound_build.add_argument("--model-source", required=True, type=_path)
     arc_outbound_build.add_argument("--binding", required=True, type=_path)
     arc_outbound_build.add_argument("--output", required=True, type=_path)
     arc_outbound_verify = arc_trial_sub.add_parser("outbound-verify", help="verify trial-input.zip offline")
     arc_outbound_verify.add_argument("path", type=_path)
     arc_preflight = arc_trial_sub.add_parser("preflight", help="write technical Kaggle readiness evidence without authorizing a run")
     arc_preflight.add_argument("--trial", required=True, type=_path)
-    arc_preflight.add_argument("--model-package", required=True, type=_path)
+    arc_preflight.add_argument("--model-source", required=True, type=_path)
     arc_preflight.add_argument("--trial-package", required=True, type=_path)
     arc_preflight.add_argument("--binding", required=True, type=_path)
     arc_preflight.add_argument("--output", required=True, type=_path)
@@ -130,7 +123,7 @@ def build_parser() -> argparse.ArgumentParser:
     arc_package_build.add_argument("--trial", required=True, type=_path)
     arc_package_build.add_argument("--source", required=True, type=_path)
     arc_package_build.add_argument("--run", required=True, type=_path)
-    arc_package_build.add_argument("--model-package", required=True, type=_path)
+    arc_package_build.add_argument("--model-source", required=True, type=_path)
     arc_package_build.add_argument("--trial-package", required=True, type=_path)
     arc_package_build.add_argument("--result-package", required=True, type=_path)
     arc_package_build.add_argument("--output", required=True, type=_path)
@@ -178,12 +171,6 @@ def execute(args: argparse.Namespace) -> str:
         if args.arc_model_command == "validate":
             provenance = validate_model_source(args.path)
             return f"verified selected model source offline: {provenance['content_digest']}"
-        if args.arc_model_command == "package-build":
-            digest = build_model_package(args.source, args.output)
-            return f"built immutable model package: {digest}"
-        if args.arc_model_command == "package-verify":
-            _, digest = verify_model_package(args.path)
-            return f"verified immutable model package: {digest}"
     if args.command == "arc-agi-2" and args.arc_command == "trial":
         if args.arc_trial_command == "prepare":
             contract = prepare_arc_trial(args.source, args.output)
@@ -194,7 +181,7 @@ def execute(args: argparse.Namespace) -> str:
         if args.arc_trial_command == "outbound-build":
             repository_root = Path(__file__).resolve().parents[2]
             digest = build_outbound_package(
-                args.trial, args.model_package, args.binding, args.output, repository_root=repository_root
+                args.trial, args.model_source, args.binding, args.output, repository_root=repository_root
             )
             return f"built closed-world Kaggle trial input: {digest}"
         if args.arc_trial_command == "outbound-verify":
@@ -204,7 +191,7 @@ def execute(args: argparse.Namespace) -> str:
             if args.output.exists():
                 raise ValidationError(f"preflight output already exists: {args.output}")
             report = kaggle_preflight(
-                args.trial, args.model_package, args.trial_package, args.binding
+                args.trial, args.model_source, args.trial_package, args.binding
             )
             write_artifact(args.output, report)
             state = "technically ready; owner authorization still absent" if report["payload"]["technical_ready"] else "blocked"
@@ -228,7 +215,7 @@ def execute(args: argparse.Namespace) -> str:
                 args.trial,
                 args.source,
                 args.run,
-                args.model_package,
+                args.model_source,
                 args.trial_package,
                 args.result_package,
                 args.output,

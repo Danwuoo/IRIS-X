@@ -32,6 +32,43 @@ def _read(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _file_digest(path: Path) -> str:
+    hasher = hashlib.sha256()
+    with path.open("rb") as stream:
+        while chunk := stream.read(1024 * 1024):
+            hasher.update(chunk)
+    return "sha256:" + hasher.hexdigest()
+
+
+def _validate_model_tree(model_root: Path, provenance: dict[str, Any]) -> None:
+    if provenance.get("schema") != "irisx/model-source-provenance":
+        raise RuntimeError("raw model provenance kind is invalid")
+    unsigned = {key: provenance.get(key) for key in ("schema", "schema_version", "artifact_id", "version", "payload")}
+    encoded = json.dumps(unsigned, ensure_ascii=False, allow_nan=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    if provenance.get("content_digest") != _digest(encoded):
+        raise RuntimeError("raw model provenance artifact digest is invalid")
+    entries = provenance.get("payload", {}).get("files")
+    if not isinstance(entries, list) or not entries:
+        raise RuntimeError("raw model provenance file list is invalid")
+    expected = {entry.get("path"): entry for entry in entries if isinstance(entry, dict)}
+    if len(expected) != len(entries) or "config.json" not in expected:
+        raise RuntimeError("raw model provenance paths are incomplete or duplicated")
+    actual: dict[str, Path] = {}
+    for path in model_root.rglob("*"):
+        if path.is_symlink():
+            raise RuntimeError(f"raw model Dataset contains a symbolic link: {path}")
+        if path.is_file():
+            actual[path.relative_to(model_root).as_posix()] = path
+    if set(actual) != set(expected):
+        missing = sorted(set(expected) - set(actual))[:20]
+        extra = sorted(set(actual) - set(expected))[:20]
+        raise RuntimeError(f"raw model Dataset membership mismatch; missing={missing}, extra={extra}")
+    for logical, path in actual.items():
+        entry = expected[logical]
+        if path.stat().st_size != entry.get("byte_size") or _file_digest(path) != entry.get("content_digest"):
+            raise RuntimeError(f"raw model Dataset file binding mismatch: {logical}")
+
+
 def _hardware() -> dict[str, Any]:
     completed = subprocess.run(
         ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader,nounits"],
@@ -256,8 +293,11 @@ def _prediction_document(
 
 def execute(trial_root: Path, model_root: Path, output: Path, trial_package_digest: str) -> None:
     working = Path("/kaggle/working").resolve()
-    if not trial_root.resolve().is_relative_to(working) or not model_root.resolve().is_relative_to(working):
-        raise RuntimeError("writable runtime material must be beneath /kaggle/working")
+    kaggle_input = Path("/kaggle/input").resolve()
+    if not trial_root.resolve().is_relative_to(working):
+        raise RuntimeError("writable trial material must be beneath /kaggle/working")
+    if not model_root.resolve().is_relative_to(kaggle_input):
+        raise RuntimeError("raw model source must be mounted read-only beneath /kaggle/input")
     if not output.resolve().is_relative_to(working):
         raise RuntimeError("result output must be beneath /kaggle/working")
     hardware = _hardware()
@@ -275,6 +315,10 @@ def execute(trial_root: Path, model_root: Path, output: Path, trial_package_dige
     baseline_prompts = _read(trial_root / "components/baseline-prompts.json")
     candidate_prompts = _read(trial_root / "components/candidate-prompts.json")
     binding = _read(trial_root / "bindings/run.json")
+    provenance = _read(trial_root / "bindings/model-source-provenance.json")
+    if provenance.get("content_digest") != binding.get("model_source_provenance_digest"):
+        raise RuntimeError("raw model provenance does not match the run binding")
+    _validate_model_tree(model_root, provenance)
     expected_invocations = sum(len(case["test"]) for case in solver_cases["payload"]["cases"]) * 2
     if envelope["payload"]["invocation_limit_per_configuration"] != expected_invocations:
         raise RuntimeError("execution envelope invocation limit does not match the frozen solver workload")
@@ -338,7 +382,7 @@ def execute(trial_root: Path, model_root: Path, output: Path, trial_package_dige
         "files": entries,
         "metadata": {
             "trial_package_digest": trial_package_digest,
-            "model_package_digest": binding["model_package_digest"],
+            "model_source_provenance_digest": binding["model_source_provenance_digest"],
             "model_dataset": binding["model_dataset"],
             "bundle_id": binding["bundle_id"],
             "repository_revision": binding["repository_revision"],

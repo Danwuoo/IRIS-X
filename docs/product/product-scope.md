@@ -1,13 +1,14 @@
 # Product Scope
 
-Status: current product policy through the Decision 0005 Kaggle handoff, grounded in
+Status: current product policy through the Decision 0006 raw-model Kaggle handoff, grounded in
 [`PRODUCT_THESIS.md`](../../PRODUCT_THESIS.md) and
 [`Decision 0001`](../decisions/0001-adopt-product-oriented-domain-ai-specialization.md),
 with the bounded trial scope selected by
 [`Decision 0004`](../decisions/0004-admit-first-p2-arc-agi-2-engineering-trial.md).
 
 Decision 0005 changes only the Trial 001 execution venue, manual transport, and
-frozen model binding.
+frozen model binding. Decision 0006 changes its active representation from a
+ZIP archive to a provenance-bound unpacked model tree.
 
 ## Product boundary
 
@@ -58,10 +59,10 @@ target.
 The admitted scope covers the minimum repository implementation, exact official
 source materialization, deterministic offline validation, and preflight work.
 Decision 0005 selects the exact Qwen3.8-27B revision and a manual,
-network-disabled Kaggle notebook using one NVIDIA RTX PRO 6000 96 GB. Exact
-model-package bytes, private Dataset versions, runtime dependencies, resource
-and retention bindings, and owner execution authorization remain unresolved
-until preflight. Detailed production architecture remains undecided, and the real run
+network-disabled Kaggle notebook using one NVIDIA RTX PRO 6000 96 GB. Decision
+0006 freezes the exact raw model bytes through provenance. Private Dataset
+versions, runtime dependencies, resource and retention bindings, and owner
+execution authorization remain unresolved until preflight. Detailed production architecture remains undecided, and the real run
 requires a separate explicit owner execution authorization. Trial artifacts
 must use the contracts in [`contracts.md`](contracts.md), changing a contract
 only through a reviewed schema-version decision rather than accidental
