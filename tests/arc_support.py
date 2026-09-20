@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+import zipfile
 
 from irisx.arc_agi2 import SourceProfile, create_source_provenance
 from irisx.canonical import digest_bytes, write_json
 from irisx.contracts import CandidateConfiguration, load_contract
-from irisx.kaggle import create_model_provenance
+from irisx.kaggle import RUNTIME_WHEEL_FILENAMES, create_model_provenance
 
 
 def make_arc_source(root: Path, *, training_count: int = 2, evaluation_count: int = 120) -> SourceProfile:
@@ -54,6 +55,17 @@ def make_model_source(root: Path) -> Path:
     return root / "model-source"
 
 
+def make_runtime_wheels(root: Path) -> Path:
+    wheels = root / "runtime-wheels"
+    wheels.mkdir()
+    for name in RUNTIME_WHEEL_FILENAMES:
+        distribution = name.split("-", 1)[0]
+        member = zipfile.ZipInfo(f"{distribution}.dist-info/METADATA", date_time=(1980, 1, 1, 0, 0, 0))
+        with zipfile.ZipFile(wheels / name, "w", compression=zipfile.ZIP_STORED) as archive:
+            archive.writestr(member, f"Name: {distribution}\nVersion: fixture\n")
+    return wheels
+
+
 def dataset_binding(slug: str) -> dict[str, Any]:
     return {"owner": "fixture-owner", "slug": slug, "version": 1, "private": True, "immutable": True}
 
@@ -66,7 +78,7 @@ def write_outbound_binding(root: Path, bundle_id: str = "run-001") -> Path:
             "bundle_id": bundle_id,
             "model_dataset": dataset_binding("qwen-model"),
             "repository": {"revision": "a" * 40, "clean": True},
-            "runtime_dependencies": {"python": "3.11.9", "torch": "2.8.0", "transformers": "4.57.0", "source": "bound-private-runtime"},
+            "runtime_dependencies": {"python": "3.11.9", "torch": "2.8.0", "transformers": "5.8.1", "source": "bound-private-runtime-plus-offline-wheel-closure"},
             "retention": {
                 "model_dataset": "delete after owner review",
                 "trial_dataset": "delete after verified import",
@@ -114,7 +126,7 @@ def observations() -> dict[str, Any]:
         "format": "irisx/arc-agi-2-execution-observations",
         "format_version": "1.0",
         "hardware": {"gpu_count": 1, "gpu_model": "NVIDIA RTX PRO 6000", "gpu_memory_mib": 98304},
-        "software": {"python": "3.11.9", "torch": "2.8.0", "transformers": "4.57.0"},
+        "software": {"python": "3.11.9", "torch": "2.8.0", "transformers": "5.8.1"},
         "internet_disabled": True,
         "credentials_present": False,
         "network_calls": 0,

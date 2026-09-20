@@ -11,6 +11,7 @@ from arc_support import (
     dataset_binding,
     make_arc_source,
     make_model_source,
+    make_runtime_wheels,
     observations,
     prediction_document,
     runner_logs,
@@ -51,11 +52,13 @@ class KaggleHandoffTests(unittest.TestCase):
         prepare_trial(self.source, self.trial, profile=profile)
         self.model_source = make_model_source(self.root)
         self.binding = write_outbound_binding(self.root)
+        self.runtime_wheels = make_runtime_wheels(self.root)
         self.outbound = self.root / "outbound/run-001/trial-input.zip"
         build_outbound_package(
             self.trial,
             self.model_source,
             self.binding,
+            self.runtime_wheels,
             self.outbound,
             repository_root=ROOT,
         )
@@ -113,6 +116,7 @@ class KaggleHandoffTests(unittest.TestCase):
             self.trial,
             self.model_source,
             self.binding,
+            self.runtime_wheels,
             second,
             repository_root=ROOT,
         )
@@ -131,7 +135,7 @@ class KaggleHandoffTests(unittest.TestCase):
         sidecar = direct.parent / f"{direct.name}-provenance.json"
         create_model_provenance(direct, sidecar, require_git_identity=False)
         output = self.root / "direct/trial-input.zip"
-        build_outbound_package(self.trial, direct, self.binding, output, repository_root=ROOT)
+        build_outbound_package(self.trial, direct, self.binding, self.runtime_wheels, output, repository_root=ROOT)
         manifest, _ = verify_outbound_package(output)
         self.assertEqual(manifest["metadata"]["model"]["source_provenance_digest"], read_json(sidecar)["content_digest"])
 
@@ -160,6 +164,7 @@ class KaggleHandoffTests(unittest.TestCase):
                 self.trial,
                 self.model_source,
                 public,
+                self.runtime_wheels,
                 self.root / "public.zip",
                 repository_root=ROOT,
             )

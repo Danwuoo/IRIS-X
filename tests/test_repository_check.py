@@ -107,6 +107,19 @@ class RepositoryCheckTests(unittest.TestCase):
         ):
             self.assertIn(term, decision)
 
+    def test_decision_0008_binds_the_offline_qwen35_runtime_without_run_authorization(self) -> None:
+        decision = (
+            ROOT / "docs/decisions/0008-bind-offline-qwen3-5-transformers-runtime.md"
+        ).read_text(encoding="utf-8")
+        for term in (
+            "Status: Accepted",
+            "qwen3_5",
+            "Transformers 5.8.1",
+            "offline",
+            "does not authorize the real model/solver run",
+        ):
+            self.assertIn(term, decision)
+
     def test_p0_archive_identities_are_unchanged(self) -> None:
         self.assertEqual(REPOSITORY_CHECK.ARCHIVE_TAG, "archive/pre-product-transition-2026-09-17")
         self.assertEqual(REPOSITORY_CHECK.TAG_OBJECT, "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d")

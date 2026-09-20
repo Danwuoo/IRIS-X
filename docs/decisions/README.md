@@ -28,3 +28,7 @@ unless a new decision explicitly re-adopts them.
   adapts the notebook to Kaggle's extracted Trial Dataset mount and binds
   returned results to the verified trial manifest rather than unavailable ZIP
   container bytes. It does not authorize the real run.
+- [`0008-bind-offline-qwen3-5-transformers-runtime.md`](0008-bind-offline-qwen3-5-transformers-runtime.md)
+  binds a closed offline Transformers 5.8.1 wheel set so the frozen Qwen3.5
+  architecture can load without Kaggle Internet. It does not authorize the
+  real run.

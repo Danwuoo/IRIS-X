@@ -92,6 +92,7 @@ def build_parser() -> argparse.ArgumentParser:
     arc_outbound_build.add_argument("--trial", required=True, type=_path)
     arc_outbound_build.add_argument("--model-source", required=True, type=_path)
     arc_outbound_build.add_argument("--binding", required=True, type=_path)
+    arc_outbound_build.add_argument("--runtime-wheels", required=True, type=_path)
     arc_outbound_build.add_argument("--output", required=True, type=_path)
     arc_outbound_verify = arc_trial_sub.add_parser("outbound-verify", help="verify trial-input.zip offline")
     arc_outbound_verify.add_argument("path", type=_path)
@@ -181,7 +182,12 @@ def execute(args: argparse.Namespace) -> str:
         if args.arc_trial_command == "outbound-build":
             repository_root = Path(__file__).resolve().parents[2]
             digest = build_outbound_package(
-                args.trial, args.model_source, args.binding, args.output, repository_root=repository_root
+                args.trial,
+                args.model_source,
+                args.binding,
+                args.runtime_wheels,
+                args.output,
+                repository_root=repository_root,
             )
             return f"built closed-world Kaggle trial input: {digest}"
         if args.arc_trial_command == "outbound-verify":

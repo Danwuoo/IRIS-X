@@ -315,6 +315,14 @@ def execute(trial_root: Path, model_root: Path, output: Path, trial_manifest_dig
     baseline_prompts = _read(trial_root / "components/baseline-prompts.json")
     candidate_prompts = _read(trial_root / "components/candidate-prompts.json")
     binding = _read(trial_root / "bindings/run.json")
+    dependencies = _read(trial_root / "runtime/dependencies.json")
+    observed_software = {
+        "python": os.sys.version.split()[0],
+        "torch": torch.__version__,
+        "transformers": transformers.__version__,
+    }
+    if any(observed_software[field] != dependencies.get(field) for field in observed_software):
+        raise RuntimeError(f"effective runtime does not match the bound dependency versions: {observed_software}")
     provenance = _read(trial_root / "bindings/model-source-provenance.json")
     if provenance.get("content_digest") != binding.get("model_source_provenance_digest"):
         raise RuntimeError("raw model provenance does not match the run binding")
@@ -349,7 +357,7 @@ def execute(trial_root: Path, model_root: Path, output: Path, trial_manifest_dig
         "format": "irisx/arc-agi-2-execution-observations",
         "format_version": "1.0",
         "hardware": hardware,
-        "software": {"python": os.sys.version.split()[0], "torch": torch.__version__, "transformers": transformers.__version__},
+        "software": observed_software,
         "internet_disabled": True,
         "credentials_present": False,
         "network_calls": _NETWORK_ATTEMPTS,

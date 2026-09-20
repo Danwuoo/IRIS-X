@@ -5,9 +5,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import tempfile
 from typing import Any
+import zipfile
 
 from .arc_agi2 import (
     ARC_COMMIT,
@@ -56,7 +58,40 @@ OUTBOUND_PATHS = {
     "runtime/dependencies.json",
     "runtime/runner.py",
     "runtime/notebook.ipynb",
+    "runtime/wheels.json",
 }
+RUNTIME_WHEEL_FILENAMES = (
+    "accelerate-1.10.1-py3-none-any.whl",
+    "annotated_doc-0.0.5-py3-none-any.whl",
+    "anyio-4.15.1-py3-none-any.whl",
+    "certifi-2026.7.22-py3-none-any.whl",
+    "click-8.5.0-py3-none-any.whl",
+    "colorama-0.4.6-py2.py3-none-any.whl",
+    "filelock-4.0.1-py3-none-any.whl",
+    "fsspec-2026.9.0-py3-none-any.whl",
+    "h11-0.16.0-py3-none-any.whl",
+    "hf_xet-1.6.0-cp38-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "httpcore-1.0.9-py3-none-any.whl",
+    "httpx-0.28.1-py3-none-any.whl",
+    "huggingface_hub-1.32.0-py3-none-any.whl",
+    "idna-3.20-py3-none-any.whl",
+    "markdown_it_py-4.2.0-py3-none-any.whl",
+    "mdurl-0.1.2-py3-none-any.whl",
+    "numpy-2.2.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+    "packaging-26.3-py3-none-any.whl",
+    "psutil-7.1.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+    "pygments-2.21.0-py3-none-any.whl",
+    "pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+    "regex-2026.9.10-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+    "rich-15.0.0-py3-none-any.whl",
+    "safetensors-0.8.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+    "shellingham-1.5.4-py2.py3-none-any.whl",
+    "tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+    "tqdm-4.70.1-py3-none-any.whl",
+    "transformers-5.8.1-py3-none-any.whl",
+    "typer-0.27.2-py3-none-any.whl",
+    "typing_extensions-4.16.0-py3-none-any.whl",
+)
 RESULT_PATHS = {
     "predictions/baseline.json",
     "predictions/candidate.json",
@@ -364,10 +399,62 @@ def _read_repo_file(root: Path, relative: str) -> bytes:
     return path.read_bytes()
 
 
+def _runtime_wheel_files(root: Path, dependencies: dict[str, str]) -> tuple[dict[str, bytes], dict[str, Any]]:
+    """Validate and bind the exact offline Python 3.12/Linux wheel closure."""
+
+    if dependencies.get("transformers") != "5.8.1":
+        raise ValidationError("runtime transformers must be exactly 5.8.1 for Qwen3.5")
+    if not root.is_dir():
+        raise ValidationError(f"runtime wheel directory does not exist: {root}")
+    actual = {path.name: path for path in root.iterdir() if path.is_file()}
+    if set(actual) != set(RUNTIME_WHEEL_FILENAMES):
+        missing = sorted(set(RUNTIME_WHEEL_FILENAMES) - set(actual))
+        unexpected = sorted(set(actual) - set(RUNTIME_WHEEL_FILENAMES))
+        raise ValidationError(f"runtime wheel closure mismatch; missing={missing}, unexpected={unexpected}")
+    files: dict[str, bytes] = {}
+    entries: list[dict[str, Any]] = []
+    for name in RUNTIME_WHEEL_FILENAMES:
+        path = actual[name]
+        try:
+            with zipfile.ZipFile(path) as archive:
+                members = archive.infolist()
+                if not members or not any(member.filename.endswith(".dist-info/METADATA") for member in members):
+                    raise ValidationError(f"runtime wheel lacks package metadata: {name}")
+                for member in members:
+                    logical = member.filename
+                    parts = logical.split("/")
+                    path_parts = parts[:-1] if member.is_dir() and parts[-1] == "" else parts
+                    if (
+                        not logical
+                        or not path_parts
+                        or "\\" in logical
+                        or logical.startswith("/")
+                        or any(part in {"", ".", ".."} for part in path_parts)
+                        or stat.S_ISLNK(member.external_attr >> 16)
+                    ):
+                        raise ValidationError(f"runtime wheel contains an unsafe member: {name}:{logical}")
+        except zipfile.BadZipFile as exc:
+            raise ValidationError(f"runtime wheel is not a valid ZIP archive: {name}") from exc
+        data = path.read_bytes()
+        logical = f"runtime/wheels/{name}"
+        files[logical] = data
+        entries.append({"path": logical, "byte_size": len(data), "content_digest": digest_bytes(data)})
+    manifest = {
+        "format": "irisx/offline-python-wheel-closure",
+        "format_version": "1.0",
+        "python_abi": "cp312",
+        "platform": "manylinux2014_x86_64",
+        "transformers": "5.8.1",
+        "wheels": entries,
+    }
+    return files, manifest
+
+
 def build_outbound_package(
     trial_root: Path,
     model_source: Path,
     binding_path: Path,
+    runtime_wheels: Path,
     output: Path,
     *,
     repository_root: Path,
@@ -376,6 +463,7 @@ def build_outbound_package(
     model_provenance = validate_model_source(model_source)
     model_provenance_digest = model_provenance["content_digest"]
     binding = _load_binding(binding_path)
+    wheel_files, wheel_manifest = _runtime_wheel_files(runtime_wheels, binding["runtime_dependencies"])
     runner = _read_repo_file(repository_root, "src/irisx/kaggle_runner.py")
     notebook = _read_repo_file(repository_root, "trials/first-real-domain/kaggle-notebook.ipynb")
     model = read_json(trial_root / "model.json")
@@ -425,7 +513,9 @@ def build_outbound_package(
         "runtime/dependencies.json": _json_bytes(binding["runtime_dependencies"]),
         "runtime/runner.py": runner,
         "runtime/notebook.ipynb": notebook,
+        "runtime/wheels.json": _json_bytes(wheel_manifest),
     }
+    files.update(wheel_files)
     digest = write_zip(
         output,
         TRIAL_PACKAGE_KIND,
@@ -446,6 +536,7 @@ def build_outbound_package(
             "candidate_configuration_ref": run_binding["candidate_configuration_ref"],
             "execution_envelope_ref": run_binding["execution_envelope_ref"],
             "runtime_dependencies": binding["runtime_dependencies"],
+            "runtime_wheels_digest": digest_bytes(_json_bytes(wheel_manifest)),
             "retention": binding["retention"],
         },
         limits=TRIAL_LIMITS,
@@ -456,7 +547,8 @@ def build_outbound_package(
 
 def verify_outbound_package(path: Path, *, expected_evaluation_count: int = PUBLIC_EVALUATION_COUNT) -> tuple[dict[str, Any], str]:
     manifest, contents, archive_digest = verify_zip(path, limits=TRIAL_LIMITS, package_kind=TRIAL_PACKAGE_KIND)
-    if set(contents) != OUTBOUND_PATHS:
+    wheel_paths = {f"runtime/wheels/{name}" for name in RUNTIME_WHEEL_FILENAMES}
+    if set(contents) != OUTBOUND_PATHS | wheel_paths:
         raise ValidationError("trial input package membership is not the exact closed-world profile")
     solver = validate_artifact(_json_from_bytes(contents["cases/solver-cases.json"], "cases/solver-cases.json"), kind="irisx/arc-solver-cases")
     cases = solver["payload"].get("cases")
@@ -482,6 +574,7 @@ def verify_outbound_package(path: Path, *, expected_evaluation_count: int = PUBL
     envelope = validate_artifact(_json_from_bytes(contents["bindings/execution-envelope.json"], "execution-envelope.json"), kind="irisx/execution-envelope")
     run = _json_from_bytes(contents["bindings/run.json"], "run.json")
     dependencies = _json_from_bytes(contents["runtime/dependencies.json"], "dependencies.json")
+    wheel_manifest = _json_from_bytes(contents["runtime/wheels.json"], "wheels.json")
     if model["payload"].get("repository") != MODEL_REPOSITORY or model["payload"].get("revision") != MODEL_REVISION:
         raise ValidationError("outbound model descriptor was substituted")
     expected_model_metadata = {
@@ -547,6 +640,25 @@ def verify_outbound_package(path: Path, *, expected_evaluation_count: int = PUBL
         raise ValidationError("outbound runtime dependencies are not fully bound")
     if dependencies != manifest["metadata"].get("runtime_dependencies"):
         raise ValidationError("outbound runtime dependency binding is stale")
+    expected_wheels = [
+        {
+            "path": logical,
+            "byte_size": len(contents[logical]),
+            "content_digest": digest_bytes(contents[logical]),
+        }
+        for logical in sorted(wheel_paths)
+    ]
+    if wheel_manifest != {
+        "format": "irisx/offline-python-wheel-closure",
+        "format_version": "1.0",
+        "python_abi": "cp312",
+        "platform": "manylinux2014_x86_64",
+        "transformers": "5.8.1",
+        "wheels": expected_wheels,
+    }:
+        raise ValidationError("outbound runtime wheel closure is stale or substituted")
+    if manifest["metadata"].get("runtime_wheels_digest") != digest_bytes(contents["runtime/wheels.json"]):
+        raise ValidationError("outbound runtime wheel manifest digest is stale")
     if run.get("retention") != manifest["metadata"].get("retention"):
         raise ValidationError("outbound retention binding is stale")
     for logical, data in contents.items():

@@ -1,13 +1,13 @@
 # ARC-AGI-2 Trial 001 Kaggle handoff
 
-Status: active under Decisions 0004, 0005, 0006, and 0007. The real run remains
+Status: active under Decisions 0004, 0005, 0006, 0007, and 0008. The real run remains
 unauthorized until a separate explicit owner instruction.
 
 ## Data flow
 
 ```text
 verified local ARC source + verified unpacked Qwen model source
-  -> trial-input.zip (contracts, provenance, runner, notebook; no model bytes)
+  -> trial-input.zip (contracts, provenance, offline runtime wheels, runner, notebook; no model bytes)
   -> two manually uploaded private immutable Kaggle Datasets
   -> Kaggle exposes the trial ZIP as an extracted tree
   -> network-disabled notebook verifies that tree and reads raw model files in place
@@ -31,6 +31,8 @@ Kaggle credentials and transport are manual and stay outside the repository.
 - representation: unpacked model files at the Dataset root
 - identity: exact path, byte size, and SHA-256 list in the local provenance
   sidecar and outbound binding
+- effective runtime: Python 3.12.13, Torch 2.10.0+cu128, and the packaged
+  offline Transformers 5.8.1 wheel closure
 
 `model-package.zip` is not part of the active flow.
 
@@ -49,14 +51,16 @@ irisx arc-agi-2 trial outbound-build `
   --trial .irisx\arc-agi-2\trial-001\trial `
   --model-source .irisx\arc-agi-2\trial-001\model\qwen3.8-27b-1d4bf0f2 `
   --binding .irisx\arc-agi-2\trial-001\kaggle\outbound-binding.json `
+  --runtime-wheels .irisx\arc-agi-2\trial-001\runtime\linux-cp312 `
   --output .irisx\arc-agi-2\trial-001\kaggle\outbound\run-001\trial-input.zip
 
 irisx arc-agi-2 trial outbound-verify `
   .irisx\arc-agi-2\trial-001\kaggle\outbound\run-001\trial-input.zip
 ```
 
-The outbound builder validates every local model file and embeds the canonical
-model provenance. It does not copy model bytes into `trial-input.zip`.
+The outbound builder validates every local model file, embeds the canonical
+model provenance, and binds every runtime wheel by path, size, and digest. It
+does not copy model bytes into `trial-input.zip`.
 
 ## Preflight
 
@@ -90,10 +94,13 @@ is readiness evidence, not execution authorization.
    `/kaggle/input/datasets/danielwuu/trial-input`, verifies its manifest and
    complete closed-world membership, then copies only those small trial files
    to `/kaggle/working`.
-6. The notebook verifies the complete raw model Dataset against provenance and loads
+6. The notebook safely expands the verified offline wheel closure into
+   `/kaggle/working`, confirms Transformers 5.8.1 exposes Qwen3.5, and does not
+   access the network.
+7. The notebook verifies the complete raw model Dataset against provenance and loads
    it directly from `/kaggle/input`; it performs no 55 GB ZIP extraction or
    model copy.
-7. Download `/kaggle/working/result-package.zip` unchanged.
+8. Download `/kaggle/working/result-package.zip` unchanged.
 
 ## Quarantine, local scoring, and final package
 

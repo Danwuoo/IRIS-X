@@ -26,6 +26,8 @@ the private Kaggle Dataset. It also does not authorize the real run.
 Decision 0007 binds Kaggle's extracted trial Dataset at
 `/kaggle/input/datasets/danielwuu/trial-input` and uses its verified manifest
 digest as the returned-result identity. It also does not authorize the real run.
+Decision 0008 binds a closed offline Transformers 5.8.1 wheel set for the
+selected model's Qwen3.5 architecture. It also does not authorize the real run.
 
 ## Authority order
 
@@ -65,8 +67,9 @@ paths. Do not recreate a legacy root merely to preserve history.
 ## Working rules
 
 - Keep current P2 work within Decision 0004 as narrowly amended by Decisions
-  0005, 0006, and 0007: the minimum ARC-AGI-2 Trial 001 implementation, official
-  source and raw-model materialization, manual Kaggle handoff, deterministic
+  0005, 0006, 0007, and 0008: the minimum ARC-AGI-2 Trial 001 implementation, official
+  source and raw-model materialization, manual Kaggle handoff, the closed
+  offline Qwen3.5 runtime wheel set, deterministic
   offline validation, quarantine import, local evaluation, preflight,
   documentation, and tests. Do not broaden it into a general framework or
   production runtime.
