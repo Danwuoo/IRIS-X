@@ -138,11 +138,11 @@ class KaggleHandoffTests(unittest.TestCase):
         for term in (
             "checkpoint-package.zip",
             "--resume-checkpoint",
-            "--session-invocation-limit",
+            "--invocation-limit",
             "after-every-attempt",
             "cumulative-across-sessions",
             "progress.jsonl",
-            "session_limit_reached",
+            "smoke_limit_reached",
         ):
             self.assertIn(term, notebook + runner)
         self.assertEqual(

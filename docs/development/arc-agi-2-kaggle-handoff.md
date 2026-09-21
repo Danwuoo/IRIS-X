@@ -44,11 +44,12 @@ packaged only as `run-002` and adds:
 - a 1,800-second finalization reserve so remaining invocations can be recorded
   as timeouts and a complete result can close before the venue limit.
 
-The currently packaged notebook limits each session to four actual model
-invocations. Deterministic interleaving makes those first four calls the two
+The currently packaged notebook limits its checkpoint to four actual model
+invocations total. Deterministic interleaving makes those first four calls the two
 attempts for the first baseline input and the two attempts for the matching
 candidate input. Reaching this smoke limit is a successful checkpoint-only
-exit; it never fabricates a partial result package.
+exit; rerunning the notebook cannot add a fifth invocation, and it never
+fabricates a partial result package.
 
 The checkpoint contains predictions and execution state, never evaluator truth.
 Cross-session persistence is manual: download the latest checkpoint unchanged,

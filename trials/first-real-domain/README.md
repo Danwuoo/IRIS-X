@@ -26,10 +26,11 @@ and the offline Kaggle execution envelope.
   canonical progress, resumes only an identity-matched contiguous prefix, and
   reserves 1,800 seconds to close the checkpoint and result before the bound
   wall-clock limit.
-- The current v4 notebook is deliberately a smoke gate: one session starts at
-  most four model invocations, covering two attempts for the first baseline and
-  candidate input. It exits successfully with a checkpoint and does not create
-  a partial `result-package.zip`.
+- The current v4 notebook is deliberately a smoke gate: the checkpoint may
+  contain at most four model invocations total, covering two attempts for the
+  first baseline and candidate input. It exits successfully with a checkpoint
+  and does not create a partial `result-package.zip`; rerunning it cannot add a
+  fifth invocation.
 - The v4 repository implementation and offline verification exist. A final
   uploadable `run-002` package still needs a clean repository revision, exact
   binding, and passing technical preflight.

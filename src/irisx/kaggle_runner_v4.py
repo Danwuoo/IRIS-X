@@ -35,7 +35,7 @@ CHECKPOINT_POLICY = {
     "pending_attempt_recovery": "record-timeout-and-continue",
     "finalization_reserve_seconds": FINALIZATION_RESERVE_SECONDS,
     "resume_budget": "cumulative-across-sessions",
-    "session_invocation_limit": SMOKE_INVOCATION_LIMIT,
+    "smoke_invocation_limit": SMOKE_INVOCATION_LIMIT,
 }
 
 
@@ -293,7 +293,7 @@ def _progress_events(data: bytes) -> list[dict[str, Any]]:
             "invocation_started",
             "invocation_complete",
             "wall_clock_exhausted",
-            "session_limit_reached",
+            "smoke_limit_reached",
         }:
             raise RuntimeError("checkpoint progress event is unsupported")
         events.append(value)
@@ -509,7 +509,7 @@ def execute(
     checkpoint_output: Path,
     trial_manifest_digest: str,
     resume_checkpoint: Path | None = None,
-    session_invocation_limit: int = SMOKE_INVOCATION_LIMIT,
+    invocation_limit: int = SMOKE_INVOCATION_LIMIT,
 ) -> None:
     working = Path("/kaggle/working").resolve()
     kaggle_input = Path("/kaggle/input").resolve()
@@ -522,8 +522,8 @@ def execute(
             raise RuntimeError(f"{label} must be beneath {boundary}")
     if not model_root.resolve().is_relative_to(kaggle_input):
         raise RuntimeError("raw model source must be mounted read-only beneath /kaggle/input")
-    if session_invocation_limit != CHECKPOINT_POLICY["session_invocation_limit"]:
-        raise RuntimeError("session invocation limit does not match the bound smoke policy")
+    if invocation_limit != CHECKPOINT_POLICY["smoke_invocation_limit"]:
+        raise RuntimeError("invocation limit does not match the bound smoke policy")
 
     hardware = core._hardware()
     if os.environ.get("IRISX_KAGGLE_INTERNET_DISABLED") != "1":
@@ -598,7 +598,7 @@ def execute(
     tokenizer = None
     model = None
     if (
-        len(state["completed"]) < len(tasks)
+        len(state["completed"]) < min(len(tasks), invocation_limit)
         and state["consumed_wall_clock_seconds"] < wall_limit - FINALIZATION_RESERVE_SECONDS
     ):
         tokenizer = transformers.AutoTokenizer.from_pretrained(
@@ -615,7 +615,6 @@ def execute(
         )
 
     accounted = time.monotonic()
-    session_invocations = 0
 
     def account_time() -> None:
         nonlocal accounted
@@ -625,13 +624,12 @@ def execute(
 
     while len(state["completed"]) < len(tasks):
         account_time()
-        if session_invocations >= session_invocation_limit:
+        if len(state["completed"]) >= invocation_limit:
             _append_progress(
                 progress,
                 {
-                    "event": "session_limit_reached",
-                    "session_invocations": session_invocations,
-                    "session_invocation_limit": session_invocation_limit,
+                    "event": "smoke_limit_reached",
+                    "smoke_invocation_limit": invocation_limit,
                     "completed_invocations": len(state["completed"]),
                     "total_invocations": len(tasks),
                     "consumed_wall_clock_seconds": state["consumed_wall_clock_seconds"],
@@ -728,7 +726,6 @@ def execute(
         account_time()
         _complete_record(state, progress, task["key"], attempt, elapsed)
         _persist_checkpoint(checkpoint_output, progress, state)
-        session_invocations += 1
 
     account_time()
     _persist_checkpoint(checkpoint_output, progress, state)
@@ -790,7 +787,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--checkpoint-output", required=True, type=Path)
     parser.add_argument("--resume-checkpoint", type=Path)
     parser.add_argument(
-        "--session-invocation-limit",
+        "--invocation-limit",
         required=True,
         type=int,
     )
@@ -803,7 +800,7 @@ def main(argv: list[str] | None = None) -> int:
         args.checkpoint_output,
         args.trial_manifest_digest,
         args.resume_checkpoint,
-        args.session_invocation_limit,
+        args.invocation_limit,
     )
     return 0
 
