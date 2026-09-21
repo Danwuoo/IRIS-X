@@ -31,9 +31,23 @@ and the offline Kaggle execution envelope.
   first baseline and candidate input. It exits successfully with a checkpoint
   and does not create a partial `result-package.zip`; rerunning it cannot add a
   fifth invocation.
-- The v4 repository implementation and offline verification exist. A final
-  uploadable `run-002` package still needs a clean repository revision, exact
-  binding, and passing technical preflight.
+- The executed `run-002` outbound is now frozen at repository revision
+  `ea9cf7ddb014fd39eb7d969323e372ed09a2d8c2` and ZIP SHA-256
+  `7ab7d06e6cdb6f5a41f6ad72b89b74a1ac55797c37fd83ba595e2bcd8d5af2f8`.
+  Its notebook, runner, runner core, run binding, and checkpoint policy must not
+  be rebuilt under the same identity.
+- The owner-authorized smoke execution reached its four-invocation limit. The
+  owner-provided Kaggle log reports four 600-second timeouts and
+  2,400.337651402 seconds of cumulative model-invocation wall time. Model
+  weights loaded, the optimized optional kernels were unavailable, and the
+  runtime used its PyTorch fallback. This is a runtime and failure-mode
+  benchmark only; it contains no successful prediction or accuracy evidence.
+- Kaggle reported `/kaggle/working/checkpoint-package.zip`, but that file has
+  not yet been imported and verified locally. The tracked observation is
+  therefore `owner-reported`, not closure evidence.
+- Decision 0012 prepares an `inconclusive-no-promotion` closure. It remains
+  proposed until the unchanged checkpoint is locally verified and its digest
+  is recorded.
 - The Decision 0009 layout audit remains the authoritative read-only check for
   frozen `run-001` bytes and disposable `.irisx/` aliases.
 - A real model/solver run is not authorized by the tracked repository. It still
@@ -53,12 +67,13 @@ not permit reusing the `run-001` identity for v4 bytes.
 
 ## Next action
 
-Finish the clean-revision `run-002` binding, build and verify its outbound
-package, and obtain a passing technical preflight. Do not execute it over the
-real workload without a separate owner authorization for those final verified
-identities. After authorization, use the v4 notebook and manually preserve its
-`checkpoint-package.zip`. Treat four completed invocations as runtime-path
-proof only, not Trial 001 measurement or promotion evidence.
+Download the unchanged Kaggle `checkpoint-package.zip` to
+`.irisx/arc-agi-2/trial-001/kaggle/inbound/quarantine/run-002/checkpoint-package.zip`.
+Verify its container digest, embedded run identity, contiguous four-invocation
+prefix, status counts, timing, and absence of evaluator truth against the
+frozen outbound package. Then replace the provisional local observation with
+checkpoint-derived evidence and accept Decision 0012. Do not rerun `run-002`,
+score the timeout records, select the candidate, or create a Domain Package.
 
 ## Fixed boundary
 
@@ -70,6 +85,8 @@ proof only, not Trial 001 measurement or promotion evidence.
 - Exactly two predictions per test input; scoring, selection, and Domain Package
   construction remain local.
 - `run-001` bytes and paths remain unchanged; v4 bytes use only `run-002`.
+- Executed `run-002` bytes are frozen; different execution bytes require a new
+  run identity.
 - The 43,200-second execution budget is cumulative across resumed sessions;
   resume cannot create additional model-compute budget.
 

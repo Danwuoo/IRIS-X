@@ -49,3 +49,7 @@ no current authority unless a new decision explicitly re-adopts them.
   preserves the frozen `run-001` bytes and creates a separately identified v4
   `run-002` adapter with atomic per-attempt checkpoints, exact resume identity,
   progress output, and cumulative cross-session time accounting.
+- [`0012-close-arc-agi-2-trial-001-inconclusive.md`](0012-close-arc-agi-2-trial-001-inconclusive.md)
+  is a proposed closure that retains the four timed-out `run-002` invocations
+  as a runtime benchmark and closes Trial 001 without promotion after the
+  returned checkpoint is verified locally.
