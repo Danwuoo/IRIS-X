@@ -77,8 +77,9 @@ budget is USD 0. The current fixed boundary is summarized on the
 handoff guide contains the procedure. Measured notebook execution remains
 network-disabled and credential-free. Evaluator truth, expected-output digests,
 scores, feedback, and third-party ARC material may not cross the outbound
-boundary. The real model/solver run still requires a separate explicit owner
-authorization and a passing technical preflight.
+boundary. The full model/solver run still requires a separate explicit owner
+authorization and a passing technical preflight. Decision 0013 authorizes only
+the exact four-invocation `run-003` completion benchmark.
 
 Decision 0011 checkpoints are truth-free execution outputs under the same
 retention boundary as returned predictions. Cross-session transport is manual:
@@ -86,3 +87,9 @@ the checkpoint may be downloaded unchanged and attached only as a private,
 immutable Kaggle Dataset version. It must remain identity-bound to `run-002`;
 resume neither changes the model/configuration nor grants extra cumulative
 wall-clock budget.
+
+Decision 0013 checkpoints and `result.zip` use the same truth-free retention
+boundary but remain identity-bound to `run-003`. The v5 runner enforces four
+completed invocation records and the frozen token/response limits without a
+per-invocation or cumulative runner time limit. A provider-interrupted pending
+invocation is retried on resume and is not mislabeled as a completed timeout.

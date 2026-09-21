@@ -1,7 +1,7 @@
 # Product-Era Repository Layout
 
 Status: active P1 plus ARC-AGI-2 Trial 001 under the Decision 0010 lightweight
-development workflow as of 2026-09-21.
+development workflow as of 2026-09-22.
 
 | Path | Role | Current state |
 | --- | --- | --- |
@@ -24,7 +24,9 @@ Decision 0010 removes the need to repeat that chain across current guidance:
 routine local work proceeds directly, while the real run requires a separate
 explicit owner authorization and a passing technical preflight. Decision 0011
 adds the distinct checkpoint-aware `run-002` v4 transport without changing the
-frozen `run-001` bytes or authorizing execution.
+frozen `run-001` bytes. Decision 0013 preserves both earlier identities and
+authorizes only a four-invocation, unbounded-time `run-003` v5 completion
+benchmark with checkpoint and `result.zip` evidence.
 
 Historical payload is not deep-moved into `archive/`. Its original tree is
 addressed by the annotated tag `archive/pre-product-transition-2026-09-17`;

@@ -15,7 +15,8 @@ qualification flow. The first P2 Engineering Trial is ARC-AGI-2 with one static
 specialization intervention and a frozen offline Qwen3.8-27B execution path.
 Its concise current state, next action, and fixed boundary are maintained in the
 [`Trial 001 status page`](trials/first-real-domain/README.md). The real run still
-requires a separate explicit owner authorization.
+requires a separate explicit owner authorization; the current authorization is
+limited to the exact four-invocation `run-003` completion benchmark.
 
 [`Decision 0010`](docs/decisions/0010-adopt-lightweight-risk-based-development.md)
 keeps the product goal and Build–Measure–Select method while simplifying daily
@@ -24,6 +25,9 @@ decisions and owner gates are reserved for durable or risky boundary changes.
 After the non-checkpointing `run-001` attempt returned no result, Decision 0011
 adds the separately identified v4 `run-002` path with atomic per-invocation
 checkpoints and cumulative-budget resume. It does not authorize execution.
+Decision 0013 preserves that executed identity and adds v5 `run-003`, with no
+runner time limit, exactly four invocations, resumable checkpoints, complete raw
+generation evidence, and `result.zip`.
 
 ## Quickstart
 

@@ -1,7 +1,8 @@
 # ARC-AGI-2 Trial 001
 
-This is the single current status page for Trial 001. Decisions 0004–0011 retain
-the rationale and exact historical bindings; the detailed manual procedure is
+This is the single current status page for Trial 001. Accepted Decisions
+0004–0011 and 0013 retain the rationale and exact historical bindings;
+Decision 0012 is the pending closure proposal. The detailed manual procedure is
 in the
 [`Kaggle handoff guide`](../../docs/development/arc-agi-2-kaggle-handoff.md).
 
@@ -45,14 +46,23 @@ and the offline Kaggle execution envelope.
 - Kaggle reported `/kaggle/working/checkpoint-package.zip`, but that file has
   not yet been imported and verified locally. The tracked observation is
   therefore `owner-reported`, not closure evidence.
-- Decision 0012 prepares an `inconclusive-no-promotion` closure. It remains
-  proposed until the unchanged checkpoint is locally verified and its digest
-  is recorded.
+- The owner clarified that the desired benchmark must let four generations
+  finish naturally rather than count four timeout records. Decision 0013
+  therefore creates a new `run-003` v5 adapter; `run-002` remains frozen.
+- `run-003` executes exactly the same first four invocation keys, passes no
+  `max_time` to `model.generate`, applies no cumulative runner time limit,
+  checkpoints each invocation, retries an unfinished interrupted invocation on
+  resume, and writes a closed-world `/kaggle/working/result.zip` after four
+  terminal records. The frozen 32,768-token generation cap still applies, and
+  Kaggle retains its provider-controlled session lifetime.
+- Decision 0012 prepares an `inconclusive-no-promotion` closure. It now remains
+  proposed until the unchanged `run-003/result.zip` is locally verified and its
+  digest is recorded.
 - The Decision 0009 layout audit remains the authoritative read-only check for
   frozen `run-001` bytes and disposable `.irisx/` aliases.
-- A real model/solver run is not authorized by the tracked repository. It still
-  requires a separate explicit owner instruction after a passing technical
-  preflight.
+- The owner's 2026-09-22 instruction authorizes only the exact four-invocation
+  `run-003` completion benchmark after a passing technical preflight. The other
+  664 invocations and the complete Trial 001 measurement remain unauthorized.
 
 Run the read-only status audit with:
 
@@ -67,13 +77,14 @@ not permit reusing the `run-001` identity for v4 bytes.
 
 ## Next action
 
-Download the unchanged Kaggle `checkpoint-package.zip` to
-`.irisx/arc-agi-2/trial-001/kaggle/inbound/quarantine/run-002/checkpoint-package.zip`.
-Verify its container digest, embedded run identity, contiguous four-invocation
-prefix, status counts, timing, and absence of evaluator truth against the
-frozen outbound package. Then replace the provisional local observation with
-checkpoint-derived evidence and accept Decision 0012. Do not rerun `run-002`,
-score the timeout records, select the candidate, or create a Domain Package.
+Bind a clean repository revision to `run-003`, build and verify
+`outbound/run-003/trial-input.zip`, and pass its technical preflight. Execute
+the v5 notebook once on the bound offline Kaggle environment, resuming from its
+checkpoint if the provider ends a session. Download the unchanged
+`/kaggle/working/result.zip` to
+`.irisx/arc-agi-2/trial-001/kaggle/inbound/quarantine/run-003/result.zip` and
+verify it with `irisx arc-agi-2 result benchmark-verify`. Then finalize Decision
+0012 without scoring or promoting the four-record benchmark.
 
 ## Fixed boundary
 
@@ -87,8 +98,10 @@ score the timeout records, select the candidate, or create a Domain Package.
 - `run-001` bytes and paths remain unchanged; v4 bytes use only `run-002`.
 - Executed `run-002` bytes are frozen; different execution bytes require a new
   run identity.
-- The 43,200-second execution budget is cumulative across resumed sessions;
-  resume cannot create additional model-compute budget.
+- The `run-002` 43,200-second execution budget remains cumulative across its
+  sessions. The separately identified `run-003` benchmark has no runner time
+  limit; its four-invocation and 32,768-token-per-invocation limits remain
+  binding.
 
 ## Tracked workspace
 
@@ -98,7 +111,9 @@ evidence, and future Domain Packages remain under ignored `.irisx/` paths.
 
 [`kaggle-notebook.ipynb`](kaggle-notebook.ipynb) is the frozen thin execution
 adapter for `run-001`. [`kaggle-notebook-v4.ipynb`](kaggle-notebook-v4.ipynb)
-is the checkpoint-aware `run-002` adapter. It reads immutable private Dataset
-inputs from `/kaggle/input`, verifies them, invokes the digest-bound runner, and
-creates only truth-free checkpoint/result packages. Neither notebook scores
-outputs nor creates selection evidence.
+is the checkpoint-aware `run-002` adapter.
+[`kaggle-notebook-v5.ipynb`](kaggle-notebook-v5.ipynb) is the unbounded-time
+four-invocation `run-003` benchmark adapter. They read immutable private Dataset
+inputs from `/kaggle/input`, verify them, invoke digest-bound runners, and
+create only truth-free checkpoint/result packages. None scores outputs or
+creates selection evidence.

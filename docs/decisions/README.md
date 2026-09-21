@@ -51,5 +51,9 @@ no current authority unless a new decision explicitly re-adopts them.
   progress output, and cumulative cross-session time accounting.
 - [`0012-close-arc-agi-2-trial-001-inconclusive.md`](0012-close-arc-agi-2-trial-001-inconclusive.md)
   is a proposed closure that retains the four timed-out `run-002` invocations
-  as a runtime benchmark and closes Trial 001 without promotion after the
-  returned checkpoint is verified locally.
+  as a runtime benchmark and prepares closure without promotion after the
+  `run-003` completion result is verified locally.
+- [`0013-create-unbounded-four-invocation-run-003.md`](0013-create-unbounded-four-invocation-run-003.md)
+  preserves the executed `run-002` identity and authorizes a new `run-003` v5
+  completion benchmark: exactly four invocations, no runner time limit,
+  resumable checkpoints, and a fully recorded `result.zip`.

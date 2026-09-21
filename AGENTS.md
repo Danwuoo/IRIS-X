@@ -22,6 +22,10 @@ still requires a separate explicit owner authorization, and Decision 0009's
 Decision 0011 creates a distinct checkpointing `run-002` v4 transport after the
 non-checkpointing run-001 attempt failed to finish. It authorizes implementation,
 offline packaging, verification, and preflight only, not real execution.
+Decision 0013 preserves the executed `run-002` identity and authorizes the exact
+four-invocation `run-003` v5 completion benchmark with no runner time limit,
+checkpoint resume, and a truth-free `result.zip`. It does not authorize the
+remaining 664 invocations or Trial 001 scoring and promotion.
 
 ## Authority order
 
@@ -75,15 +79,16 @@ paths. Do not recreate a legacy root merely to preserve history.
 - Preserve the Decision 0009 frozen `run-001` outbound, notebook, runner, and
   manifest identities. Do not move Trial 001 execution bytes until its result
   closure gate passes; never reuse one bundle ID for different outbound bytes.
-- Build checkpointing changes only as `run-002` with the Decision 0011 v4
-  adapter. Checkpoints must be identity-bound, atomic, truth-free, resumable only
-  as a contiguous invocation prefix, and charged against one cumulative time
-  budget across sessions.
+- Preserve executed `run-002` bytes under Decision 0011. Build the unbounded-time
+  four-invocation completion benchmark only as `run-003` with the Decision 0013
+  v5 adapter. Both checkpoint formats must be identity-bound, atomic, truth-free,
+  and resumable only as a contiguous invocation prefix.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.
-- Do not execute the real ARC-AGI-2 model/solver trial without a later explicit
-  owner execution authorization and a passing technical preflight. Do
+- Do not execute the full ARC-AGI-2 model/solver trial without a later explicit
+  owner execution authorization and a passing technical preflight. The current
+  authorization covers only the exact four-invocation `run-003` benchmark. Do
   not start P3/P4, call an external model provider, use third-party ARC data,
   enable notebook Internet during measured execution, automate Kaggle
   credentials or transport, spend external funds, fine-tune the selected model,

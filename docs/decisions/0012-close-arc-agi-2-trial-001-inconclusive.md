@@ -22,10 +22,13 @@ Those observations are useful as a runtime and failure-mode benchmark. They do
 not contain a valid prediction, accuracy result, baseline/candidate comparison,
 or evidence that can support promotion.
 
-The owner directed that the four-invocation observation be retained as a
-reference benchmark and that Trial 001 closure be prepared. The returned
-`checkpoint-package.zip` has not yet been imported and verified locally, so
-this decision remains proposed rather than accepted.
+The owner initially directed that the four-invocation observation be retained
+as a reference benchmark and that Trial 001 closure be prepared. The owner then
+clarified that the desired benchmark must contain four naturally completed
+generations without the runner's 600-second limit. Decision 0013 therefore
+creates the separate `run-003` completion benchmark. This closure decision
+remains proposed until the returned `run-003/result.zip` is imported and
+verified locally.
 
 ## Proposed decision
 
@@ -50,16 +53,15 @@ After the closure evidence gate below passes, close Trial 001 with disposition
 
 This proposal may become accepted only after all of the following are true:
 
-1. the returned `run-002/checkpoint-package.zip` is downloaded unchanged into
-   local quarantine and its container SHA-256 is recorded;
-2. the checkpoint's embedded identity matches the exact verified `run-002`
-   outbound package and its four invocation records form the required
-   contiguous prefix;
-3. local inspection confirms the status and timing counts reported by the
-   Kaggle log, without evaluator truth entering the checkpoint;
-4. the provisional owner-reported benchmark observation is replaced by a
-   checkpoint-verified observation; and
-5. this record is updated with the checkpoint digest and changed to
+1. the returned `run-003/result.zip` is downloaded unchanged into local
+   quarantine and its container SHA-256 is recorded;
+2. offline verification binds the result to the exact verified `run-003`
+   outbound package and confirms four contiguous invocation records;
+3. local inspection records whether each invocation produced a valid grid,
+   malformed generation, or runtime error, without using evaluator truth;
+4. the `run-002` timeout observation and the verified `run-003` completion
+   benchmark are summarized without being treated as accuracy evidence; and
+5. this record is updated with the `run-003` result digest and changed to
    `Status: Accepted`.
 
 Until then, Trial 001 is `closure-prepared-awaiting-checkpoint`, not closed.
@@ -69,7 +71,7 @@ Until then, Trial 001 is `closure-prepared-awaiting-checkpoint`, not closed.
 Decision 0009 assumed successful result return, import, and evaluation before
 layout normalization. An accepted version of this decision will narrowly add
 an alternative terminal closure for a trial that produced no usable result:
-verified checkpoint import plus an explicit `inconclusive-no-promotion`
+verified benchmark-result import plus an explicit `inconclusive-no-promotion`
 closure. It will not weaken the frozen `run-001` identity checks or allow
 unverified evidence to pass the existing result closure gate.
 

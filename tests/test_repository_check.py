@@ -163,6 +163,21 @@ class RepositoryCheckTests(unittest.TestCase):
         ):
             self.assertIn(term, decision)
 
+    def test_decision_0013_creates_exact_four_invocation_completion_benchmark(self) -> None:
+        decision = (
+            ROOT / "docs/decisions/0013-create-unbounded-four-invocation-run-003.md"
+        ).read_text(encoding="utf-8")
+        for term in (
+            "Status: Accepted",
+            "run-003",
+            "exactly the first four",
+            "max_time",
+            "result.zip",
+            "provider-controlled session lifetime",
+            "does not authorize the remaining 664 invocations",
+        ):
+            self.assertIn(term, decision)
+
     def test_trial_001_readme_is_the_current_status_source(self) -> None:
         status = (
             ROOT / "trials/first-real-domain/README.md"
@@ -176,6 +191,8 @@ class RepositoryCheckTests(unittest.TestCase):
             "frozen-awaiting-result-closure",
             "run-002",
             "checkpoint-package.zip",
+            "run-003",
+            "result.zip",
         ):
             self.assertIn(term, status)
 

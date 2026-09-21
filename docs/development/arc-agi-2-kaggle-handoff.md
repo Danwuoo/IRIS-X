@@ -1,9 +1,9 @@
 # ARC-AGI-2 Trial 001 Kaggle handoff
 
-Status: active under Decisions 0004–0011. `run-001` remains frozen and
-unreturned; v4 uses the distinct `run-002` identity. The real run remains
-unauthorized until a separate explicit owner instruction for final verified
-identities.
+Status: active under accepted Decisions 0004–0011 and 0013. `run-001` and the
+executed v4 `run-002` remain frozen. The owner authorized the exact v5
+four-invocation `run-003` completion benchmark; the remaining 664 invocations
+remain unauthorized.
 
 ## Decision 0009 in-flight freeze
 
@@ -57,6 +57,23 @@ publish it as a new immutable version of the private
 `danielwuu/run-002-checkpoint` Dataset, and attach that Dataset to the resumed
 notebook. No credential or automated Kaggle transport is added.
 
+## Decision 0013 run-003 completion benchmark
+
+`run-003` replaces only the four-invocation benchmark transport. It does not
+modify or resume `run-002`. The v5 runner:
+
+- executes the same first four keys as v4;
+- retains `max_new_tokens: 32768` but passes no `max_time` to
+  `model.generate` and applies no cumulative runner wall-clock limit;
+- checkpoints before and after every invocation;
+- retries an interrupted pending invocation on resume; and
+- writes `/kaggle/working/result.zip` after four terminal records.
+
+Kaggle's provider-controlled session lifetime still applies. The result ZIP
+contains each raw generation, parsing and error status, token counts, seeds,
+EOS flags, UTC and elapsed timing, runtime and model identity, progress log,
+final checkpoint, and run binding. It contains no evaluator truth or scores.
+
 ## Data flow
 
 ```text
@@ -66,8 +83,8 @@ verified local ARC source + verified unpacked Qwen model source
      (+ one optional private checkpoint Dataset when resuming)
   -> Kaggle exposes the trial ZIP as an extracted tree
   -> network-disabled notebook verifies that tree and reads raw model files in place
-  -> result-package.zip (predictions and execution observations only)
-  -> local quarantine verification, scoring, selection, and packaging
+  -> run-003 result.zip (four raw generations and execution observations only)
+  -> local quarantine verification and inconclusive closure preparation
 ```
 
 Evaluator truth never enters an outbound Dataset, notebook, or returned result.
@@ -105,17 +122,17 @@ irisx arc-agi-2 model validate `
 irisx arc-agi-2 trial outbound-build `
   --trial .irisx\arc-agi-2\trial-001\trial `
   --model-source .irisx\arc-agi-2\trial-001\model\qwen3.8-27b-1d4bf0f2 `
-  --binding .irisx\arc-agi-2\trial-001\kaggle\run-002-binding.json `
+  --binding .irisx\arc-agi-2\trial-001\kaggle\run-003-binding.json `
   --runtime-wheels .irisx\arc-agi-2\trial-001\runtime\linux-cp312 `
-  --output .irisx\arc-agi-2\trial-001\kaggle\outbound\run-002\trial-input.zip
+  --output .irisx\arc-agi-2\trial-001\kaggle\outbound\run-003\trial-input.zip
 
 irisx arc-agi-2 trial outbound-verify `
-  .irisx\arc-agi-2\trial-001\kaggle\outbound\run-002\trial-input.zip
+  .irisx\arc-agi-2\trial-001\kaggle\outbound\run-003\trial-input.zip
 ```
 
-The binding uses `bundle_id: run-002`. The outbound builder validates every
+The binding uses `bundle_id: run-003`. The outbound builder validates every
 local model file, embeds the canonical model provenance, binds every runtime
-wheel by path, size, and digest, and packages `kaggle_runner_v4.py` as the
+wheel by path, size, and digest, and packages `kaggle_runner_v5.py` as the
 runner plus the frozen v3 runner as `runner_core.py`. It does not copy model
 bytes into `trial-input.zip`.
 
@@ -125,21 +142,23 @@ The preflight binding must bind both private immutable Dataset versions, the
 clean full repository revision, exact Python/Torch/Transformers runtime,
 runtime source identity, notebook, runner, runner-core digests, the exact
 checkpoint policy, one NVIDIA RTX PRO 6000 96 GB GPU, Internet disabled, no
-credentials, provider calls disabled, USD 0 external paid cost, the execution
-envelope, complete result shape, `run-002` quarantine path, and retention
-behavior.
+credentials, provider calls disabled, USD 0 external paid cost, the four-call
+unbounded-time adapter policy, benchmark result shape, `run-003` quarantine
+path, and retention behavior.
 
 ```powershell
 irisx arc-agi-2 trial preflight `
   --trial .irisx\arc-agi-2\trial-001\trial `
   --model-source .irisx\arc-agi-2\trial-001\model\qwen3.8-27b-1d4bf0f2 `
-  --trial-package .irisx\arc-agi-2\trial-001\kaggle\outbound\run-002\trial-input.zip `
-  --binding .irisx\arc-agi-2\trial-001\kaggle\run-002-preflight-binding.json `
-  --output .irisx\arc-agi-2\trial-001\kaggle\run-002-preflight.json
+  --trial-package .irisx\arc-agi-2\trial-001\kaggle\outbound\run-003\trial-input.zip `
+  --binding .irisx\arc-agi-2\trial-001\kaggle\run-003-preflight-binding.json `
+  --output .irisx\arc-agi-2\trial-001\kaggle\run-003-preflight.json
 ```
 
-A valid report says `technical_ready: true` and `run_authorized: false`. That
-is readiness evidence, not execution authorization.
+A valid report says `technical_ready: true`. The owner's Decision-0013
+authorization is separate from this technical evidence and applies only to the
+exact verified `run-003` identities. The technical artifact deliberately keeps
+`run_authorized: false`; it cannot self-authorize execution.
 
 ## Manual Kaggle procedure after authorization
 
@@ -147,7 +166,7 @@ is readiness evidence, not execution authorization.
 2. Select exactly one NVIDIA RTX PRO 6000 96 GB accelerator.
 3. Disable Internet and ensure no credentials are present.
 4. Open the notebook carried in the verified trial package or use the tracked
-   `trials/first-real-domain/kaggle-notebook-v4.ipynb` with the same digest.
+   `trials/first-real-domain/kaggle-notebook-v5.ipynb` with the same digest.
 5. The notebook reads the extracted trial tree directly from
    `/kaggle/input/datasets/danielwuu/trial-input`, verifies its manifest and
    complete closed-world membership, then copies only those small trial files
@@ -158,17 +177,24 @@ is readiness evidence, not execution authorization.
 7. The notebook verifies the complete raw model Dataset against provenance and loads
    it directly from `/kaggle/input`; it performs no 55 GB ZIP extraction or
    model copy.
-8. Watch the flushed notebook progress. The smoke session stops after at most
-   four model invocations. The latest recoverable state is always
-   `/kaggle/working/checkpoint-package.zip`; absence of `result-package.zip` is
-   expected for an incomplete smoke run.
+8. Watch the flushed notebook progress. No runner timer stops a generation.
+   The latest recoverable state is always
+   `/kaggle/working/checkpoint-package.zip`; `result.zip` appears only after
+   four terminal invocation records.
 9. If the session must be resumed, download that checkpoint unchanged, publish
-   it as a private immutable `danielwuu/run-002-checkpoint` Dataset version,
-   attach it, and rerun the v4 notebook. A same-session rerun automatically
+   it as a private immutable `danielwuu/run-003-checkpoint` Dataset version,
+   attach it, and rerun the v5 notebook. A same-session rerun automatically
    finds the working checkpoint first.
-10. Only if a resumed sequence has all 668 records will the runner create
-    `/kaggle/working/result-package.zip`; otherwise use the checkpoint solely as
-    smoke/runtime evidence.
+10. After four terminal records, download `result.zip` unchanged for offline
+    verification. Do not send it through the full-trial scoring/import path.
+
+Verify the returned benchmark without evaluator truth:
+
+```powershell
+irisx arc-agi-2 result benchmark-verify `
+  --package .irisx\arc-agi-2\trial-001\kaggle\inbound\quarantine\run-003\result.zip `
+  --trial-package .irisx\arc-agi-2\trial-001\kaggle\outbound\run-003\trial-input.zip
+```
 
 ## Quarantine, local scoring, and final package
 

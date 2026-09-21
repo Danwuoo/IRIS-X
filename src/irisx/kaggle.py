@@ -30,6 +30,15 @@ from .contracts import CandidateConfiguration, EngineeringTrial, RequirementSet,
 from .engine import select_configuration
 from .errors import ValidationError
 from .kaggle_runner_v4 import CHECKPOINT_POLICY
+from .kaggle_runner_v5 import (
+    BENCHMARK_INVOCATION_LIMIT,
+    BENCHMARK_RESULT_KIND,
+    CHECKPOINT_POLICY as COMPLETION_BENCHMARK_POLICY,
+    _identity as _benchmark_identity,
+    _progress_events as _benchmark_progress_events,
+    _tasks as _benchmark_tasks,
+    _validate_state as _validate_benchmark_state,
+)
 from .transport import (
     RESULT_LIMITS,
     TRIAL_LIMITS,
@@ -100,6 +109,14 @@ RESULT_PATHS = {
     "observations/execution.json",
     "logs/runner.json",
 }
+BENCHMARK_RESULT_SHAPE = [
+    "benchmark/result.json",
+    "bindings/run.json",
+    "checkpoint/checkpoint.json",
+    "logs/progress.jsonl",
+    "observations/execution.json",
+    "outputs/<four-sequence-bound-raw-text-files>",
+]
 FORBIDDEN_OUTBOUND_KEYS = {
     "expected",
     "expected_ref",
@@ -401,13 +418,17 @@ def _read_repo_file(root: Path, relative: str) -> bytes:
     return path.read_bytes()
 
 
-def _adapter_files(repository_root: Path, bundle_id: str) -> tuple[bytes, bytes, bytes | None]:
-    """Select the immutable run-001 adapter or checkpointing run-002 adapter."""
+def _adapter_files(
+    repository_root: Path,
+    bundle_id: str,
+) -> tuple[bytes, bytes, bytes | None, dict[str, Any] | None]:
+    """Select one immutable, run-identified Kaggle adapter."""
 
     if bundle_id == "run-001":
         return (
             _read_repo_file(repository_root, "src/irisx/kaggle_runner.py"),
             _read_repo_file(repository_root, "trials/first-real-domain/kaggle-notebook.ipynb"),
+            None,
             None,
         )
     if bundle_id == "run-002":
@@ -415,8 +436,16 @@ def _adapter_files(repository_root: Path, bundle_id: str) -> tuple[bytes, bytes,
             _read_repo_file(repository_root, "src/irisx/kaggle_runner_v4.py"),
             _read_repo_file(repository_root, "trials/first-real-domain/kaggle-notebook-v4.ipynb"),
             _read_repo_file(repository_root, "src/irisx/kaggle_runner.py"),
+            CHECKPOINT_POLICY,
         )
-    raise ValidationError("Trial 001 outbound bundle_id must be run-001 or run-002")
+    if bundle_id == "run-003":
+        return (
+            _read_repo_file(repository_root, "src/irisx/kaggle_runner_v5.py"),
+            _read_repo_file(repository_root, "trials/first-real-domain/kaggle-notebook-v5.ipynb"),
+            _read_repo_file(repository_root, "src/irisx/kaggle_runner.py"),
+            COMPLETION_BENCHMARK_POLICY,
+        )
+    raise ValidationError("Trial 001 outbound bundle_id must be run-001, run-002, or run-003")
 
 
 def _validate_outbound_destination(output: Path, bundle_id: str) -> None:
@@ -495,7 +524,7 @@ def build_outbound_package(
     binding = _load_binding(binding_path)
     _validate_outbound_destination(output, binding["bundle_id"])
     wheel_files, wheel_manifest = _runtime_wheel_files(runtime_wheels, binding["runtime_dependencies"])
-    runner, notebook, runner_core = _adapter_files(repository_root, binding["bundle_id"])
+    runner, notebook, runner_core, adapter_policy = _adapter_files(repository_root, binding["bundle_id"])
     model = read_json(trial_root / "model.json")
     envelope = read_json(trial_root / "execution-envelope.json")
     baseline = read_json(trial_root / "baseline.json")
@@ -519,10 +548,11 @@ def build_outbound_package(
         "retention": binding["retention"],
     }
     if runner_core is not None:
+        assert adapter_policy is not None
         run_binding.update(
             {
                 "runner_core_digest": digest_bytes(runner_core),
-                "checkpoint_policy": CHECKPOINT_POLICY,
+                "checkpoint_policy": adapter_policy,
             }
         )
     model_binding = make_artifact(
@@ -574,10 +604,11 @@ def build_outbound_package(
         "retention": binding["retention"],
     }
     if runner_core is not None:
+        assert adapter_policy is not None
         metadata.update(
             {
                 "runner_core_digest": digest_bytes(runner_core),
-                "checkpoint_policy": CHECKPOINT_POLICY,
+                "checkpoint_policy": adapter_policy,
             }
         )
     digest = write_zip(
@@ -599,11 +630,17 @@ def verify_outbound_package(path: Path, *, expected_evaluation_count: int = PUBL
     if package_id == "run-001":
         expected_paths = OUTBOUND_PATHS | wheel_paths
         checkpointing = False
+        adapter_policy = None
     elif package_id == "run-002":
         expected_paths = CHECKPOINT_OUTBOUND_PATHS | wheel_paths
         checkpointing = True
+        adapter_policy = CHECKPOINT_POLICY
+    elif package_id == "run-003":
+        expected_paths = CHECKPOINT_OUTBOUND_PATHS | wheel_paths
+        checkpointing = True
+        adapter_policy = COMPLETION_BENCHMARK_POLICY
     else:
-        raise ValidationError("Trial 001 outbound package ID must be run-001 or run-002")
+        raise ValidationError("Trial 001 outbound package ID must be run-001, run-002, or run-003")
     if set(contents) != expected_paths:
         raise ValidationError("trial input package membership is not the exact closed-world profile")
     solver = validate_artifact(_json_from_bytes(contents["cases/solver-cases.json"], "cases/solver-cases.json"), kind="irisx/arc-solver-cases")
@@ -696,7 +733,7 @@ def verify_outbound_package(path: Path, *, expected_evaluation_count: int = PUBL
     if digest_bytes(contents["runtime/notebook.ipynb"]) != run["notebook_digest"]:
         raise ValidationError("outbound notebook source digest mismatch")
     if checkpointing:
-        if run["checkpoint_policy"] != CHECKPOINT_POLICY:
+        if run["checkpoint_policy"] != adapter_policy:
             raise ValidationError("outbound checkpoint policy is stale or unsupported")
         if digest_bytes(contents["runtime/runner_core.py"]) != run["runner_core_digest"]:
             raise ValidationError("outbound runner core source digest mismatch")
@@ -966,6 +1003,189 @@ def verify_result_package(
     return manifest, contents, result_digest
 
 
+def verify_benchmark_result_package(
+    path: Path,
+    outbound_package: Path,
+) -> tuple[dict[str, Any], dict[str, bytes], str]:
+    """Verify an untrusted run-003 four-invocation ``result.zip`` offline."""
+
+    outbound_manifest, outbound_digest = verify_outbound_package(outbound_package)
+    if outbound_manifest["package_id"] != "run-003":
+        raise ValidationError("four-invocation benchmark result requires the run-003 outbound package")
+    _, outbound_contents, verified_outbound_digest = verify_zip(
+        outbound_package,
+        limits=TRIAL_LIMITS,
+        package_kind=TRIAL_PACKAGE_KIND,
+    )
+    if verified_outbound_digest != outbound_digest:
+        raise ValidationError("run-003 outbound digest changed during verification")
+
+    manifest, contents, result_digest = verify_zip(
+        path,
+        limits=RESULT_LIMITS,
+        package_kind=BENCHMARK_RESULT_KIND,
+    )
+    fixed = {
+        "benchmark/result.json",
+        "bindings/run.json",
+        "checkpoint/checkpoint.json",
+        "observations/execution.json",
+        "logs/progress.jsonl",
+    }
+    raw_paths = {logical for logical in contents if logical.startswith("outputs/") and logical.endswith(".txt")}
+    if set(contents) != fixed | raw_paths or len(raw_paths) != BENCHMARK_INVOCATION_LIMIT:
+        raise ValidationError("benchmark result membership is not the exact four-invocation profile")
+
+    run = _json_from_bytes(outbound_contents["bindings/run.json"], "outbound bindings/run.json")
+    returned_run = _json_from_bytes(contents["bindings/run.json"], "bindings/run.json")
+    if returned_run != run:
+        raise ValidationError("benchmark result run binding is stale or substituted")
+    identity = _benchmark_identity(run, outbound_manifest_digest(outbound_manifest))
+    expected_metadata = {
+        "trial_manifest_digest": identity["trial_manifest_digest"],
+        "model_source_provenance_digest": identity["model_source_provenance_digest"],
+        "model_dataset": run["model_dataset"],
+        "bundle_id": identity["bundle_id"],
+        "repository_revision": identity["repository_revision"],
+        "notebook_digest": identity["notebook_digest"],
+        "runner_digest": identity["runner_digest"],
+        "runner_core_digest": identity["runner_core_digest"],
+        "checkpoint_policy": identity["checkpoint_policy"],
+        "baseline_configuration_ref": identity["baseline_configuration_ref"],
+        "candidate_configuration_ref": identity["candidate_configuration_ref"],
+        "execution_envelope_ref": identity["execution_envelope_ref"],
+    }
+    if manifest["package_id"] != "run-003" or manifest["metadata"] != expected_metadata:
+        raise ValidationError("benchmark result upstream identity is stale or substituted")
+
+    solver = _json_from_bytes(outbound_contents["cases/solver-cases.json"], "cases/solver-cases.json")
+    baseline = _json_from_bytes(outbound_contents["configurations/baseline.json"], "configurations/baseline.json")
+    candidate = _json_from_bytes(outbound_contents["configurations/candidate.json"], "configurations/candidate.json")
+    baseline_prompts = _json_from_bytes(
+        outbound_contents["components/baseline-prompts.json"], "components/baseline-prompts.json"
+    )
+    candidate_prompts = _json_from_bytes(
+        outbound_contents["components/candidate-prompts.json"], "components/candidate-prompts.json"
+    )
+    tasks = _benchmark_tasks(solver, baseline, candidate, baseline_prompts, candidate_prompts)
+    expected_keys = [task["key"] for task in tasks[:BENCHMARK_INVOCATION_LIMIT]]
+    state = _json_from_bytes(contents["checkpoint/checkpoint.json"], "checkpoint/checkpoint.json")
+    try:
+        _validate_benchmark_state(state, identity, expected_keys)
+        progress_events = _benchmark_progress_events(contents["logs/progress.jsonl"])
+    except RuntimeError as exc:
+        raise ValidationError(f"benchmark checkpoint evidence is invalid: {exc}") from exc
+    if state["pending"] is not None or len(state["completed"]) != BENCHMARK_INVOCATION_LIMIT:
+        raise ValidationError("benchmark result does not contain four completed invocations")
+    complete_events = [event for event in progress_events if event.get("event") == "invocation_complete"]
+    if (
+        len(complete_events) != BENCHMARK_INVOCATION_LIMIT
+        or not progress_events
+        or progress_events[-1].get("event") != "benchmark_complete"
+    ):
+        raise ValidationError("benchmark progress log does not prove four completed invocations")
+    for sequence, (event, record) in enumerate(zip(complete_events, state["completed"], strict=True)):
+        if (
+            event.get("sequence") != sequence
+            or event.get("key") != record["key"]
+            or event.get("status") != record["attempt"]["status"]
+            or event.get("elapsed_seconds") != record["elapsed_seconds"]
+        ):
+            raise ValidationError("benchmark progress event does not match checkpoint state")
+
+    benchmark = _json_from_bytes(contents["benchmark/result.json"], "benchmark/result.json")
+    if (
+        not isinstance(benchmark, dict)
+        or set(benchmark) != {
+            "format", "format_version", "run_id", "scope", "required_invocations",
+            "completed_invocations", "records"
+        }
+        or benchmark["format"] != "irisx/arc-agi-2-four-invocation-benchmark"
+        or benchmark["format_version"] != "1.0"
+        or benchmark["run_id"] != "run-003"
+        or benchmark["scope"] != COMPLETION_BENCHMARK_POLICY["scope"]
+        or benchmark["required_invocations"] != BENCHMARK_INVOCATION_LIMIT
+        or benchmark["completed_invocations"] != BENCHMARK_INVOCATION_LIMIT
+        or not isinstance(benchmark["records"], list)
+        or len(benchmark["records"]) != BENCHMARK_INVOCATION_LIMIT
+    ):
+        raise ValidationError("benchmark result summary is malformed or incomplete")
+    expected_raw_paths = set()
+    for sequence, (summary, state_record) in enumerate(zip(benchmark["records"], state["completed"], strict=True)):
+        if not isinstance(summary, dict) or set(summary) != {
+            "sequence", "key", "attempt", "elapsed_seconds", "started_at_utc",
+            "finished_at_utc", "raw_output_path"
+        }:
+            raise ValidationError("benchmark invocation summary fields are incomplete")
+        attempt_without_raw = {
+            name: value for name, value in state_record["attempt"].items() if name != "raw_output"
+        }
+        if (
+            summary["sequence"] != sequence
+            or summary["key"] != state_record["key"]
+            or summary["attempt"] != attempt_without_raw
+            or summary["elapsed_seconds"] != state_record["elapsed_seconds"]
+            or summary["started_at_utc"] != state_record["started_at_utc"]
+            or summary["finished_at_utc"] != state_record["finished_at_utc"]
+        ):
+            raise ValidationError("benchmark invocation summary does not match checkpoint state")
+        raw_path = summary["raw_output_path"]
+        if not isinstance(raw_path, str) or raw_path not in raw_paths:
+            raise ValidationError("benchmark raw output path is missing or unsafe")
+        expected_raw_paths.add(raw_path)
+        raw = state_record["attempt"]["raw_output"].encode("utf-8")
+        if contents[raw_path] != raw or digest_bytes(raw) != state_record["attempt"]["raw_output_digest"]:
+            raise ValidationError("benchmark raw output does not match its checkpoint digest")
+    if expected_raw_paths != raw_paths:
+        raise ValidationError("benchmark result contains an unreferenced raw output")
+
+    observations = _json_from_bytes(contents["observations/execution.json"], "observations/execution.json")
+    if (
+        not isinstance(observations, dict)
+        or observations.get("format") != "irisx/arc-agi-2-four-invocation-benchmark-observations"
+        or observations.get("format_version") != "1.0"
+        or observations.get("time_limit_policy") != {
+            "invocation_time_limit_seconds": None,
+            "cumulative_time_limit_seconds": None,
+            "provider_session_limit_controlled": False,
+        }
+        or observations.get("checkpoint", {}).get("completed_invocations") != BENCHMARK_INVOCATION_LIMIT
+        or observations.get("checkpoint", {}).get("required_invocations") != BENCHMARK_INVOCATION_LIMIT
+        or observations.get("network_calls") != 0
+        or observations.get("provider_calls") != 0
+        or observations.get("evaluation_leaks") != 0
+    ):
+        raise ValidationError("benchmark execution observations are incomplete or unsafe")
+    dependencies = _json_from_bytes(outbound_contents["runtime/dependencies.json"], "runtime/dependencies.json")
+    software = observations.get("software")
+    if not isinstance(software, dict) or any(
+        software.get(field) != dependencies.get(field) for field in ("python", "torch", "transformers")
+    ):
+        raise ValidationError("benchmark software identity does not match the outbound runtime")
+    last_session = state["sessions"][-1]
+    model_identity = next(
+        (session["model"] for session in reversed(state["sessions"]) if session["model"] is not None),
+        None,
+    )
+    if (
+        model_identity is None
+        or
+        observations.get("hardware") != last_session["hardware"]
+        or software != last_session["software"]
+        or observations.get("model") != model_identity
+        or observations.get("recorded_wall_clock_seconds") != state["consumed_wall_clock_seconds"]
+        or observations.get("checkpoint", {}).get("sessions") != state["sessions"]
+        or observations.get("checkpoint", {}).get("interrupted_attempts") != state["interrupted_attempts"]
+    ):
+        raise ValidationError("benchmark runtime observations do not match checkpoint state")
+    for logical, data in contents.items():
+        if logical.endswith(".json"):
+            value = _json_from_bytes(data, logical)
+            _walk_keys(value)
+            _reject_secret_material(value)
+    return manifest, contents, result_digest
+
+
 def import_quarantine(
     result_package: Path,
     outbound_package: Path,
@@ -1087,7 +1307,9 @@ def preflight(
         "hardware", "internet_disabled", "credentials_present", "provider_calls_enabled", "external_paid_cost_usd",
         "execution_limits", "result_shape", "quarantine_path", "retention", "runtime_dependencies",
     }
-    checkpointing = outbound_manifest is not None and outbound_manifest.get("package_id") == "run-002"
+    outbound_id = outbound_manifest.get("package_id") if outbound_manifest is not None else None
+    checkpointing = outbound_id in {"run-002", "run-003"}
+    completion_benchmark = outbound_id == "run-003"
     if checkpointing:
         required |= {"runner_core_digest", "checkpoint_policy"}
     if not isinstance(binding, dict) or set(binding) != required:
@@ -1111,7 +1333,7 @@ def preflight(
         blockers.append("provider_calls:must_be_disabled")
     if binding.get("external_paid_cost_usd") != 0:
         blockers.append("external_cost:must_be_zero_usd")
-    expected_result_shape = sorted(RESULT_PATHS)
+    expected_result_shape = BENCHMARK_RESULT_SHAPE if completion_benchmark else sorted(RESULT_PATHS)
     if binding.get("result_shape") != expected_result_shape:
         blockers.append("result_shape:must_bind_complete_result_package")
     quarantine = binding.get("quarantine_path")
@@ -1132,14 +1354,30 @@ def preflight(
     except ValidationError as exc:
         blockers.append(f"execution_envelope:{exc}")
         envelope = None
-    if envelope is not None and binding.get("execution_limits") != {
-        field: envelope["payload"][field]
-        for field in (
-            "attempts_per_test_input", "invocation_limit_per_configuration", "timeout_seconds_per_invocation",
-            "wall_clock_limit_seconds", "seed_policy", "decoding", "output_limits",
+    if envelope is not None:
+        expected_limits = (
+            {
+                "attempts_per_test_input": envelope["payload"]["attempts_per_test_input"],
+                "invocation_limit": BENCHMARK_INVOCATION_LIMIT,
+                "invocation_time_limit_seconds": None,
+                "cumulative_time_limit_seconds": None,
+                "provider_session_limit_controlled": False,
+                "seed_policy": envelope["payload"]["seed_policy"],
+                "decoding": envelope["payload"]["decoding"],
+                "output_limits": envelope["payload"]["output_limits"],
+            }
+            if completion_benchmark
+            else {
+                field: envelope["payload"][field]
+                for field in (
+                    "attempts_per_test_input", "invocation_limit_per_configuration",
+                    "timeout_seconds_per_invocation", "wall_clock_limit_seconds",
+                    "seed_policy", "decoding", "output_limits",
+                )
+            }
         )
-    }:
-        blockers.append("execution_limits:do_not_match_the_common_envelope")
+        if binding.get("execution_limits") != expected_limits:
+            blockers.append("execution_limits:do_not_match_the_bound_adapter_policy")
     if outbound_manifest is not None:
         metadata = outbound_manifest["metadata"]
         identity_fields = ["repository_revision", "notebook_digest", "runner_digest"]

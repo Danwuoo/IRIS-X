@@ -19,6 +19,7 @@ from .kaggle import (
     materialize_model,
     preflight as kaggle_preflight,
     validate_model_source,
+    verify_benchmark_result_package,
     verify_outbound_package,
     verify_result_package,
 )
@@ -109,6 +110,12 @@ def build_parser() -> argparse.ArgumentParser:
     arc_result_verify.add_argument("--package", required=True, type=_path)
     arc_result_verify.add_argument("--trial-package", required=True, type=_path)
     arc_result_verify.add_argument("--trial", required=True, type=_path)
+    arc_benchmark_verify = arc_result_sub.add_parser(
+        "benchmark-verify",
+        help="verify an untrusted run-003 four-invocation result.zip offline",
+    )
+    arc_benchmark_verify.add_argument("--package", required=True, type=_path)
+    arc_benchmark_verify.add_argument("--trial-package", required=True, type=_path)
     arc_result_import = arc_result_sub.add_parser("import", help="promote a fully valid quarantine result into normalized run evidence")
     arc_result_import.add_argument("--package", required=True, type=_path)
     arc_result_import.add_argument("--trial-package", required=True, type=_path)
@@ -206,6 +213,9 @@ def execute(args: argparse.Namespace) -> str:
         if args.arc_result_command == "verify":
             _, _, digest = verify_result_package(args.package, args.trial_package, args.trial)
             return f"verified untrusted result package offline: {digest}"
+        if args.arc_result_command == "benchmark-verify":
+            _, _, digest = verify_benchmark_result_package(args.package, args.trial_package)
+            return f"verified untrusted four-invocation benchmark result: {digest}"
         if args.arc_result_command == "import":
             target = import_quarantine(args.package, args.trial_package, args.trial, args.run_root)
             return f"validated and normalized quarantine result: {target}"

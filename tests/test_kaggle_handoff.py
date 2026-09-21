@@ -24,6 +24,7 @@ from irisx.artifacts import load_artifact
 from irisx.canonical import digest_bytes, read_json, write_json
 from irisx.errors import ValidationError
 from irisx.kaggle import (
+    BENCHMARK_RESULT_SHAPE,
     CHECKPOINT_OUTBOUND_PATHS,
     RESULT_PATHS,
     build_outbound_package,
@@ -37,6 +38,7 @@ from irisx.kaggle import (
     verify_result_package,
 )
 from irisx.kaggle_runner_v4 import CHECKPOINT_POLICY
+from irisx.kaggle_runner_v5 import CHECKPOINT_POLICY as COMPLETION_BENCHMARK_POLICY
 from irisx.transport import RESULT_LIMITS, TRIAL_LIMITS, verify_zip, write_zip
 
 
@@ -148,6 +150,40 @@ class KaggleHandoffTests(unittest.TestCase):
         self.assertEqual(
             (ROOT / "trials/first-real-domain/kaggle-notebook.ipynb").read_bytes(),
             (ROOT / "trials/first-real-domain/kaggle-notebook-v3.ipynb").read_bytes(),
+        )
+
+    def test_run_003_uses_unbounded_time_v5_and_writes_result_zip(self) -> None:
+        binding = write_outbound_binding(self.root / "v5", bundle_id="run-003")
+        outbound = self.root / "v5/outbound/run-003/trial-input.zip"
+        build_outbound_package(
+            self.trial,
+            self.model_source,
+            binding,
+            self.runtime_wheels,
+            outbound,
+            repository_root=ROOT,
+        )
+        manifest, _ = verify_outbound_package(outbound)
+        _, contents, _ = verify_zip(outbound, limits=TRIAL_LIMITS)
+        self.assertEqual(manifest["package_id"], "run-003")
+        self.assertEqual(manifest["metadata"]["checkpoint_policy"], COMPLETION_BENCHMARK_POLICY)
+        self.assertIsNone(COMPLETION_BENCHMARK_POLICY["invocation_time_limit_seconds"])
+        self.assertIsNone(COMPLETION_BENCHMARK_POLICY["cumulative_time_limit_seconds"])
+        notebook = contents["runtime/notebook.ipynb"].decode("utf-8")
+        runner = contents["runtime/runner.py"].decode("utf-8")
+        for term in ("run-003", "result.zip", "benchmark_complete", "raw_output", "retry-same-invocation"):
+            self.assertIn(term, notebook + runner)
+        self.assertNotIn("max_time=", runner)
+        self.assertEqual(
+            BENCHMARK_RESULT_SHAPE,
+            [
+                "benchmark/result.json",
+                "bindings/run.json",
+                "checkpoint/checkpoint.json",
+                "logs/progress.jsonl",
+                "observations/execution.json",
+                "outputs/<four-sequence-bound-raw-text-files>",
+            ],
         )
 
     def test_run_002_result_requires_complete_checkpoint_resume_evidence(self) -> None:
@@ -474,6 +510,59 @@ class KaggleHandoffTests(unittest.TestCase):
         report = preflight(self.trial, self.model_source, outbound, binding_path)
         self.assertFalse(report["payload"]["technical_ready"])
         self.assertTrue(any("preflight_binding" in blocker for blocker in report["payload"]["technical_blockers"]))
+
+    def test_run_003_preflight_binds_unbounded_four_invocation_policy(self) -> None:
+        outbound_binding = write_outbound_binding(self.root / "v5-preflight", bundle_id="run-003")
+        outbound = self.root / "v5-preflight/outbound/run-003/trial-input.zip"
+        build_outbound_package(
+            self.trial,
+            self.model_source,
+            outbound_binding,
+            self.runtime_wheels,
+            outbound,
+            repository_root=ROOT,
+        )
+        manifest, _ = verify_outbound_package(outbound)
+        envelope = load_artifact(self.trial / "execution-envelope.json", kind="irisx/execution-envelope")
+        binding = {
+            "model_dataset": manifest["metadata"]["model_dataset"],
+            "trial_dataset": dataset_binding("trial-input"),
+            "repository_revision": manifest["metadata"]["repository"]["revision"],
+            "repository_clean": True,
+            "notebook_digest": manifest["metadata"]["notebook_digest"],
+            "runner_digest": manifest["metadata"]["runner_digest"],
+            "runner_core_digest": manifest["metadata"]["runner_core_digest"],
+            "checkpoint_policy": manifest["metadata"]["checkpoint_policy"],
+            "hardware": {"gpu_count": 1, "gpu_model": "NVIDIA RTX PRO 6000", "gpu_memory_gb": 96},
+            "internet_disabled": True,
+            "credentials_present": False,
+            "provider_calls_enabled": False,
+            "external_paid_cost_usd": 0,
+            "execution_limits": {
+                "attempts_per_test_input": envelope["payload"]["attempts_per_test_input"],
+                "invocation_limit": 4,
+                "invocation_time_limit_seconds": None,
+                "cumulative_time_limit_seconds": None,
+                "provider_session_limit_controlled": False,
+                "seed_policy": envelope["payload"]["seed_policy"],
+                "decoding": envelope["payload"]["decoding"],
+                "output_limits": envelope["payload"]["output_limits"],
+            },
+            "result_shape": BENCHMARK_RESULT_SHAPE,
+            "quarantine_path": ".irisx/arc-agi-2/trial-001/kaggle/inbound/quarantine/run-003/result.zip",
+            "retention": read_json(outbound_binding)["retention"],
+            "runtime_dependencies": read_json(outbound_binding)["runtime_dependencies"],
+        }
+        binding_path = self.root / "v5-preflight/preflight.json"
+        write_json(binding_path, binding)
+        report = preflight(self.trial, self.model_source, outbound, binding_path)
+        self.assertTrue(report["payload"]["technical_ready"])
+
+        binding["execution_limits"]["invocation_time_limit_seconds"] = 600
+        write_json(binding_path, binding)
+        report = preflight(self.trial, self.model_source, outbound, binding_path)
+        self.assertFalse(report["payload"]["technical_ready"])
+        self.assertTrue(any("adapter_policy" in blocker for blocker in report["payload"]["technical_blockers"]))
 
     def test_eligible_domain_package_is_local_and_independently_recomputed(self) -> None:
         result = self._build_result()
