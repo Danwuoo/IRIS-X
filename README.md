@@ -10,26 +10,20 @@ it starts from a **Domain Specification**, follows **Build–Measure–Select**,
 uses **Engineering Trials** to decide which interventions earn promotion, and
 produces a versioned **Domain Package**.
 
-P1 now supplies the minimal provider-neutral product contracts and a bounded,
-deterministic offline reference flow. The included synthetic fixture qualifies
-validation, evaluation, selection, packaging, and corruption detection; it is
-not a real domain Engineering Trial or evidence of product effectiveness.
-Decision 0004 admits the first real P2 trial as ARC-AGI-2 on a local/offline,
-official-public-data-only path with one minimal specialization intervention.
-Its repository implementation, source materialization, offline validation, and
-preflight work are authorized; the real model/solver run still requires a
-separate explicit owner authorization. Decision 0005 binds the frozen base
-model to `Qwen/Qwen3.8-27B` at revision
-`1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0` and authorizes only a manual,
-digest-bound, private-Dataset Kaggle handoff to one network-disabled NVIDIA RTX
-PRO 6000 96 GB notebook. Scoring and selection stay local.
-Decision 0006 replaces the model ZIP with the unpacked, provenance-bound model
-tree mounted read-only from the private Kaggle Dataset. The real run remains
-unauthorized until a later explicit owner instruction.
-Decision 0007 reads the Kaggle-extracted trial tree directly and binds results
-to its verified manifest digest.
-Decision 0008 adds a digest-bound offline Transformers 5.8.1 wheel closure for
-the frozen model's Qwen3.5 architecture; it does not authorize the real run.
+P1 supplies the minimal provider-neutral contracts and deterministic offline
+qualification flow. The first P2 Engineering Trial is ARC-AGI-2 with one static
+specialization intervention and a frozen offline Qwen3.8-27B execution path.
+Its concise current state, next action, and fixed boundary are maintained in the
+[`Trial 001 status page`](trials/first-real-domain/README.md). The real run still
+requires a separate explicit owner authorization.
+
+[`Decision 0010`](docs/decisions/0010-adopt-lightweight-risk-based-development.md)
+keeps the product goal and Build–Measure–Select method while simplifying daily
+development: routine local, offline, reversible work proceeds directly;
+decisions and owner gates are reserved for durable or risky boundary changes.
+After the non-checkpointing `run-001` attempt returned no result, Decision 0011
+adds the separately identified v4 `run-002` path with atomic per-invocation
+checkpoints and cumulative-budget resume. It does not authorize execution.
 
 ## Quickstart
 
@@ -47,7 +41,7 @@ irisx package verify .irisx/quickstart/package
 irisx admission validate trials/p2-admission/admission.json
 ```
 
-The Decision 0005/0006/0007/0008 operational flow is documented in
+The detailed Trial 001 operational flow is documented in
 [`docs/development/arc-agi-2-kaggle-handoff.md`](docs/development/arc-agi-2-kaggle-handoff.md).
 No default validation command downloads weights, uploads to Kaggle, or executes
 the real workload.
@@ -70,16 +64,16 @@ identical inputs produces identical canonical contracts and package bytes.
 | [`archive/`](archive/README.md) | Read-only catalog of the pre-product repository |
 | [`tools/`](tools/README.md) | Active offline repository validation |
 
-Start with [`AGENTS.md`](AGENTS.md) and the
-[`current decisions index`](docs/decisions/README.md).
+Start with [`AGENTS.md`](AGENTS.md), the
+[`development operating model`](docs/development/operating-model.md), and the
+active trial's status page. Use the
+[`decisions index`](docs/decisions/README.md) when the rationale or an exact
+binding is needed.
 The current product, development, decision, contract, and P2 trial-admission
 documentation is indexed from [`docs/README.md`](docs/README.md).
 
 Validate the active repository from the repository root:
 
 ```powershell
-python tools\repository_check.py --self-test
-python tools\repository_check.py
-python -m unittest discover -s tests -v
-git diff --check
+python tools\repository_check.py --all
 ```

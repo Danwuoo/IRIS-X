@@ -1,56 +1,74 @@
 # Development Operating Model
 
-Status: current repository policy through the Decision 0007 extracted-trial Kaggle handoff. See the current
-[`Product Scope`](../product/product-scope.md) and
+Status: current under
+[`Decision 0010`](../decisions/0010-adopt-lightweight-risk-based-development.md).
+The product direction remains defined by the
+[`Product Scope`](../product/product-scope.md); safety boundaries remain in the
 [`Data and Execution Policy`](data-and-execution-policy.md).
 
-## Default track
+## Default loop
 
 Product engineering is the default IRIS-X track. Work follows
-**Build–Measure–Select**: build the smallest justified candidate, measure it on
-the declared workload and constraints, then select, revise, or reject it using
-recorded evidence.
+**Build–Measure–Select**:
 
-The **Engineering Trial** is the empirical unit for product changes. A future
-authorized trial must identify its goal, baseline, intervention, workload,
-measures, relevant costs, stop conditions, result, and engineering decision.
-Creating this policy does not authorize a trial.
+1. state one outcome and the check that will prove it;
+2. build the smallest reversible end-to-end increment;
+3. measure it with the narrowest reliable test or workload;
+4. keep, revise, or reject it from the evidence.
 
-## Work authorization and gates
+An **Engineering Trial** is used when the question requires empirical product
+evidence. It identifies the goal, baseline, intervention, workload, measures,
+costs, stop conditions, result, and selection. The active trial's README is its
+current status source; detailed procedures and decision records are supporting
+references rather than parallel status pages.
 
-Before work begins, the owner-authorized scope must say what phase or question
-is being addressed. Material choices are recorded under `docs/decisions/`.
-Provider/model execution, paid services, sensitive data use, and budgeted work
-also require the approvals in `data-and-execution-policy.md`.
+## Routine work
 
-A normal product cycle is:
+Local, offline, reversible work inside the current product and trial boundaries
+does not require a new decision record or separate owner authorization. This
+includes ordinary implementation, tests, documentation, refactoring, fixture
+work, and validation improvements.
 
-1. establish an authorized scope and its undecided boundaries;
-2. define the product question and acceptance evidence;
-3. prepare the smallest reversible implementation or trial;
-4. obtain any data, execution, and budget approvals before external activity;
-5. measure against the same declared workload and constraints;
-6. record the result, costs, limitations, and selection decision;
-7. promote only the artifacts and rules justified by that decision.
+Routine work should leave only the evidence its risk warrants: focused tests
+during development and the repository-wide check before handoff. P1 contracts
+and historical evidence are preserved, but they do not need to be restated in
+every current document.
+
+## Gated work
+
+An owner-authorized scope is required at the point where work would:
+
+- change the product goal, public contract, acceptance threshold, or promotion
+  claim;
+- use an external provider, paid resource, credentials, or sensitive data;
+- execute a real model workload covered by an explicit run gate;
+- change a frozen artifact identity; or
+- perform an irreversible deletion or migration.
+
+Record a decision only when the answer will govern later work. A one-time
+execution approval can remain an explicit owner instruction plus its generated
+evidence; it does not need to create a new policy layer unless it changes a
+durable boundary.
+
+## Current status and validation
+
+For Trial 001, use
+[`trials/first-real-domain/README.md`](../../trials/first-real-domain/README.md)
+for the current state, next action, and blockers. Use the Kaggle handoff guide
+for the detailed procedure and Decisions 0004–0009 only when their rationale or
+frozen identities are needed.
+
+The default handoff check is:
+
+```powershell
+python tools\repository_check.py --all
+```
+
+Focused commands remain available for faster iteration.
 
 ## Research track
 
-Research is conditional. It opens only through explicit owner authorization
-when repeated engineering failures expose a concrete unresolved question.
-Research should preserve uncertainty and return a usable rule, method, or
-negative result to product engineering; it does not create an indefinite
-parallel program by default.
-
-P1 implements the contract and offline qualification foundation described in
-Decision 0002. Decision 0003 and its admission package remain historical
-blocked-state evidence. Decision 0004 selects a bounded local/offline
-ARC-AGI-2 trial and authorizes its repository implementation, official-source
-materialization, offline validation, and preflight work. The concrete local
-raw model provenance and execution envelope remain preflight-gated. Decision 0005
-binds the frozen Qwen revision and selects a manual, private-Dataset,
-network-disabled Kaggle notebook on one NVIDIA RTX PRO 6000 96 GB; it leaves
-production runtime and detailed architecture undecided. A real P2 model run is not
-authorized by the presence of P1 contracts, fixture artifacts, the historical
-admission package, or the implementation alone; it requires the separate
-explicit authorization and passed preflight specified in Decisions 0004 and
-0005.
+Research is conditional. It opens only when repeated engineering evidence
+exposes a concrete unresolved question and the owner authorizes that question.
+It should return a usable rule, method, or negative result to product
+engineering rather than becoming a permanent parallel program.

@@ -53,6 +53,9 @@ REQUIRED_PATHS = {
     "docs/decisions/0006-use-unpacked-model-source-for-arc-agi-2-trial-001.md",
     "docs/decisions/0007-bind-kaggle-extracted-trial-dataset.md",
     "docs/decisions/0008-bind-offline-qwen3-5-transformers-runtime.md",
+    "docs/decisions/0009-normalize-arc-agi-2-trial-001-layout.md",
+    "docs/decisions/0010-adopt-lightweight-risk-based-development.md",
+    "docs/decisions/0011-create-checkpointing-run-002.md",
     "docs/decisions/README.md",
     "docs/development/arc-agi-2-kaggle-handoff.md",
     "docs/development/data-and-execution-policy.md",
@@ -82,6 +85,7 @@ REQUIRED_PATHS = {
     "src/irisx/fixture.py",
     "src/irisx/kaggle.py",
     "src/irisx/kaggle_runner.py",
+    "src/irisx/kaggle_runner_v4.py",
     "src/irisx/package.py",
     "src/irisx/transport.py",
     "tests/README.md",
@@ -94,13 +98,17 @@ REQUIRED_PATHS = {
     "tests/test_reference_flow.py",
     "tests/test_repository_check.py",
     "tests/test_kaggle_handoff.py",
+    "tests/test_kaggle_checkpoint.py",
+    "tests/test_trial_001_layout.py",
     "tests/test_transport.py",
     "tools/README.md",
     "tools/irisx_build_backend.py",
     "tools/repository_check.py",
+    "tools/trial_001_layout.py",
     "trials/README.md",
     "trials/first-real-domain/README.md",
     "trials/first-real-domain/kaggle-notebook.ipynb",
+    "trials/first-real-domain/kaggle-notebook-v4.ipynb",
     "trials/p2-admission/README.md",
     "trials/p2-admission/admission.json",
 }
@@ -351,6 +359,32 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "offline",
             "does not authorize the real model/solver run",
         ),
+        "docs/decisions/0009-normalize-arc-agi-2-trial-001-layout.md": (
+            "Status: Accepted",
+            "run-001",
+            "a179ee8b80b5b7886b756561f74be80d425312faf2d1ecea0b5d81262cef6b44",
+            "normalization_ready: true",
+            "runs/<run-id>/",
+            "does not authorize or ratify",
+        ),
+        "docs/decisions/0010-adopt-lightweight-risk-based-development.md": (
+            "Status: Accepted",
+            "Build–Measure–Select",
+            "Routine lane",
+            "Gated lane",
+            "One current status source",
+            "python tools\\repository_check.py --all",
+            "separate explicit owner authorization",
+        ),
+        "docs/decisions/0011-create-checkpointing-run-002.md": (
+            "Status: Accepted",
+            "run-002",
+            "kaggle-notebook-v4.ipynb",
+            "checkpoint-package.zip",
+            "progress.jsonl",
+            "cumulative wall-clock budget",
+            "does not authorize a real",
+        ),
         "docs/development/arc-agi-2-kaggle-handoff.md": (
             "manual",
             "private",
@@ -370,6 +404,13 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "One owner choice",
             "Acceptance and falsification",
             "synthetic evidence presented as real",
+        ),
+        "trials/first-real-domain/README.md": (
+            "single current status page",
+            "Qwen/Qwen3.8-27B",
+            "frozen-awaiting-result-closure",
+            "separate explicit owner instruction",
+            "normalization_ready: true",
         ),
     }
     for path, terms in required_terms.items():
@@ -391,33 +432,24 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
 
     current_authority_terms = {
         "AGENTS.md": (
-            "Decision 0004",
-            "Decision 0005",
-            "Decision 0006",
-            "Decision 0007",
-            "Decision 0008",
+            "Decision 0010",
+            "Decision 0011",
+            "trials/first-real-domain/README.md",
             "ARC-AGI-2",
-            "Qwen/Qwen3.8-27B",
             "separate explicit owner authorization",
             "historical blocked-state evidence",
         ),
         "README.md": (
-            "Decision 0004",
-            "Decision 0005",
-            "Decision 0006",
-            "Decision 0007",
-            "Decision 0008",
+            "Decision 0010",
+            "Trial 001 status page",
             "ARC-AGI-2",
             "separate explicit owner authorization",
         ),
         "docs/repository-layout.md": (
-            "Decision 0004",
-            "Decision 0005",
-            "Decision 0006",
-            "Decision 0007",
-            "Decision 0008",
-            "ARC-AGI-2",
-            "real run requires a separate explicit owner authorization",
+            "Decision 0010",
+            "Trial 001 status page",
+            "real run requires a separate",
+            "explicit owner authorization",
         ),
     }
     for path, terms in current_authority_terms.items():
@@ -610,14 +642,7 @@ def run_self_tests() -> int:
     return 0 if result.wasSuccessful() else 1
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--self-test", action="store_true", help="run validator helper tests")
-    args = parser.parse_args(argv)
-    if args.self_test:
-        return run_self_tests()
-
-    root = Path(__file__).resolve().parents[1]
+def run_repository_check(root: Path) -> int:
     issues = validate(root)
     if issues:
         print("IRIS-X repository check: FAIL")
@@ -634,6 +659,54 @@ def main(argv: list[str] | None = None) -> int:
     print(f"- indexed historical paths: {manifest['path_index']['tracked_path_count']}")
     print(f"- representative recovery checks: {len(manifest['representative_recovery'])}")
     return 0
+
+
+def run_all_checks(root: Path) -> int:
+    """Run the complete handoff validation through one stable entry point."""
+
+    failed = False
+    print("== validator self-tests ==", flush=True)
+    failed |= run_self_tests() != 0
+
+    print("\n== repository invariants ==", flush=True)
+    failed |= run_repository_check(root) != 0
+
+    external_checks = (
+        (
+            "unit tests",
+            [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+        ),
+        ("diff whitespace", ["git", "diff", "--check"]),
+    )
+    for label, command in external_checks:
+        print(f"\n== {label} ==", flush=True)
+        completed = subprocess.run(command, cwd=root, check=False)
+        failed |= completed.returncode != 0
+
+    if failed:
+        print("\nIRIS-X full validation: FAIL")
+        return 1
+    print("\nIRIS-X full validation: PASS")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--self-test", action="store_true", help="run validator helper tests")
+    mode.add_argument(
+        "--all",
+        action="store_true",
+        help="run repository checks, unit tests, and diff validation",
+    )
+    args = parser.parse_args(argv)
+    if args.self_test:
+        return run_self_tests()
+
+    root = Path(__file__).resolve().parents[1]
+    if args.all:
+        return run_all_checks(root)
+    return run_repository_check(root)
 
 
 if __name__ == "__main__":

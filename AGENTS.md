@@ -8,32 +8,27 @@ domain AI specialization. The product begins with a **Domain Specification**,
 uses **Build–Measure–Select** and **Engineering Trials**, and produces a
 versioned **Domain Package**.
 
-P0 repository-transition scaffolding is complete. P1 implements only the
-provider-neutral product-contract layer and deterministic offline qualification
-flow authorized on 2026-09-17. Decision 0003 and the P2 admission snapshot
-remain historical evidence of the prior blocked state. Decision 0004 selects
-the first real trial as ARC-AGI-2 on the local/offline path and authorizes its
-repository implementation, official-source materialization, offline validation,
-and preflight work. It does not authorize the real model/solver run, which still
-requires a separate explicit owner authorization after all bindings and gates
-are satisfied. Decision 0005 narrowly replaces the execution venue with a
-manual, private-Dataset, network-disabled Kaggle handoff on one NVIDIA RTX PRO
-6000 96 GB and binds the frozen Trial 001 model to
-`Qwen/Qwen3.8-27B@1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0`. It does not
-authorize the real run. Decision 0006 supersedes only the model ZIP transport:
-the active path uses the unpacked, provenance-bound model tree directly from
-the private Kaggle Dataset. It also does not authorize the real run.
-Decision 0007 binds Kaggle's extracted trial Dataset at
-`/kaggle/input/datasets/danielwuu/trial-input` and uses its verified manifest
-digest as the returned-result identity. It also does not authorize the real run.
-Decision 0008 binds a closed offline Transformers 5.8.1 wheel set for the
-selected model's Qwen3.5 architecture. It also does not authorize the real run.
+P0 and P1 established the repository and provider-neutral contract foundation.
+ARC-AGI-2 Trial 001 is the active P2 slice. Its goal, current state, next action,
+and blockers live in [`trials/first-real-domain/README.md`](trials/first-real-domain/README.md);
+Decisions 0004–0009 retain the detailed rationale and frozen evidence bindings.
+
+[`Decision 0010`](docs/decisions/0010-adopt-lightweight-risk-based-development.md)
+adopts a lightweight, risk-based workflow. Routine local, offline, reversible
+work inside the current boundaries does not need another decision record.
+Boundary-crossing work remains gated. In particular, the real ARC-AGI-2 run
+still requires a separate explicit owner authorization, and Decision 0009's
+`run-001` identities remain frozen until result closure.
+Decision 0011 creates a distinct checkpointing `run-002` v4 transport after the
+non-checkpointing run-001 attempt failed to finish. It authorizes implementation,
+offline packaging, verification, and preflight only, not real execution.
 
 ## Authority order
 
 1. explicit owner instructions for the current task;
 2. this file and any narrower active `AGENTS.md`;
-3. current decisions under `docs/decisions/`;
+3. Decision 0010, the active trial status page, and applicable accepted
+   decisions under `docs/decisions/`;
 4. `PRODUCT_THESIS.md` for product direction;
 5. the current product and development policies indexed by `docs/README.md`;
 6. other active documentation.
@@ -49,7 +44,7 @@ has no authority over active work.
 | `PRODUCT_THESIS.md` | Canonical product thesis; preserve its adopted bytes |
 | `docs/product/` | Product documentation created by an authorized scope |
 | `docs/development/` | Development and validation guidance |
-| `docs/decisions/` | Current, dated product and repository decisions |
+| `docs/decisions/` | Accepted boundary decisions and historical rationale |
 | `src/irisx/` | P1 contracts/reference flow/package verification, historical P2 admission validation, and authorized ARC-AGI-2 trial implementation |
 | `tests/` | Tests for the active product and repository surface |
 | `trials/` | Historical P2 admission package and the admitted ARC-AGI-2 trial workspace; real execution only after separate authorization |
@@ -66,18 +61,29 @@ paths. Do not recreate a legacy root merely to preserve history.
 
 ## Working rules
 
-- Keep current P2 work within Decision 0004 as narrowly amended by Decisions
-  0005, 0006, 0007, and 0008: the minimum ARC-AGI-2 Trial 001 implementation, official
-  source and raw-model materialization, manual Kaggle handoff, the closed
-  offline Qwen3.5 runtime wheel set, deterministic
-  offline validation, quarantine import, local evaluation, preflight,
-  documentation, and tests. Do not broaden it into a general framework or
-  production runtime.
+- Use the routine lane for local, offline, reversible implementation, tests,
+  documentation, refactoring, fixtures, and validation inside the current
+  product and trial boundaries. Do not create a decision record for ordinary
+  engineering choices.
+- Pause for explicit owner direction before changing product scope, a public
+  contract, an acceptance threshold, a promotion claim, a frozen identity, or
+  before external/provider/paid/sensitive-data or irreversible work. Record a
+  decision only when the choice must govern future work.
+- Use the Trial 001 README as current status. Consult Decisions 0004–0009 for
+  provenance and exact bindings instead of duplicating their full text in new
+  documents.
+- Preserve the Decision 0009 frozen `run-001` outbound, notebook, runner, and
+  manifest identities. Do not move Trial 001 execution bytes until its result
+  closure gate passes; never reuse one bundle ID for different outbound bytes.
+- Build checkpointing changes only as `run-002` with the Decision 0011 v4
+  adapter. Checkpoints must be identity-bound, atomic, truth-free, resumable only
+  as a contiguous invocation prefix, and charged against one cumulative time
+  budget across sessions.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.
 - Do not execute the real ARC-AGI-2 model/solver trial without a later explicit
-  owner execution authorization and all Decision 0004/0005/0006/0007 preflight gates. Do
+  owner execution authorization and a passing technical preflight. Do
   not start P3/P4, call an external model provider, use third-party ARC data,
   enable notebook Internet during measured execution, automate Kaggle
   credentials or transport, spend external funds, fine-tune the selected model,
@@ -94,7 +100,8 @@ paths. Do not recreate a legacy root merely to preserve history.
   enter an outbound package or notebook.
 - Treat the conceptual decomposition in the thesis as product responsibilities,
   not as settled services, classes, packages, or deployment boundaries.
-- Record material current decisions under `docs/decisions/`.
+- Record durable boundary decisions under `docs/decisions/`; keep transient
+  implementation status in the active trial README or task report.
 - Keep trials reproducible and decision-bearing when the trial track is opened.
 - Open research only for a concrete, authorized product question; return useful
   results to product engineering.
@@ -106,13 +113,10 @@ paths. Do not recreate a legacy root merely to preserve history.
 
 ## Validation
 
-Run from the repository root after active-surface or archive-catalog changes:
+Run from the repository root before handoff:
 
 ```powershell
-python tools\repository_check.py --self-test
-python tools\repository_check.py
-python -m unittest discover -s tests -v
-git diff --check
+python tools\repository_check.py --all
 ```
 
 The validator is offline and checks the active layout, thesis and decision,

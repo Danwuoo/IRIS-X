@@ -13,12 +13,11 @@ documentation is:
   independent verification boundary.
 - [`p2-admission.md`](p2-admission.md) defines the historical blocked
   first-real-domain snapshot, its offline validator, and its relationship to
-  current Decisions 0004, 0005, 0006, and 0007.
+  the admitted Trial 001.
 
-P1 contracts remain provider- and technique-neutral. Decision 0004 admits the
-bounded ARC-AGI-2 Trial 001 implementation, Decision 0005 narrowly selects
-the frozen Qwen revision and manual network-disabled Kaggle venue, and Decision
-0006 binds the unpacked model source directly, and Decision 0007 binds the
-Kaggle-extracted trial tree, without treating
-fixture details as architecture. Real model/solver execution remains separately
+P1 contracts remain provider- and technique-neutral. ARC-AGI-2 Trial 001 is the
+bounded first real slice; its
+[`status page`](../../trials/first-real-domain/README.md) summarizes current
+state and links to exact operational bindings. Fixture details do not define the
+product architecture. Real model/solver execution remains separately
 authorization-gated.

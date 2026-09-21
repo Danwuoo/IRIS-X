@@ -1,6 +1,7 @@
 # Normalize active text artifacts while leaving archived blobs immutable in Git.
 *.md text eol=lf
 *.json text eol=lf
+*.ipynb -text
 *.py text eol=lf
 *.tsv text eol=lf
 *.yaml text eol=lf

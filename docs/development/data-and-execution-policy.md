@@ -1,9 +1,11 @@
 # Data and Execution Policy
 
-Status: current repository policy through the Decision 0007 extracted-trial Kaggle handoff. This
-policy establishes safe defaults; dataset and trial scope require a current
-decision, and provider, model, real trial execution, and product runtime require
-their stated authorization gates. Execution work also follows the
+Status: current under Decision 0010. This policy defines the boundary between
+routine development and work that needs explicit owner direction. Local,
+offline, reversible implementation and validation inside the current scope do
+not require a separate approval. Provider/model execution, paid resources,
+sensitive-data disclosure, and irreversible actions retain their stated gates.
+Execution work also follows the
 [`Development Operating Model`](operating-model.md).
 
 ## Secrets and credentials
@@ -68,12 +70,19 @@ Trial path separate from default tests and repository validation. Unexpected
 network activity, cost, credential use, or data disclosure is a stop condition
 and must be reported.
 
-For the admitted ARC-AGI-2 Trial 001, external provider use, networked trial
-execution, and external paid execution are prohibited, and the maximum external
-paid-execution budget is USD 0. Decision 0005 permits only deliberate model
-source acquisition and manual upload/download of two private, immutable Kaggle
-Datasets and the complete notebook output. Measured notebook execution remains
+For ARC-AGI-2 Trial 001, external provider use, networked trial execution, and
+external paid execution are prohibited, and the maximum external paid-execution
+budget is USD 0. The current fixed boundary is summarized on the
+[`Trial 001 status page`](../../trials/first-real-domain/README.md); the Kaggle
+handoff guide contains the procedure. Measured notebook execution remains
 network-disabled and credential-free. Evaluator truth, expected-output digests,
 scores, feedback, and third-party ARC material may not cross the outbound
-boundary. The real model/solver run still requires the separate explicit owner
-authorization and passed Decision 0004/0005/0006/0007 preflight.
+boundary. The real model/solver run still requires a separate explicit owner
+authorization and a passing technical preflight.
+
+Decision 0011 checkpoints are truth-free execution outputs under the same
+retention boundary as returned predictions. Cross-session transport is manual:
+the checkpoint may be downloaded unchanged and attached only as a private,
+immutable Kaggle Dataset version. It must remain identity-bound to `run-002`;
+resume neither changes the model/configuration nor grants extra cumulative
+wall-clock budget.

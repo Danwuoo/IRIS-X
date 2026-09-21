@@ -1,18 +1,13 @@
 # Engineering Trials
 
-This directory contains the historical P2 admission package and the workspace
-reserved for the first admitted real Engineering Trial. Decision 0004 selects
-ARC-AGI-2, the official public data boundary, a local/offline path, one static
-specialization intervention, and a zero-USD external paid-execution budget.
-The synthetic qualification fixture generated under `.irisx/` is not a real
-trial and is not retained here.
+This directory contains the historical P2 admission package and the first real
+Engineering Trial. ARC-AGI-2 Trial 001 uses official public data, one static
+specialization intervention, a frozen Qwen3.8-27B model, an offline manual
+Kaggle handoff, and a zero-USD external paid-execution budget. The synthetic
+qualification fixture under `.irisx/` is not a real trial.
 
-Decision 0005 selects the exact frozen Qwen3.8-27B revision and a manual,
-private-Dataset Kaggle handoff using one network-disabled NVIDIA RTX PRO 6000
-96 GB. Decision 0006 uses the unpacked model Dataset directly under a complete
-provenance check. Decision 0007 additionally binds Kaggle's extracted trial
-Dataset tree. The tracked [`first-real-domain/`](first-real-domain/) workspace
-contains only the static notebook and instructions; model bytes, ARC bytes, handoff ZIPs,
+Use [`first-real-domain/README.md`](first-real-domain/README.md) for the current
+state, next action, and fixed boundary. Model bytes, ARC bytes, handoff packages,
 returned predictions, and evaluation evidence remain under `.irisx/`.
 
 [`p2-admission/`](p2-admission/) is a decision package, not trial results. It
@@ -22,8 +17,8 @@ historical evidence and is not an authorization token. Decision 0004 now
 authorizes creation of the ARC-AGI-2 implementation under the reserved
 `first-real-domain/` location.
 
-The real ARC-AGI-2 model/solver run is not yet authorized. After the concrete
-local model/solver and immutable execution envelope are bound, all preflight
-gates pass, and a separate explicit owner execution authorization is recorded,
-the trial must record its goal, baseline, candidate intervention, workload,
-measured result, relevant costs, and resulting engineering decision.
+The real ARC-AGI-2 model/solver run is not yet authorized. It requires a passing
+technical preflight and a separate explicit owner execution authorization.
+The prior non-checkpointing `run-001` attempt returned no result; the active
+implementation target is the separately identified, resumable v4 `run-002`
+transport defined by Decision 0011.

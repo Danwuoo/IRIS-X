@@ -29,6 +29,7 @@ from .canonical import canonical_bytes, digest_bytes, read_json, write_json
 from .contracts import CandidateConfiguration, EngineeringTrial, RequirementSet, WorkloadDefinition, load_contract
 from .engine import select_configuration
 from .errors import ValidationError
+from .kaggle_runner_v4 import CHECKPOINT_POLICY
 from .transport import (
     RESULT_LIMITS,
     TRIAL_LIMITS,
@@ -60,6 +61,7 @@ OUTBOUND_PATHS = {
     "runtime/notebook.ipynb",
     "runtime/wheels.json",
 }
+CHECKPOINT_OUTBOUND_PATHS = OUTBOUND_PATHS | {"runtime/runner_core.py"}
 RUNTIME_WHEEL_FILENAMES = (
     "accelerate-1.10.1-py3-none-any.whl",
     "annotated_doc-0.0.5-py3-none-any.whl",
@@ -399,6 +401,34 @@ def _read_repo_file(root: Path, relative: str) -> bytes:
     return path.read_bytes()
 
 
+def _adapter_files(repository_root: Path, bundle_id: str) -> tuple[bytes, bytes, bytes | None]:
+    """Select the immutable run-001 adapter or checkpointing run-002 adapter."""
+
+    if bundle_id == "run-001":
+        return (
+            _read_repo_file(repository_root, "src/irisx/kaggle_runner.py"),
+            _read_repo_file(repository_root, "trials/first-real-domain/kaggle-notebook.ipynb"),
+            None,
+        )
+    if bundle_id == "run-002":
+        return (
+            _read_repo_file(repository_root, "src/irisx/kaggle_runner_v4.py"),
+            _read_repo_file(repository_root, "trials/first-real-domain/kaggle-notebook-v4.ipynb"),
+            _read_repo_file(repository_root, "src/irisx/kaggle_runner.py"),
+        )
+    raise ValidationError("Trial 001 outbound bundle_id must be run-001 or run-002")
+
+
+def _validate_outbound_destination(output: Path, bundle_id: str) -> None:
+    """Keep the filesystem run identity aligned with the manifest package ID."""
+
+    if output.name != "trial-input.zip" or output.parent.name != bundle_id:
+        raise ValidationError(
+            "outbound path must be outbound/<bundle-id>/trial-input.zip "
+            "with the parent directory equal to binding.bundle_id"
+        )
+
+
 def _runtime_wheel_files(root: Path, dependencies: dict[str, str]) -> tuple[dict[str, bytes], dict[str, Any]]:
     """Validate and bind the exact offline Python 3.12/Linux wheel closure."""
 
@@ -463,9 +493,9 @@ def build_outbound_package(
     model_provenance = validate_model_source(model_source)
     model_provenance_digest = model_provenance["content_digest"]
     binding = _load_binding(binding_path)
+    _validate_outbound_destination(output, binding["bundle_id"])
     wheel_files, wheel_manifest = _runtime_wheel_files(runtime_wheels, binding["runtime_dependencies"])
-    runner = _read_repo_file(repository_root, "src/irisx/kaggle_runner.py")
-    notebook = _read_repo_file(repository_root, "trials/first-real-domain/kaggle-notebook.ipynb")
+    runner, notebook, runner_core = _adapter_files(repository_root, binding["bundle_id"])
     model = read_json(trial_root / "model.json")
     envelope = read_json(trial_root / "execution-envelope.json")
     baseline = read_json(trial_root / "baseline.json")
@@ -488,6 +518,13 @@ def build_outbound_package(
         "execution_envelope_ref": artifact_ref(validate_artifact(envelope, kind="irisx/execution-envelope")),
         "retention": binding["retention"],
     }
+    if runner_core is not None:
+        run_binding.update(
+            {
+                "runner_core_digest": digest_bytes(runner_core),
+                "checkpoint_policy": CHECKPOINT_POLICY,
+            }
+        )
     model_binding = make_artifact(
         "irisx/model-source-binding",
         "qwen3.8-27b-trial-001-source",
@@ -515,30 +552,40 @@ def build_outbound_package(
         "runtime/notebook.ipynb": notebook,
         "runtime/wheels.json": _json_bytes(wheel_manifest),
     }
+    if runner_core is not None:
+        files["runtime/runner_core.py"] = runner_core
     files.update(wheel_files)
+    metadata = {
+        "arc_source": {"repository": ARC_REPOSITORY, "commit": ARC_COMMIT},
+        "model": {
+            "repository": MODEL_REPOSITORY,
+            "revision": MODEL_REVISION,
+            "source_provenance_digest": model_provenance_digest,
+        },
+        "model_dataset": binding["model_dataset"],
+        "repository": binding["repository"],
+        "notebook_digest": digest_bytes(notebook),
+        "runner_digest": digest_bytes(runner),
+        "baseline_configuration_ref": run_binding["baseline_configuration_ref"],
+        "candidate_configuration_ref": run_binding["candidate_configuration_ref"],
+        "execution_envelope_ref": run_binding["execution_envelope_ref"],
+        "runtime_dependencies": binding["runtime_dependencies"],
+        "runtime_wheels_digest": digest_bytes(_json_bytes(wheel_manifest)),
+        "retention": binding["retention"],
+    }
+    if runner_core is not None:
+        metadata.update(
+            {
+                "runner_core_digest": digest_bytes(runner_core),
+                "checkpoint_policy": CHECKPOINT_POLICY,
+            }
+        )
     digest = write_zip(
         output,
         TRIAL_PACKAGE_KIND,
         binding["bundle_id"],
         files,
-        {
-            "arc_source": {"repository": ARC_REPOSITORY, "commit": ARC_COMMIT},
-            "model": {
-                "repository": MODEL_REPOSITORY,
-                "revision": MODEL_REVISION,
-                "source_provenance_digest": model_provenance_digest,
-            },
-            "model_dataset": binding["model_dataset"],
-            "repository": binding["repository"],
-            "notebook_digest": digest_bytes(notebook),
-            "runner_digest": digest_bytes(runner),
-            "baseline_configuration_ref": run_binding["baseline_configuration_ref"],
-            "candidate_configuration_ref": run_binding["candidate_configuration_ref"],
-            "execution_envelope_ref": run_binding["execution_envelope_ref"],
-            "runtime_dependencies": binding["runtime_dependencies"],
-            "runtime_wheels_digest": digest_bytes(_json_bytes(wheel_manifest)),
-            "retention": binding["retention"],
-        },
+        metadata,
         limits=TRIAL_LIMITS,
     )
     verify_outbound_package(output, expected_evaluation_count=PUBLIC_EVALUATION_COUNT)
@@ -548,7 +595,16 @@ def build_outbound_package(
 def verify_outbound_package(path: Path, *, expected_evaluation_count: int = PUBLIC_EVALUATION_COUNT) -> tuple[dict[str, Any], str]:
     manifest, contents, archive_digest = verify_zip(path, limits=TRIAL_LIMITS, package_kind=TRIAL_PACKAGE_KIND)
     wheel_paths = {f"runtime/wheels/{name}" for name in RUNTIME_WHEEL_FILENAMES}
-    if set(contents) != OUTBOUND_PATHS | wheel_paths:
+    package_id = manifest["package_id"]
+    if package_id == "run-001":
+        expected_paths = OUTBOUND_PATHS | wheel_paths
+        checkpointing = False
+    elif package_id == "run-002":
+        expected_paths = CHECKPOINT_OUTBOUND_PATHS | wheel_paths
+        checkpointing = True
+    else:
+        raise ValidationError("Trial 001 outbound package ID must be run-001 or run-002")
+    if set(contents) != expected_paths:
         raise ValidationError("trial input package membership is not the exact closed-world profile")
     solver = validate_artifact(_json_from_bytes(contents["cases/solver-cases.json"], "cases/solver-cases.json"), kind="irisx/arc-solver-cases")
     cases = solver["payload"].get("cases")
@@ -626,12 +682,26 @@ def verify_outbound_package(path: Path, *, expected_evaluation_count: int = PUBL
         "execution_envelope_ref": artifact_ref(envelope),
         "retention": manifest["metadata"]["retention"],
     }
+    if checkpointing:
+        expected_run.update(
+            {
+                "runner_core_digest": manifest["metadata"].get("runner_core_digest"),
+                "checkpoint_policy": manifest["metadata"].get("checkpoint_policy"),
+            }
+        )
     if run != expected_run:
         raise ValidationError("outbound run binding is stale or contains unexpected fields")
     if digest_bytes(contents["runtime/runner.py"]) != run["runner_digest"]:
         raise ValidationError("outbound runner source digest mismatch")
     if digest_bytes(contents["runtime/notebook.ipynb"]) != run["notebook_digest"]:
         raise ValidationError("outbound notebook source digest mismatch")
+    if checkpointing:
+        if run["checkpoint_policy"] != CHECKPOINT_POLICY:
+            raise ValidationError("outbound checkpoint policy is stale or unsupported")
+        if digest_bytes(contents["runtime/runner_core.py"]) != run["runner_core_digest"]:
+            raise ValidationError("outbound runner core source digest mismatch")
+    elif "runner_core_digest" in manifest["metadata"] or "checkpoint_policy" in manifest["metadata"]:
+        raise ValidationError("legacy run-001 metadata contains checkpoint adapter fields")
     if (
         not isinstance(dependencies, dict)
         or set(dependencies) != {"python", "torch", "transformers", "source"}
@@ -693,15 +763,17 @@ def build_result_package(
 def _validate_observations(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValidationError("execution observations must be an object")
-    required = {
+    base_required = {
         "format", "format_version", "hardware", "software", "internet_disabled", "credentials_present",
         "network_calls", "provider_calls", "external_paid_cost_usd", "evaluation_leaks", "identity_binding_failures",
         "wall_clock_seconds", "gpu_seconds_state", "gpu_seconds", "timeout_policy", "seed_policy",
         "attempts_per_test_input", "stop_conditions_triggered",
     }
+    version = value.get("format_version")
+    required = base_required | ({"checkpoint"} if version == "2.0" else set())
     if set(value) != required:
         raise ValidationError("execution observation fields are incomplete or unexpected")
-    if value["format"] != "irisx/arc-agi-2-execution-observations" or value["format_version"] != "1.0":
+    if value["format"] != "irisx/arc-agi-2-execution-observations" or version not in {"1.0", "2.0"}:
         raise ValidationError("unsupported execution observation format")
     hardware = value["hardware"]
     if not isinstance(hardware, dict) or hardware.get("gpu_count") != 1 or "NVIDIA RTX PRO 6000" not in hardware.get("gpu_model", "") or hardware.get("gpu_memory_mib", 0) < 96000:
@@ -722,6 +794,38 @@ def _validate_observations(value: Any) -> dict[str, Any]:
             raise ValidationError("observed gpu_seconds must be numeric")
     elif value["gpu_seconds"] is not None:
         raise ValidationError("unknown gpu_seconds must use null")
+    if version == "2.0":
+        checkpoint = value["checkpoint"]
+        checkpoint_fields = {
+            "format", "format_version", "resume_count", "session_count", "interrupted_attempts",
+            "completed_invocations", "total_invocations", "cumulative_wall_clock_seconds", "sessions",
+        }
+        if not isinstance(checkpoint, dict) or set(checkpoint) != checkpoint_fields:
+            raise ValidationError("checkpoint execution evidence is incomplete or unexpected")
+        if checkpoint["format"] != "irisx/arc-agi-2-checkpoint" or checkpoint["format_version"] != "1.0":
+            raise ValidationError("checkpoint execution evidence format is unsupported")
+        for field in ("resume_count", "session_count", "interrupted_attempts", "completed_invocations", "total_invocations"):
+            if isinstance(checkpoint[field], bool) or not isinstance(checkpoint[field], int) or checkpoint[field] < 0:
+                raise ValidationError(f"checkpoint execution evidence is invalid: {field}")
+        if (
+            checkpoint["session_count"] < 1
+            or checkpoint["session_count"] != checkpoint["resume_count"] + 1
+            or checkpoint["interrupted_attempts"] > checkpoint["completed_invocations"]
+        ):
+            raise ValidationError("checkpoint execution counters are inconsistent")
+        cumulative = checkpoint["cumulative_wall_clock_seconds"]
+        if isinstance(cumulative, bool) or not isinstance(cumulative, (int, float)) or cumulative < 0:
+            raise ValidationError("checkpoint cumulative wall-clock evidence is invalid")
+        if cumulative != value["wall_clock_seconds"]:
+            raise ValidationError("checkpoint cumulative wall clock does not match execution observations")
+        sessions = checkpoint["sessions"]
+        if not isinstance(sessions, list) or len(sessions) != checkpoint["session_count"]:
+            raise ValidationError("checkpoint session evidence is incomplete")
+        for index, session in enumerate(sessions):
+            if not isinstance(session, dict) or set(session) != {"session_index", "hardware", "software"}:
+                raise ValidationError("checkpoint session record is malformed")
+            if session["session_index"] != index or session["hardware"] != hardware or session["software"] != value["software"]:
+                raise ValidationError("checkpoint session identity changed across resumes")
     return value
 
 
@@ -810,6 +914,14 @@ def verify_result_package(
         "candidate_configuration_ref": candidate.ref(),
         "execution_envelope_ref": outbound_meta["execution_envelope_ref"],
     }
+    checkpointing = outbound_manifest["package_id"] == "run-002"
+    if checkpointing:
+        expected.update(
+            {
+                "runner_core_digest": outbound_meta["runner_core_digest"],
+                "checkpoint_policy": outbound_meta["checkpoint_policy"],
+            }
+        )
     if metadata != expected:
         raise ValidationError("result package upstream identity bindings are stale or substituted")
     if manifest["package_id"] != metadata["bundle_id"] or metadata["bundle_id"] != outbound_manifest["package_id"]:
@@ -831,6 +943,17 @@ def verify_result_package(
         or observations["wall_clock_seconds"] > envelope["payload"]["wall_clock_limit_seconds"]
     ):
         raise ValidationError("returned wall-clock evidence exceeds the bound execution limit")
+    if checkpointing:
+        if observations["format_version"] != "2.0":
+            raise ValidationError("run-002 requires checkpoint-aware execution observations")
+        checkpoint = observations["checkpoint"]
+        expected_invocations = sum(len(case["test"]) for case in solver["payload"]["cases"]) * 4
+        if checkpoint["completed_invocations"] != expected_invocations or checkpoint["total_invocations"] != expected_invocations:
+            raise ValidationError("checkpoint evidence does not cover every required invocation")
+        if len(logs["events"]) != expected_invocations:
+            raise ValidationError("checkpoint result log count is incomplete")
+    elif observations["format_version"] != "1.0":
+        raise ValidationError("run-001 cannot claim checkpoint-aware execution evidence")
     for logical, data in contents.items():
         if logical.endswith(".json"):
             value = _json_from_bytes(data, logical)
@@ -964,6 +1087,9 @@ def preflight(
         "hardware", "internet_disabled", "credentials_present", "provider_calls_enabled", "external_paid_cost_usd",
         "execution_limits", "result_shape", "quarantine_path", "retention", "runtime_dependencies",
     }
+    checkpointing = outbound_manifest is not None and outbound_manifest.get("package_id") == "run-002"
+    if checkpointing:
+        required |= {"runner_core_digest", "checkpoint_policy"}
     if not isinstance(binding, dict) or set(binding) != required:
         blockers.append("preflight_binding:incomplete_or_unexpected_fields")
         binding = {} if not isinstance(binding, dict) else binding
@@ -1016,10 +1142,15 @@ def preflight(
         blockers.append("execution_limits:do_not_match_the_common_envelope")
     if outbound_manifest is not None:
         metadata = outbound_manifest["metadata"]
-        for field in ("repository_revision", "notebook_digest", "runner_digest"):
+        identity_fields = ["repository_revision", "notebook_digest", "runner_digest"]
+        if checkpointing:
+            identity_fields.append("runner_core_digest")
+        for field in identity_fields:
             expected = metadata["repository"]["revision"] if field == "repository_revision" else metadata[field]
             if binding.get(field) != expected:
                 blockers.append(f"{field}:stale_or_substituted")
+        if checkpointing and binding.get("checkpoint_policy") != metadata.get("checkpoint_policy"):
+            blockers.append("checkpoint_policy:stale_or_substituted")
         if model_provenance_digest != metadata["model"]["source_provenance_digest"]:
             blockers.append("model_source_provenance_digest:stale_or_substituted")
         if binding.get("model_dataset") != metadata["model_dataset"]:

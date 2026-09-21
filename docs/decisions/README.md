@@ -1,8 +1,13 @@
-# Current Decisions
+# Decisions
 
-Decisions here govern the active product-era repository. Historical decisions
-are available only from the cold-archive tag and have no current authority
-unless a new decision explicitly re-adopts them.
+These records preserve durable product, safety, contract, and evidence-boundary
+choices. Start with Decision 0010 for the current development workflow and the
+active trial README for operational status. Read older decisions when their
+rationale or exact binding is relevant; current README files do not repeat the
+entire chain.
+
+Pre-product decisions remain available only from the cold-archive tag and have
+no current authority unless a new decision explicitly re-adopts them.
 
 - [`0001-adopt-product-oriented-domain-ai-specialization.md`](0001-adopt-product-oriented-domain-ai-specialization.md)
   adopts the IRIS-X product direction and records the choices still open.
@@ -32,3 +37,15 @@ unless a new decision explicitly re-adopts them.
   binds a closed offline Transformers 5.8.1 wheel set so the frozen Qwen3.5
   architecture can load without Kaggle Internet. It does not authorize the
   real run.
+- [`0009-normalize-arc-agi-2-trial-001-layout.md`](0009-normalize-arc-agi-2-trial-001-layout.md)
+  freezes the retained `run-001` identities, requires bundle IDs to match
+  outbound directories, and gates physical layout normalization on verified
+  result import and local evaluation. It does not authorize or ratify a run.
+- [`0010-adopt-lightweight-risk-based-development.md`](0010-adopt-lightweight-risk-based-development.md)
+  keeps Build–Measure–Select while allowing routine local, offline, reversible
+  work to proceed without a new decision record; durable and risky boundary
+  changes remain explicitly gated.
+- [`0011-create-checkpointing-run-002.md`](0011-create-checkpointing-run-002.md)
+  preserves the frozen `run-001` bytes and creates a separately identified v4
+  `run-002` adapter with atomic per-attempt checkpoints, exact resume identity,
+  progress output, and cumulative cross-session time accounting.

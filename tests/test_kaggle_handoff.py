@@ -21,9 +21,10 @@ from arc_support import (
 from irisx.arc_agi2 import prepare_trial
 from irisx.arc_package import build_arc_package, verify_arc_package
 from irisx.artifacts import load_artifact
-from irisx.canonical import read_json, write_json
+from irisx.canonical import digest_bytes, read_json, write_json
 from irisx.errors import ValidationError
 from irisx.kaggle import (
+    CHECKPOINT_OUTBOUND_PATHS,
     RESULT_PATHS,
     build_outbound_package,
     build_result_package,
@@ -35,6 +36,7 @@ from irisx.kaggle import (
     verify_outbound_package,
     verify_result_package,
 )
+from irisx.kaggle_runner_v4 import CHECKPOINT_POLICY
 from irisx.transport import RESULT_LIMITS, TRIAL_LIMITS, verify_zip, write_zip
 
 
@@ -110,8 +112,120 @@ class KaggleHandoffTests(unittest.TestCase):
         for prohibited in ("pip install", "kaggle api", "requests.get", "openai.", "anthropic."):
             self.assertNotIn(prohibited, (notebook + runner).lower())
 
+    def test_run_002_uses_checkpointing_v4_without_mutating_run_001_adapter(self) -> None:
+        binding = write_outbound_binding(self.root / "v4", bundle_id="run-002")
+        outbound = self.root / "v4/outbound/run-002/trial-input.zip"
+        build_outbound_package(
+            self.trial,
+            self.model_source,
+            binding,
+            self.runtime_wheels,
+            outbound,
+            repository_root=ROOT,
+        )
+        manifest, _ = verify_outbound_package(outbound)
+        _, contents, _ = verify_zip(outbound, limits=TRIAL_LIMITS)
+        wheel_paths = {path for path in contents if path.startswith("runtime/wheels/")}
+        self.assertEqual(set(contents), CHECKPOINT_OUTBOUND_PATHS | wheel_paths)
+        self.assertEqual(manifest["package_id"], "run-002")
+        self.assertEqual(manifest["metadata"]["checkpoint_policy"], CHECKPOINT_POLICY)
+        self.assertEqual(
+            manifest["metadata"]["runner_core_digest"],
+            digest_bytes(contents["runtime/runner_core.py"]),
+        )
+        notebook = contents["runtime/notebook.ipynb"].decode("utf-8")
+        runner = contents["runtime/runner.py"].decode("utf-8")
+        for term in (
+            "checkpoint-package.zip",
+            "--resume-checkpoint",
+            "after-every-attempt",
+            "cumulative-across-sessions",
+            "progress.jsonl",
+        ):
+            self.assertIn(term, notebook + runner)
+        self.assertEqual(
+            (ROOT / "trials/first-real-domain/kaggle-notebook.ipynb").read_bytes(),
+            (ROOT / "trials/first-real-domain/kaggle-notebook-v3.ipynb").read_bytes(),
+        )
+
+    def test_run_002_result_requires_complete_checkpoint_resume_evidence(self) -> None:
+        binding = write_outbound_binding(self.root / "v4-result", bundle_id="run-002")
+        outbound = self.root / "v4-result/outbound/run-002/trial-input.zip"
+        build_outbound_package(
+            self.trial,
+            self.model_source,
+            binding,
+            self.runtime_wheels,
+            outbound,
+            repository_root=ROOT,
+        )
+        outbound_manifest, _ = verify_outbound_package(outbound)
+        metadata = outbound_manifest["metadata"]
+        result_metadata = {
+            "trial_manifest_digest": outbound_manifest_digest(outbound_manifest),
+            "model_source_provenance_digest": metadata["model"]["source_provenance_digest"],
+            "model_dataset": metadata["model_dataset"],
+            "bundle_id": "run-002",
+            "repository_revision": metadata["repository"]["revision"],
+            "notebook_digest": metadata["notebook_digest"],
+            "runner_digest": metadata["runner_digest"],
+            "runner_core_digest": metadata["runner_core_digest"],
+            "checkpoint_policy": metadata["checkpoint_policy"],
+            "baseline_configuration_ref": metadata["baseline_configuration_ref"],
+            "candidate_configuration_ref": metadata["candidate_configuration_ref"],
+            "execution_envelope_ref": metadata["execution_envelope_ref"],
+        }
+        baseline = prediction_document(self.trial, "baseline", 90)
+        candidate = prediction_document(self.trial, "candidate", 96)
+        logs = runner_logs(self.trial, baseline, candidate)
+        observed = observations()
+        observed["format_version"] = "2.0"
+        observed["checkpoint"] = {
+            "format": "irisx/arc-agi-2-checkpoint",
+            "format_version": "1.0",
+            "resume_count": 1,
+            "session_count": 2,
+            "interrupted_attempts": 1,
+            "completed_invocations": len(logs["events"]),
+            "total_invocations": len(logs["events"]),
+            "cumulative_wall_clock_seconds": observed["wall_clock_seconds"],
+            "sessions": [
+                {
+                    "session_index": index,
+                    "hardware": observed["hardware"],
+                    "software": observed["software"],
+                }
+                for index in range(2)
+            ],
+        }
+        result = self.root / "v4-result/kaggle/inbound/quarantine/run-002/result-package.zip"
+        build_result_package(
+            result,
+            "run-002",
+            baseline,
+            candidate,
+            observed,
+            logs,
+            result_metadata,
+        )
+        verify_result_package(result, outbound, self.trial)
+
+        observed["checkpoint"]["cumulative_wall_clock_seconds"] += 1
+        stale = self.root / "v4-result/stale-result.zip"
+        build_result_package(
+            stale,
+            "run-002",
+            baseline,
+            candidate,
+            observed,
+            logs,
+            result_metadata,
+        )
+        with self.assertRaisesRegex(ValidationError, "cumulative wall clock"):
+            verify_result_package(stale, outbound, self.trial)
+
     def test_model_source_and_outbound_package_are_deterministic_and_truth_free(self) -> None:
-        second = self.root / "outbound/run-001-copy/trial-input.zip"
+        second = self.root / "deterministic-copy/outbound/run-001/trial-input.zip"
         build_outbound_package(
             self.trial,
             self.model_source,
@@ -128,13 +242,25 @@ class KaggleHandoffTests(unittest.TestCase):
         solver = read_json(self.trial / "solver-cases.json")
         self.assertTrue(all(set(pair) == {"input"} for case in solver["payload"]["cases"] for pair in case["test"]))
 
+    def test_outbound_path_must_match_the_bundle_id(self) -> None:
+        mismatched = self.root / "outbound/run-001-v2/trial-input.zip"
+        with self.assertRaisesRegex(ValidationError, "parent directory equal to binding.bundle_id"):
+            build_outbound_package(
+                self.trial,
+                self.model_source,
+                self.binding,
+                self.runtime_wheels,
+                mismatched,
+                repository_root=ROOT,
+            )
+
     def test_direct_unpacked_model_root_and_sidecar_are_supported(self) -> None:
         direct = self.root / "direct-model"
         shutil.copytree(self.model_source / "source", direct)
         write_json(direct / "dataset-metadata.json", {"id": "fixture-owner/qwen-model"})
         sidecar = direct.parent / f"{direct.name}-provenance.json"
         create_model_provenance(direct, sidecar, require_git_identity=False)
-        output = self.root / "direct/trial-input.zip"
+        output = self.root / "direct/outbound/run-001/trial-input.zip"
         build_outbound_package(self.trial, direct, self.binding, self.runtime_wheels, output, repository_root=ROOT)
         manifest, _ = verify_outbound_package(output)
         self.assertEqual(manifest["metadata"]["model"]["source_provenance_digest"], read_json(sidecar)["content_digest"])
@@ -165,7 +291,7 @@ class KaggleHandoffTests(unittest.TestCase):
                 self.model_source,
                 public,
                 self.runtime_wheels,
-                self.root / "public.zip",
+                self.root / "public/outbound/run-001/trial-input.zip",
                 repository_root=ROOT,
             )
 
@@ -296,6 +422,56 @@ class KaggleHandoffTests(unittest.TestCase):
         report = preflight(self.trial, self.model_source, self.outbound, binding_path)
         self.assertFalse(report["payload"]["technical_ready"])
         self.assertTrue(any("hardware" in blocker for blocker in report["payload"]["technical_blockers"]))
+
+    def test_run_002_preflight_requires_checkpoint_policy_and_runner_core(self) -> None:
+        outbound_binding = write_outbound_binding(self.root / "v4-preflight", bundle_id="run-002")
+        outbound = self.root / "v4-preflight/outbound/run-002/trial-input.zip"
+        build_outbound_package(
+            self.trial,
+            self.model_source,
+            outbound_binding,
+            self.runtime_wheels,
+            outbound,
+            repository_root=ROOT,
+        )
+        manifest, _ = verify_outbound_package(outbound)
+        envelope = load_artifact(self.trial / "execution-envelope.json", kind="irisx/execution-envelope")
+        binding = {
+            "model_dataset": manifest["metadata"]["model_dataset"],
+            "trial_dataset": dataset_binding("trial-input"),
+            "repository_revision": manifest["metadata"]["repository"]["revision"],
+            "repository_clean": True,
+            "notebook_digest": manifest["metadata"]["notebook_digest"],
+            "runner_digest": manifest["metadata"]["runner_digest"],
+            "runner_core_digest": manifest["metadata"]["runner_core_digest"],
+            "checkpoint_policy": manifest["metadata"]["checkpoint_policy"],
+            "hardware": {"gpu_count": 1, "gpu_model": "NVIDIA RTX PRO 6000", "gpu_memory_gb": 96},
+            "internet_disabled": True,
+            "credentials_present": False,
+            "provider_calls_enabled": False,
+            "external_paid_cost_usd": 0,
+            "execution_limits": {
+                field: envelope["payload"][field]
+                for field in (
+                    "attempts_per_test_input", "invocation_limit_per_configuration", "timeout_seconds_per_invocation",
+                    "wall_clock_limit_seconds", "seed_policy", "decoding", "output_limits",
+                )
+            },
+            "result_shape": sorted(RESULT_PATHS),
+            "quarantine_path": ".irisx/arc-agi-2/trial-001/kaggle/inbound/quarantine/run-002/result-package.zip",
+            "retention": read_json(outbound_binding)["retention"],
+            "runtime_dependencies": read_json(outbound_binding)["runtime_dependencies"],
+        }
+        binding_path = self.root / "v4-preflight/preflight.json"
+        write_json(binding_path, binding)
+        report = preflight(self.trial, self.model_source, outbound, binding_path)
+        self.assertTrue(report["payload"]["technical_ready"])
+
+        del binding["checkpoint_policy"]
+        write_json(binding_path, binding)
+        report = preflight(self.trial, self.model_source, outbound, binding_path)
+        self.assertFalse(report["payload"]["technical_ready"])
+        self.assertTrue(any("preflight_binding" in blocker for blocker in report["payload"]["technical_blockers"]))
 
     def test_eligible_domain_package_is_local_and_independently_recomputed(self) -> None:
         result = self._build_result()

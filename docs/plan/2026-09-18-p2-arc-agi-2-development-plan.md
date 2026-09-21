@@ -1,6 +1,9 @@
 # P2 ARC-AGI-2 Trial 001 Temporary Development Plan
 
-Status: temporary implementation plan, not product authority
+Status: completed implementation history; not current workflow or product
+authority. Decision 0010 and the Trial 001 status page supersede this document
+as development guidance. Do not use the sections below as a live task
+checklist.
 
 Date: 2026-09-18
 

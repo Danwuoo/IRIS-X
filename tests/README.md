@@ -6,6 +6,9 @@ execution, the historical P2 admission snapshot and negative gates, current
 Decision 0004/0005/0006/0007 authority synchronization, deterministic closed-world ZIP
 safety, evaluator-truth isolation, model/trial/result bindings, quarantine
 import, local scoring and acceptance, and the preserved P0 archive catalog.
+The suite also covers Decision 0011 `run-002` outbound separation, atomic
+identity-bound checkpoint round trips, tamper rejection, contiguous-prefix
+resume state, cumulative-budget evidence, and checkpoint-aware preflight.
 Decision 0004 also requires the admitted ARC-AGI-2 trial implementation to add
 its specified offline coverage without running a real model/solver merely to
 pass tests. Archived tests remain only in the cold-archive tag and are excluded

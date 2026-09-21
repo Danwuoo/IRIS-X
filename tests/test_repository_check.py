@@ -120,6 +120,65 @@ class RepositoryCheckTests(unittest.TestCase):
         ):
             self.assertIn(term, decision)
 
+    def test_decision_0009_freezes_run_identity_and_gates_layout_normalization(self) -> None:
+        decision = (
+            ROOT / "docs/decisions/0009-normalize-arc-agi-2-trial-001-layout.md"
+        ).read_text(encoding="utf-8")
+        for term in (
+            "Status: Accepted",
+            "run-001",
+            "a179ee8b80b5b7886b756561f74be80d425312faf2d1ecea0b5d81262cef6b44",
+            "normalization_ready: true",
+            "runs/<run-id>/",
+            "does not authorize or ratify",
+        ):
+            self.assertIn(term, decision)
+
+    def test_decision_0010_uses_risk_based_workflow_without_weakening_run_gate(self) -> None:
+        decision = (
+            ROOT / "docs/decisions/0010-adopt-lightweight-risk-based-development.md"
+        ).read_text(encoding="utf-8")
+        for term in (
+            "Status: Accepted",
+            "Routine lane",
+            "Gated lane",
+            "One current status source",
+            "python tools\\repository_check.py --all",
+            "separate explicit owner authorization",
+            "run-001",
+        ):
+            self.assertIn(term, decision)
+
+    def test_decision_0011_creates_checkpointing_run_002_without_execution_authority(self) -> None:
+        decision = (
+            ROOT / "docs/decisions/0011-create-checkpointing-run-002.md"
+        ).read_text(encoding="utf-8")
+        for term in (
+            "Status: Accepted",
+            "run-002",
+            "checkpoint-package.zip",
+            "progress.jsonl",
+            "cumulative wall-clock budget",
+            "does not authorize a real",
+        ):
+            self.assertIn(term, decision)
+
+    def test_trial_001_readme_is_the_current_status_source(self) -> None:
+        status = (
+            ROOT / "trials/first-real-domain/README.md"
+        ).read_text(encoding="utf-8")
+        for term in (
+            "single current status page",
+            "## Goal",
+            "## Current state",
+            "## Next action",
+            "## Fixed boundary",
+            "frozen-awaiting-result-closure",
+            "run-002",
+            "checkpoint-package.zip",
+        ):
+            self.assertIn(term, status)
+
     def test_p0_archive_identities_are_unchanged(self) -> None:
         self.assertEqual(REPOSITORY_CHECK.ARCHIVE_TAG, "archive/pre-product-transition-2026-09-17")
         self.assertEqual(REPOSITORY_CHECK.TAG_OBJECT, "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d")

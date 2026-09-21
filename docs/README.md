@@ -14,14 +14,18 @@ This directory contains only current product-era guidance.
   relationship between the historical blocked P2 snapshot and current Decision
   0004 trial admission.
 - [`development/operating-model.md`](development/operating-model.md) defines
-  the product-first Build–Measure–Select operating model and authorization gates.
+  the lightweight Build–Measure–Select loop and the routine-versus-gated
+  boundary adopted by Decision 0010.
 - [`development/data-and-execution-policy.md`](development/data-and-execution-policy.md)
   governs secrets, domain data, local outputs, retention, provenance, budgets,
   and external/provider execution.
 - [`development/arc-agi-2-kaggle-handoff.md`](development/arc-agi-2-kaggle-handoff.md)
-  defines the manual Decision 0005/0006/0007/0008 package, extracted-trial and raw-model notebook,
-  quarantine, local evaluation, and preflight procedure.
-- [`decisions/`](decisions/README.md) contains dated current decisions.
+  defines the detailed manual Trial 001 package, notebook, quarantine, local
+  evaluation, and preflight procedure.
+- [`../trials/first-real-domain/README.md`](../trials/first-real-domain/README.md)
+  is the single current status page for Trial 001.
+- [`decisions/`](decisions/README.md) contains accepted boundary decisions and
+  historical rationale.
 - [`repository-layout.md`](repository-layout.md) defines the active P1 plus
   admitted P2 ARC-AGI-2 layout.
 
