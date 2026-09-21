@@ -12,10 +12,12 @@ import support  # noqa: F401
 from irisx.kaggle_runner_v4 import (
     CHECKPOINT_FORMAT,
     CHECKPOINT_POLICY,
+    SMOKE_INVOCATION_LIMIT,
     _load_checkpoint,
     _new_state,
     _persist_checkpoint,
     _recover_pending,
+    _tasks,
     _validate_state,
 )
 
@@ -90,6 +92,24 @@ class KaggleCheckpointTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
+
+    def test_smoke_limit_covers_both_configurations_in_four_invocations(self) -> None:
+        tasks = _tasks(
+            {"payload": {"cases": [{"case_id": "case-001", "test": [{"input": [[0]]}]}]}},
+            {"artifact_id": "baseline"},
+            {"artifact_id": "candidate"},
+            {"payload": {"system": "baseline"}},
+            {"payload": {"system": "candidate"}},
+        )
+        self.assertEqual(SMOKE_INVOCATION_LIMIT, 4)
+        self.assertEqual(
+            [task["key"]["configuration"] for task in tasks[:4]],
+            ["baseline", "baseline", "candidate", "candidate"],
+        )
+        self.assertEqual(
+            [task["key"]["attempt_index"] for task in tasks[:4]],
+            [0, 1, 0, 1],
+        )
 
     def test_checkpoint_round_trip_is_atomic_and_identity_bound(self) -> None:
         state = _new_state(self.identity)

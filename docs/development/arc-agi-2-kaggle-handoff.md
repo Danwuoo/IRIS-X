@@ -44,6 +44,12 @@ packaged only as `run-002` and adds:
 - a 1,800-second finalization reserve so remaining invocations can be recorded
   as timeouts and a complete result can close before the venue limit.
 
+The currently packaged notebook limits each session to four actual model
+invocations. Deterministic interleaving makes those first four calls the two
+attempts for the first baseline input and the two attempts for the matching
+candidate input. Reaching this smoke limit is a successful checkpoint-only
+exit; it never fabricates a partial result package.
+
 The checkpoint contains predictions and execution state, never evaluator truth.
 Cross-session persistence is manual: download the latest checkpoint unchanged,
 publish it as a new immutable version of the private
@@ -151,13 +157,17 @@ is readiness evidence, not execution authorization.
 7. The notebook verifies the complete raw model Dataset against provenance and loads
    it directly from `/kaggle/input`; it performs no 55 GB ZIP extraction or
    model copy.
-8. Watch the flushed notebook progress. The latest recoverable state is always
-   `/kaggle/working/checkpoint-package.zip`.
+8. Watch the flushed notebook progress. The smoke session stops after at most
+   four model invocations. The latest recoverable state is always
+   `/kaggle/working/checkpoint-package.zip`; absence of `result-package.zip` is
+   expected for an incomplete smoke run.
 9. If the session must be resumed, download that checkpoint unchanged, publish
    it as a private immutable `danielwuu/run-002-checkpoint` Dataset version,
    attach it, and rerun the v4 notebook. A same-session rerun automatically
    finds the working checkpoint first.
-10. When complete, download `/kaggle/working/result-package.zip` unchanged.
+10. Only if a resumed sequence has all 668 records will the runner create
+    `/kaggle/working/result-package.zip`; otherwise use the checkpoint solely as
+    smoke/runtime evidence.
 
 ## Quarantine, local scoring, and final package
 
