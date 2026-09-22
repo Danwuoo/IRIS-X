@@ -2,6 +2,9 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-09-22-arc-agi-2-completable-baseline.md`](plan/2026-09-22-arc-agi-2-completable-baseline.md)
+  records the owner-directed Trial 002 baseline development scope, source and
+  model strategy, bounded Kaggle CLI smoke, and implementation handoff.
 - [`product/product-scope.md`](product/product-scope.md) defines the adopted
   product boundary, P1 foundation, and admitted P2 ARC-AGI-2 scope.
 - [`product/non-goals.md`](product/non-goals.md) records durable exclusions and
