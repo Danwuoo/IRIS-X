@@ -73,3 +73,7 @@ no current authority unless a new decision explicitly re-adopts them.
   preserves the failed first baseline and authorizes one transport-only
   replacement identity with exact current Kaggle Dataset mounts and the same
   four-worker startup stopping condition.
+- [`0018-authorize-prompt-pilot-result-recovery.md`](0018-authorize-prompt-pilot-result-recovery.md)
+  authorizes one output retrieval from the compute-complete baseline-002
+  failure and local reconstruction of its missing result package, without
+  rerunning or scoring the workload.

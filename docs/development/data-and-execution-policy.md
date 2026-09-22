@@ -161,3 +161,9 @@ JSON keys. No verified `result.zip` exists. The Dataset update, kernel push, and
 bounded monitoring are consumed. A local runner fix does not authorize further
 status/log/source/output requests, checkpoint recovery, result packaging,
 scoring, reflection, or resubmission.
+
+Decision 0018 authorizes one exact version 1 output retrieval from the failed
+baseline-002 kernel and local truth-free result reconstruction from a complete,
+identity-bound checkpoint. The recovery must not repeat a generation, update a
+Dataset or kernel, score predictions, reflect, publish, or retrieve output a
+second time. Missing or inconsistent checkpoint evidence ends the recovery.

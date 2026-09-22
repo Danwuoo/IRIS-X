@@ -94,6 +94,10 @@ the baseline transport and its one owner-authorized repair. The failed
 - The local runner now converts rank keys to strings and has a focused
   regression test. Those repaired source bytes have not been uploaded or
   executed, and no new Dataset/kernel identity has been created.
+- Recovery: Decision 0018 authorizes one exact version 1 output retrieval and
+  local result reconstruction from the completed baseline-002 checkpoint.
+  Recovery is in progress; scoring and any new external execution remain
+  unauthorized.
 - The repair uses the unchanged 384 visible cases and split. Prior exact
   tokenizer parity therefore remains applicable, and a byte-exact local
   archive-to-extracted-to-archive reconstruction reproduced the repair

@@ -64,6 +64,11 @@ before writing `result.zip` because integer `model_ready` rank keys violated
 canonical JSON. The Dataset update, kernel push, and monitoring authority are
 consumed. No result retrieval, checkpoint recovery, packaging, scoring, or
 resubmission is authorized without new owner direction.
+The owner has now explicitly authorized Decision 0018: retrieve the exact
+baseline-002 version 1 output once and locally package its completed checkpoint.
+This recovery may apply only the verified integer-to-string rank-key fix. It
+does not authorize another generation, Dataset/kernel mutation, scoring,
+reflection, publication, competition submission, or repeat retrieval.
 
 ## Authority order
 
@@ -132,8 +137,8 @@ paths. Do not recreate a legacy root merely to preserve history.
   generation policy, result retrieval, scoring, reflection, or retry.
 - Preserve the compute-complete but result-packaging-failed baseline-002
   identity and evidence. The local string-key fix is routine engineering only;
-  it does not authorize output retrieval, checkpoint recovery, result packaging,
-  scoring, or another kernel without new owner direction.
+  Decision 0018 now authorizes one exact output retrieval and local result
+  reconstruction. It does not authorize scoring or another kernel.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.
