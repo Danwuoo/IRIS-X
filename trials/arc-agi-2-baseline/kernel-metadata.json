@@ -1,0 +1,21 @@
+{
+  "id": "danielwuu/iris-x-arc-agi-2-trial-002-smoke-002",
+  "title": "IRIS-X ARC-AGI-2 Trial 002 Repair Smoke 002",
+  "code_file": "kaggle-notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "machine_shape": "NvidiaL4",
+  "dataset_sources": [
+    "danielwuu/irisx-arc-agi-2-trial-002-smoke-001"
+  ],
+  "competition_sources": [
+    "arc-prize-2026-arc-agi-2"
+  ],
+  "kernel_sources": [],
+  "model_sources": []
+}
+

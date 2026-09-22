@@ -15,12 +15,20 @@ Use these documents by purpose:
   data, provenance, budget, and external-execution safety;
 - [`arc-agi-2-kaggle-handoff.md`](arc-agi-2-kaggle-handoff.md) retains the
   historical Trial 001 procedure and frozen identities; and
+- [`arc-agi-2-trial-002-kaggle-smoke.md`](arc-agi-2-trial-002-kaggle-smoke.md)
+  defines the Decision 0015 Trial 002 replacement private CLI smoke,
+  quarantine, and local-scoring procedure; and
 - the [`Trial 001 status page`](../../trials/first-real-domain/README.md) is the
   concise source for current state, next action, and blockers.
 
 Trial 001 is closed as `inconclusive-no-promotion`; no continuation is
 authorized. The simplified process does not change its frozen identities or
 evidence boundaries.
+
+Trial 002 is a separate active baseline question under Decisions 0014 and 0015.
+The failed first attempt is retained; its one authorized replacement is
+inference-only and competition-mounted. Current state is maintained in
+[`trials/arc-agi-2-baseline/README.md`](../../trials/arc-agi-2-baseline/README.md).
 
 Default handoff validation:
 

@@ -9,7 +9,19 @@ import sys
 from .admission import admission_summary, validate_admission_file
 from .arc_agi2 import materialize_source, prepare_trial as prepare_arc_trial, validate_source, validate_trial_bundle
 from .arc_package import build_arc_package, verify_arc_package
+from .arc_trial_002 import (
+    build_outbound_package as build_trial_002_outbound,
+    import_quarantine as import_trial_002_quarantine,
+    prepare_trial as prepare_trial_002,
+    score_quarantined as score_trial_002_quarantined,
+    stage_kaggle_kernel as stage_trial_002_kernel,
+    technical_preflight as trial_002_preflight,
+    validate_trial as validate_trial_002,
+    verify_outbound_package as verify_trial_002_outbound,
+    verify_result_package as verify_trial_002_result,
+)
 from .artifacts import write_artifact
+from .canonical import digest_value, write_json
 from .errors import IrisxError, ValidationError
 from .fixture import prepare_fixture, run_trial, validate_specification, validate_trial
 from .kaggle import (
@@ -137,6 +149,50 @@ def build_parser() -> argparse.ArgumentParser:
     arc_package_build.add_argument("--output", required=True, type=_path)
     arc_package_verify = arc_package_sub.add_parser("verify", help="independently verify an ARC Domain Package")
     arc_package_verify.add_argument("path", type=_path)
+
+    baseline = arc_sub.add_parser("baseline", help="ARC-AGI-2 Trial 002 completable baseline operations")
+    baseline_sub = baseline.add_subparsers(dest="baseline_command", required=True)
+    baseline_prepare = baseline_sub.add_parser("prepare", help="prepare the fixed four-task answer-blind smoke workload")
+    baseline_prepare.add_argument("--source", required=True, type=_path)
+    baseline_prepare.add_argument("--competition-challenges", required=True, type=_path)
+    baseline_prepare.add_argument("--output", required=True, type=_path)
+    baseline_validate = baseline_sub.add_parser("validate", help="validate the local Trial 002 workload and truth isolation")
+    baseline_validate.add_argument("path", type=_path)
+    baseline_outbound = baseline_sub.add_parser("outbound-build", help="build the truth-free Trial 002 input package")
+    baseline_outbound.add_argument("--trial", required=True, type=_path)
+    baseline_outbound.add_argument("--model", required=True, type=_path)
+    baseline_outbound.add_argument("--nvarc", required=True, type=_path)
+    baseline_outbound.add_argument("--wheels", required=True, type=_path)
+    baseline_outbound.add_argument("--output", required=True, type=_path)
+    baseline_outbound_verify = baseline_sub.add_parser("outbound-verify", help="verify the truth-free Trial 002 input package")
+    baseline_outbound_verify.add_argument("path", type=_path)
+    baseline_kernel_stage = baseline_sub.add_parser("kernel-stage", help="bind outbound digest and exact Dataset source into Kaggle kernel staging")
+    baseline_kernel_stage.add_argument("--template", required=True, type=_path)
+    baseline_kernel_stage.add_argument("--output", required=True, type=_path)
+    baseline_kernel_stage.add_argument("--dataset-ref", required=True)
+    baseline_kernel_stage.add_argument("--outbound-digest", required=True)
+    baseline_preflight = baseline_sub.add_parser("preflight", help="verify all bound local bytes before the authorized smoke")
+    baseline_preflight.add_argument("--trial", required=True, type=_path)
+    baseline_preflight.add_argument("--outbound", required=True, type=_path)
+    baseline_preflight.add_argument("--model", required=True, type=_path)
+    baseline_preflight.add_argument("--nvarc", required=True, type=_path)
+    baseline_preflight.add_argument("--wheels", required=True, type=_path)
+    baseline_preflight.add_argument("--competition-challenges", required=True, type=_path)
+    baseline_preflight.add_argument("--dataset", required=True, type=_path)
+    baseline_preflight.add_argument("--kernel", required=True, type=_path)
+    baseline_preflight.add_argument("--dataset-ref", required=True)
+    baseline_preflight.add_argument("--output", required=True, type=_path)
+    baseline_result_verify = baseline_sub.add_parser("result-verify", help="verify an untrusted Trial 002 result package")
+    baseline_result_verify.add_argument("--package", required=True, type=_path)
+    baseline_result_verify.add_argument("--outbound", required=True, type=_path)
+    baseline_result_import = baseline_sub.add_parser("result-import", help="verify and import a Trial 002 result into quarantine")
+    baseline_result_import.add_argument("--package", required=True, type=_path)
+    baseline_result_import.add_argument("--outbound", required=True, type=_path)
+    baseline_result_import.add_argument("--quarantine", required=True, type=_path)
+    baseline_result_score = baseline_sub.add_parser("result-score", help="score a verified Trial 002 quarantine result locally")
+    baseline_result_score.add_argument("--trial", required=True, type=_path)
+    baseline_result_score.add_argument("--quarantined", required=True, type=_path)
+    baseline_result_score.add_argument("--output", required=True, type=_path)
     return parser
 
 
@@ -240,6 +296,62 @@ def execute(args: argparse.Namespace) -> str:
         if args.arc_package_command == "verify":
             manifest = verify_arc_package(args.path)
             return f"verified ARC Domain Package: {manifest.content_digest}"
+    if args.command == "arc-agi-2" and args.arc_command == "baseline":
+        if args.baseline_command == "prepare":
+            run = prepare_trial_002(args.source, args.competition_challenges, args.output)
+            return f"prepared ARC-AGI-2 Trial 002 smoke: {run['run_identity_digest']}"
+        if args.baseline_command == "validate":
+            run = validate_trial_002(args.path)
+            return f"verified ARC-AGI-2 Trial 002 smoke offline: {run['run_identity_digest']}"
+        if args.baseline_command == "outbound-build":
+            digest = build_trial_002_outbound(
+                args.trial,
+                args.model,
+                args.nvarc,
+                args.wheels,
+                args.output,
+                repository_root=Path(__file__).resolve().parents[2],
+            )
+            return f"built Trial 002 truth-free outbound: {digest}"
+        if args.baseline_command == "outbound-verify":
+            _, _, digest = verify_trial_002_outbound(args.path)
+            return f"verified Trial 002 truth-free outbound: {digest}"
+        if args.baseline_command == "kernel-stage":
+            metadata = stage_trial_002_kernel(
+                args.template,
+                args.output,
+                expected_dataset_ref=args.dataset_ref,
+                outbound_digest=args.outbound_digest,
+            )
+            return f"staged Trial 002 Kaggle kernel: {metadata['id']}"
+        if args.baseline_command == "preflight":
+            if args.output.exists():
+                raise ValidationError(f"preflight output already exists: {args.output}")
+            report = trial_002_preflight(
+                args.trial,
+                args.outbound,
+                args.model,
+                args.nvarc,
+                args.wheels,
+                args.competition_challenges,
+                args.dataset,
+                args.kernel,
+                args.dataset_ref,
+            )
+            write_json(args.output, report)
+            return f"wrote Trial 002 package preflight (technical_ready={report['technical_ready']}): {digest_value(report)}"
+        if args.baseline_command == "result-verify":
+            _, _, digest = verify_trial_002_result(args.package, args.outbound)
+            return f"verified untrusted Trial 002 result offline: {digest}"
+        if args.baseline_command == "result-import":
+            target = import_trial_002_quarantine(args.package, args.outbound, args.quarantine)
+            return f"verified and imported Trial 002 result to quarantine: {target}"
+        if args.baseline_command == "result-score":
+            if args.output.exists():
+                raise ValidationError(f"score output already exists: {args.output}")
+            score = score_trial_002_quarantined(args.trial, args.quarantined)
+            write_json(args.output, score)
+            return f"scored Trial 002 smoke locally: {score['passed_test_outputs']}/{score['total_test_outputs']} ({score['score']:.6f})"
     raise ValidationError("unsupported command")
 
 

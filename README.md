@@ -31,6 +31,15 @@ generation evidence, and `result.zip`. Decision 0012 ends that execution
 authority without accepting a returned result and records the terminal
 inconclusive closure.
 
+Decision 0014 opens a separate ARC-AGI-2 Trial 002 completable-baseline
+question. It selects exact Qwen3.5-4B and NVARC source identities, fixes four
+answer-blind public-training tasks, and authorizes one private bounded Kaggle
+L4 x4 smoke. Decision 0015 preserves that failed first attempt and authorizes a
+replacement identity with the real ARC competition mounted, runtime-verified
+L4 x4, and exactly four inference-only generation calls. Its status lives in
+[`trials/arc-agi-2-baseline/README.md`](trials/arc-agi-2-baseline/README.md);
+it does not reopen Trial 001 or claim public-evaluation performance.
+
 ## Quickstart
 
 IRIS-X requires Python 3.11 or later and has no third-party runtime dependencies.
@@ -63,9 +72,9 @@ identical inputs produces identical canonical contracts and package bytes.
 | [`docs/product/`](docs/product/README.md) | Current product scope, contracts, package, and P2 trial admission |
 | [`docs/development/`](docs/development/README.md) | Operating model and data/execution policy |
 | [`docs/decisions/`](docs/decisions/README.md) | Current decisions |
-| [`src/irisx/`](src/irisx/) | P1 contracts/reference flow/package verification, historical admission validation, and retained Trial 001 implementation |
+| [`src/irisx/`](src/irisx/) | P1 contracts/reference flow/package verification, historical admission validation, retained Trial 001 implementation, and the bounded Trial 002 runner/evaluator |
 | [`tests/`](tests/README.md) | Active P1, P2 admission, and closed-trial tests |
-| [`trials/`](trials/README.md) | Historical P2 admission package and closed ARC-AGI-2 Trial 001 workspace |
+| [`trials/`](trials/README.md) | Historical P2 admission, closed ARC-AGI-2 Trial 001, and active bounded Trial 002 workspace |
 | [`research/`](research/README.md) | Conditional product-driven research |
 | [`archive/`](archive/README.md) | Read-only catalog of the pre-product repository |
 | [`tools/`](tools/README.md) | Active offline repository validation |

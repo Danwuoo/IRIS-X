@@ -57,3 +57,11 @@ no current authority unless a new decision explicitly re-adopts them.
   preserves the executed `run-002` identity and authorizes a new `run-003` v5
   completion benchmark: exactly four invocations, no runner time limit,
   resumable checkpoints, and a fully recorded `result.zip`.
+- [`0014-authorize-arc-agi-2-trial-002-baseline-smoke.md`](0014-authorize-arc-agi-2-trial-002-baseline-smoke.md)
+  opens the distinct Trial 002 completable-baseline question, selects the exact
+  Qwen3.5-4B and NVARC-derived path, and authorizes one private bounded Kaggle
+  L4 x4 smoke with automated CLI transport and truth-free evidence.
+- [`0015-authorize-trial-002-repair-smoke.md`](0015-authorize-trial-002-repair-smoke.md)
+  preserves the failed first smoke and authorizes one replacement identity
+  with the ARC competition mounted, exact L4 x4 runtime checks, and exactly
+  four inference-only generation invocations.

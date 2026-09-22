@@ -27,6 +27,15 @@ four-invocation `run-003` v5 completion benchmark with no runner time limit,
 checkpoint resume, and a truth-free `result.zip`. Accepted Decision 0012 now
 closes Trial 001 as `inconclusive-no-promotion` without a verified `run-003`
 result and ends all remaining Trial 001 execution authority.
+Decision 0014 opens the distinct `arc-agi-2-trial-002` completable-baseline
+question and authorizes exactly one bounded private Kaggle L4 x4 smoke under
+`trial-002-smoke-001`, with Qwen3.5-4B, NVARC-derived task-local adaptation,
+automated CLI transport, truth-free checkpoints/results, and USD 0 paid cost.
+That attempt failed before model execution because the submitted kernel omitted
+the competition source and observed only two GPUs. Decision 0015 preserves the
+failed identity and authorizes one replacement `trial-002-smoke-002`: mount
+`arc-prize-2026-arc-agi-2`, verify exactly four L4 GPUs, and make exactly four
+inference-only Qwen3.5-4B generation calls with no TTT or retry.
 
 ## Authority order
 
@@ -84,26 +93,31 @@ paths. Do not recreate a legacy root merely to preserve history.
 - Preserve executed `run-002` and prepared `run-003` bytes and identities. The
   v4/v5 checkpoint and result formats remain lineage material, not active
   execution instructions.
+- Keep Trial 002 identities, bytes, results, and status separate from Trial
+  001. The Trial 002 status page is `trials/arc-agi-2-baseline/README.md`.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.
-- Do not execute or resume any part of closed Trial 001. A later experiment
-  requires a new trial question, identity, explicit owner execution
-  authorization, and passing technical preflight. Do not start P3/P4, call an
-  external model provider, use third-party ARC data,
-  enable notebook Internet during measured execution, automate Kaggle
-  credentials or transport, spend external funds, fine-tune the selected model,
-  or build a production runtime.
+- Do not execute or resume any part of closed Trial 001. Decisions 0014 and
+  0015 are the narrow exception for the separate Trial 002 question. The
+  authorized repair reuses the pinned Qwen3.5-4B bytes, mounts the real ARC
+  competition challenges, verifies exactly four L4 GPUs, and performs exactly
+  four inference-only generation calls under `trial-002-smoke-002`. It does not
+  permit TTT, LoRA, a retry or fifth invocation, notebook Internet, external
+  model APIs, paid resources, public publication, competition submission,
+  large SFT, RL, prompt search, a second solver, or a public-evaluation sweep.
+  Do not start P3/P4 or build a production runtime.
 - A network fetch, if implemented for the approved `arcprize/ARC-AGI-2`
   upstream at commit `f3283f727488ad98fe575ea6a5ac981e4a188e49`, must be a
   deliberate source-materialization command separated from trial execution;
   default tests and validation remain offline.
-- A model fetch, if invoked, may acquire only the Decision 0005 Qwen repository
-  and revision. It must remain separate from tests, validation, packaging,
-  preflight, Kaggle execution, and the real trial. Kaggle upload/download is
-  manual; the private Dataset contains the unpacked model files bound by
-  Decision 0006 provenance. Evaluator truth and answer-derived metadata never
-  enter an outbound package or notebook.
+- Trial 001 model and manual-transport rules remain frozen lineage. For Trial
+  002 only, Decisions 0014 and 0015 permit acquisition or reuse of
+  `Qwen/Qwen3.5-4B@851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a` and private
+  Dataset/kernel upload and output download through the installed Kaggle CLI.
+  Acquisition remains separate from tests, validation, packaging, preflight,
+  and measured execution. Evaluator truth and answer-derived metadata never
+  enter an outbound package, checkpoint, result, or notebook.
 - Treat the conceptual decomposition in the thesis as product responsibilities,
   not as settled services, classes, packages, or deployment boundaries.
 - Record durable boundary decisions under `docs/decisions/`; keep transient

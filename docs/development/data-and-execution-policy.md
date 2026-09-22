@@ -96,3 +96,28 @@ per-invocation or cumulative runner time limit. A provider-interrupted pending
 invocation is retried on resume and is not mislabeled as a completed timeout.
 These rules are retained as lineage only after closure; they do not authorize
 continued execution or acceptance of a late result.
+
+Decision 0014 creates a separate Trial 002 exception to the closed Trial 001
+rules. For run `trial-002-smoke-001`, the owner authorizes acquisition of the
+pinned Qwen3.5-4B and NVARC public materials, necessary private Dataset upload,
+one private Kaggle L4 x4 kernel execution through the installed CLI, and one
+bounded output retrieval. Notebook Internet stays disabled; evaluator truth,
+scores, feedback, and answer-derived metadata stay local; existing CLI secrets
+must not be printed or copied; external model APIs, paid execution above USD 0,
+public publication, and competition submission remain prohibited. The run has
+four fixed public-training tasks, 300 seconds of task-local adaptation plus
+inference per task, a 3,600-second whole-session bound, and a 180-second
+finalization reserve. It is not polled or live-streamed, and failure does not
+authorize an automatic resubmission.
+
+Decision 0015 records that `trial-002-smoke-001` failed before model work with
+no competition source and only two visible GPUs. It authorizes one replacement,
+`trial-002-smoke-002`, that mounts `arc-prize-2026-arc-agi-2` and opens only
+`arc-agi_training_challenges.json`. The runtime must verify exactly four L4
+GPUs before loading the model and then perform exactly four inference-only
+generation invocations: one fixed task/test pair per GPU, one returned sequence,
+no warm-up generation, retry, TTT, LoRA, SFT, or RL. The existing model and
+wheel bytes may be reused in a new immutable private Dataset version. The one
+kernel push and one bounded later retrieval inherit the Internet-disabled,
+truth-free, USD 0, private, non-submission, no-polling boundary. Failure or a
+queued state does not authorize another submission.
