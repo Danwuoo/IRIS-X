@@ -121,12 +121,24 @@ class KaggleCandidateEvaluator:
             return item
         dataset_dir = self.search_root / f"round-{round_index:02d}" / "dataset"
         started = time.monotonic()
-        self._run(["kaggle", "datasets", "version", "--path", str(dataset_dir), "--message", f"Decision 0019 candidate G{round_index}", "--dir-mode", "zip"])
+        target_version = item["dataset_version"]
+        status = self._dataset_status()
+        current_version = status["current_version_number"]
+        if current_version > target_version:
+            raise RuntimeError(f"runtime Dataset advanced beyond the planned version: {status}")
+        if not (status.get("status") == "ready" and current_version == target_version):
+            if status.get("status") == "ready" and current_version < target_version:
+                self._run(["kaggle", "datasets", "version", "--path", str(dataset_dir), "--message", f"Decision 0019 candidate G{round_index}", "--dir-mode", "zip"])
+            elif status.get("status") not in {"pending", "running", "updating"}:
+                raise RuntimeError(f"runtime Dataset is not ready for its planned update: {status}")
         while True:
             status = self._dataset_status()
-            if status.get("status") == "ready" and status["current_version_number"] == item["dataset_version"]:
+            current_version = status["current_version_number"]
+            if status.get("status") == "ready" and current_version == target_version:
                 break
-            if status.get("status") not in {"pending", "running", "updating"}:
+            if current_version > target_version:
+                raise RuntimeError(f"runtime Dataset advanced beyond the planned version: {status}")
+            if status.get("status") not in {"pending", "running", "updating", "ready"}:
                 raise RuntimeError(f"runtime Dataset update failed: {status}")
             time.sleep(15)
         return record_dataset_uploaded(self.ledger_path, round_index=round_index, transport_seconds=time.monotonic() - started)

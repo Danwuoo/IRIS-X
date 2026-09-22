@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import threading
 import time
 from typing import Any, Callable, Mapping, Sequence
 
@@ -173,6 +174,7 @@ def begin_proposal_attempt(path: Path, *, parent_candidate: str, parent_instruct
         "kernel_ref": None,
         "kernel_version": None,
         "dataset_version": None,
+        "incidents": [],
         "outbound_digest": None,
         "result_digest": None,
         "score_digest": None,
@@ -228,6 +230,56 @@ def record_dataset_uploaded(path: Path, *, round_index: int, transport_seconds: 
         raise ValidationError("prompt-pilot Dataset upload is out of order")
     item["gpu_status"] = "dataset-ready"
     item["timings"]["transport_seconds"] += transport_seconds
+    item["next_action"] = f"submit-kernel-round-{round_index:02d}"
+    ledger["next_action"] = item["next_action"]
+    save_ledger(path, ledger)
+    return item
+
+
+def reconcile_duplicate_dataset_versions(
+    path: Path,
+    *,
+    round_index: int,
+    observed_version: int,
+    duplicate_versions: Sequence[int],
+    evidence_path: Path,
+) -> dict[str, Any]:
+    """Recover a staged candidate after identical Dataset versions were uploaded.
+
+    This transition is deliberately narrow: it may only advance a staged item,
+    every duplicate must be at or above the originally planned version, and the
+    observed ready version must be the last duplicate.  The caller retains a
+    canonical incident record binding the bytes and remote observations.
+    """
+
+    ledger = load_ledger(path)
+    item = ledger["rounds"][round_index - 1]
+    expected_version = item.get("dataset_version")
+    versions = list(duplicate_versions)
+    if (
+        item.get("gpu_status") != "staged"
+        or not isinstance(expected_version, int)
+        or not versions
+        or versions != sorted(set(versions))
+        or versions[0] != expected_version
+        or versions[-1] != observed_version
+        or not evidence_path.is_file()
+    ):
+        raise ValidationError("prompt-pilot Dataset reconciliation evidence is invalid")
+    incident = {
+        "type": "duplicate-identical-dataset-versions",
+        "recorded_at_utc": _utc(),
+        "planned_version": expected_version,
+        "duplicate_versions": versions,
+        "recovered_version": observed_version,
+        "evidence_path": str(evidence_path.resolve()),
+        "evidence_digest": digest_path(evidence_path),
+        "kernel_submitted": False,
+        "generation_invocations": 0,
+    }
+    item.setdefault("incidents", []).append(incident)
+    item["dataset_version"] = observed_version
+    item["gpu_status"] = "dataset-ready"
     item["next_action"] = f"submit-kernel-round-{round_index:02d}"
     ledger["next_action"] = item["next_action"]
     save_ledger(path, ledger)
@@ -580,6 +632,27 @@ class LedgerCodexInstructionProposer:
             return {component: current}
 
 
+class ReplayThenLedgerProposer:
+    """Replay one retained instruction, then delegate new attempts to Codex."""
+
+    def __init__(self, delegate: LedgerCodexInstructionProposer, replay_instruction: str):
+        self.delegate = delegate
+        self.replay_instruction = replay_instruction
+        self.replayed = False
+
+    def __call__(
+        self,
+        candidate: dict[str, str],
+        reflective_dataset: Mapping[str, Sequence[Mapping[str, Any]]],
+        components_to_update: list[str],
+    ) -> dict[str, str]:
+        if not self.replayed:
+            if len(components_to_update) != 1:
+                raise ValidationError("prompt-pilot replay received multiple components")
+            self.replayed = True
+            return {components_to_update[0]: self.replay_instruction}
+        return self.delegate(candidate, reflective_dataset, components_to_update)
+
 def _load_score_for_instruction(ledger: Mapping[str, Any], instruction_digest: str) -> Path | None:
     if instruction_digest == ledger["baseline"]["instruction_digest"]:
         return Path(ledger["baseline"]["score_path"])
@@ -615,6 +688,7 @@ def run_dspy_gepa_search(
     proposer_workspace: Path,
     gepa_run_dir: Path,
     evaluate_candidate: Callable[[int, str], Path],
+    replay_instruction: str | None = None,
 ) -> dict[str, Any]:
     """Run real dspy.GEPA while delegating each new candidate to private Kaggle.
 
@@ -640,29 +714,33 @@ def run_dspy_gepa_search(
         raise ValidationError("DSPy/GEPA train-dev workload differs from the frozen evaluator truth")
 
     score_cache: dict[str, dict[str, Mapping[str, Any]]] = {}
+    candidate_evaluation_lock = threading.Lock()
 
     def ensure_score(instruction: str) -> tuple[str, dict[str, Mapping[str, Any]]]:
         instruction_digest = digest_value(instruction)
         if instruction_digest in score_cache:
             return instruction_digest, score_cache[instruction_digest]
-        ledger = load_ledger(ledger_path)
-        score_path = _load_score_for_instruction(ledger, instruction_digest)
-        if score_path is None:
-            matching = [item for item in ledger["rounds"] if item.get("candidate_instruction_digest") == instruction_digest]
-            if len(matching) != 1 or matching[0].get("duplicate") is not False or matching[0].get("proposal_status") != "valid":
-                raise ValidationError("GEPA requested an unledgered or invalid instruction")
-            score_path = evaluate_candidate(matching[0]["round"], instruction)
-        score = read_json(score_path)
-        if score.get("bindings", {}).get("instruction_digest", instruction_digest) != instruction_digest:
-            raise ValidationError("candidate score instruction binding differs")
-        records = score.get("records")
-        if not isinstance(records, list) or len(records) != BASELINE_JOB_COUNT:
-            raise ValidationError("candidate score does not preserve the 384-case denominator")
-        by_id = {item["task_id"]: item for item in records}
-        if set(by_id) != set(cases):
-            raise ValidationError("candidate score task identities differ")
-        score_cache[instruction_digest] = by_id
-        return instruction_digest, by_id
+        with candidate_evaluation_lock:
+            if instruction_digest in score_cache:
+                return instruction_digest, score_cache[instruction_digest]
+            ledger = load_ledger(ledger_path)
+            score_path = _load_score_for_instruction(ledger, instruction_digest)
+            if score_path is None:
+                matching = [item for item in ledger["rounds"] if item.get("candidate_instruction_digest") == instruction_digest]
+                if len(matching) != 1 or matching[0].get("duplicate") is not False or matching[0].get("proposal_status") != "valid":
+                    raise ValidationError("GEPA requested an unledgered or invalid instruction")
+                score_path = evaluate_candidate(matching[0]["round"], instruction)
+            score = read_json(score_path)
+            if score.get("bindings", {}).get("instruction_digest", instruction_digest) != instruction_digest:
+                raise ValidationError("candidate score instruction binding differs")
+            records = score.get("records")
+            if not isinstance(records, list) or len(records) != BASELINE_JOB_COUNT:
+                raise ValidationError("candidate score does not preserve the 384-case denominator")
+            by_id = {item["task_id"]: item for item in records}
+            if set(by_id) != set(cases):
+                raise ValidationError("candidate score task identities differ")
+            score_cache[instruction_digest] = by_id
+            return instruction_digest, by_id
 
     instruction_marker = "In adhering to this structure, your objective is: \n        "
 
@@ -731,7 +809,19 @@ def run_dspy_gepa_search(
 
     trainset = [to_example(item["task_id"]) for item in solver["cases"] if item["group"] == "optimization-train"]
     valset = [to_example(item["task_id"]) for item in solver["cases"] if item["group"] == "selection-dev"]
-    proposer = LedgerCodexInstructionProposer(ledger_path, proposer_workspace)
+    ledger_before_run = load_ledger(ledger_path)
+    remaining_attempts = MAX_PROPOSAL_ATTEMPTS - ledger_before_run["budget"]["proposal_attempts_used"]
+    proposal_iterations = remaining_attempts
+    proposer: Any = LedgerCodexInstructionProposer(ledger_path, proposer_workspace)
+    if replay_instruction is not None:
+        replay_digest = digest_value(replay_instruction)
+        replay_score = _load_score_for_instruction(ledger_before_run, replay_digest)
+        if replay_score is None:
+            raise ValidationError("GEPA recovery replay must already have a verified score")
+        proposer = ReplayThenLedgerProposer(proposer, replay_instruction)
+        proposal_iterations += 1
+    if proposal_iterations < 1:
+        raise ValidationError("prompt-pilot proposal budget is exhausted")
     dspy.configure(lm=VerifiedReplayLM(), adapter=dspy.JSONAdapter())
     optimizer = dspy.GEPA(
         metric,
@@ -745,7 +835,7 @@ def run_dspy_gepa_search(
         track_stats=True,
         log_dir=str(gepa_run_dir),
         seed=20260922,
-        gepa_kwargs={"stop_callbacks": MaxCandidateProposalsStopper(MAX_PROPOSAL_ATTEMPTS)},
+        gepa_kwargs={"stop_callbacks": MaxCandidateProposalsStopper(proposal_iterations)},
     )
     optimized = optimizer.compile(ReplayProgram(), trainset=trainset, valset=valset)
     best_instruction = optimized.solve.signature.instructions
