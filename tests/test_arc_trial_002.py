@@ -253,6 +253,22 @@ class Trial002KaggleStagingTests(unittest.TestCase):
 
 
 class Trial002HardwareAndImportTests(unittest.TestCase):
+    def test_progress_log_accepts_bound_worker_stage_records_only(self) -> None:
+        trial002.validate_progress_log(
+            b'{"event":"worker_started"}\n'
+            b'{"type":"stage","rank":0,"task_id":"2dd70a9a","stage":"model_load"}\n'
+            b'{"type":"stage","rank":3,"task_id":"d968ffd4","stage":"single_generate"}\n',
+            {"2dd70a9a", "d968ffd4"},
+        )
+        for malformed in (
+            b'{"type":"stage","rank":4,"task_id":"2dd70a9a","stage":"model_load"}\n',
+            b'{"type":"stage","rank":0,"task_id":"unknown","stage":"model_load"}\n',
+            b'{"type":"stage","rank":0,"task_id":"2dd70a9a","stage":"training"}\n',
+            b'{"type":"unknown"}\n',
+        ):
+            with self.assertRaisesRegex(ValidationError, "malformed"):
+                trial002.validate_progress_log(malformed, {"2dd70a9a", "d968ffd4"})
+
     def test_gpu_count_model_and_smi_mismatch_fail_fast(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "exactly four"):
             validate_runtime_hardware({"torch_cuda_device_count": 2, "gpus": [], "nvidia_smi_exit_code": 0, "nvidia_smi_rows": []})

@@ -36,7 +36,9 @@ question. It selects exact Qwen3.5-4B and NVARC source identities, fixes four
 answer-blind public-training tasks, and authorizes one private bounded Kaggle
 L4 x4 smoke. Decision 0015 preserves that failed first attempt and authorizes a
 replacement identity with the real ARC competition mounted, runtime-verified
-L4 x4, and exactly four inference-only generation calls. Its status lives in
+L4 x4, and exactly four inference-only generation calls. The replacement has
+completed with four valid grids and a local exact-match result of 0/4; its
+external execution authority is consumed. Its status lives in
 [`trials/arc-agi-2-baseline/README.md`](trials/arc-agi-2-baseline/README.md);
 it does not reopen Trial 001 or claim public-evaluation performance.
 
@@ -74,7 +76,7 @@ identical inputs produces identical canonical contracts and package bytes.
 | [`docs/decisions/`](docs/decisions/README.md) | Current decisions |
 | [`src/irisx/`](src/irisx/) | P1 contracts/reference flow/package verification, historical admission validation, retained Trial 001 implementation, and the bounded Trial 002 runner/evaluator |
 | [`tests/`](tests/README.md) | Active P1, P2 admission, and closed-trial tests |
-| [`trials/`](trials/README.md) | Historical P2 admission, closed ARC-AGI-2 Trial 001, and active bounded Trial 002 workspace |
+| [`trials/`](trials/README.md) | Historical P2 admission, closed ARC-AGI-2 Trial 001, and runtime-verified bounded Trial 002 workspace |
 | [`research/`](research/README.md) | Conditional product-driven research |
 | [`archive/`](archive/README.md) | Read-only catalog of the pre-product repository |
 | [`tools/`](tools/README.md) | Active offline repository validation |

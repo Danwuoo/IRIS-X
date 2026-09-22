@@ -14,10 +14,11 @@ score or an 85% milestone measurement.
 
 ## Current state
 
-- Status: `submitted-awaiting-result`; the replacement outbound, Dataset v2,
-  kernel staging, and offline preflight are identity-bound and verified, and
-  Kaggle accepted kernel version 1. Runtime state is updated only from the one
-  scheduled retrieval and verified returned evidence.
+- Status: `runtime-verified`; the one authorized replacement completed, its
+  exact output passed local quarantine, and all external execution and
+  retrieval authority for this smoke is consumed. Four valid grids were
+  returned, but local exact-match scoring was 0/4, so this is not a successful
+  quality baseline or `baseline-measured` evidence.
 - Trial ID: `arc-agi-2-trial-002`.
 - Failed identity retained: `trial-002-smoke-001`. Kaggle kernel version 1
   ended `ERROR`; its server metadata omitted competition sources and its log
@@ -32,7 +33,9 @@ score or an 85% milestone measurement.
 - Workload: exactly four inference-only generation invocations, one task per
   GPU, `num_return_sequences=1`, no TTT, LoRA, retry, or warm-up generation.
 - Primary local metric: selected-output exact-match pass@1 mean over four
-  outputs. Valid generation and completion rates are reported separately.
+  outputs. The retained pass@2 score envelope contains one generated attempt
+  per job, so its result is equivalent to pass@1 for this smoke. Valid
+  generation and completion rates are reported separately.
 - Runtime gate: exactly four NVIDIA L4 GPUs with at least 22,000 MiB each,
   verified before model loading by both notebook and runner.
 - Budget: 3,600 seconds for the whole session, a bounded finalization allowance,
@@ -44,11 +47,36 @@ score or an 85% milestone measurement.
   `danielwuu/iris-x-arc-agi-2-trial-002-repair-smoke-002`, kernel ID
   `135334870`, version 1. Static server metadata records the intended private,
   Internet-disabled `NvidiaL4` request plus the exact competition and Dataset
-  sources. This does not claim runtime GPU allocation or model start.
+  sources. Returned evidence independently confirms the runtime allocation and
+  model work described below.
 - Verified outbound SHA-256:
   `c5abe026303920cc79376e0bc111abbbcd9c616e23ea243f11cbf6488a848c01`.
 - Technical preflight SHA-256:
   `c67153b81a13d5087c4ee7c0cb920324ff67ff6709a093a45bf6e5d991337967`.
+- Verified result ZIP SHA-256:
+  `91b21a5fdae10d5adda5dc59e22626a92d1935f15e06ca5a35cf2eeac0b53097`.
+- Local score JSON SHA-256:
+  `5712fc5c020026b489d7792c7c89260190b78ada5cc683ad9399cbcc8b36d712`.
+
+## Verified outcome
+
+The returned observation reports four NVIDIA L4 devices, each with 22,563 MiB
+visible to PyTorch; the independent `nvidia-smi` rows report 23,034 MiB each.
+The mounted challenge digest matches the bound competition input, competition
+solutions were not opened, notebook Internet was disabled, and external paid
+cost was USD 0. The session completed in 175.427 seconds with exactly four
+completed generation invocations and four `valid` terminal jobs.
+
+| Task/test | GPU | Invocation | Generated tokens | Generation seconds | Peak MiB | Exact match |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| `2dd70a9a/0` | 0 | 1 | 192 | 12.823 | 9,225 | no |
+| `305b1341/0` | 2 | 2 | 420 | 27.157 | 9,498 | no |
+| `992798f6/0` | 1 | 3 | 272 | 17.644 | 9,293 | no |
+| `d968ffd4/0` | 3 | 4 | 88 | 6.579 | 8,944 | no |
+
+Valid-generation and completion rates are both 4/4. Local test-output exact
+match is 0/4 (`0.0`), and no task is all-correct. TTFT and GPU busy time remain
+explicitly `unknown`; the result does not invent those measurements.
 
 ## Completion states
 
@@ -65,9 +93,11 @@ score or an 85% milestone measurement.
 
 ## Next action
 
-Do not poll or stream logs. Make the one scheduled status/output retrieval only
-after the bounded execution window. If it remains queued at that check, report
-the queue state without starting a polling loop or resubmitting.
+Preserve the verified local evidence and make no further Kaggle status, log,
+output, retry, or submission request under this authorization. Any follow-on
+quality experiment needs a new question, identity, execution authorization,
+and technical preflight. The 0/4 result is useful falsifying evidence for this
+exact single-generation configuration; it is not permission to tune it.
 
 The detailed procedure is
 [`docs/development/arc-agi-2-trial-002-kaggle-smoke.md`](../../docs/development/arc-agi-2-trial-002-kaggle-smoke.md).

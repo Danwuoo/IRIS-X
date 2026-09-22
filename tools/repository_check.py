@@ -464,6 +464,8 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "Do not poll",
             "quarantine",
             "competition submission",
+            "91b21a5fdae10d5adda5dc59e22626a92d1935f15e06ca5a35cf2eeac0b53097",
+            "0/4",
         ),
         "docs/product/p2-admission.md": (
             "admission_blocked",
@@ -503,6 +505,8 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "selected-output exact-match pass@1 mean",
             "exactly four inference-only generation invocations",
             "runtime-verified",
+            "91b21a5fdae10d5adda5dc59e22626a92d1935f15e06ca5a35cf2eeac0b53097",
+            "0/4",
             "Do not run Trial 001",
         ),
         "trials/arc-agi-2-baseline/source-use.md": (
@@ -546,6 +550,7 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "ARC-AGI-2",
             "inconclusive-no-promotion",
             "historical blocked-state evidence",
+            "no further Trial 002 external execution",
         ),
         "README.md": (
             "Decision 0010",

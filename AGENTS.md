@@ -35,7 +35,10 @@ That attempt failed before model execution because the submitted kernel omitted
 the competition source and observed only two GPUs. Decision 0015 preserves the
 failed identity and authorizes one replacement `trial-002-smoke-002`: mount
 `arc-prize-2026-arc-agi-2`, verify exactly four L4 GPUs, and make exactly four
-inference-only Qwen3.5-4B generation calls with no TTT or retry.
+inference-only Qwen3.5-4B generation calls with no TTT or retry. That replacement
+is now `runtime-verified`: all four calls returned valid grids on four L4 GPUs,
+while local exact-match scoring was 0/4. Its one kernel push and one retrieval
+are consumed; no further Trial 002 external execution is authorized.
 
 ## Authority order
 
@@ -98,26 +101,21 @@ paths. Do not recreate a legacy root merely to preserve history.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.
-- Do not execute or resume any part of closed Trial 001. Decisions 0014 and
-  0015 are the narrow exception for the separate Trial 002 question. The
-  authorized repair reuses the pinned Qwen3.5-4B bytes, mounts the real ARC
-  competition challenges, verifies exactly four L4 GPUs, and performs exactly
-  four inference-only generation calls under `trial-002-smoke-002`. It does not
-  permit TTT, LoRA, a retry or fifth invocation, notebook Internet, external
-  model APIs, paid resources, public publication, competition submission,
-  large SFT, RL, prompt search, a second solver, or a public-evaluation sweep.
-  Do not start P3/P4 or build a production runtime.
+- Do not execute or resume any part of closed Trial 001. The Decisions 0014 and
+  0015 exception for Trial 002 was consumed by `trial-002-smoke-002`; do not
+  start another kernel, retrieval, retry, fifth invocation, TTT, LoRA, notebook
+  Internet session, external model call, paid run, publication, competition
+  submission, large SFT, RL, prompt search, second solver, or public-evaluation
+  sweep under that authority. Do not start P3/P4 or build a production runtime.
 - A network fetch, if implemented for the approved `arcprize/ARC-AGI-2`
   upstream at commit `f3283f727488ad98fe575ea6a5ac981e4a188e49`, must be a
   deliberate source-materialization command separated from trial execution;
   default tests and validation remain offline.
-- Trial 001 model and manual-transport rules remain frozen lineage. For Trial
-  002 only, Decisions 0014 and 0015 permit acquisition or reuse of
-  `Qwen/Qwen3.5-4B@851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a` and private
-  Dataset/kernel upload and output download through the installed Kaggle CLI.
-  Acquisition remains separate from tests, validation, packaging, preflight,
-  and measured execution. Evaluator truth and answer-derived metadata never
-  enter an outbound package, checkpoint, result, or notebook.
+- Trial 001 model and manual-transport rules remain frozen lineage. Decisions
+  0014 and 0015 authorized the now-completed Trial 002 acquisition, private
+  Dataset/kernel upload, execution, and output download; they do not authorize
+  repeating them. Evaluator truth and answer-derived metadata never enter an
+  outbound package, checkpoint, result, or notebook.
 - Treat the conceptual decomposition in the thesis as product responsibilities,
   not as settled services, classes, packages, or deployment boundaries.
 - Record durable boundary decisions under `docs/decisions/`; keep transient

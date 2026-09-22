@@ -1241,6 +1241,34 @@ def build_result_package(
     return write_zip(output, RESULT_KIND, RUN_ID, files, metadata, limits=RESULT_LIMITS)
 
 
+def validate_progress_log(progress: bytes, selected_task_ids: Iterable[str]) -> None:
+    allowed_task_ids = set(selected_task_ids)
+    if not allowed_task_ids or any(not isinstance(task_id, str) for task_id in allowed_task_ids):
+        raise ValidationError("Trial 002 progress log task binding is malformed")
+    if not progress or not progress.endswith(b"\n"):
+        raise ValidationError("Trial 002 progress log is empty or unterminated")
+    for line in progress.splitlines():
+        try:
+            event = json.loads(line)
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ValidationError("Trial 002 progress log contains invalid JSON") from exc
+        if not isinstance(event, dict):
+            raise ValidationError("Trial 002 progress log event is malformed")
+        if isinstance(event.get("event"), str):
+            continue
+        rank = event.get("rank")
+        if (
+            event.get("type") == "stage"
+            and event.get("stage") in {"model_load", "single_generate"}
+            and event.get("task_id") in allowed_task_ids
+            and isinstance(rank, int)
+            and not isinstance(rank, bool)
+            and 0 <= rank < WORKER_COUNT
+        ):
+            continue
+        raise ValidationError("Trial 002 progress log event is malformed")
+
+
 def verify_result_package(path: Path, outbound: Path) -> tuple[dict[str, Any], dict[str, bytes], str]:
     _, outbound_contents, _ = verify_outbound_package(outbound)
     outbound_run = json.loads(outbound_contents["bindings/run.json"])
@@ -1350,16 +1378,10 @@ def verify_result_package(path: Path, outbound: Path) -> tuple[dict[str, Any], d
         parsed = json.loads(contents[logical])
         if contents[logical] != canonical_bytes(parsed, newline=True):
             raise ValidationError(f"Trial 002 result JSON is not canonical: {logical}")
-    progress = contents["logs/progress.jsonl"]
-    if not progress or not progress.endswith(b"\n"):
-        raise ValidationError("Trial 002 progress log is empty or unterminated")
-    for line in progress.splitlines():
-        try:
-            event = json.loads(line)
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise ValidationError("Trial 002 progress log contains invalid JSON") from exc
-        if not isinstance(event, dict) or not isinstance(event.get("event"), str):
-            raise ValidationError("Trial 002 progress log event is malformed")
+    validate_progress_log(
+        contents["logs/progress.jsonl"],
+        (case["task_id"] for case in solver["cases"]),
+    )
     metadata = manifest["metadata"]
     if metadata != {
         "trial_id": TRIAL_ID,

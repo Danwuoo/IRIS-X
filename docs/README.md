@@ -29,16 +29,16 @@ This directory contains only current product-era guidance.
   retains the detailed manual Trial 001 package, notebook, quarantine, local
   evaluation, and preflight procedure as closed-trial lineage.
 - [`development/arc-agi-2-trial-002-kaggle-smoke.md`](development/arc-agi-2-trial-002-kaggle-smoke.md)
-  defines the bounded private Dataset/kernel procedure for the Decision 0015
-  Trial 002 repair smoke and local quarantine.
+  records the bounded private Dataset/kernel procedure and verified local
+  quarantine outcome for the completed Decision 0015 Trial 002 repair smoke.
 - [`../trials/first-real-domain/README.md`](../trials/first-real-domain/README.md)
   is the single current status page for Trial 001.
 - [`../trials/arc-agi-2-baseline/README.md`](../trials/arc-agi-2-baseline/README.md)
-  is the single current status page for active Trial 002.
+  is the single current status page for Trial 002.
 - [`decisions/`](decisions/README.md) contains accepted boundary decisions and
   historical rationale.
 - [`repository-layout.md`](repository-layout.md) defines the active P1 plus
-  closed Trial 001 and active Trial 002 layout.
+  closed Trial 001 and runtime-verified Trial 002 layout.
 
 Pre-product documentation remains at its original paths in the cold-archive
 tag and is cataloged under [`../archive/`](../archive/README.md). It is not

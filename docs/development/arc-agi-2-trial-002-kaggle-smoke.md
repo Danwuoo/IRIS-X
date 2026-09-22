@@ -116,9 +116,10 @@ remains `trial-002-smoke-002`; the platform slug normalization is retained as a
 transport receipt rather than rewritten into the already submitted package.
 
 Do not poll. Do not issue repeated `kernels status`, follow logs, or repeatedly
-download output. After the 3,600-second bound plus a finalization allowance,
-make exactly one status/output retrieval. If it is still queued, report that
-state without polling or resubmitting.
+download output. The one authorized status check and exact-version output
+retrieval have now been consumed. They returned Kaggle status `COMPLETE` and
+the exact result described below. Do not make another status, log, output,
+retry, or submission request under Decisions 0014 or 0015.
 
 ## Quarantine and score
 
@@ -142,3 +143,28 @@ terminal job records. Score only the verified quarantine directory with local
 truth. Report exact-match pass@1 over the four selected outputs, valid generation
 rate, completion rate, terminal statuses, timing, tokens, and peak memory
 separately. This workflow does not make a competition submission.
+
+The returned runner progress log contains both coordinator events with an
+`event` field and the runner's bound worker stage records. The offline verifier
+accepts only the two emitted stage names (`model_load` and `single_generate`),
+selected task IDs, and GPU ranks 0–3; unrelated or malformed records remain
+rejected.
+
+The verified result ZIP has SHA-256
+`91b21a5fdae10d5adda5dc59e22626a92d1935f15e06ca5a35cf2eeac0b53097`.
+It reports exactly four NVIDIA L4 devices, exactly four completed invocations,
+four valid terminal grids, a 175.427-second session, Internet disabled, and USD
+0 external paid cost. The score was produced only after quarantine using local
+truth:
+
+```powershell
+python -m irisx arc-agi-2 baseline result-score `
+  --trial .irisx\arc-agi-2\trial-002\trial-smoke-002 `
+  --quarantined .irisx\arc-agi-2\trial-002\quarantine-smoke-002\trial-002-smoke-002\91b21a5fdae10d5adda5dc59e22626a92d1935f15e06ca5a35cf2eeac0b53097 `
+  --output .irisx\arc-agi-2\trial-002\verified-smoke-002\score.json
+```
+
+All four jobs contained one generated attempt, so the retained pass@2 score
+envelope is equivalent to pass@1 here. The exact-match result is 0/4 (`0.0`),
+with zero all-correct tasks. This establishes runtime completion but not solver
+quality or a comparable baseline.

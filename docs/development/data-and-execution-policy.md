@@ -121,3 +121,9 @@ wheel bytes may be reused in a new immutable private Dataset version. The one
 kernel push and one bounded later retrieval inherit the Internet-disabled,
 truth-free, USD 0, private, non-submission, no-polling boundary. Failure or a
 queued state does not authorize another submission.
+
+The replacement and its one retrieval are complete. Returned evidence verifies
+four L4 GPUs, exactly four completed inference invocations, and four valid grids;
+local exact-match scoring was 0/4. Decisions 0014 and 0015 now retain provenance
+and boundary lineage only: they authorize no additional status/log/output call,
+kernel execution, retry, or submission.
