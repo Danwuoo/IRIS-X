@@ -36,6 +36,85 @@ runner 回報 175.427 秒，generation 各 6.579–27.157 秒，峰值約 8.7–
 - 繼續採 private Kaggle、L4 x4、Internet disabled；不監控，不設回收排程，
   由 owner 通知完成後回收。失敗不自動增開 session。
 
+## Owner 指定：從成功實作增量開發
+
+2026-09-22 owner 要求盡量沿用上次成功運行的程式，減少除錯及上傳等待，
+並明訂官方 ARC Prize ARC-AGI-2 competition 掛載與四卡排程為必要條件。
+實作基準是已驗證 commit `5388197c87a08b690ba077c1bfefd335acbb2f4b`，
+對應 `trial-002-smoke-002` 的成功執行及本機 result verifier 修正。
+
+優先保留以下已跑通的路徑與實作，僅在新 trial adapter 做必要擴充：
+
+- `src/irisx/kaggle_runner_trial002.py` 的模型載入、native chat template、
+  單次 generation、parser、hardware preflight、multiprocessing 及結果輸出流程。
+- `src/irisx/arc_trial_002.py` 的 materialization、staging、封包 digest、
+  invocation 記帳、quarantine、scoring 與合法 progress stage 驗證經驗。
+- `trials/arc-agi-2-baseline/kaggle-notebook.ipynb` 的 offline wheel 安裝、
+  competition mount、模型查找與 runner 啟動流程，以及成功 metadata 設定。
+
+本輪必要差異限於：可參數化 instruction、更多 jobs、每 GPU 常駐 worker 的迴圈、
+新 trial 身份／資料分組、DSPy/GEPA 本機 adapter 與 Codex proposer。
+不趁此換推論 engine、CUDA/Transformers 基礎版本、模型量化或重建 transport framework。
+共用的純函式可小幅抽取，但不得改變 Trial 002 已執行 bytes、身份與歷史驗證結果；
+新行為用新 module/config/run identity，避免直接把舊四次 invocation quota 放寬。
+DSPy、GEPA 與 Codex 留在本機控制端，Kaggle 接收已凍結的 prompt/jobs，
+不為了 prompt optimization 把整套新依賴加入已成功的 GPU 環境。
+
+### 官方競賽掛載及執行驗證
+
+每個新 notebook 均沿用成功組合：
+
+```json
+{
+  "competition_sources": ["arc-prize-2026-arc-agi-2"],
+  "machine_shape": "NvidiaL4",
+  "enable_gpu": true,
+  "enable_internet": false,
+  "is_private": true
+}
+```
+
+官方競賽來源必須在 `competition_sources`；自己的模型 transport Dataset
+放在 `dataset_sources`，兩者都需掛載，不能以後者取代前者。
+沿用成功 CLI accelerator 與 staging 路徑，核對提交後 server 保存的 competition source、
+machine shape、private/Internet 設定及實際 kernel ID/version，不只檢查本機 JSON。
+啟動後、載入模型前，沿用 PyTorch 與 nvidia-smi 雙重檢查：恰好四張 NVIDIA L4，
+每張至少 22,000 MiB；讀取明確綁定的 competition challenge 檔並驗證 digest。
+不符合即保留失敗證據並結束，不降級成單卡／雙卡跑全批。
+
+### 四張卡都排程
+
+把成功 runner 的「四個 worker 各做一題」增量改成「四個常駐 worker 持續領取 jobs」。
+每個 worker 綁定不同 GPU 0–3，各載入一次相同模型；不把 4B 模型分片成四卡合跑一題。
+先讓四張卡各收到一個基線 job，之後由 parent 動態派發給空閒 worker，避免靜態分四份
+造成長題拖住單卡、其他卡提早空等。只剩不到四個 jobs 的尾段可以自然閒置。
+Holdout 配對 jobs 作為同 GPU 的排程單位，同一對內 B1/G* 次序預先交錯。
+
+每筆記錄 worker rank、physical GPU UUID、job ID、start/end、terminal state；
+回傳每卡 job 數、模型載入次數與 job-active seconds，並驗證足量待處理 jobs 時四個
+worker 都收到工作。job-active seconds 不冒稱硬體 GPU utilization；沒有採樣就不填。
+worker 失敗不得靜默減少卡數完成整輪；保存 checkpoint 與診斷，未完成分母保留。
+
+### 縮小上傳與除錯範圍
+
+沿用已上傳的模型／offline dependencies Dataset 與其實際版本、hash；
+模型 9 GB 級檔案不因每次 prompt 改寫而重新下載、打包或上傳。
+新 trial 建立獨立的小型 runtime/outbound Dataset：穩定 runner wheel 只在程式變動時更新，
+後續各輪主要傳新的 prompt、jobs manifest 與 identity binding。
+若平台會重傳整個 Dataset，讓小型 Dataset 的完整內容仍保持小，不假設平台支援增量上傳。
+
+舊 transport Dataset 可能仍有舊 outbound/wheel。新 notebook 必須明確綁定
+模型來源與新 runner/outbound 的路徑、檔名和 digest，不能用第一個 `rglob` 命中結果
+選到舊 trial 封包；只安裝指定版本／hash 的 wheel。模型保持相同 bytes，
+不需要為了拆 Dataset 先重傳模型建立一個理想化的新目錄結構。
+
+先在本機對「實際要上傳的 staging 內容」做 offline preflight：metadata、
+notebook imports、offline dependencies、mount/path selection、digest、四卡 dispatch、
+多 job queue、timeout/checkpoint、result round-trip，以及舊成功 result 的 verifier 回歸。
+scheduler 測試使用四個 fake workers，驗證派發與中斷、不在測試裡呼叫 GPU／外部模型。
+不新增獨立 GPU smoke 反覆上傳；基線批次最先派出的四個真實 jobs 同時作整合檢查，
+結果直接計入基線 384 次，故不增加暖機或隱藏 generation。
+
 ## 本輪只變動 instruction
 
 使用一個 DSPy predictor：`demonstrations + query_grid -> predicted_grid`。
