@@ -1,8 +1,29 @@
 # ARC-AGI-2 DSPy / GEPA prompt pilot
 
-日期：2026-09-22。狀態：owner 已確定模型、資料規模與十輪資源設定；待獨立 task 實作。
-本次僅更新計畫，尚未啟動模型或 Kaggle。
+日期：2026-09-22。狀態：owner 已指示開啟獨立開發 task，實作並啟動第一個基線 notebook。
+新 task 必須確認 runtime 四卡模型載入後停止開發與監看；目前尚未有新執行證據。
 本聊天為總控，實作交給後續獨立開發 task。本文件不延長 Trial 002 的執行授權。
+
+## 最新開發 task 的交付與停止點
+
+Owner 原話：「正式開啟新 task 開發並啟動 notebook，確認啟動並模型成功載入後
+不監看並停止開發」。此指示界定本次 task 的執行範圍，優先於下方完整十輪路線。
+
+- 使用新的 Sol / xhigh task，從成功 Trial 002 程式增量實作新 trial；完成本機必要驗證，
+  source/version pin、split、package 與 technical preflight 後，實際提交基線 notebook。
+- 授權完成這次工作所需的來源／依賴取得、既有 Kaggle CLI 認證使用、小型 private
+  Dataset 上傳及第一個基線 kernel 啟動，不需再詢問是否可以提交。
+- 必須掛載官方 competition，實際取得四張 L4，四個 worker 都成功載入固定 Qwen3.5-4B。
+  啟動確認階段可讀 server metadata、狀態與 runtime logs；採適當間隔、不高頻輪詢。
+  CLI accepted／platform RUNNING／model_load 開始訊息都不能充當 model loaded 證據。
+- runner 在模型成功載入後，記錄 worker rank、GPU identity、model revision 與 ready 事件。
+  notebook 的必要 stdout 必須即時可見，不能把 subprocess 輸出全部緩衝到全批結束。
+  先讓四卡領取第一組 jobs，之後繼續基線 384 jobs，使用既定佇列排程。
+- 收到四個 worker 的成功載入證據後，保存啟動 receipt 並回報；立即停止後續開發與
+  外部監看，不等待推論完成、不下載完整結果、不設定排程、不執行反思或啟動下一輪。
+  已啟動的 notebook 留在 Kaggle 正常完成基線，不因 agent 停止而取消。
+- 若啟動／載入失敗，提供實際錯誤與已用身份；不得宣稱成功，也不盲目自動重提 kernel。
+  若無法取得進行中的載入證據，要明確區分「已提交」與「載入未驗證」。
 
 ## 問題與已知起點
 
