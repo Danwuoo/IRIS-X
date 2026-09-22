@@ -167,3 +167,9 @@ baseline-002 kernel and local truth-free result reconstruction from a complete,
 identity-bound checkpoint. The recovery must not repeat a generation, update a
 Dataset or kernel, score predictions, reflect, publish, or retrieve output a
 second time. Missing or inconsistent checkpoint evidence ends the recovery.
+
+The single retrieval returned a complete canonical checkpoint and progress
+stream. Local packaging used zero new generations and produced verified
+truth-free result digest
+`4764cd569f669f8736461ddf2b5d6ac3bf1c80ddf3f903d669f8d5a43aa054af`.
+The retrieval and packaging authority are consumed; scoring remains gated.

@@ -15,9 +15,11 @@ the baseline transport and its one owner-authorized repair. The failed
 
 ## Current state
 
-- Status: `compute-complete-result-packaging-failed`. At
-  2026-09-22T13:05:09Z, baseline 002 reported all 384 terminal jobs (380
-  `valid`, 4 `invalid`) and then failed before writing `result.zip`.
+- Status: `result-recovered-unscored`. Baseline 002 reported all 384 terminal
+  jobs (380 `valid`, 4 `invalid`) and then failed before writing `result.zip`.
+  Decision 0018's single output retrieval recovered its complete checkpoint and
+  progress evidence; local deterministic packaging now supplies a verified,
+  truth-free result without another generation.
 - Startup remains verified. At 2026-09-22T12:48:57Z, baseline 002 reported
   four exact-model `model_ready` events on four distinct L4 UUIDs and dispatched
   one initial job to every rank. No output was retrieved or scored.
@@ -94,10 +96,21 @@ the baseline transport and its one owner-authorized repair. The failed
 - The local runner now converts rank keys to strings and has a focused
   regression test. Those repaired source bytes have not been uploaded or
   executed, and no new Dataset/kernel identity has been created.
-- Recovery: Decision 0018 authorizes one exact version 1 output retrieval and
-  local result reconstruction from the completed baseline-002 checkpoint.
-  Recovery is in progress; scoring and any new external execution remain
-  unauthorized.
+- Recovery: Decision 0018's exact version 1 output retrieval and local result
+  reconstruction are complete. The retrieval returned the canonical checkpoint,
+  progress stream, original outbound, notebook preflight, and failure trace.
+- Recovered checkpoint SHA-256:
+  `609cdf460fd4edbc394d2179f04150320ae9a61615fab98389b24c33b383ae78`.
+- Recovered progress SHA-256:
+  `92e310e51b62b286c77267d65aef7842cc67f224f5767d2773fcf6e1c15e1571`.
+- Recovered result SHA-256:
+  `4764cd569f669f8736461ddf2b5d6ac3bf1c80ddf3f903d669f8d5a43aa054af`
+  (1,167,002 bytes; manifest digest
+  `45f39b7d1c9488e420f2f59b99c541c71c57d6fb9b403de72c7e1ebfca0db4d8`).
+- The result contains only the exact run binding, complete checkpoint,
+  predictions, reconstructed execution observations, and original progress
+  stream. Independent verification and a second deterministic build produced
+  identical bytes. `new_generation_invocations` is 0 and `scored` is false.
 - The repair uses the unchanged 384 visible cases and split. Prior exact
   tokenizer parity therefore remains applicable, and a byte-exact local
   archive-to-extracted-to-archive reconstruction reproduced the repair
@@ -106,9 +119,8 @@ the baseline transport and its one owner-authorized repair. The failed
 ## Stop boundary
 
 Baseline 001 did not reach the gate; preserve that failure. Baseline 002 reached
-the gate and completed all 384 jobs, but no result package was written. Decision
-0017's Dataset update, kernel push, and bounded monitoring authority are
-consumed. Do not retrieve output, package or score the retained checkpoint,
-resubmit the kernel, or launch a third identity without a new explicit owner
-instruction. Prefer recovering and packaging the completed baseline-002
-checkpoint, if Kaggle retained it, over repeating 384 generations.
+the gate, completed all 384 jobs, and now has a locally recovered verified
+result. Decisions 0017 and 0018 are consumed: one Dataset update, one kernel
+push, and one output retrieval occurred. Do not retrieve again, score the
+result, invoke reflection, resubmit the kernel, or launch another identity
+without a new explicit owner instruction.

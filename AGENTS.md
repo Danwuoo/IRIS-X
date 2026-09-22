@@ -69,6 +69,12 @@ baseline-002 version 1 output once and locally package its completed checkpoint.
 This recovery may apply only the verified integer-to-string rank-key fix. It
 does not authorize another generation, Dataset/kernel mutation, scoring,
 reflection, publication, competition submission, or repeat retrieval.
+That recovery is complete. The exact version 1 checkpoint and progress stream
+were retained locally, and deterministic local packaging produced verified
+truth-free result digest
+`4764cd569f669f8736461ddf2b5d6ac3bf1c80ddf3f903d669f8d5a43aa054af`
+with zero new generations. The one retrieval is consumed and the result remains
+unscored.
 
 ## Authority order
 
@@ -138,7 +144,8 @@ paths. Do not recreate a legacy root merely to preserve history.
 - Preserve the compute-complete but result-packaging-failed baseline-002
   identity and evidence. The local string-key fix is routine engineering only;
   Decision 0018 now authorizes one exact output retrieval and local result
-  reconstruction. It does not authorize scoring or another kernel.
+  reconstruction. Both are complete and consumed. It does not authorize scoring
+  or another kernel.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.

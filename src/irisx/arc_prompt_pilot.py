@@ -570,6 +570,181 @@ def verify_result_package(path: Path, outbound: Path) -> tuple[dict[str, Any], d
     return manifest, contents, digest
 
 
+def _load_canonical_progress(path: Path) -> tuple[list[dict[str, Any]], bytes]:
+    raw = path.read_bytes()
+    if not raw or not raw.endswith(b"\n"):
+        raise ValidationError("recovery progress must be non-empty newline-terminated JSONL")
+    events: list[dict[str, Any]] = []
+    for index, line in enumerate(raw.splitlines(keepends=True), start=1):
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise ValidationError(f"recovery progress line {index} is not JSON") from exc
+        if not isinstance(event, dict) or line != canonical_bytes(event, newline=True):
+            raise ValidationError(f"recovery progress line {index} is not a canonical JSON object")
+        events.append(event)
+    return events, raw
+
+
+def recover_result_package(outbound: Path, checkpoint_path: Path, progress_path: Path, output: Path) -> dict[str, Any]:
+    """Recover the completed baseline-002 result without another generation.
+
+    This is deliberately strict and specific to the Decision 0018 recovery.
+    It accepts the runtime's complete canonical checkpoint and progress stream,
+    reconstructs the observations that failed only on integer rank keys, and
+    produces the ordinary truth-free result package under the unchanged run
+    identity.
+    """
+
+    _, contents, outbound_digest = verify_outbound_package(outbound)
+    run = json.loads(contents["bindings/run.json"])
+    solver = json.loads(contents["cases/solver-cases.json"])
+    checkpoint = _load_canonical(checkpoint_path)
+    validate_checkpoint(checkpoint, run, solver)
+    expected = set(checkpoint["expected_jobs"])
+    if not checkpoint.get("complete"):
+        raise ValidationError("recovery checkpoint is not complete")
+    if len(expected) != BASELINE_JOB_COUNT or set(checkpoint.get("generation_invocations", {})) != expected or set(checkpoint.get("completed", {})) != expected:
+        raise ValidationError("recovery checkpoint does not contain the exact 384-job denominator")
+    if any(item.get("status") != "completed" for item in checkpoint["generation_invocations"].values()):
+        raise ValidationError("recovery checkpoint contains a non-completed invocation")
+    statuses = Counter(item.get("status") for item in checkpoint["completed"].values())
+    if statuses != Counter({"valid": 380, "invalid": 4}):
+        raise ValidationError(f"recovery terminal counts differ from retained runtime evidence: {dict(statuses)}")
+    if set(checkpoint.get("model_ready", {})) != {str(rank) for rank in range(WORKER_COUNT)}:
+        raise ValidationError("recovery checkpoint lacks four string-keyed model-ready records")
+    if len(checkpoint.get("sessions", [])) != 1:
+        raise ValidationError("recovery checkpoint must contain exactly one runtime session")
+    session = checkpoint["sessions"][0]
+    if session.get("ended_utc") is None or not isinstance(session.get("wall_seconds"), (int, float)):
+        raise ValidationError("recovery runtime session is not terminal")
+
+    events, progress = _load_canonical_progress(progress_path)
+    by_kind: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for event in events:
+        kind = event.get("event")
+        if not isinstance(kind, str):
+            raise ValidationError("recovery progress event lacks an event name")
+        by_kind[kind].append(event)
+    required_counts = {
+        "runtime_preflight_started": 1,
+        "runtime_hardware_observed": 1,
+        "competition_mount_validated": 1,
+        "worker_process_started": WORKER_COUNT,
+        "model_load_started": WORKER_COUNT,
+        "model_ready": WORKER_COUNT,
+        "all_workers_ready": 1,
+        "generation_invocation_dispatched": BASELINE_JOB_COUNT,
+        "job_started": BASELINE_JOB_COUNT,
+        "job_terminal": BASELINE_JOB_COUNT,
+        "session_complete": 1,
+    }
+    allowed = set(required_counts) | {"heartbeat"}
+    if set(by_kind) - allowed:
+        raise ValidationError(f"recovery progress contains unexpected events: {sorted(set(by_kind) - allowed)}")
+    for kind, count in required_counts.items():
+        if len(by_kind.get(kind, [])) != count:
+            raise ValidationError(f"recovery progress {kind} count differs: {len(by_kind.get(kind, []))} != {count}")
+
+    hardware_event = by_kind["runtime_hardware_observed"][0]
+    if hardware_event.get("hardware") != session.get("hardware"):
+        raise ValidationError("recovery checkpoint and progress hardware differ")
+    ready_events: dict[int, dict[str, Any]] = {}
+    for event in by_kind["model_ready"]:
+        rank = event.get("rank")
+        if not isinstance(rank, int) or rank in ready_events:
+            raise ValidationError("recovery progress has duplicate or invalid model-ready rank")
+        ready_events[rank] = {key: value for key, value in event.items() if key != "elapsed_seconds"}
+    for rank in range(WORKER_COUNT):
+        if ready_events.get(rank) != checkpoint["model_ready"][str(rank)]:
+            raise ValidationError(f"recovery model-ready evidence differs for rank {rank}")
+
+    dispatches = by_kind["generation_invocation_dispatched"]
+    if {item.get("job_key") for item in dispatches} != expected or {item.get("invocation_ordinal") for item in dispatches} != set(range(1, BASELINE_JOB_COUNT + 1)):
+        raise ValidationError("recovery dispatch evidence is incomplete or duplicated")
+    for event in dispatches:
+        job = event["job_key"]
+        invocation = checkpoint["generation_invocations"][job]
+        rank = invocation["worker_rank"]
+        if event.get("rank") != rank or event.get("invocation_ordinal") != invocation["ordinal"] or event.get("gpu_uuid") != checkpoint["model_ready"][str(rank)]["gpu_uuid"]:
+            raise ValidationError(f"recovery dispatch differs from checkpoint: {job}")
+    terminals = by_kind["job_terminal"]
+    if {item.get("job_key") for item in terminals} != expected:
+        raise ValidationError("recovery terminal progress is incomplete or duplicated")
+    for event in terminals:
+        record = checkpoint["completed"][event["job_key"]]
+        if event.get("status") != record["status"] or event.get("rank") != record["worker_rank"] or event.get("invocation_ordinal") != record["invocation_ordinal"] or event.get("gpu_uuid") != record["gpu_uuid"]:
+            raise ValidationError(f"recovery terminal event differs from checkpoint: {event['job_key']}")
+    complete_event = by_kind["session_complete"][0]
+    if complete_event.get("completed_jobs") != BASELINE_JOB_COUNT or complete_event.get("terminal_status_counts") != dict(sorted(statuses.items())):
+        raise ValidationError("recovery session-complete event differs from checkpoint")
+
+    competition_event = by_kind["competition_mount_validated"][0]
+    competition = {
+        key: competition_event[key]
+        for key in ("competition_slug", "challenge_digest", "available_task_count", "selected_job_count", "selected_test_index", "solutions_opened")
+    }
+    dependencies = json.loads(contents["runtime/dependencies.json"])
+    hardware = session["hardware"]
+    worker_counts = Counter(str(record["worker_rank"]) for record in checkpoint["completed"].values() if record["worker_rank"] >= 0)
+    active_seconds: Counter[str] = Counter()
+    for record in checkpoint["completed"].values():
+        value = record.get("timing", {}).get("generation_seconds")
+        if isinstance(value, (int, float)) and record["worker_rank"] >= 0:
+            active_seconds[str(record["worker_rank"])] += value
+    observations = {
+        "format": "irisx/arc-agi-2-prompt-pilot-execution",
+        "format_version": "1.0",
+        "trial_id": TRIAL_ID,
+        "run_id": RUN_ID,
+        "session_wall_seconds": session["wall_seconds"],
+        "hardware": hardware["gpus"],
+        "nvidia_smi_rows": hardware["nvidia_smi_rows"],
+        "software": {"python": hardware["python"], "torch": hardware["torch"], "transformers": dependencies["transformers"], "cuda": hardware["cuda"], "cudnn": hardware["cudnn"]},
+        "competition_input": competition,
+        "internet_enabled": False,
+        "external_paid_cost_usd": 0,
+        "model_ready": dict(sorted(checkpoint["model_ready"].items())),
+        "model_load_count_by_worker": {str(rank): 1 for rank in range(WORKER_COUNT)},
+        "jobs_by_worker": dict(sorted(worker_counts.items())),
+        "job_active_seconds_by_worker": dict(sorted(active_seconds.items())),
+        "terminal_status_counts": dict(sorted(statuses.items())),
+        "generation_invocation_count": len(checkpoint["generation_invocations"]),
+        "gpu_utilization_state": "not_sampled",
+        "result_assembly": {
+            "mode": "local-checkpoint-recovery",
+            "decision": "0018",
+            "source_checkpoint_digest": digest_path(checkpoint_path),
+            "source_progress_digest": digest_path(progress_path),
+            "source_outbound_digest": outbound_digest,
+            "applied_fix": "serialize observations.model_ready worker-rank keys as strings",
+            "new_generation_invocations": 0,
+        },
+    }
+    result_digest = build_result_package(output, run, solver, checkpoint, observations, progress)
+    result_manifest, _, verified_digest = verify_result_package(output, outbound)
+    if verified_digest != result_digest:
+        raise ValidationError("recovered result digest changed during verification")
+    return {
+        "format": "irisx/arc-agi-2-prompt-pilot-recovery",
+        "format_version": "1.0",
+        "trial_id": TRIAL_ID,
+        "run_id": RUN_ID,
+        "run_identity_digest": run["run_identity_digest"],
+        "outbound_digest": outbound_digest,
+        "checkpoint_digest": digest_path(checkpoint_path),
+        "progress_digest": digest_path(progress_path),
+        "result_digest": result_digest,
+        "result_manifest_digest": digest_value(result_manifest),
+        "generation_invocation_count": len(checkpoint["generation_invocations"]),
+        "terminal_status_counts": dict(sorted(statuses.items())),
+        "new_generation_invocations": 0,
+        "truth_free": True,
+        "verified": True,
+        "scored": False,
+    }
+
+
 def technical_preflight(trial_root: Path, outbound: Path, base_dataset_root: Path, runtime_wheel: Path, competition_challenges: Path, dataset_root: Path, kernel_root: Path, *, legacy_outbound: Path | None = None, legacy_result: Path | None = None) -> dict[str, Any]:
     run = validate_trial(trial_root)
     manifest, contents, outbound_digest = verify_outbound_package(outbound)

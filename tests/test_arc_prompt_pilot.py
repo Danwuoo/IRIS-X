@@ -8,8 +8,9 @@ import zipfile
 
 from irisx import arc_prompt_pilot as pilot
 from irisx.errors import ValidationError
-from irisx.canonical import canonical_bytes
+from irisx.canonical import canonical_bytes, digest_value, write_json
 from irisx.kaggle_runner_prompt_pilot import canonical_ready_evidence, validate_runtime_hardware
+from irisx.transport import TRIAL_LIMITS, write_zip
 
 
 def _task(index: int) -> dict:
@@ -126,6 +127,77 @@ class PromptPilotTests(unittest.TestCase):
             with zipfile.ZipFile(output) as archive:
                 returned = json.loads(archive.read("observations/execution.json"))
             self.assertEqual(["0", "1", "2", "3"], list(returned["model_ready"]))
+
+    def test_complete_checkpoint_can_be_recovered_without_new_generation(self) -> None:
+        cases = [
+            {"task_id": f"{index:08x}", "group": "optimization-train", "train": [], "test": [{"input": [[0]]}]}
+            for index in range(pilot.BASELINE_JOB_COUNT)
+        ]
+        solver = {"cases": cases}
+        run = {
+            "trial_id": pilot.TRIAL_ID,
+            "run_id": pilot.RUN_ID,
+            "solver_cases_digest": digest_value(solver),
+        }
+        run["run_identity_digest"] = digest_value(run)
+        checkpoint = pilot.new_checkpoint(run, solver)
+        hardware = {
+            "python": "3.12.13",
+            "torch": "2.10.0+cu128",
+            "cuda": "12.8",
+            "cudnn": "91002",
+            "torch_cuda_device_count": 4,
+            "gpus": [{"index": rank, "name": "NVIDIA L4", "memory_mib": 22563, "uuid": f"GPU-{rank}"} for rank in range(4)],
+            "nvidia_smi_exit_code": 0,
+            "nvidia_smi_rows": [f"{rank}, NVIDIA L4, 23034, GPU-{rank}, bus" for rank in range(4)],
+        }
+        checkpoint["sessions"] = [{"session_index": 0, "started_utc": "2026-09-22T00:00:00Z", "ended_utc": "2026-09-22T00:10:00Z", "wall_seconds": 600.0, "hardware": hardware}]
+        events = [
+            {"event": "runtime_preflight_started", "run_id": pilot.RUN_ID},
+            {"event": "runtime_hardware_observed", "hardware": hardware},
+            {"event": "competition_mount_validated", "competition_slug": pilot.COMPETITION_SLUG, "challenge_digest": f"sha256:{pilot.COMPETITION_CHALLENGE_SHA256}", "available_task_count": 1000, "selected_job_count": 384, "selected_test_index": 0, "solutions_opened": False},
+        ]
+        for rank in range(4):
+            ready = {"event": "model_ready", "rank": rank, "gpu_uuid": f"GPU-{rank}", "model_revision": pilot.MODEL_REVISION}
+            checkpoint["model_ready"][str(rank)] = ready
+            events.extend((
+                {"event": "worker_process_started", "rank": rank},
+                {"event": "model_load_started", "rank": rank, "gpu_uuid": f"GPU-{rank}"},
+                {**ready, "elapsed_seconds": 10.0},
+            ))
+        events.append({"event": "all_workers_ready", "ready_ranks": [0, 1, 2, 3]})
+        for index, job_key in enumerate(checkpoint["expected_jobs"], start=1):
+            rank = (index - 1) % 4
+            status = "valid" if index <= 380 else "invalid"
+            checkpoint["generation_invocations"][job_key] = {"ordinal": index, "worker_rank": rank, "status": "completed"}
+            checkpoint["completed"][job_key] = {"job_key": job_key, "status": status, "worker_rank": rank, "gpu_uuid": f"GPU-{rank}", "invocation_ordinal": index, "timing": {"generation_seconds": 1.0}}
+            events.extend((
+                {"event": "generation_invocation_dispatched", "job_key": job_key, "invocation_ordinal": index, "rank": rank, "gpu_uuid": f"GPU-{rank}"},
+                {"event": "job_started", "job_key": job_key},
+                {"event": "job_terminal", "job_key": job_key, "invocation_ordinal": index, "rank": rank, "gpu_uuid": f"GPU-{rank}", "status": status},
+            ))
+        checkpoint["complete"] = True
+        events.append({"event": "session_complete", "completed_jobs": 384, "terminal_status_counts": {"invalid": 4, "valid": 380}})
+        outbound_files = {
+            "bindings/run.json": canonical_bytes(run, newline=True),
+            "cases/solver-cases.json": canonical_bytes(solver, newline=True),
+            "runtime/dependencies.json": canonical_bytes({"transformers": "5.8.1"}, newline=True),
+            "runtime/runner.py": b"runner\n",
+            "runtime/core.py": b"core\n",
+            "sources/model-manifest.json": canonical_bytes({}, newline=True),
+            "sources/base-wheel-manifest.json": canonical_bytes({}, newline=True),
+            "sources/runtime-wheel-manifest.json": canonical_bytes({}, newline=True),
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            outbound = root / f"{pilot.RUN_ID}.zip"
+            write_zip(outbound, pilot.OUTBOUND_KIND, pilot.RUN_ID, outbound_files, {}, limits=TRIAL_LIMITS)
+            write_json(root / "checkpoint.json", checkpoint)
+            (root / "progress.jsonl").write_bytes(b"".join(canonical_bytes(event, newline=True) for event in events))
+            report = pilot.recover_result_package(outbound, root / "checkpoint.json", root / "progress.jsonl", root / "result.zip")
+            self.assertTrue(report["verified"])
+            self.assertFalse(report["scored"])
+            self.assertEqual(0, report["new_generation_invocations"])
 
     def test_import_does_not_load_torch_or_transformers(self) -> None:
         source = (Path(__file__).resolve().parents[1] / "src/irisx/kaggle_runner_prompt_pilot.py").read_text(encoding="utf-8")

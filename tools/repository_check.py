@@ -136,6 +136,7 @@ REQUIRED_PATHS = {
     "trials/arc-agi-2-prompt-pilot/kernel-metadata.json",
     "trials/arc-agi-2-prompt-pilot/repair-002/kaggle-notebook.ipynb",
     "trials/arc-agi-2-prompt-pilot/repair-002/kernel-metadata.json",
+    "trials/arc-agi-2-prompt-pilot/recovery.json",
     "trials/arc-agi-2-prompt-pilot/source-use.md",
     "trials/p2-admission/README.md",
     "trials/p2-admission/admission.json",
@@ -577,6 +578,15 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "prompt-pilot-baseline-002",
             "arc-prize-2026-arc-agi-2",
             "NvidiaL4",
+        ),
+        "trials/arc-agi-2-prompt-pilot/recovery.json": (
+            '"generation_invocation_count":384',
+            '"new_generation_invocations":0',
+            '"retrieval_count":1',
+            '"scored":false',
+            '"terminal_status_counts":{"invalid":4,"valid":380}',
+            '"verified":true',
+            "4764cd569f669f8736461ddf2b5d6ac3bf1c80ddf3f903d669f8d5a43aa054af",
         ),
         "trials/arc-agi-2-prompt-pilot/source-use.md": (
             "824de62cb23e2bf8b52adcb05a8804ef2c148e5d",
