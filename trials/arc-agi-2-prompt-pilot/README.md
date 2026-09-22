@@ -15,10 +15,12 @@ the baseline transport and its one owner-authorized repair. The failed
 
 ## Current state
 
-- Status: `startup-verified`. At 2026-09-22T12:48:57Z, baseline 002 reported
+- Status: `compute-complete-result-packaging-failed`. At
+  2026-09-22T13:05:09Z, baseline 002 reported all 384 terminal jobs (380
+  `valid`, 4 `invalid`) and then failed before writing `result.zip`.
+- Startup remains verified. At 2026-09-22T12:48:57Z, baseline 002 reported
   four exact-model `model_ready` events on four distinct L4 UUIDs and dispatched
-  one initial job to every rank. External monitoring stopped and the private
-  notebook was left running normally. No output was retrieved or scored.
+  one initial job to every rank. No output was retrieved or scored.
 - Baseline 001 status: `startup-failed-before-model-load`. Its authorized
   version 1 was
   accepted, briefly reported `RUNNING`, then ended `ERROR` before the hardware
@@ -83,6 +85,15 @@ the baseline transport and its one owner-authorized repair. The failed
   `de2a3d00931355f6b190f7fe67205569af6a41a69d6b458d0f894445c7a13ade`
   on four distinct L4 UUIDs. The scheduler then dispatched job keys
   `66ac4c3b:0`, `5614dbcf:0`, `9968a131:0`, and `e7dd8335:0` to ranks 0–3.
+- Terminal failure: `build_result_package` rejected
+  `observations.model_ready` because the runner passed its internal integer rank
+  keys directly to canonical JSON, which requires string object keys. This was
+  a finalization serialization bug, not ZIP compression and not model/runtime
+  failure. The retained traceback is
+  `ValidationError: $.model_ready: JSON object keys must be strings`.
+- The local runner now converts rank keys to strings and has a focused
+  regression test. Those repaired source bytes have not been uploaded or
+  executed, and no new Dataset/kernel identity has been created.
 - The repair uses the unchanged 384 visible cases and split. Prior exact
   tokenizer parity therefore remains applicable, and a byte-exact local
   archive-to-extracted-to-archive reconstruction reproduced the repair
@@ -90,9 +101,10 @@ the baseline transport and its one owner-authorized repair. The failed
 
 ## Stop boundary
 
-Baseline 001 did not reach the gate; preserve that failure. Baseline 002 did
-reach the four-worker startup gate, so Decision 0017's Dataset update, kernel
-push, and bounded monitoring authority are consumed. Leave the notebook alone.
-Do not request status, logs, source, or output; do not retrieve or score results,
-invoke Codex reflection, cancel or resubmit the kernel, or launch a third
-identity without a new explicit owner instruction.
+Baseline 001 did not reach the gate; preserve that failure. Baseline 002 reached
+the gate and completed all 384 jobs, but no result package was written. Decision
+0017's Dataset update, kernel push, and bounded monitoring authority are
+consumed. Do not retrieve output, package or score the retained checkpoint,
+resubmit the kernel, or launch a third identity without a new explicit owner
+instruction. Prefer recovering and packaging the completed baseline-002
+checkpoint, if Kaggle retained it, over repeating 384 generations.

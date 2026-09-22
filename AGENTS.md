@@ -57,11 +57,13 @@ push one new private kernel. The original 384-job, L4 x4, pinned-model, no-retry
 truth-free, Internet-disabled, USD 0 boundaries remain. Stop development and
 monitoring immediately after four distinct model-ready events plus initial
 scheduler dispatch, or retain a replacement failure without another retry.
-That replacement is now `startup-verified`: four exact-model workers reported
+That replacement reached `startup-verified`: four exact-model workers reported
 ready on four distinct L4 UUIDs and the first four jobs were dispatched across
-ranks 0–3. The Dataset update, kernel push, and monitoring authority are
-consumed. The notebook was left running; no result retrieval or scoring is
-authorized.
+ranks 0–3. It then completed all 384 jobs (380 valid, 4 invalid) but failed
+before writing `result.zip` because integer `model_ready` rank keys violated
+canonical JSON. The Dataset update, kernel push, and monitoring authority are
+consumed. No result retrieval, checkpoint recovery, packaging, scoring, or
+resubmission is authorized without new owner direction.
 
 ## Authority order
 
@@ -128,9 +130,10 @@ paths. Do not recreate a legacy root merely to preserve history.
 - Decision 0017 authorizes only `prompt-pilot-baseline-002` as the replacement.
   Do not broaden its mount repair into another Dataset, solver, workload,
   generation policy, result retrieval, scoring, reflection, or retry.
-- Preserve the startup-verified baseline-002 identity and evidence. Do not
-  request further status, logs, source, or output, cancel the running notebook,
-  retrieve results, or submit another kernel without new owner direction.
+- Preserve the compute-complete but result-packaging-failed baseline-002
+  identity and evidence. The local string-key fix is routine engineering only;
+  it does not authorize output retrieval, checkpoint recovery, result packaging,
+  scoring, or another kernel without new owner direction.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.

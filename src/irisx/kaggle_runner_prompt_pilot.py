@@ -31,6 +31,12 @@ def _utc() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
+def canonical_ready_evidence(ready: Mapping[int, Mapping[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Convert internal integer worker ranks to canonical JSON object keys."""
+
+    return {str(rank): dict(ready[rank]) for rank in sorted(ready)}
+
+
 def _load_base_model(model_root: str) -> tuple[Any, Any, dict[str, Any]]:
     import torch
     from transformers import AutoModelForMultimodalLM, AutoTokenizer
@@ -371,7 +377,7 @@ def run(outbound: Path, model_root: Path, competition_challenges: Path, output: 
         value = record.get("timing", {}).get("generation_seconds")
         if isinstance(value, (int, float)) and record["worker_rank"] >= 0:
             active_seconds[str(record["worker_rank"])] += value
-    observations = {"format": "irisx/arc-agi-2-prompt-pilot-execution", "format_version": "1.0", "trial_id": core.TRIAL_ID, "run_id": core.RUN_ID, "session_wall_seconds": wall, "hardware": hardware["gpus"], "nvidia_smi_rows": hardware["nvidia_smi_rows"], "software": {"python": hardware["python"], "torch": hardware["torch"], "transformers": transformers.__version__, "cuda": hardware["cuda"], "cudnn": hardware["cudnn"]}, "competition_input": competition, "internet_enabled": False, "external_paid_cost_usd": 0, "model_ready": ready, "model_load_count_by_worker": {str(rank): 1 for rank in ready}, "jobs_by_worker": dict(sorted(worker_counts.items())), "job_active_seconds_by_worker": dict(sorted(active_seconds.items())), "terminal_status_counts": dict(sorted(statuses.items())), "generation_invocation_count": len(checkpoint["generation_invocations"]), "gpu_utilization_state": "not_sampled"}
+    observations = {"format": "irisx/arc-agi-2-prompt-pilot-execution", "format_version": "1.0", "trial_id": core.TRIAL_ID, "run_id": core.RUN_ID, "session_wall_seconds": wall, "hardware": hardware["gpus"], "nvidia_smi_rows": hardware["nvidia_smi_rows"], "software": {"python": hardware["python"], "torch": hardware["torch"], "transformers": transformers.__version__, "cuda": hardware["cuda"], "cudnn": hardware["cudnn"]}, "competition_input": competition, "internet_enabled": False, "external_paid_cost_usd": 0, "model_ready": canonical_ready_evidence(ready), "model_load_count_by_worker": {str(rank): 1 for rank in ready}, "jobs_by_worker": dict(sorted(worker_counts.items())), "job_active_seconds_by_worker": dict(sorted(active_seconds.items())), "terminal_status_counts": dict(sorted(statuses.items())), "generation_invocation_count": len(checkpoint["generation_invocations"]), "gpu_utilization_state": "not_sampled"}
     _progress(progress_output, {"event": "session_complete", "completed_jobs": len(checkpoint["completed"]), "terminal_status_counts": dict(sorted(statuses.items())), "at_utc": _utc(), "elapsed_seconds": wall})
     return core.build_result_package(output, run_binding, solver, checkpoint, observations, progress_output.read_bytes())
 

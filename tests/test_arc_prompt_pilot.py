@@ -4,10 +4,12 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import zipfile
 
 from irisx import arc_prompt_pilot as pilot
 from irisx.errors import ValidationError
-from irisx.kaggle_runner_prompt_pilot import validate_runtime_hardware
+from irisx.canonical import canonical_bytes
+from irisx.kaggle_runner_prompt_pilot import canonical_ready_evidence, validate_runtime_hardware
 
 
 def _task(index: int) -> dict:
@@ -88,6 +90,42 @@ class PromptPilotTests(unittest.TestCase):
         hardware["gpus"][3]["uuid"] = "GPU-2"
         with self.assertRaises(RuntimeError):
             validate_runtime_hardware(hardware)
+
+    def test_runtime_observations_stringify_worker_rank_keys(self) -> None:
+        ready = {
+            rank: {"event": "model_ready", "rank": rank, "gpu_uuid": f"GPU-{rank}"}
+            for rank in range(4)
+        }
+        evidence = canonical_ready_evidence(ready)
+        self.assertEqual(["0", "1", "2", "3"], list(evidence))
+        self.assertEqual(0, evidence["0"]["rank"])
+        canonical_bytes({"model_ready": evidence}, newline=True)
+
+    def test_result_zip_accepts_canonical_worker_evidence(self) -> None:
+        cases = [
+            {"task_id": f"{index:08x}", "group": "optimization-train", "train": [], "test": [{"input": [[0]]}]}
+            for index in range(pilot.BASELINE_JOB_COUNT)
+        ]
+        solver = {"cases": cases}
+        run = {"run_identity_digest": "sha256:" + "0" * 64}
+        checkpoint = pilot.new_checkpoint(run, solver)
+        checkpoint["completed"] = {
+            job_key: {"job_key": job_key, "status": "valid"}
+            for job_key in checkpoint["expected_jobs"]
+        }
+        checkpoint["complete"] = True
+        ready = {
+            rank: {"event": "model_ready", "rank": rank, "gpu_uuid": f"GPU-{rank}"}
+            for rank in range(4)
+        }
+        observations = {"model_ready": canonical_ready_evidence(ready)}
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "result.zip"
+            digest = pilot.build_result_package(output, run, solver, checkpoint, observations, b"")
+            self.assertTrue(digest.startswith("sha256:"))
+            with zipfile.ZipFile(output) as archive:
+                returned = json.loads(archive.read("observations/execution.json"))
+            self.assertEqual(["0", "1", "2", "3"], list(returned["model_ready"]))
 
     def test_import_does_not_load_torch_or_transformers(self) -> None:
         source = (Path(__file__).resolve().parents[1] / "src/irisx/kaggle_runner_prompt_pilot.py").read_text(encoding="utf-8")

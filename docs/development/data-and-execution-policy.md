@@ -155,9 +155,9 @@ it must not search across unrelated inputs. The 384-generation quota, no-retry
 rule, local-only evaluator truth, USD 0 cost, and stop-on-startup condition are
 unchanged. Failure consumes this replacement and authorizes no third attempt.
 
-The replacement reached `startup-verified`: four distinct L4 workers loaded the
-exact model revision and the scheduler dispatched its first four jobs across
-ranks 0–3. The Dataset update, kernel push, and bounded monitoring are consumed.
-The notebook remains private and running; this authority now permits no further
-status/log/source/output request, cancellation, result retrieval, scoring,
-reflection, or resubmission.
+The replacement reached `startup-verified`, then completed all 384 jobs (380
+valid, 4 invalid) before final result packaging failed on non-string canonical
+JSON keys. No verified `result.zip` exists. The Dataset update, kernel push, and
+bounded monitoring are consumed. A local runner fix does not authorize further
+status/log/source/output requests, checkpoint recovery, result packaging,
+scoring, reflection, or resubmission.
