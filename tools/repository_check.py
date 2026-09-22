@@ -111,6 +111,7 @@ REQUIRED_PATHS = {
     "tools/trial_001_layout.py",
     "trials/README.md",
     "trials/first-real-domain/README.md",
+    "trials/first-real-domain/closure.json",
     "trials/first-real-domain/kaggle-notebook.ipynb",
     "trials/first-real-domain/kaggle-notebook-v4.ipynb",
     "trials/first-real-domain/kaggle-notebook-v5.ipynb",
@@ -390,6 +391,15 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
             "cumulative wall-clock budget",
             "does not authorize a real",
         ),
+        "docs/decisions/0012-close-arc-agi-2-trial-001-inconclusive.md": (
+            "Status: Accepted",
+            "inconclusive-no-promotion",
+            "owner-reported",
+            "`run-003/result.zip` was returned to local quarantine",
+            "promotion: false",
+            "normalization_ready: true",
+            "End all remaining Trial 001 model execution authority",
+        ),
         "docs/decisions/0013-create-unbounded-four-invocation-run-003.md": (
             "Status: Accepted",
             "run-003",
@@ -423,11 +433,19 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
         "trials/first-real-domain/README.md": (
             "single current status page",
             "Qwen/Qwen3.8-27B",
-            "frozen-awaiting-result-closure",
-            "owner's 2026-09-22 instruction",
+            "closed-inconclusive",
+            "inconclusive-no-promotion",
+            "owner's 2026-09-22 closure instruction",
             "normalization_ready: true",
             "run-003",
             "result.zip",
+        ),
+        "trials/first-real-domain/closure.json": (
+            '"format": "irisx/engineering-trial-closure"',
+            '"disposition": "inconclusive-no-promotion"',
+            '"measurement_complete": false',
+            '"promotion": false',
+            '"result_digests": []',
         ),
     }
     for path, terms in required_terms.items():
@@ -451,23 +469,26 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
         "AGENTS.md": (
             "Decision 0010",
             "Decision 0011",
+            "Decision 0012",
             "Decision 0013",
             "trials/first-real-domain/README.md",
             "ARC-AGI-2",
-            "separate explicit owner authorization",
+            "inconclusive-no-promotion",
             "historical blocked-state evidence",
         ),
         "README.md": (
             "Decision 0010",
+            "Decision 0012",
             "Trial 001 status page",
             "ARC-AGI-2",
-            "separate explicit owner authorization",
+            "inconclusive-no-promotion",
         ),
         "docs/repository-layout.md": (
             "Decision 0010",
+            "Decision 0012",
             "Trial 001 status page",
-            "real run requires a separate",
-            "explicit owner authorization",
+            "closed ARC-AGI-2 Trial 001",
+            "without a locally accepted result",
         ),
     }
     for path, terms in current_authority_terms.items():

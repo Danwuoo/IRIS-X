@@ -1,7 +1,7 @@
 # Decision 0012: Close ARC-AGI-2 Trial 001 as inconclusive
 
-Date: 2026-09-21
-Status: Proposed
+Date: 2026-09-22
+Status: Accepted
 
 ## Context
 
@@ -11,77 +11,80 @@ percentage points. That measurement was not completed.
 
 The frozen non-checkpointing `run-001` session ran for approximately twelve
 hours without returning a result package or recoverable partial state. The
-separately identified checkpointing `run-002` smoke session then exercised the
-first two baseline attempts and first two candidate attempts. The owner-provided
-Kaggle log reports four terminal invocation records, all with `timeout` status
-at the 600-second per-invocation limit, and 2,400.337651402 seconds of cumulative
+separately identified checkpointing `run-002` smoke session then exercised two
+baseline attempts and two candidate attempts. The owner-provided Kaggle log
+reports four terminal invocation records, all with `timeout` status at the
+600-second per-invocation limit, and 2,400.337651402 seconds of cumulative
 model-invocation wall time. It also reports successful model-weight loading and
-checkpoint creation.
+checkpoint creation. The checkpoint itself was not imported locally, so this
+remains an explicitly owner-reported runtime observation.
 
-Those observations are useful as a runtime and failure-mode benchmark. They do
-not contain a valid prediction, accuracy result, baseline/candidate comparison,
-or evidence that can support promotion.
+Decision 0013 authorized `run-003` to let the same four generations finish
+without a runner time limit. Its outbound and preflight were prepared, but no
+`run-003/result.zip` was returned to local quarantine and verified. On
+2026-09-22 the owner directed the project not to wait for that benchmark and to
+close Trial 001 using the evidence already available.
 
-The owner initially directed that the four-invocation observation be retained
-as a reference benchmark and that Trial 001 closure be prepared. The owner then
-clarified that the desired benchmark must contain four naturally completed
-generations without the runner's 600-second limit. Decision 0013 therefore
-creates the separate `run-003` completion benchmark. This closure decision
-remains proposed until the returned `run-003/result.zip` is imported and
-verified locally.
+## Decision
 
-## Proposed decision
+Close Trial 001 with disposition `inconclusive-no-promotion`.
 
-After the closure evidence gate below passes, close Trial 001 with disposition
-`inconclusive-no-promotion`.
+- Preserve the `run-002` log observation as an owner-reported runtime and
+  failure-mode benchmark, explicitly labeled as four timed-out invocations and
+  not as four successful predictions.
+- Record `run-003` as ended without locally accepted result evidence. A later
+  output from that execution is outside this closed trial unless the owner
+  explicitly reopens it under a new decision and evidence review.
+- Do not compute accuracy, select the candidate, or construct a Domain Package.
+- Do not interpret this disposition as evidence for or against the five-point
+  acceptance threshold.
+- Freeze the identities and bytes of `run-001`, executed `run-002`, and prepared
+  `run-003`; never relabel one run's bytes as another run.
+- End all remaining Trial 001 model execution authority, including the unused
+  664 invocations and the previously authorized four-invocation benchmark.
+- Any later experiment must state a new question and use a new trial and run
+  identity.
 
-- Preserve the four `run-002` records as a runtime and failure-mode benchmark,
-  explicitly labeled as four timed-out invocations rather than four successful
-  predictions.
-- Do not compute accuracy, select the candidate, or construct a Domain Package
-  from this benchmark.
-- Do not interpret the outcome as evidence for or against the trial's five
-  percentage-point acceptance threshold.
-- Freeze the executed `run-002` outbound package, notebook, runner, runner core,
-  run binding, checkpoint policy, and their recorded identities.
-- Retain the frozen `run-001` identities and record that no result package was
-  returned from that attempt.
-- End further Trial 001 model execution. Any later experiment must state a new
-  question and use a new trial and run identity.
+The machine-readable closure record is
+`trials/first-real-domain/closure.json`. It contains no evaluator truth,
+prediction, score, or result digest. It binds the retained outbound SHA-256 for
+all three run identities without claiming that any returned result was accepted.
 
-## Closure evidence gate
+## Closure evidence
 
-This proposal may become accepted only after all of the following are true:
+The terminal conclusion is supported only by these bounded facts:
 
-1. the returned `run-003/result.zip` is downloaded unchanged into local
-   quarantine and its container SHA-256 is recorded;
-2. offline verification binds the result to the exact verified `run-003`
-   outbound package and confirms four contiguous invocation records;
-3. local inspection records whether each invocation produced a valid grid,
-   malformed generation, or runtime error, without using evaluator truth;
-4. the `run-002` timeout observation and the verified `run-003` completion
-   benchmark are summarized without being treated as accuracy evidence; and
-5. this record is updated with the `run-003` result digest and changed to
-   `Status: Accepted`.
+1. `run-001` returned no result package after the observed long-running attempt;
+2. the owner-provided `run-002` log reports four 600-second timeouts and no
+   successful prediction;
+3. no `run-003/result.zip` was accepted through local quarantine verification
+   before the owner ended the wait;
+4. no complete baseline/candidate measurement or local accuracy evaluation
+   exists; and
+5. the owner explicitly selected terminal inconclusive closure rather than
+   spending more execution time to manufacture a score.
 
-Until then, Trial 001 is `closure-prepared-awaiting-checkpoint`, not closed.
+Missing results are evidence of incompleteness, not evidence of model quality.
+Accordingly, `promotion: false` means that promotion is unsupported; it is not
+a measured rejection of the candidate.
 
 ## Relationship to Decision 0009
 
 Decision 0009 assumed successful result return, import, and evaluation before
-layout normalization. An accepted version of this decision will narrowly add
-an alternative terminal closure for a trial that produced no usable result:
-verified benchmark-result import plus an explicit `inconclusive-no-promotion`
-closure. It will not weaken the frozen `run-001` identity checks or allow
-unverified evidence to pass the existing result closure gate.
+layout normalization. This accepted decision narrowly supplies the alternative
+terminal gate anticipated for a trial that produced no usable result: an
+explicit, machine-readable `inconclusive-no-promotion` closure with no accepted
+result digests.
 
-Physical layout normalization remains blocked while this decision is proposed.
-After acceptance, the layout audit must be updated to recognize the explicit
-inconclusive closure before any retained bytes move.
+The read-only layout audit may report `normalization_ready: true` when the
+Decision-0009 frozen identities remain valid and the closure record exactly
+matches this decision. This does not allow unverified execution output to pass
+as result evidence. Physical movement remains a separate, byte-preserving
+repository operation; this decision does not delete or rewrite retained bytes.
 
 ## Consequences
 
-Trial 001 will have a truthful terminal outcome without spending more compute
-to manufacture a score. The benchmark will preserve the observed 600-second
-timeout behavior for later design work, while product promotion, candidate
-selection, and Domain Package creation remain unsupported.
+Trial 001 now has a truthful terminal outcome without additional compute. It
+provides implementation and runtime lessons but no ARC accuracy comparison,
+promotion claim, or Domain Package. Work after this point must begin from a new
+authorized product question rather than silently extending Trial 001.

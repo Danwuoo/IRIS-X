@@ -9,29 +9,30 @@ uses **Build–Measure–Select** and **Engineering Trials**, and produces a
 versioned **Domain Package**.
 
 P0 and P1 established the repository and provider-neutral contract foundation.
-ARC-AGI-2 Trial 001 is the active P2 slice. Its goal, current state, next action,
-and blockers live in [`trials/first-real-domain/README.md`](trials/first-real-domain/README.md);
+ARC-AGI-2 Trial 001 is the completed first P2 slice. Its terminal state and
+retained evidence live in
+[`trials/first-real-domain/README.md`](trials/first-real-domain/README.md);
 Decisions 0004–0009 retain the detailed rationale and frozen evidence bindings.
 
 [`Decision 0010`](docs/decisions/0010-adopt-lightweight-risk-based-development.md)
 adopts a lightweight, risk-based workflow. Routine local, offline, reversible
 work inside the current boundaries does not need another decision record.
-Boundary-crossing work remains gated. In particular, the real ARC-AGI-2 run
-still requires a separate explicit owner authorization, and Decision 0009's
-`run-001` identities remain frozen until result closure.
+Boundary-crossing work remains gated. Decision 0009's `run-001` identities
+remain frozen.
 Decision 0011 creates a distinct checkpointing `run-002` v4 transport after the
 non-checkpointing run-001 attempt failed to finish. It authorizes implementation,
 offline packaging, verification, and preflight only, not real execution.
 Decision 0013 preserves the executed `run-002` identity and authorizes the exact
 four-invocation `run-003` v5 completion benchmark with no runner time limit,
-checkpoint resume, and a truth-free `result.zip`. It does not authorize the
-remaining 664 invocations or Trial 001 scoring and promotion.
+checkpoint resume, and a truth-free `result.zip`. Accepted Decision 0012 now
+closes Trial 001 as `inconclusive-no-promotion` without a verified `run-003`
+result and ends all remaining Trial 001 execution authority.
 
 ## Authority order
 
 1. explicit owner instructions for the current task;
 2. this file and any narrower active `AGENTS.md`;
-3. Decision 0010, the active trial status page, and applicable accepted
+3. Decision 0010, the closed trial status page, and applicable accepted
    decisions under `docs/decisions/`;
 4. `PRODUCT_THESIS.md` for product direction;
 5. the current product and development policies indexed by `docs/README.md`;
@@ -49,9 +50,9 @@ has no authority over active work.
 | `docs/product/` | Product documentation created by an authorized scope |
 | `docs/development/` | Development and validation guidance |
 | `docs/decisions/` | Accepted boundary decisions and historical rationale |
-| `src/irisx/` | P1 contracts/reference flow/package verification, historical P2 admission validation, and authorized ARC-AGI-2 trial implementation |
+| `src/irisx/` | P1 contracts/reference flow/package verification, historical P2 admission validation, and retained ARC-AGI-2 trial implementation |
 | `tests/` | Tests for the active product and repository surface |
-| `trials/` | Historical P2 admission package and the admitted ARC-AGI-2 trial workspace; real execution only after separate authorization |
+| `trials/` | Historical P2 admission package and the closed ARC-AGI-2 Trial 001 workspace |
 | `research/` | Conditional research opened by explicit product pressure |
 | `tools/` | Active repository utilities only |
 | `archive/` | Read-only catalog pointing to immutable Git history |
@@ -73,23 +74,23 @@ paths. Do not recreate a legacy root merely to preserve history.
   contract, an acceptance threshold, a promotion claim, a frozen identity, or
   before external/provider/paid/sensitive-data or irreversible work. Record a
   decision only when the choice must govern future work.
-- Use the Trial 001 README as current status. Consult Decisions 0004–0009 for
+- Use the Trial 001 README as terminal status. Consult Decisions 0004–0009 for
   provenance and exact bindings instead of duplicating their full text in new
   documents.
 - Preserve the Decision 0009 frozen `run-001` outbound, notebook, runner, and
-  manifest identities. Do not move Trial 001 execution bytes until its result
-  closure gate passes; never reuse one bundle ID for different outbound bytes.
-- Preserve executed `run-002` bytes under Decision 0011. Build the unbounded-time
-  four-invocation completion benchmark only as `run-003` with the Decision 0013
-  v5 adapter. Both checkpoint formats must be identity-bound, atomic, truth-free,
-  and resumable only as a contiguous invocation prefix.
+  manifest identities. Decision 0012 supplies the accepted alternative closure
+  gate; physical normalization may proceed only after the layout audit reports
+  `normalization_ready: true`. Never reuse one bundle ID for different bytes.
+- Preserve executed `run-002` and prepared `run-003` bytes and identities. The
+  v4/v5 checkpoint and result formats remain lineage material, not active
+  execution instructions.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.
-- Do not execute the full ARC-AGI-2 model/solver trial without a later explicit
-  owner execution authorization and a passing technical preflight. The current
-  authorization covers only the exact four-invocation `run-003` benchmark. Do
-  not start P3/P4, call an external model provider, use third-party ARC data,
+- Do not execute or resume any part of closed Trial 001. A later experiment
+  requires a new trial question, identity, explicit owner execution
+  authorization, and passing technical preflight. Do not start P3/P4, call an
+  external model provider, use third-party ARC data,
   enable notebook Internet during measured execution, automate Kaggle
   credentials or transport, spend external funds, fine-tune the selected model,
   or build a production runtime.
@@ -106,7 +107,7 @@ paths. Do not recreate a legacy root merely to preserve history.
 - Treat the conceptual decomposition in the thesis as product responsibilities,
   not as settled services, classes, packages, or deployment boundaries.
 - Record durable boundary decisions under `docs/decisions/`; keep transient
-  implementation status in the active trial README or task report.
+  implementation status in an open trial README or task report.
 - Keep trials reproducible and decision-bearing when the trial track is opened.
 - Open research only for a concrete, authorized product question; return useful
   results to product engineering.

@@ -51,10 +51,11 @@ acceptance threshold. The execution path is offline, zero-paid-spend, and bound
 to a frozen Qwen3.8-27B model.
 
 The [`Trial 001 status page`](../../trials/first-real-domain/README.md) is the
-current source for its state, next action, and exact operational boundary.
+current source for its terminal state and exact retained boundary.
 Decisions 0004–0009 retain detailed rationale and immutable evidence bindings.
 Detailed production architecture and other deployment forms remain undecided,
-and the real run requires separate explicit owner authorization. Trial
+and Trial 001 is closed without a complete measurement. Any future real run
+requires a new trial scope and separate explicit owner authorization. Trial
 artifacts must use the contracts in [`contracts.md`](contracts.md); a public
 contract changes only through an explicit schema-version boundary decision.
 

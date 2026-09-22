@@ -12,12 +12,55 @@ import zipfile
 
 
 RUN_ID = "run-001"
+INCONCLUSIVE_CLOSURE_PATH = Path("trials/first-real-domain/closure.json")
+INCONCLUSIVE_DECISION_PATH = Path(
+    "docs/decisions/0012-close-arc-agi-2-trial-001-inconclusive.md"
+)
 EXPECTED = {
     "trial_zip_digest": "sha256:a179ee8b80b5b7886b756561f74be80d425312faf2d1ecea0b5d81262cef6b44",
     "trial_manifest_digest": "sha256:1eede07b480301cebe66b56af76846178dda5ff4b5630b75d4304364bb04dfb0",
     "notebook_digest": "sha256:e12a187dd59ef0978930b2c78cded09f8187e39e08b079bab0a9f1f3547bb40a",
     "runner_digest": "sha256:ffde7dda2dd9b035ffa654b9e0914c7d2ce5f004d55467d86c2a44a7c43502a2",
     "repository_revision": "3191c3e9d126570567d09651b80d0dd778e2c6f3",
+}
+
+EXPECTED_INCONCLUSIVE_CLOSURE = {
+    "accuracy_computed": False,
+    "accepted_evidence": [
+        {
+            "outbound_sha256": "a179ee8b80b5b7886b756561f74be80d425312faf2d1ecea0b5d81262cef6b44",
+            "result_accepted": False,
+            "run_id": "run-001",
+            "status": "no-result-returned",
+            "trust": "owner-observed",
+        },
+        {
+            "completed_invocations": 4,
+            "consumed_model_wall_clock_seconds": 2400.337651402,
+            "outbound_sha256": "7ab7d06e6cdb6f5a41f6ad72b89b74a1ac55797c37fd83ba595e2bcd8d5af2f8",
+            "result_accepted": False,
+            "run_id": "run-002",
+            "status": "four-timeouts",
+            "trust": "owner-reported-log",
+        },
+        {
+            "outbound_sha256": "61ac8b8c6cb71e59f5225eec789d22392803092ae4c38b4e8bb6cba7a0076521",
+            "result_accepted": False,
+            "run_id": "run-003",
+            "status": "ended-without-locally-verified-result",
+            "trust": "local-absence-and-owner-closure-direction",
+        },
+    ],
+    "closed_at": "2026-09-22",
+    "decision_ref": INCONCLUSIVE_DECISION_PATH.as_posix(),
+    "disposition": "inconclusive-no-promotion",
+    "domain_package_created": False,
+    "format": "irisx/engineering-trial-closure",
+    "format_version": "1.0",
+    "measurement_complete": False,
+    "promotion": False,
+    "result_digests": [],
+    "trial_id": "arc-agi-2-trial-001",
 }
 
 
@@ -37,6 +80,45 @@ def _manifest(path: Path) -> tuple[dict, str]:
     with zipfile.ZipFile(path, "r") as archive:
         raw = archive.read("manifest.json")
     return json.loads(raw.decode("utf-8")), _digest_bytes(raw)
+
+
+def _inconclusive_closure(repository_root: Path) -> dict:
+    closure_path = repository_root / INCONCLUSIVE_CLOSURE_PATH
+    decision_path = repository_root / INCONCLUSIVE_DECISION_PATH
+    report: dict[str, object] = {
+        "path": INCONCLUSIVE_CLOSURE_PATH.as_posix(),
+        "present": closure_path.is_file(),
+        "valid": False,
+        "issues": [],
+    }
+    if not closure_path.is_file():
+        return report
+
+    issues: list[str] = []
+    try:
+        record = json.loads(closure_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        issues.append(f"closure record is unreadable: {exc}")
+        record = None
+    if record is not None and record != EXPECTED_INCONCLUSIVE_CLOSURE:
+        issues.append("closure record does not match the accepted terminal disposition")
+
+    try:
+        decision = decision_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        issues.append(f"closure decision is unreadable: {exc}")
+    else:
+        if "Status: Accepted" not in decision:
+            issues.append("closure decision is not accepted")
+        if "inconclusive-no-promotion" not in decision:
+            issues.append("closure decision does not name the terminal disposition")
+
+    report["valid"] = not issues
+    report["issues"] = issues
+    if isinstance(record, dict):
+        report["disposition"] = record.get("disposition")
+        report["closed_at"] = record.get("closed_at")
+    return report
 
 
 def audit_layout(repository_root: Path, trial_root: Path) -> dict:
@@ -138,18 +220,35 @@ def audit_layout(repository_root: Path, trial_root: Path) -> dict:
         "import_evidence_present": imported.is_file(),
         "local_evaluation_complete": expected_evaluation <= observed_evaluation,
     }
+    successful_result_closure = all(closure.values())
+    inconclusive_closure = _inconclusive_closure(repository_root)
     blockers = list(identity_issues)
+    unavailable_evidence = []
     if not closure["result_present"]:
-        blockers.append("returned result-package.zip is not present in quarantine")
+        unavailable_evidence.append("returned result-package.zip is not present in quarantine")
     if not closure["import_evidence_present"]:
-        blockers.append("run-001 has not been imported into runs/run-001")
+        unavailable_evidence.append("run-001 has not been imported into runs/run-001")
     if not closure["local_evaluation_complete"]:
-        blockers.append("run-001 local evaluation evidence is incomplete")
+        unavailable_evidence.append("run-001 local evaluation evidence is incomplete")
+    if not successful_result_closure and not inconclusive_closure["valid"]:
+        blockers.extend(unavailable_evidence)
+        if inconclusive_closure["present"]:
+            blockers.extend(
+                f"explicit inconclusive closure invalid: {issue}"
+                for issue in inconclusive_closure["issues"]
+            )
 
-    normalization_ready = not blockers
-    status = "ready-to-normalize" if normalization_ready else (
-        "identity-invalid" if identity_issues else "frozen-awaiting-result-closure"
+    normalization_ready = not blockers and (
+        successful_result_closure or bool(inconclusive_closure["valid"])
     )
+    if identity_issues:
+        status = "identity-invalid"
+    elif inconclusive_closure["valid"]:
+        status = "closed-inconclusive-ready-to-normalize"
+    elif successful_result_closure:
+        status = "ready-to-normalize"
+    else:
+        status = "frozen-awaiting-result-closure"
     return {
         "format": "irisx/trial-001-layout-audit",
         "format_version": "1.0",
@@ -164,6 +263,8 @@ def audit_layout(repository_root: Path, trial_root: Path) -> dict:
         "expected_identity": EXPECTED,
         "observed_identity": observed,
         "result_closure": closure,
+        "terminal_closure": inconclusive_closure,
+        "unavailable_evidence": unavailable_evidence,
         "exact_aliases": exact_aliases,
         "superseded_packages": superseded,
         "blockers": blockers,

@@ -13,14 +13,14 @@ Use these documents by purpose:
   routine-versus-gated boundary;
 - [`data-and-execution-policy.md`](data-and-execution-policy.md) defines secrets,
   data, provenance, budget, and external-execution safety;
-- [`arc-agi-2-kaggle-handoff.md`](arc-agi-2-kaggle-handoff.md) is the detailed
-  Trial 001 procedure; and
+- [`arc-agi-2-kaggle-handoff.md`](arc-agi-2-kaggle-handoff.md) retains the
+  historical Trial 001 procedure and frozen identities; and
 - the [`Trial 001 status page`](../../trials/first-real-domain/README.md) is the
   concise source for current state, next action, and blockers.
 
-The real Trial 001 model/solver run remains separately authorization-gated.
-The simplified process does not change its frozen identities or evidence
-requirements.
+Trial 001 is closed as `inconclusive-no-promotion`; no continuation is
+authorized. The simplified process does not change its frozen identities or
+evidence boundaries.
 
 Default handoff validation:
 

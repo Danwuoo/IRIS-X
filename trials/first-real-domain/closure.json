@@ -1,0 +1,38 @@
+{
+  "accuracy_computed": false,
+  "accepted_evidence": [
+    {
+      "outbound_sha256": "a179ee8b80b5b7886b756561f74be80d425312faf2d1ecea0b5d81262cef6b44",
+      "result_accepted": false,
+      "run_id": "run-001",
+      "status": "no-result-returned",
+      "trust": "owner-observed"
+    },
+    {
+      "completed_invocations": 4,
+      "consumed_model_wall_clock_seconds": 2400.337651402,
+      "outbound_sha256": "7ab7d06e6cdb6f5a41f6ad72b89b74a1ac55797c37fd83ba595e2bcd8d5af2f8",
+      "result_accepted": false,
+      "run_id": "run-002",
+      "status": "four-timeouts",
+      "trust": "owner-reported-log"
+    },
+    {
+      "outbound_sha256": "61ac8b8c6cb71e59f5225eec789d22392803092ae4c38b4e8bb6cba7a0076521",
+      "result_accepted": false,
+      "run_id": "run-003",
+      "status": "ended-without-locally-verified-result",
+      "trust": "local-absence-and-owner-closure-direction"
+    }
+  ],
+  "closed_at": "2026-09-22",
+  "decision_ref": "docs/decisions/0012-close-arc-agi-2-trial-001-inconclusive.md",
+  "disposition": "inconclusive-no-promotion",
+  "domain_package_created": false,
+  "format": "irisx/engineering-trial-closure",
+  "format_version": "1.0",
+  "measurement_complete": false,
+  "promotion": false,
+  "result_digests": [],
+  "trial_id": "arc-agi-2-trial-001"
+}

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 
@@ -163,6 +164,30 @@ class RepositoryCheckTests(unittest.TestCase):
         ):
             self.assertIn(term, decision)
 
+    def test_decision_0012_closes_trial_without_promoting_missing_results(self) -> None:
+        decision = (
+            ROOT / "docs/decisions/0012-close-arc-agi-2-trial-001-inconclusive.md"
+        ).read_text(encoding="utf-8")
+        for term in (
+            "Status: Accepted",
+            "inconclusive-no-promotion",
+            "owner-reported",
+            "`run-003/result.zip` was returned to local quarantine",
+            "promotion: false",
+            "End all remaining Trial 001 model execution authority",
+        ):
+            self.assertIn(term, decision)
+
+        closure = json.loads(
+            (ROOT / "trials/first-real-domain/closure.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(closure["disposition"], "inconclusive-no-promotion")
+        self.assertFalse(closure["measurement_complete"])
+        self.assertFalse(closure["accuracy_computed"])
+        self.assertFalse(closure["promotion"])
+        self.assertFalse(closure["domain_package_created"])
+        self.assertEqual(closure["result_digests"], [])
+
     def test_decision_0013_creates_exact_four_invocation_completion_benchmark(self) -> None:
         decision = (
             ROOT / "docs/decisions/0013-create-unbounded-four-invocation-run-003.md"
@@ -188,7 +213,8 @@ class RepositoryCheckTests(unittest.TestCase):
             "## Current state",
             "## Next action",
             "## Fixed boundary",
-            "frozen-awaiting-result-closure",
+            "closed-inconclusive",
+            "inconclusive-no-promotion",
             "run-002",
             "checkpoint-package.zip",
             "run-003",

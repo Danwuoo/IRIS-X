@@ -93,6 +93,27 @@ class Trial001LayoutAuditTests(unittest.TestCase):
         self.assertTrue(report["normalization_ready"])
         self.assertEqual(report["blockers"], [])
 
+    def test_audit_accepts_explicit_inconclusive_closure_without_results(self) -> None:
+        closure_path = self.repository / LAYOUT.INCONCLUSIVE_CLOSURE_PATH
+        closure_path.parent.mkdir(parents=True, exist_ok=True)
+        closure_path.write_text(
+            json.dumps(LAYOUT.EXPECTED_INCONCLUSIVE_CLOSURE, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        decision_path = self.repository / LAYOUT.INCONCLUSIVE_DECISION_PATH
+        decision_path.parent.mkdir(parents=True)
+        decision_path.write_text(
+            "# Decision 0012\n\nStatus: Accepted\n\ninconclusive-no-promotion\n",
+            encoding="utf-8",
+        )
+        with mock.patch.dict(LAYOUT.EXPECTED, self.expected, clear=True):
+            report = LAYOUT.audit_layout(self.repository, self.trial_root)
+        self.assertEqual(report["status"], "closed-inconclusive-ready-to-normalize")
+        self.assertTrue(report["normalization_ready"])
+        self.assertTrue(report["terminal_closure"]["valid"])
+        self.assertEqual(report["blockers"], [])
+        self.assertEqual(len(report["unavailable_evidence"]), 3)
+
 
 if __name__ == "__main__":
     unittest.main()

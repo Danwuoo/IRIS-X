@@ -20,14 +20,14 @@ This directory contains only current product-era guidance.
   governs secrets, domain data, local outputs, retention, provenance, budgets,
   and external/provider execution.
 - [`development/arc-agi-2-kaggle-handoff.md`](development/arc-agi-2-kaggle-handoff.md)
-  defines the detailed manual Trial 001 package, notebook, quarantine, local
-  evaluation, and preflight procedure.
+  retains the detailed manual Trial 001 package, notebook, quarantine, local
+  evaluation, and preflight procedure as closed-trial lineage.
 - [`../trials/first-real-domain/README.md`](../trials/first-real-domain/README.md)
   is the single current status page for Trial 001.
 - [`decisions/`](decisions/README.md) contains accepted boundary decisions and
   historical rationale.
 - [`repository-layout.md`](repository-layout.md) defines the active P1 plus
-  admitted P2 ARC-AGI-2 layout.
+  closed P2 ARC-AGI-2 Trial 001 layout.
 
 Pre-product documentation remains at its original paths in the cold-archive
 tag and is cataloged under [`../archive/`](../archive/README.md). It is not

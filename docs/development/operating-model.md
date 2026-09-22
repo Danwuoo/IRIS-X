@@ -52,11 +52,11 @@ durable boundary.
 
 ## Current status and validation
 
-For Trial 001, use
+For closed Trial 001, use
 [`trials/first-real-domain/README.md`](../../trials/first-real-domain/README.md)
-for the current state, next action, and blockers. Use the Kaggle handoff guide
-for the detailed procedure and Decisions 0004–0009 only when their rationale or
-frozen identities are needed.
+for the terminal state and retained boundaries. The Kaggle handoff guide is
+historical lineage, and Decisions 0004–0013 are consulted only when their
+rationale or frozen identities are needed.
 
 The default handoff check is:
 

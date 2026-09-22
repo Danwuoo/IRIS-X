@@ -13,11 +13,11 @@ documentation is:
   independent verification boundary.
 - [`p2-admission.md`](p2-admission.md) defines the historical blocked
   first-real-domain snapshot, its offline validator, and its relationship to
-  the admitted Trial 001.
+  the subsequently admitted and closed Trial 001.
 
-P1 contracts remain provider- and technique-neutral. ARC-AGI-2 Trial 001 is the
-bounded first real slice; its
-[`status page`](../../trials/first-real-domain/README.md) summarizes current
-state and links to exact operational bindings. Fixture details do not define the
-product architecture. Real model/solver execution remains separately
-authorization-gated.
+P1 contracts remain provider- and technique-neutral. ARC-AGI-2 Trial 001 was
+the bounded first real slice; its
+[`status page`](../../trials/first-real-domain/README.md) records the terminal
+`inconclusive-no-promotion` state and links to exact operational bindings.
+Fixture details do not define the product architecture. Future real
+model/solver execution requires a new authorized trial scope.

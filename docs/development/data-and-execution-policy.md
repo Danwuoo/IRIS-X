@@ -77,9 +77,10 @@ budget is USD 0. The current fixed boundary is summarized on the
 handoff guide contains the procedure. Measured notebook execution remains
 network-disabled and credential-free. Evaluator truth, expected-output digests,
 scores, feedback, and third-party ARC material may not cross the outbound
-boundary. The full model/solver run still requires a separate explicit owner
-authorization and a passing technical preflight. Decision 0013 authorizes only
-the exact four-invocation `run-003` completion benchmark.
+boundary. Trial 001 is closed by Decision 0012 as
+`inconclusive-no-promotion`. The Decision-0013 authorization for the exact
+four-invocation `run-003` benchmark has ended; no Trial 001 execution, resume,
+scoring, or promotion is currently authorized.
 
 Decision 0011 checkpoints are truth-free execution outputs under the same
 retention boundary as returned predictions. Cross-session transport is manual:
@@ -93,3 +94,5 @@ boundary but remain identity-bound to `run-003`. The v5 runner enforces four
 completed invocation records and the frozen token/response limits without a
 per-invocation or cumulative runner time limit. A provider-interrupted pending
 invocation is retried on resume and is not mislabeled as a completed timeout.
+These rules are retained as lineage only after closure; they do not authorize
+continued execution or acceptance of a late result.

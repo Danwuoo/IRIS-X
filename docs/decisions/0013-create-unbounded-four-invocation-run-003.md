@@ -3,6 +3,11 @@
 Date: 2026-09-22
 Status: Accepted
 
+Closure note: Decision 0012 was subsequently accepted on 2026-09-22. It ends
+the execution authority granted here and closes Trial 001 without a locally
+verified `run-003/result.zip`. The design and frozen identity remain historical
+lineage; they are no longer active execution instructions.
+
 ## Context
 
 The `run-002` smoke adapter applied the Trial 001 execution envelope's

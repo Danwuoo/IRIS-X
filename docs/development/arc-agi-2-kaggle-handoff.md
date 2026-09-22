@@ -1,9 +1,13 @@
 # ARC-AGI-2 Trial 001 Kaggle handoff
 
-Status: active under accepted Decisions 0004–0011 and 0013. `run-001` and the
-executed v4 `run-002` remain frozen. The owner authorized the exact v5
-four-invocation `run-003` completion benchmark; the remaining 664 invocations
-remain unauthorized.
+Status: retired by accepted Decision 0012. `run-001`, executed v4 `run-002`,
+and prepared v5 `run-003` remain frozen. Trial 001 is closed as
+`inconclusive-no-promotion`; no execution, resume, scoring, promotion, or Domain
+Package construction is authorized.
+
+The procedure below is retained for provenance and reproducibility. It is not
+an active runbook. No `run-003/result.zip` was locally accepted before closure,
+and later output must not be silently incorporated into the closed trial.
 
 ## Decision 0009 in-flight freeze
 
@@ -160,7 +164,7 @@ authorization is separate from this technical evidence and applies only to the
 exact verified `run-003` identities. The technical artifact deliberately keeps
 `run_authorized: false`; it cannot self-authorize execution.
 
-## Manual Kaggle procedure after authorization
+## Historical manual Kaggle procedure
 
 1. Attach the private raw-model Dataset and private `trial-input.zip` Dataset.
 2. Select exactly one NVIDIA RTX PRO 6000 96 GB accelerator.

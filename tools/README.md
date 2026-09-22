@@ -14,8 +14,9 @@ the single `src/irisx` package and the declared `irisx` console entry point.
 `trial_001_layout.py` is the read-only Decision-0009 audit for the retained
 ARC-AGI-2 `run-001` bytes. It verifies the frozen outbound, manifest, notebook,
 runner, and repository identities; inventories known aliases and superseded
-packages; and refuses normalization readiness until quarantine import and local
-evaluation evidence are present. It never moves or deletes files.
+packages; and accepts either complete verified result/evaluation evidence or
+the exact accepted Decision-0012 `inconclusive-no-promotion` closure record as
+a terminal normalization gate. It never moves or deletes files.
 
 Historical tools are recoverable from the cold-archive tag and are not active
 commands.
