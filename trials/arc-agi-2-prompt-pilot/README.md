@@ -1,25 +1,34 @@
 # ARC-AGI-2 prompt pilot
 
 This is the current status page for trial `arc-agi-2-prompt-pilot`, authorized
-by Decisions 0016 and 0017. It is separate from closed Trial 001 and completed
+by Decisions 0016–0019. It is separate from closed Trial 001 and completed
 Trial 002.
 
 ## Goal
 
-Measure whether instruction-only GEPA proposals can later improve a fixed
+Measure whether instruction-only GEPA proposals can improve a fixed
 Qwen3.5-4B selected-output exact-match baseline without changing the solver,
-parser, demonstrations, decoding, or data isolation. The current task covers
-the baseline transport and its one owner-authorized repair. The failed
-`prompt-pilot-baseline-001` remains frozen; the distinct
-`prompt-pilot-baseline-002` replacement reached its startup stopping condition.
+parser, demonstrations, decoding, or data isolation. Decision 0019 now runs
+the bounded dependent search and final locked-holdout comparison. The failed
+`prompt-pilot-baseline-001` and recovered `prompt-pilot-baseline-002` identities
+remain frozen.
 
 ## Current state
 
-- Status: `result-recovered-unscored`. Baseline 002 reported all 384 terminal
+- Status: `baseline-scored-search-initialized`. Baseline 002 reported all 384 terminal
   jobs (380 `valid`, 4 `invalid`) and then failed before writing `result.zip`.
   Decision 0018's single output retrieval recovered its complete checkpoint and
   progress evidence; local deterministic packaging now supplies a verified,
   truth-free result without another generation.
+- Deterministic selected-output exact-match pass@1: optimization-train
+  `18/256 = 0.0703125`; selection-dev `12/128 = 0.09375`; overall
+  `30/384 = 0.078125`. All four invalid outputs are in the train denominator.
+  The score report is bound to digest
+  `6f189242d8fc1d9a744a7c79ed0acabec235e2f684466726537c1cd7972d761c`;
+  holdout remains unopened.
+- The Decision 0019 ledger is initialized with 0/10 proposer attempts and
+  384/4,480 Qwen generations used. DSPy 3.3.1 and GEPA 0.1.4 are isolated
+  controller dependencies; candidate runtime bytes do not import them.
 - Startup remains verified. At 2026-09-22T12:48:57Z, baseline 002 reported
   four exact-model `model_ready` events on four distinct L4 UUIDs and dispatched
   one initial job to every rank. No output was retrieved or scored.
@@ -116,11 +125,13 @@ the baseline transport and its one owner-authorized repair. The failed
   archive-to-extracted-to-archive reconstruction reproduced the repair
   outbound digest.
 
-## Stop boundary
+## Active boundary
 
 Baseline 001 did not reach the gate; preserve that failure. Baseline 002 reached
-the gate, completed all 384 jobs, and now has a locally recovered verified
-result. Decisions 0017 and 0018 are consumed: one Dataset update, one kernel
-push, and one output retrieval occurred. Do not retrieve again, score the
-result, invoke reflection, resubmit the kernel, or launch another identity
-without a new explicit owner instruction.
+the gate, completed all 384 jobs, and now has a locally recovered, verified,
+scored result. Decisions 0017 and 0018 are consumed. Decision 0019 supersedes
+their stop points for this trial only: continue through at most ten dependent
+DSPy/GEPA plus Codex proposal attempts, distinct private candidate identities,
+and one frozen final holdout comparison. Preserve one controller ledger, keep
+dev details and all holdout truth out of reflection, and never exceed 4,480
+Qwen generation invocations or submit to the competition.

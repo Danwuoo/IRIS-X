@@ -74,7 +74,10 @@ were retained locally, and deterministic local packaging produced verified
 truth-free result digest
 `4764cd569f669f8736461ddf2b5d6ac3bf1c80ddf3f903d669f8d5a43aa054af`
 with zero new generations. The one retrieval is consumed and the result remains
-unscored.
+frozen. Decision 0019 supersedes the earlier prompt-pilot stop points and
+authorizes continuous local scoring, up to ten dependent DSPy/GEPA plus Codex
+proposal attempts, private candidate evaluation, and one final locked-holdout
+comparison under the fixed 4,480-generation ceiling.
 
 ## Authority order
 
@@ -144,8 +147,13 @@ paths. Do not recreate a legacy root merely to preserve history.
 - Preserve the compute-complete but result-packaging-failed baseline-002
   identity and evidence. The local string-key fix is routine engineering only;
   Decision 0018 now authorizes one exact output retrieval and local result
-  reconstruction. Both are complete and consumed. It does not authorize scoring
-  or another kernel.
+  reconstruction. Both are complete and consumed. Decision 0019 separately
+  authorizes the bounded continuous search; never mutate or reuse the baseline
+  identity for a candidate.
+- For Decision 0019 work, maintain one atomic local ledger before external
+  mutation or retrieval. Preserve train/dev/holdout isolation, use real
+  `dspy.GEPA` with the fixed Codex proposer, count failed/duplicate proposals,
+  and never exceed ten proposal attempts or 4,480 total Qwen generations.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.

@@ -63,12 +63,12 @@ def _cap(text: str) -> tuple[str, int, bool]:
     return encoded[:RAW_COMPLETION_LIMIT_BYTES].decode("utf-8", errors="ignore"), len(encoded), True
 
 
-def _generate_once(model: Any, tokenizer: Any, case: Mapping[str, Any], settings: Mapping[str, Any]) -> tuple[list[list[list[int]]], dict[str, Any]]:
+def _generate_once(model: Any, tokenizer: Any, case: Mapping[str, Any], settings: Mapping[str, Any], instruction: str) -> tuple[list[list[list[int]]], dict[str, Any]]:
     import torch
 
     if settings != core._configuration()["generation"]:
         raise RuntimeError("generation settings differ from the frozen prompt-pilot baseline")
-    messages = core.render_b1(case)
+    messages = core.render_candidate(case, instruction)
     prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
     encoded = tokenizer(prompt, return_tensors="pt", add_special_tokens=False).to("cuda")
     input_tokens = int(encoded["attention_mask"].sum().item())
@@ -131,7 +131,7 @@ def _record(case: Mapping[str, Any], rank: int, gpu_uuid: str, ordinal: int | No
     }
 
 
-def _worker(rank: int, model_root: str, configuration: Mapping[str, Any], command_queue: Any, output_queue: Any, model_manifest_digest: str) -> None:
+def _worker(rank: int, model_root: str, configuration: Mapping[str, Any], instruction: str, command_queue: Any, output_queue: Any, model_manifest_digest: str) -> None:
     os.environ["CUDA_VISIBLE_DEVICES"] = str(rank)
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     try:
@@ -160,7 +160,7 @@ def _worker(rank: int, model_root: str, configuration: Mapping[str, Any], comman
             output_queue.put({"type": "stage", "event": "job_started", "rank": rank, "gpu_uuid": gpu_uuid, "job_key": job_key, "invocation_ordinal": ordinal, "at_utc": started_utc})
             try:
                 torch.cuda.reset_peak_memory_stats()
-                attempts, metrics = _generate_once(model, tokenizer, case, configuration["generation"])
+                attempts, metrics = _generate_once(model, tokenizer, case, configuration["generation"], instruction)
                 peak = int(torch.cuda.max_memory_allocated() // (1024 * 1024))
                 status = "valid" if attempts else "invalid"
                 output_queue.put({"type": "record", "rank": rank, "record": _record(case, rank, gpu_uuid, ordinal, status, attempts=attempts, metrics=metrics, failure=None if attempts else "single completion was not a parseable valid grid", started_utc=started_utc, ended_utc=_utc(), peak_mib=peak)})
@@ -220,18 +220,19 @@ def _stop_processes(processes: Mapping[int, Any], queues: Mapping[int, Any]) -> 
 
 def run(outbound: Path, model_root: Path, competition_challenges: Path, output: Path, checkpoint_output: Path, progress_output: Path, resume_checkpoint: Path | None = None) -> str:
     session_started = time.monotonic()
-    manifest, contents, _ = core.verify_outbound_package(outbound)
+    manifest, contents, _ = core.verify_runtime_outbound_package(outbound)
     run_binding = json.loads(contents["bindings/run.json"])
     solver = json.loads(contents["cases/solver-cases.json"])
+    run_id = run_binding["run_id"]
     model_manifest = json.loads(contents["sources/model-manifest.json"])
     progress_output.parent.mkdir(parents=True, exist_ok=True)
     progress_output.write_bytes(b"")
-    _progress(progress_output, {"event": "runtime_preflight_started", "run_id": core.RUN_ID, "at_utc": _utc(), "elapsed_seconds": 0.0})
+    _progress(progress_output, {"event": "runtime_preflight_started", "run_id": run_id, "at_utc": _utc(), "elapsed_seconds": 0.0})
     hardware = collect_runtime_hardware()
-    _progress(progress_output, {"event": "runtime_hardware_observed", "run_id": core.RUN_ID, "at_utc": _utc(), "elapsed_seconds": time.monotonic() - session_started, "hardware": hardware})
+    _progress(progress_output, {"event": "runtime_hardware_observed", "run_id": run_id, "at_utc": _utc(), "elapsed_seconds": time.monotonic() - session_started, "hardware": hardware})
     validate_runtime_hardware(hardware)
     competition = core.validate_competition_mount(competition_challenges, run_binding, solver)
-    _progress(progress_output, {"event": "competition_mount_validated", "run_id": core.RUN_ID, "at_utc": _utc(), "elapsed_seconds": time.monotonic() - session_started, **competition})
+    _progress(progress_output, {"event": "competition_mount_validated", "run_id": run_id, "at_utc": _utc(), "elapsed_seconds": time.monotonic() - session_started, **competition})
     core.validate_material_manifest(model_root, model_manifest)
 
     if resume_checkpoint is None:
@@ -251,7 +252,7 @@ def run(outbound: Path, model_root: Path, competition_challenges: Path, output: 
     processes: dict[int, Any] = {}
     for rank in range(core.WORKER_COUNT):
         command_queues[rank] = context.Queue()
-        processes[rank] = context.Process(target=_worker, args=(rank, str(model_root), run_binding["configuration"], command_queues[rank], output_queue, model_manifest["manifest_digest"]), name=f"prompt-pilot-worker-{rank}")
+        processes[rank] = context.Process(target=_worker, args=(rank, str(model_root), run_binding["configuration"], solver["instruction"], command_queues[rank], output_queue, model_manifest["manifest_digest"]), name=f"prompt-pilot-worker-{rank}")
         processes[rank].start()
         _progress(progress_output, {"event": "worker_process_started", "rank": rank, "pid": processes[rank].pid, "at_utc": _utc(), "elapsed_seconds": time.monotonic() - session_started})
 
@@ -281,7 +282,7 @@ def run(outbound: Path, model_root: Path, competition_challenges: Path, output: 
     if len({event["gpu_uuid"] for event in ready.values()}) != 4:
         _stop_processes(processes, command_queues)
         raise RuntimeError("four model_ready events do not name four distinct GPU UUIDs")
-    _progress(progress_output, {"event": "all_workers_ready", "run_id": core.RUN_ID, "ready_ranks": sorted(ready), "model_revision": core.MODEL_REVISION, "at_utc": _utc(), "elapsed_seconds": time.monotonic() - session_started})
+    _progress(progress_output, {"event": "all_workers_ready", "run_id": run_id, "ready_ranks": sorted(ready), "model_revision": core.MODEL_REVISION, "at_utc": _utc(), "elapsed_seconds": time.monotonic() - session_started})
 
     cases = {f"{case['task_id']}:0": case for case in solver["cases"]}
     consumed = set(checkpoint["generation_invocations"])
@@ -377,7 +378,7 @@ def run(outbound: Path, model_root: Path, competition_challenges: Path, output: 
         value = record.get("timing", {}).get("generation_seconds")
         if isinstance(value, (int, float)) and record["worker_rank"] >= 0:
             active_seconds[str(record["worker_rank"])] += value
-    observations = {"format": "irisx/arc-agi-2-prompt-pilot-execution", "format_version": "1.0", "trial_id": core.TRIAL_ID, "run_id": core.RUN_ID, "session_wall_seconds": wall, "hardware": hardware["gpus"], "nvidia_smi_rows": hardware["nvidia_smi_rows"], "software": {"python": hardware["python"], "torch": hardware["torch"], "transformers": transformers.__version__, "cuda": hardware["cuda"], "cudnn": hardware["cudnn"]}, "competition_input": competition, "internet_enabled": False, "external_paid_cost_usd": 0, "model_ready": canonical_ready_evidence(ready), "model_load_count_by_worker": {str(rank): 1 for rank in ready}, "jobs_by_worker": dict(sorted(worker_counts.items())), "job_active_seconds_by_worker": dict(sorted(active_seconds.items())), "terminal_status_counts": dict(sorted(statuses.items())), "generation_invocation_count": len(checkpoint["generation_invocations"]), "gpu_utilization_state": "not_sampled"}
+    observations = {"format": "irisx/arc-agi-2-prompt-pilot-execution", "format_version": "1.0", "trial_id": core.TRIAL_ID, "run_id": run_id, "session_wall_seconds": wall, "hardware": hardware["gpus"], "nvidia_smi_rows": hardware["nvidia_smi_rows"], "software": {"python": hardware["python"], "torch": hardware["torch"], "transformers": transformers.__version__, "cuda": hardware["cuda"], "cudnn": hardware["cudnn"]}, "competition_input": competition, "internet_enabled": False, "external_paid_cost_usd": 0, "model_ready": canonical_ready_evidence(ready), "model_load_count_by_worker": {str(rank): 1 for rank in ready}, "jobs_by_worker": dict(sorted(worker_counts.items())), "job_active_seconds_by_worker": dict(sorted(active_seconds.items())), "terminal_status_counts": dict(sorted(statuses.items())), "generation_invocation_count": len(checkpoint["generation_invocations"]), "gpu_utilization_state": "not_sampled"}
     _progress(progress_output, {"event": "session_complete", "completed_jobs": len(checkpoint["completed"]), "terminal_status_counts": dict(sorted(statuses.items())), "at_utc": _utc(), "elapsed_seconds": wall})
     return core.build_result_package(output, run_binding, solver, checkpoint, observations, progress_output.read_bytes())
 
@@ -400,10 +401,10 @@ def main(argv: list[str] | None = None) -> int:
         digest = run(args.outbound, args.model_root, args.competition_challenges, args.output, args.checkpoint_output, args.progress_output, args.resume_checkpoint)
     except Exception as exc:
         failure = args.progress_output.with_name("runtime-failure.json")
-        failure.write_bytes(canonical_bytes({"run_id": core.RUN_ID, "status": "failed", "at_utc": _utc(), "detail": f"{type(exc).__name__}: {exc}", "traceback": traceback.format_exc(limit=40)}, newline=True))
+        failure.write_bytes(canonical_bytes({"run_id": args.outbound.stem, "status": "failed", "at_utc": _utc(), "detail": f"{type(exc).__name__}: {exc}", "traceback": traceback.format_exc(limit=40)}, newline=True))
         print(failure.read_text(), flush=True)
         return 1
-    print(json.dumps({"event": "result_written", "run_id": core.RUN_ID, "result_digest": digest}, sort_keys=True), flush=True)
+    print(json.dumps({"event": "result_written", "run_id": args.outbound.stem, "result_digest": digest}, sort_keys=True), flush=True)
     return 0
 
 

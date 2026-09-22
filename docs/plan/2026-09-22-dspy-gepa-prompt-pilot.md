@@ -1,10 +1,38 @@
 # ARC-AGI-2 DSPy / GEPA prompt pilot
 
-日期：2026-09-22。狀態：owner 已指示開啟獨立開發 task，實作並啟動第一個基線 notebook。
-新 task 必須確認 runtime 四卡模型載入後停止開發與監看；目前尚未有新執行證據。
+日期：2026-09-22。狀態：baseline-002 的 384 jobs 已完成並回收 result.zip；
+owner 已指示連貫進行評分、反思與後續實驗。以下最新連續執行指示取代先前 startup 停止點。
 本聊天為總控，實作交給後續獨立開發 task。本文件不延長 Trial 002 的執行授權。
 
-## 最新開發 task 的交付與停止點
+## 最新指示：連續執行至十輪搜尋與最終評估
+
+Owner：「完成並取得 result.zip，下一步就是進行評分與反思等步驟，我希望可以連貫的執行」。
+這次指示取代「四卡模型載入後停止」、不評分／不反思／不提交下一輪，以及必須等 owner
+逐批通知才能回收的限制。資源與科學比較設定不變，仍是十個 proposer attempts 的上限。
+
+- 延續現有開發 task 與 worktree，先驗證已回收 baseline-002 的 result/outbound identities，
+  再本機評分，分列 256 train 與 128 dev；4 個 invalid 仍在分母中，不重跑基線。
+- 串接真實 DSPy/GEPA、Codex CLI proposer、candidate staging、private Kaggle 四卡執行、
+  完成回收、驗證與評分。每輪依結果更新下一輪，不再停在模型載入或等待 owner 手動交接。
+- 可為此實作缺少的 scorer、optimizer bridge、ledger、續行控制與必要依賴，
+  更新 execution decision 和過時 stop boundary，直接完成已授權工作，不反覆索取授權。
+- 等待遠端執行時只做低頻狀態檢查（例如 2–5 分鐘間隔，錯誤時退避），不持續拉 logs；
+  terminal 後取得一次結果。無需新建桌面排程，保持同一有限工作流程持續執行。
+- 每一步先保存 ledger（目前 round、parent/candidate、kernel/version、result hash、
+  已用 invocation/proposal 數、下一步），任務重啟先讀 ledger，禁止重複反思或提交。
+  分開記錄 GPU 執行、反思執行、傳輸與等待時間；使用方案額度，不另問美元預算。
+- 十輪結束後僅以 dev 選定 G*，凍結後才做 B1/G* 的 128 題 holdout，輸出完整報告。
+  不開 public evaluation sweep、不競賽提交、不延長輪數。
+- 可自行修復可逆程式／封裝問題，優先利用 checkpoint 本機恢復、不重跑已有生成。
+  若必要輸入缺失、認證／平台配額不可用、證據無法驗證或修復需突破既定工作量，
+  保存狀態並清楚回報真正阻礙，不以反覆等待／無限重試掩蓋問題。
+
+本地基線證據：開發 worktree `C:/Users/wurre/.codex/worktrees/e34a/IRIS-X`，
+commit `ac6f422`；結果在 `.irisx/arc-agi-2/prompt-pilot/repair-002/recovered-v1/result.zip`，
+SHA-256 `4764cd569f669f8736461ddf2b5d6ac3bf1c80ddf3f903d669f8d5a43aa054af`。
+所有已失敗身份和本機重建 provenance 保留，不把 recovered result 說成 notebook 原生輸出的 ZIP。
+
+## 已完成的前次交付與停止點（被上述連續執行指示取代）
 
 Owner 原話：「正式開啟新 task 開發並啟動 notebook，確認啟動並模型成功載入後
 不監看並停止開發」。此指示界定本次 task 的執行範圍，優先於下方完整十輪路線。

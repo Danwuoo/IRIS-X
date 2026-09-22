@@ -77,3 +77,7 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes one output retrieval from the compute-complete baseline-002
   failure and local reconstruction of its missing result package, without
   rerunning or scoring the workload.
+- [`0019-authorize-continuous-prompt-search.md`](0019-authorize-continuous-prompt-search.md)
+  authorizes the bounded continuous scoring, real DSPy/GEPA plus Codex prompt
+  search, private candidate evaluations, and one final locked-holdout
+  comparison under a 4,480-generation ceiling.

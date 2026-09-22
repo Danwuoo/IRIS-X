@@ -128,16 +128,53 @@ class PromptPilotTests(unittest.TestCase):
                 returned = json.loads(archive.read("observations/execution.json"))
             self.assertEqual(["0", "1", "2", "3"], list(returned["model_ready"]))
 
+    def test_scorer_keeps_invalid_outputs_in_the_denominator(self) -> None:
+        truth = [
+            {"task_id": "a", "group": "optimization-train", "test_index": 0, "output": [[1]]},
+            {"task_id": "b", "group": "optimization-train", "test_index": 0, "output": [[2]]},
+            {"task_id": "c", "group": "selection-dev", "test_index": 0, "output": [[3]]},
+        ]
+        records = [
+            {"job_key": "a:0", "task_id": "a", "group": "optimization-train", "test_index": 0, "status": "valid", "attempts": [[[1]]]},
+            {"job_key": "b:0", "task_id": "b", "group": "optimization-train", "test_index": 0, "status": "invalid", "attempts": []},
+            {"job_key": "c:0", "task_id": "c", "group": "selection-dev", "test_index": 0, "status": "valid", "attempts": [[[0]]]},
+        ]
+
+        score = pilot.score_prediction_records(records, truth)
+
+        self.assertEqual({"correct": 1, "denominator": 2, "accuracy": 0.5, "terminal_status_counts": {"invalid": 1, "valid": 1}}, score["groups"]["optimization-train"])
+        self.assertEqual(0, score["groups"]["selection-dev"]["correct"])
+        self.assertEqual(3, score["overall"]["denominator"])
+
+    def test_scorer_rejects_a_changed_denominator(self) -> None:
+        truth = [{"task_id": "a", "group": "optimization-train", "test_index": 0, "output": [[1]]}]
+        with self.assertRaises(ValidationError):
+            pilot.score_prediction_records([], truth)
+
     def test_complete_checkpoint_can_be_recovered_without_new_generation(self) -> None:
         cases = [
-            {"task_id": f"{index:08x}", "group": "optimization-train", "train": [], "test": [{"input": [[0]]}]}
+            {"task_id": f"{index:08x}", "group": "optimization-train" if index < pilot.TRAIN_COUNT else "selection-dev", "train": [], "test": [{"input": [[0]]}]}
             for index in range(pilot.BASELINE_JOB_COUNT)
         ]
-        solver = {"cases": cases}
+        solver = {
+            "format": "irisx/arc-agi-2-prompt-pilot-solver-cases",
+            "format_version": "1.0",
+            "trial_id": pilot.TRIAL_ID,
+            "run_id": pilot.RUN_ID,
+            "instruction": pilot.BASE_INSTRUCTION,
+            "cases": cases,
+        }
+        configuration = pilot._configuration()
         run = {
             "trial_id": pilot.TRIAL_ID,
             "run_id": pilot.RUN_ID,
+            "source": {"competition_slug": pilot.COMPETITION_SLUG, "competition_challenge_digest": f"sha256:{pilot.COMPETITION_CHALLENGE_SHA256}", "solutions_opened_in_runtime": False},
+            "model": {"repository": pilot.MODEL_REPOSITORY, "revision": pilot.MODEL_REVISION, "license": pilot.MODEL_LICENSE},
+            "prompt": {"candidate": "B1", "instruction": pilot.BASE_INSTRUCTION, "instruction_digest": digest_value(pilot.BASE_INSTRUCTION)},
+            "split_digest": pilot.BASELINE_SPLIT_DIGEST,
             "solver_cases_digest": digest_value(solver),
+            "configuration": configuration,
+            "configuration_digest": digest_value(configuration),
         }
         run["run_identity_digest"] = digest_value(run)
         checkpoint = pilot.new_checkpoint(run, solver)

@@ -42,6 +42,9 @@ TRAIN_COUNT = 256
 DEV_COUNT = 128
 HOLDOUT_COUNT = 128
 BASELINE_JOB_COUNT = TRAIN_COUNT + DEV_COUNT
+BASELINE_SPLIT_DIGEST = "sha256:6176d88ce9a66dcc45584aa09c110898c0f782b1f97e42e1f268c3ef1f25bd2b"
+MAX_PROPOSAL_ATTEMPTS = 10
+MAX_GENERATION_INVOCATIONS = 4_480
 WORKER_COUNT = 4
 TASK_DEADLINE_SECONDS = 300
 SESSION_BUDGET_SECONDS = 39_600
@@ -56,6 +59,7 @@ BASE_DATASET_VERSION = 2
 RUNTIME_DATASET_REF = "danielwuu/irisx-arc-agi-2-prompt-pilot-baseline-001"
 RUNTIME_DATASET_VERSION = 2
 KAGGLE_KERNEL_REF = "danielwuu/iris-x-arc-agi-2-prompt-pilot-baseline-002"
+KAGGLE_SEARCH_KERNEL_REF = "danielwuu/iris-x-arc-agi-2-prompt-pilot-search"
 DATASET_METADATA_FILENAME = "dataset-metadata.json"
 
 SMOKE_TASK_IDS = ("2dd70a9a", "992798f6", "305b1341", "d968ffd4")
@@ -222,6 +226,10 @@ def render_b0(case: Mapping[str, Any]) -> list[dict[str, str]]:
 def render_b1(case: Mapping[str, Any]) -> list[dict[str, str]]:
     # The DSPy-facing adapter is intentionally a pure instruction parameter.
     return render_messages(BASE_INSTRUCTION, case["train"], case["test"][0]["input"])
+
+
+def render_candidate(case: Mapping[str, Any], instruction: str) -> list[dict[str, str]]:
+    return render_messages(instruction, case["train"], case["test"][0]["input"])
 
 
 def assert_render_parity(cases: Iterable[Mapping[str, Any]], tokenizer: Any | None = None) -> dict[str, Any]:
@@ -396,26 +404,147 @@ def build_outbound_package(trial_root: Path, base_dataset_root: Path, runtime_wh
 
 
 def verify_outbound_package(path: Path) -> tuple[dict[str, Any], dict[str, bytes], str]:
+    manifest, contents, digest = verify_runtime_outbound_package(path)
+    if manifest.get("package_id") != RUN_ID:
+        raise ValidationError("prompt-pilot baseline outbound identity is invalid")
+    return manifest, contents, digest
+
+
+def _validate_runtime_binding(run: Mapping[str, Any], solver: Mapping[str, Any]) -> None:
+    run_id = run.get("run_id")
+    if run.get("trial_id") != TRIAL_ID or not isinstance(run_id, str) or solver.get("trial_id") != TRIAL_ID or solver.get("run_id") != run_id:
+        raise ValidationError("prompt-pilot runtime identity is invalid")
+    if run_id != RUN_ID:
+        search = run.get("search")
+        if not run_id.startswith("prompt-pilot-search-g") or not isinstance(search, dict):
+            raise ValidationError("prompt-pilot search identity is invalid")
+        round_index = search.get("round")
+        if not isinstance(round_index, int) or not 1 <= round_index <= MAX_PROPOSAL_ATTEMPTS or run_id != f"prompt-pilot-search-g{round_index:02d}":
+            raise ValidationError("prompt-pilot search round identity is invalid")
+        if run.get("prompt", {}).get("candidate") != f"G{round_index}":
+            raise ValidationError("prompt-pilot search candidate label is invalid")
+    if run.get("split_digest") != BASELINE_SPLIT_DIGEST or run.get("solver_cases_digest") != digest_value(solver):
+        raise ValidationError("prompt-pilot runtime split or solver binding is stale")
+    identity = {key: value for key, value in run.items() if key != "run_identity_digest"}
+    if run.get("run_identity_digest") != digest_value(identity):
+        raise ValidationError("prompt-pilot runtime identity digest is stale")
+    instruction = solver.get("instruction")
+    prompt = run.get("prompt", {})
+    if not isinstance(instruction, str) or not instruction.strip() or len(instruction.encode("utf-8")) > 16_384:
+        raise ValidationError("prompt-pilot instruction is invalid")
+    if prompt.get("instruction") != instruction or prompt.get("instruction_digest") != digest_value(instruction):
+        raise ValidationError("prompt-pilot instruction binding is stale")
+    if run.get("configuration") != _configuration() or run.get("configuration_digest") != digest_value(_configuration()):
+        raise ValidationError("prompt-pilot runtime configuration changed")
+    if run.get("model") != {"repository": MODEL_REPOSITORY, "revision": MODEL_REVISION, "license": MODEL_LICENSE}:
+        raise ValidationError("prompt-pilot runtime model changed")
+    source = run.get("source", {})
+    if source.get("competition_slug") != COMPETITION_SLUG or source.get("competition_challenge_digest") != f"sha256:{COMPETITION_CHALLENGE_SHA256}" or source.get("solutions_opened_in_runtime") is not False:
+        raise ValidationError("prompt-pilot runtime source binding changed")
+    cases = solver.get("cases", [])
+    if len(cases) != BASELINE_JOB_COUNT or Counter(item.get("group") for item in cases) != Counter({"optimization-train": TRAIN_COUNT, "selection-dev": DEV_COUNT}):
+        raise ValidationError("prompt-pilot runtime job denominator changed")
+    if len({item.get("task_id") for item in cases}) != BASELINE_JOB_COUNT:
+        raise ValidationError("prompt-pilot runtime cases are duplicated")
+    if any(set(pair) != {"input"} for case in cases for pair in case["test"]):
+        raise ValidationError("prompt-pilot runtime cases contain evaluator truth")
+
+
+def verify_runtime_outbound_package(path: Path) -> tuple[dict[str, Any], dict[str, bytes], str]:
     manifest, contents, digest = verify_zip(path, limits=TRIAL_LIMITS, package_kind=OUTBOUND_KIND)
-    if set(contents) != OUTBOUND_PATHS or manifest.get("package_id") != RUN_ID:
+    if set(contents) != OUTBOUND_PATHS:
         raise ValidationError("prompt-pilot outbound membership or identity is invalid")
     run = json.loads(contents["bindings/run.json"])
     solver = json.loads(contents["cases/solver-cases.json"])
-    if run.get("trial_id") != TRIAL_ID or run.get("run_id") != RUN_ID or run.get("solver_cases_digest") != digest_value(solver):
-        raise ValidationError("prompt-pilot outbound bindings are stale")
-    identity = {key: value for key, value in run.items() if key != "run_identity_digest"}
-    if run.get("run_identity_digest") != digest_value(identity) or len(solver.get("cases", [])) != BASELINE_JOB_COUNT:
-        raise ValidationError("prompt-pilot outbound run digest or job count is invalid")
+    if manifest.get("package_id") != run.get("run_id"):
+        raise ValidationError("prompt-pilot outbound package and run identities differ")
+    _validate_runtime_binding(run, solver)
     for logical in OUTBOUND_PATHS - {"runtime/runner.py", "runtime/core.py"}:
         parsed = json.loads(contents[logical])
         if contents[logical] != canonical_bytes(parsed, newline=True):
             raise ValidationError(f"prompt-pilot outbound JSON is not canonical: {logical}")
-    if any(set(pair) != {"input"} for case in solver["cases"] for pair in case["test"]):
-        raise ValidationError("prompt-pilot outbound contains evaluator truth")
     forbidden = (b"evaluator-truth", b'"expected_output"', b'"score"', b'"feedback"')
     if any(marker in contents[logical] for marker in forbidden for logical in set(contents) - {"runtime/runner.py", "runtime/core.py"}):
         raise ValidationError("prompt-pilot outbound contains prohibited truth or feedback")
     return manifest, contents, digest
+
+
+def build_search_outbound_package(
+    baseline_trial_root: Path,
+    baseline_outbound: Path,
+    runtime_wheel: Path,
+    output: Path,
+    *,
+    instruction: str,
+    round_index: int,
+    parent_instruction_digest: str,
+    repository_root: Path,
+) -> dict[str, Any]:
+    """Build one truth-free search candidate from the frozen baseline workload."""
+
+    baseline_run = validate_trial(baseline_trial_root)
+    _, baseline_contents, _ = verify_outbound_package(baseline_outbound)
+    if not 1 <= round_index <= MAX_PROPOSAL_ATTEMPTS:
+        raise ValidationError("prompt-pilot search round is outside the authorized range")
+    if not isinstance(instruction, str) or not instruction.strip() or len(instruction.encode("utf-8")) > 16_384:
+        raise ValidationError("prompt-pilot search instruction is invalid")
+    run_id = f"prompt-pilot-search-g{round_index:02d}"
+    solver = _load_canonical(baseline_trial_root / "solver-cases.json")
+    solver = {**solver, "run_id": run_id, "instruction": instruction}
+    run = {
+        **baseline_run,
+        "run_id": run_id,
+        "prompt": {
+            "candidate": f"G{round_index}",
+            "instruction": instruction,
+            "instruction_digest": digest_value(instruction),
+            "b0_b1_render_parity": False,
+        },
+        "solver_cases_digest": digest_value(solver),
+        "search": {
+            "decision": "0019",
+            "round": round_index,
+            "parent_instruction_digest": parent_instruction_digest,
+            "only_instruction_changed": True,
+        },
+    }
+    run.pop("run_identity_digest", None)
+    run["run_identity_digest"] = digest_value(run)
+    _validate_runtime_binding(run, solver)
+
+    runner = (repository_root / "src/irisx/kaggle_runner_prompt_pilot.py").read_bytes()
+    core = (repository_root / "src/irisx/arc_prompt_pilot.py").read_bytes()
+    validate_runtime_wheel_sources(runtime_wheel, runner=runner, core=core)
+    runtime_manifest = _manifest_for_files(runtime_wheel.parent, [runtime_wheel], "irisx/prompt-pilot-runtime-wheel-manifest")
+    dependencies = json.loads(baseline_contents["runtime/dependencies.json"])
+    dependencies["runtime_wheel_manifest_digest"] = runtime_manifest["manifest_digest"]
+    files = {
+        "bindings/run.json": canonical_bytes(run, newline=True),
+        "cases/solver-cases.json": canonical_bytes(solver, newline=True),
+        "runtime/dependencies.json": canonical_bytes(dependencies, newline=True),
+        "runtime/runner.py": runner,
+        "runtime/core.py": core,
+        "sources/model-manifest.json": baseline_contents["sources/model-manifest.json"],
+        "sources/base-wheel-manifest.json": baseline_contents["sources/base-wheel-manifest.json"],
+        "sources/runtime-wheel-manifest.json": canonical_bytes(runtime_manifest, newline=True),
+    }
+    metadata = {
+        "trial_id": TRIAL_ID,
+        "run_id": run_id,
+        "run_identity_digest": run["run_identity_digest"],
+        "solver_cases_digest": run["solver_cases_digest"],
+        "configuration_digest": run["configuration_digest"],
+        "instruction_digest": run["prompt"]["instruction_digest"],
+        "runner_digest": digest_bytes(runner),
+        "core_digest": digest_bytes(core),
+        "model_manifest_digest": json.loads(files["sources/model-manifest.json"])["manifest_digest"],
+        "base_wheel_manifest_digest": json.loads(files["sources/base-wheel-manifest.json"])["manifest_digest"],
+        "runtime_wheel_manifest_digest": runtime_manifest["manifest_digest"],
+        "truth_free": True,
+    }
+    outbound_digest = write_zip(output, OUTBOUND_KIND, run_id, files, metadata, limits=TRIAL_LIMITS)
+    verify_runtime_outbound_package(output)
+    return {"run": run, "solver": solver, "outbound_digest": outbound_digest, "metadata": metadata}
 
 
 def stage_dataset(outbound: Path, runtime_wheel: Path, output: Path) -> dict[str, Any]:
@@ -437,6 +566,28 @@ def validate_dataset_staging(root: Path, outbound: Path, runtime_wheel: Path) ->
     if any(path.name in {"evaluator-truth.json", "arc-agi_training_solutions.json", "arc-agi_evaluation_solutions.json"} for path in root.rglob("*")):
         raise ValidationError("runtime Dataset staging contains evaluator truth")
     return {"dataset_ref": RUNTIME_DATASET_REF, "dataset_version": RUNTIME_DATASET_VERSION, "outbound_digest": digest_path(staged_outbound), "runtime_wheel_digest": digest_path(staged_wheel), "truth_free": True}
+
+
+def stage_search_dataset(outbound: Path, runtime_wheel: Path, output: Path, *, expected_version: int) -> dict[str, Any]:
+    if expected_version < 3:
+        raise ValidationError("prompt-pilot search Dataset must follow retained baseline version 2")
+    _ensure_empty(output)
+    metadata = {
+        "title": "IRIS-X ARC-AGI-2 Prompt Pilot Search Transport",
+        "id": RUNTIME_DATASET_REF,
+        "description": "Private small truth-free Decision 0019 candidate transport; model and offline inference dependencies remain in the bound Trial 002 Dataset.",
+        "licenses": [{"name": "other"}],
+    }
+    write_json(output / DATASET_METADATA_FILENAME, metadata)
+    shutil.copy2(outbound, output / outbound.name)
+    shutil.copy2(runtime_wheel, output / runtime_wheel.name)
+    staged_outbound, staged_wheel = output / outbound.name, output / runtime_wheel.name
+    verify_runtime_outbound_package(staged_outbound)
+    if digest_path(staged_outbound) != digest_path(outbound) or digest_path(staged_wheel) != digest_path(runtime_wheel):
+        raise ValidationError("prompt-pilot search Dataset staging bytes are stale")
+    if any(path.name in {"evaluator-truth.json", "arc-agi_training_solutions.json", "arc-agi_evaluation_solutions.json"} for path in output.rglob("*")):
+        raise ValidationError("prompt-pilot search Dataset staging contains evaluator truth")
+    return {"dataset_ref": RUNTIME_DATASET_REF, "expected_dataset_version": expected_version, "outbound_digest": digest_path(staged_outbound), "runtime_wheel_digest": digest_path(staged_wheel), "truth_free": True}
 
 
 def validate_kernel_staging(root: Path, outbound_digest: str, runtime_wheel_digest: str) -> dict[str, Any]:
@@ -486,9 +637,62 @@ def stage_kaggle_kernel(template_root: Path, output: Path, *, outbound_digest: s
     return validate_kernel_staging(output, outbound_digest, runtime_wheel_digest)
 
 
+def stage_search_kernel(
+    template_root: Path,
+    output: Path,
+    *,
+    run_id: str,
+    outbound_digest: str,
+    runtime_wheel_digest: str,
+) -> dict[str, Any]:
+    _ensure_empty(output)
+    if not run_id.startswith("prompt-pilot-search-g"):
+        raise ValidationError("prompt-pilot search kernel run identity is invalid")
+    metadata = read_json(template_root / "kernel-metadata.json")
+    metadata.update({"id": KAGGLE_SEARCH_KERNEL_REF, "title": f"IRIS-X ARC-AGI-2 Prompt Pilot {run_id}"})
+    notebook = json.loads((template_root / metadata["code_file"]).read_bytes())
+    replacements = {
+        RUN_ID: run_id,
+        "__IRISX_OUTBOUND_SHA256__": outbound_digest.removeprefix("sha256:"),
+        "__IRISX_RUNTIME_WHEEL_SHA256__": runtime_wheel_digest.removeprefix("sha256:"),
+        "Private, Internet-disabled, competition-mounted L4 x4 replacement authorized by Decision 0017.": "Private, Internet-disabled, competition-mounted L4 x4 candidate authorized by Decision 0019.",
+    }
+    counts = Counter()
+    for cell in notebook["cells"]:
+        if isinstance(cell.get("source"), list):
+            updated = []
+            for line in cell["source"]:
+                for marker, value in replacements.items():
+                    counts[marker] += line.count(marker)
+                    line = line.replace(marker, value)
+                updated.append(line)
+            cell["source"] = updated
+    if counts["__IRISX_OUTBOUND_SHA256__"] != 1 or counts["__IRISX_RUNTIME_WHEEL_SHA256__"] != 1 or counts[RUN_ID] < 4:
+        raise ValidationError("prompt-pilot search notebook bindings are missing")
+    (output / metadata["code_file"]).write_text(json.dumps(notebook, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    write_json(output / "kernel-metadata.json", metadata)
+    returned = _load_canonical(output / "kernel-metadata.json")
+    expected = {
+        "id": KAGGLE_SEARCH_KERNEL_REF,
+        "is_private": True,
+        "enable_gpu": True,
+        "enable_internet": False,
+        "machine_shape": KAGGLE_MACHINE_SHAPE,
+        "dataset_sources": [BASE_DATASET_REF, RUNTIME_DATASET_REF],
+        "competition_sources": [COMPETITION_SLUG],
+    }
+    if any(returned.get(key) != value for key, value in expected.items()):
+        raise ValidationError("prompt-pilot search kernel metadata is stale")
+    source = "\n".join("".join(cell.get("source", [])) for cell in notebook["cells"] if cell.get("cell_type") == "code")
+    required = (run_id, outbound_digest.removeprefix("sha256:"), runtime_wheel_digest.removeprefix("sha256:"), "kaggle_runner_prompt_pilot", "mount_paths_resolved")
+    if any(item not in source for item in required) or RUN_ID in source or "__IRISX_" in source or ".rglob(" in source:
+        raise ValidationError("prompt-pilot search notebook contains unresolved bindings")
+    return returned
+
+
 def new_checkpoint(run: Mapping[str, Any], solver: Mapping[str, Any]) -> dict[str, Any]:
     jobs = [f"{case['task_id']}:0" for case in solver["cases"]]
-    return {"format": "irisx/arc-agi-2-prompt-pilot-checkpoint", "format_version": "1.0", "trial_id": TRIAL_ID, "run_id": RUN_ID, "run_identity_digest": run["run_identity_digest"], "expected_jobs": jobs, "model_ready": {}, "generation_invocations": {}, "completed": {}, "sessions": [], "complete": False}
+    return {"format": "irisx/arc-agi-2-prompt-pilot-checkpoint", "format_version": "1.0", "trial_id": TRIAL_ID, "run_id": run.get("run_id", RUN_ID), "run_identity_digest": run["run_identity_digest"], "expected_jobs": jobs, "model_ready": {}, "generation_invocations": {}, "completed": {}, "sessions": [], "complete": False}
 
 
 @dataclass
@@ -527,9 +731,10 @@ class DispatchState:
 
 def validate_checkpoint(checkpoint: Mapping[str, Any], run: Mapping[str, Any], solver: Mapping[str, Any]) -> None:
     expected = [f"{case['task_id']}:0" for case in solver["cases"]]
-    if checkpoint.get("trial_id") != TRIAL_ID or checkpoint.get("run_id") != RUN_ID or checkpoint.get("run_identity_digest") != run["run_identity_digest"] or checkpoint.get("expected_jobs") != expected:
+    if checkpoint.get("trial_id") != TRIAL_ID or checkpoint.get("run_id") != run.get("run_id", RUN_ID) or checkpoint.get("run_identity_digest") != run["run_identity_digest"] or checkpoint.get("expected_jobs") != expected:
         raise ValidationError("prompt-pilot checkpoint identity or denominator is invalid")
-    if len(checkpoint.get("generation_invocations", {})) > BASELINE_JOB_COUNT or not set(checkpoint.get("completed", {})).issubset(expected):
+    quota = run.get("configuration", {}).get("generation", {}).get("invocation_quota", len(expected))
+    if quota != len(expected) or len(checkpoint.get("generation_invocations", {})) > quota or not set(checkpoint.get("completed", {})).issubset(expected):
         raise ValidationError("prompt-pilot checkpoint exceeds its job quota")
     if not set(checkpoint.get("model_ready", {})).issubset({str(rank) for rank in range(WORKER_COUNT)}):
         raise ValidationError("prompt-pilot checkpoint has an invalid worker rank")
@@ -544,17 +749,25 @@ def atomically_write_json(path: Path, value: Any) -> None:
 
 def build_result_package(output: Path, run: Mapping[str, Any], solver: Mapping[str, Any], checkpoint: Mapping[str, Any], observations: Mapping[str, Any], progress: bytes) -> str:
     validate_checkpoint(checkpoint, run, solver)
+    run_id = run.get("run_id", RUN_ID)
     records = [checkpoint["completed"][key] for key in checkpoint["expected_jobs"] if key in checkpoint["completed"]]
-    files = {"bindings/run.json": canonical_bytes(run, newline=True), "checkpoint/checkpoint.json": canonical_bytes(checkpoint, newline=True), "predictions/predictions.json": canonical_bytes({"format": "irisx/arc-agi-2-prompt-pilot-predictions", "format_version": "1.0", "trial_id": TRIAL_ID, "run_id": RUN_ID, "records": records}, newline=True), "observations/execution.json": canonical_bytes(observations, newline=True), "logs/progress.jsonl": progress}
-    metadata = {"trial_id": TRIAL_ID, "run_id": RUN_ID, "run_identity_digest": run["run_identity_digest"], "expected_job_count": BASELINE_JOB_COUNT, "terminal_job_count": len(records), "truth_free": True}
-    return write_zip(output, RESULT_KIND, RUN_ID, files, metadata, limits=RESULT_LIMITS)
+    files = {"bindings/run.json": canonical_bytes(run, newline=True), "checkpoint/checkpoint.json": canonical_bytes(checkpoint, newline=True), "predictions/predictions.json": canonical_bytes({"format": "irisx/arc-agi-2-prompt-pilot-predictions", "format_version": "1.0", "trial_id": TRIAL_ID, "run_id": run_id, "records": records}, newline=True), "observations/execution.json": canonical_bytes(observations, newline=True), "logs/progress.jsonl": progress}
+    metadata = {"trial_id": TRIAL_ID, "run_id": run_id, "run_identity_digest": run["run_identity_digest"], "expected_job_count": len(checkpoint["expected_jobs"]), "terminal_job_count": len(records), "truth_free": True}
+    return write_zip(output, RESULT_KIND, run_id, files, metadata, limits=RESULT_LIMITS)
 
 
 def verify_result_package(path: Path, outbound: Path) -> tuple[dict[str, Any], dict[str, bytes], str]:
-    _, outbound_contents, _ = verify_outbound_package(outbound)
+    manifest, contents, digest = verify_runtime_result_package(path, outbound)
+    if manifest.get("package_id") != RUN_ID:
+        raise ValidationError("prompt-pilot baseline result identity is invalid")
+    return manifest, contents, digest
+
+
+def verify_runtime_result_package(path: Path, outbound: Path) -> tuple[dict[str, Any], dict[str, bytes], str]:
+    _, outbound_contents, _ = verify_runtime_outbound_package(outbound)
     run, solver = json.loads(outbound_contents["bindings/run.json"]), json.loads(outbound_contents["cases/solver-cases.json"])
     manifest, contents, digest = verify_zip(path, limits=RESULT_LIMITS, package_kind=RESULT_KIND)
-    if set(contents) != RESULT_PATHS or manifest.get("package_id") != RUN_ID:
+    if set(contents) != RESULT_PATHS or manifest.get("package_id") != run["run_id"]:
         raise ValidationError("prompt-pilot result membership or identity is invalid")
     returned_run, checkpoint = json.loads(contents["bindings/run.json"]), json.loads(contents["checkpoint/checkpoint.json"])
     if returned_run != run:
@@ -568,6 +781,174 @@ def verify_result_package(path: Path, outbound: Path) -> tuple[dict[str, Any], d
     if any(marker in payload for marker in forbidden for payload in contents.values()):
         raise ValidationError("prompt-pilot result contains evaluator truth or feedback")
     return manifest, contents, digest
+
+
+def score_prediction_records(
+    records: Iterable[Mapping[str, Any]],
+    truth_cases: Iterable[Mapping[str, Any]],
+    *,
+    groups: tuple[str, ...] = ("optimization-train", "selection-dev"),
+) -> dict[str, Any]:
+    """Score selected-output pass@1 while preserving the full denominator.
+
+    Parser-invalid and other terminal failures are incorrect, not omitted.  The
+    returned per-case details are local evaluator material; callers must not
+    place them in an outbound package or expose selection-dev details to the
+    instruction proposer.
+    """
+
+    allowed = set(groups)
+    truth_by_job: dict[str, Mapping[str, Any]] = {}
+    for truth in truth_cases:
+        if truth.get("group") not in allowed:
+            continue
+        task_id, test_index = truth.get("task_id"), truth.get("test_index")
+        if not isinstance(task_id, str) or test_index != 0:
+            raise ValidationError("prompt-pilot evaluator truth identity is invalid")
+        job_key = f"{task_id}:{test_index}"
+        if job_key in truth_by_job:
+            raise ValidationError("prompt-pilot evaluator truth contains a duplicate job")
+        validate_grid(truth.get("output"), f"evaluator truth {job_key}")
+        truth_by_job[job_key] = truth
+
+    record_by_job: dict[str, Mapping[str, Any]] = {}
+    for record in records:
+        job_key = record.get("job_key")
+        if not isinstance(job_key, str) or job_key in record_by_job:
+            raise ValidationError("prompt-pilot prediction records contain an invalid or duplicate job")
+        record_by_job[job_key] = record
+    if set(record_by_job) != set(truth_by_job):
+        missing = sorted(set(truth_by_job) - set(record_by_job))
+        extra = sorted(set(record_by_job) - set(truth_by_job))
+        raise ValidationError(f"prompt-pilot score denominator differs: missing={missing[:3]} extra={extra[:3]}")
+
+    details: list[dict[str, Any]] = []
+    summaries: dict[str, dict[str, Any]] = {}
+    for group in groups:
+        group_truth = [truth for truth in truth_by_job.values() if truth["group"] == group]
+        status_counts: Counter[str] = Counter()
+        correct = 0
+        for truth in sorted(group_truth, key=lambda item: item["task_id"]):
+            job_key = f"{truth['task_id']}:0"
+            record = record_by_job[job_key]
+            if record.get("task_id") != truth["task_id"] or record.get("test_index") != 0 or record.get("group") != group:
+                raise ValidationError(f"prompt-pilot prediction identity differs from truth: {job_key}")
+            status = record.get("status")
+            if status not in TERMINAL_STATUSES:
+                raise ValidationError(f"prompt-pilot prediction status is invalid: {job_key}")
+            status_counts[str(status)] += 1
+            attempts = record.get("attempts")
+            if not isinstance(attempts, list):
+                raise ValidationError(f"prompt-pilot prediction attempts are invalid: {job_key}")
+            predicted = None
+            is_correct = False
+            if status == "valid":
+                if len(attempts) != 1:
+                    raise ValidationError(f"valid prompt-pilot prediction must contain one attempt: {job_key}")
+                predicted = validate_grid(attempts[0], f"prediction {job_key}")
+                is_correct = predicted == truth["output"]
+            elif attempts:
+                raise ValidationError(f"non-valid prompt-pilot prediction contains an attempt: {job_key}")
+            correct += int(is_correct)
+            details.append(
+                {
+                    "job_key": job_key,
+                    "task_id": truth["task_id"],
+                    "group": group,
+                    "status": status,
+                    "correct": is_correct,
+                    "predicted_output": predicted,
+                    "expected_output": truth["output"],
+                }
+            )
+        denominator = len(group_truth)
+        summaries[group] = {
+            "correct": correct,
+            "denominator": denominator,
+            "accuracy": correct / denominator if denominator else None,
+            "terminal_status_counts": dict(sorted(status_counts.items())),
+        }
+
+    total_correct = sum(summary["correct"] for summary in summaries.values())
+    total_denominator = sum(summary["denominator"] for summary in summaries.values())
+    return {
+        "groups": summaries,
+        "overall": {
+            "correct": total_correct,
+            "denominator": total_denominator,
+            "accuracy": total_correct / total_denominator if total_denominator else None,
+        },
+        "records": details,
+    }
+
+
+def score_result_package(trial_root: Path, result: Path, outbound: Path) -> dict[str, Any]:
+    """Verify and deterministically score a baseline result against local truth."""
+
+    trial_run = validate_trial(trial_root)
+    result_manifest, contents, result_digest = verify_result_package(result, outbound)
+    returned_run = json.loads(contents["bindings/run.json"])
+    if returned_run != trial_run:
+        raise ValidationError("prompt-pilot scored result differs from the local trial binding")
+    truth_path = trial_root / "evaluator-truth.json"
+    truth = _load_canonical(truth_path)
+    predictions = json.loads(contents["predictions/predictions.json"])
+    scored = score_prediction_records(predictions["records"], truth["cases"])
+    return {
+        "format": "irisx/arc-agi-2-prompt-pilot-score",
+        "format_version": "1.0",
+        "trial_id": TRIAL_ID,
+        "run_id": RUN_ID,
+        "metric": "selected-output-exact-match-pass@1",
+        "invalid_policy": "incorrect-and-retained-in-denominator",
+        "bindings": {
+            "run_identity_digest": trial_run["run_identity_digest"],
+            "split_digest": trial_run["split_digest"],
+            "truth_digest": digest_path(truth_path),
+            "outbound_digest": digest_path(outbound),
+            "result_digest": result_digest,
+            "result_manifest_digest": digest_value(result_manifest),
+        },
+        "groups": scored["groups"],
+        "overall": scored["overall"],
+        "records": scored["records"],
+        "holdout": {"opened": False, "scored": False, "record_count": 0},
+    }
+
+
+def score_search_result_package(baseline_trial_root: Path, result: Path, outbound: Path) -> dict[str, Any]:
+    """Score a verified search candidate against the frozen local train/dev truth."""
+
+    baseline_run = validate_trial(baseline_trial_root)
+    result_manifest, contents, result_digest = verify_runtime_result_package(result, outbound)
+    candidate_run = json.loads(contents["bindings/run.json"])
+    if candidate_run["run_id"] == RUN_ID or candidate_run.get("split_digest") != baseline_run["split_digest"]:
+        raise ValidationError("prompt-pilot search result is not a distinct candidate on the frozen split")
+    truth_path = baseline_trial_root / "evaluator-truth.json"
+    truth = _load_canonical(truth_path)
+    predictions = json.loads(contents["predictions/predictions.json"])
+    scored = score_prediction_records(predictions["records"], truth["cases"])
+    return {
+        "format": "irisx/arc-agi-2-prompt-pilot-score",
+        "format_version": "1.0",
+        "trial_id": TRIAL_ID,
+        "run_id": candidate_run["run_id"],
+        "metric": "selected-output-exact-match-pass@1",
+        "invalid_policy": "incorrect-and-retained-in-denominator",
+        "bindings": {
+            "run_identity_digest": candidate_run["run_identity_digest"],
+            "split_digest": candidate_run["split_digest"],
+            "instruction_digest": candidate_run["prompt"]["instruction_digest"],
+            "truth_digest": digest_path(truth_path),
+            "outbound_digest": digest_path(outbound),
+            "result_digest": result_digest,
+            "result_manifest_digest": digest_value(result_manifest),
+        },
+        "groups": scored["groups"],
+        "overall": scored["overall"],
+        "records": scored["records"],
+        "holdout": {"opened": False, "scored": False, "record_count": 0},
+    }
 
 
 def _load_canonical_progress(path: Path) -> tuple[list[dict[str, Any]], bytes]:
