@@ -2,6 +2,9 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-09-22-trial-002-kaggle-smoke-repair.md`](plan/2026-09-22-trial-002-kaggle-smoke-repair.md)
+  scopes the fresh-task repair of competition mounting, actual L4 x4 execution,
+  and exactly four Qwen3.5-4B inference invocations.
 - [`plan/2026-09-22-arc-agi-2-completable-baseline.md`](plan/2026-09-22-arc-agi-2-completable-baseline.md)
   records the owner-directed Trial 002 baseline development scope, source and
   model strategy, bounded Kaggle CLI smoke, and implementation handoff.
