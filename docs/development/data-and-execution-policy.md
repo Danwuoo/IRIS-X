@@ -144,3 +144,13 @@ path. It emitted zero model-ready events and consumed zero solver generations.
 Its single kernel launch and bounded startup checks are consumed. Decision 0016
 now authorizes no additional external status/log/source/output request, repair,
 or resubmission.
+
+The owner's explicit repair direction is recorded by Decision 0017. It
+authorizes only `prompt-pilot-baseline-002`: one immutable version 2 update to
+the existing small truth-free runtime Dataset, one new private Internet-disabled
+L4 x4 kernel push, and bounded status/log reads until four exact-model workers
+on distinct GPU UUIDs enter scheduling. The notebook may resolve only the exact
+owner-qualified current Kaggle mounts or their explicit legacy alternatives;
+it must not search across unrelated inputs. The 384-generation quota, no-retry
+rule, local-only evaluator truth, USD 0 cost, and stop-on-startup condition are
+unchanged. Failure consumes this replacement and authorizes no third attempt.

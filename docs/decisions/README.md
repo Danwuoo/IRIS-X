@@ -69,3 +69,7 @@ no current authority unless a new decision explicitly re-adopts them.
   opens a distinct prompt-pilot trial and authorizes one private 384-job
   baseline launch, with work stopping once four exact-model workers are ready
   and the dynamic scheduler has started.
+- [`0017-authorize-prompt-pilot-mount-repair.md`](0017-authorize-prompt-pilot-mount-repair.md)
+  preserves the failed first baseline and authorizes one transport-only
+  replacement identity with exact current Kaggle Dataset mounts and the same
+  four-worker startup stopping condition.

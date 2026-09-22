@@ -94,6 +94,18 @@ class PromptPilotTests(unittest.TestCase):
         self.assertNotIn("\nimport torch\n", source)
         self.assertNotIn("\nfrom transformers", source)
 
+    def test_repair_uses_new_identity_and_exact_mount_candidates(self) -> None:
+        self.assertEqual("prompt-pilot-baseline-002", pilot.RUN_ID)
+        self.assertEqual(2, pilot.RUNTIME_DATASET_VERSION)
+        self.assertTrue(pilot.KAGGLE_KERNEL_REF.endswith("prompt-pilot-baseline-002"))
+        notebook_path = Path(__file__).resolve().parents[1] / "trials/arc-agi-2-prompt-pilot/repair-002/kaggle-notebook.ipynb"
+        notebook = json.loads(notebook_path.read_bytes())
+        source = "\n".join("".join(cell.get("source", [])) for cell in notebook["cells"] if cell.get("cell_type") == "code")
+        self.assertIn("/kaggle/input/datasets/danielwuu/irisx-arc-agi-2-prompt-pilot-baseline-001", source)
+        self.assertIn("/kaggle/input/competitions/arc-prize-2026-arc-agi-2", source)
+        self.assertIn("mount_paths_resolved", source)
+        self.assertNotIn(".rglob(", source)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,14 +1,17 @@
 # ARC-AGI-2 prompt pilot
 
 This is the current status page for trial `arc-agi-2-prompt-pilot`, authorized
-by Decision 0016. It is separate from closed Trial 001 and completed Trial 002.
+by Decisions 0016 and 0017. It is separate from closed Trial 001 and completed
+Trial 002.
 
 ## Goal
 
 Measure whether instruction-only GEPA proposals can later improve a fixed
 Qwen3.5-4B selected-output exact-match baseline without changing the solver,
 parser, demonstrations, decoding, or data isolation. The current task covers
-only baseline run `prompt-pilot-baseline-001`.
+the baseline transport and its one owner-authorized repair. The failed
+`prompt-pilot-baseline-001` remains frozen; active preparation uses the distinct
+`prompt-pilot-baseline-002` identity.
 
 ## Current state
 
@@ -49,11 +52,30 @@ only baseline run `prompt-pilot-baseline-001`.
   running and after it failed. Therefore the locally submitted metadata remains
   intended configuration, not server-confirmed metadata evidence. The CLI did
   confirm the actual normalized kernel ref, version 1, `RUNNING`, then `ERROR`.
+- Repair: Decision 0017 authorizes one new `prompt-pilot-baseline-002` launch.
+  Its notebook accepts only the exact owner-qualified current Dataset and
+  competition paths or their explicit legacy alternatives, requires exactly
+  one match, and reconstructs an extracted outbound only from a closed member
+  list. It never searches across `/kaggle/input`. Offline preparation is
+  complete and the full technical preflight passes; no replacement kernel has
+  yet been pushed.
+- Repair run identity digest:
+  `15f6d00a764b3849664bdfafa80183f051bf2701c6bd64f01caf9b53168b4051`.
+- Repair truth-free outbound SHA-256:
+  `da38bb7b165f8ddc66f9709faec3222e9b2129b685d1794da1aa960a05c92a8b`.
+- Repair runtime wheel SHA-256:
+  `2c54d4cddc82cf791f6ae9b55cd502169aab5bfe576248ba0272d8fbf5b23882`.
+- The repair uses the unchanged 384 visible cases and split. Prior exact
+  tokenizer parity therefore remains applicable, and a byte-exact local
+  archive-to-extracted-to-archive reconstruction reproduced the repair
+  outbound digest.
 
 ## Stop boundary
 
 The required four identity-bound `model_ready` events and scheduler dispatch
-were not reached. Preserve the failure and stop external monitoring. Do not
-retrieve or score results, invoke Codex reflection, repair this consumed run
-identity, or launch another kernel under Decision 0016. A repair needs a new
-owner-authorized identity and must bind Kaggle's actual Dataset mount topology.
+were not reached by baseline 001. Preserve that failure. Decision 0017 permits
+exactly one baseline 002 Dataset version update and private kernel push, with
+bounded status/log reads only until the same startup evidence is retained. At
+that point stop monitoring and leave the notebook running. If baseline 002
+fails, retain its trace and stop; do not retrieve or score results, invoke Codex
+reflection, or launch a third identity.

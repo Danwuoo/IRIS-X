@@ -49,6 +49,14 @@ runner because the exact outbound was not present at the assumed Dataset mount
 path. It produced zero model-ready events and zero generations. The launch is
 consumed; Decision 0016 authorizes no repair submission or further external
 status, log, source, or output request.
+The owner's repair direction is retained in Decision 0017. It preserves the
+failed identity and authorizes exactly one transport-only replacement,
+`prompt-pilot-baseline-002`: update the existing small private runtime Dataset
+as version 2, resolve only exact owner-qualified or explicit legacy mounts, and
+push one new private kernel. The original 384-job, L4 x4, pinned-model, no-retry,
+truth-free, Internet-disabled, USD 0 boundaries remain. Stop development and
+monitoring immediately after four distinct model-ready events plus initial
+scheduler dispatch, or retain a replacement failure without another retry.
 
 ## Authority order
 
@@ -112,6 +120,9 @@ paths. Do not recreate a legacy root merely to preserve history.
   current status page is `trials/arc-agi-2-prompt-pilot/README.md`.
 - Preserve the failed `prompt-pilot-baseline-001` identity and submitted bytes.
   Do not reuse that identity for a mount-path repair or claim its 384 jobs ran.
+- Decision 0017 authorizes only `prompt-pilot-baseline-002` as the replacement.
+  Do not broaden its mount repair into another Dataset, solver, workload,
+  generation policy, result retrieval, scoring, reflection, or retry.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.

@@ -35,7 +35,7 @@ from .transport import RESULT_LIMITS, TRIAL_LIMITS, digest_path, verify_zip, wri
 
 
 TRIAL_ID = "arc-agi-2-prompt-pilot"
-RUN_ID = "prompt-pilot-baseline-001"
+RUN_ID = "prompt-pilot-baseline-002"
 SOURCE_SPLIT = "training"
 SPLIT_SEED = "arc-agi-2-prompt-pilot-split-v1"
 TRAIN_COUNT = 256
@@ -54,7 +54,8 @@ KAGGLE_MACHINE_SHAPE = "NvidiaL4"
 BASE_DATASET_REF = "danielwuu/irisx-arc-agi-2-trial-002-smoke-001"
 BASE_DATASET_VERSION = 2
 RUNTIME_DATASET_REF = "danielwuu/irisx-arc-agi-2-prompt-pilot-baseline-001"
-KAGGLE_KERNEL_REF = "danielwuu/iris-x-arc-agi-2-prompt-pilot-baseline-001"
+RUNTIME_DATASET_VERSION = 2
+KAGGLE_KERNEL_REF = "danielwuu/iris-x-arc-agi-2-prompt-pilot-baseline-002"
 DATASET_METADATA_FILENAME = "dataset-metadata.json"
 
 SMOKE_TASK_IDS = ("2dd70a9a", "992798f6", "305b1341", "d968ffd4")
@@ -419,7 +420,7 @@ def verify_outbound_package(path: Path) -> tuple[dict[str, Any], dict[str, bytes
 
 def stage_dataset(outbound: Path, runtime_wheel: Path, output: Path) -> dict[str, Any]:
     _ensure_empty(output)
-    metadata = {"title": "IRIS-X ARC-AGI-2 Prompt Pilot Baseline 001", "id": RUNTIME_DATASET_REF, "description": "Private small truth-free runner and outbound transport; model and dependencies remain in the bound Trial 002 transport Dataset.", "licenses": [{"name": "other"}]}
+    metadata = {"title": "IRIS-X ARC-AGI-2 Prompt Pilot Baseline Transport", "id": RUNTIME_DATASET_REF, "description": "Private small truth-free baseline-002 repair transport; model and dependencies remain in the bound Trial 002 transport Dataset.", "licenses": [{"name": "other"}]}
     write_json(output / DATASET_METADATA_FILENAME, metadata)
     shutil.copy2(outbound, output / outbound.name)
     shutil.copy2(runtime_wheel, output / runtime_wheel.name)
@@ -435,7 +436,7 @@ def validate_dataset_staging(root: Path, outbound: Path, runtime_wheel: Path) ->
         raise ValidationError("runtime Dataset staging bytes are stale")
     if any(path.name in {"evaluator-truth.json", "arc-agi_training_solutions.json", "arc-agi_evaluation_solutions.json"} for path in root.rglob("*")):
         raise ValidationError("runtime Dataset staging contains evaluator truth")
-    return {"dataset_ref": RUNTIME_DATASET_REF, "outbound_digest": digest_path(staged_outbound), "runtime_wheel_digest": digest_path(staged_wheel), "truth_free": True}
+    return {"dataset_ref": RUNTIME_DATASET_REF, "dataset_version": RUNTIME_DATASET_VERSION, "outbound_digest": digest_path(staged_outbound), "runtime_wheel_digest": digest_path(staged_wheel), "truth_free": True}
 
 
 def validate_kernel_staging(root: Path, outbound_digest: str, runtime_wheel_digest: str) -> dict[str, Any]:
@@ -446,8 +447,19 @@ def validate_kernel_staging(root: Path, outbound_digest: str, runtime_wheel_dige
             raise ValidationError(f"Kaggle kernel metadata is stale: {key}")
     notebook = json.loads((root / metadata["code_file"]).read_bytes())
     source = "\n".join("".join(cell.get("source", [])) for cell in notebook["cells"] if cell.get("cell_type") == "code")
-    required = (RUN_ID, COMPETITION_CHALLENGE_FILENAME, outbound_digest.removeprefix("sha256:"), runtime_wheel_digest.removeprefix("sha256:"), "PYTHONUNBUFFERED", "kaggle_runner_prompt_pilot")
-    if any(item not in source for item in required) or "__IRISX_" in source:
+    required = (
+        RUN_ID,
+        COMPETITION_CHALLENGE_FILENAME,
+        outbound_digest.removeprefix("sha256:"),
+        runtime_wheel_digest.removeprefix("sha256:"),
+        "PYTHONUNBUFFERED",
+        "kaggle_runner_prompt_pilot",
+        "/kaggle/input/datasets/danielwuu/irisx-arc-agi-2-trial-002-smoke-001",
+        "/kaggle/input/datasets/danielwuu/irisx-arc-agi-2-prompt-pilot-baseline-001",
+        "/kaggle/input/competitions/arc-prize-2026-arc-agi-2",
+        "mount_paths_resolved",
+    )
+    if any(item not in source for item in required) or "__IRISX_" in source or ".rglob(" in source:
         raise ValidationError("Kaggle notebook contains unresolved or missing bindings")
     return metadata
 
