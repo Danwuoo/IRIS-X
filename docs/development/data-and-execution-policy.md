@@ -154,3 +154,10 @@ owner-qualified current Kaggle mounts or their explicit legacy alternatives;
 it must not search across unrelated inputs. The 384-generation quota, no-retry
 rule, local-only evaluator truth, USD 0 cost, and stop-on-startup condition are
 unchanged. Failure consumes this replacement and authorizes no third attempt.
+
+The replacement reached `startup-verified`: four distinct L4 workers loaded the
+exact model revision and the scheduler dispatched its first four jobs across
+ranks 0–3. The Dataset update, kernel push, and bounded monitoring are consumed.
+The notebook remains private and running; this authority now permits no further
+status/log/source/output request, cancellation, result retrieval, scoring,
+reflection, or resubmission.

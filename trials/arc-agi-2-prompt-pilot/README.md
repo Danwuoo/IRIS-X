@@ -10,12 +10,17 @@ Measure whether instruction-only GEPA proposals can later improve a fixed
 Qwen3.5-4B selected-output exact-match baseline without changing the solver,
 parser, demonstrations, decoding, or data isolation. The current task covers
 the baseline transport and its one owner-authorized repair. The failed
-`prompt-pilot-baseline-001` remains frozen; active preparation uses the distinct
-`prompt-pilot-baseline-002` identity.
+`prompt-pilot-baseline-001` remains frozen; the distinct
+`prompt-pilot-baseline-002` replacement reached its startup stopping condition.
 
 ## Current state
 
-- Status: `startup-failed-before-model-load`. The one authorized version 1 was
+- Status: `startup-verified`. At 2026-09-22T12:48:57Z, baseline 002 reported
+  four exact-model `model_ready` events on four distinct L4 UUIDs and dispatched
+  one initial job to every rank. External monitoring stopped and the private
+  notebook was left running normally. No output was retrieved or scored.
+- Baseline 001 status: `startup-failed-before-model-load`. Its authorized
+  version 1 was
   accepted, briefly reported `RUNNING`, then ended `ERROR` before the hardware
   gate or runner started. Its kernel launch is consumed and no resubmission is
   authorized.
@@ -52,19 +57,32 @@ the baseline transport and its one owner-authorized repair. The failed
   running and after it failed. Therefore the locally submitted metadata remains
   intended configuration, not server-confirmed metadata evidence. The CLI did
   confirm the actual normalized kernel ref, version 1, `RUNNING`, then `ERROR`.
-- Repair: Decision 0017 authorizes one new `prompt-pilot-baseline-002` launch.
+- Repair: Decision 0017 authorized one new `prompt-pilot-baseline-002` launch.
   Its notebook accepts only the exact owner-qualified current Dataset and
   competition paths or their explicit legacy alternatives, requires exactly
   one match, and reconstructs an extracted outbound only from a closed member
-  list. It never searches across `/kaggle/input`. Offline preparation is
-  complete and the full technical preflight passes; no replacement kernel has
-  yet been pushed.
+  list. It never searches across `/kaggle/input`. The runtime resolved the exact
+  current Dataset and competition paths, reconstructed the outbound, passed its
+  digest and four-L4 hardware gates, and entered scheduling.
 - Repair run identity digest:
   `15f6d00a764b3849664bdfafa80183f051bf2701c6bd64f01caf9b53168b4051`.
 - Repair truth-free outbound SHA-256:
   `da38bb7b165f8ddc66f9709faec3222e9b2129b685d1794da1aa960a05c92a8b`.
 - Repair runtime wheel SHA-256:
   `2c54d4cddc82cf791f6ae9b55cd502169aab5bfe576248ba0272d8fbf5b23882`.
+- Repair private runtime Dataset:
+  `danielwuu/irisx-arc-agi-2-prompt-pilot-baseline-001`, version 2, observed
+  `ready` with only the new wheel and extracted baseline-002 outbound members.
+- Repair submitted kernel:
+  `danielwuu/iris-x-arc-agi-2-prompt-pilot-baseline-002`, version 1,
+  [Kaggle URL](https://www.kaggle.com/code/danielwuu/iris-x-arc-agi-2-prompt-pilot-baseline-002).
+- Repair submitted notebook SHA-256:
+  `b3cb5b523b26e0907bcb611de86e5f8ba66a30e524b2cb7d618b4949f797eae4`.
+- Runtime evidence: ranks 0–3 reported model revision
+  `851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a` and model-manifest digest
+  `de2a3d00931355f6b190f7fe67205569af6a41a69d6b458d0f894445c7a13ade`
+  on four distinct L4 UUIDs. The scheduler then dispatched job keys
+  `66ac4c3b:0`, `5614dbcf:0`, `9968a131:0`, and `e7dd8335:0` to ranks 0–3.
 - The repair uses the unchanged 384 visible cases and split. Prior exact
   tokenizer parity therefore remains applicable, and a byte-exact local
   archive-to-extracted-to-archive reconstruction reproduced the repair
@@ -72,10 +90,9 @@ the baseline transport and its one owner-authorized repair. The failed
 
 ## Stop boundary
 
-The required four identity-bound `model_ready` events and scheduler dispatch
-were not reached by baseline 001. Preserve that failure. Decision 0017 permits
-exactly one baseline 002 Dataset version update and private kernel push, with
-bounded status/log reads only until the same startup evidence is retained. At
-that point stop monitoring and leave the notebook running. If baseline 002
-fails, retain its trace and stop; do not retrieve or score results, invoke Codex
-reflection, or launch a third identity.
+Baseline 001 did not reach the gate; preserve that failure. Baseline 002 did
+reach the four-worker startup gate, so Decision 0017's Dataset update, kernel
+push, and bounded monitoring authority are consumed. Leave the notebook alone.
+Do not request status, logs, source, or output; do not retrieve or score results,
+invoke Codex reflection, cancel or resubmit the kernel, or launch a third
+identity without a new explicit owner instruction.
