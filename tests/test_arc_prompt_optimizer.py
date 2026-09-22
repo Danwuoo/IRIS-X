@@ -188,6 +188,47 @@ class PromptOptimizerTests(unittest.TestCase):
             self.assertTrue(holdout["opened"])
             self.assertEqual("opening", holdout["status"])
 
+    def test_final_holdout_failure_closes_the_ledger_without_a_result(self) -> None:
+        score = {
+            "trial_id": optimizer.TRIAL_ID,
+            "run_id": optimizer.RUN_ID,
+            "bindings": {"run_identity_digest": "sha256:" + "1" * 64, "outbound_digest": "sha256:" + "2" * 64, "result_digest": "sha256:" + "3" * 64},
+            "groups": {"optimization-train": {"correct": 1, "denominator": 2, "accuracy": 0.5}, "selection-dev": {"correct": 1, "denominator": 2, "accuracy": 0.5}},
+            "holdout": {"opened": False, "scored": False, "record_count": 0},
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            write_json(root / "score.json", score)
+            ledger_path = root / "ledger.json"
+            optimizer.initialize_ledger(ledger_path, root / "score.json")
+            for index in range(10):
+                optimizer.begin_proposal_attempt(ledger_path, parent_candidate="B1", parent_instruction=optimizer.BASE_INSTRUCTION)
+                optimizer.finish_proposal_attempt(ledger_path, instruction=None, status="failed", wall_seconds=1.0, input_digest=digest_value(index), output_digest=None)
+            optimizer.freeze_final_candidate(ledger_path)
+            optimizer.record_holdout_opening_planned(ledger_path)
+            optimizer.record_holdout_staged(
+                ledger_path,
+                run_id="prompt-pilot-final-holdout-b1",
+                run_identity_digest="sha256:" + "4" * 64,
+                outbound_digest="sha256:" + "5" * 64,
+                dataset_version=14,
+            )
+            optimizer.record_holdout_dataset_uploaded(ledger_path)
+            optimizer.record_holdout_kernel_submission_planned(ledger_path, kernel_ref="owner/kernel", kernel_version=10)
+            optimizer.record_holdout_kernel_accepted(ledger_path)
+            optimizer.record_holdout_kernel_terminal(ledger_path, terminal_status="error")
+            optimizer.record_holdout_retrieval_planned(ledger_path)
+            write_json(root / "runtime-failure.json", {"detail": "source mismatch"})
+            holdout = optimizer.record_holdout_failed(
+                ledger_path,
+                evidence_path=root / "runtime-failure.json",
+                reason="runtime-validation-failed-before-result",
+            )
+            self.assertEqual("failed", holdout["status"])
+            self.assertFalse(holdout["failure"]["result_zip_present"])
+            self.assertFalse(holdout["failure"]["second_retrieval_attempted"])
+            self.assertEqual("stop-unscored-final-holdout", optimizer.load_ledger(ledger_path)["next_action"])
+
 
 if __name__ == "__main__":
     unittest.main()

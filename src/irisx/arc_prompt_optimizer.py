@@ -575,6 +575,37 @@ def record_holdout_retrieval_planned(path: Path) -> dict[str, Any]:
     return holdout
 
 
+def record_holdout_failed(path: Path, *, evidence_path: Path, reason: str) -> dict[str, Any]:
+    """Close an unscored holdout after its one terminal output retrieval."""
+
+    ledger = load_ledger(path)
+    holdout = ledger["holdout"]
+    if (
+        holdout.get("status") != "error"
+        or not holdout.get("retrieval_attempted")
+        or holdout.get("result_digest") is not None
+        or not evidence_path.is_file()
+        or not isinstance(reason, str)
+        or not reason
+    ):
+        raise ValidationError("prompt-pilot holdout failure evidence is invalid")
+    holdout.update({
+        "status": "failed",
+        "failure": {
+            "type": reason,
+            "recorded_at_utc": _utc(),
+            "evidence_path": str(evidence_path.resolve()),
+            "evidence_digest": digest_path(evidence_path),
+            "result_zip_present": False,
+            "second_retrieval_attempted": False,
+        },
+        "next_action": "stop-unscored-final-holdout",
+    })
+    ledger["next_action"] = holdout["next_action"]
+    save_ledger(path, ledger)
+    return holdout
+
+
 def record_holdout_scored(path: Path, *, result_digest: str, score_path: Path) -> dict[str, Any]:
     ledger = load_ledger(path)
     holdout = ledger["holdout"]

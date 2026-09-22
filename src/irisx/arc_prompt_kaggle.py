@@ -19,6 +19,7 @@ from .arc_prompt_optimizer import (
     record_kernel_submission_planned,
     record_kernel_terminal,
     record_holdout_dataset_uploaded,
+    record_holdout_failed,
     record_holdout_kernel_accepted,
     record_holdout_kernel_submission_planned,
     record_holdout_kernel_terminal,
@@ -372,6 +373,13 @@ class KaggleFinalHoldoutEvaluator(KaggleCandidateEvaluator):
             raise RuntimeError("final holdout retrieval was attempted but no local directory exists")
         results = list(retrieved.rglob("result.zip"))
         if len(results) != 1:
+            failures = list(retrieved.rglob("runtime-failure.json"))
+            if len(results) == 0 and len(failures) == 1 and holdout["status"] == "error":
+                record_holdout_failed(
+                    self.ledger_path,
+                    evidence_path=failures[0],
+                    reason="runtime-validation-failed-before-result",
+                )
             raise RuntimeError(f"final holdout output does not contain exactly one result.zip: {results}")
         result = results[0]
         outbound = root / "outbound" / f"{pilot.FINAL_HOLDOUT_RUN_ID}.zip"

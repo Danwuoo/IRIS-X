@@ -8,27 +8,68 @@ Trial 002.
 
 Measure whether instruction-only GEPA proposals can improve a fixed
 Qwen3.5-4B selected-output exact-match baseline without changing the solver,
-parser, demonstrations, decoding, or data isolation. Decision 0019 now runs
-the bounded dependent search and final locked-holdout comparison. The failed
-`prompt-pilot-baseline-001` and recovered `prompt-pilot-baseline-002` identities
-remain frozen.
+parser, demonstrations, decoding, or data isolation. Decision 0019 ran the
+bounded dependent search and attempted the final locked-holdout comparison.
+The failed `prompt-pilot-baseline-001` and recovered
+`prompt-pilot-baseline-002` identities remain frozen.
 
 ## Current state
 
-- Status: `baseline-scored-search-initialized`. Baseline 002 reported all 384 terminal
-  jobs (380 `valid`, 4 `invalid`) and then failed before writing `result.zip`.
-  Decision 0018's single output retrieval recovered its complete checkpoint and
-  progress evidence; local deterministic packaging now supplies a verified,
-  truth-free result without another generation.
+- Status: `search-complete-final-holdout-unscored`. The controller consumed
+  exactly 10/10 proposal attempts. Nine distinct legal proposals were each run
+  once; G2 failed in the proposer and used no GPU. No proposed instruction beat
+  B1 on frozen selection-dev, so B1 was selected as `G*` with `12/128 = 0.09375`.
+- Candidate exact-match results were:
+
+  | Candidate | Optimization-train | Selection-dev |
+  | --- | ---: | ---: |
+  | B1 | 18/256 | 12/128 |
+  | G1 | 7/256 | 5/128 |
+  | G2 | proposer failed | not run |
+  | G3 | 14/256 | 9/128 |
+  | G4 | 11/256 | 8/128 |
+  | G5 | 9/256 | 7/128 |
+  | G6 | 10/256 | 6/128 |
+  | G7 | 11/256 | 10/128 |
+  | G8 | 10/256 | 10/128 |
+  | G9 | 7/256 | 8/128 |
+  | G10 | 8/256 | 8/128 |
+
+- The B1-only 128-case final holdout was opened exactly once as private Dataset
+  version 14 and kernel version 10. Four distinct L4 GPUs passed the hardware
+  gate, but runtime validation stopped before model load or generation because
+  the official competition mount's visible task `f3e62deb` differed from the
+  Decision 0019 pinned upstream commit. The terminal error was
+  `ValidationError: runtime competition case differs: f3e62deb`.
+- The single authorized terminal output retrieval is consumed. It returned
+  `runtime-failure.json`, preflight, progress, the original outbound, and the
+  kernel log, but no checkpoint or `result.zip`; therefore no local recovery or
+  holdout score is possible and no retry is authorized. Failure evidence digest:
+  `deaa2fbb8a780b31fd57642443f174971e21d8dde70af3cd980fcd70d31d5b4a`.
+- Final holdout run identity digest:
+  `5904b7e1f261be30d8faac90064800cbe850c083770884e1a6cf189b6e9f2f72`;
+  truth-free outbound digest:
+  `dcfbba24656030205650c94409707a42e6571a74939c0fe307c4bfdecce1dfc8`;
+  final runtime wheel digest:
+  `8091171cc787372595e7af32dd0cd2b2c24758f6dca78e684d81dd4b1d6672fd`.
+- The ledger conservatively reserves 3,968/4,480 generation invocations: 384
+  baseline, nine candidate workloads of 384, and the 128-case final holdout.
+  Runtime evidence shows the holdout failed before model load, so actual completed
+  Qwen calls remain 3,840. No retry, hidden warmup, fifth proposal phase, public
+  evaluation, or competition submission occurred.
+- Baseline 002 reported all 384 terminal jobs (380 `valid`, 4 `invalid`) and
+  then failed before writing `result.zip`. Decision 0018's single output
+  retrieval recovered its complete checkpoint and progress evidence; local
+  deterministic packaging supplied a verified, truth-free result without
+  another generation.
 - Deterministic selected-output exact-match pass@1: optimization-train
   `18/256 = 0.0703125`; selection-dev `12/128 = 0.09375`; overall
   `30/384 = 0.078125`. All four invalid outputs are in the train denominator.
   The score report is bound to digest
-  `6f189242d8fc1d9a744a7c79ed0acabec235e2f684466726537c1cd7972d761c`;
-  holdout remains unopened.
-- The Decision 0019 ledger is initialized with 0/10 proposer attempts and
-  384/4,480 Qwen generations used. DSPy 3.3.1 and GEPA 0.1.4 are isolated
-  controller dependencies; candidate runtime bytes do not import them.
+  `6f189242d8fc1d9a744a7c79ed0acabec235e2f684466726537c1cd7972d761c`.
+- DSPy 3.3.1 and GEPA 0.1.4 remained isolated controller dependencies;
+  candidate runtime bytes did not import them. The frozen search result digest
+  is `058214e6cc736b56f7743d578b0576f34c06b62a8fbd84efe7890439350073d5`.
 - Startup remains verified. At 2026-09-22T12:48:57Z, baseline 002 reported
   four exact-model `model_ready` events on four distinct L4 UUIDs and dispatched
   one initial job to every rank. No output was retrieved or scored.
@@ -128,10 +169,12 @@ remain frozen.
 ## Active boundary
 
 Baseline 001 did not reach the gate; preserve that failure. Baseline 002 reached
-the gate, completed all 384 jobs, and now has a locally recovered, verified,
-scored result. Decisions 0017 and 0018 are consumed. Decision 0019 supersedes
-their stop points for this trial only: continue through at most ten dependent
-DSPy/GEPA plus Codex proposal attempts, distinct private candidate identities,
-and one frozen final holdout comparison. Preserve one controller ledger, keep
-dev details and all holdout truth out of reflection, and never exceed 4,480
-Qwen generation invocations or submit to the competition.
+the gate, completed all 384 jobs, and has a locally recovered, verified, scored
+result. The Decision 0019 search completed without improving on B1. Its one
+final holdout launch failed closed before model load because the pinned public
+source and current competition mount differed, and its one output retrieval
+contained no recoverable predictions. Decisions 0017–0019 are consumed. Do not
+retry the holdout, create another candidate or Dataset/kernel identity, open a
+different split, or reinterpret the missing holdout score as zero. Preserve the
+controller ledger and all terminal evidence; further external work requires new
+explicit owner authority and a new governing decision.
