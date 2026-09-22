@@ -1,5 +1,11 @@
 # ARC-AGI-2 DSPy / GEPA prompt pilot
 
+2026-09-23 終端更新：十個 proposal attempts 已用完，九個合法候選均未超過 B1。
+最後 holdout 在模型載入前因 competition/source 可見內容不同而停止，沒有可評分預測。
+以下保留原規畫與授權沿革，不是繼續執行指令；目前狀態以
+[trial README](../../trials/arc-agi-2-prompt-pilot/README.md) 及
+[總控核對](../../trials/arc-agi-2-prompt-pilot/control-review.md) 為準。
+
 日期：2026-09-22。狀態：baseline-002 的 384 jobs 已完成並回收 result.zip；
 owner 已指示連貫進行評分、反思與後續實驗。以下最新連續執行指示取代先前 startup 停止點。
 本聊天為總控，實作交給後續獨立開發 task。本文件不延長 Trial 002 的執行授權。

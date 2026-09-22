@@ -39,6 +39,45 @@ inference-only Qwen3.5-4B generation calls with no TTT or retry. That replacemen
 is now `runtime-verified`: all four calls returned valid grids on four L4 GPUs,
 while local exact-match scoring was 0/4. Its one kernel push and one retrieval
 are consumed; no further Trial 002 external execution is authorized.
+Decision 0016 opens the separate `arc-agi-2-prompt-pilot` trial and authorizes
+one `prompt-pilot-baseline-001` private 384-job Kaggle launch. The active task
+must stop development and monitoring once four distinct L4 workers report the
+exact pinned model ready and initial dynamic dispatch is observed; it does not
+authorize result retrieval, scoring, reflection, or another kernel.
+That authorized version 1 ended `ERROR` before the hardware gate and model
+runner because the exact outbound was not present at the assumed Dataset mount
+path. It produced zero model-ready events and zero generations. The launch is
+consumed; Decision 0016 authorizes no repair submission or further external
+status, log, source, or output request.
+The owner's repair direction is retained in Decision 0017. It preserves the
+failed identity and authorizes exactly one transport-only replacement,
+`prompt-pilot-baseline-002`: update the existing small private runtime Dataset
+as version 2, resolve only exact owner-qualified or explicit legacy mounts, and
+push one new private kernel. The original 384-job, L4 x4, pinned-model, no-retry,
+truth-free, Internet-disabled, USD 0 boundaries remain. Stop development and
+monitoring immediately after four distinct model-ready events plus initial
+scheduler dispatch, or retain a replacement failure without another retry.
+That replacement reached `startup-verified`: four exact-model workers reported
+ready on four distinct L4 UUIDs and the first four jobs were dispatched across
+ranks 0–3. It then completed all 384 jobs (380 valid, 4 invalid) but failed
+before writing `result.zip` because integer `model_ready` rank keys violated
+canonical JSON. The Dataset update, kernel push, and monitoring authority are
+consumed. No result retrieval, checkpoint recovery, packaging, scoring, or
+resubmission is authorized without new owner direction.
+The owner has now explicitly authorized Decision 0018: retrieve the exact
+baseline-002 version 1 output once and locally package its completed checkpoint.
+This recovery may apply only the verified integer-to-string rank-key fix. It
+does not authorize another generation, Dataset/kernel mutation, scoring,
+reflection, publication, competition submission, or repeat retrieval.
+That recovery is complete. The exact version 1 checkpoint and progress stream
+were retained locally, and deterministic local packaging produced verified
+truth-free result digest
+`4764cd569f669f8736461ddf2b5d6ac3bf1c80ddf3f903d669f8d5a43aa054af`
+with zero new generations. The one retrieval is consumed and the result remains
+frozen. Decision 0019 supersedes the earlier prompt-pilot stop points and
+authorizes continuous local scoring, up to ten dependent DSPy/GEPA plus Codex
+proposal attempts, private candidate evaluation, and one final locked-holdout
+comparison under the fixed 4,480-generation ceiling.
 
 ## Authority order
 
@@ -98,6 +137,23 @@ paths. Do not recreate a legacy root merely to preserve history.
   execution instructions.
 - Keep Trial 002 identities, bytes, results, and status separate from Trial
   001. The Trial 002 status page is `trials/arc-agi-2-baseline/README.md`.
+- Keep the prompt-pilot identity and evidence separate from Trial 002. Its
+  current status page is `trials/arc-agi-2-prompt-pilot/README.md`.
+- Preserve the failed `prompt-pilot-baseline-001` identity and submitted bytes.
+  Do not reuse that identity for a mount-path repair or claim its 384 jobs ran.
+- Decision 0017 authorizes only `prompt-pilot-baseline-002` as the replacement.
+  Do not broaden its mount repair into another Dataset, solver, workload,
+  generation policy, result retrieval, scoring, reflection, or retry.
+- Preserve the compute-complete but result-packaging-failed baseline-002
+  identity and evidence. The local string-key fix is routine engineering only;
+  Decision 0018 now authorizes one exact output retrieval and local result
+  reconstruction. Both are complete and consumed. Decision 0019 separately
+  authorizes the bounded continuous search; never mutate or reuse the baseline
+  identity for a candidate.
+- For Decision 0019 work, maintain one atomic local ledger before external
+  mutation or retrieval. Preserve train/dev/holdout isolation, use real
+  `dspy.GEPA` with the fixed Codex proposer, count failed/duplicate proposals,
+  and never exceed ten proposal attempts or 4,480 total Qwen generations.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.

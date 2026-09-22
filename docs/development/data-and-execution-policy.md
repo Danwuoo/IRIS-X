@@ -127,3 +127,49 @@ four L4 GPUs, exactly four completed inference invocations, and four valid grids
 local exact-match scoring was 0/4. Decisions 0014 and 0015 now retain provenance
 and boundary lineage only: they authorize no additional status/log/output call,
 kernel execution, retry, or submission.
+
+Decision 0016 creates a separate exception for
+`arc-agi-2-prompt-pilot/prompt-pilot-baseline-001`. It authorizes source and
+dependency preparation, one small private Dataset upload, one private Kaggle
+L4 x4 launch, and bounded startup log reads only until four exact-model workers
+on distinct GPU UUIDs report ready and enter dynamic scheduling. The kernel has
+384 train/dev test-index-0 single-generation jobs, Internet disabled, no retry,
+no warm-up, no competition submission, and USD 0 paid cost. Once startup is
+verified, no result/status/log retrieval, scoring, Codex reflection, next
+candidate, or resubmission is authorized by this decision.
+
+The authorized version 1 ended `ERROR` before the hardware gate and model
+runner because the exact outbound was not found at the assumed Dataset mount
+path. It emitted zero model-ready events and consumed zero solver generations.
+Its single kernel launch and bounded startup checks are consumed. Decision 0016
+now authorizes no additional external status/log/source/output request, repair,
+or resubmission.
+
+The owner's explicit repair direction is recorded by Decision 0017. It
+authorizes only `prompt-pilot-baseline-002`: one immutable version 2 update to
+the existing small truth-free runtime Dataset, one new private Internet-disabled
+L4 x4 kernel push, and bounded status/log reads until four exact-model workers
+on distinct GPU UUIDs enter scheduling. The notebook may resolve only the exact
+owner-qualified current Kaggle mounts or their explicit legacy alternatives;
+it must not search across unrelated inputs. The 384-generation quota, no-retry
+rule, local-only evaluator truth, USD 0 cost, and stop-on-startup condition are
+unchanged. Failure consumes this replacement and authorizes no third attempt.
+
+The replacement reached `startup-verified`, then completed all 384 jobs (380
+valid, 4 invalid) before final result packaging failed on non-string canonical
+JSON keys. No verified `result.zip` exists. The Dataset update, kernel push, and
+bounded monitoring are consumed. A local runner fix does not authorize further
+status/log/source/output requests, checkpoint recovery, result packaging,
+scoring, reflection, or resubmission.
+
+Decision 0018 authorizes one exact version 1 output retrieval from the failed
+baseline-002 kernel and local truth-free result reconstruction from a complete,
+identity-bound checkpoint. The recovery must not repeat a generation, update a
+Dataset or kernel, score predictions, reflect, publish, or retrieve output a
+second time. Missing or inconsistent checkpoint evidence ends the recovery.
+
+The single retrieval returned a complete canonical checkpoint and progress
+stream. Local packaging used zero new generations and produced verified
+truth-free result digest
+`4764cd569f669f8736461ddf2b5d6ac3bf1c80ddf3f903d669f8d5a43aa054af`.
+The retrieval and packaging authority are consumed; scoring remains gated.

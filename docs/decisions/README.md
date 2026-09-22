@@ -65,3 +65,19 @@ no current authority unless a new decision explicitly re-adopts them.
   preserves the failed first smoke and authorizes one replacement identity
   with the ARC competition mounted, exact L4 x4 runtime checks, and exactly
   four inference-only generation invocations.
+- [`0016-authorize-arc-agi-2-prompt-pilot-baseline.md`](0016-authorize-arc-agi-2-prompt-pilot-baseline.md)
+  opens a distinct prompt-pilot trial and authorizes one private 384-job
+  baseline launch, with work stopping once four exact-model workers are ready
+  and the dynamic scheduler has started.
+- [`0017-authorize-prompt-pilot-mount-repair.md`](0017-authorize-prompt-pilot-mount-repair.md)
+  preserves the failed first baseline and authorizes one transport-only
+  replacement identity with exact current Kaggle Dataset mounts and the same
+  four-worker startup stopping condition.
+- [`0018-authorize-prompt-pilot-result-recovery.md`](0018-authorize-prompt-pilot-result-recovery.md)
+  authorizes one output retrieval from the compute-complete baseline-002
+  failure and local reconstruction of its missing result package, without
+  rerunning or scoring the workload.
+- [`0019-authorize-continuous-prompt-search.md`](0019-authorize-continuous-prompt-search.md)
+  authorizes the bounded continuous scoring, real DSPy/GEPA plus Codex prompt
+  search, private candidate evaluations, and one final locked-holdout
+  comparison under a 4,480-generation ceiling.
