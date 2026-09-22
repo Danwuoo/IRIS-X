@@ -114,6 +114,32 @@ class PromptOptimizerTests(unittest.TestCase):
             self.assertEqual(1, len(commands))
             self.assertEqual(["kaggle", "datasets", "version"], commands[0][:3])
 
+    def test_definitive_kernel_rejection_releases_pre_reserved_budget(self) -> None:
+        score = {
+            "trial_id": optimizer.TRIAL_ID,
+            "run_id": optimizer.RUN_ID,
+            "bindings": {"run_identity_digest": "sha256:" + "1" * 64, "outbound_digest": "sha256:" + "2" * 64, "result_digest": "sha256:" + "3" * 64},
+            "groups": {"optimization-train": {"correct": 1, "denominator": 2, "accuracy": 0.5}, "selection-dev": {"correct": 1, "denominator": 2, "accuracy": 0.5}},
+            "holdout": {"opened": False, "scored": False, "record_count": 0},
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            write_json(root / "score.json", score)
+            ledger_path = root / "ledger.json"
+            optimizer.initialize_ledger(ledger_path, root / "score.json")
+            optimizer.begin_proposal_attempt(ledger_path, parent_candidate="B1", parent_instruction=optimizer.BASE_INSTRUCTION)
+            optimizer.finish_proposal_attempt(ledger_path, instruction="new", status="valid", wall_seconds=1.0, input_digest="sha256:" + "4" * 64, output_digest="sha256:" + "5" * 64)
+            optimizer.record_candidate_staged(ledger_path, round_index=1, run_id="run", run_identity_digest="sha256:" + "6" * 64, configuration_digest="sha256:" + "7" * 64, outbound_digest="sha256:" + "8" * 64, dataset_version=3)
+            optimizer.record_dataset_uploaded(ledger_path, round_index=1, transport_seconds=1.0)
+            optimizer.record_kernel_submission_planned(ledger_path, round_index=1, kernel_ref="owner/kernel", kernel_version=1, transport_seconds=0.0)
+            write_json(root / "reject.json", {"status": 400, "remote_kernel": "not-found"})
+            item = optimizer.record_kernel_submission_rejected(ledger_path, round_index=1, evidence_path=root / "reject.json")
+            ledger = optimizer.load_ledger(ledger_path)
+            self.assertEqual("dataset-ready", item["gpu_status"])
+            self.assertEqual(0, item["generation_invocations"])
+            self.assertEqual(optimizer.BASELINE_JOB_COUNT, ledger["budget"]["generation_invocations_used"])
+            self.assertEqual("kernel-api-rejected-before-creation", item["incidents"][-1]["type"])
+
 
 if __name__ == "__main__":
     unittest.main()

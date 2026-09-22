@@ -308,6 +308,46 @@ def record_kernel_submission_planned(
     return item
 
 
+def record_kernel_submission_rejected(
+    path: Path,
+    *,
+    round_index: int,
+    evidence_path: Path,
+) -> dict[str, Any]:
+    """Release a pre-reserved generation budget after a definitive API reject."""
+
+    ledger = load_ledger(path)
+    item = ledger["rounds"][round_index - 1]
+    if (
+        item.get("gpu_status") != "submitting"
+        or item.get("generation_invocations") != BASELINE_JOB_COUNT
+        or not isinstance(item.get("kernel_version"), int)
+        or not evidence_path.is_file()
+    ):
+        raise ValidationError("prompt-pilot kernel rejection evidence is invalid")
+    incident = {
+        "type": "kernel-api-rejected-before-creation",
+        "recorded_at_utc": _utc(),
+        "kernel_ref": item["kernel_ref"],
+        "kernel_version": item["kernel_version"],
+        "reserved_generation_invocations_released": BASELINE_JOB_COUNT,
+        "evidence_path": str(evidence_path.resolve()),
+        "evidence_digest": digest_path(evidence_path),
+    }
+    item.setdefault("incidents", []).append(incident)
+    item.update({
+        "gpu_status": "dataset-ready",
+        "kernel_ref": None,
+        "kernel_version": None,
+        "generation_invocations": 0,
+        "next_action": f"submit-kernel-round-{round_index:02d}",
+    })
+    ledger["budget"]["generation_invocations_used"] -= BASELINE_JOB_COUNT
+    ledger["next_action"] = item["next_action"]
+    save_ledger(path, ledger)
+    return item
+
+
 def record_kernel_accepted(path: Path, *, round_index: int, transport_seconds: float) -> dict[str, Any]:
     ledger = load_ledger(path)
     item = ledger["rounds"][round_index - 1]

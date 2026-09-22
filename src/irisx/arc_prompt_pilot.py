@@ -60,6 +60,7 @@ RUNTIME_DATASET_REF = "danielwuu/irisx-arc-agi-2-prompt-pilot-baseline-001"
 RUNTIME_DATASET_VERSION = 2
 KAGGLE_KERNEL_REF = "danielwuu/iris-x-arc-agi-2-prompt-pilot-baseline-002"
 KAGGLE_SEARCH_KERNEL_REF = "danielwuu/iris-x-arc-agi-2-prompt-pilot-search"
+KAGGLE_SEARCH_KERNEL_TITLE = "IRIS-X ARC-AGI-2 Prompt Pilot Search"
 DATASET_METADATA_FILENAME = "dataset-metadata.json"
 
 SMOKE_TASK_IDS = ("2dd70a9a", "992798f6", "305b1341", "d968ffd4")
@@ -649,7 +650,7 @@ def stage_search_kernel(
     if not run_id.startswith("prompt-pilot-search-g"):
         raise ValidationError("prompt-pilot search kernel run identity is invalid")
     metadata = read_json(template_root / "kernel-metadata.json")
-    metadata.update({"id": KAGGLE_SEARCH_KERNEL_REF, "title": f"IRIS-X ARC-AGI-2 Prompt Pilot {run_id}"})
+    metadata.update({"id": KAGGLE_SEARCH_KERNEL_REF, "title": KAGGLE_SEARCH_KERNEL_TITLE})
     notebook = json.loads((template_root / metadata["code_file"]).read_bytes())
     replacements = {
         RUN_ID: run_id,
@@ -674,6 +675,7 @@ def stage_search_kernel(
     returned = _load_canonical(output / "kernel-metadata.json")
     expected = {
         "id": KAGGLE_SEARCH_KERNEL_REF,
+        "title": KAGGLE_SEARCH_KERNEL_TITLE,
         "is_private": True,
         "enable_gpu": True,
         "enable_internet": False,

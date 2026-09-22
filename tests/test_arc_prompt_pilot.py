@@ -23,6 +23,12 @@ def _task(index: int) -> dict:
 
 
 class PromptPilotTests(unittest.TestCase):
+    def test_search_kernel_title_resolves_to_its_fixed_slug(self) -> None:
+        self.assertEqual(
+            pilot.KAGGLE_SEARCH_KERNEL_REF.split("/", 1)[1],
+            pilot.KAGGLE_SEARCH_KERNEL_TITLE.lower().replace(" ", "-"),
+        )
+
     def test_split_is_deterministic_balanced_and_excludes_smoke(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             training = Path(temporary)
