@@ -162,6 +162,32 @@ class PromptOptimizerTests(unittest.TestCase):
             self.assertEqual(1, len(item["incidents"]))
             self.assertFalse(item["incidents"][0]["second_retrieval_attempted"])
 
+    def test_final_selection_waits_for_ten_attempts_and_breaks_ties_to_b1(self) -> None:
+        score = {
+            "trial_id": optimizer.TRIAL_ID,
+            "run_id": optimizer.RUN_ID,
+            "bindings": {"run_identity_digest": "sha256:" + "1" * 64, "outbound_digest": "sha256:" + "2" * 64, "result_digest": "sha256:" + "3" * 64},
+            "groups": {"optimization-train": {"correct": 1, "denominator": 2, "accuracy": 0.5}, "selection-dev": {"correct": 1, "denominator": 2, "accuracy": 0.5}},
+            "holdout": {"opened": False, "scored": False, "record_count": 0},
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            write_json(root / "score.json", score)
+            ledger_path = root / "ledger.json"
+            optimizer.initialize_ledger(ledger_path, root / "score.json")
+            with self.assertRaises(ValidationError):
+                optimizer.freeze_final_candidate(ledger_path)
+            for index in range(10):
+                optimizer.begin_proposal_attempt(ledger_path, parent_candidate="B1", parent_instruction=optimizer.BASE_INSTRUCTION)
+                optimizer.finish_proposal_attempt(ledger_path, instruction=None, status="failed", wall_seconds=1.0, input_digest=digest_value(index), output_digest=None)
+            holdout = optimizer.freeze_final_candidate(ledger_path)
+            self.assertEqual("B1", holdout["frozen_candidate"])
+            self.assertEqual("selected", holdout["status"])
+            self.assertFalse(holdout["opened"])
+            holdout = optimizer.record_holdout_opening_planned(ledger_path)
+            self.assertTrue(holdout["opened"])
+            self.assertEqual("opening", holdout["status"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -20,6 +20,7 @@ from typing import Any, Callable, Mapping, Sequence
 from .arc_prompt_pilot import (
     BASE_INSTRUCTION,
     BASELINE_JOB_COUNT,
+    HOLDOUT_COUNT,
     MAX_GENERATION_INVOCATIONS,
     MAX_PROPOSAL_ATTEMPTS,
     RUN_ID,
@@ -435,6 +436,165 @@ def record_candidate_scored(
     ledger["next_action"] = "continue-gepa"
     save_ledger(path, ledger)
     return item
+
+
+def freeze_final_candidate(path: Path) -> dict[str, Any]:
+    """Freeze G* by dev exact match with earliest-candidate tie breaking."""
+
+    ledger = load_ledger(path)
+    if ledger["budget"]["proposal_attempts_used"] != MAX_PROPOSAL_ATTEMPTS:
+        raise ValidationError("prompt-pilot final candidate requires all proposal attempts")
+    unresolved = [item["candidate"] for item in ledger["rounds"] if item["proposal_status"] == "running" or (item["proposal_status"] == "valid" and item["duplicate"] is False and item["gpu_status"] != "scored")]
+    if unresolved:
+        raise ValidationError(f"prompt-pilot candidates remain unresolved: {unresolved}")
+    candidates = [("B1", ledger["baseline"]["instruction"], ledger["baseline"]["instruction_digest"], ledger["baseline"]["dev"]["accuracy"], 0)]
+    candidates.extend(
+        (item["candidate"], item["candidate_instruction"], item["candidate_instruction_digest"], item["dev"]["accuracy"], item["round"])
+        for item in ledger["rounds"]
+        if item.get("gpu_status") == "scored"
+    )
+    candidate, instruction, instruction_digest, dev_accuracy, order = max(candidates, key=lambda value: (value[3], -value[4]))
+    ledger["holdout"].update({
+        "status": "selected",
+        "opened": False,
+        "frozen_candidate": candidate,
+        "instruction": instruction,
+        "instruction_digest": instruction_digest,
+        "selection_dev_accuracy": dev_accuracy,
+        "selection_order": order,
+        "generation_invocations": 0,
+        "run_id": None,
+        "run_identity_digest": None,
+        "outbound_digest": None,
+        "dataset_version": None,
+        "kernel_ref": None,
+        "kernel_version": None,
+        "retrieval_attempted": False,
+        "result_digest": None,
+        "score_path": None,
+        "score_digest": None,
+        "locked_holdout": None,
+        "next_action": "plan-final-holdout-opening",
+    })
+    ledger["next_action"] = "plan-final-holdout-opening"
+    save_ledger(path, ledger)
+    return ledger["holdout"]
+
+
+def record_holdout_opening_planned(path: Path) -> dict[str, Any]:
+    ledger = load_ledger(path)
+    holdout = ledger["holdout"]
+    if holdout.get("status") != "selected" or holdout.get("opened") or holdout.get("frozen_candidate") != "B1":
+        raise ValidationError("prompt-pilot B1-only holdout cannot be opened")
+    holdout.update({"status": "opening", "opened": True, "next_action": "build-final-holdout"})
+    ledger["next_action"] = holdout["next_action"]
+    save_ledger(path, ledger)
+    return holdout
+
+
+def record_holdout_staged(
+    path: Path,
+    *,
+    run_id: str,
+    run_identity_digest: str,
+    outbound_digest: str,
+    dataset_version: int,
+) -> dict[str, Any]:
+    ledger = load_ledger(path)
+    holdout = ledger["holdout"]
+    if holdout.get("status") != "opening" or not holdout.get("opened"):
+        raise ValidationError("prompt-pilot holdout staging is out of order")
+    holdout.update({
+        "status": "staged",
+        "run_id": run_id,
+        "run_identity_digest": run_identity_digest,
+        "outbound_digest": outbound_digest,
+        "dataset_version": dataset_version,
+        "next_action": "upload-final-holdout-dataset",
+    })
+    ledger["next_action"] = holdout["next_action"]
+    save_ledger(path, ledger)
+    return holdout
+
+
+def record_holdout_dataset_uploaded(path: Path) -> dict[str, Any]:
+    ledger = load_ledger(path)
+    holdout = ledger["holdout"]
+    if holdout.get("status") != "staged":
+        raise ValidationError("prompt-pilot holdout Dataset upload is out of order")
+    holdout.update({"status": "dataset-ready", "next_action": "submit-final-holdout-kernel"})
+    ledger["next_action"] = holdout["next_action"]
+    save_ledger(path, ledger)
+    return holdout
+
+
+def record_holdout_kernel_submission_planned(path: Path, *, kernel_ref: str, kernel_version: int) -> dict[str, Any]:
+    ledger = load_ledger(path)
+    holdout = ledger["holdout"]
+    if holdout.get("status") != "dataset-ready" or holdout.get("generation_invocations") != 0:
+        raise ValidationError("prompt-pilot holdout kernel submission is duplicated or out of order")
+    if ledger["budget"]["generation_invocations_used"] + HOLDOUT_COUNT > MAX_GENERATION_INVOCATIONS:
+        raise ValidationError("prompt-pilot final holdout would exceed the generation ceiling")
+    holdout.update({"status": "submitting", "kernel_ref": kernel_ref, "kernel_version": kernel_version, "generation_invocations": HOLDOUT_COUNT, "next_action": "push-final-holdout-kernel"})
+    ledger["budget"]["generation_invocations_used"] += HOLDOUT_COUNT
+    ledger["next_action"] = holdout["next_action"]
+    save_ledger(path, ledger)
+    return holdout
+
+
+def record_holdout_kernel_accepted(path: Path) -> dict[str, Any]:
+    ledger = load_ledger(path)
+    holdout = ledger["holdout"]
+    if holdout.get("status") != "submitting":
+        raise ValidationError("prompt-pilot holdout kernel acceptance is out of order")
+    holdout.update({"status": "running", "next_action": "wait-final-holdout-kernel"})
+    ledger["next_action"] = holdout["next_action"]
+    save_ledger(path, ledger)
+    return holdout
+
+
+def record_holdout_kernel_terminal(path: Path, *, terminal_status: str) -> dict[str, Any]:
+    ledger = load_ledger(path)
+    holdout = ledger["holdout"]
+    if holdout.get("status") != "running" or terminal_status not in {"complete", "error", "cancelled"}:
+        raise ValidationError("prompt-pilot holdout terminal transition is invalid")
+    holdout.update({"status": terminal_status, "next_action": "retrieve-final-holdout"})
+    ledger["next_action"] = holdout["next_action"]
+    save_ledger(path, ledger)
+    return holdout
+
+
+def record_holdout_retrieval_planned(path: Path) -> dict[str, Any]:
+    ledger = load_ledger(path)
+    holdout = ledger["holdout"]
+    if holdout.get("status") not in {"complete", "error"} or holdout.get("retrieval_attempted"):
+        raise ValidationError("prompt-pilot holdout retrieval is duplicated or out of order")
+    holdout.update({"retrieval_attempted": True, "next_action": "final-holdout-retrieval-in-progress"})
+    ledger["next_action"] = holdout["next_action"]
+    save_ledger(path, ledger)
+    return holdout
+
+
+def record_holdout_scored(path: Path, *, result_digest: str, score_path: Path) -> dict[str, Any]:
+    ledger = load_ledger(path)
+    holdout = ledger["holdout"]
+    if holdout.get("status") not in {"complete", "error"} or not holdout.get("retrieval_attempted"):
+        raise ValidationError("prompt-pilot holdout score is out of order")
+    score = read_json(score_path)
+    summary = score.get("groups", {}).get("locked-holdout")
+    if score.get("selected_candidate") != holdout.get("frozen_candidate") or not isinstance(summary, dict) or summary.get("denominator") != HOLDOUT_COUNT:
+        raise ValidationError("prompt-pilot holdout score differs from the frozen selection")
+    holdout.update({
+        "status": "scored",
+        "result_digest": result_digest,
+        "score_path": str(score_path.resolve()),
+        "score_digest": digest_path(score_path),
+        "locked_holdout": summary,
+        "next_action": "complete",
+    })
+    ledger["next_action"] = "complete"
+    save_ledger(path, ledger)
+    return holdout
 
 
 def finish_proposal_attempt(

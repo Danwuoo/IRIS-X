@@ -61,6 +61,7 @@ RUNTIME_DATASET_VERSION = 2
 KAGGLE_KERNEL_REF = "danielwuu/iris-x-arc-agi-2-prompt-pilot-baseline-002"
 KAGGLE_SEARCH_KERNEL_REF = "danielwuu/iris-x-arc-agi-2-prompt-pilot-search"
 KAGGLE_SEARCH_KERNEL_TITLE = "IRIS-X ARC-AGI-2 Prompt Pilot Search"
+FINAL_HOLDOUT_RUN_ID = "prompt-pilot-final-holdout-b1"
 DATASET_METADATA_FILENAME = "dataset-metadata.json"
 
 SMOKE_TASK_IDS = ("2dd70a9a", "992798f6", "305b1341", "d968ffd4")
@@ -248,7 +249,7 @@ def assert_render_parity(cases: Iterable[Mapping[str, Any]], tokenizer: Any | No
     return {"case_count": count, "messages_equal": True, "token_ids_equal": tokenizer is not None}
 
 
-def _configuration() -> dict[str, Any]:
+def _configuration(invocation_quota: int = BASELINE_JOB_COUNT) -> dict[str, Any]:
     return {
         "worker_count": WORKER_COUNT,
         "scheduling": "four persistent one-model-per-GPU workers; initial rank assignment then dynamic dispatch",
@@ -256,7 +257,7 @@ def _configuration() -> dict[str, Any]:
         "session_budget_seconds": SESSION_BUDGET_SECONDS,
         "finalization_reserve_seconds": FINALIZATION_RESERVE_SECONDS,
         "task_deadline_seconds": TASK_DEADLINE_SECONDS,
-        "generation": {"invocation_quota": BASELINE_JOB_COUNT, "num_return_sequences": 1, "num_beams": 1, "do_sample": False, "maximum_new_tokens": 512, "enable_thinking": False, "seed": 20260922},
+        "generation": {"invocation_quota": invocation_quota, "num_return_sequences": 1, "num_beams": 1, "do_sample": False, "maximum_new_tokens": 512, "enable_thinking": False, "seed": 20260922},
         "retry": False,
         "warmup_generation": False,
     }
@@ -415,7 +416,8 @@ def _validate_runtime_binding(run: Mapping[str, Any], solver: Mapping[str, Any])
     run_id = run.get("run_id")
     if run.get("trial_id") != TRIAL_ID or not isinstance(run_id, str) or solver.get("trial_id") != TRIAL_ID or solver.get("run_id") != run_id:
         raise ValidationError("prompt-pilot runtime identity is invalid")
-    if run_id != RUN_ID:
+    final_holdout = run_id == FINAL_HOLDOUT_RUN_ID
+    if run_id != RUN_ID and not final_holdout:
         search = run.get("search")
         if not run_id.startswith("prompt-pilot-search-g") or not isinstance(search, dict):
             raise ValidationError("prompt-pilot search identity is invalid")
@@ -435,18 +437,23 @@ def _validate_runtime_binding(run: Mapping[str, Any], solver: Mapping[str, Any])
         raise ValidationError("prompt-pilot instruction is invalid")
     if prompt.get("instruction") != instruction or prompt.get("instruction_digest") != digest_value(instruction):
         raise ValidationError("prompt-pilot instruction binding is stale")
-    if run.get("configuration") != _configuration() or run.get("configuration_digest") != digest_value(_configuration()):
+    cases = solver.get("cases", [])
+    expected_configuration = _configuration(HOLDOUT_COUNT if final_holdout else BASELINE_JOB_COUNT)
+    if run.get("configuration") != expected_configuration or run.get("configuration_digest") != digest_value(expected_configuration):
         raise ValidationError("prompt-pilot runtime configuration changed")
     if run.get("model") != {"repository": MODEL_REPOSITORY, "revision": MODEL_REVISION, "license": MODEL_LICENSE}:
         raise ValidationError("prompt-pilot runtime model changed")
     source = run.get("source", {})
     if source.get("competition_slug") != COMPETITION_SLUG or source.get("competition_challenge_digest") != f"sha256:{COMPETITION_CHALLENGE_SHA256}" or source.get("solutions_opened_in_runtime") is not False:
         raise ValidationError("prompt-pilot runtime source binding changed")
-    cases = solver.get("cases", [])
-    if len(cases) != BASELINE_JOB_COUNT or Counter(item.get("group") for item in cases) != Counter({"optimization-train": TRAIN_COUNT, "selection-dev": DEV_COUNT}):
+    expected_groups = Counter({"locked-holdout": HOLDOUT_COUNT}) if final_holdout else Counter({"optimization-train": TRAIN_COUNT, "selection-dev": DEV_COUNT})
+    expected_count = HOLDOUT_COUNT if final_holdout else BASELINE_JOB_COUNT
+    if len(cases) != expected_count or Counter(item.get("group") for item in cases) != expected_groups:
         raise ValidationError("prompt-pilot runtime job denominator changed")
-    if len({item.get("task_id") for item in cases}) != BASELINE_JOB_COUNT:
+    if len({item.get("task_id") for item in cases}) != expected_count:
         raise ValidationError("prompt-pilot runtime cases are duplicated")
+    if final_holdout and run.get("final_holdout") != {"decision": "0019", "selected_candidate": "B1", "comparison_candidates": ["B1"], "job_count": HOLDOUT_COUNT}:
+        raise ValidationError("prompt-pilot final holdout binding is invalid")
     if any(set(pair) != {"input"} for case in cases for pair in case["test"]):
         raise ValidationError("prompt-pilot runtime cases contain evaluator truth")
 
@@ -544,6 +551,85 @@ def build_search_outbound_package(
         "truth_free": True,
     }
     outbound_digest = write_zip(output, OUTBOUND_KIND, run_id, files, metadata, limits=TRIAL_LIMITS)
+    verify_runtime_outbound_package(output)
+    return {"run": run, "solver": solver, "outbound_digest": outbound_digest, "metadata": metadata}
+
+
+def build_final_holdout_outbound_package(
+    baseline_trial_root: Path,
+    source_training_root: Path,
+    baseline_outbound: Path,
+    runtime_wheel: Path,
+    output: Path,
+    *,
+    repository_root: Path,
+) -> dict[str, Any]:
+    """Build the truth-free B1-only holdout workload authorized by Decision 0019."""
+
+    baseline_run = validate_trial(baseline_trial_root)
+    split = _load_canonical(baseline_trial_root / "split.json")
+    _, baseline_contents, _ = verify_outbound_package(baseline_outbound)
+    holdout_records = [item for item in split["records"] if item["group"] == "locked-holdout"]
+    if len(holdout_records) != HOLDOUT_COUNT:
+        raise ValidationError("prompt-pilot final holdout split denominator changed")
+    cases = []
+    for record in holdout_records:
+        task_id = record["task_id"]
+        official = validate_task(read_json(source_training_root / f"{task_id}.json"), f"training/{task_id}.json", require_test_outputs=True)
+        visible = visible_projection(official)
+        cases.append({"task_id": task_id, "group": "locked-holdout", "train": visible["train"], "test": visible["test"]})
+    solver = {
+        "format": "irisx/arc-agi-2-prompt-pilot-solver-cases",
+        "format_version": "1.0",
+        "trial_id": TRIAL_ID,
+        "run_id": FINAL_HOLDOUT_RUN_ID,
+        "instruction": BASE_INSTRUCTION,
+        "cases": cases,
+    }
+    configuration = _configuration(HOLDOUT_COUNT)
+    run = {
+        **baseline_run,
+        "run_id": FINAL_HOLDOUT_RUN_ID,
+        "prompt": {"candidate": "B1", "instruction": BASE_INSTRUCTION, "instruction_digest": digest_value(BASE_INSTRUCTION), "b0_b1_render_parity": True},
+        "solver_cases_digest": digest_value(solver),
+        "configuration": configuration,
+        "configuration_digest": digest_value(configuration),
+        "final_holdout": {"decision": "0019", "selected_candidate": "B1", "comparison_candidates": ["B1"], "job_count": HOLDOUT_COUNT},
+    }
+    run.pop("run_identity_digest", None)
+    run["run_identity_digest"] = digest_value(run)
+    _validate_runtime_binding(run, solver)
+    runner = (repository_root / "src/irisx/kaggle_runner_prompt_pilot.py").read_bytes()
+    core = (repository_root / "src/irisx/arc_prompt_pilot.py").read_bytes()
+    validate_runtime_wheel_sources(runtime_wheel, runner=runner, core=core)
+    runtime_manifest = _manifest_for_files(runtime_wheel.parent, [runtime_wheel], "irisx/prompt-pilot-runtime-wheel-manifest")
+    dependencies = json.loads(baseline_contents["runtime/dependencies.json"])
+    dependencies["runtime_wheel_manifest_digest"] = runtime_manifest["manifest_digest"]
+    files = {
+        "bindings/run.json": canonical_bytes(run, newline=True),
+        "cases/solver-cases.json": canonical_bytes(solver, newline=True),
+        "runtime/dependencies.json": canonical_bytes(dependencies, newline=True),
+        "runtime/runner.py": runner,
+        "runtime/core.py": core,
+        "sources/model-manifest.json": baseline_contents["sources/model-manifest.json"],
+        "sources/base-wheel-manifest.json": baseline_contents["sources/base-wheel-manifest.json"],
+        "sources/runtime-wheel-manifest.json": canonical_bytes(runtime_manifest, newline=True),
+    }
+    metadata = {
+        "trial_id": TRIAL_ID,
+        "run_id": FINAL_HOLDOUT_RUN_ID,
+        "run_identity_digest": run["run_identity_digest"],
+        "solver_cases_digest": run["solver_cases_digest"],
+        "configuration_digest": run["configuration_digest"],
+        "instruction_digest": run["prompt"]["instruction_digest"],
+        "runner_digest": digest_bytes(runner),
+        "core_digest": digest_bytes(core),
+        "model_manifest_digest": json.loads(files["sources/model-manifest.json"])["manifest_digest"],
+        "base_wheel_manifest_digest": json.loads(files["sources/base-wheel-manifest.json"])["manifest_digest"],
+        "runtime_wheel_manifest_digest": runtime_manifest["manifest_digest"],
+        "truth_free": True,
+    }
+    outbound_digest = write_zip(output, OUTBOUND_KIND, FINAL_HOLDOUT_RUN_ID, files, metadata, limits=TRIAL_LIMITS)
     verify_runtime_outbound_package(output)
     return {"run": run, "solver": solver, "outbound_digest": outbound_digest, "metadata": metadata}
 
@@ -647,7 +733,7 @@ def stage_search_kernel(
     runtime_wheel_digest: str,
 ) -> dict[str, Any]:
     _ensure_empty(output)
-    if not run_id.startswith("prompt-pilot-search-g"):
+    if not (run_id.startswith("prompt-pilot-search-g") or run_id == FINAL_HOLDOUT_RUN_ID):
         raise ValidationError("prompt-pilot search kernel run identity is invalid")
     metadata = read_json(template_root / "kernel-metadata.json")
     metadata.update({"id": KAGGLE_SEARCH_KERNEL_REF, "title": KAGGLE_SEARCH_KERNEL_TITLE})
@@ -950,6 +1036,42 @@ def score_search_result_package(baseline_trial_root: Path, result: Path, outboun
         "overall": scored["overall"],
         "records": scored["records"],
         "holdout": {"opened": False, "scored": False, "record_count": 0},
+    }
+
+
+def score_final_holdout_result_package(baseline_trial_root: Path, result: Path, outbound: Path) -> dict[str, Any]:
+    """Open and score only the frozen B1 holdout after search selection."""
+
+    baseline_run = validate_trial(baseline_trial_root)
+    result_manifest, contents, result_digest = verify_runtime_result_package(result, outbound)
+    run = json.loads(contents["bindings/run.json"])
+    if run.get("run_id") != FINAL_HOLDOUT_RUN_ID or run.get("split_digest") != baseline_run["split_digest"]:
+        raise ValidationError("prompt-pilot final holdout differs from the frozen split")
+    truth_path = baseline_trial_root / "evaluator-truth.json"
+    truth = _load_canonical(truth_path)
+    predictions = json.loads(contents["predictions/predictions.json"])
+    scored = score_prediction_records(predictions["records"], truth["cases"], groups=("locked-holdout",))
+    return {
+        "format": "irisx/arc-agi-2-prompt-pilot-final-holdout-score",
+        "format_version": "1.0",
+        "trial_id": TRIAL_ID,
+        "run_id": FINAL_HOLDOUT_RUN_ID,
+        "selected_candidate": "B1",
+        "metric": "selected-output-exact-match-pass@1",
+        "invalid_policy": "incorrect-and-retained-in-denominator",
+        "bindings": {
+            "run_identity_digest": run["run_identity_digest"],
+            "split_digest": run["split_digest"],
+            "instruction_digest": run["prompt"]["instruction_digest"],
+            "truth_digest": digest_path(truth_path),
+            "outbound_digest": digest_path(outbound),
+            "result_digest": result_digest,
+            "result_manifest_digest": digest_value(result_manifest),
+        },
+        "groups": scored["groups"],
+        "overall": scored["overall"],
+        "records": scored["records"],
+        "holdout": {"opened": True, "scored": True, "record_count": HOLDOUT_COUNT},
     }
 
 

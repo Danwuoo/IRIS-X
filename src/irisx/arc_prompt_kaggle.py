@@ -18,6 +18,14 @@ from .arc_prompt_optimizer import (
     record_kernel_accepted,
     record_kernel_submission_planned,
     record_kernel_terminal,
+    record_holdout_dataset_uploaded,
+    record_holdout_kernel_accepted,
+    record_holdout_kernel_submission_planned,
+    record_holdout_kernel_terminal,
+    record_holdout_opening_planned,
+    record_holdout_retrieval_planned,
+    record_holdout_scored,
+    record_holdout_staged,
     record_retrieval_planned,
     record_retrieval_cli_recovery,
 )
@@ -246,3 +254,138 @@ class KaggleCandidateEvaluator:
         if item["gpu_status"] == "cancelled":
             raise RuntimeError("candidate kernel was cancelled")
         return self._retrieve_and_score(round_index, item, wait_seconds)
+
+
+class KaggleFinalHoldoutEvaluator(KaggleCandidateEvaluator):
+    """Execute the one B1-only final holdout after all ten proposals."""
+
+    def __init__(self, *, source_training_root: Path, **kwargs: Any):
+        super().__init__(**kwargs)
+        self.source_training_root = source_training_root.resolve()
+
+    def _stage_holdout(self, holdout: dict[str, Any]) -> dict[str, Any]:
+        if holdout["status"] == "selected":
+            holdout = record_holdout_opening_planned(self.ledger_path)
+        if holdout["status"] != "opening":
+            return holdout
+        dataset_status = self._dataset_status()
+        if dataset_status.get("status") != "ready":
+            raise RuntimeError(f"runtime Dataset is not ready: {dataset_status}")
+        expected_dataset_version = dataset_status["current_version_number"] + 1
+        root = self.search_root / "final-holdout"
+        outbound_dir = root / "outbound"
+        outbound_dir.mkdir(parents=True, exist_ok=True)
+        outbound = outbound_dir / f"{pilot.FINAL_HOLDOUT_RUN_ID}.zip"
+        if outbound.exists():
+            raise ValidationError("unledgered final holdout outbound already exists")
+        built = pilot.build_final_holdout_outbound_package(
+            self.baseline_trial_root,
+            self.source_training_root,
+            self.baseline_outbound,
+            self.runtime_wheel,
+            outbound,
+            repository_root=self.repository_root,
+        )
+        pilot.stage_search_dataset(outbound, self.runtime_wheel, root / "dataset", expected_version=expected_dataset_version)
+        pilot.stage_search_kernel(
+            self.notebook_template_root,
+            root / "kernel",
+            run_id=pilot.FINAL_HOLDOUT_RUN_ID,
+            outbound_digest=built["outbound_digest"],
+            runtime_wheel_digest=pilot.digest_path(self.runtime_wheel),
+        )
+        return record_holdout_staged(
+            self.ledger_path,
+            run_id=pilot.FINAL_HOLDOUT_RUN_ID,
+            run_identity_digest=built["run"]["run_identity_digest"],
+            outbound_digest=built["outbound_digest"],
+            dataset_version=expected_dataset_version,
+        )
+
+    def _upload_holdout_dataset(self, holdout: dict[str, Any]) -> dict[str, Any]:
+        if holdout["status"] != "staged":
+            return holdout
+        dataset_dir = self.search_root / "final-holdout" / "dataset"
+        target_version = holdout["dataset_version"]
+        status = self._dataset_status()
+        current_version = status["current_version_number"]
+        if current_version > target_version:
+            raise RuntimeError(f"runtime Dataset advanced beyond the final holdout version: {status}")
+        if not (status.get("status") == "ready" and current_version == target_version):
+            if status.get("status") == "ready" and current_version < target_version:
+                self._run(["kaggle", "datasets", "version", "--path", str(dataset_dir), "--message", "Decision 0019 final B1 holdout", "--dir-mode", "zip"])
+            elif status.get("status") not in {"pending", "running", "updating"}:
+                raise RuntimeError(f"runtime Dataset is not ready for the final holdout update: {status}")
+        while True:
+            status = self._dataset_status()
+            current_version = status["current_version_number"]
+            if status.get("status") == "ready" and current_version == target_version:
+                break
+            if current_version > target_version:
+                raise RuntimeError(f"runtime Dataset advanced beyond the final holdout version: {status}")
+            if status.get("status") not in {"pending", "running", "updating", "ready"}:
+                raise RuntimeError(f"runtime Dataset final holdout update failed: {status}")
+            time.sleep(15)
+        return record_holdout_dataset_uploaded(self.ledger_path)
+
+    def _submit_holdout_kernel(self, holdout: dict[str, Any]) -> dict[str, Any]:
+        if holdout["status"] == "submitting":
+            try:
+                self._kernel_status(holdout["kernel_ref"], holdout["kernel_version"])
+            except Exception as exc:
+                raise RuntimeError("final holdout submission state is ambiguous; refusing a duplicate push") from exc
+            return record_holdout_kernel_accepted(self.ledger_path)
+        if holdout["status"] != "dataset-ready":
+            return holdout
+        ledger = load_ledger(self.ledger_path)
+        prior_versions = [entry["kernel_version"] for entry in ledger["rounds"] if isinstance(entry.get("kernel_version"), int)]
+        kernel_version = max(prior_versions, default=0) + 1
+        record_holdout_kernel_submission_planned(self.ledger_path, kernel_ref=pilot.KAGGLE_SEARCH_KERNEL_REF, kernel_version=kernel_version)
+        self._run(["kaggle", "kernels", "push", "--path", str(self.search_root / "final-holdout" / "kernel"), "--accelerator", pilot.KAGGLE_MACHINE_SHAPE])
+        return record_holdout_kernel_accepted(self.ledger_path)
+
+    def _wait_holdout_terminal(self, holdout: dict[str, Any]) -> dict[str, Any]:
+        if holdout["status"] != "running":
+            return holdout
+        started = time.monotonic()
+        next_query = 0.0
+        while True:
+            elapsed = time.monotonic() - started
+            if elapsed >= next_query:
+                status = self._kernel_status(holdout["kernel_ref"], holdout["kernel_version"])
+                print(json.dumps({"event": "low_frequency_final_holdout_status", "status": status, "elapsed_seconds": elapsed}, sort_keys=True), flush=True)
+                if status in {"complete", "error", "cancelled"}:
+                    return record_holdout_kernel_terminal(self.ledger_path, terminal_status=status)
+                next_query = elapsed + self.status_query_interval_seconds
+            time.sleep(60)
+
+    def _retrieve_and_score_holdout(self, holdout: dict[str, Any]) -> Path:
+        if holdout["status"] == "cancelled":
+            raise RuntimeError("final holdout kernel was cancelled")
+        root = self.search_root / "final-holdout"
+        retrieved = root / "retrieved"
+        if not holdout["retrieval_attempted"]:
+            record_holdout_retrieval_planned(self.ledger_path)
+            retrieved.mkdir(parents=True, exist_ok=False)
+            self._run(["kaggle", "kernels", "output", f"{holdout['kernel_ref']}/{holdout['kernel_version']}", "--path", str(retrieved), "--force"])
+        elif not retrieved.is_dir():
+            raise RuntimeError("final holdout retrieval was attempted but no local directory exists")
+        results = list(retrieved.rglob("result.zip"))
+        if len(results) != 1:
+            raise RuntimeError(f"final holdout output does not contain exactly one result.zip: {results}")
+        result = results[0]
+        outbound = root / "outbound" / f"{pilot.FINAL_HOLDOUT_RUN_ID}.zip"
+        _, _, result_digest = pilot.verify_runtime_result_package(result, outbound)
+        report = pilot.score_final_holdout_result_package(self.baseline_trial_root, result, outbound)
+        score_path = root / "score.json"
+        write_json(score_path, report)
+        record_holdout_scored(self.ledger_path, result_digest=result_digest, score_path=score_path)
+        return score_path
+
+    def __call__(self) -> Path:
+        holdout = load_ledger(self.ledger_path)["holdout"]
+        holdout = self._stage_holdout(holdout)
+        holdout = self._upload_holdout_dataset(holdout)
+        holdout = self._submit_holdout_kernel(holdout)
+        holdout = self._wait_holdout_terminal(holdout)
+        return self._retrieve_and_score_holdout(holdout)
