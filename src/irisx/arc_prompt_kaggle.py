@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import subprocess
 import time
@@ -18,6 +19,7 @@ from .arc_prompt_optimizer import (
     record_kernel_submission_planned,
     record_kernel_terminal,
     record_retrieval_planned,
+    record_retrieval_cli_recovery,
 )
 from .canonical import write_json
 from .errors import ValidationError
@@ -48,7 +50,9 @@ class KaggleCandidateEvaluator:
         self.status_query_interval_seconds = max(120, status_query_interval_seconds)
 
     def _run(self, arguments: list[str]) -> subprocess.CompletedProcess[str]:
-        completed = subprocess.run(arguments, cwd=self.repository_root, text=True, encoding="utf-8", capture_output=True, check=False)
+        environment = os.environ.copy()
+        environment.update({"PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"})
+        completed = subprocess.run(arguments, cwd=self.repository_root, env=environment, text=True, encoding="utf-8", capture_output=True, check=False)
         if completed.stdout:
             print(completed.stdout.rstrip(), flush=True)
         if completed.returncode != 0:
@@ -189,7 +193,23 @@ class KaggleCandidateEvaluator:
             record_retrieval_planned(self.ledger_path, round_index=round_index)
             retrieved.mkdir(parents=True, exist_ok=False)
             started = time.monotonic()
-            self._run(["kaggle", "kernels", "output", f"{item['kernel_ref']}/{item['kernel_version']}", "--path", str(retrieved), "--force"])
+            try:
+                self._run(["kaggle", "kernels", "output", f"{item['kernel_ref']}/{item['kernel_version']}", "--path", str(retrieved), "--force"])
+            except RuntimeError as exc:
+                if len(list(retrieved.rglob("result.zip"))) != 1:
+                    raise
+                evidence_path = round_root / "retrieval-cli-recovery.json"
+                write_json(evidence_path, {
+                    "format": "irisx/prompt-pilot-retrieval-cli-recovery",
+                    "format_version": "1.0",
+                    "round": round_index,
+                    "kernel_ref": item["kernel_ref"],
+                    "kernel_version": item["kernel_version"],
+                    "error": str(exc),
+                    "result_zip_present": True,
+                    "second_retrieval_attempted": False,
+                })
+                record_retrieval_cli_recovery(self.ledger_path, round_index=round_index, evidence_path=evidence_path)
             retrieval_seconds = time.monotonic() - started
         else:
             if not retrieved.is_dir():

@@ -383,6 +383,27 @@ def record_retrieval_planned(path: Path, *, round_index: int) -> dict[str, Any]:
     return item
 
 
+def record_retrieval_cli_recovery(path: Path, *, round_index: int, evidence_path: Path) -> dict[str, Any]:
+    """Retain a CLI-print failure that did not prevent a valid local result."""
+
+    ledger = load_ledger(path)
+    item = ledger["rounds"][round_index - 1]
+    if item.get("gpu_status") not in {"complete", "error", "scored"} or not item.get("retrieval_attempted") or not evidence_path.is_file():
+        raise ValidationError("prompt-pilot retrieval recovery evidence is invalid")
+    incidents = item.setdefault("incidents", [])
+    if any(entry.get("type") == "retrieval-cli-encoding-after-download" for entry in incidents):
+        return item
+    incidents.append({
+        "type": "retrieval-cli-encoding-after-download",
+        "recorded_at_utc": _utc(),
+        "evidence_path": str(evidence_path.resolve()),
+        "evidence_digest": digest_path(evidence_path),
+        "second_retrieval_attempted": False,
+    })
+    save_ledger(path, ledger)
+    return item
+
+
 def record_candidate_scored(
     path: Path,
     *,

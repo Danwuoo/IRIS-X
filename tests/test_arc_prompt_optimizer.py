@@ -140,6 +140,28 @@ class PromptOptimizerTests(unittest.TestCase):
             self.assertEqual(optimizer.BASELINE_JOB_COUNT, ledger["budget"]["generation_invocations_used"])
             self.assertEqual("kernel-api-rejected-before-creation", item["incidents"][-1]["type"])
 
+    def test_retrieval_cli_recovery_is_idempotent_after_scoring(self) -> None:
+        score = {
+            "trial_id": optimizer.TRIAL_ID,
+            "run_id": optimizer.RUN_ID,
+            "bindings": {"run_identity_digest": "sha256:" + "1" * 64, "outbound_digest": "sha256:" + "2" * 64, "result_digest": "sha256:" + "3" * 64},
+            "groups": {"optimization-train": {"correct": 1, "denominator": 2, "accuracy": 0.5}, "selection-dev": {"correct": 1, "denominator": 2, "accuracy": 0.5}},
+            "holdout": {"opened": False, "scored": False, "record_count": 0},
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            write_json(root / "score.json", score)
+            ledger_path = root / "ledger.json"
+            ledger = optimizer.initialize_ledger(ledger_path, root / "score.json")
+            ledger["rounds"] = [{"round": 1, "proposal_status": "valid", "candidate_instruction_digest": digest_value("new"), "duplicate": False, "gpu_status": "scored", "retrieval_attempted": True, "incidents": []}]
+            ledger["budget"]["proposal_attempts_used"] = 1
+            optimizer.save_ledger(ledger_path, ledger)
+            write_json(root / "recovery.json", {"result_zip_present": True})
+            optimizer.record_retrieval_cli_recovery(ledger_path, round_index=1, evidence_path=root / "recovery.json")
+            item = optimizer.record_retrieval_cli_recovery(ledger_path, round_index=1, evidence_path=root / "recovery.json")
+            self.assertEqual(1, len(item["incidents"]))
+            self.assertFalse(item["incidents"][0]["second_retrieval_attempted"])
+
 
 if __name__ == "__main__":
     unittest.main()
