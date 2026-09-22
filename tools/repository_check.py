@@ -542,9 +542,11 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
         "trials/arc-agi-2-prompt-pilot/README.md": (
             "arc-agi-2-prompt-pilot",
             "prompt-pilot-baseline-001",
-            "package-ready",
+            "startup-failed-before-model-load",
             "model_ready",
-            "Do not wait for completion",
+            "zero Qwen",
+            "not running",
+            "HTTP 403",
         ),
         "trials/arc-agi-2-prompt-pilot/source-use.md": (
             "824de62cb23e2bf8b52adcb05a8804ef2c148e5d",

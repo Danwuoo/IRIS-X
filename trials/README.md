@@ -35,3 +35,6 @@ submission is authorized.
 0016 instruction-only research trial. Its first authorization is limited to one
 384-job private baseline launch and startup verification; it does not extend
 Trial 002 or authorize reflection, retrieval, scoring, or another kernel.
+That version 1 failed before the hardware/model runner because its outbound was
+not found at the assumed Dataset mount path; no model worker became ready and
+no solver generation ran. The launch is consumed.

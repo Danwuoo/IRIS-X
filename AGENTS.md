@@ -44,6 +44,11 @@ one `prompt-pilot-baseline-001` private 384-job Kaggle launch. The active task
 must stop development and monitoring once four distinct L4 workers report the
 exact pinned model ready and initial dynamic dispatch is observed; it does not
 authorize result retrieval, scoring, reflection, or another kernel.
+That authorized version 1 ended `ERROR` before the hardware gate and model
+runner because the exact outbound was not present at the assumed Dataset mount
+path. It produced zero model-ready events and zero generations. The launch is
+consumed; Decision 0016 authorizes no repair submission or further external
+status, log, source, or output request.
 
 ## Authority order
 
@@ -105,6 +110,8 @@ paths. Do not recreate a legacy root merely to preserve history.
   001. The Trial 002 status page is `trials/arc-agi-2-baseline/README.md`.
 - Keep the prompt-pilot identity and evidence separate from Trial 002. Its
   current status page is `trials/arc-agi-2-prompt-pilot/README.md`.
+- Preserve the failed `prompt-pilot-baseline-001` identity and submitted bytes.
+  Do not reuse that identity for a mount-path repair or claim its 384 jobs ran.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.

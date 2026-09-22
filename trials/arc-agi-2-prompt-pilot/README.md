@@ -12,9 +12,10 @@ only baseline run `prompt-pilot-baseline-001`.
 
 ## Current state
 
-- Status: `package-ready`; the exact staged bytes passed offline technical
-  preflight, but no new external execution evidence is claimed until the exact
-  submitted run supplies it.
+- Status: `startup-failed-before-model-load`. The one authorized version 1 was
+  accepted, briefly reported `RUNNING`, then ended `ERROR` before the hardware
+  gate or runner started. Its kernel launch is consumed and no resubmission is
+  authorized.
 - Split: 256 optimization-train, 128 selection-dev, 128 locked-holdout from
   pinned official public training; only the first 384 groups run now.
 - Runtime: private Kaggle `NvidiaL4` x4, Internet disabled, USD 0 paid cost.
@@ -31,10 +32,28 @@ only baseline run `prompt-pilot-baseline-001`.
   `ecc2b429d58be79c7b41d7fee7a4ed122e059a0210c3f18892d05fe3d2cd28c5`.
 - The retained Trial 002 result verifier regression reaccepted result digest
   `91b21a5fdae10d5adda5dc59e22626a92d1935f15e06ca5a35cf2eeac0b53097`.
+- Private runtime Dataset:
+  `danielwuu/irisx-arc-agi-2-prompt-pilot-baseline-001`, version 1, observed
+  `ready` with the new wheel and extracted outbound members.
+- Submitted kernel:
+  `danielwuu/iris-x-arc-agi-2-prompt-pilot-baseline-001`, version 1,
+  [Kaggle URL](https://www.kaggle.com/code/danielwuu/iris-x-arc-agi-2-prompt-pilot-baseline-001).
+- Submitted notebook SHA-256:
+  `feda2df3200292e2ab7e3d29f3f19af8f59766ec544f102d2519c6bd18270639`.
+- Failure: at Papermill runtime time 23.284540225 seconds, the notebook raised
+  `RuntimeError: exact bound outbound is neither an archive nor the expected
+  extracted directory`. This occurred before the hardware inventory, runner,
+  model load, or scheduler. There were zero `model_ready` events and zero Qwen
+  generation invocations; the 384-job baseline is **not running**.
+- Server-source metadata retrieval returned HTTP 403 both while the kernel was
+  running and after it failed. Therefore the locally submitted metadata remains
+  intended configuration, not server-confirmed metadata evidence. The CLI did
+  confirm the actual normalized kernel ref, version 1, `RUNNING`, then `ERROR`.
 
 ## Stop boundary
 
-After four identity-bound `model_ready` events on distinct L4 GPU UUIDs and
-initial scheduler dispatch are retained, stop development and external
-monitoring. Do not wait for completion, retrieve or score results, invoke Codex
-reflection, or launch another candidate under Decision 0016.
+The required four identity-bound `model_ready` events and scheduler dispatch
+were not reached. Preserve the failure and stop external monitoring. Do not
+retrieve or score results, invoke Codex reflection, repair this consumed run
+identity, or launch another kernel under Decision 0016. A repair needs a new
+owner-authorized identity and must bind Kaggle's actual Dataset mount topology.

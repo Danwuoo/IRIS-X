@@ -137,3 +137,10 @@ on distinct GPU UUIDs report ready and enter dynamic scheduling. The kernel has
 no warm-up, no competition submission, and USD 0 paid cost. Once startup is
 verified, no result/status/log retrieval, scoring, Codex reflection, next
 candidate, or resubmission is authorized by this decision.
+
+The authorized version 1 ended `ERROR` before the hardware gate and model
+runner because the exact outbound was not found at the assumed Dataset mount
+path. It emitted zero model-ready events and consumed zero solver generations.
+Its single kernel launch and bounded startup checks are consumed. Decision 0016
+now authorizes no additional external status/log/source/output request, repair,
+or resubmission.
