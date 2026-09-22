@@ -55,7 +55,7 @@ BASE_DATASET_REF = "danielwuu/irisx-arc-agi-2-trial-002-smoke-001"
 BASE_DATASET_VERSION = 2
 RUNTIME_DATASET_REF = "danielwuu/irisx-arc-agi-2-prompt-pilot-baseline-001"
 KAGGLE_KERNEL_REF = "danielwuu/iris-x-arc-agi-2-prompt-pilot-baseline-001"
-DATASET_METADATA_FILENAME = "datasets-metadata.json"
+DATASET_METADATA_FILENAME = "dataset-metadata.json"
 
 SMOKE_TASK_IDS = ("2dd70a9a", "992798f6", "305b1341", "d968ffd4")
 BASE_INSTRUCTION = (
