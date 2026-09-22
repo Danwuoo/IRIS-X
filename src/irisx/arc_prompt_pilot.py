@@ -55,6 +55,7 @@ BASE_DATASET_REF = "danielwuu/irisx-arc-agi-2-trial-002-smoke-001"
 BASE_DATASET_VERSION = 2
 RUNTIME_DATASET_REF = "danielwuu/irisx-arc-agi-2-prompt-pilot-baseline-001"
 KAGGLE_KERNEL_REF = "danielwuu/iris-x-arc-agi-2-prompt-pilot-baseline-001"
+DATASET_METADATA_FILENAME = "datasets-metadata.json"
 
 SMOKE_TASK_IDS = ("2dd70a9a", "992798f6", "305b1341", "d968ffd4")
 BASE_INSTRUCTION = (
@@ -419,14 +420,14 @@ def verify_outbound_package(path: Path) -> tuple[dict[str, Any], dict[str, bytes
 def stage_dataset(outbound: Path, runtime_wheel: Path, output: Path) -> dict[str, Any]:
     _ensure_empty(output)
     metadata = {"title": "IRIS-X ARC-AGI-2 Prompt Pilot Baseline 001", "id": RUNTIME_DATASET_REF, "description": "Private small truth-free runner and outbound transport; model and dependencies remain in the bound Trial 002 transport Dataset.", "licenses": [{"name": "other"}]}
-    write_json(output / "dataset-metadata.json", metadata)
+    write_json(output / DATASET_METADATA_FILENAME, metadata)
     shutil.copy2(outbound, output / outbound.name)
     shutil.copy2(runtime_wheel, output / runtime_wheel.name)
     return validate_dataset_staging(output, outbound, runtime_wheel)
 
 
 def validate_dataset_staging(root: Path, outbound: Path, runtime_wheel: Path) -> dict[str, Any]:
-    metadata = _load_canonical(root / "dataset-metadata.json")
+    metadata = _load_canonical(root / DATASET_METADATA_FILENAME)
     if metadata.get("id") != RUNTIME_DATASET_REF:
         raise ValidationError("runtime Dataset staging identity is stale")
     staged_outbound, staged_wheel = root / outbound.name, root / runtime_wheel.name

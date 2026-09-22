@@ -26,9 +26,9 @@ only baseline run `prompt-pilot-baseline-001`.
 - Split digest:
   `6176d88ce9a66dcc45584aa09c110898c0f782b1f97e42e1f268c3ef1f25bd2b`.
 - Truth-free outbound SHA-256:
-  `22cd2d9449b8aaa0646d1baf1e5ba8ecb71c54b1a73fc761be5e8751c62eed24`.
+  `1e12760375696cfc11bb1e635da96d22837c62aa62a9015622d841003a6b68c8`.
 - Exact runtime wheel SHA-256:
-  `2afbe550c0d63947f3e1062193d9d10df9563ddd48c69fba14a6385248342f9b`.
+  `46bc17cb83c6058095e364a08a6db346d04462a05e079cacfc8094b037adb2e9`.
 - The retained Trial 002 result verifier regression reaccepted result digest
   `91b21a5fdae10d5adda5dc59e22626a92d1935f15e06ca5a35cf2eeac0b53097`.
 
