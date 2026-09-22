@@ -39,6 +39,11 @@ inference-only Qwen3.5-4B generation calls with no TTT or retry. That replacemen
 is now `runtime-verified`: all four calls returned valid grids on four L4 GPUs,
 while local exact-match scoring was 0/4. Its one kernel push and one retrieval
 are consumed; no further Trial 002 external execution is authorized.
+Decision 0016 opens the separate `arc-agi-2-prompt-pilot` trial and authorizes
+one `prompt-pilot-baseline-001` private 384-job Kaggle launch. The active task
+must stop development and monitoring once four distinct L4 workers report the
+exact pinned model ready and initial dynamic dispatch is observed; it does not
+authorize result retrieval, scoring, reflection, or another kernel.
 
 ## Authority order
 
@@ -98,6 +103,8 @@ paths. Do not recreate a legacy root merely to preserve history.
   execution instructions.
 - Keep Trial 002 identities, bytes, results, and status separate from Trial
   001. The Trial 002 status page is `trials/arc-agi-2-baseline/README.md`.
+- Keep the prompt-pilot identity and evidence separate from Trial 002. Its
+  current status page is `trials/arc-agi-2-prompt-pilot/README.md`.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.

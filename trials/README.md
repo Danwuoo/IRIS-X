@@ -30,3 +30,8 @@ task/test pairs, exactly four inference invocations, and an explicitly mounted
 ARC competition on private Kaggle L4 x4. All four jobs returned valid grids,
 but local exact-match scoring was 0/4. No further external run or competition
 submission is authorized.
+
+[`arc-agi-2-prompt-pilot/`](arc-agi-2-prompt-pilot/) is the distinct Decision
+0016 instruction-only research trial. Its first authorization is limited to one
+384-job private baseline launch and startup verification; it does not extend
+Trial 002 or authorize reflection, retrieval, scoring, or another kernel.

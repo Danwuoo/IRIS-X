@@ -65,3 +65,7 @@ no current authority unless a new decision explicitly re-adopts them.
   preserves the failed first smoke and authorizes one replacement identity
   with the ARC competition mounted, exact L4 x4 runtime checks, and exactly
   four inference-only generation invocations.
+- [`0016-authorize-arc-agi-2-prompt-pilot-baseline.md`](0016-authorize-arc-agi-2-prompt-pilot-baseline.md)
+  opens a distinct prompt-pilot trial and authorizes one private 384-job
+  baseline launch, with work stopping once four exact-model workers are ready
+  and the dynamic scheduler has started.

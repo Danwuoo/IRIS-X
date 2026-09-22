@@ -127,3 +127,13 @@ four L4 GPUs, exactly four completed inference invocations, and four valid grids
 local exact-match scoring was 0/4. Decisions 0014 and 0015 now retain provenance
 and boundary lineage only: they authorize no additional status/log/output call,
 kernel execution, retry, or submission.
+
+Decision 0016 creates a separate exception for
+`arc-agi-2-prompt-pilot/prompt-pilot-baseline-001`. It authorizes source and
+dependency preparation, one small private Dataset upload, one private Kaggle
+L4 x4 launch, and bounded startup log reads only until four exact-model workers
+on distinct GPU UUIDs report ready and enter dynamic scheduling. The kernel has
+384 train/dev test-index-0 single-generation jobs, Internet disabled, no retry,
+no warm-up, no competition submission, and USD 0 paid cost. Once startup is
+verified, no result/status/log retrieval, scoring, Codex reflection, next
+candidate, or resubmission is authorized by this decision.
