@@ -19,11 +19,13 @@ runner 回報 175.427 秒，generation 各 6.579–27.157 秒，峰值約 8.7–
 ## 已確定選擇與待定預算
 
 - 解題模型固定 `Qwen/Qwen3.5-4B@851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a`。
-- Owner 指定反思使用付費 Codex CLI 的 GPT-5.6 系列；不使用 4B 自我反思作主方案。
-- 建議具體設定 `gpt-5.6-sol` / `xhigh`，最多一次 `codex exec`、15 分鐘、無自動重試。
+- Owner 已指定反思使用 Codex CLI 的 `gpt-5.6-sol` / `xhigh`，
+  並將資料規模擴大為 256 optimization-train + 128 selection-dev。
+- 建議先做一次反思，每次 `codex exec` 最多 15 分鐘、無自動重試；
+  一次或最多三次 mutation 的選擇尚待 owner 回覆。
   模型可用性須在開發時核對，不可默默更換成其他系列。
-- Kaggle 建議最多兩個各 60 分鐘 session、每個 job 最多 300 秒；session 全程上限
-  包含 setup、模型載入、推論和封包輸出。整輪最多 8 個配置 GPU-hours，
+- 擴大後的單次 mutation 方案建議最多兩個各 120 分鐘 session、每個 job 最多 300 秒；
+  session 全程上限包含 setup、模型載入、推論和封包輸出。整輪最多 16 個配置 GPU-hours，
   另列實測 GPU busy time，不把兩者混用。這個預算尚待 owner 回覆。
 - Codex 的計費邊界尚待 owner 回覆：建議只用既有付費訂閱額度、不加購、不轉 API。
   訂閱額度不是「免費算力」；記錄使用量，無法取得金額時標示 unknown。
@@ -50,8 +52,10 @@ B0/B1 先用離線 render/tokenization parity 驗證；通過即可共用同一�
 
 ## 資料隔離
 
-從固定官方 public-training source，按 task ID 分組，預先凍結 40 題：
-16 optimization-train、8 selection-dev、16 locked-holdout。
+從固定官方 public-training source，按 task ID 分組，預先凍結 owner 指定的
+256 optimization-train、128 selection-dev；另建議保留 128 locked-holdout，合計 512 題。
+現有 source contract 的 public-training count 為 1,000；實際 materialization 後
+仍須確認排除 smoke、重複題後數量足夠。不能挪用 public evaluation 補足數量。
 每題只取 test index 0，故本輪是 selected-output pass@1 pilot，不冒稱完整 ARC 分數。
 其他 test inputs、題目的 augmentations 和近重複題不得跨組。
 
@@ -70,32 +74,60 @@ Kaggle solver 的 outbound 仍只有可見 task demonstrations 和 test inputs�
 不放在可讀取整個 repo 或 holdout 的工作目錄中。這是新的訓練回饋資料流，必須在
 新 trial 的執行決策中明訂；不得套用 Trial 002 的 truth-free runtime 名稱掩蓋它。
 
-## 兩個 session 的工作量
+## 一次 mutation、兩個 session 的工作量（預算待定）
 
 1. **本機離線準備**：凍結 split、B0/B1 parity、package identities、budgets；
    驗證真實 DSPy / GEPA imports、adapter、重放與停止路徑，測試本身不呼叫模型。
-2. **Kaggle A**：B1 在 16 train + 8 dev 生成，共 24 次 Qwen 呼叫。
+2. **Kaggle A**：B1 在 256 train + 128 dev 生成，共 384 次 Qwen 呼叫。
    四個 persistent workers 共用任務佇列，每 GPU 一個模型，不為每題 reload。
 3. **本機反思**：下載驗證一次，scorer 產出 train feedback。
    DSPy GEPA 以凍結 seed 選擇最多 3 個 train traces，透過 Codex CLI proposer
    產生 G1；保存 parent、instruction diff、failure hypothesis、預期改善與 prompt hash。
    若沒有失敗案例則不花反思額度；若全零仍允許一次有具體 feedback 的反思。
-4. **Kaggle B**：G1 在同一 16 train + 8 dev 生成 24 次，另對 locked holdout
-   執行 B1 與 G1 各 16 次，共 56 次。兩組配對排程、同 GPU／設定比較，
+4. **Kaggle B**：G1 在同一 256 train + 128 dev 生成 384 次，另對 locked holdout
+   執行 B1 與 G1 各 128 次，共 640 次。兩組配對排程、同 GPU／設定比較，
    任務順序預先凍結並交錯，降低 worker 或執行順序偏差。
 5. **本機判讀**：先只用 train/dev 完成 GEPA minibatch 接受／拒絕與 candidate selection，
    保存選擇結果；再開 holdout scorer。若 G1 在 dev 落敗，正式選擇維持 B1，
    G1 的 holdout 對照仍作預註冊診斷，不能據此翻轉選擇。
 
-合計最多 80 次 Qwen solver generation、一次 Codex 反思。B 的 holdout predictions
+合計最多 1,024 次 Qwen solver generation、一次 Codex 反思。B 的 holdout predictions
 可以先計算，但答案、分數與 predictions 不得回流 optimizer；它們在選擇凍結前隔離保存。
 預算是上限，不是要求用滿；若 G1 無效／等同 B1，停止而不花第二個 session。
 每次啟動、失敗、timeout、截斷皆計入 ledger；不隱藏重試，不因 cache miss 自動呼叫雲端。
 
+上述工作量是完整資料覆蓋的上限，不承諾能在建議時間內跑完。先用 A 的實際 input
+tokens、generation 長尾、timeout 與 worker 使用率估算 B，不以四題 smoke 的平均值保證吞吐。
+若不足以在已選預算內完成，就回報並保留完整分母，不能臨時挑短題完成後宣稱全量比較。
+
+若 owner 選三次反思，需改成基線批次、最多三個相依 mutation 批次，再對 dev 選定的
+唯一候選做一次獨立 holdout 比較。最寬上限為 1,792 次 Qwen 呼叫、三次 Codex exec、
+五個 Kaggle sessions；不能沿用兩個 sessions 的授權。每輪只根據先前 train/dev 更新，
+連續兩輪無 dev 改善即停止。本文的一次 mutation 工作量目前是預設提案，並非已選執行額度。
+
+## 控制反思模型的壓力
+
+256 題 train 是可供分析與抽樣的資料池，不是每次反思的上下文。先以 deterministic
+本機程式產出 parse、形狀、顏色／位置、截斷、timeout 等錯誤統計，再由預先固定的
+train-only sampler 選最多三個有代表性的失敗案例，避免三題都是同一類錯誤。
+抽樣規則、seed、被排除與選中的 case IDs 均記錄；若使用自訂 sampler，明列為 GEPA 適配。
+
+每次完整 proposer 輸入（指令、parent prompt、統計、案例與 feedback）最多 32 KiB UTF-8，
+摘要最多 2 KiB。案例超出剩餘容量時以固定順序減少案例數或選下一個可容納案例，
+不能截斷 grid 冒充完整案例；排除的大題列入 coverage limitation。
+Codex 輸出結構化的短診斷與 instruction；instruction 最多 4,096 字元，且
+以固定 Qwen tokenizer 驗證最多 512 tokens，超限就拒絕，不再次要求模型修稿。
+這些是資料大小與產品 prompt 限制，不冒稱 Codex 內部 reasoning token 硬上限。
+
+只傳 train 的聚合統計與選中案例，不傳 128 題 dev 的 trace 或答案。
+每次反思使用獨立最小上下文；parent instruction 加摘要即足夠，不累積整條聊天、
+全部 raw logs 或前代完整反思紀錄。相同模型、輸入與設定以 hash cache 復用回應，
+重放不消耗新的反思額度。每次報告輸入 bytes、實際回傳 token usage、耗時與接受／拒絕結果。
+
 ## 真正使用 DSPy / GEPA
 
 實作採固定版本的 `dspy.GEPA` 與可注入的 instruction proposer，不能只有名稱或自寫
-「叫模型改 prompt」而宣稱 GEPA reproduction。首輪限一個 mutation，因此只能稱
+「叫模型改 prompt」而宣稱 GEPA reproduction。若採一次 mutation 方案，只能稱
 GEPA integration / one-mutation pilot；尚未驗證多代進化或 Pareto search 的優勢。
 
 本機 optimizer 使用 identity-bound Qwen request/result cache。缺少真實 prediction
@@ -104,9 +136,11 @@ GEPA integration / one-mutation pilot；尚未驗證多代進化或 Pareto searc
 若上游沒有合用的 checkpoint API，用薄 adapter 做可測的重放，不宣稱上游原生支援。
 使用 fake backend 測試「重放不再呼叫 Codex、不重複 GPU 請求、正確 parent/selection」。
 
-GEPA 設定採明確的 metric budget，不用不可見的 auto 搜尋額度；例如
-`max_metric_calls=96`、reflection minibatch 3、`use_merge=False`、`track_stats=True`，
-實際可用參數與計數語意以被 pin 的版本為準。另有獨立全域上限：80 solver calls、
+GEPA 設定採明確的 metric budget，不用不可見的 auto 搜尋額度；
+reflection minibatch 上限 3、`use_merge=False`、`track_stats=True`。
+開發時依被 pin 版本的計數語意與離線 mock trace 推導並凍結 `max_metric_calls`，
+不可沿用舊 40 題提案的 96 次額度，也不拿重複的 feedback callback 當新 generation。
+另有獨立全域上限：一次 mutation 方案最多 1,024 solver calls、
 1 proposal、2 kernels、session deadline；metric calls 不能當成 GPU calls 或 CLI turns。
 本輪先不加入消融實驗，沒有數據支持時不能聲稱反思或 Pareto 機制各自造成收益。
 
@@ -159,8 +193,8 @@ valid/timeout/OOM/truncation、tokens、median/p95 latency、peak VRAM、兩種�
 以及 prompt、split、source、runtime、result identities。
 
 僅當 dev 選中 G1，且 holdout 的 net wins > 0、沒有新的 invalid／timeout、
-兩組都在相同硬預算內，才標記「值得擴大重驗」。16 題的一題就是 6.25 個百分點，
-小樣本結果不宣稱統計穩健或泛化成功；報告配對不確定性與具體失敗，禁止只報勝例。
+兩組都在相同硬預算內，才標記「值得擴大重驗」。128 題的一題是 0.78125 個百分點；
+不能因分母擴大就宣稱統計穩健或泛化成功。報告配對不確定性與具體失敗，禁止只報勝例。
 這是後續研究建議，不變更既有產品 acceptance / promotion 門檻。
 
 兩組均零分、無改善、退步或僅 train 改善時，停止擴大同一 prompt search，
