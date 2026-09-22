@@ -2,6 +2,9 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-09-22-dspy-gepa-prompt-pilot.md`](plan/2026-09-22-dspy-gepa-prompt-pilot.md)
+  proposes the next controlled prompt experiment, with Qwen3.5-4B solving,
+  Codex CLI reflection, grouped data splits, and bounded DSPy/GEPA integration.
 - [`plan/2026-09-22-trial-002-kaggle-smoke-repair.md`](plan/2026-09-22-trial-002-kaggle-smoke-repair.md)
   scopes the fresh-task repair of competition mounting, actual L4 x4 execution,
   and exactly four Qwen3.5-4B inference invocations.
