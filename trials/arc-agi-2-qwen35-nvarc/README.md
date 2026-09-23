@@ -15,7 +15,8 @@ ablation. None of their exhausted ceilings or frozen identities is reused.
   embedding/head conversion, reload and material digests. Original Qwen3 token
   IDs and weights are never assumed compatible.
 - Unpacked full-SFT gradient/checkpoint/export path, task-local leave-one-out
-  LoRA with adapter/optimizer/RNG reset, multi-view generation, complete-grid
+  LoRA with adapter/optimizer/RNG reset, bounded score-pruned DFS with isolated
+  prefix state, multi-view generation, complete-grid
   gating, inverse transforms, deduplication, Qwen likelihood verification and
   deterministic top two.
 - Separate TRM training-data conversion and pinned launch specification,
@@ -30,7 +31,8 @@ The offline fixture E2E runs a **tiny random transition model for gradient and
 resume checks**, then explicitly marked fixture predictions through candidate,
 result and sealed-scoring paths. Its 2/3 pass@2 is synthetic test behavior,
 not an ARC accuracy claim. The real 4B, TRM, and SDG teacher paths have not
-been executed. Source-level differences and remaining gaps are in
+been executed. The additional real PyTorch synthetic resume test is skipped in
+this checkout because torch is not installed. Source-level differences and remaining gaps are in
 [`reproduction-matrix.md`](reproduction-matrix.md).
 
 ## Current evidence states

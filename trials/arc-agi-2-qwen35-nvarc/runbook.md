@@ -15,6 +15,13 @@ produces `outbound.zip`, `result.zip`, `frozen-data/manifest.json`, a tiny
 training checkpoint, and a separate `sealed-fixture-score.json`. The score is
 never in outbound/result. No model weights are read.
 
+The focused test suite also contains a real PyTorch CPU resume/parameter
+update check. It skips on this checkout's Python because `torch` is absent;
+`transformers` and `peft` are absent too. When those pinned compatible
+dependencies are provisioned, run `python -m unittest tests.test_arc_nvarc -v`
+before proposing any 4B work. The test does not instantiate Qwen3.5's hybrid
+architecture, so the pinned model gradient/PEFT gate remains separate.
+
 ## Material and compatibility gates
 
 1. Acquire the pinned Qwen3.5-4B base and verify its full upstream manifest.
@@ -33,6 +40,13 @@ never in outbound/result. No model weights are read.
    ```powershell
    python -m irisx.arc_nvarc_cli freeze-data --input <labelled-records.jsonl> --split sft-train --policy clean-research --excluded-parents <excluded-parent-ids.json> --output <new-frozen-dir> --shard-size 8192
    ```
+
+   The freeze manifest now records exact per-source counts and rejects the
+   known `arc2_evaluation6` source under `clean-research`. Source IDs and the
+   excluded-parent list must be supplied from trusted lineage; this does not
+   establish that an unknown upstream corpus is clean. The pinned NVARC SFT
+   YAML concatenates six source datasets, but their actual counts and mixture
+   are unavailable until those datasets are materialized and audited.
 3. Run compact conversion with the pinned base revision and source manifest
    digest. The output is a distinct directory with `grid-vocab.json`, saved HF
    model, and `material-manifest.json`. The converter checks embedding/head
@@ -42,6 +56,16 @@ never in outbound/result. No model weights are read.
    throughput/peak VRAM and task reset. Stop on an unsupported module, OOM,
    nonfinite loss or missing full-grid completion. The present fixture does
    not pass this gate.
+
+The Qwen candidate config now names `bounded-dfs` with cumulative NLL cutoff
+`-log(0.2)`, at most 256 prefix expansions and four returned sequences per
+view. Each branch recomputes its full prefix with `use_cache=False`; this
+prevents sibling state leakage but has unknown 4B speed. `hf-beam` is a named
+alternative, not source-method evidence. The parent still enforces one task
+deadline across adaptation, all test inputs, generation and verification.
+The result ledger counts generation calls, returned sequences and verification
+calls separately. Phase F must measure DFS completion and cost before a larger
+candidate run; Qwen3.5 hybrid cache reuse remains untested.
 
 Real commands are deliberately gated. `convert-compact`, `train-sft`, and the
 Kaggle runner require a new `authorization.json` with `approved: true`, exact
@@ -59,6 +83,21 @@ is separate from an exported inference model. Before a 12,716-step/full-corpus
 run, a Qwen3.5-compatible distributed training implementation and a measured
 single-step memory/throughput report are required. Do not submit the original
 Qwen3 Megatron config against Qwen3.5 unchanged.
+
+TRM training has a separate two-stage path. First stage labelled JSON with
+`stage_trm_training`, then use `trm_preprocess_spec` for the pinned upstream
+`dataset/build_arc_dataset.py`; its output must contain `train/dataset.json`
+before `trm_launch_spec(..., mode="train")` will produce a launch spec. The
+evaluation spec requires a processed `test/dataset.json` and an exact checkpoint
+file. Its NVARC script directory and TinyRecursiveModels import/config roots
+are distinct. These specs are drafts; upstream dependencies, processed real
+data and checkpoint are absent, and no TRM command was run. The pinned README
+names `hydra-core==1.3.2`, `adam_atan2_pytorch==0.2.4`,
+`argdantic==1.3.3`, `coolname==2.2.0`, `numba==0.62.1` plus PyTorch and the
+matching upstream source. The SDG program executor likewise remains blocked
+until an actual isolated runtime can attest no network/credentials, restricted
+mounts, CPU/memory/time and output limits; a config claim alone does not run
+untrusted Python.
 
 ## Static Kaggle packaging
 
