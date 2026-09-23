@@ -21,6 +21,62 @@ RESULT_KIND = "irisx/nvarc-qwen35-result"
 OUTBOUND_MEMBERS = {"bindings/run.json", "cases/visible-tasks.json"}
 RESULT_MEMBERS = {"bindings/run.json", "checkpoint/checkpoint.json",
                   "predictions/predictions.json", "observations/execution.json"}
+TASK_TERMINAL = {"complete", "missing-candidate", "timeout", "worker_crash",
+                 "oom", "interrupted_pending", "not_executed", "session_limit"}
+FAILURE_TERMINAL = TASK_TERMINAL - {"complete", "missing-candidate"}
+COUNTER_FIELDS = {"generation_calls_reserved", "sequences_reserved",
+                  "verification_calls_reserved", "dfs_forwards_reserved",
+                  "ttt_steps_reserved", "ttt_tokens_reserved",
+                  "generation_calls_observed", "sequences_observed",
+                  "verification_calls_observed", "explicit_forward_calls_observed",
+                  "sgd_steps", "training_tokens", "sdg_calls"}
+RESERVATION_FIELDS = {"generation_calls_reserved", "sequences_reserved",
+                      "verification_calls_reserved", "dfs_forwards_reserved",
+                      "ttt_steps_reserved", "ttt_tokens_reserved"}
+CONFIG_FIELDS = {"worker_count", "task_deadline_seconds", "session_budget_seconds",
+                 "finalization_reserve_seconds", "maximum_calls_per_task",
+                 "beams_per_call", "maximum_new_tokens", "seed", "color_repeats",
+                 "ranking", "full_coverage", "decoding", "dfs_max_score",
+                 "dfs_max_expansions", "dfs_cache_mode", "ttt"}
+TTT_FIELDS = {"enabled", "rank", "alpha", "dropout", "use_rslora", "seed",
+              "steps", "augmentation_count", "max_sequence_length", "learning_rate"}
+
+
+def _is_digest(value: Any) -> bool:
+    return (isinstance(value, str) and len(value) == 71 and value.startswith("sha256:") and
+            all(char in "0123456789abcdef" for char in value[7:]))
+
+
+def validate_workload(workload: Mapping[str, Any]) -> None:
+    if (not isinstance(workload, dict) or set(workload) !=
+            {"format", "trial_id", "source_digest", "cases", "task_count", "test_output_count"} or
+            workload["format"] != "irisx/nvarc-visible-workload" or
+            workload["trial_id"] != TRIAL_ID or
+            not _is_digest(workload["source_digest"]) or
+            not isinstance(workload["cases"], list) or not workload["cases"]):
+        raise ValidationError("visible workload schema differs")
+    names = []
+    tests = 0
+    for case in workload["cases"]:
+        if (not isinstance(case, dict) or set(case) != {"task_id", "train", "test"} or
+                not isinstance(case["task_id"], str) or not case["task_id"] or
+                not isinstance(case["train"], list) or not case["train"] or
+                not isinstance(case["test"], list) or not case["test"]):
+            raise ValidationError("visible task schema differs")
+        names.append(case["task_id"])
+        for demo in case["train"]:
+            if not isinstance(demo, dict) or set(demo) != {"input", "output"}:
+                raise ValidationError("demonstration needs only input and output")
+            grid(demo["input"]); grid(demo["output"])
+        for test in case["test"]:
+            if not isinstance(test, dict) or set(test) != {"input"}:
+                raise ValidationError("test input contains an output or extra field")
+            grid(test["input"])
+            tests += 1
+    if (names != sorted(set(names)) or type(workload["task_count"]) is not int or
+            workload["task_count"] != len(names) or type(workload["test_output_count"]) is not int or
+            workload["test_output_count"] != tests):
+        raise ValidationError("visible task identities or denominator differ")
 
 
 def atomic_json(path: Path, value: Any) -> None:
@@ -43,9 +99,15 @@ def make_workload(tasks: Mapping[str, Mapping[str, Any]], *, source_digest: str)
 def make_binding(workload: Mapping[str, Any], *, run_id: str, model_digest: str,
                  data_digest: str, tokenizer_digest: str, runtime_digest: str,
                  config: Mapping[str, Any]) -> dict[str, Any]:
-    if not run_id or any(not value.startswith("sha256:") for value in
+    validate_workload(workload)
+    if not isinstance(run_id, str) or not run_id or any(not _is_digest(value) for value in
                          (model_digest, data_digest, tokenizer_digest, runtime_digest)):
         raise ValidationError("run and immutable materials required")
+    if not isinstance(config, Mapping) or set(config) - CONFIG_FIELDS:
+        raise ValidationError("candidate config has an unsupported field")
+    if "ttt" in config and (not isinstance(config["ttt"], Mapping) or
+                            set(config["ttt"]) - TTT_FIELDS):
+        raise ValidationError("task adaptation config has an unsupported field")
     required = {"worker_count", "task_deadline_seconds", "session_budget_seconds",
                 "finalization_reserve_seconds", "maximum_calls_per_task",
                 "beams_per_call", "maximum_new_tokens"}
@@ -63,6 +125,9 @@ def make_binding(workload: Mapping[str, Any], *, run_id: str, model_digest: str,
         if (type(score) not in (int, float) or not math.isfinite(score) or
                 score <= 0 or type(expansions) is not int or expansions < 1):
             raise ValidationError("bounded DFS requires finite score and expansion ceilings")
+        if config.get("dfs_cache_mode", "full-prefix-recompute") not in {
+                "full-prefix-recompute", "full-prefix-logit-cache"}:
+            raise ValidationError("unsupported Qwen3.5 hybrid DFS cache mode")
     ttt = config.get("ttt", {})
     if ttt.get("enabled") and any(type(ttt.get(key)) is not int or ttt[key] < 1
                                   for key in ("steps", "max_sequence_length")):
@@ -84,6 +149,27 @@ def make_binding(workload: Mapping[str, Any], *, run_id: str, model_digest: str,
     return binding
 
 
+def validate_binding(binding: Mapping[str, Any], workload: Mapping[str, Any]) -> None:
+    validate_workload(workload)
+    fields = {"format", "trial_id", "run_id", "workload_digest", "task_count",
+              "test_output_count", "source_digest", "model_digest", "data_digest",
+              "tokenizer_digest", "runtime_digest", "config", "configuration_digest",
+              "source_view", "truth_free", "identity_digest"}
+    if not isinstance(binding, dict) or set(binding) != fields:
+        raise ValidationError("run binding schema differs")
+    try:
+        expected = make_binding(workload, run_id=binding["run_id"],
+                                model_digest=binding["model_digest"],
+                                data_digest=binding["data_digest"],
+                                tokenizer_digest=binding["tokenizer_digest"],
+                                runtime_digest=binding["runtime_digest"],
+                                config=binding["config"])
+    except (KeyError, TypeError, AttributeError) as exc:
+        raise ValidationError("run binding field is invalid") from exc
+    if binding != expected:
+        raise ValidationError("run binding and visible workload differ")
+
+
 def _truth_free(value: Any) -> None:
     forbidden = {"expected_output", "evaluator_truth", "answer_digest", "feedback",
                  "correct", "accuracy", "score_report"}
@@ -98,8 +184,7 @@ def _truth_free(value: Any) -> None:
 
 
 def build_outbound(path: Path, binding: Mapping[str, Any], workload: Mapping[str, Any]) -> str:
-    if binding["workload_digest"] != digest_value(workload):
-        raise ValidationError("workload binding differs")
+    validate_binding(binding, workload)
     _truth_free(binding)
     _truth_free(workload)
     files = {"bindings/run.json": canonical_bytes(binding, newline=True),
@@ -119,6 +204,7 @@ def verify_outbound(path: Path) -> tuple[dict[str, Any], dict[str, Any], str]:
     workload = json.loads(contents["cases/visible-tasks.json"])
     _truth_free(binding)
     _truth_free(workload)
+    validate_binding(binding, workload)
     if (binding["workload_digest"] != digest_value(workload) or
             binding["identity_digest"] != digest_value({key: value for key, value in binding.items() if key != "identity_digest"}) or
             manifest["package_id"] != binding["run_id"]):
@@ -144,16 +230,74 @@ def new_checkpoint(binding: Mapping[str, Any], workload: Mapping[str, Any]) -> d
 
 def validate_checkpoint(checkpoint: Mapping[str, Any], binding: Mapping[str, Any],
                         workload: Mapping[str, Any]) -> None:
+    validate_binding(binding, workload)
     expected = [case["task_id"] for case in workload["cases"]]
-    if (checkpoint.get("run_id") != binding["run_id"] or
+    if (not isinstance(checkpoint, dict) or checkpoint.get("format") != "irisx/nvarc-task-checkpoint" or
+            checkpoint.get("run_id") != binding["run_id"] or
             checkpoint.get("identity_digest") != binding["identity_digest"] or
             checkpoint.get("expected_tasks") != expected):
         raise ValidationError("task checkpoint identity differs")
+    if (type(checkpoint.get("complete")) is not bool or
+            not isinstance(checkpoint.get("reserved"), dict) or
+            not isinstance(checkpoint.get("completed"), dict) or
+            not isinstance(checkpoint.get("counters"), dict) or
+            set(checkpoint["counters"]) != COUNTER_FIELDS or
+            any(type(value) is not int or value < 0 for value in checkpoint["counters"].values())):
+        raise ValidationError("task checkpoint counters or completion flag differ")
+    if checkpoint["counters"]["sdg_calls"] != 0:
+        raise ValidationError("inference checkpoint cannot record SDG calls")
     keys = set(expected)
     if not set(checkpoint["reserved"]).issubset(keys) or not set(checkpoint["completed"]).issubset(keys):
         raise ValidationError("task checkpoint contains an unexpected task")
     if set(checkpoint["reserved"]) & set(checkpoint["completed"]):
         raise ValidationError("task cannot be reserved and complete")
+    if checkpoint["complete"] and (checkpoint["reserved"] or set(checkpoint["completed"]) != keys):
+        raise ValidationError("completed checkpoint has pending or missing tasks")
+    reservations = list(checkpoint["reserved"].values())
+    by_id = {case["task_id"]: case for case in workload["cases"]}
+    for task_id, record in checkpoint["completed"].items():
+        if not isinstance(record, dict) or record.get("task_id") != task_id:
+            raise ValidationError("completed task identity differs")
+        reservation = record.get("reservation")
+        if record.get("status") == "not_executed":
+            if reservation is not None:
+                raise ValidationError("unexecuted task has a reservation")
+        elif not isinstance(reservation, dict):
+            raise ValidationError("executed task lacks its reservation")
+        if reservation is not None:
+            reservations.append(reservation)
+        validate_result_records([record], {"cases": [by_id[task_id]]})
+    for reservation in reservations:
+        if (not isinstance(reservation, dict) or
+                set(reservation) != {"rank", "started_utc"} | RESERVATION_FIELDS or
+                type(reservation["rank"]) is not int or not 0 <= reservation["rank"] < 4 or
+                not isinstance(reservation["started_utc"], str) or
+                any(type(reservation[key]) is not int or reservation[key] < 0
+                    for key in RESERVATION_FIELDS)):
+            raise ValidationError("task reservation schema differs")
+        config = binding["config"]
+        if (reservation["generation_calls_reserved"] != config["maximum_calls_per_task"] or
+                reservation["sequences_reserved"] != config["maximum_calls_per_task"] * config["beams_per_call"] or
+                reservation["verification_calls_reserved"] != reservation["sequences_reserved"]):
+            raise ValidationError("task reservation does not match run limits")
+    for field in RESERVATION_FIELDS:
+        if checkpoint["counters"][field] != sum(item[field] for item in reservations):
+            raise ValidationError("task reservation accounting differs")
+    observed = {"generation_calls_observed": 0, "sequences_observed": 0,
+                "verification_calls_observed": 0, "explicit_forward_calls_observed": 0,
+                "sgd_steps": 0, "training_tokens": 0}
+    for record in checkpoint["completed"].values():
+        tests = record.get("tests")
+        if not isinstance(tests, list) or not tests:
+            raise ValidationError("completed task tests missing")
+        observed["generation_calls_observed"] += tests[-1].get("generation_calls_so_far", 0)
+        observed["sequences_observed"] += sum(test.get("returned_sequences", 0) for test in tests)
+        observed["verification_calls_observed"] += tests[-1].get("verification_calls_so_far", 0)
+        observed["explicit_forward_calls_observed"] += record.get("explicit_forward_calls", 0)
+        observed["sgd_steps"] += record.get("adaptation", {}).get("steps", 0)
+        observed["training_tokens"] += record.get("adaptation", {}).get("training_tokens", 0)
+    if any(checkpoint["counters"][field] != value for field, value in observed.items()):
+        raise ValidationError("observed task accounting differs")
     if checkpoint["counters"]["generation_calls_reserved"] > len(expected) * binding["config"]["maximum_calls_per_task"]:
         raise ValidationError("generation call ceiling exceeded")
     if (checkpoint["counters"]["generation_calls_observed"] > checkpoint["counters"]["generation_calls_reserved"] or
@@ -203,11 +347,13 @@ def finish_task(checkpoint: dict[str, Any], task_id: str, record: Mapping[str, A
     sequences = 0
     verification = 0
     if observed_calls is not None:
-        if type(observed_calls) is not int or observed_calls > reservation["generation_calls_reserved"]:
+        if (type(observed_calls) is not int or observed_calls < 0 or
+                observed_calls > reservation["generation_calls_reserved"]):
             raise ValidationError("observed generation calls exceed reservation")
         sequences = sum(test.get("returned_sequences", 0) for test in record["tests"])
         verification = record["tests"][-1].get("verification_calls_so_far", 0)
-        if (type(verification) is not int or verification < 0 or
+        if (type(sequences) is not int or sequences < 0 or
+                type(verification) is not int or verification < 0 or
                 verification > sequences or sequences > reservation["sequences_reserved"]):
             raise ValidationError("candidate or verification count exceeds reservation")
     forwards = record.get("explicit_forward_calls", 0)
@@ -277,15 +423,47 @@ def validate_result_records(records: list[Mapping[str, Any]], workload: Mapping[
     if len(records) != len(workload["cases"]):
         raise ValidationError("result task denominator differs")
     for case, record in zip(workload["cases"], records):
-        if case["task_id"] != record["task_id"] or len(case["test"]) != len(record["tests"]):
+        if (not isinstance(record, dict) or case["task_id"] != record.get("task_id") or
+                not isinstance(record.get("tests"), list) or
+                len(case["test"]) != len(record["tests"]) or
+                record.get("status") not in TASK_TERMINAL):
             raise ValidationError("result test denominator differs")
+        prior_calls = prior_verifications = 0
+        has_missing = False
         for index, test in enumerate(record["tests"]):
-            if test["test_index"] != index or len(test["attempts"]) > 2:
+            if (not isinstance(test, dict) or type(test.get("test_index")) is not int or
+                    test["test_index"] != index or not isinstance(test.get("attempts"), list) or
+                    len(test["attempts"]) > 2 or test.get("status") not in TASK_TERMINAL):
                 raise ValidationError("result attempt identity differs")
-            if test.get("missing_attempts") != 2 - len(test["attempts"]):
+            if (type(test.get("missing_attempts")) is not int or
+                    test["missing_attempts"] != 2 - len(test["attempts"])):
                 raise ValidationError("result missing-attempt count differs")
+            if test["status"] == "complete" and len(test["attempts"]) != 2:
+                raise ValidationError("complete test requires two candidates")
+            if test["status"] == "missing-candidate" and len(test["attempts"]) == 2:
+                raise ValidationError("missing-candidate test is not missing")
+            if test["status"] in FAILURE_TERMINAL and test["attempts"]:
+                raise ValidationError("failed test cannot claim model candidates")
+            has_missing |= test["status"] == "missing-candidate"
+            for field, prior in (("generation_calls_so_far", prior_calls),
+                                 ("verification_calls_so_far", prior_verifications)):
+                value = test.get(field)
+                if value is not None and (type(value) is not int or value < prior):
+                    raise ValidationError("result call counters are invalid or regressed")
+            returned = test.get("returned_sequences")
+            if returned is not None and (type(returned) is not int or returned < 0):
+                raise ValidationError("result returned-sequence count differs")
+            prior_calls = test.get("generation_calls_so_far", prior_calls)
+            prior_verifications = test.get("verification_calls_so_far", prior_verifications)
             for attempt in test["attempts"]:
                 grid(attempt)
+        if record["status"] == "complete" and any(test["status"] != "complete" for test in record["tests"]):
+            raise ValidationError("complete task contains incomplete tests")
+        if record["status"] == "missing-candidate" and not has_missing:
+            raise ValidationError("missing-candidate task has no missing test")
+        if record["status"] in FAILURE_TERMINAL and any(test["status"] != record["status"]
+                                                        for test in record["tests"]):
+            raise ValidationError("failed task test statuses differ")
 
 
 def verify_result(path: Path, binding: Mapping[str, Any], workload: Mapping[str, Any]) -> str:
@@ -297,6 +475,8 @@ def verify_result(path: Path, binding: Mapping[str, Any], workload: Mapping[str,
     checkpoint = json.loads(contents["checkpoint/checkpoint.json"])
     _truth_free(checkpoint)
     validate_checkpoint(checkpoint, binding, workload)
+    if checkpoint["complete"] is not True:
+        raise ValidationError("result checkpoint is not terminal")
     records = json.loads(contents["predictions/predictions.json"])["records"]
     _truth_free(records)
     validate_result_records(records, workload)

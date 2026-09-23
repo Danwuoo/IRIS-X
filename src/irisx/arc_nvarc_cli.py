@@ -17,7 +17,7 @@ from .arc_nvarc_runtime import (build_outbound, build_result, finalize_interrupt
 from .arc_nvarc_training import supervised_sequences, tiny_train
 from .arc_nvarc_training import FrozenSequenceStore, load_compact_model, train_torch_sft
 from .arc_nvarc_representation import (convert_qwen35_checkpoint, export_trained_model,
-                                       verify_model_material)
+                                       snapshot_source_model_material, verify_model_material)
 from .arc_nvarc_transport import stage_runtime_dataset
 from .canonical import canonical_bytes, digest_value
 from .errors import ValidationError
@@ -70,7 +70,7 @@ def fixture_e2e(output: Path) -> dict[str, Any]:
         reserve_task(checkpoint, binding, task_id, rank=0, at_utc="synthetic")
         tests = solve_task(case, backend, config)
         finish_task(checkpoint, task_id, {"task_id": task_id, "tests": tests,
-                                          "status": "fixture-complete",
+                                          "status": "complete" if all(test["status"] == "complete" for test in tests) else "missing-candidate",
                                           "timing": {"load_seconds": None, "ttt_seconds": None,
                                                      "generate_seconds": None, "rank_seconds": None},
                                           "peak_memory_mib": None})
@@ -148,7 +148,11 @@ def main(argv: list[str] | None = None) -> int:
     convert.add_argument("--output", type=Path, required=True)
     convert.add_argument("--model-revision", required=True)
     convert.add_argument("--model-manifest-digest", required=True)
+    convert.add_argument("--base-manifest", type=Path, required=True)
     convert.add_argument("--authorization", type=Path, required=True)
+    snapshot = commands.add_parser("snapshot-base-manifest")
+    snapshot.add_argument("--base", type=Path, required=True)
+    snapshot.add_argument("--output", type=Path, required=True)
     train = commands.add_parser("train-sft")
     train.add_argument("--compact-base", type=Path, required=True)
     train.add_argument("--frozen-data", type=Path, required=True)
@@ -181,7 +185,11 @@ def main(argv: list[str] | None = None) -> int:
         _authorized(args.authorization, operation="convert-compact", identity_digest=identity)
         print(json.dumps(convert_qwen35_checkpoint(args.base, args.output,
                                                     model_revision=args.model_revision,
-                                                    model_manifest_digest=args.model_manifest_digest), indent=2))
+                                                    model_manifest_digest=args.model_manifest_digest,
+                                                    base_manifest_path=args.base_manifest), indent=2))
+    elif args.command == "snapshot-base-manifest":
+        print(json.dumps({"base_model_manifest_digest":
+                          snapshot_source_model_material(args.base, args.output)}, indent=2))
     else:
         sequences, data_manifest = load_frozen_sequences(args.frozen_data)
         config = json.loads(args.config.read_bytes())

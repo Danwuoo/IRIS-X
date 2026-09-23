@@ -17,6 +17,8 @@ SYMBOLS = tuple("0123456789") + ("\n", "<user>", "<assistant>", "<pad>", "<begin
 USER, ASSISTANT, PAD, BEGIN, END = 11, 12, 13, 14, 15
 MODEL_REVISION = "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
 TOKENIZER_SHA256 = "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42"
+BASE_CONFIG_SHA256 = "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670"
+BASE_INDEX_SHA256 = "cf3f798ee02ba45f9622aa8892a47369ab667d0afbf154ee7c2212de42e6302d"
 PINNED_SOURCE_IDS = tuple(range(15, 25)) + (198, 846, 74455, 248044, 248045, 248046)
 
 
@@ -145,21 +147,21 @@ def validate_compact_model(model: Any, *, tied: bool | None = None) -> None:
 
 
 def convert_qwen35_checkpoint(base_dir: Path, output_dir: Path, *, model_revision: str,
-                              model_manifest_digest: str) -> dict[str, Any]:
+                              model_manifest_digest: str,
+                              base_manifest_path: Path | None = None) -> dict[str, Any]:
     """Save a distinct compact checkpoint; never change the base directory.
 
     The vision module remains in the saved HF model but is never given image
     inputs. Actual Qwen3.5 gradient/load compatibility requires a GPU pilot.
     """
-    import torch
-    from transformers import AutoModelForMultimodalLM, AutoTokenizer
-
     if output_dir.exists() and any(output_dir.iterdir()):
         raise ValidationError("converted output directory must be empty")
     if base_dir.resolve() == output_dir.resolve() or not base_dir.is_dir():
         raise ValidationError("base checkpoint must be immutable and separate")
-    if hashlib.sha256((base_dir / "tokenizer.json").read_bytes()).hexdigest() != TOKENIZER_SHA256:
-        raise ValidationError("pinned Qwen3.5 tokenizer digest differs")
+    verify_source_model_material(base_dir, model_manifest_digest, model_revision,
+                                 manifest_path=base_manifest_path)
+    import torch
+    from transformers import AutoModelForMultimodalLM, AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(base_dir, local_files_only=True)
     manifest = vocabulary_manifest(tokenizer, model_revision=model_revision,
                                    model_manifest_digest=model_manifest_digest)
@@ -228,22 +230,127 @@ def convert_qwen35_checkpoint(base_dir: Path, output_dir: Path, *, model_revisio
 
 
 def verify_model_material(root: Path, expected_digest: str) -> dict[str, Any]:
-    import hashlib
-
-    material = json.loads((root / "material-manifest.json").read_bytes())
-    if digest_value(material) != expected_digest or material.get("format") != "irisx/nvarc-compact-model-material":
+    manifest_path = root / "material-manifest.json"
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        raise ValidationError("compact material manifest is missing or unsafe")
+    material = json.loads(manifest_path.read_bytes())
+    if (digest_value(material) != expected_digest or
+            material.get("format") != "irisx/nvarc-compact-model-material" or
+            type(material.get("tied_embeddings")) is not bool):
         raise ValidationError("compact model material identity differs")
-    for item in material["files"]:
-        path = root / item["path"]
-        if path.parent != root or not path.is_file() or path.stat().st_size != item["bytes"]:
-            raise ValidationError("compact model member missing or outside root")
-        sha = hashlib.sha256()
-        with path.open("rb") as stream:
-            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-                sha.update(chunk)
-        if sha.hexdigest() != item["sha256"]:
-            raise ValidationError("compact model member digest differs")
+    files = _verify_file_inventory(root, material.get("files"), "material-manifest.json")
+    _verify_weight_layout(root, files)
+    required = {"config.json", "generation_config.json", "grid-vocab.json", "grid-tokenizer.json"}
+    if not required.issubset(files):
+        raise ValidationError("compact model config or grid tokenizer is missing")
+    config = json.loads((root / "config.json").read_bytes())
+    generation = json.loads((root / "generation_config.json").read_bytes())
+    vocabulary = json.loads((root / "grid-vocab.json").read_bytes())
+    tokenizer = json.loads((root / "grid-tokenizer.json").read_bytes())
+    if (config.get("text_config", config).get("vocab_size") != 16 or
+            vocabulary.get("vocab_size") != 16 or
+            vocabulary.get("identity_digest") != digest_value({k: v for k, v in vocabulary.items()
+                                                               if k != "identity_digest"}) or
+            material.get("vocabulary_identity_digest") != vocabulary["identity_digest"] or
+            tokenizer.get("format") != "irisx/nvarc-grid-tokenizer" or
+            tokenizer.get("symbols") != list(SYMBOLS) or
+            tokenizer.get("pad_token_id") != PAD or tokenizer.get("eos_token_id") != END):
+        raise ValidationError("compact vocabulary binding differs")
+    for member in (config, config.get("text_config", {}), generation):
+        for name, expected in (("pad_token_id", PAD), ("eos_token_id", END),
+                               ("bos_token_id", BEGIN)):
+            if member.get(name) != expected:
+                raise ValidationError("compact model special-token config differs")
     return material
+
+
+def _verify_file_inventory(root: Path, entries: Any, manifest_name: str | None) -> set[str]:
+    if not isinstance(entries, list) or not entries:
+        raise ValidationError("model material file inventory is empty")
+    names: set[str] = set()
+    for item in entries:
+        if (not isinstance(item, dict) or set(item) != {"path", "sha256", "bytes"} or
+                not isinstance(item["path"], str) or not item["path"] or
+                item["path"] in {".", "..", manifest_name} or
+                "/" in item["path"] or "\\" in item["path"] or ":" in item["path"] or
+                item["path"] in names or type(item["bytes"]) is not int or item["bytes"] < 1 or
+                not isinstance(item["sha256"], str) or len(item["sha256"]) != 64 or
+                any(char not in "0123456789abcdef" for char in item["sha256"])):
+            raise ValidationError("model material member identity is unsafe")
+        names.add(item["path"])
+        path = root / item["path"]
+        if (path.is_symlink() or not path.is_file() or path.stat().st_size != item["bytes"] or
+                _file_sha256(path) != item["sha256"]):
+            raise ValidationError("model material member digest differs")
+    actual = {path.name for path in root.iterdir() if path.name != manifest_name}
+    if actual != names or any(path.is_symlink() or not path.is_file()
+                              for path in root.iterdir() if path.name != manifest_name):
+        raise ValidationError("model material has an unlisted or unsafe member")
+    return names
+
+
+def _file_sha256(path: Path) -> str:
+    sha = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            sha.update(chunk)
+    return sha.hexdigest()
+
+
+def _verify_weight_layout(root: Path, names: set[str]) -> None:
+    index = "model.safetensors.index.json"
+    weights = {name for name in names if name.endswith(".safetensors")}
+    if index in names:
+        mapping = json.loads((root / index).read_bytes()).get("weight_map")
+        if (not isinstance(mapping, dict) or not mapping or
+                any(not isinstance(key, str) or not isinstance(value, str) for key, value in mapping.items()) or
+                set(mapping.values()) != weights):
+            raise ValidationError("model shard index and files differ")
+    elif weights != {"model.safetensors"}:
+        raise ValidationError("model needs an indexed shard set or one safe tensor")
+
+
+def verify_source_model_material(root: Path, expected_digest: str,
+                                 model_revision: str, *,
+                                 manifest_path: Path | None = None) -> dict[str, Any]:
+    """Verify the approved base inventory before any HF loader sees its files."""
+    path = manifest_path if manifest_path is not None else root / "source-model-manifest.json"
+    if not path.is_file() or path.is_symlink():
+        raise ValidationError("base model inventory is missing")
+    manifest = json.loads(path.read_bytes())
+    if (digest_value(manifest) != expected_digest or
+            manifest.get("format") != "irisx/nvarc-base-model-material" or
+            manifest.get("revision") != MODEL_REVISION or model_revision != MODEL_REVISION):
+        raise ValidationError("base model identity differs")
+    local_name = path.name if path.parent.resolve() == root.resolve() else None
+    names = _verify_file_inventory(root, manifest.get("files"), local_name)
+    _verify_weight_layout(root, names)
+    if not {"config.json", "tokenizer.json", "model.safetensors.index.json"}.issubset(names):
+        raise ValidationError("pinned base config, tokenizer or weight index missing")
+    for name, expected in (("config.json", BASE_CONFIG_SHA256),
+                           ("tokenizer.json", TOKENIZER_SHA256),
+                           ("model.safetensors.index.json", BASE_INDEX_SHA256)):
+        if hashlib.sha256((root / name).read_bytes()).hexdigest() != expected:
+            raise ValidationError(f"pinned base {name} digest differs")
+    return manifest
+
+
+def snapshot_source_model_material(root: Path, output: Path) -> str:
+    """Hash an already present pinned base into a separate, immutable inventory."""
+    if (not root.is_dir() or output.exists() or output.resolve().is_relative_to(root.resolve()) or
+            any(path.is_symlink() or not path.is_file() for path in root.iterdir())):
+        raise ValidationError("base snapshot needs a regular directory and new external manifest")
+    files = []
+    for path in sorted(root.iterdir()):
+        files.append({"path": path.name, "sha256": _file_sha256(path),
+                      "bytes": path.stat().st_size})
+    manifest = {"format": "irisx/nvarc-base-model-material", "revision": MODEL_REVISION,
+                "files": files}
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_bytes(canonical_bytes(manifest, newline=True))
+    digest = digest_value(manifest)
+    verify_source_model_material(root, digest, MODEL_REVISION, manifest_path=output)
+    return digest
 
 
 def export_trained_model(model: Any, compact_base: Path, output: Path,
