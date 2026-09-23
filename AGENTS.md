@@ -128,6 +128,13 @@ listing show no pilot 004 version. Decision 0025 applies the owner's standing
 pre-runtime rejection retry direction to authorize one exact-package transport
 retry under the same pilot 004 identity. If it is accepted, monitor to terminal
 and retrieve once; if rejected, stop without a third request.
+That exact retry was accepted as version 1 and completed. The official
+competition mount, four distinct L4s and offline removal of `torchao 0.10.0`
+were verified. Qwen3.5-4B completed two synthetic LoRA optimizer steps with
+16 total training tokens, all four expected gradient groups, adapter reset,
+and zero generations. One terminal retrieval returned a full log and verified
+truth-free result. Decisions 0024–0025 are consumed; no additional pilot
+submission, retrieval, ARC scoring, full SFT or method promotion is authorized.
 
 ## Authority order
 

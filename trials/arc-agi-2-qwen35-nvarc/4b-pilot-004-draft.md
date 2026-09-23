@@ -1,6 +1,6 @@
-# Qwen3.5-4B pilot 004 dependency-repair draft
+# Qwen3.5-4B pilot 004 dependency repair
 
-Status: **first push rejected by expired OAuth; Decision 0025 authorizes one exact-package transport retry**.
+Status: **version 1 runtime complete and locally verified; Decisions 0024–0025 consumed**.
 
 The [pilot 003](4b-pilot-003.md) accepted version verified the official
 `arc-prize-2026-arc-agi-2` mount, four distinct L4 devices and the pinned
@@ -51,9 +51,43 @@ plan, wheel, notebook and metadata SHA-256 values
 `70241f00764bad3849a29aae20dbde7d6e20657c76ebca6f374c0f279c8f6e22`,
 `08627fa4ba2cbaff101bb6fb7ed4f0d4c5af291f1b88685dca69d61513886ea9`,
 and `b4907d434348128fe0db9f495963e0ef5b8fb88ea6c5a099db4480c462e8b013`.
-This does not permit a third push or a changed workload.
+This did not permit a third push or a changed workload.
 
 For the authorized terminal retrieval, set `PYTHONIOENCODING=utf-8` in
 the local CLI process so a Unicode log line does not repeat pilot 003's
 Windows `charmap` download failure. This note does not authorize another
 retrieval of pilot 003.
+
+## Executed version and terminal evidence
+
+The one Decision 0025 retry of the unchanged package was accepted at
+[`danielwuu/iris-x-4b-lora-pilot-004`](https://www.kaggle.com/code/danielwuu/iris-x-4b-lora-pilot-004),
+version 1. Kaggle reported `COMPLETE`, and the application result also reports
+`complete`. One terminal output retrieval succeeded with UTF-8 local CLI
+output; the log and all eight other expected files were retained. The result
+plan digest is
+`sha256:6162bb4426ff848d843e9b2b56d006e8801ce52bfd794922cad55d646d01fc26`.
+Local verification matched the returned plan, wheel and model manifest to
+the approved package hashes and confirmed the result/ledger identity and
+truth-free counters.
+
+The dependency preflight observed `torchao 0.10.0`, removed it with exit code
+0, and found it absent afterward. The notebook and runner verified the one
+official competition challenge mount and four distinct NVIDIA L4 GPUs, each
+with 22,563 MiB visible to PyTorch. Only device 0 was used. The pinned
+Qwen3.5-4B loaded and completed two synthetic LoRA optimizer steps using 16
+total training tokens. The returned losses were 6.4069 and 4.0467; attention,
+delta, embedding and head gradient groups were all observed, and adapter
+reset matched its initial state. Peak allocated GPU memory was 9,419 MiB.
+There were zero model generations and zero teacher calls. No ARC task was
+trained or scored, so this establishes only the bounded 4B compatibility
+path, not full NVARC reproduction or ARC accuracy.
+
+The ignored local evidence is under
+`.irisx/arc-agi-2/qwen35-nvarc/4b-pilot-launch-004/`. Returned result
+SHA-256 is
+`4c501af39032542f9b16f53fd373f0b582b5ef6151f4b360c348ee20484cc088`;
+the local verification report SHA-256 is
+`e529b66502f45553d462e7dbddfa72fd03feaa3d319ad90d96ebf64f5016b3b1`.
+The first HTTP 401, accepted retry, terminal monitoring and one retrieval are
+all consumed. Any additional external experiment requires new owner direction.

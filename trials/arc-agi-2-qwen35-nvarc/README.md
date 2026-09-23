@@ -1,8 +1,7 @@
 # Qwen3.5-4B NVARC reproduction development
 
-Status: **reviewed local P1 repairs implemented; CPU tiny Qwen3.5/PEFT verified;
-pilot 001 failed its hardware gate, pilot 002 push was rejected, and pilot 003
-failed on a runtime dependency; acceptance still partial**.
+Status: **reviewed local P1 repairs implemented; pilot 004 verified a bounded
+synthetic Qwen3.5-4B LoRA path on one L4; full-method acceptance remains partial**.
 The [second control review](control-review-4d23546.md) independently confirms
 the earlier example repairs and identified TTT/DFS reservation binding,
 unused-parameter DDP and TRM evaluation-entry blockers at `4d23546`. Its
@@ -51,11 +50,11 @@ loading model weights or training. Both external allowances are consumed.
 The offline fixture E2E runs a **tiny random transition model for gradient and
 resume checks**, then explicitly marked fixture predictions through candidate,
 result and sealed-scoring paths. Its 2/3 pass@2 is synthetic test behavior,
-not an ARC accuracy claim. The real 4B, TRM, and SDG teacher paths have not
-been executed. The additional real PyTorch synthetic resume test skips under
+not an ARC accuracy claim. Full ARC 4B training, TRM, and SDG teacher paths
+have not been executed. The additional real PyTorch synthetic resume test skips under
 default Python 3.14 but passes with the installed Python 3.12 and torch. Tiny
-actual Qwen3.5/PEFT passes in the separate optional CPU environment; 4B GPU
-compatibility remains unverified.
+actual Qwen3.5/PEFT passes in the separate optional CPU environment; pilot 004
+separately verifies bounded 4B LoRA gradients and reset on one L4.
 Source-level differences and remaining gaps are in
 [`reproduction-matrix.md`](reproduction-matrix.md).
 
@@ -63,9 +62,9 @@ Source-level differences and remaining gaps are in
 
 | State | Current value |
 | --- | --- |
-| implementation-verified | Partial: both reviews' local P1 and DFS defects repaired; CPU collective, unused-branch, TRM entry and tiny actual Qwen3.5/PEFT pass; sandbox, upstream TRM and 4B GPU gates remain |
+| implementation-verified | Partial: both reviews' local P1 and DFS defects repaired; CPU collective, unused-branch, TRM entry, tiny actual Qwen3.5/PEFT and bounded 4B GPU LoRA pilot pass; sandbox, upstream TRM and full-method GPU gates remain |
 | materials-ready | Partial: the existing private Kaggle Dataset v2 has pinned 4B base weights and offline wheels, now inventoried and digest-bound. The pilot uses synthetic data. Compact/ARC-SFT weights, full training data and TRM weights remain absent |
-| runtime-verified | No 4B model/gradient proof: pilot 003 verified the official competition mount, four L4s and base material, then failed on the preinstalled `torchao 0.10.0`/PEFT 0.21.0 dependency conflict before model loading |
+| runtime-verified | Partial: pilot 004 verified one L4 Qwen3.5-4B load, two synthetic LoRA steps, four expected gradient groups, adapter reset and 9,419 MiB peak allocation; four GPUs were visible but no four-worker or ARC task execution was tested |
 | sft-trained | No |
 | full-method-measured | No |
 
@@ -87,10 +86,14 @@ The [pilot 004 draft](4b-pilot-004-draft.md) contains a bounded offline
 dependency repair. Decision 0024 authorizes one separate Kaggle push and
 terminal retrieval. Its first request received HTTP 401 from an expired local
 OAuth token before version creation. Decision 0025 authorizes one exact-package
-transport retry after refreshing that credential.
+transport retry after refreshing that credential. That retry was accepted as
+version 1, completed two synthetic 4B LoRA steps and was retrieved and
+verified once. Both decisions are consumed.
 
 Pilot 001 made one private Kaggle kernel push and one terminal retrieval.
 Pilot 002's one push request was rejected before a version receipt, with no
 retrieval. Pilot 003 made one accepted push and one partial terminal retrieval
-attempt. None made real Qwen/TRM generations or training steps, SDG
+attempt. Pilot 004 made one HTTP 401 request and one accepted retry, followed
+by one full terminal retrieval. It completed two synthetic 4B LoRA steps with
+16 tokens. No pilot made model generations, ARC training or scoring, SDG
 teacher calls, Codex proposer calls, competition submissions, or paid usage.
