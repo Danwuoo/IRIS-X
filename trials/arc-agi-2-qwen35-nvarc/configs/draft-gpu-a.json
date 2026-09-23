@@ -1,0 +1,26 @@
+{
+  "approved": false,
+  "owner_authorization": null,
+  "operation": "tiny-qwen35-gpu-compatibility",
+  "run_id": "nvarc-acceptance-gpu-a-001",
+  "repair_baseline_commit": "f532885",
+  "provider": "Kaggle private GPU notebook",
+  "target_image_reference": "v170-GPU-bdf9e0538555f90453619adefb49ba40cfa136db44a9c9be7a42ea715c0aa068",
+  "dependencies": {
+    "torch": "UNBOUND",
+    "transformers": "UNBOUND",
+    "peft": "UNBOUND",
+    "safetensors": "UNBOUND"
+  },
+  "maximum_paid_usd": 0,
+  "maximum_kernel_pushes": 1,
+  "maximum_output_retrievals": 1,
+  "maximum_visible_gpus": 4,
+  "maximum_gpu_devices_used": 1,
+  "maximum_wall_seconds": 1500,
+  "maximum_training_steps": 2,
+  "maximum_training_tokens": 128,
+  "maximum_generation_calls": 0,
+  "materials": "Random tiny Qwen3.5 instance and one synthetic grid pair only; no 4B weights or ARC data",
+  "retention": "Private truth-free JSON result and local digest ledger; no publication or submission"
+}
