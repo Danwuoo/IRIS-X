@@ -32,9 +32,9 @@ compatibility before any capability claim.
 | Workload/result/material | Independent schema, complete terminal checkpoint, exact counters, closed model inventory and pinned base inventory checks; rehashed adversarial fixtures pass | Large real model material absent |
 | DFS | Iterative >1,000-token path, distinct stop reasons and cost counters; safe full-prefix logit LRU parity with reference; canonical duplicate grids share one verification while retaining each vote | Source notebook's batched KV behavior and GPU performance unverified; hybrid KV is rejected |
 | Single-process SFT | Python 3.12 torch synthetic gradient/resume passes | Actual tiny Qwen3.5 and PEFT tests blocked on `transformers`, `peft`, `safetensors` |
-| Distributed SFT | Two-rank CPU Gloo DDP update, disjoint samples, exact pause/resume and forced worker failure pass; wall ledger persists | DDP does not shard memory; GPU and large-model path untested |
+| Distributed SFT | Two-rank CPU Gloo DDP update with unused trainable visual branch, disjoint samples, exact pause/resume and forced worker failure pass; text weights update and unused visual weights stay fixed | DDP does not shard memory; actual Qwen3.5 text gradient groups, GPU and large-model path untested |
 | SDG | Saved/fake stage provider, stable stage identity, failed/duplicate call accounting and fail-closed caller claims pass | Docker launcher flags tested; daemon absent, no real sandbox integration or teacher call |
-| TRM | Pinned source hash binding, bounded invocation fixture, ten-attempt parser and truth-free raw-tensor normalization with fixture provenance pass | `argdantic`, `numba`, `hydra` missing; upstream preprocessing/train/eval and pure inference launch semantics unverified |
+| TRM | Pinned source hash binding, inference-only checkpoint/test entry and CPU fake-source call-order harness, bounded invocation fixture, ten-attempt parser and truth-free raw-tensor normalization pass | `argdantic`, `numba`, `hydra` and model checkpoint missing; actual upstream CUDA inference remains unverified |
 
 The table above supersedes earlier implementation-status cells for this
 continuation. The reviewed historical version remains described above.

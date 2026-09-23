@@ -40,3 +40,22 @@ evaluator's label-bearing `test_puzzles.json`. It is parser-fixture verified;
 the upstream script still derives steps from `epochs` and mixes training and
 evaluation. Its pure inference launch behavior requires source-backed testing
 and separate authorization before sealed tasks.
+
+## Narrow GPU acceptance choice after the second control review
+
+The repaired local control flow is ready for an optional GPU compatibility
+decision. The owner has been asked to select one route; neither is currently
+approved, and the original Phase F draft above is not an execution token.
+
+| Choice | Proposed scope | Required binding before launch |
+| --- | --- | --- |
+| A: tiny random-model compatibility | One private Kaggle L4 kernel, Internet off, free tier only and USD 0; ≤30 min session, one GPU used, ≤2 training steps/128 tokens, zero model-generation calls, no ARC data or 4B weights; one terminal output retrieval, no retry. Exercise Qwen3.5 full-attention/DeltaNet/embedding/head gradients and PEFT reset. | [`draft-gpu-a.json`](configs/draft-gpu-a.json) is `approved: false`; the exact Kaggle image and installed torch/transformers/peft/safetensors versions, owner decision reference, final kernel ID and output retention must be bound. Local notebook staging is in `tools/stage_nvarc_gpu_compat.py`. |
+| B: 4B compatibility | A separate private free-tier proposal would bind the exact base/model/tokenizer weights and hashes, mounting path, dependency wheels/image, GPU topology, training/inference call and token caps, wall ceiling and one retrieval. | No kernel is built or launched for B until those exact materials and limits are reviewed and the owner chooses it. The broader Phase F placeholders are insufficient. |
+
+The [second control review](control-review-4d23546.md) now contains the repair
+disposition. CPU evidence is not a real Qwen3.5, PEFT or TRM runtime claim.
+The [Kaggle v170 GPU release](https://github.com/Kaggle/docker-python/releases/tag/v170-GPU-bdf9e0538555f90453619adefb49ba40cfa136db44a9c9be7a42ea715c0aa068)
+supplies a target image digest and lists PEFT 0.19.1. The draft kernel metadata
+does not pin that image; installed versions and image availability must be
+verified before replacing the `UNBOUND` values. No version is guessed from
+the release diff.

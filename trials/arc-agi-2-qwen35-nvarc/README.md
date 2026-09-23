@@ -1,9 +1,10 @@
 # Qwen3.5-4B NVARC reproduction development
 
-Status: **local continuation implemented; acceptance still partial; no execution authority**.
+Status: **reviewed local P1 repairs implemented; acceptance still partial; no execution authority**.
 The [second control review](control-review-4d23546.md) independently confirms
-the earlier example repairs, but finds remaining TTT/DFS reservation binding,
-unused-parameter DDP and TRM evaluation-entry blockers at `4d23546`.
+the earlier example repairs and identified TTT/DFS reservation binding,
+unused-parameter DDP and TRM evaluation-entry blockers at `4d23546`. Its
+subsequent disposition records the local fixes.
 The [control review](control-review.md) found reproducible outbound, result,
 model-material and DFS defects at `e7d74a6`. The
 [continuation plan](../../docs/plan/2026-09-23-qwen35-nvarc-acceptance-continuation.md)
@@ -34,12 +35,14 @@ ablation. None of their exhausted ceilings or frozen identities is reused.
 - Static private Kaggle staging and a draft kernel notebook. No Dataset/kernel
   mutation was made.
 
-The continuation repaired the three reviewed P1 boundaries, made DFS iterative,
+The continuation repaired the original three reviewed P1 boundaries and the
+second review's reservation, DDP and TRM entry blockers, made DFS iterative,
 and exercised a two-rank CPU Gloo DDP worker with pause, resume, and worker
 failure. SDG stage accounting, a Docker launcher, a TRM invocation wrapper,
 truth-free raw-tensor normalizer and strict optional ML profile were added.
-The Docker daemon and the optional
-Qwen3.5/PEFT packages are absent, so those integrations remain unverified.
+The Docker daemon and optional Qwen3.5/PEFT packages are absent, so those
+integrations remain unverified. An unapproved tiny GPU draft is staged locally;
+no Kaggle submission or output retrieval occurred.
 
 The offline fixture E2E runs a **tiny random transition model for gradient and
 resume checks**, then explicitly marked fixture predictions through candidate,
@@ -55,7 +58,7 @@ Source-level differences and remaining gaps are in
 
 | State | Current value |
 | --- | --- |
-| implementation-verified | Partial: reviewed P1 and DFS defects repaired; CPU collective and adapter fixtures pass; architecture, sandbox, upstream TRM and GPU gates remain |
+| implementation-verified | Partial: both reviews' local P1 and DFS defects repaired; CPU collective, unused-branch, TRM entry and adapter fixtures pass; architecture, sandbox, upstream TRM and GPU gates remain |
 | materials-ready | No: this worktree has pinned small sources/configs, but no compact or ARC-SFT Qwen3.5 weights, frozen full training data, or TRM weights |
 | runtime-verified | No for this new identity; the four-L4 success belongs only to the earlier trials |
 | sft-trained | No |

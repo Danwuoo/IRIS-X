@@ -120,3 +120,19 @@ Keep the current state partial. Resolve these code-level defects before another
 development acceptance claim, and report environmental gates separately.
 The retained improvements and passing tests remain valid evidence; neither
 they nor missing GPU authority eliminate the concrete failures above.
+
+## Subsequent local repair disposition
+
+The findings above describe the reviewed `4d23546` state and remain unchanged
+as evidence. Later commits on `main` address the three code-level blockers:
+
+| Finding | Repair | Local verification |
+| --- | --- | --- |
+| Bound TTT/DFS reservations | `9cd1839` derives all six reservations from the bound config, including zero when TTT is disabled, and checks each task's observations | Correctly rehashed forged result cases now reject inflated TTT steps/tokens and DFS expansions; existing failure/resume cases pass |
+| Unused visual branch in DDP | `4267890` enables DDP unused-parameter discovery without freezing text parameters | Two-rank Gloo fixture with a trainable but unused visual layer completes multiple steps, pause/resume, and forced-rank failure; text weights change while the visual layer does not |
+| TRM evaluate enters training | `f532885` adds a source-hashed inference entry that loads the checkpoint, bounds test batches and calls the pinned upstream evaluator with no evaluator plugins | CPU fake-source harness checks call order and raw output; actual upstream CUDA execution still requires dependencies and checkpoint |
+
+These repairs close the reproduced local control-flow failures. They do not
+establish real Qwen3.5/PEFT gradients, GPU performance, upstream TRM runtime
+compatibility, or full development acceptance. A separate unapproved tiny GPU
+compatibility package is described in the [execution proposal](execution-proposal.md).

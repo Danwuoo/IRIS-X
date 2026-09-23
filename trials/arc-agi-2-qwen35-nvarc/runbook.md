@@ -108,19 +108,23 @@ TRM training has a separate two-stage path. First stage labelled JSON with
 `dataset/build_arc_dataset.py`; its output must contain `train/dataset.json`
 before `trm_launch_spec(..., mode="train")` will produce a launch spec. The
 evaluation spec requires a processed `test/dataset.json` and an exact checkpoint
-file. Its NVARC script directory and TinyRecursiveModels import/config roots
-are distinct. These specs are drafts; upstream dependencies, processed real
-data and checkpoint are absent, and no TRM command was run. The pinned README
+file. It targets the NVARC inference entry, which checks upstream source and
+material hashes, loads the checkpoint, bounds test batches and calls the pinned
+upstream evaluator without entering its training loop. A CPU fake-source
+harness verifies that control flow and raw output. Its NVARC script directory
+and TinyRecursiveModels import/config roots are distinct. These specs are
+drafts; upstream dependencies, processed real data and checkpoint are absent,
+and no upstream TRM command was run. The pinned README
 names `hydra-core==1.3.2`, `adam_atan2_pytorch==0.2.4`,
 `argdantic==1.3.3`, `coolname==2.2.0`, `numba==0.62.1` plus PyTorch and the
 matching upstream source. The current Python 3.12 environment lacks
 `argdantic`, `numba`, and `hydra`. `arc_nvarc_trm.py` now has a bounded
 subprocess wrapper, ten-attempt output parser and a visible-input raw-tensor
-normalizer. These paths have synthetic launch/parser tests. The launch spec
-disables the upstream evaluator that reads labelled `test_puzzles.json` and
-saves `inputs`, `puzzle_identifiers`, `q_halt_logits`, and `preds` tensors.
-The upstream script still mixes training/evaluation and derives optimizer
-steps from `epochs`; pure inference launch semantics remain unverified.
+normalizer. These paths have synthetic launch/parser tests. The inference
+entry disables the upstream evaluator that reads labelled `test_puzzles.json`
+and saves `inputs`, `puzzle_identifiers`, `q_halt_logits`, and `preds` tensors.
+The pinned script's own launch remains training-only; actual upstream CUDA
+compatibility of the new entry is unverified.
 Fixture predictions are tagged `trm-fixture` and rejected by model integration.
 
 `arc_nvarc_sdg.py` saves stage identities and call reservations before provider
@@ -161,3 +165,26 @@ this runbook or draft files. After a separately approved run, verify the
 result ZIP against its outbound and score only in an evaluator enclave with
 full-task sealed truth. The scorer denominator is every specified test output;
 report pass@1, pass@2, task-all-correct, invalid/missing and timing separately.
+
+## Tiny GPU compatibility draft
+
+`python tools/stage_nvarc_gpu_compat.py` produces an offline, reviewable
+single-notebook package under `.irisx/arc-agi-2/qwen35-nvarc/gpu-a/`.
+It embeds the current local IRIS-X wheel, checks both embedded SHA-256 digests,
+and uses only Kaggle's installed PyTorch, Transformers, PEFT and Safetensors.
+No Dataset, competition source, 4B weights or ARC records are mounted. The
+notebook remains private with Internet disabled and writes one truth-free JSON
+result. Its current `approved: false`, draft kernel ID and `UNBOUND` dependency
+versions stop execution before wheel install or GPU work. Staging only writes
+local ignored files; it does not call Kaggle.
+
+If the owner selects this route, bind the exact Kaggle image and four installed
+package versions, explicit run identity and retention, then review the rebuilt
+notebook and hashes before one authorized push. The proposed ceiling is one
+free private kernel, zero paid cost, at most 30 minutes session, one GPU device
+used (up to four visible), two tiny training steps and 128 training tokens,
+zero pretrained-model inference calls, one output retrieval, no retry. The
+model's two layers exercise full attention and DeltaNet gradients, embedding
+and head gradients, and PEFT success/failure reset. The local test covers the
+draft guard and notebook composition; real architecture compatibility is the
+point of the future GPU check.
