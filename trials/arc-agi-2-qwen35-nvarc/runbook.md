@@ -167,9 +167,9 @@ report pass@1, pass@2, task-all-correct, invalid/missing and timing separately.
 
 ## Tiny GPU compatibility draft
 
-The owner chose the real 4B preparation route after this draft. Use the
-[4B pilot handoff](4b-pilot.md) for the next proposed execution. The tiny-only
-GPU A package below remains unapproved and is not the selected workload.
+The owner chose the real 4B route after this draft. Its single authorized
+[4B pilot](4b-pilot.md) reached a terminal hardware-gate failure; no repeat
+execution is authorized. The tiny-only GPU A package below remains unapproved.
 
 `python tools/stage_nvarc_gpu_compat.py` produces an offline, reviewable
 single-notebook package under `.irisx/arc-agi-2/qwen35-nvarc/gpu-a/`.

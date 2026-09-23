@@ -1,7 +1,7 @@
 # Qwen3.5-4B NVARC reproduction development
 
 Status: **reviewed local P1 repairs implemented; CPU tiny Qwen3.5/PEFT verified;
-Decision 0021 authorizes one 4B pilot; not yet launched; acceptance still partial**.
+Decision 0021 pilot failed at the hardware gate; acceptance still partial**.
 The [second control review](control-review-4d23546.md) independently confirms
 the earlier example repairs and identified TTT/DFS reservation binding,
 unused-parameter DDP and TRM evaluation-entry blockers at `4d23546`. Its
@@ -33,8 +33,8 @@ ablation. None of their exhausted ceilings or frozen identities is reused.
 - Truth-free workload/result ZIPs, task-boundary call reservations, four-L4
   hardware/source gate, persistent worker dispatch, parent-enforced deadline,
   and evaluator-only full-task multi-test pass@1/pass@2.
-- Static private Kaggle staging and a draft kernel notebook. No Dataset/kernel
-  mutation was made.
+- Static private Kaggle staging and a draft kernel notebook. Preparation itself
+  made no Dataset/kernel mutation; Decision 0021 later authorized one push.
 
 The continuation repaired the original three reviewed P1 boundaries and the
 second review's reservation, DDP and TRM entry blockers, made DFS iterative,
@@ -42,10 +42,10 @@ and exercised a two-rank CPU Gloo DDP worker with pause, resume, and worker
 failure. SDG stage accounting, a Docker launcher, a TRM invocation wrapper,
 truth-free raw-tensor normalizer and strict optional ML profile were added.
 The Docker daemon remains absent. A separate Python 3.12 environment now runs
-tiny actual Qwen3.5/PEFT tests on CPU. The owner chose preparation of a real
-4B pilot; its [exact package](4b-pilot.md) is staged locally. Decision 0021
-now authorizes one launch and retrieval. No Kaggle kernel was launched or
-result retrieved for this identity yet.
+tiny actual Qwen3.5/PEFT tests on CPU. Decision 0021's bounded
+[4B pilot](4b-pilot.md) was pushed once and retrieved once. Kaggle marked the
+kernel `COMPLETE`, while the application failed its L4 hardware gate before
+loading model weights or training. Both external allowances are consumed.
 
 The offline fixture E2E runs a **tiny random transition model for gradient and
 resume checks**, then explicitly marked fixture predictions through candidate,
@@ -64,15 +64,16 @@ Source-level differences and remaining gaps are in
 | --- | --- |
 | implementation-verified | Partial: both reviews' local P1 and DFS defects repaired; CPU collective, unused-branch, TRM entry and tiny actual Qwen3.5/PEFT pass; sandbox, upstream TRM and 4B GPU gates remain |
 | materials-ready | Partial: the existing private Kaggle Dataset v2 has pinned 4B base weights and offline wheels, now inventoried and digest-bound. The pilot uses synthetic data. Compact/ARC-SFT weights, full training data and TRM weights remain absent |
-| runtime-verified | No for this new identity; the four-L4 success belongs only to the earlier trials |
+| runtime-verified | No 4B model/gradient proof: the exact material and dependency gates passed, then the L4 hardware gate failed before model loading. The four-L4 success belongs only to earlier trials |
 | sft-trained | No |
 | full-method-measured | No |
 
 The [source-use](source-use.md), [runbook](runbook.md),
-[4B pilot](4b-pilot.md), and [execution proposal](execution-proposal.md) bind
-the next steps. Decision 0021 is the specific owner launch authorization. The
-retained draft manifest is not an approval token.
+[4B pilot](4b-pilot.md), and [execution proposal](execution-proposal.md) retain
+the preparation and terminal evidence. Decision 0021's one launch and
+retrieval are consumed; a new external attempt requires new owner direction.
+The retained draft manifest is not an approval token.
 
-No new real Qwen/TRM generations or training steps, SDG teacher calls, Codex proposer
-calls, Kaggle mutation/retrieval, competition submission, or paid usage occurred
-in this development task.
+This pilot made one private Kaggle kernel push and one terminal retrieval. It
+made no real Qwen/TRM generations or training steps, SDG teacher calls, Codex
+proposer calls, competition submission, or paid usage.

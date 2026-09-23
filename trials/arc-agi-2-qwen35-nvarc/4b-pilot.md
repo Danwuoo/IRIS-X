@@ -1,6 +1,6 @@
-# Proposed Qwen3.5-4B Kaggle compatibility pilot
+# Qwen3.5-4B Kaggle compatibility pilot
 
-Status: **Decision 0021 authorized one launch; kernel not yet pushed**.
+Status: **terminal hardware-gate failure; Decision 0021 push and retrieval consumed**.
 Owner selected a real 4B pilot preparation on 2026-09-23. This is one bounded
 LoRA compatibility run, not full SFT, ARC evaluation, or a claim of NVARC
 reproduction. It supersedes the tiny-only GPU A route for the next execution
@@ -10,8 +10,12 @@ Implementation package: `1990872` on `main`, building on reservation repair
 
 ## Exact materials and data
 
-- Run identity: `nvarc-4b-compat-pilot-001`; proposed new private kernel
-  `danielwuu/irisx-nvarc-4b-compat-pilot-001`. No prior execution uses it.
+- Run identity: `nvarc-4b-compat-pilot-001`; approved metadata kernel ID
+  `danielwuu/irisx-nvarc-4b-compat-pilot-001`. The one push produced Kaggle
+  version 1 at the actual title-derived slug
+  [`danielwuu/iris-x-qwen3-5-4b-bounded-lora-compatibility-pilot`](https://www.kaggle.com/code/danielwuu/iris-x-qwen3-5-4b-bounded-lora-compatibility-pilot).
+  The local launch ledger records this slug mismatch; the approved plan and
+  submitted bytes were not changed or pushed again.
 - Reuse the existing **private** Kaggle Dataset
   `danielwuu/irisx-arc-agi-2-trial-002-smoke-001` version 2. Read-only CLI
   inventory on 2026-09-23 confirmed both BF16 weight shards, config, tokenizer,
@@ -37,15 +41,16 @@ Implementation package: `1990872` on `main`, building on reservation repair
 - Target Kaggle GPU image reference:
   [`v170-GPU-bdf9e0538555f90453619adefb49ba40cfa136db44a9c9be7a42ea715c0aa068`](https://github.com/Kaggle/docker-python/releases/tag/v170-GPU-bdf9e0538555f90453619adefb49ba40cfa136db44a9c9be7a42ea715c0aa068).
   The CLI kernel metadata selects `NvidiaL4`, not that Docker digest. Installed
-  torch/image bytes cannot be asserted before launch; the runner records torch
-  and fails before model work if Python, exact installed offline packages, GPU
-  model or capacity differ. This is an explicit remaining environment gate.
+  torch/image bytes were not pinned by that metadata. The runner checks Python,
+  exact installed offline packages, GPU model and capacity before model work.
+  The failure result omits installed versions and observed GPU properties, so
+  the exact hardware mismatch and image bytes remain unknown.
 
 ## One-run ceiling and stop
 
 The retained [machine-readable draft](configs/draft-4b-pilot.json) remains
-`approved: false`; Decision 0021 permits staging a separate bound approved
-notebook. One private Kaggle kernel push, at most one terminal output
+`approved: false`; Decision 0021 permitted staging a separate bound approved
+notebook. It authorized one private Kaggle kernel push and one terminal output
 retrieval, no retry or resume, Internet off, and USD 0 paid cost. The kernel
 may see one to four L4s but uses **one** with at least 22,000 MiB; no DDP or
 sharding claim follows. Maximum 1,800 seconds from notebook start: setup at
@@ -66,7 +71,7 @@ workspace, LoRA state and activations are unknown, so **L4 fit is a pilot
 question**, not a measured fact. Full-model AdamW SFT would require separate
 memory/sharding proof; this run deliberately uses frozen-base LoRA r=2.
 
-## Prepared handoff
+## Prepared and executed package
 
 From the repository root, offline staging writes only under `.irisx/`:
 
@@ -75,20 +80,39 @@ $env:PYTHONPATH = 'src'
 python tools/stage_nvarc_4b_pilot.py
 ```
 
-`stage-summary.json` records the draft plan, wheel, model/wheel manifests,
-notebook and metadata SHA-256 values. The draft metadata ID starts
-`DRAFT-DO-NOT-PUSH/`, and its first executable cell refuses unapproved input
-before installing wheels or touching the GPU. The wheel includes the
-`arc_nvarc_4b_pilot` runner. The Decision 0021 authorization file must bind
-`approved: true`, `run_id`, the printed `draft_plan_sha256`, final `kernel_id`,
-and a nonempty `owner_decision`. Then stage a **new** directory with
-`--authorization <reviewed-json>` and review its new hashes. That command
-builds the final notebook locally; it does not push. The deliberate launch
-command, after authorization and preflight, is one
-`kaggle kernels push -p <approved-stage>/kernel --accelerator NvidiaL4 --timeout 1800`.
-Retrieve only the terminal output once, verify run ID, plan digest, ledger,
-truth-free result and SHA-256, then stop. Failure consumes the identity and
-does not authorize repair submission.
+The draft metadata ID starts `DRAFT-DO-NOT-PUSH/`, and its first executable
+cell refuses unapproved input before installing wheels or touching the GPU.
+The approved package was staged separately with Decision 0021, then pushed
+once with `--accelerator NvidiaL4 --timeout 1800`. The Kaggle kernel reached
+`COMPLETE`; one terminal output retrieval was made. Both allowances are
+consumed. The ignored local launch directory
+`.irisx/arc-agi-2/qwen35-nvarc/4b-pilot-launch-001/` retains the exact
+approved package, atomic launch ledger, six retrieved files and verification
+report. Its verification SHA-256 is
+`008227921a0ad2a53abce834534fad0438525cff5c8ccc33cbf09e437f40d6ea`.
+
+## Terminal evidence
+
+The application result is `failed` with `ValidationError: pilot requires one
+usable L4 with 22000 MiB`. The guard checks CUDA availability, one to four
+visible devices, the device-0 name containing `L4`, and device-0 total memory
+of at least 22,000 MiB. The output does not identify which condition failed;
+it does not record the observed GPU name or capacity. The runner reached this
+guard after exact model-material verification and dependency/version checks,
+but before loading the 4B model. The returned ledger and result agree on
+**zero reserved/completed optimizer steps, zero training tokens and zero
+generation calls**. The result is truth-free. Kaggle `COMPLETE` describes the
+notebook's terminal state, not a successful pilot.
+
+Local verification matched the retrieved plan, model manifest and wheel to
+their approved prelaunch SHA-256 values. The canonical plan digest in the
+result and ledger is
+`sha256:4b194bcce885162519fc381bf1ca61119d713fe37e50ddb580ac6594e5fc7233`.
+The result SHA-256 is
+`0f84494a724d7191535752774d1256006706ce8d54dd985ce721c670c835e40a`;
+the returned ledger SHA-256 is
+`8eaba8f9809febcfed8e625d34c7514309c65ed1e85226d2121fa653c048bfec`.
+The frozen identity cannot be retried or repaired under Decision 0021.
 
 ## Verified versus open
 
@@ -98,6 +122,7 @@ does not authorize repair submission.
   PEFT target attachment and reset pass with torch 2.12.1+cpu, Transformers
   5.8.1, PEFT 0.21.0 and Safetensors 0.8.0. Pinned 4B config ties embeddings;
   `ensure_weight_tying` was added to the LoRA adapter after this check.
-- **No 4B weights were loaded, no GPU training occurred, no Kaggle kernel was
-  pushed, and no output was retrieved for this new identity.** Image/runtime
-  version and L4 memory fit will be known only after the authorized pilot.
+- The one Kaggle push and retrieval are complete. The run passed exact material
+  and dependency gates, then stopped at the hardware gate. **No 4B weights
+  were loaded and no GPU training occurred.** Actual L4 availability and
+  memory fit remain unverified; the output lacks hardware diagnostics.

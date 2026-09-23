@@ -45,12 +45,13 @@ and separate authorization before sealed tasks.
 
 The owner selected preparation of a **real Qwen3.5-4B pilot** rather than the
 tiny-only GPU A kernel. The exact
-[4B pilot proposal](4b-pilot.md) now binds the existing private Dataset v2,
+[4B pilot record](4b-pilot.md) binds the existing private Dataset v2,
 model and wheel manifests, synthetic-only training data, a one-L4 LoRA
 workload, two steps/128 tokens, zero generation, one private kernel and one
 terminal retrieval, 1,800 seconds and USD 0. Local staging and fail-closed
-guards are implemented. Decision 0021 authorizes this compatibility pilot;
-it does not authorize full SFT or an ARC score.
+guards are implemented. Decision 0021's one push and retrieval are consumed:
+the application failed its L4 hardware gate before 4B loading or training.
+It does not authorize full SFT, an ARC score or a replacement kernel.
 
 ## Earlier narrow GPU acceptance choice after the second control review
 
@@ -62,10 +63,12 @@ Phase F draft above is not an execution token.
 | Choice | Proposed scope | Required binding before launch |
 | --- | --- | --- |
 | A: tiny random-model compatibility | One private Kaggle L4 kernel, Internet off, free tier only and USD 0; ≤30 min session, one GPU used, ≤2 training steps/128 tokens, zero model-generation calls, no ARC data or 4B weights; one terminal output retrieval, no retry. Exercise Qwen3.5 full-attention/DeltaNet/embedding/head gradients and PEFT reset. | [`draft-gpu-a.json`](configs/draft-gpu-a.json) is `approved: false`; the exact Kaggle image and installed torch/transformers/peft/safetensors versions, owner decision reference, final kernel ID and output retention must be bound. Local notebook staging is in `tools/stage_nvarc_gpu_compat.py`. |
-| B: 4B compatibility | A separate private free-tier proposal would bind the exact base/model/tokenizer weights and hashes, mounting path, dependency wheels/image, GPU topology, training/inference call and token caps, wall ceiling and one retrieval. | Selected for preparation. The bounded [4B pilot](4b-pilot.md) now has local code and a staged draft notebook; no kernel has been launched. The broader Phase F placeholders remain insufficient. |
+| B: 4B compatibility | A separate private free-tier proposal would bind the exact base/model/tokenizer weights and hashes, mounting path, dependency wheels/image, GPU topology, training/inference call and token caps, wall ceiling and one retrieval. | Selected and executed once under Decision 0021. The [4B pilot](4b-pilot.md) failed at the L4 hardware gate before model loading; its authority is consumed. The broader Phase F placeholders remain insufficient. |
 
-The [second control review](control-review-4d23546.md) now contains the repair
-disposition. CPU evidence is not a real Qwen3.5, PEFT or TRM runtime claim.
+The [second control review](control-review-4d23546.md) contains the repair
+disposition. Its earlier CPU fixtures alone were not a real Qwen3.5, PEFT or
+TRM runtime claim; later optional tiny Qwen3.5/PEFT CPU tests are distinct
+from 4B GPU verification.
 The [Kaggle v170 GPU release](https://github.com/Kaggle/docker-python/releases/tag/v170-GPU-bdf9e0538555f90453619adefb49ba40cfa136db44a9c9be7a42ea715c0aa068)
 supplies a target image digest and lists PEFT 0.19.1. The draft kernel metadata
 does not pin that image; installed versions and image availability must be
