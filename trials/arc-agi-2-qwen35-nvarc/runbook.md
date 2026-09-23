@@ -1,8 +1,8 @@
 # Development and future execution runbook
 
-All commands start at the repository root. The only command below that is
-currently executable end to end is the synthetic fixture command. It has no
-model/provider/Kaggle access and writes only to ignored `.irisx/`.
+All commands start at the repository root. The fixture and local pilot staging
+commands run end to end. Neither starts a provider/model workload; generated
+output stays under ignored `.irisx/`.
 
 ```powershell
 $env:PYTHONPATH = 'src'
@@ -24,24 +24,23 @@ $env:PYTHONPATH = 'src'
 ```
 
 The first command executes synthetic SFT/resume and two-rank CPU Gloo DDP.
-The strict ML profile returns `BLOCKED` until `transformers`, `peft`, and
-`safetensors` are installed for Python 3.12. It records versions and then runs
-tiny actual Qwen3.5 conversion/gradient and PEFT/reset tests. The current
-interpreter has Python 3.12.10 and torch 2.12.1+cpu. Existing local wheel
-caches did not contain the missing packages. Provision a separate optional
-environment from a reviewed compatible wheelhouse, for example with
-`python -m venv --system-site-packages .irisx/nvarc-ml-venv` and
-`pip install --no-index --find-links <wheelhouse> transformers peft safetensors`;
-record resolved versions before use. No real weights are needed for these
-tiny tests. A skipped generic unittest run is not an ML profile pass.
+The strict ML profile now passes in a separate ignored
+`.irisx/nvarc-ml-venv` with Python 3.12.10, torch 2.12.1+cpu,
+Transformers 5.8.1, PEFT 0.21.0 and Safetensors 0.8.0. It runs tiny actual
+Qwen3.5 conversion/gradient and PEFT/reset tests. Recreate it from the
+recorded versions, then run
+`.irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_ml_profile.py` with
+`PYTHONPATH=src`. This does not load 4B weights or prove GPU behavior. A
+skipped generic unittest run is not an ML profile pass.
 
 ## Material and compatibility gates
 
-1. Acquire the pinned Qwen3.5-4B base and verify its full upstream manifest.
-   This worktree only retained small `config.json`, tokenizer config, template,
-   and weight index. The 9.34 GB base was **not** downloaded here. Obtain an
-   exact new owner decision and bounded resources before materializing the
-   real conversion/training path.
+1. Reuse the pinned Qwen3.5-4B base already present in the private Kaggle
+   Dataset v2 for the proposed [4B compatibility pilot](4b-pilot.md). Small
+   model/wheel manifests were retrieved and committed; the 9.34 GB base was
+   **not** downloaded locally. The pilot checks every member SHA-256 at the
+   exact mount before loading. Full conversion/training needs its own material
+   and resource decision.
 2. Freeze a labelled training dataset with explicit source, parent, split,
    known-transform group and exposure policy. Importing a released NVARC
    dataset is not rerunning SDG. Do not put labelled `test` outputs in solver
@@ -167,6 +166,10 @@ full-task sealed truth. The scorer denominator is every specified test output;
 report pass@1, pass@2, task-all-correct, invalid/missing and timing separately.
 
 ## Tiny GPU compatibility draft
+
+The owner chose the real 4B preparation route after this draft. Use the
+[4B pilot handoff](4b-pilot.md) for the next proposed execution. The tiny-only
+GPU A package below remains unapproved and is not the selected workload.
 
 `python tools/stage_nvarc_gpu_compat.py` produces an offline, reviewable
 single-notebook package under `.irisx/arc-agi-2/qwen35-nvarc/gpu-a/`.

@@ -28,3 +28,10 @@ The handoff's ignored evidence locations under worktrees `e34a` and `918a`
 were absent when checked from this task. The committed budget-ablation control
 review and Trial 002 source-use were read instead. No old result ZIP, ledger,
 sealed truth or output was retrieved, copied or mutated.
+
+On 2026-09-23 the successor task queried only the file inventory and metadata
+of the existing **private** base Dataset v2, and retrieved its small
+`model-manifest.json`, `wheel-manifest.json`, `dependencies.json` and
+`config.json` for material binding. The two manifests are retained under this
+trial's `configs/` and inform the separate [4B pilot](4b-pilot.md). No weight
+shard, previous kernel output or evaluator truth was downloaded.

@@ -41,11 +41,23 @@ the upstream script still derives steps from `epochs` and mixes training and
 evaluation. Its pure inference launch behavior requires source-backed testing
 and separate authorization before sealed tasks.
 
-## Narrow GPU acceptance choice after the second control review
+## Owner-selected next preparation: bounded real 4B pilot
 
-The repaired local control flow is ready for an optional GPU compatibility
-decision. The owner has been asked to select one route; neither is currently
-approved, and the original Phase F draft above is not an execution token.
+The owner selected preparation of a **real Qwen3.5-4B pilot** rather than the
+tiny-only GPU A kernel. The exact, unapproved
+[4B pilot proposal](4b-pilot.md) now binds the existing private Dataset v2,
+model and wheel manifests, synthetic-only training data, a one-L4 LoRA
+workload, two steps/128 tokens, zero generation, one private kernel and one
+terminal retrieval, 1,800 seconds and USD 0. Local staging and fail-closed
+guards are implemented. This is a compatibility pilot; it does not authorize
+full SFT or an ARC score. A specific launch decision remains open.
+
+## Earlier narrow GPU acceptance choice after the second control review
+
+At the second review, the repaired local control flow led to the two routes
+below. The owner subsequently selected B preparation, implemented in the
+bounded 4B pilot above. Neither route was a launch approval; the original
+Phase F draft above is not an execution token.
 
 | Choice | Proposed scope | Required binding before launch |
 | --- | --- | --- |

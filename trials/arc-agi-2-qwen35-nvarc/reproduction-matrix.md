@@ -31,8 +31,9 @@ compatibility before any capability claim.
 | --- | --- | --- |
 | Workload/result/material | Independent schema, complete terminal checkpoint, exact counters, closed model inventory and pinned base inventory checks; rehashed adversarial fixtures pass | Large real model material absent |
 | DFS | Iterative >1,000-token path, distinct stop reasons and cost counters; safe full-prefix logit LRU parity with reference; canonical duplicate grids share one verification while retaining each vote | Source notebook's batched KV behavior and GPU performance unverified; hybrid KV is rejected |
-| Single-process SFT | Python 3.12 torch synthetic gradient/resume passes | Actual tiny Qwen3.5 and PEFT tests blocked on `transformers`, `peft`, `safetensors` |
+| Single-process SFT | Python 3.12 torch synthetic gradient/resume passes; optional tiny Qwen3.5 compact reload and PEFT pass in a separate environment | Actual 4B gradients, full SFT memory and GPU sharding untested |
 | Distributed SFT | Two-rank CPU Gloo DDP update with unused trainable visual branch, disjoint samples, exact pause/resume and forced worker failure pass; text weights update and unused visual weights stay fixed | DDP does not shard memory; actual Qwen3.5 text gradient groups, GPU and large-model path untested |
+| 4B compatibility pilot | Private, offline, one-L4 LoRA package staged with existing Dataset v2 model/wheel digests and two-step atomic ledger | Draft blocks launch; real 4B loading, PEFT gradients, L4 memory and actual image remain untested |
 | SDG | Saved/fake stage provider, stable stage identity, failed/duplicate call accounting and fail-closed caller claims pass | Docker launcher flags tested; daemon absent, no real sandbox integration or teacher call |
 | TRM | Pinned source hash binding, inference-only checkpoint/test entry and CPU fake-source call-order harness, bounded invocation fixture, ten-attempt parser and truth-free raw-tensor normalization pass | `argdantic`, `numba`, `hydra` and model checkpoint missing; actual upstream CUDA inference remains unverified |
 

@@ -1,6 +1,7 @@
 # Qwen3.5-4B NVARC reproduction development
 
-Status: **reviewed local P1 repairs implemented; acceptance still partial; no execution authority**.
+Status: **reviewed local P1 repairs implemented; CPU tiny Qwen3.5/PEFT verified;
+4B pilot prepared but not approved or launched; acceptance still partial**.
 The [second control review](control-review-4d23546.md) independently confirms
 the earlier example repairs and identified TTT/DFS reservation binding,
 unused-parameter DDP and TRM evaluation-entry blockers at `4d23546`. Its
@@ -40,17 +41,19 @@ second review's reservation, DDP and TRM entry blockers, made DFS iterative,
 and exercised a two-rank CPU Gloo DDP worker with pause, resume, and worker
 failure. SDG stage accounting, a Docker launcher, a TRM invocation wrapper,
 truth-free raw-tensor normalizer and strict optional ML profile were added.
-The Docker daemon and optional Qwen3.5/PEFT packages are absent, so those
-integrations remain unverified. An unapproved tiny GPU draft is staged locally;
-no Kaggle submission or output retrieval occurred.
+The Docker daemon remains absent. A separate Python 3.12 environment now runs
+tiny actual Qwen3.5/PEFT tests on CPU. The owner chose preparation of a real
+4B pilot; its [exact proposed package](4b-pilot.md) is staged locally and
+unapproved. No Kaggle kernel was launched or result retrieved for this identity.
 
 The offline fixture E2E runs a **tiny random transition model for gradient and
 resume checks**, then explicitly marked fixture predictions through candidate,
 result and sealed-scoring paths. Its 2/3 pass@2 is synthetic test behavior,
 not an ARC accuracy claim. The real 4B, TRM, and SDG teacher paths have not
 been executed. The additional real PyTorch synthetic resume test skips under
-default Python 3.14 but passed during control review with the installed Python
-3.12 and torch. Qwen3.5/PEFT compatibility remains unverified.
+default Python 3.14 but passes with the installed Python 3.12 and torch. Tiny
+actual Qwen3.5/PEFT passes in the separate optional CPU environment; 4B GPU
+compatibility remains unverified.
 Source-level differences and remaining gaps are in
 [`reproduction-matrix.md`](reproduction-matrix.md).
 
@@ -58,16 +61,16 @@ Source-level differences and remaining gaps are in
 
 | State | Current value |
 | --- | --- |
-| implementation-verified | Partial: both reviews' local P1 and DFS defects repaired; CPU collective, unused-branch, TRM entry and adapter fixtures pass; architecture, sandbox, upstream TRM and GPU gates remain |
-| materials-ready | No: this worktree has pinned small sources/configs, but no compact or ARC-SFT Qwen3.5 weights, frozen full training data, or TRM weights |
+| implementation-verified | Partial: both reviews' local P1 and DFS defects repaired; CPU collective, unused-branch, TRM entry and tiny actual Qwen3.5/PEFT pass; sandbox, upstream TRM and 4B GPU gates remain |
+| materials-ready | Partial: the existing private Kaggle Dataset v2 has pinned 4B base weights and offline wheels, now inventoried and digest-bound. The pilot uses synthetic data. Compact/ARC-SFT weights, full training data and TRM weights remain absent |
 | runtime-verified | No for this new identity; the four-L4 success belongs only to the earlier trials |
 | sft-trained | No |
 | full-method-measured | No |
 
-The [source-use](source-use.md), [runbook](runbook.md), and
-[execution proposal](execution-proposal.md) bind the next steps. A new owner
-authorization with exact materials, limits and retention is needed for each
-real workload. The present draft manifests are not approval tokens.
+The [source-use](source-use.md), [runbook](runbook.md),
+[4B pilot](4b-pilot.md), and [execution proposal](execution-proposal.md) bind
+the next steps. A specific owner launch authorization is still required. The
+present draft manifest is not an approval token.
 
 No new real Qwen/TRM generations or training steps, SDG teacher calls, Codex proposer
 calls, Kaggle mutation/retrieval, competition submission, or paid usage occurred
