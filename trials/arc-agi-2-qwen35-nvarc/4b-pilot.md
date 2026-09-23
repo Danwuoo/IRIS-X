@@ -113,6 +113,9 @@ The result SHA-256 is
 the returned ledger SHA-256 is
 `8eaba8f9809febcfed8e625d34c7514309c65ed1e85226d2121fa653c048bfec`.
 The frozen identity cannot be retried or repaired under Decision 0021.
+The [local pilot 002 draft](4b-pilot-002-draft.md) records the missing official
+competition mount and the hardware diagnostic settings copied from earlier
+successful notebooks. It carries no execution authority.
 
 ## Verified versus open
 

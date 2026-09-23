@@ -73,6 +73,9 @@ The [source-use](source-use.md), [runbook](runbook.md),
 the preparation and terminal evidence. Decision 0021's one launch and
 retrieval are consumed; a new external attempt requires new owner direction.
 The retained draft manifest is not an approval token.
+The [pilot 002 local draft](4b-pilot-002-draft.md) corrects the missing official
+competition mount and adds early hardware diagnostics without changing pilot
+001's submitted identity or granting another launch.
 
 This pilot made one private Kaggle kernel push and one terminal retrieval. It
 made no real Qwen/TRM generations or training steps, SDG teacher calls, Codex

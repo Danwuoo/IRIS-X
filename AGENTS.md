@@ -98,6 +98,9 @@ before model loading or training: zero steps, tokens and generations. No
 retry, replacement, full SFT or ARC scoring is authorized. The terminal
 evidence and exact material bindings are in
 `trials/arc-agi-2-qwen35-nvarc/4b-pilot.md`.
+The distinct `nvarc-4b-compat-pilot-002` repair is a local draft only. It
+adds the official competition source and early hardware diagnostics; it has
+no accepted owner execution authority or provider mutation.
 
 ## Authority order
 
