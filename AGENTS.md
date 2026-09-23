@@ -106,10 +106,19 @@ the push authority is consumed and the unused retrieval is not permission to
 retry. The official competition mount and early hardware diagnostics remain
 locally staged only. Decision 0023 records the owner's explicit direction to
 retry a provider rejection before any kernel version or model run. It
-authorizes exactly one separate `nvarc-4b-compat-pilot-003` submission with a
+authorized exactly one separate `nvarc-4b-compat-pilot-003` submission with a
 shorter title/slug and the same synthetic-only, private, offline, USD 0,
-two-step, 128-token, zero-generation bounds. No model retry or reuse of pilot
-001/002 identities is authorized.
+two-step, 128-token, zero-generation bounds. That version was accepted,
+verified four distinct L4s and the official competition mount, then failed
+before model loading on Kaggle's preinstalled `torchao 0.10.0`, which PEFT
+0.21.0 rejects. Zero steps/tokens/generations were reserved. The one output
+retrieval attempt retained all seven non-log files; Windows console encoding
+left the log empty. Decision 0023 is consumed. No model retry or reuse of
+pilot 001/002/003 identities is authorized.
+An isolated pilot 004 dependency-repair draft is local only. It removes the
+optional incompatible `torchao` package before installing pinned offline
+wheels and checks its absence before PEFT import. It has no external execution
+authority or accepted Decision 0024.
 
 ## Authority order
 

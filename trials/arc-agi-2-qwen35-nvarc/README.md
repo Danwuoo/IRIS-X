@@ -1,8 +1,8 @@
 # Qwen3.5-4B NVARC reproduction development
 
 Status: **reviewed local P1 repairs implemented; CPU tiny Qwen3.5/PEFT verified;
-pilot 001 failed its hardware gate and pilot 002 push was rejected; acceptance
-still partial**.
+pilot 001 failed its hardware gate, pilot 002 push was rejected, and pilot 003
+failed on a runtime dependency; acceptance still partial**.
 The [second control review](control-review-4d23546.md) independently confirms
 the earlier example repairs and identified TTT/DFS reservation binding,
 unused-parameter DDP and TRM evaluation-entry blockers at `4d23546`. Its
@@ -65,7 +65,7 @@ Source-level differences and remaining gaps are in
 | --- | --- |
 | implementation-verified | Partial: both reviews' local P1 and DFS defects repaired; CPU collective, unused-branch, TRM entry and tiny actual Qwen3.5/PEFT pass; sandbox, upstream TRM and 4B GPU gates remain |
 | materials-ready | Partial: the existing private Kaggle Dataset v2 has pinned 4B base weights and offline wheels, now inventoried and digest-bound. The pilot uses synthetic data. Compact/ARC-SFT weights, full training data and TRM weights remain absent |
-| runtime-verified | No 4B model/gradient proof: the exact material and dependency gates passed, then the L4 hardware gate failed before model loading. The four-L4 success belongs only to earlier trials |
+| runtime-verified | No 4B model/gradient proof: pilot 003 verified the official competition mount, four L4s and base material, then failed on the preinstalled `torchao 0.10.0`/PEFT 0.21.0 dependency conflict before model loading |
 | sft-trained | No |
 | full-method-measured | No |
 
@@ -78,11 +78,16 @@ The [pilot 002 package](4b-pilot-002-draft.md) corrected the missing official
 competition mount and added early hardware diagnostics locally. Decision 0022's
 single push was rejected by Kaggle HTTP 400 before a version receipt. Its
 authority is consumed; pilot 001 stays frozen.
-The owner then authorized retry of that pre-version rejection. Decision 0023
-opens the separate [pilot 003 attempt](4b-pilot-003.md) with a shorter
-title/slug and the same runtime bounds. No model run has occurred under it.
+The owner then authorized retry of that pre-version rejection. Decision 0023's
+separate [pilot 003 attempt](4b-pilot-003.md) with a shorter title/slug was
+accepted. It verified the official mount and four L4s, then failed on the
+preinstalled `torchao 0.10.0`/PEFT 0.21.0 incompatibility before model load.
+That execution and its retrieval attempt are consumed.
+The [pilot 004 local draft](4b-pilot-004-draft.md) contains a bounded offline
+dependency repair. It is not authorized for a Kaggle push or execution.
 
 Pilot 001 made one private Kaggle kernel push and one terminal retrieval.
 Pilot 002's one push request was rejected before a version receipt, with no
-retrieval. Neither made real Qwen/TRM generations or training steps, SDG
+retrieval. Pilot 003 made one accepted push and one partial terminal retrieval
+attempt. None made real Qwen/TRM generations or training steps, SDG
 teacher calls, Codex proposer calls, competition submissions, or paid usage.
