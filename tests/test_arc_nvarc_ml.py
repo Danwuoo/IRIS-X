@@ -27,6 +27,9 @@ class NvarcMLTests(unittest.TestCase):
 
         config = Qwen3_5Config()
         text = config.text_config
+        # The pinned Qwen3.5-4B config ties both rows; constructor defaults do not.
+        config.tie_word_embeddings = True
+        text.tie_word_embeddings = True
         text.vocab_size = 32
         text.hidden_size = 64
         text.intermediate_size = 128
@@ -99,6 +102,19 @@ class NvarcMLTests(unittest.TestCase):
         task = {"task_id": "tiny", "train": [{"input": [[1]], "output": [[2]]}],
                 "test": [{"input": [[3]]}]}
         adapter.adapt(task)
+        groups = {"attention": False, "delta": False, "embedding": False, "head": False}
+        for name, parameter in adapter.model.named_parameters():
+            if parameter.grad is None or not bool(torch.any(parameter.grad != 0)):
+                continue
+            if ".self_attn." in name:
+                groups["attention"] = True
+            if ".linear_attn." in name:
+                groups["delta"] = True
+            if "embed_tokens" in name:
+                groups["embedding"] = True
+            if "lm_head" in name:
+                groups["head"] = True
+        self.assertTrue(all(groups.values()), groups)
         adapter.reset()
         for name, value in get_peft_model_state_dict(adapter.model).items():
             self.assertTrue(torch.equal(value.cpu(), adapter.initial[name]), name)

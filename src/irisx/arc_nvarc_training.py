@@ -374,10 +374,15 @@ class TaskLocalAdapter:
         self.config = dict(config)
         self.targets = inspect_lora_targets(base_model)
         torch.manual_seed(int(config["seed"]))
+        input_embeddings = base_model.get_input_embeddings()
+        output_embeddings = base_model.get_output_embeddings()
+        tied = (input_embeddings is not None and output_embeddings is not None and
+                input_embeddings.weight.data_ptr() == output_embeddings.weight.data_ptr())
         self.model = get_peft_model(base_model, LoraConfig(
             r=int(config["rank"]), lora_alpha=int(config["alpha"]),
             lora_dropout=float(config.get("dropout", 0.0)), target_modules=self.targets,
-            bias="none", task_type="CAUSAL_LM", use_rslora=bool(config.get("use_rslora", True))))
+            bias="none", task_type="CAUSAL_LM", use_rslora=bool(config.get("use_rslora", True)),
+            ensure_weight_tying=bool(tied)))
         self.initial = {key: value.detach().cpu().clone() for key, value in
                         get_peft_model_state_dict(self.model).items()}
         self.last_observation: dict[str, Any] | None = None
