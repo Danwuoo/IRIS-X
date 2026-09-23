@@ -23,7 +23,7 @@ from .canonical import digest_value
 from .errors import ValidationError
 
 
-def tiny_torch_model(seed: int) -> Any:
+def tiny_torch_model(seed: int, *, include_unused_visual: bool = False) -> Any:
     import torch
 
     torch.manual_seed(seed)
@@ -33,15 +33,15 @@ def tiny_torch_model(seed: int) -> Any:
             super().__init__()
             self.embedding = torch.nn.Embedding(16, 16)
             self.head = torch.nn.Linear(16, 16)
+            if include_unused_visual:
+                self.unused_visual = torch.nn.Linear(16, 16)
 
         def forward(self, input_ids: Any, labels: Any, attention_mask: Any) -> Any:
-            from types import SimpleNamespace
-
             logits = self.head(self.embedding(input_ids))
             loss = torch.nn.functional.cross_entropy(
                 logits[:, :-1].reshape(-1, 16), labels[:, 1:].reshape(-1),
                 ignore_index=-100)
-            return SimpleNamespace(loss=loss)
+            return {"loss": loss}
 
     return TinyCausalLM()
 
@@ -76,8 +76,11 @@ def train_ddp(model: Any, sequences: FrozenSequenceStore, output: Path,
     if device.type == "cuda":
         torch.cuda.set_device(rank)
     model.to(device)
+    # Compact Qwen retains a visual branch that text-only forward does not use.
+    # Detect unused parameters across ranks while preserving language/DeltaNet grads.
     ddp = torch.nn.parallel.DistributedDataParallel(
-        model, device_ids=[rank] if device.type == "cuda" else None)
+        model, device_ids=[rank] if device.type == "cuda" else None,
+        find_unused_parameters=True)
     optimizer = torch.optim.AdamW(ddp.parameters(), lr=float(config["learning_rate"]))
     scheduler = torch.optim.lr_scheduler.LambdaLR(
         optimizer, lambda step: max(0.0, (max_steps - step) / max_steps))
@@ -130,7 +133,8 @@ def train_ddp(model: Any, sequences: FrozenSequenceStore, output: Path,
                 raise ValidationError("DDP step has no supervised tokens")
             context = ddp.no_sync() if micro < accumulation - 1 else nullcontext()
             with context:
-                loss = ddp(**batch).loss
+                outputs = ddp(**batch)
+                loss = outputs.loss if hasattr(outputs, "loss") else outputs["loss"]
                 if not torch.isfinite(loss):
                     raise ValidationError("non-finite DDP loss")
                 scale = supervised * world / int(all_supervised.item()) / accumulation
@@ -194,7 +198,8 @@ def supervise(*, config_path: Path, data_root: Path, output: Path,
     config = json.loads(config_path.read_bytes())
     store = FrozenSequenceStore(data_root)
     if fixture:
-        model_digest = digest_value({"fixture_torch_model_seed": int(config["seed"])})
+        model_digest = digest_value({"fixture_torch_model_seed": int(config["seed"]),
+                                     "unused_visual": config.get("include_unused_visual", False)})
     else:
         if model_root is None:
             raise ValidationError("real DDP SFT needs a compact model")
@@ -366,7 +371,8 @@ def main(argv: list[str] | None = None) -> int:
         dist.init_process_group("nccl" if config.get("device") == "cuda" else "gloo")
     try:
         store = FrozenSequenceStore(args.data_root)
-        model_digest = (digest_value({"fixture_torch_model_seed": int(config["seed"])})
+        model_digest = (digest_value({"fixture_torch_model_seed": int(config["seed"]),
+                                      "unused_visual": config.get("include_unused_visual", False)})
                         if args.fixture else digest_value(json.loads(
                             (args.model_root / "material-manifest.json").read_bytes())))
         if not args.fixture:
@@ -376,7 +382,8 @@ def main(argv: list[str] | None = None) -> int:
                                  _identity(config, store.data_digest, model_digest,
                                            dist.get_world_size()), config,
                                  args.session_wall_seconds)
-        model = (tiny_torch_model(int(config["seed"])) if args.fixture
+        model = (tiny_torch_model(int(config["seed"]),
+                                  include_unused_visual=config.get("include_unused_visual", False)) if args.fixture
                  else load_compact_model(args.model_root))
         report = train_ddp(model, store, args.output, config, model_digest=model_digest,
                            resume=args.resume, stop_after_steps=args.stop_after_steps,

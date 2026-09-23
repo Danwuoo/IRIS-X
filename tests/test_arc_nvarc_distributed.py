@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 from irisx.arc_nvarc_data import freeze_shards, visible_task
-from irisx.arc_nvarc_distributed import supervise
+from irisx.arc_nvarc_distributed import supervise, tiny_torch_model
 from irisx.canonical import canonical_bytes, digest_value
 
 
@@ -34,7 +34,8 @@ class NvarcDistributedTests(unittest.TestCase):
             config = {"mode": "ddp-full-sft", "device": "cpu", "seed": 7,
                       "learning_rate": 0.01, "max_steps": 4,
                       "maximum_training_tokens": 10000, "max_sequence_length": 128,
-                      "gradient_accumulation": 1, "checkpoint_every": 1}
+                      "gradient_accumulation": 1, "checkpoint_every": 1,
+                      "include_unused_visual": True}
             config_path = root / "config.json"
             config_path.write_bytes(canonical_bytes(config, newline=True))
             paused = supervise(config_path=config_path, data_root=root / "frozen",
@@ -57,6 +58,10 @@ class NvarcDistributedTests(unittest.TestCase):
             self.assertEqual((4, 4, a["tokens_seen"]), (a["step"], a["cursor"], b["tokens_seen"]))
             for key, value in a["model"].items():
                 self.assertTrue(torch.equal(value, b["model"][key]), key)
+            initial = tiny_torch_model(config["seed"], include_unused_visual=True).state_dict()
+            self.assertFalse(torch.equal(initial["embedding.weight"], a["model"]["embedding.weight"]))
+            self.assertFalse(torch.equal(initial["head.weight"], a["model"]["head.weight"]))
+            self.assertTrue(torch.equal(initial["unused_visual.weight"], a["model"]["unused_visual.weight"]))
             rank0 = json.loads((root / "whole" / "rank-0.json").read_bytes())
             rank1 = json.loads((root / "whole" / "rank-1.json").read_bytes())
             self.assertEqual(set(), set(rank0["assigned_indices"]) & set(rank1["assigned_indices"]))
