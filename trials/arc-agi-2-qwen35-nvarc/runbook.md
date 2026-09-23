@@ -15,12 +15,25 @@ produces `outbound.zip`, `result.zip`, `frozen-data/manifest.json`, a tiny
 training checkpoint, and a separate `sealed-fixture-score.json`. The score is
 never in outbound/result. No model weights are read.
 
-The focused test suite also contains a real PyTorch CPU resume/parameter
-update check. It skips on this checkout's Python because `torch` is absent;
-`transformers` and `peft` are absent too. When those pinned compatible
-dependencies are provisioned, run `python -m unittest tests.test_arc_nvarc -v`
-before proposing any 4B work. The test does not instantiate Qwen3.5's hybrid
-architecture, so the pinned model gradient/PEFT gate remains separate.
+For the installed CPU torch interpreter, run:
+
+```powershell
+$env:PYTHONPATH = 'src'
+& 'C:/Users/wurre/AppData/Local/Programs/Python/Python312/python.exe' -m unittest tests.test_arc_nvarc tests.test_arc_nvarc_distributed -v
+& 'C:/Users/wurre/AppData/Local/Programs/Python/Python312/python.exe' tools/nvarc_ml_profile.py
+```
+
+The first command executes synthetic SFT/resume and two-rank CPU Gloo DDP.
+The strict ML profile returns `BLOCKED` until `transformers`, `peft`, and
+`safetensors` are installed for Python 3.12. It records versions and then runs
+tiny actual Qwen3.5 conversion/gradient and PEFT/reset tests. The current
+interpreter has Python 3.12.10 and torch 2.12.1+cpu. Existing local wheel
+caches did not contain the missing packages. Provision a separate optional
+environment from a reviewed compatible wheelhouse, for example with
+`python -m venv --system-site-packages .irisx/nvarc-ml-venv` and
+`pip install --no-index --find-links <wheelhouse> transformers peft safetensors`;
+record resolved versions before use. No real weights are needed for these
+tiny tests. A skipped generic unittest run is not an ML profile pass.
 
 ## Material and compatibility gates
 
@@ -59,8 +72,11 @@ architecture, so the pinned model gradient/PEFT gate remains separate.
 
 The Qwen candidate config now names `bounded-dfs` with cumulative NLL cutoff
 `-log(0.2)`, at most 256 prefix expansions and four returned sequences per
-view. Each branch recomputes its full prefix with `use_cache=False`; this
-prevents sibling state leakage but has unknown 4B speed. `hf-beam` is a named
+view. An optional LRU retains full-prefix logits; model forwards still use
+`use_cache=False`, preventing sibling hybrid-state leakage. A hybrid KV-cache
+mode is explicitly rejected. A 1,000-token completion requires at least 1,001
+expansions, so the 256 default cannot reach it. Full-prefix cache and reference
+parity are CPU tested; 4B speed is unknown. `hf-beam` is a named
 alternative, not source-method evidence. The parent still enforces one task
 deadline across adaptation, all test inputs, generation and verification.
 The result ledger counts generation calls, returned sequences and verification
@@ -74,15 +90,18 @@ identity and nonempty owner decision/limits. The provided manifests remain
 
 ```powershell
 $env:PYTHONPATH = 'src'
-python -m irisx.arc_nvarc_cli convert-compact --base <verified-base-dir> --output <new-compact-dir> --model-revision 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a --model-manifest-digest <sha256:...> --authorization <approved-json>
+python -m irisx.arc_nvarc_cli snapshot-base-manifest --base <verified-base-dir> --output .irisx/arc-agi-2/qwen35-nvarc/base-model-manifest.json
+python -m irisx.arc_nvarc_cli convert-compact --base <verified-base-dir> --base-manifest .irisx/arc-agi-2/qwen35-nvarc/base-model-manifest.json --output <new-compact-dir> --model-revision 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a --model-manifest-digest <snapshot-output-digest> --authorization <approved-json>
 python -m irisx.arc_nvarc_cli train-sft --compact-base <verified-compact-dir> --frozen-data <frozen-data-dir> --config trials/arc-agi-2-qwen35-nvarc/configs/sft-pilot.json --output <new-training-dir> --authorization <approved-json>
 ```
 
 The local full-SFT backend is single-process and unpacked; its optimizer state
-is separate from an exported inference model. Before a 12,716-step/full-corpus
-run, a Qwen3.5-compatible distributed training implementation and a measured
-single-step memory/throughput report are required. Do not submit the original
-Qwen3 Megatron config against Qwen3.5 unchanged.
+is separate from an exported inference model. `arc_nvarc_distributed.py` adds
+DDP with disjoint rank samples, gradient collectives, rank-zero step checkpoints,
+exact resume, and a cumulative session wall ledger. Its two-rank Gloo fixture
+passes on Python 3.12. DDP copies the full model and optimizer to every rank;
+GPU memory/throughput and sharding remain unverified before any full-corpus
+proposal. Do not submit the original Qwen3 Megatron config unchanged.
 
 TRM training has a separate two-stage path. First stage labelled JSON with
 `stage_trm_training`, then use `trm_preprocess_spec` for the pinned upstream
@@ -94,10 +113,20 @@ are distinct. These specs are drafts; upstream dependencies, processed real
 data and checkpoint are absent, and no TRM command was run. The pinned README
 names `hydra-core==1.3.2`, `adam_atan2_pytorch==0.2.4`,
 `argdantic==1.3.3`, `coolname==2.2.0`, `numba==0.62.1` plus PyTorch and the
-matching upstream source. The SDG program executor likewise remains blocked
-until an actual isolated runtime can attest no network/credentials, restricted
-mounts, CPU/memory/time and output limits; a config claim alone does not run
-untrusted Python.
+matching upstream source. The current Python 3.12 environment lacks
+`argdantic`, `numba`, and `hydra`. `arc_nvarc_trm.py` now has a bounded
+subprocess wrapper and ten-attempt output parser, but only its launch and
+parser fixtures ran. The upstream evaluator reads labelled
+`test_puzzles.json`; it cannot be used for sealed truth-free inference without
+a separate source-backed adaptation. Fixture predictions are tagged
+`trm-fixture` and rejected by model integration.
+
+`arc_nvarc_sdg.py` saves stage identities and call reservations before provider
+calls. Failed and pending calls are not retried automatically. Its Docker
+program launcher pins a local image and bounds network, filesystem, CPU,
+memory, process count, wall time and output size. Launcher flags and rejection
+paths have fixtures; the Docker daemon was unavailable, so sandbox enforcement
+has no integration evidence. A caller-supplied attestation claim is rejected.
 
 ## Static Kaggle packaging
 

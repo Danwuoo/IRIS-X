@@ -1,6 +1,6 @@
 # Qwen3.5-4B NVARC reproduction development
 
-Status: **development acceptance incomplete; development-authorized-no-execution**.
+Status: **local continuation implemented; acceptance still partial; no execution authority**.
 The [control review](control-review.md) found reproducible outbound, result,
 model-material and DFS defects at `e7d74a6`. The
 [continuation plan](../../docs/plan/2026-09-23-qwen35-nvarc-acceptance-continuation.md)
@@ -31,6 +31,12 @@ ablation. None of their exhausted ceilings or frozen identities is reused.
 - Static private Kaggle staging and a draft kernel notebook. No Dataset/kernel
   mutation was made.
 
+The continuation repaired the three reviewed P1 boundaries, made DFS iterative,
+and exercised a two-rank CPU Gloo DDP worker with pause, resume, and worker
+failure. SDG stage accounting, a Docker launcher, a TRM invocation wrapper and
+a strict optional ML profile were added. The Docker daemon and the optional
+Qwen3.5/PEFT packages are absent, so those integrations remain unverified.
+
 The offline fixture E2E runs a **tiny random transition model for gradient and
 resume checks**, then explicitly marked fixture predictions through candidate,
 result and sealed-scoring paths. Its 2/3 pass@2 is synthetic test behavior,
@@ -45,7 +51,7 @@ Source-level differences and remaining gaps are in
 
 | State | Current value |
 | --- | --- |
-| implementation-verified | Partial: existing synthetic tests pass, but control-review blockers and remaining implementation prevent overall acceptance |
+| implementation-verified | Partial: reviewed P1 and DFS defects repaired; CPU collective and adapter fixtures pass; architecture, sandbox, upstream TRM and GPU gates remain |
 | materials-ready | No: this worktree has pinned small sources/configs, but no compact or ARC-SFT Qwen3.5 weights, frozen full training data, or TRM weights |
 | runtime-verified | No for this new identity; the four-L4 success belongs only to the earlier trials |
 | sft-trained | No |
@@ -56,6 +62,6 @@ The [source-use](source-use.md), [runbook](runbook.md), and
 authorization with exact materials, limits and retention is needed for each
 real workload. The present draft manifests are not approval tokens.
 
-No new real Qwen/TRM generations, SGD steps, SDG teacher calls, Codex proposer
+No new real Qwen/TRM generations or training steps, SDG teacher calls, Codex proposer
 calls, Kaggle mutation/retrieval, competition submission, or paid usage occurred
 in this development task.

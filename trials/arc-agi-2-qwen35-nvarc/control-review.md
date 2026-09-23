@@ -78,3 +78,13 @@ durable findings. The development task must add independent regression tests
 to the tracked suite rather than depend on these local probe artifacts.
 No previous trial identity, retained scientific evidence, acceptance threshold,
 or real-execution authorization changed in this review.
+
+## Resolution of reviewed findings
+
+This section records later repairs; the findings above remain the review of
+`e7d74a6`. Rehashed adversarial tests now reject test truth in outbound,
+incomplete result checkpoints, and empty or unbound model inventories in
+`e3d348c`. Iterative DFS and explicit caps/stop reasons landed in `64d3350`.
+The two-rank CPU collective landed in `995bb1d`; optional ML, SDG and TRM
+adapter work followed in `6c4384f`, `21178d4`, and `a91c2fc`. These changes
+do not establish real Qwen3.5, sandbox, TRM or four-L4 execution readiness.
