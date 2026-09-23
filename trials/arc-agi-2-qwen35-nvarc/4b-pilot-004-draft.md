@@ -1,6 +1,6 @@
 # Qwen3.5-4B pilot 004 dependency-repair draft
 
-Status: **local draft only; no Kaggle push or execution authorized**.
+Status: **Decision 0024 authorizes one exact private Kaggle launch; not yet pushed**.
 
 The [pilot 003](4b-pilot-003.md) accepted version verified the official
 `arc-prize-2026-arc-agi-2` mount, four distinct L4 devices and the pinned
@@ -29,17 +29,20 @@ PEFT 0.21.0 source path, but the repair has not yet been tested on Kaggle's
 GPU image.
 
 The staged draft is `approved: false` with a `DRAFT-DO-NOT-PUSH` kernel ID.
-Its notebook refuses to run without an exact, separate owner authorization.
+Its notebook refuses to run without the exact Decision 0024 authorization
+binding and separate approved package.
 The offline stage and test pass. The current draft plan SHA-256 is
 `57f581383f96661fc980a15e5a877654c8f324e6ddeb00da9865c1c907d024cd`.
 The current local draft wheel, notebook and metadata SHA-256 values are
 `70241f00764bad3849a29aae20dbde7d6e20657c76ebca6f374c0f279c8f6e22`,
 `73753d8a1f0f9ad41bb5ac39f83299c24c853a8996ba0f0ccf8d942c8eeae237`,
 and `481d9d073c21405077862055eb6b1e52adda381bb17133a9077aefd6b0e794d1`.
-An approved package would have different plan and notebook hashes and must be
-bound separately before any provider mutation.
+An approved package has different plan and notebook hashes and must be bound
+separately before provider mutation. Decision 0024 authorizes exactly one
+such package and launch with one terminal retrieval; it does not authorize
+another retry or Dataset update.
 
-For a future authorized terminal retrieval, set `PYTHONIOENCODING=utf-8` in
+For the authorized terminal retrieval, set `PYTHONIOENCODING=utf-8` in
 the local CLI process so a Unicode log line does not repeat pilot 003's
 Windows `charmap` download failure. This note does not authorize another
 retrieval of pilot 003.

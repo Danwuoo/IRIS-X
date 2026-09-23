@@ -115,10 +115,13 @@ before model loading on Kaggle's preinstalled `torchao 0.10.0`, which PEFT
 retrieval attempt retained all seven non-log files; Windows console encoding
 left the log empty. Decision 0023 is consumed. No model retry or reuse of
 pilot 001/002/003 identities is authorized.
-An isolated pilot 004 dependency-repair draft is local only. It removes the
-optional incompatible `torchao` package before installing pinned offline
-wheels and checks its absence before PEFT import. It has no external execution
-authority or accepted Decision 0024.
+Decision 0024 accepts the owner's explicit authorization of one distinct pilot
+004 dependency repair, bound to the unchanged local draft plan. It removes the
+optional incompatible `torchao` package offline before pinned wheel install
+and checks its absence before PEFT import. Exactly one private kernel push,
+bounded terminal status checks and one output retrieval are authorized under
+the unchanged two-step, 128-token, zero-generation, USD 0 limits. No Dataset
+mutation, retry, resume or other pilot identity is authorized.
 
 ## Authority order
 

@@ -83,8 +83,9 @@ separate [pilot 003 attempt](4b-pilot-003.md) with a shorter title/slug was
 accepted. It verified the official mount and four L4s, then failed on the
 preinstalled `torchao 0.10.0`/PEFT 0.21.0 incompatibility before model load.
 That execution and its retrieval attempt are consumed.
-The [pilot 004 local draft](4b-pilot-004-draft.md) contains a bounded offline
-dependency repair. It is not authorized for a Kaggle push or execution.
+The [pilot 004 draft](4b-pilot-004-draft.md) contains a bounded offline
+dependency repair. Decision 0024 authorizes one separate Kaggle push and
+terminal retrieval; no pilot 004 version has yet been submitted.
 
 Pilot 001 made one private Kaggle kernel push and one terminal retrieval.
 Pilot 002's one push request was rejected before a version receipt, with no

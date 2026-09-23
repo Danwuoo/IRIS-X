@@ -94,3 +94,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0023-authorize-pre-version-4b-pilot-retry.md`](0023-authorize-pre-version-4b-pilot-retry.md)
   preserves the provider-rejected pilot 002 and authorizes one corrected,
   shorter-slug pilot 003 submission before any accepted run.
+- [`0024-authorize-4b-pilot-dependency-repair.md`](0024-authorize-4b-pilot-dependency-repair.md)
+  preserves pilot 003's dependency failure and authorizes one distinct pilot
+  004 submission with an offline removal of incompatible optional `torchao`.
