@@ -34,7 +34,9 @@ truth-free; public evaluation and competition submission need separate scope.
 The local continuation adds a CPU DDP collective path, which synchronizes
 gradients but leaves full model and optimizer copies on every rank. Phase S
 must use separately measured GPU memory and, if necessary, an explicitly
-validated sharding backend. Phase T additionally needs a truth-free inference
-adapter: the pinned upstream evaluator reads `test_puzzles.json` with labels
-to compute metrics. Its current `submission.json` parser is available for
-synthetic format checks but does not authorize that evaluator on sealed tasks.
+validated sharding backend. Phase T has a local raw-tensor normalizer that
+matches predictions to visible inputs and bypasses the pinned upstream
+evaluator's label-bearing `test_puzzles.json`. It is parser-fixture verified;
+the upstream script still derives steps from `epochs` and mixes training and
+evaluation. Its pure inference launch behavior requires source-backed testing
+and separate authorization before sealed tasks.

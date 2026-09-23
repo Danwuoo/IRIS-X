@@ -115,11 +115,13 @@ names `hydra-core==1.3.2`, `adam_atan2_pytorch==0.2.4`,
 `argdantic==1.3.3`, `coolname==2.2.0`, `numba==0.62.1` plus PyTorch and the
 matching upstream source. The current Python 3.12 environment lacks
 `argdantic`, `numba`, and `hydra`. `arc_nvarc_trm.py` now has a bounded
-subprocess wrapper and ten-attempt output parser, but only its launch and
-parser fixtures ran. The upstream evaluator reads labelled
-`test_puzzles.json`; it cannot be used for sealed truth-free inference without
-a separate source-backed adaptation. Fixture predictions are tagged
-`trm-fixture` and rejected by model integration.
+subprocess wrapper, ten-attempt output parser and a visible-input raw-tensor
+normalizer. These paths have synthetic launch/parser tests. The launch spec
+disables the upstream evaluator that reads labelled `test_puzzles.json` and
+saves `inputs`, `puzzle_identifiers`, `q_halt_logits`, and `preds` tensors.
+The upstream script still mixes training/evaluation and derives optimizer
+steps from `epochs`; pure inference launch semantics remain unverified.
+Fixture predictions are tagged `trm-fixture` and rejected by model integration.
 
 `arc_nvarc_sdg.py` saves stage identities and call reservations before provider
 calls. Failed and pending calls are not retried automatically. Its Docker

@@ -15,7 +15,7 @@ synthetic CPU tests. None of these labels implies model readiness or ARC score.
 | Rerank/top two | 8 shared augmentations and `votes - mean NLL` | Eight-view model NLL, inverse-before-dedupe, deterministic ties, missing-candidate records | Fixture verified; real NLL numerics untested |
 | Four-L4 runtime | Persistent independent workers/dynamic queue | Exact four-L4/source gate, one load per worker, parent timeout/crash terminalization, atomic task ledger | Four synthetic worker processes and forced crash/timeout/result tested; new identity not run on Kaggle; adapter call budget remains proposed |
 | ZIP/result/evaluator | Truth-free result, multi-test pass@2 | Existing canonical transport, workload binding, sealed per-test scorer | Fixture E2E and boundary tests; no real result or holdout score |
-| TRM | Independent TRM train/TTT, 10 attempts | Pinned labelled stage, source-hashed preprocess/train/eval specs, bounded invocation wrapper, ten-attempt parser with fixture provenance | 30×30 encoding and launch/parser fixtures pass; upstream dependencies, checkpoint and truth-free inference path absent |
+| TRM | Independent TRM train/TTT, 10 attempts | Pinned labelled stage, source-hashed preprocess/train/eval specs, bounded invocation wrapper, ten-attempt parser and visible-input raw-tensor normalizer with fixture provenance | 30×30 encoding and launch/parser fixtures pass; upstream dependencies, checkpoint and pure inference launch semantics unverified |
 | Combined submission | 2B+TRM and separate 4B-only versions | Combined candidate pool with Qwen verification plus explicit branch-priority fallback | Interface tested; no calibrated/real joint run; cannot attribute or combine original scores |
 
 The original Qwen submission notebook uses Unsloth and a custom batch DFS. The
@@ -34,7 +34,7 @@ compatibility before any capability claim.
 | Single-process SFT | Python 3.12 torch synthetic gradient/resume passes | Actual tiny Qwen3.5 and PEFT tests blocked on `transformers`, `peft`, `safetensors` |
 | Distributed SFT | Two-rank CPU Gloo DDP update, disjoint samples, exact pause/resume and forced worker failure pass; wall ledger persists | DDP does not shard memory; GPU and large-model path untested |
 | SDG | Saved/fake stage provider, stable stage identity, failed/duplicate call accounting and fail-closed caller claims pass | Docker launcher flags tested; daemon absent, no real sandbox integration or teacher call |
-| TRM | Pinned source hash binding, bounded invocation fixture, ten-attempt parser with fixture provenance pass | `argdantic`, `numba`, `hydra` missing; upstream preprocessing/train/eval and truth-free inference adaptation unverified |
+| TRM | Pinned source hash binding, bounded invocation fixture, ten-attempt parser and truth-free raw-tensor normalization with fixture provenance pass | `argdantic`, `numba`, `hydra` missing; upstream preprocessing/train/eval and pure inference launch semantics unverified |
 
 The table above supersedes earlier implementation-status cells for this
 continuation. The reviewed historical version remains described above.

@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 import hashlib
+import math
 import os
 from pathlib import Path
+import re
 import subprocess
 import time
 from typing import Any, Mapping
@@ -140,7 +142,8 @@ def trm_launch_spec(nvarc_trm_root: Path, upstream_root: Path, data_root: Path,
     else:
         argv.extend(["arch.halt_max_steps=10", f"+load_checkpoint={load_checkpoint.as_posix()}",
                      "global_batch_size=128", "eval_interval=2000", "lr_warmup_steps=200",
-                     "lr=0.0001", "eval_save_outputs=[inputs,puzzle_identifiers,q_halt_logits,preds]"])
+                     "lr=0.0001", "evaluators=[]",
+                     "eval_save_outputs=[inputs,puzzle_identifiers,q_halt_logits,preds]"])
     return {"format": "irisx/nvarc-trm-launch-spec", "mode": mode,
             "upstream_revision": TRM_REVISION, "nvarc_revision": NVARC_REVISION,
             "argv": argv, "cwd": str(nvarc_trm_root),
@@ -228,6 +231,144 @@ def read_trm_submission(path: Path, expected_tests: Mapping[str, int], *,
                  "source": f"{kind}:attempt_{i}", "rank": i}
                 for i in range(1, 11)]
     return result
+
+
+def _decode_trm_tensor(value: Any) -> list[list[int]]:
+    """Mirror the pinned evaluator's largest EOS-free top-left crop."""
+    cells = value.tolist() if hasattr(value, "tolist") else value
+    if not isinstance(cells, list) or len(cells) != 900:
+        raise ValidationError("TRM grid tensor is not 30x30")
+    rows = [cells[start:start + 30] for start in range(0, 900, 30)]
+    best_area = 0
+    best_shape = (0, 0)
+    columns = 30
+    for height in range(1, 31):
+        for col in range(1, columns + 1):
+            value = rows[height - 1][col - 1]
+            if type(value) is not int or value < 2 or value > 11:
+                columns = col - 1
+                break
+        if height * columns > best_area:
+            best_area, best_shape = height * columns, (height, columns)
+    height, width = best_shape
+    if not height or not width:
+        raise ValidationError("TRM grid tensor has no complete grid")
+    return grid([[rows[row][col] - 2 for col in range(width)] for row in range(height)])
+
+
+def _inverse_trm_augmentation(name: str, value: list[list[int]]) -> tuple[str, list[list[int]]]:
+    if "|||" not in name:
+        return name, value
+    import numpy as np
+
+    parts = name.split("|||")
+    if (len(parts) != 3 or not parts[0] or not parts[1].startswith("t") or
+            parts[1] not in {f"t{i}" for i in range(8)} or
+            len(parts[2]) != 10 or set(parts[2]) != set("0123456789")):
+        raise ValidationError("TRM augmentation identifier differs")
+    tid = int(parts[1][1:])
+    inverse = (0, 3, 2, 1, 4, 5, 6, 7)[tid]
+    array = np.array(value, dtype=np.uint8)
+    if inverse == 1:
+        array = np.rot90(array, 1)
+    elif inverse == 2:
+        array = np.rot90(array, 2)
+    elif inverse == 3:
+        array = np.rot90(array, 3)
+    elif inverse == 4:
+        array = np.fliplr(array)
+    elif inverse == 5:
+        array = np.flipud(array)
+    elif inverse == 6:
+        array = array.T
+    elif inverse == 7:
+        array = np.fliplr(np.rot90(array, 1))
+    permutation = [int(char) for char in parts[2]]
+    return parts[0], grid(np.argsort(permutation).astype(np.uint8)[array].tolist())
+
+
+def read_trm_prediction_tensors(files: list[Path], identifiers_path: Path,
+                                visible_cases: Mapping[str, Mapping[str, Any]], *,
+                                invocation: Mapping[str, Any],
+                                expected_ranks: int) -> dict[str, Any]:
+    """Normalize saved upstream tensors using visible inputs, never evaluator labels."""
+    import torch
+
+    kind = invocation.get("source_kind")
+    if kind not in {"upstream", "parser-fixture"} or invocation.get("status") != "complete":
+        raise ValidationError("TRM tensor reader needs successful provenance")
+    if (expected_ranks < 1 or len(files) != expected_ranks or
+            len({path.name for path in files}) != expected_ranks):
+        raise ValidationError("TRM saved rank set differs")
+    patterns = [re.fullmatch(r"step_(\d+)_all_preds\.(\d+)", path.name)
+                for path in files]
+    if (any(match is None for match in patterns) or
+            len({match.group(1) for match in patterns if match}) != 1 or
+            {int(match.group(2)) for match in patterns if match} != set(range(expected_ranks))):
+        raise ValidationError("TRM saved rank/step identity differs")
+    identifiers = json.loads(identifiers_path.read_bytes())
+    if not isinstance(identifiers, list) or len(set(identifiers)) != len(identifiers):
+        raise ValidationError("TRM identifier mapping differs")
+    by_input: dict[tuple[str, tuple[tuple[int, ...], ...]], list[int]] = {}
+    result: dict[tuple[str, int], list[dict[str, Any]]] = {}
+    for task_id, task in visible_cases.items():
+        for test_index, item in enumerate(task["test"]):
+            key = (task_id, tuple(tuple(row) for row in grid(item["input"])))
+            by_input.setdefault(key, []).append(test_index)
+            result[(task_id, test_index)] = []
+    invalid = 0
+    for path in files:
+        payload = torch.load(path, map_location="cpu", weights_only=True)
+        required = {"inputs", "puzzle_identifiers", "q_halt_logits", "preds"}
+        if not isinstance(payload, dict) or set(payload) != required:
+            raise ValidationError("TRM raw prediction schema differs")
+        size = len(payload["puzzle_identifiers"])
+        if any(len(payload[key]) != size for key in required):
+            raise ValidationError("TRM raw prediction lengths differ")
+        for index in range(size):
+            identifier = int(payload["puzzle_identifiers"][index])
+            if identifier == 0:
+                continue
+            if identifier < 0 or identifier >= len(identifiers):
+                raise ValidationError("TRM prediction identifier outside mapping")
+            try:
+                raw_input = _decode_trm_tensor(payload["inputs"][index])
+                raw_pred = _decode_trm_tensor(payload["preds"][index])
+                task_id, input_grid = _inverse_trm_augmentation(identifiers[identifier], raw_input)
+                pred_task, output_grid = _inverse_trm_augmentation(identifiers[identifier], raw_pred)
+                if pred_task != task_id:
+                    raise ValidationError("TRM inverse task identity differs")
+                matches = by_input.get((task_id, tuple(tuple(row) for row in input_grid)), [])
+                if not matches:
+                    invalid += 1
+                    continue
+                logit = float(payload["q_halt_logits"][index])
+                if not math.isfinite(logit):
+                    raise ValidationError("TRM halt logit is nonfinite")
+                probability = 1 / (1 + math.exp(-logit)) if logit >= 0 else (
+                    math.exp(logit) / (1 + math.exp(logit)))
+                for test_index in matches:
+                    result[(task_id, test_index)].append({"grid": output_grid,
+                        "branch": "trm" if kind == "upstream" else "trm-fixture",
+                        "source": f"{kind}:{path.name}:{index}",
+                        "halt_probability": probability})
+            except ValidationError:
+                invalid += 1
+    for key, candidates in result.items():
+        votes: dict[tuple[tuple[int, ...], ...], dict[str, Any]] = {}
+        for candidate in candidates:
+            identity = tuple(tuple(row) for row in candidate["grid"])
+            record = votes.setdefault(identity, {**candidate, "votes": 0,
+                                                  "halt_sum": 0.0})
+            record["votes"] += 1
+            record["halt_sum"] += candidate["halt_probability"]
+        ordered = list(votes.values())
+        for candidate in ordered:
+            candidate["halt_probability"] = candidate.pop("halt_sum") / candidate["votes"]
+        ordered.sort(key=lambda item: (-item["votes"], -item["halt_probability"], item["grid"]))
+        result[key] = ordered
+    return {"candidates": result, "invalid_predictions": invalid,
+            "source_kind": kind, "test_outputs": len(result)}
 
 
 def trm_candidates(records: list[Mapping[str, Any]]) -> dict[tuple[str, int], list[dict[str, Any]]]:

@@ -33,8 +33,9 @@ ablation. None of their exhausted ceilings or frozen identities is reused.
 
 The continuation repaired the three reviewed P1 boundaries, made DFS iterative,
 and exercised a two-rank CPU Gloo DDP worker with pause, resume, and worker
-failure. SDG stage accounting, a Docker launcher, a TRM invocation wrapper and
-a strict optional ML profile were added. The Docker daemon and the optional
+failure. SDG stage accounting, a Docker launcher, a TRM invocation wrapper,
+truth-free raw-tensor normalizer and strict optional ML profile were added.
+The Docker daemon and the optional
 Qwen3.5/PEFT packages are absent, so those integrations remain unverified.
 
 The offline fixture E2E runs a **tiny random transition model for gradient and
