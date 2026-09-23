@@ -169,7 +169,8 @@ def ordered_diagnostic_jobs(cohort: Mapping[str, Any]) -> list[dict[str, Any]]:
 def validate_ledger(ledger: Mapping[str, Any]) -> None:
     if ledger.get("trial_id") != TRIAL_ID or ledger.get("generation_ceiling") != MAX_GENERATIONS:
         raise ValidationError("ablation ledger identity or ceiling differs")
-    if ledger.get("development") != ACTIVE_REFLECTION_PROFILE or ledger.get("reflection") != {**ACTIVE_REFLECTION_PROFILE, "proposer_calls": 0}:
+    if ({key: ledger.get("development", {}).get(key) for key in ACTIVE_REFLECTION_PROFILE} != ACTIVE_REFLECTION_PROFILE
+            or ledger.get("reflection") != {**ACTIVE_REFLECTION_PROFILE, "proposer_calls": 0}):
         raise ValidationError("ablation permits no proposer calls")
     if ledger["diagnostic"]["reserved_generations"] != 192 or ledger["validation"]["reserved_generations"] != 384:
         raise ValidationError("ablation generation reservations differ")
@@ -372,7 +373,10 @@ def verify_result_package(path: Path, outbound: Path) -> tuple[dict[str, Any], d
     validate_checkpoint(checkpoint, run, workload)
     predictions = json.loads(contents["predictions/predictions.json"])
     records = predictions["records"]
-    if len(records) != len({item["job_key"] for item in records}) or {item["job_key"] for item in records} != set(checkpoint["completed"]):
+    expected_records = [checkpoint["completed"][key] for key in checkpoint["expected_jobs"] if key in checkpoint["completed"]]
+    if (len(records) != len({item["job_key"] for item in records})
+            or {item["job_key"] for item in records} != set(checkpoint["completed"])
+            or records != expected_records):
         raise ValidationError("ablation predictions differ from checkpoint")
     if any(marker in payload for payload in contents.values() for marker in (b"evaluator-truth", b'"expected_output"', b'"score"', b'"feedback"')):
         raise ValidationError("ablation result contains evaluator material")
@@ -396,6 +400,7 @@ def _summarize(records: list[Mapping[str, Any]]) -> dict[str, Any]:
             "valid_grid": sum(record["status"] == "valid" for record in records),
             "parse_failures": sum(record["status"] == "invalid" for record in records),
             "cap_hits": sum(record["stop_reason"] == "maximum_new_tokens" for record in records),
+            "raw_completions_truncated": sum(bool(record.get("raw_completion_truncated")) for record in records),
             "timeouts": sum(record["status"] == "timeout" for record in records),
             "elapsed_p50_seconds": _percentile(times, .5), "elapsed_p95_seconds": _percentile(times, .95),
             "elapsed_total_seconds": sum(times), "generated_tokens_p50": _percentile(tokens, .5),
@@ -433,6 +438,7 @@ def score_ablation_result(result: Path, outbound: Path, baseline_score: Path,
                   "job_key": job["job_key"], "status": raw["status"], "correct": correct,
                   "baseline_correct": original["correct"], "stop_reason": raw.get("generation", {}).get("stop_reason"),
                   "parse_state": raw.get("generation", {}).get("parse_state"),
+                  "raw_completion_truncated": raw.get("generation", {}).get("raw_completion_truncated"),
                   "split_state": raw.get("generation", {}).get("split_state"),
                   "final_complete": raw.get("generation", {}).get("final_complete"),
                   "elapsed_seconds": raw.get("timing", {}).get("generation_seconds"),
