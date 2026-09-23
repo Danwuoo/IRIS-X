@@ -2,6 +2,11 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-09-23-qwen35-nvarc-reproduction.md`](plan/2026-09-23-qwen35-nvarc-reproduction.md)
+  defines the owner-requested Qwen3.5-4B NVARC development plan, including
+  data, SFT, task-local adaptation, candidate ranking, integration, offline
+  validation and a separate proposal for future real execution.
+
 - [`plan/2026-09-23-research-control-handoff.md`](plan/2026-09-23-research-control-handoff.md)
   hands verified experimental results, local evidence locations and open
   research choices to the next GPT-6 Astra high control task.
