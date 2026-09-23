@@ -71,6 +71,40 @@ class NvarcBoundaryTests(unittest.TestCase):
                 with self.assertRaises(ValidationError):
                     verify_result(path, binding, workload)
 
+    def test_rehashed_result_cannot_inflate_ttt_or_dfs_reservations(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            fixture_e2e(root / "fixture")
+            binding, workload, _ = verify_outbound(root / "fixture" / "outbound.zip")
+            _, original, _ = verify_zip(root / "fixture" / "result.zip", limits=RESULT_LIMITS,
+                                        package_kind=RESULT_KIND)
+            for label in ("ttt", "dfs"):
+                contents = dict(original)
+                checkpoint = json.loads(contents["checkpoint/checkpoint.json"])
+                first = checkpoint["completed"][checkpoint["expected_tasks"][0]]
+                if label == "ttt":
+                    first["adaptation"] = {"steps": 999, "training_tokens": 9999}
+                    first["reservation"]["ttt_steps_reserved"] = 999
+                    first["reservation"]["ttt_tokens_reserved"] = 9999
+                    checkpoint["counters"]["ttt_steps_reserved"] = 999
+                    checkpoint["counters"]["ttt_tokens_reserved"] = 9999
+                    checkpoint["counters"]["sgd_steps"] = 999
+                    checkpoint["counters"]["training_tokens"] = 9999
+                else:
+                    first["reservation"]["dfs_forwards_reserved"] += 999
+                    checkpoint["counters"]["dfs_forwards_reserved"] += 999
+                contents["checkpoint/checkpoint.json"] = canonical_bytes(checkpoint, newline=True)
+                contents["predictions/predictions.json"] = canonical_bytes({
+                    "records": [checkpoint["completed"][key] for key in checkpoint["expected_tasks"]]},
+                    newline=True)
+                path = root / f"inflated-{label}.zip"
+                write_zip(path, RESULT_KIND, binding["run_id"], contents,
+                          {"trial_id": binding["trial_id"],
+                           "identity_digest": binding["identity_digest"], "truth_free": True},
+                          limits=RESULT_LIMITS)
+                with self.assertRaises(ValidationError):
+                    verify_result(path, binding, workload)
+
     def test_compact_material_requires_complete_closed_inventory(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

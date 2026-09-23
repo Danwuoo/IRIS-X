@@ -129,6 +129,8 @@ def make_binding(workload: Mapping[str, Any], *, run_id: str, model_digest: str,
                 "full-prefix-recompute", "full-prefix-logit-cache"}:
             raise ValidationError("unsupported Qwen3.5 hybrid DFS cache mode")
     ttt = config.get("ttt", {})
+    if "enabled" in ttt and type(ttt["enabled"]) is not bool:
+        raise ValidationError("task adaptation enabled flag must be boolean")
     if ttt.get("enabled") and any(type(ttt.get(key)) is not int or ttt[key] < 1
                                   for key in ("steps", "max_sequence_length")):
         raise ValidationError("task adaptation needs positive step and token ceilings")
@@ -228,6 +230,20 @@ def new_checkpoint(binding: Mapping[str, Any], workload: Mapping[str, Any]) -> d
             "sessions": [], "complete": False}
 
 
+def _bound_reservation(config: Mapping[str, Any]) -> dict[str, int]:
+    """Derive all six per-task ceilings solely from the bound configuration."""
+    calls = config["maximum_calls_per_task"]
+    sequences = calls * config["beams_per_call"]
+    ttt = config.get("ttt", {})
+    steps = ttt["steps"] if ttt.get("enabled") is True else 0
+    tokens = steps * ttt["max_sequence_length"] if steps else 0
+    dfs = (calls * config.get("dfs_max_expansions", 256)
+           if config.get("decoding", "bounded-dfs") == "bounded-dfs" else 0)
+    return {"generation_calls_reserved": calls, "sequences_reserved": sequences,
+            "verification_calls_reserved": sequences, "dfs_forwards_reserved": dfs,
+            "ttt_steps_reserved": steps, "ttt_tokens_reserved": tokens}
+
+
 def validate_checkpoint(checkpoint: Mapping[str, Any], binding: Mapping[str, Any],
                         workload: Mapping[str, Any]) -> None:
     validate_binding(binding, workload)
@@ -276,9 +292,7 @@ def validate_checkpoint(checkpoint: Mapping[str, Any], binding: Mapping[str, Any
                     for key in RESERVATION_FIELDS)):
             raise ValidationError("task reservation schema differs")
         config = binding["config"]
-        if (reservation["generation_calls_reserved"] != config["maximum_calls_per_task"] or
-                reservation["sequences_reserved"] != config["maximum_calls_per_task"] * config["beams_per_call"] or
-                reservation["verification_calls_reserved"] != reservation["sequences_reserved"]):
+        if any(reservation[key] != value for key, value in _bound_reservation(config).items()):
             raise ValidationError("task reservation does not match run limits")
     for field in RESERVATION_FIELDS:
         if checkpoint["counters"][field] != sum(item[field] for item in reservations):
@@ -296,6 +310,29 @@ def validate_checkpoint(checkpoint: Mapping[str, Any], binding: Mapping[str, Any
         observed["explicit_forward_calls_observed"] += record.get("explicit_forward_calls", 0)
         observed["sgd_steps"] += record.get("adaptation", {}).get("steps", 0)
         observed["training_tokens"] += record.get("adaptation", {}).get("training_tokens", 0)
+        reservation = record.get("reservation")
+        if reservation is not None:
+            last = tests[-1]
+            per_task = {"generation_calls_observed": last.get("generation_calls_so_far", 0),
+                        "sequences_observed": sum(test.get("returned_sequences", 0) for test in tests),
+                        "verification_calls_observed": last.get("verification_calls_so_far", 0),
+                        "explicit_forward_calls_observed": record.get("explicit_forward_calls", 0),
+                        "sgd_steps": record.get("adaptation", {}).get("steps", 0),
+                        "training_tokens": record.get("adaptation", {}).get("training_tokens", 0)}
+            ceilings = {"generation_calls_observed": reservation["generation_calls_reserved"],
+                        "sequences_observed": reservation["sequences_reserved"],
+                        "verification_calls_observed": reservation["verification_calls_reserved"],
+                        "explicit_forward_calls_observed": reservation["dfs_forwards_reserved"] +
+                            8 * reservation["verification_calls_reserved"],
+                        "sgd_steps": reservation["ttt_steps_reserved"],
+                        "training_tokens": reservation["ttt_tokens_reserved"]}
+            if any(type(per_task[key]) is not int or not 0 <= per_task[key] <= value
+                   for key, value in ceilings.items()):
+                raise ValidationError("task observations exceed bound reservation")
+        elif any((record.get("explicit_forward_calls", 0),
+                  record.get("adaptation", {}).get("steps", 0),
+                  record.get("adaptation", {}).get("training_tokens", 0))):
+            raise ValidationError("unexecuted task has observed model work")
     if any(checkpoint["counters"][field] != value for field, value in observed.items()):
         raise ValidationError("observed task accounting differs")
     if checkpoint["counters"]["generation_calls_reserved"] > len(expected) * binding["config"]["maximum_calls_per_task"]:
@@ -314,26 +351,11 @@ def reserve_task(checkpoint: dict[str, Any], binding: Mapping[str, Any], task_id
                  *, rank: int, at_utc: str) -> None:
     if task_id not in checkpoint["expected_tasks"] or task_id in checkpoint["reserved"] or task_id in checkpoint["completed"]:
         raise ValidationError("duplicate or unexpected task dispatch")
-    calls = binding["config"]["maximum_calls_per_task"]
-    sequences = calls * binding["config"]["beams_per_call"]
-    ttt = binding["config"].get("ttt", {})
-    steps = int(ttt["steps"]) if ttt.get("enabled") else 0
-    tokens = steps * int(ttt["max_sequence_length"]) if steps else 0
-    dfs_forwards = (calls * int(binding["config"].get("dfs_max_expansions", 256))
-                    if binding["config"].get("decoding", "bounded-dfs") == "bounded-dfs" else 0)
+    limits = _bound_reservation(binding["config"])
     checkpoint["reserved"][task_id] = {"rank": rank, "started_utc": at_utc,
-                                        "generation_calls_reserved": calls,
-                                        "sequences_reserved": sequences,
-                                        "verification_calls_reserved": sequences,
-                                        "dfs_forwards_reserved": dfs_forwards,
-                                        "ttt_steps_reserved": steps,
-                                        "ttt_tokens_reserved": tokens}
-    checkpoint["counters"]["generation_calls_reserved"] += calls
-    checkpoint["counters"]["sequences_reserved"] += sequences
-    checkpoint["counters"]["verification_calls_reserved"] += sequences
-    checkpoint["counters"]["dfs_forwards_reserved"] += dfs_forwards
-    checkpoint["counters"]["ttt_steps_reserved"] += steps
-    checkpoint["counters"]["ttt_tokens_reserved"] += tokens
+                                        **limits}
+    for key, value in limits.items():
+        checkpoint["counters"][key] += value
 
 
 def finish_task(checkpoint: dict[str, Any], task_id: str, record: Mapping[str, Any]) -> None:
