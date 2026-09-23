@@ -573,7 +573,9 @@ class NvarcTests(unittest.TestCase):
             self.assertEqual("fixture-predictions", first["backend"])
             with zipfile.ZipFile(root / "one" / "result.zip") as archive:
                 checkpoint = json.loads(archive.read("checkpoint/checkpoint.json"))
-            self.assertEqual(48, checkpoint["counters"]["verification_calls_observed"])
+            # Identical inverse-mapped grids from distinct views keep their votes
+            # but share the same evaluator-side likelihood computation.
+            self.assertEqual(4, checkpoint["counters"]["verification_calls_observed"])
             self.assertEqual(64, checkpoint["counters"]["verification_calls_reserved"])
 
 
