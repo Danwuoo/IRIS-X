@@ -118,6 +118,32 @@ def select_rows(weight: Any, manifest: Mapping[str, Any]) -> Any:
     return torch.stack(rows)
 
 
+def validate_compact_model(model: Any, *, tied: bool | None = None) -> None:
+    """Check every token ID that inference and generation use after reload."""
+    input_module = model.get_input_embeddings()
+    output_module = model.get_output_embeddings()
+    if input_module is None or output_module is None:
+        raise ValidationError("compact input or output embedding is missing")
+    embeddings = input_module.weight
+    head = output_module.weight
+    if embeddings.shape[0] != 16 or head.shape[0] != 16:
+        raise ValidationError("checkpoint is not a compact-grid model")
+    configs = [model.config]
+    if hasattr(model.config, "text_config"):
+        configs.append(model.config.text_config)
+    generation = getattr(model, "generation_config", None)
+    if generation is None:
+        raise ValidationError("compact generation configuration is missing")
+    configs.append(generation)
+    for config in configs:
+        for name, expected in (("pad_token_id", PAD), ("eos_token_id", END),
+                               ("bos_token_id", BEGIN)):
+            if getattr(config, name, None) != expected:
+                raise ValidationError(f"compact {name} differs after reload")
+    if tied is not None and (embeddings.data_ptr() == head.data_ptr()) != tied:
+        raise ValidationError("compact output-head tying differs after reload")
+
+
 def convert_qwen35_checkpoint(base_dir: Path, output_dir: Path, *, model_revision: str,
                               model_manifest_digest: str) -> dict[str, Any]:
     """Save a distinct compact checkpoint; never change the base directory.
@@ -165,6 +191,11 @@ def convert_qwen35_checkpoint(base_dir: Path, output_dir: Path, *, model_revisio
         model.config.text_config.pad_token_id = PAD
         model.config.text_config.eos_token_id = END
         model.config.text_config.bos_token_id = BEGIN
+    if getattr(model, "generation_config", None) is not None:
+        model.generation_config.pad_token_id = PAD
+        model.generation_config.eos_token_id = END
+        model.generation_config.bos_token_id = BEGIN
+    validate_compact_model(model, tied=tied)
     output_dir.mkdir(parents=True, exist_ok=True)
     model.save_pretrained(output_dir, safe_serialization=True)
     (output_dir / "grid-vocab.json").write_bytes(canonical_bytes(manifest, newline=True))
@@ -174,8 +205,7 @@ def convert_qwen35_checkpoint(base_dir: Path, output_dir: Path, *, model_revisio
     del model
     reloaded = AutoModelForMultimodalLM.from_pretrained(output_dir, local_files_only=True,
                                                         dtype=torch.bfloat16, attn_implementation="sdpa")
-    if reloaded.get_input_embeddings().weight.shape[0] != 16 or reloaded.get_output_embeddings().weight.shape[0] != 16:
-        raise ValidationError("converted checkpoint reload has wrong vocabulary")
+    validate_compact_model(reloaded, tied=tied)
     if not torch.equal(reloaded.get_input_embeddings().weight.cpu(), selected_input.cpu()):
         raise ValidationError("converted embedding rows changed on reload")
     if not tied and not torch.equal(reloaded.get_output_embeddings().weight.cpu(), selected_output.cpu()):
@@ -223,6 +253,9 @@ def export_trained_model(model: Any, compact_base: Path, output: Path,
         raise ValidationError("trained model output directory must be empty")
     if not training_identity_digest.startswith("sha256:"):
         raise ValidationError("training identity is required")
+    base_material = json.loads((compact_base / "material-manifest.json").read_bytes())
+    tied = bool(base_material["tied_embeddings"])
+    validate_compact_model(model, tied=tied)
     output.mkdir(parents=True, exist_ok=True)
     model.save_pretrained(output, safe_serialization=True)
     for name in ("grid-vocab.json", "grid-tokenizer.json"):
@@ -238,6 +271,6 @@ def export_trained_model(model: Any, compact_base: Path, output: Path,
     material = {"format": "irisx/nvarc-compact-model-material",
                 "kind": "sft-inference-export", "training_identity_digest": training_identity_digest,
                 "vocabulary_identity_digest": json.loads((output / "grid-vocab.json").read_bytes())["identity_digest"],
-                "vision_modules_retained": True, "files": files}
+                "vision_modules_retained": True, "tied_embeddings": tied, "files": files}
     (output / "material-manifest.json").write_bytes(canonical_bytes(material, newline=True))
     return digest_value(material)

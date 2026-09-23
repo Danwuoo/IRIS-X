@@ -194,7 +194,8 @@ def main(argv: list[str] | None = None) -> int:
                 authorization.get("maximum_training_tokens") != config.get("maximum_training_tokens")):
             raise ValidationError("training authorization limits differ from configuration")
         model = load_compact_model(args.compact_base)
-        state = train_torch_sft(model, sequences, args.output, config, resume=args.resume)
+        state = train_torch_sft(model, sequences, args.output, config,
+                                model_identity_digest=model_digest, resume=args.resume)
         inference_digest = (export_trained_model(model, args.compact_base,
                             args.output / "inference-model",
                             training_identity_digest=state["identity_digest"])

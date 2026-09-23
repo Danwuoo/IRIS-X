@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 from pathlib import Path
 import time
@@ -54,6 +55,18 @@ def make_binding(workload: Mapping[str, Any], *, run_id: str, model_digest: str,
         raise ValidationError("runtime limit must be positive integer")
     if config["finalization_reserve_seconds"] >= config["session_budget_seconds"]:
         raise ValidationError("finalization reserve consumes whole session")
+    if config.get("decoding", "bounded-dfs") not in {"bounded-dfs", "hf-beam"}:
+        raise ValidationError("unknown candidate decoding mode")
+    if config.get("decoding", "bounded-dfs") == "bounded-dfs":
+        score = config.get("dfs_max_score", 1.6094379124341003)
+        expansions = config.get("dfs_max_expansions", 256)
+        if (type(score) not in (int, float) or not math.isfinite(score) or
+                score <= 0 or type(expansions) is not int or expansions < 1):
+            raise ValidationError("bounded DFS requires finite score and expansion ceilings")
+    ttt = config.get("ttt", {})
+    if ttt.get("enabled") and any(type(ttt.get(key)) is not int or ttt[key] < 1
+                                  for key in ("steps", "max_sequence_length")):
+        raise ValidationError("task adaptation needs positive step and token ceilings")
     if config.get("full_coverage") and any(
         len(case["test"]) * 8 * int(config.get("color_repeats", 2)) > config["maximum_calls_per_task"]
         for case in workload["cases"]):
@@ -119,7 +132,12 @@ def new_checkpoint(binding: Mapping[str, Any], workload: Mapping[str, Any]) -> d
             "expected_tasks": [case["task_id"] for case in workload["cases"]],
             "reserved": {}, "completed": {}, "model_ready": {},
             "counters": {"generation_calls_reserved": 0, "sequences_reserved": 0,
+                         "verification_calls_reserved": 0,
+                         "dfs_forwards_reserved": 0,
+                         "ttt_steps_reserved": 0, "ttt_tokens_reserved": 0,
                          "generation_calls_observed": 0, "sequences_observed": 0,
+                         "verification_calls_observed": 0,
+                         "explicit_forward_calls_observed": 0,
                          "sgd_steps": 0, "training_tokens": 0, "sdg_calls": 0},
             "sessions": [], "complete": False}
 
@@ -139,7 +157,12 @@ def validate_checkpoint(checkpoint: Mapping[str, Any], binding: Mapping[str, Any
     if checkpoint["counters"]["generation_calls_reserved"] > len(expected) * binding["config"]["maximum_calls_per_task"]:
         raise ValidationError("generation call ceiling exceeded")
     if (checkpoint["counters"]["generation_calls_observed"] > checkpoint["counters"]["generation_calls_reserved"] or
-            checkpoint["counters"]["sequences_observed"] > checkpoint["counters"]["sequences_reserved"]):
+            checkpoint["counters"]["sequences_observed"] > checkpoint["counters"]["sequences_reserved"] or
+            checkpoint["counters"].get("verification_calls_observed", 0) > checkpoint["counters"]["verification_calls_reserved"] or
+            checkpoint["counters"].get("explicit_forward_calls_observed", 0) >
+            checkpoint["counters"]["dfs_forwards_reserved"] + 8 * checkpoint["counters"]["verification_calls_reserved"] or
+            checkpoint["counters"]["sgd_steps"] > checkpoint["counters"]["ttt_steps_reserved"] or
+            checkpoint["counters"]["training_tokens"] > checkpoint["counters"]["ttt_tokens_reserved"]):
         raise ValidationError("observed calls or sequences exceed reservations")
 
 
@@ -149,29 +172,60 @@ def reserve_task(checkpoint: dict[str, Any], binding: Mapping[str, Any], task_id
         raise ValidationError("duplicate or unexpected task dispatch")
     calls = binding["config"]["maximum_calls_per_task"]
     sequences = calls * binding["config"]["beams_per_call"]
+    ttt = binding["config"].get("ttt", {})
+    steps = int(ttt["steps"]) if ttt.get("enabled") else 0
+    tokens = steps * int(ttt["max_sequence_length"]) if steps else 0
+    dfs_forwards = (calls * int(binding["config"].get("dfs_max_expansions", 256))
+                    if binding["config"].get("decoding", "bounded-dfs") == "bounded-dfs" else 0)
     checkpoint["reserved"][task_id] = {"rank": rank, "started_utc": at_utc,
                                         "generation_calls_reserved": calls,
-                                        "sequences_reserved": sequences}
+                                        "sequences_reserved": sequences,
+                                        "verification_calls_reserved": sequences,
+                                        "dfs_forwards_reserved": dfs_forwards,
+                                        "ttt_steps_reserved": steps,
+                                        "ttt_tokens_reserved": tokens}
     checkpoint["counters"]["generation_calls_reserved"] += calls
     checkpoint["counters"]["sequences_reserved"] += sequences
+    checkpoint["counters"]["verification_calls_reserved"] += sequences
+    checkpoint["counters"]["dfs_forwards_reserved"] += dfs_forwards
+    checkpoint["counters"]["ttt_steps_reserved"] += steps
+    checkpoint["counters"]["ttt_tokens_reserved"] += tokens
 
 
 def finish_task(checkpoint: dict[str, Any], task_id: str, record: Mapping[str, Any]) -> None:
     if task_id not in checkpoint["reserved"]:
         raise ValidationError("task was not reserved")
-    reservation = checkpoint["reserved"].pop(task_id)
+    reservation = checkpoint["reserved"][task_id]
     if record["task_id"] != task_id or len(record["tests"]) < 1:
         raise ValidationError("terminal task record differs")
     _truth_free(record)
     observed_calls = record["tests"][-1].get("generation_calls_so_far")
+    sequences = 0
+    verification = 0
     if observed_calls is not None:
         if type(observed_calls) is not int or observed_calls > reservation["generation_calls_reserved"]:
             raise ValidationError("observed generation calls exceed reservation")
+        sequences = sum(test.get("returned_sequences", 0) for test in record["tests"])
+        verification = record["tests"][-1].get("verification_calls_so_far", 0)
+        if (type(verification) is not int or verification < 0 or
+                verification > sequences or sequences > reservation["sequences_reserved"]):
+            raise ValidationError("candidate or verification count exceeds reservation")
+    forwards = record.get("explicit_forward_calls", 0)
+    steps = record.get("adaptation", {}).get("steps", 0)
+    tokens = record.get("adaptation", {}).get("training_tokens", 0)
+    if (type(forwards) is not int or forwards < 0 or
+            forwards > reservation["dfs_forwards_reserved"] + 8 * reservation["verification_calls_reserved"] or
+            type(steps) is not int or steps < 0 or steps > reservation["ttt_steps_reserved"] or
+            type(tokens) is not int or tokens < 0 or tokens > reservation["ttt_tokens_reserved"]):
+        raise ValidationError("model forward or TTT observations exceed reservation")
+    checkpoint["reserved"].pop(task_id)
+    if observed_calls is not None:
         checkpoint["counters"]["generation_calls_observed"] += observed_calls
-        checkpoint["counters"]["sequences_observed"] += sum(test.get("returned_sequences", 0)
-                                                            for test in record["tests"])
-    checkpoint["counters"]["sgd_steps"] += record.get("adaptation", {}).get("steps", 0)
-    checkpoint["counters"]["training_tokens"] += record.get("adaptation", {}).get("training_tokens", 0)
+        checkpoint["counters"]["sequences_observed"] += sequences
+        checkpoint["counters"]["verification_calls_observed"] += verification
+    checkpoint["counters"]["explicit_forward_calls_observed"] += forwards
+    checkpoint["counters"]["sgd_steps"] += steps
+    checkpoint["counters"]["training_tokens"] += tokens
     checkpoint["completed"][task_id] = {**record, "reservation": reservation}
 
 

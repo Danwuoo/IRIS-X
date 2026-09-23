@@ -60,7 +60,10 @@ def _worker(rank: int, command_queue: Any, output_queue: Any, model_root: str,
         model = load_compact_model(Path(model_root))
         model.cuda().eval()
         adapter = TaskLocalAdapter(model, config["ttt"]) if config.get("ttt", {}).get("enabled") else None
-        backend = QwenCandidateBackend(model, task_adapter=adapter)
+        backend = QwenCandidateBackend(
+            model, task_adapter=adapter, decoding=config.get("decoding", "bounded-dfs"),
+            dfs_max_score=float(config.get("dfs_max_score", 1.6094379124341003)),
+            dfs_max_expansions=int(config.get("dfs_max_expansions", 256)))
         output_queue.put({"type": "ready", "rank": rank, "gpu_uuid": gpu_uuid,
                           "model_load_seconds": time.monotonic() - load_started})
         while True:
@@ -79,6 +82,8 @@ def _worker(rank: int, command_queue: Any, output_queue: Any, model_root: str,
                                                         "rank_seconds": backend.rank_seconds,
                                                         "task_wall_seconds": time.monotonic() - started},
                                              "adaptation": adapter.last_observation if adapter is not None else {},
+                                             "explicit_forward_calls": backend.forward_calls,
+                                             "verification_calls": backend.verification_calls,
                                              "peak_memory_mib": int(torch.cuda.max_memory_allocated() / 1024**2)}})
             except Exception as exc:
                 status = "oom" if "out of memory" in str(exc).lower() else "worker_crash"

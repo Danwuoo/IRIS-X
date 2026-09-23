@@ -14,7 +14,7 @@ from pathlib import Path
 import random
 from typing import Any, Iterable, Mapping, Sequence
 
-from .arc_nvarc_representation import GridTokenizer, PAD
+from .arc_nvarc_representation import GridTokenizer, PAD, validate_compact_model
 from .arc_nvarc_data import seeded_transform, transform_task
 from .canonical import canonical_bytes, digest_value
 from .errors import ValidationError
@@ -236,13 +236,15 @@ def load_compact_model(checkpoint: Path, *, dtype: str = "bfloat16") -> Any:
     torch_dtype = {"bfloat16": torch.bfloat16, "float32": torch.float32}[dtype]
     model = AutoModelForMultimodalLM.from_pretrained(
         checkpoint, local_files_only=True, dtype=torch_dtype, attn_implementation="sdpa")
-    if model.get_input_embeddings().weight.shape[0] != 16:
-        raise ValidationError("checkpoint is not a compact-grid model")
+    material_path = checkpoint / "material-manifest.json"
+    tied = json.loads(material_path.read_bytes())["tied_embeddings"] if material_path.is_file() else None
+    validate_compact_model(model, tied=tied)
     return model
 
 
 def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: Path,
-                    config: Mapping[str, Any], *, resume: bool = False) -> dict[str, Any]:
+                    config: Mapping[str, Any], *, model_identity_digest: str,
+                    resume: bool = False) -> dict[str, Any]:
     """Real gradient path with exact optimizer/scheduler/RNG/data-cursor restore.
 
     Single-process full SFT is deliberate; distributed sharding requires a
@@ -255,8 +257,11 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
         raise ValidationError("only unpacked full-SFT is supported by this entry")
     if not sequences:
         raise ValidationError("SFT dataset is empty")
+    if not model_identity_digest.startswith("sha256:"):
+        raise ValidationError("immutable compact model identity required")
     data_digest = sequences.data_digest if isinstance(sequences, FrozenSequenceStore) else digest_value(sequences)
-    identity = digest_value({"config": config, "data_digest": data_digest})
+    identity = digest_value({"config": config, "data_digest": data_digest,
+                             "model_identity_digest": model_identity_digest})
     device = torch.device(config.get("device", "cpu"))
     model.to(device).train()
     if config.get("gradient_checkpointing", False):
@@ -302,15 +307,19 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
     while math.gcd(stride, len(sequences)) != 1:
         stride += 1
     while step < total_steps:
-        for _ in range(accumulation):
+        microbatches = []
+        for microstep in range(accumulation):
             # Coprime stride gives an O(1) deterministic permutation and
             # exact cursor restoration for large corpora.
-            item = sequences[(int(config["seed"]) + cursor * stride) % len(sequences)]
+            item = sequences[(int(config["seed"]) + (cursor + microstep) * stride) % len(sequences)]
             batch = _torch_batch(collate([item], int(config["max_sequence_length"])), device)
             sample_tokens = int(batch["attention_mask"].sum().item())
-            if tokens_seen + sample_tokens > token_limit:
-                stop_reason = "maximum_training_tokens"
-                break
+            microbatches.append((batch, sample_tokens))
+        if tokens_seen + sum(count for _, count in microbatches) > token_limit:
+            stop_reason = "maximum_training_tokens"
+            optimizer.zero_grad(set_to_none=True)
+            break
+        for batch, sample_tokens in microbatches:
             output_value = model(**batch)
             loss = output_value.loss
             if not torch.isfinite(loss):
@@ -319,9 +328,6 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
             last_loss = float(loss.detach().cpu())
             cursor += 1
             tokens_seen += sample_tokens
-        if stop_reason == "maximum_training_tokens":
-            optimizer.zero_grad(set_to_none=True)
-            break
         if step == 0 and not any(parameter.grad is not None and
                                  bool(torch.any(parameter.grad != 0)) for parameter in model.parameters()
                                  if parameter.requires_grad):
@@ -358,38 +364,6 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
                                              if parameter.requires_grad)}
 
 
-def adapt_task_lora(base_model: Any, task: Mapping[str, Any], config: Mapping[str, Any]) -> tuple[Any, dict[str, Any]]:
-    """Create a fresh adapter and optimizer per task using demonstrations only."""
-    import torch
-    from peft import LoraConfig, get_peft_model
-
-    torch.manual_seed(int(config["seed"]))
-    targets = inspect_lora_targets(base_model)
-    model = get_peft_model(base_model, LoraConfig(
-        r=int(config["rank"]), lora_alpha=int(config["alpha"]),
-        lora_dropout=float(config.get("dropout", 0.0)), target_modules=targets,
-        bias="none", task_type="CAUSAL_LM", use_rslora=bool(config.get("use_rslora", True))))
-    optimizer = torch.optim.AdamW((parameter for parameter in model.parameters() if parameter.requires_grad),
-                                  lr=float(config["learning_rate"]))
-    examples = task_local_sequences(task, seed=int(config["seed"]),
-                                    augmentation_count=int(config.get("augmentation_count", 16)))
-    model.train()
-    losses = []
-    for step in range(int(config["steps"])):
-        batch = _torch_batch(collate([examples[step % len(examples)]], int(config["max_sequence_length"])),
-                             next(model.parameters()).device)
-        optimizer.zero_grad(set_to_none=True)
-        loss = model(**batch).loss
-        if not torch.isfinite(loss):
-            raise ValidationError("non-finite task adaptation loss")
-        loss.backward()
-        optimizer.step()
-        losses.append(float(loss.detach().cpu()))
-    model.eval()
-    return model, {"task_id": task["task_id"], "steps": len(losses),
-                   "last_loss": losses[-1] if losses else None, "targets": targets}
-
-
 class TaskLocalAdapter:
     """Keep one loaded base model while restoring a fresh LoRA for every task."""
 
@@ -408,34 +382,52 @@ class TaskLocalAdapter:
                         get_peft_model_state_dict(self.model).items()}
         self.last_observation: dict[str, Any] | None = None
 
-    def adapt(self, task: Mapping[str, Any]) -> Any:
-        import torch
+    def reset(self, *, clear_observation: bool = True) -> None:
+        """Discard task gradients and adapter deltas after success or failure."""
         from peft import set_peft_model_state_dict
 
-        config = self.config
+        self.model.zero_grad(set_to_none=True)
         set_peft_model_state_dict(self.model, copy.deepcopy(self.initial))
+        self.model.eval()
+        import torch
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        if clear_observation:
+            self.last_observation = None
+
+    def adapt(self, task: Mapping[str, Any]) -> Any:
+        import torch
+        config = self.config
+        self.reset()
         torch.manual_seed(int(config["seed"]))
         if torch.cuda.is_available():
             torch.cuda.manual_seed_all(int(config["seed"]))
             torch.cuda.empty_cache()
-        optimizer = torch.optim.AdamW((parameter for parameter in self.model.parameters() if parameter.requires_grad),
-                                      lr=float(config["learning_rate"]))
-        examples = task_local_sequences(task, seed=int(config["seed"]),
-                                        augmentation_count=int(config.get("augmentation_count", 16)))
-        self.model.train()
+        optimizer = None
         last_loss = None
         tokens_seen = 0
-        for step in range(int(config["steps"])):
-            batch = _torch_batch(collate([examples[step % len(examples)]], int(config["max_sequence_length"])),
-                                 next(self.model.parameters()).device)
-            optimizer.zero_grad(set_to_none=True)
-            loss = self.model(**batch).loss
-            if not torch.isfinite(loss):
-                raise ValidationError("non-finite task adaptation loss")
-            loss.backward()
-            optimizer.step()
-            last_loss = float(loss.detach().cpu())
-            tokens_seen += int(batch["attention_mask"].sum().item())
+        try:
+            optimizer = torch.optim.AdamW((parameter for parameter in self.model.parameters() if parameter.requires_grad),
+                                          lr=float(config["learning_rate"]))
+            examples = task_local_sequences(task, seed=int(config["seed"]),
+                                            augmentation_count=int(config.get("augmentation_count", 16)))
+            self.model.train()
+            for step in range(int(config["steps"])):
+                batch = _torch_batch(collate([examples[step % len(examples)]], int(config["max_sequence_length"])),
+                                     next(self.model.parameters()).device)
+                optimizer.zero_grad(set_to_none=True)
+                loss = self.model(**batch).loss
+                if not torch.isfinite(loss):
+                    raise ValidationError("non-finite task adaptation loss")
+                loss.backward()
+                optimizer.step()
+                last_loss = float(loss.detach().cpu())
+                tokens_seen += int(batch["attention_mask"].sum().item())
+        except BaseException:
+            self.reset()
+            raise
+        finally:
+            del optimizer
         self.model.eval()
         self.last_observation = {"task_id": task["task_id"], "steps": int(config["steps"]),
                                  "training_tokens": tokens_seen,

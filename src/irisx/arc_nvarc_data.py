@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import random
 import sqlite3
+from collections import Counter
 from typing import Any, Iterable, Mapping
 
 from .canonical import canonical_bytes, digest_value
@@ -186,6 +187,7 @@ def freeze_streaming(records: Iterable[Mapping[str, Any]], output: Path, *,
         raise ValidationError("frozen stream output directory must be empty")
     output.mkdir(parents=True, exist_ok=True)
     excluded = set(forbidden_parent_ids)
+    known_evaluation_sources = {"arc2_evaluation6"}
     database = output / ".freeze-index.sqlite3"
     connection = sqlite3.connect(database)
     try:
@@ -197,6 +199,8 @@ def freeze_streaming(records: Iterable[Mapping[str, Any]], output: Path, *,
             parent, split = record["parent_id"], record["split"]
             if policy == "clean-research" and parent in excluded:
                 raise ValidationError("clean stream contains a known excluded parent")
+            if policy == "clean-research" and record["source_id"] in known_evaluation_sources:
+                raise ValidationError("clean stream contains a known evaluation source")
             variant = known_variant_group(record)
             for table, key_name, key in (("parents", "parent_id", parent),
                                          ("variants", "variant_id", variant)):
@@ -228,6 +232,8 @@ def freeze_streaming(records: Iterable[Mapping[str, Any]], output: Path, *,
                            "records": len(batch)})
             index += 1
         groups = connection.execute("SELECT COUNT(*) FROM variants").fetchone()[0]
+        source_counts = {source: amount for source, amount in
+                         connection.execute("SELECT source_id, COUNT(*) FROM records GROUP BY source_id ORDER BY source_id")}
     finally:
         connection.close()
         database.unlink(missing_ok=True)
@@ -235,6 +241,7 @@ def freeze_streaming(records: Iterable[Mapping[str, Any]], output: Path, *,
                 "record_count": count, "shards": shards,
                 "known_excluded_parent_count": len(excluded),
                 "known_variant_group_count": groups,
+                "source_counts": source_counts,
                 "exposure": "unproven" if policy == "clean-research" else "competition-reproduction-contamination-possible"}
     (output / "manifest.json").write_bytes(canonical_bytes(manifest, newline=True))
     return manifest
@@ -248,6 +255,8 @@ def freeze_shards(records: Iterable[Mapping[str, Any]], output: Path, *,
     ordered = sorted(records, key=lambda r: (r["source_id"], r["parent_id"], r["task_id"]))
     if policy == "clean-research" and any(r["parent_id"] in forbidden for r in ordered):
         raise ValidationError("clean split contains a known excluded parent")
+    if policy == "clean-research" and any(r["source_id"] == "arc2_evaluation6" for r in ordered):
+        raise ValidationError("clean split contains a known evaluation source")
     groups: dict[str, str] = {}
     variants: dict[str, str] = {}
     for record in ordered:
@@ -273,6 +282,7 @@ def freeze_shards(records: Iterable[Mapping[str, Any]], output: Path, *,
                 "record_count": len(ordered), "shards": shards,
                 "known_excluded_parent_count": len(forbidden),
                 "known_variant_group_count": len(variants),
+                "source_counts": dict(sorted(Counter(r["source_id"] for r in ordered).items())),
                 "exposure": "unproven" if policy == "clean-research" else "competition-reproduction-contamination-possible"}
     (output / "manifest.json").write_bytes(canonical_bytes(manifest, newline=True))
     return manifest

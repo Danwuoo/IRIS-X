@@ -5,10 +5,10 @@ from __future__ import annotations
 from collections import defaultdict
 import math
 import time
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 from .arc_nvarc_data import grid, seeded_transform, transform_grid, transform_task
-from .arc_nvarc_representation import GridTokenizer, END
+from .arc_nvarc_representation import GridTokenizer, END, PAD
 from .errors import ValidationError
 
 
@@ -50,6 +50,57 @@ def rank_candidates(candidates: list[Mapping[str, Any]], *, policy: str = "votes
     return sorted(results, key=lambda item: (-item["score"], -item["votes"], item["grid"]))
 
 
+def bounded_dfs(query: list[int], next_log_probs: Callable[[list[int]], list[float]], *,
+                max_new_tokens: int, max_score: float, max_expansions: int,
+                max_sequences: int, deadline: float | None = None,
+                now: Callable[[], float] = time.monotonic) -> tuple[list[dict[str, Any]], int]:
+    """Source-order DFS with cumulative NLL pruning and isolated branch state.
+
+    The pinned notebook sorts each node's non-EOS siblings by NLL, accepts EOS
+    only below its score threshold, then explores siblings depth first. Full
+    prefixes are recomputed here: no mutable Qwen hybrid cache crosses branches.
+    This is bounded and deliberately slower than the notebook's batched cache.
+    """
+    if (not query or max_new_tokens < 1 or max_expansions < 1 or max_sequences < 1 or
+            not math.isfinite(max_score) or max_score <= 0):
+        raise ValidationError("invalid bounded DFS limits")
+    results: list[dict[str, Any]] = []
+    expansions = 0
+    seen: set[tuple[int, ...]] = set()
+
+    def visit(suffix: tuple[int, ...], score: float) -> None:
+        nonlocal expansions
+        if (len(results) >= max_sequences or expansions >= max_expansions or
+                (deadline is not None and now() >= deadline)):
+            return
+        probabilities = next_log_probs(query + list(suffix))
+        expansions += 1
+        if len(probabilities) <= END or any(not math.isfinite(float(p)) for p in probabilities):
+            raise ValidationError("DFS backend returned invalid compact logits")
+        options = []
+        for token in tuple(range(11)) + (END,):
+            nll = score - float(probabilities[token])
+            if nll < max_score:
+                if token == END:
+                    candidate = suffix + (END,)
+                    if candidate not in seen:
+                        seen.add(candidate)
+                        results.append({"tokens": list(candidate), "eos": True,
+                                        "beam_nll": nll})
+                elif len(suffix) + 1 < max_new_tokens:
+                    options.append((nll, token))
+        # The source accepts terminal branches before descending, then visits
+        # nonterminal siblings in increasing cumulative NLL order.
+        for child_score, token in sorted(options, key=lambda item: (item[0], item[1])):
+            if (len(results) >= max_sequences or expansions >= max_expansions or
+                    (deadline is not None and now() >= deadline)):
+                break
+            visit(suffix + (token,), child_score)
+
+    visit((), 0.0)
+    return results, expansions
+
+
 def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any]) -> list[dict[str, Any]]:
     """One adaptation per full task, then all test outputs share that state."""
     views = default_views(task, int(config["seed"]), int(config.get("color_repeats", 2)))
@@ -58,44 +109,52 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
     max_tokens = int(config["maximum_new_tokens"])
     if maximum_calls < 1 or beams < 1 or max_tokens < 1:
         raise ValidationError("candidate call limits must be positive")
-    backend.begin_task(task)
     results = []
     calls = 0
-    for test_index in range(len(task["test"])):
-        if hasattr(backend, "begin_test"):
-            backend.begin_test(test_index)
-        candidates = []
-        returned_sequences = 0
-        for view_index, spec in enumerate(views):
-            if calls >= maximum_calls:
-                break
-            if hasattr(backend, "begin_view"):
-                backend.begin_view(spec, view_index)
-            transformed = transform_task(task, spec)
-            query = GridTokenizer().encode_query(transformed, test_index)
-            sequences = backend.generate(query, beams=beams, max_new_tokens=max_tokens)
-            calls += 1
-            if len(sequences) > beams:
-                raise ValidationError("backend returned more sequences than bound")
-            returned_sequences += len(sequences)
-            for sequence_index, sequence in enumerate(sequences):
-                parsed = GridTokenizer().parse_completion(sequence["tokens"], stopped_on_eos=sequence["eos"])
-                if parsed is None:
-                    continue
-                restored = transform_grid(parsed, spec, inverse=True)
-                verification = backend.verify(task, test_index, restored)
-                candidates.append({"grid": restored, "complete": True,
-                                   "source": f"qwen:view{view_index}:seq{sequence_index}",
-                                   "beam_nll": float(sequence["beam_nll"]),
-                                   "verification_nll": float(verification)})
-        ranked = rank_candidates(candidates, policy=config.get("ranking", "votes-minus-mean-nll"))
-        attempts = [item["grid"] for item in ranked[:2]]
-        results.append({"task_id": task["task_id"], "test_index": test_index,
-                        "attempts": attempts, "missing_attempts": 2 - len(attempts),
-                        "ranked": ranked, "generation_calls_so_far": calls,
-                        "returned_sequences": returned_sequences,
-                        "status": "complete" if len(attempts) == 2 else "missing-candidate"})
-    backend.end_task()
+    verification_calls = 0
+    try:
+        backend.begin_task(task)
+        for test_index in range(len(task["test"])):
+            if hasattr(backend, "begin_test"):
+                backend.begin_test(test_index)
+            candidates = []
+            returned_sequences = 0
+            for view_index, spec in enumerate(views):
+                if calls >= maximum_calls:
+                    break
+                if hasattr(backend, "begin_view"):
+                    backend.begin_view(spec, view_index)
+                transformed = transform_task(task, spec)
+                query = GridTokenizer().encode_query(transformed, test_index)
+                calls += 1  # Reserve the invocation before backend failure.
+                sequences = backend.generate(query, beams=beams, max_new_tokens=max_tokens)
+                if len(sequences) > beams:
+                    raise ValidationError("backend returned more sequences than bound")
+                returned_sequences += len(sequences)
+                for sequence_index, sequence in enumerate(sequences):
+                    parsed = GridTokenizer().parse_completion(sequence["tokens"], stopped_on_eos=sequence["eos"])
+                    if parsed is None:
+                        continue
+                    restored = transform_grid(parsed, spec, inverse=True)
+                    verification_calls += 1
+                    verification = backend.verify(task, test_index, restored)
+                    candidates.append({"grid": restored, "complete": True,
+                                       "source": f"qwen:view{view_index}:seq{sequence_index}",
+                                       "beam_nll": float(sequence["beam_nll"]),
+                                       "verification_nll": float(verification)})
+            rank_started = time.monotonic()
+            ranked = rank_candidates(candidates, policy=config.get("ranking", "votes-minus-mean-nll"))
+            if hasattr(backend, "rank_seconds"):
+                backend.rank_seconds += time.monotonic() - rank_started
+            attempts = [item["grid"] for item in ranked[:2]]
+            results.append({"task_id": task["task_id"], "test_index": test_index,
+                            "attempts": attempts, "missing_attempts": 2 - len(attempts),
+                            "ranked": ranked, "generation_calls_so_far": calls,
+                            "verification_calls_so_far": verification_calls,
+                            "returned_sequences": returned_sequences,
+                            "status": "complete" if len(attempts) == 2 else "missing-candidate"})
+    finally:
+        backend.end_task()
     return results
 
 
@@ -143,24 +202,30 @@ class FixtureCandidateBackend:
 
 
 class QwenCandidateBackend:
-    """Real compact Qwen path. HF beam search replaces the source turbo DFS.
-
-    The divergence is explicit in source-use; this still creates multiple
-    likelihood-scored candidates and model-based verification across views.
-    """
+    """Compact Qwen path with isolated-prefix DFS or named HF beam alternative."""
 
     kind = "qwen35-compact"
 
-    def __init__(self, model: Any, *, task_adapter: Any = None) -> None:
+    def __init__(self, model: Any, *, task_adapter: Any = None,
+                 decoding: str = "bounded-dfs", dfs_max_score: float = -math.log(0.2),
+                 dfs_max_expansions: int = 256) -> None:
+        if decoding not in {"bounded-dfs", "hf-beam"}:
+            raise ValidationError("unknown Qwen decoding mode")
         self.base_model = model
         self.model = model
         self.adapter = task_adapter
+        self.decoding = decoding
+        self.dfs_max_score = dfs_max_score
+        self.dfs_max_expansions = dfs_max_expansions
+        self.forward_calls = 0
+        self.verification_calls = 0
         self.ttt_seconds = 0.0
         self.generate_seconds = 0.0
         self.rank_seconds = 0.0
 
     def begin_task(self, task: Mapping[str, Any]) -> None:
         self.ttt_seconds = self.generate_seconds = self.rank_seconds = 0.0
+        self.forward_calls = self.verification_calls = 0
         if self.adapter is not None:
             started = time.monotonic()
             self.model = self.adapter.adapt(task)
@@ -170,24 +235,40 @@ class QwenCandidateBackend:
         import torch
 
         device = next(self.model.parameters()).device
-        ids = torch.tensor([query], dtype=torch.long, device=device)
         started = time.monotonic()
-        with torch.inference_mode():
-            output = self.model.generate(input_ids=ids, max_new_tokens=max_new_tokens,
-                                         num_beams=beams, num_return_sequences=beams,
-                                         do_sample=False, return_dict_in_generate=True,
-                                         output_scores=True, eos_token_id=END, pad_token_id=13)
-        self.generate_seconds += time.monotonic() - started
-        result = []
-        for index, sequence in enumerate(output.sequences):
-            suffix = sequence[len(query):].tolist()
-            ended = END in suffix
-            if ended:
-                suffix = suffix[:suffix.index(END) + 1]
-            sequence_scores = getattr(output, "sequences_scores", None)
-            beam_nll = -float(sequence_scores[index]) if sequence_scores is not None else 0.0
-            result.append({"tokens": suffix, "eos": ended, "beam_nll": beam_nll})
-        return result
+        try:
+            if self.decoding == "bounded-dfs":
+                def next_probs(prefix: list[int]) -> list[float]:
+                    ids = torch.tensor([prefix], dtype=torch.long, device=device)
+                    with torch.inference_mode():
+                        # Recompute per prefix. A mutable hybrid cache cannot
+                        # be shared safely between sibling DFS branches.
+                        logits = self.model(input_ids=ids, use_cache=False).logits[0, -1]
+                        values = torch.log_softmax(logits.float(), dim=-1).cpu().tolist()
+                    self.forward_calls += 1
+                    return values
+                return bounded_dfs(query, next_probs, max_new_tokens=max_new_tokens,
+                                   max_score=self.dfs_max_score,
+                                   max_expansions=self.dfs_max_expansions,
+                                   max_sequences=beams)[0]
+            ids = torch.tensor([query], dtype=torch.long, device=device)
+            with torch.inference_mode():
+                output = self.model.generate(input_ids=ids, max_new_tokens=max_new_tokens,
+                                             num_beams=beams, num_return_sequences=beams,
+                                             do_sample=False, return_dict_in_generate=True,
+                                             output_scores=True, eos_token_id=END, pad_token_id=PAD)
+            result = []
+            for index, sequence in enumerate(output.sequences):
+                suffix = sequence[len(query):].tolist()
+                ended = END in suffix
+                if ended:
+                    suffix = suffix[:suffix.index(END) + 1]
+                sequence_scores = getattr(output, "sequences_scores", None)
+                beam_nll = -float(sequence_scores[index]) if sequence_scores is not None else 0.0
+                result.append({"tokens": suffix, "eos": ended, "beam_nll": beam_nll})
+            return result
+        finally:
+            self.generate_seconds += time.monotonic() - started
 
     def verify(self, task: Mapping[str, Any], test_index: int, answer: Any) -> float:
         """Mean answer NLL under eight fixed, solver-visible views."""
@@ -203,12 +284,19 @@ class QwenCandidateBackend:
             tokens = query + target
             device = next(self.model.parameters()).device
             with torch.inference_mode():
-                logits = self.model(input_ids=torch.tensor([tokens], dtype=torch.long, device=device)).logits[0]
+                logits = self.model(input_ids=torch.tensor([tokens], dtype=torch.long, device=device),
+                                    use_cache=False).logits[0]
+                self.forward_calls += 1
                 log_probs = torch.log_softmax(logits[len(query) - 1:-1].float(), dim=-1)
                 nll = -log_probs.gather(1, torch.tensor(target, device=device).unsqueeze(1)).sum().item()
             scores.append(nll / len(target))
+        self.verification_calls += 1
         self.rank_seconds += time.monotonic() - started
         return sum(scores) / len(scores)
 
     def end_task(self) -> None:
-        self.model = self.base_model
+        try:
+            if self.adapter is not None:
+                self.adapter.reset(clear_observation=False)
+        finally:
+            self.model = self.base_model

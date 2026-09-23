@@ -1,5 +1,8 @@
 {
-  "method": "qwen35-compact-sft-plus-task-lora-hf-beam",
+  "method": "qwen35-compact-sft-plus-task-lora-bounded-dfs",
+  "decoding": "bounded-dfs",
+  "dfs_max_score": 1.6094379124341003,
+  "dfs_max_expansions": 256,
   "seed": 24,
   "color_repeats": 2,
   "maximum_calls_per_task": 32,

@@ -9,7 +9,8 @@ import unittest
 from unittest import mock
 import zipfile
 
-from irisx.arc_nvarc_candidates import FixtureCandidateBackend, rank_candidates, solve_task
+from irisx.arc_nvarc_candidates import (FixtureCandidateBackend, bounded_dfs,
+                                         rank_candidates, solve_task)
 from irisx.arc_nvarc_cli import fixture_e2e
 from irisx.arc_nvarc_data import (compare_visible, freeze_shards, freeze_streaming, grid, import_jsonl,
                                    known_variant_group, pair_saved_sdg_grids, replay_sdg_stage,
@@ -17,13 +18,16 @@ from irisx.arc_nvarc_data import (compare_visible, freeze_shards, freeze_streami
                                    stream_import_jsonl, transform_grid, transform_task, visible_task)
 from irisx.arc_nvarc_kaggle import enforce_deadline, run as run_kaggle
 from irisx.arc_nvarc_representation import (GridTokenizer, MODEL_REVISION,
-                                             PINNED_SOURCE_IDS, vocabulary_manifest)
-from irisx.arc_nvarc_runtime import (build_outbound, make_binding, make_workload,
-                                     new_checkpoint, reserve_task, score_sealed)
+                                             PINNED_SOURCE_IDS, validate_compact_model,
+                                             vocabulary_manifest)
+from irisx.arc_nvarc_runtime import (build_outbound, finish_task, make_binding,
+                                     make_workload, new_checkpoint, reserve_task,
+                                     score_sealed)
 from irisx.arc_nvarc_training import (FrozenSequenceStore, collate, supervised_sequences,
-                                       task_local_sequences, tiny_train)
+                                       task_local_sequences, tiny_train, train_torch_sft)
 from irisx.arc_nvarc_trm import (integrate_attempts, integrate_with_qwen_verifier,
-                                 stage_trm_training, trm_grid)
+                                 stage_trm_training, trm_grid,
+                                 trm_launch_spec, trm_preprocess_spec)
 from irisx.canonical import canonical_bytes, digest_value
 from irisx.errors import ValidationError
 from irisx.transport import digest_path
@@ -65,6 +69,144 @@ def synthetic_startup_failure_worker(rank, commands, outputs, model_root, config
 
 
 class NvarcTests(unittest.TestCase):
+    def test_real_torch_sft_resume_and_token_limit_if_available(self) -> None:
+        try:
+            import torch
+            import torch.nn.functional as functional
+        except ImportError:
+            self.skipTest("PyTorch is not installed in this local Python")
+        from types import SimpleNamespace
+
+        class TinyLM(torch.nn.Module):
+            def __init__(self, fail_after=None):
+                super().__init__()
+                self.embedding = torch.nn.Embedding(16, 8)
+                self.head = torch.nn.Linear(8, 16)
+                self.calls = 0
+                self.fail_after = fail_after
+            def forward(self, input_ids, labels, attention_mask):
+                self.calls += 1
+                if self.fail_after is not None and self.calls > self.fail_after:
+                    raise RuntimeError("synthetic interruption")
+                logits = self.head(self.embedding(input_ids))
+                loss = functional.cross_entropy(logits[:, :-1].reshape(-1, 16),
+                                                labels[:, 1:].reshape(-1), ignore_index=-100)
+                return SimpleNamespace(loss=loss)
+
+        sequence = supervised_sequences([visible_task("x", {
+            "train": [{"input": [[1, 2]], "output": [[3, 4]]}],
+            "test": [{"input": [[5]]}]})])
+        config = {"mode": "full-sft", "device": "cpu", "seed": 9,
+                  "learning_rate": 0.01, "max_steps": 4, "maximum_training_tokens": 10000,
+                  "max_sequence_length": 128, "gradient_accumulation": 2,
+                  "checkpoint_every": 1}
+        material = digest_value("synthetic-compact-model")
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            torch.manual_seed(17)
+            interrupted = TinyLM(fail_after=4)
+            with self.assertRaisesRegex(RuntimeError, "synthetic interruption"):
+                train_torch_sft(interrupted, sequence, root / "resume", config,
+                                model_identity_digest=material)
+            torch.manual_seed(123)
+            resumed = TinyLM()
+            resumed_state = train_torch_sft(resumed, sequence, root / "resume", config,
+                                            model_identity_digest=material, resume=True)
+            torch.manual_seed(17)
+            whole = TinyLM()
+            whole_state = train_torch_sft(whole, sequence, root / "whole", config,
+                                          model_identity_digest=material)
+            self.assertEqual((4, 8), (resumed_state["steps"], resumed_state["cursor"]))
+            self.assertEqual(resumed_state["tokens_seen"], whole_state["tokens_seen"])
+            for key, value in whole.state_dict().items():
+                self.assertTrue(torch.equal(value, resumed.state_dict()[key]), key)
+            torch.manual_seed(17)
+            limited = TinyLM()
+            before = {key: value.clone() for key, value in limited.state_dict().items()}
+            stopped = train_torch_sft(limited, sequence, root / "limited",
+                                      {**config, "maximum_training_tokens": len(sequence[0]["input_ids"])},
+                                      model_identity_digest=material)
+            self.assertEqual((0, 0, 0), (stopped["steps"], stopped["cursor"], stopped["tokens_seen"]))
+            self.assertTrue(all(torch.equal(before[key], value)
+                                for key, value in limited.state_dict().items()))
+            with self.assertRaises(ValidationError):
+                train_torch_sft(TinyLM(), sequence, root / "resume", config,
+                                model_identity_digest=digest_value("wrong-base"), resume=True)
+
+    def test_bounded_dfs_source_order_pruning_and_caps(self) -> None:
+        visited = []
+        def logits(prefix):
+            visited.append(tuple(prefix))
+            values = [-100.0] * 16
+            if prefix == [14]:
+                values[1], values[2], values[15] = -0.1, -0.2, -2.0
+            elif prefix[-1] == 1:
+                values[15] = -0.1
+                values[3] = -0.3
+            elif prefix[-1] == 3:
+                values[15] = -0.09
+            else:
+                values[15] = -0.1
+            return values
+        results, expansions = bounded_dfs([14], logits, max_new_tokens=3,
+                                          max_score=0.5, max_expansions=8,
+                                          max_sequences=3)
+        self.assertEqual([[1, 15], [1, 3, 15], [2, 15]],
+                         [item["tokens"] for item in results])
+        self.assertEqual(4, expansions)
+        self.assertEqual([(14,), (14, 1), (14, 1, 3), (14, 2)], visited)
+        truncated, count = bounded_dfs([14], logits, max_new_tokens=3,
+                                       max_score=0.5, max_expansions=2,
+                                       max_sequences=3)
+        self.assertEqual([[1, 15]], [item["tokens"] for item in truncated])
+        self.assertEqual(2, count)
+        stopped, count = bounded_dfs([14], logits, max_new_tokens=3,
+                                     max_score=0.5, max_expansions=8,
+                                     max_sequences=3, deadline=0, now=lambda: 0)
+        self.assertEqual(([], 0), (stopped, count))
+
+    def test_task_failure_always_cleans_backend(self) -> None:
+        class Failing(FixtureCandidateBackend):
+            def __init__(self):
+                super().__init__({})
+                self.ended = False
+            def generate(self, query, *, beams, max_new_tokens):
+                raise RuntimeError("synthetic generation failure")
+            def end_task(self):
+                self.ended = True
+                super().end_task()
+        task = visible_task("x", {"train": [{"input": [[1]], "output": [[2]]}],
+                                  "test": [{"input": [[3]]}, {"input": [[4]]}]})
+        backend = Failing()
+        with self.assertRaises(RuntimeError):
+            solve_task(task, backend, {"seed": 1, "maximum_calls_per_task": 2,
+                                       "beams_per_call": 1, "maximum_new_tokens": 8})
+        self.assertTrue(backend.ended)
+
+    def test_compact_special_ids_and_tying_contract(self) -> None:
+        class Weight:
+            shape = (16, 2)
+            def __init__(self, pointer): self.pointer = pointer
+            def data_ptr(self): return self.pointer
+        class Module:
+            def __init__(self, pointer): self.weight = Weight(pointer)
+        class Config:
+            pad_token_id, eos_token_id, bos_token_id = 13, 15, 14
+        class Model:
+            config = Config()
+            generation_config = Config()
+            def get_input_embeddings(self): return Module(1)
+            def get_output_embeddings(self): return Module(1)
+        model = Model()
+        model.config.text_config = Config()
+        validate_compact_model(model, tied=True)
+        model.generation_config.eos_token_id = 2
+        with self.assertRaises(ValidationError):
+            validate_compact_model(model, tied=True)
+        model.generation_config.eos_token_id = 15
+        with self.assertRaises(ValidationError):
+            validate_compact_model(model, tied=False)
+
     def test_rectangular_transform_and_color_zero_roundtrip(self) -> None:
         task = {"task_id": "x", "train": [{"input": [[0, 1]], "output": [[1, 0]]}],
                 "test": [{"input": [[0, 2, 3]]}]}
@@ -97,6 +239,7 @@ class NvarcTests(unittest.TestCase):
             streamed = freeze_streaming(stream_import_jsonl(records_path, split="sft-train"),
                                         root / "streamed", policy="clean-research", shard_size=2)
             self.assertEqual(manifest, streamed)
+            self.assertEqual({"synthetic": 1}, streamed["source_counts"])
             self.assertEqual(supervised_sequences(records)[0], FrozenSequenceStore(root / "streamed")[0])
             with self.assertRaises(ValidationError):
                 freeze_shards(records + [{**records[0], "split": "selection-dev", "task_id": "y"}],
@@ -110,6 +253,12 @@ class NvarcTests(unittest.TestCase):
                 freeze_shards(records + [{**transformed, "task_id": "y", "parent_id": "other",
                                           "source_id": "synthetic", "split": "selection-dev"}],
                               root / "variant-crossed", policy="clean-research")
+            exposed = [{**records[0], "task_id": "eval", "parent_id": "eval-parent",
+                        "source_id": "arc2_evaluation6"}]
+            with self.assertRaises(ValidationError):
+                freeze_shards(exposed, root / "eval-shards", policy="clean-research")
+            with self.assertRaises(ValidationError):
+                freeze_streaming(exposed, root / "eval-stream", policy="clean-research")
 
     def test_tokenizer_mask_padding_and_incomplete_grid(self) -> None:
         tokenizer = GridTokenizer()
@@ -220,6 +369,15 @@ class NvarcTests(unittest.TestCase):
                 build_outbound(root / "unsafe.zip", {**binding, "workload_digest": digest_value(unsafe)}, unsafe)
             checkpoint = new_checkpoint(binding, work)
             reserve_task(checkpoint, binding, "x", rank=0, at_utc="now")
+            before = digest_value(checkpoint)
+            with self.assertRaises(ValidationError):
+                finish_task(checkpoint, "x", {"task_id": "x",
+                                              "tests": [{"test_index": 0, "attempts": [],
+                                                         "generation_calls_so_far": 1,
+                                                         "returned_sequences": 2,
+                                                         "verification_calls_so_far": 3}],
+                                              "adaptation": {"steps": 1}})
+            self.assertEqual(before, digest_value(checkpoint))
             with self.assertRaises(ValidationError):
                 reserve_task(checkpoint, binding, "x", rank=0, at_utc="now")
 
@@ -315,6 +473,46 @@ class NvarcTests(unittest.TestCase):
             self.assertTrue(manifest["contains_labels"])
             staged = json.loads((Path(temp) / "trm" / "arc-agi_sft_challenges.json").read_bytes())
             self.assertNotIn("output", staged["x"]["test"][0])
+
+    def test_trm_requires_upstream_preprocessing_before_launch(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            upstream = root / "upstream"
+            builder = upstream / "dataset" / "build_arc_dataset.py"
+            builder.parent.mkdir(parents=True)
+            builder.write_text("# fixture path only")
+            source = root / "nvarc-trm"
+            source.mkdir()
+            (source / "pretrain-no-eval.py").write_text("# fixture path only")
+            (source / "eval-arc-k-10.py").write_text("# fixture path only")
+            model_file = upstream / "models" / "recursive_reasoning" / "trm.py"
+            model_file.parent.mkdir(parents=True)
+            model_file.write_text("# fixture path only")
+            config_file = upstream / "config" / "cfg_pretrain.yaml"
+            config_file.parent.mkdir()
+            config_file.write_text("# fixture path only")
+            task = {"train": [{"input": [[0]], "output": [[1]]}],
+                    "labelled_test": [{"input": [[2]], "output": [[3]]}]}
+            stage_trm_training({"x": task}, root / "staged",
+                               source_digest=digest_value("fixture"), augmentation_count=2)
+            pre = trm_preprocess_spec(upstream, root / "staged", root / "processed",
+                                      augmentation_count=2)
+            self.assertIn("--input-file-prefix", pre["argv"])
+            with self.assertRaises(ValidationError):
+                trm_launch_spec(source, upstream, root / "staged", root / "checkpoint",
+                                mode="train", world_size=1, steps=2, wall_seconds=30)
+            processed = root / "processed" / "train"
+            processed.mkdir(parents=True)
+            (processed / "dataset.json").write_text("{}")
+            launch = trm_launch_spec(source, upstream, root / "processed", root / "checkpoint",
+                                     mode="train", world_size=2, steps=2, wall_seconds=30)
+            self.assertEqual(str(source), launch["cwd"])
+            self.assertEqual(str(upstream), launch["env"]["PYTHONPATH"])
+            self.assertIn(str(upstream / "config"), launch["argv"])
+            self.assertIn("global_batch_size=3072", launch["argv"])
+            with self.assertRaises(ValidationError):
+                trm_launch_spec(source, upstream, root / "processed", root / "checkpoint",
+                                mode="evaluate", world_size=1, steps=2, wall_seconds=30)
 
     def test_offline_e2e_artifacts_are_reproducible(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
