@@ -4,7 +4,8 @@
 `C:/Users/wurre/.codex/worktrees/918a/IRIS-X`。
 結論：**diagnostic-complete-no-validation；沒有設定通過擴大評估門檻，不提升候選**。
 本次總控只做本機驗證、分析與文件更新，零新模型呼叫、零 Kaggle 操作。
-開發實作仍在 `codex/arc-budget-ablation`，本報告不代表已合併其程式碼。
+本報告完成時實作仍在 `codex/arc-budget-ablation`。後續 owner 要求 push 並
+移交新總控，已將該開發歷史整合 main；未增加模型呼叫或變更凍結實驗產物。
 完整 repository validation 在開發 worktree 通過 156 tests；總控 main 的
 文件更新亦通過現有 151 tests。這些是本機驗證，不消耗實驗生成次數。
 

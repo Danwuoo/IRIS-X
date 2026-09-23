@@ -2,6 +2,10 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-09-23-research-control-handoff.md`](plan/2026-09-23-research-control-handoff.md)
+  hands verified experimental results, local evidence locations and open
+  research choices to the next GPT-6 Astra high control task.
+
 - [`plan/2026-09-23-arc-reasoning-budget-ablation.md`](plan/2026-09-23-arc-reasoning-budget-ablation.md)
   defines the Decision 0020 authorized output-budget and thinking-mode
   diagnostic after the negative prompt search, with conditional validation.
