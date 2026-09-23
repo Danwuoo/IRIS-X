@@ -349,9 +349,5 @@ def pair_saved_sdg_grids(input_records: Iterable[Mapping[str, Any]],
 
 
 def require_isolated_executor(config: Mapping[str, Any]) -> None:
-    """Generated Python may run only in a separately attested sandbox."""
-    required = {"network": "none", "credentials": "none", "mounts": "restricted",
-                "cpu_limit": True, "memory_limit": True, "time_limit": True,
-                "output_limit": True, "attested": True}
-    if any(config.get(key) != value for key, value in required.items()):
-        raise ValidationError("generated code executor is not isolated; refusing execution")
+    """Legacy config claims cannot authorize execution of generated Python."""
+    raise ValidationError("caller-supplied sandbox claims do not establish isolation")
