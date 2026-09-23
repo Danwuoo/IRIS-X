@@ -88,3 +88,6 @@ incomplete result checkpoints, and empty or unbound model inventories in
 The two-rank CPU collective landed in `995bb1d`; optional ML, SDG and TRM
 adapter work followed in `6c4384f`, `21178d4`, and `a91c2fc`. These changes
 do not establish real Qwen3.5, sandbox, TRM or four-L4 execution readiness.
+
+The [second control review](control-review-4d23546.md) independently retests
+those repairs at `4d23546` and records the remaining development blockers.

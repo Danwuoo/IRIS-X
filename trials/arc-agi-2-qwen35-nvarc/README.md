@@ -1,6 +1,9 @@
 # Qwen3.5-4B NVARC reproduction development
 
 Status: **local continuation implemented; acceptance still partial; no execution authority**.
+The [second control review](control-review-4d23546.md) independently confirms
+the earlier example repairs, but finds remaining TTT/DFS reservation binding,
+unused-parameter DDP and TRM evaluation-entry blockers at `4d23546`.
 The [control review](control-review.md) found reproducible outbound, result,
 model-material and DFS defects at `e7d74a6`. The
 [continuation plan](../../docs/plan/2026-09-23-qwen35-nvarc-acceptance-continuation.md)
