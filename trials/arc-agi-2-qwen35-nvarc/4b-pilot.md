@@ -1,6 +1,6 @@
 # Proposed Qwen3.5-4B Kaggle compatibility pilot
 
-Status: **materials inventoried; local package staged; not approved or launched**.
+Status: **Decision 0021 authorized one launch; kernel not yet pushed**.
 Owner selected a real 4B pilot preparation on 2026-09-23. This is one bounded
 LoRA compatibility run, not full SFT, ARC evaluation, or a claim of NVARC
 reproduction. It supersedes the tiny-only GPU A route for the next execution
@@ -43,8 +43,9 @@ Implementation package: `1990872` on `main`, building on reservation repair
 
 ## One-run ceiling and stop
 
-The proposed [machine-readable plan](configs/draft-4b-pilot.json) is
-`approved: false`. One private Kaggle kernel push, at most one terminal output
+The retained [machine-readable draft](configs/draft-4b-pilot.json) remains
+`approved: false`; Decision 0021 permits staging a separate bound approved
+notebook. One private Kaggle kernel push, at most one terminal output
 retrieval, no retry or resume, Internet off, and USD 0 paid cost. The kernel
 may see one to four L4s but uses **one** with at least 22,000 MiB; no DDP or
 sharding claim follows. Maximum 1,800 seconds from notebook start: setup at
@@ -78,7 +79,7 @@ python tools/stage_nvarc_4b_pilot.py
 notebook and metadata SHA-256 values. The draft metadata ID starts
 `DRAFT-DO-NOT-PUSH/`, and its first executable cell refuses unapproved input
 before installing wheels or touching the GPU. The wheel includes the
-`arc_nvarc_4b_pilot` runner. An owner-approved authorization file must bind
+`arc_nvarc_4b_pilot` runner. The Decision 0021 authorization file must bind
 `approved: true`, `run_id`, the printed `draft_plan_sha256`, final `kernel_id`,
 and a nonempty `owner_decision`. Then stage a **new** directory with
 `--authorization <reviewed-json>` and review its new hashes. That command

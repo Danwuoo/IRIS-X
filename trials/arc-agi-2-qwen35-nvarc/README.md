@@ -1,7 +1,7 @@
 # Qwen3.5-4B NVARC reproduction development
 
 Status: **reviewed local P1 repairs implemented; CPU tiny Qwen3.5/PEFT verified;
-4B pilot prepared but not approved or launched; acceptance still partial**.
+Decision 0021 authorizes one 4B pilot; not yet launched; acceptance still partial**.
 The [second control review](control-review-4d23546.md) independently confirms
 the earlier example repairs and identified TTT/DFS reservation binding,
 unused-parameter DDP and TRM evaluation-entry blockers at `4d23546`. Its
@@ -43,8 +43,9 @@ failure. SDG stage accounting, a Docker launcher, a TRM invocation wrapper,
 truth-free raw-tensor normalizer and strict optional ML profile were added.
 The Docker daemon remains absent. A separate Python 3.12 environment now runs
 tiny actual Qwen3.5/PEFT tests on CPU. The owner chose preparation of a real
-4B pilot; its [exact proposed package](4b-pilot.md) is staged locally and
-unapproved. No Kaggle kernel was launched or result retrieved for this identity.
+4B pilot; its [exact package](4b-pilot.md) is staged locally. Decision 0021
+now authorizes one launch and retrieval. No Kaggle kernel was launched or
+result retrieved for this identity yet.
 
 The offline fixture E2E runs a **tiny random transition model for gradient and
 resume checks**, then explicitly marked fixture predictions through candidate,
@@ -69,8 +70,8 @@ Source-level differences and remaining gaps are in
 
 The [source-use](source-use.md), [runbook](runbook.md),
 [4B pilot](4b-pilot.md), and [execution proposal](execution-proposal.md) bind
-the next steps. A specific owner launch authorization is still required. The
-present draft manifest is not an approval token.
+the next steps. Decision 0021 is the specific owner launch authorization. The
+retained draft manifest is not an approval token.
 
 No new real Qwen/TRM generations or training steps, SDG teacher calls, Codex proposer
 calls, Kaggle mutation/retrieval, competition submission, or paid usage occurred

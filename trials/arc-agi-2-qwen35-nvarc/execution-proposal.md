@@ -44,13 +44,13 @@ and separate authorization before sealed tasks.
 ## Owner-selected next preparation: bounded real 4B pilot
 
 The owner selected preparation of a **real Qwen3.5-4B pilot** rather than the
-tiny-only GPU A kernel. The exact, unapproved
+tiny-only GPU A kernel. The exact
 [4B pilot proposal](4b-pilot.md) now binds the existing private Dataset v2,
 model and wheel manifests, synthetic-only training data, a one-L4 LoRA
 workload, two steps/128 tokens, zero generation, one private kernel and one
 terminal retrieval, 1,800 seconds and USD 0. Local staging and fail-closed
-guards are implemented. This is a compatibility pilot; it does not authorize
-full SFT or an ARC score. A specific launch decision remains open.
+guards are implemented. Decision 0021 authorizes this compatibility pilot;
+it does not authorize full SFT or an ARC score.
 
 ## Earlier narrow GPU acceptance choice after the second control review
 

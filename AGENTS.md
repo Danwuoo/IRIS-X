@@ -91,6 +91,12 @@ validation was not launched. Decision 0020 is terminal, and its unused ceiling
 does not authorize further calls. Control review confirms all 512 visible
 sources match: the prior holdout failure compared a single-test projection
 against a full multi-test case. Holdout remains unscored.
+Decision 0021 authorizes exactly one private, free Kaggle L4 kernel and one
+terminal retrieval for the distinct `nvarc-4b-compat-pilot-001` 4B LoRA
+compatibility pilot. It uses only synthetic training data, at most two steps
+and 128 training tokens, with zero model generations. No retry, full SFT or
+ARC scoring is authorized. The exact bounds and material bindings are in the
+decision and `trials/arc-agi-2-qwen35-nvarc/4b-pilot.md`.
 
 ## Authority order
 

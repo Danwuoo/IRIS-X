@@ -85,3 +85,6 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes the separate output-budget/thinking diagnostic and conditional
   validation under a 576-generation ceiling, with GPT-6 Sol xhigh development
   and future reflection configuration.
+- [`0021-authorize-nvarc-4b-compatibility-pilot.md`](0021-authorize-nvarc-4b-compatibility-pilot.md)
+  authorizes one private Kaggle L4 Qwen3.5-4B LoRA compatibility kernel and one
+  terminal retrieval under a two-step, 128-token, zero-generation ceiling.
