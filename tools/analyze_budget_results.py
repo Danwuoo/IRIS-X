@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import zipfile
+from collections import Counter
 
 from irisx import arc_budget_ablation as budget
 from irisx.transport import digest_path
@@ -44,6 +45,17 @@ def main() -> int:
                            "generated_tokens": prediction["tokens"]["generated"], "reasoning_tokens": 0,
                            "final_tokens": prediction["tokens"]["generated"]})
     summaries = {"B0": budget._summarize(b0_records), **diagnostic["arms"]}
+    diagnostic_results = list((ROOT / "diagnostic/retrieved").rglob("result.zip"))
+    if len(diagnostic_results) != 1:
+        raise RuntimeError("analysis requires one verified diagnostic result")
+    with zipfile.ZipFile(diagnostic_results[0]) as archive:
+        raw_records = json.loads(archive.read("predictions/predictions.json"))["records"]
+    truncated_by_arm = Counter(record["arm"] for record in raw_records if record["generation"].get("raw_completion_truncated"))
+    for arm in budget.ARMS:
+        summaries[arm]["raw_completions_truncated"] = truncated_by_arm[arm]
+        records = [record for record in diagnostic["records"] if record["arm"] == arm]
+        summaries[arm]["elapsed_sample_count"] = sum(isinstance(record.get("elapsed_seconds"), (int, float)) for record in records)
+        summaries[arm]["token_sample_count"] = sum(isinstance(record.get("generated_tokens"), int) for record in records)
     by_arm = {arm: {record["task_id"]: record["correct"] for record in records}
               for arm, records in {"B0": b0_records, **{arm: [record for record in diagnostic["records"] if record["arm"] == arm]
                                                         for arm in budget.ARMS}}.items()}
