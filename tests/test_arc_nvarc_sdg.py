@@ -48,6 +48,13 @@ class NvarcSDGTests(unittest.TestCase):
             with self.assertRaises(ValidationError):
                 run_stage("summary", items, "changed", provider, root,
                           seed=3, maximum_calls=1)
+            path = root / "summary.json"
+            tampered = json.loads(path.read_text())
+            tampered["reserved_calls"] = 0
+            path.write_text(json.dumps(tampered))
+            with self.assertRaises(ValidationError):
+                run_stage("summary", items, "prompt", provider, root,
+                          seed=3, maximum_calls=1)
 
     def test_saved_pipeline_has_four_ordered_stages_and_zero_calls(self) -> None:
         item = {"record_id": "a", "parent_id": "p", "source_id": "s"}

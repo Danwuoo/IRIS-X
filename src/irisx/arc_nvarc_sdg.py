@@ -56,6 +56,29 @@ def run_stage(stage: str, inputs: list[Mapping[str, Any]], prompt: str,
         ledger = json.loads(path.read_bytes())
         if ledger.get("binding") != binding or ledger.get("maximum_calls") != maximum_calls:
             raise ValidationError("SDG resumed stage identity differs")
+        if (ledger.get("format") != "irisx/nvarc-sdg-stage" or
+                ledger.get("stage") != stage or
+                not isinstance(ledger.get("records"), dict) or
+                not set(ledger["records"]).issubset(identifiers) or
+                type(ledger.get("reserved_calls")) is not int or
+                not 0 <= ledger["reserved_calls"] <= maximum_calls):
+            raise ValidationError("SDG resumed stage ledger is invalid")
+        by_id = {item["record_id"]: item for item in inputs}
+        costs = 0
+        for key, record in ledger["records"].items():
+            if (not isinstance(record, dict) or
+                    record.get("input_digest") != digest_value(by_id[key]) or
+                    record.get("status") not in {"pending", "failed", "complete"} or
+                    type(record.get("provider_calls")) is not int or
+                    record["provider_calls"] not in (0, 1)):
+                raise ValidationError("SDG resumed stage record differs")
+            if record["status"] == "complete" and (
+                    "response" not in record or
+                    record.get("response_digest") != digest_value(record["response"])):
+                raise ValidationError("SDG resumed response digest differs")
+            costs += record["provider_calls"]
+        if costs != ledger["reserved_calls"]:
+            raise ValidationError("SDG resumed call accounting differs")
     else:
         ledger = {"format": "irisx/nvarc-sdg-stage", "binding": binding,
                   "stage": stage, "maximum_calls": maximum_calls, "reserved_calls": 0,
