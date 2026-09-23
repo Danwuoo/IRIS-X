@@ -53,6 +53,9 @@ This directory contains only current product-era guidance.
   is the single current status page for Trial 001.
 - [`../trials/arc-agi-2-baseline/README.md`](../trials/arc-agi-2-baseline/README.md)
   is the single current status page for Trial 002.
+- [`../trials/arc-agi-2-qwen35-nvarc/README.md`](../trials/arc-agi-2-qwen35-nvarc/README.md)
+  is the distinct development status page for the owner-requested Qwen3.5
+  NVARC port; its offline implementation does not authorize real execution.
 - [`decisions/`](decisions/README.md) contains accepted boundary decisions and
   historical rationale.
 - [`repository-layout.md`](repository-layout.md) defines the active P1 plus

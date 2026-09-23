@@ -31,6 +31,13 @@ ARC competition on private Kaggle L4 x4. All four jobs returned valid grids,
 but local exact-match scoring was 0/4. No further external run or competition
 submission is authorized.
 
+[`arc-agi-2-qwen35-nvarc/`](arc-agi-2-qwen35-nvarc/) is the separately
+owner-directed development workspace for a Qwen3.5-4B port of the NVARC
+data, compact vocabulary, SFT, task-local adaptation, candidate and TRM
+routes. Its synthetic offline implementation is verified, but no new real
+training, four-L4 run, result, or external execution is authorized by the
+development plan. See its status page and proposed resource stages.
+
 [`arc-agi-2-prompt-pilot/`](arc-agi-2-prompt-pilot/) is the distinct Decision
 0016 instruction-only research trial. Its first authorization is limited to one
 384-job private baseline launch and startup verification; it does not extend

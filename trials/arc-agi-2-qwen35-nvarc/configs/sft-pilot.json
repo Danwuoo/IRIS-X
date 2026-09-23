@@ -1,0 +1,16 @@
+{
+  "mode": "full-sft",
+  "seed": 24,
+  "device": "cuda",
+  "learning_rate": 0.0001,
+  "weight_decay": 0.1,
+  "warmup_steps": 4,
+  "clip_grad_norm": 0.5,
+  "max_steps": 32,
+  "maximum_training_tokens": 131072,
+  "max_sequence_length": 2048,
+  "gradient_accumulation": 4,
+  "checkpoint_every": 4,
+  "gradient_checkpointing": true,
+  "packing": false
+}

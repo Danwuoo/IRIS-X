@@ -1,0 +1,20 @@
+{
+  "id": "DRAFT-DO-NOT-PUSH/nvarc-qwen35-future-run",
+  "title": "DRAFT IRIS-X Qwen3.5 NVARC future run",
+  "code_file": "kaggle-notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "machine_shape": "NvidiaL4",
+  "competition_sources": ["arc-prize-2026-arc-agi-2"],
+  "dataset_sources": [
+    "danielwuu/irisx-arc-agi-2-trial-002-smoke-001",
+    "DRAFT-OWNER/new-nvarc-arc-sft-model",
+    "DRAFT-OWNER/new-nvarc-runtime-bundle"
+  ],
+  "kernel_sources": [],
+  "model_sources": []
+}
