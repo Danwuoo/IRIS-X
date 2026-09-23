@@ -173,3 +173,14 @@ stream. Local packaging used zero new generations and produced verified
 truth-free result digest
 `4764cd569f669f8736461ddf2b5d6ac3bf1c80ddf3f903d669f8d5a43aa054af`.
 The retrieval and packaging authority are consumed; scoring remains gated.
+
+Decision 0019 subsequently authorized the bounded prompt search, which is now
+terminal without a scored final holdout. Its external authority is consumed.
+Decision 0020 separately authorizes the output-budget/thinking ablation:
+deliberate source/tokenizer/dependency preparation, private four-L4 Kaggle
+execution and retrieval, and local scoring for at most 576 new Qwen generations.
+Development and future reflection profiles use `gpt-6-sol / xhigh` via Codex
+subscription usage; this ablation makes no reflection calls. Observe its
+source parity, atomic ledger, truth-free packaging, per-job timeout and
+conditional-validation rules. Earlier stop points are historical for those
+identities and do not prohibit the distinct authorized Decision 0020 workflow.

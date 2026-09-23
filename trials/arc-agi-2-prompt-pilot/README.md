@@ -8,7 +8,8 @@ The [control review](control-review.md) independently recomputes all ten
 available score reports and records the limits of the terminal conclusion.
 The [offline failure analysis](failure-analysis.md) separates truncation,
 semantic errors, paired regressions, reflection limitations, and source parity;
-the linked next-experiment plan remains a proposal without execution authority.
+the separate [budget-ablation trial](../arc-agi-2-budget-ablation/README.md)
+is now authorized by Decision 0020. This does not reopen the prompt pilot.
 
 ## Goal
 

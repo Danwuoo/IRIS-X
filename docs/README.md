@@ -3,8 +3,8 @@
 This directory contains only current product-era guidance.
 
 - [`plan/2026-09-23-arc-reasoning-budget-ablation.md`](plan/2026-09-23-arc-reasoning-budget-ablation.md)
-  proposes a bounded output-budget and thinking-mode diagnostic after the
-  negative prompt search; it does not authorize new execution.
+  defines the Decision 0020 authorized output-budget and thinking-mode
+  diagnostic after the negative prompt search, with conditional validation.
 - [`plan/2026-09-22-dspy-gepa-prompt-pilot.md`](plan/2026-09-22-dspy-gepa-prompt-pilot.md)
   retains the completed prompt experiment plan, with Qwen3.5-4B solving,
   Codex CLI reflection, grouped data splits, and bounded DSPy/GEPA integration.

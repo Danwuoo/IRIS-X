@@ -78,6 +78,14 @@ frozen. Decision 0019 supersedes the earlier prompt-pilot stop points and
 authorizes continuous local scoring, up to ten dependent DSPy/GEPA plus Codex
 proposal attempts, private candidate evaluation, and one final locked-holdout
 comparison under the fixed 4,480-generation ceiling.
+That search is now terminal: no candidate beat B1 and the final holdout failed
+before inference on visible-source incompatibility. Decision 0019 is consumed.
+Decision 0020 opens `arc-agi-2-budget-ablation`: development and future reflection
+use `gpt-6-sol / xhigh`, while the solver remains pinned Qwen3.5-4B. It authorizes
+192 diagnostic generations and at most 384 conditional validation generations,
+with source acquisition, private four-L4 CLI execution, retrieval and scoring
+as one continuous workflow. No GEPA calls or holdout execution are part of it.
+The status page is `trials/arc-agi-2-budget-ablation/README.md`.
 
 ## Authority order
 
@@ -157,6 +165,14 @@ paths. Do not recreate a legacy root merely to preserve history.
 - Preserve Decision 0003 and `trials/p2-admission/admission.json` as immutable
   historical blocked-state evidence. Never reinterpret or mutate that v1.0
   snapshot into an authorization token.
+- For Decision 0020, preserve all previous trial identities. Audit all 512
+  visible cases and require parity for every one of the 384 executable
+  train/dev cases. Isolated unused-holdout differences remain documented and
+  unscored. Use an atomic ledger, at most 576 new generations, 300 seconds per
+  job, no retries, and the fixed qualification rule before the second kernel.
+  Keep outcome-derived diagnostic strata evaluator-side. New Codex development
+  and reflection profiles use `gpt-6-sol / xhigh`; historical profiles remain
+  valid. This ablation configures reflection but makes no proposer calls.
 - Do not execute or resume any part of closed Trial 001. The Decisions 0014 and
   0015 exception for Trial 002 was consumed by `trial-002-smoke-002`; do not
   start another kernel, retrieval, retry, fifth invocation, TTT, LoRA, notebook

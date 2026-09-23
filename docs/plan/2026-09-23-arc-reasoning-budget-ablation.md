@@ -1,8 +1,11 @@
 # ARC solver：先量測輸出容量與推理模式
 
-日期：2026-09-23。狀態：**總控建議稿，尚未啟動新 task 或外部執行**。
-Owner 本次指示為「先分析吧，然後規劃下一步」。這份計畫不延長已消耗的
-Decision 0019 執行授權，不修改原 trial 的分數、身份或 acceptance criteria。
+日期：2026-09-23。狀態：**Owner 已授權開發與連貫執行**。
+最新指示：「開發的模型和反思的模型都換成 gpt 6 sol xhigh，開始進行新實驗吧」。
+[Decision 0020](../decisions/0020-authorize-arc-budget-ablation.md) 記錄新實驗授權，
+目前狀態見 [trial README](../../trials/arc-agi-2-budget-ablation/README.md)。
+開發與後續反思均使用 `gpt-6-sol / xhigh`；解題仍是原 pinned Qwen3.5-4B。
+這不延長已消耗的 Decision 0019，也不改寫原 trial 的分數、身份或 acceptance criteria。
 
 ## 問題與優先順序
 
@@ -24,9 +27,10 @@ evaluation 成績，不能拿來估計距離 85 分還需要幾輪。
   checkpoint/result、CLI transport 和本機 scorer；只修改配置、thinking 分段
   處理及觀測欄位。避免重建依賴環境與重傳大型權重。
 - 在 evaluator 端取得並固定 competition challenge snapshot 後，先比對全部
-  256 train + 128 dev + 128 holdout 的可見內容，產生逐題差異報告。若本機
-  缺少 snapshot，列為未完成的 preflight；未通過前不啟動 GPU。
-  未來來源下載應是明確、獨立的 materialization 步驟。
+  256 train + 128 dev + 128 holdout 的可見內容，產生逐題差異報告。來源下載
+  已授權，必須是明確、獨立的 materialization 步驟。稽核覆蓋全部 512 題，
+  本輪可能執行的 384 train/dev 題必須全部一致，否則不啟動 GPU；若差異僅
+  在不使用的 holdout，保留差異與 unscored 狀態，可繼續本輪 train/dev 實驗。
 - 對 `f3e62deb` 說明差異的欄位與來源。若需要換 source binding，另建 run 與
   split identity，公開列出與原實驗不可直接比較的部分；不覆寫舊資料、不刪題
   讓原 holdout 過關。這份計畫沒有授權修改原 holdout。
@@ -89,12 +93,13 @@ Kaggle metadata 必須保留：
 
 ## C. 只讓有訊號的設定跑完整 384 題
 
-以下是**待採用的新實驗篩選規則**，不是改寫舊 trial 的 promotion 標準：
+以下是 **Decision 0020 採用的新實驗篩選規則**，不是改寫舊 trial 的 promotion 標準：
 
 - 在 64 題診斷集相對 B0 淨增至少 4 題，且保留原本 18 題中的至少 16 題，
   才進入完整評估。這是工程篩選，不是統計顯著性或泛化證明。
 - 多個 arm 過關時先取 exact-match 較高者；同分取 p95 elapsed 較低者，再以
-  較少 token 上限作為 tie-break。只允許一個設定進入下一階段。
+  較少 token 上限作為 tie-break；若仍完全同分，優先 thinking off。
+  只允許一個設定進入下一階段。
 - 凍結設定後做一次完整 256 train + 128 selection-dev；全部 384 題重跑以
   形成單一新 run 的完整觀測，診斷 cache 僅供比較，避免拼成混合結果。
 - 新生成總上限為 192 + 384 = **576**；若沒有 arm 過關，止於 192。
@@ -104,7 +109,7 @@ Kaggle metadata 必須保留：
 - 若四卡、model binding、來源或輸出驗證失敗，保存失敗並停止，不能自動
   增開 notebook 填補配額。最終 holdout 保持 unscored，本輪不重試。
 
-未來若 owner 採用此範圍，開發 task 可連貫完成 A→B→條件式 C→報告，不在
+Owner 已採用此範圍，開發 task 連貫完成 A→B→條件式 C→報告，不在
 每批模型載入後停下等人工交接。沿用原子 ledger、低頻 terminal 狀態檢查、
 完成後單次取回與本機 checkpoint 修復；不做高頻 log 輪詢。
 
@@ -113,7 +118,7 @@ Kaggle metadata 必須保留：
 1. **只有容量改善**：採用能容納完整 final grid 的最小預算；不把補完 grid
    描述成推理能力躍升。GEPA 下一輪先測短 instruction 的單一變更。
 2. **Thinking 有穩定淨收益**：固定新 solver 配置後再做 GEPA。反思仍用
-   `gpt-5.6-sol / xhigh`，記錄方案使用量與 elapsed；先提三個有不同可驗證
+   `gpt-6-sol / xhigh`，記錄方案使用量與 elapsed；先提三個有不同可驗證
    假說的候選，經 train 小樣本篩選才評估完整 dev，不預設再跑十批。
 3. **兩者都無訊號**：停止全局 prompt 擴寫。下一條獨立實驗轉向 NVARC 衍生
    task-local adaptation 或可用 demonstrations 驗證的程式求解路線，先選一條，
@@ -129,9 +134,33 @@ Kaggle metadata 必須保留：
 總控保留計畫、研究判斷與結果核對；後續獨立開發 task 承接實作與經授權的
 執行。交付包括 source parity 報告、固定 cohort/config manifests、獨立 ledger、
 truth-free outbound/checkpoint/result、逐題評分與配對分析、時間報告和推薦。
-新外部範圍採用時再建立 governing decision，不挪用原 trial 剩餘數字當成授權。
+新外部範圍由 Decision 0020 授權，不挪用原 trial 剩餘數字當成授權。
+本輪更新新的反思設定並做離線測試，不呼叫反思模型；D 節是結果後的研究方向，
+不是在 576 次之外自動追加 GEPA、TTT 或其他實驗。舊 gpt-5.6-sol 的歷史綁定保留。
 
 只對有失敗後果的變更增加測試：thinking/final 分隔、截斷識別、全體可見資料
 parity、generation ledger 與 resumability。交付前執行
 `python tools/repository_check.py --all`。原有 notebook、result、score、ledger
 與 trial terminal status 保持原樣。
+
+## 開發交接定位
+
+新的獨立 task 使用 `gpt-6-sol / xhigh` 和 Git worktree；總控不在本機同時修改
+solver 實作。此前已成功的 runtime 位於 `src/irisx/arc_prompt_pilot.py`、
+`src/irisx/arc_prompt_kaggle.py` 及 prompt-pilot 的 notebook/template。
+不要套用會重啟 Decision 0019 controller 的舊命令。
+
+保留證據根目錄為
+`C:/Users/wurre/.codex/worktrees/e34a/IRIS-X/.irisx/arc-agi-2/prompt-pilot/`：
+
+- `repair-002/trial/`：split、solver-cases、run binding 與 evaluator truth。
+- `repair-002/recovered-v1/result.zip`：B1 原始預測，SHA-256
+  `4764cd569f669f8736461ddf2b5d6ac3bf1c80ddf3f903d669f8d5a43aa054af`。
+- `repair-002/outbound/prompt-pilot-baseline-002.zip`：對應 truth-free outbound。
+- `search/baseline-score.json` 與 `search/ledger.json`：重新核對後用作離線參照。
+- `source/upstream/`：pinned 上游來源；`search/final-holdout/retrieved/` 保留來源
+  gate 的失敗證據。`source/provenance.json` 是大型 JSON，應選欄位讀取。
+
+新 task 可讀取或選擇性複製所需本機證據並重新驗證 digest，不能修改舊 worktree
+的 evidence。大型模型維持 Kaggle 既有 Dataset，不因新 worktree 缺 cache 而重傳。
+新產物放自己的 `.irisx/arc-agi-2/budget-ablation/`；進度與結果更新新 trial README。

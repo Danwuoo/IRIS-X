@@ -81,3 +81,7 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes the bounded continuous scoring, real DSPy/GEPA plus Codex prompt
   search, private candidate evaluations, and one final locked-holdout
   comparison under a 4,480-generation ceiling.
+- [`0020-authorize-arc-budget-ablation.md`](0020-authorize-arc-budget-ablation.md)
+  authorizes the separate output-budget/thinking diagnostic and conditional
+  validation under a 576-generation ceiling, with GPT-6 Sol xhigh development
+  and future reflection configuration.
