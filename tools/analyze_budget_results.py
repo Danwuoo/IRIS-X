@@ -45,6 +45,10 @@ def main() -> int:
                            "generated_tokens": prediction["tokens"]["generated"], "reasoning_tokens": 0,
                            "final_tokens": prediction["tokens"]["generated"]})
     summaries = {"B0": budget._summarize(b0_records), **diagnostic["arms"]}
+    summaries["B0"]["strata"] = {name: budget._summarize([record for record in b0_records if record["task_id"] in task_ids])
+                                  for name, task_ids in cohort["strata"].items()}
+    summaries["B0"]["elapsed_sample_count"] = sum(isinstance(record.get("elapsed_seconds"), (int, float)) for record in b0_records)
+    summaries["B0"]["token_sample_count"] = sum(isinstance(record.get("generated_tokens"), int) for record in b0_records)
     diagnostic_results = list((ROOT / "diagnostic/retrieved").rglob("result.zip"))
     if len(diagnostic_results) != 1:
         raise RuntimeError("analysis requires one verified diagnostic result")

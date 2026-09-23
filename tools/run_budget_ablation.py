@@ -55,11 +55,22 @@ def _status(ref: str, version: int) -> str:
 
 def _wait_terminal(section: str) -> str:
     prior = None
+    consecutive_status_errors = 0
     while True:
         entry = _load()[section]
         if entry["state"] not in {"running", "launching"}:
             return entry.get("terminal_status", "")
-        status = _status(entry["kernel_ref"], entry["kernel_version"])
+        try:
+            status = _status(entry["kernel_ref"], entry["kernel_version"])
+        except RuntimeError as error:
+            consecutive_status_errors += 1
+            budget.atomic_json(ROOT / f"{section}/status-error-{consecutive_status_errors}.json",
+                               {"at_utc": _utc(), "error": str(error), "consecutive_failures": consecutive_status_errors})
+            if consecutive_status_errors >= 3:
+                raise RuntimeError("three consecutive low-frequency status requests failed; run identity remains unchanged") from error
+            time.sleep(180)
+            continue
+        consecutive_status_errors = 0
         if status != prior:
             print(json.dumps({"event": "kernel_status", "run": section, "status": status, "at_utc": _utc()}), flush=True)
         prior = status
