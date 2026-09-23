@@ -85,7 +85,9 @@ preinstalled `torchao 0.10.0`/PEFT 0.21.0 incompatibility before model load.
 That execution and its retrieval attempt are consumed.
 The [pilot 004 draft](4b-pilot-004-draft.md) contains a bounded offline
 dependency repair. Decision 0024 authorizes one separate Kaggle push and
-terminal retrieval; no pilot 004 version has yet been submitted.
+terminal retrieval. Its first request received HTTP 401 from an expired local
+OAuth token before version creation. Decision 0025 authorizes one exact-package
+transport retry after refreshing that credential.
 
 Pilot 001 made one private Kaggle kernel push and one terminal retrieval.
 Pilot 002's one push request was rejected before a version receipt, with no

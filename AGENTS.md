@@ -122,6 +122,12 @@ and checks its absence before PEFT import. Exactly one private kernel push,
 bounded terminal status checks and one output retrieval are authorized under
 the unchanged two-step, 128-token, zero-generation, USD 0 limits. No Dataset
 mutation, retry, resume or other pilot identity is authorized.
+The first pilot 004 `SaveKernel` request received HTTP 401 because the local
+OAuth access token had expired. A refreshed credential and successful own-kernel
+listing show no pilot 004 version. Decision 0025 applies the owner's standing
+pre-runtime rejection retry direction to authorize one exact-package transport
+retry under the same pilot 004 identity. If it is accepted, monitor to terminal
+and retrieve once; if rejected, stop without a third request.
 
 ## Authority order
 

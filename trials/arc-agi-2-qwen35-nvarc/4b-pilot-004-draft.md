@@ -1,6 +1,6 @@
 # Qwen3.5-4B pilot 004 dependency-repair draft
 
-Status: **Decision 0024 authorizes one exact private Kaggle launch; not yet pushed**.
+Status: **first push rejected by expired OAuth; Decision 0025 authorizes one exact-package transport retry**.
 
 The [pilot 003](4b-pilot-003.md) accepted version verified the official
 `arc-prize-2026-arc-agi-2` mount, four distinct L4 devices and the pinned
@@ -41,6 +41,17 @@ An approved package has different plan and notebook hashes and must be bound
 separately before provider mutation. Decision 0024 authorizes exactly one
 such package and launch with one terminal retrieval; it does not authorize
 another retry or Dataset update.
+
+The first approved-package `SaveKernel` request returned HTTP 401 because the
+local OAuth access token had expired at `2026-09-23T16:00:14Z`. The owner-kernel
+list after credential refresh contained no pilot 004 version. Decision 0025
+binds one additional transport attempt to the *unchanged* approved package:
+plan, wheel, notebook and metadata SHA-256 values
+`cca98adaab611c2eff11f099b875785fe9d4b64443d4bbeb27ba6533fdf5ef46`,
+`70241f00764bad3849a29aae20dbde7d6e20657c76ebca6f374c0f279c8f6e22`,
+`08627fa4ba2cbaff101bb6fb7ed4f0d4c5af291f1b88685dca69d61513886ea9`,
+and `b4907d434348128fe0db9f495963e0ef5b8fb88ea6c5a099db4480c462e8b013`.
+This does not permit a third push or a changed workload.
 
 For the authorized terminal retrieval, set `PYTHONIOENCODING=utf-8` in
 the local CLI process so a Unicode log line does not repeat pilot 003's

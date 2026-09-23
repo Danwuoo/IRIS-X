@@ -97,3 +97,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0024-authorize-4b-pilot-dependency-repair.md`](0024-authorize-4b-pilot-dependency-repair.md)
   preserves pilot 003's dependency failure and authorizes one distinct pilot
   004 submission with an offline removal of incompatible optional `torchao`.
+- [`0025-retry-auth-rejected-4b-pilot-004.md`](0025-retry-auth-rejected-4b-pilot-004.md)
+  records pilot 004's expired-OAuth HTTP 401 and authorizes one exact-package
+  transport retry after credential refresh, before any notebook version.
