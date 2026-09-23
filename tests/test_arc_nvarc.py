@@ -523,6 +523,10 @@ class NvarcTests(unittest.TestCase):
             self.assertEqual((1, 2, 3), (first["score"]["passed_at_1"],
                                          first["score"]["passed_at_2"], first["score"]["test_outputs"]))
             self.assertEqual("fixture-predictions", first["backend"])
+            with zipfile.ZipFile(root / "one" / "result.zip") as archive:
+                checkpoint = json.loads(archive.read("checkpoint/checkpoint.json"))
+            self.assertEqual(48, checkpoint["counters"]["verification_calls_observed"])
+            self.assertEqual(64, checkpoint["counters"]["verification_calls_reserved"])
 
 
 if __name__ == "__main__":
