@@ -1,6 +1,6 @@
 # Proposed 4B compatibility pilot 002 repair
 
-Status: **local draft only; no owner execution authorization**.
+Status: **Decision 0022 authorizes one new launch; not yet pushed**.
 
 The completed `nvarc-4b-compat-pilot-001` kernel had an empty
 `competition_sources` list and failed its GPU gate before model loading. The
@@ -39,7 +39,8 @@ SHA-256 `a2396c1ea45a783477353c088bad7dc8153a4edb93ee2c80418f4437adf7d7bb`,
 wheel SHA-256 `17663445b53dba8b3ce78a517fa0252c9340d4423999d10c9356e4d772f8ce97`,
 notebook SHA-256 `f476eb311c50978e1fe0ab07c0921a4de983f6553a7964016660cff23571a13d`,
 and metadata SHA-256 `597f5125819c823084ec5c703ac4c16b29a8a1865fed8a7c40d9dc231bd7270c`.
-A replacement push, status request or output retrieval is
-outside Decision 0021 and requires a distinct owner decision with new
-resource, stop and retention bounds. Pilot 001's submitted bytes and result
-remain frozen.
+Decision 0022 now supplies the distinct owner authorization for one private
+push, bounded status checks and one terminal retrieval under the stated
+resource, stop and retention bounds. The draft remains unapproved and must
+be staged separately with that exact authorization. Pilot 001's submitted
+bytes and result remain frozen.

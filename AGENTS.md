@@ -98,9 +98,12 @@ before model loading or training: zero steps, tokens and generations. No
 retry, replacement, full SFT or ARC scoring is authorized. The terminal
 evidence and exact material bindings are in
 `trials/arc-agi-2-qwen35-nvarc/4b-pilot.md`.
-The distinct `nvarc-4b-compat-pilot-002` repair is a local draft only. It
-adds the official competition source and early hardware diagnostics; it has
-no accepted owner execution authority or provider mutation.
+Decision 0022 authorizes one distinct `nvarc-4b-compat-pilot-002` private
+Kaggle kernel push and one terminal retrieval, with the official competition
+source mounted for presence checking only and early hardware diagnostics.
+It preserves pilot 001 and the synthetic-only, two-step, 128-token,
+zero-generation, USD 0 bounds. No retry or further external attempt is
+authorized.
 
 ## Authority order
 

@@ -88,3 +88,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0021-authorize-nvarc-4b-compatibility-pilot.md`](0021-authorize-nvarc-4b-compatibility-pilot.md)
   authorizes one private Kaggle L4 Qwen3.5-4B LoRA compatibility kernel and one
   terminal retrieval under a two-step, 128-token, zero-generation ceiling.
+- [`0022-authorize-competition-mounted-4b-pilot-repair.md`](0022-authorize-competition-mounted-4b-pilot-repair.md)
+  preserves the failed pilot 001 and authorizes one distinct pilot 002 kernel
+  with the official competition mounted and early GPU diagnostics.
