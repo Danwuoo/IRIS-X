@@ -2,6 +2,9 @@
 
 Status: **reviewed local P1 repairs implemented; pilot 004 verified a bounded
 synthetic Qwen3.5-4B LoRA path on one L4; full-method acceptance remains partial**.
+The [2026-09-24 independent review](control-review-811bd4b.md) verifies the
+retained pilot evidence and local ML tests, and records the remaining shipped
+configuration mismatch, numerical-check gap and full-method integration gates.
 The [second control review](control-review-4d23546.md) independently confirms
 the earlier example repairs and identified TTT/DFS reservation binding,
 unused-parameter DDP and TRM evaluation-entry blockers at `4d23546`. Its
