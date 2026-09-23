@@ -184,7 +184,8 @@ class QwenCandidateBackend:
             ended = END in suffix
             if ended:
                 suffix = suffix[:suffix.index(END) + 1]
-            beam_nll = -float(output.sequences_scores[index]) if hasattr(output, "sequences_scores") else 0.0
+            sequence_scores = getattr(output, "sequences_scores", None)
+            beam_nll = -float(sequence_scores[index]) if sequence_scores is not None else 0.0
             result.append({"tokens": suffix, "eos": ended, "beam_nll": beam_nll})
         return result
 

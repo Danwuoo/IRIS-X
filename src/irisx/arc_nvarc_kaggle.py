@@ -12,7 +12,6 @@ import multiprocessing
 import os
 from pathlib import Path
 import queue
-import sys
 import time
 from typing import Any, Mapping
 
@@ -23,7 +22,6 @@ from .arc_nvarc_runtime import (atomic_json, build_result, finalize_interrupted,
                                 finish_task, new_checkpoint, reserve_task,
                                 validate_checkpoint, verify_outbound)
 from .arc_nvarc_training import TaskLocalAdapter, load_compact_model
-from .canonical import canonical_bytes
 from .errors import ValidationError
 from .transport import digest_path
 
@@ -120,7 +118,8 @@ def enforce_deadline(process: Any, deadline: float, now: float) -> bool:
 
 
 def run(outbound: Path, model_root: Path, competition_source: Path,
-        output: Path, checkpoint_path: Path, *, resume: bool = False) -> str:
+        output: Path, checkpoint_path: Path, *, resume: bool = False,
+        worker_target: Any = None) -> str:
     binding, workload, _ = verify_outbound(outbound)
     config = binding["config"]
     start = time.monotonic()
@@ -149,23 +148,45 @@ def run(outbound: Path, model_root: Path, competition_source: Path,
         if checkpoint_path.exists():
             raise ValidationError("existing checkpoint requires resume")
         checkpoint = new_checkpoint(binding, workload)
+    prior_wall = 0.0
+    for session in checkpoint["sessions"]:
+        if session.get("wall_seconds") is not None:
+            prior_wall += float(session["wall_seconds"])
+        elif session.get("started_unix") is not None:
+            # Includes provider downtime: conservative accounting cannot
+            # create a fresh budget by restarting the kernel.
+            prior_wall += max(0.0, time.time() - float(session["started_unix"]))
+        else:
+            prior_wall += float(config["session_budget_seconds"])
+    remaining_wall = max(0.0, config["session_budget_seconds"] - prior_wall)
+    if remaining_wall <= config["finalization_reserve_seconds"] or set(checkpoint["completed"]) == set(checkpoint["expected_tasks"]):
+        finalize_interrupted(checkpoint, workload, reason="session_limit")
+        atomic_json(checkpoint_path, checkpoint)
+        return build_result(output, binding, workload, checkpoint,
+                            {"format": "irisx/nvarc-execution", "run_id": binding["run_id"],
+                             "session_wall_seconds": 0.0, "prior_wall_seconds_charged": prior_wall,
+                             "model_loads_this_session": 0, "gpu_busy_time_seconds": None,
+                             "internet_enabled": False, "external_paid_cost_usd": 0})
     session_index = len(checkpoint["sessions"])
     checkpoint["sessions"].append({"index": session_index, "wall_seconds": None,
+                                   "started_unix": time.time(),
                                    "gpu_uuids": [gpu["uuid"] for gpu in hardware["gpus"]]})
     atomic_json(checkpoint_path, checkpoint)
     context = multiprocessing.get_context("spawn")
     outputs = context.Queue()
     commands: dict[int, Any] = {}
     processes: dict[int, Any] = {}
+    target = worker_target or _worker
     for rank in range(4):
         commands[rank] = context.Queue()
-        processes[rank] = context.Process(target=_worker, args=(rank, commands[rank], outputs,
+        processes[rank] = context.Process(target=target, args=(rank, commands[rank], outputs,
             str(model_root), config, hardware["gpus"][rank]["uuid"]))
         processes[rank].start()
     ready: set[int] = set()
+    failure_info: dict[str, str] | None = None
     try:
         while len(ready) < 4:
-            if time.monotonic() - start > min(600, config["session_budget_seconds"] - config["finalization_reserve_seconds"]):
+            if time.monotonic() - start > min(600, remaining_wall - config["finalization_reserve_seconds"]):
                 raise ValidationError("four workers did not become model-ready within startup bound")
             try:
                 event = outputs.get(timeout=1)
@@ -186,7 +207,7 @@ def run(outbound: Path, model_root: Path, competition_source: Path,
         pending = [task_id for task_id in checkpoint["expected_tasks"] if task_id not in checkpoint["completed"]]
         active: dict[int, tuple[str, float]] = {}
         disabled: set[int] = set()
-        global_stop = start + config["session_budget_seconds"] - config["finalization_reserve_seconds"]
+        global_stop = start + remaining_wall - config["finalization_reserve_seconds"]
 
         def assign(rank: int) -> None:
             if not pending or rank in disabled or time.monotonic() >= global_stop:
@@ -241,6 +262,10 @@ def run(outbound: Path, model_root: Path, competition_source: Path,
                 atomic_json(checkpoint_path, checkpoint)
         reason = "session_limit" if time.monotonic() >= global_stop else "not_executed"
         finalize_interrupted(checkpoint, workload, reason=reason)
+    except Exception as exc:
+        failure_info = {"status": "startup_or_supervisor_failure",
+                        "detail": f"{type(exc).__name__}: {exc}"}
+        finalize_interrupted(checkpoint, workload, reason="worker_crash")
     finally:
         _stop(processes, commands)
     wall = time.monotonic() - start
@@ -250,6 +275,7 @@ def run(outbound: Path, model_root: Path, competition_source: Path,
                     "hardware": hardware["gpus"], "model_ready": checkpoint["model_ready"],
                     "session_wall_seconds": wall, "internet_enabled": False,
                     "competition_source": "arc-prize-2026-arc-agi-2",
+                    "failure": failure_info,
                     "gpu_busy_time_seconds": None, "external_paid_cost_usd": 0}
     return build_result(output, binding, workload, checkpoint, observations)
 

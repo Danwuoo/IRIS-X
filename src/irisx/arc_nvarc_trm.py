@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -44,7 +43,6 @@ def stage_trm_training(tasks: Mapping[str, Mapping[str, Any]], output: Path, *,
         raise ValidationError("TRM staging directory must be empty")
     challenges = {}
     solutions = {}
-    summaries = []
     for task_id, task in sorted(tasks.items()):
         demos = [{"input": grid(pair["input"]), "output": grid(pair["output"])} for pair in task["train"]]
         tests = task.get("labelled_test", [])
@@ -52,9 +50,6 @@ def stage_trm_training(tasks: Mapping[str, Mapping[str, Any]], output: Path, *,
             raise ValidationError("TRM train adapter requires explicit labelled_test")
         challenges[task_id] = {"train": demos, "test": [{"input": grid(item["input"])} for item in tests]}
         solutions[task_id] = [grid(item["output"]) for item in tests]
-        summaries.append({"task_id": task_id, "examples": len(demos) + len(tests),
-                          "trm_sequences": [trm_grid(demos[0]["input"])[:3],
-                                            trm_grid(demos[0]["output"])[:3]]})
     output.mkdir(parents=True, exist_ok=True)
     challenge_path = output / "arc-agi_sft_challenges.json"
     solution_path = output / "arc-agi_sft_solutions.json"

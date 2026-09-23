@@ -181,6 +181,7 @@ def finalize_interrupted(checkpoint: dict[str, Any], workload: Mapping[str, Any]
         tests = [{"test_index": index, "attempts": [], "status": reason, "missing_attempts": 2}
                  for index in range(len(by_id[task_id]["test"]))]
         finish_task(checkpoint, task_id, {"task_id": task_id, "tests": tests, "status": reason,
+                                          "failure": reason,
                                           "timing": {"load_seconds": None, "ttt_seconds": None,
                                                      "generate_seconds": None, "rank_seconds": None},
                                           "peak_memory_mib": None})
@@ -190,6 +191,7 @@ def finalize_interrupted(checkpoint: dict[str, Any], workload: Mapping[str, Any]
                      for index in range(len(by_id[task_id]["test"]))]
             checkpoint["completed"][task_id] = {"task_id": task_id, "tests": tests,
                                                 "status": "not_executed", "reservation": None,
+                                                "failure": reason,
                                                 "timing": {"load_seconds": None, "ttt_seconds": None,
                                                            "generate_seconds": None, "rank_seconds": None},
                                                 "peak_memory_mib": None}

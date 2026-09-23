@@ -35,9 +35,12 @@ def visible_task(task_id: str, raw: Mapping[str, Any]) -> dict[str, Any]:
     train, tests = raw.get("train"), raw.get("test")
     if not isinstance(train, list) or not train or not isinstance(tests, list) or not tests:
         raise ValidationError("task needs demonstrations and test inputs")
-    return {"task_id": task_id,
-            "train": [{"input": grid(p["input"]), "output": grid(p["output"])} for p in train],
-            "test": [{"input": grid(p["input"])} for p in tests]}
+    try:
+        return {"task_id": task_id,
+                "train": [{"input": grid(p["input"]), "output": grid(p["output"])} for p in train],
+                "test": [{"input": grid(p["input"])} for p in tests]}
+    except (KeyError, TypeError) as exc:
+        raise ValidationError("task pair is missing an input or demonstration output") from exc
 
 
 def selected_view(task: Mapping[str, Any], test_index: int) -> dict[str, Any]:
@@ -145,11 +148,16 @@ def stream_import_jsonl(path: Path, *, split: str,
             if not line.strip():
                 continue
             raw = json.loads(line)
-            task_id, parent = raw["task_id"], raw["parent_id"]
+            try:
+                task_id, parent, source_id = raw["task_id"], raw["parent_id"], raw["source_id"]
+            except (KeyError, TypeError) as exc:
+                raise ValidationError(f"source identity missing at line {line_number}") from exc
+            if any(not isinstance(value, str) or not value for value in (task_id, parent, source_id)):
+                raise ValidationError(f"source identity invalid at line {line_number}")
             if parent in forbidden:
                 raise ValidationError(f"forbidden lineage at line {line_number}")
             visible = visible_task(task_id, raw)
-            record = {**visible, "parent_id": parent, "source_id": raw["source_id"],
+            record = {**visible, "parent_id": parent, "source_id": source_id,
                       "split": split, "visible_digest": digest_value(visible)}
             if split.startswith("sft-") and all("output" in item for item in raw["test"]):
                 # Training-data artifacts may carry labels; solver-visible
@@ -204,6 +212,8 @@ def freeze_streaming(records: Iterable[Mapping[str, Any]], output: Path, *,
                 raise ValidationError("frozen stream has duplicate task ID") from exc
             count += 1
         connection.commit()
+        if count == 0:
+            raise ValidationError("cannot freeze an empty source stream")
         shards = []
         cursor = connection.execute("SELECT payload FROM records ORDER BY source_id, parent_id, task_id")
         index = 0

@@ -15,6 +15,9 @@ from .errors import ValidationError
 
 SYMBOLS = tuple("0123456789") + ("\n", "<user>", "<assistant>", "<pad>", "<begin>", "<end>")
 USER, ASSISTANT, PAD, BEGIN, END = 11, 12, 13, 14, 15
+MODEL_REVISION = "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
+TOKENIZER_SHA256 = "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42"
+PINNED_SOURCE_IDS = tuple(range(15, 25)) + (198, 846, 74455, 248044, 248045, 248046)
 
 
 class GridTokenizer:
@@ -79,6 +82,8 @@ def vocabulary_manifest(source_tokenizer: Any, *, model_revision: str,
     """Bind each compact row to one or more pinned native tokenizer rows."""
     if not model_revision or not model_manifest_digest.startswith("sha256:"):
         raise ValidationError("immutable model identity required")
+    if model_revision != MODEL_REVISION:
+        raise ValidationError("compact row map is pinned to one Qwen3.5 revision")
     native = [str(i) for i in range(10)] + ["\n", "user", "assistant", "<|endoftext|>",
                                           "<|im_start|>", "<|im_end|>"]
     rows = []
@@ -89,9 +94,12 @@ def vocabulary_manifest(source_tokenizer: Any, *, model_revision: str,
         rows.append({"compact_id": compact_id, "symbol": SYMBOLS[compact_id],
                      "native_text": text, "source_token_ids": ids,
                      "initialization": "exact-row" if len(ids) == 1 else "mean-of-native-rows"})
+    if tuple(row["source_token_ids"][0] for row in rows if len(row["source_token_ids"]) == 1) != PINNED_SOURCE_IDS or any(len(row["source_token_ids"]) != 1 for row in rows):
+        raise ValidationError("pinned Qwen3.5 tokenizer no longer has the verified 16 exact rows")
     manifest = {"format": "irisx/nvarc-compact-vocab", "version": 1,
                 "model_revision": model_revision, "model_manifest_digest": model_manifest_digest,
                 "symbols": rows, "vocab_size": 16,
+                "tokenizer_sha256": TOKENIZER_SHA256,
                 "source_difference": "Qwen3.5 tokenizer rows and text-only grammar; source NVARC ids cannot be reused"}
     manifest["identity_digest"] = digest_value(manifest)
     return manifest
@@ -124,6 +132,8 @@ def convert_qwen35_checkpoint(base_dir: Path, output_dir: Path, *, model_revisio
         raise ValidationError("converted output directory must be empty")
     if base_dir.resolve() == output_dir.resolve() or not base_dir.is_dir():
         raise ValidationError("base checkpoint must be immutable and separate")
+    if hashlib.sha256((base_dir / "tokenizer.json").read_bytes()).hexdigest() != TOKENIZER_SHA256:
+        raise ValidationError("pinned Qwen3.5 tokenizer digest differs")
     tokenizer = AutoTokenizer.from_pretrained(base_dir, local_files_only=True)
     manifest = vocabulary_manifest(tokenizer, model_revision=model_revision,
                                    model_manifest_digest=model_manifest_digest)

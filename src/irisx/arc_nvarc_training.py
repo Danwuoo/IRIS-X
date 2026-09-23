@@ -286,6 +286,8 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
         if torch.cuda.is_available() and state["cuda_rng"] is not None:
             torch.cuda.set_rng_state_all(state["cuda_rng"])
         cursor, step, tokens_seen = state["cursor"], state["step"], state["tokens_seen"]
+        if step >= total_steps or tokens_seen >= token_limit:
+            raise ValidationError("terminal training checkpoint cannot be resumed")
     elif checkpoint.exists():
         raise ValidationError("existing training state requires resume")
     else:

@@ -6,6 +6,7 @@ from pathlib import Path
 import tempfile
 import time
 import unittest
+from unittest import mock
 import zipfile
 
 from irisx.arc_nvarc_candidates import FixtureCandidateBackend, rank_candidates, solve_task
@@ -14,15 +15,53 @@ from irisx.arc_nvarc_data import (compare_visible, freeze_shards, freeze_streami
                                    known_variant_group, pair_saved_sdg_grids, replay_sdg_stage,
                                    require_isolated_executor, seeded_transform, selected_view,
                                    stream_import_jsonl, transform_grid, transform_task, visible_task)
-from irisx.arc_nvarc_kaggle import enforce_deadline
-from irisx.arc_nvarc_representation import GridTokenizer
+from irisx.arc_nvarc_kaggle import enforce_deadline, run as run_kaggle
+from irisx.arc_nvarc_representation import (GridTokenizer, MODEL_REVISION,
+                                             PINNED_SOURCE_IDS, vocabulary_manifest)
 from irisx.arc_nvarc_runtime import (build_outbound, make_binding, make_workload,
                                      new_checkpoint, reserve_task, score_sealed)
 from irisx.arc_nvarc_training import (FrozenSequenceStore, collate, supervised_sequences,
                                        task_local_sequences, tiny_train)
-from irisx.arc_nvarc_trm import integrate_attempts, integrate_with_qwen_verifier, trm_grid
+from irisx.arc_nvarc_trm import (integrate_attempts, integrate_with_qwen_verifier,
+                                 stage_trm_training, trm_grid)
 from irisx.canonical import canonical_bytes, digest_value
 from irisx.errors import ValidationError
+from irisx.transport import digest_path
+
+
+def synthetic_worker(rank, commands, outputs, model_root, config, gpu_uuid):
+    outputs.put({"type": "ready", "rank": rank, "gpu_uuid": gpu_uuid, "model_load_seconds": 0.0})
+    while True:
+        command = commands.get()
+        if command["type"] == "stop":
+            return
+        task_id = command["task"]["task_id"]
+        if rank == 0:
+            time.sleep(30)
+        elif rank == 1:
+            outputs.put({"type": "failure", "rank": rank, "task_id": task_id,
+                         "status": "worker_crash", "detail": "synthetic failure"})
+            return
+        else:
+            outputs.put({"type": "record", "rank": rank, "task_id": task_id,
+                         "record": {"task_id": task_id, "status": "missing-candidate",
+                                    "tests": [{"test_index": 0, "attempts": [[[0]]],
+                                               "missing_attempts": 1, "status": "missing-candidate",
+                                               "generation_calls_so_far": 1,
+                                               "returned_sequences": 1}],
+                                    "timing": {"load_seconds": None, "ttt_seconds": 0.0,
+                                               "generate_seconds": 0.0, "rank_seconds": 0.0},
+                                    "peak_memory_mib": None}})
+
+
+def synthetic_startup_failure_worker(rank, commands, outputs, model_root, config, gpu_uuid):
+    if rank == 1:
+        outputs.put({"type": "failure", "rank": rank, "task_id": None,
+                     "status": "worker_crash", "detail": "synthetic load failure"})
+        return
+    outputs.put({"type": "ready", "rank": rank, "gpu_uuid": gpu_uuid, "model_load_seconds": 0.0})
+    while commands.get()["type"] != "stop":
+        pass
 
 
 class NvarcTests(unittest.TestCase):
@@ -81,6 +120,19 @@ class NvarcTests(unittest.TestCase):
         self.assertEqual(0, batch["attention_mask"][1][-1])
         self.assertEqual([[4, 5], [6, 7]], tokenizer.parse_completion(tokenizer.encode_grid([[4, 5], [6, 7]]) + [15], stopped_on_eos=True))
         self.assertIsNone(tokenizer.parse_completion([4, 5], stopped_on_eos=False))
+        class Native:
+            values = dict(zip([str(i) for i in range(10)] + ["\n", "user", "assistant",
+                               "<|endoftext|>", "<|im_start|>", "<|im_end|>"],
+                              PINNED_SOURCE_IDS))
+            def encode(self, text, add_special_tokens=False):
+                return [self.values[text]]
+        manifest = vocabulary_manifest(Native(), model_revision=MODEL_REVISION,
+                                       model_manifest_digest=digest_value("base"))
+        self.assertEqual(16, manifest["vocab_size"])
+        Native.values["0"] = 999
+        with self.assertRaises(ValidationError):
+            vocabulary_manifest(Native(), model_revision=MODEL_REVISION,
+                                model_manifest_digest=digest_value("base"))
 
     def test_tiny_resume_replays_same_gradient_path(self) -> None:
         task = visible_task("x", {"train": [{"input": [[1]], "output": [[2]]}],
@@ -185,6 +237,62 @@ class NvarcTests(unittest.TestCase):
                 process.kill()
                 process.join()
 
+    def test_four_worker_parent_terminalizes_crash_timeout_and_result(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "arc-agi_training_challenges.json"
+            tasks = {f"t{i}": {"train": [{"input": [[1]], "output": [[2]]}],
+                               "test": [{"input": [[3]]}]} for i in range(4)}
+            source.write_bytes(canonical_bytes(tasks, newline=True))
+            work = make_workload(tasks, source_digest=digest_path(source))
+            config = {"worker_count": 4, "task_deadline_seconds": 1,
+                      "session_budget_seconds": 20, "finalization_reserve_seconds": 2,
+                      "maximum_calls_per_task": 1, "beams_per_call": 1,
+                      "maximum_new_tokens": 10}
+            binding = make_binding(work, run_id="nvarc-synthetic-supervisor",
+                                   model_digest=digest_value("m"), data_digest=digest_value("d"),
+                                   tokenizer_digest=digest_value("t"), runtime_digest=digest_value("r"),
+                                   config=config)
+            outbound = root / "outbound.zip"
+            build_outbound(outbound, binding, work)
+            model = root / "model"; model.mkdir()
+            (model / "grid-vocab.json").write_text("{}")
+            hardware = {"gpus": [{"uuid": f"gpu-{i}"} for i in range(4)]}
+            with mock.patch("irisx.arc_nvarc_kaggle.validate_hardware", return_value=hardware), \
+                 mock.patch("irisx.arc_nvarc_kaggle.verify_model_material", return_value={}):
+                run_kaggle(outbound, model, source, root / "result.zip",
+                           root / "checkpoint.json", worker_target=synthetic_worker)
+            checkpoint = json.loads((root / "checkpoint.json").read_bytes())
+            statuses = [record["status"] for record in checkpoint["completed"].values()]
+            self.assertEqual(1, statuses.count("timeout"))
+            self.assertEqual(1, statuses.count("worker_crash"))
+            self.assertEqual(2, statuses.count("missing-candidate"))
+            self.assertEqual(4, checkpoint["counters"]["generation_calls_reserved"])
+            self.assertEqual(2, checkpoint["counters"]["generation_calls_observed"])
+            interrupted = new_checkpoint(binding, work)
+            reserve_task(interrupted, binding, "t0", rank=0, at_utc="past")
+            interrupted["sessions"] = [{"index": 0, "wall_seconds": 19.0,
+                                         "gpu_uuids": [f"gpu-{i}" for i in range(4)]}]
+            resume_path = root / "resume-checkpoint.json"
+            resume_path.write_bytes(canonical_bytes(interrupted, newline=True))
+            with mock.patch("irisx.arc_nvarc_kaggle.validate_hardware", return_value=hardware), \
+                 mock.patch("irisx.arc_nvarc_kaggle.verify_model_material", return_value={}):
+                run_kaggle(outbound, model, source, root / "resume-result.zip",
+                           resume_path, resume=True, worker_target=synthetic_worker)
+            resumed = json.loads(resume_path.read_bytes())
+            self.assertEqual("interrupted_pending", resumed["completed"]["t0"]["status"])
+            self.assertEqual(1, resumed["counters"]["generation_calls_reserved"])
+            self.assertEqual(0, resumed["counters"]["generation_calls_observed"])
+            self.assertEqual(1, len(resumed["sessions"]))
+            with mock.patch("irisx.arc_nvarc_kaggle.validate_hardware", return_value=hardware), \
+                 mock.patch("irisx.arc_nvarc_kaggle.verify_model_material", return_value={}):
+                run_kaggle(outbound, model, source, root / "startup-result.zip",
+                           root / "startup-checkpoint.json",
+                           worker_target=synthetic_startup_failure_worker)
+            startup = json.loads((root / "startup-checkpoint.json").read_bytes())
+            self.assertEqual(4, len(startup["completed"]))
+            self.assertTrue(all(record["status"] == "not_executed" for record in startup["completed"].values()))
+
     def test_trm_encoding_and_branch_priority(self) -> None:
         encoded = trm_grid([[0, 9], [1, 2]])
         self.assertEqual([2, 11, 1], encoded[:3])
@@ -198,6 +306,15 @@ class NvarcTests(unittest.TestCase):
         result = integrate_with_qwen_verifier({"task_id": "x"}, 0, qwen, trm[:1], Verifier())
         self.assertEqual([[2]], result["attempts"][0])
         self.assertEqual(2, result["verification_calls"])
+        with tempfile.TemporaryDirectory() as temp:
+            task = {"train": [{"input": [[0]], "output": [[1]]}],
+                    "labelled_test": [{"input": [[2]], "output": [[3]]}]}
+            manifest = stage_trm_training({"x": task}, Path(temp) / "trm",
+                                          source_digest=digest_value("fixture"),
+                                          augmentation_count=2)
+            self.assertTrue(manifest["contains_labels"])
+            staged = json.loads((Path(temp) / "trm" / "arc-agi_sft_challenges.json").read_bytes())
+            self.assertNotIn("output", staged["x"]["test"][0])
 
     def test_offline_e2e_artifacts_are_reproducible(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
