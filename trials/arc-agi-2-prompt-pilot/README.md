@@ -6,6 +6,9 @@ Trial 002.
 
 The [control review](control-review.md) independently recomputes all ten
 available score reports and records the limits of the terminal conclusion.
+The [offline failure analysis](failure-analysis.md) separates truncation,
+semantic errors, paired regressions, reflection limitations, and source parity;
+the linked next-experiment plan remains a proposal without execution authority.
 
 ## Goal
 

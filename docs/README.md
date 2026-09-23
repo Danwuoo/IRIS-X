@@ -2,8 +2,11 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-09-23-arc-reasoning-budget-ablation.md`](plan/2026-09-23-arc-reasoning-budget-ablation.md)
+  proposes a bounded output-budget and thinking-mode diagnostic after the
+  negative prompt search; it does not authorize new execution.
 - [`plan/2026-09-22-dspy-gepa-prompt-pilot.md`](plan/2026-09-22-dspy-gepa-prompt-pilot.md)
-  proposes the next controlled prompt experiment, with Qwen3.5-4B solving,
+  retains the completed prompt experiment plan, with Qwen3.5-4B solving,
   Codex CLI reflection, grouped data splits, and bounded DSPy/GEPA integration.
 - [`decisions/0017-authorize-prompt-pilot-mount-repair.md`](decisions/0017-authorize-prompt-pilot-mount-repair.md)
   authorizes one transport-only replacement after the first prompt-pilot
