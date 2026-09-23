@@ -98,12 +98,13 @@ before model loading or training: zero steps, tokens and generations. No
 retry, replacement, full SFT or ARC scoring is authorized. The terminal
 evidence and exact material bindings are in
 `trials/arc-agi-2-qwen35-nvarc/4b-pilot.md`.
-Decision 0022 authorizes one distinct `nvarc-4b-compat-pilot-002` private
-Kaggle kernel push and one terminal retrieval, with the official competition
-source mounted for presence checking only and early hardware diagnostics.
-It preserves pilot 001 and the synthetic-only, two-step, 128-token,
-zero-generation, USD 0 bounds. No retry or further external attempt is
-authorized.
+Decision 0022's one distinct `nvarc-4b-compat-pilot-002` private Kaggle
+kernel push was attempted and rejected by the API with HTTP 400 before a
+version receipt. The intended kernel was inaccessible at the status check
+and absent from the recent own-kernel list. No terminal retrieval was made;
+the push authority is consumed and the unused retrieval is not permission to
+retry. The official competition mount and early hardware diagnostics remain
+locally staged only. No further external attempt is authorized.
 
 ## Authority order
 

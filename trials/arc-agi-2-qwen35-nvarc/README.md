@@ -1,7 +1,8 @@
 # Qwen3.5-4B NVARC reproduction development
 
 Status: **reviewed local P1 repairs implemented; CPU tiny Qwen3.5/PEFT verified;
-Decision 0021 pilot failed at the hardware gate; acceptance still partial**.
+pilot 001 failed its hardware gate and pilot 002 push was rejected; acceptance
+still partial**.
 The [second control review](control-review-4d23546.md) independently confirms
 the earlier example repairs and identified TTT/DFS reservation binding,
 unused-parameter DDP and TRM evaluation-entry blockers at `4d23546`. Its
@@ -73,10 +74,12 @@ The [source-use](source-use.md), [runbook](runbook.md),
 the preparation and terminal evidence. Decision 0021's one launch and
 retrieval are consumed; a new external attempt requires new owner direction.
 The retained draft manifest is not an approval token.
-The [pilot 002 package](4b-pilot-002-draft.md) corrects the missing official
-competition mount and adds early hardware diagnostics. Decision 0022 now
-authorizes its one distinct launch and retrieval; pilot 001 stays frozen.
+The [pilot 002 package](4b-pilot-002-draft.md) corrected the missing official
+competition mount and added early hardware diagnostics locally. Decision 0022's
+single push was rejected by Kaggle HTTP 400 before a version receipt. Its
+authority is consumed; pilot 001 stays frozen.
 
-This pilot made one private Kaggle kernel push and one terminal retrieval. It
-made no real Qwen/TRM generations or training steps, SDG teacher calls, Codex
-proposer calls, competition submission, or paid usage.
+Pilot 001 made one private Kaggle kernel push and one terminal retrieval.
+Pilot 002's one push request was rejected before a version receipt, with no
+retrieval. Neither made real Qwen/TRM generations or training steps, SDG
+teacher calls, Codex proposer calls, competition submissions, or paid usage.
