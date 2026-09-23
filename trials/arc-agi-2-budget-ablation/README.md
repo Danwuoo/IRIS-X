@@ -129,7 +129,10 @@ accepted at 01:06:18 UTC; runner preflight began 21.53 seconds later at
 observed terminal at 02:27:35, a 120-second detection lag. The single output
 retrieval plus local score completed within 14 seconds of that observation.
 These intervals distinguish transport and status-poll wait from the measured
-4,732.345-second runner wall. No metered inference API charge is claimed.
+4,732.345-second runner wall. The `gpt-6-sol / xhigh` development task recorded
+6,495 seconds of subscription elapsed time through report completion and zero
+proposer or metered inference API calls. No dollar charge is inferred from
+subscription time.
 
 ## Decision and next research question
 
