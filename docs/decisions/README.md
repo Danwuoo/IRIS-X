@@ -91,3 +91,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0022-authorize-competition-mounted-4b-pilot-repair.md`](0022-authorize-competition-mounted-4b-pilot-repair.md)
   preserves the failed pilot 001 and authorizes one distinct pilot 002 kernel
   with the official competition mounted and early GPU diagnostics.
+- [`0023-authorize-pre-version-4b-pilot-retry.md`](0023-authorize-pre-version-4b-pilot-retry.md)
+  preserves the provider-rejected pilot 002 and authorizes one corrected,
+  shorter-slug pilot 003 submission before any accepted run.

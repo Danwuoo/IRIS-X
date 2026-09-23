@@ -78,6 +78,9 @@ The [pilot 002 package](4b-pilot-002-draft.md) corrected the missing official
 competition mount and added early hardware diagnostics locally. Decision 0022's
 single push was rejected by Kaggle HTTP 400 before a version receipt. Its
 authority is consumed; pilot 001 stays frozen.
+The owner then authorized retry of that pre-version rejection. Decision 0023
+opens the separate [pilot 003 attempt](4b-pilot-003.md) with a shorter
+title/slug and the same runtime bounds. No model run has occurred under it.
 
 Pilot 001 made one private Kaggle kernel push and one terminal retrieval.
 Pilot 002's one push request was rejected before a version receipt, with no

@@ -104,7 +104,12 @@ version receipt. The intended kernel was inaccessible at the status check
 and absent from the recent own-kernel list. No terminal retrieval was made;
 the push authority is consumed and the unused retrieval is not permission to
 retry. The official competition mount and early hardware diagnostics remain
-locally staged only. No further external attempt is authorized.
+locally staged only. Decision 0023 records the owner's explicit direction to
+retry a provider rejection before any kernel version or model run. It
+authorizes exactly one separate `nvarc-4b-compat-pilot-003` submission with a
+shorter title/slug and the same synthetic-only, private, offline, USD 0,
+two-step, 128-token, zero-generation bounds. No model retry or reuse of pilot
+001/002 identities is authorized.
 
 ## Authority order
 
