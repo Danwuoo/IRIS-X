@@ -18,6 +18,27 @@ Owner direction and boundaries are in
 This workspace is distinct from Trial 001, Trial 002, prompt pilot, and budget
 ablation. None of their exhausted ceilings or frozen identities is reused.
 
+## Compact 4B vertical pilot development (2026-09-24)
+
+The distinct `nvarc-4b-compact-complete-001` flow is now staged **locally as an
+unapproved draft**; it has not launched a Kaggle kernel or retrieved output.
+The checked-in candidate `method` now passes the same binding/outbound verifier
+used by the runner, while unknown fields still fail closed. Task-local LoRA
+checks finite loss, every trainable gradient and updated adapter tensors at
+each step; failures reset the adapter and leave a bounded failure observation.
+Compact conversion selects only the 16 pinned source rows before resize and
+releases the source model before reload. Bounded DFS now prevents empty or
+newline-only completions from consuming the candidate sequence ceiling and
+shares calls across multiple tests.
+
+The strict CPU ML environment ran a tiny **real Qwen3.5** two-task/four-test
+flow through conversion, reload, PEFT adaptation, model DFS generation,
+likelihood verification, checkpoint/result ZIP and separate sealed synthetic
+scoring. This checks the pipeline, not ARC quality. The 4B compact artifact,
+its VRAM/RAM cost and GPU result remain **unverified**. The exact draft limits,
+stage commands and owner review gate are in the [runbook](runbook.md) and
+[development plan](../../docs/plan/2026-09-24-qwen35-compact-complete-pilot.md).
+
 ## What was built
 
 - Deterministic labelled-data import, parent and known-transform split checks,

@@ -1,0 +1,163 @@
+"""Embedded private Kaggle notebook body. Replaced and compiled by the stager."""
+
+import base64
+import hashlib
+import importlib
+import importlib.metadata
+import importlib.util
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import time
+
+START = time.monotonic()
+PAYLOADS = __PAYLOADS__
+HASHES = __HASHES__
+for name, encoded in PAYLOADS.items():
+    if hashlib.sha256(base64.b64decode(encoded)).hexdigest() != HASHES[name]:
+        raise RuntimeError("embedded compact pilot material differs")
+plan = json.loads(base64.b64decode(PAYLOADS["plan"]))
+if (plan.get("approved") is not True or
+        plan.get("run_id") != "nvarc-4b-compact-complete-001" or
+        plan.get("kernel_id") != "danielwuu/iris-x-4b-compact-complete-001" or
+        not plan.get("owner_authorization") or plan.get("maximum_paid_usd") != 0):
+    raise RuntimeError("compact pilot lacks exact owner authorization")
+os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", HF_DATASETS_OFFLINE="1",
+                  TOKENIZERS_PARALLELISM="false", WANDB_DISABLED="true",
+                  PYTHONIOENCODING="utf-8")
+work = Path("/kaggle/working")
+work.mkdir(parents=True, exist_ok=True)
+
+def save(name, value):
+    (work / name).write_text(json.dumps(value, sort_keys=True) + "\n", encoding="utf-8")
+
+# The first diagnostic runs before importing PEFT or loading any model.
+import torch
+gpus = []
+for index in range(min(torch.cuda.device_count(), 8)):
+    props = torch.cuda.get_device_properties(index)
+    gpus.append({"index": index, "name": str(props.name),
+                 "memory_mib": int(props.total_memory // (1024 * 1024)),
+                 "uuid": str(getattr(props, "uuid", "unknown"))})
+try:
+    smi = subprocess.run(["nvidia-smi", "--query-gpu=index,name,memory.total,uuid,pci.bus_id",
+                          "--format=csv,noheader,nounits"], capture_output=True,
+                         text=True, check=False, timeout=30)
+    smi_status, smi_rows = smi.returncode, smi.stdout.splitlines()[:8]
+except (OSError, subprocess.TimeoutExpired) as exc:
+    smi_status, smi_rows = None, [type(exc).__name__]
+hardware = {"run_id": plan["run_id"], "torch_cuda_device_count": torch.cuda.device_count(),
+            "gpus": gpus, "nvidia_smi_exit_code": smi_status, "nvidia_smi_rows": smi_rows}
+save("compact-hardware-preflight.json", hardware)
+print(json.dumps({"event": "hardware_preflight", **hardware}, sort_keys=True), flush=True)
+if (not gpus or "L4" not in gpus[0]["name"] or gpus[0]["memory_mib"] < 22000 or
+        smi_status != 0):
+    raise RuntimeError("one usable L4 is required")
+
+competition_roots = [Path("/kaggle/input/competitions/arc-prize-2026-arc-agi-2"),
+                     Path("/kaggle/input/arc-prize-2026-arc-agi-2")]
+competition_files = [root / "arc-agi_training_challenges.json" for root in competition_roots
+                     if (root / "arc-agi_training_challenges.json").is_file()]
+base_roots = [Path("/kaggle/input/datasets/danielwuu/irisx-arc-agi-2-trial-002-smoke-001"),
+              Path("/kaggle/input/irisx-arc-agi-2-trial-002-smoke-001")]
+bases = [root for root in base_roots if root.is_dir()]
+mounts = {"run_id": plan["run_id"], "competition_count": len(competition_files),
+          "dataset_count": len(bases), "competition_challenges_read": False}
+save("compact-mount-preflight.json", mounts)
+if len(competition_files) != 1 or len(bases) != 1:
+    raise RuntimeError("exact official competition and Dataset mounts required")
+base = bases[0]
+
+try:
+    torchao_before = importlib.metadata.version("torchao")
+except importlib.metadata.PackageNotFoundError:
+    torchao_before = None
+dependency = {"package": "torchao", "version_before": torchao_before,
+              "action": "remove_optional_torchao_if_present"}
+if importlib.util.find_spec("torchao") is not None:
+    removal = subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "torchao"],
+                             capture_output=True, text=True, timeout=60, check=False)
+    dependency["uninstall_exit_code"] = removal.returncode
+    if removal.returncode != 0:
+        save("compact-dependency-preflight.json", dependency)
+        raise RuntimeError("optional torchao removal failed")
+importlib.invalidate_caches()
+dependency["present_after"] = importlib.util.find_spec("torchao") is not None
+save("compact-dependency-preflight.json", dependency)
+if dependency["present_after"]:
+    raise RuntimeError("optional torchao remains before PEFT import")
+
+wheel_manifest = json.loads(base64.b64decode(PAYLOADS["wheel_manifest"]))
+if wheel_manifest.get("manifest_digest") != plan["wheel_manifest_digest"]:
+    raise RuntimeError("offline wheel manifest differs")
+entries = {item["path"]: item for item in wheel_manifest["files"]}
+for name in plan["runtime_wheels"].values():
+    if name not in entries or not (base / name).is_file():
+        raise RuntimeError("required offline wheel is missing")
+    item = entries[name]
+    if ((base / name).stat().st_size != item["byte_size"] or
+            "sha256:" + hashlib.sha256((base / name).read_bytes()).hexdigest() != item["content_digest"]):
+        raise RuntimeError("required offline wheel digest differs")
+
+paths = {}
+for name in ("plan", "visible", "model_manifest", "wheel_manifest", "irisx_wheel"):
+    path = (work / "__IRISX_WHEEL_NAME__" if name == "irisx_wheel" else
+            work / ("compact-" + name.replace("_", "-") + ".json"))
+    path.write_bytes(base64.b64decode(PAYLOADS[name]))
+    paths[name] = path
+subprocess.run([sys.executable, "-m", "pip", "install", "--no-index", "--find-links", str(base),
+                "transformers==5.8.1", "peft==0.21.0", "safetensors==0.8.0",
+                "tokenizers==0.22.2", "accelerate==1.10.1", str(paths["irisx_wheel"])],
+               check=True, timeout=180)
+if time.monotonic() - START >= plan["config"]["finalization_reserve_seconds"]:
+    raise RuntimeError("setup consumed compact pilot finalization reserve")
+
+output = work / "compact-complete-001"
+command = [sys.executable, "-m", "irisx.arc_nvarc_compact_pilot", "run",
+           "--plan", str(paths["plan"]), "--visible", str(paths["visible"]),
+           "--model-manifest", str(paths["model_manifest"]),
+           "--wheel-manifest", str(paths["wheel_manifest"]),
+           "--base", str(base), "--competition-source", str(competition_files[0]),
+           "--output", str(output), "--runtime-digest", "sha256:" + HASHES["irisx_wheel"]]
+worker = subprocess.Popen(command, env=os.environ.copy(), start_new_session=True)
+try:
+    worker_status = {"return_code": worker.wait(timeout=plan["worker_timeout_seconds"]),
+                     "timed_out": False}
+except subprocess.TimeoutExpired:
+    os.killpg(worker.pid, signal.SIGTERM)
+    try:
+        worker.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        os.killpg(worker.pid, signal.SIGKILL)
+        worker.wait(timeout=10)
+    worker_status = {"return_code": None, "timed_out": True}
+if worker_status["return_code"] not in (0, None):
+    # An abrupt parent exit may leave a multiprocessing child in its session.
+    try:
+        os.killpg(worker.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+    time.sleep(1)
+    try:
+        os.killpg(worker.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+if (worker_status["timed_out"] or worker_status["return_code"] != 0):
+    if ((output / "outbound.zip").is_file() and (output / "checkpoint.json").is_file()
+            and not (output / "result.zip").is_file()):
+        reason = "session_limit" if worker_status["timed_out"] else "worker_crash"
+        subprocess.run([sys.executable, "-m", "irisx.arc_nvarc_compact_pilot",
+                        "finalize-timeout", "--output", str(output), "--reason", reason],
+                       check=False, timeout=60)
+save("compact-worker-status.json", worker_status)
+if time.monotonic() - START > plan["config"]["session_budget_seconds"]:
+    raise RuntimeError("compact pilot session budget exhausted")
+if not (output / "result.zip").is_file():
+    raise RuntimeError("compact pilot has no terminal result; inspect phase and worker diagnostics")
+subprocess.run([sys.executable, "-m", "irisx.arc_nvarc_compact_pilot", "verify",
+                "--output", str(output)], check=True, timeout=60)
+print(json.dumps({"event": "compact_pilot_terminal", **worker_status,
+                  "result": str(output / "result.zip")}, sort_keys=True), flush=True)

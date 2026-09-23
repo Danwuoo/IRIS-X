@@ -26,16 +26,19 @@ from .errors import ValidationError
 from .transport import digest_path
 
 
-def validate_hardware() -> dict[str, Any]:
+def validate_hardware(worker_count: int = 4) -> dict[str, Any]:
     from .kaggle_runner_budget_ablation import collect_runtime_hardware
 
     hardware = collect_runtime_hardware()
     gpus = hardware["gpus"]
-    if (hardware["torch_cuda_device_count"] != 4 or len(gpus) != 4 or
-            any("L4" not in gpu["name"] or gpu["memory_mib"] < 22000 for gpu in gpus) or
-            len({gpu["uuid"] for gpu in gpus}) != 4 or
-            hardware["nvidia_smi_exit_code"] != 0 or len(hardware["nvidia_smi_rows"]) != 4):
-        raise ValidationError("NVARC runner requires four distinct L4 GPUs")
+    if (worker_count not in {1, 4} or hardware["torch_cuda_device_count"] < worker_count or
+            len(gpus) < worker_count or
+            any("L4" not in gpu["name"] or gpu["memory_mib"] < 22000 for gpu in gpus[:worker_count]) or
+            len({gpu["uuid"] for gpu in gpus[:worker_count]}) != worker_count or
+            hardware["nvidia_smi_exit_code"] != 0 or len(hardware["nvidia_smi_rows"]) < worker_count or
+            (worker_count == 4 and (hardware["torch_cuda_device_count"] != 4 or len(gpus) != 4 or
+                                    len(hardware["nvidia_smi_rows"]) != 4))):
+        raise ValidationError(f"NVARC runner requires {worker_count} distinct L4 GPU(s)")
     return hardware
 
 
@@ -50,6 +53,26 @@ def validate_competition_mount(path: Path, binding: Mapping[str, Any],
             raise ValidationError(f"full-task source differs: {task_id}")
 
 
+def execute_model_task(task: Mapping[str, Any], backend: QwenCandidateBackend,
+                       adapter: TaskLocalAdapter | None, config: Mapping[str, Any],
+                       torch: Any) -> dict[str, Any]:
+    started = time.monotonic()
+    if torch.cuda.is_available():
+        torch.cuda.reset_peak_memory_stats()
+    tests = solve_task(task, backend, config)
+    return {"task_id": task["task_id"], "tests": tests,
+            "status": "complete" if all(test["status"] == "complete" for test in tests) else "missing-candidate",
+            "timing": {"load_seconds": None, "ttt_seconds": backend.ttt_seconds,
+                       "generate_seconds": backend.generate_seconds,
+                       "rank_seconds": backend.rank_seconds,
+                       "task_wall_seconds": time.monotonic() - started},
+            "adaptation": adapter.last_observation if adapter is not None else {},
+            "explicit_forward_calls": backend.forward_calls,
+            "verification_calls": backend.verification_calls,
+            "peak_memory_mib": int(torch.cuda.max_memory_allocated() / 1024**2)
+            if torch.cuda.is_available() else None}
+
+
 def _worker(rank: int, command_queue: Any, output_queue: Any, model_root: str,
             config: Mapping[str, Any], gpu_uuid: str) -> None:
     os.environ["CUDA_VISIBLE_DEVICES"] = str(rank)
@@ -57,6 +80,8 @@ def _worker(rank: int, command_queue: Any, output_queue: Any, model_root: str,
         import torch
 
         load_started = time.monotonic()
+        if torch.cuda.is_available():
+            torch.cuda.reset_peak_memory_stats()
         model = load_compact_model(Path(model_root))
         model.cuda().eval()
         adapter = TaskLocalAdapter(model, config["ttt"]) if config.get("ttt", {}).get("enabled") else None
@@ -66,30 +91,23 @@ def _worker(rank: int, command_queue: Any, output_queue: Any, model_root: str,
             dfs_max_expansions=int(config.get("dfs_max_expansions", 256)),
             dfs_cache_mode=config.get("dfs_cache_mode", "full-prefix-recompute"))
         output_queue.put({"type": "ready", "rank": rank, "gpu_uuid": gpu_uuid,
-                          "model_load_seconds": time.monotonic() - load_started})
+                          "model_load_seconds": time.monotonic() - load_started,
+                          "model_load_peak_mib": int(torch.cuda.max_memory_allocated() / 1024**2)})
         while True:
             command = command_queue.get()
             if command["type"] == "stop":
                 return
             task = command["task"]
-            started = time.monotonic()
             try:
-                tests = solve_task(task, backend, config)
                 output_queue.put({"type": "record", "rank": rank, "task_id": task["task_id"],
-                                  "record": {"task_id": task["task_id"], "tests": tests,
-                                             "status": "complete" if all(test["status"] == "complete" for test in tests) else "missing-candidate",
-                                             "timing": {"load_seconds": None, "ttt_seconds": backend.ttt_seconds,
-                                                        "generate_seconds": backend.generate_seconds,
-                                                        "rank_seconds": backend.rank_seconds,
-                                                        "task_wall_seconds": time.monotonic() - started},
-                                             "adaptation": adapter.last_observation if adapter is not None else {},
-                                             "explicit_forward_calls": backend.forward_calls,
-                                             "verification_calls": backend.verification_calls,
-                                             "peak_memory_mib": int(torch.cuda.max_memory_allocated() / 1024**2)}})
+                                  "record": execute_model_task(task, backend, adapter, config, torch)})
             except Exception as exc:
                 status = "oom" if "out of memory" in str(exc).lower() else "worker_crash"
                 output_queue.put({"type": "failure", "rank": rank, "task_id": task["task_id"],
-                                  "status": status, "detail": f"{type(exc).__name__}: {exc}"})
+                                  "status": status, "detail": f"{type(exc).__name__}: {exc}",
+                                  "adaptation": adapter.last_observation if adapter is not None else {},
+                                  "explicit_forward_calls": backend.forward_calls,
+                                  "peak_memory_mib": int(torch.cuda.max_memory_allocated() / 1024**2)})
                 return
     except Exception as exc:
         output_queue.put({"type": "failure", "rank": rank, "task_id": None,
@@ -125,12 +143,19 @@ def enforce_deadline(process: Any, deadline: float, now: float) -> bool:
 
 def run(outbound: Path, model_root: Path, competition_source: Path,
         output: Path, checkpoint_path: Path, *, resume: bool = False,
-        worker_target: Any = None) -> str:
+        worker_target: Any = None, source_policy: str = "exact") -> str:
     binding, workload, _ = verify_outbound(outbound)
     config = binding["config"]
     start = time.monotonic()
-    hardware = validate_hardware()
-    validate_competition_mount(competition_source, binding, workload)
+    worker_count = config["worker_count"]
+    hardware = validate_hardware(worker_count)
+    if source_policy == "exact":
+        validate_competition_mount(competition_source, binding, workload)
+    elif source_policy == "mount-presence-only" and worker_count == 1:
+        if competition_source.name != "arc-agi_training_challenges.json" or not competition_source.is_file():
+            raise ValidationError("official ARC-AGI-2 challenge mount is absent")
+    else:
+        raise ValidationError("unsupported competition source policy")
     if not (model_root / "grid-vocab.json").is_file():
         raise ValidationError("compact SFT checkpoint missing")
     verify_model_material(model_root, binding["model_digest"])
@@ -183,7 +208,7 @@ def run(outbound: Path, model_root: Path, competition_source: Path,
     commands: dict[int, Any] = {}
     processes: dict[int, Any] = {}
     target = worker_target or _worker
-    for rank in range(4):
+    for rank in range(worker_count):
         commands[rank] = context.Queue()
         processes[rank] = context.Process(target=target, args=(rank, commands[rank], outputs,
             str(model_root), config, hardware["gpus"][rank]["uuid"]))
@@ -191,14 +216,14 @@ def run(outbound: Path, model_root: Path, competition_source: Path,
     ready: set[int] = set()
     failure_info: dict[str, str] | None = None
     try:
-        while len(ready) < 4:
+        while len(ready) < worker_count:
             if time.monotonic() - start > min(600, remaining_wall - config["finalization_reserve_seconds"]):
-                raise ValidationError("four workers did not become model-ready within startup bound")
+                raise ValidationError("workers did not become model-ready within startup bound")
             try:
                 event = outputs.get(timeout=1)
             except queue.Empty:
                 if any(not process.is_alive() for process in processes.values()):
-                    raise ValidationError("worker exited before four-model readiness")
+                    raise ValidationError("worker exited before model readiness")
                 continue
             if event["type"] != "ready" or event["rank"] in ready:
                 raise ValidationError("worker failed or duplicated model readiness")
@@ -207,7 +232,8 @@ def run(outbound: Path, model_root: Path, competition_source: Path,
                 raise ValidationError("model-ready GPU UUID differs")
             ready.add(rank)
             checkpoint["model_ready"][str(rank)] = {"gpu_uuid": event["gpu_uuid"],
-                                                     "model_load_seconds": event["model_load_seconds"]}
+                                                     "model_load_seconds": event["model_load_seconds"],
+                                                     "model_load_peak_mib": event.get("model_load_peak_mib")}
             atomic_json(checkpoint_path, checkpoint)
         cases = {case["task_id"]: case for case in workload["cases"]}
         pending = [task_id for task_id in checkpoint["expected_tasks"] if task_id not in checkpoint["completed"]]
@@ -225,7 +251,7 @@ def run(outbound: Path, model_root: Path, competition_source: Path,
             active[rank] = (task_id, min(global_stop, time.monotonic() + config["task_deadline_seconds"]))
             commands[rank].put({"type": "task", "task": cases[task_id]})
 
-        for rank in range(4):
+        for rank in range(worker_count):
             assign(rank)
         while active:
             now = time.monotonic()
@@ -261,9 +287,12 @@ def run(outbound: Path, model_root: Path, competition_source: Path,
                           "status": event["status"]} for index in range(len(cases[task_id]["test"]))]
                 finish_task(checkpoint, task_id, {"task_id": task_id, "tests": tests,
                                                   "status": event["status"],
+                                                  "adaptation": event.get("adaptation") or {},
+                                                  "explicit_forward_calls": event.get("explicit_forward_calls", 0),
+                                                  "failure": event.get("detail", "worker failure")[:300],
                                                   "timing": {"load_seconds": None, "ttt_seconds": None,
                                                              "generate_seconds": None, "rank_seconds": None},
-                                                  "peak_memory_mib": None})
+                                                  "peak_memory_mib": event.get("peak_memory_mib")})
                 disabled.add(rank)
                 atomic_json(checkpoint_path, checkpoint)
         reason = "session_limit" if time.monotonic() >= global_stop else "not_executed"
@@ -281,6 +310,7 @@ def run(outbound: Path, model_root: Path, competition_source: Path,
                     "hardware": hardware["gpus"], "model_ready": checkpoint["model_ready"],
                     "session_wall_seconds": wall, "internet_enabled": False,
                     "competition_source": "arc-prize-2026-arc-agi-2",
+                    "competition_source_policy": source_policy,
                     "failure": failure_info,
                     "gpu_busy_time_seconds": None, "external_paid_cost_usd": 0}
     return build_result(output, binding, workload, checkpoint, observations)

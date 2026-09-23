@@ -1,0 +1,10 @@
+{
+  "synthetic-rect-a": {
+    "train": [{"input": [[1, 2]], "output": [[2, 1]]}],
+    "test": [{"input": [[3, 4]]}, {"input": [[5, 6]]}]
+  },
+  "synthetic-rect-b": {
+    "train": [{"input": [[1], [2]], "output": [[2], [1]]}],
+    "test": [{"input": [[3], [4]]}, {"input": [[5], [6]]}]
+  }
+}

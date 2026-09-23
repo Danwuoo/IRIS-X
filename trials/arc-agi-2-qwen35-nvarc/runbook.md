@@ -1,5 +1,85 @@
 # Development and future execution runbook
 
+## Compact 4B small complete flow (2026-09-24 draft)
+
+The new [development plan](../../docs/plan/2026-09-24-qwen35-compact-complete-pilot.md)
+and checked-in `configs/compact-complete-001.json` define the distinct
+`nvarc-4b-compact-complete-001` identity. It is **unapproved**. The synthetic
+visible source has two tasks, two test inputs each, rectangular grids, and no
+test outputs. Its source digest is of those visible bytes only. The official
+competition mount is checked for presence but no challenge file is read.
+
+Local prepare, package and validation commands (no Kaggle mutation):
+
+```powershell
+$env:PYTHONPATH = 'src'
+$env:HF_HUB_OFFLINE = '1'
+$env:TRANSFORMERS_OFFLINE = '1'
+python -m irisx.arc_nvarc_compact_pilot prepare --plan trials/arc-agi-2-qwen35-nvarc/configs/compact-complete-001.json --visible trials/arc-agi-2-qwen35-nvarc/configs/compact-complete-visible.json --model-manifest trials/arc-agi-2-qwen35-nvarc/configs/base-model-manifest.json --wheel-manifest trials/arc-agi-2-qwen35-nvarc/configs/base-wheel-manifest.json
+python tools/stage_nvarc_compact_complete.py --output .irisx/arc-agi-2/qwen35-nvarc/compact-complete-review-003
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m unittest tests.test_arc_nvarc_compact_pilot tests.test_arc_nvarc_ml -v
+```
+
+The stage summary gives the exact plan, visible source, model/wheel manifest,
+new IRIS-X wheel, notebook and metadata hashes. The draft notebook stops
+before hardware/model work. An owner-approved authorization JSON must bind
+the exact draft plan SHA-256, run ID, final kernel ID
+`danielwuu/iris-x-4b-compact-complete-001`, and owner decision; pass its path
+to `stage_nvarc_compact_complete.py --authorization` in a **new** output
+directory to build the executable package. The prepared wheel/plan identity
+then changes and must be reviewed before launch. Do not edit the draft kernel
+metadata by hand.
+
+The installed runtime also exposes `python -m irisx.arc_nvarc_compact_pilot
+preflight --plan <approved-plan> --visible <visible-json> --model-manifest
+<base-manifest> --wheel-manifest <wheel-manifest> --base <Dataset-v2-root>
+--competition-source <official-challenge-file> --output <new-preflight-json>`.
+It checks environment and full source inventory without loading model weights
+or reading the challenge file. The notebook's `run` entry performs the same
+gates in its first phases, so a separate preflight invocation is optional and
+would reread the 9.34 GB inventory.
+
+The intended post-approval CLI sequence is one private
+`kaggle kernels push -p <approved-package>/kernel`, bounded terminal status
+checks, one `kaggle kernels output` retrieval with local
+`PYTHONIOENCODING=utf-8`, then
+`python -m irisx.arc_nvarc_compact_pilot verify --output <retrieved-run-dir>`
+against the retrieved `outbound.zip`, `result.zip`, and compact model inventory.
+Before push, check
+credential freshness through an own-kernel listing without printing tokens.
+If the API rejects the request before creating a version, inspect own-kernel
+status and retry the **same package bytes once at most** under the proposed
+transport ceiling. HTTP 400 cause is unknown; changing a slug is not assumed
+to fix it. Once a version is accepted, no model retry or second push is
+proposed. Provider status, source and output requests stay inside the separately
+approved bounds. This paragraph is an execution procedure, not approval.
+
+The notebook reuses Dataset v2, the official competition mount, private
+Internet-off `NvidiaL4` metadata, early `nvidia-smi` UUID/memory diagnostics,
+and exact offline wheel hashes. It removes only optional incompatible `torchao`
+before importing PEFT and records installed versions. The runner verifies the
+entire 9.34 GB base inventory, converts its pinned source tokenizer rows into
+a distinct 16-symbol compact model, saves/reloads and verifies its closed
+material inventory, then uses one L4 for task-local adaptation and real grid
+candidate generation. Source conversion runs before task reservation; if it
+fails there is a phase failure record and **no** result ZIP. Once outbound and
+checkpoint exist, the one-worker supervisor charges reservations before each
+task, forcibly stops a timed-out worker, terminalizes pending tasks, and
+packages a truth-free result. An outer 2,100-second timeout can finalize an
+existing checkpoint but never resumes inference. The new compact artifact
+remains in private kernel output and may be roughly 8–9 GB; output retrieval
+must have disk capacity for it.
+
+The plan ceilings are one kernel push, one terminal retrieval, USD 0 paid,
+2,400 seconds session including 300 seconds finalization, 900 seconds per
+task, two LoRA steps total with 128 token reservation, four generation calls,
+eight sequences, 64 DFS forwards and 64 verification forwards. The pilot uses
+rank 2 and a 64-token sequence limit; it does not test production rank 256 or
+8,192 tokens. Missing/invalid candidates remain missing. A successful GPU
+claim needs a verified result and at least one actual complete grid; otherwise
+report a partial result. No ARC accuracy or full NVARC reproduction claim
+follows from this synthetic flow.
+
 All commands start at the repository root. The fixture and local pilot staging
 commands run end to end. Neither starts a provider/model workload; generated
 output stays under ignored `.irisx/`.
