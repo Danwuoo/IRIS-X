@@ -7,7 +7,6 @@ import hashlib
 import os
 from pathlib import Path
 import subprocess
-import sys
 import time
 from typing import Any, Mapping
 
@@ -129,8 +128,7 @@ def trm_launch_spec(nvarc_trm_root: Path, upstream_root: Path, data_root: Path,
         raise ValidationError("TRM script, Hydra config or processed dataset is unavailable")
     if mode == "evaluate" and (load_checkpoint is None or not load_checkpoint.is_file()):
         raise ValidationError("TRM evaluation requires an exact checkpoint file")
-    argv = [sys.executable, "-m", "torch.distributed.run", "--standalone",
-            "--nnodes=1", f"--nproc-per-node={world_size}",
+    argv = ["torchrun", "--standalone", "--nnodes=1", f"--nproc-per-node={world_size}",
             str(script_path), "--config-path", str(upstream_root / "config"),
             "arch=trm", f"data_paths=[{data_root.as_posix()}]",
             "arch.L_layers=2", "arch.H_cycles=3" if mode == "train" else "arch.H_cycles=4",

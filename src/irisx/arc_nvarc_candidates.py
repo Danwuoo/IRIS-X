@@ -169,6 +169,7 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
     try:
         backend.begin_task(task)
         for test_index in range(len(task["test"])):
+            verified_grids: dict[tuple[tuple[int, ...], ...], float] = {}
             if hasattr(backend, "begin_test"):
                 backend.begin_test(test_index)
             candidates = []
@@ -194,8 +195,11 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
                     if parsed is None:
                         continue
                     restored = transform_grid(parsed, spec, inverse=True)
-                    verification_calls += 1
-                    verification = backend.verify(task, test_index, restored)
+                    canonical_grid = tuple(tuple(row) for row in restored)
+                    if canonical_grid not in verified_grids:
+                        verified_grids[canonical_grid] = float(backend.verify(task, test_index, restored))
+                        verification_calls += 1
+                    verification = verified_grids[canonical_grid]
                     candidates.append({"grid": restored, "complete": True,
                                        "source": f"qwen:view{view_index}:seq{sequence_index}",
                                        "beam_nll": float(sequence["beam_nll"]),

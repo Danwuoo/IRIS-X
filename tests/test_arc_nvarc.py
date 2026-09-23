@@ -377,6 +377,7 @@ class NvarcTests(unittest.TestCase):
         output = solve_task(task, backend, config)
         self.assertEqual(2, len(output[0]["attempts"]))
         self.assertEqual(16, output[0]["generation_calls_so_far"])
+        self.assertEqual(2, output[0]["verification_calls_so_far"])
         self.assertEqual({((0, 4),), ((5, 0),)}, {tuple(map(tuple, value)) for value in output[0]["attempts"]})
         self.assertEqual([], rank_candidates([{"grid": [[1]], "complete": False,
                                                "source": "cap", "beam_nll": 0,

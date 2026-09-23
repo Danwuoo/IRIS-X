@@ -12,7 +12,6 @@ import json
 import os
 from pathlib import Path
 import signal
-import socket
 import subprocess
 import sys
 import time
@@ -295,9 +294,9 @@ def _terminate_tree(process: subprocess.Popen[Any]) -> None:
 def _run_local_cpu_ranks(worker_args: list[str], world: int, base_env: dict[str, str],
                          log: Path, wall_seconds: int) -> tuple[str, int | None]:
     """Windows Gloo launcher where the installed torchrun requires absent libuv."""
-    with socket.socket() as probe:
-        probe.bind(("127.0.0.1", 0))
-        port = probe.getsockname()[1]
+    from torch.distributed.elastic.utils.distributed import get_free_port
+
+    port = get_free_port()
     processes: list[subprocess.Popen[Any]] = []
     started = time.monotonic()
     with log.open("wb") as stream:
