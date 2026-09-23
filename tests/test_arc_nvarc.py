@@ -23,7 +23,7 @@ from irisx.arc_nvarc_representation import (GridTokenizer, MODEL_REVISION,
                                              PINNED_SOURCE_IDS, validate_compact_model,
                                              vocabulary_manifest)
 from irisx.arc_nvarc_runtime import (build_outbound, finish_task, make_binding,
-                                     make_workload, new_checkpoint, reserve_task,
+                                     make_workload, new_checkpoint, reserve_task, verify_outbound,
                                      score_sealed)
 from irisx.arc_nvarc_training import (FrozenSequenceStore, collate, supervised_sequences,
                                        task_local_sequences, tiny_train, train_torch_sft)
@@ -71,6 +71,41 @@ def synthetic_startup_failure_worker(rank, commands, outputs, model_root, config
 
 
 class NvarcTests(unittest.TestCase):
+    def test_dfs_invalid_empty_or_newline_prefix_cannot_spend_sequence_cap(self) -> None:
+        def logits(prefix):
+            values = [-100.0] * 16
+            if len(prefix) == 1:
+                values[15], values[10], values[1] = -0.01, -0.02, -0.1
+            else:
+                values[15] = -0.01
+            return values
+        result = bounded_dfs_search([14], logits, max_new_tokens=3,
+                                    max_score=1.0, max_expansions=3,
+                                    max_sequences=1)
+        self.assertEqual([[1, 15]], [item["tokens"] for item in result["sequences"]])
+
+    def test_checked_in_candidate_config_builds_and_verifies_outbound(self) -> None:
+        config_path = (Path(__file__).resolve().parents[1] /
+                       "trials/arc-agi-2-qwen35-nvarc/configs/qwen-candidates.json")
+        config = json.loads(config_path.read_bytes())
+        work = make_workload({"synthetic": {"train": [{"input": [[1, 2]],
+                                                       "output": [[2, 1]]}],
+                                             "test": [{"input": [[3, 4]]}]}},
+                             source_digest=digest_value("synthetic-source"))
+        fields = {key: digest_value(key) for key in
+                  ("model_digest", "data_digest", "tokenizer_digest", "runtime_digest")}
+        binding = make_binding(work, run_id="checked-in-config-regression", config=config, **fields)
+        with tempfile.TemporaryDirectory() as temp:
+            outbound = Path(temp) / "outbound.zip"
+            build_outbound(outbound, binding, work)
+            self.assertEqual((binding, work), verify_outbound(outbound)[:2])
+        with self.assertRaises(ValidationError):
+            make_binding(work, run_id="bad", config={**config, "unknown": 1}, **fields)
+        with self.assertRaises(ValidationError):
+            make_binding(work, run_id="bad", config={**config, "method": "fixture"}, **fields)
+        with self.assertRaises(ValidationError):
+            make_binding(work, run_id="bad", config={**config, "decoding": "hf-beam"}, **fields)
+
     def test_long_dfs_path_stop_reasons_and_safe_prefix_cache(self) -> None:
         def one_path(length):
             def logits(prefix):

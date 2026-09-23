@@ -400,6 +400,38 @@ class TaskLocalAdapter:
         if clear_observation:
             self.last_observation = None
 
+    def _finite_step(self, step: int) -> dict[str, int]:
+        """Reject every nonfinite trainable gradient and report each model group."""
+        import torch
+
+        groups = {"attention": 0, "delta": 0, "embedding": 0, "head": 0, "other": 0}
+        saw_gradient = False
+        for name, parameter in self.model.named_parameters():
+            if not parameter.requires_grad or parameter.grad is None:
+                continue
+            gradient = parameter.grad
+            if not bool(torch.isfinite(gradient).all()):
+                raise ValidationError(f"non-finite task adaptation gradient at step {step}: {name}")
+            saw_gradient = True
+            group = ("attention" if ".self_attn." in name else
+                     "delta" if ".linear_attn." in name else
+                     "embedding" if "embed_tokens" in name else
+                     "head" if "lm_head" in name else "other")
+            if bool(torch.any(gradient != 0)):
+                groups[group] += 1
+        if not saw_gradient or not all(groups[name] for name in
+                                       ("attention", "delta", "embedding", "head")):
+            raise ValidationError(f"task adaptation gradient coverage differs at step {step}")
+        return groups
+
+    def _finite_adapter(self, step: int) -> None:
+        import torch
+        from peft import get_peft_model_state_dict
+
+        for name, tensor in get_peft_model_state_dict(self.model).items():
+            if not bool(torch.isfinite(tensor).all()):
+                raise ValidationError(f"non-finite task adapter after step {step}: {name}")
+
     def adapt(self, task: Mapping[str, Any]) -> Any:
         import torch
         config = self.config
@@ -411,6 +443,8 @@ class TaskLocalAdapter:
         optimizer = None
         last_loss = None
         tokens_seen = 0
+        completed_steps = 0
+        gradient_groups: list[dict[str, int]] = []
         try:
             optimizer = torch.optim.AdamW((parameter for parameter in self.model.parameters() if parameter.requires_grad),
                                           lr=float(config["learning_rate"]))
@@ -425,16 +459,25 @@ class TaskLocalAdapter:
                 if not torch.isfinite(loss):
                     raise ValidationError("non-finite task adaptation loss")
                 loss.backward()
+                gradient_groups.append(self._finite_step(step + 1))
                 optimizer.step()
+                self._finite_adapter(step + 1)
                 last_loss = float(loss.detach().cpu())
                 tokens_seen += int(batch["attention_mask"].sum().item())
-        except BaseException:
-            self.reset()
+                completed_steps += 1
+        except BaseException as exc:
+            self.reset(clear_observation=False)
+            self.last_observation = {"task_id": task["task_id"], "status": "failed",
+                                     "steps": completed_steps, "training_tokens": tokens_seen,
+                                     "failure_type": type(exc).__name__,
+                                     "gradient_groups_by_step": gradient_groups}
             raise
         finally:
             del optimizer
         self.model.eval()
-        self.last_observation = {"task_id": task["task_id"], "steps": int(config["steps"]),
+        self.last_observation = {"task_id": task["task_id"], "status": "complete",
+                                 "steps": completed_steps,
                                  "training_tokens": tokens_seen,
-                                 "last_loss": last_loss, "targets": self.targets}
+                                 "last_loss": last_loss, "targets": self.targets,
+                                 "gradient_groups_by_step": gradient_groups}
         return self.model

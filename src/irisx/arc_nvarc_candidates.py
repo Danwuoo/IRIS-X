@@ -114,7 +114,22 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
         if len(probabilities) <= END or any(not math.isfinite(float(p)) for p in probabilities):
             raise ValidationError("DFS backend returned invalid compact logits")
         options = []
+        row_lengths = [0]
+        for token in suffix:
+            if token == 10:
+                row_lengths.append(0)
+            else:
+                row_lengths[-1] += 1
+        complete_grid_prefix = bool(suffix) and row_lengths[-1] > 0 and all(
+            length == row_lengths[0] for length in row_lengths)
         for token in tuple(range(11)) + (END,):
+            if token == 10 and (not suffix or row_lengths[-1] == 0 or
+                                (len(row_lengths) > 1 and row_lengths[-1] != row_lengths[0])):
+                continue
+            if token != 10 and token != END and len(row_lengths) > 1 and row_lengths[-1] >= row_lengths[0]:
+                continue
+            if token == END and not complete_grid_prefix:
+                continue
             nll = score - float(probabilities[token])
             if nll < max_score:
                 if token == END:
@@ -169,6 +184,10 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
     try:
         backend.begin_task(task)
         for test_index in range(len(task["test"])):
+            # Hold a share of the remaining invocation budget for each later
+            # test; otherwise the first test can consume the whole task cap.
+            remaining_tests = len(task["test"]) - test_index
+            test_call_stop = calls + math.ceil((maximum_calls - calls) / remaining_tests)
             verified_grids: dict[tuple[tuple[int, ...], ...], float] = {}
             if hasattr(backend, "begin_test"):
                 backend.begin_test(test_index)
@@ -176,7 +195,7 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
             returned_sequences = 0
             generation_observations = []
             for view_index, spec in enumerate(views):
-                if calls >= maximum_calls:
+                if calls >= test_call_stop:
                     break
                 if hasattr(backend, "begin_view"):
                     backend.begin_view(spec, view_index)

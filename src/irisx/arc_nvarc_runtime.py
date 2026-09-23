@@ -33,7 +33,7 @@ COUNTER_FIELDS = {"generation_calls_reserved", "sequences_reserved",
 RESERVATION_FIELDS = {"generation_calls_reserved", "sequences_reserved",
                       "verification_calls_reserved", "dfs_forwards_reserved",
                       "ttt_steps_reserved", "ttt_tokens_reserved"}
-CONFIG_FIELDS = {"worker_count", "task_deadline_seconds", "session_budget_seconds",
+CONFIG_FIELDS = {"method", "worker_count", "task_deadline_seconds", "session_budget_seconds",
                  "finalization_reserve_seconds", "maximum_calls_per_task",
                  "beams_per_call", "maximum_new_tokens", "seed", "color_repeats",
                  "ranking", "full_coverage", "decoding", "dfs_max_score",
@@ -111,8 +111,12 @@ def make_binding(workload: Mapping[str, Any], *, run_id: str, model_digest: str,
     required = {"worker_count", "task_deadline_seconds", "session_budget_seconds",
                 "finalization_reserve_seconds", "maximum_calls_per_task",
                 "beams_per_call", "maximum_new_tokens"}
-    if not required.issubset(config) or config["worker_count"] != 4:
-        raise ValidationError("four-worker configuration or limits missing")
+    if not required.issubset(config) or type(config["worker_count"]) is not int or config["worker_count"] not in {1, 4}:
+        raise ValidationError("one- or four-worker configuration or limits missing")
+    if config.get("method", "qwen35-compact-sft-plus-task-lora-bounded-dfs") != "qwen35-compact-sft-plus-task-lora-bounded-dfs":
+        raise ValidationError("unsupported candidate method")
+    if "method" in config and config.get("decoding", "bounded-dfs") != "bounded-dfs":
+        raise ValidationError("candidate method and decoder differ")
     if any(type(config[key]) is not int or config[key] < 1 for key in required - {"worker_count"}):
         raise ValidationError("runtime limit must be positive integer")
     if config["finalization_reserve_seconds"] >= config["session_budget_seconds"]:
@@ -286,7 +290,7 @@ def validate_checkpoint(checkpoint: Mapping[str, Any], binding: Mapping[str, Any
     for reservation in reservations:
         if (not isinstance(reservation, dict) or
                 set(reservation) != {"rank", "started_utc"} | RESERVATION_FIELDS or
-                type(reservation["rank"]) is not int or not 0 <= reservation["rank"] < 4 or
+                type(reservation["rank"]) is not int or not 0 <= reservation["rank"] < binding["config"]["worker_count"] or
                 not isinstance(reservation["started_utc"], str) or
                 any(type(reservation[key]) is not int or reservation[key] < 0
                     for key in RESERVATION_FIELDS)):
@@ -349,7 +353,8 @@ def validate_checkpoint(checkpoint: Mapping[str, Any], binding: Mapping[str, Any
 
 def reserve_task(checkpoint: dict[str, Any], binding: Mapping[str, Any], task_id: str,
                  *, rank: int, at_utc: str) -> None:
-    if task_id not in checkpoint["expected_tasks"] or task_id in checkpoint["reserved"] or task_id in checkpoint["completed"]:
+    if (type(rank) is not int or not 0 <= rank < binding["config"]["worker_count"] or
+            task_id not in checkpoint["expected_tasks"] or task_id in checkpoint["reserved"] or task_id in checkpoint["completed"]):
         raise ValidationError("duplicate or unexpected task dispatch")
     limits = _bound_reservation(binding["config"])
     checkpoint["reserved"][task_id] = {"rank": rank, "started_utc": at_utc,
