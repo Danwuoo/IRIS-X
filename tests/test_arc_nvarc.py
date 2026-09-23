@@ -9,7 +9,8 @@ import unittest
 from unittest import mock
 import zipfile
 
-from irisx.arc_nvarc_candidates import (FixtureCandidateBackend, bounded_dfs,
+from irisx.arc_nvarc_candidates import (FixtureCandidateBackend, PrefixLogitCache,
+                                         bounded_dfs, bounded_dfs_search,
                                          rank_candidates, solve_task)
 from irisx.arc_nvarc_cli import fixture_e2e
 from irisx.arc_nvarc_data import (compare_visible, freeze_shards, freeze_streaming, grid, import_jsonl,
@@ -69,6 +70,52 @@ def synthetic_startup_failure_worker(rank, commands, outputs, model_root, config
 
 
 class NvarcTests(unittest.TestCase):
+    def test_long_dfs_path_stop_reasons_and_safe_prefix_cache(self) -> None:
+        def one_path(length):
+            def logits(prefix):
+                result = [-100.0] * 16
+                result[15 if len(prefix) - 1 == length else 1] = 0.0
+                return result
+            return logits
+        completed = bounded_dfs_search([14], one_path(1000), max_new_tokens=1024,
+                                       max_score=1.61, max_expansions=1200,
+                                       max_sequences=1)
+        self.assertEqual(1001, len(completed["sequences"][0]["tokens"]))
+        self.assertEqual(1001, completed["expansions"])
+        self.assertEqual("sequence_limit", completed["stop_reason"])
+        capped = bounded_dfs_search([14], one_path(300), max_new_tokens=1024,
+                                    max_score=1.61, max_expansions=256, max_sequences=1)
+        self.assertEqual((0, 256, "expansion_limit", 256),
+                         (capped["completed_candidates"], capped["expansions"],
+                          capped["stop_reason"], capped["maximum_reachable_tokens"]))
+        token_capped = bounded_dfs_search([14], one_path(300), max_new_tokens=200,
+                                          max_score=1.61, max_expansions=400,
+                                          max_sequences=1)
+        self.assertEqual("token_limit", token_capped["stop_reason"])
+        expired = bounded_dfs_search([14], one_path(1), max_new_tokens=10,
+                                     max_score=1.61, max_expansions=10,
+                                     max_sequences=1, deadline=0, now=lambda: 0)
+        self.assertEqual((0, "deadline"), (expired["expansions"], expired["stop_reason"]))
+        none = bounded_dfs_search([14], lambda _: [-100.0] * 16, max_new_tokens=10,
+                                  max_score=1.61, max_expansions=10, max_sequences=1)
+        self.assertEqual("no_valid_candidate", none["stop_reason"])
+        calls = []
+        def counted(prefix):
+            calls.append(tuple(prefix))
+            return one_path(3)(prefix)
+        cache = PrefixLogitCache(counted, capacity=8)
+        reference = bounded_dfs_search([14], one_path(3), max_new_tokens=8,
+                                       max_score=1.61, max_expansions=8, max_sequences=1)
+        first = bounded_dfs_search([14], cache, max_new_tokens=8,
+                                   max_score=1.61, max_expansions=8, max_sequences=1)
+        second = bounded_dfs_search([14], cache, max_new_tokens=8,
+                                    max_score=1.61, max_expansions=8, max_sequences=1)
+        self.assertEqual(reference, first)
+        self.assertEqual(first, second)
+        self.assertEqual((4, 4), (len(calls), cache.hits))
+        cache.clear()
+        self.assertFalse(cache.values)
+
     def test_real_torch_sft_resume_and_token_limit_if_available(self) -> None:
         try:
             import torch

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
 import math
 import time
 from typing import Any, Callable, Mapping
@@ -50,10 +50,38 @@ def rank_candidates(candidates: list[Mapping[str, Any]], *, policy: str = "votes
     return sorted(results, key=lambda item: (-item["score"], -item["votes"], item["grid"]))
 
 
-def bounded_dfs(query: list[int], next_log_probs: Callable[[list[int]], list[float]], *,
-                max_new_tokens: int, max_score: float, max_expansions: int,
-                max_sequences: int, deadline: float | None = None,
-                now: Callable[[], float] = time.monotonic) -> tuple[list[dict[str, Any]], int]:
+class PrefixLogitCache:
+    """Bounded immutable-prefix logits cache; never stores a mutable KV state."""
+
+    def __init__(self, backend: Callable[[list[int]], list[float]], capacity: int) -> None:
+        if capacity < 1:
+            raise ValidationError("prefix logit cache capacity must be positive")
+        self.backend = backend
+        self.capacity = capacity
+        self.values: OrderedDict[tuple[int, ...], tuple[float, ...]] = OrderedDict()
+        self.hits = self.misses = 0
+
+    def __call__(self, prefix: list[int]) -> list[float]:
+        key = tuple(prefix)
+        if key in self.values:
+            self.hits += 1
+            self.values.move_to_end(key)
+            return list(self.values[key])
+        self.misses += 1
+        value = tuple(self.backend(prefix))
+        self.values[key] = value
+        if len(self.values) > self.capacity:
+            self.values.popitem(last=False)
+        return list(value)
+
+    def clear(self) -> None:
+        self.values.clear()
+
+
+def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], list[float]], *,
+                       max_new_tokens: int, max_score: float, max_expansions: int,
+                       max_sequences: int, deadline: float | None = None,
+                       now: Callable[[], float] = time.monotonic) -> dict[str, Any]:
     """Source-order DFS with cumulative NLL pruning and isolated branch state.
 
     The pinned notebook sorts each node's non-EOS siblings by NLL, accepts EOS
@@ -67,12 +95,20 @@ def bounded_dfs(query: list[int], next_log_probs: Callable[[list[int]], list[flo
     results: list[dict[str, Any]] = []
     expansions = 0
     seen: set[tuple[int, ...]] = set()
-
-    def visit(suffix: tuple[int, ...], score: float) -> None:
-        nonlocal expansions
-        if (len(results) >= max_sequences or expansions >= max_expansions or
-                (deadline is not None and now() >= deadline)):
-            return
+    stack: list[tuple[tuple[int, ...], float]] = [((), 0.0)]
+    token_limit_hit = False
+    reason = "exhausted"
+    while stack:
+        if len(results) >= max_sequences:
+            reason = "sequence_limit"
+            break
+        if deadline is not None and now() >= deadline:
+            reason = "deadline"
+            break
+        if expansions >= max_expansions:
+            reason = "expansion_limit"
+            break
+        suffix, score = stack.pop()
         probabilities = next_log_probs(query + list(suffix))
         expansions += 1
         if len(probabilities) <= END or any(not math.isfinite(float(p)) for p in probabilities):
@@ -89,16 +125,34 @@ def bounded_dfs(query: list[int], next_log_probs: Callable[[list[int]], list[flo
                                         "beam_nll": nll})
                 elif len(suffix) + 1 < max_new_tokens:
                     options.append((nll, token))
-        # The source accepts terminal branches before descending, then visits
-        # nonterminal siblings in increasing cumulative NLL order.
-        for child_score, token in sorted(options, key=lambda item: (item[0], item[1])):
-            if (len(results) >= max_sequences or expansions >= max_expansions or
-                    (deadline is not None and now() >= deadline)):
-                break
-            visit(suffix + (token,), child_score)
+                else:
+                    token_limit_hit = True
+        # Push in reverse so the next pop preserves the source's sorted DFS.
+        for child_score, token in reversed(sorted(options, key=lambda item: (item[0], item[1]))):
+            stack.append((suffix + (token,), child_score))
+    else:
+        if len(results) >= max_sequences:
+            reason = "sequence_limit"
+        elif token_limit_hit:
+            reason = "token_limit"
+        elif not results:
+            reason = "no_valid_candidate"
+    return {"sequences": results, "expansions": expansions,
+            "completed_candidates": len(results), "stop_reason": reason,
+            "max_new_tokens": max_new_tokens, "max_expansions": max_expansions,
+            "max_sequences": max_sequences,
+            "maximum_reachable_tokens": min(max_new_tokens, max_expansions)}
 
-    visit((), 0.0)
-    return results, expansions
+
+def bounded_dfs(query: list[int], next_log_probs: Callable[[list[int]], list[float]], *,
+                max_new_tokens: int, max_score: float, max_expansions: int,
+                max_sequences: int, deadline: float | None = None,
+                now: Callable[[], float] = time.monotonic) -> tuple[list[dict[str, Any]], int]:
+    """Compatibility wrapper for callers that need only sequences and cost."""
+    result = bounded_dfs_search(query, next_log_probs, max_new_tokens=max_new_tokens,
+                                max_score=max_score, max_expansions=max_expansions,
+                                max_sequences=max_sequences, deadline=deadline, now=now)
+    return result["sequences"], result["expansions"]
 
 
 def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -119,6 +173,7 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
                 backend.begin_test(test_index)
             candidates = []
             returned_sequences = 0
+            generation_observations = []
             for view_index, spec in enumerate(views):
                 if calls >= maximum_calls:
                     break
@@ -128,6 +183,9 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
                 query = GridTokenizer().encode_query(transformed, test_index)
                 calls += 1  # Reserve the invocation before backend failure.
                 sequences = backend.generate(query, beams=beams, max_new_tokens=max_tokens)
+                if hasattr(backend, "last_generation_observation"):
+                    generation_observations.append({"view_index": view_index,
+                                                    **backend.last_generation_observation})
                 if len(sequences) > beams:
                     raise ValidationError("backend returned more sequences than bound")
                 returned_sequences += len(sequences)
@@ -152,6 +210,7 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
                             "ranked": ranked, "generation_calls_so_far": calls,
                             "verification_calls_so_far": verification_calls,
                             "returned_sequences": returned_sequences,
+                            "generation_observations": generation_observations,
                             "status": "complete" if len(attempts) == 2 else "missing-candidate"})
     finally:
         backend.end_task()
@@ -208,15 +267,21 @@ class QwenCandidateBackend:
 
     def __init__(self, model: Any, *, task_adapter: Any = None,
                  decoding: str = "bounded-dfs", dfs_max_score: float = -math.log(0.2),
-                 dfs_max_expansions: int = 256) -> None:
+                 dfs_max_expansions: int = 256,
+                 dfs_cache_mode: str = "full-prefix-recompute") -> None:
         if decoding not in {"bounded-dfs", "hf-beam"}:
             raise ValidationError("unknown Qwen decoding mode")
+        if dfs_cache_mode not in {"full-prefix-recompute", "full-prefix-logit-cache"}:
+            raise ValidationError("Qwen3.5 hybrid KV cache mode is unsupported")
         self.base_model = model
         self.model = model
         self.adapter = task_adapter
         self.decoding = decoding
         self.dfs_max_score = dfs_max_score
         self.dfs_max_expansions = dfs_max_expansions
+        self.dfs_cache_mode = dfs_cache_mode
+        self.prefix_cache: PrefixLogitCache | None = None
+        self.last_generation_observation: dict[str, Any] = {}
         self.forward_calls = 0
         self.verification_calls = 0
         self.ttt_seconds = 0.0
@@ -226,6 +291,8 @@ class QwenCandidateBackend:
     def begin_task(self, task: Mapping[str, Any]) -> None:
         self.ttt_seconds = self.generate_seconds = self.rank_seconds = 0.0
         self.forward_calls = self.verification_calls = 0
+        self.last_generation_observation = {}
+        self.prefix_cache = None
         if self.adapter is not None:
             started = time.monotonic()
             self.model = self.adapter.adapt(task)
@@ -247,10 +314,22 @@ class QwenCandidateBackend:
                         values = torch.log_softmax(logits.float(), dim=-1).cpu().tolist()
                     self.forward_calls += 1
                     return values
-                return bounded_dfs(query, next_probs, max_new_tokens=max_new_tokens,
-                                   max_score=self.dfs_max_score,
-                                   max_expansions=self.dfs_max_expansions,
-                                   max_sequences=beams)[0]
+                callback = next_probs
+                if self.dfs_cache_mode == "full-prefix-logit-cache":
+                    if self.prefix_cache is None:
+                        self.prefix_cache = PrefixLogitCache(next_probs, self.dfs_max_expansions)
+                    callback = self.prefix_cache
+                before_hits = self.prefix_cache.hits if self.prefix_cache is not None else 0
+                search = bounded_dfs_search(query, callback, max_new_tokens=max_new_tokens,
+                                            max_score=self.dfs_max_score,
+                                            max_expansions=self.dfs_max_expansions,
+                                            max_sequences=beams)
+                self.last_generation_observation = {
+                    key: value for key, value in search.items() if key != "sequences"}
+                self.last_generation_observation["cache_mode"] = self.dfs_cache_mode
+                self.last_generation_observation["cache_hits"] = (
+                    self.prefix_cache.hits - before_hits if self.prefix_cache is not None else 0)
+                return search["sequences"]
             ids = torch.tensor([query], dtype=torch.long, device=device)
             with torch.inference_mode():
                 output = self.model.generate(input_ids=ids, max_new_tokens=max_new_tokens,
@@ -266,6 +345,10 @@ class QwenCandidateBackend:
                 sequence_scores = getattr(output, "sequences_scores", None)
                 beam_nll = -float(sequence_scores[index]) if sequence_scores is not None else 0.0
                 result.append({"tokens": suffix, "eos": ended, "beam_nll": beam_nll})
+            self.last_generation_observation = {
+                "stop_reason": "hf-beam-return", "completed_candidates": sum(item["eos"] for item in result),
+                "max_new_tokens": max_new_tokens, "max_sequences": beams,
+                "internal_forward_calls": None, "cache_mode": "hf-managed"}
             return result
         finally:
             self.generate_seconds += time.monotonic() - started
@@ -299,4 +382,7 @@ class QwenCandidateBackend:
             if self.adapter is not None:
                 self.adapter.reset(clear_observation=False)
         finally:
+            if self.prefix_cache is not None:
+                self.prefix_cache.clear()
+            self.prefix_cache = None
             self.model = self.base_model

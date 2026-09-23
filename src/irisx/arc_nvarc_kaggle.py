@@ -63,7 +63,8 @@ def _worker(rank: int, command_queue: Any, output_queue: Any, model_root: str,
         backend = QwenCandidateBackend(
             model, task_adapter=adapter, decoding=config.get("decoding", "bounded-dfs"),
             dfs_max_score=float(config.get("dfs_max_score", 1.6094379124341003)),
-            dfs_max_expansions=int(config.get("dfs_max_expansions", 256)))
+            dfs_max_expansions=int(config.get("dfs_max_expansions", 256)),
+            dfs_cache_mode=config.get("dfs_cache_mode", "full-prefix-recompute"))
         output_queue.put({"type": "ready", "rank": rank, "gpu_uuid": gpu_uuid,
                           "model_load_seconds": time.monotonic() - load_started})
         while True:
