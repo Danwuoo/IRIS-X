@@ -27,7 +27,7 @@ Authorize one new private Kaggle `SaveKernel` attempt for
 Both are 24 characters after the owner prefix and the title resolves exactly
 to the slug in the installed Kaggle CLI. Bind the unchanged [pilot 003 draft
 plan](../../trials/arc-agi-2-qwen35-nvarc/configs/draft-4b-pilot-003.json)
-SHA-256 `286b5171e138d4c93e6aae64baabe58a1cb3879969bb105ea447e1e2d933fc18`.
+SHA-256 `14f95a83953777e7261b530e38d5cf2d0b33486ee4dc62fe52ad435f91cfb443`.
 If Kaggle accepts a kernel version, make bounded status checks to terminal and
 retrieve its output once. Capture a provider rejection's response detail if
 available. Never send the same rejected package again unchanged.
