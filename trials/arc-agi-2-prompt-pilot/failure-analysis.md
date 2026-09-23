@@ -107,6 +107,10 @@ G8 的錯誤原樣複製輸入由 B1 的 train 32 題增至 61 題，dev 17 題�
 
 ## 5. Holdout 是來源相容性失敗，不是模型零分
 
+2026-09-23 後續校正：[budget ablation 總控分析](../arc-agi-2-budget-ablation/control-review.md)
+已核對全部 512 題來源相同。根因是舊 gate 把單一 test-index 視圖與完整
+multi-test case 比較，不是實際 source drift。下文保留取得完整 snapshot 前的診斷。
+
 最終 kernel 在模型載入前回報 `runtime competition case differs: f3e62deb`。
 四卡硬體 gate 已通過，但沒有 generation、checkpoint 或 result.zip。
 holdout 準確率不可得；不能填零，也不能宣稱最終泛化比較完成。

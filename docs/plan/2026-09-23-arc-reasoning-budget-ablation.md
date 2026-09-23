@@ -1,5 +1,9 @@
 # ARC solver：先量測輸出容量與推理模式
 
+2026-09-23 終端更新：192 次診斷已完成，沒有 arm 通過門檻，未執行條件式
+384 題評估。參見[總控分析](../../trials/arc-agi-2-budget-ablation/control-review.md)。
+以下保留原授權與設計；不是繼續提交新 kernel 的指令。
+
 日期：2026-09-23。狀態：**Owner 已授權開發與連貫執行**。
 最新指示：「開發的模型和反思的模型都換成 gpt 6 sol xhigh，開始進行新實驗吧」。
 [Decision 0020](../decisions/0020-authorize-arc-budget-ablation.md) 記錄新實驗授權，

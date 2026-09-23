@@ -86,6 +86,11 @@ use `gpt-6-sol / xhigh`, while the solver remains pinned Qwen3.5-4B. It authoriz
 with source acquisition, private four-L4 CLI execution, retrieval and scoring
 as one continuous workflow. No GEPA calls or holdout execution are part of it.
 The status page is `trials/arc-agi-2-budget-ablation/README.md`.
+That diagnostic completed all 192 calls with no qualifying arm; conditional
+validation was not launched. Decision 0020 is terminal, and its unused ceiling
+does not authorize further calls. Control review confirms all 512 visible
+sources match: the prior holdout failure compared a single-test projection
+against a full multi-test case. Holdout remains unscored.
 
 ## Authority order
 
