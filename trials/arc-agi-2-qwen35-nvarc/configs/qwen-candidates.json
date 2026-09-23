@@ -1,0 +1,26 @@
+{
+  "method": "qwen35-compact-sft-plus-task-lora-hf-beam",
+  "seed": 24,
+  "color_repeats": 2,
+  "maximum_calls_per_task": 32,
+  "full_coverage": true,
+  "beams_per_call": 4,
+  "maximum_new_tokens": 1024,
+  "ranking": "votes-minus-mean-nll",
+  "worker_count": 4,
+  "task_deadline_seconds": 1200,
+  "session_budget_seconds": 43200,
+  "finalization_reserve_seconds": 900,
+  "ttt": {
+    "enabled": true,
+    "rank": 256,
+    "alpha": 32,
+    "dropout": 0.0,
+    "use_rslora": true,
+    "seed": 42,
+    "steps": 16,
+    "augmentation_count": 16,
+    "max_sequence_length": 8192,
+    "learning_rate": 0.00005
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "approved": false,
+  "owner_decision": null,
+  "operation": null,
+  "identity_digest": null,
+  "run_identity_digest": null,
+  "provider": null,
+  "permitted_data": null,
+  "maximum_paid_usd": 0,
+  "maximum_steps": null,
+  "maximum_training_tokens": null,
+  "maximum_generation_calls": null,
+  "maximum_session_seconds": null,
+  "retention": null
+}

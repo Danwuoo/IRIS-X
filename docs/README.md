@@ -2,6 +2,11 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-09-23-qwen35-nvarc-reproduction.md`](plan/2026-09-23-qwen35-nvarc-reproduction.md)
+  defines the owner-requested Qwen3.5-4B NVARC development plan, including
+  data, SFT, task-local adaptation, candidate ranking, integration, offline
+  validation and a separate proposal for future real execution.
+
 - [`plan/2026-09-23-research-control-handoff.md`](plan/2026-09-23-research-control-handoff.md)
   hands verified experimental results, local evidence locations and open
   research choices to the next GPT-6 Astra high control task.
@@ -48,6 +53,9 @@ This directory contains only current product-era guidance.
   is the single current status page for Trial 001.
 - [`../trials/arc-agi-2-baseline/README.md`](../trials/arc-agi-2-baseline/README.md)
   is the single current status page for Trial 002.
+- [`../trials/arc-agi-2-qwen35-nvarc/README.md`](../trials/arc-agi-2-qwen35-nvarc/README.md)
+  is the distinct development status page for the owner-requested Qwen3.5
+  NVARC port; its offline implementation does not authorize real execution.
 - [`decisions/`](decisions/README.md) contains accepted boundary decisions and
   historical rationale.
 - [`repository-layout.md`](repository-layout.md) defines the active P1 plus
