@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import multiprocessing
+import os
 from pathlib import Path
 import tempfile
 import time
@@ -555,7 +556,7 @@ class NvarcTests(unittest.TestCase):
             launch = trm_launch_spec(source, upstream, root / "processed", root / "checkpoint",
                                      mode="train", world_size=2, steps=2, wall_seconds=30)
             self.assertEqual(str(source), launch["cwd"])
-            self.assertEqual(str(upstream), launch["env"]["PYTHONPATH"])
+            self.assertEqual(str(upstream), launch["env"]["PYTHONPATH"].split(os.pathsep)[0])
             self.assertIn(str(upstream / "config"), launch["argv"])
             self.assertIn("global_batch_size=3072", launch["argv"])
             with self.assertRaises(ValidationError):

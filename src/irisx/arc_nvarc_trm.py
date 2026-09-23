@@ -128,28 +128,38 @@ def trm_launch_spec(nvarc_trm_root: Path, upstream_root: Path, data_root: Path,
             not (upstream_root / "config" / "cfg_pretrain.yaml").is_file() or
             not (data_root / ("train" if mode == "train" else "test") / "dataset.json").is_file()):
         raise ValidationError("TRM script, Hydra config or processed dataset is unavailable")
-    if mode == "evaluate" and (load_checkpoint is None or not load_checkpoint.is_file()):
+    if mode == "evaluate" and (load_checkpoint is None or not load_checkpoint.is_file() or
+                                not (data_root / "identifiers.json").is_file()):
         raise ValidationError("TRM evaluation requires an exact checkpoint file")
-    argv = ["torchrun", "--standalone", "--nnodes=1", f"--nproc-per-node={world_size}",
-            str(script_path), "--config-path", str(upstream_root / "config"),
-            "arch=trm", f"data_paths=[{data_root.as_posix()}]",
-            "arch.L_layers=2", "arch.H_cycles=3" if mode == "train" else "arch.H_cycles=4",
-            "arch.L_cycles=4", "ema=True", f"epochs={steps}",
-            f"+checkpoint_path={checkpoint_root.as_posix()}"]
+    argv = ["torchrun", "--standalone", "--nnodes=1", f"--nproc-per-node={world_size}"]
     if mode == "train":
+        argv.extend([str(script_path), "--config-path", str(upstream_root / "config"),
+                     "arch=trm", f"data_paths=[{data_root.as_posix()}]",
+                     "arch.L_layers=2", "arch.H_cycles=3", "arch.L_cycles=4",
+                     "ema=True", f"epochs={steps}",
+                     f"+checkpoint_path={checkpoint_root.as_posix()}"])
         argv.extend(["evaluators=[]", "lr=0.0003", "global_batch_size=3072",
                      "eval_interval=1000"])
     else:
-        argv.extend(["arch.halt_max_steps=10", f"+load_checkpoint={load_checkpoint.as_posix()}",
-                     "global_batch_size=128", "eval_interval=2000", "lr_warmup_steps=200",
-                     "lr=0.0001", "evaluators=[]",
-                     "eval_save_outputs=[inputs,puzzle_identifiers,q_halt_logits,preds]"])
+        from .arc_nvarc_trm_infer import _sha256
+        argv.extend(["-m", "irisx.arc_nvarc_trm_infer",
+                     "--source-script", str(script_path),
+                     "--upstream-root", str(upstream_root), "--data-root", str(data_root),
+                     "--checkpoint", str(load_checkpoint),
+                     "--checkpoint-sha256", _sha256(load_checkpoint),
+                     "--dataset-sha256", _sha256(data_root / "test" / "dataset.json"),
+                     "--output", str(checkpoint_root), "--max-batches", str(steps)])
     return {"format": "irisx/nvarc-trm-launch-spec", "mode": mode,
             "upstream_revision": TRM_REVISION, "nvarc_revision": NVARC_REVISION,
             "argv": argv, "cwd": str(nvarc_trm_root),
-            "env": {"PYTHONPATH": str(upstream_root)}, "world_size": world_size,
-            "maximum_wall_seconds": wall_seconds, "maximum_epochs": steps,
-            "step_semantics": "upstream derives optimizer steps from epochs and dataset size",
+            "env": {"PYTHONPATH": str(upstream_root) + os.pathsep +
+                    str(Path(__file__).resolve().parents[1])}, "world_size": world_size,
+            "maximum_wall_seconds": wall_seconds,
+            "maximum_epochs": steps if mode == "train" else None,
+            "maximum_batches": steps if mode == "evaluate" else None,
+            "step_semantics": ("inference-only test batches; zero optimizer steps" if mode == "evaluate"
+                               else "upstream derives optimizer steps from epochs and dataset size"),
+            "output_root": str(checkpoint_root),
             "source_file": str(script_path), "source_sha256": TRM_SOURCE_HASHES[mode],
             "execution_state": "draft-not-authorized"}
 
@@ -160,6 +170,9 @@ def execute_trm_spec(spec: Mapping[str, Any], output: Path, *,
     """Execute a bounded subprocess; fixture launch never has model provenance."""
     if spec.get("format") not in {"irisx/nvarc-trm-preprocess-spec", "irisx/nvarc-trm-launch-spec"}:
         raise ValidationError("TRM invocation spec differs")
+    if (spec.get("mode") == "evaluate" and
+            output.resolve() != Path(spec.get("output_root", "")).resolve()):
+        raise ValidationError("TRM inference output root differs from bound spec")
     if output.exists() and any(output.iterdir()):
         raise ValidationError("TRM invocation output must be empty")
     identity = digest_value(spec)

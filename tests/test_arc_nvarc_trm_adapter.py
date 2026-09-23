@@ -10,11 +10,72 @@ import unittest
 
 from irisx.arc_nvarc_trm import (execute_trm_spec, integrate_attempts,
                                  read_trm_prediction_tensors, read_trm_submission,
-                                 trm_grid)
+                                 trm_grid, trm_launch_spec)
+from irisx.arc_nvarc_trm_infer import run_inference_core
 from irisx.errors import ValidationError
 
 
 class NvarcTRMAdapterTests(unittest.TestCase):
+    def test_inference_entry_never_calls_train_and_produces_rank_tensor(self) -> None:
+        from types import SimpleNamespace
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            calls = []
+            class Model:
+                def eval(self):
+                    calls.append("eval-mode")
+            class Source:
+                TrainState = lambda self, **kwargs: SimpleNamespace(**kwargs)
+                def create_dataloader(self, config, split, **kwargs):
+                    calls.append(f"loader:{split}")
+                    return [1, 2, 3], {"test": True}
+                def create_model(self, config, metadata, **kwargs):
+                    calls.append("checkpoint-model")
+                    return Model(), [], []
+                def train_batch(self, *args, **kwargs):
+                    raise AssertionError("inference entered training")
+                def evaluate(self, config, state, loader, metadata, evaluators, **kwargs):
+                    calls.append("evaluate")
+                    self_test.assertEqual([1, 2], list(loader))
+                    self_test.assertEqual([], evaluators)
+                    (root / "step_0_all_preds.0").write_bytes(b"synthetic rank tensor")
+            self_test = self
+            config = SimpleNamespace(evaluators=[], eval_save_outputs=[
+                "inputs", "puzzle_identifiers", "q_halt_logits", "preds"],
+                global_batch_size=2, load_checkpoint="synthetic checkpoint",
+                checkpoint_path=str(root))
+            report = run_inference_core(Source(), config, output=root, rank=0,
+                                        world_size=1, cpu_group=None, max_batches=2)
+            self.assertEqual(0, report["training_steps"])
+            self.assertEqual(["loader:test", "checkpoint-model", "eval-mode", "evaluate"], calls)
+
+    def test_evaluate_spec_targets_inference_entry_not_upstream_train_loop(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            nvarc = root / "nvarc"
+            upstream = root / "upstream"
+            data = root / "data"
+            (nvarc).mkdir()
+            (upstream / "models" / "recursive_reasoning").mkdir(parents=True)
+            (upstream / "config").mkdir()
+            (data / "test").mkdir(parents=True)
+            (nvarc / "eval-arc-k-10.py").write_text("# synthetic source path")
+            (upstream / "models" / "recursive_reasoning" / "trm.py").write_text("# model")
+            (upstream / "config" / "cfg_pretrain.yaml").write_text("# config")
+            (data / "test" / "dataset.json").write_text("{}")
+            (data / "identifiers.json").write_text('["<blank>","a"]')
+            checkpoint = root / "step_1"
+            checkpoint.write_bytes(b"synthetic checkpoint")
+            spec = trm_launch_spec(nvarc, upstream, data, root / "output",
+                                   mode="evaluate", world_size=1, steps=1,
+                                   wall_seconds=20, load_checkpoint=checkpoint)
+            self.assertIn("irisx.arc_nvarc_trm_infer", spec["argv"])
+            self.assertNotIn("epochs=1", spec["argv"])
+            self.assertNotIn("eval_interval=2000", spec["argv"])
+            self.assertEqual(1, spec["maximum_batches"])
+            self.assertIsNone(spec["maximum_epochs"])
+
     def test_truth_free_raw_tensor_normalization_and_fixture_provenance(self) -> None:
         try:
             import numpy as np
