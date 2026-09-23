@@ -1,6 +1,10 @@
 # Qwen3.5-4B NVARC reproduction development
 
-Status: **implementation-verified on synthetic CPU fixtures; development-authorized-no-execution**.
+Status: **development acceptance incomplete; development-authorized-no-execution**.
+The [control review](control-review.md) found reproducible outbound, result,
+model-material and DFS defects at `e7d74a6`. The
+[continuation plan](../../docs/plan/2026-09-23-qwen35-nvarc-acceptance-continuation.md)
+returns repairs and remaining implementation to the existing task on main.
 Owner direction and boundaries are in
 [`docs/plan/2026-09-23-qwen35-nvarc-reproduction.md`](../../docs/plan/2026-09-23-qwen35-nvarc-reproduction.md).
 This workspace is distinct from Trial 001, Trial 002, prompt pilot, and budget
@@ -31,15 +35,17 @@ The offline fixture E2E runs a **tiny random transition model for gradient and
 resume checks**, then explicitly marked fixture predictions through candidate,
 result and sealed-scoring paths. Its 2/3 pass@2 is synthetic test behavior,
 not an ARC accuracy claim. The real 4B, TRM, and SDG teacher paths have not
-been executed. The additional real PyTorch synthetic resume test is skipped in
-this checkout because torch is not installed. Source-level differences and remaining gaps are in
+been executed. The additional real PyTorch synthetic resume test skips under
+default Python 3.14 but passed during control review with the installed Python
+3.12 and torch. Qwen3.5/PEFT compatibility remains unverified.
+Source-level differences and remaining gaps are in
 [`reproduction-matrix.md`](reproduction-matrix.md).
 
 ## Current evidence states
 
 | State | Current value |
 | --- | --- |
-| implementation-verified | Yes, for the offline modules and synthetic fixture cases listed in the runbook |
+| implementation-verified | Partial: existing synthetic tests pass, but control-review blockers and remaining implementation prevent overall acceptance |
 | materials-ready | No: this worktree has pinned small sources/configs, but no compact or ARC-SFT Qwen3.5 weights, frozen full training data, or TRM weights |
 | runtime-verified | No for this new identity; the four-L4 success belongs only to the earlier trials |
 | sft-trained | No |

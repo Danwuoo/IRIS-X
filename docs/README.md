@@ -2,6 +2,10 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-09-23-qwen35-nvarc-acceptance-continuation.md`](plan/2026-09-23-qwen35-nvarc-acceptance-continuation.md)
+  records the incomplete acceptance review and concrete repairs and remaining
+  development for the original Qwen3.5 NVARC task on main.
+
 - [`plan/2026-09-23-qwen35-nvarc-reproduction.md`](plan/2026-09-23-qwen35-nvarc-reproduction.md)
   defines the owner-requested Qwen3.5-4B NVARC development plan, including
   data, SFT, task-local adaptation, candidate ranking, integration, offline
