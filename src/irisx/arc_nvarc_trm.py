@@ -3,7 +3,12 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import os
 from pathlib import Path
+import subprocess
+import sys
+import time
 from typing import Any, Mapping
 
 from .arc_nvarc_data import grid
@@ -14,6 +19,17 @@ from .arc_nvarc_candidates import rank_candidates
 
 TRM_REVISION = "e7b68717f0a6c4cbb4ce6fbef787b14f42083bd9"
 NVARC_REVISION = "846d0198efa752534594e321fc3289fc0a06c657"
+TRM_SOURCE_HASHES = {
+    "builder": "f6e452979cdaa438e46c82eaea1f2fe34cef828debd4b94e1b5139d13aca7c60",
+    "train": "59dfb2523507046af3126790c473f371111f7b7ded77233266a71ea13d3104ac",
+    "evaluate": "62ec1e2f179cd80c58a7f0067ab51c76e2e7eb213959566b015c107c5d98b36f",
+}
+
+
+def _pinned_file(path: Path, expected: str) -> None:
+    if (not path.is_file() or path.is_symlink() or
+            hashlib.sha256(path.read_bytes()).hexdigest() != expected):
+        raise ValidationError(f"pinned TRM source differs: {path.name}")
 
 
 def trm_grid(value: Any) -> list[int]:
@@ -92,7 +108,9 @@ def trm_preprocess_spec(upstream_root: Path, staged_root: Path, output_root: Pat
                      "--output-dir", str(output_root), "--subsets", "sft",
                      "--test-set-name", "evaluation", "--num-aug", str(augmentation_count),
                      "--seed", str(seed)],
-            "cwd": str(upstream_root), "execution_state": "draft-not-authorized"}
+            "cwd": str(upstream_root),
+            "source_file": str(builder), "source_sha256": TRM_SOURCE_HASHES["builder"],
+            "execution_state": "draft-not-authorized"}
 
 
 def trm_launch_spec(nvarc_trm_root: Path, upstream_root: Path, data_root: Path,
@@ -111,7 +129,8 @@ def trm_launch_spec(nvarc_trm_root: Path, upstream_root: Path, data_root: Path,
         raise ValidationError("TRM script, Hydra config or processed dataset is unavailable")
     if mode == "evaluate" and (load_checkpoint is None or not load_checkpoint.is_file()):
         raise ValidationError("TRM evaluation requires an exact checkpoint file")
-    argv = ["torchrun", "--standalone", "--nnodes=1", f"--nproc-per-node={world_size}",
+    argv = [sys.executable, "-m", "torch.distributed.run", "--standalone",
+            "--nnodes=1", f"--nproc-per-node={world_size}",
             str(script_path), "--config-path", str(upstream_root / "config"),
             "arch=trm", f"data_paths=[{data_root.as_posix()}]",
             "arch.L_layers=2", "arch.H_cycles=3" if mode == "train" else "arch.H_cycles=4",
@@ -123,13 +142,94 @@ def trm_launch_spec(nvarc_trm_root: Path, upstream_root: Path, data_root: Path,
     else:
         argv.extend(["arch.halt_max_steps=10", f"+load_checkpoint={load_checkpoint.as_posix()}",
                      "global_batch_size=128", "eval_interval=2000", "lr_warmup_steps=200",
-                     "lr=0.0001"])
+                     "lr=0.0001", "eval_save_outputs=[inputs,puzzle_identifiers,q_halt_logits,preds]"])
     return {"format": "irisx/nvarc-trm-launch-spec", "mode": mode,
             "upstream_revision": TRM_REVISION, "nvarc_revision": NVARC_REVISION,
             "argv": argv, "cwd": str(nvarc_trm_root),
             "env": {"PYTHONPATH": str(upstream_root)}, "world_size": world_size,
-            "maximum_wall_seconds": wall_seconds, "maximum_steps": steps,
+            "maximum_wall_seconds": wall_seconds, "maximum_epochs": steps,
+            "step_semantics": "upstream derives optimizer steps from epochs and dataset size",
+            "source_file": str(script_path), "source_sha256": TRM_SOURCE_HASHES[mode],
             "execution_state": "draft-not-authorized"}
+
+
+def execute_trm_spec(spec: Mapping[str, Any], output: Path, *,
+                     authorization: Mapping[str, Any] | None = None,
+                     fixture_command: list[str] | None = None) -> dict[str, Any]:
+    """Execute a bounded subprocess; fixture launch never has model provenance."""
+    if spec.get("format") not in {"irisx/nvarc-trm-preprocess-spec", "irisx/nvarc-trm-launch-spec"}:
+        raise ValidationError("TRM invocation spec differs")
+    if output.exists() and any(output.iterdir()):
+        raise ValidationError("TRM invocation output must be empty")
+    identity = digest_value(spec)
+    if fixture_command is None:
+        if (authorization is None or authorization.get("approved") is not True or
+                authorization.get("operation") != "execute-trm" or
+                authorization.get("identity_digest") != identity or
+                not authorization.get("owner_decision")):
+            raise ValidationError("real TRM invocation has no matching owner authorization")
+        _pinned_file(Path(spec["source_file"]), spec["source_sha256"])
+        argv = list(spec["argv"])
+        kind = "upstream"
+    else:
+        argv = fixture_command
+        kind = "launch-fixture"
+    wall = int(spec.get("maximum_wall_seconds", 60))
+    if wall < 1:
+        raise ValidationError("TRM wall limit invalid")
+    output.mkdir(parents=True, exist_ok=True)
+    report = {"format": "irisx/nvarc-trm-invocation", "identity_digest": identity,
+              "source_kind": kind, "status": "pending", "maximum_wall_seconds": wall}
+    (output / "invocation.json").write_bytes(canonical_bytes(report, newline=True))
+    log = output / "invocation.log"
+    started = time.monotonic()
+    with log.open("wb") as stream:
+        process = subprocess.Popen(argv, cwd=spec["cwd"], stdout=stream,
+                                   stderr=subprocess.STDOUT, env={**os.environ, **spec.get("env", {})},
+                                   creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+                                   start_new_session=os.name != "nt")
+        try:
+            code = process.wait(timeout=wall)
+            status = "complete" if code == 0 else "failed"
+        except subprocess.TimeoutExpired:
+            code, status = None, "timeout"
+            if os.name == "nt":
+                subprocess.run(["taskkill", "/T", "/F", "/PID", str(process.pid)],
+                               capture_output=True, check=False)
+            else:
+                import signal
+                os.killpg(process.pid, signal.SIGKILL)
+            process.wait(timeout=10)
+    report.update({"status": status, "exit_code": code,
+                   "elapsed_seconds": time.monotonic() - started})
+    (output / "invocation.json").write_bytes(canonical_bytes(report, newline=True))
+    return report
+
+
+def read_trm_submission(path: Path, expected_tests: Mapping[str, int], *,
+                        invocation: Mapping[str, Any]) -> dict[tuple[str, int], list[dict[str, Any]]]:
+    """Parse upstream attempt grids; launch fixtures cannot claim model output."""
+    kind = invocation.get("source_kind")
+    if (kind not in {"upstream", "parser-fixture"} or
+            invocation.get("status") != "complete"):
+        raise ValidationError("TRM output needs a successful upstream invocation or explicit parser fixture")
+    submission = json.loads(path.read_bytes())
+    if set(submission) != set(expected_tests):
+        raise ValidationError("TRM submission task denominator differs")
+    result = {}
+    for task_id, count in expected_tests.items():
+        tests = submission[task_id]
+        if type(count) is not int or count < 1 or not isinstance(tests, list) or len(tests) != count:
+            raise ValidationError("TRM submission test denominator differs")
+        for test_index, attempts in enumerate(tests):
+            if not isinstance(attempts, dict) or set(attempts) != {f"attempt_{i}" for i in range(1, 11)}:
+                raise ValidationError("TRM upstream ten-attempt schema differs")
+            result[(task_id, test_index)] = [
+                {"grid": grid(attempts[f"attempt_{i}"]),
+                 "branch": "trm" if kind == "upstream" else "trm-fixture",
+                 "source": f"{kind}:attempt_{i}", "rank": i}
+                for i in range(1, 11)]
+    return result
 
 
 def trm_candidates(records: list[Mapping[str, Any]]) -> dict[tuple[str, int], list[dict[str, Any]]]:
@@ -155,6 +255,8 @@ def integrate_attempts(qwen: list[Mapping[str, Any]], trm: list[Mapping[str, Any
     """Fixed branch priority avoids adding uncalibrated Qwen/TRM scores."""
     if mode not in {"qwen-only", "trm-only", "combined"}:
         raise ValidationError("invalid branch mode")
+    if any(item.get("branch") == "trm-fixture" for item in trm):
+        raise ValidationError("TRM parser fixture cannot enter model attempts")
     ordered = (list(qwen) if mode != "trm-only" else []) + (list(trm) if mode != "qwen-only" else [])
     attempts = []
     for candidate in ordered:
@@ -174,6 +276,8 @@ def integrate_with_qwen_verifier(task: Mapping[str, Any], test_index: int,
     The caller must include these extra forward passes in the run budget.
     """
     candidates = []
+    if any(item.get("branch") == "trm-fixture" for item in trm):
+        raise ValidationError("TRM parser fixture cannot enter joint verification")
     for branch, items in (("qwen", qwen), ("trm", trm)):
         for index, item in enumerate(items):
             value = grid(item["grid"])
