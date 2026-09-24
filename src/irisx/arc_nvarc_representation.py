@@ -253,7 +253,8 @@ def convert_qwen35_checkpoint(base_dir: Path, output_dir: Path, *, model_revisio
             "tied_embeddings": tied}
 
 
-def verify_model_material(root: Path, expected_digest: str) -> dict[str, Any]:
+def verify_model_material(root: Path, expected_digest: str, *,
+                          allowed_extra_files: set[str] | None = None) -> dict[str, Any]:
     manifest_path = root / "material-manifest.json"
     if manifest_path.is_symlink() or not manifest_path.is_file():
         raise ValidationError("compact material manifest is missing or unsafe")
@@ -262,7 +263,8 @@ def verify_model_material(root: Path, expected_digest: str) -> dict[str, Any]:
             material.get("format") != "irisx/nvarc-compact-model-material" or
             type(material.get("tied_embeddings")) is not bool):
         raise ValidationError("compact model material identity differs")
-    files = _verify_file_inventory(root, material.get("files"), "material-manifest.json")
+    files = _verify_file_inventory(root, material.get("files"), "material-manifest.json",
+                                   allowed_extra_files=allowed_extra_files)
     _verify_weight_layout(root, files)
     required = {"config.json", "generation_config.json", "grid-vocab.json", "grid-tokenizer.json"}
     if not required.issubset(files):

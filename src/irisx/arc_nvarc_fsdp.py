@@ -104,7 +104,10 @@ def run(plan_path: Path, compact: Path, sequences_path: Path, output: Path) -> d
         gate = [None]
         if rank == 0:
             try:
-                verify_model_material(compact, plan["compact_material_digest"])
+                metadata = compact / "dataset-metadata.json"
+                verify_model_material(compact, plan["compact_material_digest"],
+                                      allowed_extra_files={"dataset-metadata.json"}
+                                      if metadata.exists() else None)
             except Exception as error:
                 gate[0] = f"{type(error).__name__}: {error}"
         dist.broadcast_object_list(gate, src=0)

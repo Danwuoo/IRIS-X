@@ -7,6 +7,7 @@ import base64
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -16,6 +17,7 @@ import torch
 
 from irisx.arc_nvarc_m2 import freeze_arc_sft_data, load_frozen_arc_sft_data
 from irisx.arc_nvarc_fsdp import run as run_fsdp_probe
+from irisx.arc_nvarc_representation import verify_model_material
 from irisx.arc_nvarc_sdg import (WSLNamespaceProgramExecutor, render_source_teacher_prompt,
                                  replay_pinned_ten_stage_sdg, replay_teacher_program_ledgers,
                                  run_teacher_pipeline, SavedTeacher)
@@ -82,6 +84,13 @@ class M2M3StrictTests(unittest.TestCase):
             self.assertEqual(8, joint_result["qwen_verifier_explicit_forwards"])
             self.assertEqual(1, joint_result["joint"]["branch_counts"]["trm"])
             self.assertFalse(joint_result["contains_evaluator_truth"])
+            mounted = root / "flat-dataset-mount"
+            shutil.copytree(sft / "export", mounted)
+            (mounted / "dataset-metadata.json").write_text("{}", encoding="utf-8")
+            with self.assertRaises(ValidationError):
+                verify_model_material(mounted, chain["sft_export_material_digest"])
+            verify_model_material(mounted, chain["sft_export_material_digest"],
+                                  allowed_extra_files={"dataset-metadata.json"})
 
     def test_real_namespace_limits_and_ten_stage_saved_replay(self):
         sandbox = WSLNamespaceProgramExecutor()

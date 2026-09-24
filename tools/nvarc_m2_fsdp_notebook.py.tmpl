@@ -20,6 +20,7 @@ for name, encoded in PAYLOADS.items():
 plan = json.loads(base64.b64decode(PAYLOADS["plan"]))
 if (plan.get("approved") is not True or not plan.get("owner_decision") or
         plan.get("run_id") != "nvarc-m2-fsdp-feasibility-001" or
+        plan.get("kernel_id") != "danielwuu/nvarc-m2-fsdp-feasibility-001" or
         plan.get("maximum_paid_usd") != 0 or plan.get("maximum_optimizer_steps") != 1):
     raise RuntimeError("exact owner-approved feasibility plan required")
 
@@ -58,8 +59,7 @@ model_roots = [Path("/kaggle/input/datasets/danielwuu/irisx-nvarc-m2-compact-4b-
                Path("/kaggle/input/irisx-nvarc-m2-compact-4b-001")]
 wheel_roots = [Path("/kaggle/input/datasets/danielwuu/irisx-arc-agi-2-trial-002-smoke-001"),
                Path("/kaggle/input/irisx-arc-agi-2-trial-002-smoke-001")]
-models = [path / "compact-model" for path in model_roots
-          if (path / "compact-model/material-manifest.json").is_file()]
+models = [path for path in model_roots if (path / "material-manifest.json").is_file()]
 wheels = [path for path in wheel_roots if path.is_dir()]
 save("m2-fsdp-mount-preflight.json", {"model_mounts": [str(path) for path in models],
                                       "wheel_mounts": [str(path) for path in wheels]})

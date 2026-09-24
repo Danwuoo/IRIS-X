@@ -103,13 +103,12 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
                        "kernel_sources": [], "model_sources": []}
     (kernel / "kernel-metadata.json").write_bytes(canonical_bytes(kernel_metadata, newline=True))
     model_dataset = output / "model-dataset"
-    compact_dataset = model_dataset / "compact-model"
-    compact_dataset.mkdir(parents=True)
+    model_dataset.mkdir()
     for member in sorted(model_root.iterdir()):
         if not member.is_file():
             raise ValidationError("model material contains a nonfile member")
-        os.link(member, compact_dataset / member.name)
-    dataset_metadata = {"title": "IRIS-X NVARC M2 compact 4B 001",
+        os.link(member, model_dataset / member.name)
+    dataset_metadata = {"title": "irisx-nvarc-m2-compact-4b-001",
                         "id": plan["model_dataset_id"], "licenses": [{"name": "other"}],
                         "isPrivate": True}
     (model_dataset / "dataset-metadata.json").write_bytes(canonical_bytes(dataset_metadata, newline=True))

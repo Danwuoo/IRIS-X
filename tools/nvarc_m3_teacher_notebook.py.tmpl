@@ -20,6 +20,7 @@ for name, encoded in PAYLOADS.items():
 plan = json.loads(base64.b64decode(PAYLOADS["plan"]))
 if (plan.get("approved") is not True or not plan.get("owner_decision") or
         plan.get("run_id") != "nvarc-m3-teacher-small-001" or
+        plan.get("kernel_id") != "danielwuu/nvarc-m3-teacher-small-001" or
         plan.get("maximum_paid_usd") != 0 or plan.get("maximum_teacher_calls") != 4):
     raise RuntimeError("exact owner-approved teacher plan required")
 os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1",
