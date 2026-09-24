@@ -100,3 +100,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0025-retry-auth-rejected-4b-pilot-004.md`](0025-retry-auth-rejected-4b-pilot-004.md)
   records pilot 004's expired-OAuth HTTP 401 and authorizes one exact-package
   transport retry after credential refresh, before any notebook version.
+- [`0026-authorize-nvarc-4b-compact-complete-pilot.md`](0026-authorize-nvarc-4b-compact-complete-pilot.md)
+  binds one private compact 4B conversion, short adaptation, generation and
+  result-verification run under fixed synthetic and USD 0 ceilings.
