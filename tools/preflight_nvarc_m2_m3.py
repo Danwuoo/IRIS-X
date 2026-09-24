@@ -15,7 +15,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from irisx.arc_nvarc_representation import verify_model_material
-from irisx.canonical import digest_value
+from irisx.canonical import canonical_bytes, digest_value
 from irisx.errors import ValidationError
 
 
@@ -102,8 +102,15 @@ def preflight(package: Path) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("package", type=Path)
+    parser.add_argument("--report", type=Path)
     args = parser.parse_args()
-    print(json.dumps(preflight(args.package), indent=2))
+    report = preflight(args.package)
+    if args.report is not None:
+        if args.report.exists():
+            raise ValidationError("new local preflight report path required")
+        args.report.parent.mkdir(parents=True, exist_ok=True)
+        args.report.write_bytes(canonical_bytes(report, newline=True))
+    print(json.dumps(report, indent=2))
 
 
 if __name__ == "__main__":

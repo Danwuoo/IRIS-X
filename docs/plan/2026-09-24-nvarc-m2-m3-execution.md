@@ -40,3 +40,35 @@ Decision 0027 已消耗；本文件不啟動 provider 執行。
 
 小批工程可執行不等於 ARC 能力提升、原 NVARC 規模重現、holdout 評分或 M4
 完成。任何實際缺口及失敗留在 trial status 和 reproduction matrix。
+
+## 2026-09-25 具體外部請求草案與停止條件
+
+本機 M2/M3 的實際證據及 artifact digest 見
+`trials/arc-agi-2-qwen35-nvarc/m2-m3.md`。下列兩份 package 已離線產生、
+`approved: false`，原有 Decision 0027 等額度不能移用：
+
+1. `nvarc-m2-fsdp-feasibility-001`：新私有 compact model Dataset **一版**，
+   私有 Internet-off Kaggle NvidiaL4 x4 kernel **一版**，最長 1,800 秒；
+   BF16、unpacked、全參數 FSDP **一步**，每 rank 最多 128 input tokens、
+   全部最多 512，零 generation、零 teacher call、USD paid 0；終止後取回
+   **一次**，失敗不 retry。觀察 peak memory、四個不同 L4 UUID、loss/grad/
+   weight update；不匯出 SFT checkpoint。若 backend 不相容、OOM 或資料
+   綁定不符，停止此 identity，不啟動其他 4B SFT。
+2. `nvarc-m3-teacher-small-001`：沿用既有私有原始 Qwen3.5-4B 模型／
+   offline wheels Dataset，私有 Internet-off Kaggle NvidiaL4 x4 kernel
+   **一版**（只用一張 GPU），最長 1,800 秒；僅對兩個已凍結的公開 ARC
+   training parent 做四個相依的上游 prompt 呼叫；每次最多 4,096 input
+   加 1,024 output tokens，全部保留上限 20,480，USD paid 0；原始回應、
+   usage、失敗 ledger 私有留存，終止後取回 **一次**，失敗不 retry。這是
+   Qwen3.5-4B 的小型 local teacher smoke，與 NVARC README 所連 NeMo-Skills
+   GPT-OSS-120B 教學不同；README 未凍結實際 teacher identity，結果不能
+   假稱原始 SDG 復現。
+
+總計上限：兩個 kernel 版次、一個新 Dataset 版次、兩次 terminal output
+retrieval、四次 teacher generation、四張 L4 各佔用最多兩個 30 分鐘 session
+（供應端預留量上限約 4 GPU 小時）、USD paid 0。取得回應後只在本機 WSL
+sandbox replay/filter，不在 Kaggle notebook 執行 generated Python。
+上述只是可審查請求，尚未獲得 provider/model/data/limits/retention 的
+owner 明確核定。即使兩個 probe 成功，真正 4B 八步 SFT 的 checkpoint／
+optimizer sharding、reload、4B TTT/搜尋/排序及原規模 TRM 仍需另行
+具體 package 與授權；不得把探針的 512 tokens 誤用為訓練額度。

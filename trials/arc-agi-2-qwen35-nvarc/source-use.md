@@ -8,6 +8,9 @@ owner-authorized M0/M1 implementation, see the
 invokes pinned upstream SDG, SFT-loader, Qwen augmentation/collator/DFS/scoring
 and TRM builder code where documented; historical pilot defaults and artifacts
 are unchanged.
+The later [M2/M3 record](m2-m3.md) updates the execution status of SDG
+sandbox replay, real tiny TRM training and public ARC-SFT. The table below
+remains its dated source inspection, including then-current gaps.
 
 Read-only inspection on 2026-09-23. NVARC was cloned at commit
 `846d0198efa752534594e321fc3289fc0a06c657`; no upstream file was

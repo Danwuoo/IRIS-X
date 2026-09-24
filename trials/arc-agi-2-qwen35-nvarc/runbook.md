@@ -1,5 +1,70 @@
 # Development and future execution runbook
 
+## M2/M3 local execution and external preflight (2026-09-25)
+
+The [M2/M3 record](m2-m3.md) gives observed artifact identities and precise
+open gates. Use the installed strict CPU environment from the repository root.
+Every command below is local and makes a new ignored output directory.
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_source.py verify
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_m2_m3.py freeze --data .irisx/arc-agi-2/qwen35-nvarc/m2-m3/arc-data-new
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_m2_m3.py tiny-sft --data .irisx/arc-agi-2/qwen35-nvarc/m2-m3/arc-data-new --output .irisx/arc-agi-2/qwen35-nvarc/m2-m3/tiny-sft-new
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_m2_m3.py tiny-solve --data .irisx/arc-agi-2/qwen35-nvarc/m2-m3/arc-data-new --sft .irisx/arc-agi-2/qwen35-nvarc/m2-m3/tiny-sft-new --output .irisx/arc-agi-2/qwen35-nvarc/m2-m3/tiny-solve-new
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_m2_m3.py tiny-trm --data .irisx/arc-agi-2/qwen35-nvarc/m2-m3/arc-data-new --output .irisx/arc-agi-2/qwen35-nvarc/m2-m3/tiny-trm-new
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_m2_m3.py tiny-joint --data .irisx/arc-agi-2/qwen35-nvarc/m2-m3/arc-data-new --sft .irisx/arc-agi-2/qwen35-nvarc/m2-m3/tiny-sft-new --qwen .irisx/arc-agi-2/qwen35-nvarc/m2-m3/tiny-solve-new --trm .irisx/arc-agi-2/qwen35-nvarc/m2-m3/tiny-trm-new --output .irisx/arc-agi-2/qwen35-nvarc/m2-m3/tiny-joint-new
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_m2_m3.py sdg-replay --data .irisx/arc-agi-2/qwen35-nvarc/m2-m3/arc-data-new --output .irisx/arc-agi-2/qwen35-nvarc/m2-m3/sdg-replay-new
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/stage_nvarc_m2_fsdp.py --data .irisx/arc-agi-2/qwen35-nvarc/m2-m3/arc-data-new --output .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-review-new
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/stage_nvarc_m3_teacher.py --output .irisx/arc-agi-2/qwen35-nvarc/m2-m3/teacher-review-new
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/preflight_nvarc_m2_m3.py .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-review-new --report .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-review-new/preflight.json
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/preflight_nvarc_m2_m3.py .irisx/arc-agi-2/qwen35-nvarc/m2-m3/teacher-review-new --report .irisx/arc-agi-2/qwen35-nvarc/m2-m3/teacher-review-new/preflight.json
+```
+
+The FSDP stage requires the existing, independently verified compact 4B
+material and creates hardlinks for one prospective private model Dataset. The
+teacher stage uses the existing private full-vocabulary model/wheel Dataset;
+it packages only pinned public training demos and source prompts. Both
+`kernel-metadata.json` files are private, `NvidiaL4`, Internet-disabled and
+both notebooks fail their `approved: false` gate before model/provider work.
+
+After an exact owner decision, create a local authorization JSON with
+`approved: true`, `owner_decision`, `draft_plan_sha256`, `run_id` and final
+`kernel_id`; FSDP also requires `model_dataset_id`. Restage to a **new** output
+with `--authorization <file>` and inspect its updated summary/notebook before
+the bounded Dataset/kernel commands. Never mutate an executed package or reuse
+a failed identity. The staged FSDP worker invokes
+`torch.distributed.run --nproc_per_node=4 -m irisx.arc_nvarc_fsdp` for one step.
+The teacher worker invokes `irisx.arc_nvarc_sdg_teacher` for at most four
+dependent calls. The terminal files and one retrieval per approved identity
+must be retained; provider errors consume that identity. A successful 4B
+feasibility step alone does not authorize the subsequent 8-step 4B SFT.
+The FSDP package keeps compact files flat beside the CLI's singular
+`dataset-metadata.json`. After approval, the bounded commands are:
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle datasets create -p <approved-fsdp-package>/model-dataset
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle kernels push -p <approved-fsdp-package>/kernel --accelerator NvidiaL4 --timeout 1800
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle kernels push -p <approved-teacher-package>/kernel --accelerator NvidiaL4 --timeout 1800
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle kernels output <exact-owner/slug/version> -p <new-local-output>
+```
+
+Dataset creation defaults to private. Push the FSDP kernel only after its
+Dataset version receipt. The teacher package attaches the existing private
+Dataset. Preserve both returned kernel version IDs and use the final line at
+most once for each terminal version. These are future commands contingent on
+the exact owner decision, not commands to run from this draft.
+After an authorized teacher retrieval, keep the raw stage ledgers private and
+run the local replay with the exact approved package seed:
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_m2_m3.py sdg-teacher-replay --teacher-ledgers <retrieved>/m3-teacher-small-001/stage-ledgers --teacher-seed <approved-package>/seed.json --data <frozen-data> --output <new-local-output>
+```
+
+It extracts the two generated functions as text, executes them only in the
+verified WSL namespace, and applies the pinned source pair filter and
+augmentation. This ARC-seeded six-stage bridge does not claim HARC/BARC
+cleaning parity; the separate saved-response test exercises all ten stages.
+
 ## Compact 4B small complete flow (2026-09-24 terminal)
 
 The new [development plan](../../docs/plan/2026-09-24-qwen35-compact-complete-pilot.md)

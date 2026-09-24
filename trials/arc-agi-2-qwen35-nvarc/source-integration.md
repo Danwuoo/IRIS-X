@@ -2,6 +2,10 @@
 
 This is the local M0/M1 engineering record for the owner-authorized phases
 1–3. It does not promote a method, score ARC, or authorize an external run.
+The subsequent [M2/M3 bounded development record](m2-m3.md) describes the
+actual public ARC-SFT/tiny TRM/SDG sandbox chain and its separate unapproved
+4B feasibility and teacher packages; it leaves these M0/M1 source bindings
+unchanged.
 
 ## Rebuild and boundaries
 
