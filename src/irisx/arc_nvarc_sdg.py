@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import ast
+import hashlib
 from pathlib import Path
 import re
 import shutil
@@ -12,7 +14,7 @@ import time
 from typing import Any, Mapping, Protocol
 
 from .arc_nvarc_runtime import atomic_json
-from .canonical import digest_value
+from .canonical import canonical_bytes, digest_value
 from .errors import ValidationError
 
 
@@ -38,6 +40,100 @@ class SavedTeacher:
         if key not in self.responses:
             raise ValidationError(f"saved SDG response missing: {key}")
         return self.responses[key]
+
+
+def _response_text(value: Any) -> str:
+    result = value.get("text") if isinstance(value, dict) else value
+    if not isinstance(result, str) or not result.strip():
+        raise ValidationError("SDG teacher response is empty or not text")
+    return result
+
+
+def render_source_teacher_prompt(stage: str, item: Mapping[str, Any], template: str) -> str:
+    """Fill the four pinned v1 templates from public demos and prior replies."""
+    history = item.get("stage_responses", {})
+    if stage == "summary":
+        demos = item.get("train_demos", [])
+        if len(demos) < 2:
+            raise ValidationError("SDG summary requires two public train demonstrations")
+        values = {"INPUT_IMAGE1": json.dumps(demos[0]["input"]),
+                  "OUTPUT_IMAGE1": json.dumps(demos[0]["output"]),
+                  "INPUT_IMAGE2": json.dumps(demos[1]["input"]),
+                  "OUTPUT_IMAGE2": json.dumps(demos[1]["output"]),
+                  "USER_COMMENTS": item.get("source_comments", "No source comments supplied.")}
+    elif stage == "mix":
+        values = {"PUZZLE1": _response_text(history["summary"]),
+                  "PUZZLE2": item["second_description"]}
+    elif stage == "input-logic":
+        values = {"PUZZLE": _response_text(history["mix"])}
+    elif stage == "output-logic":
+        values = {"PUZZLE": _response_text(history["mix"]),
+                  "INPUT_CODE": _response_text(history["input-logic"])}
+    else:
+        raise ValidationError("SDG teacher stage differs")
+    for key, value in values.items():
+        if not isinstance(value, str) or not value:
+            raise ValidationError("SDG teacher source value is empty")
+        if "{" + key + "}" not in template:
+            raise ValidationError("pinned source prompt placeholder differs: " + key)
+        template = template.replace("{" + key + "}", value)
+    return template
+
+
+class BoundedLocalHFTeacher:
+    """Offline text teacher adapter. Model/provider execution needs owner approval.
+
+    The caller supplies an already loaded full-vocabulary model/tokenizer and
+    exact material digest. The compact 16-symbol solver model is invalid here.
+    """
+
+    billed_calls = 1
+
+    def __init__(self, model: Any, tokenizer: Any, *, model_material_digest: str,
+                 maximum_input_tokens: int, maximum_output_tokens: int,
+                 maximum_total_tokens: int) -> None:
+        if (not model_material_digest.startswith("sha256:") or
+                min(maximum_input_tokens, maximum_output_tokens, maximum_total_tokens) < 1 or
+                maximum_input_tokens + maximum_output_tokens > maximum_total_tokens):
+            raise ValidationError("local SDG teacher bounds differ")
+        self.model, self.tokenizer = model, tokenizer
+        self.model_material_digest = model_material_digest
+        self.maximum_input_tokens = maximum_input_tokens
+        self.maximum_output_tokens = maximum_output_tokens
+        self.maximum_total_tokens = maximum_total_tokens
+        self.reserved_tokens = 0
+        self.identity = "offline-local-hf:" + digest_value({
+            "model_material_digest": model_material_digest,
+            "maximum_input_tokens": maximum_input_tokens,
+            "maximum_output_tokens": maximum_output_tokens,
+            "maximum_total_tokens": maximum_total_tokens})
+
+    def complete(self, stage: str, item: Mapping[str, Any], prompt: str) -> dict[str, Any]:
+        import torch
+
+        if self.reserved_tokens + self.maximum_input_tokens + self.maximum_output_tokens > self.maximum_total_tokens:
+            raise ValidationError("local SDG teacher total token ceiling exhausted")
+        rendered = render_source_teacher_prompt(stage, item, prompt)
+        tokens = self.tokenizer.apply_chat_template(
+            [{"role": "user", "content": rendered}], tokenize=True,
+            add_generation_prompt=True, return_tensors="pt")
+        input_tokens = int(tokens.shape[-1])
+        if input_tokens > self.maximum_input_tokens:
+            raise ValidationError("local SDG teacher input token ceiling exceeded")
+        # Reserve the full call before model generation; failure consumes it.
+        self.reserved_tokens += self.maximum_input_tokens + self.maximum_output_tokens
+        with torch.inference_mode():
+            generated = self.model.generate(tokens.to(self.model.device),
+                                            max_new_tokens=self.maximum_output_tokens,
+                                            do_sample=False,
+                                            pad_token_id=self.tokenizer.eos_token_id)
+        output_ids = generated[0, input_tokens:]
+        value = self.tokenizer.decode(output_ids, skip_special_tokens=True)
+        if not value.strip():
+            raise ValidationError("local SDG teacher returned no text")
+        return {"text": value, "input_tokens": input_tokens,
+                "output_tokens": int(output_ids.numel()),
+                "model_material_digest": self.model_material_digest}
 
 
 def run_stage(stage: str, inputs: list[Mapping[str, Any]], prompt: str,
@@ -129,7 +225,9 @@ def run_teacher_pipeline(seed_records: list[Mapping[str, Any]],
         ledgers[stage] = ledger
         if any(value["status"] != "complete" for value in ledger["records"].values()):
             break
-        records = [{**item, "upstream_response": ledger["records"][item["record_id"]]["response"]}
+        records = [{**item,
+                    "stage_responses": {**item.get("stage_responses", {}),
+                                        stage: ledger["records"][item["record_id"]]["response"]}}
                    for item in records]
     return {"stages": ledgers, "reserved_calls": sum(value["reserved_calls"]
                                                        for value in ledgers.values())}
@@ -207,3 +305,214 @@ class DockerProgramExecutor:
                            capture_output=True, timeout=5, check=False)
         process.kill()
         process.wait(timeout=5)
+
+
+class WSLNamespaceProgramExecutor:
+    """Generated Python runs in WSL user/mount/PID/network namespaces and chroot.
+
+    The namespace script bind mounts only read-only /usr and /dev/null into a
+    disposable tmpfs root, then enforces address-space, process, CPU and wall
+    limits. The host never imports or executes the submitted Python.
+    """
+
+    def __init__(self, *, distribution: str = "Ubuntu-24.04", wall_seconds: int = 15,
+                 output_bytes: int = 65536) -> None:
+        if (not re.fullmatch(r"[A-Za-z0-9.-]+", distribution) or
+                not 8 <= wall_seconds <= 60 or not 1 <= output_bytes <= 65536):
+            raise ValidationError("WSL SDG sandbox bounds invalid")
+        self.distribution, self.wall_seconds, self.output_bytes = distribution, wall_seconds, output_bytes
+
+    def command(self) -> list[str]:
+        script = Path(__file__).resolve().parents[2] / "tools/nvarc_sdg_namespace.sh"
+        if not script.is_file():
+            raise ValidationError("WSL namespace launcher missing")
+        resolved = script.resolve()
+        if resolved.drive.lower() != "c:":
+            raise ValidationError("WSL namespace launcher needs a C: workspace path")
+        linux_path = "/mnt/c" + resolved.as_posix()[2:]
+        return ["wsl", "-d", self.distribution, "--", "sh", linux_path]
+
+    def execute_entry(self, code: str, entry: str, *, input_grid: Any | None = None,
+                      seed: int | None = None) -> Any:
+        from .arc_nvarc_data import grid
+
+        if not shutil.which("wsl") or entry not in {"transform", "generate_puzzle_input",
+                                                       "generate_puzzle_output"}:
+            raise ValidationError("WSL sandbox unavailable or SDG entry unknown")
+        if not isinstance(code, str) or not code or len(code.encode()) > self.output_bytes:
+            raise ValidationError("SDG program exceeds input bound")
+        if entry == "generate_puzzle_input":
+            if type(seed) is not int or not 0 <= seed <= 1000000:
+                raise ValidationError("SDG input generation seed differs")
+            argument = {"seed": seed}
+        else:
+            argument = {"grid": grid(input_grid)}
+        payload = json.dumps({"code": code, "entry": entry, **argument}).encode()
+        scratch = Path(".irisx") / "nvarc-sdg-sandbox"
+        scratch.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=scratch) as temp:
+            stdout, stderr = Path(temp) / "stdout", Path(temp) / "stderr"
+            with stdout.open("wb") as out, stderr.open("wb") as err:
+                process = subprocess.Popen(self.command(), stdin=subprocess.PIPE,
+                                           stdout=out, stderr=err)
+                assert process.stdin is not None
+                process.stdin.write(payload)
+                process.stdin.close()
+                started = time.monotonic()
+                while process.poll() is None:
+                    if stdout.stat().st_size > self.output_bytes or stderr.stat().st_size > self.output_bytes:
+                        process.kill()
+                        process.wait(timeout=5)
+                        raise ValidationError("WSL SDG sandbox output exceeded bound")
+                    if time.monotonic() - started >= self.wall_seconds:
+                        process.kill()
+                        process.wait(timeout=5)
+                        raise ValidationError("WSL SDG sandbox wall time exceeded")
+                    time.sleep(0.02)
+            if process.returncode or stderr.stat().st_size or stdout.stat().st_size > self.output_bytes:
+                raise ValidationError("WSL SDG sandbox failed or output exceeded bound")
+            return grid(json.loads(stdout.read_bytes()))
+
+    def execute(self, code: str, input_grid: Any) -> Any:
+        return self.execute_entry(code, "transform", input_grid=input_grid)
+
+
+def replay_pinned_ten_stage_sdg(fixture_path: Path, source_root: Path,
+                                output: Path, executor: WSLNamespaceProgramExecutor) -> dict[str, Any]:
+    """Replay ten NVARC stages with saved responses and real isolated Python.
+
+    Caller first verifies the complete pinned source tree. Source cleaning and
+    validation functions are trusted code; only generated functions enter WSL.
+    """
+    from .arc_nvarc_data import source_sdg_messages
+    from .arc_nvarc_upstream import sdg_build_datasets
+
+    if output.exists():
+        raise ValidationError("SDG replay output must be new")
+    fixture = json.loads(fixture_path.read_bytes())
+    if fixture.get("format") != "irisx/nvarc-sdg-saved-fixture-v1" or len(fixture.get("seeds", [])) != 5:
+        raise ValidationError("saved SDG fixture differs")
+    script_root = source_root / "NVARC/SDG/scripts"
+    prompt_root = source_root / "NVARC/SDG/prompts"
+
+    def checked_function(path: Path, names: tuple[str, ...]) -> dict[str, Any]:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        nodes = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in names]
+        if set(node.name for node in nodes) != set(names):
+            raise ValidationError("source SDG cleaning function missing")
+        namespace: dict[str, Any] = {}
+        exec(compile(ast.Module(body=nodes, type_ignores=[]), str(path), "exec"), namespace)
+        return namespace
+
+    h_arc = checked_function(script_root / "h_arc_clean.py", ("clean_solution",))
+    barc = checked_function(script_root / "utils_barc.py", ("clean_comments", "clean_description"))
+    cleaned_h_arc = h_arc["clean_solution"](fixture["h_arc_solution"])
+    cleaned_barc = barc["clean_description"](fixture["barc_comments"])
+    if not cleaned_h_arc or not cleaned_barc:
+        raise ValidationError("SDG source cleaning produced no description")
+    prompt_names = {"summary": "summary_v1.md", "mix": "mix_v1.md",
+                    "input-logic": "generate_puzzle_input.md",
+                    "output-logic": "generate_puzzle_output.md"}
+    prompts = {stage: (prompt_root / name).read_text(encoding="utf-8")
+               for stage, name in prompt_names.items()}
+    prompt_hashes = {stage: hashlib.sha256(prompts[stage].encode()).hexdigest()
+                     for stage in prompt_names}
+    output.mkdir(parents=True)
+    record = {"record_id": fixture["record_id"], "parent_id": fixture["record_id"],
+              "source_id": "saved-replay-fixture", "h_arc": cleaned_h_arc, "barc": cleaned_barc}
+    ledgers = run_teacher_pipeline([record], prompts, SavedTeacher(fixture["responses"]),
+                                   output / "teacher-ledgers", seed=24, maximum_calls=0)
+    if ledgers["reserved_calls"] or len(ledgers["stages"]) != 4:
+        raise ValidationError("saved SDG replay did not complete teacher stages")
+    response = {stage: ledgers["stages"][stage]["records"][fixture["record_id"]]["response"]
+                for stage in prompt_names}
+    inputs = [executor.execute_entry(response["input-logic"], "generate_puzzle_input", seed=seed)
+              for seed in fixture["seeds"]]
+    outputs = [executor.execute_entry(response["output-logic"], "generate_puzzle_output",
+                                      input_grid=value) for value in inputs]
+    pairs = [{"input": input_grid, "output": output_grid}
+             for input_grid, output_grid in zip(inputs, outputs)]
+    source = sdg_build_datasets()
+    accepted = all(source.validate_grid(item["input"]) and source.validate_grid(item["output"])
+                   for item in pairs) and source.validate_pairs(pairs)
+    if not accepted:
+        raise ValidationError("source SDG pair/filter rejected saved replay")
+    augmented = source_sdg_messages(pairs, seed=2400, augment=True)
+    stages = ["h-arc-clean", "barc-clean", "summary", "mix", "input-logic",
+              "output-logic", "execute-input", "execute-output", "pair-filter", "dataset-augment"]
+    report = {"format": "irisx/nvarc-m3-sdg-replay-v1", "stages": stages,
+              "stage_count": len(stages), "fixture_sha256": hashlib.sha256(fixture_path.read_bytes()).hexdigest(),
+              "prompt_sha256": prompt_hashes,
+              "saved_response_digests": {key: digest_value(value) for key, value in response.items()},
+              "sandbox": "WSL2 user/mount/PID/network namespace + chroot + resource limits",
+              "generated_program_invocations": 10, "teacher_calls": 0,
+              "pair_count": len(pairs), "source_pair_filter_passed": accepted,
+              "augmented_message_count": len(augmented["messages"]),
+              "augmented_messages_digest": digest_value(augmented["messages"]),
+              "generated_puzzle_claim": False, "fixture_only": True}
+    (output / "report.json").write_bytes(canonical_bytes(report, newline=True))
+    return report
+
+
+def replay_teacher_program_ledgers(ledger_root: Path, seed_path: Path, output: Path,
+                                   executor: WSLNamespaceProgramExecutor) -> dict[str, Any]:
+    """Turn retained teacher program replies into isolated pairs, never host exec.
+
+    This post-retrieval route has six stages. HARC/BARC cleaning is specific to
+    the separate ten-stage fixture replay and is not claimed for this ARC seed.
+    """
+    from .arc_nvarc_data import source_sdg_messages
+    from .arc_nvarc_upstream import sdg_build_datasets
+
+    if output.exists():
+        raise ValidationError("new SDG teacher replay output required")
+    seed = json.loads(seed_path.read_bytes())
+    if seed.get("format") != "irisx/nvarc-m3-teacher-seed-v1":
+        raise ValidationError("SDG teacher seed format differs")
+    record_id = seed["record"]["record_id"]
+    responses = {}
+    for stage in STAGES[:4]:
+        ledger = json.loads((ledger_root / f"{stage}.json").read_bytes())
+        record = ledger.get("records", {}).get(record_id)
+        if (ledger.get("stage") != stage or record is None or
+                record.get("status") != "complete" or
+                record.get("response_digest") != digest_value(record.get("response"))):
+            raise ValidationError("SDG teacher saved response binding differs")
+        responses[stage] = _response_text(record["response"])
+
+    def program(stage: str, function: str) -> str:
+        raw = responses[stage]
+        blocks = re.findall(r"```(?:python)?\s*(.*?)```", raw, flags=re.DOTALL | re.IGNORECASE)
+        code = max(blocks, key=len).strip() if blocks else raw.strip()
+        tree = ast.parse(code)
+        if function not in {node.name for node in tree.body if isinstance(node, ast.FunctionDef)}:
+            raise ValidationError("SDG teacher response lacks required program function")
+        return code
+
+    input_code = program("input-logic", "generate_puzzle_input")
+    output_code = program("output-logic", "generate_puzzle_output")
+    seeds = list(range(5))
+    inputs = [executor.execute_entry(input_code, "generate_puzzle_input", seed=value)
+              for value in seeds]
+    outputs = [executor.execute_entry(output_code, "generate_puzzle_output",
+                                      input_grid=value) for value in inputs]
+    pairs = [{"input": before, "output": after} for before, after in zip(inputs, outputs)]
+    source = sdg_build_datasets()
+    accepted = all(source.validate_grid(pair["input"]) and source.validate_grid(pair["output"])
+                   for pair in pairs) and source.validate_pairs(pairs)
+    if not accepted:
+        raise ValidationError("source SDG pair/filter rejected teacher output")
+    augmented = source_sdg_messages(pairs, seed=2400, augment=True)
+    report = {"format": "irisx/nvarc-m3-teacher-program-replay-v1",
+              "seed_sha256": hashlib.sha256(seed_path.read_bytes()).hexdigest(),
+              "response_digests": {stage: digest_value(value) for stage, value in responses.items()},
+              "input_code_sha256": hashlib.sha256(input_code.encode()).hexdigest(),
+              "output_code_sha256": hashlib.sha256(output_code.encode()).hexdigest(),
+              "generated_program_invocations": 10, "pair_count": len(pairs),
+              "source_pair_filter_passed": accepted,
+              "augmented_messages_digest": digest_value(augmented["messages"]),
+              "contains_evaluator_truth": False,
+              "claim": "six-stage ARC-seeded teacher program replay; no HARC/BARC cleaning parity"}
+    output.mkdir(parents=True)
+    (output / "report.json").write_bytes(canonical_bytes(report, newline=True))
+    return report

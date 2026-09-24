@@ -65,6 +65,10 @@ def run(config_path: Path, visible_path: Path, output: Path, *, profile: str,
     results = []
     measurements = []
     for task in tasks:
+        if profile != "fixture":
+            import torch
+            if torch.cuda.is_available():
+                torch.cuda.reset_peak_memory_stats()
         started = time.monotonic()
         results.extend(solve_task(task, backend, candidate))
         if profile != "fixture":
@@ -81,6 +85,8 @@ def run(config_path: Path, visible_path: Path, output: Path, *, profile: str,
                                  "generation_seconds": backend.generate_seconds,
                                  "ranking_seconds": backend.rank_seconds,
                                  "explicit_forward_calls": backend.forward_calls,
+                                 "total_model_forward_calls": backend.forward_calls +
+                                 (adapter.last_observation or {}).get("steps", 0),
                                  "verification_calls": backend.verification_calls,
                                  "ttt": adapter.last_observation,
                                  "process_peak_rss_mib": rss_mib,

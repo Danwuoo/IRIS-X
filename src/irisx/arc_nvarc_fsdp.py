@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import subprocess
 import time
 
 from .arc_nvarc_training import collate, load_compact_model
@@ -30,6 +31,15 @@ def _hardware_gate() -> dict:
             not torch.cuda.is_available() or torch.cuda.device_count() != 4 or
             not torch.cuda.is_bf16_supported()):
         raise ValidationError("FSDP feasibility requires exactly four visible CUDA GPUs")
+    smi = subprocess.run(["nvidia-smi", "--query-gpu=index,name,memory.total,uuid",
+                          "--format=csv,noheader,nounits"], capture_output=True,
+                         text=True, timeout=30, check=True)
+    rows = [[part.strip() for part in line.split(",")] for line in smi.stdout.splitlines()]
+    if (len(rows) != 4 or any(len(row) != 4 or row[0] != str(index) or
+                              "L4" not in row[1] or int(row[2]) < 22000 or not row[3]
+                              for index, row in enumerate(rows)) or
+            len({row[3] for row in rows}) != 4):
+        raise ValidationError("FSDP feasibility requires four distinct L4 UUIDs")
     torch.cuda.set_device(local_rank)
     name = torch.cuda.get_device_name(local_rank)
     if "L4" not in name:
@@ -38,7 +48,7 @@ def _hardware_gate() -> dict:
     device = torch.device("cuda", local_rank)
     properties = torch.cuda.get_device_properties(local_rank)
     observed = {"rank": rank, "local_rank": local_rank, "name": name,
-                "device_uuid": str(getattr(properties, "uuid", "")),
+                "device_uuid": rows[local_rank][3],
                 "total_memory_bytes": properties.total_memory}
     all_observed = [None] * 4
     dist.all_gather_object(all_observed, observed)
@@ -50,15 +60,19 @@ def _hardware_gate() -> dict:
     return observed
 
 
-def _weight_sum(model) -> float:
+def _weight_fingerprint(model) -> tuple[float, float]:
     import torch
     import torch.distributed as dist
 
+    local = torch.zeros(2, dtype=torch.float64,
+                        device=torch.device("cuda", torch.cuda.current_device()))
     with torch.no_grad():
-        local = sum((parameter.detach().float().sum() for parameter in model.parameters()),
-                    torch.zeros((), device=torch.device("cuda", torch.cuda.current_device())))
+        for parameter in model.parameters():
+            value = parameter.detach().double()
+            local[0] += value.sum()
+            local[1] += (value * value).sum()
     dist.all_reduce(local)
-    return float(local.cpu())
+    return float(local[0].cpu()), float(local[1].cpu())
 
 
 def run(plan_path: Path, compact: Path, sequences_path: Path, output: Path) -> dict:
@@ -107,7 +121,7 @@ def run(plan_path: Path, compact: Path, sequences_path: Path, output: Path) -> d
         optimizer = torch.optim.AdamW(wrapped.parameters(), lr=float(plan["learning_rate"]),
                                       weight_decay=float(plan["weight_decay"]))
         torch.cuda.reset_peak_memory_stats()
-        before = _weight_sum(wrapped)
+        before = _weight_fingerprint(wrapped)
         sequence = sequences[(int(plan["seed"]) + rank) % len(sequences)]
         batch = {key: torch.tensor(value, dtype=torch.long,
                                    device=torch.device("cuda", observed["local_rank"]))
@@ -131,12 +145,12 @@ def run(plan_path: Path, compact: Path, sequences_path: Path, output: Path) -> d
         if any(not bool(torch.isfinite(parameter).all()) for parameter in wrapped.parameters()):
             raise ValidationError("FSDP SFT updated weight non-finite")
         torch.cuda.synchronize()
-        after = _weight_sum(wrapped)
+        after = _weight_fingerprint(wrapped)
         if before == after:
             raise ValidationError("FSDP SFT optimizer did not change weight sum")
         local = {**observed, "input_tokens": tokens, "loss": float(loss.detach().cpu()),
                  "nonzero_gradient_tensors": nonzero,
-                 "weight_sum_before": before, "weight_sum_after": after,
+                 "weight_fingerprint_before": before, "weight_fingerprint_after": after,
                  "step_wall_seconds": time.monotonic() - step_started,
                  "peak_cuda_allocated_mib": torch.cuda.max_memory_allocated() / 1048576}
         all_local = [None] * 4

@@ -454,7 +454,7 @@ def integrate_attempts(qwen: list[Mapping[str, Any]], trm: list[Mapping[str, Any
 
 def integrate_with_qwen_verifier(task: Mapping[str, Any], test_index: int,
                                  qwen: list[Mapping[str, Any]], trm: list[Mapping[str, Any]],
-                                 verifier: Any) -> dict[str, Any]:
+                                 verifier: Any, *, policy: str = "votes-minus-mean-nll") -> dict[str, Any]:
     """Source-style joint pool: Qwen likelihood verifies every TRM attempt.
 
     The caller must include these extra forward passes in the run budget.
@@ -469,7 +469,9 @@ def integrate_with_qwen_verifier(task: Mapping[str, Any], test_index: int,
             candidates.append({"grid": value, "complete": True,
                                "source": f"{branch}:{item.get('source', index)}",
                                "beam_nll": 0.0, "verification_nll": nll})
-    ranked = rank_candidates(candidates, policy="votes-minus-mean-nll")
+    ranked = rank_candidates(candidates, policy=policy)
     return {"attempts": [item["grid"] for item in ranked[:2]],
             "ranked": ranked, "verification_calls": len(candidates),
-            "branches": ["qwen", "trm"]}
+            "branch_counts": {"qwen": len(qwen), "trm": len(trm)},
+            "missing_attempts": max(0, 2 - len(ranked)),
+            "ranking_policy": policy, "branches": ["qwen", "trm"]}

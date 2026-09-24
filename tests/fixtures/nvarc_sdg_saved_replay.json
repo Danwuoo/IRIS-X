@@ -1,0 +1,14 @@
+{
+  "format": "irisx/nvarc-sdg-saved-fixture-v1",
+  "provenance": "hand-authored saved response fixture; zero provider calls; not newly generated SDG data",
+  "record_id": "saved-001",
+  "h_arc_solution": "Move the colored diagonal one cell to the right. Keep the square canvas and change each affected color consistently.",
+  "barc_comments": "# A small colored square uses two adjacent colors.\n# Shift both colors while keeping the square dimensions.",
+  "responses": {
+    "summary:saved-001": "A small two-color square is transformed by changing both colors.",
+    "mix:saved-001": "Combine the square description with a seeded color transformation.",
+    "input-logic:saved-001": "def generate_puzzle_input(seed):\n    a = seed % 9\n    return [[a, (a + 1) % 9], [(a + 2) % 9, (a + 3) % 9]]",
+    "output-logic:saved-001": "def generate_puzzle_output(input_grid):\n    return [[(value + 1) % 10 for value in row] for row in input_grid]"
+  },
+  "seeds": [0, 1, 2, 3, 4]
+}

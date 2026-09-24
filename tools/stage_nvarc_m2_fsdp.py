@@ -30,7 +30,8 @@ def sha(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None) -> dict:
+def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
+          data_root: Path = DATA, model_root: Path = MODEL) -> dict:
     if output.exists():
         raise ValidationError("new FSDP package output directory required")
     draft_path = CONFIG / "m2-fsdp-feasibility-draft.json"
@@ -53,8 +54,8 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None) -> dict
         plan["owner_decision"] = binding["owner_decision"]
         plan["kernel_id"] = binding["kernel_id"]
     config = json.loads((CONFIG / "m2-m3-small.json").read_bytes())
-    sequences = load_frozen_arc_sft_data(config, DATA)
-    data_manifest = json.loads((DATA / "manifest.json").read_bytes())
+    sequences = load_frozen_arc_sft_data(config, data_root)
+    data_manifest = json.loads((data_root / "manifest.json").read_bytes())
     if len(sequences) != 128 or data_manifest["train_sequence_digest"] != digest_value(sequences):
         raise ValidationError("frozen ARC sequence binding differs")
     sequence_bytes = b"".join(canonical_bytes(item, newline=True) for item in sequences)
@@ -64,7 +65,7 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None) -> dict
     if (max(len(item["input_ids"]) for item in sequences) > plan["max_sequence_length"] or
             max(len(item["input_ids"]) for item in sequences) > plan["maximum_tokens_per_rank"]):
         raise ValidationError("source sequence exceeds FSDP token/length bound")
-    material = verify_model_material(MODEL, plan["compact_material_digest"])
+    material = verify_model_material(model_root, plan["compact_material_digest"])
     wheel_manifest = json.loads((CONFIG / "base-wheel-manifest.json").read_bytes())
     if wheel_manifest.get("format") != "irisx/offline-wheel-manifest":
         raise ValidationError("offline wheel manifest differs")
@@ -104,7 +105,7 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None) -> dict
     model_dataset = output / "model-dataset"
     compact_dataset = model_dataset / "compact-model"
     compact_dataset.mkdir(parents=True)
-    for member in sorted(MODEL.iterdir()):
+    for member in sorted(model_root.iterdir()):
         if not member.is_file():
             raise ValidationError("model material contains a nonfile member")
         os.link(member, compact_dataset / member.name)
@@ -137,8 +138,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--authorization", type=Path)
+    parser.add_argument("--data", type=Path, default=DATA)
+    parser.add_argument("--compact", type=Path, default=MODEL)
     args = parser.parse_args()
-    print(json.dumps(stage(args.output, args.authorization), indent=2))
+    print(json.dumps(stage(args.output, args.authorization, args.data, args.compact), indent=2))
 
 
 if __name__ == "__main__":

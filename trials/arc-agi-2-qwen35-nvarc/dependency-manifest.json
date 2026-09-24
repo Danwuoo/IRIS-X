@@ -29,7 +29,8 @@
       "coolname": "2.2.0",
       "pydantic": "2.12.5",
       "omegaconf": "2.3.1",
-      "kaggle": "2.2.4"
+      "kaggle": "2.2.4",
+      "einops": "0.8.1"
     },
     "environment_path_hint": ".irisx/nvarc-ml-venv/Scripts/python.exe",
     "status": "tested integration environment, not a claimed restoration of original Kaggle environments"

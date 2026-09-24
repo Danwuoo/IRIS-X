@@ -13,7 +13,7 @@ import sys
 def main() -> int:
     required = ("torch", "transformers", "peft", "safetensors", "numpy",
                 "datasets", "argdantic", "hydra-core", "numba",
-                "adam-atan2-pytorch", "coolname")
+                "adam-atan2-pytorch", "coolname", "einops")
     versions = {}
     missing = []
     for package in required:
@@ -38,7 +38,7 @@ def main() -> int:
         return source_check
     return subprocess.call([sys.executable, "-m", "unittest",
                             "tests.test_arc_nvarc_ml", "tests.test_arc_nvarc_distributed",
-                            "tests.nvarc_source_differential", "-v"],
+                            "tests.nvarc_source_differential", "tests.nvarc_m2_m3_strict", "-v"],
                            env=env)
 
 

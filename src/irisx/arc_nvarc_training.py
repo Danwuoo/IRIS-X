@@ -356,6 +356,7 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
     if accumulation < 1 or total_steps < 1 or (stop_after_steps is not None and
                                                not step < stop_after_steps < total_steps):
         raise ValidationError("invalid training limits")
+    invocation_start_cursor = cursor
     optimizer.zero_grad(set_to_none=True)
     last_loss = None
     stop_reason = "maximum_steps"
@@ -430,6 +431,8 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
         peak_rss_mib = None
     return {"artifact_kind": "training-state", "identity_digest": identity,
             "steps": step, "cursor": cursor, "tokens_seen": tokens_seen,
+            "model_forward_calls": cursor,
+            "invocation_forward_calls": cursor - invocation_start_cursor,
             "last_loss": last_loss, "stop_reason": stop_reason,
             "elapsed_seconds": time.monotonic() - started,
             "process_peak_rss_mib": peak_rss_mib,
