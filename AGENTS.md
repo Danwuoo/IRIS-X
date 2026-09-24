@@ -148,6 +148,11 @@ debugging for program errors in that same bounded synthetic compact flow.
 Every new attempt uses a distinct immutable run identity and private kernel;
 the original 001 version remains consumed. No scientific scope, paid cost,
 Dataset mutation, ARC scoring or competition submission is authorized.
+Version 002 passed the Dataset root inventory gate and saved compact weights,
+then failed at canonical JSON serialization of the grid tokenizer's tuple.
+Its one terminal output command broke during the 7.8 GB weight transfer;
+the partial local files are not a verified model. That version is frozen.
+The terminal record is `trials/arc-agi-2-qwen35-nvarc/compact-complete-002.md`.
 
 ## Authority order
 

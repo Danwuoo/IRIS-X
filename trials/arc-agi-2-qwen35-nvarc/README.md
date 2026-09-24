@@ -26,6 +26,12 @@ terminal retrieval](compact-complete-001.md) are consumed. The version failed
 before model loading because the Dataset v2 mount's root filenames did not
 equal the pinned model and wheel inventory. It produced no compact artifact,
 training steps, or generations.
+Decision 0027 authorizes distinct free kernels in this session for program-error
+repairs. [Version 002](compact-complete-002.md) passed that inventory gate and
+saved compact weights, then failed because the grid tokenizer serializer used
+a tuple where canonical JSON requires a list. Its large-file retrieval broke
+mid-transfer, so no model artifact was verified locally. The serializer and
+retrieval sharding repairs are staged for a distinct version 003.
 The checked-in candidate `method` now passes the same binding/outbound verifier
 used by the runner, while unknown fields still fail closed. Task-local LoRA
 checks finite loss, every trainable gradient and updated adapter tensors at

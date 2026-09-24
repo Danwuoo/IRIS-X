@@ -211,10 +211,12 @@ def convert_qwen35_checkpoint(base_dir: Path, output_dir: Path, *, model_revisio
                                                       dtype=torch.bfloat16, attn_implementation="sdpa")
     tied, selected_input, selected_output = compact_loaded_model(model, manifest)
     output_dir.mkdir(parents=True, exist_ok=True)
-    model.save_pretrained(output_dir, safe_serialization=True)
+    # Keep each retrieval member bounded; a single 7.8 GB shard broke the
+    # previous terminal download before the small phase files were reached.
+    model.save_pretrained(output_dir, safe_serialization=True, max_shard_size="2GB")
     (output_dir / "grid-vocab.json").write_bytes(canonical_bytes(manifest, newline=True))
     (output_dir / "grid-tokenizer.json").write_bytes(canonical_bytes(
-        {"format": "irisx/nvarc-grid-tokenizer", "symbols": SYMBOLS,
+        {"format": "irisx/nvarc-grid-tokenizer", "symbols": list(SYMBOLS),
          "pad_token_id": PAD, "eos_token_id": END}, newline=True))
     del model
     if torch.cuda.is_available():

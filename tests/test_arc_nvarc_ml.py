@@ -13,8 +13,9 @@ from irisx.arc_nvarc_candidates import QwenCandidateBackend
 from irisx.arc_nvarc_compact_pilot import visible_workload
 from irisx.arc_nvarc_kaggle import execute_model_task
 from irisx.arc_nvarc_representation import (BEGIN, END, PAD, GridTokenizer,
-                                             compact_loaded_model, select_rows,
-                                             validate_compact_model)
+                                             SYMBOLS, compact_loaded_model,
+                                             convert_qwen35_checkpoint, select_rows,
+                                             validate_compact_model, verify_model_material)
 from irisx.arc_nvarc_runtime import (build_outbound, build_result, finish_task,
                                      make_binding, new_checkpoint, reserve_task,
                                      score_sealed, verify_outbound, verify_result)
@@ -66,6 +67,37 @@ class NvarcMLTests(unittest.TestCase):
         model = Qwen3_5ForConditionalGeneration(config)
         model.generation_config = copy.deepcopy(model.generation_config)
         return model
+
+    def test_converter_serializes_grid_tokenizer_and_verifies_material(self) -> None:
+        from transformers import Qwen3_5ForConditionalGeneration
+        import irisx.arc_nvarc_representation as representation
+
+        rows = [{"compact_id": index, "symbol": symbol,
+                 "source_token_ids": [index]} for index, symbol in enumerate(SYMBOLS)]
+        vocabulary = {"format": "irisx/nvarc-compact-vocab", "version": 1,
+                      "symbols": rows, "vocab_size": 16}
+        vocabulary["identity_digest"] = digest_value(vocabulary)
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp) / "base"
+            base.mkdir()
+            output = Path(temp) / "compact"
+
+            def load(path, **_kwargs):
+                if Path(path) == base:
+                    return self._tiny_qwen()
+                return Qwen3_5ForConditionalGeneration.from_pretrained(path,
+                                                                        local_files_only=True)
+
+            with mock.patch.object(representation, "verify_source_model_material"), \
+                 mock.patch.object(representation, "vocabulary_manifest",
+                                   return_value=vocabulary), \
+                 mock.patch("transformers.AutoTokenizer.from_pretrained"), \
+                 mock.patch("transformers.AutoModelForMultimodalLM.from_pretrained",
+                            side_effect=load):
+                converted = convert_qwen35_checkpoint(base, output,
+                    model_revision=representation.MODEL_REVISION,
+                    model_manifest_digest=digest_value("tiny-source"))
+            verify_model_material(output, converted["material_digest"])
 
     def test_tiny_conversion_reload_and_masked_gradient(self) -> None:
         import torch
