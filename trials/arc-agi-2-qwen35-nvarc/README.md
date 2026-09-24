@@ -2,6 +2,10 @@
 
 Status: **bounded synthetic 4B compact flow verified on one L4; full-method
 acceptance remains partial**.
+The [independent compact-flow analysis](control-review-e9048f8.md) accepts this
+bounded engineering milestone after rehashing the model/result and rerunning
+the repository and actual tiny-model tests. Candidate availability is 2/4,
+not an accuracy result.
 The [2026-09-24 independent review](control-review-811bd4b.md) verifies the
 retained pilot evidence and local ML tests, and records the remaining shipped
 configuration mismatch, numerical-check gap and full-method integration gates.
@@ -49,8 +53,9 @@ shares calls across multiple tests.
 The strict CPU ML environment ran a tiny **real Qwen3.5** two-task/four-test
 flow through conversion, reload, PEFT adaptation, model DFS generation,
 likelihood verification, checkpoint/result ZIP and separate sealed synthetic
-scoring. This checks the pipeline, not ARC quality. The 4B compact artifact,
-its VRAM/RAM cost and GPU result remain **unverified**. The exact draft limits,
+scoring. This checks the pipeline, not ARC quality. Pilot 003 separately
+verified the real 4B compact artifact, bounded phase memory observations and
+GPU result; full-method resource requirements remain unverified. The exact draft limits,
 stage commands and executed boundary are in the [runbook](runbook.md) and
 [development plan](../../docs/plan/2026-09-24-qwen35-compact-complete-pilot.md).
 
@@ -134,5 +139,8 @@ Pilot 002's one push request was rejected before a version receipt, with no
 retrieval. Pilot 003 made one accepted push and one partial terminal retrieval
 attempt. Pilot 004 made one HTTP 401 request and one accepted retry, followed
 by one full terminal retrieval. It completed two synthetic 4B LoRA steps with
-16 tokens. No pilot made model generations, ARC training or scoring, SDG
-teacher calls, Codex proposer calls, competition submissions, or paid usage.
+16 tokens. These earlier compatibility pilots made no model generations.
+The separate compact-complete-003 flow made four generations and two synthetic
+adaptation steps using 20 tokens. Neither line performed ARC training or
+scoring, SDG teacher calls, Codex proposer calls, competition submissions, or
+paid usage.
