@@ -24,6 +24,12 @@ ablation. None of their exhausted ceilings or frozen identities is reused.
 
 ## Source integration checkpoint (2026-09-24)
 
+The [independent source review](control-review-9198fd4.md) reran the repository
+and strict ML/source profiles successfully at `9198fd4`. Final phases 1–3
+acceptance remains pending two reproducible source-tool repairs: tracked
+worktree changes can escape the readiness check, and materialization does not
+reuse a valid pinned notebook cache when the remote current version changes.
+
 Owner-authorized local phases 1–3 now have a reconstructable pinned NVARC
 source and public-notebook cache, a source-to-adapter map, upstream differential
 tests and a shared fixture/tiny/4B stage configuration. The
