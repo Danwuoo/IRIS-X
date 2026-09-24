@@ -1,5 +1,14 @@
 # Pinned source use and method provenance
 
+The 2026-09-23 inspection below is historical. For the subsequent
+owner-authorized M0/M1 implementation, see the
+[2026-09-24 source-to-adapter map](source-integration.md),
+[exact source manifest](source-manifest.json) and
+[current reproduction matrix](reproduction-matrix.md). The newer source profile
+invokes pinned upstream SDG, SFT-loader, Qwen augmentation/collator/DFS/scoring
+and TRM builder code where documented; historical pilot defaults and artifacts
+are unchanged.
+
 Read-only inspection on 2026-09-23. NVARC was cloned at commit
 `846d0198efa752534594e321fc3289fc0a06c657`; no upstream file was
 vendored into the runtime. Its root lacks a license at this commit. The

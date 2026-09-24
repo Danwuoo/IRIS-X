@@ -1,5 +1,34 @@
 # Component completion and reproduction gaps
 
+## Current source-integration checkpoint (2026-09-24)
+
+This table is the current M0/M1 status for the owner-authorized local phases
+1–3. The older implementation snapshots below remain lineage, including their
+then-current missing-dependency statements. A fixture or tiny CPU pass does
+not establish a 4B source-profile run, full-method completion or ARC quality.
+The [source integration record](source-integration.md) and exact
+[source manifest](source-manifest.json) contain the bindings.
+
+| Component | Upstream reference | Reuse or patch; actual artifact | Verification command and observed result | Remaining gap |
+| --- | --- | --- | --- | --- |
+| Source acquisition | `NVARC@846d019` plus seven direct and one nested submodule; Qwen notebook v10; TRM notebook v21 | `tools/nvarc_source.py` reconstructs hash-pinned Git/notebook cache; `source-manifest.json`, `dependency-manifest.json`, `asset-inventory.json` committed; all source bytes stay ignored | Clean Git/submodule rebuild plus notebook materialization and `python tools/nvarc_source.py verify` passed | TRM notebook version 18 cited upstream could not be fetched; notebooks have no stated license and NVARC has no root license; large data/model assets not acquired |
+| SDG messages and augmentation | `SDG/scripts/build_datasets.py:fix_settings/apply_augmentation/get_messages` | Hash-gated upstream functions invoked by `source_sdg_messages`; differential fixture records in-place color-map behavior | Strict `tools/nvarc_ml_profile.py` runs rectangular augmentation and source-message comparisons | Generated program sandbox and real teacher calls unrun; published data not regenerated |
+| Source SFT data | `ARChitects/run_sft.py:load_datasets` | Original loader and alternating messages feed `source_sft_sequences`; local source-derived two-record dataset and tiny Qwen3.5 optimizer checkpoint | Strict profile exercises real loader, assistant mask, gradient step and checkpoint | NeMo preprocessing/packing and full real-data SFT remain unverified; no ARC-SFT artifact |
+| Qwen3.5 material and model boundary | Qwen3 16-row cut; Qwen3.5 pinned 4B; PEFT | Distinct `arc_nvarc_qwen35_adapter.py` handles Qwen3.5 LoRA targets, full-prefix logits and NLL; source grammar flag preserves prior compact bytes | Strict profile checks tiny real model branch isolation and source role/newline/EOS/mask; historical compact 003 is separately digest-verified | Qwen3 rows/weights cannot be reused; 4B source-profile model and full SFT unrun |
+| Task-local adaptation | Qwen notebook v10 `ArcDataset.augment` and `QwenDataCollatorForCompletionOnlyLM` | Original augmentation and collator run through hash-gated extraction; source training views label every demonstration assistant response | Strict profile compares augmented sequence/mask token for token and runs tiny PEFT step; historical compact 003 made two short 4B synthetic steps under its older profile | Source r256/length schedule and ARC tasks unrun; long-context cut/packing not proven |
+| Candidate augmentation | Qwen notebook v10 `ArcDataset.forward_mod/invert_mod` | Original D4/color/demo-order views feed source candidate profile; inverse before dedupe | Strict profile compares rectangular inverse, demonstration shuffle and two-test task views | Original process-random hash seed is replaced by explicit seed; 4B source candidate run absent |
+| DFS and model calls | Qwen notebook v10 `turbo_dfs` | Original DFS extracted for reference; bounded IRIS-X DFS retains traversal/pruning/EOS semantics on common domain; Qwen3.5 full-prefix forward avoids shared hybrid KV | Strict profile compares deterministic logits and >1,000-token path, each bound and tiny real sibling isolation | Batch KV reuse and performance are not reproduced; source has no equivalent IRIS-X stop accounting |
+| Likelihood and top two | Qwen notebook v10 `calc_scores`, `getter_kgmon`, `score_kgmon` | Source profile uses sum NLL incl. EOS, eight shared views and original getter; explicit missing/duplicate vote records remain | Strict profile compares source NLL and top-two, eight views, duplicate and empty cases | ARC ranking quality and 4B source profile not measured |
+| TRM data | `TinyRecursiveModels/dataset/build_arc_dataset.py:convert_dataset` | Original pinned builder invoked on locally staged labelled synthetic training fixture; NumPy arrays checked | Strict profile builds and inspects real upstream arrays | TRM train/reload/TTT/inference, weights and notebook v18 parity unverified |
+| Shared local stage | Existing IRIS-X solver, reset, checkpoint, material and truth-free result | `configs/source-integration-stage.json` and `tools/nvarc_source_stage.py` select fixture/tiny/4B with one result schema | Strict profile runs fixture and tiny actual-Qwen3.5 paths; 4B profile is configured and identity-gated but not run | No full artifact chain from real SFT through 4B TTT, TRM and joint result |
+| Transport regressions | Earlier pilot Dataset mount, optional `torchao`, JSON tuple, Windows log and interrupted transfer failures | Existing checks retained; `resume_digest_member` and `run_utf8_logged_command` added to shared transport | `python -m unittest tests.test_arc_nvarc_transport_io -v` passes interrupted same-digest continuation and non-ASCII log fixture; `python tools/repository_check.py --all` covers existing checks | No live provider range response or new large artifact retrieval tested |
+
+The strict profile requires the offline source cache and installed ML
+dependencies; missing prerequisites fail rather than skip. No new Kaggle
+kernel, Dataset mutation, teacher call, ARC score or holdout read occurred.
+
+## Earlier implementation snapshot
+
 `implemented` means source code exists. `fixture-verified` refers only to
 synthetic CPU tests. None of these labels implies model readiness or ARC score.
 

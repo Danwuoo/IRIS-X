@@ -22,6 +22,22 @@ Owner direction and boundaries are in
 This workspace is distinct from Trial 001, Trial 002, prompt pilot, and budget
 ablation. None of their exhausted ceilings or frozen identities is reused.
 
+## Source integration checkpoint (2026-09-24)
+
+Owner-authorized local phases 1–3 now have a reconstructable pinned NVARC
+source and public-notebook cache, a source-to-adapter map, upstream differential
+tests and a shared fixture/tiny/4B stage configuration. The
+[source integration record](source-integration.md) explains direct upstream use,
+Qwen3.5 patches, test results and limits; the current
+[reproduction matrix](reproduction-matrix.md) lists each component's artifact,
+verification command and remaining gap. The source cache is ignored, and
+`tools/nvarc_source.py verify` performs an offline identity check.
+
+The source-profile fixture and tiny actual-Qwen3.5 CPU paths passed. The 4B
+source profile, real ARC-SFT, SDG teacher, TRM model path and joint scoring have
+not run. Kaggle, external execution and paid work remain outside this local
+authorization. Historical pilot identities and their evidence remain frozen.
+
 ## Compact 4B vertical pilot (2026-09-24)
 
 The distinct `nvarc-4b-compact-complete-001` flow was staged locally, then

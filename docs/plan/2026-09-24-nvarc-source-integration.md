@@ -1,6 +1,10 @@
 # NVARC 完整來源整合與 Qwen3.5-4B 開發提案
 
 日期：2026-09-24。狀態：**owner 已授權階段 1～3（本文件 M0、M1 與融合邊界）；M2～M4 的 GPU/teacher 執行仍是提案**。
+本機 M0/M1 已交付：固定來源與資產清單、可離線查驗的重建、上游入口整合、
+差分測試及共用 fixture/tiny/4B stage 設定；4B 的新來源模式未執行。
+實測與缺口見[來源整合紀錄](../../trials/arc-agi-2-qwen35-nvarc/source-integration.md)
+及[最新重現矩陣](../../trials/arc-agi-2-qwen35-nvarc/reproduction-matrix.md)。
 依據：owner 希望完整取得 NVARC，以融合式開發及驗證加速完成。
 本文件補充既有 reproduction plan；不改寫已執行身份、驗收結果或既有授權。
 檢視基準：main `70385f2`，最近開發 `e9048f8`。
