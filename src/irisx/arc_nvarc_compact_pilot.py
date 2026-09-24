@@ -23,8 +23,15 @@ from .canonical import digest_value
 from .errors import ValidationError
 
 
-RUN_ID = "nvarc-4b-compact-complete-001"
-FINAL_KERNEL_ID = "danielwuu/iris-x-4b-compact-complete-001"
+RUN_ID_PREFIX = "nvarc-4b-compact-complete-"
+KERNEL_ID_PREFIX = "danielwuu/iris-x-4b-compact-complete-"
+LEGACY_DATASET_DIR = "trial-002-smoke-002"
+LEGACY_DATASET_FILES = frozenset({
+    "bindings/run.json", "cases/solver-cases.json", "manifest.json",
+    "runtime/core.py", "runtime/dependencies.json", "runtime/runner.py",
+    "sources/model-manifest.json", "sources/nvarc-manifest.json",
+    "sources/wheel-manifest.json",
+})
 MODEL_DIGEST = "sha256:8f27407e1b0ee4dd7a5b4d62d39af9b356ba86b5701dd93eafba052febe9c72f"
 WHEEL_DIGEST = "sha256:d24d85f791788621166fa05d7db51c03f7c72c046af4923096b12863f7e7dfa1"
 VISIBLE_DIGEST = "sha256:0140be6128bd1eb653681c684c63439ed775dc1c4dc25668249dfc03546cea22"
@@ -40,13 +47,21 @@ PLAN_FIELDS = {"format", "approved", "owner_authorization", "run_id",
                "worker_timeout_seconds", "retention", "config"}
 
 
+def final_kernel_id(run_id: str) -> str:
+    if (not isinstance(run_id, str) or not run_id.startswith(RUN_ID_PREFIX) or
+            len(run_id) != len(RUN_ID_PREFIX) + 3 or
+            not run_id[-3:].isascii() or not run_id[-3:].isdigit()):
+        raise ValidationError("compact pilot run identity differs")
+    return KERNEL_ID_PREFIX + run_id[-3:]
+
+
 def validate_plan(plan: Mapping[str, Any], *, approved: bool) -> None:
     if not isinstance(plan, dict) or set(plan) != PLAN_FIELDS:
         raise ValidationError("compact pilot plan schema differs")
     config = plan.get("config")
     ttt = config.get("ttt") if isinstance(config, dict) else None
     if (plan.get("format") != "irisx/nvarc-compact-complete-plan" or
-            plan.get("run_id") != RUN_ID or plan.get("model_revision") != MODEL_REVISION or
+            plan.get("model_revision") != MODEL_REVISION or
             plan.get("visible_source_digest") != VISIBLE_DIGEST or
             plan.get("task_count") != 2 or plan.get("test_output_count") != 4 or
             plan.get("model_manifest_digest") != MODEL_DIGEST or
@@ -74,13 +89,14 @@ def validate_plan(plan: Mapping[str, Any], *, approved: bool) -> None:
             plan.get("worker_timeout_seconds", 0) > config.get("session_budget_seconds", -1) - config.get("finalization_reserve_seconds", -1) or
             not isinstance(plan.get("retention"), str) or not plan["retention"]):
         raise ValidationError("compact pilot plan identity or ceilings differ")
+    expected_kernel_id = final_kernel_id(plan.get("run_id"))
     if approved:
-        if (plan.get("approved") is not True or plan.get("kernel_id") != FINAL_KERNEL_ID or
+        if (plan.get("approved") is not True or plan.get("kernel_id") != expected_kernel_id or
                 not isinstance(plan.get("owner_authorization"), str) or
                 not plan["owner_authorization"].strip()):
             raise ValidationError("compact pilot has no exact owner authorization")
     elif (plan.get("approved") is not False or plan.get("owner_authorization") is not None or
-          plan.get("kernel_id") != "DRAFT-DO-NOT-PUSH/" + RUN_ID):
+          plan.get("kernel_id") != "DRAFT-DO-NOT-PUSH/" + plan["run_id"]):
         raise ValidationError("compact pilot draft must be unapproved")
     if "UNBOUND" in json.dumps(plan) or "PLACEHOLDER" in json.dumps(plan):
         raise ValidationError("compact pilot contains an unbound value")
@@ -119,10 +135,10 @@ def prepare(plan_path: Path, visible_path: Path, model_manifest_path: Path,
     if not set(plan["runtime_wheels"].values()).issubset({item["path"] for item in wheels["files"]}):
         raise ValidationError("required offline wheels are absent from manifest")
     # Use the actual checked-in candidate schema before any conversion.
-    make_binding(workload, run_id=RUN_ID, model_digest=MODEL_DIGEST,
+    make_binding(workload, run_id=plan["run_id"], model_digest=MODEL_DIGEST,
                  data_digest=digest_value(workload), tokenizer_digest=MODEL_DIGEST,
                  runtime_digest=WHEEL_DIGEST, config=plan["config"])
-    return {"run_id": RUN_ID, "plan_sha256": hashlib.sha256(plan_path.read_bytes()).hexdigest(),
+    return {"run_id": plan["run_id"], "plan_sha256": hashlib.sha256(plan_path.read_bytes()).hexdigest(),
             "source_digest": workload["source_digest"],
             "tasks": workload["task_count"], "tests": workload["test_output_count"],
             "model_files": len(model["files"]), "wheel_files": len(wheels["files"]),
@@ -130,7 +146,7 @@ def prepare(plan_path: Path, visible_path: Path, model_manifest_path: Path,
 
 
 def _source_inventory(model_manifest: Mapping[str, Any], wheel_manifest: Mapping[str, Any],
-                      base: Path, output: Path) -> tuple[str, set[str]]:
+                      base: Path, output: Path) -> tuple[str, set[str], dict[str, set[str]]]:
     """Translate the already pinned Dataset v2 manifest to compact converter format."""
     if (model_manifest.get("manifest_digest") != MODEL_DIGEST or
             digest_value(model_manifest.get("files")) != MODEL_DIGEST or
@@ -139,10 +155,18 @@ def _source_inventory(model_manifest: Mapping[str, Any], wheel_manifest: Mapping
         raise ValidationError("Dataset v2 material manifest differs")
     model_names = {item["path"] for item in model_manifest["files"]}
     wheel_names = {item["path"] for item in wheel_manifest["files"]}
+    legacy = base / LEGACY_DATASET_DIR
+    legacy_nodes = {path.relative_to(legacy).as_posix() for path in legacy.rglob("*")}
+    expected_nodes = set(LEGACY_DATASET_FILES)
+    for name in LEGACY_DATASET_FILES:
+        expected_nodes.update(path.as_posix() for path in Path(name).parents if path != Path("."))
     if (len(model_names) != len(model_manifest["files"]) or
             len(wheel_names) != len(wheel_manifest["files"]) or
             model_names & wheel_names or
-            {path.name for path in base.iterdir()} != model_names | wheel_names):
+            {path.name for path in base.iterdir()} != model_names | wheel_names | {LEGACY_DATASET_DIR} or
+            legacy.is_symlink() or not legacy.is_dir() or legacy_nodes != expected_nodes or
+            any(path.is_symlink() or not (path.is_file() or path.is_dir())
+                for path in legacy.rglob("*"))):
         raise ValidationError("Dataset v2 material inventory is not closed")
     for item in wheel_manifest["files"]:
         path = base / item["path"]
@@ -153,7 +177,7 @@ def _source_inventory(model_manifest: Mapping[str, Any], wheel_manifest: Mapping
                   "files": [{"path": item["path"], "sha256": item["content_digest"][7:],
                              "bytes": item["byte_size"]} for item in model_manifest["files"]]}
     atomic_json(output, translated)
-    return digest_value(translated), wheel_names
+    return digest_value(translated), wheel_names, {LEGACY_DATASET_DIR: set(LEGACY_DATASET_FILES)}
 
 
 def preflight(base: Path, competition_source: Path) -> dict[str, Any]:
@@ -187,13 +211,14 @@ def preflight_package(plan_path: Path, visible_path: Path, model_manifest_path: 
         raise ValidationError("visible pilot source differs from plan")
     observation = preflight(base, competition_source)
     translation = output.with_name(output.stem + "-source-model-manifest.json")
-    source_digest, extras = _source_inventory(json.loads(model_manifest_path.read_bytes()),
+    source_digest, extras, extra_dirs = _source_inventory(json.loads(model_manifest_path.read_bytes()),
                                                json.loads(wheel_manifest_path.read_bytes()),
                                                base, translation)
     verify_source_model_material(base, source_digest, MODEL_REVISION,
-                                 manifest_path=translation, allowed_extra_files=extras)
+                                 manifest_path=translation, allowed_extra_files=extras,
+                                 allowed_extra_directories=extra_dirs)
     observation["source_model_manifest_digest"] = source_digest
-    observation["run_id"] = RUN_ID
+    observation["run_id"] = plan["run_id"]
     atomic_json(output, observation)
     return observation
 
@@ -208,7 +233,7 @@ def run(plan_path: Path, visible_path: Path, model_manifest_path: Path,
             workload["task_count"] != plan["task_count"] or
             workload["test_output_count"] != plan["test_output_count"]):
         raise ValidationError("visible pilot workload differs from plan")
-    make_binding(workload, run_id=RUN_ID, model_digest=MODEL_DIGEST,
+    make_binding(workload, run_id=plan["run_id"], model_digest=MODEL_DIGEST,
                  data_digest=digest_value(workload), tokenizer_digest=MODEL_DIGEST,
                  runtime_digest=WHEEL_DIGEST, config=plan["config"])
     if output.exists() and any(output.iterdir()):
@@ -236,14 +261,14 @@ def run(plan_path: Path, visible_path: Path, model_manifest_path: Path,
         phases.append({"name": name, "elapsed_seconds": time.monotonic() - started,
                        "rss_mib": rss_mib, "process_peak_rss_mib": process_peak_rss_mib,
                        **fields})
-        atomic_json(phase_path, {"run_id": RUN_ID, "phases": phases})
+        atomic_json(phase_path, {"run_id": plan["run_id"], "phases": phases})
 
     try:
         observation = preflight(base, competition_source)
         phase("preflight", **observation)
         model_manifest = json.loads(model_manifest_path.read_bytes())
         wheel_manifest = json.loads(wheel_manifest_path.read_bytes())
-        source_digest, extras = _source_inventory(model_manifest, wheel_manifest, base,
+        source_digest, extras, extra_dirs = _source_inventory(model_manifest, wheel_manifest, base,
                                                    output / "source-model-manifest.json")
         phase("source-inventory", source_manifest_digest=source_digest)
         import torch
@@ -252,11 +277,12 @@ def run(plan_path: Path, visible_path: Path, model_manifest_path: Path,
         converted = convert_qwen35_checkpoint(base, compact, model_revision=MODEL_REVISION,
                     model_manifest_digest=source_digest,
                     base_manifest_path=output / "source-model-manifest.json",
-                    allowed_extra_source_files=extras)
+                    allowed_extra_source_files=extras,
+                    allowed_extra_source_directories=extra_dirs)
         phase("compact-reload", compact_material_digest=converted["material_digest"],
               tied_embeddings=converted["tied_embeddings"],
               peak_memory_mib=int(torch.cuda.max_memory_allocated() / 1024**2))
-        binding = make_binding(workload, run_id=RUN_ID,
+        binding = make_binding(workload, run_id=plan["run_id"],
                                model_digest=converted["material_digest"],
                                data_digest=digest_value(workload),
                                tokenizer_digest=converted["vocabulary_manifest"]["identity_digest"],
@@ -290,7 +316,7 @@ def finalize_after_timeout(output: Path, *, reason: str = "session_limit") -> st
     finalize_interrupted(checkpoint, workload, reason=reason)
     atomic_json(checkpoint_path, checkpoint)
     return build_result(result_path, binding, workload, checkpoint,
-                        {"format": "irisx/nvarc-execution", "run_id": RUN_ID,
+                        {"format": "irisx/nvarc-execution", "run_id": binding["run_id"],
                          "failure": reason, "internet_enabled": False,
                          "external_paid_cost_usd": 0})
 

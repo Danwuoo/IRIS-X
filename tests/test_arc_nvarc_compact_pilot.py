@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 import sys
 import tempfile
 import unittest
 from unittest import mock
 
-from irisx.arc_nvarc_compact_pilot import prepare, validate_plan, visible_workload
+from irisx.arc_nvarc_compact_pilot import (_source_inventory, final_kernel_id,
+                                           prepare, validate_plan, visible_workload)
 from irisx.arc_nvarc_kaggle import run as run_kaggle
 from irisx.arc_nvarc_runtime import (build_outbound, build_result, finalize_interrupted,
                                      finish_task, make_binding, new_checkpoint,
@@ -43,6 +45,42 @@ def single_worker(rank, commands, outputs, model_root, config, gpu_uuid):
 
 
 class CompactPilotTests(unittest.TestCase):
+    def test_dataset_v2_legacy_tree_is_exact_and_new_run_is_distinct(self) -> None:
+        plan_path = ROOT / "trials/arc-agi-2-qwen35-nvarc/configs/compact-complete-002.json"
+        plan = json.loads(plan_path.read_bytes())
+        validate_plan(plan, approved=False)
+        self.assertEqual("danielwuu/iris-x-4b-compact-complete-002",
+                         final_kernel_id(plan["run_id"]))
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "dataset"
+            root.mkdir()
+            translation = Path(temp) / "translated.json"
+            model_file = root / "model.safetensors"
+            model_file.write_bytes(b"model")
+            wheel_file = root / "runtime.whl"
+            wheel_file.write_bytes(b"wheel")
+            model_files = [{"path": model_file.name, "byte_size": 5,
+                            "content_digest": "sha256:" + hashlib.sha256(b"model").hexdigest()}]
+            wheel_files = [{"path": wheel_file.name, "byte_size": 5,
+                            "content_digest": "sha256:" + hashlib.sha256(b"wheel").hexdigest()}]
+            model_manifest = {"files": model_files, "manifest_digest": digest_value(model_files)}
+            wheel_manifest = {"files": wheel_files, "manifest_digest": digest_value(wheel_files)}
+            import irisx.arc_nvarc_compact_pilot as pilot
+            legacy = root / pilot.LEGACY_DATASET_DIR
+            for name in pilot.LEGACY_DATASET_FILES:
+                path = legacy / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b"retained prior runtime")
+            with mock.patch.object(pilot, "MODEL_DIGEST", model_manifest["manifest_digest"]), \
+                 mock.patch.object(pilot, "WHEEL_DIGEST", wheel_manifest["manifest_digest"]):
+                _, extras, dirs = _source_inventory(model_manifest, wheel_manifest,
+                                                    root, translation)
+                self.assertEqual({"runtime.whl"}, extras)
+                self.assertEqual(set(pilot.LEGACY_DATASET_FILES), dirs[pilot.LEGACY_DATASET_DIR])
+                (legacy / "runtime/extra.py").write_bytes(b"unexpected")
+                with self.assertRaises(ValidationError):
+                    _source_inventory(model_manifest, wheel_manifest, root, translation)
+
     def test_one_worker_supervisor_uses_mount_presence_without_reading_challenges(self) -> None:
         config_dir = ROOT / "trials/arc-agi-2-qwen35-nvarc/configs"
         config = json.loads((config_dir / "compact-complete-001.json").read_bytes())["config"]
@@ -135,6 +173,28 @@ class CompactPilotTests(unittest.TestCase):
             self.assertIn("competition_challenges_read", code)
             self.assertIn("remove_optional_torchao_if_present", code)
             self.assertIn("finalize-timeout", code)
+
+    def test_second_identity_stages_with_matching_title_and_new_output(self) -> None:
+        plan_path = ROOT / "trials/arc-agi-2-qwen35-nvarc/configs/compact-complete-002.json"
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            authorization = root / "authorization.json"
+            authorization.write_text(json.dumps({
+                "approved": True,
+                "draft_plan_sha256": hashlib.sha256(plan_path.read_bytes()).hexdigest(),
+                "run_id": "nvarc-4b-compact-complete-002",
+                "kernel_id": "danielwuu/iris-x-4b-compact-complete-002",
+                "owner_decision": "Decision 0027",
+            }))
+            summary = stage(root / "stage", authorization, plan_path)
+            kernel = Path(summary["kernel_path"])
+            metadata = json.loads((kernel / "kernel-metadata.json").read_bytes())
+            notebook = json.loads((kernel / "kaggle-notebook.ipynb").read_bytes())
+            source = "".join(notebook["cells"][0]["source"])
+            self.assertEqual("danielwuu/iris-x-4b-compact-complete-002", metadata["id"])
+            self.assertEqual("iris-x-4b-compact-complete-002", metadata["title"])
+            self.assertIn('output = work / "compact-complete-002"', source)
+            self.assertTrue(summary["approved"])
 
 
 if __name__ == "__main__":

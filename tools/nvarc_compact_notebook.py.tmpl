@@ -21,8 +21,8 @@ for name, encoded in PAYLOADS.items():
         raise RuntimeError("embedded compact pilot material differs")
 plan = json.loads(base64.b64decode(PAYLOADS["plan"]))
 if (plan.get("approved") is not True or
-        plan.get("run_id") != "nvarc-4b-compact-complete-001" or
-        plan.get("kernel_id") != "danielwuu/iris-x-4b-compact-complete-001" or
+        plan.get("run_id") != "__RUN_ID__" or
+        plan.get("kernel_id") != "__KERNEL_ID__" or
         not plan.get("owner_authorization") or plan.get("maximum_paid_usd") != 0):
     raise RuntimeError("compact pilot lacks exact owner authorization")
 os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", HF_DATASETS_OFFLINE="1",
@@ -65,7 +65,9 @@ base_roots = [Path("/kaggle/input/datasets/danielwuu/irisx-arc-agi-2-trial-002-s
               Path("/kaggle/input/irisx-arc-agi-2-trial-002-smoke-001")]
 bases = [root for root in base_roots if root.is_dir()]
 mounts = {"run_id": plan["run_id"], "competition_count": len(competition_files),
-          "dataset_count": len(bases), "competition_challenges_read": False}
+          "dataset_count": len(bases), "competition_challenges_read": False,
+          "dataset_root_entries": sorted(path.name for path in bases[0].iterdir())
+          if len(bases) == 1 else []}
 save("compact-mount-preflight.json", mounts)
 if len(competition_files) != 1 or len(bases) != 1:
     raise RuntimeError("exact official competition and Dataset mounts required")
@@ -115,7 +117,7 @@ subprocess.run([sys.executable, "-m", "pip", "install", "--no-index", "--find-li
 if time.monotonic() - START >= plan["config"]["finalization_reserve_seconds"]:
     raise RuntimeError("setup consumed compact pilot finalization reserve")
 
-output = work / "compact-complete-001"
+output = work / "__OUTPUT_NAME__"
 command = [sys.executable, "-m", "irisx.arc_nvarc_compact_pilot", "run",
            "--plan", str(paths["plan"]), "--visible", str(paths["visible"]),
            "--model-manifest", str(paths["model_manifest"]),

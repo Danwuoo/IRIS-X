@@ -143,6 +143,11 @@ generation. One terminal retrieval preserved 11 files and confirmed that no
 compact artifact, checkpoint or result exists. The one push and retrieval are
 consumed; no repair submission or further external execution is authorized.
 Its status is `trials/arc-agi-2-qwen35-nvarc/compact-complete-001.md`.
+The owner now authorizes Decision 0027's session-local, free Kaggle kernel
+debugging for program errors in that same bounded synthetic compact flow.
+Every new attempt uses a distinct immutable run identity and private kernel;
+the original 001 version remains consumed. No scientific scope, paid cost,
+Dataset mutation, ARC scoring or competition submission is authorized.
 
 ## Authority order
 

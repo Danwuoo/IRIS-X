@@ -103,3 +103,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0026-authorize-nvarc-4b-compact-complete-pilot.md`](0026-authorize-nvarc-4b-compact-complete-pilot.md)
   binds one private compact 4B conversion, short adaptation, generation and
   result-verification run under fixed synthetic and USD 0 ceilings.
+- [`0027-authorize-session-free-kernel-debugging.md`](0027-authorize-session-free-kernel-debugging.md)
+  authorizes distinct free private kernels during the current session solely
+  for program-error repairs to that bounded compact 4B flow.

@@ -157,6 +157,17 @@ class NvarcBoundaryTests(unittest.TestCase):
                  mock.patch.object(representation, "BASE_INDEX_SHA256",
                                    hashlib.sha256((root / "model.safetensors.index.json").read_bytes()).hexdigest()):
                 verify_source_model_material(root, digest_value(material), MODEL_REVISION)
+                (root / "retained/runtime").mkdir(parents=True)
+                (root / "retained/runtime/runner.py").write_bytes(b"prior trial")
+                with self.assertRaises(ValidationError):
+                    verify_source_model_material(root, digest_value(material), MODEL_REVISION)
+                verify_source_model_material(root, digest_value(material), MODEL_REVISION,
+                    allowed_extra_directories={"retained": {"runtime/runner.py"}})
+                (root / "retained/runtime/extra.py").write_bytes(b"unlisted")
+                with self.assertRaises(ValidationError):
+                    verify_source_model_material(root, digest_value(material), MODEL_REVISION,
+                        allowed_extra_directories={"retained": {"runtime/runner.py"}})
+                (root / "retained/runtime/extra.py").unlink()
                 with self.assertRaises(ValidationError):
                     convert_qwen35_checkpoint(root, root / "derived",
                                               model_revision=MODEL_REVISION,

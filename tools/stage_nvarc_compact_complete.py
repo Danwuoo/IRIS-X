@@ -12,7 +12,7 @@ import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import irisx_build_backend as build
-from irisx.arc_nvarc_compact_pilot import (FINAL_KERNEL_ID, RUN_ID, prepare,
+from irisx.arc_nvarc_compact_pilot import (final_kernel_id, prepare,
                                            validate_plan)
 from irisx.errors import ValidationError
 
@@ -31,23 +31,28 @@ def sha(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
-def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None) -> dict:
+def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
+          plan_path: Path = PLAN) -> dict:
     if output.exists() and any(output.iterdir()):
         raise ValidationError("compact package output must be new or empty")
-    summary = prepare(PLAN, VISIBLE, MODEL, WHEELS)
-    draft_bytes = PLAN.read_bytes()
+    summary = prepare(plan_path, VISIBLE, MODEL, WHEELS)
+    draft_bytes = plan_path.read_bytes()
     plan = json.loads(draft_bytes)
+    run_id = plan["run_id"]
+    kernel_id = final_kernel_id(run_id)
     if authorization is not None:
+        if run_id == "nvarc-4b-compact-complete-001":
+            raise ValidationError("compact pilot 001 submission is consumed")
         binding = json.loads(authorization.read_bytes())
         if (binding.get("approved") is not True or
                 binding.get("draft_plan_sha256") != sha(draft_bytes) or
-                binding.get("run_id") != RUN_ID or
-                binding.get("kernel_id") != FINAL_KERNEL_ID or
+                binding.get("run_id") != run_id or
+                binding.get("kernel_id") != kernel_id or
                 not isinstance(binding.get("owner_decision"), str) or
                 not binding["owner_decision"].strip()):
             raise ValidationError("exact owner authorization is absent or differs")
         plan.update(approved=True, owner_authorization=binding["owner_decision"],
-                    kernel_id=FINAL_KERNEL_ID)
+                    kernel_id=kernel_id)
         validate_plan(plan, approved=True)
     plan_bytes = (json.dumps(plan, sort_keys=True, separators=(",", ":")) + "\n").encode()
     wheel_dir = output / "wheel"
@@ -64,7 +69,10 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None) -> dict
     source = TEMPLATE.read_text(encoding="utf-8")
     source = (source.replace("__PAYLOADS__", json.dumps(encoded, sort_keys=True))
                     .replace("__HASHES__", json.dumps(hashes, sort_keys=True))
-                    .replace("__IRISX_WHEEL_NAME__", wheel_name))
+                    .replace("__IRISX_WHEEL_NAME__", wheel_name)
+                    .replace("__RUN_ID__", run_id)
+                    .replace("__KERNEL_ID__", kernel_id)
+                    .replace("__OUTPUT_NAME__", "compact-complete-" + run_id[-3:]))
     compile(source, "compact-pilot-notebook", "exec")
     kernel = output / "kernel"
     kernel.mkdir(parents=True, exist_ok=True)
@@ -76,7 +84,7 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None) -> dict
                 "nbformat": 4, "nbformat_minor": 5}
     notebook_path = kernel / "kaggle-notebook.ipynb"
     notebook_path.write_text(json.dumps(notebook, indent=1) + "\n", encoding="utf-8")
-    metadata = {"id": plan["kernel_id"], "title": "IRIS X compact 4B pilot",
+    metadata = {"id": plan["kernel_id"], "title": kernel_id.split("/", 1)[1],
                 "code_file": "kaggle-notebook.ipynb", "language": "python",
                 "kernel_type": "notebook", "is_private": True, "enable_gpu": True,
                 "enable_tpu": False, "enable_internet": False,
@@ -102,8 +110,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--authorization", type=Path)
+    parser.add_argument("--plan", type=Path, default=PLAN)
     args = parser.parse_args()
-    print(json.dumps(stage(args.output, args.authorization), indent=2))
+    print(json.dumps(stage(args.output, args.authorization, args.plan), indent=2))
     return 0
 
 

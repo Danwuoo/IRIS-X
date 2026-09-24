@@ -187,7 +187,8 @@ def compact_loaded_model(model: Any, manifest: Mapping[str, Any]) -> tuple[bool,
 def convert_qwen35_checkpoint(base_dir: Path, output_dir: Path, *, model_revision: str,
                               model_manifest_digest: str,
                               base_manifest_path: Path | None = None,
-                              allowed_extra_source_files: set[str] | None = None) -> dict[str, Any]:
+                              allowed_extra_source_files: set[str] | None = None,
+                              allowed_extra_source_directories: Mapping[str, set[str]] | None = None) -> dict[str, Any]:
     """Save a distinct compact checkpoint; never change the base directory.
 
     The vision module remains in the saved HF model but is never given image
@@ -199,7 +200,8 @@ def convert_qwen35_checkpoint(base_dir: Path, output_dir: Path, *, model_revisio
         raise ValidationError("base checkpoint must be immutable and separate")
     verify_source_model_material(base_dir, model_manifest_digest, model_revision,
                                  manifest_path=base_manifest_path,
-                                 allowed_extra_files=allowed_extra_source_files)
+                                 allowed_extra_files=allowed_extra_source_files,
+                                 allowed_extra_directories=allowed_extra_source_directories)
     import torch
     from transformers import AutoModelForMultimodalLM, AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(base_dir, local_files_only=True)
@@ -277,7 +279,8 @@ def verify_model_material(root: Path, expected_digest: str) -> dict[str, Any]:
 
 
 def _verify_file_inventory(root: Path, entries: Any, manifest_name: str | None,
-                           allowed_extra_files: set[str] | None = None) -> set[str]:
+                           allowed_extra_files: set[str] | None = None,
+                           allowed_extra_directories: Mapping[str, set[str]] | None = None) -> set[str]:
     if not isinstance(entries, list) or not entries:
         raise ValidationError("model material file inventory is empty")
     names: set[str] = set()
@@ -295,10 +298,33 @@ def _verify_file_inventory(root: Path, entries: Any, manifest_name: str | None,
         if (path.is_symlink() or not path.is_file() or path.stat().st_size != item["bytes"] or
                 _file_sha256(path) != item["sha256"]):
             raise ValidationError("model material member digest differs")
+    extra_files = allowed_extra_files or set()
+    extra_directories = allowed_extra_directories or {}
     actual = {path.name for path in root.iterdir() if path.name != manifest_name}
-    if actual != names | (allowed_extra_files or set()) or any(path.is_symlink() or not path.is_file()
-                              for path in root.iterdir() if path.name != manifest_name):
+    if (actual != names | extra_files | set(extra_directories) or
+            (names | extra_files) & set(extra_directories) or
+            any(path.is_symlink() or
+                (not path.is_dir() if path.name in extra_directories else not path.is_file())
+                for path in root.iterdir() if path.name != manifest_name)):
         raise ValidationError("model material has an unlisted or unsafe member")
+    for dirname, expected_files in extra_directories.items():
+        if (not dirname or "/" in dirname or "\\" in dirname or dirname in {".", ".."} or
+                not expected_files or any(not member or "\\" in member or
+                Path(member).is_absolute() or any(part in {".", ".."} for part in member.split("/"))
+                for member in expected_files)):
+            raise ValidationError("model material extra directory identity is unsafe")
+        directory = root / dirname
+        expected_nodes = set(expected_files)
+        for member in expected_files:
+            expected_nodes.update(parent.as_posix() for parent in Path(member).parents
+                                  if parent != Path("."))
+        nodes = list(directory.rglob("*"))
+        actual_nodes = {path.relative_to(directory).as_posix() for path in nodes}
+        if (actual_nodes != expected_nodes or
+                any(path.is_symlink() or
+                    (not path.is_file() if path.relative_to(directory).as_posix() in expected_files
+                     else not path.is_dir()) for path in nodes)):
+            raise ValidationError("model material extra directory differs")
     return names
 
 
@@ -326,7 +352,8 @@ def _verify_weight_layout(root: Path, names: set[str]) -> None:
 def verify_source_model_material(root: Path, expected_digest: str,
                                  model_revision: str, *,
                                  manifest_path: Path | None = None,
-                                 allowed_extra_files: set[str] | None = None) -> dict[str, Any]:
+                                 allowed_extra_files: set[str] | None = None,
+                                 allowed_extra_directories: Mapping[str, set[str]] | None = None) -> dict[str, Any]:
     """Verify the approved base inventory before any HF loader sees its files."""
     path = manifest_path if manifest_path is not None else root / "source-model-manifest.json"
     if not path.is_file() or path.is_symlink():
@@ -338,7 +365,8 @@ def verify_source_model_material(root: Path, expected_digest: str,
         raise ValidationError("base model identity differs")
     local_name = path.name if path.parent.resolve() == root.resolve() else None
     names = _verify_file_inventory(root, manifest.get("files"), local_name,
-                                   allowed_extra_files=allowed_extra_files)
+                                   allowed_extra_files=allowed_extra_files,
+                                   allowed_extra_directories=allowed_extra_directories)
     _verify_weight_layout(root, names)
     if not {"config.json", "tokenizer.json", "model.safetensors.index.json"}.issubset(names):
         raise ValidationError("pinned base config, tokenizer or weight index missing")
