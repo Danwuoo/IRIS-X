@@ -1,6 +1,6 @@
 # Qwen3.5-4B compact 小型完整流程開發
 
-日期：2026-09-24。狀態：Decision 0026 已授權並執行一次；[終止紀錄](../../trials/arc-agi-2-qwen35-nvarc/compact-complete-001.md)顯示在模型載入前因 Dataset 清單不符而失敗。一次提交及一次取回均已消耗。
+日期：2026-09-24。狀態：Decision 0026 的首次執行在 Dataset 清單檢查失敗；Decision 0027 的 session 程式修復版本 002 修正清單但遇到 serializer 錯誤，版本 003 已完成小型合成全流程並通過本機獨立驗證。[終止紀錄](../../trials/arc-agi-2-qwen35-nvarc/compact-complete-003.md)保留用量、結果與限制；本 session 的 kernel 修復權限已結束。
 
 ## 範圍與材料
 

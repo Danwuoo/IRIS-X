@@ -10,6 +10,10 @@ one push and one terminal retrieval are consumed. The synthetic
 visible source has two tasks, two test inputs each, rectangular grids, and no
 test outputs. Its source digest is of those visible bytes only. The official
 competition mount is checked for presence but no challenge file is read.
+Decision 0027's separate [version 002](compact-complete-002.md) exposed a
+serializer bug; [version 003](compact-complete-003.md) completed the bounded
+flow and passed independent local verification. Session kernel debugging
+authority has ended.
 
 Local prepare, package and validation commands (no Kaggle mutation):
 

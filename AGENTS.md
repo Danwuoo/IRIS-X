@@ -153,6 +153,14 @@ then failed at canonical JSON serialization of the grid tokenizer's tuple.
 Its one terminal output command broke during the 7.8 GB weight transfer;
 the partial local files are not a verified model. That version is frozen.
 The terminal record is `trials/arc-agi-2-qwen35-nvarc/compact-complete-002.md`.
+Version 003 then completed the bounded synthetic one-L4 compact conversion,
+reload, two task-local LoRA steps, four generations and truth-free result.
+Two of four synthetic test inputs produced complete-grid candidates; two were
+correctly marked missing. The locally recovered four-shard model and result
+passed independent digest-bound verification. Its terminal record is
+`trials/arc-agi-2-qwen35-nvarc/compact-complete-003.md`. Decision 0027's
+session-only kernel-debugging authority ended on this verified small flow;
+it does not authorize more external execution or method promotion.
 
 ## Authority order
 

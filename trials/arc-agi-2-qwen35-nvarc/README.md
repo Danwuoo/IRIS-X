@@ -1,7 +1,7 @@
 # Qwen3.5-4B NVARC reproduction development
 
-Status: **reviewed local P1 repairs implemented; pilot 004 verified a bounded
-synthetic Qwen3.5-4B LoRA path on one L4; full-method acceptance remains partial**.
+Status: **bounded synthetic 4B compact flow verified on one L4; full-method
+acceptance remains partial**.
 The [2026-09-24 independent review](control-review-811bd4b.md) verifies the
 retained pilot evidence and local ML tests, and records the remaining shipped
 configuration mismatch, numerical-check gap and full-method integration gates.
@@ -31,7 +31,12 @@ repairs. [Version 002](compact-complete-002.md) passed that inventory gate and
 saved compact weights, then failed because the grid tokenizer serializer used
 a tuple where canonical JSON requires a list. Its large-file retrieval broke
 mid-transfer, so no model artifact was verified locally. The serializer and
-retrieval sharding repairs are staged for a distinct version 003.
+retrieval sharding repairs were applied in [version 003](compact-complete-003.md).
+That version completed compact conversion and reload, two short task-local
+LoRA steps, four generation calls, complete grids for two of four synthetic
+tests, truth-free result packaging, and independent local material/result
+verification. The other two tests are marked missing. Decision 0027's
+session-specific kernel authority ends with this verified flow.
 The checked-in candidate `method` now passes the same binding/outbound verifier
 used by the runner, while unknown fields still fail closed. Task-local LoRA
 checks finite loss, every trainable gradient and updated adapter tensors at
@@ -97,8 +102,8 @@ Source-level differences and remaining gaps are in
 | State | Current value |
 | --- | --- |
 | implementation-verified | Partial: both reviews' local P1 and DFS defects repaired; CPU collective, unused-branch, TRM entry, tiny actual Qwen3.5/PEFT and bounded 4B GPU LoRA pilot pass; sandbox, upstream TRM and full-method GPU gates remain |
-| materials-ready | Partial: the existing private Kaggle Dataset v2 has pinned 4B base weights and offline wheels, now inventoried and digest-bound. The pilot uses synthetic data. Compact/ARC-SFT weights, full training data and TRM weights remain absent |
-| runtime-verified | Partial: pilot 004 verified one L4 Qwen3.5-4B load, two synthetic LoRA steps, four expected gradient groups, adapter reset and 9,419 MiB peak allocation; four GPUs were visible but no four-worker or ARC task execution was tested |
+| materials-ready | Partial: Dataset v2 has pinned 4B base weights and offline wheels; compact pilot 003's distinct four-shard model is retained and locally verified. ARC-SFT weights, full training data and TRM weights remain absent |
+| runtime-verified | Partial: compact pilot 003 verified one-L4 4B conversion/reload, two synthetic task-local LoRA steps, four generations, two tests with complete grids, truth-free result and local material verification; four-worker execution and ARC task quality remain untested |
 | sft-trained | No |
 | full-method-measured | No |
 
