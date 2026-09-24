@@ -114,6 +114,38 @@ def trm_preprocess_spec(upstream_root: Path, staged_root: Path, output_root: Pat
             "execution_state": "draft-not-authorized"}
 
 
+def preprocess_source_training_fixture(staged_root: Path, output_root: Path, *,
+                                       augmentation_count: int = 0, seed: int = 42) -> dict[str, Any]:
+    """Run the actual pinned TRM builder on a small labelled training fixture.
+
+    This local CPU source check is separate from the gated GPU train/eval specs.
+    Source ``convert_dataset`` performs the NumPy encoding and writes its own
+    dataset files; evaluator material is never accepted as input here.
+    """
+    if augmentation_count < 0 or augmentation_count > 4:
+        raise ValidationError("source TRM fixture augmentation must be 0..4")
+    from .arc_nvarc_upstream import SOURCE, trm_dataset_entry
+
+    upstream_root = SOURCE / "NVARC/external/TinyRecursiveModels"
+    spec = trm_preprocess_spec(upstream_root, staged_root, output_root,
+                               augmentation_count=augmentation_count, seed=seed)
+    stage = json.loads((staged_root / "manifest.json").read_bytes())
+    if not 1 <= stage["task_count"] <= 32 or stage.get("artifact_kind") != "training-data":
+        raise ValidationError("source TRM fixture task bound or role differs")
+    source = trm_dataset_entry()
+    config = source.DataProcessConfig(input_file_prefix=str(staged_root / "arc-agi"),
+                                      output_dir=str(output_root), subsets=["sft"],
+                                      test_set_name="evaluation", num_aug=augmentation_count,
+                                      seed=seed)
+    source.convert_dataset(config)
+    train_meta = output_root / "train/dataset.json"
+    if not train_meta.is_file() or not (output_root / "train/all__inputs.npy").is_file():
+        raise ValidationError("source TRM builder did not produce training arrays")
+    return {"format": "irisx/nvarc-trm-source-fixture", "source_sha256": spec["source_sha256"],
+            "stage_digest": spec["stage_digest"], "dataset_metadata": json.loads(train_meta.read_bytes()),
+            "contains_labels": True, "source_function": "convert_dataset"}
+
+
 def trm_launch_spec(nvarc_trm_root: Path, upstream_root: Path, data_root: Path,
                     checkpoint_root: Path, *, mode: str, world_size: int,
                     steps: int, wall_seconds: int,

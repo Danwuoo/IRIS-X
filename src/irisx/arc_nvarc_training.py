@@ -15,7 +15,8 @@ import random
 from typing import Any, Iterable, Mapping, Sequence
 
 from .arc_nvarc_representation import GridTokenizer, PAD, validate_compact_model
-from .arc_nvarc_data import seeded_transform, transform_task
+from .arc_nvarc_data import (grid, seeded_transform, source_qwen_training_views,
+                             transform_task)
 from .canonical import canonical_bytes, digest_value
 from .errors import ValidationError
 
@@ -33,6 +34,52 @@ def supervised_sequences(tasks: Iterable[Mapping[str, Any]]) -> list[dict[str, A
         if not tokens:
             raise ValidationError("SFT record has no labelled grid pair")
         sequences.append({"source": task["task_id"], "input_ids": tokens, "labels": labels})
+    return sequences
+
+
+def source_sft_sequences(dataset_paths: str | list[str], *, maximum_records: int) -> list[dict[str, Any]]:
+    """Use NVARC's real HF dataset loader, then map its messages to compact rows.
+
+    The source NeMo backend is a separate compatibility gap; this keeps its
+    message order and assistant-only loss while using the verified Qwen3.5
+    compact vocabulary. Call only with approved labelled training material.
+    """
+    if maximum_records < 1:
+        raise ValidationError("SFT source record bound required")
+    from .arc_nvarc_upstream import sft_data_entry
+
+    dataset = sft_data_entry().load_datasets(dataset_paths)
+    tokenizer = GridTokenizer(source_chat_newlines=True)
+    sequences: list[dict[str, Any]] = []
+
+    def parse_grid(content: Any) -> list[list[int]]:
+        if not isinstance(content, str):
+            raise ValidationError("source SFT message content must be a grid")
+        rows = content.split("\n")
+        if any(not row or any(char not in "0123456789" for char in row) for row in rows):
+            raise ValidationError("source SFT message contains non-grid text")
+        return grid([[int(char) for char in row] for row in rows])
+
+    for index, record in enumerate(dataset):
+        if index >= maximum_records:
+            break
+        messages = record.get("messages")
+        if not isinstance(messages, list) or not messages or len(messages) % 2:
+            raise ValidationError("source SFT roles are incomplete")
+        tokens: list[int] = []
+        labels: list[int] = []
+        for pair_index in range(0, len(messages), 2):
+            user, assistant = messages[pair_index:pair_index + 2]
+            if user.get("role") != "user" or assistant.get("role") != "assistant":
+                raise ValidationError("source SFT roles differ")
+            pair_tokens, pair_labels = tokenizer.encode_pair(
+                parse_grid(user.get("content")), parse_grid(assistant.get("content")))
+            tokens.extend(pair_tokens)
+            labels.extend(pair_labels)
+        sequences.append({"source": str(record.get("puzzle_name", index)),
+                          "input_ids": tokens, "labels": labels})
+    if not sequences:
+        raise ValidationError("source SFT dataset has no records")
     return sequences
 
 
@@ -76,15 +123,31 @@ class FrozenSequenceStore:
 
 
 def task_local_sequences(task: Mapping[str, Any], *, seed: int,
-                         augmentation_count: int = 16) -> list[dict[str, Any]]:
+                         augmentation_count: int = 16,
+                         source_qwen: bool = False,
+                         source_augmentation_seed: int = 1) -> list[dict[str, Any]]:
     """Leave-one-out demonstration targets across reversible task views.
 
     Test inputs and any test outputs are never supervised here.
     """
-    tokenizer = GridTokenizer()
+    tokenizer = GridTokenizer(source_chat_newlines=source_qwen)
     sequences = []
     if augmentation_count < 1:
         raise ValidationError("task adaptation needs at least one view")
+    if source_qwen:
+        views = source_qwen_training_views(task, seed=source_augmentation_seed,
+                                          color_repeats=augmentation_count)
+        for view_index, view in enumerate(views):
+            demos = view["train"]
+            tokens: list[int] = []
+            labels: list[int] = []
+            for pair in demos:
+                pair_tokens, pair_labels = tokenizer.encode_pair(pair["input"], pair["output"])
+                tokens.extend(pair_tokens)
+                labels.extend(pair_labels)
+            sequences.append({"source": f"{task['task_id']}:source-view{view_index}",
+                              "input_ids": tokens, "labels": labels})
+        return sequences
     for view_index in range(augmentation_count):
         spec = seeded_transform(task, seed, view_index)
         transformed = transform_task(task, spec)
@@ -209,22 +272,9 @@ def _torch_batch(batch: Mapping[str, list[list[int]]], device: Any) -> dict[str,
 
 def inspect_lora_targets(model: Any) -> list[str]:
     """Require projection coverage in both attention and DeltaNet layers."""
-    import torch
+    from .arc_nvarc_qwen35_adapter import lora_targets
 
-    linear = [name for name, module in model.named_modules()
-              if isinstance(module, torch.nn.Linear) and "model.language_model.layers." in name]
-    attention = [name for name in linear if ".self_attn." in name and
-                 name.endswith(("q_proj", "k_proj", "v_proj", "o_proj"))]
-    delta = [name for name in linear if ".linear_attn." in name]
-    mlp = [name for name in linear if ".mlp." in name and
-           name.endswith(("gate_proj", "up_proj", "down_proj"))]
-    embedding = [name for name, module in model.named_modules()
-                 if isinstance(module, torch.nn.Embedding) and name == "model.language_model.embed_tokens"]
-    head = [name for name, module in model.named_modules()
-            if isinstance(module, torch.nn.Linear) and name == "lm_head"]
-    if not all((attention, delta, mlp, embedding, head)):
-        raise ValidationError("Qwen3.5 attention/DeltaNet/MLP/embedding/head LoRA coverage unverified")
-    return sorted(set(attention + delta + mlp + embedding + head))
+    return lora_targets(model)
 
 
 def load_compact_model(checkpoint: Path, *, dtype: str = "bfloat16") -> Any:
@@ -449,7 +499,10 @@ class TaskLocalAdapter:
             optimizer = torch.optim.AdamW((parameter for parameter in self.model.parameters() if parameter.requires_grad),
                                           lr=float(config["learning_rate"]))
             examples = task_local_sequences(task, seed=int(config["seed"]),
-                                            augmentation_count=int(config.get("augmentation_count", 16)))
+                                            augmentation_count=int(config.get("augmentation_count", 16)),
+                                            source_qwen=bool(config.get("source_qwen", False)),
+                                            source_augmentation_seed=int(config.get(
+                                                "source_augmentation_seed", 1)))
             self.model.train()
             for step in range(int(config["steps"])):
                 batch = _torch_batch(collate([examples[step % len(examples)]], int(config["max_sequence_length"])),

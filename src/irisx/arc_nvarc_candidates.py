@@ -7,7 +7,9 @@ import math
 import time
 from typing import Any, Callable, Mapping
 
-from .arc_nvarc_data import grid, seeded_transform, transform_grid, transform_task
+from .arc_nvarc_data import (grid, seeded_transform, source_qwen_transform_grid,
+                             source_qwen_transform_task, source_qwen_views,
+                             transform_grid, transform_task)
 from .arc_nvarc_representation import GridTokenizer, END, PAD
 from .errors import ValidationError
 
@@ -27,8 +29,13 @@ def default_views(task: Mapping[str, Any], seed: int, color_repeats: int = 2) ->
 
 def rank_candidates(candidates: list[Mapping[str, Any]], *, policy: str = "votes-minus-mean-nll") -> list[dict[str, Any]]:
     """Aggregate only complete, inverse-mapped grids; never examine truth."""
-    if policy not in {"votes-minus-mean-nll", "nll-sum"}:
+    if policy not in {"votes-minus-mean-nll", "nll-sum", "source-kgmon"}:
         raise ValidationError("unknown candidate ranking policy")
+    source_getter = None
+    if policy == "source-kgmon":
+        from .arc_nvarc_upstream import qwen_cell
+
+        source_getter = qwen_cell("arc_decoder.py").getter_kgmon
     groups: dict[tuple[tuple[int, ...], ...], list[Mapping[str, Any]]] = defaultdict(list)
     for item in candidates:
         if not item.get("complete"):
@@ -42,7 +49,11 @@ def rank_candidates(candidates: list[Mapping[str, Any]], *, policy: str = "votes
         beam_nll_sum = sum(float(item["beam_nll"]) for item in items)
         if not all(math.isfinite(float(item["verification_nll"])) and math.isfinite(float(item["beam_nll"])) for item in items):
             raise ValidationError("non-finite candidate score")
-        score = votes - mean_nll if policy == "votes-minus-mean-nll" else 3 * votes - beam_nll_sum - mean_nll
+        if source_getter is not None:
+            score = float(source_getter([{"score_aug": [float(item["verification_nll"])]}
+                                         for item in items]))
+        else:
+            score = votes - mean_nll if policy == "votes-minus-mean-nll" else 3 * votes - beam_nll_sum - mean_nll
         results.append({"grid": [list(row) for row in key], "score": score,
                         "votes": votes, "mean_verification_nll": mean_nll,
                         "beam_nll_sum": beam_nll_sum,
@@ -172,7 +183,17 @@ def bounded_dfs(query: list[int], next_log_probs: Callable[[list[int]], list[flo
 
 def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any]) -> list[dict[str, Any]]:
     """One adaptation per full task, then all test outputs share that state."""
-    views = default_views(task, int(config["seed"]), int(config.get("color_repeats", 2)))
+    augmentation = config.get("augmentation", "irisx")
+    if augmentation not in {"irisx", "source-qwen"}:
+        raise ValidationError("unknown candidate augmentation source")
+    representation = config.get("representation", "irisx")
+    if representation not in {"irisx", "source-qwen"}:
+        raise ValidationError("unknown candidate representation")
+    tokenizer = GridTokenizer(source_chat_newlines=representation == "source-qwen")
+    transform = source_qwen_transform_task if augmentation == "source-qwen" else transform_task
+    inverse_grid = source_qwen_transform_grid if augmentation == "source-qwen" else transform_grid
+    views = (default_views(task, int(config["seed"]), int(config.get("color_repeats", 2)))
+             if augmentation == "irisx" else None)
     maximum_calls = int(config["maximum_calls_per_task"])
     beams = int(config["beams_per_call"])
     max_tokens = int(config["maximum_new_tokens"])
@@ -182,6 +203,10 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
     calls = 0
     verification_calls = 0
     try:
+        if hasattr(backend, "augmentation"):
+            backend.augmentation = augmentation
+        if hasattr(backend, "representation"):
+            backend.representation = representation
         backend.begin_task(task)
         for test_index in range(len(task["test"])):
             # Hold a share of the remaining invocation budget for each later
@@ -194,13 +219,18 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
             candidates = []
             returned_sequences = 0
             generation_observations = []
-            for view_index, spec in enumerate(views):
+            view_records = ([{"spec": spec, "task": transform(task, spec), "test_index": test_index}
+                            for spec in views] if views is not None else
+                            [{**item, "test_index": 0} for item in source_qwen_views(
+                                task, test_index, seed=int(config.get("source_generation_seed", 2)),
+                                color_repeats=int(config.get("color_repeats", 2)))])
+            for view_index, view in enumerate(view_records):
                 if calls >= test_call_stop:
                     break
+                spec = view["spec"]
                 if hasattr(backend, "begin_view"):
                     backend.begin_view(spec, view_index)
-                transformed = transform_task(task, spec)
-                query = GridTokenizer().encode_query(transformed, test_index)
+                query = tokenizer.encode_query(view["task"], view["test_index"])
                 calls += 1  # Reserve the invocation before backend failure.
                 sequences = backend.generate(query, beams=beams, max_new_tokens=max_tokens)
                 if hasattr(backend, "last_generation_observation"):
@@ -210,10 +240,10 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
                     raise ValidationError("backend returned more sequences than bound")
                 returned_sequences += len(sequences)
                 for sequence_index, sequence in enumerate(sequences):
-                    parsed = GridTokenizer().parse_completion(sequence["tokens"], stopped_on_eos=sequence["eos"])
+                    parsed = tokenizer.parse_completion(sequence["tokens"], stopped_on_eos=sequence["eos"])
                     if parsed is None:
                         continue
-                    restored = transform_grid(parsed, spec, inverse=True)
+                    restored = inverse_grid(parsed, spec, inverse=True)
                     canonical_grid = tuple(tuple(row) for row in restored)
                     if canonical_grid not in verified_grids:
                         verified_grids[canonical_grid] = float(backend.verify(task, test_index, restored))
@@ -251,6 +281,8 @@ class FixtureCandidateBackend:
         self.calls = 0
         self.test_index = 0
         self.view_spec: Mapping[str, Any] | None = None
+        self.augmentation = "irisx"
+        self.representation = "irisx"
 
     def begin_task(self, task: Mapping[str, Any]) -> None:
         self.task_id = task["task_id"]
@@ -271,7 +303,8 @@ class FixtureCandidateBackend:
         if not values:
             return []
         original = values[current % len(values)]
-        rendered = transform_grid(original, self.view_spec) if self.view_spec is not None else original
+        render = source_qwen_transform_grid if getattr(self, "augmentation", "irisx") == "source-qwen" else transform_grid
+        rendered = render(original, self.view_spec) if self.view_spec is not None else original
         output = GridTokenizer().encode_grid(rendered) + [END]
         return [{"tokens": output, "eos": len(output) <= max_new_tokens,
                  "beam_nll": float(current + 1)}] if len(output) <= max_new_tokens else []
@@ -304,6 +337,8 @@ class QwenCandidateBackend:
         self.dfs_max_expansions = dfs_max_expansions
         self.dfs_cache_mode = dfs_cache_mode
         self.prefix_cache: PrefixLogitCache | None = None
+        self.augmentation = "irisx"
+        self.representation = "irisx"
         self.last_generation_observation: dict[str, Any] = {}
         self.forward_calls = 0
         self.verification_calls = 0
@@ -323,18 +358,14 @@ class QwenCandidateBackend:
 
     def generate(self, query: list[int], *, beams: int, max_new_tokens: int) -> list[dict[str, Any]]:
         import torch
+        from .arc_nvarc_qwen35_adapter import full_prefix_log_probs
 
         device = next(self.model.parameters()).device
         started = time.monotonic()
         try:
             if self.decoding == "bounded-dfs":
                 def next_probs(prefix: list[int]) -> list[float]:
-                    ids = torch.tensor([prefix], dtype=torch.long, device=device)
-                    with torch.inference_mode():
-                        # Recompute per prefix. A mutable hybrid cache cannot
-                        # be shared safely between sibling DFS branches.
-                        logits = self.model(input_ids=ids, use_cache=False).logits[0, -1]
-                        values = torch.log_softmax(logits.float(), dim=-1).cpu().tolist()
+                    values = full_prefix_log_probs(self.model, prefix)
                     self.forward_calls += 1
                     return values
                 callback = next_probs
@@ -378,24 +409,25 @@ class QwenCandidateBackend:
 
     def verify(self, task: Mapping[str, Any], test_index: int, answer: Any) -> float:
         """Mean answer NLL under eight fixed, solver-visible views."""
-        import torch
+        from .arc_nvarc_qwen35_adapter import answer_nll
 
-        tokenizer = GridTokenizer()
+        tokenizer = GridTokenizer(source_chat_newlines=self.representation == "source-qwen")
+        transform = source_qwen_transform_task if self.augmentation == "source-qwen" else transform_task
+        render = source_qwen_transform_grid if self.augmentation == "source-qwen" else transform_grid
         started = time.monotonic()
         scores = []
-        for spec in default_views(task, 17, color_repeats=1):
-            transformed = transform_task(task, spec)
-            query = tokenizer.encode_query(transformed, test_index)
-            target = tokenizer.encode_grid(transform_grid(answer, spec)) + [END]
-            tokens = query + target
-            device = next(self.model.parameters()).device
-            with torch.inference_mode():
-                logits = self.model(input_ids=torch.tensor([tokens], dtype=torch.long, device=device),
-                                    use_cache=False).logits[0]
-                self.forward_calls += 1
-                log_probs = torch.log_softmax(logits[len(query) - 1:-1].float(), dim=-1)
-                nll = -log_probs.gather(1, torch.tensor(target, device=device).unsqueeze(1)).sum().item()
-            scores.append(nll / len(target))
+        view_records = ([{"spec": spec, "task": transform(task, spec), "test_index": test_index,
+                         "answer": render(answer, spec)}
+                        for spec in default_views(task, 17, color_repeats=1)]
+                        if self.augmentation == "irisx" else
+                        [{**item, "test_index": 0} for item in source_qwen_views(
+                            task, test_index, seed=17, color_repeats=1, answer=answer)])
+        for view in view_records:
+            query = tokenizer.encode_query(view["task"], view["test_index"])
+            target = tokenizer.encode_grid(view["answer"]) + [END]
+            scores.append(answer_nll(self.model, query, target,
+                                     normalize=self.augmentation != "source-qwen"))
+            self.forward_calls += 1
         self.verification_calls += 1
         self.rank_seconds += time.monotonic() - started
         return sum(scores) / len(scores)

@@ -51,6 +51,32 @@ def selected_view(task: Mapping[str, Any], test_index: int) -> dict[str, Any]:
             "test": [task["test"][test_index]], "source_test_index": test_index}
 
 
+def source_sdg_messages(pairs: list[Mapping[str, Any]], *, seed: int,
+                        augment: bool) -> dict[str, Any]:
+    """Execute pinned NVARC SDG augmentation/formatter on labelled pairs.
+
+    The original SDG function uses Python's global RNG. Save and restore it so
+    this source-compatible data path cannot perturb another trial stage.
+    """
+    from .arc_nvarc_upstream import sdg_build_datasets
+
+    source = sdg_build_datasets()
+    cleaned = [{"input": grid(pair["input"]), "output": grid(pair["output"])}
+               for pair in pairs]
+    if not cleaned:
+        raise ValidationError("source SDG message builder needs labelled pairs")
+    state = random.getstate()
+    try:
+        random.seed(seed)
+        rules = source.fix_settings(["dihedral", "color"]) if augment else []
+        transformed = source.apply_augmentation(cleaned, rules)
+        messages = source.get_messages(transformed, do_augmentation=False)
+    finally:
+        random.setstate(state)
+    return {"messages": messages, "rules": rules,
+            "source": "NVARC/SDG/scripts/build_datasets.py:get_messages"}
+
+
 def compare_visible(full: Mapping[str, Any], mounted: Mapping[str, Any]) -> bool:
     """Compare full tasks; selected execution views are never accepted here."""
     return (full["task_id"] == mounted["task_id"] and
@@ -95,6 +121,102 @@ def transform_task(task: Mapping[str, Any], spec: Mapping[str, Any]) -> dict[str
     return {"task_id": task["task_id"], "train": [train[i] for i in order],
             "test": [{"input": transform_grid(item["input"], spec)} for item in task["test"]],
             "transform": dict(spec)}
+
+
+def source_qwen_transform_grid(value: Any, spec: Mapping[str, Any], *,
+                               inverse: bool = False) -> list[list[int]]:
+    """Use the pinned notebook's ArcDataset D4/color operations directly."""
+    import numpy as np
+    from .arc_nvarc_upstream import qwen_cell
+
+    source_key = spec.get("source_key")
+    if source_key is not None:
+        if not isinstance(source_key, str) or not source_key.startswith("view."):
+            raise ValidationError("invalid source Qwen view key")
+        cls = qwen_cell("arc_loader.py").ArcDataset
+        array = np.array(grid(value), dtype=np.uint8)
+        result = (cls.invert_mod(array, source_key, inv_perm=True) if inverse else
+                  cls.forward_mod(array, source_key, use_perm=True))
+        return grid(result.tolist())
+    rotation = spec.get("rotation", 0)
+    transpose = spec.get("transpose", False)
+    colors = spec.get("colors", list(range(10)))
+    if rotation not in (0, 1, 2, 3) or type(transpose) is not bool or sorted(colors) != list(range(10)):
+        raise ValidationError("invalid source Qwen transform")
+    key = "view" + (".transpose" if transpose else "") + ".rot90" * rotation
+    key += ".permute" + "".join(str(color) for color in colors)
+    cls = qwen_cell("arc_loader.py").ArcDataset
+    array = np.array(grid(value), dtype=np.uint8)
+    result = cls.invert_mod(array, key, inv_perm=True) if inverse else cls.forward_mod(array, key, use_perm=True)
+    return grid(result.tolist())
+
+
+def source_qwen_views(task: Mapping[str, Any], test_index: int, *,
+                      seed: int, color_repeats: int,
+                      answer: Any | None = None) -> list[dict[str, Any]]:
+    """Run pinned ArcDataset.augment and keep its exact transformed examples.
+
+    One source dataset is constructed per test; this preserves a full multi-test
+    task while never adding answers from other tests to the solver view.
+    """
+    import numpy as np
+    from .arc_nvarc_upstream import qwen_cell
+
+    if not 0 <= test_index < len(task["test"]) or color_repeats not in (1, 2):
+        raise ValidationError("source Qwen view bounds differ")
+    cls = qwen_cell("arc_loader.py").ArcDataset
+    query = {"train": task["train"], "test": [task["test"][test_index]]}
+    replies = {"view": [grid(answer)]} if answer is not None else {}
+    source = cls(queries={"view": query}, replies=replies, keys=["view"])
+    state = np.random.get_state()
+    try:
+        augmented = source.augment(n=color_repeats, seed=seed)
+    finally:
+        np.random.set_state(state)
+    keys = sorted(augmented.keys)
+    if color_repeats == 2:
+        # Notebook cell4: four two-key DFS batches for each transpose half.
+        indices = [0, 4, 2, 6, 8, 12, 10, 14]
+        keys = [keys[i + j] for i in indices for j in range(2)]
+    views = []
+    for key in keys:
+        item = augmented.queries[key]
+        transformed = {"task_id": task["task_id"], "train": item["train"],
+                       "test": item["test"], "transform": {"source_key": key}}
+        views.append({"spec": {"source_key": key}, "task": transformed,
+                      "answer": augmented.replies[key][0] if answer is not None else None})
+    return views
+
+
+def source_qwen_training_views(task: Mapping[str, Any], *, seed: int,
+                               color_repeats: int) -> list[dict[str, Any]]:
+    """Use notebook train_ds.augment(n, shfl_keys=True) without test labels."""
+    import numpy as np
+    from .arc_nvarc_upstream import qwen_cell
+
+    if not 1 <= color_repeats <= 16 or not task["train"]:
+        raise ValidationError("source Qwen adaptation view bound differs")
+    cls = qwen_cell("arc_loader.py").ArcDataset
+    source = cls(queries={"view": {"train": task["train"], "test": task["test"]}},
+                 keys=["view"])
+    state = np.random.get_state()
+    try:
+        augmented = source.augment(n=color_repeats, shfl_keys=True, seed=seed)
+    finally:
+        np.random.set_state(state)
+    return [{"key": key, "train": augmented.queries[key]["train"]}
+            for key in augmented.keys]
+
+
+def source_qwen_transform_task(task: Mapping[str, Any], spec: Mapping[str, Any]) -> dict[str, Any]:
+    train = [{key: source_qwen_transform_grid(pair[key], spec) for key in ("input", "output")}
+             for pair in task["train"]]
+    order = spec.get("demo_order", list(range(len(train))))
+    if sorted(order) != list(range(len(train))):
+        raise ValidationError("invalid source Qwen demonstration order")
+    return {"task_id": task["task_id"], "train": [train[i] for i in order],
+            "test": [{"input": source_qwen_transform_grid(item["input"], spec)}
+                     for item in task["test"]], "transform": dict(spec)}
 
 
 def seeded_transform(task: Mapping[str, Any], seed: int, index: int) -> dict[str, Any]:

@@ -32,6 +32,12 @@ class GridTokenizer:
     pad_token_id = PAD
     eos_token_id = END
 
+    def __init__(self, *, source_chat_newlines: bool = False) -> None:
+        # The completed compact pilot used the original IRIS-X grammar. The
+        # source-compatible profile adds the Qwen notebook's newline after
+        # each user/assistant role without changing any embedding row.
+        self.source_chat_newlines = source_chat_newlines
+
     def encode_grid(self, value: Any) -> list[int]:
         rows = grid(value)
         result: list[int] = []
@@ -53,7 +59,8 @@ class GridTokenizer:
         return grid(rows)
 
     def encode_pair(self, input_grid: Any, output_grid: Any) -> tuple[list[int], list[int]]:
-        prefix = [BEGIN, USER] + self.encode_grid(input_grid) + [END, BEGIN, ASSISTANT]
+        role_end = [10] if self.source_chat_newlines else []
+        prefix = [BEGIN, USER] + role_end + self.encode_grid(input_grid) + [END, BEGIN, ASSISTANT] + role_end
         answer = self.encode_grid(output_grid) + [END]
         tokens = prefix + answer
         labels = [-100] * len(prefix) + answer
@@ -66,8 +73,9 @@ class GridTokenizer:
         for item in task["train"]:
             pair, _ = self.encode_pair(item["input"], item["output"])
             result.extend(pair)
-        result.extend([BEGIN, USER] + self.encode_grid(task["test"][test_index]["input"]) +
-                      [END, BEGIN, ASSISTANT])
+        role_end = [10] if self.source_chat_newlines else []
+        result.extend([BEGIN, USER] + role_end + self.encode_grid(task["test"][test_index]["input"]) +
+                      [END, BEGIN, ASSISTANT] + role_end)
         return result
 
     def parse_completion(self, tokens: list[int], *, stopped_on_eos: bool) -> list[list[int]] | None:
