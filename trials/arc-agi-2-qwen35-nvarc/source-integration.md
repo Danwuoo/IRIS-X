@@ -5,17 +5,41 @@ This is the local M0/M1 engineering record for the owner-authorized phases
 
 ## Rebuild and boundaries
 
-From a clean repository checkout, install `git` and Kaggle CLI/API access in
-Python 3.12, then run that Python's `tools/nvarc_source.py materialize`. A clean
-Git/submodule checkout followed by this command's notebook fetch passed the
-full offline verifier on 2026-09-24. The command is the only network
-source acquisition path. It clones NVARC at
+For a first network acquisition, install `git` and Kaggle CLI/API access in
+Python 3.12 and run `python tools/nvarc_source.py materialize`. It clones NVARC at
 `846d0198efa752534594e321fc3289fc0a06c657`, initializes its seven direct
 submodules and the nested ConceptARC editor, checks nine exact commits, pulls
-the frozen current public Kaggle notebooks, and checks all pinned bytes. The
+the pinned public Kaggle notebooks only when their verified local copies are
+absent, and checks all pinned bytes. A newer remote current version fails closed.
+The
 cache lives at `.irisx/arc-agi-2/qwen35-nvarc/source/`, independent of the old
 51fa worktree. `python tools/nvarc_source.py verify` is strictly offline.
 Default repository tests never download source or install packages.
+
+After a verified acquisition, export a local directory bundle with
+`python tools/nvarc_source.py export-bundle --bundle .irisx/nvarc-source-bundle`.
+Rebuild into a fresh directory without Kaggle or network access with
+`python tools/nvarc_source.py materialize --bundle .irisx/nvarc-source-bundle
+--source .irisx/nvarc-source-rebuilt`. The bundle contains the checked source
+tree, Git object stores and both exact notebooks; it is ignored local material,
+not a redistributable artifact. Every member is size/hash checked before import,
+then the reconstructed nine Git checkouts, recursive submodules, notices,
+notebooks and bound source files are verified. The actual pinned source was
+exported and rebuilt this way on 2026-09-24, returning `source_ready: true`.
+
+The verifier checks each repository's HEAD, index and tracked worktree, rejects
+Git assume-unchanged/skip-worktree bypass flags, and inspects untracked and
+ignored files. Its only permitted additions are bytecode caches
+for the three hash-gated modules that the integration compiles directly from
+checked source; untracked Python source, other caches and staged changes fail.
+Those bytecode files cannot replace the loaded source. A partial Git clone
+cannot always produce a self-contained `git bundle` because historical blobs
+may be absent, so the local bundle preserves the verified working tree and Git
+metadata instead. The four offline
+`tests.test_nvarc_source_materialization` cases cover dirty root/nested
+repositories, cache reuse, current-version drift, interrupted and mismatched
+notebook writes, clean rebuild and tampered bundle members. This closes F1/F2
+from the [independent review](control-review-9198fd4.md) at the tool level.
 
 The [source manifest](source-manifest.json) binds commits, URLs, notebook
 versions/hashes, integration source files, and available root license notices.
@@ -87,11 +111,14 @@ replacement, so a failed fetch cannot replace verified bytes. Provider range
 transport and **large real artifact** retrieval remain unverified M4 work; no
 new retrieval was attempted here.
 
-`python tools/repository_check.py --all` passed its offline repository check
-and 208 unit tests (four existing optional PyTorch tests skipped under the
-default Python 3.14 environment). `python tools/nvarc_source.py verify` passed
-with nine Git repositories, two notebooks and nine bound code files. The two
-new transport I/O regressions also passed directly under default Python.
+After the F1/F2 repair, `python tools/repository_check.py --all` passed the
+offline repository check and 212 unit tests (four existing optional PyTorch
+tests skipped under default Python 3.14). The new source-materialization suite
+passed all four tests. The strict ML profile again passed 19 tests with zero
+skips. `python tools/nvarc_source.py verify` reports nine Git repositories,
+two notebooks and nine bound code files; running `materialize` on that valid
+cache also passed without Kaggle access. The two transport I/O regressions
+passed under default Python.
 
 The original DFS has neither IRIS-X's shape-aware pruning nor its expansion,
 sequence and deadline semantics. Differential equivalence is asserted only

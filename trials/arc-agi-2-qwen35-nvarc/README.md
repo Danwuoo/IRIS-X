@@ -25,10 +25,12 @@ ablation. None of their exhausted ceilings or frozen identities is reused.
 ## Source integration checkpoint (2026-09-24)
 
 The [independent source review](control-review-9198fd4.md) reran the repository
-and strict ML/source profiles successfully at `9198fd4`. Final phases 1–3
-acceptance remains pending two reproducible source-tool repairs: tracked
-worktree changes can escape the readiness check, and materialization does not
-reuse a valid pinned notebook cache when the remote current version changes.
+and strict ML/source profiles successfully at `9198fd4`, then reproduced two
+source-tool defects. F1/F2 have since been repaired locally: readiness now
+checks every Git index/worktree and executable addition, and materialization
+reuses valid notebook cache or imports an exact local source bundle. The
+[source integration record](source-integration.md) retains the offline rebuild
+commands, regression evidence and remaining limits.
 
 Owner-authorized local phases 1–3 now have a reconstructable pinned NVARC
 source and public-notebook cache, a source-to-adapter map, upstream differential

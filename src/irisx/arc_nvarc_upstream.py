@@ -7,7 +7,6 @@ excluded; the original definitions in their writefile cells execute locally.
 from __future__ import annotations
 
 import ast
-import importlib.util
 import json
 from pathlib import Path
 import sys
@@ -40,12 +39,16 @@ def _checked(path: Path, expected: str) -> Path:
 
 
 def _module(name: str, path: Path) -> types.ModuleType:
-    spec = importlib.util.spec_from_file_location(name, path)
-    if spec is None or spec.loader is None:
-        raise ValidationError(f"cannot load upstream source: {path}")
-    module = importlib.util.module_from_spec(spec)
+    # Compile the checked source bytes, never a pre-existing bytecode cache.
+    module = types.ModuleType(name)
+    module.__file__ = str(path)
     sys.modules[name] = module
-    spec.loader.exec_module(module)
+    previous = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    try:
+        exec(compile(path.read_bytes(), str(path), "exec"), module.__dict__)
+    finally:
+        sys.dont_write_bytecode = previous
     return module
 
 
@@ -135,11 +138,23 @@ def trm_dataset_entry() -> types.ModuleType:
     manifest = _binding()
     rel = "external/TinyRecursiveModels/dataset/build_arc_dataset.py"
     path = _checked(SOURCE / "NVARC" / rel, manifest["code_files"][rel]["sha256"])
+    common_rel = "external/TinyRecursiveModels/dataset/common.py"
+    common_path = _checked(SOURCE / "NVARC" / common_rel,
+                           manifest["code_files"][common_rel]["sha256"])
     trm_root = path.parents[1]
     added = str(trm_root) not in sys.path
     if added:
         sys.path.insert(0, str(trm_root))
     try:
+        # The builder imports dataset.common. Preload the exact checked source
+        # to prevent a stale or untracked __pycache__ entry from taking effect.
+        package = sys.modules.get("dataset")
+        if package is None:
+            package = types.ModuleType("dataset")
+            package.__path__ = [str(common_path.parent)]
+            sys.modules["dataset"] = package
+        common = _module("dataset.common", common_path)
+        package.common = common
         return _module("_nvarc_trm_dataset", path)
     finally:
         if added:
