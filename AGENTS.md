@@ -135,6 +135,14 @@ were verified. Qwen3.5-4B completed two synthetic LoRA optimizer steps with
 and zero generations. One terminal retrieval returned a full log and verified
 truth-free result. Decisions 0024–0025 are consumed; no additional pilot
 submission, retrieval, ARC scoring, full SFT or method promotion is authorized.
+Decision 0026 authorized the distinct `nvarc-4b-compact-complete-001` small
+complete flow. Kaggle accepted one private version under a title-derived slug
+different from the specified metadata ID. The terminal version failed at the
+Dataset v2 root inventory gate before model load, conversion, training or
+generation. One terminal retrieval preserved 11 files and confirmed that no
+compact artifact, checkpoint or result exists. The one push and retrieval are
+consumed; no repair submission or further external execution is authorized.
+Its status is `trials/arc-agi-2-qwen35-nvarc/compact-complete-001.md`.
 
 ## Authority order
 

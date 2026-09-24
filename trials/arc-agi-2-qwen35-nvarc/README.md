@@ -18,10 +18,14 @@ Owner direction and boundaries are in
 This workspace is distinct from Trial 001, Trial 002, prompt pilot, and budget
 ablation. None of their exhausted ceilings or frozen identities is reused.
 
-## Compact 4B vertical pilot development (2026-09-24)
+## Compact 4B vertical pilot (2026-09-24)
 
-The distinct `nvarc-4b-compact-complete-001` flow is now staged **locally as an
-unapproved draft**; it has not launched a Kaggle kernel or retrieved output.
+The distinct `nvarc-4b-compact-complete-001` flow was staged locally, then
+authorized by Decision 0026. Its [one accepted private Kaggle version and one
+terminal retrieval](compact-complete-001.md) are consumed. The version failed
+before model loading because the Dataset v2 mount's root filenames did not
+equal the pinned model and wheel inventory. It produced no compact artifact,
+training steps, or generations.
 The checked-in candidate `method` now passes the same binding/outbound verifier
 used by the runner, while unknown fields still fail closed. Task-local LoRA
 checks finite loss, every trainable gradient and updated adapter tensors at
@@ -36,7 +40,7 @@ flow through conversion, reload, PEFT adaptation, model DFS generation,
 likelihood verification, checkpoint/result ZIP and separate sealed synthetic
 scoring. This checks the pipeline, not ARC quality. The 4B compact artifact,
 its VRAM/RAM cost and GPU result remain **unverified**. The exact draft limits,
-stage commands and owner review gate are in the [runbook](runbook.md) and
+stage commands and executed boundary are in the [runbook](runbook.md) and
 [development plan](../../docs/plan/2026-09-24-qwen35-compact-complete-pilot.md).
 
 ## What was built

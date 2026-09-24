@@ -1,10 +1,12 @@
 # Development and future execution runbook
 
-## Compact 4B small complete flow (2026-09-24 draft)
+## Compact 4B small complete flow (2026-09-24 terminal)
 
 The new [development plan](../../docs/plan/2026-09-24-qwen35-compact-complete-pilot.md)
 and checked-in `configs/compact-complete-001.json` define the distinct
-`nvarc-4b-compact-complete-001` identity. It is **unapproved**. The synthetic
+`nvarc-4b-compact-complete-001` identity. Decision 0026 authorized one
+execution, which [failed before model loading](compact-complete-001.md). Its
+one push and one terminal retrieval are consumed. The synthetic
 visible source has two tasks, two test inputs each, rectangular grids, and no
 test outputs. Its source digest is of those visible bytes only. The official
 competition mount is checked for presence but no challenge file is read.
@@ -39,7 +41,7 @@ or reading the challenge file. The notebook's `run` entry performs the same
 gates in its first phases, so a separate preflight invocation is optional and
 would reread the 9.34 GB inventory.
 
-The intended post-approval CLI sequence is one private
+The authorized version 1 followed this planned CLI sequence: one private
 `kaggle kernels push -p <approved-package>/kernel`, bounded terminal status
 checks, one `kaggle kernels output` retrieval with local
 `PYTHONIOENCODING=utf-8`, then

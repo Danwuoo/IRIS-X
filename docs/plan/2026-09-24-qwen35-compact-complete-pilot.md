@@ -1,6 +1,6 @@
 # Qwen3.5-4B compact 小型完整流程開發
 
-日期：2026-09-24。狀態：本機開發；新 Kaggle 執行待 owner 審核。
+日期：2026-09-24。狀態：Decision 0026 已授權並執行一次；[終止紀錄](../../trials/arc-agi-2-qwen35-nvarc/compact-complete-001.md)顯示在模型載入前因 Dataset 清單不符而失敗。一次提交及一次取回均已消耗。
 
 ## 範圍與材料
 
