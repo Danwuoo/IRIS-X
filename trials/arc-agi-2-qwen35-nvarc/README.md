@@ -24,6 +24,12 @@ ablation. None of their exhausted ceilings or frozen identities is reused.
 
 ## Source integration checkpoint (2026-09-24)
 
+**Local phases 1–3 accepted at `002f457`.** The
+[independent repair review](control-review-002f457.md) passed the repository
+and strict ML/source suites, rebuilt the actual source bundle offline, and
+confirmed F1/F2 with independent dirty-source and no-network cache probes.
+This accepts the documented source integration scope, not full-method execution.
+
 The [independent source review](control-review-9198fd4.md) reran the repository
 and strict ML/source profiles successfully at `9198fd4`, then reproduced two
 source-tool defects. F1/F2 have since been repaired locally: readiness now
