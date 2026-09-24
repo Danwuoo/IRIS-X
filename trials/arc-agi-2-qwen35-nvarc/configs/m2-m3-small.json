@@ -1,0 +1,32 @@
+{
+  "format": "irisx/nvarc-m2-m3-small-v1",
+  "source_revision": "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+  "selection": "16 shortest source-grammar demonstration sequences in pinned official ARC-AGI-2 data/training; first 8 train, next 8 dev; ties by task ID",
+  "train": [
+    {"id": "833966f4", "sha256": "cec9e5fe2a25f61a7f20f7f4da328d31fd2dce8b9a6d4b16a0461126750c6aef"},
+    {"id": "6150a2bd", "sha256": "173321aaad548482da0aa3e012df8914e7f8ef5d4996dba4475ef96c4d5a5779"},
+    {"id": "e9afcf9a", "sha256": "c1ca1a1c246c676873e883584e7d9bdaec0fcf98b1709c62a80e3472045bc7f1"},
+    {"id": "d631b094", "sha256": "4014c0cc8786d867c13ac599a69f2b1b57b625496f9d28b4166f79e5a423a545"},
+    {"id": "5582e5ca", "sha256": "11f3b4b0de9ccd8e5488af732f1b8ea8a25246516becf5c9bf0cc303b6509af9"},
+    {"id": "d037b0a7", "sha256": "9e39a4acdb3e3bff7dd54bed5f4ab77973f4027d48beb62a9c740d8a7a0b0aee"},
+    {"id": "66e6c45b", "sha256": "2665eb07147dc163f4d7262d61f7ffd66c8da89478d2361e7b403ad1d8363d74"},
+    {"id": "a6953f00", "sha256": "5bb5e89552d9e26ba211f1f4a5c850866ce1bc8c607daa16ef8f39733b524502"}
+  ],
+  "dev": [
+    {"id": "00576224", "sha256": "0eec5237d183b37d4a8f56ea9a193b5680e08faa2f865026cabb2e2b1a307e51"},
+    {"id": "c9e6f938", "sha256": "43b96b6c46b8ca3f0a2f0b4d7cfe7375eb9c271f1d53cab9d9f639de6fe54e15"},
+    {"id": "49d1d64f", "sha256": "dfa99527e7dffadd4325471e5479d223f0f8dc2fc0048b48b99319d83eac1709"},
+    {"id": "0d3d703e", "sha256": "16bc1695ae651124ea07b7c1d08248a02500391ed1a2a6bd059be8ab6851e0c8"},
+    {"id": "25d8a9c8", "sha256": "5546728278c97c13553eb7b3aabd884e97761ce4260866f7812f2f26d1c5b631"},
+    {"id": "25ff71a9", "sha256": "8e7f08f07f2ac0a1c7658854d75ab1bba6cc7d0dfeaa72003afe2fa88cb9eb34"},
+    {"id": "3c9b0459", "sha256": "e4d14b94f439bb7984119c82bc5587067b9b75e7a61cf534fb842111ed1bf968"},
+    {"id": "44f52bb0", "sha256": "090aa5554d607b2c57633bbd2eac6a6fa56fd35c971215b61afb23124bfcdcbc"}
+  ],
+  "augmentation": {"source": "NVARC SDG/scripts/build_datasets.py", "train_views_per_parent": 16, "seed_start": 2400, "dev_views_per_parent": 0},
+  "sft": {"mode": "full-sft", "packing": false, "device": "cpu", "seed": 24, "learning_rate": 0.0001, "max_steps": 8, "maximum_training_tokens": 2048, "max_sequence_length": 256, "gradient_accumulation": 1, "checkpoint_every": 1, "gradient_checkpointing": false},
+  "tiny_cpu_validation_steps": 2,
+  "tiny_cpu_validation_tokens": 512,
+  "dev_visible_task_limit": 1,
+  "teacher_calls_authorized": 0,
+  "paid_usd_authorized": 0
+}

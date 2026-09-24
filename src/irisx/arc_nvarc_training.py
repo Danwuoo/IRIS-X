@@ -12,6 +12,7 @@ import json
 import math
 from pathlib import Path
 import random
+import time
 from typing import Any, Iterable, Mapping, Sequence
 
 from .arc_nvarc_representation import GridTokenizer, PAD, validate_compact_model
@@ -294,7 +295,7 @@ def load_compact_model(checkpoint: Path, *, dtype: str = "bfloat16") -> Any:
 
 def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: Path,
                     config: Mapping[str, Any], *, model_identity_digest: str,
-                    resume: bool = False) -> dict[str, Any]:
+                    resume: bool = False, stop_after_steps: int | None = None) -> dict[str, Any]:
     """Real gradient path with exact optimizer/scheduler/RNG/data-cursor restore.
 
     Single-process full SFT is deliberate; distributed sharding requires a
@@ -302,6 +303,8 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
     verified on the pinned architecture.
     """
     import torch
+
+    started = time.monotonic()
 
     if config.get("packing", False) or config.get("mode") != "full-sft":
         raise ValidationError("only unpacked full-SFT is supported by this entry")
@@ -314,6 +317,8 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
                              "model_identity_digest": model_identity_digest})
     device = torch.device(config.get("device", "cpu"))
     model.to(device).train()
+    if device.type == "cuda":
+        torch.cuda.reset_peak_memory_stats(device)
     if config.get("gradient_checkpointing", False):
         model.gradient_checkpointing_enable()
         if hasattr(model.config, "use_cache"):
@@ -348,7 +353,8 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
     else:
         torch.manual_seed(int(config["seed"]))
     accumulation = int(config.get("gradient_accumulation", 1))
-    if accumulation < 1 or total_steps < 1:
+    if accumulation < 1 or total_steps < 1 or (stop_after_steps is not None and
+                                               not step < stop_after_steps < total_steps):
         raise ValidationError("invalid training limits")
     optimizer.zero_grad(set_to_none=True)
     last_loss = None
@@ -382,8 +388,14 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
                                  bool(torch.any(parameter.grad != 0)) for parameter in model.parameters()
                                  if parameter.requires_grad):
             raise ValidationError("no trainable parameter received a nonzero gradient")
+        if any(parameter.grad is not None and not bool(torch.isfinite(parameter.grad).all())
+               for parameter in model.parameters() if parameter.requires_grad):
+            raise ValidationError("non-finite full-SFT gradient")
         torch.nn.utils.clip_grad_norm_(model.parameters(), float(config.get("clip_grad_norm", 1.0)))
         optimizer.step()
+        if any(not bool(torch.isfinite(parameter).all()) for parameter in model.parameters()
+               if parameter.requires_grad):
+            raise ValidationError("non-finite full-SFT weight after optimizer update")
         scheduler.step()
         optimizer.zero_grad(set_to_none=True)
         step += 1
@@ -397,6 +409,9 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
                         "cursor": cursor, "step": step, "tokens_seen": tokens_seen,
                         "last_loss": last_loss}, temporary)
             temporary.replace(checkpoint)
+        if stop_after_steps is not None and step == stop_after_steps:
+            stop_reason = "controlled_interruption"
+            break
     if stop_reason == "maximum_training_tokens":
         output.mkdir(parents=True, exist_ok=True)
         temporary = checkpoint.with_suffix(".tmp")
@@ -407,9 +422,19 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
                     "cursor": cursor, "step": step, "tokens_seen": tokens_seen,
                     "last_loss": last_loss}, temporary)
         temporary.replace(checkpoint)
+    try:
+        import psutil
+        memory = psutil.Process().memory_info()
+        peak_rss_mib = getattr(memory, "peak_wset", memory.rss) / 1048576
+    except ImportError:
+        peak_rss_mib = None
     return {"artifact_kind": "training-state", "identity_digest": identity,
             "steps": step, "cursor": cursor, "tokens_seen": tokens_seen,
             "last_loss": last_loss, "stop_reason": stop_reason,
+            "elapsed_seconds": time.monotonic() - started,
+            "process_peak_rss_mib": peak_rss_mib,
+            "peak_cuda_allocated_mib": (torch.cuda.max_memory_allocated(device) / 1048576
+                                        if device.type == "cuda" else None),
             "trainable_parameter_count": sum(parameter.numel() for parameter in model.parameters()
                                              if parameter.requires_grad)}
 

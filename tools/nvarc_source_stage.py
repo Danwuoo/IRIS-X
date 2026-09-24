@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import time
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,12 +62,36 @@ def run(config_path: Path, visible_path: Path, output: Path, *, profile: str,
         adapter = TaskLocalAdapter(model, adaptation)
         backend = QwenCandidateBackend(model, task_adapter=adapter,
                                        dfs_max_expansions=int(candidate["dfs_max_expansions"]))
-    results = [item for task in tasks for item in solve_task(task, backend, candidate)]
+    results = []
+    measurements = []
+    for task in tasks:
+        started = time.monotonic()
+        results.extend(solve_task(task, backend, candidate))
+        if profile != "fixture":
+            import torch
+            try:
+                import psutil
+                memory = psutil.Process().memory_info()
+                rss_mib = getattr(memory, "peak_wset", memory.rss) / 1048576
+            except ImportError:
+                rss_mib = None
+            measurements.append({"task_id": task["task_id"],
+                                 "wall_seconds": time.monotonic() - started,
+                                 "ttt_seconds": backend.ttt_seconds,
+                                 "generation_seconds": backend.generate_seconds,
+                                 "ranking_seconds": backend.rank_seconds,
+                                 "explicit_forward_calls": backend.forward_calls,
+                                 "verification_calls": backend.verification_calls,
+                                 "ttt": adapter.last_observation,
+                                 "process_peak_rss_mib": rss_mib,
+                                 "peak_cuda_allocated_mib": (torch.cuda.max_memory_allocated() / 1048576
+                                                             if torch.cuda.is_available() else None)})
     report = {"format": "irisx/nvarc-source-stage-result-v1", "profile": profile,
               "source_profile": config["source_profile"],
               "config_sha256": hashlib.sha256(config_path.read_bytes()).hexdigest(),
               "visible_sha256": hashlib.sha256(visible_path.read_bytes()).hexdigest(),
               "material_digest": material_digest,
+              "measurements": measurements,
               "task_count": len(tasks), "test_count": sum(len(task["test"]) for task in tasks),
               "results": results, "contains_evaluator_truth": False}
     output.parent.mkdir(parents=True, exist_ok=True)
