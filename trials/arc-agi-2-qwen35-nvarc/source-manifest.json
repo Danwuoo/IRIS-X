@@ -1,0 +1,121 @@
+{
+  "format": "irisx/nvarc-source-manifest-v1",
+  "git": {
+    "NVARC": {
+      "path": "",
+      "url": "https://github.com/1ytic/NVARC.git",
+      "commit": "846d0198efa752534594e321fc3289fc0a06c657",
+      "license_status": "no root license/notice found; inspect upstream before redistribution"
+    },
+    "ARC-AGI-2": {
+      "path": "external/ARC-AGI-2",
+      "url": "https://github.com/arcprize/ARC-AGI-2",
+      "commit": "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+      "notice": {
+        "path": "LICENSE",
+        "sha256": "4db826e4b03ae48a804acca629284cf7f63b1debc405c868f588c1f70d09c806"
+      }
+    },
+    "BARC": {
+      "path": "external/BARC",
+      "url": "https://github.com/xu3kev/BARC",
+      "commit": "a7b51a6b1ff969da3a78a71c533b6d79a93966e7",
+      "license_status": "no root license/notice found; inspect upstream before redistribution"
+    },
+    "ConceptARC": {
+      "path": "external/ConceptARC",
+      "url": "https://github.com/victorvikram/ConceptARC",
+      "commit": "b22ef526b4656679816b7811e78f55cc24d736d7",
+      "notice": {
+        "path": "LICENSE",
+        "sha256": "fd7f62b96ce57d422f81c49f52d933bfa10532e76c1882bf0da730108c8df19e"
+      }
+    },
+    "ConceptARC/editor": {
+      "path": "external/ConceptARC/editor",
+      "url": "https://github.com/victorvikram/arc-site.git",
+      "commit": "7af43f3b25a943b519f62459f16cddb1c6aaedd1",
+      "license_status": "no root license/notice found; inspect upstream before redistribution"
+    },
+    "MINI-ARC": {
+      "path": "external/MINI-ARC",
+      "url": "https://github.com/KSB21ST/MINI-ARC",
+      "commit": "792d082c40d496f2f106f63fa7125bb115c8230b",
+      "notice": {
+        "path": "LICENSE",
+        "sha256": "e6a5fd635dc096497950cb3456cb892bab84851ebb98cb1be10727cf8ca683cf"
+      }
+    },
+    "TinyRecursiveModels": {
+      "path": "external/TinyRecursiveModels",
+      "url": "https://github.com/SamsungSAILMontreal/TinyRecursiveModels",
+      "commit": "e7b68717f0a6c4cbb4ce6fbef787b14f42083bd9",
+      "notice": {
+        "path": "LICENSE",
+        "sha256": "a17df02e2c90fbbb4b2fc0f0262ae429ef9c628c45ee434499fd9aeb987735a4"
+      }
+    },
+    "h-arc": {
+      "path": "external/h-arc",
+      "url": "https://github.com/Le-Gris/h-arc",
+      "commit": "2983eb8672097cd555685a8d140e2f66e1a3a91a",
+      "license_status": "no root license/notice found; inspect upstream before redistribution"
+    },
+    "re-arc": {
+      "path": "external/re-arc",
+      "url": "https://github.com/michaelhodel/re-arc",
+      "commit": "e5b7f1d06362a76f9d3b8c25154ff1fafca897ce",
+      "notice": {
+        "path": "LICENSE",
+        "sha256": "7f1a2239c9e0465955e5d79dda7e5ea21a5deeae7c2865b76cece4dd17f9eb1a"
+      }
+    }
+  },
+  "notebooks": {
+    "qwen": {
+      "path": "kaggle-qwen/arc2-qwen3-unsloth-flash-lora-batch4-queue.ipynb",
+      "ref": "sorokin/arc2-qwen3-unsloth-flash-lora-batch4-queue",
+      "version_number": 10,
+      "sha256": "506b85db66f9949022e87935ccb06a73fd78cb690883bd600bfb5c7d36c2b3af",
+      "license_status": "not specified in notebook pull",
+      "source_status": "public Kaggle current-version API; exact bytes checked"
+    },
+    "trm": {
+      "path": "kaggle-trm/arc2-trm-v31.ipynb",
+      "ref": "cpmpml/arc2-trm-v31",
+      "version_number": 21,
+      "sha256": "9000b90f61346c1872c0e31056d6beeb3d19201899dca4f7cd8f3b4e0c8d56dc",
+      "license_status": "not specified in notebook pull",
+      "source_status": "public Kaggle current-version API; exact bytes checked"
+    }
+  },
+  "code_files": {
+    "SDG/scripts/build_datasets.py": {
+      "sha256": "1996ed8010afa28135f3d3fad5d89ae113ca845a0f235ab7392e4167cb23f5e8"
+    },
+    "ARChitects/run_sft.py": {
+      "sha256": "457afaa486d2bcd65727797115bca10285f49c17b4df4250a95b6a3691a03175"
+    },
+    "ARChitects/sft_mg.yaml": {
+      "sha256": "aca7fd8618b7304690bf3ba401ac67866b5527e88acee371331265221a9f73fd"
+    },
+    "ARChitects/cut_tokenizer.ipynb": {
+      "sha256": "1b108add2834da40da103cbb961964bb7e0796e4e7d7a5ec82f29edee080a3f7"
+    },
+    "TRM/pretrain-no-eval.py": {
+      "sha256": "59dfb2523507046af3126790c473f371111f7b7ded77233266a71ea13d3104ac"
+    },
+    "TRM/eval-arc-k-10.py": {
+      "sha256": "62ec1e2f179cd80c58a7f0067ab51c76e2e7eb213959566b015c107c5d98b36f"
+    },
+    "external/TinyRecursiveModels/dataset/build_arc_dataset.py": {
+      "sha256": "f6e452979cdaa438e46c82eaea1f2fe34cef828debd4b94e1b5139d13aca7c60"
+    },
+    "external/TinyRecursiveModels/dataset/common.py": {
+      "sha256": "f94117b98150d0e5de0d0326270fb73ab4d4e614ced958d245c1330c163138ba"
+    },
+    "external/TinyRecursiveModels/evaluators/arc.py": {
+      "sha256": "d47e1d0d95556c9e5f7ef85fd507607d950f5fc934e8f0d5f4902056618d1a02"
+    }
+  }
+}

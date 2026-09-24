@@ -1,0 +1,2020 @@
+{
+  "format": "irisx/nvarc-asset-inventory-v1",
+  "queried_utc": "2026-09-24",
+  "acquisition": "metadata only; no dataset bytes downloaded",
+  "datasets": [
+    {
+      "key": "artifacts",
+      "ref": "sorokin/nvarc-artifacts-puzzles",
+      "version_number": 1,
+      "reported_total_bytes": 42008423274,
+      "license": "Unknown",
+      "last_updated": "2025-11-20T20:52:37.793000Z",
+      "purpose": "SDG generated text/program descriptions",
+      "exposure": "potential evaluation-derived",
+      "first_page_files": [
+        {
+          "path": "inputs/data-00000.parquet",
+          "bytes": 111257793
+        },
+        {
+          "path": "inputs/data-00001.parquet",
+          "bytes": 256174086
+        },
+        {
+          "path": "inputs/data-00002.parquet",
+          "bytes": 203640259
+        },
+        {
+          "path": "inputs/data-00003.parquet",
+          "bytes": 130748280
+        },
+        {
+          "path": "inputs/data-00004.parquet",
+          "bytes": 130119632
+        },
+        {
+          "path": "inputs/data-00005.parquet",
+          "bytes": 130892584
+        },
+        {
+          "path": "inputs/data-00006.parquet",
+          "bytes": 133428486
+        },
+        {
+          "path": "inputs/data-00007.parquet",
+          "bytes": 255492283
+        },
+        {
+          "path": "inputs/data-00008.parquet",
+          "bytes": 368103427
+        },
+        {
+          "path": "inputs/data-00009.parquet",
+          "bytes": 395479030
+        },
+        {
+          "path": "inputs/data-00010.parquet",
+          "bytes": 390380031
+        },
+        {
+          "path": "inputs/data-00011.parquet",
+          "bytes": 341376432
+        },
+        {
+          "path": "inputs/data-00012.parquet",
+          "bytes": 364621546
+        },
+        {
+          "path": "inputs/data-00013.parquet",
+          "bytes": 374534998
+        },
+        {
+          "path": "inputs/data-00014.parquet",
+          "bytes": 378600257
+        },
+        {
+          "path": "inputs/data-00015.parquet",
+          "bytes": 378585958
+        },
+        {
+          "path": "inputs/data-00016.parquet",
+          "bytes": 371750647
+        },
+        {
+          "path": "inputs/data-00017.parquet",
+          "bytes": 348307823
+        },
+        {
+          "path": "inputs/data-00018.parquet",
+          "bytes": 349404245
+        },
+        {
+          "path": "inputs/data-00019.parquet",
+          "bytes": 368150085
+        },
+        {
+          "path": "mixtures/data-00000.parquet",
+          "bytes": 48021551
+        },
+        {
+          "path": "mixtures/data-00001.parquet",
+          "bytes": 47977654
+        },
+        {
+          "path": "mixtures/data-00002.parquet",
+          "bytes": 264805192
+        },
+        {
+          "path": "mixtures/data-00003.parquet",
+          "bytes": 109633221
+        },
+        {
+          "path": "mixtures/data-00004.parquet",
+          "bytes": 109095373
+        },
+        {
+          "path": "mixtures/data-00005.parquet",
+          "bytes": 108978873
+        },
+        {
+          "path": "mixtures/data-00006.parquet",
+          "bytes": 108690843
+        },
+        {
+          "path": "mixtures/data-00007.parquet",
+          "bytes": 109229319
+        },
+        {
+          "path": "mixtures/data-00008.parquet",
+          "bytes": 203429438
+        },
+        {
+          "path": "mixtures/data-00009.parquet",
+          "bytes": 215254141
+        },
+        {
+          "path": "mixtures/data-00010.parquet",
+          "bytes": 231127137
+        },
+        {
+          "path": "mixtures/data-00011.parquet",
+          "bytes": 313300427
+        },
+        {
+          "path": "mixtures/data-00012.parquet",
+          "bytes": 340205577
+        },
+        {
+          "path": "mixtures/data-00013.parquet",
+          "bytes": 308264620
+        },
+        {
+          "path": "mixtures/data-00014.parquet",
+          "bytes": 295404969
+        },
+        {
+          "path": "mixtures/data-00015.parquet",
+          "bytes": 293536144
+        },
+        {
+          "path": "mixtures/data-00016.parquet",
+          "bytes": 297814001
+        },
+        {
+          "path": "mixtures/data-00017.parquet",
+          "bytes": 299613370
+        },
+        {
+          "path": "mixtures/data-00018.parquet",
+          "bytes": 297595201
+        },
+        {
+          "path": "mixtures/data-00019.parquet",
+          "bytes": 301770749
+        },
+        {
+          "path": "outputs/data-00000.parquet",
+          "bytes": 101348465
+        },
+        {
+          "path": "outputs/data-00001.parquet",
+          "bytes": 103635022
+        },
+        {
+          "path": "outputs/data-00002.parquet",
+          "bytes": 103146929
+        },
+        {
+          "path": "outputs/data-00003.parquet",
+          "bytes": 102172534
+        },
+        {
+          "path": "outputs/data-00004.parquet",
+          "bytes": 104239323
+        },
+        {
+          "path": "outputs/data-00005.parquet",
+          "bytes": 103377980
+        },
+        {
+          "path": "outputs/data-00006.parquet",
+          "bytes": 100828526
+        },
+        {
+          "path": "outputs/data-00007.parquet",
+          "bytes": 103433998
+        },
+        {
+          "path": "outputs/data-00008.parquet",
+          "bytes": 103459428
+        },
+        {
+          "path": "outputs/data-00009.parquet",
+          "bytes": 102325541
+        },
+        {
+          "path": "outputs/data-00010.parquet",
+          "bytes": 102331513
+        },
+        {
+          "path": "outputs/data-00011.parquet",
+          "bytes": 101478577
+        },
+        {
+          "path": "outputs/data-00012.parquet",
+          "bytes": 102057859
+        },
+        {
+          "path": "outputs/data-00013.parquet",
+          "bytes": 103077201
+        },
+        {
+          "path": "outputs/data-00014.parquet",
+          "bytes": 103597190
+        },
+        {
+          "path": "outputs/data-00015.parquet",
+          "bytes": 104207079
+        },
+        {
+          "path": "outputs/data-00016.parquet",
+          "bytes": 99788555
+        },
+        {
+          "path": "outputs/data-00017.parquet",
+          "bytes": 98280625
+        },
+        {
+          "path": "outputs/data-00018.parquet",
+          "bytes": 98518708
+        },
+        {
+          "path": "outputs/data-00019.parquet",
+          "bytes": 100132129
+        },
+        {
+          "path": "outputs/data-00020.parquet",
+          "bytes": 102206886
+        },
+        {
+          "path": "outputs/data-00021.parquet",
+          "bytes": 100412928
+        },
+        {
+          "path": "outputs/data-00022.parquet",
+          "bytes": 99018533
+        },
+        {
+          "path": "outputs/data-00023.parquet",
+          "bytes": 99893611
+        },
+        {
+          "path": "outputs/data-00024.parquet",
+          "bytes": 99473561
+        },
+        {
+          "path": "outputs/data-00025.parquet",
+          "bytes": 100376942
+        },
+        {
+          "path": "outputs/data-00026.parquet",
+          "bytes": 98845327
+        },
+        {
+          "path": "outputs/data-00027.parquet",
+          "bytes": 101457772
+        },
+        {
+          "path": "outputs/data-00028.parquet",
+          "bytes": 98066590
+        },
+        {
+          "path": "outputs/data-00029.parquet",
+          "bytes": 97702526
+        },
+        {
+          "path": "outputs/data-00030.parquet",
+          "bytes": 97867701
+        },
+        {
+          "path": "outputs/data-00031.parquet",
+          "bytes": 100282686
+        },
+        {
+          "path": "outputs/data-00032.parquet",
+          "bytes": 102316689
+        },
+        {
+          "path": "outputs/data-00033.parquet",
+          "bytes": 101934111
+        },
+        {
+          "path": "outputs/data-00034.parquet",
+          "bytes": 100347095
+        },
+        {
+          "path": "outputs/data-00035.parquet",
+          "bytes": 99170693
+        },
+        {
+          "path": "outputs/data-00036.parquet",
+          "bytes": 100314697
+        },
+        {
+          "path": "outputs/data-00037.parquet",
+          "bytes": 101478810
+        },
+        {
+          "path": "outputs/data-00038.parquet",
+          "bytes": 101569771
+        },
+        {
+          "path": "outputs/data-00039.parquet",
+          "bytes": 100527977
+        },
+        {
+          "path": "outputs/data-00040.parquet",
+          "bytes": 101069058
+        },
+        {
+          "path": "outputs/data-00041.parquet",
+          "bytes": 100852808
+        },
+        {
+          "path": "outputs/data-00042.parquet",
+          "bytes": 100821909
+        },
+        {
+          "path": "outputs/data-00043.parquet",
+          "bytes": 101268284
+        },
+        {
+          "path": "outputs/data-00044.parquet",
+          "bytes": 101752522
+        },
+        {
+          "path": "outputs/data-00045.parquet",
+          "bytes": 99902228
+        },
+        {
+          "path": "outputs/data-00046.parquet",
+          "bytes": 100000788
+        },
+        {
+          "path": "outputs/data-00047.parquet",
+          "bytes": 98497422
+        },
+        {
+          "path": "outputs/data-00048.parquet",
+          "bytes": 99063676
+        },
+        {
+          "path": "outputs/data-00049.parquet",
+          "bytes": 99738249
+        },
+        {
+          "path": "outputs/data-00050.parquet",
+          "bytes": 101465274
+        },
+        {
+          "path": "outputs/data-00051.parquet",
+          "bytes": 101856393
+        },
+        {
+          "path": "outputs/data-00052.parquet",
+          "bytes": 101741926
+        },
+        {
+          "path": "outputs/data-00053.parquet",
+          "bytes": 101977480
+        },
+        {
+          "path": "outputs/data-00054.parquet",
+          "bytes": 99272216
+        },
+        {
+          "path": "outputs/data-00055.parquet",
+          "bytes": 98061248
+        },
+        {
+          "path": "outputs/data-00056.parquet",
+          "bytes": 97863643
+        },
+        {
+          "path": "outputs/data-00057.parquet",
+          "bytes": 98962404
+        },
+        {
+          "path": "outputs/data-00058.parquet",
+          "bytes": 99733181
+        },
+        {
+          "path": "outputs/data-00059.parquet",
+          "bytes": 98591386
+        },
+        {
+          "path": "outputs/data-00060.parquet",
+          "bytes": 98592899
+        },
+        {
+          "path": "outputs/data-00061.parquet",
+          "bytes": 98692385
+        },
+        {
+          "path": "outputs/data-00062.parquet",
+          "bytes": 99926469
+        },
+        {
+          "path": "outputs/data-00063.parquet",
+          "bytes": 98284119
+        },
+        {
+          "path": "outputs/data-00064.parquet",
+          "bytes": 99716992
+        },
+        {
+          "path": "outputs/data-00065.parquet",
+          "bytes": 98899017
+        },
+        {
+          "path": "outputs/data-00066.parquet",
+          "bytes": 99252373
+        },
+        {
+          "path": "outputs/data-00067.parquet",
+          "bytes": 100479833
+        },
+        {
+          "path": "outputs/data-00068.parquet",
+          "bytes": 98822283
+        },
+        {
+          "path": "outputs/data-00069.parquet",
+          "bytes": 98455551
+        },
+        {
+          "path": "outputs/data-00070.parquet",
+          "bytes": 99870400
+        },
+        {
+          "path": "outputs/data-00071.parquet",
+          "bytes": 97517577
+        },
+        {
+          "path": "outputs/data-00072.parquet",
+          "bytes": 197242024
+        },
+        {
+          "path": "outputs/data-00073.parquet",
+          "bytes": 293326778
+        },
+        {
+          "path": "outputs/data-00074.parquet",
+          "bytes": 288959117
+        },
+        {
+          "path": "outputs/data-00075.parquet",
+          "bytes": 288257341
+        },
+        {
+          "path": "outputs/data-00076.parquet",
+          "bytes": 283357122
+        },
+        {
+          "path": "outputs/data-00077.parquet",
+          "bytes": 282304477
+        },
+        {
+          "path": "outputs/data-00078.parquet",
+          "bytes": 286582137
+        },
+        {
+          "path": "outputs/data-00079.parquet",
+          "bytes": 300332242
+        },
+        {
+          "path": "outputs/data-00080.parquet",
+          "bytes": 322374801
+        },
+        {
+          "path": "outputs/data-00081.parquet",
+          "bytes": 324400157
+        },
+        {
+          "path": "outputs/data-00082.parquet",
+          "bytes": 421086864
+        },
+        {
+          "path": "outputs/data-00083.parquet",
+          "bytes": 456268588
+        },
+        {
+          "path": "outputs/data-00084.parquet",
+          "bytes": 388325427
+        },
+        {
+          "path": "outputs/data-00085.parquet",
+          "bytes": 382681220
+        },
+        {
+          "path": "outputs/data-00086.parquet",
+          "bytes": 437929789
+        },
+        {
+          "path": "outputs/data-00087.parquet",
+          "bytes": 419937318
+        },
+        {
+          "path": "outputs/data-00088.parquet",
+          "bytes": 331751743
+        },
+        {
+          "path": "outputs/data-00089.parquet",
+          "bytes": 278629191
+        },
+        {
+          "path": "outputs/data-00090.parquet",
+          "bytes": 437323014
+        },
+        {
+          "path": "outputs/data-00091.parquet",
+          "bytes": 360876530
+        },
+        {
+          "path": "outputs/data-00092.parquet",
+          "bytes": 335965205
+        },
+        {
+          "path": "outputs/data-00093.parquet",
+          "bytes": 388595313
+        },
+        {
+          "path": "outputs/data-00094.parquet",
+          "bytes": 487635324
+        },
+        {
+          "path": "outputs/data-00095.parquet",
+          "bytes": 498636468
+        },
+        {
+          "path": "outputs/data-00096.parquet",
+          "bytes": 521623016
+        },
+        {
+          "path": "outputs/data-00097.parquet",
+          "bytes": 484044041
+        },
+        {
+          "path": "outputs/data-00098.parquet",
+          "bytes": 435033522
+        },
+        {
+          "path": "outputs/data-00099.parquet",
+          "bytes": 463457677
+        },
+        {
+          "path": "outputs/data-00100.parquet",
+          "bytes": 600861581
+        },
+        {
+          "path": "outputs/data-00101.parquet",
+          "bytes": 637369073
+        },
+        {
+          "path": "outputs/data-00102.parquet",
+          "bytes": 596900307
+        },
+        {
+          "path": "outputs/data-00103.parquet",
+          "bytes": 318848635
+        },
+        {
+          "path": "outputs/data-00104.parquet",
+          "bytes": 374722650
+        },
+        {
+          "path": "outputs/data-00105.parquet",
+          "bytes": 316648697
+        },
+        {
+          "path": "outputs/data-00106.parquet",
+          "bytes": 411930540
+        },
+        {
+          "path": "outputs/data-00107.parquet",
+          "bytes": 402379762
+        },
+        {
+          "path": "outputs/data-00108.parquet",
+          "bytes": 390099252
+        },
+        {
+          "path": "outputs/data-00109.parquet",
+          "bytes": 388790429
+        },
+        {
+          "path": "outputs/data-00110.parquet",
+          "bytes": 366593015
+        },
+        {
+          "path": "outputs/data-00111.parquet",
+          "bytes": 324280731
+        },
+        {
+          "path": "outputs/data-00112.parquet",
+          "bytes": 390944929
+        },
+        {
+          "path": "outputs/data-00113.parquet",
+          "bytes": 400263283
+        },
+        {
+          "path": "outputs/data-00114.parquet",
+          "bytes": 392258075
+        },
+        {
+          "path": "outputs/data-00115.parquet",
+          "bytes": 402169616
+        },
+        {
+          "path": "outputs/data-00116.parquet",
+          "bytes": 417071058
+        },
+        {
+          "path": "outputs/data-00117.parquet",
+          "bytes": 346746814
+        },
+        {
+          "path": "outputs/data-00118.parquet",
+          "bytes": 404105350
+        },
+        {
+          "path": "outputs/data-00119.parquet",
+          "bytes": 400593123
+        },
+        {
+          "path": "outputs/data-00120.parquet",
+          "bytes": 402217267
+        },
+        {
+          "path": "outputs/data-00121.parquet",
+          "bytes": 386610259
+        },
+        {
+          "path": "outputs/data-00122.parquet",
+          "bytes": 380951822
+        },
+        {
+          "path": "outputs/data-00123.parquet",
+          "bytes": 432233929
+        },
+        {
+          "path": "outputs/data-00124.parquet",
+          "bytes": 352731899
+        },
+        {
+          "path": "outputs/data-00125.parquet",
+          "bytes": 367993490
+        },
+        {
+          "path": "outputs/data-00126.parquet",
+          "bytes": 362986724
+        },
+        {
+          "path": "outputs/data-00127.parquet",
+          "bytes": 393482854
+        },
+        {
+          "path": "outputs/data-00128.parquet",
+          "bytes": 374165203
+        },
+        {
+          "path": "outputs/data-00129.parquet",
+          "bytes": 292729704
+        },
+        {
+          "path": "outputs/data-00130.parquet",
+          "bytes": 352028032
+        },
+        {
+          "path": "outputs/data-00131.parquet",
+          "bytes": 385952396
+        },
+        {
+          "path": "outputs/data-00132.parquet",
+          "bytes": 319496101
+        },
+        {
+          "path": "outputs/data-00133.parquet",
+          "bytes": 446092629
+        },
+        {
+          "path": "outputs/data-00134.parquet",
+          "bytes": 375444181
+        },
+        {
+          "path": "outputs/data-00135.parquet",
+          "bytes": 336550559
+        },
+        {
+          "path": "outputs/data-00136.parquet",
+          "bytes": 332887798
+        },
+        {
+          "path": "outputs/data-00137.parquet",
+          "bytes": 372259381
+        },
+        {
+          "path": "outputs/data-00138.parquet",
+          "bytes": 371284453
+        },
+        {
+          "path": "outputs/data-00139.parquet",
+          "bytes": 307355184
+        },
+        {
+          "path": "outputs/data-00140.parquet",
+          "bytes": 401055893
+        },
+        {
+          "path": "outputs/data-00141.parquet",
+          "bytes": 411362059
+        },
+        {
+          "path": "outputs/data-00142.parquet",
+          "bytes": 379758231
+        },
+        {
+          "path": "outputs/data-00143.parquet",
+          "bytes": 289309835
+        },
+        {
+          "path": "outputs/data-00144.parquet",
+          "bytes": 341186687
+        },
+        {
+          "path": "outputs/data-00145.parquet",
+          "bytes": 570467424
+        },
+        {
+          "path": "outputs/data-00146.parquet",
+          "bytes": 443765645
+        },
+        {
+          "path": "outputs/data-00147.parquet",
+          "bytes": 412639658
+        },
+        {
+          "path": "outputs/data-00148.parquet",
+          "bytes": 389640839
+        },
+        {
+          "path": "outputs/data-00149.parquet",
+          "bytes": 481827281
+        },
+        {
+          "path": "summaries/data-00000.parquet",
+          "bytes": 19787462
+        },
+        {
+          "path": "summaries/data-00001.parquet",
+          "bytes": 26809176
+        }
+      ],
+      "file_page_complete": true,
+      "local_bytes_present": false,
+      "content_sha256": "unknown; material not downloaded"
+    },
+    {
+      "key": "synthetic",
+      "ref": "sorokin/nvarc-synthetic-puzzles",
+      "version_number": 1,
+      "reported_total_bytes": 338160847,
+      "license": "Unknown",
+      "last_updated": "2025-11-13T21:56:37.647000Z",
+      "purpose": "generated puzzle pairs",
+      "exposure": "potential evaluation-derived",
+      "first_page_files": [
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_00576224.json",
+          "bytes": 30599
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_0520fde7.json",
+          "bytes": 28261
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_05269061.json",
+          "bytes": 30866
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_05a7bcf2.json",
+          "bytes": 29994
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_05f2a901.json",
+          "bytes": 31456
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_0607ce86.json",
+          "bytes": 16039
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_08ed6ac7.json",
+          "bytes": 43453
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_0a2355a6.json",
+          "bytes": 92426
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_0bb8deee.json",
+          "bytes": 31238
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_0becf7df.json",
+          "bytes": 34954
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_0c786b71.json",
+          "bytes": 50454
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_0d87d2a6.json",
+          "bytes": 37136
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_0e671a1a.json",
+          "bytes": 35181
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_0f63c0b9.json",
+          "bytes": 38010
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_10fcaaa3.json",
+          "bytes": 44982
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_12422b43.json",
+          "bytes": 44977
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_137eaa0f.json",
+          "bytes": 34394
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_137f0df0.json",
+          "bytes": 52807
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_140c817e.json",
+          "bytes": 44105
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1478ab18.json",
+          "bytes": 48190
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_14b8e18c.json",
+          "bytes": 83006
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_150deff5.json",
+          "bytes": 34844
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_15113be4.json",
+          "bytes": 33096
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_15696249.json",
+          "bytes": 46790
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_17829a00.json",
+          "bytes": 29757
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_178fcbfb.json",
+          "bytes": 42291
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_17b80ad2.json",
+          "bytes": 34572
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_17cae0c1.json",
+          "bytes": 78060
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1a07d186.json",
+          "bytes": 25514
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1a2e2828.json",
+          "bytes": 28170
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1b2d62fb.json",
+          "bytes": 44784
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1b60fb0c.json",
+          "bytes": 70218
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1bfc4729.json",
+          "bytes": 61426
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1c56ad9f.json",
+          "bytes": 50374
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1c786137.json",
+          "bytes": 40755
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1caeab9d.json",
+          "bytes": 32402
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1cf80156.json",
+          "bytes": 36348
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1d0a4b61.json",
+          "bytes": 40937
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1d398264.json",
+          "bytes": 60826
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1d61978c.json",
+          "bytes": 101213
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1e81d6f9.json",
+          "bytes": 37351
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1f0c79e5.json",
+          "bytes": 18072
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1f876c06.json",
+          "bytes": 31406
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_1fad071e.json",
+          "bytes": 31600
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_2072aba6.json",
+          "bytes": 48049
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_20981f0e.json",
+          "bytes": 30246
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_20fb2937.json",
+          "bytes": 41589
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_212895b5.json",
+          "bytes": 21651
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_21f83797.json",
+          "bytes": 49493
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_22168020.json",
+          "bytes": 43096
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_22eb0ac0.json",
+          "bytes": 41351
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_234bbc79.json",
+          "bytes": 8403
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_23581191.json",
+          "bytes": 27224
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_239be575.json",
+          "bytes": 44103
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_23b5c85d.json",
+          "bytes": 40135
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_253bf280.json",
+          "bytes": 42694
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_2546ccf6.json",
+          "bytes": 72530
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_256b0a75.json",
+          "bytes": 39137
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_25c199f5.json",
+          "bytes": 22380
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_25d487eb.json",
+          "bytes": 70494
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_25d8a9c8.json",
+          "bytes": 38896
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_25ff71a9.json",
+          "bytes": 45463
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_2601afb7.json",
+          "bytes": 59002
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_27a28665.json",
+          "bytes": 28040
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_27a77e38.json",
+          "bytes": 48374
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_27f8ce4f.json",
+          "bytes": 35932
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_28bf18c6.json",
+          "bytes": 37935
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_28e73c20.json",
+          "bytes": 35616
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_292dd178.json",
+          "bytes": 46028
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_29623171.json",
+          "bytes": 38644
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_29c11459.json",
+          "bytes": 30767
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_2bcee788.json",
+          "bytes": 71860
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_2bee17df.json",
+          "bytes": 45785
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_2c737e39.json",
+          "bytes": 97906
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_2dc579da.json",
+          "bytes": 42053
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_2dd70a9a.json",
+          "bytes": 34492
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_2dee498d.json",
+          "bytes": 28911
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_2e65ae53.json",
+          "bytes": 56080
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_310f3251.json",
+          "bytes": 49500
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_31aa019c.json",
+          "bytes": 70758
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_31adaf00.json",
+          "bytes": 61446
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_31d5ba1a.json",
+          "bytes": 38013
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_32597951.json",
+          "bytes": 42060
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3428a4f5.json",
+          "bytes": 35737
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_342dd610.json",
+          "bytes": 40271
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_34b99a2b.json",
+          "bytes": 41215
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_358ba94e.json",
+          "bytes": 65180
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3618c87e.json",
+          "bytes": 40122
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_36d67576.json",
+          "bytes": 21037
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_37ce87bb.json",
+          "bytes": 40903
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_37d3e8b2.json",
+          "bytes": 94050
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_396d80d7.json",
+          "bytes": 47555
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_39a8645d.json",
+          "bytes": 57830
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_39e1d7f9.json",
+          "bytes": 46626
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3a301edc.json",
+          "bytes": 70039
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3aa6fb7a.json",
+          "bytes": 45697
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3ac3eb23.json",
+          "bytes": 43487
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3af2c5a8.json",
+          "bytes": 20870
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3b4c2228.json",
+          "bytes": 43023
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3bd292e8.json",
+          "bytes": 38758
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3bdb4ada.json",
+          "bytes": 34537
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3c9b0459.json",
+          "bytes": 24890
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3d6c6e23.json",
+          "bytes": 92174
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3eda0437.json",
+          "bytes": 73318
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_3f7978a0.json",
+          "bytes": 42132
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_423a55dc.json",
+          "bytes": 44912
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_4290ef0e.json",
+          "bytes": 67304
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_42918530.json",
+          "bytes": 45300
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_42a15761.json",
+          "bytes": 19590
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_42a50994.json",
+          "bytes": 42006
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_42f83767.json",
+          "bytes": 42810
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_4347f46a.json",
+          "bytes": 50451
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_4364c1c4.json",
+          "bytes": 54159
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_445eab21.json",
+          "bytes": 54114
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_4522001f.json",
+          "bytes": 66016
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_458e3a53.json",
+          "bytes": 44857
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_4612dd53.json",
+          "bytes": 40325
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_46f33fce.json",
+          "bytes": 43311
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_470c91de.json",
+          "bytes": 102986
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_4852f2fa.json",
+          "bytes": 48814
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_494ef9d7.json",
+          "bytes": 42392
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_496994bd.json",
+          "bytes": 27622
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_49d1d64f.json",
+          "bytes": 41653
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_4a1cacc2.json",
+          "bytes": 23347
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_4be741c5.json",
+          "bytes": 39536
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_4c4377d9.json",
+          "bytes": 31197
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_4df5b0ae.json",
+          "bytes": 112188
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_4ff4c9da.json",
+          "bytes": 34726
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_50846271.json",
+          "bytes": 87837
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_50a16a69.json",
+          "bytes": 41597
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_50c07299.json",
+          "bytes": 43357
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_50cb2852.json",
+          "bytes": 38028
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_50f325b5.json",
+          "bytes": 49834
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5117e062.json",
+          "bytes": 37457
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5289ad53.json",
+          "bytes": 32372
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_53b68214.json",
+          "bytes": 41200
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_54d82841.json",
+          "bytes": 71182
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_55059096.json",
+          "bytes": 79114
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5582e5ca.json",
+          "bytes": 40536
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5587a8d0.json",
+          "bytes": 56445
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5623160b.json",
+          "bytes": 38239
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_56ff96f3.json",
+          "bytes": 41439
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5751f35e.json",
+          "bytes": 58365
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_575b1a71.json",
+          "bytes": 49463
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5792cb4d.json",
+          "bytes": 48926
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_58743b76.json",
+          "bytes": 47898
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_58c02a16.json",
+          "bytes": 43699
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_59341089.json",
+          "bytes": 35330
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5a719d11.json",
+          "bytes": 49937
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5ad8a7c0.json",
+          "bytes": 45565
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5b37cb25.json",
+          "bytes": 52041
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5b526a93.json",
+          "bytes": 51840
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5b692c0f.json",
+          "bytes": 47767
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5bd6f4ac.json",
+          "bytes": 41028
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5c0a986e.json",
+          "bytes": 46710
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5c2c9af4.json",
+          "bytes": 47435
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5d2a5c43.json",
+          "bytes": 48883
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5d588b4d.json",
+          "bytes": 21705
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5e6bbc0b.json",
+          "bytes": 51738
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_5ffb2104.json",
+          "bytes": 29186
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_60a26a3e.json",
+          "bytes": 37344
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_60c09cac.json",
+          "bytes": 49368
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_60d73be6.json",
+          "bytes": 32320
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_6165ea8f.json",
+          "bytes": 47464
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_626c0bcc.json",
+          "bytes": 25677
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_62b74c02.json",
+          "bytes": 31458
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_62c24649.json",
+          "bytes": 41888
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_63613498.json",
+          "bytes": 54929
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_642248e4.json",
+          "bytes": 89258
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_662c240a.json",
+          "bytes": 33402
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_66ac4c3b.json",
+          "bytes": 44776
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_66e6c45b.json",
+          "bytes": 38422
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_673ef223.json",
+          "bytes": 64235
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_67636eac.json",
+          "bytes": 50257
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_67a3c6ac.json",
+          "bytes": 34929
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_67c52801.json",
+          "bytes": 45000
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_689c358e.json",
+          "bytes": 33451
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_68b16354.json",
+          "bytes": 45614
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_68b67ca3.json",
+          "bytes": 34185
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_68bc2e87.json",
+          "bytes": 34509
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_695367ec.json",
+          "bytes": 14182
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_69889d6e.json",
+          "bytes": 34233
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_6a980be1.json",
+          "bytes": 45604
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_6aa20dc0.json",
+          "bytes": 69372
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_6ad5bdfd.json",
+          "bytes": 45123
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_6d0160f0.json",
+          "bytes": 12711
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_6d0aefbc.json",
+          "bytes": 32722
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_6d58a25d.json",
+          "bytes": 45386
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_6e02f1e3.json",
+          "bytes": 28037
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_6ecd11f4.json",
+          "bytes": 36091
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_6f8cd79b.json",
+          "bytes": 39660
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_6fa7a44f.json",
+          "bytes": 14736
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_705a3229.json",
+          "bytes": 115076
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_712bf12e.json",
+          "bytes": 67752
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_72207abc.json",
+          "bytes": 32791
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_72a961c9.json",
+          "bytes": 39727
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_72ca375d.json",
+          "bytes": 59552
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_73182012.json",
+          "bytes": 84168
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_73c3b0d8.json",
+          "bytes": 52942
+        },
+        {
+          "path": "nvarc_full/0934a4d8/0934a4d8_7447852a.json",
+          "bytes": 34936
+        }
+      ],
+      "file_page_complete": false,
+      "local_bytes_present": false,
+      "content_sha256": "unknown; material not downloaded"
+    },
+    {
+      "key": "augmented",
+      "ref": "sorokin/nvarc-augmented-puzzles",
+      "version_number": 1,
+      "reported_total_bytes": 1322144874,
+      "license": "Unknown",
+      "last_updated": "2025-11-13T21:48:14.753000Z",
+      "purpose": "ARC SFT mixture",
+      "exposure": "contains arc2_evaluation6; exclude from clean training",
+      "first_page_files": [
+        {
+          "path": "arc2_evaluation6/data-00000-of-00001.arrow",
+          "bytes": 2497280
+        },
+        {
+          "path": "arc2_evaluation6/dataset_info.json",
+          "bytes": 419
+        },
+        {
+          "path": "arc2_evaluation6/state.json",
+          "bytes": 247
+        },
+        {
+          "path": "arc2_training/data-00000-of-00001.arrow",
+          "bytes": 300320304
+        },
+        {
+          "path": "arc2_training/dataset_info.json",
+          "bytes": 419
+        },
+        {
+          "path": "arc2_training/state.json",
+          "bytes": 247
+        },
+        {
+          "path": "concept/data-00000-of-00001.arrow",
+          "bytes": 58964752
+        },
+        {
+          "path": "concept/dataset_info.json",
+          "bytes": 419
+        },
+        {
+          "path": "concept/state.json",
+          "bytes": 247
+        },
+        {
+          "path": "mini/data-00000-of-00001.arrow",
+          "bytes": 16724184
+        },
+        {
+          "path": "mini/dataset_info.json",
+          "bytes": 419
+        },
+        {
+          "path": "mini/state.json",
+          "bytes": 247
+        },
+        {
+          "path": "nvarc_full/data-00000-of-00015.arrow",
+          "bytes": 504694840
+        },
+        {
+          "path": "nvarc_full/data-00001-of-00015.arrow",
+          "bytes": 468038712
+        },
+        {
+          "path": "nvarc_full/data-00002-of-00015.arrow",
+          "bytes": 456042576
+        },
+        {
+          "path": "nvarc_full/data-00003-of-00015.arrow",
+          "bytes": 468547496
+        },
+        {
+          "path": "nvarc_full/data-00004-of-00015.arrow",
+          "bytes": 485285512
+        },
+        {
+          "path": "nvarc_full/data-00005-of-00015.arrow",
+          "bytes": 462024880
+        },
+        {
+          "path": "nvarc_full/data-00006-of-00015.arrow",
+          "bytes": 482599496
+        },
+        {
+          "path": "nvarc_full/data-00007-of-00015.arrow",
+          "bytes": 514051776
+        },
+        {
+          "path": "nvarc_full/data-00008-of-00015.arrow",
+          "bytes": 451539792
+        },
+        {
+          "path": "nvarc_full/data-00009-of-00015.arrow",
+          "bytes": 586532368
+        },
+        {
+          "path": "nvarc_full/data-00010-of-00015.arrow",
+          "bytes": 470171240
+        },
+        {
+          "path": "nvarc_full/data-00011-of-00015.arrow",
+          "bytes": 561123368
+        },
+        {
+          "path": "nvarc_full/data-00012-of-00015.arrow",
+          "bytes": 546940800
+        },
+        {
+          "path": "nvarc_full/data-00013-of-00015.arrow",
+          "bytes": 513732416
+        },
+        {
+          "path": "nvarc_full/data-00014-of-00015.arrow",
+          "bytes": 459912064
+        },
+        {
+          "path": "nvarc_full/dataset_info.json",
+          "bytes": 419
+        },
+        {
+          "path": "nvarc_full/state.json",
+          "bytes": 1108
+        },
+        {
+          "path": "nvarc_training/data-00000-of-00008.arrow",
+          "bytes": 489005504
+        },
+        {
+          "path": "nvarc_training/data-00001-of-00008.arrow",
+          "bytes": 472573472
+        },
+        {
+          "path": "nvarc_training/data-00002-of-00008.arrow",
+          "bytes": 457178304
+        },
+        {
+          "path": "nvarc_training/data-00003-of-00008.arrow",
+          "bytes": 458063744
+        },
+        {
+          "path": "nvarc_training/data-00004-of-00008.arrow",
+          "bytes": 456634864
+        },
+        {
+          "path": "nvarc_training/data-00005-of-00008.arrow",
+          "bytes": 464918720
+        },
+        {
+          "path": "nvarc_training/data-00006-of-00008.arrow",
+          "bytes": 464115424
+        },
+        {
+          "path": "nvarc_training/data-00007-of-00008.arrow",
+          "bytes": 482184464
+        },
+        {
+          "path": "nvarc_training/dataset_info.json",
+          "bytes": 419
+        },
+        {
+          "path": "nvarc_training/state.json",
+          "bytes": 660
+        },
+        {
+          "path": "rearc/data-00000-of-00001.arrow",
+          "bytes": 412832576
+        },
+        {
+          "path": "rearc/dataset_info.json",
+          "bytes": 419
+        },
+        {
+          "path": "rearc/state.json",
+          "bytes": 247
+        }
+      ],
+      "file_page_complete": true,
+      "local_bytes_present": false,
+      "content_sha256": "unknown; material not downloaded"
+    },
+    {
+      "key": "trm-training",
+      "ref": "cpmpml/arc-prize-trm-training-data",
+      "version_number": 1,
+      "reported_total_bytes": 2218651916,
+      "license": "CC0: Public Domain",
+      "last_updated": "2025-11-14T13:25:30.717000Z",
+      "purpose": "TRM train arrays",
+      "exposure": "reported competition and SDG mix",
+      "first_page_files": [
+        {
+          "path": ".ipynb_checkpoints/dataset-metadata-checkpoint.json",
+          "bytes": 148
+        },
+        {
+          "path": "identifiers.json",
+          "bytes": 37781070
+        },
+        {
+          "path": "test/all__group_indices.npy",
+          "bytes": 612
+        },
+        {
+          "path": "test/all__inputs.npy",
+          "bytes": 39617228
+        },
+        {
+          "path": "test/all__labels.npy",
+          "bytes": 39617228
+        },
+        {
+          "path": "test/all__puzzle_identifiers.npy",
+          "bytes": 122748
+        },
+        {
+          "path": "test/all__puzzle_indices.npy",
+          "bytes": 122752
+        },
+        {
+          "path": "test/dataset.json",
+          "bytes": 236
+        },
+        {
+          "path": "test_puzzles.json",
+          "bytes": 1208557
+        },
+        {
+          "path": "train/.ipynb_checkpoints/dataset-checkpoint.json",
+          "bytes": 238
+        },
+        {
+          "path": "train/all__group_indices.npy",
+          "bytes": 16424
+        },
+        {
+          "path": "train/all__inputs.npy",
+          "bytes": 19660558628
+        },
+        {
+          "path": "train/all__labels.npy",
+          "bytes": 19660558628
+        },
+        {
+          "path": "train/all__puzzle_identifiers.npy",
+          "bytes": 4164956
+        },
+        {
+          "path": "train/all__puzzle_indices.npy",
+          "bytes": 4164960
+        },
+        {
+          "path": "train/dataset.json",
+          "bytes": 238
+        }
+      ],
+      "file_page_complete": true,
+      "local_bytes_present": false,
+      "content_sha256": "unknown; material not downloaded"
+    },
+    {
+      "key": "trm-evaluation",
+      "ref": "cpmpml/arc-prize-trm-evaluation-data",
+      "version_number": 1,
+      "reported_total_bytes": 8380437,
+      "license": "CC0: Public Domain",
+      "last_updated": "2025-11-14T12:11:32.610000Z",
+      "purpose": "TRM evaluation arrays",
+      "exposure": "contains evaluation labels; do not stage into solver",
+      "first_page_files": [
+        {
+          "path": "identifiers.json",
+          "bytes": 460541
+        },
+        {
+          "path": "test/all__group_indices.npy",
+          "bytes": 612
+        },
+        {
+          "path": "test/all__inputs.npy",
+          "bytes": 19918028
+        },
+        {
+          "path": "test/all__labels.npy",
+          "bytes": 19918028
+        },
+        {
+          "path": "test/all__puzzle_identifiers.npy",
+          "bytes": 61820
+        },
+        {
+          "path": "test/all__puzzle_indices.npy",
+          "bytes": 61824
+        },
+        {
+          "path": "test/dataset.json",
+          "bytes": 234
+        },
+        {
+          "path": "test_puzzles.json",
+          "bytes": 1208557
+        },
+        {
+          "path": "train/all__group_indices.npy",
+          "bytes": 612
+        },
+        {
+          "path": "train/all__inputs.npy",
+          "bytes": 41410028
+        },
+        {
+          "path": "train/all__labels.npy",
+          "bytes": 41410028
+        },
+        {
+          "path": "train/all__puzzle_identifiers.npy",
+          "bytes": 61820
+        },
+        {
+          "path": "train/all__puzzle_indices.npy",
+          "bytes": 61824
+        },
+        {
+          "path": "train/dataset.json",
+          "bytes": 233
+        }
+      ],
+      "file_page_complete": true,
+      "local_bytes_present": false,
+      "content_sha256": "unknown; material not downloaded"
+    },
+    {
+      "key": "trm-checkpoints",
+      "ref": "cpmpml/arc-prize-trm-031",
+      "version_number": 1,
+      "reported_total_bytes": 13929348998,
+      "license": "CC0: Public Domain",
+      "last_updated": "2025-11-09T06:40:55.217000Z",
+      "purpose": "published TRM checkpoints",
+      "exposure": "training exposure requires review",
+      "first_page_files": [
+        {
+          "path": "step_110355",
+          "bytes": 2159719349
+        },
+        {
+          "path": "step_137944",
+          "bytes": 2159719349
+        },
+        {
+          "path": "step_165532",
+          "bytes": 2159719349
+        },
+        {
+          "path": "step_193120",
+          "bytes": 2159719349
+        },
+        {
+          "path": "step_220708",
+          "bytes": 2159719349
+        },
+        {
+          "path": "step_248297",
+          "bytes": 2159719349
+        },
+        {
+          "path": "step_275886",
+          "bytes": 2159719349
+        }
+      ],
+      "file_page_complete": true,
+      "local_bytes_present": false,
+      "content_sha256": "unknown; material not downloaded"
+    }
+  ],
+  "models": [
+    {
+      "key": "qwen35-base",
+      "ref": "Qwen/Qwen3.5-4B",
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "total_bytes": 9342907469,
+      "license": "Apache-2.0",
+      "manifest_digest": "sha256:8f27407e1b0ee4dd7a5b4d62d39af9b356ba86b5701dd93eafba052febe9c72f",
+      "purpose": "source for Qwen3.5 compact row selection",
+      "status": "private Kaggle base Dataset v2 inventory already bound; no new download"
+    },
+    {
+      "key": "qwen35-compact-003",
+      "ref": "local verified compact-complete-003 artifact",
+      "revision": "sha256:1a8eebd70d811e58c35dc5b1ee27dc18bd73a1066c3ab33adf96ed8427d4c982",
+      "total_bytes": null,
+      "license": "inherits Qwen3.5 base terms; separate NVARC method notices unresolved",
+      "purpose": "existing 16-symbol local starting material",
+      "status": "verified in prior acceptance; no reconversion or retrieval"
+    },
+    {
+      "key": "original-qwen3-arc-sft",
+      "ref": "sorokin/qwen3_4b_grids15_sft139/Transformers/bfloat16/1",
+      "revision": "Kaggle model instance version 1",
+      "total_bytes": null,
+      "license": "unknown",
+      "purpose": "original notebook Qwen3 ARC-SFT source; incompatible with Qwen3.5 architecture",
+      "status": "not downloaded"
+    },
+    {
+      "key": "trm-published-checkpoint",
+      "ref": "cpmpml/arc-prize-trm-031@1 step_220708",
+      "revision": "dataset version 1",
+      "total_bytes": 2159719349,
+      "license": "CC0: Public Domain (Kaggle dataset metadata)",
+      "purpose": "TRM inference diagnostic only; training exposure unreviewed",
+      "status": "not downloaded"
+    }
+  ]
+}

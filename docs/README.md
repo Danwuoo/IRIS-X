@@ -2,6 +2,11 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-09-24-nvarc-source-integration.md`](plan/2026-09-24-nvarc-source-integration.md)
+  records owner-authorized source acquisition, direct integration and
+  differential validation for the Qwen3.5 NVARC port; its later GPU and teacher
+  execution envelope remains a proposal.
+
 - [`plan/2026-09-23-qwen35-nvarc-acceptance-continuation.md`](plan/2026-09-23-qwen35-nvarc-acceptance-continuation.md)
   records the incomplete acceptance review and concrete repairs and remaining
   development for the original Qwen3.5 NVARC task on main.
