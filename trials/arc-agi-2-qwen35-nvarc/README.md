@@ -18,7 +18,9 @@ stopped at the owner's request pending their terminal notification. The owner
 then reported its failure: all four ranks completed one 4B optimizer step, but
 rank 0 could not serialize tuple fingerprints into the truth-free result.
 Decision 0030 authorizes one new `003` run with the JSON-array repair; its
-approved package passed local preflight.
+approved package passed local preflight. Kaggle accepted private `003` version
+1; monitoring stopped after that receipt at the owner's request, with no
+terminal result yet.
 Full 4B ARC-SFT, a new 4B SFT checkpoint in TTT/search/rank, new teacher
 output, and original-scale TRM remain open.
 
