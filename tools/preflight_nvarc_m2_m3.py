@@ -70,10 +70,14 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
                               "nvarc-m2-fsdp-feasibility-003": "Decision 0030"}
                              .get(plan.get("run_id"), "Decision 0028"))
         decision = str(plan.get("owner_decision", ""))
-        decision_ok = (bool(decision.strip()) and not decision.startswith(
-                           ("Decision 0028", "Decision 0029", "Decision 0030"))
-                       if plan.get("run_id") == "nvarc-m3-teacher-small-002"
-                       else decision.startswith(expected_decision))
+        if plan.get("run_id") == "nvarc-m3-teacher-small-003":
+            decision_ok = bool(decision.strip()) and not decision.startswith(
+                ("Decision 0028", "Decision 0029", "Decision 0030", "Decision 0031"))
+        elif plan.get("run_id") == "nvarc-m3-teacher-small-002":
+            decision_ok = bool(decision.strip()) and not decision.startswith(
+                ("Decision 0028", "Decision 0029", "Decision 0030"))
+        else:
+            decision_ok = decision.startswith(expected_decision)
         if (not decision_ok or
                 plan.get("kernel_id") != metadata.get("id") or
                 plan.get("maximum_kernel_wall_seconds") != 1800 or

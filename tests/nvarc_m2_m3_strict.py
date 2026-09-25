@@ -20,7 +20,8 @@ from irisx.arc_nvarc_fsdp import (_json_fingerprint, _tensor_health,
                                   run as run_fsdp_probe)
 from irisx.arc_nvarc_representation import verify_model_material
 from irisx.arc_nvarc_candidates import QwenCandidateBackend, configure_candidate_backend
-from irisx.arc_nvarc_sdg import (WSLNamespaceProgramExecutor, render_source_teacher_prompt,
+from irisx.arc_nvarc_sdg import (BoundedLocalHFTeacher, WSLNamespaceProgramExecutor,
+                                 render_source_teacher_prompt,
                                  replay_pinned_ten_stage_sdg, replay_teacher_program_ledgers,
                                  run_teacher_pipeline, SavedTeacher)
 from irisx.canonical import canonical_bytes
@@ -216,6 +217,39 @@ class M2M3StrictTests(unittest.TestCase):
                              (teacher_replay["generated_program_invocations"],
                               teacher_replay["pair_count"],
                               teacher_replay["source_pair_filter_passed"]))
+
+    def test_qwen35_teacher_chat_template_returns_tensor(self):
+        from transformers import Qwen3_5Tokenizer
+
+        tokenizer = Qwen3_5Tokenizer(
+            vocab={"<|endoftext|>": 0, "a": 1}, merges=[],
+            chat_template="{{ messages[0].content }}")
+        item = {"train_demos": [{"input": [[1]], "output": [[2]]},
+                                {"input": [[3]], "output": [[4]]}],
+                "source_comments": "a"}
+        template = ("{INPUT_IMAGE1}{OUTPUT_IMAGE1}{INPUT_IMAGE2}"
+                    "{OUTPUT_IMAGE2}{USER_COMMENTS}")
+        default = tokenizer.apply_chat_template(
+            [{"role": "user", "content": "a"}], return_tensors="pt")
+        self.assertFalse(hasattr(default, "shape"))
+        case = self
+
+        class OneTokenModel:
+            device = torch.device("cpu")
+
+            def generate(self, tokens, **kwargs):
+                case.assertEqual(2, tokens.ndim)
+                return torch.cat((tokens, torch.tensor([[1]], dtype=torch.long)), dim=1)
+
+        provider = BoundedLocalHFTeacher(
+            OneTokenModel(), tokenizer,
+            model_material_digest="sha256:" + "0" * 64,
+            maximum_input_tokens=32, maximum_output_tokens=1,
+            maximum_total_tokens=33)
+        response = provider.complete("summary", item, template)
+        self.assertEqual("a", response["text"])
+        self.assertEqual(1, response["output_tokens"])
+        self.assertEqual(33, provider.reserved_tokens)
 
     def test_teacher_prompt_render_and_external_draft_guards(self):
         prompts = SOURCE / "NVARC/SDG/prompts"

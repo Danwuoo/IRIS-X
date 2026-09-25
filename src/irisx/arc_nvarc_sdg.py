@@ -116,7 +116,9 @@ class BoundedLocalHFTeacher:
         rendered = render_source_teacher_prompt(stage, item, prompt)
         tokens = self.tokenizer.apply_chat_template(
             [{"role": "user", "content": rendered}], tokenize=True,
-            add_generation_prompt=True, return_tensors="pt")
+            add_generation_prompt=True, return_tensors="pt", return_dict=False)
+        if not isinstance(tokens, torch.Tensor) or tokens.ndim != 2 or tokens.shape[0] != 1:
+            raise ValidationError("local SDG teacher chat template did not return one token tensor")
         input_tokens = int(tokens.shape[-1])
         if input_tokens > self.maximum_input_tokens:
             raise ValidationError("local SDG teacher input token ceiling exceeded")

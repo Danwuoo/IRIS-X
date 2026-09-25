@@ -31,14 +31,16 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
     if output.exists():
         raise ValidationError("new teacher package directory required")
     if draft_path.resolve() not in {(CONFIG / name).resolve() for name in
-                                    ("m3-teacher-draft.json", "m3-teacher-draft-002.json")}:
+                                    ("m3-teacher-draft.json", "m3-teacher-draft-002.json",
+                                     "m3-teacher-draft-003.json")}:
         raise ValidationError("unknown immutable teacher draft")
     draft_bytes = draft_path.read_bytes()
     plan = json.loads(draft_bytes)
     if (plan.get("approved") is not False or plan["maximum_teacher_calls"] != 4 or
             plan["maximum_total_reserved_tokens"] != 20480 or plan["maximum_paid_usd"] != 0 or
             plan.get("run_id") not in {"nvarc-m3-teacher-small-001",
-                                       "nvarc-m3-teacher-small-002"} or
+                                       "nvarc-m3-teacher-small-002",
+                                       "nvarc-m3-teacher-small-003"} or
             plan.get("kernel_id") != "DRAFT-DO-NOT-PUSH/" + plan["run_id"]):
         raise ValidationError("small teacher draft differs")
     if authorization is not None:
@@ -49,9 +51,9 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
                 binding.get("kernel_id") != "danielwuu/" + plan["run_id"] or
                 not isinstance(binding.get("owner_decision"), str) or
                 not binding["owner_decision"].strip() or
-                (plan["run_id"].endswith("002") and
+                (plan["run_id"].endswith(("002", "003")) and
                  binding["owner_decision"].startswith(("Decision 0028", "Decision 0029",
-                                                       "Decision 0030")))):
+                                                       "Decision 0030", "Decision 0031")))):
             raise ValidationError("exact SDG teacher authorization is absent or differs")
         plan["approved"] = True
         plan["owner_decision"] = binding["owner_decision"]
@@ -105,7 +107,8 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
     for name in ("plan", "seed", "prompts"):
         (output / f"{name}.json").write_bytes(payloads[name])
     encoded = {name: base64.b64encode(payload).decode() for name, payload in payloads.items()}
-    template_name = ("nvarc_m3_teacher_notebook_002.py.tmpl" if plan["run_id"].endswith("002")
+    template_name = ("nvarc_m3_teacher_notebook_003.py.tmpl" if plan["run_id"].endswith("003")
+                     else "nvarc_m3_teacher_notebook_002.py.tmpl" if plan["run_id"].endswith("002")
                      else "nvarc_m3_teacher_notebook.py.tmpl")
     template = (ROOT / "tools" / template_name).read_text(encoding="utf-8")
     source = template.replace("__PAYLOADS__", json.dumps(encoded, sort_keys=True)).replace(

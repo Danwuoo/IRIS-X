@@ -74,6 +74,8 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
               "claim": "local Qwen3.5-4B teacher smoke; no NVARC teacher parity or generated data acceptance"}
     output.mkdir(parents=True, exist_ok=True)
     (output / "result.json").write_bytes(canonical_bytes(report, newline=True))
+    if report["completed_calls"] != plan["maximum_teacher_calls"]:
+        raise ValidationError("local SDG teacher batch ended before all four calls completed")
     return report
 
 
