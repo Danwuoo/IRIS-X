@@ -1,7 +1,8 @@
 # NVARC M2/M3 checkpoint continuation — bounded execution proposal
 
-Status: local implementation and draft package complete; **no new external
-quota is approved by this file**. M2 is the real ARC-SFT checkpoint and M3 is
+Status: local implementation and draft package complete; the owner has now
+approved the two exact bounds in [Decision 0031](../decisions/0031-authorize-nvarc-m2-m3-checkpoint-continuation.md).
+This plan itself grants no additional quota. M2 is the real ARC-SFT checkpoint and M3 is
 SDG/TRM, not the later four-worker benchmark. The current branch is `main`.
 
 ## Observed starting point

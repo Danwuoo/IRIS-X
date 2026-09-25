@@ -2,10 +2,29 @@
 
 ## Current M2/M3 checkpoint and teacher drafts (2026-09-25)
 
+The owner accepted [Decision 0031](../../docs/decisions/0031-authorize-nvarc-m2-m3-checkpoint-continuation.md)
+for these two exact independent identities. Approved packages are
+`m2-m3/fsdp-sft-approved-001/` (plan SHA-256
+`b20c766377c14043aff958379884d37efedef49be365cb465573703dad7a40a6`,
+notebook SHA-256
+`a73f9b06f0565dd635c6575eb0abce4b2e724412e73ad141fea71d585bbb476a`)
+and `m2-m3/teacher-approved-002/` (plan SHA-256
+`0086d57a7833698b74b7de884525871bf36ed8fc270fb52bd557be31570d819a`,
+notebook SHA-256
+`cf710e3a53bd13a7e6cd5da3a4c3945ad4cef7fa743af59618ad199987d5b457`).
+Both approved offline preflights passed with zero external calls. The runtime
+wheel in both packages remains SHA-256
+`523285fadb96ada0a9483cb63a63655a1584b5d524592eecdf6e3c016ac051ce`.
+Reuse the existing private model and wheel Datasets. Push only each approved
+package's `kernel/` directory, at most once under each identity. The M2
+kernel has a 2,700-second bound; M3 has a 1,800-second bound. Each allows one
+terminal retrieval and no retry. Stop on any provider rejection, hardware gate
+or runtime error; a local repair does not authorize a new push.
+
 The [bounded continuation plan](../../docs/plan/2026-09-25-nvarc-m2-m3-checkpoint-continuation.md)
-is the current proposal. Its draft packages are inert and have made zero
+records the reviewed draft packages; they are inert and have made zero
 external calls. The historical feasibility and teacher `001` commands below
-remain lineage and grant no new quota. All commands here are run from the
+remain lineage and grant no new quota. Local commands here are run from the
 repository root in the strict CPU ML environment.
 
 ```powershell
@@ -25,9 +44,9 @@ a separate process. The actual export feeds the shared source TTT/search/rank
 runtime. Final DCP members are split into at most 1.75 GB transport parts;
 the terminal verifier reconstructs and checks the original checkpoint.
 The teacher `002` package uses the same competition mount, but makes no
-model call until its exact four-L4 gate passes. Both require a new owner
-approval for one kernel and one terminal retrieval each. Do not use
-Decisions 0028–0030 to push them.
+model call until its exact four-L4 gate passes. Decision 0031 supplies the
+one kernel and one terminal retrieval for each. Do not use Decisions
+0028–0030 to push them.
 
 The actual local two-rank CPU path can be checked without Kaggle:
 

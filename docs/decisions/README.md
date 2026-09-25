@@ -115,3 +115,7 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0030-authorize-nvarc-m2-result-repair.md`](0030-authorize-nvarc-m2-result-repair.md)
   authorizes one distinct, private four-L4 FSDP result-packaging repair after
   `002` completed a step but failed canonical JSON serialization.
+- [`0031-authorize-nvarc-m2-m3-checkpoint-continuation.md`](0031-authorize-nvarc-m2-m3-checkpoint-continuation.md)
+  authorizes one bounded private four-L4 full-parameter ARC-SFT checkpoint,
+  export and source-solve run, and one independent four-call local Qwen teacher
+  run, each with one terminal retrieval and no retry.
