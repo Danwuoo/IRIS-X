@@ -20,7 +20,12 @@ rank 0 could not serialize tuple fingerprints into the truth-free result.
 Decision 0030 authorizes one new `003` run with the JSON-array repair; its
 approved package passed local preflight. Kaggle accepted private `003` version
 1; monitoring stopped after that receipt at the owner's request, with no
-terminal result yet.
+terminal result at that handoff. After the owner reported completion, the
+single terminal retrieval and independent verifier confirmed one real
+full-parameter compact 4B step on four distinct L4s: 240 input tokens,
+finite gradients and changed weights. The truth-free result SHA-256 is
+`4624b1c4e4c4079d7daf6d0e958d74a0fd4fe5ebe1d1559a9a7faf28b5ef28ba`.
+The Decision 0030 push and retrieval are consumed.
 Full 4B ARC-SFT, a new 4B SFT checkpoint in TTT/search/rank, new teacher
 output, and original-scale TRM remain open.
 

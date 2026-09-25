@@ -178,6 +178,13 @@ new explicit repair-and-rerun direction: one distinct private
 `nvarc-m2-fsdp-feasibility-003` kernel may reuse the same Dataset with only the
 canonical fingerprint-array repair, within the same one-step/512-token/
 USD 0 bounds and one terminal retrieval. No automatic further retry follows.
+Decision 0030's `003` version 1 completed on four distinct L4s. Its sole
+terminal retrieval and independent digest-bound verification are complete:
+one full-parameter compact 4B optimizer step, 240 input tokens, finite loss
+and gradients, changed global weight fingerprint, and truth-free result SHA-256
+`4624b1c4e4c4079d7daf6d0e958d74a0fd4fe5ebe1d1559a9a7faf28b5ef28ba`.
+This is a one-step backend feasibility observation, not an exported 4B
+ARC-SFT checkpoint or permission for further kernels or teacher execution.
 
 ## Authority order
 

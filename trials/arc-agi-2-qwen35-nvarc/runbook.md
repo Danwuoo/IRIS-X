@@ -60,6 +60,17 @@ SHA-256 is
 `3b9dd03807da3d11f72ac4cf0c2d44e29ee2bc6d0dbf7572ff15f75342700cbc`.
 Reuse the existing private compact Dataset and do not re-push `001` or `002`.
 The owner asked to stop monitoring after the new submission until they call.
+After the owner's terminal notification, `003` was retrieved once and verified
+locally with:
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/verify_nvarc_m2_fsdp.py .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-approved-003-lf .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-retrieved-003 --report <new-ignored-report-path>
+```
+
+The retained report is `m2-m3/fsdp-verified-003.json`. The Decision 0030
+external push and retrieval are consumed. This verifies one 4B optimizer step
+only; the eight-step ARC-SFT checkpoint/export/resume and its TTT/search/rank
+chain remain future work requiring an explicit new execution bound.
 
 ```powershell
 & .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle datasets create -p (Resolve-Path <approved-fsdp-package>/model-dataset).Path

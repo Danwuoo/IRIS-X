@@ -97,6 +97,10 @@ class M2M3StrictTests(unittest.TestCase):
 
     def test_real_namespace_limits_and_ten_stage_saved_replay(self):
         sandbox = WSLNamespaceProgramExecutor()
+        # Boot the WSL distribution before measuring generated-program wall time.
+        # The program itself still runs under the executor's 15-second limit.
+        subprocess.run(["wsl", "-d", sandbox.distribution, "--", "true"],
+                       check=True, capture_output=True, timeout=90)
         self.assertEqual([[1, 2]], sandbox.execute("def transform(grid): return grid", [[1, 2]]))
         filesystem = ('def transform(grid):\n import os\n'
                       ' return [[1 if not os.path.exists("/mnt/c/Users") else 0]]')
