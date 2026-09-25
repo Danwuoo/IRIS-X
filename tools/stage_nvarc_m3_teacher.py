@@ -26,22 +26,32 @@ def sha(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None) -> dict:
+def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
+          draft_path: Path = CONFIG / "m3-teacher-draft.json") -> dict:
     if output.exists():
         raise ValidationError("new teacher package directory required")
-    draft_bytes = (CONFIG / "m3-teacher-draft.json").read_bytes()
+    if draft_path.resolve() not in {(CONFIG / name).resolve() for name in
+                                    ("m3-teacher-draft.json", "m3-teacher-draft-002.json")}:
+        raise ValidationError("unknown immutable teacher draft")
+    draft_bytes = draft_path.read_bytes()
     plan = json.loads(draft_bytes)
     if (plan.get("approved") is not False or plan["maximum_teacher_calls"] != 4 or
-            plan["maximum_total_reserved_tokens"] != 20480 or plan["maximum_paid_usd"] != 0):
+            plan["maximum_total_reserved_tokens"] != 20480 or plan["maximum_paid_usd"] != 0 or
+            plan.get("run_id") not in {"nvarc-m3-teacher-small-001",
+                                       "nvarc-m3-teacher-small-002"} or
+            plan.get("kernel_id") != "DRAFT-DO-NOT-PUSH/" + plan["run_id"]):
         raise ValidationError("small teacher draft differs")
     if authorization is not None:
         binding = json.loads(authorization.read_bytes())
         if (binding.get("approved") is not True or
                 binding.get("draft_plan_sha256") != sha(draft_bytes) or
                 binding.get("run_id") != plan["run_id"] or
-                binding.get("kernel_id") != "danielwuu/nvarc-m3-teacher-small-001" or
+                binding.get("kernel_id") != "danielwuu/" + plan["run_id"] or
                 not isinstance(binding.get("owner_decision"), str) or
-                not binding["owner_decision"].strip()):
+                not binding["owner_decision"].strip() or
+                (plan["run_id"].endswith("002") and
+                 binding["owner_decision"].startswith(("Decision 0028", "Decision 0029",
+                                                       "Decision 0030")))):
             raise ValidationError("exact SDG teacher authorization is absent or differs")
         plan["approved"] = True
         plan["owner_decision"] = binding["owner_decision"]
@@ -95,7 +105,9 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None) -> dict
     for name in ("plan", "seed", "prompts"):
         (output / f"{name}.json").write_bytes(payloads[name])
     encoded = {name: base64.b64encode(payload).decode() for name, payload in payloads.items()}
-    template = (ROOT / "tools/nvarc_m3_teacher_notebook.py.tmpl").read_text(encoding="utf-8")
+    template_name = ("nvarc_m3_teacher_notebook_002.py.tmpl" if plan["run_id"].endswith("002")
+                     else "nvarc_m3_teacher_notebook.py.tmpl")
+    template = (ROOT / "tools" / template_name).read_text(encoding="utf-8")
     source = template.replace("__PAYLOADS__", json.dumps(encoded, sort_keys=True)).replace(
         "__HASHES__", json.dumps(hashes, sort_keys=True))
     compile(source, "m3-teacher-notebook", "exec")
@@ -112,7 +124,8 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None) -> dict
                 "code_file": notebook_path.name, "language": "python", "kernel_type": "notebook",
                 "is_private": True, "enable_gpu": True, "enable_tpu": False,
                 "enable_internet": False, "machine_shape": "NvidiaL4",
-                "competition_sources": [], "dataset_sources": [plan["source_dataset_id"]],
+                "competition_sources": plan.get("competition_sources", []),
+                "dataset_sources": [plan["source_dataset_id"]],
                 "kernel_sources": [], "model_sources": []}
     (kernel / "kernel-metadata.json").write_bytes(canonical_bytes(metadata, newline=True))
     summary = {"format": "irisx/nvarc-m3-teacher-stage-v1", "approved": plan["approved"],
@@ -134,8 +147,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--authorization", type=Path)
+    parser.add_argument("--draft-plan", type=Path, default=CONFIG / "m3-teacher-draft.json")
     args = parser.parse_args()
-    print(json.dumps(stage(args.output, args.authorization), indent=2))
+    print(json.dumps(stage(args.output, args.authorization, args.draft_plan), indent=2))
 
 
 if __name__ == "__main__":

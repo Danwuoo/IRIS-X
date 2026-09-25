@@ -69,7 +69,12 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
         expected_decision = ({"nvarc-m2-fsdp-feasibility-002": "Decision 0029",
                               "nvarc-m2-fsdp-feasibility-003": "Decision 0030"}
                              .get(plan.get("run_id"), "Decision 0028"))
-        if (not str(plan.get("owner_decision", "")).startswith(expected_decision) or
+        decision = str(plan.get("owner_decision", ""))
+        decision_ok = (bool(decision.strip()) and not decision.startswith(
+                           ("Decision 0028", "Decision 0029", "Decision 0030"))
+                       if plan.get("run_id") == "nvarc-m3-teacher-small-002"
+                       else decision.startswith(expected_decision))
+        if (not decision_ok or
                 plan.get("kernel_id") != metadata.get("id") or
                 plan.get("maximum_kernel_wall_seconds") != 1800 or
                 plan.get("maximum_accepted_kernel_versions") != 1 or
@@ -109,6 +114,8 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
         if sha((package / "model-dataset/dataset-metadata.json").read_bytes()) != summary["dataset_metadata_sha256"]:
             raise ValidationError("M2 private Dataset metadata differs")
     else:
+        if metadata.get("competition_sources") != plan.get("competition_sources", []):
+            raise ValidationError("teacher L4 transport source mount differs")
         if approved and (plan.get("maximum_teacher_calls") != 4 or
                          plan.get("maximum_total_reserved_tokens") != 20480 or
                          plan.get("seed_train_parent_ids") != ["833966f4", "6150a2bd"]):

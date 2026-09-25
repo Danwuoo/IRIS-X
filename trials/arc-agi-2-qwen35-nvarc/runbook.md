@@ -1,5 +1,49 @@
 # Development and future execution runbook
 
+## Current M2/M3 checkpoint and teacher drafts (2026-09-25)
+
+The [bounded continuation plan](../../docs/plan/2026-09-25-nvarc-m2-m3-checkpoint-continuation.md)
+is the current proposal. Its draft packages are inert and have made zero
+external calls. The historical feasibility and teacher `001` commands below
+remain lineage and grant no new quota. All commands here are run from the
+repository root in the strict CPU ML environment.
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/stage_nvarc_m2_fsdp_sft.py --output .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-sft-review-new
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/preflight_nvarc_m2_fsdp_sft.py .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-sft-review-new --report .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-sft-review-new/preflight.json
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/stage_nvarc_m3_teacher.py --draft-plan trials/arc-agi-2-qwen35-nvarc/configs/m3-teacher-draft-002.json --output .irisx/arc-agi-2/qwen35-nvarc/m2-m3/teacher-review-new
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/preflight_nvarc_m2_m3.py .irisx/arc-agi-2/qwen35-nvarc/m2-m3/teacher-review-new --report .irisx/arc-agi-2/qwen35-nvarc/m2-m3/teacher-review-new/preflight.json
+```
+
+The retained final review packages are `m2-m3/fsdp-sft-review-004/` and
+`m2-m3/teacher-review-004/`; both preflights passed. The SFT package reuses
+the existing private compact-model and wheel Datasets with the official
+competition source mount used in the successful four-L4 probe. Its first
+worker writes a full-parameter sharded checkpoint, exits, and the second
+restores optimizer/RNG/cursor before finishing. Export consolidation runs in
+a separate process. The actual export feeds the shared source TTT/search/rank
+runtime. Final DCP members are split into at most 1.75 GB transport parts;
+the terminal verifier reconstructs and checks the original checkpoint.
+The teacher `002` package uses the same competition mount, but makes no
+model call until its exact four-L4 gate passes. Both require a new owner
+approval for one kernel and one terminal retrieval each. Do not use
+Decisions 0028–0030 to push them.
+
+The actual local two-rank CPU path can be checked without Kaggle:
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/verify_nvarc_m2_fsdp_sft.py --plan .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-sft-cpu-001/plan.json --compact .irisx/arc-agi-2/qwen35-nvarc/m2-m3/tiny-sft/base --sequences .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-sft-cpu-001/sequences.jsonl --run .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-sft-cpu-001/run-resume-002 --source-result .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-sft-cpu-001/source-result.json --source-config trials/arc-agi-2-qwen35-nvarc/configs/source-integration-stage.json --visible .irisx/arc-agi-2/qwen35-nvarc/m2-m3/tiny-solve/visible.json --report .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-sft-cpu-001/verified-chain-new.json
+```
+
+After a new explicit owner decision, create a local authorization JSON
+binding the exact draft SHA-256, `run_id`, `kernel_id` and decision text;
+restage to a **new** approved package directory and rerun its preflight
+(`--approved` for the teacher). One private kernel push and one terminal
+retrieval per approved identity are the proposed limits. There is no Dataset
+version mutation, retry, paid API, heldout scoring or competition submission
+in this proposal. The 4B package needs at least 60 GB free working disk;
+if the hardware or disk gate fails, keep that failed identity and stop.
+
 ## M2/M3 local execution and external preflight (2026-09-25)
 
 The [M2/M3 record](m2-m3.md) gives observed artifact identities and precise

@@ -1,0 +1,31 @@
+{
+  "format": "irisx/nvarc-source-stage-v1",
+  "source_profile": "qwen-notebook-v10-qwen35-compact",
+  "candidate": {
+    "seed": 2,
+    "source_generation_seed": 2,
+    "color_repeats": 2,
+    "maximum_calls_per_task": 4,
+    "beams_per_call": 2,
+    "maximum_new_tokens": 64,
+    "dfs_max_expansions": 128,
+    "augmentation": "source-qwen",
+    "representation": "source-qwen",
+    "ranking": "source-kgmon"
+  },
+  "adaptation": {
+    "seed": 42,
+    "rank": 2,
+    "alpha": 4,
+    "learning_rate": 0.00005,
+    "steps": 1,
+    "max_sequence_length": 128,
+    "augmentation_count": 1,
+    "source_augmentation_seed": 1,
+    "source_qwen": true
+  },
+  "profiles": {
+    "4b": {"backend": "qwen35-compact", "model_required": true,
+           "material_digest": "sha256:1a8eebd70d811e58c35dc5b1ee27dc18bd73a1066c3ab33adf96ed8427d4c982"}
+  }
+}

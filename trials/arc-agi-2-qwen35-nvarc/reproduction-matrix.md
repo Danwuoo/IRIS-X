@@ -2,17 +2,18 @@
 
 ## M2/M3 bounded continuation (2026-09-25)
 
-The [actual local artifacts and bounded external probe record](m2-m3.md) supersede
-older missing-path statements below. They do not establish original-scale
+The [actual local artifacts and bounded external probe record](m2-m3.md) and
+[checkpoint continuation proposal](../../docs/plan/2026-09-25-nvarc-m2-m3-checkpoint-continuation.md)
+supersede older missing-path statements below. They do not establish original-scale
 method reproduction or ARC quality.
 
 | Component | Executed path | Remaining gap |
 | --- | --- | --- |
 | Public ARC-SFT split | Exact pinned 8 train/8 dev public training parents and hashes; only train augmented to 128 source-loaded episodes; dev visible-only | No full source mixture or long-context packed-state isolation |
-| Full-parameter SFT | Two actual tiny hybrid Qwen3.5 CPU steps with resume/export/reload; FSDP `001` timed out before a step; `002` ran a 4B step but failed result packaging; `003` completed one real compact 4B full-parameter step on four L4s, 240 input tokens, finite gradients/weights, changed global fingerprint, max 9,426.9 MiB CUDA allocation per rank, and independently verified truth-free result `4624b1c4…` | One-step backend feasibility only: no exported/resumed 4B ARC-SFT checkpoint or 4B TTT/search/rank; full 4B training needs a separate bounded authorization |
-| Post-SFT Qwen path | New tiny export digest flows to source TTT, bounded DFS, inverse/dedupe/rank and truth-free result; four generation calls, no completed grid | 4B source profile cost, candidate availability and any quality claim |
-| SDG | Pinned ten-stage prompt/replay, source pair/filter, 10 isolated WSL-generated-program invocations, tested resource/network/filesystem limits; approved private teacher kernel version 1 terminated at four-L4 hardware gate (actual two T4s), with zero teacher calls/tokens | Original teacher parity and real generated-pair yield unknown; teacher identity consumed, no retry |
-| TRM and joint | Pinned TRM builder/model/loss/optimizers: one actual CPU training step, checkpoint/reload, one task-local TTT, visible-only inference and one TRM candidate sent to Qwen verifier | NVARC width/horizon/scale, notebook v18 parity, GPU training, clean accuracy and Qwen branch candidate availability |
+| Full-parameter SFT | Two actual tiny hybrid Qwen3.5 CPU steps with resume/export/reload; the new two-rank FSDP CPU path resumes sharded model/optimizer/RNG/cursor after step 1, reaches 2 steps/240 ARC input tokens, and exports identical HF weights in continuous and resumed runs; FSDP `003` separately completed one real compact 4B step on four L4s, with finite updates, max 9,426.9 MiB CUDA allocation per rank and verified truth-free result `4624b1c4…` | The preflighted 8-step/2,578-token 4B SFT package is unexecuted; no exported/resumed 4B ARC-SFT checkpoint or 4B TTT/search/rank; needs a new bounded external authorization |
+| Post-SFT Qwen path | Tiny SFT and two-rank FSDP CPU exports each feed source TTT, bounded DFS, inverse/dedupe/rank and truth-free result; the latter made four generation calls, no completed grid | 4B source-profile cost, candidate availability, nonempty Qwen ranking and any quality claim |
+| SDG | Pinned ten-stage prompt/replay and source pair/filter; real WSL namespace canary now rejects second chroot after capability drop, with normal replay and timeout/memory/process/filesystem/network checks; teacher `001` stopped at two-T4 allocation with zero calls; teacher `002` is an inert, preflighted competition-mount draft | Original teacher parity and new generated-pair yield unknown; `001` consumed, `002` needs a new bounded authorization |
+| TRM and joint | Pinned TRM builder/model/loss/optimizers: one actual CPU training step, checkpoint/reload, one task-local TTT, visible-only inference and one TRM candidate sent to eight source-profile Qwen verifier forwards; direct differential confirms summed source NLL and artifact identity | NVARC width/horizon/scale, notebook v18 parity, GPU training, clean accuracy and Qwen branch candidate availability |
 
 
 ## Current source-integration checkpoint (2026-09-24)
