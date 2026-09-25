@@ -119,3 +119,7 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes one bounded private four-L4 full-parameter ARC-SFT checkpoint,
   export and source-solve run, and one independent four-call local Qwen teacher
   run, each with one terminal retrieval and no retry.
+- [`0032-authorize-nvarc-m2-m3-terminal-repairs.md`](0032-authorize-nvarc-m2-m3-terminal-repairs.md)
+  authorizes one distinct scratch-backed M2 full-parameter ARC-SFT kernel and
+  one distinct tokenizer-repaired M3 local Qwen teacher kernel, each private,
+  bounded, free, and limited to one terminal retrieval without retry.

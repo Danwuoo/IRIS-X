@@ -1,7 +1,8 @@
 # NVARC M2/M3 terminal repair — bounded new identities
 
-Status: local repairs and inert packages complete; **no external repair run is
-authorized by this plan**. Decision 0031's M2 SFT `001` and M3 teacher `002`
+Status: local repairs and inert packages complete; [Decision 0032](../decisions/0032-authorize-nvarc-m2-m3-terminal-repairs.md)
+now authorizes exactly one new bounded private kernel and one terminal
+retrieval for each distinct M2 `002` and M3 `003` identity. Decision 0031's M2 SFT `001` and M3 teacher `002`
 version 1 identities, pushes and single retrievals are consumed. The
 independent truth-free audit is retained locally as
 `.irisx/arc-agi-2/qwen35-nvarc/m2-m3/decision-0031-terminal-audit.json`
@@ -74,6 +75,7 @@ submission, public release, paid API, original-scale H100 training or a
 change to the frozen ARC parent split.
 
 AGENTS.md and `docs/development/data-and-execution-policy.md` require new
-owner direction for these new external identities and resource bounds. A
-future approval must bind the exact draft SHA-256s above; Decision 0031
-cannot be reused to launch either repair.
+owner direction for these new external identities and resource bounds. The
+owner supplied it for the exact draft SHA-256s above through Decision 0032;
+Decision 0031 cannot be reused to launch either repair. Submission receipts
+and terminal outcomes must be appended without rewriting these frozen drafts.
