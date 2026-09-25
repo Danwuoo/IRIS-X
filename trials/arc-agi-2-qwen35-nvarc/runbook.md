@@ -52,6 +52,15 @@ version. Retain the per-rank diagnostics directory from the terminal output.
 One new private kernel push and one terminal retrieval are permitted for this
 identity, with no further retry.
 
+Decision 0030 permits the separate `003` repair after `002` completed the step
+but failed canonical JSON serialization. Use
+`--draft-plan trials/arc-agi-2-qwen35-nvarc/configs/m2-fsdp-feasibility-repair-003.json`
+and a matching Decision 0030 authorization JSON; the preflighted notebook
+SHA-256 is
+`3b9dd03807da3d11f72ac4cf0c2d44e29ee2bc6d0dbf7572ff15f75342700cbc`.
+Reuse the existing private compact Dataset and do not re-push `001` or `002`.
+The owner asked to stop monitoring after the new submission until they call.
+
 ```powershell
 & .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle datasets create -p (Resolve-Path <approved-fsdp-package>/model-dataset).Path
 & .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle kernels push -p <approved-fsdp-package>/kernel --accelerator NvidiaL4 --timeout 1800

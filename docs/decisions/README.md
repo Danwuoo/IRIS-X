@@ -112,3 +112,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0029-authorize-nvarc-m2-fsdp-repair.md`](0029-authorize-nvarc-m2-fsdp-repair.md)
   authorizes one new private, free four-L4 FSDP feasibility replacement with
   phase diagnostics after the original probe's NCCL timeout.
+- [`0030-authorize-nvarc-m2-result-repair.md`](0030-authorize-nvarc-m2-result-repair.md)
+  authorizes one distinct, private four-L4 FSDP result-packaging repair after
+  `002` completed a step but failed canonical JSON serialization.

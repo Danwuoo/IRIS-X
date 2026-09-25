@@ -20,7 +20,8 @@ for name, encoded in PAYLOADS.items():
 plan = json.loads(base64.b64decode(PAYLOADS["plan"]))
 if (plan.get("approved") is not True or not plan.get("owner_decision") or
         plan.get("run_id") not in {"nvarc-m2-fsdp-feasibility-001",
-                                   "nvarc-m2-fsdp-feasibility-002"} or
+                                   "nvarc-m2-fsdp-feasibility-002",
+                                   "nvarc-m2-fsdp-feasibility-003"} or
         plan.get("kernel_id") != "danielwuu/" + plan["run_id"] or
         plan.get("maximum_paid_usd") != 0 or plan.get("maximum_optimizer_steps") != 1):
     raise RuntimeError("exact owner-approved feasibility plan required")

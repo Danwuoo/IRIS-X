@@ -170,6 +170,14 @@ direction: one distinct private `nvarc-m2-fsdp-feasibility-002` kernel may reuse
 the existing model Dataset for one bounded FSDP step with rank diagnostics and
 one terminal retrieval. No third attempt, new Dataset version, 4B SFT claim,
 teacher retry or paid execution follows from that decision.
+Decision 0029's `002` kernel and retrieval are consumed. Four L4 ranks
+completed the full-parameter optimizer step and finite weight checks, but rank
+0 failed truth-free result serialization because its fingerprint used tuples;
+no result artifact or SFT checkpoint exists. Decision 0030 records the owner's
+new explicit repair-and-rerun direction: one distinct private
+`nvarc-m2-fsdp-feasibility-003` kernel may reuse the same Dataset with only the
+canonical fingerprint-array repair, within the same one-step/512-token/
+USD 0 bounds and one terminal retrieval. No automatic further retry follows.
 
 ## Authority order
 

@@ -66,8 +66,9 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
     marker = ("exact owner-approved feasibility plan required" if "fsdp" in kind else
               "exact owner-approved teacher plan required")
     if approved:
-        expected_decision = ("Decision 0029" if plan.get("run_id") ==
-                             "nvarc-m2-fsdp-feasibility-002" else "Decision 0028")
+        expected_decision = ({"nvarc-m2-fsdp-feasibility-002": "Decision 0029",
+                              "nvarc-m2-fsdp-feasibility-003": "Decision 0030"}
+                             .get(plan.get("run_id"), "Decision 0028"))
         if (not str(plan.get("owner_decision", "")).startswith(expected_decision) or
                 plan.get("kernel_id") != metadata.get("id") or
                 plan.get("maximum_kernel_wall_seconds") != 1800 or
@@ -91,7 +92,8 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
                          plan.get("maximum_generations") != 0 or
                          plan.get("model_dataset_id") != "danielwuu/irisx-nvarc-m2-compact-4b-001"):
             raise ValidationError("approved FSDP ceilings differ")
-        if plan.get("run_id") == "nvarc-m2-fsdp-feasibility-002" and (
+        if plan.get("run_id") in {"nvarc-m2-fsdp-feasibility-002",
+                                  "nvarc-m2-fsdp-feasibility-003"} and (
                 plan.get("collective_timeout_seconds") != 480 or
                 plan.get("maximum_model_dataset_versions") != 0):
             raise ValidationError("FSDP replacement diagnostic or Dataset bound differs")

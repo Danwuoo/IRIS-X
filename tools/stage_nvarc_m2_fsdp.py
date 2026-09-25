@@ -39,11 +39,12 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
     plan = json.loads(draft_bytes)
     if (plan["approved"] is not False or
             plan["run_id"] not in {"nvarc-m2-fsdp-feasibility-001",
-                                   "nvarc-m2-fsdp-feasibility-002"} or
+                                   "nvarc-m2-fsdp-feasibility-002",
+                                   "nvarc-m2-fsdp-feasibility-003"} or
             plan["kernel_id"] != "DRAFT-DO-NOT-PUSH/" + plan["run_id"] or
             plan["maximum_paid_usd"] != 0 or plan["maximum_optimizer_steps"] != 1):
         raise ValidationError("FSDP draft boundaries differ")
-    if plan["run_id"].endswith("-002") and plan.get("collective_timeout_seconds") != 480:
+    if plan["run_id"].endswith(("-002", "-003")) and plan.get("collective_timeout_seconds") != 480:
         raise ValidationError("FSDP replacement diagnostic timeout differs")
     if authorization is not None:
         binding = json.loads(authorization.read_bytes())

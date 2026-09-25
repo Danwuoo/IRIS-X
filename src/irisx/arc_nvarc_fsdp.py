@@ -11,6 +11,7 @@ from datetime import timedelta
 import faulthandler
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import subprocess
@@ -69,6 +70,13 @@ def _tensor_health(tensors, device, *, require_nonzero: bool) -> tuple[bool, int
             nonzero = nonzero + torch.any(tensor != 0).to(torch.int64)
     values = torch.stack((finite.to(torch.int64), nonzero)).cpu().tolist()
     return bool(values[0]) and count > 0, int(values[1])
+
+
+def _json_fingerprint(value: tuple[float, float]) -> list[float]:
+    """Convert a numerical fingerprint to the canonical JSON array type."""
+    if len(value) != 2 or not all(math.isfinite(part) for part in value):
+        raise ValidationError("FSDP weight fingerprint is invalid")
+    return [float(value[0]), float(value[1])]
 
 
 def _hardware_gate(*, collective_timeout_seconds: int = 600) -> dict:
@@ -140,7 +148,8 @@ def run(plan_path: Path, compact: Path, sequences_path: Path, output: Path) -> d
             plan.get("maximum_teacher_calls") != 0):
         raise ValidationError("exact authorized FSDP feasibility plan required")
     if (plan.get("run_id") not in {"nvarc-m2-fsdp-feasibility-001",
-                                    "nvarc-m2-fsdp-feasibility-002"} or
+                                    "nvarc-m2-fsdp-feasibility-002",
+                                    "nvarc-m2-fsdp-feasibility-003"} or
             plan.get("kernel_id") != "danielwuu/" + plan["run_id"] or
             plan.get("collective_timeout_seconds", 600) not in {480, 600}):
         raise ValidationError("FSDP run identity or collective timeout differs")
@@ -188,7 +197,7 @@ def run(plan_path: Path, compact: Path, sequences_path: Path, output: Path) -> d
                                       weight_decay=float(plan["weight_decay"]))
         torch.cuda.reset_peak_memory_stats()
         trace.mark("fingerprint_before_start")
-        before = _weight_fingerprint(wrapped)
+        before = _json_fingerprint(_weight_fingerprint(wrapped))
         trace.mark("fingerprint_before_complete")
         sequence = sequences[(int(plan["seed"]) + rank) % len(sequences)]
         batch = {key: torch.tensor(value, dtype=torch.long,
@@ -227,7 +236,7 @@ def run(plan_path: Path, compact: Path, sequences_path: Path, output: Path) -> d
         trace.mark("weight_check_complete")
         torch.cuda.synchronize()
         trace.mark("fingerprint_after_start")
-        after = _weight_fingerprint(wrapped)
+        after = _json_fingerprint(_weight_fingerprint(wrapped))
         trace.mark("fingerprint_after_complete")
         if before == after:
             raise ValidationError("FSDP SFT optimizer did not change weight sum")

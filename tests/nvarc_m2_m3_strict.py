@@ -16,7 +16,8 @@ import unittest
 import torch
 
 from irisx.arc_nvarc_m2 import freeze_arc_sft_data, load_frozen_arc_sft_data
-from irisx.arc_nvarc_fsdp import _tensor_health, run as run_fsdp_probe
+from irisx.arc_nvarc_fsdp import (_json_fingerprint, _tensor_health,
+                                  run as run_fsdp_probe)
 from irisx.arc_nvarc_representation import verify_model_material
 from irisx.arc_nvarc_sdg import (WSLNamespaceProgramExecutor, render_source_teacher_prompt,
                                  replay_pinned_ten_stage_sdg, replay_teacher_program_ledgers,
@@ -169,6 +170,8 @@ class M2M3StrictTests(unittest.TestCase):
                  "exact owner-approved feasibility plan required"),
                 ("nvarc_m2_fsdp_notebook.py.tmpl", "m2-fsdp-feasibility-repair-002.json",
                  "exact owner-approved feasibility plan required"),
+                ("nvarc_m2_fsdp_notebook.py.tmpl", "m2-fsdp-feasibility-repair-003.json",
+                 "exact owner-approved feasibility plan required"),
                 ("nvarc_m3_teacher_notebook.py.tmpl", "m3-teacher-draft.json",
                  "exact owner-approved teacher plan required")):
             payload = (root / "trials/arc-agi-2-qwen35-nvarc/configs" / plan_name).read_bytes()
@@ -196,6 +199,15 @@ class M2M3StrictTests(unittest.TestCase):
             [torch.tensor([float("nan")])], device, require_nonzero=False))
         self.assertEqual((False, 0), _tensor_health(
             [None], device, require_nonzero=True))
+
+    def test_fsdp_result_fingerprint_is_canonical_json_array(self):
+        record = {"weight_fingerprint_before": _json_fingerprint((1.0, 2.0)),
+                  "weight_fingerprint_after": _json_fingerprint((1.5, 2.5))}
+        self.assertEqual({"weight_fingerprint_before": [1.0, 2.0],
+                          "weight_fingerprint_after": [1.5, 2.5]},
+                         json.loads(canonical_bytes(record)))
+        with self.assertRaises(ValidationError):
+            _json_fingerprint((float("nan"), 1.0))
 
     def test_approved_teacher_package_preflight_is_read_only_and_bound(self):
         root = Path(__file__).resolve().parents[1]

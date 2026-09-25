@@ -14,7 +14,11 @@ The compact Dataset is ready. The FSDP `001` kernel reached four L4s and loaded
 the model, then timed out at a collective without an optimizer step. Decision
 0029 authorizes one distinct bounded repair run, `002`, using the same Dataset.
 Kaggle accepted `002` version 1; its first status was `RUNNING`, and monitoring
-has stopped at the owner's request pending their terminal notification.
+stopped at the owner's request pending their terminal notification. The owner
+then reported its failure: all four ranks completed one 4B optimizer step, but
+rank 0 could not serialize tuple fingerprints into the truth-free result.
+Decision 0030 authorizes one new `003` run with the JSON-array repair; its
+approved package passed local preflight.
 Full 4B ARC-SFT, a new 4B SFT checkpoint in TTT/search/rank, new teacher
 output, and original-scale TRM remain open.
 
