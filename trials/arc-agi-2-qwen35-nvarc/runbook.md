@@ -1,5 +1,33 @@
 # Development and future execution runbook
 
+## Decision 0032: approved scratch SFT and tokenizer teacher repairs
+
+The owner approved the exact M2 `nvarc-m2-fsdp-sft-002` and M3
+`nvarc-m3-teacher-small-003` bounds in
+[Decision 0032](../../docs/decisions/0032-authorize-nvarc-m2-m3-terminal-repairs.md).
+Approved packages are `m2-m3/fsdp-sft-storage-approved-002/` (plan SHA-256
+`c827aafcf8149a777e4928df2a51e96a541b477b12d9c1b967bcc88d0b0d6a80`,
+notebook SHA-256
+`23eaa850ccd90d2d1dd65a2ca8a172ede3926d4e154874d283bc68680faa2599`)
+and `m2-m3/teacher-repair-approved-003/` (plan SHA-256
+`aed16a19d503add8f80a7a1cdf0863d1d2bb1d7b2299e531da288b61fa60543d`,
+notebook SHA-256
+`4e1582405c4193f3e23cd4c363b78cf53e37daa59451ef55fb49e8db35432d11`).
+Both exact approved offline preflights passed; wheel SHA-256 is
+`d1c3d225be6a6b60ef879936b34273931192beeeb09e1ee92501da0c9e43bb6e`.
+The single approved push per identity uses only its `kernel/` directory:
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle kernels push -p .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-sft-storage-approved-002/kernel --accelerator NvidiaL4 --timeout 2700
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle kernels push -p .irisx/arc-agi-2/qwen35-nvarc/m2-m3/teacher-repair-approved-003/kernel --accelerator NvidiaL4 --timeout 1800
+```
+
+Record the exact version receipts. Do not monitor continuously; the owner
+will report terminal state. Only then use the single terminal retrieval per
+identity. M2's full optimizer DCP shard set stays in session scratch and is
+not retained after Kaggle execution; the HF export alone is not a restartable
+optimizer checkpoint.
+
 ## Consumed Decision 0031 and inert storage/tokenizer repairs
 
 The [terminal repair plan](../../docs/plan/2026-09-25-nvarc-m2-m3-terminal-repair.md)
@@ -27,7 +55,8 @@ least 55 GB free before loading the model, and limits retained working output
 to 12 GB. It preserves the trained HF export but does not retain optimizer
 DCP shard bytes across sessions. The teacher adapter fix requests a tensor
 from Transformers 5.8.1 and fails the kernel if the four-call batch is
-incomplete. Neither repair may be pushed without a new exact owner decision.
+incomplete. Neither inert review package may be pushed. Decision 0032
+separately binds the approved package paths above.
 
 ## Current M2/M3 checkpoint and teacher drafts (2026-09-25)
 

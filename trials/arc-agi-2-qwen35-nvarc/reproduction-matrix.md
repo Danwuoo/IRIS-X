@@ -2,6 +2,12 @@
 
 ## M2/M3 bounded continuation (2026-09-25)
 
+[Decision 0032](../../docs/decisions/0032-authorize-nvarc-m2-m3-terminal-repairs.md)
+now authorizes the separately identified M2 scratch and M3 tokenizer repairs.
+Both approved packages passed offline preflight with zero external calls.
+Actual new 4B SFT and teacher execution evidence remains pending submission
+and terminal retrieval; the table below continues to describe executed work.
+
 The [actual local artifacts and bounded external probe record](m2-m3.md) and
 [checkpoint continuation proposal](../../docs/plan/2026-09-25-nvarc-m2-m3-checkpoint-continuation.md)
 supersede older missing-path statements below. They do not establish original-scale
@@ -10,9 +16,9 @@ method reproduction or ARC quality.
 | Component | Executed path | Remaining gap |
 | --- | --- | --- |
 | Public ARC-SFT split | Exact pinned 8 train/8 dev public training parents and hashes; only train augmented to 128 source-loaded episodes; dev visible-only | No full source mixture or long-context packed-state isolation |
-| Full-parameter SFT | Two actual tiny hybrid Qwen3.5 CPU steps with resume/export/reload; the new two-rank FSDP CPU path resumes sharded model/optimizer/RNG/cursor after step 1, reaches 2 steps/240 ARC input tokens, and exports identical HF weights in continuous and resumed runs; FSDP `003` separately completed one real compact 4B step on four L4s, with finite updates, max 9,426.9 MiB CUDA allocation per rank and verified truth-free result `4624b1c4…` | Decision 0031 SFT `001` stopped at the 60 GB working-disk gate (20.94 GB observed) before model work, zero new steps. The 8-step/2,578-token 4B SFT checkpoint and 4B TTT/search/rank remain unverified; a separate-scratch repair package is local draft only |
+| Full-parameter SFT | Two actual tiny hybrid Qwen3.5 CPU steps with resume/export/reload; the new two-rank FSDP CPU path resumes sharded model/optimizer/RNG/cursor after step 1, reaches 2 steps/240 ARC input tokens, and exports identical HF weights in continuous and resumed runs; FSDP `003` separately completed one real compact 4B step on four L4s, with finite updates, max 9,426.9 MiB CUDA allocation per rank and verified truth-free result `4624b1c4…` | Decision 0031 SFT `001` stopped at the 60 GB working-disk gate (20.94 GB observed) before model work, zero new steps. The 8-step/2,578-token 4B SFT checkpoint and 4B TTT/search/rank remain unverified; Decision 0032's separate-scratch package is approved and preflighted but unexecuted here |
 | Post-SFT Qwen path | Tiny SFT and two-rank FSDP CPU exports each feed source TTT, bounded DFS, inverse/dedupe/rank and truth-free result; the latter made four generation calls, no completed grid | 4B source-profile cost, candidate availability, nonempty Qwen ranking and any quality claim |
-| SDG | Pinned ten-stage prompt/replay and source pair/filter; real WSL namespace canary now rejects second chroot after capability drop, with normal replay and timeout/memory/process/filesystem/network checks; teacher `001` stopped at two-T4 allocation with zero calls; teacher `002` passed four L4s but its first reserved stage failed with `AttributeError`, producing zero completed calls/responses | New generated-pair yield and original teacher parity remain unknown; the repaired tokenizer adapter and teacher `003` package are local draft only |
+| SDG | Pinned ten-stage prompt/replay and source pair/filter; real WSL namespace canary now rejects second chroot after capability drop, with normal replay and timeout/memory/process/filesystem/network checks; teacher `001` stopped at two-T4 allocation with zero calls; teacher `002` passed four L4s but its first reserved stage failed with `AttributeError`, producing zero completed calls/responses | New generated-pair yield and original teacher parity remain unknown; the repaired tokenizer adapter and teacher `003` package are approved and preflighted but unexecuted here |
 | TRM and joint | Pinned TRM builder/model/loss/optimizers: one actual CPU training step, checkpoint/reload, one task-local TTT, visible-only inference and one TRM candidate sent to eight source-profile Qwen verifier forwards; direct differential confirms summed source NLL and artifact identity | NVARC width/horizon/scale, notebook v18 parity, GPU training, clean accuracy and Qwen branch candidate availability |
 
 

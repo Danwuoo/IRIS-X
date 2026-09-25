@@ -74,6 +74,23 @@ new accepted SDG pairs. Neither package allows heldout scoring, competition
 submission, public release, paid API, original-scale H100 training or a
 change to the frozen ARC parent split.
 
+## Decision 0032 approved packages
+
+The owner approved both exact draft hashes in the table above. The new,
+ignored approved packages are `m2-m3/fsdp-sft-storage-approved-002/` and
+`m2-m3/teacher-repair-approved-003/`. Offline preflight passed for each with
+`approved: true` and `external_calls: 0`. M2 approved plan SHA-256 is
+`c827aafcf8149a777e4928df2a51e96a541b477b12d9c1b967bcc88d0b0d6a80`,
+notebook SHA-256 is
+`23eaa850ccd90d2d1dd65a2ca8a172ede3926d4e154874d283bc68680faa2599`.
+M3 approved plan SHA-256 is
+`aed16a19d503add8f80a7a1cdf0863d1d2bb1d7b2299e531da288b61fa60543d`,
+notebook SHA-256 is
+`4e1582405c4193f3e23cd4c363b78cf53e37daa59451ef55fb49e8db35432d11`.
+Both carry the reviewed wheel SHA-256
+`d1c3d225be6a6b60ef879936b34273931192beeeb09e1ee92501da0c9e43bb6e`.
+The submitted receipts and runtime evidence remain to be recorded.
+
 AGENTS.md and `docs/development/data-and-execution-policy.md` require new
 owner direction for these new external identities and resource bounds. The
 owner supplied it for the exact draft SHA-256s above through Decision 0032;
