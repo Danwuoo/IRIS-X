@@ -32,19 +32,31 @@ def _sha(payload: bytes) -> str:
 
 
 def stage(output: Path, *, authorization: Path | None = None,
+          draft_path: Path = CONFIG / "m2-fsdp-sft-draft-001.json",
           data_root: Path = DATA, model_root: Path = MODEL) -> dict:
     if output.exists():
         raise ValidationError("new FSDP SFT package directory required")
-    draft_path = CONFIG / "m2-fsdp-sft-draft-001.json"
+    if draft_path.resolve() not in {(CONFIG / name).resolve() for name in
+                                    ("m2-fsdp-sft-draft-001.json",
+                                     "m2-fsdp-sft-draft-002.json")}:
+        raise ValidationError("unknown immutable FSDP SFT draft")
     draft_bytes = draft_path.read_bytes()
     plan = json.loads(draft_bytes)
+    run_id = plan.get("run_id")
     if (plan.get("approved") is not False or
-            plan.get("run_id") != "nvarc-m2-fsdp-sft-001" or
-            plan.get("kernel_id") != "DRAFT-DO-NOT-PUSH/nvarc-m2-fsdp-sft-001" or
+            run_id not in {"nvarc-m2-fsdp-sft-001", "nvarc-m2-fsdp-sft-002"} or
+            plan.get("kernel_id") != "DRAFT-DO-NOT-PUSH/" + run_id or
             plan.get("maximum_paid_usd") != 0 or
             plan.get("maximum_optimizer_steps") != 8 or
             plan.get("maximum_source_generation_calls") != 4):
         raise ValidationError("bounded FSDP SFT draft differs")
+    if run_id.endswith("002") and (
+            plan.get("checkpoint_storage") != "ephemeral-scratch" or
+            plan.get("discard_resumed_checkpoint_after_load") is not True or
+            plan.get("minimum_free_working_bytes") != 11_000_000_000 or
+            plan.get("minimum_free_scratch_bytes") != 55_000_000_000 or
+            plan.get("maximum_retained_output_bytes") != 12_000_000_000):
+        raise ValidationError("bounded scratch SFT repair differs")
     if authorization is not None:
         binding = json.loads(authorization.read_bytes())
         if (binding.get("approved") is not True or
@@ -53,8 +65,9 @@ def stage(output: Path, *, authorization: Path | None = None,
                 binding.get("kernel_id") != "danielwuu/" + plan["run_id"] or
                 not isinstance(binding.get("owner_decision"), str) or
                 not binding["owner_decision"].strip() or
-                binding["owner_decision"].startswith(("Decision 0028", "Decision 0029",
-                                                      "Decision 0030"))):
+                binding["owner_decision"].startswith(
+                    ("Decision 0028", "Decision 0029", "Decision 0030") +
+                    (("Decision 0031",) if run_id.endswith("002") else ()))):
             raise ValidationError("exact owner-approved FSDP SFT binding required")
         plan.update(approved=True, kernel_id=binding["kernel_id"],
                     owner_decision=binding["owner_decision"])
@@ -123,7 +136,9 @@ def stage(output: Path, *, authorization: Path | None = None,
     for name, filename in review_names.items():
         (output / filename).write_bytes(payloads[name])
     encoded = {name: base64.b64encode(payload).decode() for name, payload in payloads.items()}
-    template = (ROOT / "tools/nvarc_m2_fsdp_sft_notebook.py.tmpl").read_text(encoding="utf-8")
+    template_name = ("nvarc_m2_fsdp_sft_notebook_002.py.tmpl" if run_id.endswith("002")
+                     else "nvarc_m2_fsdp_sft_notebook.py.tmpl")
+    template = (ROOT / "tools" / template_name).read_text(encoding="utf-8")
     source = template.replace("__PAYLOADS__", json.dumps(encoded, sort_keys=True)).replace(
         "__HASHES__", json.dumps(hashes, sort_keys=True))
     compile(source, "nvarc-m2-fsdp-sft-notebook", "exec")
@@ -174,10 +189,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--authorization", type=Path)
+    parser.add_argument("--draft-plan", type=Path,
+                        default=CONFIG / "m2-fsdp-sft-draft-001.json")
     parser.add_argument("--data", type=Path, default=DATA)
     parser.add_argument("--compact", type=Path, default=MODEL)
     args = parser.parse_args()
     print(json.dumps(stage(args.output, authorization=args.authorization,
+                           draft_path=args.draft_plan,
                            data_root=args.data, model_root=args.compact), indent=2))
 
 

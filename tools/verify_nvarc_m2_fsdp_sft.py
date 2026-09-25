@@ -26,6 +26,51 @@ def _sha(path: Path) -> str:
     return digest.hexdigest()
 
 
+def verify_ephemeral_checkpoint_evidence(run_root: Path, identity: str,
+                                         pause: dict | None, final: dict,
+                                         export_chain: dict, world: int) -> dict:
+    """Bind scratch checkpoint manifests without claiming retained DCP bytes."""
+    if pause is None or pause.get("checkpoint", {}).get("step") != 1:
+        raise ValidationError("scratch SFT first interruption is missing")
+    first = json.loads((run_root / "first-checkpoint-manifest.json").read_bytes())
+    last = json.loads((run_root / "final-checkpoint-manifest.json").read_bytes())
+    evicted = json.loads((run_root / "resume-evicted.json").read_bytes())
+    if (digest_value(first) != pause["checkpoint"]["manifest_digest"] or
+            digest_value(last) != final["checkpoint"]["manifest_digest"] or
+            evicted.get("format") != "irisx/nvarc-m2-fsdp-resume-evicted-v1" or
+            evicted.get("identity_digest") != identity or
+            evicted.get("checkpoint_manifest_digest") !=
+            pause["checkpoint"]["manifest_digest"] or
+            evicted.get("step") != 1 or
+            evicted.get("contains_evaluator_truth") is not False or
+            export_chain.get("checkpoint_manifest_digest") !=
+            final["checkpoint"]["manifest_digest"]):
+        raise ValidationError("scratch SFT checkpoint digest chain differs")
+    for manifest, step, tokens in ((first, 1, pause["tokens_seen"]),
+                                   (last, final["step"], final["tokens_seen"])):
+        state = manifest.get("state", {})
+        if (manifest.get("format") != "irisx/nvarc-m2-fsdp-checkpoint-v1" or
+                state.get("identity_digest") != identity or
+                state.get("world_size") != world or
+                state.get("step") != step or state.get("tokens_seen") != tokens or
+                state.get("contains_evaluator_truth") is not False or
+                not manifest.get("files")):
+            raise ValidationError("scratch SFT checkpoint manifest state differs")
+    if any((run_root / reference["path"]).exists()
+           for reference in (pause["checkpoint"], final["checkpoint"])):
+        raise ValidationError("scratch SFT claims unretained DCP members")
+    required = {"resume_dcp_load_complete", "resume_set_state_complete",
+                "resume_load_complete", "resumed_checkpoint_evicted",
+                "checkpoint_save_complete"}
+    for rank in range(world):
+        trace = [json.loads(line) for line in (run_root / f"rank-{rank}-trace.jsonl")
+                 .read_text(encoding="utf-8").splitlines()]
+        phases = {item["phase"] for item in trace if item.get("rank") == rank}
+        if not required.issubset(phases):
+            raise ValidationError("scratch SFT resume trace is incomplete")
+    return last
+
+
 def verify(plan_path: Path, compact: Path, sequences_path: Path, run_root: Path,
            source_result_path: Path, source_config_path: Path, visible_path: Path,
            *, reconstructed_checkpoint: Path | None = None) -> dict:
@@ -63,7 +108,14 @@ def verify(plan_path: Path, compact: Path, sequences_path: Path, run_root: Path,
                               pause.get("stop_reason") != "controlled_interruption"):
         raise ValidationError("SFT verifier interruption chain differs")
     transport = run_root / "checkpoint-transport/manifest.json"
-    if transport.exists():
+    ephemeral = plan.get("checkpoint_storage") == "ephemeral-scratch"
+    if ephemeral:
+        if transport.exists() or reconstructed_checkpoint is not None:
+            raise ValidationError("scratch SFT cannot claim checkpoint transport")
+        checkpoint_manifest = verify_ephemeral_checkpoint_evidence(
+            run_root, identity, pause, final, export_chain, plan["world_size"])
+        transport_digest = None
+    elif transport.exists():
         if reconstructed_checkpoint is None:
             raise ValidationError("split checkpoint needs an explicit new reconstruction directory")
         checkpoint_manifest = restore_checkpoint_transport(run_root, reconstructed_checkpoint)
@@ -107,12 +159,15 @@ def verify(plan_path: Path, compact: Path, sequences_path: Path, run_root: Path,
             "maximum_source_generation_calls"]:
         raise ValidationError("SFT source generation ceiling exceeded")
     run_chain_path = run_root / "run-chain.json"
+    if ephemeral and not run_chain_path.is_file():
+        raise ValidationError("scratch SFT terminal run chain is missing")
     if run_chain_path.exists():
         run_chain = json.loads(run_chain_path.read_bytes())
         if (run_chain.get("training_identity_digest") != identity or
                 run_chain.get("export_material_digest") != export_chain["export_material_digest"] or
                 run_chain.get("source_result_sha256") != _sha(source_result_path) or
                 run_chain.get("checkpoint_transport_manifest_digest") != transport_digest or
+                run_chain.get("optimizer_checkpoint_retained", True) != (not ephemeral) or
                 run_chain.get("contains_evaluator_truth") is not False):
             raise ValidationError("SFT terminal run chain differs")
     return {"format": "irisx/nvarc-m2-fsdp-sft-verification-v1",
@@ -121,6 +176,7 @@ def verify(plan_path: Path, compact: Path, sequences_path: Path, run_root: Path,
             "model_forwards": final["forwards"],
             "checkpoint_manifest_digest": final["checkpoint"]["manifest_digest"],
             "checkpoint_transport_manifest_digest": transport_digest,
+            "optimizer_checkpoint_retained": not ephemeral,
             "export_material_digest": export_chain["export_material_digest"],
             "source_result_sha256": _sha(source_result_path),
             "source_generation_calls": calls,

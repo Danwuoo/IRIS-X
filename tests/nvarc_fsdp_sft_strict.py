@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -19,6 +20,7 @@ from irisx.arc_nvarc_representation import verify_model_material
 from irisx.canonical import canonical_bytes, digest_value
 from irisx.errors import ValidationError
 from tools.nvarc_source_stage import validate_profile_material
+from tools.verify_nvarc_m2_fsdp_sft import verify_ephemeral_checkpoint_evidence
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,6 +49,7 @@ class FSDPSFTStrictTests(unittest.TestCase):
                     "max_sequence_length": 128, "checkpoint_steps": [1, 2],
                     "gradient_accumulation": 1, "learning_rate": 0.0001,
                     "weight_decay": 0.0, "seed": 24,
+                    "discard_resumed_checkpoint_after_load": True,
                     "compact_material_digest": base_digest,
                     "sequences_sha256": hashlib.sha256(sequence_bytes).hexdigest(),
                     "sequences_digest": digest_value(sequences),
@@ -87,6 +90,11 @@ class FSDPSFTStrictTests(unittest.TestCase):
             self.assertEqual((pause["step"], pause["tokens_seen"], pause["stop_reason"]),
                              (1, 120, "controlled_interruption"))
             launch("resumed", "--resume")
+            self.assertFalse((root / "resumed/checkpoint-step-0001").exists())
+            self.assertTrue((root / "resumed/first-checkpoint-manifest.json").is_file())
+            evicted = json.loads((root / "resumed/resume-evicted.json").read_bytes())
+            self.assertEqual(pause["checkpoint"]["manifest_digest"],
+                             evicted["checkpoint_manifest_digest"])
             resumed = export("resumed")
             final = json.loads((root / "resumed/final-result.json").read_bytes())
             self.assertEqual((final["step"], final["tokens_seen"], final["forwards"],
@@ -103,6 +111,23 @@ class FSDPSFTStrictTests(unittest.TestCase):
                                           resumed["export_material_digest"], material)
             checkpoint = root / "resumed" / final["checkpoint"]["path"]
             verify_checkpoint(checkpoint, identity, 2)
+            retained = root / "ephemeral-evidence"
+            retained.mkdir()
+            final_manifest = json.loads((checkpoint / "manifest.json").read_bytes())
+            (retained / "final-checkpoint-manifest.json").write_bytes(
+                canonical_bytes(final_manifest, newline=True))
+            for name in ("first-checkpoint-manifest.json", "resume-evicted.json",
+                         "rank-0-trace.jsonl", "rank-1-trace.jsonl"):
+                shutil.copy2(root / "resumed" / name, retained / name)
+            self.assertEqual(final["checkpoint"]["manifest_digest"], digest_value(
+                verify_ephemeral_checkpoint_evidence(
+                    retained, identity, pause, final, resumed, 2)))
+            with (retained / "rank-0-trace.jsonl").open("ab") as stream:
+                stream.write(canonical_bytes({"rank": 0, "phase": "test-only"}, newline=True))
+            (retained / "first-checkpoint-manifest.json").write_bytes(b"{}")
+            with self.assertRaises(ValidationError):
+                verify_ephemeral_checkpoint_evidence(retained, identity, pause,
+                                                     final, resumed, 2)
             transport = package_checkpoint_transport(root / "resumed", maximum_member_bytes=200_000)
             self.assertEqual(transport["checkpoint_manifest_digest"],
                              final["checkpoint"]["manifest_digest"])

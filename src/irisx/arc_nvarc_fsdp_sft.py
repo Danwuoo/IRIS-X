@@ -92,10 +92,20 @@ def _check_plan(plan: dict, compact: Path, sequences_path: Path,
             plan.get("gradient_accumulation") != 1):
         raise ValidationError("bounded unpacked FSDP SFT plan required")
     if plan.get("backend") == "cuda-l4":
+        run_id = plan.get("run_id")
+        storage_policy = plan.get("checkpoint_storage", "retained-working")
+        identity_ok = (
+            (run_id == "nvarc-m2-fsdp-sft-001" and
+             plan.get("kernel_id") == "danielwuu/nvarc-m2-fsdp-sft-001" and
+             storage_policy == "retained-working" and
+             not plan.get("discard_resumed_checkpoint_after_load")) or
+            (run_id == "nvarc-m2-fsdp-sft-002" and
+             plan.get("kernel_id") == "danielwuu/nvarc-m2-fsdp-sft-002" and
+             storage_policy == "ephemeral-scratch" and
+             plan.get("discard_resumed_checkpoint_after_load") is True))
         if (plan.get("approved") is not True or world != 4 or
                 not plan.get("owner_decision") or
-                plan.get("run_id") != "nvarc-m2-fsdp-sft-001" or
-                plan.get("kernel_id") != "danielwuu/nvarc-m2-fsdp-sft-001" or
+                not identity_ok or
                 plan.get("maximum_optimizer_steps") != 8 or
                 plan.get("maximum_training_tokens") != 2578 or
                 plan.get("scheduled_training_tokens") != 2578 or
@@ -329,6 +339,32 @@ def run(plan_path: Path, compact: Path, sequences_path: Path, output: Path,
             if any(abs(left - right) > 1e-5 for left, right in
                    zip(restored, state["weight_fingerprint_after"])):
                 raise ValidationError("FSDP resumed weights differ from saved fingerprint")
+            if plan.get("discard_resumed_checkpoint_after_load") is True:
+                dist.barrier()
+                cleanup_error = None
+                if rank == 0:
+                    try:
+                        old_checkpoint = output / previous["path"]
+                        if (old_checkpoint.parent.resolve() != output.resolve() or
+                                state["step"] != 1 or previous["step"] != 1):
+                            raise ValidationError("unsafe resumed FSDP checkpoint cleanup")
+                        first_manifest = json.loads((old_checkpoint / "manifest.json").read_bytes())
+                        if digest_value(first_manifest) != previous["manifest_digest"]:
+                            raise ValidationError("resumed FSDP checkpoint manifest changed")
+                        (output / "first-checkpoint-manifest.json").write_bytes(
+                            canonical_bytes(first_manifest, newline=True))
+                        shutil.rmtree(old_checkpoint)
+                        (output / "resume-evicted.json").write_bytes(canonical_bytes(
+                            {"format": "irisx/nvarc-m2-fsdp-resume-evicted-v1",
+                             "identity_digest": identity,
+                             "checkpoint_manifest_digest": previous["manifest_digest"],
+                             "step": state["step"], "contains_evaluator_truth": False},
+                            newline=True))
+                    except Exception as caught:
+                        cleanup_error = f"{type(caught).__name__}: {caught}"
+                _broadcast_error(cleanup_error, rank)
+                dist.barrier()
+                _mark(output, rank, "resumed_checkpoint_evicted")
         elif stop_after_steps is not None and stop_after_steps not in plan["checkpoint_steps"]:
             raise ValidationError("controlled interruption must align with checkpoint")
         if gpu:

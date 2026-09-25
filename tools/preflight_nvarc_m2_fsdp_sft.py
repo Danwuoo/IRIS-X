@@ -65,6 +65,17 @@ def preflight(package: Path, *, model_root: Path = MODEL) -> dict:
         raise ValidationError("SFT inspectable review member differs from notebook")
     plan = json.loads(payloads["plan"])
     metadata = json.loads(metadata_bytes)
+    run_id = plan.get("run_id")
+    if run_id not in {"nvarc-m2-fsdp-sft-001", "nvarc-m2-fsdp-sft-002"}:
+        raise ValidationError("unknown SFT run identity")
+    storage_ok = (
+        plan.get("maximum_retrieval_member_bytes") == 1_750_000_000
+        if run_id.endswith("001") else
+        plan.get("checkpoint_storage") == "ephemeral-scratch" and
+        plan.get("discard_resumed_checkpoint_after_load") is True and
+        plan.get("minimum_free_working_bytes") == 11_000_000_000 and
+        plan.get("minimum_free_scratch_bytes") == 55_000_000_000 and
+        plan.get("maximum_retained_output_bytes") == 12_000_000_000)
     if (plan.get("format") != "irisx/nvarc-m2-fsdp-sft-v1" or
             plan.get("run_id") != summary["run_id"] or
             plan.get("approved") != summary["approved"] or
@@ -73,7 +84,7 @@ def preflight(package: Path, *, model_root: Path = MODEL) -> dict:
             plan.get("maximum_optimizer_steps") != 8 or
             plan.get("scheduled_training_tokens") != 2578 or
             plan.get("maximum_source_generation_calls") != 4 or
-            plan.get("maximum_retrieval_member_bytes") != 1_750_000_000 or
+            not storage_ok or
             metadata.get("is_private") is not True or
             metadata.get("enable_internet") is not False or
             metadata.get("machine_shape") != "NvidiaL4" or
@@ -94,6 +105,8 @@ def preflight(package: Path, *, model_root: Path = MODEL) -> dict:
                 "exact owner-approved 4B SFT plan required" not in checked.stderr):
             raise ValidationError("SFT review notebook did not stop at its approval guard")
     elif (plan.get("owner_decision") is None or
+          (run_id.endswith("002") and str(plan["owner_decision"]).startswith(
+              ("Decision 0028", "Decision 0029", "Decision 0030", "Decision 0031"))) or
           plan["kernel_id"] != "danielwuu/" + plan["run_id"]):
         raise ValidationError("SFT package lacks exact approval binding")
     sequences = [json.loads(line) for line in payloads["sequences"].decode().splitlines()]
@@ -140,6 +153,7 @@ def preflight(package: Path, *, model_root: Path = MODEL) -> dict:
               "runtime_wheel_sha256": hashes["runtime_wheel"],
               "compact_material_digest": plan["compact_material_digest"],
               "scheduled_training_tokens": 2578, "optimizer_steps": 8,
+              "checkpoint_storage": plan.get("checkpoint_storage", "retained-working"),
               "source_visible_task_ids": plan["source_visible_task_ids"],
               "maximum_source_generation_calls": 4,
               "maximum_paid_usd": 0, "external_calls": 0}
