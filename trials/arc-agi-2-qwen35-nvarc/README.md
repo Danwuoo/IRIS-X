@@ -13,6 +13,8 @@ Kaggle allocated two T4s, so its four-L4 gate stopped before any model call.
 The compact Dataset is ready. The FSDP `001` kernel reached four L4s and loaded
 the model, then timed out at a collective without an optimizer step. Decision
 0029 authorizes one distinct bounded repair run, `002`, using the same Dataset.
+Kaggle accepted `002` version 1; its first status was `RUNNING`, and monitoring
+has stopped at the owner's request pending their terminal notification.
 Full 4B ARC-SFT, a new 4B SFT checkpoint in TTT/search/rank, new teacher
 output, and original-scale TRM remain open.
 
