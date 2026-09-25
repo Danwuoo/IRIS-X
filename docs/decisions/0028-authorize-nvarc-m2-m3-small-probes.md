@@ -12,6 +12,16 @@ supplies the external execution and data-use authorization required by
 `AGENTS.md` and `docs/development/data-and-execution-policy.md`; older trial
 decisions, including Decision 0027, do not authorize these runs.
 
+After the teacher probe received two T4s and stopped before model execution,
+the owner directed the task to use the prior successful four-L4 cases as the
+reference. Those cases requested `NvidiaL4` and mounted the official ARC
+competition source. The FSDP kernel has not yet been submitted. Its pre-submit
+transport package may add that exact official competition mount, with the
+notebook still reading only the frozen public-training sequences embedded in
+the package. The earlier approved and revised package identities remain
+separate. This transport correction does not grant a teacher retry or change
+any model, training or budget ceiling.
+
 ## Decision
 
 - `nvarc-m2-fsdp-feasibility-001`: create exactly one new private Kaggle Dataset

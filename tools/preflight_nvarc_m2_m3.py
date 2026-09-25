@@ -82,6 +82,8 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
         if guard.returncode == 0 or marker not in guard.stderr:
             raise ValidationError("M2/M3 draft notebook execution guard failed")
     if "fsdp" in kind:
+        if metadata.get("competition_sources") != ["arc-prize-2026-arc-agi-2"]:
+            raise ValidationError("FSDP L4 transport source mount differs")
         if approved and (plan.get("maximum_optimizer_steps") != 1 or
                          plan.get("maximum_total_input_tokens") != 512 or
                          plan.get("maximum_generations") != 0 or

@@ -2,16 +2,16 @@
 
 ## M2/M3 bounded continuation (2026-09-25)
 
-The [actual local artifacts and draft external packages](m2-m3.md) supersede
+The [actual local artifacts and bounded external probe record](m2-m3.md) supersede
 older missing-path statements below. They do not establish original-scale
 method reproduction or ARC quality.
 
 | Component | Executed path | Remaining gap |
 | --- | --- | --- |
 | Public ARC-SFT split | Exact pinned 8 train/8 dev public training parents and hashes; only train augmented to 128 source-loaded episodes; dev visible-only | No full source mixture or long-context packed-state isolation |
-| Full-parameter SFT | Two actual tiny hybrid Qwen3.5 CPU steps, finite gradients/weights, optimizer+RNG/cursor resume parity, export/reload | Pinned compact 4B full-SFT backend, actual 4B checkpoint/resume and 4B TTT/search/rank; four-L4 FSDP one-step package is offline draft only |
+| Full-parameter SFT | Two actual tiny hybrid Qwen3.5 CPU steps, finite gradients/weights, optimizer+RNG/cursor resume parity, export/reload; approved four-L4 FSDP one-step transport package passed local preflight | Pinned compact 4B full-SFT backend, actual 4B checkpoint/resume and 4B TTT/search/rank; FSDP one-step kernel not yet submitted |
 | Post-SFT Qwen path | New tiny export digest flows to source TTT, bounded DFS, inverse/dedupe/rank and truth-free result; four generation calls, no completed grid | 4B source profile cost, candidate availability and any quality claim |
-| SDG | Pinned ten-stage prompt/replay, source pair/filter, 10 isolated WSL-generated-program invocations, tested resource/network/filesystem limits | Four-call local Qwen3.5 teacher proposal is unapproved and unexecuted; original teacher parity and real generated-pair yield unknown |
+| SDG | Pinned ten-stage prompt/replay, source pair/filter, 10 isolated WSL-generated-program invocations, tested resource/network/filesystem limits; approved private teacher kernel version 1 terminated at four-L4 hardware gate (actual two T4s), with zero teacher calls/tokens | Original teacher parity and real generated-pair yield unknown; teacher identity consumed, no retry |
 | TRM and joint | Pinned TRM builder/model/loss/optimizers: one actual CPU training step, checkpoint/reload, one task-local TTT, visible-only inference and one TRM candidate sent to Qwen verifier | NVARC width/horizon/scale, notebook v18 parity, GPU training, clean accuracy and Qwen branch candidate availability |
 
 

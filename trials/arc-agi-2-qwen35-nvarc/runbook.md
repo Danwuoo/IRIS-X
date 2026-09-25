@@ -27,7 +27,8 @@ it packages only pinned public training demos and source prompts. Both
 `kernel-metadata.json` files are private, `NvidiaL4`, Internet-disabled and
 both notebooks fail their `approved: false` gate before model/provider work.
 
-After an exact owner decision, create a local authorization JSON with
+Decision 0028 now supplies the exact bounded authorization. For any approved
+package, create a local authorization JSON with
 `approved: true`, `owner_decision`, `draft_plan_sha256`, `run_id` and final
 `kernel_id`; FSDP also requires `model_dataset_id`. Restage to a **new** output
 with `--authorization <file>` and inspect its updated summary/notebook before
@@ -42,17 +43,25 @@ The FSDP package keeps compact files flat beside the CLI's singular
 `dataset-metadata.json`. After approval, the bounded commands are:
 
 ```powershell
-& .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle datasets create -p <approved-fsdp-package>/model-dataset
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle datasets create -p (Resolve-Path <approved-fsdp-package>/model-dataset).Path
 & .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle kernels push -p <approved-fsdp-package>/kernel --accelerator NvidiaL4 --timeout 1800
 & .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle kernels push -p <approved-teacher-package>/kernel --accelerator NvidiaL4 --timeout 1800
 & .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle kernels output <exact-owner/slug/version> -p <new-local-output>
 ```
 
-Dataset creation defaults to private. Push the FSDP kernel only after its
-Dataset version receipt. The teacher package attaches the existing private
-Dataset. Preserve both returned kernel version IDs and use the final line at
-most once for each terminal version. These are future commands contingent on
-the exact owner decision, not commands to run from this draft.
+Dataset creation defaults to private. On Windows, pass an **absolute** Dataset
+path: the installed CLI's resumable-upload cache cannot create its local temp
+file for a relative path containing directory separators. This failure occurs
+before a Dataset version request. Push the FSDP kernel only after its Dataset
+version receipt. The teacher package attaches the existing private Dataset.
+Preserve both returned kernel version IDs and use the final line at most once
+for each terminal version. Decision 0028's teacher version 1 and its sole
+retrieval are consumed; these commands are now lineage, not repeat authority.
+The pre-submit FSDP transport revision mounts
+`arc-prize-2026-arc-agi-2`, as did the prior successful four-L4 compact run;
+its notebook still reads only the embedded frozen public training sequences.
+The original no-competition-source teacher kernel received two T4s despite
+requesting `NvidiaL4`. A metadata request does not prove actual hardware.
 After an authorized teacher retrieval, keep the raw stage ledgers private and
 run the local replay with the exact approved package seed:
 

@@ -26,6 +26,8 @@ from irisx.arc_nvarc_training import load_compact_model, train_torch_sft
 from irisx.errors import ValidationError
 from tools.nvarc_m2_m3 import (DEFAULT_CONFIG, SOURCE, checked_source, tiny_joint,
                                 tiny_sft, tiny_solve)
+from tools.preflight_nvarc_m2_m3 import preflight as preflight_stage
+from tools.stage_nvarc_m3_teacher import stage as stage_teacher
 from irisx.arc_nvarc_m3_trm import run_tiny_trm
 
 
@@ -180,6 +182,34 @@ class M2M3StrictTests(unittest.TestCase):
             run_fsdp_probe(root / "trials/arc-agi-2-qwen35-nvarc/configs/m2-fsdp-feasibility-draft.json",
                            root / "nonexistent-model", root / "nonexistent-sequences",
                            root / "nonexistent-output")
+
+    def test_approved_teacher_package_preflight_is_read_only_and_bound(self):
+        root = Path(__file__).resolve().parents[1]
+        draft = (root / "trials/arc-agi-2-qwen35-nvarc/configs/m3-teacher-draft.json").read_bytes()
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp)
+            authorization = base / "authorization.json"
+            authorization.write_bytes(canonical_bytes({
+                "approved": True,
+                "draft_plan_sha256": hashlib.sha256(draft).hexdigest(),
+                "run_id": "nvarc-m3-teacher-small-001",
+                "kernel_id": "danielwuu/nvarc-m3-teacher-small-001",
+                "owner_decision": "Decision 0028; exact two-probe approval",
+            }, newline=True))
+            package = base / "package"
+            stage_teacher(package, authorization)
+            report = preflight_stage(package, approved=True)
+            self.assertTrue(report["approved"])
+            self.assertEqual(0, report["external_calls"])
+            self.assertFalse(report["draft_guard_verified"])
+            with self.assertRaises(ValidationError):
+                preflight_stage(package)
+            metadata = package / "kernel/kernel-metadata.json"
+            value = json.loads(metadata.read_bytes())
+            value["enable_internet"] = True
+            metadata.write_bytes(canonical_bytes(value, newline=True))
+            with self.assertRaises(ValidationError):
+                preflight_stage(package, approved=True)
 
 
 if __name__ == "__main__":
