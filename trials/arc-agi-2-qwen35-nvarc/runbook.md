@@ -1,5 +1,34 @@
 # Development and future execution runbook
 
+## Consumed Decision 0031 and inert storage/tokenizer repairs
+
+The [terminal repair plan](../../docs/plan/2026-09-25-nvarc-m2-m3-terminal-repair.md)
+records the observed M2 20.94 GB working-disk gate and M3 failed first
+teacher stage. Decision 0031 permits no further push or retrieval. The
+truth-free local audit can be reproduced without provider use:
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/verify_nvarc_m2_m3_attempts.py --sft-package .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-sft-approved-001 --sft-output .irisx/arc-agi-2/qwen35-nvarc/m2-m3/fsdp-sft-retrieved-001 --teacher-package .irisx/arc-agi-2/qwen35-nvarc/m2-m3/teacher-approved-002 --teacher-output .irisx/arc-agi-2/qwen35-nvarc/m2-m3/teacher-retrieved-002 --report <new-ignored-report-path>
+```
+
+The local M2 scratch repair and M3 tokenizer repair are deliberately inert:
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/stage_nvarc_m2_fsdp_sft.py --draft-plan trials/arc-agi-2-qwen35-nvarc/configs/m2-fsdp-sft-draft-002.json --output <new-ignored-review-dir>
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/preflight_nvarc_m2_fsdp_sft.py <new-ignored-review-dir> --report <new-ignored-report-path>
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/stage_nvarc_m3_teacher.py --draft-plan trials/arc-agi-2-qwen35-nvarc/configs/m3-teacher-draft-003.json --output <new-ignored-review-dir>
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/preflight_nvarc_m2_m3.py <new-ignored-review-dir> --report <new-ignored-report-path>
+```
+
+The retained review packages are `m2-m3/fsdp-sft-storage-review-003/` and
+`m2-m3/teacher-repair-review-004/`; both preflights passed without external
+calls. The M2 scratch plan requires a separate `/kaggle/temp` mount with at
+least 55 GB free before loading the model, and limits retained working output
+to 12 GB. It preserves the trained HF export but does not retain optimizer
+DCP shard bytes across sessions. The teacher adapter fix requests a tensor
+from Transformers 5.8.1 and fails the kernel if the four-call batch is
+incomplete. Neither repair may be pushed without a new exact owner decision.
+
 ## Current M2/M3 checkpoint and teacher drafts (2026-09-25)
 
 The owner accepted [Decision 0031](../../docs/decisions/0031-authorize-nvarc-m2-m3-checkpoint-continuation.md)

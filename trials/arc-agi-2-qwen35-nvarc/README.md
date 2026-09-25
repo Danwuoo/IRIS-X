@@ -2,17 +2,20 @@
 
 ## M2–M3 local continuation (2026-09-25)
 
-**Stages 4–5 remain incomplete.** Decision 0031 now authorizes the exact
-bounded 4B SFT and teacher `002` runs. Kaggle accepted each private,
-Internet-disabled kernel as version 1; terminal execution and output retrieval
-are pending. The
+**Stages 4–5 remain incomplete.** Decision 0031's two private,
+Internet-disabled version 1 kernels have now ended and their single terminal
+outputs were retrieved. M2 stopped before model work because Kaggle supplied
+20.94 GB free `/kaggle/working` space against the package's 60 GB checkpoint
+gate. M3 passed its four-L4 gate but failed its first teacher stage with an
+`AttributeError`: zero completed calls and zero responses. Neither identity
+has a retry allowance. The
 [independent review](control-review-0b7002a.md) accepted the four-L4 4B
 optimizer-step milestone and found a WSL sandbox chroot escape plus a joint
 verifier profile mismatch. Both are now repaired with actual namespace and
 tiny-Qwen regressions. A two-rank tiny Qwen FSDP run also proves sharded
 checkpoint resume, optimizer/RNG/cursor restoration, deterministic HF
 export/reload and source TTT/search/rank from that export. The 4B SFT
-checkpoint chain and real teacher batch have **not yet been verified**. The
+checkpoint chain and real teacher batch have **not been obtained**. The
 [bounded continuation plan](../../docs/plan/2026-09-25-nvarc-m2-m3-checkpoint-continuation.md),
 [Decision 0031](../../docs/decisions/0031-authorize-nvarc-m2-m3-checkpoint-continuation.md)
 and [M2/M3 record](m2-m3.md) bind the exact approved packages and limits.
