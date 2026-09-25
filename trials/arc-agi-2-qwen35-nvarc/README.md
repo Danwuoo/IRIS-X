@@ -6,11 +6,13 @@ The [bounded M2–M3 record](m2-m3.md) covers public ARC train/dev freezing,
 two-step full-parameter **tiny actual Qwen3.5** SFT with exact resume/export,
 the new checkpoint's source TTT/DFS/ranking path, a real pinned TRM CPU
 train/reload/TTT/inference and joint Qwen verification, plus ten-stage SDG
-saved-response replay in a tested WSL namespace sandbox. Two gated offline
-packages specify a four-L4 4B FSDP feasibility probe and a local Qwen3.5-4B
-teacher smoke. Neither external proposal has run. Full 4B ARC-SFT, a new 4B
-SFT checkpoint in TTT/search/rank, new teacher output, and original-scale TRM
-remain open.
+saved-response replay in a tested WSL namespace sandbox. Decision 0028
+authorized one private 4B FSDP feasibility probe and one local Qwen3.5-4B
+teacher smoke. The teacher kernel's sole version and retrieval are terminal:
+Kaggle allocated two T4s, so its four-L4 gate stopped before any model call.
+The separate FSDP compact Dataset upload remains in progress, with no kernel
+submitted yet. Full 4B ARC-SFT, a new 4B SFT checkpoint in TTT/search/rank,
+new teacher output, and original-scale TRM remain open.
 
 Status: **bounded synthetic 4B compact flow verified on one L4; full-method
 acceptance remains partial**.
