@@ -185,6 +185,18 @@ and gradients, changed global weight fingerprint, and truth-free result SHA-256
 `4624b1c4e4c4079d7daf6d0e958d74a0fd4fe5ebe1d1559a9a7faf28b5ef28ba`.
 This is a one-step backend feasibility observation, not an exported 4B
 ARC-SFT checkpoint or permission for further kernels or teacher execution.
+Decision 0031's separate M2 `nvarc-m2-fsdp-sft-001` and M3
+`nvarc-m3-teacher-small-002` version 1 kernels and single retrievals are
+consumed. M2 stopped before model load at a 60 GB working-disk gate; M3's
+first tokenizer stage failed with zero completed teacher calls. Decision 0032
+records the owner's explicit approval of one new bounded private free kernel
+and one terminal retrieval each for M2 `nvarc-m2-fsdp-sft-002` and M3
+`nvarc-m3-teacher-small-003`. The exact approved packages passed offline
+preflight and Kaggle accepted version 1 of each. Do not monitor continuously;
+the owner will report terminal state. Preserve their receipts and retrieve
+each output at most once after that report. No retry or additional external
+quota follows from a failure. The scratch-backed M2 package retains an HF
+export but not optimizer shard bytes after the Kaggle session.
 
 ## Authority order
 

@@ -89,7 +89,13 @@ notebook SHA-256 is
 `4e1582405c4193f3e23cd4c363b78cf53e37daa59451ef55fb49e8db35432d11`.
 Both carry the reviewed wheel SHA-256
 `d1c3d225be6a6b60ef879936b34273931192beeeb09e1ee92501da0c9e43bb6e`.
-The submitted receipts and runtime evidence remain to be recorded.
+Kaggle accepted one private version 1 submission of each exact approved
+package. The M2 CLI receipt SHA-256 is
+`b34d0df20b690fee9ad3967967b21ca0475c84ef4a1b8c6123c0fb55ae06cc0f`;
+the M3 receipt SHA-256 is
+`fd56f6d42c00ac9895ed3279f3d87741f152e468ad62f433e2aa1f0dcc89fd22`.
+At this checkpoint the kernels' terminal states and new ML outputs have not
+been observed. The owner's stop-monitoring instruction remains active.
 
 AGENTS.md and `docs/development/data-and-execution-policy.md` require new
 owner direction for these new external identities and resource bounds. The

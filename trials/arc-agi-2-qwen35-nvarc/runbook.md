@@ -22,7 +22,10 @@ The single approved push per identity uses only its `kernel/` directory:
 & .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle kernels push -p .irisx/arc-agi-2/qwen35-nvarc/m2-m3/teacher-repair-approved-003/kernel --accelerator NvidiaL4 --timeout 1800
 ```
 
-Record the exact version receipts. Do not monitor continuously; the owner
+Kaggle accepted version 1 of both exact identities; retained CLI receipt
+SHA-256s are `b34d0df20b690fee9ad3967967b21ca0475c84ef4a1b8c6123c0fb55ae06cc0f`
+for M2 and `fd56f6d42c00ac9895ed3279f3d87741f152e468ad62f433e2aa1f0dcc89fd22`
+for M3. Do not monitor continuously; the owner
 will report terminal state. Only then use the single terminal retrieval per
 identity. M2's full optimizer DCP shard set stays in session scratch and is
 not retained after Kaggle execution; the HF export alone is not a restartable

@@ -5,8 +5,9 @@
 [Decision 0032](../../docs/decisions/0032-authorize-nvarc-m2-m3-terminal-repairs.md)
 now authorizes the separately identified M2 scratch and M3 tokenizer repairs.
 Both approved packages passed offline preflight with zero external calls.
-Actual new 4B SFT and teacher execution evidence remains pending submission
-and terminal retrieval; the table below continues to describe executed work.
+Kaggle accepted private version 1 of each new identity. Actual new 4B SFT
+and teacher execution evidence remains pending terminal retrieval; the table
+below continues to describe verified work.
 
 The [actual local artifacts and bounded external probe record](m2-m3.md) and
 [checkpoint continuation proposal](../../docs/plan/2026-09-25-nvarc-m2-m3-checkpoint-continuation.md)
