@@ -2,6 +2,13 @@
 
 ## M2–M3 local continuation (2026-09-25)
 
+**Stages 4–5 are not accepted as complete at `0b7002a`.** The
+[independent review](control-review-0b7002a.md) confirms the four-L4 4B
+optimizer-step milestone and passing repository/strict ML suites, but
+reproduces a WSL sandbox chroot escape and an incorrect joint verifier
+profile. Both require repair. The 4B SFT checkpoint chain and actual teacher
+batch remain incomplete; generated teacher code must wait for sandbox repair.
+
 The [bounded M2–M3 record](m2-m3.md) covers public ARC train/dev freezing,
 two-step full-parameter **tiny actual Qwen3.5** SFT with exact resume/export,
 the new checkpoint's source TTT/DFS/ranking path, a real pinned TRM CPU
