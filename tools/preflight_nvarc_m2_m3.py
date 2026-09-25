@@ -1,4 +1,4 @@
-"""Recheck a staged M2/M3 draft without provider calls or notebook execution."""
+"""Recheck a staged M2/M3 package without provider calls or model execution."""
 
 from __future__ import annotations
 
@@ -23,13 +23,13 @@ def sha(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def preflight(package: Path) -> dict:
+def preflight(package: Path, *, approved: bool = False) -> dict:
     summary = json.loads((package / "stage-summary.json").read_bytes())
     kind = summary.get("format")
     if kind not in {"irisx/nvarc-m2-fsdp-stage-v1", "irisx/nvarc-m3-teacher-stage-v1"}:
         raise ValidationError("unknown M2/M3 package kind")
-    if summary.get("approved") is not False or summary.get("external_calls") != 0:
-        raise ValidationError("preflight expects a zero-call unapproved draft")
+    if summary.get("approved") is not approved or summary.get("external_calls") != 0:
+        raise ValidationError("package approval or call state differs")
     kernel = package / "kernel"
     notebook_path = kernel / "kaggle-notebook.ipynb"
     metadata_path = kernel / "kernel-metadata.json"
@@ -60,19 +60,33 @@ def preflight(package: Path) -> dict:
             "sha256:d24d85f791788621166fa05d7db51c03f7c72c046af4923096b12863f7e7dfa1"):
         raise ValidationError("M2/M3 runtime or offline wheel inventory differs")
     plan = json.loads(decoded["plan"])
-    if (plan.get("approved") is not False or sha(decoded["plan"]) != summary["plan_sha256"] or
+    if (plan.get("approved") is not approved or sha(decoded["plan"]) != summary["plan_sha256"] or
             digest_value(plan) != summary["plan_digest"]):
-        raise ValidationError("M2/M3 draft plan binding differs")
+        raise ValidationError("M2/M3 plan binding differs")
     marker = ("exact owner-approved feasibility plan required" if "fsdp" in kind else
               "exact owner-approved teacher plan required")
-    with tempfile.TemporaryDirectory() as scratch:
-        draft_script = Path(scratch) / "guard.py"
-        draft_script.write_text(source, encoding="utf-8")
-        guard = subprocess.run([sys.executable, str(draft_script)], capture_output=True,
-                               text=True, timeout=10)
-    if guard.returncode == 0 or marker not in guard.stderr:
-        raise ValidationError("M2/M3 draft notebook execution guard failed")
+    if approved:
+        if (not str(plan.get("owner_decision", "")).startswith("Decision 0028") or
+                plan.get("kernel_id") != metadata.get("id") or
+                plan.get("maximum_kernel_wall_seconds") != 1800 or
+                plan.get("maximum_accepted_kernel_versions") != 1 or
+                plan.get("maximum_output_retrievals") != 1 or
+                plan.get("maximum_paid_usd") != 0):
+            raise ValidationError("approved Decision 0028 boundary differs")
+    else:
+        with tempfile.TemporaryDirectory() as scratch:
+            draft_script = Path(scratch) / "guard.py"
+            draft_script.write_text(source, encoding="utf-8")
+            guard = subprocess.run([sys.executable, str(draft_script)], capture_output=True,
+                                   text=True, timeout=10)
+        if guard.returncode == 0 or marker not in guard.stderr:
+            raise ValidationError("M2/M3 draft notebook execution guard failed")
     if "fsdp" in kind:
+        if approved and (plan.get("maximum_optimizer_steps") != 1 or
+                         plan.get("maximum_total_input_tokens") != 512 or
+                         plan.get("maximum_generations") != 0 or
+                         plan.get("model_dataset_id") != "danielwuu/irisx-nvarc-m2-compact-4b-001"):
+            raise ValidationError("approved FSDP ceilings differ")
         if (metadata.get("dataset_sources") != [plan["model_dataset_id"],
                                                "danielwuu/irisx-arc-agi-2-trial-002-smoke-001"] or
                 sha(decoded["sequences"]) != plan["sequences_sha256"] or
@@ -85,6 +99,10 @@ def preflight(package: Path) -> dict:
         if sha((package / "model-dataset/dataset-metadata.json").read_bytes()) != summary["dataset_metadata_sha256"]:
             raise ValidationError("M2 private Dataset metadata differs")
     else:
+        if approved and (plan.get("maximum_teacher_calls") != 4 or
+                         plan.get("maximum_total_reserved_tokens") != 20480 or
+                         plan.get("seed_train_parent_ids") != ["833966f4", "6150a2bd"]):
+            raise ValidationError("approved teacher ceilings differ")
         if (metadata.get("dataset_sources") != [plan["source_dataset_id"]] or
                 sha(decoded["seed"]) != plan["seed_record_sha256"] or
                 digest_value(json.loads(decoded["prompts"])) != plan["prompts_digest"] or
@@ -93,9 +111,9 @@ def preflight(package: Path) -> dict:
                 plan["teacher_model_manifest_digest"]):
             raise ValidationError("M3 teacher source or model binding differs")
     return {"format": "irisx/nvarc-m2-m3-local-preflight-v1",
-            "kind": kind, "run_id": plan["run_id"], "approved": False,
+            "kind": kind, "run_id": plan["run_id"], "approved": approved,
             "notebook_sha256": summary["notebook_sha256"],
-            "payload_count": len(decoded), "draft_guard_verified": True,
+            "payload_count": len(decoded), "draft_guard_verified": not approved,
             "external_calls": 0}
 
 
@@ -103,8 +121,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("package", type=Path)
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--approved", action="store_true")
     args = parser.parse_args()
-    report = preflight(args.package)
+    report = preflight(args.package, approved=args.approved)
     if args.report is not None:
         if args.report.exists():
             raise ValidationError("new local preflight report path required")

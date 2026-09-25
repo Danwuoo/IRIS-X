@@ -106,3 +106,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0027-authorize-session-free-kernel-debugging.md`](0027-authorize-session-free-kernel-debugging.md)
   authorizes distinct free private kernels during the current session solely
   for program-error repairs to that bounded compact 4B flow.
+- [`0028-authorize-nvarc-m2-m3-small-probes.md`](0028-authorize-nvarc-m2-m3-small-probes.md)
+  authorizes one private free Kaggle FSDP feasibility probe and one independent
+  bounded local Qwen teacher probe, each with one terminal retrieval and no retry.
