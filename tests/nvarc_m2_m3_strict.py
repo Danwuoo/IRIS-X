@@ -19,13 +19,15 @@ from irisx.arc_nvarc_m2 import freeze_arc_sft_data, load_frozen_arc_sft_data
 from irisx.arc_nvarc_fsdp import (_json_fingerprint, _tensor_health,
                                   run as run_fsdp_probe)
 from irisx.arc_nvarc_representation import verify_model_material
+from irisx.arc_nvarc_candidates import QwenCandidateBackend, configure_candidate_backend
 from irisx.arc_nvarc_sdg import (WSLNamespaceProgramExecutor, render_source_teacher_prompt,
                                  replay_pinned_ten_stage_sdg, replay_teacher_program_ledgers,
                                  run_teacher_pipeline, SavedTeacher)
 from irisx.canonical import canonical_bytes
-from irisx.arc_nvarc_training import load_compact_model, train_torch_sft
+from irisx.arc_nvarc_training import TaskLocalAdapter, load_compact_model, train_torch_sft
+from irisx.arc_nvarc_trm import integrate_with_qwen_verifier
 from irisx.errors import ValidationError
-from tools.nvarc_m2_m3 import (DEFAULT_CONFIG, SOURCE, checked_source, tiny_joint,
+from tools.nvarc_m2_m3 import (DEFAULT_CONFIG, SOURCE, SOURCE_STAGE, checked_source, tiny_joint,
                                 tiny_sft, tiny_solve)
 from tools.preflight_nvarc_m2_m3 import preflight as preflight_stage
 from tools.stage_nvarc_m3_teacher import stage as stage_teacher
@@ -82,11 +84,58 @@ class M2M3StrictTests(unittest.TestCase):
                                      SOURCE, data, trm)
             self.assertEqual((1, 1, True), (trm_chain["train_steps"], trm_chain["ttt_steps"],
                                               trm_chain["reload_equal"]))
+            self.assertEqual(hashlib.sha256((trm / "inference.json").read_bytes()).hexdigest(),
+                             trm_chain["inference_sha256"])
             joint_result = tiny_joint(self.config, data, sft, qwen, trm, joint)
             self.assertEqual(1, joint_result["trm_candidates"])
             self.assertEqual(8, joint_result["qwen_verifier_explicit_forwards"])
             self.assertEqual(1, joint_result["joint"]["branch_counts"]["trm"])
             self.assertFalse(joint_result["contains_evaluator_truth"])
+            self.assertEqual({"augmentation": "source-qwen",
+                              "representation": "source-qwen", "ranking": "source-kgmon",
+                              "answer_nll": "summed",
+                              "source_profile": "qwen-notebook-v10-qwen35-compact"},
+                             joint_result["verifier_profile"])
+            stage = json.loads(SOURCE_STAGE.read_bytes())
+            task_id = joint_result["task_id"]
+            task = {"task_id": task_id,
+                    **json.loads((data / "dev-visible.json").read_bytes())[task_id]}
+            trm_candidate = json.loads((trm / "inference.json").read_bytes())["candidate"]
+            observed_nll = {}
+            for augmentation in ("source-qwen", "irisx"):
+                model = load_compact_model(sft / "export", dtype="float32")
+                adapter = TaskLocalAdapter(model, stage["adaptation"])
+                verifier = QwenCandidateBackend(model, task_adapter=adapter)
+                profile = configure_candidate_backend(verifier, {
+                    **stage["candidate"], "augmentation": augmentation,
+                    "representation": augmentation})
+                verifier.begin_task(task)
+                try:
+                    direct = integrate_with_qwen_verifier(
+                        task, 0, [], [{"grid": trm_candidate, "branch": "trm",
+                                       "source": "trained-ttt"}], verifier,
+                        policy=profile["ranking"])
+                finally:
+                    verifier.end_task()
+                observed_nll[augmentation] = direct["ranked"][0]["mean_verification_nll"]
+            self.assertAlmostEqual(observed_nll["source-qwen"],
+                                   joint_result["joint"]["ranked"][0]["mean_verification_nll"],
+                                   delta=1e-4)
+            self.assertGreater(observed_nll["source-qwen"], observed_nll["irisx"] * 100)
+            qwen_result_path = qwen / "result.json"
+            original_qwen_result = qwen_result_path.read_bytes()
+            qwen_result_path.write_bytes(original_qwen_result + b" ")
+            with self.assertRaises(ValidationError):
+                tiny_joint(self.config, data, sft, qwen, trm, root / "tampered-qwen-joint")
+            qwen_result_path.write_bytes(original_qwen_result)
+            inference_path = trm / "inference.json"
+            original_inference = inference_path.read_bytes()
+            altered_inference = json.loads(original_inference)
+            altered_inference["training_exposure"] = [task_id]
+            inference_path.write_bytes(canonical_bytes(altered_inference, newline=True))
+            with self.assertRaises(ValidationError):
+                tiny_joint(self.config, data, sft, qwen, trm, root / "tampered-trm-joint")
+            inference_path.write_bytes(original_inference)
             mounted = root / "flat-dataset-mount"
             shutil.copytree(sft / "export", mounted)
             (mounted / "dataset-metadata.json").write_text("{}", encoding="utf-8")
@@ -102,6 +151,25 @@ class M2M3StrictTests(unittest.TestCase):
         subprocess.run(["wsl", "-d", sandbox.distribution, "--", "true"],
                        check=True, capture_output=True, timeout=90)
         self.assertEqual([[1, 2]], sandbox.execute("def transform(grid): return grid", [[1, 2]]))
+        Path(".irisx").mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=Path(".irisx")) as temp:
+            canary = Path(temp).resolve() / "sandbox-canary.txt"
+            canary.write_text("Test-only filesystem canary.\n", encoding="utf-8")
+            linux_canary = "/mnt/c" + canary.as_posix()[2:]
+            escape_probe = f'''def transform(grid):
+ import errno,os
+ target={linux_canary!r}
+ before=int(os.path.exists(target))
+ os.mkdir("/tmp/inner")
+ try:
+  os.chroot("/tmp/inner")
+ except OSError as error:
+  return [[before,int(error.errno==errno.EPERM),int(os.path.exists(target))]]
+ for _ in range(64):os.chdir("..")
+ os.chroot(".")
+ return [[before,0,int(os.path.exists(target))]]
+'''
+            self.assertEqual([[0, 1, 0]], sandbox.execute(escape_probe, [[0]]))
         filesystem = ('def transform(grid):\n import os\n'
                       ' return [[1 if not os.path.exists("/mnt/c/Users") else 0]]')
         readonly = ('def transform(grid):\n'

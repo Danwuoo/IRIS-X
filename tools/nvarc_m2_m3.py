@@ -21,7 +21,7 @@ from irisx.arc_nvarc_sdg import (WSLNamespaceProgramExecutor, replay_pinned_ten_
 from irisx.arc_nvarc_trm import integrate_with_qwen_verifier
 from irisx.arc_nvarc_representation import export_trained_model, verify_model_material
 from irisx.arc_nvarc_training import TaskLocalAdapter, load_compact_model, train_torch_sft
-from irisx.arc_nvarc_candidates import QwenCandidateBackend
+from irisx.arc_nvarc_candidates import QwenCandidateBackend, configure_candidate_backend
 from irisx.canonical import canonical_bytes, digest_value
 from irisx.errors import ValidationError
 from tools.nvarc_source_stage import run as run_source_stage
@@ -127,24 +127,61 @@ def tiny_joint(config: dict, data_root: Path, sft_root: Path, qwen_root: Path,
         raise ValidationError("new joint output required")
     sft = json.loads((sft_root / "chain.json").read_bytes())
     qwen_observation = json.loads((qwen_root / "observation.json").read_bytes())
+    qwen_result_path = qwen_root / "result.json"
+    qwen_result_sha256 = hashlib.sha256(qwen_result_path.read_bytes()).hexdigest()
+    qwen_result = json.loads(qwen_result_path.read_bytes())
     trm_chain = json.loads((trm_root / "chain.json").read_bytes())
-    trm_inference = json.loads((trm_root / "inference.json").read_bytes())
+    trm_inference_path = trm_root / "inference.json"
+    trm_inference_sha256 = hashlib.sha256(trm_inference_path.read_bytes()).hexdigest()
+    trm_inference = json.loads(trm_inference_path.read_bytes())
+    data_manifest = json.loads((data_root / "manifest.json").read_bytes())
+    dev_visible_path = data_root / "dev-visible.json"
+    dev_visible_sha256 = hashlib.sha256(dev_visible_path.read_bytes()).hexdigest()
+    source_stage_bytes = SOURCE_STAGE.read_bytes()
+    source_stage = json.loads(source_stage_bytes)
+    candidate_config = source_stage["candidate"]
     digest = sft["sft_export_material_digest"]
-    if (qwen_observation["sft_export_material_digest"] != digest or
+    if (sft.get("config_digest") != digest_value(config) or
+            sft.get("data_manifest_digest") != digest_value(data_manifest) or
+            data_manifest.get("dev_visible_sha256") != dev_visible_sha256 or
+            qwen_observation.get("sft_export_material_digest") != digest or
+            qwen_observation.get("source_result_sha256") != qwen_result_sha256 or
+            qwen_result.get("format") != "irisx/nvarc-source-stage-result-v1" or
+            qwen_result.get("material_digest") != digest or
+            qwen_result.get("config_sha256") != hashlib.sha256(source_stage_bytes).hexdigest() or
+            qwen_result.get("source_profile") != source_stage["source_profile"] or
+            qwen_result.get("profile") != "tiny" or
+            qwen_result.get("contains_evaluator_truth") is not False or
+            trm_chain.get("format") != "irisx/nvarc-m3-trm-cpu-chain-v1" or
+            trm_inference.get("format") != "irisx/nvarc-m3-trm-visible-inference-v1" or
             trm_chain["checkpoint_sha256"] != trm_inference["training_checkpoint_sha256"] or
+            trm_chain.get("inference_sha256") != trm_inference_sha256 or
+            trm_chain["train_parent_ids"] != trm_inference.get("training_exposure") or
+            not set(trm_chain["train_parent_ids"]).isdisjoint(
+                item["id"] for item in config["dev"]) or
+            trm_inference.get("labels_in_inference") is not False or
+            trm_inference.get("contains_evaluator_truth") is not False or
             hashlib.sha256((trm_root / "trm-trained.pt").read_bytes()).hexdigest() !=
             trm_chain["checkpoint_sha256"]):
         raise ValidationError("joint parent artifact digest differs")
     verify_model_material(sft_root / "export", digest)
-    results = json.loads((qwen_root / "result.json").read_bytes())["results"]
-    visible = json.loads((data_root / "dev-visible.json").read_bytes())
+    results = qwen_result["results"]
+    visible = json.loads(dev_visible_path.read_bytes())
+    selected = dict(list(sorted(visible.items()))[:config["dev_visible_task_limit"]])
+    if (hashlib.sha256((qwen_root / "visible.json").read_bytes()).hexdigest() !=
+            qwen_result.get("visible_sha256") or
+            json.loads((qwen_root / "visible.json").read_bytes()) != selected):
+        raise ValidationError("joint Qwen visible task binding differs")
     task_id = trm_inference["task_id"]
-    if len(results) != 1 or results[0]["task_id"] != task_id or task_id not in visible:
+    if (len(results) != 1 or results[0]["task_id"] != task_id or
+            results[0].get("test_index") != trm_inference.get("test_index") or
+            task_id not in selected or trm_inference.get("ttt_visible_demo_parent") != task_id):
         raise ValidationError("joint task/test denominator differs")
     task = {"task_id": task_id, **visible[task_id]}
     model = load_compact_model(sft_root / "export", dtype="float32")
-    adapter = TaskLocalAdapter(model, json.loads(SOURCE_STAGE.read_bytes())["adaptation"])
+    adapter = TaskLocalAdapter(model, source_stage["adaptation"])
     verifier = QwenCandidateBackend(model, task_adapter=adapter)
+    verifier_profile = configure_candidate_backend(verifier, candidate_config)
     qwen = [{"grid": item["grid"], "branch": "qwen", "source": item["sources"][0]
              if item.get("sources") else "qwen"} for item in results[0]["ranked"]]
     trm = ([{"grid": trm_inference["candidate"], "branch": "trm", "source": "trained-ttt"}]
@@ -152,7 +189,7 @@ def tiny_joint(config: dict, data_root: Path, sft_root: Path, qwen_root: Path,
     verifier.begin_task(task)
     try:
         joint = integrate_with_qwen_verifier(task, 0, qwen, trm, verifier,
-                                             policy="source-kgmon")
+                                             policy=verifier_profile["ranking"])
         ttt = adapter.last_observation
         forwards = verifier.forward_calls
     finally:
@@ -160,9 +197,14 @@ def tiny_joint(config: dict, data_root: Path, sft_root: Path, qwen_root: Path,
     output.mkdir(parents=True)
     report = {"format": "irisx/nvarc-m3-joint-v1", "task_id": task_id, "test_index": 0,
               "sft_export_material_digest": digest,
-              "qwen_result_sha256": qwen_observation["source_result_sha256"],
+              "data_manifest_digest": digest_value(data_manifest),
+              "dev_visible_sha256": dev_visible_sha256,
+              "source_candidate_config_digest": digest_value(candidate_config),
+              "verifier_profile": {**verifier_profile,
+                                   "source_profile": source_stage["source_profile"]},
+              "qwen_result_sha256": qwen_result_sha256,
               "trm_checkpoint_sha256": trm_chain["checkpoint_sha256"],
-              "trm_inference_sha256": hashlib.sha256((trm_root / "inference.json").read_bytes()).hexdigest(),
+              "trm_inference_sha256": trm_inference_sha256,
               "qwen_candidates": len(qwen), "trm_candidates": len(trm),
               "joint": joint, "qwen_verifier_explicit_forwards": forwards,
               "qwen_task_local_ttt": ttt, "contains_evaluator_truth": False,

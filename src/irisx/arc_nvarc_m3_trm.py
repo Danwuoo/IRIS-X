@@ -172,6 +172,7 @@ def run_tiny_trm(config: Mapping[str, Any], source_root: Path, source_cache: Pat
                  "ttt_visible_demo_parent": dev_id,
                  "labels_in_inference": False, "contains_evaluator_truth": False}
     (output / "inference.json").write_bytes(canonical_bytes(inference, newline=True))
+    inference_sha256 = hashlib.sha256((output / "inference.json").read_bytes()).hexdigest()
     report = {"format": "irisx/nvarc-m3-trm-cpu-chain-v1",
               "upstream_revision": "e7b68717f0a6c4cbb4ce6fbef787b14f42083bd9",
               "nvarc_revision": "846d0198efa752534594e321fc3289fc0a06c657",
@@ -183,6 +184,7 @@ def run_tiny_trm(config: Mapping[str, Any], source_root: Path, source_cache: Pat
               "train_model_forwards": 1,
               "train_gradient_groups": train_gradient_groups, "train_wall_seconds": train_wall,
               "checkpoint_sha256": checkpoint_sha, "reload_equal": True,
+              "inference_sha256": inference_sha256,
               "ttt_steps": 1, "ttt_loss": ttt_loss,
               "ttt_input_tokens": int(ttt_batch["inputs"].numel()),
               "ttt_supervised_tokens": int((ttt_batch["labels"] != -100).sum()),

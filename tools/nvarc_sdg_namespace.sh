@@ -19,7 +19,8 @@ mount --bind /dev/null "$root/dev/null"
 chmod 1777 "$root/tmp"
 timeout -s KILL 6s chroot "$root" \
     /usr/bin/prlimit --as=805306368 --nproc=16 --cpu=4 -- \
-    /usr/bin/python3 -I -c '
+    /usr/bin/setpriv --no-new-privs --bounding-set=-all \
+    --inh-caps=-all --ambient-caps=-all /usr/bin/python3 -I -c '
 import contextlib, io, json, sys
 p = json.load(sys.stdin)
 scope = {}

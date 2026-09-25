@@ -181,14 +181,31 @@ def bounded_dfs(query: list[int], next_log_probs: Callable[[list[int]], list[flo
     return result["sequences"], result["expansions"]
 
 
-def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any]) -> list[dict[str, Any]]:
-    """One adaptation per full task, then all test outputs share that state."""
+def configure_candidate_backend(backend: Any, config: Mapping[str, Any]) -> dict[str, str]:
+    """Apply the exact grammar and augmentation profile at every model entry."""
     augmentation = config.get("augmentation", "irisx")
     if augmentation not in {"irisx", "source-qwen"}:
         raise ValidationError("unknown candidate augmentation source")
     representation = config.get("representation", "irisx")
     if representation not in {"irisx", "source-qwen"}:
         raise ValidationError("unknown candidate representation")
+    ranking = config.get("ranking", "votes-minus-mean-nll")
+    if ranking not in {"votes-minus-mean-nll", "nll-sum", "source-kgmon"}:
+        raise ValidationError("unknown candidate ranking profile")
+    if hasattr(backend, "augmentation"):
+        backend.augmentation = augmentation
+    if hasattr(backend, "representation"):
+        backend.representation = representation
+    return {"augmentation": augmentation, "representation": representation,
+            "ranking": ranking,
+            "answer_nll": "summed" if augmentation == "source-qwen" else "per-token"}
+
+
+def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """One adaptation per full task, then all test outputs share that state."""
+    profile = configure_candidate_backend(backend, config)
+    augmentation = profile["augmentation"]
+    representation = profile["representation"]
     tokenizer = GridTokenizer(source_chat_newlines=representation == "source-qwen")
     transform = source_qwen_transform_task if augmentation == "source-qwen" else transform_task
     inverse_grid = source_qwen_transform_grid if augmentation == "source-qwen" else transform_grid
@@ -203,10 +220,6 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
     calls = 0
     verification_calls = 0
     try:
-        if hasattr(backend, "augmentation"):
-            backend.augmentation = augmentation
-        if hasattr(backend, "representation"):
-            backend.representation = representation
         backend.begin_task(task)
         for test_index in range(len(task["test"])):
             # Hold a share of the remaining invocation budget for each later
@@ -254,7 +267,7 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
                                        "beam_nll": float(sequence["beam_nll"]),
                                        "verification_nll": float(verification)})
             rank_started = time.monotonic()
-            ranked = rank_candidates(candidates, policy=config.get("ranking", "votes-minus-mean-nll"))
+            ranked = rank_candidates(candidates, policy=profile["ranking"])
             if hasattr(backend, "rank_seconds"):
                 backend.rank_seconds += time.monotonic() - rank_started
             attempts = [item["grid"] for item in ranked[:2]]
