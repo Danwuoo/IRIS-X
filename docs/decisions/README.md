@@ -109,3 +109,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0028-authorize-nvarc-m2-m3-small-probes.md`](0028-authorize-nvarc-m2-m3-small-probes.md)
   authorizes one private free Kaggle FSDP feasibility probe and one independent
   bounded local Qwen teacher probe, each with one terminal retrieval and no retry.
+- [`0029-authorize-nvarc-m2-fsdp-repair.md`](0029-authorize-nvarc-m2-fsdp-repair.md)
+  authorizes one new private, free four-L4 FSDP feasibility replacement with
+  phase diagnostics after the original probe's NCCL timeout.

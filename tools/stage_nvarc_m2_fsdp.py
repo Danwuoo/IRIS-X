@@ -31,21 +31,26 @@ def sha(payload: bytes) -> str:
 
 
 def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
-          data_root: Path = DATA, model_root: Path = MODEL) -> dict:
+          data_root: Path = DATA, model_root: Path = MODEL,
+          draft_path: Path = CONFIG / "m2-fsdp-feasibility-draft.json") -> dict:
     if output.exists():
         raise ValidationError("new FSDP package output directory required")
-    draft_path = CONFIG / "m2-fsdp-feasibility-draft.json"
     draft_bytes = draft_path.read_bytes()
     plan = json.loads(draft_bytes)
-    if (plan["approved"] is not False or plan["run_id"] != "nvarc-m2-fsdp-feasibility-001" or
+    if (plan["approved"] is not False or
+            plan["run_id"] not in {"nvarc-m2-fsdp-feasibility-001",
+                                   "nvarc-m2-fsdp-feasibility-002"} or
+            plan["kernel_id"] != "DRAFT-DO-NOT-PUSH/" + plan["run_id"] or
             plan["maximum_paid_usd"] != 0 or plan["maximum_optimizer_steps"] != 1):
         raise ValidationError("FSDP draft boundaries differ")
+    if plan["run_id"].endswith("-002") and plan.get("collective_timeout_seconds") != 480:
+        raise ValidationError("FSDP replacement diagnostic timeout differs")
     if authorization is not None:
         binding = json.loads(authorization.read_bytes())
         if (binding.get("approved") is not True or
                 binding.get("draft_plan_sha256") != sha(draft_bytes) or
                 binding.get("run_id") != plan["run_id"] or
-                binding.get("kernel_id") != "danielwuu/nvarc-m2-fsdp-feasibility-001" or
+                binding.get("kernel_id") != "danielwuu/" + plan["run_id"] or
                 binding.get("model_dataset_id") != plan["model_dataset_id"] or
                 not isinstance(binding.get("owner_decision"), str) or
                 not binding["owner_decision"].strip()):
@@ -140,8 +145,11 @@ def main() -> None:
     parser.add_argument("--authorization", type=Path)
     parser.add_argument("--data", type=Path, default=DATA)
     parser.add_argument("--compact", type=Path, default=MODEL)
+    parser.add_argument("--draft-plan", type=Path,
+                        default=CONFIG / "m2-fsdp-feasibility-draft.json")
     args = parser.parse_args()
-    print(json.dumps(stage(args.output, args.authorization, args.data, args.compact), indent=2))
+    print(json.dumps(stage(args.output, args.authorization, args.data, args.compact,
+                           args.draft_plan), indent=2))
 
 
 if __name__ == "__main__":

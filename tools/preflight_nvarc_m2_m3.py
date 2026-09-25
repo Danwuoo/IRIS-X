@@ -66,13 +66,15 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
     marker = ("exact owner-approved feasibility plan required" if "fsdp" in kind else
               "exact owner-approved teacher plan required")
     if approved:
-        if (not str(plan.get("owner_decision", "")).startswith("Decision 0028") or
+        expected_decision = ("Decision 0029" if plan.get("run_id") ==
+                             "nvarc-m2-fsdp-feasibility-002" else "Decision 0028")
+        if (not str(plan.get("owner_decision", "")).startswith(expected_decision) or
                 plan.get("kernel_id") != metadata.get("id") or
                 plan.get("maximum_kernel_wall_seconds") != 1800 or
                 plan.get("maximum_accepted_kernel_versions") != 1 or
                 plan.get("maximum_output_retrievals") != 1 or
                 plan.get("maximum_paid_usd") != 0):
-            raise ValidationError("approved Decision 0028 boundary differs")
+            raise ValidationError("approved M2/M3 decision boundary differs")
     else:
         with tempfile.TemporaryDirectory() as scratch:
             draft_script = Path(scratch) / "guard.py"
@@ -89,6 +91,10 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
                          plan.get("maximum_generations") != 0 or
                          plan.get("model_dataset_id") != "danielwuu/irisx-nvarc-m2-compact-4b-001"):
             raise ValidationError("approved FSDP ceilings differ")
+        if plan.get("run_id") == "nvarc-m2-fsdp-feasibility-002" and (
+                plan.get("collective_timeout_seconds") != 480 or
+                plan.get("maximum_model_dataset_versions") != 0):
+            raise ValidationError("FSDP replacement diagnostic or Dataset bound differs")
         if (metadata.get("dataset_sources") != [plan["model_dataset_id"],
                                                "danielwuu/irisx-arc-agi-2-trial-002-smoke-001"] or
                 sha(decoded["sequences"]) != plan["sequences_sha256"] or

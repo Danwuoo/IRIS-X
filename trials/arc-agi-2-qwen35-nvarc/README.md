@@ -10,9 +10,11 @@ saved-response replay in a tested WSL namespace sandbox. Decision 0028
 authorized one private 4B FSDP feasibility probe and one local Qwen3.5-4B
 teacher smoke. The teacher kernel's sole version and retrieval are terminal:
 Kaggle allocated two T4s, so its four-L4 gate stopped before any model call.
-The separate FSDP compact Dataset upload remains in progress, with no kernel
-submitted yet. Full 4B ARC-SFT, a new 4B SFT checkpoint in TTT/search/rank,
-new teacher output, and original-scale TRM remain open.
+The compact Dataset is ready. The FSDP `001` kernel reached four L4s and loaded
+the model, then timed out at a collective without an optimizer step. Decision
+0029 authorizes one distinct bounded repair run, `002`, using the same Dataset.
+Full 4B ARC-SFT, a new 4B SFT checkpoint in TTT/search/rank, new teacher
+output, and original-scale TRM remain open.
 
 Status: **bounded synthetic 4B compact flow verified on one L4; full-method
 acceptance remains partial**.

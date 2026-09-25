@@ -161,6 +161,15 @@ passed independent digest-bound verification. Its terminal record is
 `trials/arc-agi-2-qwen35-nvarc/compact-complete-003.md`. Decision 0027's
 session-only kernel-debugging authority ended on this verified small flow;
 it does not authorize more external execution or method promotion.
+Decision 0028's independent M2 FSDP and M3 teacher probes have each consumed
+their one private kernel and terminal retrieval. The teacher stopped at a
+two-T4 hardware gate before model work. The FSDP probe reached four distinct
+L4s and loaded its compact model, then timed out at an NCCL collective without
+an optimizer step. Decision 0029 records the owner's explicit repair-and-rerun
+direction: one distinct private `nvarc-m2-fsdp-feasibility-002` kernel may reuse
+the existing model Dataset for one bounded FSDP step with rank diagnostics and
+one terminal retrieval. No third attempt, new Dataset version, 4B SFT claim,
+teacher retry or paid execution follows from that decision.
 
 ## Authority order
 

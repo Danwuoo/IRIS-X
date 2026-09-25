@@ -19,8 +19,9 @@ for name, encoded in PAYLOADS.items():
         raise RuntimeError("embedded feasibility material differs")
 plan = json.loads(base64.b64decode(PAYLOADS["plan"]))
 if (plan.get("approved") is not True or not plan.get("owner_decision") or
-        plan.get("run_id") != "nvarc-m2-fsdp-feasibility-001" or
-        plan.get("kernel_id") != "danielwuu/nvarc-m2-fsdp-feasibility-001" or
+        plan.get("run_id") not in {"nvarc-m2-fsdp-feasibility-001",
+                                   "nvarc-m2-fsdp-feasibility-002"} or
+        plan.get("kernel_id") != "danielwuu/" + plan["run_id"] or
         plan.get("maximum_paid_usd") != 0 or plan.get("maximum_optimizer_steps") != 1):
     raise RuntimeError("exact owner-approved feasibility plan required")
 
@@ -103,7 +104,7 @@ command = [sys.executable, "-m", "torch.distributed.run", "--standalone",
            "--nproc_per_node=4", "-m", "irisx.arc_nvarc_fsdp",
            "--plan", str(paths["plan"]), "--compact", str(models[0]),
            "--sequences", str(paths["sequences"]),
-           "--output", str(work / "m2-fsdp-feasibility-001")]
+           "--output", str(work / plan["run_id"])]
 worker = subprocess.Popen(command, start_new_session=True, env=os.environ.copy())
 remaining = max(1, int(plan["maximum_kernel_wall_seconds"] - (time.monotonic() - START) - 30))
 try:

@@ -42,6 +42,16 @@ feasibility step alone does not authorize the subsequent 8-step 4B SFT.
 The FSDP package keeps compact files flat beside the CLI's singular
 `dataset-metadata.json`. After approval, the bounded commands are:
 
+Decision 0029 separately authorizes one FSDP repair identity, `002`, after
+`001` reached four L4s but timed out at an NCCL collective. Stage the repair
+with `--draft-plan configs/m2-fsdp-feasibility-repair-002.json` and a matching
+Decision 0029 authorization JSON. Its preflight passed with notebook SHA-256
+`d93b8ccfbdd8f6024fb99dcbf7e7040ce6646ce35eb52d8a525084884f048cc0`.
+Reuse the already ready private model Dataset; do not create another Dataset
+version. Retain the per-rank diagnostics directory from the terminal output.
+One new private kernel push and one terminal retrieval are permitted for this
+identity, with no further retry.
+
 ```powershell
 & .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle datasets create -p (Resolve-Path <approved-fsdp-package>/model-dataset).Path
 & .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle kernels push -p <approved-fsdp-package>/kernel --accelerator NvidiaL4 --timeout 1800

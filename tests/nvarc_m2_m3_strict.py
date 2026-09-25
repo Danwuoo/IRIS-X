@@ -16,7 +16,7 @@ import unittest
 import torch
 
 from irisx.arc_nvarc_m2 import freeze_arc_sft_data, load_frozen_arc_sft_data
-from irisx.arc_nvarc_fsdp import run as run_fsdp_probe
+from irisx.arc_nvarc_fsdp import _tensor_health, run as run_fsdp_probe
 from irisx.arc_nvarc_representation import verify_model_material
 from irisx.arc_nvarc_sdg import (WSLNamespaceProgramExecutor, render_source_teacher_prompt,
                                  replay_pinned_ten_stage_sdg, replay_teacher_program_ledgers,
@@ -167,6 +167,8 @@ class M2M3StrictTests(unittest.TestCase):
         for template, plan_name, marker in (
                 ("nvarc_m2_fsdp_notebook.py.tmpl", "m2-fsdp-feasibility-draft.json",
                  "exact owner-approved feasibility plan required"),
+                ("nvarc_m2_fsdp_notebook.py.tmpl", "m2-fsdp-feasibility-repair-002.json",
+                 "exact owner-approved feasibility plan required"),
                 ("nvarc_m3_teacher_notebook.py.tmpl", "m3-teacher-draft.json",
                  "exact owner-approved teacher plan required")):
             payload = (root / "trials/arc-agi-2-qwen35-nvarc/configs" / plan_name).read_bytes()
@@ -182,6 +184,18 @@ class M2M3StrictTests(unittest.TestCase):
             run_fsdp_probe(root / "trials/arc-agi-2-qwen35-nvarc/configs/m2-fsdp-feasibility-draft.json",
                            root / "nonexistent-model", root / "nonexistent-sequences",
                            root / "nonexistent-output")
+
+    def test_fsdp_repair_device_predicates_detect_zero_and_nonfinite(self):
+        device = torch.device("cpu")
+        self.assertEqual((True, 1), _tensor_health(
+            [torch.tensor([0., 1.]), None, torch.tensor([0.])],
+            device, require_nonzero=True))
+        self.assertEqual((True, 0), _tensor_health(
+            [torch.tensor([0.])], device, require_nonzero=True))
+        self.assertEqual((False, 0), _tensor_health(
+            [torch.tensor([float("nan")])], device, require_nonzero=False))
+        self.assertEqual((False, 0), _tensor_health(
+            [None], device, require_nonzero=True))
 
     def test_approved_teacher_package_preflight_is_read_only_and_bound(self):
         root = Path(__file__).resolve().parents[1]
