@@ -38,7 +38,8 @@ def main() -> int:
         return source_check
     return subprocess.call([sys.executable, "-m", "unittest",
                             "tests.test_arc_nvarc_ml", "tests.test_arc_nvarc_distributed",
-                            "tests.nvarc_source_differential", "tests.nvarc_m2_m3_strict", "-v"],
+                            "tests.nvarc_source_differential", "tests.nvarc_m2_m3_strict",
+                            "tests.nvarc_fsdp_sft_strict", "-v"],
                            env=env)
 
 

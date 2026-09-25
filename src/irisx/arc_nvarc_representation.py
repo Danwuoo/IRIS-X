@@ -290,6 +290,16 @@ def verify_model_material(root: Path, expected_digest: str, *,
     return material
 
 
+def validate_profile_material(profile: str, pinned: str | None,
+                              material_digest: str, material: Mapping[str, Any]) -> None:
+    """Keep a 4B source run bound to either its base or a trained export of it."""
+    if profile == "4b" and pinned is not None and material_digest != pinned:
+        if (material.get("kind") != "sft-inference-export" or
+                material.get("base_material_digest") != pinned or
+                not str(material.get("training_identity_digest", "")).startswith("sha256:")):
+            raise ValidationError("4B SFT export does not bind the pinned compact base")
+
+
 def _verify_file_inventory(root: Path, entries: Any, manifest_name: str | None,
                            allowed_extra_files: set[str] | None = None,
                            allowed_extra_directories: Mapping[str, set[str]] | None = None) -> set[str]:
@@ -419,7 +429,15 @@ def export_trained_model(model: Any, compact_base: Path, output: Path,
     tied = bool(base_material["tied_embeddings"])
     validate_compact_model(model, tied=tied)
     output.mkdir(parents=True, exist_ok=True)
-    model.save_pretrained(output, safe_serialization=True)
+    model.save_pretrained(output, safe_serialization=True, max_shard_size="2GB")
+    return _finish_trained_export(compact_base, output, base_material,
+                                  training_identity_digest)
+
+
+def _finish_trained_export(compact_base: Path, output: Path,
+                           base_material: Mapping[str, Any],
+                           training_identity_digest: str) -> str:
+    tied = bool(base_material["tied_embeddings"])
     for name in ("grid-vocab.json", "grid-tokenizer.json"):
         shutil.copyfile(compact_base / name, output / name)
     files = []
@@ -432,6 +450,7 @@ def export_trained_model(model: Any, compact_base: Path, output: Path,
             files.append({"path": file.name, "sha256": sha.hexdigest(), "bytes": file.stat().st_size})
     material = {"format": "irisx/nvarc-compact-model-material",
                 "kind": "sft-inference-export", "training_identity_digest": training_identity_digest,
+                "base_material_digest": digest_value(base_material),
                 "vocabulary_identity_digest": json.loads((output / "grid-vocab.json").read_bytes())["identity_digest"],
                 "vision_modules_retained": True, "tied_embeddings": tied, "files": files}
     (output / "material-manifest.json").write_bytes(canonical_bytes(material, newline=True))
