@@ -17,6 +17,9 @@ and M3 `teacher-small-004` were prepared as inert proposals. The owner's
 subsequent Kaggle execution instruction is now recorded in
 [Decision 0033](../../docs/decisions/0033-authorize-nvarc-source-and-direct-teacher.md),
 which permits their bounded private execution and artifact verification.
+The [execution record](m2-m3-decision-0033.md) tracks the in-flight export
+Dataset upload and accepted M3 version 1; agent monitoring and local follow-up
+continue in the same thread.
 The earlier dated sections below retain their historical observations
 and are superseded by this section.
 
