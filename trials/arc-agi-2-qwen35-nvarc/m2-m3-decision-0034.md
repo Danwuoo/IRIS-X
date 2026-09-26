@@ -1,6 +1,7 @@
 # Decision 0034 restart submission record
 
-Status: local preparation complete; submission receipts pending.
+Status: both private version-1 submissions accepted; stopped after receipts.
+Runtime state is intentionally unqueried.
 
 The owner reported stopping both Decision 0033 sessions and requested two
 restarts without monitoring. [Decision 0034](../../docs/decisions/0034-restart-nvarc-without-monitoring.md)
@@ -31,3 +32,15 @@ the final documentation/layout check also passed.
 Generated packages, preflights, comparison report and the atomic execution
 ledger are retained under `.irisx/arc-agi-2/qwen35-nvarc/m2-m3/`.
 Submission is not evidence of runtime success, accepted SDG pairs or parity.
+
+## Submission receipts
+
+| Kernel (version 1) | Receipt time (UTC) | Receipt SHA-256 |
+| --- | --- | --- |
+| [nvarc-m2-source-cont-002](https://www.kaggle.com/code/danielwuu/nvarc-m2-source-cont-002) | 2026-09-26T06:22:18.487099+00:00 | `ba3f8c48c3a0904694d5c26a87d05e7e4832e13518a534545c14ddf0dcd70627` |
+| [nvarc-m3-teacher-small-005](https://www.kaggle.com/code/danielwuu/nvarc-m3-teacher-small-005) | 2026-09-26T06:22:23.829722+00:00 | `43c270bc174ad6246498182e1ff326189959e461813956342acdae11a50bc05a` |
+
+Both sole push allowances are consumed. There were zero status/log/output
+requests after submission, zero retrievals and zero Dataset mutations in this
+restart batch. The heartbeat remains PAUSED. Await owner direction; no automatic
+retry, monitoring or follow-up is scheduled. Implementation commit: `08be93a`.
