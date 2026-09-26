@@ -238,3 +238,12 @@ The draft has no live
 activation path: new owner direction and a reviewed exact package-binding
 change are required. Two-L4 fit, GPU UUID representation and Kaggle image
 behavior remain unverified. No provider request or remote Git push occurred.
+
+## Subsequent submission direction
+
+After the local implementation, the owner requested submission using prior
+successful Kaggle cases. [Decision 0035](../decisions/0035-submit-nvarc-combined-two-gpu-notebook.md)
+authorizes a separately bound approved package, with the original inert draft
+and its evidence preserved. Exact submitted bytes and the transport outcome
+are recorded in the [submission record](../../trials/arc-agi-2-qwen35-nvarc/combined-notebook-001-submission.md).
+The stop point is the submission receipt, without monitoring or retrieval.

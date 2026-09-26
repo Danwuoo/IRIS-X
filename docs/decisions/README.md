@@ -126,3 +126,8 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0033-authorize-nvarc-source-and-direct-teacher.md`](0033-authorize-nvarc-source-and-direct-teacher.md)
   authorizes the retained-export source continuation, a four-stage direct
   teacher, exact tokenizer preflight and local artifact verification.
+- [`0034-restart-nvarc-without-monitoring.md`](0034-restart-nvarc-without-monitoring.md)
+  authorizes two distinct private replacement submissions and stops at receipts.
+- [`0035-submit-nvarc-combined-two-gpu-notebook.md`](0035-submit-nvarc-combined-two-gpu-notebook.md)
+  authorizes one private combined M2/M3 notebook using two selected L4 GPUs,
+  unchanged workloads and existing Datasets, with no monitoring or retrieval.

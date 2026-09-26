@@ -1,5 +1,9 @@
 # Combined M2/M3 local notebook draft
 
+This page retains the original offline draft evidence. The subsequent owner
+submission direction and exact approved package are tracked separately in the
+[Decision 0035 submission record](combined-notebook-001-submission.md).
+
 Date: 2026-09-26. Status: **local implementation verified; GPU acceptance pending**.
 The [owner's development plan](../../docs/plan/2026-09-26-nvarc-combined-two-gpu-notebook.md)
 authorizes local work only. This draft is distinct from consumed/submitted

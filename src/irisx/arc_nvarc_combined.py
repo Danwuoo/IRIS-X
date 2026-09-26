@@ -1,12 +1,9 @@
-"""Internal inert M2/M3 proposal and bounded, independently checked supervision.
-
-The CPU supervisor is reusable for offline probes. Neither this module's live
-entry point nor the generated notebook accepts any existing execution decision.
-"""
+"""Exactly bound M2/M3 authorization and independently checked supervision."""
 
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -22,6 +19,8 @@ from .errors import ValidationError
 
 RUN = "nvarc-m2-m3-combined-001"
 DRAFT_DIGEST = "sha256:2052311757ab3922473e0476801dde4df551e0a037795b64025fa5f17c54e0ef"
+DRAFT_SHA256 = "7014795d4ea7f098a8f9680b32843039a2c76b946fd920789491743201ebcc22"
+APPROVED_DIGEST = "sha256:efa10338690105c3236a8bb62d235568d2335b08a674475ba156e6b9a4abc912"
 PROFILE = "combined-two-distinct-l4-v1"
 LOG_LIMIT = 8 * 1024 * 1024
 
@@ -63,15 +62,34 @@ def member(root: Path, name: str) -> Path:
     return path
 
 
-def validate_plan(plan: dict) -> None:
+def validate_plan(plan: dict, *, approved=False) -> None:
     # Whole-plan binding rejects unknown fields, changed inputs, identities,
     # allowances and budgets, including booleans substituted for integer limits.
-    require(digest_value(plan) == DRAFT_DIGEST, "combined draft identity, materials or bounds differ")
+    require(digest_value(plan) == (APPROVED_DIGEST if approved else DRAFT_DIGEST),
+            "combined approved identity, materials or bounds differ" if approved else
+            "combined draft identity, materials or bounds differ")
+
+
+def activate_plan(draft: dict) -> dict:
+    """Decision 0035 changes only the parent authorization/transport envelope.
+
+    Child dictionaries remain the original inert workload specifications; they
+    have no independent submission allowance and execute only under this guard.
+    """
+    validate_plan(draft)
+    plan = copy.deepcopy(draft)
+    plan.update(format="irisx/nvarc-combined-approved-v1", approved=True,
+                owner_decision="Decision 0035", kernel_id="danielwuu/" + RUN,
+                original_draft_digest=DRAFT_DIGEST, original_draft_sha256=DRAFT_SHA256)
+    plan["external_allowances"]["submissions"] = 1
+    validate_plan(plan, approved=True)
+    return plan
 
 
 def require_live_authorization(plan: dict) -> None:
-    validate_plan(plan)
-    raise ValidationError("combined draft is inert; new owner direction and exact package binding required")
+    if digest_value(plan) == DRAFT_DIGEST:
+        raise ValidationError("combined draft is inert; exact Decision 0035 package required")
+    validate_plan(plan, approved=True)
 
 
 def select_devices(inventory: list[dict], indices=(0, 1)) -> dict:

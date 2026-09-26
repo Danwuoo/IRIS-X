@@ -1,4 +1,4 @@
-"""Separately isolated workers for the inert combined proposal; no live approval."""
+"""Separately isolated workers behind the exact combined parent guard."""
 
 from __future__ import annotations
 
@@ -231,7 +231,7 @@ def partial_teacher_counts(plan, output):
 
 
 def _run_prepared(plan: dict, branch: str, paths: dict, hardware: dict, output: Path):
-    """Internal work after exact approval; cannot be reached by this draft CLI."""
+    """Internal work after the exact approved parent envelope is verified."""
     import shutil
     from .arc_nvarc_source_continuation import _run_bound as run_m2
     from .arc_nvarc_sdg_teacher import _run_bound as run_m3

@@ -1,4 +1,4 @@
-"""Offline closed-inventory verification and execution-guard test of the draft."""
+"""Offline closed-inventory and guard verification, stopping before shared setup."""
 
 from __future__ import annotations
 
@@ -14,16 +14,52 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "src")]
 from tools.stage_nvarc_combined import (DRAFT, metadata, render, verify_inputs, verify_references)
-from irisx.arc_nvarc_combined import DRAFT_DIGEST, RUN, member, read, require, sha, validate_plan
+from irisx.arc_nvarc_combined import (APPROVED_DIGEST, DRAFT_DIGEST, RUN, activate_plan,
+                                    member, read, require, sha, validate_plan)
 from irisx.arc_nvarc_source_bundle import verify_bundle
 from irisx.canonical import canonical_bytes, digest_value
 
 
-def preflight(package: Path) -> dict:
+OFFLINE_STOP = "offline approved guard accepted; stopped before shared setup"
+
+
+def guard_prefix(source: str) -> str:
+    """Extract only stdlib payload/authorization checks, never live setup.
+
+    The first environment mutation begins the live path. Replace everything
+    from there in the try body with a deliberate exception, preserving terminal
+    diagnostics. No approved notebook is ever executed by preflight.
+    """
+    tree = ast.parse(source)
+    block = next(node for node in tree.body if isinstance(node, ast.Try))
+    boundary = next(i for i, node in enumerate(block.body) if isinstance(node, ast.Expr) and
+                    isinstance(node.value, ast.Call) and ast.unparse(node.value.func) == "os.environ.update")
+    block.body = block.body[:boundary] + [ast.Raise(exc=ast.Call(
+        func=ast.Name(id="RuntimeError", ctx=ast.Load()), args=[ast.Constant(OFFLINE_STOP)], keywords=[]))]
+    return ast.unparse(ast.fix_missing_locations(tree))
+
+
+def probe_guard(source: str, plan_digest: str, *, accepted=False) -> None:
+    with tempfile.TemporaryDirectory(dir=ROOT / ".irisx", prefix="combined-guard-") as temp:
+        probe = Path(temp) / "guard.py"
+        probe.write_text(guard_prefix(source), encoding="utf-8")
+        guard = subprocess.run([sys.executable, "-I", str(probe)], cwd=temp,
+                               capture_output=True, text=True, timeout=10)
+        expected = OFFLINE_STOP if accepted else "combined draft is inert"
+        require(guard.returncode != 0 and expected in guard.stderr,
+                "combined notebook offline authorization probe differs")
+        terminal = read(Path(temp) / RUN / "aggregate-terminal.json")
+        require(terminal.get("outcome") == "failed" and terminal.get("last_phase") == "execution-guard" and
+                terminal.get("plan_digest") == plan_digest and
+                all(b["launch_count"] == 0 for b in terminal["branches"].values()), "offline guard terminal differs")
+
+
+def preflight(package: Path, *, approved=False) -> dict:
     summary = read(package / "stage-summary.json")
     require(summary.get("format") == "irisx/nvarc-combined-stage-v1" and summary.get("run_id") == RUN and
-            summary.get("approved") is False and summary.get("external_calls") == 0 and
-            summary.get("plan_digest") == DRAFT_DIGEST, "combined package summary differs")
+            summary.get("approved") is approved and summary.get("external_calls") == 0 and
+            summary.get("plan_digest") == (APPROVED_DIGEST if approved else DRAFT_DIGEST),
+            "combined package summary differs")
     inventory = summary["inventory"]
     actual = {p.relative_to(package).as_posix() for p in package.rglob("*") if p.is_file()}
     require(actual == set(inventory) | {"stage-summary.json"} and
@@ -31,9 +67,10 @@ def preflight(package: Path) -> dict:
     for name, digest in inventory.items():
         require(sha(member(package, name)) == digest, "combined review file differs: " + name)
     plan = read(package / "plan.json")
-    validate_plan(plan)
-    require((package / "plan.json").read_bytes() == DRAFT.read_bytes(), "checked draft bytes differ")
-    require(read(package / "kernel/kernel-metadata.json") == metadata(plan), "combined private draft metadata differs")
+    validate_plan(plan, approved=approved)
+    expected_plan = canonical_bytes(activate_plan(read(DRAFT)), newline=True) if approved else DRAFT.read_bytes()
+    require((package / "plan.json").read_bytes() == expected_plan, "checked plan bytes differ")
+    require(read(package / "kernel/kernel-metadata.json") == metadata(plan), "combined private metadata differs")
     notebook = read(package / "kernel/kaggle-notebook.ipynb")
     source = "".join(notebook["cells"][0]["source"])
     bindings = {}
@@ -60,25 +97,19 @@ def preflight(package: Path) -> dict:
         require(hashlib.sha256(value).hexdigest() == bindings["HASHES"][key] and
                 member(package, bindings["FILES"][key]).read_bytes() == value,
                 "combined embedded bytes differ: " + key)
-    require(source == render(payloads, bindings["FILES"]), "combined executable differs from reviewed template")
+    require(source == render(payloads, bindings["FILES"], approved=approved),
+            "combined executable differs from reviewed template")
     require(payloads["plan"] == (package / "plan.json").read_bytes(), "embedded plan differs")
     verify_inputs(plan, payloads)
     verify_bundle(package / "source-bundle", plan["branches"]["m2"]["source_bundle_digest"])
     verify_references(read(package / "material-references.json"), json.loads(payloads["model_manifest"]))
-    # Execute the exact stdlib guard only; no dependency installs or model work.
-    with tempfile.TemporaryDirectory(dir=ROOT / ".irisx", prefix="combined-guard-") as temp:
-        probe = Path(temp) / "guard.py"
-        probe.write_text(source, encoding="utf-8")
-        guard = subprocess.run([sys.executable, "-I", str(probe)], cwd=temp,
-                               capture_output=True, text=True, timeout=10)
-        require(guard.returncode != 0 and "combined draft is inert" in guard.stderr,
-                "combined notebook guard did not reject execution")
-        terminal = read(Path(temp) / RUN / "aggregate-terminal.json")
-        require(terminal.get("outcome") == "failed" and terminal.get("last_phase") == "execution-guard" and
-                terminal.get("plan_digest") == DRAFT_DIGEST and
-                all(b["launch_count"] == 0 for b in terminal["branches"].values()), "inert guard terminal differs")
-    return {"run_id": RUN, "plan_digest": digest_value(plan), "approved": False,
+    # Deliberately truncate before setup even when checking an approved package.
+    probe_guard(source, digest_value(plan), accepted=approved)
+    draft_payloads = {**payloads, "plan": DRAFT.read_bytes()}
+    probe_guard(render(draft_payloads, bindings["FILES"], approved=approved), DRAFT_DIGEST)
+    return {"run_id": RUN, "plan_digest": digest_value(plan), "approved": approved,
             "external_calls": 0, "draft_guard_verified": True, "inventory_count": len(inventory),
+            "approved_guard_verified": approved, "offline_probe_stops_before_shared_setup": True,
             "export_verified_by_reference": True, "cached_tokenizer_verified": True,
             "gpu_acceptance": "pending"}
 
@@ -86,4 +117,6 @@ def preflight(package: Path) -> dict:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("package", type=Path)
-    print(json.dumps(preflight(parser.parse_args().package), indent=2))
+    parser.add_argument("--approved", action="store_true", help="verify exact Decision 0035 package")
+    args = parser.parse_args()
+    print(json.dumps(preflight(args.package, approved=args.approved), indent=2))

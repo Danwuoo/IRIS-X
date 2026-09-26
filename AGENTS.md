@@ -227,6 +227,15 @@ verified bug or zero model work. Stop after saving the two submission receipts;
 do not query status, logs or outputs, retrieve results, or resume the heartbeat.
 No Dataset mutation or automatic retry is authorized.
 
+Decision 0035 records the owner's direction to submit the reviewed combined
+two-GPU notebook using prior successful transport. It authorizes one private,
+Internet-disabled, USD 0 `nvarc-m2-m3-combined-001` submission using two distinct
+L4 workers, existing Datasets and the unchanged M2/M3 workloads. Retain exact
+approved package bindings and reserve the sole push before the provider call.
+Stop after its receipt; no monitoring, retrieval, Dataset mutation or retry
+is authorized. Decision 0034 sessions remain unqueried. The submission record
+is `trials/arc-agi-2-qwen35-nvarc/combined-notebook-001-submission.md`.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;
