@@ -28,8 +28,10 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
             plan.get("maximum_paid_usd") != 0 or plan.get("retry") is not False or
             output.exists()):
         raise ValidationError("exact owner-approved small teacher run required")
-    if validated and (plan.get("run_id") != "nvarc-m3-teacher-small-004" or
-                      plan.get("owner_decision") != "Decision 0033" or
+    direct_decisions = {"nvarc-m3-teacher-small-004": "Decision 0033",
+                        "nvarc-m3-teacher-small-005": "Decision 0034"}
+    if validated and (plan.get("run_id") not in direct_decisions or
+                      plan.get("owner_decision") != direct_decisions[plan["run_id"]] or
                       plan.get("stage_limits") != LIMITS or plan.get("enable_thinking") is not False or
                       plan.get("maximum_total_reserved_tokens") != TOTAL_TOKENS or
                       json.loads(prompts_path.read_bytes()) != PROMPTS):

@@ -1,0 +1,51 @@
+{
+  "format": "irisx/nvarc-m3-teacher-small-v1",
+  "approved": false,
+  "owner_decision": null,
+  "run_id": "nvarc-m3-teacher-small-005",
+  "kernel_id": "DRAFT-DO-NOT-PUSH/nvarc-m3-teacher-small-005",
+  "provider": "Kaggle private NvidiaL4 x4, one L4 used, Internet disabled",
+  "teacher_model": "Qwen/Qwen3.5-4B full vocabulary, revision 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "teacher_model_manifest_digest": "sha256:8f27407e1b0ee4dd7a5b4d62d39af9b356ba86b5701dd93eafba052febe9c72f",
+  "source_dataset_id": "danielwuu/irisx-arc-agi-2-trial-002-smoke-001",
+  "competition_sources": [
+    "arc-prize-2026-arc-agi-2"
+  ],
+  "seed_train_parent_ids": [
+    "833966f4",
+    "6150a2bd"
+  ],
+  "seed_record_sha256": "UNBOUND",
+  "prompts_digest": "UNBOUND",
+  "maximum_teacher_calls": 4,
+  "maximum_input_tokens_per_call": 8192,
+  "maximum_output_tokens_per_call": 3072,
+  "maximum_total_reserved_tokens": 28160,
+  "maximum_model_generations": 4,
+  "maximum_kernel_wall_seconds": 1800,
+  "maximum_accepted_kernel_versions": 1,
+  "maximum_output_retrievals": 0,
+  "maximum_paid_usd": 0,
+  "retry": false,
+  "retention": "private four stage ledgers, full raw responses and token usage; public ARC training demos only; no model weights in output",
+  "teacher_profile": "qwen-direct-complete-v1",
+  "enable_thinking": false,
+  "stage_limits": {
+    "summary": {
+      "input": 4096,
+      "output": 512
+    },
+    "mix": {
+      "input": 4096,
+      "output": 1024
+    },
+    "input-logic": {
+      "input": 4096,
+      "output": 3072
+    },
+    "output-logic": {
+      "input": 8192,
+      "output": 3072
+    }
+  }
+}

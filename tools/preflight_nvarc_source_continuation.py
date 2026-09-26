@@ -44,13 +44,15 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
             bindings["HASHES"] != summary["payload_sha256"]):
         raise ValidationError("continuation embedded payloads differ")
     # Compare the entire executable body to the current reviewed template.
-    expected = (ROOT / "tools/nvarc_source_continuation_notebook.py.tmpl").read_text()
+    plan = json.loads(payloads["plan"])
+    validate_plan(plan, approved=approved)
+    template_name = ("nvarc_source_continuation_notebook.py.tmpl" if plan["run_id"] == RUN else
+                     "nvarc_source_continuation_notebook_002.py.tmpl")
+    expected = (ROOT / "tools" / template_name).read_text()
     for key in ("PAYLOADS", "HASHES", "FILES"):
         expected = expected.replace("__" + key + "__", repr(bindings[key]))
     if source != expected:
         raise ValidationError("continuation executable differs from reviewed template")
-    plan = json.loads(payloads["plan"])
-    validate_plan(plan, approved=approved)
     if digest_value(plan) != summary["plan_digest"] or summary.get("external_calls") != 0:
         raise ValidationError("continuation stage identity differs")
     for key, value in payloads.items():
@@ -89,7 +91,7 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
     inert_bytes = json.dumps(inert_plan).encode()
     inert_payloads["plan"] = base64.b64encode(inert_bytes).decode()
     inert_hashes = {**bindings["HASHES"], "plan": sha(inert_bytes)}
-    guard_source = (ROOT / "tools/nvarc_source_continuation_notebook.py.tmpl").read_text()
+    guard_source = (ROOT / "tools" / template_name).read_text()
     for key, value in (("PAYLOADS", inert_payloads), ("HASHES", inert_hashes), ("FILES", bindings["FILES"])):
         guard_source = guard_source.replace("__" + key + "__", repr(value))
     with tempfile.TemporaryDirectory() as temp:
@@ -98,7 +100,7 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
         guard = subprocess.run([sys.executable, str(script)], capture_output=True, text=True, timeout=10)
         if guard.returncode == 0 or "exact owner-approved source continuation required" not in guard.stderr:
             raise ValidationError("continuation draft did not stop before execution")
-    return {"run_id": RUN, "approved": approved, "external_calls": 0, "draft_guard_verified": True,
+    return {"run_id": plan["run_id"], "approved": approved, "external_calls": 0, "draft_guard_verified": True,
             "source_bundle_digest": plan["source_bundle_digest"], "export_material_digest": EXPORT}
 
 

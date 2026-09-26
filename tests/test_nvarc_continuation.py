@@ -19,21 +19,52 @@ from nvarc_continuation_authorization import authorize
 
 class ContinuationTests(unittest.TestCase):
     def test_authorization_binds_exact_draft_and_new_decision(self):
-        for filename in ("m2-source-cont-draft-001.json", "m3-teacher-draft-004.json"):
+        for filename, decision in (("m2-source-cont-draft-001.json", "Decision 0033"),
+                                   ("m3-teacher-draft-004.json", "Decision 0033"),
+                                   ("m2-source-cont-draft-002.json", "Decision 0034"),
+                                   ("m3-teacher-draft-005.json", "Decision 0034")):
             raw = (ROOT / "trials/arc-agi-2-qwen35-nvarc/configs" / filename).read_bytes()
             plan = json.loads(raw)
-            binding = {"approved": True, "owner_decision": "Decision 0033",
+            binding = {"approved": True, "owner_decision": decision,
                        "run_id": plan["run_id"], "kernel_id": "danielwuu/" + plan["run_id"],
                        "draft_plan_sha256": hashlib.sha256(raw).hexdigest()}
             with tempfile.TemporaryDirectory() as temp:
                 path = Path(temp) / "auth.json"
                 path.write_text(json.dumps(binding))
                 self.assertTrue(authorize(plan, raw, path)["approved"])
-                for key, value in (("owner_decision", "Decision 0032"),
+                for key, value in (("owner_decision", "Decision 0033" if decision == "Decision 0034" else "Decision 0034"),
                                    ("draft_plan_sha256", "0" * 64), ("run_id", "old-run")):
                     path.write_text(json.dumps({**binding, key: value}))
                     with self.subTest(key=key), self.assertRaises(ValidationError):
                         authorize(plan, raw, path)
+
+    def test_restart_preserves_workload_and_does_not_reauthorize_retrieval(self):
+        config = ROOT / "trials/arc-agi-2-qwen35-nvarc/configs"
+        for old, new in (("m2-source-cont-draft-001.json", "m2-source-cont-draft-002.json"),
+                         ("m3-teacher-draft-004.json", "m3-teacher-draft-005.json")):
+            before = json.loads((config / old).read_bytes())
+            after = json.loads((config / new).read_bytes())
+            self.assertNotEqual(before["run_id"], after["run_id"])
+            self.assertEqual(0, after["maximum_output_retrievals"])
+            keys = {"run_id", "kernel_id", "maximum_output_retrievals", "maximum_model_dataset_versions"}
+            self.assertEqual({k: v for k, v in before.items() if k not in keys},
+                             {k: v for k, v in after.items() if k not in keys})
+        plan = json.loads((config / "m2-source-cont-draft-002.json").read_bytes())
+        validate_plan(plan, approved=False)
+        approved = {**plan, "approved": True, "owner_decision": "Decision 0034",
+                    "kernel_id": "danielwuu/" + plan["run_id"]}
+        validate_plan(approved, approved=True)
+        for key, value in (("maximum_output_retrievals", 1), ("maximum_model_dataset_versions", 1),
+                           ("owner_decision", "Decision 0033")):
+            with self.subTest(key=key), self.assertRaises(ValidationError):
+                validate_plan({**approved, key: value}, approved=True)
+        for old, new, before, after in (
+                ("nvarc_source_continuation_notebook.py.tmpl", "nvarc_source_continuation_notebook_002.py.tmpl",
+                 "source-cont-001", "source-cont-002"),
+                ("nvarc_m3_teacher_notebook_004.py.tmpl", "nvarc_m3_teacher_notebook_005.py.tmpl",
+                 "teacher-small-004", "teacher-small-005")):
+            self.assertEqual((ROOT / "tools" / old).read_text().replace("Decision 0033", "Decision 0034").replace(before, after),
+                             (ROOT / "tools" / new).read_text())
 
     def test_rejected_reply_is_retained_and_stops_dependent_calls(self):
         class TruncatedTeacher:

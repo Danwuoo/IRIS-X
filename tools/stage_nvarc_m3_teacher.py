@@ -34,16 +34,18 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
         raise ValidationError("new teacher package directory required")
     if draft_path.resolve() not in {(CONFIG / name).resolve() for name in
                                     ("m3-teacher-draft.json", "m3-teacher-draft-002.json",
-                                     "m3-teacher-draft-003.json", "m3-teacher-draft-004.json")}:
+                                     "m3-teacher-draft-003.json", "m3-teacher-draft-004.json",
+                                     "m3-teacher-draft-005.json")}:
         raise ValidationError("unknown immutable teacher draft")
     draft_bytes = draft_path.read_bytes()
     plan = json.loads(draft_bytes)
-    validated = plan.get("run_id") == "nvarc-m3-teacher-small-004"
+    validated = plan.get("run_id") in {"nvarc-m3-teacher-small-004", "nvarc-m3-teacher-small-005"}
     if (plan.get("approved") is not False or plan["maximum_teacher_calls"] != 4 or
             plan["maximum_total_reserved_tokens"] != (TOTAL_TOKENS if validated else 20480) or plan["maximum_paid_usd"] != 0 or
             plan.get("run_id") not in {"nvarc-m3-teacher-small-001",
                                        "nvarc-m3-teacher-small-002",
-                                       "nvarc-m3-teacher-small-003", "nvarc-m3-teacher-small-004"} or
+                                       "nvarc-m3-teacher-small-003", "nvarc-m3-teacher-small-004",
+                                       "nvarc-m3-teacher-small-005"} or
             plan.get("kernel_id") != "DRAFT-DO-NOT-PUSH/" + plan["run_id"]):
         raise ValidationError("small teacher draft differs")
     if validated and (plan.get("teacher_profile") != PROFILE or plan.get("stage_limits") != LIMITS or
@@ -120,7 +122,7 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
     for name in ("plan", "seed", "prompts"):
         (output / f"{name}.json").write_bytes(payloads[name])
     encoded = {name: base64.b64encode(payload).decode() for name, payload in payloads.items()}
-    template_name = ("nvarc_m3_teacher_notebook_004.py.tmpl" if validated else
+    template_name = (f"nvarc_m3_teacher_notebook_{plan['run_id'][-3:]}.py.tmpl" if validated else
                      "nvarc_m3_teacher_notebook_003.py.tmpl" if plan["run_id"].endswith("003")
                      else "nvarc_m3_teacher_notebook_002.py.tmpl" if plan["run_id"].endswith("002")
                      else "nvarc_m3_teacher_notebook.py.tmpl")

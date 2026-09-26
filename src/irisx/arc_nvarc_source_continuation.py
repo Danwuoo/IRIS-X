@@ -14,13 +14,16 @@ from .errors import ValidationError
 
 
 RUN = "nvarc-m2-source-cont-001"
+RUN_DECISIONS = {RUN: "Decision 0033", "nvarc-m2-source-cont-002": "Decision 0034"}
 EXPORT = "sha256:481d9f12d573b39b0703e47b5f8f6f518a7ccd7847824ffb3f0fb96b11f2c3e6"
 TRAINING = "sha256:40804d408005b666cb377aab623bd6b0edcfbcdaa4743049d26e7e65500f5fc4"
 
 
 def validate_plan(plan: dict, *, approved: bool) -> None:
+    run_id = plan.get("run_id")
+    original = run_id == RUN
     if (plan.get("format") != "irisx/nvarc-m2-source-continuation-v1" or
-            plan.get("run_id") != RUN or plan.get("approved") is not approved or
+            run_id not in RUN_DECISIONS or plan.get("approved") is not approved or
             plan.get("export_material_digest") != EXPORT or
             plan.get("training_identity_digest") != TRAINING or
             plan.get("maximum_sft_steps") != 0 or plan.get("maximum_ttt_steps") != 1 or
@@ -28,14 +31,14 @@ def validate_plan(plan: dict, *, approved: bool) -> None:
             plan.get("maximum_new_tokens") != 64 or plan.get("maximum_dfs_expansions") != 128 or
             plan.get("maximum_paid_usd") != 0 or plan.get("retry") is not False or
             plan.get("maximum_kernel_wall_seconds") != 1800 or
-            plan.get("maximum_output_retrievals") != 1 or
-            plan.get("maximum_model_dataset_versions") != 1 or
+            plan.get("maximum_output_retrievals") != (1 if original else 0) or
+            plan.get("maximum_model_dataset_versions") != (1 if original else 0) or
             plan.get("maximum_accepted_kernel_versions") != 1):
         raise ValidationError("source continuation identity or bounds differ")
     if approved:
-        if plan.get("owner_decision") != "Decision 0033" or plan.get("kernel_id") != "danielwuu/" + RUN:
+        if plan.get("owner_decision") != RUN_DECISIONS[run_id] or plan.get("kernel_id") != "danielwuu/" + run_id:
             raise ValidationError("exact new owner-approved source continuation required")
-    elif plan.get("owner_decision") is not None or plan.get("kernel_id") != "DRAFT-DO-NOT-PUSH/" + RUN:
+    elif plan.get("owner_decision") is not None or plan.get("kernel_id") != "DRAFT-DO-NOT-PUSH/" + run_id:
         raise ValidationError("source continuation draft must be inert")
 
 
@@ -70,7 +73,7 @@ def run(plan_path: Path, config: Path, visible: Path, bundle: Path,
     verification_calls = max(item["verification_calls_so_far"] for item in result["results"])
     if calls > 4 or result["task_count"] != 1:
         raise ValidationError("source continuation work exceeded bounds")
-    report = {"format": "irisx/nvarc-m2-source-continuation-result-v1", "run_id": RUN,
+    report = {"format": "irisx/nvarc-m2-source-continuation-result-v1", "run_id": plan["run_id"],
               "plan_digest": digest_value(plan), "export_material_digest": EXPORT,
               "training_identity_digest": TRAINING, "source_bundle_digest": plan["source_bundle_digest"],
               "training_evidence_sha256": plan["training_evidence_sha256"],

@@ -1,6 +1,10 @@
 # Decision 0033 execution continuation
 
-Status at 2026-09-26 04:42 UTC: both kernels queued, not a completion claim.
+Status: owner reported stopping both sessions after pausing scheduled queries.
+The last provider observation at 2026-09-26 04:46 UTC was QUEUED for both.
+No terminal state, suspected provider bug or amount of model work is verified.
+The owner-requested distinct restarts are governed by
+[Decision 0034](../../docs/decisions/0034-restart-nvarc-without-monitoring.md).
 
 The owner authorized execution and selected agent monitoring through terminal
 state and continued development. [Decision 0033](../../docs/decisions/0033-authorize-nvarc-source-and-direct-teacher.md)
@@ -10,8 +14,8 @@ exact package hashes are in the [continuation plan](../../docs/plan/2026-09-26-n
 | Work | Observed state | Next action |
 | --- | --- | --- |
 | Private retained-export Dataset | CREATE completed at 04:38:41 UTC; version 1 ready, private, all ten flat root files match expected names and byte sizes | Runtime verifies the pinned material hashes before model loading |
-| M2 `nvarc-m2-source-cont-001` | Kaggle accepted version 1 at 04:42:02 UTC; latest status QUEUED | Terminal check, one retrieval and independent source-chain verification |
-| M3 `nvarc-m3-teacher-small-004` | Kaggle accepted version 1 at 03:36:19 UTC; latest status QUEUED | Terminal check, one retrieval, verify all stage ledgers and sandbox complete programs |
+| M2 `nvarc-m2-source-cont-001` | Accepted version 1 at 04:42:02 UTC; owner later reported stopping it | Preserve identity and receipt; no further monitoring or retrieval |
+| M3 `nvarc-m3-teacher-small-004` | Accepted version 1 at 03:36:19 UTC; owner later reported stopping it | Preserve identity and receipt; no further monitoring or retrieval |
 
 Provider receipts and inventory evidence:
 
@@ -34,8 +38,8 @@ The actual installed-wheel tiny deployment check passed both tests, and
 focused artifact-tampering checks passed. Exact tokenizer verification and
 prompt-budget probes are retained separately; they made no model calls.
 
-The same-thread `nvarc-kaggle` heartbeat is active every five minutes, with
-instructions to finish this batch and its local verification, then stop.
+The same-thread `nvarc-kaggle` heartbeat is PAUSED at the owner's request.
+Decision 0034 supersedes this batch's monitoring and retrieval workflow.
 Its durable working state is under `.irisx/arc-agi-2/qwen35-nvarc/m2-m3/`:
 
 - `decision-0033-handoff.md`: concrete continuation commands and bounds;

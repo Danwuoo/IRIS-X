@@ -17,9 +17,14 @@ and M3 `teacher-small-004` were prepared as inert proposals. The owner's
 subsequent Kaggle execution instruction is now recorded in
 [Decision 0033](../../docs/decisions/0033-authorize-nvarc-source-and-direct-teacher.md),
 which permits their bounded private execution and artifact verification.
-The [execution record](m2-m3-decision-0033.md) tracks the in-flight export
-Dataset upload and accepted M3 version 1; agent monitoring and local follow-up
-continue in the same thread.
+The [execution record](m2-m3-decision-0033.md) retains the verified export
+Dataset upload and both accepted version-1 receipts. The owner subsequently
+paused monitoring and reported stopping both sessions.
+[Decision 0034](../../docs/decisions/0034-restart-nvarc-without-monitoring.md)
+authorizes one restart each as M2 `source-cont-002` and M3 `teacher-small-005`,
+using the same workload and existing Datasets. The new
+[execution record](m2-m3-decision-0034.md) retains their exact bindings.
+Stop after submission receipts; monitoring and retrieval are not authorized.
 The earlier dated sections below retain their historical observations
 and are superseded by this section.
 

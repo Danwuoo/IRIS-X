@@ -17,7 +17,7 @@ from tools.stage_nvarc_m2_fsdp_sft import MODEL
 from tools.verify_nvarc_m2_fsdp_sft import verify_training_export
 from tools.nvarc_continuation_authorization import authorize
 from irisx.arc_nvarc_source_bundle import build_bundle
-from irisx.arc_nvarc_source_continuation import RUN, EXPORT, TRAINING, validate_plan
+from irisx.arc_nvarc_source_continuation import RUN, RUN_DECISIONS, EXPORT, TRAINING, validate_plan
 from irisx.canonical import canonical_bytes, digest_value
 from irisx.errors import ValidationError
 
@@ -30,7 +30,9 @@ def sha(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def stage(output: Path, authorization: Path | None = None) -> dict:
+def stage(output: Path, authorization: Path | None = None, run_id: str = RUN) -> dict:
+    if run_id not in RUN_DECISIONS:
+        raise ValidationError("unknown source continuation identity")
     if output.exists():
         raise ValidationError("new continuation package directory required")
     run = RETRIEVED / "nvarc-m2-fsdp-sft-002"
@@ -38,7 +40,7 @@ def stage(output: Path, authorization: Path | None = None) -> dict:
                                      RETRIEVED / "sequences.jsonl", run)
     if checked["identity"] != TRAINING or checked["export_chain"]["export_material_digest"] != EXPORT:
         raise ValidationError("retained training identity differs")
-    draft = (TRIAL / "configs/m2-source-cont-draft-001.json").read_bytes()
+    draft = (TRIAL / f"configs/m2-source-cont-draft-{run_id[-3:]}.json").read_bytes()
     plan = json.loads(draft)
     validate_plan(plan, approved=False)
     if authorization is not None:
@@ -86,7 +88,9 @@ def stage(output: Path, authorization: Path | None = None) -> dict:
         "title": "IRIS-X NVARC M2 SFT export 002", "id": plan["model_dataset_id"],
         "licenses": [{"name": "other"}]}, newline=True))
     hashes = {name: sha(value) for name, value in payloads.items()}
-    template = (ROOT / "tools/nvarc_source_continuation_notebook.py.tmpl").read_text()
+    template_name = ("nvarc_source_continuation_notebook.py.tmpl" if run_id == RUN else
+                     "nvarc_source_continuation_notebook_002.py.tmpl")
+    template = (ROOT / "tools" / template_name).read_text()
     source = template.replace("__PAYLOADS__", repr({name: base64.b64encode(value).decode()
                                                    for name, value in payloads.items()}))
     source = source.replace("__HASHES__", repr(hashes)).replace("__FILES__", repr(files))
@@ -98,7 +102,7 @@ def stage(output: Path, authorization: Path | None = None) -> dict:
                 "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}},
                 "nbformat": 4, "nbformat_minor": 5}
     (kernel / "kaggle-notebook.ipynb").write_bytes(canonical_bytes(notebook, newline=True))
-    metadata = {"id": plan["kernel_id"], "title": RUN, "code_file": "kaggle-notebook.ipynb",
+    metadata = {"id": plan["kernel_id"], "title": run_id, "code_file": "kaggle-notebook.ipynb",
                 "language": "python", "kernel_type": "notebook", "is_private": True,
                 "enable_gpu": True, "enable_tpu": False, "enable_internet": False,
                 "machine_shape": "NvidiaL4", "competition_sources": ["arc-prize-2026-arc-agi-2"],
@@ -107,7 +111,7 @@ def stage(output: Path, authorization: Path | None = None) -> dict:
     (kernel / "kernel-metadata.json").write_bytes(canonical_bytes(metadata, newline=True))
     summary = {"format": "irisx/nvarc-m2-source-continuation-stage-v1", "approved": plan["approved"],
                "draft_plan_sha256": sha(draft),
-               "run_id": RUN, "plan_digest": digest_value(plan), "payload_sha256": hashes,
+               "run_id": run_id, "plan_digest": digest_value(plan), "payload_sha256": hashes,
                "source_bundle_digest": binding["bundle_digest"], "export_material_digest": EXPORT,
                "notebook_sha256": sha((kernel / "kaggle-notebook.ipynb").read_bytes()),
                "metadata_sha256": sha((kernel / "kernel-metadata.json").read_bytes()), "external_calls": 0}
@@ -119,5 +123,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--authorization", type=Path)
+    parser.add_argument("--run-id", choices=RUN_DECISIONS, default=RUN)
     args = parser.parse_args()
-    print(json.dumps(stage(args.output, args.authorization), indent=2))
+    print(json.dumps(stage(args.output, args.authorization, args.run_id), indent=2))

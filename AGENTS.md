@@ -217,6 +217,16 @@ Preserve consumed identities. For this batch the owner explicitly chose agent
 monitoring through terminal state, one retrieval each, and continued development;
 the earlier wait-for-owner monitoring preference is superseded for these runs.
 
+The owner subsequently paused scheduled queries, reported stopping both
+Decision 0033 sessions, and requested restarting them without monitoring.
+Decision 0034 authorizes exactly one new private submission each for M2
+`nvarc-m2-source-cont-002` and M3 `nvarc-m3-teacher-small-005`, reusing existing
+Datasets and the same model/workload/token/step/USD 0 limits. Preserve the
+previous identities and owner-reported cancellation without asserting a
+verified bug or zero model work. Stop after saving the two submission receipts;
+do not query status, logs or outputs, retrieve results, or resume the heartbeat.
+No Dataset mutation or automatic retry is authorized.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

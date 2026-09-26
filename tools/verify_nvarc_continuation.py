@@ -1,4 +1,4 @@
-"""Independently verify retrieved Decision 0033 artifacts without model calls."""
+"""Independently verify retained continuation artifacts without model calls."""
 
 import argparse
 import copy
@@ -35,7 +35,12 @@ def common(package, output, terminal_name):
     plan = read(package / "plan.json")
     require((output / "plan.json").read_bytes() == (package / "plan.json").read_bytes(),
             "retrieved approved plan differs")
-    require(plan.get("approved") is True and plan.get("owner_decision") == "Decision 0033",
+    decisions = {"nvarc-m2-source-cont-001": "Decision 0033",
+                 "nvarc-m3-teacher-small-004": "Decision 0033",
+                 "nvarc-m2-source-cont-002": "Decision 0034",
+                 "nvarc-m3-teacher-small-005": "Decision 0034"}
+    require(plan.get("approved") is True and plan.get("run_id") in decisions and
+            plan.get("owner_decision") == decisions[plan["run_id"]],
             "continuation owner binding differs")
     wheels = list((package / "wheel").glob("*.whl"))
     require(len(wheels) == 1 and sha(output / wheels[0].name) == sha(wheels[0]),
@@ -63,8 +68,8 @@ def verify_m2(package, output):
     for name in ("source-config.json", "visible.json", "training-evidence.json"):
         require((output / name).read_bytes() == (package / name).read_bytes(),
                 "retrieved M2 input differs: " + name)
-    source_path = output / RUN / "source-result.json"
-    chain_path = output / RUN / "continuation-chain.json"
+    source_path = output / plan["run_id"] / "source-result.json"
+    chain_path = output / plan["run_id"] / "continuation-chain.json"
     source, chain = read(source_path), read(chain_path)
     require(source.get("format") == "irisx/nvarc-source-stage-result-v1" and
             source.get("profile") == "4b" and source.get("material_digest") == EXPORT and
@@ -90,7 +95,7 @@ def verify_m2(package, output):
             ttt.get("steps") == 1 and ttt.get("training_tokens", 0) > 0 and
             math.isfinite(ttt["last_loss"]), "source TTT update is not verified")
     require(chain.get("format") == "irisx/nvarc-m2-source-continuation-result-v1" and
-            chain.get("run_id") == RUN and chain.get("plan_digest") == digest_value(plan) and
+            chain.get("run_id") == plan["run_id"] and chain.get("plan_digest") == digest_value(plan) and
             chain.get("export_material_digest") == EXPORT and chain.get("training_identity_digest") == TRAINING and
             chain.get("source_bundle_digest") == plan["source_bundle_digest"] and
             chain.get("training_evidence_sha256") == plan["training_evidence_sha256"] and
@@ -99,7 +104,7 @@ def verify_m2(package, output):
             chain.get("generation_calls") == calls and chain.get("verification_calls") == verification and
             chain.get("nonempty_ranking_observed") is (verification > 0) and
             chain.get("contains_evaluator_truth") is False, "distinct continuation chain differs")
-    return {"format": "irisx/nvarc-m2-source-continuation-verification-v1", "run_id": RUN,
+    return {"format": "irisx/nvarc-m2-source-continuation-verification-v1", "run_id": plan["run_id"],
             **bindings, "source_result_sha256": sha(source_path), "chain_sha256": sha(chain_path),
             "export_material_digest": EXPORT, "training_identity_digest": TRAINING,
             "sft_steps": 0, "ttt_steps": 1, "ttt_tokens": ttt["training_tokens"],
@@ -111,7 +116,7 @@ def verify_m2(package, output):
 
 def verify_m3(package, output):
     plan, bindings = common(package, output, "m3-teacher-terminal.json")
-    require(plan["run_id"] == "nvarc-m3-teacher-small-004" and plan["stage_limits"] == LIMITS and
+    require(plan["run_id"] in {"nvarc-m3-teacher-small-004", "nvarc-m3-teacher-small-005"} and plan["stage_limits"] == LIMITS and
             read(package / "prompts.json") == PROMPTS, "teacher profile differs")
     for name in ("seed.json", "prompts.json"):
         require((output / name).read_bytes() == (package / name).read_bytes(), "teacher input differs")
@@ -120,7 +125,7 @@ def verify_m3(package, output):
         maximum_input_tokens=plan["maximum_input_tokens_per_call"],
         maximum_output_tokens=plan["maximum_output_tokens_per_call"], maximum_total_tokens=TOTAL_TOKENS,
         stage_limits=LIMITS, enable_thinking=False, require_complete=True)
-    run = output / "m3-teacher-small-004"
+    run = output / plan["run_id"].removeprefix("nvarc-")
     result = read(run / "result.json")
     item = seed["record"]
     usage = []
