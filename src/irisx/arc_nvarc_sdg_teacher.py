@@ -11,6 +11,7 @@ from .arc_nvarc_4b_pilot import verify_model_material
 from .arc_nvarc_sdg import BoundedLocalHFTeacher, run_teacher_pipeline
 from .canonical import canonical_bytes, digest_value
 from .errors import ValidationError
+from .arc_nvarc_teacher_profile import LIMITS, TOTAL_TOKENS, PROFILE, PROMPTS
 
 
 def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
@@ -19,6 +20,7 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
     from transformers import AutoModelForMultimodalLM, AutoTokenizer
 
     plan = json.loads(plan_path.read_bytes())
+    validated = plan.get("teacher_profile") == PROFILE
     if (plan.get("format") != "irisx/nvarc-m3-teacher-small-v1" or
             plan.get("approved") is not True or not plan.get("owner_decision") or
             plan.get("maximum_teacher_calls") != 4 or
@@ -26,6 +28,11 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
             plan.get("maximum_paid_usd") != 0 or plan.get("retry") is not False or
             output.exists()):
         raise ValidationError("exact owner-approved small teacher run required")
+    if validated and (plan.get("run_id") != "nvarc-m3-teacher-small-004" or
+                      plan.get("stage_limits") != LIMITS or plan.get("enable_thinking") is not False or
+                      plan.get("maximum_total_reserved_tokens") != TOTAL_TOKENS or
+                      json.loads(prompts_path.read_bytes()) != PROMPTS):
+        raise ValidationError("validated teacher profile or stage limits differ")
     if (not torch.cuda.is_available() or torch.cuda.device_count() != 4 or
             "L4" not in torch.cuda.get_device_name(0)):
         raise ValidationError("private Kaggle four-L4 gate failed before teacher load")
@@ -51,16 +58,20 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
         model, tokenizer, model_material_digest=manifest["manifest_digest"],
         maximum_input_tokens=plan["maximum_input_tokens_per_call"],
         maximum_output_tokens=plan["maximum_output_tokens_per_call"],
-        maximum_total_tokens=plan["maximum_total_reserved_tokens"])
+        maximum_total_tokens=plan["maximum_total_reserved_tokens"],
+        stage_limits=LIMITS if validated else None,
+        enable_thinking=False if validated else None, require_complete=validated)
     ledgers = run_teacher_pipeline([seed["record"]], json.loads(prompts_bytes), provider,
                                    output / "stage-ledgers", seed=24,
                                    maximum_calls=plan["maximum_teacher_calls"])
     responses = []
     for stage, ledger in ledgers["stages"].items():
         for record in ledger["records"].values():
-            if record["status"] == "complete":
+            if "response" in record:
                 responses.append({"stage": stage, "usage": {key: record["response"][key]
                                   for key in ("input_tokens", "output_tokens")},
+                                  "accepted": record["status"] == "complete",
+                                  "rejection_reason": record.get("rejection_reason"),
                                   "response_digest": record["response_digest"]})
     report = {"format": "irisx/nvarc-m3-teacher-small-result-v1",
               "run_id": plan["run_id"], "plan_digest": digest_value(plan),
@@ -69,12 +80,15 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
               "reserved_calls": ledgers["reserved_calls"],
               "reserved_tokens": provider.reserved_tokens,
               "completed_calls": len(responses), "responses": responses,
+              "accepted_stages": sum(item["accepted"] for item in responses),
+              "teacher_profile": plan.get("teacher_profile", "legacy-source-prompts"),
               "wall_seconds": time.monotonic() - started,
               "contains_evaluator_truth": False,
               "claim": "local Qwen3.5-4B teacher smoke; no NVARC teacher parity or generated data acceptance"}
     output.mkdir(parents=True, exist_ok=True)
     (output / "result.json").write_bytes(canonical_bytes(report, newline=True))
-    if report["completed_calls"] != plan["maximum_teacher_calls"]:
+    if (report["completed_calls"] != plan["maximum_teacher_calls"] or
+            report["accepted_stages"] != plan["maximum_teacher_calls"]):
         raise ValidationError("local SDG teacher batch ended before all four calls completed")
     return report
 

@@ -198,6 +198,16 @@ each output at most once after that report. No retry or additional external
 quota follows from a failure. The scratch-backed M2 package retains an HF
 export but not optimizer shard bytes after the Kaggle session.
 
+Decision 0032's two version-1 runs and sole terminal retrievals are now consumed.
+M2 completed eight SFT steps and a verified HF export, then failed before TTT
+on missing packaged source. M3 completed four calls but retained truncated,
+unusable replies; no accepted SDG pairs exist. The terminal record is
+`trials/arc-agi-2-qwen35-nvarc/m2-m3-decision-0032-terminal.md`.
+The owner directs continued local development on main. The distinct M2
+`nvarc-m2-source-cont-001` and M3 `nvarc-m3-teacher-small-004` packages are
+inert proposals only. No new Dataset mutation, kernel, retrieval, scoring or
+teacher invocation is authorized by their local preparation.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

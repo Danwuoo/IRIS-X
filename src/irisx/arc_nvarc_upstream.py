@@ -7,6 +7,8 @@ excluded; the original definitions in their writefile cells execute locally.
 from __future__ import annotations
 
 import ast
+from contextlib import contextmanager
+from contextvars import ContextVar
 import json
 from pathlib import Path
 import sys
@@ -19,12 +21,31 @@ from .errors import ValidationError
 REPO = Path(__file__).resolve().parents[2]
 SOURCE = REPO / ".irisx/arc-agi-2/qwen35-nvarc/source"
 MANIFEST = REPO / "trials/arc-agi-2-qwen35-nvarc/source-manifest.json"
+_BUNDLE = ContextVar("nvarc_source_bundle", default=None)
+
+
+@contextmanager
+def source_bundle(root: Path, expected_digest: str):
+    """Use only an explicitly verified runtime bundle during this operation."""
+    from .arc_nvarc_source_bundle import verify_bundle
+
+    verify_bundle(root, expected_digest)
+    token = _BUNDLE.set(root.resolve())
+    try:
+        yield
+    finally:
+        _BUNDLE.reset(token)
+
+
+def _source() -> Path:
+    return _BUNDLE.get() or SOURCE
 
 
 def _binding() -> dict[str, Any]:
-    if not MANIFEST.is_file():
+    path = (_BUNDLE.get() / "source-manifest.json") if _BUNDLE.get() else MANIFEST
+    if not path.is_file():
         raise ValidationError("NVARC source manifest is missing")
-    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    manifest = json.loads(path.read_text(encoding="utf-8"))
     if manifest.get("format") != "irisx/nvarc-source-manifest-v1":
         raise ValidationError("NVARC source manifest format differs")
     return manifest
@@ -62,7 +83,7 @@ def qwen_cell(writefile: str) -> types.ModuleType:
     if writefile not in allowed:
         raise ValidationError("not an approved Qwen notebook writefile cell")
     binding = _binding()["notebooks"]["qwen"]
-    path = _checked(SOURCE / binding["path"], binding["sha256"])
+    path = _checked(_source() / binding["path"], binding["sha256"])
     notebook = json.loads(path.read_text(encoding="utf-8"))
     marker = f"%%writefile {writefile}\n"
     for cell in notebook["cells"]:
@@ -111,7 +132,7 @@ def qwen_cell(writefile: str) -> types.ModuleType:
 def sdg_build_datasets() -> types.ModuleType:
     manifest = _binding()
     rel = "SDG/scripts/build_datasets.py"
-    path = _checked(SOURCE / "NVARC" / rel, manifest["code_files"][rel]["sha256"])
+    path = _checked(_source() / "NVARC" / rel, manifest["code_files"][rel]["sha256"])
     return _module("_nvarc_sdg_build_datasets", path)
 
 
@@ -119,7 +140,7 @@ def sft_data_entry() -> types.ModuleType:
     """Load original SFT dataset loader; NeMo-only training imports stay gated."""
     manifest = _binding()
     rel = "ARChitects/run_sft.py"
-    path = _checked(SOURCE / "NVARC" / rel, manifest["code_files"][rel]["sha256"])
+    path = _checked(_source() / "NVARC" / rel, manifest["code_files"][rel]["sha256"])
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     selected = [node for node in tree.body if isinstance(node, ast.FunctionDef)
                 and node.name == "load_datasets"]
@@ -137,9 +158,9 @@ def sft_data_entry() -> types.ModuleType:
 def trm_dataset_entry() -> types.ModuleType:
     manifest = _binding()
     rel = "external/TinyRecursiveModels/dataset/build_arc_dataset.py"
-    path = _checked(SOURCE / "NVARC" / rel, manifest["code_files"][rel]["sha256"])
+    path = _checked(_source() / "NVARC" / rel, manifest["code_files"][rel]["sha256"])
     common_rel = "external/TinyRecursiveModels/dataset/common.py"
-    common_path = _checked(SOURCE / "NVARC" / common_rel,
+    common_path = _checked(_source() / "NVARC" / common_rel,
                            manifest["code_files"][common_rel]["sha256"])
     trm_root = path.parents[1]
     added = str(trm_root) not in sys.path

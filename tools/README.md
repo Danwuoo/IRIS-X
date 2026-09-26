@@ -20,3 +20,11 @@ a terminal normalization gate. It never moves or deletes files.
 
 Historical tools are recoverable from the cold-archive tag and are not active
 commands.
+
+`stage_nvarc_source_continuation.py` and
+`preflight_nvarc_source_continuation.py` prepare and check a local, inert
+post-SFT source solve from the retained M2 export. They perform no upload,
+model invocation or provider call. `verify_nvarc_deployment.py` exercises
+the installed wheel with tiny CPU model work in an offline WSL mount/network
+namespace. See the [continuation plan](../docs/plan/2026-09-26-nvarc-source-teacher-continuation.md)
+for prerequisites, evidence limits and separate external authorization.

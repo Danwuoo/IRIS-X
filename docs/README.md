@@ -65,6 +65,9 @@ This directory contains only current product-era guidance.
 - [`../trials/arc-agi-2-qwen35-nvarc/README.md`](../trials/arc-agi-2-qwen35-nvarc/README.md)
   is the distinct development status page for the owner-requested Qwen3.5
   NVARC port; Decisions 0021–0025 retain the bounded 4B Kaggle pilot lineage.
+- [`plan/2026-09-26-nvarc-source-teacher-continuation.md`](plan/2026-09-26-nvarc-source-teacher-continuation.md)
+  records the local source-bundle/export continuation, teacher completeness
+  gates and inert packages after Decision 0032's consumed terminal runs.
 - [`decisions/`](decisions/README.md) contains accepted boundary decisions and
   historical rationale.
 - [`repository-layout.md`](repository-layout.md) defines the active P1 plus

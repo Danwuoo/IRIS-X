@@ -71,9 +71,8 @@ def verify_ephemeral_checkpoint_evidence(run_root: Path, identity: str,
     return last
 
 
-def verify(plan_path: Path, compact: Path, sequences_path: Path, run_root: Path,
-           source_result_path: Path, source_config_path: Path, visible_path: Path,
-           *, reconstructed_checkpoint: Path | None = None) -> dict:
+def verify_training_export(plan_path: Path, compact: Path, sequences_path: Path, run_root: Path,
+                           *, reconstructed_checkpoint: Path | None = None) -> dict:
     plan = json.loads(plan_path.read_bytes())
     sequences = [json.loads(line) for line in sequences_path.read_text(encoding="utf-8").splitlines()]
     if (_sha(sequences_path) != plan["sequences_sha256"] or
@@ -139,6 +138,19 @@ def verify(plan_path: Path, compact: Path, sequences_path: Path, run_root: Path,
             export_material.get("training_identity_digest") != identity or
             export_material.get("base_material_digest") != plan["compact_material_digest"]):
         raise ValidationError("SFT verifier export lineage differs")
+    return {"plan": plan, "identity": identity, "final": final,
+            "export_chain": export_chain, "export_material": export_material,
+            "transport_digest": transport_digest, "ephemeral": ephemeral}
+
+
+def verify(plan_path: Path, compact: Path, sequences_path: Path, run_root: Path,
+           source_result_path: Path, source_config_path: Path, visible_path: Path,
+           *, reconstructed_checkpoint: Path | None = None) -> dict:
+    evidence = verify_training_export(plan_path, compact, sequences_path, run_root,
+                                      reconstructed_checkpoint=reconstructed_checkpoint)
+    plan, identity, final = (evidence[key] for key in ("plan", "identity", "final"))
+    export_chain, transport_digest, ephemeral = (evidence[key] for key in
+                                                ("export_chain", "transport_digest", "ephemeral"))
     source = json.loads(source_result_path.read_bytes())
     if (source.get("format") != "irisx/nvarc-source-stage-result-v1" or
             source.get("material_digest") != export_chain["export_material_digest"] or

@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 import irisx_build_backend as build
 from irisx.canonical import canonical_bytes, digest_value
 from irisx.errors import ValidationError
+from irisx.arc_nvarc_teacher_profile import LIMITS, TOTAL_TOKENS, PROFILE, PROMPTS
 
 CONFIG = ROOT / "trials/arc-agi-2-qwen35-nvarc/configs"
 SOURCE = ROOT / ".irisx/arc-agi-2/qwen35-nvarc/source"
@@ -32,17 +33,23 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
         raise ValidationError("new teacher package directory required")
     if draft_path.resolve() not in {(CONFIG / name).resolve() for name in
                                     ("m3-teacher-draft.json", "m3-teacher-draft-002.json",
-                                     "m3-teacher-draft-003.json")}:
+                                     "m3-teacher-draft-003.json", "m3-teacher-draft-004.json")}:
         raise ValidationError("unknown immutable teacher draft")
     draft_bytes = draft_path.read_bytes()
     plan = json.loads(draft_bytes)
+    validated = plan.get("run_id") == "nvarc-m3-teacher-small-004"
     if (plan.get("approved") is not False or plan["maximum_teacher_calls"] != 4 or
-            plan["maximum_total_reserved_tokens"] != 20480 or plan["maximum_paid_usd"] != 0 or
+            plan["maximum_total_reserved_tokens"] != (TOTAL_TOKENS if validated else 20480) or plan["maximum_paid_usd"] != 0 or
             plan.get("run_id") not in {"nvarc-m3-teacher-small-001",
                                        "nvarc-m3-teacher-small-002",
-                                       "nvarc-m3-teacher-small-003"} or
+                                       "nvarc-m3-teacher-small-003", "nvarc-m3-teacher-small-004"} or
             plan.get("kernel_id") != "DRAFT-DO-NOT-PUSH/" + plan["run_id"]):
         raise ValidationError("small teacher draft differs")
+    if validated and (plan.get("teacher_profile") != PROFILE or plan.get("stage_limits") != LIMITS or
+                      plan.get("enable_thinking") is not False):
+        raise ValidationError("validated teacher draft differs")
+    if validated and authorization is not None:
+        raise ValidationError("teacher 004 is local-review-only until new owner direction")
     if authorization is not None:
         binding = json.loads(authorization.read_bytes())
         if (binding.get("approved") is not True or
@@ -84,6 +91,11 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
                     "output-logic": "generate_puzzle_output.md"}
     prompts = {stage: (prompt_root / name).read_text(encoding="utf-8")
                for stage, name in prompt_names.items()}
+    if validated:
+        plan["original_source_prompts_digest"] = digest_value(prompts)
+        if plan["original_source_prompts_digest"] != "sha256:59311484055911ad130ff407d92cb4d67a488bffa8793952ea0a175362cab23f":
+            raise ValidationError("original pinned teacher prompt provenance differs")
+        prompts = PROMPTS
     plan["seed_record_sha256"] = sha(seed_bytes)
     plan["prompts_digest"] = digest_value(prompts)
     manifest = json.loads((CONFIG / "base-model-manifest.json").read_bytes())
@@ -107,7 +119,8 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
     for name in ("plan", "seed", "prompts"):
         (output / f"{name}.json").write_bytes(payloads[name])
     encoded = {name: base64.b64encode(payload).decode() for name, payload in payloads.items()}
-    template_name = ("nvarc_m3_teacher_notebook_003.py.tmpl" if plan["run_id"].endswith("003")
+    template_name = ("nvarc_m3_teacher_notebook_004.py.tmpl" if validated else
+                     "nvarc_m3_teacher_notebook_003.py.tmpl" if plan["run_id"].endswith("003")
                      else "nvarc_m3_teacher_notebook_002.py.tmpl" if plan["run_id"].endswith("002")
                      else "nvarc_m3_teacher_notebook.py.tmpl")
     template = (ROOT / "tools" / template_name).read_text(encoding="utf-8")
@@ -139,7 +152,7 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
                "runtime_wheel_sha256": hashes["runtime_wheel"],
                "notebook_sha256": sha(notebook_path.read_bytes()),
                "metadata_sha256": sha((kernel / "kernel-metadata.json").read_bytes()),
-               "maximum_teacher_calls": 4, "maximum_total_reserved_tokens": 20480,
+               "maximum_teacher_calls": 4, "maximum_total_reserved_tokens": plan["maximum_total_reserved_tokens"],
                "output": str(output), "external_calls": 0,
                "claim": "offline teacher proposal only; model calls unexecuted"}
     (output / "stage-summary.json").write_bytes(canonical_bytes(summary, newline=True))

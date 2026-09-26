@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 import hashlib
 import json
 from pathlib import Path
@@ -19,7 +20,25 @@ from .errors import ValidationError
 def run_source_profile(config_path: Path, visible_path: Path, output: Path, *,
                        profile: str, fixture_path: Path | None = None,
                        checkpoint: Path | None = None,
-                       material_digest: str | None = None) -> dict:
+                       material_digest: str | None = None,
+                       bundle: Path | None = None, bundle_digest: str | None = None) -> dict:
+    from .arc_nvarc_upstream import source_bundle, qwen_cell
+
+    if (bundle is None) != (bundle_digest is None):
+        raise ValidationError("source bundle path and digest must be supplied together")
+    with source_bundle(bundle, bundle_digest) if bundle is not None else nullcontext():
+        # Exercise every runtime source entrance before any model load or update.
+        for name in ("arc_loader.py", "arc_decoder.py", "arc_solver.py"):
+            qwen_cell(name)
+        return _run_source_profile(config_path, visible_path, output, profile=profile,
+                                   fixture_path=fixture_path, checkpoint=checkpoint,
+                                   material_digest=material_digest, bundle_digest=bundle_digest)
+
+
+def _run_source_profile(config_path: Path, visible_path: Path, output: Path, *,
+                        profile: str, fixture_path: Path | None,
+                        checkpoint: Path | None, material_digest: str | None,
+                        bundle_digest: str | None) -> dict:
     config = json.loads(config_path.read_bytes())
     if config.get("format") != "irisx/nvarc-source-stage-v1" or profile not in config.get("profiles", {}):
         raise ValidationError("unknown source integration stage/profile")
@@ -90,6 +109,7 @@ def run_source_profile(config_path: Path, visible_path: Path, output: Path, *,
               "config_sha256": hashlib.sha256(config_path.read_bytes()).hexdigest(),
               "visible_sha256": hashlib.sha256(visible_path.read_bytes()).hexdigest(),
               "material_digest": material_digest,
+              "source_bundle_digest": bundle_digest,
               "training_identity_digest": (material.get("training_identity_digest")
                                            if material is not None else None),
               "measurements": measurements,
@@ -109,10 +129,13 @@ def main() -> None:
     parser.add_argument("--fixture", type=Path)
     parser.add_argument("--checkpoint", type=Path)
     parser.add_argument("--material-digest")
+    parser.add_argument("--source-bundle", type=Path)
+    parser.add_argument("--source-bundle-digest")
     args = parser.parse_args()
     run_source_profile(args.config, args.visible, args.output, profile=args.profile,
                        fixture_path=args.fixture, checkpoint=args.checkpoint,
-                       material_digest=args.material_digest)
+                       material_digest=args.material_digest,
+                       bundle=args.source_bundle, bundle_digest=args.source_bundle_digest)
 
 
 if __name__ == "__main__":

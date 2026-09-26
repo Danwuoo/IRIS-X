@@ -1,0 +1,23 @@
+{
+  "format": "irisx/nvarc-m2-source-continuation-v1",
+  "run_id": "nvarc-m2-source-cont-001",
+  "approved": false,
+  "owner_decision": null,
+  "kernel_id": "DRAFT-DO-NOT-PUSH/nvarc-m2-source-cont-001",
+  "export_material_digest": "sha256:481d9f12d573b39b0703e47b5f8f6f518a7ccd7847824ffb3f0fb96b11f2c3e6",
+  "training_identity_digest": "sha256:40804d408005b666cb377aab623bd6b0edcfbcdaa4743049d26e7e65500f5fc4",
+  "maximum_sft_steps": 0,
+  "maximum_ttt_steps": 1,
+  "maximum_source_generation_calls": 4,
+  "maximum_new_tokens": 64,
+  "maximum_dfs_expansions": 128,
+  "maximum_paid_usd": 0,
+  "maximum_kernel_wall_seconds": 1800,
+  "maximum_output_retrievals": 1,
+  "maximum_model_dataset_versions": 1,
+  "maximum_accepted_kernel_versions": 1,
+  "retry": false,
+  "model_dataset_id": "danielwuu/irisx-nvarc-m2-sft-export-002",
+  "wheel_dataset_id": "danielwuu/irisx-arc-agi-2-trial-002-smoke-001",
+  "optimizer_checkpoint_retained": false
+}

@@ -217,6 +217,13 @@ class M2M3StrictTests(unittest.TestCase):
                              (teacher_replay["generated_program_invocations"],
                               teacher_replay["pair_count"],
                               teacher_replay["source_pair_filter_passed"]))
+            self.assertEqual({"pairs.json", "messages.json", "programs.json"},
+                             set(teacher_replay["artifacts"]))
+            for name, binding in teacher_replay["artifacts"].items():
+                payload = (Path(temp) / "teacher-replay" / name).read_bytes()
+                self.assertEqual(binding["sha256"], hashlib.sha256(payload).hexdigest())
+            pairs = json.loads((Path(temp) / "teacher-replay/pairs.json").read_bytes())
+            self.assertEqual(5, len(pairs["pairs"]))
 
     def test_qwen35_teacher_chat_template_returns_tensor(self):
         from transformers import Qwen3_5Tokenizer

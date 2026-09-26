@@ -43,10 +43,58 @@ class SavedTeacher:
 
 
 def _response_text(value: Any) -> str:
-    result = value.get("text") if isinstance(value, dict) else value
+    result = value.get("content", value.get("text")) if isinstance(value, dict) else value
     if not isinstance(result, str) or not result.strip():
         raise ValidationError("SDG teacher response is empty or not text")
     return result
+
+
+def extract_teacher_program(raw: str, function: str) -> str:
+    """Parse complete source only; generated code is never executed here."""
+    if raw.count("```") % 2:
+        raise ValidationError("SDG teacher program has an unclosed code block")
+    blocks = re.findall(r"```(?:python)?\s*(.*?)```", raw, flags=re.DOTALL | re.IGNORECASE)
+    candidates = []
+    for code in blocks or [raw]:
+        try:
+            tree = ast.parse(code.strip())
+        except SyntaxError as error:
+            raise ValidationError("SDG teacher program is not complete Python") from error
+        functions = [node for node in tree.body if isinstance(node, ast.FunctionDef)
+                     and node.name == function]
+        if functions:
+            if len(functions) != 1:
+                raise ValidationError("SDG teacher program repeats its entry function")
+            args = functions[0].args
+            positional = args.posonlyargs + args.args
+            if (len(positional) != 1 or args.vararg or args.kwarg or args.kwonlyargs or
+                    positional[0].arg != ("seed" if function == "generate_puzzle_input" else "input_grid")):
+                raise ValidationError("SDG teacher entry signature differs")
+            candidates.append(code.strip())
+    if len(candidates) != 1:
+        raise ValidationError("SDG teacher response lacks one unambiguous program function")
+    return candidates[0]
+
+
+def validate_teacher_response(stage: str, response: dict[str, Any]) -> None:
+    """A completed model call may still be rejected as an unusable stage."""
+    if response.get("finish_reason") != "eos":
+        raise ValidationError("teacher output did not finish with EOS")
+    raw = response.get("text", "").strip()
+    if not raw or "<think>" in raw or "</think>" in raw:
+        raise ValidationError("teacher final content is absent or contains thinking markers")
+    if stage in {"input-logic", "output-logic"}:
+        content = extract_teacher_program(raw, "generate_puzzle_" +
+                                          ("input" if stage == "input-logic" else "output"))
+    elif stage in {"summary", "mix"}:
+        if "```" in raw:
+            raise ValidationError("teacher description contains an unexpected code block")
+        content = raw
+    else:
+        raise ValidationError("unknown validated teacher stage")
+    response["content"] = content
+    response["content_sha256"] = hashlib.sha256(content.encode()).hexdigest()
+    response["validation_profile"] = "qwen-direct-complete-v1"
 
 
 def render_source_teacher_prompt(stage: str, item: Mapping[str, Any], template: str) -> str:
@@ -91,7 +139,10 @@ class BoundedLocalHFTeacher:
 
     def __init__(self, model: Any, tokenizer: Any, *, model_material_digest: str,
                  maximum_input_tokens: int, maximum_output_tokens: int,
-                 maximum_total_tokens: int) -> None:
+                 maximum_total_tokens: int,
+                 stage_limits: Mapping[str, Mapping[str, int]] | None = None,
+                 enable_thinking: bool | None = None,
+                 require_complete: bool = False) -> None:
         if (not model_material_digest.startswith("sha256:") or
                 min(maximum_input_tokens, maximum_output_tokens, maximum_total_tokens) < 1 or
                 maximum_input_tokens + maximum_output_tokens > maximum_total_tokens):
@@ -102,40 +153,72 @@ class BoundedLocalHFTeacher:
         self.maximum_output_tokens = maximum_output_tokens
         self.maximum_total_tokens = maximum_total_tokens
         self.reserved_tokens = 0
-        self.identity = "offline-local-hf:" + digest_value({
+        self.stage_limits = dict(stage_limits) if stage_limits is not None else None
+        self.enable_thinking, self.require_complete = enable_thinking, require_complete
+        if self.stage_limits is not None and (
+                set(self.stage_limits) != set(STAGES[:4]) or
+                any(set(limits) != {"input", "output"} or
+                    any(type(v) is not int or v < 1 for v in limits.values())
+                    for limits in self.stage_limits.values()) or
+                sum(sum(limits.values()) for limits in self.stage_limits.values()) != maximum_total_tokens):
+            raise ValidationError("teacher stage token reservations differ")
+        if require_complete and (enable_thinking is not False or self.stage_limits is None):
+            raise ValidationError("validated teacher requires explicit direct mode and stage budgets")
+        identity = {
             "model_material_digest": model_material_digest,
             "maximum_input_tokens": maximum_input_tokens,
             "maximum_output_tokens": maximum_output_tokens,
-            "maximum_total_tokens": maximum_total_tokens})
+            "maximum_total_tokens": maximum_total_tokens}
+        if stage_limits is not None or enable_thinking is not None or require_complete:
+            identity.update(stage_limits=self.stage_limits, enable_thinking=enable_thinking,
+                            validation_profile="qwen-direct-complete-v1" if require_complete else None,
+                            do_sample=False)
+        self.identity = "offline-local-hf:" + digest_value(identity)
+
+    def validate_response(self, stage: str, value: dict[str, Any]) -> None:
+        if self.require_complete:
+            validate_teacher_response(stage, value)
 
     def complete(self, stage: str, item: Mapping[str, Any], prompt: str) -> dict[str, Any]:
         import torch
 
-        if self.reserved_tokens + self.maximum_input_tokens + self.maximum_output_tokens > self.maximum_total_tokens:
+        limits = (self.stage_limits[stage] if self.stage_limits is not None else
+                  {"input": self.maximum_input_tokens, "output": self.maximum_output_tokens})
+        if self.reserved_tokens + limits["input"] + limits["output"] > self.maximum_total_tokens:
             raise ValidationError("local SDG teacher total token ceiling exhausted")
         rendered = render_source_teacher_prompt(stage, item, prompt)
+        template_options = {} if self.enable_thinking is None else {"enable_thinking": self.enable_thinking}
         tokens = self.tokenizer.apply_chat_template(
             [{"role": "user", "content": rendered}], tokenize=True,
-            add_generation_prompt=True, return_tensors="pt", return_dict=False)
+            add_generation_prompt=True, return_tensors="pt", return_dict=False, **template_options)
         if not isinstance(tokens, torch.Tensor) or tokens.ndim != 2 or tokens.shape[0] != 1:
             raise ValidationError("local SDG teacher chat template did not return one token tensor")
         input_tokens = int(tokens.shape[-1])
-        if input_tokens > self.maximum_input_tokens:
+        if input_tokens > limits["input"]:
             raise ValidationError("local SDG teacher input token ceiling exceeded")
         # Reserve the full call before model generation; failure consumes it.
-        self.reserved_tokens += self.maximum_input_tokens + self.maximum_output_tokens
+        self.reserved_tokens += limits["input"] + limits["output"]
         with torch.inference_mode():
             generated = self.model.generate(tokens.to(self.model.device),
-                                            max_new_tokens=self.maximum_output_tokens,
+                                            max_new_tokens=limits["output"],
                                             do_sample=False,
                                             pad_token_id=self.tokenizer.eos_token_id)
         output_ids = generated[0, input_tokens:]
         value = self.tokenizer.decode(output_ids, skip_special_tokens=True)
         if not value.strip():
             raise ValidationError("local SDG teacher returned no text")
-        return {"text": value, "input_tokens": input_tokens,
+        result = {"text": value, "input_tokens": input_tokens,
                 "output_tokens": int(output_ids.numel()),
                 "model_material_digest": self.model_material_digest}
+        if self.require_complete:
+            eos = getattr(getattr(self.model, "generation_config", None), "eos_token_id", None)
+            eos = eos if eos is not None else self.tokenizer.eos_token_id
+            eos_ids = eos if isinstance(eos, (list, tuple)) else [eos]
+            result.update(output_token_ids=output_ids.detach().cpu().tolist(),
+                          finish_reason=("eos" if output_ids.numel() and int(output_ids[-1]) in eos_ids
+                                         else "length" if output_ids.numel() == limits["output"] else "other"),
+                          enable_thinking=False)
+        return result
 
 
 def run_stage(stage: str, inputs: list[Mapping[str, Any]], prompt: str,
@@ -166,11 +249,11 @@ def run_stage(stage: str, inputs: list[Mapping[str, Any]], prompt: str,
         for key, record in ledger["records"].items():
             if (not isinstance(record, dict) or
                     record.get("input_digest") != digest_value(by_id[key]) or
-                    record.get("status") not in {"pending", "failed", "complete"} or
+                    record.get("status") not in {"pending", "failed", "complete", "rejected"} or
                     type(record.get("provider_calls")) is not int or
                     record["provider_calls"] not in (0, 1)):
                 raise ValidationError("SDG resumed stage record differs")
-            if record["status"] == "complete" and (
+            if record["status"] in {"complete", "rejected"} and (
                     "response" not in record or
                     record.get("response_digest") != digest_value(record["response"])):
                 raise ValidationError("SDG resumed response digest differs")
@@ -197,8 +280,15 @@ def run_stage(stage: str, inputs: list[Mapping[str, Any]], prompt: str,
         atomic_json(path, ledger)
         try:
             value = provider.complete(stage, item, prompt)
-            ledger["records"][key].update({"status": "complete", "response": value,
-                                           "response_digest": digest_value(value)})
+            status = "complete"
+            if hasattr(provider, "validate_response"):
+                try:
+                    provider.validate_response(stage, value)
+                except ValidationError as error:
+                    status = "rejected"
+                    ledger["records"][key]["rejection_reason"] = str(error)
+            ledger["records"][key].update({"status": status, "response": value,
+                                          "response_digest": digest_value(value)})
         except Exception as error:
             ledger["records"][key].update({"status": "failed",
                                            "error_type": type(error).__name__})
@@ -482,17 +572,8 @@ def replay_teacher_program_ledgers(ledger_root: Path, seed_path: Path, output: P
             raise ValidationError("SDG teacher saved response binding differs")
         responses[stage] = _response_text(record["response"])
 
-    def program(stage: str, function: str) -> str:
-        raw = responses[stage]
-        blocks = re.findall(r"```(?:python)?\s*(.*?)```", raw, flags=re.DOTALL | re.IGNORECASE)
-        code = max(blocks, key=len).strip() if blocks else raw.strip()
-        tree = ast.parse(code)
-        if function not in {node.name for node in tree.body if isinstance(node, ast.FunctionDef)}:
-            raise ValidationError("SDG teacher response lacks required program function")
-        return code
-
-    input_code = program("input-logic", "generate_puzzle_input")
-    output_code = program("output-logic", "generate_puzzle_output")
+    input_code = extract_teacher_program(responses["input-logic"], "generate_puzzle_input")
+    output_code = extract_teacher_program(responses["output-logic"], "generate_puzzle_output")
     seeds = list(range(5))
     inputs = [executor.execute_entry(input_code, "generate_puzzle_input", seed=value)
               for value in seeds]
@@ -516,5 +597,15 @@ def replay_teacher_program_ledgers(ledger_root: Path, seed_path: Path, output: P
               "contains_evaluator_truth": False,
               "claim": "six-stage ARC-seeded teacher program replay; no HARC/BARC cleaning parity"}
     output.mkdir(parents=True)
+    artifacts = {"pairs.json": {"parent_ids": seed.get("parent_ids", []), "seeds": seeds, "pairs": pairs},
+                 "messages.json": augmented,
+                 "programs.json": {"input": input_code, "output": output_code}}
+    report["artifacts"] = {}
+    report["ledger_sha256"] = {stage: hashlib.sha256((ledger_root / f"{stage}.json").read_bytes()).hexdigest()
+                                for stage in STAGES[:4]}
+    for name, value in artifacts.items():
+        payload = canonical_bytes(value, newline=True)
+        (output / name).write_bytes(payload)
+        report["artifacts"][name] = {"sha256": hashlib.sha256(payload).hexdigest(), "bytes": len(payload)}
     (output / "report.json").write_bytes(canonical_bytes(report, newline=True))
     return report

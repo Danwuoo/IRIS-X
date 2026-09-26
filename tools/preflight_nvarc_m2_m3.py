@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from irisx.arc_nvarc_representation import verify_model_material
 from irisx.canonical import canonical_bytes, digest_value
 from irisx.errors import ValidationError
+from irisx.arc_nvarc_teacher_profile import LIMITS, TOTAL_TOKENS, PROFILE, PROMPTS
 
 
 def sha(payload: bytes) -> str:
@@ -118,6 +119,24 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
         if sha((package / "model-dataset/dataset-metadata.json").read_bytes()) != summary["dataset_metadata_sha256"]:
             raise ValidationError("M2 private Dataset metadata differs")
     else:
+        if plan.get("run_id") == "nvarc-m3-teacher-small-004":
+            expected = (ROOT / "tools/nvarc_m3_teacher_notebook_004.py.tmpl").read_text()
+            expected = expected.replace("__PAYLOADS__", json.dumps(payloads, sort_keys=True)).replace(
+                "__HASHES__", json.dumps(hashes, sort_keys=True))
+            if source != expected:
+                raise ValidationError("teacher 004 executable differs from reviewed template")
+            if any((package / (name + ".json")).read_bytes() != decoded[name]
+                   for name in ("plan", "seed", "prompts")):
+                raise ValidationError("teacher 004 review payload differs")
+            if (approved or plan.get("teacher_profile") != PROFILE or
+                    plan.get("stage_limits") != LIMITS or plan.get("enable_thinking") is not False or
+                    plan.get("maximum_total_reserved_tokens") != TOTAL_TOKENS or
+                    json.loads(decoded["prompts"]) != PROMPTS or
+                    plan.get("seed_train_parent_ids") != ["833966f4", "6150a2bd"] or
+                    plan.get("maximum_teacher_calls") != 4 or plan.get("maximum_model_generations") != 4 or
+                    plan.get("maximum_paid_usd") != 0 or plan.get("retry") is not False or
+                    metadata.get("id") != "DRAFT-DO-NOT-PUSH/nvarc-m3-teacher-small-004"):
+                raise ValidationError("local-review-only teacher 004 profile differs")
         if metadata.get("competition_sources") != plan.get("competition_sources", []):
             raise ValidationError("teacher L4 transport source mount differs")
         if approved and (plan.get("maximum_teacher_calls") != 4 or

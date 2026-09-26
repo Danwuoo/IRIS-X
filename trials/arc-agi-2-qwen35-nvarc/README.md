@@ -1,5 +1,22 @@
 # Qwen3.5-4B NVARC reproduction development
 
+## Current continuation (2026-09-26)
+
+Decision 0032's two kernels and terminal retrievals are consumed. The
+[terminal record](m2-m3-decision-0032-terminal.md) confirms M2's eight-step,
+2,578-token SFT and verified HF export; source TTT failed on absent packaged
+source before its update. M3 completed four teacher calls, but all replies
+hit the output ceiling and no accepted SDG pairs exist. Full-method acceptance
+and ARC quality remain unestablished.
+
+The owner requested development directly on main after confirming the NVARC
+worktree was already merged. The [local continuation plan](../../docs/plan/2026-09-26-nvarc-source-teacher-continuation.md)
+adds a portable source bundle, an export-only M2 continuation, complete-stage
+teacher validation and retained SDG data artifacts. New M2 `source-cont-001`
+and M3 `teacher-small-004` packages are inert proposals, with no new external
+quota. The earlier dated sections below retain their historical observations
+and are superseded by this section.
+
 ## M2–M3 local continuation (2026-09-25)
 
 **Stages 4–5 remain incomplete.** Decision 0031's two private,
@@ -179,7 +196,7 @@ separately verifies bounded 4B LoRA gradients and reset on one L4.
 Source-level differences and remaining gaps are in
 [`reproduction-matrix.md`](reproduction-matrix.md).
 
-## Current evidence states
+## Earlier evidence states (before Decision 0032 terminal retrieval)
 
 | State | Current value |
 | --- | --- |

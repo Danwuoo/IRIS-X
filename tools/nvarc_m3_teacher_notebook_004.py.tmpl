@@ -1,0 +1,115 @@
+"""Offline local Qwen3.5-4B SDG teacher smoke; generated draft remains gated."""
+
+import base64
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import time
+
+START = time.monotonic()
+PAYLOADS = __PAYLOADS__
+HASHES = __HASHES__
+for name, encoded in PAYLOADS.items():
+    if hashlib.sha256(base64.b64decode(encoded)).hexdigest() != HASHES[name]:
+        raise RuntimeError("embedded SDG teacher material differs")
+plan = json.loads(base64.b64decode(PAYLOADS["plan"]))
+if (plan.get("approved") is not True or not plan.get("owner_decision") or
+        plan.get("run_id") != "nvarc-m3-teacher-small-004" or
+        plan.get("kernel_id") != "danielwuu/nvarc-m3-teacher-small-004" or
+        plan.get("maximum_paid_usd") != 0 or plan.get("maximum_teacher_calls") != 4):
+    raise RuntimeError("exact owner-approved teacher plan required")
+os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1",
+                  HF_DATASETS_OFFLINE="1", TOKENIZERS_PARALLELISM="false",
+                  WANDB_DISABLED="true", PYTHONIOENCODING="utf-8")
+work = Path("/kaggle/working")
+work.mkdir(parents=True, exist_ok=True)
+
+def save(name, value):
+    (work / name).write_text(json.dumps(value, sort_keys=True) + "\n", encoding="utf-8")
+
+import torch
+gpus = []
+for index in range(torch.cuda.device_count()):
+    properties = torch.cuda.get_device_properties(index)
+    gpus.append({"index": index, "name": str(properties.name),
+                 "memory_bytes": properties.total_memory})
+save("m3-teacher-hardware-preflight.json", {"gpus": gpus,
+                                            "torch_version": torch.__version__,
+                                            "torch_cuda_build": torch.version.cuda})
+smi = subprocess.run(["nvidia-smi", "--query-gpu=index,name,memory.total,uuid",
+                      "--format=csv,noheader,nounits"], capture_output=True,
+                     text=True, check=True, timeout=30)
+rows = [[part.strip() for part in line.split(",")] for line in smi.stdout.splitlines()]
+save("hardware-uuid-preflight.json", {"rows": rows, "bf16": torch.cuda.is_bf16_supported()})
+if (len(gpus) != 4 or len(rows) != 4 or not torch.cuda.is_bf16_supported() or
+        len({row[3] for row in rows if len(row) == 4}) != 4 or
+        any(len(row) != 4 or row[0] != str(index) or "L4" not in row[1] or
+            int(row[2]) < 22000 or not row[3] for index, row in enumerate(rows)) or
+        any("L4" not in gpu["name"] or gpu["memory_bytes"] < 22 * 10**9 for gpu in gpus)):
+    raise RuntimeError("four distinct BF16 L4 GPUs required, one used")
+
+roots = [Path("/kaggle/input/datasets/danielwuu/irisx-arc-agi-2-trial-002-smoke-001"),
+         Path("/kaggle/input/irisx-arc-agi-2-trial-002-smoke-001")]
+bases = [path for path in roots if (path / "model.safetensors.index.json").is_file()]
+save("m3-teacher-mount-preflight.json", {"roots": [str(path) for path in bases]})
+if len(bases) != 1:
+    raise RuntimeError("exact existing private Qwen and wheel Dataset mount required")
+base = bases[0]
+if importlib.util.find_spec("torchao") is not None:
+    subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "torchao"],
+                   check=True, timeout=60)
+if importlib.util.find_spec("torchao") is not None:
+    raise RuntimeError("optional incompatible torchao remains")
+wheel_manifest = json.loads(base64.b64decode(PAYLOADS["wheel_manifest"]))
+entries = {item["path"]: item for item in wheel_manifest["files"]}
+for filename in ("transformers-5.8.1-py3-none-any.whl",
+                 "accelerate-1.10.1-py3-none-any.whl",
+                 "safetensors-0.8.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+                 "tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"):
+    path = base / filename
+    entry = entries.get(filename)
+    if (entry is None or not path.is_file() or path.stat().st_size != entry["byte_size"] or
+            "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest() != entry["content_digest"]):
+        raise RuntimeError("offline wheel binding differs: " + filename)
+
+paths = {}
+for name, encoded in PAYLOADS.items():
+    filename = "irisx-0.2.0-py3-none-any.whl" if name == "runtime_wheel" else name + ".json"
+    path = work / filename
+    path.write_bytes(base64.b64decode(encoded))
+    paths[name] = path
+subprocess.run([sys.executable, "-m", "pip", "install", "--no-index", "--find-links",
+                str(base), "transformers==5.8.1", "safetensors==0.8.0",
+                "tokenizers==0.22.2", "accelerate==1.10.1",
+                str(paths["runtime_wheel"])],
+               check=True, timeout=180)
+if time.monotonic() - START > 300:
+    raise RuntimeError("teacher setup exceeded 300-second bound")
+command = [sys.executable, "-m", "irisx.arc_nvarc_sdg_teacher",
+           "--plan", str(paths["plan"]), "--seed", str(paths["seed"]),
+           "--prompts", str(paths["prompts"]), "--model", str(base),
+           "--model-manifest", str(paths["model_manifest"]),
+           "--output", str(work / "m3-teacher-small-004")]
+worker = subprocess.Popen(command, start_new_session=True, env=os.environ.copy())
+remaining = max(1, int(plan["maximum_kernel_wall_seconds"] - (time.monotonic() - START) - 30))
+try:
+    return_code = worker.wait(timeout=remaining)
+except subprocess.TimeoutExpired:
+    os.killpg(worker.pid, signal.SIGTERM)
+    try:
+        worker.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        os.killpg(worker.pid, signal.SIGKILL)
+        worker.wait(timeout=10)
+    raise RuntimeError("bounded SDG teacher run timed out")
+save("m3-teacher-terminal.json", {"return_code": return_code,
+                                   "wall_seconds": time.monotonic() - START,
+                                   "plan_sha256": HASHES["plan"],
+                                   "runtime_wheel_sha256": HASHES["runtime_wheel"]})
+if return_code != 0:
+    raise RuntimeError("bounded SDG teacher run failed; no retry in this identity")

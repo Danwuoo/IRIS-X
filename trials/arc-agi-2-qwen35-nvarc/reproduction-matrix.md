@@ -1,5 +1,20 @@
 # Component completion and reproduction gaps
 
+## Current bounded evidence (2026-09-26)
+
+The [Decision 0032 terminal record](m2-m3-decision-0032-terminal.md) supersedes
+the pending/unexecuted statements in the older checkpoints below.
+
+| Component | Retained observation | Remaining gap |
+| --- | --- | --- |
+| M2 SFT/export | Four-L4 eight-step full-parameter SFT, 2,578 tokens, 32 forwards, session resume and digest-verified HF export | No retained optimizer bytes; bounded training does not establish full-scale ARC-SFT quality |
+| Post-SFT source solve | Failed on missing source manifest before TTT; local repair carries a separately verified source bundle | New 4B source continuation unexecuted; nonempty candidate ranking unverified |
+| M3 teacher | Four completed calls, 11,836 actual tokens, four truncated replies | No accepted generated SDG pairs; direct-mode profile and stage budgets remain an unexecuted proposal |
+| SDG replay | Existing isolated saved-response replay now persists pairs/messages/programs with lineage and hashes | Fixture data is not evidence of new teacher yield or semantic quality |
+
+New packages and external limits are described in the [local continuation plan](../../docs/plan/2026-09-26-nvarc-source-teacher-continuation.md).
+The old identities and their used quotas stay frozen.
+
 ## M2/M3 bounded continuation (2026-09-25)
 
 [Decision 0032](../../docs/decisions/0032-authorize-nvarc-m2-m3-terminal-repairs.md)
