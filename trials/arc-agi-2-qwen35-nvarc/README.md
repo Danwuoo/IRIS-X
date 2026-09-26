@@ -5,8 +5,9 @@
 The owner has now authorized [one combined notebook submission](combined-notebook-001-submission.md)
 under [Decision 0035](../../docs/decisions/0035-submit-nvarc-combined-two-gpu-notebook.md),
 reusing the existing Datasets and unchanged M2/M3 workloads on two selected
-L4 GPUs. Submission preparation is in progress; stop at the receipt without
-monitoring or retrieval. The original inert draft remains preserved.
+L4 GPUs. Kaggle accepted version 1; the sole push is consumed. Runtime state
+remains unqueried, with no monitoring or retrieval. The original inert draft
+remains preserved.
 
 The owner's [combined two-GPU development plan](../../docs/plan/2026-09-26-nvarc-combined-two-gpu-notebook.md)
 now has a distinct [inert notebook implementation and local verification record](combined-notebook-001.md).

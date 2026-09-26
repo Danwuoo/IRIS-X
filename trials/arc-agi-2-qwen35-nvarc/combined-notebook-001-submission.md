@@ -1,6 +1,6 @@
 # Combined M2/M3 notebook 001: submission record
 
-Status: approved for one submission; receipt pending
+Status: version 1 accepted; runtime unqueried
 Date: 2026-09-26
 Authority: [Decision 0035](../../docs/decisions/0035-submit-nvarc-combined-two-gpu-notebook.md)
 
@@ -17,7 +17,7 @@ incompatible optional `torchao`. The expired local OAuth credential was
 refreshed and the owner account verified before reserving the kernel push;
 no notebook status, logs or outputs were queried for that authentication check.
 
-The sole provider request will be reserved in
+The sole provider request was reserved in
 `.irisx/arc-agi-2/qwen35-nvarc/m2-m3/decision-0035-execution-ledger.json`.
 Rejection or uncertainty consumes it. Stop at the receipt: no monitoring,
 output retrieval, retry, scoring or heartbeat is authorized.
@@ -62,3 +62,23 @@ remain pending; no local test claims to establish them.
 Required `python tools/repository_check.py --all` passed: 240 tests, four
 existing optional skips, repository invariants and whitespace checks.
 The log is `.irisx/nvarc-combined-decision-0035-repository.txt`.
+
+## Submission receipt
+
+Kaggle accepted version 1 of
+[`danielwuu/nvarc-m2-m3-combined-001`](https://www.kaggle.com/code/danielwuu/nvarc-m2-m3-combined-001)
+at `2026-09-26T15:54:46.688412+00:00` (23:54 Taipei).
+The source commit is `7926dc2ce4ce0e237291c28578ca41d5e97cf7d8`.
+The CLI returned exit code 0 and `Kernel version 1 successfully pushed`.
+The exact notebook title equals its slug; the accepted URL matches the plan.
+
+The sole push and receipt are retained in the local atomic ledger and
+`.irisx/arc-agi-2/qwen35-nvarc/m2-m3/decision-0035-push.txt`.
+Receipt SHA-256 is
+`3b9cc3a9246faea799394f16e3fe18b471d1a9bb13986dd2623c32f9e137f6fb`.
+One push is consumed. There were zero Dataset mutations and zero status,
+log, output or retrieval requests for this notebook. No heartbeat was resumed.
+
+The task stopped at submission acceptance. Provider queue/running state,
+two-worker readiness, actual GPU allocation and model outcomes are unobserved.
+The receipt is not runtime success; no retry or retrieval follows automatically.

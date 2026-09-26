@@ -235,6 +235,9 @@ approved package bindings and reserve the sole push before the provider call.
 Stop after its receipt; no monitoring, retrieval, Dataset mutation or retry
 is authorized. Decision 0034 sessions remain unqueried. The submission record
 is `trials/arc-agi-2-qwen35-nvarc/combined-notebook-001-submission.md`.
+The sole push was accepted as version 1 and is now consumed. Its receipt and
+exact package hashes are retained. Runtime state remains unqueried; no
+monitoring, retrieval or retry follows from submission acceptance.
 
 ## Authority order
 
