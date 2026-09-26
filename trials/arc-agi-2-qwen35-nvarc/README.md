@@ -2,6 +2,16 @@
 
 ## Current continuation (2026-09-26)
 
+The owner's [combined two-GPU development plan](../../docs/plan/2026-09-26-nvarc-combined-two-gpu-notebook.md)
+now has a distinct [inert notebook implementation and local verification record](combined-notebook-001.md).
+It stages M2 and M3 as isolated workers with shared setup, separate budgets,
+bounded readiness/supervision and independently checked partial outcomes.
+Cached installed-wheel CPU and WSL probes use tiny real Qwen and saved
+teacher-response replay; no new 4B work or teacher calls occurred. The draft
+has zero external allowances and rejects live execution. Two-L4 resource fit,
+GPU UUID mapping and Kaggle image acceptance remain pending. Decision 0034's
+submitted versions remain unqueried and their identities stay frozen.
+
 Decision 0032's two kernels and terminal retrievals are consumed. The
 [terminal record](m2-m3-decision-0032-terminal.md) confirms M2's eight-step,
 2,578-token SFT and verified HF export; source TTT failed on absent packaged

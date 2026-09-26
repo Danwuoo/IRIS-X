@@ -201,7 +201,8 @@ def configure_candidate_backend(backend: Any, config: Mapping[str, Any]) -> dict
             "answer_nll": "summed" if augmentation == "source-qwen" else "per-token"}
 
 
-def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any]) -> list[dict[str, Any]]:
+def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any], *,
+               call_observer=None) -> list[dict[str, Any]]:
     """One adaptation per full task, then all test outputs share that state."""
     profile = configure_candidate_backend(backend, config)
     augmentation = profile["augmentation"]
@@ -245,7 +246,13 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
                     backend.begin_view(spec, view_index)
                 query = tokenizer.encode_query(view["task"], view["test_index"])
                 calls += 1  # Reserve the invocation before backend failure.
+                call = {"kind": "generation", "index": calls, "task_id": task["task_id"],
+                        "test_index": test_index, "view_index": view_index}
+                if call_observer is not None:
+                    call_observer({**call, "status": "reserved"})
                 sequences = backend.generate(query, beams=beams, max_new_tokens=max_tokens)
+                if call_observer is not None:
+                    call_observer({**call, "status": "complete"})
                 if hasattr(backend, "last_generation_observation"):
                     generation_observations.append({"view_index": view_index,
                                                     **backend.last_generation_observation})
@@ -259,8 +266,15 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any])
                     restored = inverse_grid(parsed, spec, inverse=True)
                     canonical_grid = tuple(tuple(row) for row in restored)
                     if canonical_grid not in verified_grids:
+                        verify_call = {"kind": "verification", "index": verification_calls + 1,
+                                       "task_id": task["task_id"], "test_index": test_index,
+                                       "view_index": view_index}
+                        if call_observer is not None:
+                            call_observer({**verify_call, "status": "reserved"})
                         verified_grids[canonical_grid] = float(backend.verify(task, test_index, restored))
                         verification_calls += 1
+                        if call_observer is not None:
+                            call_observer({**verify_call, "status": "complete"})
                     verification = verified_grids[canonical_grid]
                     candidates.append({"grid": restored, "complete": True,
                                        "source": f"qwen:view{view_index}:seq{sequence_index}",

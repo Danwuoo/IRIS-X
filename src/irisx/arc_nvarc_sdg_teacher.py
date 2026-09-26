@@ -14,6 +14,37 @@ from .errors import ValidationError
 from .arc_nvarc_teacher_profile import LIMITS, TOTAL_TOKENS, PROFILE, PROMPTS
 
 
+def stage_outcomes(ledgers: dict) -> list[dict]:
+    """Keep failed stages visible even when no model response was returned."""
+    outcomes = []
+    for stage, ledger in ledgers["stages"].items():
+        for record_id, record in ledger["records"].items():
+            response = record.get("response", {})
+            outcomes.append({"stage": stage, "record_id": record_id,
+                             "status": record["status"],
+                             "reason": record.get("rejection_reason") or record.get("error_message") or
+                                       record.get("error_type"),
+                             "error_type": record.get("error_type"),
+                             "finish_reason": response.get("finish_reason"),
+                             "input_tokens": response.get("input_tokens"),
+                             "output_tokens": response.get("output_tokens")})
+    return outcomes
+
+
+def completion_error(report: dict, expected_calls: int) -> str | None:
+    if report["completed_calls"] == expected_calls and report["accepted_stages"] == expected_calls:
+        return None
+    counts = (f"responses={report['completed_calls']}/{expected_calls}, "
+              f"accepted_stages={report['accepted_stages']}/{expected_calls}")
+    failures = [item for item in report["stage_outcomes"] if item["status"] != "complete"]
+    if failures:
+        first = failures[0]
+        detail = f"{first['stage']} {first['status']}: {first['reason'] or 'no completed response'}"
+    else:
+        detail = "stage coverage incomplete; inspect result.json and stage-ledgers"
+    return f"local SDG teacher batch incomplete ({counts}); {detail}"
+
+
 def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
         model_manifest_path: Path, output: Path) -> dict:
     import torch
@@ -39,6 +70,16 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
     if (not torch.cuda.is_available() or torch.cuda.device_count() != 4 or
             "L4" not in torch.cuda.get_device_name(0)):
         raise ValidationError("private Kaggle four-L4 gate failed before teacher load")
+    return _run_bound(plan, seed_path, prompts_path, model_root, model_manifest_path, output)
+
+
+def _run_bound(plan: dict, seed_path: Path, prompts_path: Path, model_root: Path,
+               model_manifest_path: Path, output: Path, *, model_ready=None) -> dict:
+    """Internal workload after the standalone or combined execution gate."""
+    import torch
+    from transformers import AutoModelForMultimodalLM, AutoTokenizer
+
+    validated = plan.get("teacher_profile") == PROFILE
     seed_bytes, prompts_bytes = seed_path.read_bytes(), prompts_path.read_bytes()
     if (hashlib.sha256(seed_bytes).hexdigest() != plan["seed_record_sha256"] or
             digest_value(json.loads(prompts_bytes)) != plan["prompts_digest"]):
@@ -57,6 +98,8 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
     model = AutoModelForMultimodalLM.from_pretrained(
         model_root, local_files_only=True, dtype=torch.bfloat16,
         attn_implementation="sdpa", device_map="cuda:0").eval()
+    if model_ready is not None:
+        model_ready()
     provider = BoundedLocalHFTeacher(
         model, tokenizer, model_material_digest=manifest["manifest_digest"],
         maximum_input_tokens=plan["maximum_input_tokens_per_call"],
@@ -84,15 +127,16 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
               "reserved_tokens": provider.reserved_tokens,
               "completed_calls": len(responses), "responses": responses,
               "accepted_stages": sum(item["accepted"] for item in responses),
+              "stage_outcomes": stage_outcomes(ledgers),
               "teacher_profile": plan.get("teacher_profile", "legacy-source-prompts"),
               "wall_seconds": time.monotonic() - started,
               "contains_evaluator_truth": False,
               "claim": "local Qwen3.5-4B teacher smoke; no NVARC teacher parity or generated data acceptance"}
     output.mkdir(parents=True, exist_ok=True)
     (output / "result.json").write_bytes(canonical_bytes(report, newline=True))
-    if (report["completed_calls"] != plan["maximum_teacher_calls"] or
-            report["accepted_stages"] != plan["maximum_teacher_calls"]):
-        raise ValidationError("local SDG teacher batch ended before all four calls completed")
+    failure = completion_error(report, plan["maximum_teacher_calls"])
+    if failure is not None:
+        raise ValidationError(f"{failure}; evidence: {output / 'result.json'}")
     return report
 
 

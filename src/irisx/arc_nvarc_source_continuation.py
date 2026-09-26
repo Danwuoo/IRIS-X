@@ -46,6 +46,12 @@ def run(plan_path: Path, config: Path, visible: Path, bundle: Path,
         model: Path, evidence: Path, output: Path) -> dict:
     plan = json.loads(plan_path.read_bytes())
     validate_plan(plan, approved=True)
+    return _run_bound(plan, config, visible, bundle, model, evidence, output)
+
+
+def _run_bound(plan: dict, config: Path, visible: Path, bundle: Path,
+               model: Path, evidence: Path, output: Path, *, model_ready=None, call_observer=None) -> dict:
+    """Internal workload; caller must enforce its own exact execution profile."""
     if output.exists():
         raise ValidationError("new source continuation output required")
     for name, path in (("source_config", config), ("visible", visible), ("training_evidence", evidence)):
@@ -68,7 +74,8 @@ def run(plan_path: Path, config: Path, visible: Path, bundle: Path,
     result_path = output / "source-result.json"
     result = run_source_profile(config, visible, result_path, profile="4b", checkpoint=model,
                                 material_digest=EXPORT, bundle=bundle,
-                                bundle_digest=plan["source_bundle_digest"])
+                                bundle_digest=plan["source_bundle_digest"], model_ready=model_ready,
+                                call_observer=call_observer)
     calls = max(item["generation_calls_so_far"] for item in result["results"])
     verification_calls = max(item["verification_calls_so_far"] for item in result["results"])
     if calls > 4 or result["task_count"] != 1:

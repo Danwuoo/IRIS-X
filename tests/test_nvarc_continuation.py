@@ -10,6 +10,7 @@ import sys
 from irisx.arc_nvarc_sdg import (extract_teacher_program, validate_teacher_response,
                                 run_teacher_pipeline)
 from irisx.arc_nvarc_source_continuation import validate_plan
+from irisx.arc_nvarc_sdg_teacher import stage_outcomes, completion_error
 from irisx.errors import ValidationError
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -89,6 +90,41 @@ class ContinuationTests(unittest.TestCase):
             self.assertEqual("unfinished rule", record["response"]["text"])
             self.assertEqual((1, 1), (provider.calls, result["reserved_calls"]))
             self.assertEqual({"summary"}, set(result["stages"]))
+            report = {"completed_calls": 1, "accepted_stages": 0,
+                      "stage_outcomes": stage_outcomes(result)}
+            message = completion_error(report, 4)
+            self.assertIn("summary rejected: teacher output did not finish with EOS", message)
+            self.assertIn("responses=1/4, accepted_stages=0/4", message)
+            self.assertEqual("length", report["stage_outcomes"][0]["finish_reason"])
+
+    def test_failed_teacher_cause_survives_ledger_and_resume_without_retry(self):
+        class FailingTeacher:
+            identity = "fixture-failing-teacher"
+            billed_calls = 1
+            calls = 0
+
+            def complete(self, *args):
+                self.calls += 1
+                raise ValidationError("local SDG teacher input token ceiling exceeded")
+
+        provider = FailingTeacher()
+        with tempfile.TemporaryDirectory() as temp:
+            prompts = {stage: "prompt" for stage in ("summary", "mix", "input-logic", "output-logic")}
+            for _ in range(2):
+                result = run_teacher_pipeline([{"record_id": "a"}], prompts, provider, Path(temp),
+                                              seed=24, maximum_calls=4)
+            saved = json.loads((Path(temp) / "summary.json").read_bytes())["records"]["a"]
+            self.assertEqual(1, provider.calls)
+            self.assertEqual("failed", saved["status"])
+            self.assertNotIn("response", saved)
+            self.assertEqual("ValidationError", saved["error_type"])
+            self.assertEqual("local SDG teacher input token ceiling exceeded", saved["error_message"])
+            report = {"completed_calls": 0, "accepted_stages": 0,
+                      "stage_outcomes": stage_outcomes(result)}
+            self.assertIn("summary failed: local SDG teacher input token ceiling exceeded",
+                          completion_error(report, 4))
+            self.assertIsNone(completion_error({"completed_calls": 4, "accepted_stages": 4,
+                                                "stage_outcomes": []}, 4))
 
     def test_program_parser_rejects_truncation_missing_ambiguous_and_wrong_signature(self):
         for raw in ("```python\ndef generate_puzzle_input(seed): return [[1]]",

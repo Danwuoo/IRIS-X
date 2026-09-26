@@ -8,12 +8,15 @@ the pending/unexecuted statements in the older checkpoints below.
 | Component | Retained observation | Remaining gap |
 | --- | --- | --- |
 | M2 SFT/export | Four-L4 eight-step full-parameter SFT, 2,578 tokens, 32 forwards, session resume and digest-verified HF export | No retained optimizer bytes; bounded training does not establish full-scale ARC-SFT quality |
-| Post-SFT source solve | Failed on missing source manifest before TTT; local repair carries a separately verified source bundle | New 4B source continuation unexecuted; nonempty candidate ranking unverified |
-| M3 teacher | Four completed calls, 11,836 actual tokens, four truncated replies | No accepted generated SDG pairs; direct-mode profile and stage budgets remain an unexecuted proposal |
+| Post-SFT source solve | Failed on missing source manifest before TTT; local repair carries a separately verified source bundle | Decision 0034's continuation version 1 is submitted but unqueried; no newly verified result or nonempty candidate ranking |
+| M3 teacher | Four completed calls, 11,836 actual tokens, four truncated replies | Decision 0034's direct-mode version 1 is submitted but unqueried; no accepted generated SDG pairs |
 | SDG replay | Existing isolated saved-response replay now persists pairs/messages/programs with lineage and hashes | Fixture data is not evidence of new teacher yield or semantic quality |
+| Combined two-device notebook | Distinct inert draft with exact material references; separate processes/budgets, persistent M2 reservations, teacher ledgers, bounded readiness/global timeout, semantic checks and aggregate partial outcomes; CPU tests and installed-wheel tiny-Qwen/saved-stage replay pass | Two-L4 fit, actual UUID API mapping, host RAM/disk pressure and Kaggle image parity remain unverified; zero external allowances and no live activation path |
 
 New packages and external limits are described in the [local continuation plan](../../docs/plan/2026-09-26-nvarc-source-teacher-continuation.md).
-The old identities and their used quotas stay frozen.
+The [combined notebook record](combined-notebook-001.md) contains separate
+offline staging and verification commands. The old identities and their used
+quotas stay frozen.
 
 ## M2/M3 bounded continuation (2026-09-25)
 

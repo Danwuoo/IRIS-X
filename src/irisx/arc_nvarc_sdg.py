@@ -291,7 +291,8 @@ def run_stage(stage: str, inputs: list[Mapping[str, Any]], prompt: str,
                                           "response_digest": digest_value(value)})
         except Exception as error:
             ledger["records"][key].update({"status": "failed",
-                                           "error_type": type(error).__name__})
+                                           "error_type": type(error).__name__,
+                                           "error_message": str(error)[:2000]})
         atomic_json(path, ledger)
     return ledger
 

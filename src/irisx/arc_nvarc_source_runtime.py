@@ -21,7 +21,8 @@ def run_source_profile(config_path: Path, visible_path: Path, output: Path, *,
                        profile: str, fixture_path: Path | None = None,
                        checkpoint: Path | None = None,
                        material_digest: str | None = None,
-                       bundle: Path | None = None, bundle_digest: str | None = None) -> dict:
+                       bundle: Path | None = None, bundle_digest: str | None = None,
+                       model_ready=None, call_observer=None) -> dict:
     from .arc_nvarc_upstream import source_bundle, qwen_cell
 
     if (bundle is None) != (bundle_digest is None):
@@ -32,13 +33,14 @@ def run_source_profile(config_path: Path, visible_path: Path, output: Path, *,
             qwen_cell(name)
         return _run_source_profile(config_path, visible_path, output, profile=profile,
                                    fixture_path=fixture_path, checkpoint=checkpoint,
-                                   material_digest=material_digest, bundle_digest=bundle_digest)
+                                   material_digest=material_digest, bundle_digest=bundle_digest,
+                                   model_ready=model_ready, call_observer=call_observer)
 
 
 def _run_source_profile(config_path: Path, visible_path: Path, output: Path, *,
                         profile: str, fixture_path: Path | None,
                         checkpoint: Path | None, material_digest: str | None,
-                        bundle_digest: str | None) -> dict:
+                        bundle_digest: str | None, model_ready=None, call_observer=None) -> dict:
     config = json.loads(config_path.read_bytes())
     if config.get("format") != "irisx/nvarc-source-stage-v1" or profile not in config.get("profiles", {}):
         raise ValidationError("unknown source integration stage/profile")
@@ -74,6 +76,8 @@ def _run_source_profile(config_path: Path, visible_path: Path, output: Path, *,
         adapter = TaskLocalAdapter(model, adaptation)
         backend = QwenCandidateBackend(model, task_adapter=adapter,
                                        dfs_max_expansions=int(candidate["dfs_max_expansions"]))
+    if model_ready is not None:
+        model_ready()
     results = []
     measurements = []
     for task in tasks:
@@ -82,7 +86,7 @@ def _run_source_profile(config_path: Path, visible_path: Path, output: Path, *,
             if torch.cuda.is_available():
                 torch.cuda.reset_peak_memory_stats()
         started = time.monotonic()
-        results.extend(solve_task(task, backend, candidate))
+        results.extend(solve_task(task, backend, candidate, call_observer=call_observer))
         if profile != "fixture":
             import torch
             try:

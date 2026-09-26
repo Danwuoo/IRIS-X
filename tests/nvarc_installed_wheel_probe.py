@@ -2,8 +2,11 @@
 
 import hashlib
 import json
+import math
 from pathlib import Path
+import os
 import sys
+import time
 
 root = Path(__file__).resolve().parent
 sys.path.insert(0, str(root / "site"))
@@ -23,6 +26,7 @@ from irisx.arc_nvarc_representation import export_trained_model, GridTokenizer
 from irisx.arc_nvarc_source_bundle import verify_bundle
 from irisx.canonical import canonical_bytes, digest_value
 from irisx.errors import ValidationError
+from irisx.arc_nvarc_combined import require, supervise, require_live_authorization
 import torch
 
 torch.set_num_threads(1)
@@ -67,11 +71,59 @@ assert observed["steps"] == 1 and result["training_identity_digest"] == identity
 assert result["measurements"][0]["ttt"]["steps"] == 1
 assert result["source_bundle_digest"] == digest
 assert not MANIFEST.exists() and not SOURCE.exists()
+
+def verify_tiny(output):
+    value = json.loads((output / "source-result.json").read_bytes())
+    observation = value["measurements"][0]["ttt"]
+    require(value["profile"] == "tiny" and value["material_digest"] == export_digest and
+            value["source_bundle_digest"] == digest and value["training_identity_digest"] == identity and
+            observation["status"] == "complete" and observation["steps"] == 1 and
+            math.isfinite(observation["last_loss"]), "independent tiny child verification failed")
+    calls = max(r["generation_calls_so_far"] for r in value["results"])
+    require(calls == 4, "tiny child call ceiling differs")
+    events = json.loads((output / "call-observations.json").read_bytes())["events"]
+    generation = [event for event in events if event["kind"] == "generation"]
+    require([(event["index"], event["status"]) for event in generation] ==
+            [(i, status) for i in range(1, 5) for status in ("reserved", "complete")],
+            "tiny child did not persist each reservation before completion")
+    return {"tiny_model_generation_calls": calls, "ttt_steps": 1}
+
+def verify_saved(output):
+    from irisx.arc_nvarc_sdg import validate_teacher_response
+    value = json.loads((output / "replay-result.json").read_bytes())
+    require(value["kind"] == "saved-response-stage-replay", "replay mislabeled")
+    for stage in ("summary", "mix", "input-logic", "output-logic"):
+        ledger = json.loads((output / "stage-ledgers" / (stage + ".json")).read_bytes())
+        require(ledger["reserved_calls"] == ledger["maximum_calls"] == 0, "saved replay claimed real calls")
+        for record in ledger["records"].values():
+            require(record["status"] == "complete" and record["response_digest"] == digest_value(record["response"]),
+                    "saved child record binding differs")
+            validate_teacher_response(stage, dict(record["response"]))
+    return {"teacher_calls": 0, "validated_saved_stages": 4}
+
+children = {branch: {"command": [sys.executable, "-I", str(root / "combined-child.py"), "--branch", branch,
+                                "--output", str(root / "combined-cpu" / branch)], "cwd": root}
+            for branch in ("m2", "m3")}
+combined = supervise(children, root / "combined-cpu", run_id="installed-tiny-and-replay",
+    plan_digest="offline-installed-probe", deadline=time.monotonic() + 120,
+    readiness_seconds=60, validators={"m2": verify_tiny, "m3": verify_saved})
+assert combined["outcome"] == "complete", json.dumps(combined)
+draft = json.loads((root / "combined-plan.json").read_bytes())
+try:
+    require_live_authorization(draft)
+except ValidationError as error:
+    assert "inert" in str(error)
+else:
+    raise AssertionError("installed combined draft activated")
 summary = {"installed_wheel": True, "repository_source_available": False, "network_calls": 0,
            "tiny_sft_steps": observed["steps"], "source_bundle_digest": digest,
            "ttt_steps": result["measurements"][0]["ttt"]["steps"],
            "generation_calls": max(x["generation_calls_so_far"] for x in result["results"]),
            "verification_calls": max(x["verification_calls_so_far"] for x in result["results"]),
-           "platform": sys.platform, "torch": torch.__version__}
+           "platform": sys.platform, "torch": torch.__version__,
+           "combined_cpu_probe": {"outcome": combined["outcome"],
+                                  "tiny_source_generation_calls": combined["branches"]["m2"]["actual_counters"]["tiny_model_generation_calls"],
+                                  **combined["branches"]["m3"]["actual_counters"],
+                                  "active_devices": "CPU only; no GPU evidence"}}
 (root / "probe-result.json").write_bytes(canonical_bytes(summary, newline=True))
 print(json.dumps(summary))

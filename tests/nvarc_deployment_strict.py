@@ -23,11 +23,17 @@ LOCAL = ROOT / ".irisx/arc-agi-2/qwen35-nvarc"
 
 def prepare_probe(root: Path) -> None:
     wheel = irisx_build_backend.build_wheel(str(root / "wheel"))
-    with zipfile.ZipFile(root / "wheel" / wheel) as archive:
-        archive.extractall(root / "site")
+    installed = subprocess.run([sys.executable, "-m", "pip", "install", "--no-index", "--no-deps",
+                                "--target", str(root / "site"), str(root / "wheel" / wheel)],
+                               capture_output=True, text=True, timeout=60)
+    if installed.returncode:
+        raise RuntimeError("isolated offline wheel install failed: " + installed.stderr)
     build_bundle(LOCAL / "source", TRIAL / "source-manifest.json", root / "source-bundle")
     shutil.copyfile(ROOT / "tests/nvarc_installed_wheel_probe.py", root / "probe.py")
+    shutil.copyfile(ROOT / "tests/nvarc_combined_probe_child.py", root / "combined-child.py")
+    shutil.copyfile(ROOT / "tests/fixtures/nvarc_sdg_saved_replay.json", root / "saved-replay.json")
     shutil.copyfile(TRIAL / "configs/source-integration-sft-4b-001.json", root / "config.json")
+    shutil.copyfile(TRIAL / "configs/m2-m3-combined-draft-001.json", root / "combined-plan.json")
 
 
 class DeploymentTests(unittest.TestCase):
@@ -43,6 +49,9 @@ class DeploymentTests(unittest.TestCase):
             self.assertEqual(0, check.returncode, check.stdout + check.stderr)
             observed = json.loads((root / "probe-result.json").read_bytes())
             self.assertEqual((1, 1, 4), (observed["tiny_sft_steps"], observed["ttt_steps"], observed["generation_calls"]))
+            self.assertEqual("complete", observed["combined_cpu_probe"]["outcome"])
+            self.assertEqual(0, observed["combined_cpu_probe"]["teacher_calls"])
+            self.assertEqual(4, observed["combined_cpu_probe"]["validated_saved_stages"])
             path = root / "source-bundle" / NOTEBOOK
             original = path.read_bytes()
             path.write_bytes(original + b" ")

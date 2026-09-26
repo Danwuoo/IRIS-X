@@ -2,6 +2,10 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-09-26-nvarc-combined-two-gpu-notebook.md`](plan/2026-09-26-nvarc-combined-two-gpu-notebook.md)
+  scopes owner-authorized local development of one notebook with isolated M2
+  and M3 GPU workers, offline validation and an inert execution proposal.
+
 - [`plan/2026-09-24-nvarc-source-integration.md`](plan/2026-09-24-nvarc-source-integration.md)
   records owner-authorized source acquisition, direct integration and
   differential validation for the Qwen3.5 NVARC port; its later GPU and teacher
