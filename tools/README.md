@@ -28,3 +28,14 @@ model invocation or provider call. `verify_nvarc_deployment.py` exercises
 the installed wheel with tiny CPU model work in an offline WSL mount/network
 namespace. See the [continuation plan](../docs/plan/2026-09-26-nvarc-source-teacher-continuation.md)
 for prerequisites, evidence limits and separate external authorization.
+
+`nvarc_continuation_authorization.py` binds Decision 0033 to the unchanged
+reviewed drafts; the staging tools accept an explicit authorization file and
+their preflights require `--approved` for runnable packages.
+`materialize_nvarc_teacher_tokenizer.py --fetch` deliberately acquires only
+the six pinned tokenizer/configuration files. Run this separately from the
+offline `preflight_nvarc_teacher_tokenizer.py`; neither tool invokes a model.
+`verify_nvarc_continuation.py` checks the retrieved M2 training/export/source
+chain or M3 dependent response ledgers, hardware, counters and artifact hashes
+without model calls. Complete teacher programs still require separate sandbox
+replay and pair validation.

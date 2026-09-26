@@ -123,3 +123,6 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes one distinct scratch-backed M2 full-parameter ARC-SFT kernel and
   one distinct tokenizer-repaired M3 local Qwen teacher kernel, each private,
   bounded, free, and limited to one terminal retrieval without retry.
+- [`0033-authorize-nvarc-source-and-direct-teacher.md`](0033-authorize-nvarc-source-and-direct-teacher.md)
+  authorizes the retained-export source continuation, a four-stage direct
+  teacher, exact tokenizer preflight and local artifact verification.

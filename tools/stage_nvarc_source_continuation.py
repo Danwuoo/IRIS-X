@@ -1,4 +1,4 @@
-"""Build the inert export-only M2 continuation and verify retained training evidence."""
+"""Stage the export-only M2 continuation; activation needs exact owner binding."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ sys.path[:0] = [str(ROOT / "src"), str(ROOT)]
 from tools import irisx_build_backend as build
 from tools.stage_nvarc_m2_fsdp_sft import MODEL
 from tools.verify_nvarc_m2_fsdp_sft import verify_training_export
+from tools.nvarc_continuation_authorization import authorize
 from irisx.arc_nvarc_source_bundle import build_bundle
 from irisx.arc_nvarc_source_continuation import RUN, EXPORT, TRAINING, validate_plan
 from irisx.canonical import canonical_bytes, digest_value
@@ -29,7 +30,7 @@ def sha(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def stage(output: Path) -> dict:
+def stage(output: Path, authorization: Path | None = None) -> dict:
     if output.exists():
         raise ValidationError("new continuation package directory required")
     run = RETRIEVED / "nvarc-m2-fsdp-sft-002"
@@ -37,8 +38,12 @@ def stage(output: Path) -> dict:
                                      RETRIEVED / "sequences.jsonl", run)
     if checked["identity"] != TRAINING or checked["export_chain"]["export_material_digest"] != EXPORT:
         raise ValidationError("retained training identity differs")
-    plan = json.loads((TRIAL / "configs/m2-source-cont-draft-001.json").read_bytes())
+    draft = (TRIAL / "configs/m2-source-cont-draft-001.json").read_bytes()
+    plan = json.loads(draft)
     validate_plan(plan, approved=False)
+    if authorization is not None:
+        plan = authorize(plan, draft, authorization)
+        validate_plan(plan, approved=True)
     binding = build_bundle(LOCAL / "source", TRIAL / "source-manifest.json", output / "source-bundle")
     plan["source_bundle_digest"] = binding["bundle_digest"]
     evidence = {"format": "irisx/nvarc-m2-retained-training-export-v1",
@@ -72,8 +77,11 @@ def stage(output: Path) -> dict:
         (output / files[name]).write_bytes(payloads[name])
     # A separate local copy is ready for a future private upload. No provider calls.
     dataset = output / "model-dataset"
-    shutil.copytree(run / "export", dataset / "export")
-    (dataset / "training-evidence.json").write_bytes(payloads["training_evidence"])
+    # Match the successful compact-model Dataset: model files at the root,
+    # without provider archive extraction or folder-shape assumptions. The
+    # full truth-free training evidence is embedded in the kernel; the model
+    # manifest itself retains the training identity and base/export lineage.
+    shutil.copytree(run / "export", dataset)
     (dataset / "dataset-metadata.json").write_bytes(canonical_bytes({
         "title": "IRIS-X NVARC M2 SFT export 002", "id": plan["model_dataset_id"],
         "licenses": [{"name": "other"}]}, newline=True))
@@ -97,7 +105,8 @@ def stage(output: Path) -> dict:
                 "dataset_sources": [plan["model_dataset_id"], plan["wheel_dataset_id"]],
                 "kernel_sources": [], "model_sources": []}
     (kernel / "kernel-metadata.json").write_bytes(canonical_bytes(metadata, newline=True))
-    summary = {"format": "irisx/nvarc-m2-source-continuation-stage-v1", "approved": False,
+    summary = {"format": "irisx/nvarc-m2-source-continuation-stage-v1", "approved": plan["approved"],
+               "draft_plan_sha256": sha(draft),
                "run_id": RUN, "plan_digest": digest_value(plan), "payload_sha256": hashes,
                "source_bundle_digest": binding["bundle_digest"], "export_material_digest": EXPORT,
                "notebook_sha256": sha((kernel / "kaggle-notebook.ipynb").read_bytes()),
@@ -109,4 +118,6 @@ def stage(output: Path) -> dict:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    print(json.dumps(stage(parser.parse_args().output), indent=2))
+    parser.add_argument("--authorization", type=Path)
+    args = parser.parse_args()
+    print(json.dumps(stage(args.output, args.authorization), indent=2))

@@ -29,6 +29,7 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
             output.exists()):
         raise ValidationError("exact owner-approved small teacher run required")
     if validated and (plan.get("run_id") != "nvarc-m3-teacher-small-004" or
+                      plan.get("owner_decision") != "Decision 0033" or
                       plan.get("stage_limits") != LIMITS or plan.get("enable_thinking") is not False or
                       plan.get("maximum_total_reserved_tokens") != TOTAL_TOKENS or
                       json.loads(prompts_path.read_bytes()) != PROMPTS):

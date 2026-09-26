@@ -1,4 +1,4 @@
-"""Offline review of the distinct, inert M2 export-only continuation."""
+"""Offline review of the distinct M2 export-only continuation."""
 
 import argparse
 import ast
@@ -23,8 +23,10 @@ def sha(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def preflight(package: Path) -> dict:
+def preflight(package: Path, *, approved: bool = False) -> dict:
     summary = json.loads((package / "stage-summary.json").read_bytes())
+    if summary.get("approved") is not approved:
+        raise ValidationError("continuation approval state differs")
     notebook = package / "kernel/kaggle-notebook.ipynb"
     metadata = package / "kernel/kernel-metadata.json"
     if (sha(notebook.read_bytes()) != summary["notebook_sha256"] or
@@ -48,7 +50,7 @@ def preflight(package: Path) -> dict:
     if source != expected:
         raise ValidationError("continuation executable differs from reviewed template")
     plan = json.loads(payloads["plan"])
-    validate_plan(plan, approved=False)
+    validate_plan(plan, approved=approved)
     if digest_value(plan) != summary["plan_digest"] or summary.get("external_calls") != 0:
         raise ValidationError("continuation stage identity differs")
     for key, value in payloads.items():
@@ -66,31 +68,43 @@ def preflight(package: Path) -> dict:
             raise ValidationError("continuation plan input digest differs")
     verify_bundle(package / "source-bundle", plan["source_bundle_digest"])
     dataset = package / "model-dataset"
+    material = json.loads((dataset / "material-manifest.json").read_bytes())
+    expected_files = {entry["path"] for entry in material["files"]} | {
+        "material-manifest.json", "dataset-metadata.json"}
     if (set(path.name for path in dataset.iterdir()) !=
-            {"export", "training-evidence.json", "dataset-metadata.json"} or
+            expected_files or
             any(path.is_symlink() for path in dataset.iterdir()) or
             json.loads((dataset / "dataset-metadata.json").read_bytes()).get("id") != plan["model_dataset_id"]):
         raise ValidationError("continuation Dataset root inventory or identity differs")
-    verify_model_material(package / "model-dataset/export", EXPORT)
-    if (package / "model-dataset/training-evidence.json").read_bytes() != payloads["training_evidence"]:
-        raise ValidationError("continuation Dataset provenance differs")
+    verify_model_material(dataset, EXPORT, allowed_extra_files={"dataset-metadata.json"})
     meta = json.loads(metadata.read_bytes())
     if (meta.get("is_private") is not True or meta.get("enable_internet") is not False or
-            meta.get("id") != "DRAFT-DO-NOT-PUSH/" + RUN or meta.get("machine_shape") != "NvidiaL4" or
+            meta.get("id") != plan["kernel_id"] or meta.get("machine_shape") != "NvidiaL4" or
             meta.get("dataset_sources") != [plan["model_dataset_id"], plan["wheel_dataset_id"]] or
             meta.get("competition_sources") != ["arc-prize-2026-arc-agi-2"]):
         raise ValidationError("continuation provider boundaries differ")
+    # Exercise an inert copy of the exact notebook guard, never its approved body.
+    inert_payloads = dict(bindings["PAYLOADS"])
+    inert_plan = {**plan, "approved": False}
+    inert_bytes = json.dumps(inert_plan).encode()
+    inert_payloads["plan"] = base64.b64encode(inert_bytes).decode()
+    inert_hashes = {**bindings["HASHES"], "plan": sha(inert_bytes)}
+    guard_source = (ROOT / "tools/nvarc_source_continuation_notebook.py.tmpl").read_text()
+    for key, value in (("PAYLOADS", inert_payloads), ("HASHES", inert_hashes), ("FILES", bindings["FILES"])):
+        guard_source = guard_source.replace("__" + key + "__", repr(value))
     with tempfile.TemporaryDirectory() as temp:
         script = Path(temp) / "guard.py"
-        script.write_text(source, encoding="utf-8")
+        script.write_text(guard_source, encoding="utf-8")
         guard = subprocess.run([sys.executable, str(script)], capture_output=True, text=True, timeout=10)
         if guard.returncode == 0 or "exact owner-approved source continuation required" not in guard.stderr:
             raise ValidationError("continuation draft did not stop before execution")
-    return {"run_id": RUN, "approved": False, "external_calls": 0, "draft_guard_verified": True,
+    return {"run_id": RUN, "approved": approved, "external_calls": 0, "draft_guard_verified": True,
             "source_bundle_digest": plan["source_bundle_digest"], "export_material_digest": EXPORT}
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("package", type=Path)
-    print(json.dumps(preflight(parser.parse_args().package), indent=2))
+    parser.add_argument("--approved", action="store_true")
+    args = parser.parse_args()
+    print(json.dumps(preflight(args.package, approved=args.approved), indent=2))

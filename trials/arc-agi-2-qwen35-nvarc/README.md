@@ -13,8 +13,11 @@ The owner requested development directly on main after confirming the NVARC
 worktree was already merged. The [local continuation plan](../../docs/plan/2026-09-26-nvarc-source-teacher-continuation.md)
 adds a portable source bundle, an export-only M2 continuation, complete-stage
 teacher validation and retained SDG data artifacts. New M2 `source-cont-001`
-and M3 `teacher-small-004` packages are inert proposals, with no new external
-quota. The earlier dated sections below retain their historical observations
+and M3 `teacher-small-004` were prepared as inert proposals. The owner's
+subsequent Kaggle execution instruction is now recorded in
+[Decision 0033](../../docs/decisions/0033-authorize-nvarc-source-and-direct-teacher.md),
+which permits their bounded private execution and artifact verification.
+The earlier dated sections below retain their historical observations
 and are superseded by this section.
 
 ## M2–M3 local continuation (2026-09-25)

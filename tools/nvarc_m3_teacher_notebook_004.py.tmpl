@@ -18,7 +18,7 @@ for name, encoded in PAYLOADS.items():
     if hashlib.sha256(base64.b64decode(encoded)).hexdigest() != HASHES[name]:
         raise RuntimeError("embedded SDG teacher material differs")
 plan = json.loads(base64.b64decode(PAYLOADS["plan"]))
-if (plan.get("approved") is not True or not plan.get("owner_decision") or
+if (plan.get("approved") is not True or plan.get("owner_decision") != "Decision 0033" or
         plan.get("run_id") != "nvarc-m3-teacher-small-004" or
         plan.get("kernel_id") != "danielwuu/nvarc-m3-teacher-small-004" or
         plan.get("maximum_paid_usd") != 0 or plan.get("maximum_teacher_calls") != 4):

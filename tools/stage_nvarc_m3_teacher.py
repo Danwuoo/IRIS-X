@@ -17,6 +17,7 @@ import irisx_build_backend as build
 from irisx.canonical import canonical_bytes, digest_value
 from irisx.errors import ValidationError
 from irisx.arc_nvarc_teacher_profile import LIMITS, TOTAL_TOKENS, PROFILE, PROMPTS
+from nvarc_continuation_authorization import authorize
 
 CONFIG = ROOT / "trials/arc-agi-2-qwen35-nvarc/configs"
 SOURCE = ROOT / ".irisx/arc-agi-2/qwen35-nvarc/source"
@@ -49,8 +50,8 @@ def stage(output: Path = DEFAULT_OUT, authorization: Path | None = None,
                       plan.get("enable_thinking") is not False):
         raise ValidationError("validated teacher draft differs")
     if validated and authorization is not None:
-        raise ValidationError("teacher 004 is local-review-only until new owner direction")
-    if authorization is not None:
+        plan = authorize(plan, draft_bytes, authorization)
+    if authorization is not None and not validated:
         binding = json.loads(authorization.read_bytes())
         if (binding.get("approved") is not True or
                 binding.get("draft_plan_sha256") != sha(draft_bytes) or

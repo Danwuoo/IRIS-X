@@ -208,6 +208,15 @@ The owner directs continued local development on main. The distinct M2
 inert proposals only. No new Dataset mutation, kernel, retrieval, scoring or
 teacher invocation is authorized by their local preparation.
 
+The owner's subsequent instruction to execute Kaggle and continue NVARC is
+recorded in Decision 0033. It authorizes one private export Dataset, the distinct
+M2 source continuation and M3 direct teacher kernel, each with one submission
+and terminal retrieval, under the reviewed USD 0 and workload limits. Exact
+tokenizer acquisition and local verification/sandbox replay are included.
+Preserve consumed identities. For this batch the owner explicitly chose agent
+monitoring through terminal state, one retrieval each, and continued development;
+the earlier wait-for-owner monitoring preference is superseded for these runs.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

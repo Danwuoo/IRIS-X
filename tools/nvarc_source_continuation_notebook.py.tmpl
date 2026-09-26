@@ -19,7 +19,7 @@ for name, encoded in PAYLOADS.items():
     if hashlib.sha256(base64.b64decode(encoded)).hexdigest() != HASHES[name]:
         raise RuntimeError("embedded source-continuation material differs")
 plan = json.loads(base64.b64decode(PAYLOADS["plan"]))
-if (plan.get("approved") is not True or not plan.get("owner_decision") or
+if (plan.get("approved") is not True or plan.get("owner_decision") != "Decision 0033" or
         plan.get("run_id") != "nvarc-m2-source-cont-001" or
         plan.get("kernel_id") != "danielwuu/nvarc-m2-source-cont-001" or
         plan.get("maximum_paid_usd") != 0 or plan.get("maximum_source_generation_calls") != 4):
@@ -97,13 +97,13 @@ from irisx.arc_nvarc_source_bundle import verify_bundle
 verify_bundle(work / "source-bundle", plan["source_bundle_digest"])
 model_roots = [Path("/kaggle/input/datasets/danielwuu/irisx-nvarc-m2-sft-export-002"),
                Path("/kaggle/input/irisx-nvarc-m2-sft-export-002")]
-models = [root for root in model_roots if (root / "export/material-manifest.json").is_file()]
+models = [root for root in model_roots if (root / "material-manifest.json").is_file()]
 if len(models) != 1:
     raise RuntimeError("exact private SFT export mount required")
 command = [sys.executable, "-m", "irisx.arc_nvarc_source_continuation",
            "--plan", str(paths["plan"]), "--config", str(paths["source_config"]),
            "--visible", str(paths["visible"]), "--bundle", str(work / "source-bundle"),
-           "--model", str(models[0] / "export"), "--evidence", str(paths["training_evidence"]),
+           "--model", str(models[0]), "--evidence", str(paths["training_evidence"]),
            "--output", str(work / plan["run_id"])]
 worker = subprocess.Popen(command, start_new_session=True, env=os.environ.copy())
 remaining = max(1, int(plan["maximum_kernel_wall_seconds"] - (time.monotonic() - START) - 30))

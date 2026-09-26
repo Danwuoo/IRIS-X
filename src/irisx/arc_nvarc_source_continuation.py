@@ -33,7 +33,7 @@ def validate_plan(plan: dict, *, approved: bool) -> None:
             plan.get("maximum_accepted_kernel_versions") != 1):
         raise ValidationError("source continuation identity or bounds differ")
     if approved:
-        if not plan.get("owner_decision") or plan.get("kernel_id") != "danielwuu/" + RUN:
+        if plan.get("owner_decision") != "Decision 0033" or plan.get("kernel_id") != "danielwuu/" + RUN:
             raise ValidationError("exact new owner-approved source continuation required")
     elif plan.get("owner_decision") is not None or plan.get("kernel_id") != "DRAFT-DO-NOT-PUSH/" + RUN:
         raise ValidationError("source continuation draft must be inert")

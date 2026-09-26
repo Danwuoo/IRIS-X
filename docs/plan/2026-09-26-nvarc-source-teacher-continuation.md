@@ -1,6 +1,6 @@
 # NVARC source/export continuation and complete teacher stages
 
-Status: local development on `main`; external packages are review-only.
+Status: implementation on `main`; execution authorized by Decision 0033.
 The owner requested merging the NVARC worktree and continuing on main.
 Worktree `51fa` at `00db35d` was already contained by merge `f30baa8`;
 `git merge --ff-only 00db35d` returned `Already up to date`. The separate
@@ -9,7 +9,37 @@ P2 worktree, remote push or new worktree is part of this continuation.
 
 Decision 0032's [terminal evidence](../../trials/arc-agi-2-qwen35-nvarc/m2-m3-decision-0032-terminal.md)
 supersedes its earlier pending-execution status. The owner authorized local
-development here; no new provider execution has been authorized.
+development here and subsequently directed Kaggle execution and continued
+development. [Decision 0033](../decisions/0033-authorize-nvarc-source-and-direct-teacher.md)
+now governs the two distinct continuations. Earlier review-only observations
+below retain their historical meaning.
+
+## Approved execution preparation
+
+The exact six tokenizer/configuration files were acquired from the pinned
+revision and checked against the existing model manifest. Transformers 5.8.1
+loads its `Qwen2Tokenizer`; direct-mode template and tensor handling passed.
+The exact summary prompt has 143 input tokens. Synthetic prior-output budget
+probes have 740, 1,142 and 4,218 tokens for the later three stages, below their
+4,096, 4,096 and 8,192 caps. These are budget probes, not actual teacher replies;
+runtime still checks every actual dependent input. No model calls occurred.
+
+The approved M2 Dataset uses the successful flat model-file layout. Its
+material manifest retains the original training identity; detailed training
+evidence is embedded in the kernel. No folder/archive extraction convention
+is assumed. All model shard bytes and the export digest remain unchanged.
+Authorization guards bind exactly Decision 0033 and unchanged draft hashes;
+old decisions cannot activate these packages.
+
+| Binding | M2 `source-cont-approved-001` | M3 `teacher-direct-approved-004` |
+| --- | --- | --- |
+| Plan SHA-256 | `643f0b65ae0f818adf37000b4dd2780fb615cf271c8c5fd8aec260580fb96781` | `d2bdb4e9507c41e6f23efa7aeb850025090da8860cf7381f8c00e523d60da402` |
+| Notebook SHA-256 | `afa16185557d119c130a137d9d8c2570e924b9ff090ed5292e74c9bd88186d8f` | `8a5b491c12b694adfb4e872a957d9217a3ee50bd0de3c667428ee2d40f9be2ef` |
+| Runtime wheel SHA-256 | `48de077bfb3c0cf4abddfb16211882fd65db8cedd712ae7c22fc8531192f1edf` | same |
+
+Approved packages and the atomic `decision-0033-execution-ledger.json` live
+under `.irisx/arc-agi-2/qwen35-nvarc/m2-m3/`. Source identity remains
+`sha256:625b010706dabfce5df58c036f5921af4e782da133bd27038bc442abdc79e1a4`.
 
 ## M2 deployment repair
 

@@ -71,7 +71,9 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
                               "nvarc-m2-fsdp-feasibility-003": "Decision 0030"}
                              .get(plan.get("run_id"), "Decision 0028"))
         decision = str(plan.get("owner_decision", ""))
-        if plan.get("run_id") == "nvarc-m3-teacher-small-003":
+        if plan.get("run_id") == "nvarc-m3-teacher-small-004":
+            decision_ok = decision == "Decision 0033"
+        elif plan.get("run_id") == "nvarc-m3-teacher-small-003":
             decision_ok = bool(decision.strip()) and not decision.startswith(
                 ("Decision 0028", "Decision 0029", "Decision 0030", "Decision 0031"))
         elif plan.get("run_id") == "nvarc-m3-teacher-small-002":
@@ -128,19 +130,20 @@ def preflight(package: Path, *, approved: bool = False) -> dict:
             if any((package / (name + ".json")).read_bytes() != decoded[name]
                    for name in ("plan", "seed", "prompts")):
                 raise ValidationError("teacher 004 review payload differs")
-            if (approved or plan.get("teacher_profile") != PROFILE or
+            if (plan.get("teacher_profile") != PROFILE or
                     plan.get("stage_limits") != LIMITS or plan.get("enable_thinking") is not False or
                     plan.get("maximum_total_reserved_tokens") != TOTAL_TOKENS or
                     json.loads(decoded["prompts"]) != PROMPTS or
                     plan.get("seed_train_parent_ids") != ["833966f4", "6150a2bd"] or
                     plan.get("maximum_teacher_calls") != 4 or plan.get("maximum_model_generations") != 4 or
                     plan.get("maximum_paid_usd") != 0 or plan.get("retry") is not False or
-                    metadata.get("id") != "DRAFT-DO-NOT-PUSH/nvarc-m3-teacher-small-004"):
-                raise ValidationError("local-review-only teacher 004 profile differs")
+                    metadata.get("id") != ("danielwuu/" if approved else "DRAFT-DO-NOT-PUSH/") + plan["run_id"]):
+                raise ValidationError("teacher 004 profile differs")
         if metadata.get("competition_sources") != plan.get("competition_sources", []):
             raise ValidationError("teacher L4 transport source mount differs")
         if approved and (plan.get("maximum_teacher_calls") != 4 or
-                         plan.get("maximum_total_reserved_tokens") != 20480 or
+                         plan.get("maximum_total_reserved_tokens") !=
+                         (TOTAL_TOKENS if plan.get("run_id") == "nvarc-m3-teacher-small-004" else 20480) or
                          plan.get("seed_train_parent_ids") != ["833966f4", "6150a2bd"]):
             raise ValidationError("approved teacher ceilings differ")
         if (metadata.get("dataset_sources") != [plan["source_dataset_id"]] or
