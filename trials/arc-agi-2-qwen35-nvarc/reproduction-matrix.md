@@ -1,22 +1,28 @@
 # Component completion and reproduction gaps
 
-## Current bounded evidence (2026-09-26)
+## Current bounded evidence (2026-09-27)
 
-The [Decision 0032 terminal record](m2-m3-decision-0032-terminal.md) supersedes
-the pending/unexecuted statements in the older checkpoints below.
+The [Decision 0032 terminal record](m2-m3-decision-0032-terminal.md) and
+[combined 003 Editor diagnosis](combined-003-editor-diagnosis.md) supersede
+the pending/unexecuted statements in the older checkpoints below. Runtime
+completion does not establish usable candidates, accepted SDG data or ARC
+quality. The Editor observations do not establish background kernel status.
 
 | Component | Retained observation | Remaining gap |
 | --- | --- | --- |
 | M2 SFT/export | Four-L4 eight-step full-parameter SFT, 2,578 tokens, 32 forwards, session resume and digest-verified HF export | No retained optimizer bytes; bounded training does not establish full-scale ARC-SFT quality |
-| Post-SFT source solve | Failed on missing source manifest before TTT; local repair carries a separately verified source bundle | Decision 0034's continuation version 1 is submitted but unqueried; no newly verified result or nonempty candidate ranking |
-| M3 teacher | Four completed calls, 11,836 actual tokens, four truncated replies | Decision 0034's direct-mode version 1 is submitted but unqueried; no accepted generated SDG pairs |
+| Post-SFT source solve | Combined 003 Editor completed one TTT step/108 training tokens and four generation calls; every legal root digit was below the fixed 0.2 cumulative-probability threshold | Zero candidates and zero ranking calls; the trace identifies root pruning, not the upstream cause of model uncertainty or the quality of a lower-threshold answer |
+| M3 teacher | Combined 003 Editor completed all four EOS/schema-valid stages with 1,071 input and 459 output tokens | Summary, composition and generated input/output programs violate the requested semantics; zero accepted generated SDG pairs |
 | SDG replay | Existing isolated saved-response replay now persists pairs/messages/programs with lineage and hashes | Fixture data is not evidence of new teacher yield or semantic quality |
-| Combined two-device notebook | Distinct inert draft with exact material references; separate processes/budgets, persistent M2 reservations, teacher ledgers, bounded readiness/global timeout, semantic checks and aggregate partial outcomes; CPU tests and installed-wheel tiny-Qwen/saved-stage replay pass | Two-L4 fit, actual UUID API mapping, host RAM/disk pressure and Kaggle image parity remain unverified; zero external allowances and no live activation path |
+| Combined two-device notebook | Owner-supplied combined 003 diagnostics bind distinct L4 workers, both model-ready events and terminal records; both branches completed in 306.509 seconds | Verified only for this bounded workload; successful terminal checks did not ensure semantic correctness. No usable M2/M3 scientific output or new execution authority follows |
+| TRM and joint result | Pinned TRM CPU train/reload/TTT/inference and a candidate passed through source-profile Qwen verification in the retained local checks | Original-scale GPU training, usable Qwen branch candidates, full joint execution and clean ARC quality remain unestablished |
 
-New packages and external limits are described in the [local continuation plan](../../docs/plan/2026-09-26-nvarc-source-teacher-continuation.md).
-The [combined notebook record](combined-notebook-001.md) contains separate
-offline staging and verification commands. The old identities and their used
-quotas stay frozen.
+The next local engineering work is semantic contract validation with retained
+wrong teacher responses as negative replay cases. A root-threshold experiment
+requires a distinct scientific proposal; additional expansion/token allowance
+alone cannot overcome the observed root pruning. Full-method acceptance remains
+incomplete. Old identities, raw responses, packages and consumed quotas stay
+frozen; no new provider request or model work was used for this status update.
 
 ## M2/M3 bounded continuation (2026-09-25)
 
