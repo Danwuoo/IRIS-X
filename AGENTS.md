@@ -282,6 +282,18 @@ SDG pair is accepted. This is a compute-complete observation, not promotion or
 new execution authority. Preserve it at
 `trials/arc-agi-2-qwen35-nvarc/combined-003-editor-diagnosis.md`.
 
+Decision 0038 records the owner's request for a single new combined 004
+owner-Editor notebook and downloadable `結果.zip`. It authorizes exactly one
+private QUICK_SAVE with paired M2 thresholds (one shared TTT, twelve calls) and
+semantic M3 (at most four calls, 28,160 reserved tokens and 44 isolated program
+invocations). Existing materials, two distinct L4 workers, Internet disabled,
+USD 0 and the 1,800-second session remain bound. Stop at the sole save receipt;
+no agent run, status/log/output request, retrieval, Dataset mutation, monitoring
+or automatic retry is authorized. Status is
+`trials/arc-agi-2-qwen35-nvarc/combined-notebook-004-editor.md`.
+The sole QUICK_SAVE was accepted as version 1 and is consumed. No agent session
+was started; runtime remains unobserved pending the owner's Editor report.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

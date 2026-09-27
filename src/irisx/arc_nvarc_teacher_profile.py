@@ -41,6 +41,9 @@ Input generator (reference only):
 
 
 def profile_prompts(profile):
+    if profile == "qwen-rule-contract-v3":
+        from .arc_nvarc_semantics import PROMPTS as SEMANTIC_PROMPTS
+        return SEMANTIC_PROMPTS
     if profile == PROFILE:
         return PROMPTS
     from .arc_nvarc_teacher_spec import PROFILE as SPEC_PROFILE, PROMPTS as SPEC_PROMPTS

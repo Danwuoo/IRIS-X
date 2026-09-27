@@ -1,0 +1,209 @@
+"""Decision 0038 combined 004: saved without running; owner starts in Editor."""
+import base64
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import time
+
+START = time.monotonic()
+PAYLOADS = __PAYLOADS__
+HASHES = __HASHES__
+FILES = __FILES__
+RUN = "nvarc-m2-m3-combined-004"
+work = (Path("/kaggle/working") if Path("/kaggle/working").is_dir() else Path.cwd()) / RUN
+if work.exists():
+    raise RuntimeError("new combined output required; prior run cannot be resumed")
+work.mkdir(parents=True)
+phase = "payload-validation"
+plan_digest = None
+launched = False
+setup_armed = False
+previous_alarm_handler = None
+
+def save(name, value):
+    path = work / name
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(json.dumps(value, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8")
+    os.replace(temporary, path)
+
+def emit(branch, stage, **details):
+    with (work / "startup-events.jsonl").open("a", encoding="utf-8") as stream:
+        stream.write(json.dumps({"branch": branch, "phase": stage,
+            "elapsed_seconds": time.monotonic() - START, "run_id": RUN,
+            "plan_digest": plan_digest, "package_payload_sha256": HASHES, **details}, sort_keys=True) + "\n")
+
+def remaining(limit, ceiling):
+    value = min(ceiling, limit - time.monotonic())
+    if value <= 0:
+        raise RuntimeError("bounded shared setup deadline exceeded")
+    return value
+
+__HARDWARE_HELPER__
+
+__ZIP_HELPER__
+
+try:
+    emit("shared", phase)
+    if set(PAYLOADS) != set(HASHES) or set(PAYLOADS) != set(FILES):
+        raise RuntimeError("combined payload inventory differs")
+    decoded = {}
+    for name, encoded in PAYLOADS.items():
+        value = base64.b64decode(encoded, validate=True)
+        if hashlib.sha256(value).hexdigest() != HASHES[name]:
+            raise RuntimeError("combined embedded payload differs: " + name)
+        decoded[name] = value
+    plan = json.loads(decoded["plan"])
+    plan_digest = "sha256:" + hashlib.sha256(json.dumps(plan, ensure_ascii=False,
+        allow_nan=False, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    phase = "execution-guard"
+    emit("shared", phase)
+    if plan_digest != __PLAN_DIGEST__:
+        raise RuntimeError("combined draft is inert; candidate plan binding differs")
+    if plan.get("approved") is not True or plan.get("owner_decision") != "Decision 0038" or plan.get("execution_control") != {"agent_start": False, "owner_editor_start": True, "save_type": "QUICK_SAVE"}:
+        raise RuntimeError("combined draft is inert; exact owner-Editor approval required")
+
+    os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", HF_DATASETS_OFFLINE="1",
+                      TOKENIZERS_PARALLELISM="false", WANDB_DISABLED="true", PYTHONIOENCODING="utf-8")
+    setup_deadline = START + plan["maximum_setup_seconds"]
+    work_deadline = START + plan["maximum_notebook_wall_seconds"] - plan["terminal_reserve_seconds"]
+    if os.name != "posix":
+        raise RuntimeError("prepared Kaggle setup requires POSIX deadline signals")
+    def setup_expired(signum, frame):
+        raise TimeoutError("shared preparation exceeded its 300-second ceiling")
+    previous_alarm_handler = signal.signal(signal.SIGALRM, setup_expired)
+    signal.setitimer(signal.ITIMER_REAL, remaining(setup_deadline, 300))
+    setup_armed = True
+    phase = "hardware-inventory"
+    emit("shared", phase)
+    # Parent uses preinstalled Torch for inventory; neither model loads here.
+    import torch
+    smi = subprocess.run(["nvidia-smi", "--query-gpu=index,name,memory.total,uuid",
+                          "--format=csv,noheader,nounits"], capture_output=True, text=True,
+                         check=True, timeout=remaining(setup_deadline, 30))
+    inventory = collect_hardware_inventory(torch, smi.stdout,
+        lambda raw: save("hardware-raw.json", raw))
+    save("hardware-inventory.json", {"inventory": inventory, "torch": torch.__version__,
+                                    "cuda_build": torch.version.cuda})
+    phase = "mount-resolution"
+    emit("shared", phase)
+    def mount(dataset, marker):
+        owner, slug = dataset.split("/")
+        roots = [Path("/kaggle/input/datasets") / owner / slug, Path("/kaggle/input") / slug]
+        matches = [p for p in roots if (p / marker).is_file()]
+        if len(matches) != 1:
+            raise RuntimeError("exact Dataset mount required: " + dataset)
+        return matches[0]
+    base = mount(plan["branches"]["m3"]["source_dataset_id"], "peft-0.21.0-py3-none-any.whl")
+    # M2 export mount is branch-specific; a missing export must not stop M3.
+    m2 = plan["branches"]["m2"]["model_dataset_id"].split("/")
+    model_roots = [Path("/kaggle/input/datasets") / m2[0] / m2[1], Path("/kaggle/input") / m2[1]]
+    matches = [p for p in model_roots if (p / "material-manifest.json").is_file()]
+    paths = {"m2_model": str(matches[0]) if len(matches) == 1 else str(work / "missing-or-ambiguous-m2-export"),
+             "m3_model": str(base), "bundle": str(work / "source-bundle")}
+    save("mount-preflight.json", {"base": str(base), "m2_candidates": [str(p) for p in matches]})
+    phase = "dependency-setup"
+    emit("shared", phase)
+    manifest = json.loads(decoded["wheel_manifest"])
+    entries = {entry["path"]: entry for entry in manifest["files"]}
+    for filename in ("transformers-5.8.1-py3-none-any.whl", "accelerate-1.10.1-py3-none-any.whl",
+                     "peft-0.21.0-py3-none-any.whl",
+                     "safetensors-0.8.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+                     "tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+                     "numpy-2.2.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"):
+        entry, path = entries.get(filename), base / filename
+        if entry is None or not path.is_file() or path.stat().st_size != entry["byte_size"]:
+            raise RuntimeError("offline dependency binding missing: " + filename)
+        digest = hashlib.sha256()
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                remaining(setup_deadline, 1)
+                digest.update(chunk)
+        if "sha256:" + digest.hexdigest() != entry["content_digest"]:
+            raise RuntimeError("offline dependency digest differs: " + filename)
+    if importlib.util.find_spec("torchao") is not None:
+        subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "torchao"],
+                       check=True, timeout=remaining(setup_deadline, 60))
+    if importlib.util.find_spec("torchao") is not None:
+        raise RuntimeError("optional incompatible torchao remains")
+    for name, value in decoded.items():
+        relative = Path(FILES[name])
+        if relative.is_absolute() or ".." in relative.parts or ":" in FILES[name] or "\\" in FILES[name]:
+            raise RuntimeError("unsafe embedded payload member")
+        path = work / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(value)
+        paths[name] = str(path)
+    paths["sdg_bundle"] = str(work / "sdg-source")
+    paths["sandbox_dependencies"] = str(work / "sandbox-dependencies")
+    paths["numpy_wheel"] = str(base / "numpy-2.2.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
+    subprocess.run([sys.executable, "-m", "pip", "install", "--no-index", "--find-links", str(base),
+                    "transformers==5.8.1", "safetensors==0.8.0", "tokenizers==0.22.2",
+                    "accelerate==1.10.1", "peft==0.21.0", paths["runtime_wheel"]],
+                   check=True, timeout=remaining(setup_deadline, 180))
+    remaining(setup_deadline, 1)
+    from irisx.arc_nvarc_combined import atomic, select_devices, supervise, completion_failure
+    from irisx.arc_nvarc_editor004 import require_editor_authorization
+    from irisx.canonical import digest_value
+    from irisx.arc_nvarc_editor004 import verify_branch, partial_counts
+    require_editor_authorization(plan)
+    phase = "shared-preparation-verified"
+    emit("shared", phase)
+    hardware = select_devices(inventory, plan["device_indices"])
+    atomic(work / "hardware.json", hardware)
+    atomic(work / "paths.json", paths)
+    remaining(setup_deadline, 1)
+    signal.setitimer(signal.ITIMER_REAL, 0)
+    setup_armed = False
+    signal.signal(signal.SIGALRM, previous_alarm_handler)
+    children = {b: {"device": hardware["assignments"][b], "command": [sys.executable, "-m",
+        "irisx.arc_nvarc_editor004", "--plan", paths["plan"], "--branch", b,
+        "--paths", str(work / "paths.json"), "--hardware", str(work / "hardware.json"),
+        "--output", str(work / "workers" / b)]} for b in ("m2", "m3")}
+    children["m3"]["diagnostics"] = lambda output: partial_counts(plan, "m3", output)
+    children["m2"]["diagnostics"] = lambda output: partial_counts(plan, "m2", output)
+    for branch in children:
+        child = plan["branches"][branch]
+        children[branch]["child_plan_digest"] = digest_value(child)
+        children[branch]["materials"] = {k: v for k, v in child.items()
+                                        if k.endswith(("_digest", "_sha256"))}
+    phase = "supervision"
+    launched = True
+    manifest = supervise(children, work / "workers", run_id=RUN, plan_digest=plan_digest,
+        deadline=work_deadline, readiness_seconds=plan["maximum_readiness_seconds"], started=START,
+        terminal_deadline=START + plan["maximum_notebook_wall_seconds"] - 10,
+        term_seconds=plan["cleanup_term_seconds"], kill_seconds=plan["cleanup_kill_seconds"],
+        validators={b: (lambda output, branch=b: verify_branch(plan, branch, output)) for b in ("m2", "m3")})
+    save("aggregate-terminal.json", manifest)
+    failure = completion_failure(manifest)
+    if failure is not None:
+        raise RuntimeError(failure)
+except Exception as error:
+    try:
+        emit("shared", "terminal-failure", error={"type": type(error).__name__, "message": str(error)[:2000]})
+    except OSError:
+        pass  # Attempt the aggregate independently when its path is writable.
+    if not (work / "aggregate-terminal.json").exists():
+        save("aggregate-terminal.json", {"format": "irisx/nvarc-combined-terminal-v1", "run_id": RUN,
+            "plan_digest": plan_digest, "outcome": "failed", "last_phase": phase,
+            "branches": {b: {"outcome": "not-started", "actual_counters": None if launched else
+                {"model_calls": 0}, "reserved_counters": None, "launch_count": 0} for b in ("m2", "m3")},
+            "error": {"type": type(error).__name__, "message": str(error)[:2000]},
+            "wall_seconds": time.monotonic() - START, "contains_evaluator_truth": False, "retries": 0})
+    raise
+finally:
+    if setup_armed:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, previous_alarm_handler)
+
+    zip_receipt = write_analysis_zip(work, work.parent / "結果.zip", RUN, plan_digest)
+    print(json.dumps(zip_receipt, ensure_ascii=True))
+    try:
+        from IPython.display import display, FileLink
+        display(FileLink(str(work.parent / "結果.zip")))
+    except ImportError:
+        pass

@@ -201,8 +201,10 @@ def accept_semantic_record(item, responses, executor):
 class SemanticProgramExecutor(WSLNamespaceProgramExecutor):
     """Existing namespace boundary with ONLY a digest-bound cached NumPy mount."""
 
-    def __init__(self, dependencies: Path, **kwargs):
+    def __init__(self, dependencies: Path, *, launcher: Path | None = None, launcher_sha256: str | None = None, **kwargs):
         super().__init__(**kwargs)
+        self.launcher = launcher
+        self.launcher_sha256 = launcher_sha256
         self.dependencies = dependencies.resolve()
         manifest = json.loads((dependencies / "inventory.json").read_bytes())
         if digest_value(manifest) != NUMPY_INVENTORY_DIGEST:
@@ -214,6 +216,15 @@ class SemanticProgramExecutor(WSLNamespaceProgramExecutor):
         self.material_digest = digest_value(manifest)
 
     def command(self):
+        import os
+        if os.name == "posix":
+            if (self.launcher is None or self.launcher.is_symlink() or not self.launcher.is_file() or
+                    hashlib.sha256(self.launcher.read_bytes()).hexdigest() != self.launcher_sha256):
+                raise ValidationError("semantic_namespace_launcher_unavailable")
+            import sys
+            if not sys.executable.startswith("/usr/"):
+                raise ValidationError("semantic_namespace_python_prefix_unsupported")
+            return ["sh", str(self.launcher.resolve()), str(self.dependencies), sys.executable]
         root = Path(__file__).resolve().parents[2]
         launcher = root / "tools/nvarc_sdg_semantic_namespace.sh"
         if not launcher.is_file() or self.dependencies.drive.lower() != "c:":

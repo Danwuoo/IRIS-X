@@ -137,3 +137,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0037-save-nvarc-notebook-for-owner-editor.md`](0037-save-nvarc-notebook-for-owner-editor.md)
   authorizes one private quick save of the reviewed combined 003 notebook,
   without agent execution; the owner will run it in Editor and report.
+- [`0038-save-paired-nvarc-analysis-notebook.md`](0038-save-paired-nvarc-analysis-notebook.md)
+  authorizes one private QUICK_SAVE combining paired M2 thresholds and semantic
+  M3, with a downloadable analysis ZIP and no agent execution or monitoring.

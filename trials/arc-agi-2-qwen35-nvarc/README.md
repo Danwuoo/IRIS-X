@@ -2,6 +2,11 @@
 
 ## Current continuation (2026-09-27)
 
+The owner now authorizes [combined 004](combined-notebook-004-editor.md) under
+Decision 0038: one private QUICK_SAVE of M2 paired thresholds and M3 semantic
+gates in one notebook, producing `結果.zip` after the owner starts it in Editor.
+No agent execution, monitoring or retrieval is authorized.
+
 The owner's local continuation now adds [semantic gates and paired threshold
 candidate implementation](local-semantic-continuation.md). The retained M3
 replies reject summary/demo, composition and isolated input/output contracts;
@@ -10,8 +15,8 @@ v3 profile preserves raw replies/reservations and leaves code pending until
 the complete sandbox/source gate. M2 source/tiny-model checks preserve the .2
 default; separately named inert .2/.1/.02 arms share one adaptation and retain
 costs. These engineering results establish neither real teacher yield nor
-improved 4B candidate quality. Both proposals require new owner direction for
-external execution; all frozen packages and identities remain unchanged.
+improved 4B candidate quality. Both proposals remain inert; Decision 0038 supplies
+a separate exact owner-Editor envelope. All frozen packages remain unchanged.
 
 The owner supplied [combined 003 Editor diagnostics](combined-003-editor-diagnosis.md).
 Both branches completed on distinct L4s in 306.509 seconds. M2's four calls

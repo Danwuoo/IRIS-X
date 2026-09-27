@@ -136,6 +136,28 @@ def sdg_build_datasets() -> types.ModuleType:
     return _module("_nvarc_sdg_build_datasets", path)
 
 
+@contextmanager
+def sdg_source_bundle(root: Path, expected_digest: str):
+    """Separate small SDG material; never changes the frozen Qwen bundle."""
+    from .canonical import digest_value
+    from hashlib import sha256
+    names = {"source-manifest.json", "NVARC/SDG/scripts/build_datasets.py"}
+    if root.is_symlink() or any(p.is_symlink() for p in root.rglob("*")):
+        raise ValidationError("SDG source bundle symlink")
+    files = {p.relative_to(root).as_posix(): sha256(p.read_bytes()).hexdigest()
+             for p in root.rglob("*") if p.is_file()}
+    if set(files) != names or digest_value(files) != expected_digest:
+        raise ValidationError("SDG source bundle differs")
+    binding = json.loads((root / "source-manifest.json").read_bytes())
+    if files["NVARC/SDG/scripts/build_datasets.py"] != binding["code_files"]["SDG/scripts/build_datasets.py"]["sha256"]:
+        raise ValidationError("SDG source binding differs")
+    token = _BUNDLE.set(root.resolve())
+    try:
+        yield
+    finally:
+        _BUNDLE.reset(token)
+
+
 def sft_data_entry() -> types.ModuleType:
     """Load original SFT dataset loader; NeMo-only training imports stay gated."""
     manifest = _binding()
