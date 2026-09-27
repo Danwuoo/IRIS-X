@@ -2,6 +2,14 @@
 
 ## Current continuation (2026-09-27)
 
+The owner supplied [combined 003 Editor diagnostics](combined-003-editor-diagnosis.md).
+Both branches completed on distinct L4s in 306.509 seconds. M2's four calls
+pruned every legal root digit below the fixed 0.2 threshold and produced no
+candidate. M3 completed four EOS/schema-valid calls, but its summary, mix and
+generated programs violate the requested puzzle semantics; no accepted SDG
+pairs exist. Digest-bound local diagnosis used no new model calls or provider
+requests. This observation grants no new execution or submission authority.
+
 The owner's latest instruction authorizes saving the repaired
 [combined 003 Editor notebook](combined-notebook-003-editor.md) without running
 it under Decision 0037. The owner will start it manually in Editor and report.

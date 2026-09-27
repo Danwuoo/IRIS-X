@@ -3,6 +3,11 @@
 Status: saved-without-running; Decision 0037's sole save is consumed.
 Date: 2026-09-27
 
+Subsequent owner-run Editor outcome: compute-complete, with no M2 candidate
+and semantically unusable M3 programs. See the separately retained
+[Editor diagnosis](combined-003-editor-diagnosis.md); the save receipt below
+remains unchanged.
+
 The owner requests notebook submission without running it and will execute it
 from Editor and report. The original [inert candidate](combined-notebook-003-local-repair.md)
 and its exact reviewed package remain preserved. The new approval envelope
@@ -39,8 +44,9 @@ the receipt URL is [combined 003](https://www.kaggle.com/code/danielwuu/nvarc-m2
 The exact wire request uses `kernelExecutionType: QUICK_SAVE`; the installed
 SDK enum value is 3. One SDK `SaveKernel` POST was sent with retries disabled.
 No session creation, notebook cell execution, status/log/output query,
-retrieval or Dataset mutation occurred. Runtime is unobserved; the owner
-controls manual Editor execution and reporting. No automatic retry follows.
+retrieval or Dataset mutation occurred during agent submission. Runtime was
+unobserved at the receipt; the owner's later Editor report is retained above.
+No automatic retry follows.
 
 Exact local SHA-256 bindings:
 

@@ -273,6 +273,14 @@ not authorized. Status is
 `trials/arc-agi-2-qwen35-nvarc/combined-notebook-003-editor.md`.
 The sole `QUICK_SAVE` was accepted as version 1 and is consumed. No session
 was started by the agent; runtime is unobserved pending the owner's report.
+The owner has now supplied the completed Editor diagnostics. Local verification
+matches the approved 003 plan, both worker envelopes and all 25 referenced
+artifacts. M2 completed one TTT step/four calls but pruned all legal root digits
+below 0.2. M3 completed four structurally accepted EOS replies, but the retained
+summary, mix and generated programs violate the requested semantics; no usable
+SDG pair is accepted. This is a compute-complete observation, not promotion or
+new execution authority. Preserve it at
+`trials/arc-agi-2-qwen35-nvarc/combined-003-editor-diagnosis.md`.
 
 ## Authority order
 
