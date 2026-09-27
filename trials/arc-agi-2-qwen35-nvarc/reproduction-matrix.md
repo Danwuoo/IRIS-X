@@ -2,6 +2,15 @@
 
 ## Current bounded evidence (2026-09-27)
 
+[Local semantic continuation](local-semantic-continuation.md) supplies executable
+demo rules, exact composition, actual isolated NumPy contract checks and a full
+pair gate. Retained wrong teacher replies yield zero pairs; authored controls
+are engineering evidence only. V3's restricted language is a method candidate,
+not full SDG parity or verified teacher yield. Source differential/tiny Qwen
+checks and a shared-one-TTT threshold comparison are implemented; real .1/.02
+arm candidate availability and quality remain unknown. The inert configurations
+do not activate prior approvals or alter frozen .2 thresholds.
+
 The [Decision 0032 terminal record](m2-m3-decision-0032-terminal.md) and
 [combined 003 Editor diagnosis](combined-003-editor-diagnosis.md) supersede
 the pending/unexecuted statements in the older checkpoints below. Runtime
@@ -17,12 +26,12 @@ quality. The Editor observations do not establish background kernel status.
 | Combined two-device notebook | Owner-supplied combined 003 diagnostics bind distinct L4 workers, both model-ready events and terminal records; both branches completed in 306.509 seconds | Verified only for this bounded workload; successful terminal checks did not ensure semantic correctness. No usable M2/M3 scientific output or new execution authority follows |
 | TRM and joint result | Pinned TRM CPU train/reload/TTT/inference and a candidate passed through source-profile Qwen verification in the retained local checks | Original-scale GPU training, usable Qwen branch candidates, full joint execution and clean ARC quality remain unestablished |
 
-The next local engineering work is semantic contract validation with retained
-wrong teacher responses as negative replay cases. A root-threshold experiment
-requires a distinct scientific proposal; additional expansion/token allowance
-alone cannot overcome the observed root pruning. Full-method acceptance remains
-incomplete. Old identities, raw responses, packages and consumed quotas stay
-frozen; no new provider request or model work was used for this status update.
+Semantic validation and retained negative replay are now implemented and locally
+checked as detailed above. Distinct inert M3 and M2 proposals are reviewable;
+additional expansion/token allowance alone cannot overcome observed root
+pruning. Full-method acceptance remains incomplete. Old identities, raw
+responses, packages and consumed quotas stay frozen; new evidence is offline
+program/fixture/tiny-model work, without provider or real 4B/teacher calls.
 
 ## M2/M3 bounded continuation (2026-09-25)
 

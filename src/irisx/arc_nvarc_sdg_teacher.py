@@ -52,7 +52,7 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
     # New candidate prompts must never piggyback on a consumed standalone
     # Decision 0033/0034 identity. Only the internal combined workload knows v2;
     # its parent/worker still require a separately bound execution envelope.
-    if plan.get("teacher_profile") == SPEC_PROFILE:
+    if plan.get("teacher_profile") in {SPEC_PROFILE, "qwen-rule-contract-v3"}:
         raise ValidationError("structured teacher profile is inert; separate exact combined approval required")
     validated = plan.get("teacher_profile") == PROFILE
     if (plan.get("format") != "irisx/nvarc-m3-teacher-small-v1" or
@@ -80,6 +80,8 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
 def _run_bound(plan: dict, seed_path: Path, prompts_path: Path, model_root: Path,
                model_manifest_path: Path, output: Path, *, model_ready=None) -> dict:
     """Internal workload after the standalone or combined execution gate."""
+    if plan.get("teacher_profile") == "qwen-rule-contract-v3":
+        raise ValidationError("semantic teacher profile is inert; new exact execution envelope required")
     import torch
     from transformers import AutoModelForMultimodalLM, AutoTokenizer
 

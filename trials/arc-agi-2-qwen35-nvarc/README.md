@@ -2,6 +2,17 @@
 
 ## Current continuation (2026-09-27)
 
+The owner's local continuation now adds [semantic gates and paired threshold
+candidate implementation](local-semantic-continuation.md). The retained M3
+replies reject summary/demo, composition and isolated input/output contracts;
+authored NumPy and rectangular controls pass independently. A new restricted
+v3 profile preserves raw replies/reservations and leaves code pending until
+the complete sandbox/source gate. M2 source/tiny-model checks preserve the .2
+default; separately named inert .2/.1/.02 arms share one adaptation and retain
+costs. These engineering results establish neither real teacher yield nor
+improved 4B candidate quality. Both proposals require new owner direction for
+external execution; all frozen packages and identities remain unchanged.
+
 The owner supplied [combined 003 Editor diagnostics](combined-003-editor-diagnosis.md).
 Both branches completed on distinct L4s in 306.509 seconds. M2's four calls
 pruned every legal root digit below the fixed 0.2 threshold and produced no
@@ -10,9 +21,10 @@ generated programs violate the requested puzzle semantics; no accepted SDG
 pairs exist. Digest-bound local diagnosis used no new model calls or provider
 requests. This observation grants no new execution or submission authority.
 
-The owner's latest instruction authorizes saving the repaired
+The earlier owner instruction authorized saving the repaired
 [combined 003 Editor notebook](combined-notebook-003-editor.md) without running
-it under Decision 0037. The owner will start it manually in Editor and report.
+it under Decision 0037. The owner subsequently executed it in Editor and supplied
+the diagnostics above.
 No agent monitoring, output retrieval, Dataset mutation or retry is authorized.
 Kaggle accepted its sole `QUICK_SAVE` as version 1; no execution was started.
 

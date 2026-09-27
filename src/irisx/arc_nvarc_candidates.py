@@ -12,6 +12,7 @@ from .arc_nvarc_data import (grid, seeded_transform, source_qwen_transform_grid,
                              transform_grid, transform_task)
 from .arc_nvarc_representation import GridTokenizer, END, PAD
 from .errors import ValidationError
+from .canonical import digest_value
 
 
 def default_views(task: Mapping[str, Any], seed: int, color_repeats: int = 2) -> list[dict[str, Any]]:
@@ -239,6 +240,18 @@ def configure_candidate_backend(backend: Any, config: Mapping[str, Any]) -> dict
             "answer_nll": "summed" if augmentation == "source-qwen" else "per-token"}
 
 
+def candidate_score_limit(config: Mapping[str, Any]) -> float:
+    """Explicit candidate-only experiment parameter; historical default stays .2.
+
+    This parameter does not authorize model execution or change any frozen
+    config. A proposal must still cross the exact material/identity/owner gate.
+    """
+    probability = config.get("cumulative_probability_threshold", 0.2)
+    if type(probability) not in (int, float) or not math.isfinite(probability) or not 0 < probability < 1:
+        raise ValidationError("candidate cumulative probability threshold invalid")
+    return -math.log(probability)
+
+
 def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any], *,
                call_observer=None) -> list[dict[str, Any]]:
     """One adaptation per full task, then all test outputs share that state."""
@@ -456,6 +469,7 @@ class QwenCandidateBackend:
                 self.last_generation_observation["cache_mode"] = self.dfs_cache_mode
                 self.last_generation_observation["representation"] = self.representation
                 self.last_generation_observation["query_tokens"] = len(query)
+                self.last_generation_observation["query_digest"] = digest_value(query)
                 self.last_generation_observation["query_role_tail"] = query[-4:]
                 self.last_generation_observation["cache_hits"] = (
                     self.prefix_cache.hits - before_hits if self.prefix_cache is not None else 0)

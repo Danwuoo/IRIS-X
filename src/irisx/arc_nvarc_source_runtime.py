@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 import time
 
-from .arc_nvarc_candidates import FixtureCandidateBackend, QwenCandidateBackend, solve_task
+from .arc_nvarc_candidates import FixtureCandidateBackend, QwenCandidateBackend, solve_task, candidate_score_limit
 from .arc_nvarc_data import visible_task
 from .arc_nvarc_representation import verify_model_material, validate_profile_material
 from .arc_nvarc_training import TaskLocalAdapter, load_compact_model
@@ -45,6 +45,7 @@ def _run_source_profile(config_path: Path, visible_path: Path, output: Path, *,
     if config.get("format") != "irisx/nvarc-source-stage-v1" or profile not in config.get("profiles", {}):
         raise ValidationError("unknown source integration stage/profile")
     candidate, adaptation = config["candidate"], config["adaptation"]
+    max_score = candidate_score_limit(candidate)
     if (candidate.get("augmentation") != "source-qwen" or
             candidate.get("representation") != "source-qwen" or
             candidate.get("ranking") != "source-kgmon" or
@@ -75,6 +76,7 @@ def _run_source_profile(config_path: Path, visible_path: Path, output: Path, *,
             model.to(torch.device("cuda", 0))
         adapter = TaskLocalAdapter(model, adaptation)
         backend = QwenCandidateBackend(model, task_adapter=adapter,
+                                       dfs_max_score=max_score,
                                        dfs_max_expansions=int(candidate["dfs_max_expansions"]))
     if model_ready is not None:
         model_ready()

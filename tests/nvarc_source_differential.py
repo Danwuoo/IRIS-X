@@ -405,6 +405,24 @@ class DifferentialTests(unittest.TestCase):
             self.assertEqual(1, len(result["results"]))
             self.assertFalse(result["contains_evaluator_truth"])
 
+            # The future threshold proposal is an explicit separate tiny-only
+            # configuration. Same loaded checkpoint, adaptation seed and query:
+            # compare the actual forwarded roots, not a mocked constructor.
+            proposal_config = json.loads(config.read_bytes())
+            proposal_config["candidate"]["cumulative_probability_threshold"] = 0.02
+            proposal_path = work / "root-threshold-tiny-proposal.json"
+            proposal_path.write_text(json.dumps(proposal_config))
+            proposed = run(proposal_path, visible, work / "root-threshold-tiny-result.json", profile="tiny",
+                           checkpoint=model_dir, material_digest=material_digest)
+            control = result["results"][0]["generation_observations"][0]
+            candidate = proposed["results"][0]["generation_observations"][0]
+            self.assertEqual(control["query_role_tail"], candidate["query_role_tail"])
+            self.assertEqual(control["diagnostics"]["root"]["log_probs"], candidate["diagnostics"]["root"]["log_probs"])
+            self.assertAlmostEqual(-math.log(.2), control["diagnostics"]["max_score"])
+            self.assertAlmostEqual(-math.log(.02), candidate["diagnostics"]["max_score"])
+            self.assertEqual(1, control["expansions"])
+            self.assertGreater(candidate["expansions"], 1)
+
     def test_long_path_and_explicit_stop_reasons(self):
         def path(prefix):
             logits = [-50.0] * 16

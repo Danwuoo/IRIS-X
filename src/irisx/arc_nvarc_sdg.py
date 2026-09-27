@@ -77,7 +77,7 @@ def extract_teacher_program(raw: str, function: str) -> str:
 
 
 def validate_teacher_response(stage: str, response: dict[str, Any], *,
-                              profile="qwen-direct-complete-v1") -> None:
+                              profile="qwen-direct-complete-v1", item=None) -> None:
     """A completed model call may still be rejected as an unusable stage."""
     if response.get("finish_reason") != "eos":
         raise ValidationError("teacher output did not finish with EOS")
@@ -94,20 +94,31 @@ def validate_teacher_response(stage: str, response: dict[str, Any], *,
         if profile == "qwen-direct-permutation-v2":
             from .arc_nvarc_teacher_spec import parse_spec
             content = canonical_bytes(parse_spec(stage, raw)).decode()
+        elif profile == "qwen-rule-contract-v3":
+            if item is None:
+                raise ValidationError("semantic_teacher_context_required")
+            from .arc_nvarc_semantics import semantic_stage
+            content = canonical_bytes(semantic_stage(stage, raw, item)).decode()
     else:
         raise ValidationError("unknown validated teacher stage")
-    if profile not in {"qwen-direct-complete-v1", "qwen-direct-permutation-v2"}:
+    if profile not in {"qwen-direct-complete-v1", "qwen-direct-permutation-v2", "qwen-rule-contract-v3"}:
         raise ValidationError("unknown teacher validation profile")
     response["content"] = content
     response["content_sha256"] = hashlib.sha256(content.encode()).hexdigest()
     response["validation_profile"] = profile
+    if profile == "qwen-rule-contract-v3":
+        response["semantic_status"] = {"summary": "demonstrations-checked",
+            "mix": "composition-checked"}.get(stage, "program-contract-pending-sandbox")
 
 
 def render_source_teacher_prompt(stage: str, item: Mapping[str, Any], template: str, *,
                                  profile="qwen-direct-complete-v1") -> str:
     """Fill the four pinned v1 templates from public demos and prior replies."""
     history = item.get("stage_responses", {})
-    if profile == "qwen-direct-permutation-v2":
+    if profile == "qwen-rule-contract-v3":
+        from .arc_nvarc_semantics import prompt_values
+        values = prompt_values(stage, item)
+    elif profile == "qwen-direct-permutation-v2":
         from .arc_nvarc_teacher_spec import prompt_values
         values = prompt_values(stage, item)
     elif stage == "summary":
@@ -166,8 +177,8 @@ class BoundedLocalHFTeacher:
         self.reserved_tokens = 0
         self.stage_limits = dict(stage_limits) if stage_limits is not None else None
         self.enable_thinking, self.require_complete = enable_thinking, require_complete
-        if validation_profile not in {"qwen-direct-complete-v1", "qwen-direct-permutation-v2"} or (
-                validation_profile == "qwen-direct-permutation-v2" and not require_complete):
+        if validation_profile not in {"qwen-direct-complete-v1", "qwen-direct-permutation-v2", "qwen-rule-contract-v3"} or (
+                validation_profile in {"qwen-direct-permutation-v2", "qwen-rule-contract-v3"} and not require_complete):
             raise ValidationError("teacher validation profile or EOS gate differs")
         self.validation_profile = validation_profile
         if self.stage_limits is not None and (
@@ -193,6 +204,10 @@ class BoundedLocalHFTeacher:
     def validate_response(self, stage: str, value: dict[str, Any]) -> None:
         if self.require_complete:
             validate_teacher_response(stage, value, profile=self.validation_profile)
+
+    def validate_item_response(self, stage, value, item):
+        if self.require_complete:
+            validate_teacher_response(stage, value, profile=self.validation_profile, item=item)
 
     def complete(self, stage: str, item: Mapping[str, Any], prompt: str) -> dict[str, Any]:
         import torch
@@ -296,9 +311,12 @@ def run_stage(stage: str, inputs: list[Mapping[str, Any]], prompt: str,
         try:
             value = provider.complete(stage, item, prompt)
             status = "complete"
-            if hasattr(provider, "validate_response"):
+            if hasattr(provider, "validate_response") or hasattr(provider, "validate_item_response"):
                 try:
-                    provider.validate_response(stage, value)
+                    if hasattr(provider, "validate_item_response"):
+                        provider.validate_item_response(stage, value, item)
+                    else:
+                        provider.validate_response(stage, value)
                 except ValidationError as error:
                     status = "rejected"
                     ledger["records"][key]["rejection_reason"] = str(error)
@@ -456,6 +474,10 @@ class WSLNamespaceProgramExecutor:
         else:
             argument = {"grid": grid(input_grid)}
         payload = json.dumps({"code": code, "entry": entry, **argument}).encode()
+        return grid(self._execute_payload(payload))
+
+    def _execute_payload(self, payload: bytes) -> Any:
+        """Run bytes only through the isolated launcher; never host eval/exec."""
         scratch = Path(".irisx") / "nvarc-sdg-sandbox"
         scratch.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(dir=scratch) as temp:
@@ -478,8 +500,9 @@ class WSLNamespaceProgramExecutor:
                         raise ValidationError("WSL SDG sandbox wall time exceeded")
                     time.sleep(0.02)
             if process.returncode or stderr.stat().st_size or stdout.stat().st_size > self.output_bytes:
-                raise ValidationError("WSL SDG sandbox failed or output exceeded bound")
-            return grid(json.loads(stdout.read_bytes()))
+                detail = stderr.read_bytes()[:1000].decode("utf-8", errors="replace")
+                raise ValidationError(f"WSL SDG sandbox failed or output exceeded bound (exit={process.returncode}, stderr={detail!r})")
+            return json.loads(stdout.read_bytes())
 
     def execute(self, code: str, input_grid: Any) -> Any:
         return self.execute_entry(code, "transform", input_grid=input_grid)

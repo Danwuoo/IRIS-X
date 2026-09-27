@@ -1,0 +1,39 @@
+{
+  "format": "irisx/nvarc-local-experiment-proposal-v1",
+  "run_id": "nvarc-m2-root-threshold-proposal-001",
+  "status": "inert-owner-decision-required",
+  "approved": false,
+  "owner_decision": null,
+  "external_allowances": {"dataset_mutations": 0, "kernel_submissions": 0, "model_calls": 0, "retrievals": 0, "status_queries": 0},
+  "reference_plan_digest": "sha256:13790f5930800a9614555cae183eecfe12b0443d9a8f4ba83f9d3976039410cf",
+  "export_material_digest": "sha256:481d9f12d573b39b0703e47b5f8f6f518a7ccd7847824ffb3f0fb96b11f2c3e6",
+  "source_bundle_digest": "sha256:625b010706dabfce5df58c036f5921af4e782da133bd27038bc442abdc79e1a4",
+  "visible_task_id": "00576224",
+  "arms": [
+    {"id": "control-p020", "cumulative_probability_threshold": 0.2},
+    {"id": "candidate-p010", "cumulative_probability_threshold": 0.1},
+    {"id": "candidate-p002", "cumulative_probability_threshold": 0.02}
+  ],
+  "shared": {
+    "representation": "source-qwen", "augmentation": "source-qwen", "ranking": "source-kgmon",
+    "source_generation_seed": 2, "color_repeats": 2, "calls_per_arm": 4,
+    "beams_per_call": 2, "maximum_new_tokens": 64, "dfs_max_expansions": 128,
+    "probability_space": "unmasked-16-symbol-vocabulary", "cache": "full-prefix-recompute",
+    "adapt_once_then_freeze": true,
+    "adaptation": {"seed": 42, "rank": 2, "alpha": 4, "learning_rate": 0.00005, "steps": 1,
+      "max_sequence_length": 128, "augmentation_count": 1, "source_augmentation_seed": 1, "source_qwen": true}
+  },
+  "proposed_limits": {
+    "paid_usd": 0, "l4_workers": 1, "ttt_steps": 1, "training_tokens": 512,
+    "generation_calls": 12, "returned_sequences": 24, "dfs_forwards": 1536,
+    "verification_calls": 24, "verification_forwards": 192,
+    "returned_sequence_token_positions": 1536, "session_seconds": 1800, "terminal_reserve_seconds": 30,
+    "retry": 0, "teacher_calls": 0, "arc_scoring": false
+  },
+  "measurement": ["arm/view/query and post-TTT state digests", "root survivors", "complete legal grids",
+    "cumulative NLL including EOS", "expansion/grammar/score/token/deadline stops", "actual forwards and elapsed",
+    "inverse/dedupe/rank costs", "terminal accounting including failed calls"],
+  "stop_conditions": ["material/view/post-TTT state mismatch", "nonfinite logits", "hardware mismatch",
+    "timeout/OOM/crash", "any workload or quota excess"],
+  "claim_limit": "Candidate availability and cost only; no ARC accuracy, upstream training causality or promotion"
+}
