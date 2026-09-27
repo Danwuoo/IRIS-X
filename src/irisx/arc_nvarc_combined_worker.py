@@ -16,29 +16,17 @@ from .arc_nvarc_combined import (atomic, check_logical_device, read, require,
 from .arc_nvarc_source_continuation import EXPORT, TRAINING
 from .arc_nvarc_teacher_profile import LIMITS, PROFILE, PROMPTS, TOTAL_TOKENS
 from .canonical import digest_value
+from .arc_nvarc_hardware import collect_hardware_inventory
 
 
-def inventory() -> list[dict]:
+def inventory(output=None) -> list[dict]:
     import torch
 
     completed = subprocess.run(["nvidia-smi", "--query-gpu=index,name,memory.total,uuid",
                                 "--format=csv,noheader,nounits"], capture_output=True,
                                text=True, check=True, timeout=30)
-    rows = [[item.strip() for item in line.split(",")] for line in completed.stdout.splitlines()]
-    by_uuid = {row[3]: row for row in rows if len(row) == 4}
-    require(len(by_uuid) == len(rows), "hardware UUID inventory malformed")
-    devices = []
-    for index in range(torch.cuda.device_count()):
-        properties = torch.cuda.get_device_properties(index)
-        uuid = str(properties.uuid)
-        require(uuid in by_uuid, "Torch and nvidia-smi UUID records differ")
-        row = by_uuid[uuid]
-        with torch.cuda.device(index):
-            bf16 = torch.cuda.is_bf16_supported()
-        devices.append({"index": index, "uuid": uuid, "name": properties.name,
-                        "memory_bytes": properties.total_memory,
-                        "memory_mib": int(row[2]), "bf16": bf16})
-    return devices
+    return collect_hardware_inventory(torch, completed.stdout,
+        lambda raw: atomic(output / "hardware-raw.json", raw) if output is not None else None)
 
 
 def _verify_m2(plan: dict, output: Path) -> dict:
@@ -246,7 +234,7 @@ def _run_prepared(plan: dict, branch: str, paths: dict, hardware: dict, output: 
     state = {**common, "phase": "prerequisites", "reserved_counters": None, "actual_counters": None}
     atomic(output / "worker-state.json", state)
     try:
-        check_logical_device(branch, hardware, device["uuid"], inventory(), os.environ.get("CUDA_VISIBLE_DEVICES"))
+        check_logical_device(branch, hardware, device["uuid"], inventory(output), os.environ.get("CUDA_VISIBLE_DEVICES"))
 
         def ready():
             state["phase"] = "work"

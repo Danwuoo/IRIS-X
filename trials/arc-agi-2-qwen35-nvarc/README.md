@@ -1,13 +1,19 @@
 # Qwen3.5-4B NVARC reproduction development
 
-## Current continuation (2026-09-26)
+## Current continuation (2026-09-27)
 
-The owner has now authorized [one combined notebook submission](combined-notebook-001-submission.md)
+2026-09-27: [combined 001 diagnostic retrieval](combined-notebook-002.md)
+verified an early UUID hardware-mapping failure, with zero worker launches and
+zero model calls. The owner's repair/re-push instruction is accepted under
+Decision 0036 for one distinct combined 002, with unchanged scientific limits.
+Local hardware-identity repair and validation are in progress.
+
+The earlier [combined notebook submission](combined-notebook-001-submission.md)
 under [Decision 0035](../../docs/decisions/0035-submit-nvarc-combined-two-gpu-notebook.md),
 reusing the existing Datasets and unchanged M2/M3 workloads on two selected
-L4 GPUs. Kaggle accepted version 1; the sole push is consumed. Runtime state
-remains unqueried, with no monitoring or retrieval. The original inert draft
-remains preserved.
+L4 GPUs was accepted as version 1. Its sole push is consumed; the subsequent
+owner-authorized diagnosis above establishes its early hardware-gate failure.
+The original inert draft and submitted package remain preserved.
 
 The owner's [combined two-GPU development plan](../../docs/plan/2026-09-26-nvarc-combined-two-gpu-notebook.md)
 now has a distinct [inert notebook implementation and local verification record](combined-notebook-001.md).

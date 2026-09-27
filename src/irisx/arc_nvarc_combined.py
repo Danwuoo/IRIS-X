@@ -18,9 +18,11 @@ from .canonical import canonical_bytes, digest_value
 from .errors import ValidationError
 
 RUN = "nvarc-m2-m3-combined-001"
+REPAIR_RUN = "nvarc-m2-m3-combined-002"
 DRAFT_DIGEST = "sha256:2052311757ab3922473e0476801dde4df551e0a037795b64025fa5f17c54e0ef"
 DRAFT_SHA256 = "7014795d4ea7f098a8f9680b32843039a2c76b946fd920789491743201ebcc22"
 APPROVED_DIGEST = "sha256:efa10338690105c3236a8bb62d235568d2335b08a674475ba156e6b9a4abc912"
+REPAIR_DIGEST = "sha256:48e9fa7c28e37fc585f87046957e723573697eb01016e1175fab50c9152364ef"
 PROFILE = "combined-two-distinct-l4-v1"
 LOG_LIMIT = 8 * 1024 * 1024
 
@@ -65,16 +67,17 @@ def member(root: Path, name: str) -> Path:
 def validate_plan(plan: dict, *, approved=False) -> None:
     # Whole-plan binding rejects unknown fields, changed inputs, identities,
     # allowances and budgets, including booleans substituted for integer limits.
-    require(digest_value(plan) == (APPROVED_DIGEST if approved else DRAFT_DIGEST),
+    expected = REPAIR_DIGEST if plan.get("run_id") == REPAIR_RUN else APPROVED_DIGEST
+    require(digest_value(plan) == (expected if approved else DRAFT_DIGEST),
             "combined approved identity, materials or bounds differ" if approved else
             "combined draft identity, materials or bounds differ")
 
 
-def activate_plan(draft: dict) -> dict:
-    """Decision 0035 changes only the parent authorization/transport envelope.
+def activate_plan(draft: dict, *, run_id=RUN) -> dict:
+    """Exact historical 0035 or replacement 0036 authorization/transport envelope.
 
-    Child dictionaries remain the original inert workload specifications; they
-    have no independent submission allowance and execute only under this guard.
+    Child scientific fields remain inert workload specifications; replacement
+    children receive distinct identities, with no independent submission quota.
     """
     validate_plan(draft)
     plan = copy.deepcopy(draft)
@@ -82,14 +85,19 @@ def activate_plan(draft: dict) -> dict:
                 owner_decision="Decision 0035", kernel_id="danielwuu/" + RUN,
                 original_draft_digest=DRAFT_DIGEST, original_draft_sha256=DRAFT_SHA256)
     plan["external_allowances"]["submissions"] = 1
+    require(run_id in {RUN, REPAIR_RUN}, "known combined run identity required")
+    if run_id == REPAIR_RUN:
+        plan.update(run_id=run_id, owner_decision="Decision 0036", kernel_id="danielwuu/" + run_id)
+        for branch, child in plan["branches"].items():
+            child.update(run_id=run_id + "-" + branch, kernel_id="DRAFT-DO-NOT-PUSH/" + run_id + "-" + branch)
     validate_plan(plan, approved=True)
     return plan
 
 
 def require_live_authorization(plan: dict) -> None:
     if digest_value(plan) == DRAFT_DIGEST:
-        raise ValidationError("combined draft is inert; exact Decision 0035 package required")
-    validate_plan(plan, approved=True)
+        raise ValidationError("combined draft is inert; exact Decision 0036 package required")
+    require(digest_value(plan) == REPAIR_DIGEST, "exact active Decision 0036 combined package required")
 
 
 def select_devices(inventory: list[dict], indices=(0, 1)) -> dict:
@@ -119,7 +127,7 @@ def check_logical_device(branch, hardware, assigned_uuid, logical_inventory, vis
     require(assigned_uuid == assigned["uuid"] and visible_devices == assigned_uuid and
             len(logical_inventory) == 1 and logical_inventory[0]["index"] == 0 and
             all(logical_inventory[0].get(k) == assigned.get(k) for k in
-                ("uuid", "name", "memory_bytes", "bf16")),
+                ("uuid", "physical_index", "name", "memory_bytes", "memory_mib", "bf16")),
             "worker must see only assigned UUID as logical cuda:0")
 
 

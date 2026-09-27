@@ -239,6 +239,17 @@ The sole push was accepted as version 1 and is now consumed. Its receipt and
 exact package hashes are retained. Runtime state remains unqueried; no
 monitoring, retrieval or retry follows from submission acceptance.
 
+The owner subsequently reports the combined notebook error and explicitly
+requests repair and re-push. Decision 0036 authorizes one diagnostic retrieval
+of combined 001 and one distinct private `nvarc-m2-m3-combined-002` submission
+under unchanged workloads, materials, two selected L4s, Internet-disabled and
+USD 0 limits. The diagnostic retrieval is complete and consumed: exact plan
+and payload bindings match, and 001 stopped at `hardware-inventory` with
+`hardware UUID mapping differs`, zero worker launches and zero model calls.
+Preserve 001 and repair strict UUID normalization/mapping in new 002 bytes.
+Stop at the replacement receipt without monitoring, retrieval or further retry.
+Status is `trials/arc-agi-2-qwen35-nvarc/combined-notebook-002.md`.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

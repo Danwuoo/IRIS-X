@@ -1,8 +1,14 @@
 # Combined M2/M3 notebook 001: submission record
 
-Status: version 1 accepted; runtime unqueried
+Status: version 1 failed before worker launch; diagnostic retrieval complete
 Date: 2026-09-26
 Authority: [Decision 0035](../../docs/decisions/0035-submit-nvarc-combined-two-gpu-notebook.md)
+
+Subsequent owner direction under Decision 0036 authorized one diagnostic
+retrieval. It verified the exact submitted payload and an early hardware UUID
+mapping failure, with zero worker launches/model calls. See the
+[repair and terminal evidence record](combined-notebook-002.md). The submission
+and stop-at-receipt record below is retained as historical chronology.
 
 This record extends the [local draft review](combined-notebook-001.md).
 The owner requested submission using previous successful Kaggle cases.

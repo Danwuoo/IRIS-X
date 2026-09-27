@@ -1,4 +1,4 @@
-"""Stage retained local inputs; default inert, exact Decision 0035 opt-in."""
+"""Stage retained inputs; default inert, exact replacement approval opt-in."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "src")]
 from tools import irisx_build_backend as build
-from irisx.arc_nvarc_combined import RUN, activate_plan, atomic, read, require, sha, validate_plan
+from irisx.arc_nvarc_combined import RUN, REPAIR_RUN, activate_plan, atomic, read, require, sha, validate_plan
 from irisx.arc_nvarc_source_bundle import build_bundle
 from irisx.arc_nvarc_representation import verify_model_material
 from irisx.arc_nvarc_source_continuation import EXPORT, TRAINING
@@ -22,6 +22,8 @@ LOCAL = ROOT / ".irisx/arc-agi-2/qwen35-nvarc"
 DRAFT = TRIAL / "configs/m2-m3-combined-draft-001.json"
 TEMPLATE = ROOT / "tools/nvarc_combined_notebook.py.tmpl"
 APPROVED_TEMPLATE = ROOT / "tools/nvarc_combined_notebook_approved_001.py.tmpl"
+REPAIR_TEMPLATE = ROOT / "tools/nvarc_combined_notebook_approved_002.py.tmpl"
+HARDWARE_HELPER = ROOT / "src/irisx/arc_nvarc_hardware.py"
 M2 = LOCAL / "m2-m3/source-cont-approved-002"
 M3 = LOCAL / "m2-m3/teacher-direct-approved-005"
 EXPORT_ROOT = LOCAL / "m2-m3/fsdp-sft-retrieved-002/nvarc-m2-fsdp-sft-002/export"
@@ -52,9 +54,13 @@ def verify_references(value: dict, model_manifest: dict) -> None:
                 "sha256:" + sha(path) == entry["content_digest"], "cached tokenizer binding differs: " + name)
 
 
-def render(payloads: dict[str, bytes], files: dict[str, str], *, approved=False) -> str:
+def render(payloads: dict[str, bytes], files: dict[str, str], *, approved=False, run_id=RUN) -> str:
     import hashlib
-    source = (APPROVED_TEMPLATE if approved else TEMPLATE).read_text(encoding="utf-8")
+    require(run_id in {RUN, REPAIR_RUN}, "known combined template identity required")
+    template = (REPAIR_TEMPLATE if run_id == REPAIR_RUN else APPROVED_TEMPLATE) if approved else TEMPLATE
+    source = template.read_text(encoding="utf-8")
+    if approved and run_id == REPAIR_RUN:
+        source = source.replace("__HARDWARE_HELPER__", HARDWARE_HELPER.read_text(encoding="utf-8"))
     bindings = {"PAYLOADS": {k: base64.b64encode(v).decode() for k, v in payloads.items()},
                 "HASHES": {k: hashlib.sha256(v).hexdigest() for k, v in payloads.items()}, "FILES": files}
     for name, value in bindings.items():
@@ -63,12 +69,14 @@ def render(payloads: dict[str, bytes], files: dict[str, str], *, approved=False)
     return source
 
 
-def stage(output: Path, *, approved=False) -> dict:
+def stage(output: Path, *, approved=False, run_id=None) -> dict:
     require(not output.exists(), "new combined review directory required")
     plan = read(DRAFT)
     validate_plan(plan)
+    run_id = run_id or (REPAIR_RUN if approved else RUN)
+    require(approved or run_id == RUN, "original inert draft identity required")
     if approved:
-        plan = activate_plan(plan)
+        plan = activate_plan(plan, run_id=run_id)
     payloads = {"plan": canonical_bytes(plan, newline=True) if approved else DRAFT.read_bytes(),
                 "source_config": (M2 / "source-config.json").read_bytes(),
                 "visible": (M2 / "visible.json").read_bytes(),
@@ -95,24 +103,24 @@ def stage(output: Path, *, approved=False) -> dict:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(payload)
     atomic(output / "material-references.json", refs)
-    source = render(payloads, files, approved=approved)
+    source = render(payloads, files, approved=approved, run_id=run_id)
     notebook = {"cells": [{"cell_type": "code", "execution_count": None, "metadata": {}, "outputs": [],
                             "source": source.splitlines(keepends=True)}],
                 "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}},
                 "nbformat": 4, "nbformat_minor": 5}
     atomic(output / "kernel/kaggle-notebook.ipynb", notebook)
     atomic(output / "kernel/kernel-metadata.json", metadata(plan))
-    summary = {"format": "irisx/nvarc-combined-stage-v1", "run_id": RUN, "approved": approved,
+    summary = {"format": "irisx/nvarc-combined-stage-v1", "run_id": run_id, "approved": approved,
                "plan_digest": digest_value(plan), "external_calls": 0,
                "inventory": {p.relative_to(output).as_posix(): sha(p) for p in sorted(output.rglob("*")) if p.is_file()},
-               "claim": ("Decision 0035 exact local submission package; two-device GPU acceptance pending"
+               "claim": (plan["owner_decision"] + " exact local submission package; two-device GPU acceptance pending"
                          if approved else "local inert proposal; two-device GPU acceptance pending")}
     atomic(output / "stage-summary.json", summary)
     return summary
 
 
 def metadata(plan):
-    return {"id": plan["kernel_id"], "title": RUN, "code_file": "kaggle-notebook.ipynb",
+    return {"id": plan["kernel_id"], "title": plan["run_id"], "code_file": "kaggle-notebook.ipynb",
             "language": "python", "kernel_type": "notebook", "is_private": True,
             "enable_gpu": True, "enable_tpu": False, "enable_internet": False,
             "machine_shape": "NvidiaL4", "competition_sources": ["arc-prize-2026-arc-agi-2"],
@@ -143,6 +151,7 @@ def verify_inputs(plan, payloads):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--approved", action="store_true", help="stage only the exact Decision 0035 envelope")
+    parser.add_argument("--approved", action="store_true", help="stage exact Decision 0036 replacement by default")
+    parser.add_argument("--run-id", choices=(RUN, REPAIR_RUN), help="explicit historical or replacement identity")
     args = parser.parse_args()
-    print(json.dumps(stage(args.output, approved=args.approved), indent=2))
+    print(json.dumps(stage(args.output, approved=args.approved, run_id=args.run_id), indent=2))

@@ -62,8 +62,12 @@ class CombinedPackageStrictLocalTests(unittest.TestCase):
     def test_exact_approved_package_preserves_draft_and_changes_only_envelope(self):
         report = preflight(self.approved, approved=True)
         self.assertTrue(report["approved_guard_verified"])
-        self.assertEqual(read(self.package / "plan.json")["branches"],
-                         read(self.approved / "plan.json")["branches"])
+        for branch in ("m2", "m3"):
+            self.assertEqual({k: v for k, v in read(self.package / "plan.json")["branches"][branch].items()
+                              if k not in {"run_id", "kernel_id"}},
+                             {k: v for k, v in read(self.approved / "plan.json")["branches"][branch].items()
+                              if k not in {"run_id", "kernel_id"}})
+        self.assertEqual(12, report["generated_hardware_fixture_probe"]["cases_passed"])
         for name, digest in self.summary["inventory"].items():
             if name not in {"plan.json", "kernel/kaggle-notebook.ipynb", "kernel/kernel-metadata.json"}:
                 self.assertEqual(digest, self.approved_summary["inventory"][name])
@@ -91,11 +95,19 @@ with patch.object(worker, "_run_prepared") as workload, patch.object(sys, "argv"
      "--hardware", str(inputs), "--output", str(plan.parent / "output-fixture")]):
     worker.main()
     assert workload.call_count == 1
-for decision in ("Decision 0033", "Decision 0034"):
+for decision in ("Decision 0033", "Decision 0034", "Decision 0035"):
     altered = parent.read(plan); altered["owner_decision"] = decision
     try: parent.require_live_authorization(altered)
     except Exception: pass
     else: raise AssertionError("old decision activated installed runtime")
+old = parent.read(plan)
+old.update(run_id=parent.RUN, owner_decision="Decision 0035", kernel_id="danielwuu/" + parent.RUN)
+for branch, child in old["branches"].items():
+    child.update(run_id=parent.RUN + "-" + branch, kernel_id="DRAFT-DO-NOT-PUSH/" + parent.RUN + "-" + branch)
+parent.validate_plan(old, approved=True)
+try: parent.require_live_authorization(old)
+except Exception: pass
+else: raise AssertionError("exact historical001 activated replacement runtime")
 print("installed parent/worker exact guards verified; zero workload calls")
 ''', encoding="utf-8")
         # Keep fixture inputs outside the immutable review package.

@@ -14,7 +14,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "src")]
 from tools.stage_nvarc_combined import (DRAFT, metadata, render, verify_inputs, verify_references)
-from irisx.arc_nvarc_combined import (APPROVED_DIGEST, DRAFT_DIGEST, RUN, activate_plan,
+from irisx.arc_nvarc_combined import (APPROVED_DIGEST, REPAIR_DIGEST, DRAFT_DIGEST, RUN, REPAIR_RUN, activate_plan,
                                     member, read, require, sha, validate_plan)
 from irisx.arc_nvarc_source_bundle import verify_bundle
 from irisx.canonical import canonical_bytes, digest_value
@@ -39,7 +39,7 @@ def guard_prefix(source: str) -> str:
     return ast.unparse(ast.fix_missing_locations(tree))
 
 
-def probe_guard(source: str, plan_digest: str, *, accepted=False) -> None:
+def probe_guard(source: str, plan_digest: str, *, accepted=False, run_id=RUN) -> None:
     with tempfile.TemporaryDirectory(dir=ROOT / ".irisx", prefix="combined-guard-") as temp:
         probe = Path(temp) / "guard.py"
         probe.write_text(guard_prefix(source), encoding="utf-8")
@@ -48,7 +48,7 @@ def probe_guard(source: str, plan_digest: str, *, accepted=False) -> None:
         expected = OFFLINE_STOP if accepted else "combined draft is inert"
         require(guard.returncode != 0 and expected in guard.stderr,
                 "combined notebook offline authorization probe differs")
-        terminal = read(Path(temp) / RUN / "aggregate-terminal.json")
+        terminal = read(Path(temp) / run_id / "aggregate-terminal.json")
         require(terminal.get("outcome") == "failed" and terminal.get("last_phase") == "execution-guard" and
                 terminal.get("plan_digest") == plan_digest and
                 all(b["launch_count"] == 0 for b in terminal["branches"].values()), "offline guard terminal differs")
@@ -56,9 +56,12 @@ def probe_guard(source: str, plan_digest: str, *, accepted=False) -> None:
 
 def preflight(package: Path, *, approved=False) -> dict:
     summary = read(package / "stage-summary.json")
-    require(summary.get("format") == "irisx/nvarc-combined-stage-v1" and summary.get("run_id") == RUN and
+    run_id = summary.get("run_id")
+    expected_digest = REPAIR_DIGEST if run_id == REPAIR_RUN else APPROVED_DIGEST
+    require(summary.get("format") == "irisx/nvarc-combined-stage-v1" and run_id in {RUN, REPAIR_RUN} and
+            (approved or run_id == RUN) and
             summary.get("approved") is approved and summary.get("external_calls") == 0 and
-            summary.get("plan_digest") == (APPROVED_DIGEST if approved else DRAFT_DIGEST),
+            summary.get("plan_digest") == (expected_digest if approved else DRAFT_DIGEST),
             "combined package summary differs")
     inventory = summary["inventory"]
     actual = {p.relative_to(package).as_posix() for p in package.rglob("*") if p.is_file()}
@@ -68,7 +71,7 @@ def preflight(package: Path, *, approved=False) -> dict:
         require(sha(member(package, name)) == digest, "combined review file differs: " + name)
     plan = read(package / "plan.json")
     validate_plan(plan, approved=approved)
-    expected_plan = canonical_bytes(activate_plan(read(DRAFT)), newline=True) if approved else DRAFT.read_bytes()
+    expected_plan = canonical_bytes(activate_plan(read(DRAFT), run_id=run_id), newline=True) if approved else DRAFT.read_bytes()
     require((package / "plan.json").read_bytes() == expected_plan, "checked plan bytes differ")
     require(read(package / "kernel/kernel-metadata.json") == metadata(plan), "combined private metadata differs")
     notebook = read(package / "kernel/kaggle-notebook.ipynb")
@@ -97,19 +100,24 @@ def preflight(package: Path, *, approved=False) -> dict:
         require(hashlib.sha256(value).hexdigest() == bindings["HASHES"][key] and
                 member(package, bindings["FILES"][key]).read_bytes() == value,
                 "combined embedded bytes differ: " + key)
-    require(source == render(payloads, bindings["FILES"], approved=approved),
+    require(source == render(payloads, bindings["FILES"], approved=approved, run_id=run_id),
             "combined executable differs from reviewed template")
     require(payloads["plan"] == (package / "plan.json").read_bytes(), "embedded plan differs")
     verify_inputs(plan, payloads)
     verify_bundle(package / "source-bundle", plan["branches"]["m2"]["source_bundle_digest"])
     verify_references(read(package / "material-references.json"), json.loads(payloads["model_manifest"]))
     # Deliberately truncate before setup even when checking an approved package.
-    probe_guard(source, digest_value(plan), accepted=approved)
+    probe_guard(source, digest_value(plan), accepted=approved, run_id=run_id)
     draft_payloads = {**payloads, "plan": DRAFT.read_bytes()}
-    probe_guard(render(draft_payloads, bindings["FILES"], approved=approved), DRAFT_DIGEST)
-    return {"run_id": RUN, "plan_digest": digest_value(plan), "approved": approved,
+    probe_guard(render(draft_payloads, bindings["FILES"], approved=approved, run_id=run_id), DRAFT_DIGEST, run_id=run_id)
+    hardware_probe = None
+    if approved and run_id == REPAIR_RUN:
+        from tools.nvarc_combined_hardware_probe import probe_hardware
+        hardware_probe = probe_hardware(source)
+    return {"run_id": run_id, "plan_digest": digest_value(plan), "approved": approved,
             "external_calls": 0, "draft_guard_verified": True, "inventory_count": len(inventory),
             "approved_guard_verified": approved, "offline_probe_stops_before_shared_setup": True,
+            "generated_hardware_fixture_probe": hardware_probe,
             "export_verified_by_reference": True, "cached_tokenizer_verified": True,
             "gpu_acceptance": "pending"}
 
@@ -117,6 +125,6 @@ def preflight(package: Path, *, approved=False) -> dict:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("package", type=Path)
-    parser.add_argument("--approved", action="store_true", help="verify exact Decision 0035 package")
+    parser.add_argument("--approved", action="store_true", help="verify exact historical/replacement approved package")
     args = parser.parse_args()
     print(json.dumps(preflight(args.package, approved=args.approved), indent=2))

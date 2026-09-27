@@ -131,3 +131,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0035-submit-nvarc-combined-two-gpu-notebook.md`](0035-submit-nvarc-combined-two-gpu-notebook.md)
   authorizes one private combined M2/M3 notebook using two selected L4 GPUs,
   unchanged workloads and existing Datasets, with no monitoring or retrieval.
+- [`0036-repair-combined-nvarc-notebook.md`](0036-repair-combined-nvarc-notebook.md)
+  authorizes one diagnostic retrieval of failed combined 001 and one distinct
+  combined 002 hardware-identity repair submission, stopping at its receipt.
