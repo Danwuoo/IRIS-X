@@ -1,7 +1,7 @@
 # Combined notebook 002: GPU identity repair
 
 Date: 2026-09-27
-Status: hardware identity repair verified offline; submission pending
+Status: submitted version 1; runtime unqueried; push consumed
 Authority: [Decision 0036](../../docs/decisions/0036-repair-combined-nvarc-notebook.md)
 
 ## Verified predecessor failure
@@ -85,3 +85,37 @@ Its plan digest is
 `decision-0036-preflight.json` independently checks the embedded payloads,
 exact executable template, model/export/tokenizer materials, approval guards
 and all 12 generated-hardware fixtures, with zero external calls.
+
+The coordinating review independently verified both package inventories,
+the replacement wheel against final source bytes, and exactly seven changed
+plan paths: parent run/kernel/decision and each child's run/kernel identity.
+`decision-0036-comparison.json` records the complete original inventory and
+unchanged scientific fields, materials, original templates and draft.
+
+## Exact submission and stopping point
+
+Source commit: `0772bdda701fe045fcb38d8b98ad90f8fabacac1` on local `main`.
+The single push was reserved at `2026-09-27T03:12:55.807200+00:00` in
+`decision-0036-execution-ledger.json` before the provider call. The UTF-8 CLI
+used `NvidiaL4` and timeout `1800`. Kaggle returned exit 0 and accepted
+[combined 002 version 1](https://www.kaggle.com/code/danielwuu/nvarc-m2-m3-combined-002)
+at `2026-09-27T03:12:59.672679+00:00` (11:12:59 Asia/Taipei).
+
+SHA-256 bindings:
+
+| Member | SHA-256 |
+| --- | --- |
+| Plan file | `39f9c31d4fd2b25fb079d4cf258e916d68f29e0655c59ad176e304e2902edb69` |
+| Notebook | `b4d2027da0f81396fb4fba17f20476a582bda3e52104e20a5c4e8bd073bf9931` |
+| Metadata | `f6d216d4c05c6b619cf7dca2b37404c41379afcb77cb414e683184058fcb34b1` |
+| Runtime wheel | `7d04854f89ecb6930827ba79044967a372442103d90ea5eb4c07feb5fe5493af` |
+| Stage summary | `2109c08c7a514b72fbd49356293766bada9e593d1b1b910e9c9940ca489d8596` |
+| Preflight | `4eee368338af99d3e9a8801fb64a6bb175aefd0be182a8fa230edabce1243b59` |
+| Comparison | `1db810c6b5e2f8b837d25e02e37e3758f192a6ec0e9ab64bef0fe806003d5118` |
+| Push receipt | `36d17f040b6fd7f7df51fc09e076574f249d676a3e122dc5d8f71c7051fcf756` |
+
+The receipt is `decision-0036-push-002.txt` beside the package. Both the
+predecessor diagnostic retrieval and replacement push are consumed. No status,
+log or output request was made for the replacement, no Dataset was mutated,
+and no heartbeat was resumed. Runtime startup, GPU acceptance and model
+outcomes remain unknown. No further retry or retrieval follows automatically.

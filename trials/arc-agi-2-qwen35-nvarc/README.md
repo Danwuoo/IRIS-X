@@ -6,7 +6,10 @@
 verified an early UUID hardware-mapping failure, with zero worker launches and
 zero model calls. The owner's repair/re-push instruction is accepted under
 Decision 0036 for one distinct combined 002, with unchanged scientific limits.
-Local hardware-identity repair and validation are in progress.
+The hardware-identity repair passed full offline validation (244 tests, four
+optional skips), focused/strict package checks and 12 generated-hardware
+fixtures. Kaggle accepted combined 002 version 1 on 2026-09-27. Its sole push
+is consumed; runtime remains unqueried and no monitoring or retrieval followed.
 
 The earlier [combined notebook submission](combined-notebook-001-submission.md)
 under [Decision 0035](../../docs/decisions/0035-submit-nvarc-combined-two-gpu-notebook.md),

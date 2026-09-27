@@ -250,6 +250,12 @@ Preserve 001 and repair strict UUID normalization/mapping in new 002 bytes.
 Stop at the replacement receipt without monitoring, retrieval or further retry.
 Status is `trials/arc-agi-2-qwen35-nvarc/combined-notebook-002.md`.
 
+Decision 0036's distinct combined 002 push was accepted as version 1 after
+offline validation. The predecessor retrieval and replacement push are both
+consumed. Exact package bindings and receipt are retained in that status page.
+Replacement runtime is unqueried; no monitoring, retrieval or further retry
+is authorized by the completed repair submission.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;
