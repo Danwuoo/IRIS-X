@@ -292,7 +292,16 @@ no agent run, status/log/output request, retrieval, Dataset mutation, monitoring
 or automatic retry is authorized. Status is
 `trials/arc-agi-2-qwen35-nvarc/combined-notebook-004-editor.md`.
 The sole QUICK_SAVE was accepted as version 1 and is consumed. No agent session
-was started; runtime remains unobserved pending the owner's Editor report.
+was started at save; the owner subsequently supplied the Editor report.
+The owner has supplied combined 004's `結果.zip`. Local digest-bound verification
+matches the exact approved inputs and both L4 worker envelopes. M2 completed one
+shared TTT and twelve paired calls, producing two legal 1x2 candidates only at
+0.02; no ARC exact-match score or promotion follows. M3's one EOS summary was
+rejected for fenced JSON, and its diagnostically unwrapped first-parent rule
+also fails both public demos. No later teacher stage or program suite ran, and
+no SDG pair was accepted. Preserve the observation at
+`trials/arc-agi-2-qwen35-nvarc/combined-004-editor-diagnosis.md`; it grants no new
+external execution, save, retrieval or changed acceptance threshold.
 
 ## Authority order
 

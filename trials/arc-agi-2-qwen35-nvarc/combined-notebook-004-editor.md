@@ -25,8 +25,11 @@ shards enter the ZIP. Download it and supply it for local analysis.
 
 Plan digest: `sha256:7abcb83ec8824db7822349a5e735efb532caa1a56ba52a4c619ba1afe049550b`.
 Package: `.irisx/arc-agi-2/qwen35-nvarc/m2-m3/combined-editor-004-final/`.
-Runtime remains unobserved. No monitoring, retrieval or automatic retry follows
-from this save.
+The owner subsequently supplied [combined 004 Editor diagnostics](combined-004-editor-diagnosis.md).
+Local verification matches the approved inputs and both worker envelopes. M2
+completed the paired twelve calls and returned two short legal grids only at
+0.02; M3's sole summary call was rejected and no SDG pair was accepted. The
+Editor observation does not authorize provider queries, another save or retry.
 
 Exact local bindings (SHA-256):
 

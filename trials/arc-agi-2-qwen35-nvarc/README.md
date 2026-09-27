@@ -2,10 +2,12 @@
 
 ## Current continuation (2026-09-27)
 
-The owner now authorizes [combined 004](combined-notebook-004-editor.md) under
-Decision 0038: one private QUICK_SAVE of M2 paired thresholds and M3 semantic
-gates in one notebook, producing `結果.zip` after the owner starts it in Editor.
-No agent execution, monitoring or retrieval is authorized.
+The owner supplied [combined 004 Editor results](combined-004-editor-diagnosis.md)
+from Decision 0038's quick-saved notebook. Digest-bound local verification
+confirms twelve M2 calls sharing one TTT and two legal 1x2 candidates only at
+0.02; ARC quality remains unscored. M3's sole EOS summary was fenced JSON and,
+even after diagnostic unwrapping, gave a wrong first-parent rule. It accepted no
+SDG pair. No agent execution, monitoring, retrieval or further save is authorized.
 
 The owner's local continuation now adds [semantic gates and paired threshold
 candidate implementation](local-semantic-continuation.md). The retained M3
