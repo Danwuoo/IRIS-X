@@ -76,7 +76,8 @@ def extract_teacher_program(raw: str, function: str) -> str:
     return candidates[0]
 
 
-def validate_teacher_response(stage: str, response: dict[str, Any]) -> None:
+def validate_teacher_response(stage: str, response: dict[str, Any], *,
+                              profile="qwen-direct-complete-v1") -> None:
     """A completed model call may still be rejected as an unusable stage."""
     if response.get("finish_reason") != "eos":
         raise ValidationError("teacher output did not finish with EOS")
@@ -90,17 +91,26 @@ def validate_teacher_response(stage: str, response: dict[str, Any]) -> None:
         if "```" in raw:
             raise ValidationError("teacher description contains an unexpected code block")
         content = raw
+        if profile == "qwen-direct-permutation-v2":
+            from .arc_nvarc_teacher_spec import parse_spec
+            content = canonical_bytes(parse_spec(stage, raw)).decode()
     else:
         raise ValidationError("unknown validated teacher stage")
+    if profile not in {"qwen-direct-complete-v1", "qwen-direct-permutation-v2"}:
+        raise ValidationError("unknown teacher validation profile")
     response["content"] = content
     response["content_sha256"] = hashlib.sha256(content.encode()).hexdigest()
-    response["validation_profile"] = "qwen-direct-complete-v1"
+    response["validation_profile"] = profile
 
 
-def render_source_teacher_prompt(stage: str, item: Mapping[str, Any], template: str) -> str:
+def render_source_teacher_prompt(stage: str, item: Mapping[str, Any], template: str, *,
+                                 profile="qwen-direct-complete-v1") -> str:
     """Fill the four pinned v1 templates from public demos and prior replies."""
     history = item.get("stage_responses", {})
-    if stage == "summary":
+    if profile == "qwen-direct-permutation-v2":
+        from .arc_nvarc_teacher_spec import prompt_values
+        values = prompt_values(stage, item)
+    elif stage == "summary":
         demos = item.get("train_demos", [])
         if len(demos) < 2:
             raise ValidationError("SDG summary requires two public train demonstrations")
@@ -142,7 +152,8 @@ class BoundedLocalHFTeacher:
                  maximum_total_tokens: int,
                  stage_limits: Mapping[str, Mapping[str, int]] | None = None,
                  enable_thinking: bool | None = None,
-                 require_complete: bool = False) -> None:
+                 require_complete: bool = False,
+                 validation_profile="qwen-direct-complete-v1") -> None:
         if (not model_material_digest.startswith("sha256:") or
                 min(maximum_input_tokens, maximum_output_tokens, maximum_total_tokens) < 1 or
                 maximum_input_tokens + maximum_output_tokens > maximum_total_tokens):
@@ -155,6 +166,10 @@ class BoundedLocalHFTeacher:
         self.reserved_tokens = 0
         self.stage_limits = dict(stage_limits) if stage_limits is not None else None
         self.enable_thinking, self.require_complete = enable_thinking, require_complete
+        if validation_profile not in {"qwen-direct-complete-v1", "qwen-direct-permutation-v2"} or (
+                validation_profile == "qwen-direct-permutation-v2" and not require_complete):
+            raise ValidationError("teacher validation profile or EOS gate differs")
+        self.validation_profile = validation_profile
         if self.stage_limits is not None and (
                 set(self.stage_limits) != set(STAGES[:4]) or
                 any(set(limits) != {"input", "output"} or
@@ -171,13 +186,13 @@ class BoundedLocalHFTeacher:
             "maximum_total_tokens": maximum_total_tokens}
         if stage_limits is not None or enable_thinking is not None or require_complete:
             identity.update(stage_limits=self.stage_limits, enable_thinking=enable_thinking,
-                            validation_profile="qwen-direct-complete-v1" if require_complete else None,
+                            validation_profile=validation_profile if require_complete else None,
                             do_sample=False)
         self.identity = "offline-local-hf:" + digest_value(identity)
 
     def validate_response(self, stage: str, value: dict[str, Any]) -> None:
         if self.require_complete:
-            validate_teacher_response(stage, value)
+            validate_teacher_response(stage, value, profile=self.validation_profile)
 
     def complete(self, stage: str, item: Mapping[str, Any], prompt: str) -> dict[str, Any]:
         import torch
@@ -186,7 +201,7 @@ class BoundedLocalHFTeacher:
                   {"input": self.maximum_input_tokens, "output": self.maximum_output_tokens})
         if self.reserved_tokens + limits["input"] + limits["output"] > self.maximum_total_tokens:
             raise ValidationError("local SDG teacher total token ceiling exhausted")
-        rendered = render_source_teacher_prompt(stage, item, prompt)
+        rendered = render_source_teacher_prompt(stage, item, prompt, profile=self.validation_profile)
         template_options = {} if self.enable_thinking is None else {"enable_thinking": self.enable_thinking}
         tokens = self.tokenizer.apply_chat_template(
             [{"role": "user", "content": rendered}], tokenize=True,

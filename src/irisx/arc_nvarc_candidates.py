@@ -109,6 +109,14 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
     stack: list[tuple[tuple[int, ...], float]] = [((), 0.0)]
     token_limit_hit = False
     reason = "exhausted"
+    # Fixed-size counters and one root snapshot; no prompt, answer or extra
+    # model forward is retained. In particular, never renormalize after masking:
+    # that would silently relax the source's cumulative probability threshold.
+    diagnostics = {"format": "irisx/nvarc-dfs-diagnostics-v1", "root": None,
+                   "score_pruned_edges": 0, "grammar_masked_edges": 0,
+                   "token_limit_edges": 0, "enqueued_edges": 0,
+                   "maximum_suffix_tokens": 0, "max_score": max_score,
+                   "probability_space": "unmasked-16-symbol-vocabulary"}
     while stack:
         if len(results) >= max_sequences:
             reason = "sequence_limit"
@@ -122,8 +130,9 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
         suffix, score = stack.pop()
         probabilities = next_log_probs(query + list(suffix))
         expansions += 1
-        if len(probabilities) <= END or any(not math.isfinite(float(p)) for p in probabilities):
+        if len(probabilities) != GridTokenizer.vocab_size or any(not math.isfinite(float(p)) for p in probabilities):
             raise ValidationError("DFS backend returned invalid compact logits")
+        diagnostics["maximum_suffix_tokens"] = max(diagnostics["maximum_suffix_tokens"], len(suffix))
         options = []
         row_lengths = [0]
         for token in suffix:
@@ -133,14 +142,19 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
                 row_lengths[-1] += 1
         complete_grid_prefix = bool(suffix) and row_lengths[-1] > 0 and all(
             length == row_lengths[0] for length in row_lengths)
+        allowed = []
         for token in tuple(range(11)) + (END,):
             if token == 10 and (not suffix or row_lengths[-1] == 0 or
                                 (len(row_lengths) > 1 and row_lengths[-1] != row_lengths[0])):
+                diagnostics["grammar_masked_edges"] += 1
                 continue
             if token != 10 and token != END and len(row_lengths) > 1 and row_lengths[-1] >= row_lengths[0]:
+                diagnostics["grammar_masked_edges"] += 1
                 continue
             if token == END and not complete_grid_prefix:
+                diagnostics["grammar_masked_edges"] += 1
                 continue
+            allowed.append(token)
             nll = score - float(probabilities[token])
             if nll < max_score:
                 if token == END:
@@ -151,8 +165,23 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
                                         "beam_nll": nll})
                 elif len(suffix) + 1 < max_new_tokens:
                     options.append((nll, token))
+                    diagnostics["enqueued_edges"] += 1
                 else:
                     token_limit_hit = True
+                    diagnostics["token_limit_edges"] += 1
+            else:
+                diagnostics["score_pruned_edges"] += 1
+        if not suffix:
+            best = max(range(len(probabilities)), key=lambda token: probabilities[token])
+            diagnostics["root"] = {
+                "log_probs": [float(p) for p in probabilities], "allowed_token_ids": allowed,
+                "best_token_id": best, "best_token_allowed": best in allowed,
+                "best_allowed_nll": min(-float(probabilities[token]) for token in allowed),
+                "allowed_probability_mass": sum(math.exp(float(probabilities[token])) for token in allowed),
+                "non_grid_symbol_probability_mass": sum(math.exp(float(probabilities[token]))
+                    for token in (11, 12, 13, 14)),
+                "score_surviving_token_ids": [token for token in allowed if -float(probabilities[token]) < max_score],
+                "enqueued_children": len(options)}
         # Push in reverse so the next pop preserves the source's sorted DFS.
         for child_score, token in reversed(sorted(options, key=lambda item: (item[0], item[1]))):
             stack.append((suffix + (token,), child_score))
@@ -163,11 +192,20 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
             reason = "token_limit"
         elif not results:
             reason = "no_valid_candidate"
+    if not results:
+        root = diagnostics["root"]
+        diagnostics["no_candidate_reason"] = (
+            "root_legal_tokens_below_score_threshold" if root is not None and
+            not root["score_surviving_token_ids"] else reason if reason != "no_valid_candidate" else
+            "cumulative_score_or_grammar_exhaustion")
+    else:
+        diagnostics["no_candidate_reason"] = None
     return {"sequences": results, "expansions": expansions,
             "completed_candidates": len(results), "stop_reason": reason,
             "max_new_tokens": max_new_tokens, "max_expansions": max_expansions,
             "max_sequences": max_sequences,
-            "maximum_reachable_tokens": min(max_new_tokens, max_expansions)}
+            "maximum_reachable_tokens": min(max_new_tokens, max_expansions),
+            "diagnostics": diagnostics}
 
 
 def bounded_dfs(query: list[int], next_log_probs: Callable[[list[int]], list[float]], *,
@@ -232,6 +270,7 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any],
                 backend.begin_test(test_index)
             candidates = []
             returned_sequences = 0
+            parse_rejections = {"missing_eos": 0, "invalid_grid": 0}
             generation_observations = []
             view_records = ([{"spec": spec, "task": transform(task, spec), "test_index": test_index}
                             for spec in views] if views is not None else
@@ -251,17 +290,23 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any],
                 if call_observer is not None:
                     call_observer({**call, "status": "reserved"})
                 sequences = backend.generate(query, beams=beams, max_new_tokens=max_tokens)
+                observation = (backend.last_generation_observation if
+                               hasattr(backend, "last_generation_observation") else None)
                 if call_observer is not None:
-                    call_observer({**call, "status": "complete"})
-                if hasattr(backend, "last_generation_observation"):
+                    call_observer({**call, "status": "complete",
+                                   **({"generation_observation": observation} if observation is not None else {})})
+                if observation is not None:
                     generation_observations.append({"view_index": view_index,
-                                                    **backend.last_generation_observation})
+                                                    **observation})
                 if len(sequences) > beams:
                     raise ValidationError("backend returned more sequences than bound")
                 returned_sequences += len(sequences)
                 for sequence_index, sequence in enumerate(sequences):
                     parsed = tokenizer.parse_completion(sequence["tokens"], stopped_on_eos=sequence["eos"])
                     if parsed is None:
+                        key = ("missing_eos" if not sequence["eos"] or not sequence["tokens"] or
+                               sequence["tokens"][-1] != END else "invalid_grid")
+                        parse_rejections[key] += 1
                         continue
                     restored = inverse_grid(parsed, spec, inverse=True)
                     canonical_grid = tuple(tuple(row) for row in restored)
@@ -290,6 +335,7 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any],
                             "ranked": ranked, "generation_calls_so_far": calls,
                             "verification_calls_so_far": verification_calls,
                             "returned_sequences": returned_sequences,
+                            "parse_rejections": parse_rejections,
                             "generation_observations": generation_observations,
                             "status": "complete" if len(attempts) == 2 else "missing-candidate"})
     finally:
@@ -408,6 +454,9 @@ class QwenCandidateBackend:
                 self.last_generation_observation = {
                     key: value for key, value in search.items() if key != "sequences"}
                 self.last_generation_observation["cache_mode"] = self.dfs_cache_mode
+                self.last_generation_observation["representation"] = self.representation
+                self.last_generation_observation["query_tokens"] = len(query)
+                self.last_generation_observation["query_role_tail"] = query[-4:]
                 self.last_generation_observation["cache_hits"] = (
                     self.prefix_cache.hits - before_hits if self.prefix_cache is not None else 0)
                 return search["sequences"]

@@ -2,6 +2,15 @@
 
 ## Current continuation (2026-09-27)
 
+The owner's subsequent local repair direction is implemented in the distinct
+[combined 003 inert candidate](combined-notebook-003-local-repair.md).
+It adds persisted M2 root/pruning diagnostics, a paired structured M3
+permutation profile and explicit branch/stage completion errors. Token/step
+ceilings and EOS/sandbox/pair gates stay in force; the new prompt design has
+no model-quality evidence. All external allowances are zero and the notebook
+and packaged worker reject execution before setup. This does not authorize
+another submission or a query of background combined 002.
+
 The owner subsequently supplied [Editor-session diagnostics](combined-002-editor-diagnosis.md).
 Both distinct L4 workers loaded their models. M2 completed one TTT step and four
 generation calls but returned no candidates; M3's second call reached its

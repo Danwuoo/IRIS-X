@@ -14,7 +14,7 @@ import time
 from .arc_nvarc_combined import (atomic, check_logical_device, read, require,
                                 require_live_authorization, sha)
 from .arc_nvarc_source_continuation import EXPORT, TRAINING
-from .arc_nvarc_teacher_profile import LIMITS, PROFILE, PROMPTS, TOTAL_TOKENS
+from .arc_nvarc_teacher_profile import LIMITS, PROFILE, PROMPTS, TOTAL_TOKENS, profile_prompts
 from .canonical import digest_value
 from .arc_nvarc_hardware import collect_hardware_inventory
 
@@ -71,30 +71,39 @@ def _verify_m2(plan: dict, output: Path) -> dict:
         "optimizer_checkpoint_retained": False, "generation_calls": calls,
         "verification_calls": verification, "nonempty_ranking_observed": verification > 0,
         "contains_evaluator_truth": False}, "combined M2 chain differs")
-    return {"generation_calls": calls, "verification_calls": verification, "ttt_steps": 1,
-            "ranked_candidates": sum(len(r["ranked"]) for r in rows), "sft_steps": 0}
+    counts = {"generation_calls": calls, "verification_calls": verification, "ttt_steps": 1,
+              "ranked_candidates": sum(len(r["ranked"]) for r in rows), "sft_steps": 0}
+    if child.get("search_diagnostics_profile") == "root-pruning-v1":
+        require(all(o.get("diagnostics", {}).get("format") == "irisx/nvarc-dfs-diagnostics-v1"
+                    for row in rows for o in row["generation_observations"]),
+                "candidate M2 bounded search diagnostics missing")
+        counts.update(candidate_status="available" if any(r["ranked"] for r in rows) else "missing-candidate",
+                      missing_test_outputs=sum(not r["ranked"] for r in rows))
+    return counts
 
 
 def _verify_m3(plan: dict, output: Path) -> dict:
     from .arc_nvarc_sdg import BoundedLocalHFTeacher, validate_teacher_response
 
     child = plan["branches"]["m3"]
+    prompts = profile_prompts(child["teacher_profile"])
     result = read(output / "work/result.json")
     seed = read(output / "seed.json")
     require(sha(output / "seed.json") == child["seed_record_sha256"] and
             digest_value(read(output / "prompts.json")) == child["prompts_digest"] and
-            read(output / "prompts.json") == PROMPTS, "combined teacher inputs differ")
+            read(output / "prompts.json") == prompts, "combined teacher inputs differ")
     provider = BoundedLocalHFTeacher(None, None,
         model_material_digest=child["teacher_model_manifest_digest"],
         maximum_input_tokens=8192, maximum_output_tokens=3072, maximum_total_tokens=TOTAL_TOKENS,
-        stage_limits=LIMITS, enable_thinking=False, require_complete=True)
+        stage_limits=LIMITS, enable_thinking=False, require_complete=True,
+        validation_profile=child["teacher_profile"])
     item = seed["record"]
     responses = []
-    for index, stage in enumerate(PROMPTS):
+    for index, stage in enumerate(prompts):
         ledger = read(output / "work/stage-ledgers" / (stage + ".json"))
         require(ledger.get("format") == "irisx/nvarc-sdg-stage" and ledger.get("stage") == stage and
             ledger.get("binding") == digest_value({"stage": stage, "inputs": [item],
-                "prompt": PROMPTS[stage], "provider": provider.identity, "seed": 24}) and
+                "prompt": prompts[stage], "provider": provider.identity, "seed": 24}) and
             ledger.get("maximum_calls") == 4 - index and ledger.get("reserved_calls") == 1 and
             set(ledger["records"]) == {item["record_id"]}, "combined teacher dependent ledger differs")
         record = ledger["records"][item["record_id"]]
@@ -103,7 +112,7 @@ def _verify_m3(plan: dict, output: Path) -> dict:
                 record.get("input_digest") == digest_value(item) and
                 record.get("response_digest") == digest_value(response), "combined teacher response differs")
         checked = copy.deepcopy(response)
-        validate_teacher_response(stage, checked)
+        validate_teacher_response(stage, checked, profile=child["teacher_profile"])
         require(checked == response and 0 < response["input_tokens"] <= LIMITS[stage]["input"] and
                 0 < response["output_tokens"] <= LIMITS[stage]["output"] and
                 len(response.get("output_token_ids", [])) == response["output_tokens"] and
@@ -115,7 +124,7 @@ def _verify_m3(plan: dict, output: Path) -> dict:
                           "response_digest": record["response_digest"]})
         item = {**item, "stage_responses": {**item.get("stage_responses", {}), stage: response}}
     require(result.get("format") == "irisx/nvarc-m3-teacher-small-result-v1" and
-        result.get("teacher_profile") == PROFILE and result.get("run_id") == child["run_id"] and
+        result.get("teacher_profile") == child["teacher_profile"] and result.get("run_id") == child["run_id"] and
         result.get("plan_digest") == digest_value(child) and result.get("completed_calls") == 4 and
         result.get("accepted_stages") == 4 and result.get("reserved_calls") == 4 and
         result.get("reserved_tokens") == TOTAL_TOKENS and result.get("responses") == responses and
@@ -172,6 +181,7 @@ def partial_teacher_counts(plan, output):
     from .arc_nvarc_sdg import BoundedLocalHFTeacher
 
     child = plan["branches"]["m3"]
+    prompts = profile_prompts(child["teacher_profile"])
     if not (output / "seed.json").exists():
         return {"counter_evidence": "no persisted teacher seed/ledgers; counts unknown"}
     require(sha(output / "seed.json") == child["seed_record_sha256"], "partial teacher seed differs")
@@ -179,16 +189,18 @@ def partial_teacher_counts(plan, output):
     provider = BoundedLocalHFTeacher(None, None,
         model_material_digest=child["teacher_model_manifest_digest"],
         maximum_input_tokens=8192, maximum_output_tokens=3072, maximum_total_tokens=TOTAL_TOKENS,
-        stage_limits=LIMITS, enable_thinking=False, require_complete=True)
+        stage_limits=LIMITS, enable_thinking=False, require_complete=True,
+        validation_profile=child["teacher_profile"])
     reserved, responses, input_tokens, output_tokens = 0, 0, 0, 0
     uncertain = False
-    for index, stage in enumerate(PROMPTS):
+    outcomes = []
+    for index, stage in enumerate(prompts):
         path = output / "work/stage-ledgers" / (stage + ".json")
         if not path.exists():
             break
         ledger = read(path)
         require(ledger.get("binding") == digest_value({"stage": stage, "inputs": [item],
-                "prompt": PROMPTS[stage], "provider": provider.identity, "seed": 24}) and
+                "prompt": prompts[stage], "provider": provider.identity, "seed": 24}) and
                 ledger.get("maximum_calls") == 4 - reserved and
                 ledger.get("reserved_calls") in (0, 1) and
                 set(ledger["records"]) <= {item["record_id"]}, "partial teacher ledger differs")
@@ -196,6 +208,9 @@ def partial_teacher_counts(plan, output):
         if not ledger["records"]:
             break
         record = ledger["records"][item["record_id"]]
+        outcomes.append({"stage": stage, "status": record.get("status"),
+                         "reason": record.get("rejection_reason") or record.get("error_message") or
+                                   record.get("error_type")})
         require(record.get("input_digest") == digest_value(item) and record.get("provider_calls") == 1,
                 "partial teacher reservation differs")
         response = record.get("response")
@@ -215,6 +230,7 @@ def partial_teacher_counts(plan, output):
     return {"reserved_counters": {"teacher_calls": reserved, "tokens": None},
             "actual_counters": {"completed_responses": responses, "input_tokens": input_tokens,
                                 "output_tokens": output_tokens, "actual_model_calls": None if uncertain else responses},
+            "stage_outcomes": outcomes,
             "counter_evidence": "digest-bound partial ledgers; pending/failed calls and reserved token count remain unknown"}
 
 
@@ -252,7 +268,8 @@ def _run_prepared(plan: dict, branch: str, paths: dict, hardware: dict, output: 
                     require(key not in ledger["records"] and
                             (call["kind"] != "generation" or call["index"] <= 4), "M2 call reused or exceeded bounds")
                 else:
-                    require(ledger["records"][key] == {**call, "status": "reserved"}, "M2 call reservation differs")
+                    reservation = {k: v for k, v in call.items() if k != "generation_observation"}
+                    require(ledger["records"][key] == {**reservation, "status": "reserved"}, "M2 call reservation differs")
                 ledger["records"][key] = call
                 atomic(output / "call-ledger.json", ledger)
             for key, name in (("visible", "visible.json"), ("source_config", "source-config.json"),
@@ -281,6 +298,8 @@ def _run_prepared(plan: dict, branch: str, paths: dict, hardware: dict, output: 
         if branch == "m3" and terminal["status"] != "complete":
             try:
                 terminal.update(partial_teacher_counts(plan, output))
+                if terminal.get("stage_outcomes"):
+                    terminal["phase"] = "teacher/" + terminal["stage_outcomes"][-1]["stage"]
             except Exception as exception:
                 terminal["counter_evidence"] = "partial counters unreconciled: " + str(exception)[:2000]
         if branch == "m2" and terminal["status"] != "complete":

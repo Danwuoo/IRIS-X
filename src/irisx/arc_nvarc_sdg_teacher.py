@@ -11,7 +11,8 @@ from .arc_nvarc_4b_pilot import verify_model_material
 from .arc_nvarc_sdg import BoundedLocalHFTeacher, run_teacher_pipeline
 from .canonical import canonical_bytes, digest_value
 from .errors import ValidationError
-from .arc_nvarc_teacher_profile import LIMITS, TOTAL_TOKENS, PROFILE, PROMPTS
+from .arc_nvarc_teacher_profile import LIMITS, TOTAL_TOKENS, PROFILE, PROMPTS, profile_prompts
+from .arc_nvarc_teacher_spec import PROFILE as SPEC_PROFILE
 
 
 def stage_outcomes(ledgers: dict) -> list[dict]:
@@ -47,10 +48,12 @@ def completion_error(report: dict, expected_calls: int) -> str | None:
 
 def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
         model_manifest_path: Path, output: Path) -> dict:
-    import torch
-    from transformers import AutoModelForMultimodalLM, AutoTokenizer
-
     plan = json.loads(plan_path.read_bytes())
+    # New candidate prompts must never piggyback on a consumed standalone
+    # Decision 0033/0034 identity. Only the internal combined workload knows v2;
+    # its parent/worker still require a separately bound execution envelope.
+    if plan.get("teacher_profile") == SPEC_PROFILE:
+        raise ValidationError("structured teacher profile is inert; separate exact combined approval required")
     validated = plan.get("teacher_profile") == PROFILE
     if (plan.get("format") != "irisx/nvarc-m3-teacher-small-v1" or
             plan.get("approved") is not True or not plan.get("owner_decision") or
@@ -65,8 +68,9 @@ def run(plan_path: Path, seed_path: Path, prompts_path: Path, model_root: Path,
                       plan.get("owner_decision") != direct_decisions[plan["run_id"]] or
                       plan.get("stage_limits") != LIMITS or plan.get("enable_thinking") is not False or
                       plan.get("maximum_total_reserved_tokens") != TOTAL_TOKENS or
-                      json.loads(prompts_path.read_bytes()) != PROMPTS):
+                      json.loads(prompts_path.read_bytes()) != profile_prompts(plan["teacher_profile"])):
         raise ValidationError("validated teacher profile or stage limits differ")
+    import torch
     if (not torch.cuda.is_available() or torch.cuda.device_count() != 4 or
             "L4" not in torch.cuda.get_device_name(0)):
         raise ValidationError("private Kaggle four-L4 gate failed before teacher load")
@@ -79,8 +83,12 @@ def _run_bound(plan: dict, seed_path: Path, prompts_path: Path, model_root: Path
     import torch
     from transformers import AutoModelForMultimodalLM, AutoTokenizer
 
-    validated = plan.get("teacher_profile") == PROFILE
+    validated = plan.get("teacher_profile") in {PROFILE, SPEC_PROFILE}
     seed_bytes, prompts_bytes = seed_path.read_bytes(), prompts_path.read_bytes()
+    if validated and (json.loads(prompts_bytes) != profile_prompts(plan["teacher_profile"]) or
+                      plan.get("stage_limits") != LIMITS or plan.get("enable_thinking") is not False or
+                      plan.get("maximum_total_reserved_tokens") != TOTAL_TOKENS):
+        raise ValidationError("internal direct teacher profile or complete-response bounds differ")
     if (hashlib.sha256(seed_bytes).hexdigest() != plan["seed_record_sha256"] or
             digest_value(json.loads(prompts_bytes)) != plan["prompts_digest"]):
         raise ValidationError("teacher public seed or source prompt binding differs")
@@ -106,7 +114,8 @@ def _run_bound(plan: dict, seed_path: Path, prompts_path: Path, model_root: Path
         maximum_output_tokens=plan["maximum_output_tokens_per_call"],
         maximum_total_tokens=plan["maximum_total_reserved_tokens"],
         stage_limits=LIMITS if validated else None,
-        enable_thinking=False if validated else None, require_complete=validated)
+        enable_thinking=False if validated else None, require_complete=validated,
+        validation_profile=plan["teacher_profile"] if validated else PROFILE)
     ledgers = run_teacher_pipeline([seed["record"]], json.loads(prompts_bytes), provider,
                                    output / "stage-ledgers", seed=24,
                                    maximum_calls=plan["maximum_teacher_calls"])

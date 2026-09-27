@@ -38,3 +38,12 @@ Puzzle: {PUZZLE}
 Input generator (reference only):
 {INPUT_CODE}
 """}
+
+
+def profile_prompts(profile):
+    if profile == PROFILE:
+        return PROMPTS
+    from .arc_nvarc_teacher_spec import PROFILE as SPEC_PROFILE, PROMPTS as SPEC_PROMPTS
+    if profile == SPEC_PROFILE:
+        return SPEC_PROMPTS
+    raise ValueError("unknown direct teacher profile")

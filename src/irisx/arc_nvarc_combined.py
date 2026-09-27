@@ -435,6 +435,34 @@ def supervise(children: dict, output: Path, *, run_id: str, plan_digest: str,
     return manifest
 
 
+def completion_failure(manifest: dict) -> str | None:
+    """Describe branch/phase/reason while preserving the terminal disposition."""
+    if manifest.get("outcome") == "complete":
+        return None
+    details = []
+    for branch in ("m2", "m3"):
+        item = manifest.get("branches", {}).get(branch, {})
+        error = item.get("error")
+        if isinstance(error, dict):
+            error = error.get("message") or error.get("type")
+        counts = item.get("actual_counters") or {}
+        detail = f"{branch} {item.get('outcome', 'unknown')} at {item.get('last_phase', 'unknown')}"
+        if branch == "m2" and "ranked_candidates" in counts:
+            detail += f" (ranked_candidates={counts['ranked_candidates']}"
+            if counts["ranked_candidates"] == 0:
+                detail += "; missing-candidate"
+            detail += ")"
+        failures = [s for s in item.get("stage_outcomes", []) if s.get("status") != "complete"]
+        if failures:
+            stage = failures[0]
+            detail += f"; {stage['stage']} {stage['status']}: {stage.get('reason') or 'response incomplete'}"
+        elif error:
+            detail += ": " + str(error)[:600]
+        details.append(detail)
+    return (f"combined {manifest.get('outcome', 'unknown')}; " + " | ".join(details) +
+            "; no retry; evidence: aggregate-terminal.json")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plan", type=Path, required=True)
