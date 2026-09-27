@@ -2,6 +2,13 @@
 
 ## Current continuation (2026-09-27)
 
+The owner subsequently supplied [Editor-session diagnostics](combined-002-editor-diagnosis.md).
+Both distinct L4 workers loaded their models. M2 completed one TTT step and four
+generation calls but returned no candidates; M3's second call reached its
+1,024-output-token limit and was rejected without EOS. The observed Editor
+outcome is partial. Background version 1 remains unqueried; these are separate
+evidence sources, and no new execution follows from this local diagnosis.
+
 2026-09-27: [combined 001 diagnostic retrieval](combined-notebook-002.md)
 verified an early UUID hardware-mapping failure, with zero worker launches and
 zero model calls. The owner's repair/re-push instruction is accepted under

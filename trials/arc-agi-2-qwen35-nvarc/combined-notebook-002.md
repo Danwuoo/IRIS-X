@@ -2,6 +2,11 @@
 
 Date: 2026-09-27
 Status: submitted version 1; runtime unqueried; push consumed
+
+Subsequent owner-supplied [Editor-session diagnostics](combined-002-editor-diagnosis.md)
+establish partial execution in the Editor: hardware binding passed, M2 completed
+without candidates, and M3 mix hit its output ceiling. They do not establish the
+background submitted version's state. The submission record below stays frozen.
 Authority: [Decision 0036](../../docs/decisions/0036-repair-combined-nvarc-notebook.md)
 
 ## Verified predecessor failure

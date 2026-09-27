@@ -256,6 +256,14 @@ consumed. Exact package bindings and receipt are retained in that status page.
 Replacement runtime is unqueried; no monitoring, retrieval or further retry
 is authorized by the completed repair submission.
 
+The owner later supplied a ZIP from a manually run Editor session. Local
+digest-bound diagnosis confirms two distinct L4 model-ready workers, M2's one
+TTT step/four calls with no candidates, and M3's two calls followed by mix
+rejection at its 1,024-output-token ceiling without EOS. The Editor outcome is
+partial; the background submission remains unqueried. Preserve the separate
+observation at `trials/arc-agi-2-qwen35-nvarc/combined-002-editor-diagnosis.md`.
+This local diagnosis grants no new execution, retrieval or changed thresholds.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;
