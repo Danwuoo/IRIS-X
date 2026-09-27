@@ -23,6 +23,7 @@ DRAFT_DIGEST = "sha256:2052311757ab3922473e0476801dde4df551e0a037795b64025fa5f17
 DRAFT_SHA256 = "7014795d4ea7f098a8f9680b32843039a2c76b946fd920789491743201ebcc22"
 APPROVED_DIGEST = "sha256:efa10338690105c3236a8bb62d235568d2335b08a674475ba156e6b9a4abc912"
 REPAIR_DIGEST = "sha256:48e9fa7c28e37fc585f87046957e723573697eb01016e1175fab50c9152364ef"
+EDITOR_DIGEST = 'sha256:13790f5930800a9614555cae183eecfe12b0443d9a8f4ba83f9d3976039410cf'
 PROFILE = "combined-two-distinct-l4-v1"
 LOG_LIMIT = 8 * 1024 * 1024
 
@@ -97,7 +98,8 @@ def activate_plan(draft: dict, *, run_id=RUN) -> dict:
 def require_live_authorization(plan: dict) -> None:
     if digest_value(plan) == DRAFT_DIGEST:
         raise ValidationError("combined draft is inert; exact Decision 0036 package required")
-    require(digest_value(plan) == REPAIR_DIGEST, "exact active Decision 0036 combined package required")
+    require(digest_value(plan) in {REPAIR_DIGEST, EDITOR_DIGEST},
+            "exact Decision 0036 or owner-Editor Decision 0037 combined package required")
 
 
 def select_devices(inventory: list[dict], indices=(0, 1)) -> dict:

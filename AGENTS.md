@@ -264,6 +264,16 @@ partial; the background submission remains unqueried. Preserve the separate
 observation at `trials/arc-agi-2-qwen35-nvarc/combined-002-editor-diagnosis.md`.
 This local diagnosis grants no new execution, retrieval or changed thresholds.
 
+The owner now directs submission without running and will execute in Editor
+and report. Decision 0037 authorizes one private `QUICK_SAVE` of the reviewed
+combined 003 candidate in a separate owner-Editor approval envelope. Preserve
+the inert review bytes and all previous identities. Agent execution, status,
+logs, outputs, retrieval, Dataset mutation, monitoring and automatic retry are
+not authorized. Status is
+`trials/arc-agi-2-qwen35-nvarc/combined-notebook-003-editor.md`.
+The sole `QUICK_SAVE` was accepted as version 1 and is consumed. No session
+was started by the agent; runtime is unobserved pending the owner's report.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

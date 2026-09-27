@@ -2,6 +2,12 @@
 
 ## Current continuation (2026-09-27)
 
+The owner's latest instruction authorizes saving the repaired
+[combined 003 Editor notebook](combined-notebook-003-editor.md) without running
+it under Decision 0037. The owner will start it manually in Editor and report.
+No agent monitoring, output retrieval, Dataset mutation or retry is authorized.
+Kaggle accepted its sole `QUICK_SAVE` as version 1; no execution was started.
+
 The owner's subsequent local repair direction is implemented in the distinct
 [combined 003 inert candidate](combined-notebook-003-local-repair.md).
 It adds persisted M2 root/pruning diagnostics, a paired structured M3

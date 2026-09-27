@@ -134,3 +134,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0036-repair-combined-nvarc-notebook.md`](0036-repair-combined-nvarc-notebook.md)
   authorizes one diagnostic retrieval of failed combined 001 and one distinct
   combined 002 hardware-identity repair submission, stopping at its receipt.
+- [`0037-save-nvarc-notebook-for-owner-editor.md`](0037-save-nvarc-notebook-for-owner-editor.md)
+  authorizes one private quick save of the reviewed combined 003 notebook,
+  without agent execution; the owner will run it in Editor and report.
