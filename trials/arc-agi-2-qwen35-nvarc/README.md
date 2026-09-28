@@ -2,6 +2,15 @@
 
 ## Current continuation (2026-09-28)
 
+The owner supplied [combined 009's completed Editor ZIP](combined-009-editor-diagnosis.md).
+Its 41 member digests, exact saved plan, two distinct L4 worker envelopes and
+branch ledgers verify. M2 returned eight legal 6×6 model candidates after
+one TTT and four calls, but they match the separate public-demo positional
+witness on only 8–12 of 36 cells. M3 completed four teacher stages and
+accepted five pairs after 44 bounded no-exec AST probes. No hidden answer was
+scored and no method was promoted. The 009 QUICK_SAVE is consumed; no new
+external execution follows from this observation.
+
 The owner supplied [combined 008's completed Editor ZIP](combined-008-editor-diagnosis.md).
 M2 made eight legal model candidates with low agreement against a separately
 inferred public-demo position map. M3 passed four teacher stages but Kaggle
@@ -10,7 +19,7 @@ denied the namespace syscall before program checks, so no pair was accepted.
 authorizes one distinct [combined 009 owner-Editor QUICK_SAVE](combined-notebook-009-editor.md)
 with an explicitly separate public witness and no-exec AST validation.
 The sole version 1 QUICK_SAVE was accepted and consumed. No agent run or
-monitoring is authorized; runtime is unobserved pending the owner's result.
+monitoring was authorized; the owner supplied its result above.
 
 The owner supplied [combined 007's partial startup ZIP](combined-007-editor-diagnosis.md).
 Its one retained file verifies against the exact saved payloads but has no

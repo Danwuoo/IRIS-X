@@ -7,8 +7,9 @@ The sole QUICK_SAVE was accepted as version 1 on 2026-09-28 and is consumed.
 Notebook: [nvarc-m2-m3-combined-009](https://www.kaggle.com/code/danielwuu/nvarc-m2-m3-combined-009).
 Provider kernel ID: `136265696`. One SaveKernel request used
 `KernelExecutionType.QUICK_SAVE`, private visibility, Internet off and the
-existing sources. No agent session was started or queried; runtime remains
-unobserved pending the owner's Editor result.
+existing sources. No agent session was started or queried. The owner later
+supplied the completed Editor result, analyzed in
+[combined-009-editor-diagnosis.md](combined-009-editor-diagnosis.md).
 
 M2 retains four model generation calls and separately reports a uniquely
 public-demo-derived positional candidate. M3 uses a strict, no-exec AST
@@ -40,6 +41,7 @@ preflight, hardware fixtures, approved/draft guards and five strict local
 checks passed. Those checks include a tiny real-model M2 worker, saved M3
 teacher replies passing 44 safe-AST challenges, malicious-code rejection and
 wrong-permutation rejection. The full repository check passed 274 tests
-(four optional skips). None establishes the new 4B Editor runtime outcome.
+(four optional skips). The owner's subsequently supplied ZIP establishes the
+runtime outcome only within the limits described in the diagnosis.
 No agent run, status/log/output query, retrieval, Dataset mutation or
 automatic retry is authorized.

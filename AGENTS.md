@@ -386,8 +386,18 @@ status/log/output query, retrieval, Dataset mutation or automatic retry is
 authorized. Status is
 `trials/arc-agi-2-qwen35-nvarc/combined-notebook-008-editor.md`.
 The sole QUICK_SAVE was accepted as version 1 and is consumed. No agent
-session was started, and runtime remains unobserved pending the owner's
-Editor result.
+session was started by the agent. The owner supplied the completed 009
+Editor `結果.zip`. Its 41 listed members, exact saved plan, two distinct L4
+worker envelopes and branch ledgers verify locally. M2 completed one TTT,
+four generation calls and eight verifications; the model candidates agree
+with the separately derived public positional witness on only 8–12 of 36
+cells. M3 completed all four teacher stages and accepted five pairs under
+the bounded, no-exec AST contract and 44 logical probes. This is not a
+hidden-answer score, arbitrary Python execution, or method promotion.
+Preserve the observation at
+`trials/arc-agi-2-qwen35-nvarc/combined-009-editor-diagnosis.md`.
+The 009 save is consumed; this observation alone grants no new external
+execution or QUICK_SAVE.
 
 The owner has now supplied combined 008's complete Editor `結果.zip`.
 All 40 member digests and both worker envelopes verify against its approved
