@@ -44,3 +44,11 @@ tests (four optional skips); separate local tiny-model M2 and saved M3 tests
 passed. These checks do not establish 4B runtime quality. No agent execution,
 status/log/output request, retrieval, monitoring, Dataset mutation or retry
 is authorized.
+
+The owner subsequently supplied the Editor `結果.zip`. The digest-bound local
+[combined 005 diagnosis](combined-005-editor-diagnosis.md) confirms both L4
+workers completed. M2 returned six complete 6×6 candidates, all inconsistent
+with the public examples' input-color preservation; no ARC score or promotion
+follows. M3 accepted the summary but rejected the malformed six-index mix;
+there are zero accepted SDG pairs. This local observation grants no further
+external execution or save.

@@ -317,6 +317,17 @@ monitoring, Dataset mutation or automatic retry is authorized. Status is
 QUICK_SAVE was accepted as version 1 and is consumed. No session was started
 by the agent; runtime is unobserved pending the owner's Editor report.
 
+The owner has now supplied the combined 005 Editor `結果.zip`. Local
+digest-bound verification matches the approved plan, all 38 listed artifacts
+and two distinct L4 worker envelopes. M2 completed one TTT/four calls and
+returned six full 6×6 candidates, but every candidate violates the color-set
+property shared by the public demos; no ARC correctness claim follows. M3's
+summary passed all public demos, but its mix reply omitted shape and supplied
+only six indices for a 3×3 composition. No program suite or SDG pair ran.
+Preserve the observation at
+`trials/arc-agi-2-qwen35-nvarc/combined-005-editor-diagnosis.md`; it grants no
+new external execution, save, retrieval, scoring or changed acceptance gate.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

@@ -2,6 +2,15 @@
 
 ## Current continuation (2026-09-28)
 
+The owner supplied [combined 005 Editor results](combined-005-editor-diagnosis.md).
+All 38 ZIP inventory members, saved plan/inputs, two L4 worker envelopes and
+result ledgers verify locally. M2 completed its bounded flow and returned six
+6×6 candidates, all violating the public examples' observed color-preservation
+property; no ARC score or solution claim follows. M3's summary passed every
+public demo, but the mix reply omitted shape and supplied six indices for a
+3×3 composition, so no program or accepted SDG pair followed. No new
+external execution is authorized by this observation.
+
 The owner directs repair and Editor rerun of both branches after combined 004.
 [Decision 0039](../../docs/decisions/0039-save-repaired-nvarc-combined-editor.md)
 opened the distinct [combined 005 notebook](combined-notebook-005-editor.md)
