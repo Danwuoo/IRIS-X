@@ -41,6 +41,9 @@ Input generator (reference only):
 
 
 def profile_prompts(profile):
+    if profile == "qwen-signature-guided-v6":
+        from .arc_nvarc_semantics_v6 import PROMPTS as SIGNATURE_PROMPTS
+        return SIGNATURE_PROMPTS
     if profile == "qwen-rule-guided-v5":
         from .arc_nvarc_semantics_v5 import PROMPTS as GUIDED_PROMPTS
         return GUIDED_PROMPTS

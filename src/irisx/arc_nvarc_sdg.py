@@ -88,28 +88,28 @@ def validate_teacher_response(stage: str, response: dict[str, Any], *,
         content = extract_teacher_program(raw, "generate_puzzle_" +
                                           ("input" if stage == "input-logic" else "output"))
     elif stage in {"summary", "mix"}:
-        if "```" in raw and profile not in {"qwen-rule-hinted-v4", "qwen-rule-guided-v5"}:
+        if "```" in raw and profile not in {"qwen-rule-hinted-v4", "qwen-rule-guided-v5", "qwen-signature-guided-v6"}:
             raise ValidationError("teacher description contains an unexpected code block")
         content = raw
         if profile == "qwen-direct-permutation-v2":
             from .arc_nvarc_teacher_spec import parse_spec
             content = canonical_bytes(parse_spec(stage, raw)).decode()
-        elif profile in {"qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5"}:
+        elif profile in {"qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5", "qwen-signature-guided-v6"}:
             if item is None:
                 raise ValidationError("semantic_teacher_context_required")
-            if profile in {"qwen-rule-hinted-v4", "qwen-rule-guided-v5"}:
+            if profile in {"qwen-rule-hinted-v4", "qwen-rule-guided-v5", "qwen-signature-guided-v6"}:
                 from .arc_nvarc_semantics_v4 import semantic_stage
             else:
                 from .arc_nvarc_semantics import semantic_stage
             content = canonical_bytes(semantic_stage(stage, raw, item)).decode()
     else:
         raise ValidationError("unknown validated teacher stage")
-    if profile not in {"qwen-direct-complete-v1", "qwen-direct-permutation-v2", "qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5"}:
+    if profile not in {"qwen-direct-complete-v1", "qwen-direct-permutation-v2", "qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5", "qwen-signature-guided-v6"}:
         raise ValidationError("unknown teacher validation profile")
     response["content"] = content
     response["content_sha256"] = hashlib.sha256(content.encode()).hexdigest()
     response["validation_profile"] = profile
-    if profile in {"qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5"}:
+    if profile in {"qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5", "qwen-signature-guided-v6"}:
         response["semantic_status"] = {"summary": "demonstrations-checked",
             "mix": "composition-checked"}.get(stage, "program-contract-pending-sandbox")
 
@@ -118,8 +118,10 @@ def render_source_teacher_prompt(stage: str, item: Mapping[str, Any], template: 
                                  profile="qwen-direct-complete-v1") -> str:
     """Fill the four pinned v1 templates from public demos and prior replies."""
     history = item.get("stage_responses", {})
-    if profile in {"qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5"}:
-        if profile == "qwen-rule-guided-v5":
+    if profile in {"qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5", "qwen-signature-guided-v6"}:
+        if profile == "qwen-signature-guided-v6":
+            from .arc_nvarc_semantics_v6 import prompt_values
+        elif profile == "qwen-rule-guided-v5":
             from .arc_nvarc_semantics_v5 import prompt_values
         elif profile == "qwen-rule-hinted-v4":
             from .arc_nvarc_semantics_v4 import prompt_values
@@ -185,8 +187,8 @@ class BoundedLocalHFTeacher:
         self.reserved_tokens = 0
         self.stage_limits = dict(stage_limits) if stage_limits is not None else None
         self.enable_thinking, self.require_complete = enable_thinking, require_complete
-        if validation_profile not in {"qwen-direct-complete-v1", "qwen-direct-permutation-v2", "qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5"} or (
-                validation_profile in {"qwen-direct-permutation-v2", "qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5"} and not require_complete):
+        if validation_profile not in {"qwen-direct-complete-v1", "qwen-direct-permutation-v2", "qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5", "qwen-signature-guided-v6"} or (
+                validation_profile in {"qwen-direct-permutation-v2", "qwen-rule-contract-v3", "qwen-rule-hinted-v4", "qwen-rule-guided-v5", "qwen-signature-guided-v6"} and not require_complete):
             raise ValidationError("teacher validation profile or EOS gate differs")
         self.validation_profile = validation_profile
         if self.stage_limits is not None and (

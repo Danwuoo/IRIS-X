@@ -343,6 +343,30 @@ The sole QUICK_SAVE was accepted as version 1 and is consumed. No session
 was started by the agent; runtime remains unobserved pending the owner's
 Editor report.
 
+The owner has now supplied combined 006's Editor `結果.zip`. All 40 listed
+members and both branch result envelopes verify against the exact approved
+plan. M2 completed one TTT and four calls but its 0.02 token floor exhausted
+all 6×6 paths by two suffix tokens, yielding no candidate. M3 completed four
+EOS calls; summary, mix and input logic passed, but output logic used three
+parameters instead of the required one and was rejected before program
+execution. No pair was accepted. Preserve the observation at
+`trials/arc-agi-2-qwen35-nvarc/combined-006-editor-diagnosis.md`; it grants
+no execution or promotion on its own.
+
+Decision 0041 records the owner's new repair-and-save instruction for distinct
+private `nvarc-m2-m3-combined-007`. M2 uses model-ranked legal colors with
+public 6×6 shape and palette grammar completion, retaining one TTT, four calls
+and eight verification ceiling. M3 prompts an exact single-argument output
+program against the same public-rule mix, while all response, semantic and
+isolated program gates remain. The same materials, two distinct L4s, offline
+USD 0 and 1,800-second bounds remain. Only one QUICK_SAVE is authorized;
+stop at its receipt, without agent execution, monitoring, status/log/output
+query, retrieval, Dataset mutation or retry. Status is
+`trials/arc-agi-2-qwen35-nvarc/combined-notebook-007-editor.md`.
+The sole QUICK_SAVE was accepted as version 1 and is consumed. No agent
+session was started, and runtime remains unobserved pending the owner's
+Editor report.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

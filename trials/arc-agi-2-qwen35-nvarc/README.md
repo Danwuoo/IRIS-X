@@ -2,11 +2,21 @@
 
 ## Current continuation (2026-09-28)
 
+The owner supplied [combined 006 Editor results](combined-006-editor-diagnosis.md).
+Its 40 ZIP members and branch envelopes match the saved plan. M2's 0.02
+token floor yielded no completed 6×6 grid; M3's output function had an
+invalid three-argument entry. Neither branch produced a usable result.
+[Decision 0041](../../docs/decisions/0041-save-nvarc-grammar-and-signature-repairs.md)
+authorizes one distinct [combined 007 owner-Editor QUICK_SAVE](combined-notebook-007-editor.md)
+with public-grammar M2 completion and explicit M3 signature guidance.
+The sole version 1 QUICK_SAVE was accepted and consumed. No agent run or
+monitoring is authorized; runtime is unobserved pending the owner's result.
+
 The owner directs a distinct [combined 006 owner-Editor QUICK_SAVE](combined-notebook-006-editor.md)
 under [Decision 0040](../../docs/decisions/0040-save-nvarc-public-witness-repairs.md).
 Its public-witness repairs address combined 005's palette inconsistency and
 malformed mix reply. The sole version 1 QUICK_SAVE is accepted and consumed;
-runtime remains unobserved. Agent execution, monitoring, retrieval and
+runtime is observed in the owner-supplied ZIP above. Agent execution, monitoring, retrieval and
 automatic retry are not authorized.
 
 The owner supplied [combined 005 Editor results](combined-005-editor-diagnosis.md).

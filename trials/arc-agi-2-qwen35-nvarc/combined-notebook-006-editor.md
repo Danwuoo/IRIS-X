@@ -2,10 +2,11 @@
 
 Decision 0040 authorized one private QUICK_SAVE of distinct
 `nvarc-m2-m3-combined-006` without an agent run. The sole save was accepted
-as version 1 on 2026-09-28 and is consumed. The owner can start it in
-Editor with two L4 GPUs and Internet disabled and then supply
-`/kaggle/working/結果.zip` for local analysis. This saved proposal does not
-establish ARC correctness or SDG pair acceptance.
+as version 1 on 2026-09-28 and is consumed. The owner started it in
+Editor and supplied `/kaggle/working/結果.zip`. The
+[digest-bound diagnosis](combined-006-editor-diagnosis.md) confirms two
+completed branches but no M2 candidates or M3 pairs. This observation does
+not establish ARC correctness or SDG pair acceptance.
 
 Notebook: [nvarc-m2-m3-combined-006](https://www.kaggle.com/code/danielwuu/nvarc-m2-m3-combined-006).
 Provider kernel ID: `136217857`. One SaveKernel request used
@@ -42,6 +43,7 @@ The request, receipt, ledger and preflight remain under the ignored local
 preflight, hardware fixtures and approved/draft execution guards passed. The
 full repository check passed 274 tests (four optional skips); separate tiny
 model and saved-response tests exercised the new M2/M3 worker paths. These
-checks do not establish full 4B runtime quality. No agent run,
+checks did not establish full 4B runtime quality; the subsequent owner result
+is documented above. No agent run,
 status/log/output query, retrieval, Dataset mutation or automatic retry is
 authorized.

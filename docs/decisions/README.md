@@ -148,3 +148,7 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes one private QUICK_SAVE of distinct combined 006 with a public
   palette witness for M2 and a trusted public-rule mix target for M3, without
   an agent run or monitoring.
+- [`0041-save-nvarc-grammar-and-signature-repairs.md`](0041-save-nvarc-grammar-and-signature-repairs.md)
+  authorizes one private QUICK_SAVE of distinct combined 007 with public
+  grammar completion for M2 and an exact one-argument output prompt for M3,
+  without an agent run or monitoring.

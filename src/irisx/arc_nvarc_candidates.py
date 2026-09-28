@@ -260,6 +260,73 @@ def bounded_dfs(query: list[int], next_log_probs: Callable[[list[int]], list[flo
     return result["sequences"], result["expansions"]
 
 
+def bounded_grammar_completion_search(query: list[int], next_log_probs: Callable[[list[int]], list[float]], *,
+                                      max_new_tokens: int, max_expansions: int, max_sequences: int,
+                                      required_shape: tuple[int, int], required_colors: tuple[int, ...]) -> dict[str, Any]:
+    """Complete a public-shape grid, choosing each legal color from raw model logits.
+
+    Row separators and EOS are forced only by the public output shape. The
+    last cells reserve room for every public input color. This is a separate
+    decoding profile: it makes no source-DFS probability-floor claim.
+    """
+    rows, columns = required_shape
+    if (not query or (rows, columns) != (6, 6) or
+            required_colors != tuple(sorted(set(required_colors))) or
+            not required_colors or any(type(c) is not int or c not in range(10) for c in required_colors) or
+            max_sequences != 2 or max_new_tokens < rows * (columns + 1) or
+            max_expansions < max_sequences * rows * (columns + 1)):
+        raise ValidationError("public grammar completion bounds differ")
+    sequences = []
+    expansions = 0
+    minimum_selected_probability = 1.0
+    forced_symbols = 0
+    root = None
+    for variant in range(max_sequences):
+        suffix: list[int] = []
+        nll = 0.0
+        for position in range(rows * (columns + 1)):
+            probabilities = next_log_probs(query + suffix)
+            expansions += 1
+            if len(probabilities) != GridTokenizer.vocab_size or any(
+                    not math.isfinite(float(p)) for p in probabilities):
+                raise ValidationError("grammar completion returned invalid logits")
+            column = position % (columns + 1)
+            if column == columns:
+                token = END if position == rows * (columns + 1) - 1 else 10
+                forced_symbols += 1
+            else:
+                used = {c for c in suffix if c < 10}
+                cells_after = rows * columns - (position - position // (columns + 1) + 1)
+                allowed = [c for c in required_colors if
+                           len(set(required_colors) - (used | {c})) <= cells_after]
+                if not allowed:
+                    raise ValidationError("public palette grammar has no legal color")
+                allowed.sort(key=lambda c: (-float(probabilities[c]), c))
+                if position == 0 and variant == 1 and len(allowed) > 1:
+                    token = allowed[1]
+                else:
+                    token = allowed[0]
+                if position == 0:
+                    root = {"allowed_token_ids": list(required_colors),
+                            "best_token_id": max(range(16), key=lambda c: probabilities[c]),
+                            "allowed_probability_mass": sum(math.exp(float(probabilities[c])) for c in required_colors)}
+            suffix.append(token)
+            nll -= float(probabilities[token])
+            minimum_selected_probability = min(minimum_selected_probability, math.exp(float(probabilities[token])))
+        sequences.append({"tokens": suffix, "eos": True, "beam_nll": nll})
+    return {"sequences": sequences, "expansions": expansions,
+            "completed_candidates": len(sequences), "stop_reason": "public-grammar-complete",
+            "max_new_tokens": max_new_tokens, "max_expansions": max_expansions,
+            "max_sequences": max_sequences, "maximum_reachable_tokens": rows * (columns + 1),
+            "diagnostics": {"format": "irisx/nvarc-public-grammar-completion-v1",
+                            "required_shape": list(required_shape),
+                            "required_colors": list(required_colors),
+                            "probability_space": "unmasked-16-symbol-vocabulary",
+                            "forced_symbols": forced_symbols,
+                            "minimum_selected_probability": minimum_selected_probability,
+                            "root": root}}
+
+
 def configure_candidate_backend(backend: Any, config: Mapping[str, Any]) -> dict[str, str]:
     """Apply the exact grammar and augmentation profile at every model entry."""
     augmentation = config.get("augmentation", "irisx")
@@ -464,7 +531,7 @@ class QwenCandidateBackend:
                  required_colors: tuple[int, ...] | None = None,
                  palette_from_view: bool = False,
                  dfs_cache_mode: str = "full-prefix-recompute") -> None:
-        if decoding not in {"bounded-dfs", "hf-beam"}:
+        if decoding not in {"bounded-dfs", "hf-beam", "grammar-completion"}:
             raise ValidationError("unknown Qwen decoding mode")
         if dfs_cache_mode not in {"full-prefix-recompute", "full-prefix-logit-cache"}:
             raise ValidationError("Qwen3.5 hybrid KV cache mode is unsupported")
@@ -506,7 +573,7 @@ class QwenCandidateBackend:
         device = next(self.model.parameters()).device
         started = time.monotonic()
         try:
-            if self.decoding == "bounded-dfs":
+            if self.decoding in {"bounded-dfs", "grammar-completion"}:
                 def next_probs(prefix: list[int]) -> list[float]:
                     values = full_prefix_log_probs(self.model, prefix)
                     self.forward_calls += 1
@@ -517,13 +584,19 @@ class QwenCandidateBackend:
                         self.prefix_cache = PrefixLogitCache(next_probs, self.dfs_max_expansions)
                     callback = self.prefix_cache
                 before_hits = self.prefix_cache.hits if self.prefix_cache is not None else 0
-                search = bounded_dfs_search(query, callback, max_new_tokens=max_new_tokens,
-                                            max_score=self.dfs_max_score,
-                                            max_expansions=self.dfs_max_expansions,
-                                            max_sequences=beams,
-                                            token_probability_floor=self.token_probability_floor,
-                                            required_shape=self.required_shape,
-                                            required_colors=self.required_colors)
+                if self.decoding == "grammar-completion":
+                    search = bounded_grammar_completion_search(query, callback,
+                        max_new_tokens=max_new_tokens, max_expansions=self.dfs_max_expansions,
+                        max_sequences=beams, required_shape=self.required_shape,
+                        required_colors=self.required_colors)
+                else:
+                    search = bounded_dfs_search(query, callback, max_new_tokens=max_new_tokens,
+                                                max_score=self.dfs_max_score,
+                                                max_expansions=self.dfs_max_expansions,
+                                                max_sequences=beams,
+                                                token_probability_floor=self.token_probability_floor,
+                                                required_shape=self.required_shape,
+                                                required_colors=self.required_colors)
                 self.last_generation_observation = {
                     key: value for key, value in search.items() if key != "sequences"}
                 self.last_generation_observation["cache_mode"] = self.dfs_cache_mode
