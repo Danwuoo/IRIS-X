@@ -1,6 +1,15 @@
 # Qwen3.5-4B NVARC reproduction development
 
-## Current continuation (2026-09-27)
+## Current continuation (2026-09-28)
+
+The owner directs repair and Editor rerun of both branches after combined 004.
+[Decision 0039](../../docs/decisions/0039-save-repaired-nvarc-combined-editor.md)
+opened the distinct [combined 005 notebook](combined-notebook-005-editor.md)
+for one private QUICK_SAVE without agent execution or monitoring. Its version 1
+save is accepted and consumed; runtime remains unobserved. M2 uses a
+public-demo-derived full-grid search; M3 adds public-demo rule guidance and a
+single JSON-fence parser while retaining semantic/program gates. Its saved
+state is not runtime or quality evidence.
 
 The owner supplied [combined 004 Editor results](combined-004-editor-diagnosis.md)
 from Decision 0038's quick-saved notebook. Digest-bound local verification

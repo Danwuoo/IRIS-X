@@ -14,3 +14,8 @@ archive/path-index.tsv text eol=lf
 
 # Preserve intentional Markdown hard breaks in the adopted, byte-fixed thesis.
 PRODUCT_THESIS.md whitespace=-blank-at-eol
+
+# Preserve the exact source/template line endings embedded in the consumed
+# Decision 0039 QUICK_SAVE package; its local digest inventory binds these bytes.
+src/irisx/arc_nvarc_editor005.py -text whitespace=cr-at-eol
+tools/nvarc_combined_notebook_editor_005.py.tmpl -text whitespace=cr-at-eol

@@ -93,6 +93,8 @@ class PrefixLogitCache:
 def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], list[float]], *,
                        max_new_tokens: int, max_score: float, max_expansions: int,
                        max_sequences: int, deadline: float | None = None,
+                       token_probability_floor: float | None = None,
+                       required_shape: tuple[int, int] | None = None,
                        now: Callable[[], float] = time.monotonic) -> dict[str, Any]:
     """Source-order DFS with cumulative NLL pruning and isolated branch state.
 
@@ -104,6 +106,10 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
     if (not query or max_new_tokens < 1 or max_expansions < 1 or max_sequences < 1 or
             not math.isfinite(max_score) or max_score <= 0):
         raise ValidationError("invalid bounded DFS limits")
+    if token_probability_floor is not None and (not 0 < token_probability_floor < 1 or
+            required_shape is None or len(required_shape) != 2 or
+            any(type(d) is not int or d < 1 or d > 30 for d in required_shape)):
+        raise ValidationError("invalid shape-conditioned token floor")
     results: list[dict[str, Any]] = []
     expansions = 0
     seen: set[tuple[int, ...]] = set()
@@ -118,6 +124,10 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
                    "token_limit_edges": 0, "enqueued_edges": 0,
                    "maximum_suffix_tokens": 0, "max_score": max_score,
                    "probability_space": "unmasked-16-symbol-vocabulary"}
+    if token_probability_floor is not None:
+        diagnostics.update(format="irisx/nvarc-shape-token-floor-diagnostics-v1",
+                           token_probability_floor=token_probability_floor,
+                           required_shape=list(required_shape))
     while stack:
         if len(results) >= max_sequences:
             reason = "sequence_limit"
@@ -145,6 +155,13 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
             length == row_lengths[0] for length in row_lengths)
         allowed = []
         for token in tuple(range(11)) + (END,):
+            if required_shape is not None:
+                rows, columns = required_shape
+                if ((token == 10 and (len(row_lengths) >= rows or row_lengths[-1] != columns)) or
+                    (token == END and (len(row_lengths) != rows or row_lengths[-1] != columns)) or
+                    (token < 10 and row_lengths[-1] >= columns)):
+                    diagnostics["grammar_masked_edges"] += 1
+                    continue
             if token == 10 and (not suffix or row_lengths[-1] == 0 or
                                 (len(row_lengths) > 1 and row_lengths[-1] != row_lengths[0])):
                 diagnostics["grammar_masked_edges"] += 1
@@ -157,7 +174,8 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
                 continue
             allowed.append(token)
             nll = score - float(probabilities[token])
-            if nll < max_score:
+            if (-float(probabilities[token]) < -math.log(token_probability_floor)
+                    if token_probability_floor is not None else nll < max_score):
                 if token == END:
                     candidate = suffix + (END,)
                     if candidate not in seen:
@@ -410,6 +428,8 @@ class QwenCandidateBackend:
     def __init__(self, model: Any, *, task_adapter: Any = None,
                  decoding: str = "bounded-dfs", dfs_max_score: float = -math.log(0.2),
                  dfs_max_expansions: int = 256,
+                 token_probability_floor: float | None = None,
+                 required_shape: tuple[int, int] | None = None,
                  dfs_cache_mode: str = "full-prefix-recompute") -> None:
         if decoding not in {"bounded-dfs", "hf-beam"}:
             raise ValidationError("unknown Qwen decoding mode")
@@ -421,6 +441,8 @@ class QwenCandidateBackend:
         self.decoding = decoding
         self.dfs_max_score = dfs_max_score
         self.dfs_max_expansions = dfs_max_expansions
+        self.token_probability_floor = token_probability_floor
+        self.required_shape = required_shape
         self.dfs_cache_mode = dfs_cache_mode
         self.prefix_cache: PrefixLogitCache | None = None
         self.augmentation = "irisx"
@@ -463,7 +485,9 @@ class QwenCandidateBackend:
                 search = bounded_dfs_search(query, callback, max_new_tokens=max_new_tokens,
                                             max_score=self.dfs_max_score,
                                             max_expansions=self.dfs_max_expansions,
-                                            max_sequences=beams)
+                                            max_sequences=beams,
+                                            token_probability_floor=self.token_probability_floor,
+                                            required_shape=self.required_shape)
                 self.last_generation_observation = {
                     key: value for key, value in search.items() if key != "sequences"}
                 self.last_generation_observation["cache_mode"] = self.dfs_cache_mode

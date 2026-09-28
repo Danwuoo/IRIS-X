@@ -140,3 +140,7 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0038-save-paired-nvarc-analysis-notebook.md`](0038-save-paired-nvarc-analysis-notebook.md)
   authorizes one private QUICK_SAVE combining paired M2 thresholds and semantic
   M3, with a downloadable analysis ZIP and no agent execution or monitoring.
+- [`0039-save-repaired-nvarc-combined-editor.md`](0039-save-repaired-nvarc-combined-editor.md)
+  authorizes one private QUICK_SAVE of distinct combined 005, repairing both
+  M2 full-grid candidate search and M3 public-demo rule guidance without an
+  agent run or monitoring.

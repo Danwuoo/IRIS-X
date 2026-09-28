@@ -303,6 +303,20 @@ no SDG pair was accepted. Preserve the observation at
 `trials/arc-agi-2-qwen35-nvarc/combined-004-editor-diagnosis.md`; it grants no new
 external execution, save, retrieval or changed acceptance threshold.
 
+Decision 0039 records the owner's explicit request to repair and rerun **both**
+M2 and M3 after combined 004, then submit one private QUICK_SAVE without an
+agent run. It authorizes the distinct `nvarc-m2-m3-combined-005` owner-Editor
+package under the same two-L4, existing-material, Internet-disabled, USD 0 and
+1,800-second envelope. M2 uses a public-demo-derived 6×6 output-shape gate and
+0.02 per-token probability floor for at most four generation calls after one
+TTT. M3 uses public-demo single-operation hints and accepts one JSON fence
+while retaining exact semantic and isolated program gates. Stop at the sole
+save receipt. No agent execution, status/log/output query, retrieval,
+monitoring, Dataset mutation or automatic retry is authorized. Status is
+`trials/arc-agi-2-qwen35-nvarc/combined-notebook-005-editor.md`. The sole
+QUICK_SAVE was accepted as version 1 and is consumed. No session was started
+by the agent; runtime is unobserved pending the owner's Editor report.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;
