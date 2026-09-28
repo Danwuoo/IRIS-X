@@ -2,6 +2,15 @@
 
 ## Current continuation (2026-09-28)
 
+The owner supplied [combined 007's partial startup ZIP](combined-007-editor-diagnosis.md).
+Its one retained file verifies against the exact saved payloads but has no
+terminal cause, hardware inventory or worker output. [Decision 0042](../../docs/decisions/0042-save-nvarc-startup-diagnostics.md)
+authorizes one distinct [combined 008 owner-Editor QUICK_SAVE](combined-notebook-008-editor.md)
+with additional startup and interrupt diagnostics. The M2/M3 scientific
+workloads remain unchanged. The sole version 1 QUICK_SAVE was accepted and
+consumed. No agent run or monitoring is authorized; runtime is unobserved
+pending the owner's result.
+
 The owner supplied [combined 006 Editor results](combined-006-editor-diagnosis.md).
 Its 40 ZIP members and branch envelopes match the saved plan. M2's 0.02
 token floor yielded no completed 6×6 grid; M3's output function had an

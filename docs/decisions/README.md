@@ -152,3 +152,7 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes one private QUICK_SAVE of distinct combined 007 with public
   grammar completion for M2 and an exact one-argument output prompt for M3,
   without an agent run or monitoring.
+- [`0042-save-nvarc-startup-diagnostics.md`](0042-save-nvarc-startup-diagnostics.md)
+  authorizes one private QUICK_SAVE of distinct combined 008 with finer
+  startup events and interrupt-class terminal evidence, without changing
+  M2/M3 workloads or starting an agent run.

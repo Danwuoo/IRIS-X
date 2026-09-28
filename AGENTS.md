@@ -367,6 +367,28 @@ The sole QUICK_SAVE was accepted as version 1 and is consumed. No agent
 session was started, and runtime remains unobserved pending the owner's
 Editor report.
 
+The owner has now supplied a partial combined 007 Editor `結果.zip`.
+Digest-bound local verification matches the exact saved plan and all 15
+embedded payload hashes, but the sole data file ends at the startup
+`hardware-inventory` event. There is no terminal cause, hardware inventory,
+worker launch or branch result. The owner cannot tell whether the Editor was
+manually interrupted or stopped itself. Preserve the observation at
+`trials/arc-agi-2-qwen35-nvarc/combined-007-editor-diagnosis.md`; it gives no
+M2/M3 outcome or new execution authority on its own.
+
+Decision 0042 records the owner's repair-and-save direction for distinct
+private `nvarc-m2-m3-combined-008`. It preserves combined 007's exact M2/M3
+workloads, materials, two distinct L4 workers, Internet-disabled USD 0 and
+1,800-second limits. Only the parent startup events and interrupt-class
+terminal capture change. Submit at most one private QUICK_SAVE after offline
+verification and stop at its receipt. No agent execution, monitoring,
+status/log/output query, retrieval, Dataset mutation or automatic retry is
+authorized. Status is
+`trials/arc-agi-2-qwen35-nvarc/combined-notebook-008-editor.md`.
+The sole QUICK_SAVE was accepted as version 1 and is consumed. No agent
+session was started, and runtime remains unobserved pending the owner's
+Editor result.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

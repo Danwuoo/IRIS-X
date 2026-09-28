@@ -8,7 +8,8 @@ Notebook: [nvarc-m2-m3-combined-007](https://www.kaggle.com/code/danielwuu/nvarc
 Provider kernel ID: `136223231`. One SaveKernel request used
 `KernelExecutionType.QUICK_SAVE`, private visibility, Internet off and the
 existing sources. No agent session was started or queried; runtime is
-unobserved pending the owner's Editor report.
+partially observed in the [owner-supplied ZIP](combined-007-editor-diagnosis.md).
+That ZIP ends during startup and contains no M2/M3 outcome.
 
 M2 uses public-shape and palette grammar completion with model-ranked legal
 colors after one shared TTT step and four bounded generation calls. M3 adds a
@@ -41,4 +42,5 @@ repository check passed 274 tests (four optional skips). A tiny real-model
 worker produced grammar-complete candidates, and a separate local
 counterfactual replay of the saved M3 first-three-stage replies with a
 one-argument output program passed the 44-invocation gate and produced five
-pairs. Neither is an observation of the new full 4B Editor execution.
+pairs. Neither is an observation of the full 4B Editor execution; the later
+owner ZIP supplies only partial startup evidence.
