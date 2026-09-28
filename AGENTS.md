@@ -421,8 +421,22 @@ receipt. No agent execution, monitoring, status/log/output query, retrieval,
 Dataset mutation or automatic retry is authorized. Status is
 `trials/arc-agi-2-qwen35-nvarc/combined-notebook-009-editor.md`.
 The sole QUICK_SAVE was accepted as version 1 and is consumed. No agent
-session was started, and runtime remains unobserved pending the owner's
-Editor result.
+session was started; the owner's Editor result is retained in
+`trials/arc-agi-2-qwen35-nvarc/combined-009-editor-diagnosis.md`.
+
+Decision 0044 records the owner's distinct compact 16-symbol comparison:
+existing base, the retained **8-step SFT pilot** export without TTT, and
+the same export with task-local TTT. It authorizes one private
+`nvarc-compact-abc-editor-001` QUICK_SAVE after exact offline verification.
+The owner will start the notebook in Editor and return `結果.zip`. Three fixed
+public dev-parent tasks, equal candidate budgets, two verified distinct L4s,
+Internet disabled, USD 0 and 1,800 seconds are bound in its approved plan.
+Stop at the sole save receipt. No agent execution, status/log/output query,
+retrieval, Dataset mutation, monitoring or automatic retry is authorized.
+Status is `trials/arc-agi-2-qwen35-nvarc/compact-abc-editor-001.md`.
+The sole QUICK_SAVE was accepted as version 1 and is consumed. The agent did
+not start a session or query runtime state. Its exact receipt and package
+bindings are retained on that status page. The owner will run it manually.
 
 ## Authority order
 

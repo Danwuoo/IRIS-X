@@ -345,6 +345,10 @@ separately verifies bounded 4B LoRA gradients and reset on one L4.
 Source-level differences and remaining gaps are in
 [`reproduction-matrix.md`](reproduction-matrix.md).
 
+Decision 0044 opens the separate [compact base / SFT / SFT+TTT owner-Editor
+comparison](compact-abc-editor-001.md). It is a bounded comparison of existing
+checkpoints, not another full SFT, teacher run, or method promotion.
+
 ## Earlier evidence states (before Decision 0032 terminal retrieval)
 
 | State | Current value |

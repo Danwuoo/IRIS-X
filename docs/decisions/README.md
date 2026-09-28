@@ -160,3 +160,7 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes one private QUICK_SAVE of distinct combined 009, separately
   reporting an M2 public positional witness and validating M3's narrow
   teacher programs by no-exec AST interpretation and 44 semantic probes.
+- [`0044-save-compact-base-sft-ttt-comparison.md`](0044-save-compact-base-sft-ttt-comparison.md)
+  authorizes one private owner-Editor QUICK_SAVE comparing a compact base,
+  its retained eight-step SFT pilot export, and that export with task TTT on
+  a fixed truth-free public workload.
