@@ -11,8 +11,9 @@ The sole QUICK_SAVE was accepted as version 1 on 2026-09-28 and is consumed.
 Notebook: [nvarc-m2-m3-combined-008](https://www.kaggle.com/code/danielwuu/nvarc-m2-m3-combined-008).
 Provider kernel ID: `136229226`. One SaveKernel request used
 `KernelExecutionType.QUICK_SAVE`, private visibility, Internet off and the
-existing sources. No agent session was started or queried; runtime remains
-unobserved pending the owner's Editor result.
+existing sources. No agent session was started or queried; runtime was
+subsequently observed in the [owner-supplied result ZIP](combined-008-editor-diagnosis.md).
+It completed both worker branches, with no accepted M3 pair.
 
 Plan digest:
 `sha256:f8644274acac94f860839b1c93c2ddf54e82dd1ccdbc906027bcc5d36b873b49`.

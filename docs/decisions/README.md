@@ -156,3 +156,7 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes one private QUICK_SAVE of distinct combined 008 with finer
   startup events and interrupt-class terminal evidence, without changing
   M2/M3 workloads or starting an agent run.
+- [`0043-save-nvarc-public-witness-and-safe-ast.md`](0043-save-nvarc-public-witness-and-safe-ast.md)
+  authorizes one private QUICK_SAVE of distinct combined 009, separately
+  reporting an M2 public positional witness and validating M3's narrow
+  teacher programs by no-exec AST interpretation and 44 semantic probes.

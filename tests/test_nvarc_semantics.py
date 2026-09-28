@@ -112,12 +112,12 @@ class SemanticsTests(unittest.TestCase):
             # Rejected stage never retried even with a changed provider reply.
             self.assertEqual(result, run_teacher_pipeline([record], PROMPTS, SemanticSavedTeacher(replies), Path(temp), seed=24, maximum_calls=0))
 
-    def test_no_isolation_no_program_execution_or_pair_acceptance(self):
-        with self.assertRaisesRegex(ValidationError, "verified_semantic_sandbox_required"):
+    def test_no_trusted_executor_no_program_execution_or_pair_acceptance(self):
+        with self.assertRaisesRegex(ValidationError, "verified_semantic_program_executor_required"):
             accept_program_pairs(INPUT, OUTPUT, MIX, object())
         replies = {stage: response(text) for stage, text in {
             "summary": json.dumps(SUMMARY), "mix": json.dumps(MIX), "input-logic": INPUT, "output-logic": OUTPUT}.items()}
-        with self.assertRaisesRegex(ValidationError, "verified_semantic_sandbox_required"):
+        with self.assertRaisesRegex(ValidationError, "verified_semantic_program_executor_required"):
             accept_semantic_record(item(), replies, None)
 
     def test_complete_stage_pipeline_keeps_programs_pending_and_requires_semantic_context(self):

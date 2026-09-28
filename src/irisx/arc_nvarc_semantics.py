@@ -278,13 +278,15 @@ def _typed_grid(observation, expected_shape, label):
 
 
 def accept_program_pairs(input_text, output_text, spec, executor, *, seeds=(11, 22, 33, 44, 55)):
-    """Bounded independent challenge suite BEFORE source pair filtering.
+    """Bounded challenge suite before source filtering, with concrete safe executors.
 
-    Only the concrete isolated executor is allowed; caller-provided execute
-    callbacks cannot assert isolation. No pair is returned on any rejection.
+    The namespace executor runs isolated Python. The exact AST executor runs
+    no teacher code at all and accepts only its reviewed syntax family.
+    Caller-provided callbacks remain prohibited. No pair survives rejection.
     """
-    if type(executor) is not SemanticProgramExecutor:
-        raise ValidationError("verified_semantic_sandbox_required")
+    from .arc_nvarc_safe_ast import SafeASTProgramExecutor
+    if type(executor) not in {SemanticProgramExecutor, SafeASTProgramExecutor}:
+        raise ValidationError("verified_semantic_program_executor_required")
     # Trusted pinned source/dependencies must be ready BEFORE any program call.
     from .arc_nvarc_upstream import sdg_build_datasets
     source = sdg_build_datasets()
@@ -344,6 +346,9 @@ def accept_program_pairs(input_text, output_text, spec, executor, *, seeds=(11, 
             "spec_digest": digest_value(spec), "sandbox_material_digest": executor.material_digest,
             "seeds": list(seeds), "output_challenges": len(challenges),
             "program_invocations": 2 * len(seeds) + 2 * (len(seeds) + len(challenges)),
+            "program_validation_mode": ("isolated-namespace-python" if
+                type(executor) is SemanticProgramExecutor else "trusted-ast-interpretation"),
+            "teacher_programs_executed": type(executor) is SemanticProgramExecutor,
             "source_filter_passed": True, "teacher_yield_claim": False,
             "random_distribution_proven": False,
             "limitation": "finite seed/color probes reject observed correlations; do not prove distributional independence or universal program equivalence"}

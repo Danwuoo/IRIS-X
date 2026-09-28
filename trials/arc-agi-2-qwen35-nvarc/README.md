@@ -2,6 +2,16 @@
 
 ## Current continuation (2026-09-28)
 
+The owner supplied [combined 008's completed Editor ZIP](combined-008-editor-diagnosis.md).
+M2 made eight legal model candidates with low agreement against a separately
+inferred public-demo position map. M3 passed four teacher stages but Kaggle
+denied the namespace syscall before program checks, so no pair was accepted.
+[Decision 0043](../../docs/decisions/0043-save-nvarc-public-witness-and-safe-ast.md)
+authorizes one distinct [combined 009 owner-Editor QUICK_SAVE](combined-notebook-009-editor.md)
+with an explicitly separate public witness and no-exec AST validation.
+The sole version 1 QUICK_SAVE was accepted and consumed. No agent run or
+monitoring is authorized; runtime is unobserved pending the owner's result.
+
 The owner supplied [combined 007's partial startup ZIP](combined-007-editor-diagnosis.md).
 Its one retained file verifies against the exact saved payloads but has no
 terminal cause, hardware inventory or worker output. [Decision 0042](../../docs/decisions/0042-save-nvarc-startup-diagnostics.md)
