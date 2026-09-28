@@ -28,8 +28,8 @@ consumed. Notebook: [nvarc-compact-abc-editor-001](https://www.kaggle.com/code/d
 Provider kernel ID: `136275587`. The one request used
 `KernelExecutionType.QUICK_SAVE`, private visibility, Internet off, and the
 three existing Datasets in the plan. The local ledger records one send. No
-agent session was started or queried. Runtime and result status remain
-**unobserved** pending the owner's Editor report.
+agent session was started or queried. Runtime and result status were
+**unobserved at save time** pending the owner's Editor report below.
 
 Exact local bindings (SHA-256):
 
@@ -51,7 +51,14 @@ The package and save evidence are under ignored local
 `compact-abc-editor-001-submission/`. The final exact-package preflight,
 notebook approved/draft guard checks, tiny real Qwen CPU comparison/reset
 replay, digest-tamper rejection and `python tools/repository_check.py --all`
-passed. The latter ran 280 tests with four optional skips. The Kaggle Editor
-run remains the owner's next step. After it completes, download `結果.zip`
-from the notebook's `/kaggle/working` output and return it for digest-bound
-local analysis. No score or three-arm result is asserted from this save.
+passed. The latter ran 280 tests with four optional skips. The owner then
+started the Kaggle Editor run and returned `結果.zip` for digest-bound local
+analysis. No score or three-arm result is asserted from this save.
+
+The owner later returned that Editor ZIP. Its SHA-256 is
+`72476b79f7a59f4fb81f6ca1a067177448b9720885ee55ee39c951440d526a12`;
+all 13 members passed the local digest verifier. Four distinct BF16 L4s were
+observed, then the worker failed at the base material inventory gate before
+arm A. No A/B/C model result is retained. Decision 0045 and
+[`compact-abc-editor-002.md`](compact-abc-editor-002.md) record the distinct
+repair and save. The 001 kernel and package remain frozen.
