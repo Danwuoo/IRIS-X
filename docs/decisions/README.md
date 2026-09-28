@@ -144,3 +144,7 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes one private QUICK_SAVE of distinct combined 005, repairing both
   M2 full-grid candidate search and M3 public-demo rule guidance without an
   agent run or monitoring.
+- [`0040-save-nvarc-public-witness-repairs.md`](0040-save-nvarc-public-witness-repairs.md)
+  authorizes one private QUICK_SAVE of distinct combined 006 with a public
+  palette witness for M2 and a trusted public-rule mix target for M3, without
+  an agent run or monitoring.

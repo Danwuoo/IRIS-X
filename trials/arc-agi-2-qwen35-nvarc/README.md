@@ -2,6 +2,13 @@
 
 ## Current continuation (2026-09-28)
 
+The owner directs a distinct [combined 006 owner-Editor QUICK_SAVE](combined-notebook-006-editor.md)
+under [Decision 0040](../../docs/decisions/0040-save-nvarc-public-witness-repairs.md).
+Its public-witness repairs address combined 005's palette inconsistency and
+malformed mix reply. The sole version 1 QUICK_SAVE is accepted and consumed;
+runtime remains unobserved. Agent execution, monitoring, retrieval and
+automatic retry are not authorized.
+
 The owner supplied [combined 005 Editor results](combined-005-editor-diagnosis.md).
 All 38 ZIP inventory members, saved plan/inputs, two L4 worker envelopes and
 result ledgers verify locally. M2 completed its bounded flow and returned six

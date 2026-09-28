@@ -41,6 +41,9 @@ Input generator (reference only):
 
 
 def profile_prompts(profile):
+    if profile == "qwen-rule-guided-v5":
+        from .arc_nvarc_semantics_v5 import PROMPTS as GUIDED_PROMPTS
+        return GUIDED_PROMPTS
     if profile == "qwen-rule-hinted-v4":
         from .arc_nvarc_semantics_v4 import PROMPTS as HINTED_PROMPTS
         return HINTED_PROMPTS

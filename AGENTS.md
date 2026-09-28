@@ -328,6 +328,21 @@ Preserve the observation at
 `trials/arc-agi-2-qwen35-nvarc/combined-005-editor-diagnosis.md`; it grants no
 new external execution, save, retrieval, scoring or changed acceptance gate.
 
+Decision 0040 records the owner's new instruction to repair both branches and
+submit one distinct private `nvarc-m2-m3-combined-006` QUICK_SAVE, without an
+agent run. M2 keeps the bounded shape/token-floor workload but requires the
+palette derived from each transformed public test input, justified by every
+public training demonstration. M3's mix prompt includes the exact trusted
+3×3 composition derived from its validated public summary; the model reply
+must still pass semantic checks before programs. The same materials, two
+distinct L4s, Internet-disabled, USD 0 and 1,800-second bounds remain.
+Stop after the sole save receipt. No agent execution, monitoring, status/log/
+output query, retrieval, Dataset mutation or retry is authorized. Status is
+`trials/arc-agi-2-qwen35-nvarc/combined-notebook-006-editor.md`.
+The sole QUICK_SAVE was accepted as version 1 and is consumed. No session
+was started by the agent; runtime remains unobserved pending the owner's
+Editor report.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

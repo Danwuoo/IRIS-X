@@ -95,6 +95,7 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
                        max_sequences: int, deadline: float | None = None,
                        token_probability_floor: float | None = None,
                        required_shape: tuple[int, int] | None = None,
+                       required_colors: tuple[int, ...] | None = None,
                        now: Callable[[], float] = time.monotonic) -> dict[str, Any]:
     """Source-order DFS with cumulative NLL pruning and isolated branch state.
 
@@ -110,6 +111,10 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
             required_shape is None or len(required_shape) != 2 or
             any(type(d) is not int or d < 1 or d > 30 for d in required_shape)):
         raise ValidationError("invalid shape-conditioned token floor")
+    if required_colors is not None and (token_probability_floor is None or
+            not required_colors or tuple(sorted(set(required_colors))) != required_colors or
+            any(type(color) is not int or color < 0 or color > 9 for color in required_colors)):
+        raise ValidationError("invalid public-demo palette constraint")
     results: list[dict[str, Any]] = []
     expansions = 0
     seen: set[tuple[int, ...]] = set()
@@ -128,6 +133,9 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
         diagnostics.update(format="irisx/nvarc-shape-token-floor-diagnostics-v1",
                            token_probability_floor=token_probability_floor,
                            required_shape=list(required_shape))
+    if required_colors is not None:
+        diagnostics.update(format="irisx/nvarc-shape-palette-token-floor-diagnostics-v1",
+                           required_colors=list(required_colors))
     while stack:
         if len(results) >= max_sequences:
             reason = "sequence_limit"
@@ -155,6 +163,18 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
             length == row_lengths[0] for length in row_lengths)
         allowed = []
         for token in tuple(range(11)) + (END,):
+            if required_colors is not None:
+                used = {value for value in suffix if value < 10}
+                if ((token < 10 and token not in required_colors) or
+                    (token == END and used != set(required_colors))):
+                    diagnostics["grammar_masked_edges"] += 1
+                    continue
+                if token < 10:
+                    missing_after = len(set(required_colors) - (used | {token}))
+                    cells_after = required_shape[0] * required_shape[1] - (sum(row_lengths) + 1)
+                    if missing_after > cells_after:
+                        diagnostics["grammar_masked_edges"] += 1
+                        continue
             if required_shape is not None:
                 rows, columns = required_shape
                 if ((token == 10 and (len(row_lengths) >= rows or row_lengths[-1] != columns)) or
@@ -199,7 +219,8 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
                 "allowed_probability_mass": sum(math.exp(float(probabilities[token])) for token in allowed),
                 "non_grid_symbol_probability_mass": sum(math.exp(float(probabilities[token]))
                     for token in (11, 12, 13, 14)),
-                "score_surviving_token_ids": [token for token in allowed if -float(probabilities[token]) < max_score],
+                "score_surviving_token_ids": [token for token in allowed if -float(probabilities[token]) <
+                    (-math.log(token_probability_floor) if token_probability_floor is not None else max_score)],
                 "enqueued_children": len(options)}
         # Push in reverse so the next pop preserves the source's sorted DFS.
         for child_score, token in reversed(sorted(options, key=lambda item: (item[0], item[1]))):
@@ -216,6 +237,7 @@ def bounded_dfs_search(query: list[int], next_log_probs: Callable[[list[int]], l
         diagnostics["no_candidate_reason"] = (
             "root_legal_tokens_below_score_threshold" if root is not None and
             not root["score_surviving_token_ids"] else reason if reason != "no_valid_candidate" else
+            "token_floor_or_grammar_exhaustion" if token_probability_floor is not None else
             "cumulative_score_or_grammar_exhaustion")
     else:
         diagnostics["no_candidate_reason"] = None
@@ -314,6 +336,15 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any],
                 spec = view["spec"]
                 if hasattr(backend, "begin_view"):
                     backend.begin_view(spec, view_index)
+                if getattr(backend, "palette_from_view", False):
+                    public_train = view["task"]["train"]
+                    if not public_train or any(
+                            {cell for row in grid(example["input"]) for cell in row} !=
+                            {cell for row in grid(example["output"]) for cell in row}
+                            for example in public_train):
+                        raise ValidationError("public demos do not establish palette preservation")
+                    test_input = grid(view["task"]["test"][view["test_index"]]["input"])
+                    backend.required_colors = tuple(sorted({cell for row in test_input for cell in row}))
                 query = tokenizer.encode_query(view["task"], view["test_index"])
                 calls += 1  # Reserve the invocation before backend failure.
                 call = {"kind": "generation", "index": calls, "task_id": task["task_id"],
@@ -430,6 +461,8 @@ class QwenCandidateBackend:
                  dfs_max_expansions: int = 256,
                  token_probability_floor: float | None = None,
                  required_shape: tuple[int, int] | None = None,
+                 required_colors: tuple[int, ...] | None = None,
+                 palette_from_view: bool = False,
                  dfs_cache_mode: str = "full-prefix-recompute") -> None:
         if decoding not in {"bounded-dfs", "hf-beam"}:
             raise ValidationError("unknown Qwen decoding mode")
@@ -443,6 +476,8 @@ class QwenCandidateBackend:
         self.dfs_max_expansions = dfs_max_expansions
         self.token_probability_floor = token_probability_floor
         self.required_shape = required_shape
+        self.required_colors = required_colors
+        self.palette_from_view = palette_from_view
         self.dfs_cache_mode = dfs_cache_mode
         self.prefix_cache: PrefixLogitCache | None = None
         self.augmentation = "irisx"
@@ -487,7 +522,8 @@ class QwenCandidateBackend:
                                             max_expansions=self.dfs_max_expansions,
                                             max_sequences=beams,
                                             token_probability_floor=self.token_probability_floor,
-                                            required_shape=self.required_shape)
+                                            required_shape=self.required_shape,
+                                            required_colors=self.required_colors)
                 self.last_generation_observation = {
                     key: value for key, value in search.items() if key != "sequences"}
                 self.last_generation_observation["cache_mode"] = self.dfs_cache_mode
