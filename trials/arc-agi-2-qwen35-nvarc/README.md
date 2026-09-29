@@ -1,6 +1,19 @@
 # Qwen3.5-4B NVARC reproduction development
 
-## Current measured continuation (2026-09-29)
+## Current beam continuation (2026-09-29)
+
+The owner returned [003's complete Editor result](compact-abc-003-editor-diagnosis.md).
+Its isolated public-development score found A 1/3 and B/C0/C2/CH 0/3 for
+pass@1, pass@2 and candidate coverage. The extra TTT step and higher learning
+rate did not recover an answer on these repeatedly examined parents.
+[Decision 0047](../../docs/decisions/0047-save-compact-abc-beam-comparison.md)
+opens one [004 owner-Editor package](compact-abc-editor-004.md) that changes
+only the legal two-path decoder while preserving A/B/C model, TTT and call
+budgets. Its sole private QUICK_SAVE was accepted as version 1; the owner
+will run it in Editor. It remains a development comparison, not a method
+promotion.
+
+## Earlier measured continuation (2026-09-29)
 
 The [compact ABC 002 owner-Editor result](compact-abc-editor-002-diagnosis.md)
 completed all nine bounded task/arm rows. A separate local evaluation on the
@@ -17,7 +30,7 @@ opens one [compact ABC 003 owner-Editor package](compact-abc-editor-003.md)
 to test TTT step count and learning rate with A/B/C0 controls, fixed solver
 budgets and no new SFT or Dataset. It is a bounded tuning experiment, not a
 promotion or broad NVARC result. Its sole private QUICK_SAVE was accepted as
-version 1; the owner will start it in Editor and return `結果.zip`.
+version 1; the owner has returned and locally verified `結果.zip`.
 
 ## Current continuation (2026-09-28)
 

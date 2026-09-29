@@ -53,3 +53,8 @@ Offline verification included the exact material preflight, a two-step tiny
 Qwen adapter and generation replay, and `python tools/repository_check.py --all`
 (284 tests, four skipped, pass). No further save, agent execution, status or
 output request, retrieval, Dataset change or automatic retry is authorized.
+
+The owner later returned the Editor `結果.zip`. Its complete, digest-bound
+runtime and separate public development score are retained in the
+[003 diagnosis](compact-abc-003-editor-diagnosis.md). The result does not
+reopen this consumed save identity.

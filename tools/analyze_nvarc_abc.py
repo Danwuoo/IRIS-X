@@ -10,7 +10,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "src")]
-from irisx.arc_nvarc_abc import ARMS, TASKS
+from irisx.arc_nvarc_abc import TASKS
 from irisx.arc_nvarc_analysis_zip_abc import verify_abc_zip
 from irisx.arc_nvarc_combined import read
 from irisx.arc_nvarc_data import grid
@@ -37,7 +37,7 @@ def inspect(path: Path, truth: dict | None = None, *, plan_path: Path = PLAN) ->
                    "terminal": terminal, "arms": {}, "scoring": "unknown-no-isolated-truth"}
         if truth is not None and set(truth) != set(TASKS):
             raise RuntimeError("isolated truth task coverage differs")
-        for arm in ARMS:
+        for arm in (entry["id"] for entry in plan["arms"]):
             rows = []
             for task_id in TASKS:
                 row = item("worker/" + arm + "-" + task_id + ".json")

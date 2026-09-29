@@ -2,6 +2,15 @@
 
 ## Measured compact ABC continuation (2026-09-29)
 
+The [003 result](compact-abc-003-editor-diagnosis.md) completed all five
+arms. Isolated public development scoring found A 1/3 and B/C0/C2/CH 0/3
+for pass@1, pass@2 and candidate coverage. TTT changes yielded finite
+updates but no exact gain on these repeated parents. The [004 plan](compact-abc-editor-004.md)
+tests a two-path legal model beam with the same A/B/C checkpoint and call
+budget. Runtime remains unobserved until the owner runs its saved notebook.
+Its sole QUICK_SAVE was accepted as private version 1; no agent session was
+started.
+
 The [002 owner-Editor comparison](compact-abc-editor-002-diagnosis.md) is an
 engineering-complete five-hundred-fifty-second 4B run for A compact base, B
 eight-step SFT export and C one-step task TTT on three public development
@@ -14,8 +23,8 @@ or broad generalization. The eight-step SFT pilot is not full ARC-SFT.
 The [003 bounded plan](compact-abc-editor-003.md) is a controlled TTT
 sensitivity test with A/B and original C0 controls plus separate step-count
 and learning-rate variations. Its saved package and eventual owner-run result
-remain distinct states: the private version-1 QUICK_SAVE is accepted, while
-runtime is unobserved. Search diversity, larger SFT, SDG training benefit,
+remain distinct states: its private version-1 QUICK_SAVE and returned Editor
+result are separately retained. Larger SFT, SDG training benefit,
 TRM integration and a locked final evaluation remain open reproduction gaps.
 
 ## Current bounded evidence (2026-09-27)

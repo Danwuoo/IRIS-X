@@ -164,3 +164,12 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes one private owner-Editor QUICK_SAVE comparing a compact base,
   its retained eight-step SFT pilot export, and that export with task TTT on
   a fixed truth-free public workload.
+- [`0045-repair-compact-abc-editor-mount.md`](0045-repair-compact-abc-editor-mount.md)
+  authorizes one distinct material-mount repair and owner-Editor QUICK_SAVE
+  for the compact A/B/C comparison.
+- [`0046-save-compact-abc-adaptation-sensitivity.md`](0046-save-compact-abc-adaptation-sensitivity.md)
+  authorizes one owner-Editor QUICK_SAVE comparing fixed A/B controls with
+  task-local TTT step-count and learning-rate variations.
+- [`0047-save-compact-abc-beam-comparison.md`](0047-save-compact-abc-beam-comparison.md)
+  authorizes one owner-Editor QUICK_SAVE changing only the legal model
+  candidate search to a bounded two-path beam.

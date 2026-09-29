@@ -476,6 +476,29 @@ verification; its receipt and package bindings are retained on that status
 page. The save is consumed. The agent did not start or query its runtime;
 the owner will run it in Editor and return `結果.zip`.
 
+The owner returned 003's complete Editor `結果.zip`. Local digest-bound
+verification confirms all 35 data members, the approved plan, four distinct
+BF16 L4s, exact official competition mount and all 15 task/arm completions.
+An isolated score on the same three repeatedly examined public development
+parents found A pass@1/pass@2/candidate coverage 1/3 and B/C0/C2/CH each
+0/3. All adapted-arm candidate pools missed; extra TTT steps and learning
+rate did not improve exact correctness on this selected set. Preserve the
+observation at `trials/arc-agi-2-qwen35-nvarc/compact-abc-003-editor-diagnosis.md`.
+Decision 0047 records the owner's new repair-and-save direction for one
+distinct private `nvarc-compact-abc-editor-004` QUICK_SAVE. It holds A/B/C
+materials and one-step TTT fixed while replacing the first-digit-only
+second path with a two-path legal model beam at every output position. The
+same three public tuning tasks, 18-call/36-sequence budget, exact official
+competition mount, L4 x4 gate, one sequential worker, existing Datasets,
+Internet off, USD 0 and 1,800-second envelope remain. Stop at the sole
+receipt; no agent execution, status/log/output query, retrieval, monitoring,
+Dataset mutation, retry, hidden scoring or promotion is authorized. Status
+is `trials/arc-agi-2-qwen35-nvarc/compact-abc-editor-004.md`.
+The sole QUICK_SAVE was accepted as private version 1 after offline
+verification. Its exact package bindings and receipt are retained on that
+status page. The save is consumed; the agent did not start or query runtime.
+The owner will run the notebook in Editor and return `結果.zip`.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;
