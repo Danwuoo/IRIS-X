@@ -54,3 +54,14 @@ a tiny Qwen base-start adapter and beam replay, and
 `python tools/repository_check.py --all` (290 tests, four skipped, pass).
 No further save, agent execution, status/log/output query, retrieval,
 Dataset change or automatic retry is authorized.
+
+## Owner-Editor result
+
+The owner returned the complete 005 Editor ZIP. [The digest-bound local
+diagnosis](compact-abc-005-editor-diagnosis.md) verifies all four arms on the
+approved mount and four distinct BF16 L4s. Isolated scoring of the same three
+public development parents found A and AT each at 1/3, B and C each at 0/3
+for pass@1, pass@2 and candidate-pool coverage. TTT produced finite adapter
+updates but no correct new candidate. The conditional request for another
+repair and QUICK_SAVE did not yield a concrete software fault or supported
+parameter change, so no new save was sent.

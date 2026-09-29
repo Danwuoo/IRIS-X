@@ -521,7 +521,15 @@ authorized. Status is
 The sole QUICK_SAVE was accepted as private version 1 after offline
 verification. Exact package bindings and receipt are retained on that
 status page. The save is consumed; the agent did not start or query runtime.
-The owner will run it in Editor and return `結果.zip`.
+The owner returned 005's complete Editor `結果.zip`. Local digest-bound
+verification confirms 31 listed members, the exact official competition
+mount and four distinct BF16 L4s. The four arms completed all three public
+development parents. Isolated exact scoring found A and AT each 1/3, B and C
+each 0/3; task TTT made finite adapter updates but no correct new candidate.
+The owner's conditional request for correction and another QUICK_SAVE was
+evaluated; no program fault or supported parameter repair was found, so no
+006 save was submitted. Preserve the observation at
+`trials/arc-agi-2-qwen35-nvarc/compact-abc-005-editor-diagnosis.md`.
 
 ## Authority order
 

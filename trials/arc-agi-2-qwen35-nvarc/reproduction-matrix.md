@@ -5,10 +5,13 @@
 The [004 result](compact-abc-004-editor-diagnosis.md) completed the fixed
 A/B/C comparison with a two-path model beam. The beam changed candidate
 pools but left public-development pass@1/pass@2/coverage at A 1/3, B/C
-0/3. The [005 paired plan](compact-abc-editor-005.md) fixes this decoder
-and compares no TTT versus the same one-step TTT on base and eight-step
-SFT pilot weights. Its quick save and future Editor result remain distinct.
-The private version-1 QUICK_SAVE is accepted; no agent session was started.
+0/3. The [005 paired result](compact-abc-005-editor-diagnosis.md) held that
+decoder fixed while comparing no TTT with the same one-step TTT on base and
+eight-step SFT pilot weights. All four arms completed. A and AT each attained
+1/3; B and C each attained 0/3 on the same three repeated public development
+parents. TTT changed adapter tensors but gave no exact-match or candidate
+coverage gain. The private version-1 QUICK_SAVE and owner Editor execution
+remain distinct; the agent started no session or runtime query.
 
 The [003 result](compact-abc-003-editor-diagnosis.md) completed all five
 arms. Isolated public development scoring found A 1/3 and B/C0/C2/CH 0/3
