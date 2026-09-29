@@ -1,5 +1,23 @@
 # Component completion and reproduction gaps
 
+## Measured compact ABC continuation (2026-09-29)
+
+The [002 owner-Editor comparison](compact-abc-editor-002-diagnosis.md) is an
+engineering-complete five-hundred-fifty-second 4B run for A compact base, B
+eight-step SFT export and C one-step task TTT on three public development
+parents. The [isolated local score](compact-abc-002-public-dev-score.md) found
+A pass@1/pass@2/oracle coverage 1/3, B 0/3 and C 0/3. B/C misses occur in
+candidate generation or content, before ranking could recover an answer.
+This selected, repeatedly examined set does not prove model-line superiority
+or broad generalization. The eight-step SFT pilot is not full ARC-SFT.
+
+The [003 bounded plan](compact-abc-editor-003.md) is a controlled TTT
+sensitivity test with A/B and original C0 controls plus separate step-count
+and learning-rate variations. Its saved package and eventual owner-run result
+remain distinct states: the private version-1 QUICK_SAVE is accepted, while
+runtime is unobserved. Search diversity, larger SFT, SDG training benefit,
+TRM integration and a locked final evaluation remain open reproduction gaps.
+
 ## Current bounded evidence (2026-09-27)
 
 [Local semantic continuation](local-semantic-continuation.md) supplies executable

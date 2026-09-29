@@ -457,6 +457,25 @@ Correctness is unscored. The terminal observation is
 No runtime repair, new QUICK_SAVE, scoring or promotion follows from this
 observation.
 
+The owner subsequently directs continued tuning after an independent review.
+The frozen 002 result was scored only against its three public training2
+development parents with the evaluator isolated from the solver. A attained
+pass@1/pass@2/oracle coverage 1/3; B and C each attained 0/3. All B/C pools
+missed the answer; these repeatedly examined tasks are tuning data, not a
+fresh holdout. Decision 0046 authorizes one distinct private
+`nvarc-compact-abc-editor-003` QUICK_SAVE after offline verification: A/B
+controls plus C0 one-step/5e-5, C2 two-step/5e-5 and CH one-step/1e-4 TTT,
+with all other solve factors fixed. The exact plan binds the unchanged
+official competition mount, L4 x4 gate, one sequential worker, existing
+Datasets, Internet off, USD 0 and 1,800 seconds. Stop at the sole receipt;
+no agent execution, monitoring, status/log/output query, retrieval, Dataset
+mutation, automatic retry, hidden/locked scoring or promotion is authorized.
+Status is `trials/arc-agi-2-qwen35-nvarc/compact-abc-editor-003.md`.
+The sole QUICK_SAVE was accepted as private version 1 after offline
+verification; its receipt and package bindings are retained on that status
+page. The save is consumed. The agent did not start or query its runtime;
+the owner will run it in Editor and return `結果.zip`.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

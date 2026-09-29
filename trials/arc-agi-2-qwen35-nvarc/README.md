@@ -1,5 +1,24 @@
 # Qwen3.5-4B NVARC reproduction development
 
+## Current measured continuation (2026-09-29)
+
+The [compact ABC 002 owner-Editor result](compact-abc-editor-002-diagnosis.md)
+completed all nine bounded task/arm rows. A separate local evaluation on the
+three exactly bound, public training2 development parents measured
+[pass@1/pass@2/candidate-pool coverage](compact-abc-002-public-dev-score.md):
+A reached 1/3 on each; B and C reached 0/3. B/C pools missed the correct
+answer on every selected task. These repeatedly examined parents are tuning
+data. The eight-step SFT export and one-step TTT provide neither full-method
+training nor broad effectiveness evidence. Engineering completion and measured
+quality are now reported separately.
+
+[Decision 0046](../../docs/decisions/0046-save-compact-abc-adaptation-sensitivity.md)
+opens one [compact ABC 003 owner-Editor package](compact-abc-editor-003.md)
+to test TTT step count and learning rate with A/B/C0 controls, fixed solver
+budgets and no new SFT or Dataset. It is a bounded tuning experiment, not a
+promotion or broad NVARC result. Its sole private QUICK_SAVE was accepted as
+version 1; the owner will start it in Editor and return `結果.zip`.
+
 ## Current continuation (2026-09-28)
 
 The owner supplied [combined 009's completed Editor ZIP](combined-009-editor-diagnosis.md).
