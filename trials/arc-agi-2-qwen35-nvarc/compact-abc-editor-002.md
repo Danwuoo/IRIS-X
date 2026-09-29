@@ -31,8 +31,8 @@ The sole QUICK_SAVE was accepted as version 1 and is consumed. Notebook:
 Provider kernel ID: `136279071`. The one request used private visibility,
 Internet off, `NvidiaL4`, the three existing Datasets and the official
 competition source. The atomic ledger records one send, with no agent start.
-No status, logs or outputs were queried. Runtime is unobserved pending the
-owner's Editor run.
+No status, logs or outputs were queried. Runtime was unobserved at save time;
+the owner later returned the completed Editor result below.
 
 Exact local bindings (SHA-256):
 
@@ -56,3 +56,10 @@ material tests, 282 repository unit tests (four optional skips), repository
 invariants and diff whitespace checks passed before the save. The initial
 combined `--all` run found the owner ZIP at the active root; it was moved
 intact to ignored local evidence and the invariant check then passed.
+
+The owner-run Editor result is verified and complete. Its SHA-256 is
+`965ac0622546efe2d2e996e925ab376f4e219e5657d705cbe45685e8e060f37e`.
+All nine public task/arm rows completed under the approved limits; no runtime
+repair or new QUICK_SAVE was needed. See
+[`compact-abc-editor-002-diagnosis.md`](compact-abc-editor-002-diagnosis.md)
+for the digest-bound truth-free analysis. ARC correctness remains unknown.

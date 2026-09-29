@@ -22,8 +22,8 @@ PUBLIC_STRATA = {"00576224": "2x2-to-6x6/public-palette-preserved",
                  "0d3d703e": "3x3-to-3x3/public-palette-changes"}
 
 
-def inspect(path: Path, truth: dict | None = None) -> dict:
-    plan = read(PLAN)
+def inspect(path: Path, truth: dict | None = None, *, plan_path: Path = PLAN) -> dict:
+    plan = read(plan_path)
     manifest = verify_abc_zip(path, run_id=plan["run_id"], plan_digest=digest_value(plan))
     with zipfile.ZipFile(path) as archive:
         def item(name):
@@ -74,8 +74,10 @@ def inspect(path: Path, truth: dict | None = None) -> dict:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("zip", type=Path)
+    parser.add_argument("--plan", type=Path, default=PLAN,
+                        help="Approved ABC plan bound by the returned ZIP; defaults to 001")
     parser.add_argument("--isolated-truth", type=Path,
                         help="Separate legally available evaluator file; never supplied to the notebook")
     args = parser.parse_args()
     truth = read(args.isolated_truth) if args.isolated_truth else None
-    print(json.dumps(inspect(args.zip, truth), ensure_ascii=False, indent=2))
+    print(json.dumps(inspect(args.zip, truth, plan_path=args.plan), ensure_ascii=False, indent=2))

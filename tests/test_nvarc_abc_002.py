@@ -7,9 +7,12 @@ import unittest
 from unittest.mock import patch
 
 from irisx.arc_nvarc_abc_002 import BASE, SFT, TRAINING, VOCAB, check_materials
+from irisx.arc_nvarc_analysis_zip_abc import write_abc_zip
 from irisx.arc_nvarc_representation import _verify_file_inventory
+from irisx.canonical import digest_value
 from irisx.errors import ValidationError
-from tools.stage_nvarc_abc_002 import PLAN, make_plan, metadata, preflight, save_fields
+from tools.analyze_nvarc_abc import inspect
+from tools.stage_nvarc_abc_002 import PLAN, RUN, make_plan, metadata, preflight, save_fields
 from irisx.arc_nvarc_combined import read
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,6 +20,18 @@ PACKAGE = ROOT / ".irisx/arc-agi-2/qwen35-nvarc/m2-m3/compact-abc-editor-002-sub
 
 
 class ABCRepairTests(unittest.TestCase):
+    def test_002_analysis_uses_explicit_bound_plan_without_truth(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            work = root / RUN
+            work.mkdir()
+            (work / "aggregate-terminal.json").write_text('{"outcome":"complete"}', encoding="utf-8")
+            result = root / "result.zip"
+            write_abc_zip(work, result, RUN, digest_value(read(PLAN)))
+            report = inspect(result, plan_path=PLAN)
+            self.assertEqual(RUN, report["run_id"])
+            self.assertEqual("unknown-no-isolated-truth", report["scoring"])
+
     def test_publishing_sidecar_is_optional_but_unknown_members_fail(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

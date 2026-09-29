@@ -449,8 +449,13 @@ receipt; no agent run, monitoring, status/log/output query, retrieval,
 Dataset mutation or retry is authorized. Status is
 `trials/arc-agi-2-qwen35-nvarc/compact-abc-editor-002.md`.
 The sole QUICK_SAVE was accepted as version 1 and is consumed. The agent did
-not start or query its runtime. The owner will run it in Editor and return
-`結果.zip`; no additional external action follows from the save.
+not start or query its runtime. The owner returned the completed Editor
+`結果.zip`: all 27 listed data members, four distinct BF16 L4s, exact official
+mount, nine task/arm completions and bounded call ledger verify locally.
+Correctness is unscored. The terminal observation is
+`trials/arc-agi-2-qwen35-nvarc/compact-abc-editor-002-diagnosis.md`.
+No runtime repair, new QUICK_SAVE, scoring or promotion follows from this
+observation.
 
 ## Authority order
 
