@@ -173,3 +173,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0047-save-compact-abc-beam-comparison.md`](0047-save-compact-abc-beam-comparison.md)
   authorizes one owner-Editor QUICK_SAVE changing only the legal model
   candidate search to a bounded two-path beam.
+- [`0048-save-compact-abc-base-ttt-pair.md`](0048-save-compact-abc-base-ttt-pair.md)
+  authorizes one owner-Editor QUICK_SAVE comparing base and eight-step SFT
+  pilot weights with and without the same one-step task TTT.

@@ -1,5 +1,17 @@
 # Qwen3.5-4B NVARC reproduction development
 
+## Current paired continuation (2026-09-29)
+
+The owner returned [004's complete Editor result](compact-abc-004-editor-diagnosis.md).
+Its isolated public-development score found A 1/3 and B/C 0/3 for pass@1,
+pass@2 and candidate coverage. The two-path beam changed candidate pools
+but did not recover another correct grid. [Decision 0048](../../docs/decisions/0048-save-compact-abc-base-ttt-pair.md)
+opens one [005 owner-Editor package](compact-abc-editor-005.md) pairing
+base/SFT starting weights with no TTT or the same one-step task TTT. It
+retains the 004 beam and all task, call and ranking settings. These are
+repeated public tuning tasks, not a fresh holdout. Its sole private
+QUICK_SAVE was accepted as version 1; the owner will run it in Editor.
+
 ## Current beam continuation (2026-09-29)
 
 The owner returned [003's complete Editor result](compact-abc-003-editor-diagnosis.md).
@@ -10,7 +22,7 @@ rate did not recover an answer on these repeatedly examined parents.
 opens one [004 owner-Editor package](compact-abc-editor-004.md) that changes
 only the legal two-path decoder while preserving A/B/C model, TTT and call
 budgets. Its sole private QUICK_SAVE was accepted as version 1; the owner
-will run it in Editor. It remains a development comparison, not a method
+returned its complete Editor result. It remains a development comparison, not a method
 promotion.
 
 ## Earlier measured continuation (2026-09-29)

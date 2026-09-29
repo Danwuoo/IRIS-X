@@ -52,3 +52,8 @@ a tiny Qwen one-step TTT and beam-generation replay, and
 `python tools/repository_check.py --all` (287 tests, four skipped, pass).
 No additional save, agent execution, status/log/output query, retrieval,
 Dataset change or automatic retry is authorized.
+
+The owner later returned the complete Editor `結果.zip`. Its digest-bound
+runtime, local public-development score and candidate-pool comparison are
+retained in the [004 diagnosis](compact-abc-004-editor-diagnosis.md).
+This does not reopen the consumed 004 save identity.

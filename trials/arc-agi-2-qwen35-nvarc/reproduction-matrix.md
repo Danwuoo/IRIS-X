@@ -2,14 +2,21 @@
 
 ## Measured compact ABC continuation (2026-09-29)
 
+The [004 result](compact-abc-004-editor-diagnosis.md) completed the fixed
+A/B/C comparison with a two-path model beam. The beam changed candidate
+pools but left public-development pass@1/pass@2/coverage at A 1/3, B/C
+0/3. The [005 paired plan](compact-abc-editor-005.md) fixes this decoder
+and compares no TTT versus the same one-step TTT on base and eight-step
+SFT pilot weights. Its quick save and future Editor result remain distinct.
+The private version-1 QUICK_SAVE is accepted; no agent session was started.
+
 The [003 result](compact-abc-003-editor-diagnosis.md) completed all five
 arms. Isolated public development scoring found A 1/3 and B/C0/C2/CH 0/3
 for pass@1, pass@2 and candidate coverage. TTT changes yielded finite
 updates but no exact gain on these repeated parents. The [004 plan](compact-abc-editor-004.md)
 tests a two-path legal model beam with the same A/B/C checkpoint and call
-budget. Runtime remains unobserved until the owner runs its saved notebook.
-Its sole QUICK_SAVE was accepted as private version 1; no agent session was
-started.
+budget. Its sole QUICK_SAVE and returned Editor result are separately
+retained; no agent session was started.
 
 The [002 owner-Editor comparison](compact-abc-editor-002-diagnosis.md) is an
 engineering-complete five-hundred-fifty-second 4B run for A compact base, B

@@ -228,6 +228,8 @@ def preflight(package):
             "ABC rendered notebook or metadata differs")
     with zipfile.ZipFile(package / values["FILES"]["runtime_wheel"]) as wheel:
         for path in (ROOT / "src/irisx").glob("*.py"):
+            if path.name == "arc_nvarc_abc_005.py":
+                continue  # Distinct 005 module was not part of frozen 004 wheel.
             require(wheel.read("irisx/" + path.name) == path.read_bytes(),
                     "ABC installed wheel source differs: " + path.name)
     require(not any(x in source for x in ("SAVE_AND_RUN_ALL", "GetKernel", "GetOutput", "solutions.json")),
