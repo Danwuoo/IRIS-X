@@ -7,7 +7,7 @@ from irisx.arc_nvarc_abc_005 import ARMS, BASE, SFT, material_for_arm
 from irisx.arc_nvarc_combined import read
 from irisx.errors import ValidationError
 from tools.analyze_nvarc_abc import inspect
-from tools.stage_nvarc_abc_005 import PLAN, make_plan, metadata, save_fields
+from tools.stage_nvarc_abc_005 import PLAN, make_plan, metadata, preflight, save_fields
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = ROOT / ".irisx/arc-agi-2/qwen35-nvarc/m2-m3/compact-abc-editor-005-submission"
@@ -35,7 +35,10 @@ class ABCPairedBoundaries(unittest.TestCase):
         self.assertEqual(48, plan["limits"]["maximum_total_returned_sequences"])
         self.assertEqual(6, plan["limits"]["maximum_total_ttt_steps"])
         self.assertEqual(["arc-prize-2026-arc-agi-2"], metadata(plan)["competition_sources"])
-        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE)["kernel_execution_type"])
+        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE, retained_review=True)["kernel_execution_type"])
+        # Historical success must never claim compatibility with changed main.
+        with self.assertRaisesRegex(ValidationError, 'installed wheel source differs'):
+            preflight(PACKAGE)
 
     def test_004_predecessor_analysis_has_three_approved_arms(self):
         result = inspect(PREDECESSOR, plan_path=PREDECESSOR_PLAN)

@@ -192,7 +192,7 @@ def stage(output):
     return summary
 
 
-def preflight(package):
+def preflight(package, *, retained_review=False):
     plan = read(package / "plan.json")
     validate_plan(plan)
     summary = read(package / "stage-summary.json")
@@ -221,22 +221,28 @@ def preflight(package):
             payloads["visible"] == visible_bytes() and
             read(package / "kernel/kernel-metadata.json") == metadata(plan),
             "ABC rendered notebook or metadata differs")
-    with zipfile.ZipFile(package / values["FILES"]["runtime_wheel"]) as wheel:
-        for path in (ROOT / "src/irisx").glob("*.py"):
-            if path.name in {"arc_nvarc_abc_002.py", "arc_nvarc_abc_003.py",
-                             "arc_nvarc_abc_004.py", "arc_nvarc_abc_005.py"}:
-                continue  # Later run modules were not part of frozen 001 wheel.
-            require(wheel.read("irisx/" + path.name) == path.read_bytes(),
-                    "ABC installed wheel source differs: " + path.name)
+    if retained_review:
+        from tools.nvarc_retained_abc import verify_retained_wheel
+        verify_retained_wheel(package / values["FILES"]["runtime_wheel"], RUN)
+    else:
+        with zipfile.ZipFile(package / values["FILES"]["runtime_wheel"]) as wheel:
+            for path in (ROOT / "src/irisx").glob("*.py"):
+                if path.name in {"arc_nvarc_abc_002.py", "arc_nvarc_abc_003.py",
+                                 "arc_nvarc_abc_004.py", "arc_nvarc_abc_005.py"}:
+                    continue  # Later run modules were not part of frozen 001 wheel.
+                require(wheel.read("irisx/" + path.name) == path.read_bytes(),
+                        "ABC installed wheel source differs: " + path.name)
     require(not any(x in source for x in ("SAVE_AND_RUN_ALL", "GetKernel", "GetOutput", "solutions.json")),
             "ABC notebook contains forbidden transport or truth access")
     return {"run_id": RUN, "plan_digest": digest_value(plan), "external_calls": 0,
-            "wheel_matches_source": True, "embedded_payloads": len(payloads),
+            "wheel_matches_source": None if retained_review else True,
+            "retained_wheel_verified": retained_review, "execution_authorized": False, "embedded_payloads": len(payloads),
             "exact_materials_verified": True, "quick_save_only": True}
 
 
-def save_fields(package):
-    preflight(package)
+def save_fields(package, *, retained_review=False):
+    """Inspect request fields; historical review grants no save/run permission."""
+    preflight(package, retained_review=retained_review)
     meta = read(package / "kernel/kernel-metadata.json")
     notebook = read(package / "kernel/kaggle-notebook.ipynb")
     for cell in notebook["cells"]:

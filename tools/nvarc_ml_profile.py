@@ -40,7 +40,7 @@ def main() -> int:
                             "tests.test_arc_nvarc_ml", "tests.test_arc_nvarc_distributed",
                             "tests.nvarc_source_differential", "tests.nvarc_m2_m3_strict",
                             "tests.nvarc_fsdp_sft_strict", "tests.nvarc_deployment_strict",
-                            "tests.nvarc_combined_strict", "-v"],
+                            "tests.nvarc_combined_strict", "tests.nvarc_method_strict", "-v"],
                            env=env)
 
 

@@ -153,7 +153,8 @@ def source_qwen_transform_grid(value: Any, spec: Mapping[str, Any], *,
 
 def source_qwen_views(task: Mapping[str, Any], test_index: int, *,
                       seed: int, color_repeats: int,
-                      answer: Any | None = None) -> list[dict[str, Any]]:
+                      answer: Any | None = None,
+                      max_length: int | None = None) -> list[dict[str, Any]]:
     """Run pinned ArcDataset.augment and keep its exact transformed examples.
 
     One source dataset is constructed per test; this preserves a full multi-test
@@ -173,6 +174,9 @@ def source_qwen_views(task: Mapping[str, Any], test_index: int, *,
         augmented = source.augment(n=color_repeats, seed=seed)
     finally:
         np.random.set_state(state)
+    if max_length is not None:
+        from .arc_nvarc_source_recipe import cut_source_dataset
+        augmented = cut_source_dataset(augmented, name="input", max_length=max_length)
     keys = sorted(augmented.keys)
     if color_repeats == 2:
         # Notebook cell4: four two-key DFS batches for each transpose half.
@@ -189,7 +193,8 @@ def source_qwen_views(task: Mapping[str, Any], test_index: int, *,
 
 
 def source_qwen_training_views(task: Mapping[str, Any], *, seed: int,
-                               color_repeats: int) -> list[dict[str, Any]]:
+                               color_repeats: int,
+                               max_length: int | None = None) -> list[dict[str, Any]]:
     """Use notebook train_ds.augment(n, shfl_keys=True) without test labels."""
     import numpy as np
     from .arc_nvarc_upstream import qwen_cell
@@ -204,6 +209,9 @@ def source_qwen_training_views(task: Mapping[str, Any], *, seed: int,
         augmented = source.augment(n=color_repeats, shfl_keys=True, seed=seed)
     finally:
         np.random.set_state(state)
+    if max_length is not None:
+        from .arc_nvarc_source_recipe import cut_source_dataset
+        augmented = cut_source_dataset(augmented, name="text", max_length=max_length)
     return [{"key": key, "train": augmented.queries[key]["train"]}
             for key in augmented.keys]
 

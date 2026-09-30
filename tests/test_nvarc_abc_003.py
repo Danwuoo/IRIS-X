@@ -26,7 +26,7 @@ class ABCTuningBoundaries(unittest.TestCase):
         self.assertEqual(12, plan["limits"]["maximum_total_ttt_steps"])
         self.assertEqual(3072, plan["limits"]["maximum_total_ttt_training_tokens"])
         self.assertEqual(["arc-prize-2026-arc-agi-2"], metadata(plan)["competition_sources"])
-        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE)["kernel_execution_type"])
+        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE, retained_review=True)["kernel_execution_type"])
 
 
 if __name__ == "__main__":

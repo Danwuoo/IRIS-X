@@ -47,7 +47,7 @@ class ABCBeamBoundaries(unittest.TestCase):
         self.assertEqual(36, plan["limits"]["maximum_total_returned_sequences"])
         self.assertEqual(3, plan["limits"]["maximum_total_ttt_steps"])
         self.assertEqual(["arc-prize-2026-arc-agi-2"], metadata(plan)["competition_sources"])
-        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE)["kernel_execution_type"])
+        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE, retained_review=True)["kernel_execution_type"])
 
     def test_003_analysis_uses_all_five_approved_arms(self):
         result = inspect(PREDECESSOR, plan_path=PREDECESSOR_PLAN)

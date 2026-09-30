@@ -342,6 +342,14 @@ def configure_candidate_backend(backend: Any, config: Mapping[str, Any]) -> dict
         backend.augmentation = augmentation
     if hasattr(backend, "representation"):
         backend.representation = representation
+    context = config.get("source_context_tokens")
+    if context is not None:
+        suffix = config.get("maximum_new_tokens")
+        if (augmentation != "source-qwen" or representation != "source-qwen" or type(context) is not int or
+                type(suffix) is not int or not 0 < suffix < context):
+            raise ValidationError("source generation context reservation differs")
+    backend.source_context_length = context
+    backend.source_reply_reserve = config.get("maximum_new_tokens", 0)
     return {"augmentation": augmentation, "representation": representation,
             "ranking": ranking,
             "answer_nll": "summed" if augmentation == "source-qwen" else "per-token"}
@@ -396,7 +404,9 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any],
                             for spec in views] if views is not None else
                             [{**item, "test_index": 0} for item in source_qwen_views(
                                 task, test_index, seed=int(config.get("source_generation_seed", 2)),
-                                color_repeats=int(config.get("color_repeats", 2)))])
+                                color_repeats=int(config.get("color_repeats", 2)),
+                                max_length=(backend.source_context_length - max_tokens
+                                            if backend.source_context_length is not None else None))])
             for view_index, view in enumerate(view_records):
                 if calls >= test_call_stop:
                     break
@@ -546,6 +556,8 @@ class QwenCandidateBackend:
         self.required_colors = required_colors
         self.palette_from_view = palette_from_view
         self.dfs_cache_mode = dfs_cache_mode
+        self.source_context_length: int | None = None
+        self.source_reply_reserve = 0
         self.prefix_cache: PrefixLogitCache | None = None
         self.augmentation = "irisx"
         self.representation = "irisx"
@@ -644,7 +656,9 @@ class QwenCandidateBackend:
                         for spec in default_views(task, 17, color_repeats=1)]
                         if self.augmentation == "irisx" else
                         [{**item, "test_index": 0} for item in source_qwen_views(
-                            task, test_index, seed=17, color_repeats=1, answer=answer)])
+                            task, test_index, seed=17, color_repeats=1, answer=answer,
+                            max_length=(self.source_context_length - self.source_reply_reserve
+                                        if self.source_context_length is not None else None))])
         for view in view_records:
             query = tokenizer.encode_query(view["task"], view["test_index"])
             target = tokenizer.encode_grid(view["answer"]) + [END]

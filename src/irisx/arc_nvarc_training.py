@@ -38,20 +38,21 @@ def supervised_sequences(tasks: Iterable[Mapping[str, Any]]) -> list[dict[str, A
     return sequences
 
 
-def source_sft_sequences(dataset_paths: str | list[str], *, maximum_records: int) -> list[dict[str, Any]]:
+def iter_source_sft_sequences(dataset_paths: str | list[str], *,
+                             maximum_records: int | None = None) -> Iterable[dict[str, Any]]:
     """Use NVARC's real HF dataset loader, then map its messages to compact rows.
 
     The source NeMo backend is a separate compatibility gap; this keeps its
     message order and assistant-only loss while using the verified Qwen3.5
     compact vocabulary. Call only with approved labelled training material.
     """
-    if maximum_records < 1:
+    if maximum_records is not None and (type(maximum_records) is not int or maximum_records < 1):
         raise ValidationError("SFT source record bound required")
     from .arc_nvarc_upstream import sft_data_entry
 
     dataset = sft_data_entry().load_datasets(dataset_paths)
     tokenizer = GridTokenizer(source_chat_newlines=True)
-    sequences: list[dict[str, Any]] = []
+    count = 0
 
     def parse_grid(content: Any) -> list[list[int]]:
         if not isinstance(content, str):
@@ -62,7 +63,7 @@ def source_sft_sequences(dataset_paths: str | list[str], *, maximum_records: int
         return grid([[int(char) for char in row] for row in rows])
 
     for index, record in enumerate(dataset):
-        if index >= maximum_records:
+        if maximum_records is not None and index >= maximum_records:
             break
         messages = record.get("messages")
         if not isinstance(messages, list) or not messages or len(messages) % 2:
@@ -77,11 +78,18 @@ def source_sft_sequences(dataset_paths: str | list[str], *, maximum_records: int
                 parse_grid(user.get("content")), parse_grid(assistant.get("content")))
             tokens.extend(pair_tokens)
             labels.extend(pair_labels)
-        sequences.append({"source": str(record.get("puzzle_name", index)),
-                          "input_ids": tokens, "labels": labels})
-    if not sequences:
+        count += 1
+        yield {"source": str(record.get("puzzle_name", index)),
+               "input_ids": tokens, "labels": labels}
+    if not count:
         raise ValidationError("source SFT dataset has no records")
-    return sequences
+
+
+def source_sft_sequences(dataset_paths: str | list[str], *, maximum_records: int) -> list[dict[str, Any]]:
+    """Compatibility entry for the frozen bounded pilots."""
+    if type(maximum_records) is not int or maximum_records < 1:
+        raise ValidationError("SFT source record bound required")
+    return list(iter_source_sft_sequences(dataset_paths, maximum_records=maximum_records))
 
 
 class FrozenSequenceStore:
@@ -126,7 +134,8 @@ class FrozenSequenceStore:
 def task_local_sequences(task: Mapping[str, Any], *, seed: int,
                          augmentation_count: int = 16,
                          source_qwen: bool = False,
-                         source_augmentation_seed: int = 1) -> list[dict[str, Any]]:
+                         source_augmentation_seed: int = 1,
+                         source_max_length: int | None = None) -> list[dict[str, Any]]:
     """Leave-one-out demonstration targets across reversible task views.
 
     Test inputs and any test outputs are never supervised here.
@@ -137,7 +146,8 @@ def task_local_sequences(task: Mapping[str, Any], *, seed: int,
         raise ValidationError("task adaptation needs at least one view")
     if source_qwen:
         views = source_qwen_training_views(task, seed=source_augmentation_seed,
-                                          color_repeats=augmentation_count)
+                                          color_repeats=augmentation_count,
+                                          max_length=source_max_length)
         for view_index, view in enumerate(views):
             demos = view["train"]
             tokens: list[int] = []
@@ -324,15 +334,27 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
         if hasattr(model.config, "use_cache"):
             model.config.use_cache = False
     optimizer = torch.optim.AdamW(model.parameters(), lr=float(config["learning_rate"]),
-                                  weight_decay=float(config.get("weight_decay", 0.0)))
+                                  weight_decay=float(config.get("weight_decay", 0.0)),
+                                  betas=tuple(config.get("optimizer_betas", (0.9, 0.999))),
+                                  eps=float(config.get("optimizer_eps", 1e-8)))
     total_steps = int(config["max_steps"])
     token_limit = int(config["maximum_training_tokens"])
     if token_limit < 1:
         raise ValidationError("training token limit is required")
     warmup = int(config.get("warmup_steps", 0))
-    scheduler = torch.optim.lr_scheduler.LambdaLR(
-        optimizer, lambda step: min(1.0, (step + 1) / max(1, warmup)) *
-        max(0.0, (total_steps - step) / max(1, total_steps - warmup)))
+    if config.get("scheduler", "pilot-linear") == "source-linear":
+        from .arc_nvarc_source_recipe import source_sft_lr
+        scheduler = torch.optim.lr_scheduler.LambdaLR(
+            optimizer, lambda step: source_sft_lr(config, step) / float(config["learning_rate"]))
+    elif config.get("scheduler", "pilot-linear") == "pilot-linear":
+        scheduler = torch.optim.lr_scheduler.LambdaLR(
+            optimizer, lambda step: min(1.0, (step + 1) / max(1, warmup)) *
+            max(0.0, (total_steps - step) / max(1, total_steps - warmup)))
+    else:
+        raise ValidationError("unknown SFT learning-rate schedule")
+    reduction = config.get("loss_reduction", "microbatch-mean")
+    if reduction not in {"microbatch-mean", "supervised-token-mean"}:
+        raise ValidationError("unknown SFT gradient accumulation loss reduction")
     checkpoint = output / "training-state.pt"
     cursor = step = tokens_seen = 0
     if resume:
@@ -376,12 +398,18 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
             stop_reason = "maximum_training_tokens"
             optimizer.zero_grad(set_to_none=True)
             break
+        supervised_counts = [int((batch["labels"][:, 1:] != -100).sum().item())
+                             for batch, _ in microbatches]
+        if not all(supervised_counts):
+            raise ValidationError("SFT microbatch has no next-token supervision")
         for batch, sample_tokens in microbatches:
             output_value = model(**batch)
             loss = output_value.loss
             if not torch.isfinite(loss):
                 raise ValidationError("non-finite SFT loss")
-            (loss / accumulation).backward()
+            weight = (int((batch["labels"][:, 1:] != -100).sum().item()) / sum(supervised_counts)
+                      if reduction == "supervised-token-mean" else 1 / accumulation)
+            (loss * weight).backward()
             last_loss = float(loss.detach().cpu())
             cursor += 1
             tokens_seen += sample_tokens
@@ -511,6 +539,12 @@ class TaskLocalAdapter:
                 raise ValidationError(f"non-finite task adapter after step {step}: {name}")
 
     def adapt(self, task: Mapping[str, Any]) -> Any:
+        schedule = self.config.get("training_schedule", "bounded-steps")
+        if schedule == "source-one-epoch":
+            from .arc_nvarc_source_recipe import train_source_epoch
+            return train_source_epoch(self, task)
+        if schedule != "bounded-steps":
+            raise ValidationError("unknown task adaptation schedule")
         import torch
         config = self.config
         self.reset()

@@ -79,8 +79,8 @@ class ABCRepairTests(unittest.TestCase):
         self.assertEqual("four-distinct-bf16-l4-verified/one-active-worker-v1",
                          plan["hardware_profile"])
         self.assertEqual(["arc-prize-2026-arc-agi-2"], metadata(plan)["competition_sources"])
-        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE)["kernel_execution_type"])
-        self.assertTrue(preflight(PACKAGE)["wheel_matches_source"])
+        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE, retained_review=True)["kernel_execution_type"])
+        self.assertTrue(preflight(PACKAGE, retained_review=True)["retained_wheel_verified"])
 
 
 if __name__ == "__main__":

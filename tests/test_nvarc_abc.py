@@ -31,7 +31,7 @@ class ABCBoundaryTests(unittest.TestCase):
         self.assertEqual(36, plan["limits"]["maximum_total_returned_sequences"])
         self.assertEqual(3, plan["limits"]["maximum_total_ttt_steps"])
         self.assertEqual(set(), set(TASKS) & set(plan["sft_train_parent_ids"]))
-        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE)["kernel_execution_type"])
+        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE, retained_review=True)["kernel_execution_type"])
         self.assertEqual([], metadata(plan)["competition_sources"])
 
     def test_public_shape_and_palette_fail_closed_without_truth(self):
@@ -96,9 +96,9 @@ class ABCBoundaryTests(unittest.TestCase):
                 verify_abc_zip(tampered, run_id=RUN, plan_digest=plan_digest)
 
     def test_exact_package_preflight_and_save_guard(self):
-        report = preflight(PACKAGE)
-        self.assertTrue(report["wheel_matches_source"])
-        fields = save_fields(PACKAGE)
+        report = preflight(PACKAGE, retained_review=True)
+        self.assertTrue(report["retained_wheel_verified"])
+        fields = save_fields(PACKAGE, retained_review=True)
         self.assertTrue(fields["is_private"])
         self.assertFalse(fields["enable_internet"])
         with tempfile.TemporaryDirectory() as temp:
