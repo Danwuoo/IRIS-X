@@ -1,5 +1,20 @@
 # Component completion and reproduction gaps
 
+## Method-completeness continuation (2026-09-30)
+
+The [new method report](../../docs/plan/2026-09-30-nvarc-method-completeness.md)
+supersedes pending-state statements in earlier sections. Current source
+identities and available code are verified; full method reproduction remains
+incomplete. New local paths import all six source datasets with bound
+inventories/parent lineage, implement source SFT optimizer/schedule and
+token-weighted accumulation, and consume a complete 128-view r256 task epoch
+with source context cuts. Synthetic fixtures and tiny actual-model acceptance
+verify engineering semantics only. Actual six-source material, distributed
+source-recipe migration, packed isolation, GPU throughput and target-scale
+TRM/SDG evidence remain gaps. The eight-step 4B export does not qualify as
+full SFT. New dev comparison preparation is inert and data-gated; no ABC 006
+or new external workload has been launched.
+
 ## Measured compact ABC continuation (2026-09-29)
 
 The [004 result](compact-abc-004-editor-diagnosis.md) completed the fixed

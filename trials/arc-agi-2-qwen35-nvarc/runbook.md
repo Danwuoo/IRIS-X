@@ -1,5 +1,46 @@
 # Development and future execution runbook
 
+## Current offline method reference (2026-09-30)
+
+Use the [method-completeness report](../../docs/plan/2026-09-30-nvarc-method-completeness.md)
+and current README first. Provider commands in older dated sections below
+are retained historical recipes; their quotas are consumed and cannot be
+replayed under this local development direction.
+Historical ABC package inspection explicitly uses `retained_review=True`,
+bound to the wheel digests in the five tracked status pages. Its report does
+not claim current-source compatibility or execution permission. The default
+preflight keeps the current-source check and rejects these older wheels after
+main changes; never regenerate a consumed package to make that check pass.
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_ml_profile.py
+python tools/repository_check.py --all
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_method.py audit --proof <current-bound-local-proof.json> --output <new-ignored-readiness.json>
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_method.py prepare-comparison --proof <current-bound-local-proof.json> --output <new-ignored-review-dir>
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_method.py freeze-corpus --spec <reviewed-source-spec.json> --output <new-ignored-corpus-dir>
+```
+
+The proof format is `irisx/nvarc-method-local-proof-v1`, scope
+`source-differential-and-tiny-actual-model-only`, with successful `exit_code`,
+`contract_digest`, `code_binding` from the tool, `log_path` relative to proof,
+and `log_sha256`. It is advisory evidence and carries no execution authority.
+
+Corpus specs use `irisx/nvarc-source-corpus-spec-v1`, `clean-research`, explicit
+`material_class` (`synthetic-fixture` or `source-material`), sequence bound,
+and nonempty excluded development/locked parent IDs. Supply the exact ordered
+six `sources` from the contract. Each source declares its dataset path,
+record count, public-training-only exposure, closed member paths/SHA-256,
+and SHA-256-bound ordered lineage JSONL (`puzzle_name`, `parent_id`). Actual
+material additionally needs provenance `origin`, `revision`, `lineage_basis`.
+No unknown parent is guessed from an augmented name. Freeze never silently
+truncates episodes; source spec, counts, tokens, masks, exclusions and shards
+are checked again on load. Fixtures cannot set corpus readiness true.
+
+Prepare provisional dev parents before freezing actual training material,
+include them in exclusions, then regenerate the proposal with `--corpus`.
+All proposal external allowances remain zero; fix concrete training/resource
+bounds and review materials before requesting any execution authority.
+
 ## Decision 0032: approved scratch SFT and tokenizer teacher repairs
 
 The owner approved the exact M2 `nvarc-m2-fsdp-sft-002` and M3

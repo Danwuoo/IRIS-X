@@ -2,6 +2,10 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-09-30-nvarc-method-completeness.md`](plan/2026-09-30-nvarc-method-completeness.md)
+  records the source/method boundaries, six-source lineage importer, complete
+  task epoch, SFT training semantics and data-gated inert development comparison.
+
 - [`plan/2026-09-26-nvarc-combined-two-gpu-notebook.md`](plan/2026-09-26-nvarc-combined-two-gpu-notebook.md)
   scopes owner-authorized local development of one notebook with isolated M2
   and M3 GPU workers, offline validation and an inert execution proposal.

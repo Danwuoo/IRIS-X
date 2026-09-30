@@ -1,6 +1,35 @@
 # Qwen3.5-4B NVARC reproduction development
 
-## Current paired continuation (2026-09-29)
+## Current method-completeness development (2026-09-30)
+
+The [005 paired result](compact-abc-005-editor-diagnosis.md) is complete:
+A/AT each reached 1/3 and B/C each 0/3 on the same three repeated public
+development parents. The eight-step SFT export remains an engineering pilot.
+No compact ABC 006 was submitted. The owner now directs local development
+in the order: establish version/method boundaries, complete and verify the
+method prerequisites, then prepare a new training/comparison design.
+
+The [method-completeness report](../../docs/plan/2026-09-30-nvarc-method-completeness.md)
+and [pinned contract](configs/method-contract-20260930.json) record the new
+six-source lineage importer, source SFT optimizer/schedule/loss reference,
+complete 128-view r256 task epoch and source context reservation. These
+opt-in paths preserve old pilot defaults. Actual six-source material,
+distributed source-recipe integration and target GPU resource checks remain
+missing; local synthetic and tiny-model evidence cannot establish full-method
+or full-scale SFT completion. The comparison builder produces visible-only,
+inert proposals and refuses to treat fixtures as actual data readiness.
+No new external execution, save, retrieval, teacher call or scoring occurred.
+
+Validation completed on 2026-10-01 (Taipei): strict ML profile passed all
+38 tests without skips; repository `--all` passed 293 tests with four
+existing optional skips. The new method's four strict checks passed, and
+historical ABC checks passed against recorded wheel bindings. Bound local
+readiness reports source/reference verified, corpus absent and quality gate
+closed. The provisional comparison retains eight parents and all nine test
+inputs, with zero test outputs and zero external allowances. Exact local
+artifact bindings and commands are recorded in the method report.
+
+## Earlier paired continuation (2026-09-29)
 
 The owner returned [004's complete Editor result](compact-abc-004-editor-diagnosis.md).
 Its isolated public-development score found A 1/3 and B/C 0/3 for pass@1,
@@ -10,7 +39,8 @@ opens one [005 owner-Editor package](compact-abc-editor-005.md) pairing
 base/SFT starting weights with no TTT or the same one-step task TTT. It
 retains the 004 beam and all task, call and ranking settings. These are
 repeated public tuning tasks, not a fresh holdout. Its sole private
-QUICK_SAVE was accepted as version 1; the owner will run it in Editor.
+QUICK_SAVE was accepted as version 1; the owner returned its complete Editor
+result, retained above and in the diagnosis. The save is consumed.
 
 ## Current beam continuation (2026-09-29)
 

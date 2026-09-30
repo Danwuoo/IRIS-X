@@ -1,0 +1,131 @@
+{
+  "format": "irisx/nvarc-method-contract-v1",
+  "id": "qwen35-nvarc-source-reference-20260930",
+  "status": "local-development-no-execution",
+  "source": {
+    "nvarc_commit": "846d0198efa752534594e321fc3289fc0a06c657",
+    "qwen_notebook_version": 10,
+    "qwen_notebook_sha256": "506b85db66f9949022e87935ccb06a73fd78cb690883bd600bfb5c7d36c2b3af",
+    "trm_notebook_version": 21,
+    "trm_original_version_18_parity": false
+  },
+  "branches": {
+    "qwen4b_only": [
+      "source",
+      "six-source-corpus",
+      "compact",
+      "sft-reference",
+      "source-ttt",
+      "source-dfs",
+      "source-rerank"
+    ],
+    "sdg": [
+      "source",
+      "ten-stage-pipeline",
+      "namespace-executor",
+      "pair-filter"
+    ],
+    "qwen35_trm": [
+      "qwen4b_only",
+      "trm-train-reload-ttt",
+      "joint-verification"
+    ]
+  },
+  "sft": {
+    "sources": [
+      "arc2_training",
+      "mini",
+      "concept",
+      "rearc",
+      "nvarc_training",
+      "nvarc_full"
+    ],
+    "excluded_sources": [
+      "arc2_evaluation6",
+      "evaluation",
+      "locked-holdout"
+    ],
+    "original_optimizer_steps": 12716,
+    "original_global_batch_size": 256,
+    "learning_rate": 0.0001,
+    "minimum_learning_rate": 1e-7,
+    "warmup_initial_learning_rate": 0.000001,
+    "warmup_steps": 200,
+    "schedule_steps": 12716,
+    "optimizer_betas": [
+      0.9,
+      0.98
+    ],
+    "optimizer_eps": 1e-8,
+    "weight_decay": 0.1,
+    "clip_grad_norm": 0.5,
+    "scheduler": "source-linear",
+    "loss_reduction": "supervised-token-mean",
+    "reference_packing": false,
+    "original_packing": true
+  },
+  "ttt": {
+    "source_qwen": true,
+    "training_schedule": "source-one-epoch",
+    "rank": 256,
+    "alpha": 32,
+    "use_rslora": true,
+    "learning_rate": 0.00005,
+    "augmentation_count": 16,
+    "source_augmentation_seed": 1,
+    "seed": 42,
+    "max_sequence_length": 8192,
+    "warmup_ratio": 0.1,
+    "clip_grad_norm": 1,
+    "maximum_optimizer_steps": 128,
+    "maximum_training_tokens": 1048576
+  },
+  "candidate": {
+    "seed": 2,
+    "source_generation_seed": 2,
+    "color_repeats": 2,
+    "maximum_calls_per_task": 16,
+    "beams_per_call": 2,
+    "maximum_new_tokens": 931,
+    "source_context_tokens": 8192,
+    "dfs_max_expansions": 4096,
+    "cumulative_probability_threshold": 0.2,
+    "augmentation": "source-qwen",
+    "representation": "source-qwen",
+    "ranking": "source-kgmon"
+  },
+  "explicit_differences": [
+    "Qwen3.5 hybrid backbone; original Qwen3 weights are not reusable",
+    "Unpacked, isolated sequences with supervised-token weighting; packed DeltaNet isolation is not implemented",
+    "Full-prefix DFS correctness reference; original shared batch KV optimization and GPU throughput remain unverified",
+    "Seeded torch randperm for task epoch; Trainer/Unsloth numerical and sampler-order parity are not claimed",
+    "Explicit verification seed replaces process-dependent source hash seed",
+    "TRM notebook v21 available; original competition v18 remains unavailable",
+    "Six-source lineage and counts require actual material audit; synthetic fixtures cannot satisfy data readiness",
+    "Source SFT optimizer/loss reference is single-process; current bounded FSDP pilot is not a migrated six-source recipe backend"
+  ],
+  "historical_evidence": {
+    "abc_005": "compact-abc-005-editor-diagnosis.md",
+    "sft_pilot_steps": 8,
+    "sft_pilot_training_tokens": 2578,
+    "sdg_009_pairs": 5,
+    "sdg_009_execution_contract": "two-template-no-exec-AST"
+  },
+  "external_allowances": {
+    "kernel_saves": 0,
+    "kernel_runs": 0,
+    "dataset_mutations": 0,
+    "retrievals": 0,
+    "teacher_calls": 0,
+    "paid_usd": 0
+  },
+  "quality_gate": {
+    "requires": [
+      "source identity verified",
+      "six-source corpus and exposure/parent manifests verified",
+      "reference implementation proof bound to current code and contract",
+      "new development manifest excludes prior 16 pilot parents and corpus training parents"
+    ],
+    "fresh_holdout_claim": false
+  }
+}

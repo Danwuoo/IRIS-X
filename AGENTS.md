@@ -531,6 +531,17 @@ evaluated; no program fault or supported parameter repair was found, so no
 006 save was submitted. Preserve the observation at
 `trials/arc-agi-2-qwen35-nvarc/compact-abc-005-editor-diagnosis.md`.
 
+The owner now directs local development to establish version/method boundaries,
+complete and verify method prerequisites, then design a new SFT/development
+comparison. The current report is
+`docs/plan/2026-09-30-nvarc-method-completeness.md`. The six-source importer,
+source SFT loss/schedule reference, complete source TTT epoch and context cuts
+have local synthetic/tiny actual-model evidence. Actual six-source material,
+distributed source-recipe integration and target GPU checks remain incomplete.
+The new comparison proposal is inert and materials-blocked; it grants no
+external acquisition, Dataset mutation, save/run, retrieval, teacher call,
+hidden/locked scoring or promotion. Preserve all consumed ABC identities.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;
