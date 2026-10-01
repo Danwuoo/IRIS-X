@@ -616,6 +616,19 @@ exported checkpoint, teacher, generation, scoring or further kernel follows.
 
 ## Authority order
 
+Decision 0053 records the owner's development Goal through substantial NVARC
+completion or 2026-10-02 07:00 Taipei and explicit autonomous free Kaggle GPU
+authorization. New private runtime/material Datasets, distinct GPU probes,
+bounded monitoring and terminal retrieval may proceed under that goal without
+per-attempt approval. Preserve all consumed identities, exact package bindings,
+truth/exposure isolation and USD 0 cost. No competition submission, paid run,
+public publication, hidden scoring or external teacher API is authorized.
+The native one-shot `nvarc-07-00` timer is armed; do not poll wall-clock time or
+restore previous monitoring automations. Stop new work at the timer and retain
+pending run receipts. Follow `docs/plan/2026-10-02-nvarc-overnight.md` and report
+real implementation/runtime gaps; small port probes do not prove original
+model/backend or full-scale parity.
+
 1. explicit owner instructions for the current task;
 2. this file and any narrower active `AGENTS.md`;
 3. Decision 0010, the closed trial status page, and applicable accepted

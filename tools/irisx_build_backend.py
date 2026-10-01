@@ -94,6 +94,8 @@ def build_wheel(wheel_directory: str, config_settings=None, metadata_directory=N
     files = _dist_info_files()
     for source in sorted(SOURCE.glob("*.py")):
         files[f"irisx/{source.name}"] = source.read_bytes()
+    for notice in sorted((SOURCE / "licenses").glob("*.txt")):
+        files[f"irisx/licenses/{notice.name}"] = notice.read_bytes()
     return _write_wheel(wheel_directory, files)
 
 

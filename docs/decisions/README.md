@@ -188,3 +188,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0052-repair-qwen35-kaggle-gpu-preflight.md`](0052-repair-qwen35-kaggle-gpu-preflight.md)
   records the consumed second-upload repair: both whole-sequence steps and
   checkpoint resume passed on four L4s with CPU FP32 state offload.
+- [`0053-nvarc-overnight-development-goal.md`](0053-nvarc-overnight-development-goal.md)
+  records the timed NVARC implementation Goal and autonomous free Kaggle GPU
+  direction, preserving prior identities and explicit parity gaps.
