@@ -179,3 +179,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0049-acquire-and-audit-nvarc-datasets.md`](0049-acquire-and-audit-nvarc-datasets.md)
   authorizes fixed-version acquisition and local lineage/exposure processing
   of the two published NVARC puzzle datasets, without model execution.
+- [`0050-separate-original-nvarc-reproduction.md`](0050-separate-original-nvarc-reproduction.md)
+  records the owner's original-recipe reproduction direction: preserve all
+  published recipe inputs and isolate exposure from clean-data comparisons.

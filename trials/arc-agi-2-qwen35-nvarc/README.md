@@ -1,5 +1,17 @@
 # Qwen3.5-4B NVARC reproduction development
 
+## Original-recipe direction (2026-10-01)
+
+[Decision 0050](../../docs/decisions/0050-separate-original-nvarc-reproduction.md)
+supersedes clean-filtering as a prerequisite for original-recipe preparation.
+All six raw training sources are present (3,255,481 records), with the separate
+original 720-record validation source. Preserve the full recipe and its exposure
+in an isolated track; retain the earlier filtered material as a distinct clean
+preparation. The [current gaps](../../docs/plan/2026-10-01-nvarc-reproduction-gaps.md)
+identify importer/isolation, distributed/packed SFT, target GPU TTT/inference,
+SDG/TRM materials and exact original-version/model gaps. No new acquisition or
+execution is authorized by this local direction.
+
 ## Published material acquisition (2026-10-01)
 
 Under [Decision 0049](../../docs/decisions/0049-acquire-and-audit-nvarc-datasets.md),

@@ -556,6 +556,17 @@ puzzles have an evaluation ancestor; the entire source remains quarantined.
 The original clean six-source gate remains false, and multi-parent lineage
 must not be collapsed into a false single parent to satisfy the old importer.
 
+Decision 0050 records the owner's direction to accept the original published
+NVARC recipe and material in full within an isolated reproduction track.
+Clean filtering no longer blocks local preparation of that track. All six raw
+training sources are already acquired (3,255,481 records); preserve the separate
+720-record original validation source. New importer/contract work must retain
+multi-parent lineage, exposure and separate namespaces. Keep old clean outputs,
+frozen contracts and consumed identities unchanged. Original reproduction is
+distinct from the Qwen3.5 port and from clean evaluation. This direction permits
+local preparation only, with no new acquisition or external execution/scoring.
+Remaining work is `docs/plan/2026-10-01-nvarc-reproduction-gaps.md`.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

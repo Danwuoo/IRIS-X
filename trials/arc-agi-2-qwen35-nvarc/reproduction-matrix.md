@@ -1,5 +1,15 @@
 # Component completion and reproduction gaps
 
+## Original-recipe scope correction (2026-10-01)
+
+Under the owner's [Decision 0050](../../docs/decisions/0050-separate-original-nvarc-reproduction.md),
+preserve all original recipe inputs and isolate exposure. The clean exclusions
+below remain true for the earlier clean-data branch, but do not block original
+reproduction. Its six training sources and validation bytes are already present;
+full corpus import, separate policy/lineage manifests and complete runtime work
+remain. Use the [current remaining-work inventory](../../docs/plan/2026-10-01-nvarc-reproduction-gaps.md)
+before the older dated snapshots below.
+
 ## Actual dataset audit (2026-10-01)
 
 The [dataset acquisition](dataset-acquisition-20261001.md) supersedes the
