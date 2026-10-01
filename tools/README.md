@@ -21,6 +21,16 @@ a terminal normalization gate. It never moves or deletes files.
 Historical tools are recoverable from the cold-archive tag and are not active
 commands.
 
+`nvarc_original_corpus.py` prepares the distinct Decision-0050 original
+reproduction corpus under `.irisx/nvarc-original/`. It copies published
+HF bytes unchanged, retains all six training sources and separate validation,
+and freezes row-aligned Arrow lineage/exposure and compact projection counts.
+The verifier checks every row, independent encoder samples, actual upstream
+concatenation and the complete seed-24 shuffle. Original tokenizer and NeMo
+packing parity remain separate prerequisites. It never starts training,
+scoring, acquisition or provider work; see the
+[original material report](../trials/arc-agi-2-qwen35-nvarc/original-corpus-20261001.md).
+
 `nvarc_datasets.py` inventories and safely extracts downloaded ZIPs, builds
 public parent catalogs with frozen development/locked exclusions, prepares
 filtered HF material with ordered multi-parent lineage, and independently

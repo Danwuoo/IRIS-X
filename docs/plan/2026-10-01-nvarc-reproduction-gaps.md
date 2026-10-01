@@ -9,8 +9,8 @@
 
 | 項目 | 現有證據 | 尚缺工作 |
 | --- | --- | --- |
-| 原 Qwen SFT 資料 | 固定第 1 版 augmented 和 synthetic ZIP 已完整取得及 SHA/CRC 驗證；六個 training sources 共 3,255,481 records；另有 720 筆原 validation source | 對未篩選的全部來源做格式/token accounting、原始 loader/packing 對接與正式 corpus freeze；保留 evaluation/dev exposure 與雙親 lineage，不套用乾淨分支的排除和 8192 review cap |
-| 新隔離與 corpus 契約 | raw ZIP 與 clean filtered HF 已分開，雙親索引已建立 | 現有 freezer 只接受 clean-research 和單親 parent_id；補原重現 policy、parent_ids、validation split、隔離 namespaces 及 readiness 判定；舊契約不覆寫 |
+| 原 Qwen SFT 資料 | 原版六來源 3,255,481 records 與獨立 validation 720 records 已全量封存；HF 位元組與順序保留，逐列 compact projection accounting，input tokens 共 11,509,821,262，最長 11,196；雙親及 evaluation/dev exposure 保留，無篩選/截斷 | 原 Qwen3 tokenizer/NeMo preprocessor 數值 parity、實際 packing/attention isolation 對接；compact projection 計數不等於原 tokenizer parity |
+| 新隔離與 corpus 契約 | 新 original-corpus-v1/contract、雙親 Arrow sidecar、validation split、獨立 materials/manifests/checkpoints/runs/results namespaces 與限定用途 reader 已實作；舊 clean-research/single-parent 契約未改 | 完整訓練及推論的 checkpoint/run/result 綁定待 backend 整合；material preparation 與 training/full-method readiness 保持分開 |
 | Qwen SFT backend | 原 run_sft_4b.sh/YAML 的 optimizer、loss/schedule reference 有本機差分；4-L4 pilot 有八步、2,578-token export | 六來源 distributed loss normalization、原 packing/attention isolation、optimizer/scheduler/checkpoint/resume 完整整合；原 12,716 steps/global batch 256 的完整訓練及匯出未完成；Qwen3.5 hybrid backend 並非原 Qwen3 Megatron backend |
 | Qwen TTT/推論 | tiny 真實模型完成 source r256/alpha32、128-view epoch、source context cut、DFS/rerank 差分；4B 有小步數 pilot | 4B 的完整 source TTT 與 8192 context 資源/耗時驗證；source batch KV/cache 與 throughput；完整候選搜尋、八視圖驗證、task reset 和 ranking 的目標 GPU 整合 |
 | SDG 全流程 | 103,223 個已發表 pairs puzzles 已取得；source 十階段程式/prompts 和 bounded replay 存在；009 僅有五筆 two-template AST pairs | 若要重現生成過程：42,008,423,274-byte artifacts 包未取得；原 teacher/material bindings、十階段端到端、一般程式隔離、majority/filter/augmentation 對照未完成。使用已發表 pairs 做 SFT 不以重跑 teacher 為前提 |
@@ -20,21 +20,29 @@
 
 資料的實際下載、digests 與 clean filtering 計數見
 [資料報告](../../trials/arc-agi-2-qwen35-nvarc/dataset-acquisition-20261001.md)。
+原版全量 corpus 的計數、隔離與證據見
+[原版 corpus 報告](../../trials/arc-agi-2-qwen35-nvarc/original-corpus-20261001.md)。
 未下載的資源身份與數量來自既有 `asset-inventory.json`；本次未另行查詢 provider。
 原六個 training paths 和 validation path 以 pinned `ARChitects/sft_mg.yaml`
 為準；原模型/steps/batch 以 `run_sft_4b.sh` 的有效 overrides 為準。
 
 ## 接續順序
 
-1. 補原重現 corpus/隔離契約和雙親 importer，凍結全部六來源與原 validation。
+1. 原重現 corpus/隔離契約和雙親 importer 已完成，六來源與原 validation 全量封存及獨立逐列驗證已通過；保留 proof，material preparation ready。
 2. 補完整 source-recipe distributed SFT 與目標推論 backend，先做差分與資源
    preflight，再提出具體訓練執行包。
 3. 補 TRM 材料與整合；若目標包含自行產生 SDG，再補 artifacts/teacher
    十階段。原模型、原 notebook version 的未重現差異逐項保留。
 
-本次變更只整理原版重現方向與缺口。沒有新下載、model/teacher execution、
-Kaggle 操作、scoring 或 paid work。
+本次變更完成本機原版 corpus importer/隔離及全量封存。沒有新下載、真實資料
+model/teacher execution、Kaggle 操作、scoring 或 paid work；strict backend
+tests 只使用既有 synthetic/tiny CPU fixtures。
 
-本次文件與 authority 更新後，repository `--all` 通過：299 tests、455.485 秒，
+本次 repository `--all` 通過 302 tests（四個既有 optional skips）；新增五項
+policy/real-HF checks 均通過。Strict ML 首輪 37/38，installed-wheel tiny model
+因既有 60 秒 model-ready timeout 失敗，停止資料處理後單獨重跑通過，未改
+timeout。完整首輪失敗及 recheck logs/digests 保留於原版 corpus 報告。
+
+前次文件與 authority 更新後，repository `--all` 通過：299 tests、455.485 秒，
 四個既有 optional skips。Log 保存在 ignored
 `.irisx/nvarc-data/reproduction-direction-repository-001.log`。

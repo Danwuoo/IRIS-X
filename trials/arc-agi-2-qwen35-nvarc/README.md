@@ -5,10 +5,16 @@
 [Decision 0050](../../docs/decisions/0050-separate-original-nvarc-reproduction.md)
 supersedes clean-filtering as a prerequisite for original-recipe preparation.
 All six raw training sources are present (3,255,481 records), with the separate
-original 720-record validation source. Preserve the full recipe and its exposure
+original 720-record validation source. The
+[original corpus report](original-corpus-20261001.md) records the new unfiltered
+HF freeze, row-aligned Arrow dual-parent/exposure sidecars and compact projection
+accounting (11,509,821,262 training input tokens). All 3,256,201 rows, actual
+upstream concatenation and full seed-24 shuffle independently verify. Material
+preparation is ready; original tokenizer/packing/training readiness remains false.
+Preserve the full recipe and its exposure
 in an isolated track; retain the earlier filtered material as a distinct clean
 preparation. The [current gaps](../../docs/plan/2026-10-01-nvarc-reproduction-gaps.md)
-identify importer/isolation, distributed/packed SFT, target GPU TTT/inference,
+identify original tokenizer/packing parity, distributed SFT, target GPU TTT/inference,
 SDG/TRM materials and exact original-version/model gaps. No new acquisition or
 execution is authorized by this local direction.
 

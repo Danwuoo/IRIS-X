@@ -1,5 +1,29 @@
 # Development and future execution runbook
 
+## Isolated original corpus (2026-10-01)
+
+[Decision 0050](../../docs/decisions/0050-separate-original-nvarc-reproduction.md)
+uses a distinct [original corpus contract](configs/original-corpus-contract-20261001.json).
+The full raw recipe is retained, including evaluation/protected ancestors and
+sequences beyond 8192 tokens; validation remains a separate split. Existing
+clean corpus contracts/material are unchanged. All commands below are local
+CPU preparation/verification, with no training or evaluation execution:
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_original_corpus.py prepare --augmented .irisx/nvarc-data/extracted/augmented-v1 --augmented-archive .irisx/nvarc-data/raw/augmented-v1/nvarc-augmented-puzzles.zip --augmented-inventory .irisx/nvarc-data/augmented-v1-inventory.json --synthetic-archive .irisx/nvarc-data/raw/synthetic-v1/nvarc-synthetic-puzzles.zip --synthetic-inventory .irisx/nvarc-data/synthetic-v1-inventory.json --catalog .irisx/nvarc-data/parent-catalog.json --output .irisx/nvarc-original/materials/<new-corpus-id>
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_original_corpus.py verify --corpus .irisx/nvarc-original/materials/<corpus-id> --manifest-sha256 <exact-sha256> --output .irisx/nvarc-original/manifests/<new-verification-id>.json
+$env:PYTHONPATH = 'src'
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m unittest tests.test_nvarc_original_corpus tests.nvarc_original_corpus_strict -v
+```
+
+Outputs are new identities; the tool refuses overwrite or paths outside the
+original materials/manifests namespaces. The explicit reader accepts only
+original reproduction or Qwen3.5-port purpose. Arrow sidecars retain both
+parents and additive exposure tags, while original HF message bytes remain
+unchanged. Token counts describe the verified compact-grid projection;
+original Qwen3 tokenizer and NeMo packing parity remain incomplete. The
+[material report](original-corpus-20261001.md) records actual evidence and limits.
+
 ## Published dataset acquisition and processing (2026-10-01)
 
 [Decision 0049](../../docs/decisions/0049-acquire-and-audit-nvarc-datasets.md)
@@ -34,8 +58,8 @@ Published `nvarc_full` mixes evaluation and training parents and has no
 clean-research eligible records. The processed five-source HF material is
 preparation evidence, not the existing six-source frozen-corpus format. Its
 `parent_ids` list must never be collapsed to a false single `parent_id` to
-satisfy that importer. Keep original six-source readiness false until a
-separately reviewed method/data design resolves this incompatibility.
+satisfy that importer. This historical clean gate remains false. Decision 0050
+and the distinct original contract above handle unfiltered reproduction.
 
 ## Current offline method reference (2026-09-30)
 

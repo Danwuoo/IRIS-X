@@ -567,6 +567,15 @@ distinct from the Qwen3.5 port and from clean evaluation. This direction permits
 local preparation only, with no new acquisition or external execution/scoring.
 Remaining work is `docs/plan/2026-10-01-nvarc-reproduction-gaps.md`.
 
+The isolated original corpus freeze and independent verification are complete:
+all 3,255,481 training records and separate 720 validation records are retained
+without filtering/truncation, with dual-parent Arrow lineage and exposure.
+Actual upstream concatenation and complete seed-24 shuffle verify locally.
+Material preparation is ready; original tokenizer/NeMo packing parity,
+distributed SFT and target GPU method/resource checks remain incomplete.
+Evidence is `trials/arc-agi-2-qwen35-nvarc/original-corpus-20261001.md`.
+This local preparation grants no new acquisition, execution or scoring.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

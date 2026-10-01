@@ -1,0 +1,53 @@
+{
+  "format": "irisx/nvarc-original-corpus-contract-v1",
+  "policy": "original-reproduction",
+  "namespace": "nvarc-original",
+  "material_class": "published-material",
+  "training_sources": ["arc2_training", "mini", "concept", "rearc", "nvarc_training", "nvarc_full"],
+  "validation_source": "arc2_evaluation6",
+  "expected_records": {
+    "arc2_training": 155904,
+    "mini": 37632,
+    "concept": 40960,
+    "rearc": 102392,
+    "nvarc_training": 1132633,
+    "nvarc_full": 1785960,
+    "arc2_evaluation6": 720
+  },
+  "archives": {
+    "augmented": {"ref": "sorokin/nvarc-augmented-puzzles/1", "sha256": "5e6599d8ea34f05c42bb936a33d9d1b80ac1196d7f70c8d99d1bbd9a9cb3fdfd", "inventory_sha256": "4d5b43a3e313a50c31c661bf76f59acb17570b30325ac23e76c1042495233b83"},
+    "synthetic": {"ref": "sorokin/nvarc-synthetic-puzzles/1", "sha256": "84e33a1a042fe3fa699423f4b63f1b8091d90c9fd3db4f19efc2e4c8c9715f3b", "inventory_sha256": "85da48dec4f6cda2cfae206da8f20225bdacfaabb7043978e857eb69fa9d6454"}
+  },
+  "catalog_sha256": "4fc2ec18a817adc2e4f54122b8feafec5d78c91df5a12e337be4b21005d23c4f",
+  "source_commit": "846d0198efa752534594e321fc3289fc0a06c657",
+  "source_files": {
+    "ARChitects/run_sft.py": "457afaa486d2bcd65727797115bca10285f49c17b4df4250a95b6a3691a03175",
+    "ARChitects/sft_mg.yaml": "aca7fd8618b7304690bf3ba401ac67866b5527e88acee371331265221a9f73fd",
+    "ARChitects/run_sft_4b.sh": "4fb428cfef81514102f614a31e719e0072365b9fbf26ecc9d289c11c5c3eb60c"
+  },
+  "source_recipe": {
+    "model_path": "/models/Qwen3-4B-Thinking-2507-16t",
+    "shuffle_seed": 24,
+    "max_steps": 12716,
+    "global_batch_size": 256,
+    "packing": {"enabled": true, "algorithm": "modified_first_fit_decreasing", "train_mb_tokens": 256000, "sequence_length_round": 64},
+    "preprocessor": {"add_bos_token": false, "add_eos_token": false, "add_generation_prompt": true, "loss_multiplier": 1.0, "length_argument_used": false}
+  },
+  "preparation": {
+    "filter_parents": false,
+    "maximum_sequence_length": null,
+    "truncate": false,
+    "preserve_hf_bytes_and_row_order": true,
+    "token_accounting": "Qwen3.5 compact-grid projection, source_chat_newlines=True; original Qwen3 tokenizer parity pending",
+    "synthetic_lineage_basis": "both filename ARC IDs and first-parent batch directory; semantic ancestry not independently reconstructed"
+  },
+  "isolation": {
+    "materials": "nvarc-original/materials",
+    "manifests": "nvarc-original/manifests",
+    "checkpoints": "nvarc-original/checkpoints",
+    "runs": "nvarc-original/runs",
+    "results": "nvarc-original/results",
+    "unexposed_evaluation_claim_allowed": false
+  },
+  "execution_authorized": false
+}
