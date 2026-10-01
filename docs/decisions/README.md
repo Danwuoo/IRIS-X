@@ -185,3 +185,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0051-run-qwen35-kaggle-gpu-preflight.md`](0051-run-qwen35-kaggle-gpu-preflight.md)
   records the consumed private Qwen3.5 resource probe: one source-optimizer
   step and checkpoint restore gate passed; the long-sequence step failed.
+- [`0052-repair-qwen35-kaggle-gpu-preflight.md`](0052-repair-qwen35-kaggle-gpu-preflight.md)
+  records the consumed second-upload repair: both whole-sequence steps and
+  checkpoint resume passed on four L4s with CPU FP32 state offload.

@@ -593,6 +593,27 @@ no final step/result or exported checkpoint exists. Preserve the exact partial
 observation at `trials/arc-agi-2-qwen35-nvarc/q35-gpu-preflight-001.md`.
 Decision 0051 grants no further kernel, retrieval, full SFT or promotion.
 
+Decision 0052 records the owner's explicit repair-and-second-upload direction.
+The distinct `nvarc-q35-gpu-preflight-002` may use one private four-L4
+save-and-run, bounded terminal monitoring and one diagnostic retrieval under
+the unchanged eight whole records, 47,078 input tokens, two-step, offline,
+USD 0 limits. Repair FSDP CPU parameter/gradient/optimizer residency, explicit
+per-layer checkpointing and separate Gloo control/NCCL model groups; retain
+rank memory and failure diagnostics. No previous identity is changed or
+queried, no Dataset mutation, truncation, generation, teacher, scoring,
+full SFT, promotion or automatic further kernel is authorized.
+The sole private version-1 save-and-run, nine backed-off status checks and
+terminal diagnostic retrieval are consumed. Four distinct BF16 L4s completed
+both full-parameter steps over all 47,078 whole input tokens, including the
+11,196-token maximum. CPU FP32 state residency, 32 activation-checkpointed
+layers, checkpoint restart and both changed weight fingerprints verify locally.
+The 29 data-member result has SHA-256
+`d06408cf34aca7d4247ed2c18bcd84b45ad6a9c370fd63aad89a62c458bb80b5`.
+Retain the observation at
+`trials/arc-agi-2-qwen35-nvarc/q35-gpu-preflight-002.md`. This completes the
+bounded Qwen3.5 resource probe; no full SFT, original Qwen3/NeMo parity,
+exported checkpoint, teacher, generation, scoring or further kernel follows.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

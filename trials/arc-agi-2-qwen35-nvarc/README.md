@@ -1,5 +1,23 @@
 # Qwen3.5-4B NVARC reproduction development
 
+## Second GPU resource preflight (2026-10-01)
+
+The owner requested continued repair and a second upload under
+[Decision 0052](../../docs/decisions/0052-repair-qwen35-kaggle-gpu-preflight.md).
+[GPU preflight 002](q35-gpu-preflight-002.md) was accepted as a separate private
+save-and-run version 1. It preserves the exact eight whole records/two steps,
+using FP32 CPU state offload, per-layer activation checkpointing and separate
+Gloo control/NCCL model groups. Local two-rank reconstruction verifies every
+model and optimizer tensor after checkpoint resume; repository validation
+passed 306 tests with four existing optional skips. The single terminal
+retrieval and offline digest-bound verification passed: four distinct BF16 L4s,
+both full-parameter steps, 47,078 whole input tokens (maximum 11,196), 32 layer
+checkpoints and CPU FP32 state residency. Long-step GPU peak allocated was
+10.365–11.613 GiB. The notebook took 1,942.564 seconds; retained result SHA-256
+is `d06408cf34aca7d4247ed2c18bcd84b45ad6a9c370fd63aad89a62c458bb80b5`.
+The bounded resource probe is complete, with no exported checkpoint or full
+SFT/original Qwen3-NeMo parity claim and no further execution authority.
+
 ## Qwen3.5 Kaggle GPU resource probe (2026-10-01)
 
 The owner selected the existing Qwen3.5 port and authorized
