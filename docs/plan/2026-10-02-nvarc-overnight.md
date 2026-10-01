@@ -3,7 +3,9 @@
 The owner opened a development Goal, with autonomous free Kaggle GPUs,
 until substantial completion or 2026-10-02 07:00 Taipei. Authority is
 [Decision 0053](../decisions/0053-nvarc-overnight-development-goal.md).
-The native one-shot timer `nvarc-07-00` is armed; no wall-clock polling is needed.
+The implementation/integration Goal reached substantial completion before the
+native one-shot 07:00 cutoff; the remaining reminder is being paused. No
+wall-clock polling was used after the initial setup.
 Starting main commit is `01f43cd`. GPU preflight 002 is verified and consumed.
 
 ## Completion evidence
@@ -29,7 +31,8 @@ Starting main commit is `01f43cd`. GPU preflight 002 is verified and consumed.
 
 ## Progress
 
-- Timer and Goal: active.
+- Goal: substantially complete; all accepted Goal runs and sole retrievals are
+  terminal-verified. No Goal worker or local download remains pending.
 - Packing / hybrid attention-state isolation: reference implemented; 503 exact
   NeMo MFFD comparisons and real tiny hybrid logits/loss/gradients pass.
   Segmented execution is explicit; fused NeMo throughput remains unverified.
@@ -96,7 +99,9 @@ Starting main commit is `01f43cd`. GPU preflight 002 is verified and consumed.
   passes. Full-width/all-identifier TRM 001 is accepted with a public-training
   prefix, two steps/process restart/EMA export and zero inference. Runtime and
   all fifteen retained export tensor byte digests independently verify. Joint
-  010 using actual SFT 003/TRM 001 exports is accepted and pending; inert 009
+  010 using actual SFT 003/TRM 001 exports completes with 128 steps/sixteen
+  calls, all eight TRM views, seven unique joint candidates, same-state NLL
+  ranking and exact reset; its independent terminal check passes. Inert 009
   preserves a published-only plan-gate rejection with no provider call.
   Full original teacher generation, whole-archive program semantics, TRM scale and v18 parity
   remain unverified and cannot be replaced by these engineering observations.
@@ -106,8 +111,10 @@ Starting main commit is `01f43cd`. GPU preflight 002 is verified and consumed.
   independent transient/persistent-lock regression. Required full revalidation
   passed 315 tests in 253.016 seconds using the ML runtime. The later source-EMA
   inference bridge's five focused tests pass in 26.419 seconds.
-  Final trained-export joint runtime, durable handoff and substantive completion remain
-  pending. Required validation will be repeated only after further changes.
+  Final trained-export joint runtime independently verifies. Final required
+  repository validation passes 315 tests in 281.713 seconds. Main retains the
+  implementation and durable evidence; original scale/backend/quality gaps
+  remain explicit in the component matrix.
 
 The bounded two-step GPU probe is not a full SFT checkpoint or quality result.
 An interface, fixture or inert plan alone does not satisfy a runtime requirement.

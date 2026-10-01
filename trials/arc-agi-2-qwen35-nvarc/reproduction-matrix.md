@@ -4,7 +4,8 @@
 
 [Decision 0053](../../docs/decisions/0053-nvarc-overnight-development-goal.md)
 opens continuous local and free private Kaggle work until substantial
-completion or the one-shot 07:00 Taipei timer. The [current report](overnight-source-integration.md)
+completion or the one-shot 07:00 Taipei timer. The implementation/integration
+Goal is now substantially complete before that cutoff. The [current report](overnight-source-integration.md)
 supersedes the historical pending/absent rows below. Complete original corpus
 bytes, shuffle and lineage are verified. Logical MFFD placement matches the
 pinned NeMo reference; segmented Qwen3.5 execution passes real hybrid state,
@@ -33,7 +34,9 @@ execution or fresh teacher calls. Source TRM
 pretraining/ACT carry/EMA/resume has an unchanged-step differential oracle;
 full-width/all-identifier GPU 001 completes two steps and an exact fifteen-tensor
 EMA export retained and independently verified locally. New joint 010 using
-both actual source-training exports is accepted and pending. Exact TRM v18,
+both actual source-training exports completes and independently verifies
+128 Qwen steps, sixteen calls, all eight TRM views, same-state joint ranking
+and exact reset. Exact TRM v18,
 original model/backend and scale remain unverified.
 
 | Component | Verified engineering evidence | Remaining original reproduction evidence |

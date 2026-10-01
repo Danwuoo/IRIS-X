@@ -1,10 +1,12 @@
 # Qwen3.5-4B NVARC reproduction development
 
-## Active overnight Goal (2026-10-02)
+## Completed overnight implementation Goal (2026-10-02)
 
 [Decision 0053](../../docs/decisions/0053-nvarc-overnight-development-goal.md)
 records the owner's substantial-completion/07:00 Taipei Goal and autonomous
-free private Kaggle GPU direction. The single cutoff timer is armed. The
+free private Kaggle GPU direction. The implementation/integration Goal reached
+substantial completion before the cutoff; all accepted Goal runtimes and sole
+retrievals are terminal-verified. The
 [current integration evidence](overnight-source-integration.md) and
 [work plan](../../docs/plan/2026-10-02-nvarc-overnight.md) retain progress.
 Logical MFFD packing and hybrid state isolation, explicit CPU-shard accumulation,
@@ -50,7 +52,8 @@ the CPU differential and actual long GPU workload pass. Source TRM
 pretraining now retains ACT carry/EMA and exact resume with a source-step
 oracle. Full-width/all-identifier TRM 001 completes two steps/restart and all
 fifteen exported EMA tensors independently verify. Joint 010 using the actual
-SFT 003/TRM 001 exports is accepted and pending. All 50 strict ML tests and 315
+SFT 003/TRM 001 exports completes the full TTT/search/joint ranking/reset chain
+and independently verifies. All 50 strict ML tests and 315
 repository tests pass; the later leaf failure/optimizer regressions also pass.
 No ARC quality,
 original backend/model parity or full-scale training is claimed before proof.

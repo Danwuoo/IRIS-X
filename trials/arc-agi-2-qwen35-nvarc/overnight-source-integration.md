@@ -1,8 +1,11 @@
 # Overnight source integration
 
 Authority is [Decision 0053](../../docs/decisions/0053-nvarc-overnight-development-goal.md).
-The development Goal ends on substantial completion or the one-shot 07:00
-Taipei timer on 2026-10-02. Previous run identities and results remain frozen.
+The implementation/integration Goal reached substantial completion before the
+one-shot 07:00 Taipei cutoff on 2026-10-02. All accepted Goal kernels are
+terminal, their sole retrievals are consumed and required independent checks
+pass. Original model/backend/scale/quality gaps below remain explicit. Previous
+run identities and results remain frozen; this completion authorizes no new run.
 
 ## Packing and accumulation evidence
 
@@ -451,7 +454,19 @@ no provider call. Distinct 010 is accepted as private version 1, kernel
 `sha256:d3bf79a8b2bd62c757dd4362b2acb13a3bd060ce664cd86356240b7993152426`.
 It retains the exact 128-step Qwen/16-DFS plus one TRM update/eight-view workload,
 same adapted Qwen ranking/reset, four-L4 gate, finite 4,500 seconds and USD 0.
-Its runtime remains pending. Latest five focused source/export/TTT/joint tests
+Its sole terminal retrieval and independent reconciliation verify the actual
+trained-export chain: 128 Qwen steps / 13,824 tokens, sixteen DFS calls, one TRM
+demo update, eight D4 views / eighty ACT forwards, seven returned TRM grids
+and seven unique combined model candidates. All candidates use the same
+adapted Qwen NLL before reset; seven candidate verifications plus two separate
+public-demo probes reserve 872 Qwen outer forwards. Two attempts are selected,
+reset is exact and no correctness score is computed. The notebook took
+706.566 seconds. Archive SHA-256 is
+`e5be635ed053e94bba99896ff39f0ddd1be7c90defde0cae2a34d5fbb1241c4c`;
+independent proof SHA-256 is
+`a8313246cd1d024966e7cc7a97c8c930230b8602213a33be44acac9331dfefcb`.
+[Kaggle notebook](https://www.kaggle.com/code/danielwuu/nvarc-overnight-ttt-010).
+Latest five focused source/export/TTT/joint tests
 pass in 26.419 seconds, SHA-256
 `329c25e33ebfb6335939e685adcf43f3c75149ca98cfdbace95b880dd19d72d3`.
 
@@ -463,4 +478,22 @@ SHA-256 `ef17ec36a15b1488a9d5b1637965043d78d53732561e3a63fd91169817a6af8c`.
 Repository milestone 007 passes 315 tests in 253.016 seconds, SHA-256
 `f9734e3416b963acd76770fba1da427a51a6778527253ddb09910098c5b2144b`.
 Later source-EMA inference bridge changes have the five focused checks above;
-final repository verification follows those changes.
+final repository milestone 008 also passes 315 tests in 281.713 seconds,
+SHA-256 `c943b5cee65197fb26f1dd364723012f5d3f44f44ab1f04f04f1128109367c4c`.
+
+## Handoff boundary
+
+The implementation and bounded source-training/export/TTT/search/SDG/TRM
+integration evidence are complete for this Goal. Source/material data and all
+large artifacts remain isolated under `.irisx/nvarc-original/`; code and durable
+reports are committed on main. Every accepted Goal version has a verified
+terminal record and one consumed retrieval. No accepted Goal worker or local
+download remains pending. Older owner-Editor/background identities are untouched.
+
+The remaining original reproduction work is original Qwen3/tokenizer and exact
+NeMo/Unsloth/backend parity, practical fused packing/whole-SFT throughput,
+12,716-step SFT, original teacher regeneration and whole-archive program
+semantics/yield, eight-H100/global-3072/10,000-epoch TRM pretraining, 2,000-epoch
+TTT, exact notebook v18 and independent ARC quality evidence. The source-prefix
+SFT backend's 27–31-minute step time is a practical throughput gap. These probes
+do not claim those missing results or promote a method.
