@@ -92,6 +92,9 @@ def train_source_epoch(adapter: Any, task: dict) -> Any:
     optimizer = torch.optim.AdamW(
         (p for p in adapter.model.parameters() if p.requires_grad),
         lr=float(config["learning_rate"]), weight_decay=0.0)
+    device = next(adapter.model.parameters()).device
+    if device.type == "cuda":
+        torch.cuda.reset_peak_memory_stats(device)
     scheduler = get_cosine_schedule_with_warmup(optimizer,
         num_warmup_steps=math.ceil(steps * ratio), num_training_steps=steps)
     losses, rates, groups, consumed = [], [], [], []
@@ -117,6 +120,9 @@ def train_source_epoch(adapter: Any, task: dict) -> Any:
             losses.append(float(loss.detach().cpu()))
             consumed.append(index)
             tokens_seen += len(examples[index]["input_ids"])
+            if adapter.step_observer is not None:
+                adapter.step_observer({"completed_steps": len(losses), "source_view_index": index,
+                    "training_tokens": tokens_seen, "loss": losses[-1], "learning_rate": rates[-1]})
     except BaseException as exc:
         adapter.reset(clear_observation=False)
         adapter.last_observation = {"task_id": task["task_id"], "status": "failed",
@@ -135,7 +141,11 @@ def train_source_epoch(adapter: Any, task: dict) -> Any:
         "losses_by_step": losses, "learning_rates_by_step": rates,
         "gradient_groups_by_step": groups, "targets": adapter.targets,
         "warmup_steps": math.ceil(steps * ratio), "complete_epoch": sorted(consumed) == list(range(steps)),
-        "sample_order_policy": "seeded-torch-randperm-reference"}
+        "sample_order_policy": "seeded-torch-randperm-reference",
+        "gradient_checkpointing": bool(adapter.model.is_gradient_checkpointing),
+        "trainable_parameter_count": sum(p.numel() for p in adapter.model.parameters() if p.requires_grad),
+        "peak_cuda_allocated_bytes": torch.cuda.max_memory_allocated(device) if device.type == "cuda" else None,
+        "peak_cuda_reserved_bytes": torch.cuda.max_memory_reserved(device) if device.type == "cuda" else None}
     return adapter.model
 
 

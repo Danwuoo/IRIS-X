@@ -1,0 +1,158 @@
+"""Decision 0053: exact export through a complete source TTT/inference epoch."""
+import base64
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import signal
+import shutil
+import subprocess
+import sys
+import time
+import zipfile
+import zlib
+
+START=time.monotonic()
+RUN=__RUN__
+PAYLOADS=__PAYLOADS__
+HASHES=__HASHES__
+FILES=__FILES__
+work=Path('/kaggle/working')/RUN
+temp=Path('/kaggle/temp')/RUN
+if work.exists() or temp.exists():raise RuntimeError('new TTT identity required')
+work.mkdir(parents=True);temp.mkdir(parents=True)
+phase='payload-validation';plan=None
+
+def save(name,value):
+    path=work/name;path.parent.mkdir(parents=True,exist_ok=True)
+    path.write_text(json.dumps(value,sort_keys=True,allow_nan=False)+'\n',encoding='utf-8')
+
+def emit(phase,**details):
+    with (work/'events.jsonl').open('a',encoding='utf-8') as stream:
+        stream.write(json.dumps({'phase':phase,'elapsed_seconds':time.monotonic()-START,**details},sort_keys=True)+'\n')
+
+def digest_file(path):
+    with path.open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
+
+__HARDWARE_HELPER__
+
+try:
+    emit(phase)
+    if set(PAYLOADS)!=set(HASHES) or set(PAYLOADS)!=set(FILES):raise RuntimeError('TTT payload coverage differs')
+    decoded={}
+    for key,value in PAYLOADS.items():
+        decoder=zlib.decompressobj()
+        raw=decoder.decompress(base64.b64decode(value,validate=True),8*1024**2+1)
+        if len(raw)>8*1024**2 or not decoder.eof or decoder.unconsumed_tail or decoder.unused_data:
+            raise RuntimeError('bounded TTT payload expansion differs')
+        if hashlib.sha256(raw).hexdigest()!=HASHES[key]:raise RuntimeError('TTT payload hash differs')
+        relative=FILES[key]
+        if '\\' in relative or ':' in relative or any(x in {'','.','..'} for x in relative.split('/')):
+            raise RuntimeError('TTT payload target differs')
+        path=temp/relative;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
+        decoded[key]=raw
+    plan=json.loads(decoded['plan'])
+    if plan.get('run_id')!=RUN or plan.get('approved') is not True or plan.get('owner_decision')!='Decision 0053':
+        raise RuntimeError('exact complete TTT Goal plan required')
+    save('plan.json',plan);save('payload-bindings.json',HASHES)
+    os.environ.update(HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',HF_DATASETS_OFFLINE='1',
+        TOKENIZERS_PARALLELISM='false',WANDB_DISABLED='true',OMP_NUM_THREADS='2',PYTHONIOENCODING='utf-8')
+    phase='hardware-inventory';emit(phase)
+    import torch
+    smi=subprocess.run(['nvidia-smi','--query-gpu=index,name,memory.total,uuid','--format=csv,noheader,nounits'],
+        capture_output=True,text=True,timeout=30,check=True)
+    inventory=collect_hardware_inventory(torch,smi.stdout,lambda raw:save('hardware-raw.json',raw))
+    if len(inventory)!=4 or len({item['uuid'] for item in inventory})!=4 or any(item['name']!='NVIDIA L4' or not item['bf16'] for item in inventory):
+        raise RuntimeError('four distinct BF16 L4 hardware gate differs')
+    save('hardware.json',{'inventory':inventory,'torch':torch.__version__,'cuda':torch.version.cuda,
+        'model_worker_count':1,'selected_local_rank':0,'selected_uuid':inventory[0]['uuid']})
+    phase='exact-export-mount';emit(phase)
+    owner,slug=plan['source_kernel'].split('/')
+    roots=[Path('/kaggle/input/notebooks')/owner/slug,
+        Path('/kaggle/input/kernels')/owner/slug,Path('/kaggle/input')/slug]
+    candidates=[root/suffix for root in roots for suffix in (Path(slug)/'export',Path('export'))]
+    save('export-mount-diagnostics.json',{'input_root_entries':sorted(path.name for path in Path('/kaggle/input').iterdir()),
+        'exact_candidate_paths':[{'path':str(path),'manifest_present':(path/'material-manifest.json').is_file()} for path in candidates],
+        'exact_root_children':{str(root):sorted(path.name for path in root.iterdir())[:100] for root in roots if root.is_dir()},
+        'competition_files_opened':0})
+    matches=[path for path in candidates if (path/'material-manifest.json').is_file()]
+    if len(matches)!=1:raise RuntimeError('exact owner-qualified or explicit legacy kernel export mount required')
+    model=matches[0]
+    wheel_owner,wheel_slug=plan['datasets']['wheels'].split('/')
+    wheel_roots=[Path('/kaggle/input/datasets')/wheel_owner/wheel_slug,Path('/kaggle/input')/wheel_slug]
+    matches=[path for path in wheel_roots if (path/'peft-0.21.0-py3-none-any.whl').is_file()]
+    if len(matches)!=1:raise RuntimeError('exact offline wheel Dataset mount required')
+    wheels=matches[0]
+    competition=Path('/kaggle/input/competitions/arc-prize-2026-arc-agi-2')
+    if not competition.is_dir():raise RuntimeError('four-L4 official competition entitlement mount required')
+    save('mount-policy.json',{'export_mount':str(model),'wheel_mount':str(wheels),
+        'competition_mount':str(competition),'competition_files_opened':0})
+    phase='dependency-setup';emit(phase)
+    manifest=json.loads(decoded['wheel_manifest'])
+    names={'transformers-5.8.1-py3-none-any.whl','accelerate-1.10.1-py3-none-any.whl',
+        'peft-0.21.0-py3-none-any.whl','huggingface_hub-1.32.0-py3-none-any.whl',
+        'safetensors-0.8.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl',
+        'tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl'}
+    entries={entry['path']:entry for entry in manifest['files']}
+    for name in names:
+        path=wheels/name;entry=entries[name]
+        if path.stat().st_size!=entry['byte_size'] or 'sha256:'+digest_file(path)!=entry['content_digest']:
+            raise RuntimeError('TTT offline wheel binding differs: '+name)
+    if importlib.util.find_spec('torchao') is not None:
+        subprocess.run([sys.executable,'-m','pip','uninstall','-y','torchao'],check=True,timeout=60)
+    if importlib.util.find_spec('torchao') is not None:raise RuntimeError('optional incompatible torchao remains')
+    subprocess.run([sys.executable,'-m','pip','install','--no-index','--find-links',str(wheels),
+        'transformers==5.8.1','accelerate==1.10.1','peft==0.21.0','huggingface-hub==1.32.0',
+        'safetensors==0.8.0','tokenizers==0.22.2',str(temp/FILES['runtime_wheel'])],check=True,timeout=180)
+    from irisx.arc_nvarc_complete_ttt import check_plan
+    from irisx.arc_nvarc_data import visible_task
+    from irisx.arc_nvarc_representation import verify_model_material
+    from irisx.arc_nvarc_source_bundle import verify_bundle
+    from irisx.canonical import digest_value
+    raw=json.loads(decoded['visible']);tasks=[visible_task(key,value) for key,value in sorted(raw.items())]
+    check_plan(plan,json.loads(decoded['config']),tasks)
+    material=verify_model_material(model,plan['material_digest'])
+    if material['training_identity_digest']!=plan['training_identity_digest']:raise RuntimeError('TTT training identity differs')
+    verify_bundle(temp/'source-bundle',plan['source_bundle_digest'])
+    phase='complete-source-ttt-and-inference';emit(phase)
+    command=[sys.executable,'-m','irisx.arc_nvarc_complete_ttt','--plan',str(temp/FILES['plan']),
+        '--model',str(model),'--visible',str(temp/FILES['visible']),'--config',str(temp/FILES['config']),
+        '--bundle',str(temp/'source-bundle'),'--output',str(work/'worker')]
+    process=None
+    with (work/'stdout.log').open('w',encoding='utf-8') as stdout,(work/'stderr.log').open('w',encoding='utf-8') as stderr:
+        process=subprocess.Popen(command,stdout=stdout,stderr=stderr,start_new_session=True)
+        try:
+            remaining=plan['maximum_notebook_wall_seconds']-120-(time.monotonic()-START)
+            code=process.wait(timeout=max(1,remaining))
+            if code:raise subprocess.CalledProcessError(code,command)
+        finally:
+            if process.poll() is None:
+                os.killpg(process.pid,signal.SIGTERM)
+                try:process.wait(timeout=15)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid,signal.SIGKILL);process.wait(timeout=15)
+    result=json.loads((work/'worker/result.json').read_bytes())
+    if result['plan_digest']!=digest_value(plan) or not result['adapter_reset_exact']:
+        raise RuntimeError('complete TTT returned identity/reset differs')
+    save('terminal.json',{'run_id':RUN,'outcome':'complete','plan_digest':digest_value(plan),
+        'optimizer_steps':result['ttt']['steps'],'generations':result['ledger']['generation_calls_completed'],
+        'contains_evaluator_truth':False,'correctness_scored':False,'wall_seconds':time.monotonic()-START})
+except BaseException as error:
+    save('terminal.json',{'run_id':RUN,'outcome':'failed','phase':phase,
+        'error_type':type(error).__name__,'error_message':str(error)[:1200],
+        'contains_evaluator_truth':False,'wall_seconds':time.monotonic()-START})
+    raise
+finally:
+    entries=[]
+    for path in sorted(work.rglob('*')):
+        if path.is_file():
+            if path.is_symlink() or path.stat().st_size>8*1024**2:raise RuntimeError('TTT diagnostic member exceeds bound')
+            entries.append({'path':path.relative_to(work).as_posix(),'bytes':path.stat().st_size,'sha256':digest_file(path)})
+    if sum(item['bytes'] for item in entries)>64*1024**2:raise RuntimeError('TTT archive exceeds bound')
+    manifest={'format':'irisx/nvarc-overnight-ttt-archive-v1','run_id':RUN,
+        'plan_digest':None if plan is None else 'sha256:'+hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest(),
+        'members':entries}
+    with zipfile.ZipFile(work.parent/'gpu-preflight-result.zip','x',compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr('manifest.json',json.dumps(manifest,sort_keys=True,separators=(',',':')))
+        for entry in entries:archive.write(work/entry['path'],entry['path'])

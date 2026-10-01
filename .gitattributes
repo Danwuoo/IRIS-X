@@ -8,6 +8,7 @@
 *.tsv text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf
+src/irisx/licenses/NeMo-RL-LICENSE.txt -text
 
 # The path index is generated deterministically from Git tree identities.
 archive/path-index.tsv text eol=lf

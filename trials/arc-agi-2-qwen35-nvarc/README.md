@@ -1,5 +1,31 @@
 # Qwen3.5-4B NVARC reproduction development
 
+## Active overnight Goal (2026-10-02)
+
+[Decision 0053](../../docs/decisions/0053-nvarc-overnight-development-goal.md)
+records the owner's substantial-completion/07:00 Taipei Goal and autonomous
+free private Kaggle GPU direction. The single cutoff timer is armed. The
+[current integration evidence](overnight-source-integration.md) and
+[work plan](../../docs/plan/2026-10-02-nvarc-overnight.md) retain progress.
+Logical MFFD packing and hybrid state isolation, explicit CPU-shard accumulation,
+the complete original shuffle/lineage stream, checkpoint restart and exact
+export tensor reload pass local differential checks. Complete rank-256 TTT now
+has a verified activation-checkpoint path and a bounded 128-view/16-call runtime.
+Current SDG namespace and tiny TRM integration checks also pass.
+
+The first new integration submission received HTTP 400 without a receipt; its
+identity remains frozen. Distinct `nvarc-overnight-sft-002` was accepted as
+private version 1 and completed accumulated SFT, restart and a 724-tensor
+HF export/reload. Its diagnostic archive is verified; local shard transfer
+is pending. The distinct global-256 source-prefix SFT 003 and complete
+128-view TTT 002 are accepted with finite limits and terminal outcomes pending.
+TTT 001's exact retrieved failure is preserved; 002 adds the omitted notebook
+mount-path variant with unchanged model/data/workload bytes.
+Published SDG artifacts version 1
+(192 Parquet members, 47,514,077,184 raw bytes) are being acquired into the
+isolated original namespace. No new runtime, complete acquisition, ARC quality,
+original backend/model parity or full-scale training is claimed before proof.
+
 ## Second GPU resource preflight (2026-10-01)
 
 The owner requested continued repair and a second upload under

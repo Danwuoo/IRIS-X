@@ -42,7 +42,8 @@ def main() -> int:
                             "tests.nvarc_fsdp_sft_strict", "tests.nvarc_deployment_strict",
                             "tests.nvarc_combined_strict", "tests.nvarc_method_strict",
                             "tests.nvarc_packing_strict", "tests.nvarc_sft_step_strict",
-                            "tests.nvarc_source_stream_strict", "tests.nvarc_source_sft_strict", "-v"],
+                            "tests.nvarc_source_stream_strict", "tests.nvarc_source_sft_strict",
+                            "tests.nvarc_ttt_checkpoint_strict", "tests.nvarc_complete_ttt_strict", "-v"],
                            env=env)
 
 

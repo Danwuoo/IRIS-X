@@ -38,10 +38,32 @@ Starting main commit is `01f43cd`. GPU preflight 002 is verified and consumed.
   token-mean optimizer; uninterrupted/resumed model and optimizer tensors,
   scheduler, RNG and cursor match exactly. Every export tensor reloads exactly.
   Complete source shuffle, lazy Arrow lineage and whole long records pass.
-  The distinct four-L4 accumulation/export package is being prepared.
-- Complete task-local adaptation / inference integration: pending.
-- SDG / TRM integration and remaining material parity: pending.
-- Final validation, runtime observations and handoff: pending.
+  Four-L4 run 002 completed two accumulated steps, 94,156 input tokens,
+  process restart and a 724-tensor HF export/reload. Sole terminal retrieval
+  verified the closed diagnostics; local weight transfer/independent tensor
+  verification is pending. Run 003 is accepted and measures global batch 256
+  over the exact first 512 full-shuffle rows (1,770,662 input tokens).
+- Complete task-local adaptation / inference integration: full 128-view tiny
+  epoch checkpoint differential and trained-export/search/reset integration
+  pass. Four-L4 run `nvarc-overnight-ttt-001` is accepted with a single model
+  worker, 128 rank-256 TTT steps and sixteen source DFS calls. Its sole terminal
+  retrieval verified a missing notebook mount-path variant before model work.
+  Distinct TTT 002 repairs that transport path and is accepted/running.
+  It uses SFT run 002's
+  immutable output mount and must verify all weight bytes onsite before model
+  work. No terminal TTT observation is claimed yet.
+- SDG / TRM integration and remaining material parity: current strict profile
+  passed 45 tests in 329.491 s, including ten-stage source saved replay under
+  actual WSL namespaces and real tiny source TRM train/reload/TTT/joint ranking.
+  Published raw SDG artifacts version 1 are downloading; source-linked TRM
+  checkpoint Dataset 031 version 1 was inventoried separately and its exact
+  source-named `step_220708` checkpoint is downloading. The exact TRM
+  v18 source API request returned 404, preserving the v21/v18 gap.
+  Full original teacher generation, raw artifact verification, TRM scale and v18 parity
+  remain unverified and cannot be replaced by these engineering observations.
+- Repository validation: 314 tests passed in 267.771 s for milestone 002.
+  Final runtime observations, durable handoff and substantive completion remain
+  pending. Required validation will be repeated only after further changes.
 
 The bounded two-step GPU probe is not a full SFT checkpoint or quality result.
 An interface, fixture or inert plan alone does not satisfy a runtime requirement.

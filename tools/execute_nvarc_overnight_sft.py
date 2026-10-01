@@ -17,7 +17,12 @@ from irisx.arc_nvarc_combined import atomic, read, sha
 import re
 RUN = None
 from irisx.canonical import digest_value
-from tools.stage_nvarc_overnight_sft import preflight
+def preflight(package):
+    if read(package/'plan.json')['format']=='irisx/nvarc-complete-ttt-v1':
+        from tools.stage_nvarc_overnight_ttt import preflight as check
+    else:
+        from tools.stage_nvarc_overnight_sft import preflight as check
+    return check(package)
 
 
 def utc():
@@ -37,7 +42,7 @@ def request(package):
         language="python", kernel_type="notebook", is_private=True, enable_gpu=True,
         enable_tpu=False, enable_internet=False, machine_shape="NvidiaL4",
         session_timeout_seconds=read(package / "plan.json")["maximum_notebook_wall_seconds"], dataset_data_sources=meta["dataset_sources"],
-        competition_data_sources=meta["competition_sources"], kernel_data_sources=[], model_data_sources=[])
+        competition_data_sources=meta["competition_sources"], kernel_data_sources=meta['kernel_sources'], model_data_sources=[])
     for key, value in fields.items():
         setattr(req, key, value)
     req.kernel_execution_type = KernelExecutionType.SAVE_AND_RUN_ALL
@@ -90,7 +95,7 @@ def bindings(package):
 def execute(action, package, journal_dir):
     global RUN
     RUN = read(package / "plan.json")["run_id"]
-    assert re.fullmatch(r"nvarc-overnight-sft-\d{3}", RUN)
+    assert re.fullmatch(r"nvarc-overnight-(?:sft|ttt)-\d{3}", RUN)
     # This immutable identity has one journal, including after a process restart.
     # A fresh journal argument must never create a second submission allowance.
     run_root = ROOT / ".irisx/nvarc-original/runs" / RUN
@@ -153,8 +158,17 @@ def execute(action, package, journal_dir):
                 event.setdefault("outcome", "uncertain-no-retry")
                 if getattr(error, "response", None) is not None:
                     event["http_status"] = error.response.status_code
+                    try:
+                        body = error.response.json()
+                        message = body.get('message',body.get('error','')) if isinstance(body,dict) else ''
+                        if isinstance(message,dict):message = message.get('message','')
+                        message = re.sub(r'https?://\S+','[redacted URL]',str(message))[:800]
+                        event['provider_error_message'] = message
+                    except (ValueError,TypeError):
+                        event['provider_error_message'] = 'non-JSON provider response'
                 atomic(ledger, journal)
-                raise SystemExit("Save failed or uncertain: " + type(error).__name__ + "; no retry")
+                raise SystemExit("Save failed or uncertain: " + type(error).__name__ + "; " +
+                    event.get('provider_error_message','') + "; this identity is frozen")
         return
     assert journal.get("accepted") is True and journal["provider_version"] == 1
     if action == "status":
@@ -252,7 +266,7 @@ def execute(action, package, journal_dir):
                     assert json.loads(archive.read('payload-bindings.json')) == read(package/'stage-summary.json')['payload_sha256']
                     terminal = json.loads(archive.read('terminal.json'))
                     entries = json.loads(archive.read('export-inventory.json')) if 'export-inventory.json' in expected_names else []
-                if terminal['outcome'] == 'complete':
+                if terminal['outcome'] == 'complete' and read(package/'plan.json').get('retain_export',True):
                     assert entries and sum(item['bytes'] for item in entries) < 9 * 1024**3
                     assert shutil.disk_usage(destination).free > sum(item['bytes'] for item in entries) + 2 * 1024**3
                     event['export_downloads'] = []

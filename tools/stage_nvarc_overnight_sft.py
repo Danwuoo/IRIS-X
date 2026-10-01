@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 import sys
 import zipfile
+import zlib
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'src')]
@@ -33,22 +34,41 @@ def render(payloads,hashes,run):
     return source
 
 
-def stage(output:Path,run:str):
+def stage(output:Path,run:str,source_prefix:Path|None=None):
     if output.exists() or not re.fullmatch(r'nvarc-overnight-sft-\d{3}',run):
         raise ValidationError('new immutable overnight SFT package required')
     # Repeat the frozen eight whole rows for two accumulated optimizer steps.
     # This is an integration schedule, explicitly distinct from a corpus epoch.
     samples=select_samples()*2
+    batch=8;wall=4500;prefix_binding=None
+    if source_prefix is not None:
+        verification=json.loads((source_prefix/'verification.json').read_bytes())
+        path=source_prefix/'samples.json'
+        if (verification['format']!='irisx/nvarc-source-shuffle-prefix-v1' or
+                verification['corpus_manifest_sha256']!=CORPUS_SHA or verification['cursor']!=512 or
+                verification['samples_sha256']!='82d5e1f60f7d8a2748d9aa4011e7cd5478106405f06089b6cea7b9085b9521e6' or
+                sha_file(path)!=verification['samples_sha256']):
+            raise ValidationError('exact original seed-24 two-batch prefix required')
+        samples=json.loads(path.read_bytes())
+        if (len(samples)!=512 or [row['shuffle_position'] for row in samples]!=list(range(512)) or
+                digest_value(samples)!=verification['sample_digest'] or
+                sum(len(row['input_ids']) for row in samples)!=verification['input_tokens']):
+            raise ValidationError('whole shuffled source prefix differs')
+        batch=256;wall=10800
+        prefix_binding={'verification_sha256':sha_file(source_prefix/'verification.json'),
+            'source_stream_identity':verification['source_stream_identity'],'shuffle_start':0,'shuffle_stop':512,
+            'filtered_records':0,'truncated_records':0,'complete_training_records':verification['complete_training_records'],
+            'exposure_counts':verification['exposure_counts'],'source_counts':verification['source_counts']}
     plan={'format':'irisx/nvarc-source-sft-v1','approved':True,'owner_decision':'Decision 0053',
         'run_id':run,'kernel_id':'danielwuu/'+run,'backend':'cuda-l4','world_size':4,
         'data_kind':'published-sample-integration','data_digest':digest_value(samples),
         'source_recipe':RECIPE,'base_material_digest':BASE,'corpus_manifest_sha256':CORPUS_SHA,
-        'global_batch_size':8,'maximum_optimizer_steps':2,'checkpoint_steps':[1,2],
+        'global_batch_size':batch,'maximum_optimizer_steps':2,'checkpoint_steps':[1,2],
         'packing_execution':'isolated-segments','packing_capacity':256000,'packing_length_multiple':64,
         'scheduled_input_tokens':sum(len(row['input_ids']) for row in samples),
-        'maximum_training_tokens':94156,'maximum_sequence_length':11196,'seed':24,
+        'maximum_training_tokens':sum(len(row['input_ids']) for row in samples),'maximum_sequence_length':11196,'seed':24,
         'maximum_generations':0,'maximum_teacher_calls':0,'maximum_paid_usd':0,
-        'maximum_notebook_wall_seconds':4500,'terminal_reserve_seconds':120,
+        'maximum_notebook_wall_seconds':wall,'terminal_reserve_seconds':120,
         'minimum_free_scratch_bytes':60000000000,'minimum_host_available_bytes':140000000000,
         'datasets':{'base':'danielwuu/irisx-nvarc-m2-compact-4b-001','wheels':'danielwuu/irisx-arc-agi-2-trial-002-smoke-001'},
         'competition_sources':['arc-prize-2026-arc-agi-2'],
@@ -57,6 +77,7 @@ def stage(output:Path,run:str):
         'full_sft_completed':False,'fused_packing_verified':False,'original_qwen3_nemo_parity':False,
         'export_policy':'retain BF16 HF export; FP32 optimizer checkpoint ephemeral scratch',
         'execution_control':'private SAVE_AND_RUN_ALL, bounded monitoring and one terminal retrieval'}
+    if prefix_binding is not None:plan['original_source_prefix']=prefix_binding
     check_plan(plan,4)
     (output/'wheel').mkdir(parents=True)
     wheel=output/'wheel'/build.build_wheel(str(output/'wheel'))
@@ -66,7 +87,7 @@ def stage(output:Path,run:str):
     for name in ('plan','samples'):(output/(name+'.json')).write_bytes(payloads[name])
     notebook={'nbformat':4,'nbformat_minor':5,'metadata':{'kernelspec':{'display_name':'Python 3','language':'python','name':'python3'}},
         'cells':[{'cell_type':'code','execution_count':None,'metadata':{},'outputs':[],
-            'source':render({key:base64.b64encode(value).decode() for key,value in payloads.items()},hashes,run).splitlines(keepends=True)}]}
+            'source':render({key:base64.b64encode(zlib.compress(value,9)).decode() for key,value in payloads.items()},hashes,run).splitlines(keepends=True)}]}
     kernel=output/'kernel';kernel.mkdir()
     (kernel/'notebook.ipynb').write_bytes(canonical_bytes(notebook,newline=True))
     meta={'id':plan['kernel_id'],'title':run,'code_file':'notebook.ipynb','language':'python','kernel_type':'notebook',
@@ -91,7 +112,8 @@ def preflight(output:Path):
         if isinstance(node,ast.Assign) and len(node.targets)==1 and isinstance(node.targets[0],ast.Name) and node.targets[0].id in {'PAYLOADS','HASHES','RUN'}:
             values[node.targets[0].id]=ast.literal_eval(node.value)
     if source!=render(values['PAYLOADS'],values['HASHES'],values['RUN']):raise ValidationError('overnight notebook differs from template')
-    decoded={key:base64.b64decode(value,validate=True) for key,value in values['PAYLOADS'].items()}
+    decoded={key:zlib.decompress(base64.b64decode(value,validate=True)) for key,value in values['PAYLOADS'].items()}
+    if any(len(value)>32*1024**2 for value in decoded.values()):raise ValidationError('overnight expanded payload exceeds bound')
     if {key:hashlib.sha256(value).hexdigest() for key,value in decoded.items()}!=values['HASHES'] or values['HASHES']!=summary['payload_sha256']:
         raise ValidationError('overnight payload hashes differ')
     plan=json.loads(decoded['plan']);check_plan(plan,4)
@@ -117,11 +139,13 @@ def preflight(output:Path):
         raise ValidationError('overnight provider metadata differs')
     return {'run_id':plan['run_id'],'plan_digest':digest_value(plan),'identity_digest':identity,
         'offline_package_verified':True,'external_calls':0,'runtime_verified':False,
-        'maximum_optimizer_steps':2,'scheduled_input_tokens':plan['scheduled_input_tokens'],'maximum_paid_usd':0}
+        'maximum_optimizer_steps':2,'scheduled_input_tokens':plan['scheduled_input_tokens'],
+        'global_batch_size':plan['global_batch_size'],'maximum_paid_usd':0}
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('action',choices=('stage','preflight'))
     parser.add_argument('--output',type=Path,required=True);parser.add_argument('--run')
+    parser.add_argument('--source-prefix',type=Path)
     args=parser.parse_args()
-    print(json.dumps(stage(args.output,args.run) if args.action=='stage' else preflight(args.output),indent=2))
+    print(json.dumps(stage(args.output,args.run,args.source_prefix) if args.action=='stage' else preflight(args.output),indent=2))

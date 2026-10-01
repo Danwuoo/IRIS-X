@@ -473,11 +473,14 @@ def train_torch_sft(model: Any, sequences: Sequence[Mapping[str, Any]], output: 
 class TaskLocalAdapter:
     """Keep one loaded base model while restoring a fresh LoRA for every task."""
 
-    def __init__(self, base_model: Any, config: Mapping[str, Any]) -> None:
+    def __init__(self, base_model: Any, config: Mapping[str, Any], *, step_observer=None) -> None:
         import torch
         from peft import LoraConfig, get_peft_model, get_peft_model_state_dict
 
         self.config = dict(config)
+        if step_observer is not None and not callable(step_observer):
+            raise ValidationError("task adaptation step observer must be callable")
+        self.step_observer = step_observer
         self.targets = inspect_lora_targets(base_model)
         torch.manual_seed(int(config["seed"]))
         input_embeddings = base_model.get_input_embeddings()
@@ -489,6 +492,13 @@ class TaskLocalAdapter:
             lora_dropout=float(config.get("dropout", 0.0)), target_modules=self.targets,
             bias="none", task_type="CAUSAL_LM", use_rslora=bool(config.get("use_rslora", True)),
             ensure_weight_tying=bool(tied)))
+        checkpointing = config.get("gradient_checkpointing", False)
+        if type(checkpointing) is not bool:
+            raise ValidationError("task adaptation checkpoint setting must be Boolean")
+        if checkpointing:
+            self.model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+            if not self.model.is_gradient_checkpointing:
+                raise ValidationError("task adaptation activation checkpointing did not enable")
         self.initial = {key: value.detach().cpu().clone() for key, value in
                         get_peft_model_state_dict(self.model).items()}
         self.last_observation: dict[str, Any] | None = None

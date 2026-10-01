@@ -1,5 +1,27 @@
 # Component completion and reproduction gaps
 
+## Overnight implementation (2026-10-02)
+
+[Decision 0053](../../docs/decisions/0053-nvarc-overnight-development-goal.md)
+opens continuous local and free private Kaggle work until substantial
+completion or the one-shot 07:00 Taipei timer. The [current report](overnight-source-integration.md)
+supersedes the historical pending/absent rows below. Complete original corpus
+bytes, shuffle and lineage are verified. Logical MFFD placement matches the
+pinned NeMo reference; segmented Qwen3.5 execution passes real hybrid state,
+loss and gradient isolation checks. Distributed CPU-shard accumulation,
+optimizer/RNG/scheduler/cursor restart and exact export pass independent CPU
+checks. Four-L4 SFT 002 completed two accumulated steps and a 724-tensor export;
+local shard recovery remains pending. Full-source global-256 prefix SFT 003
+and complete rank-256 128-view TTT 002 are accepted, with terminal outcomes
+pending. TTT 001 stopped before model work on an omitted notebook mount root;
+its sole retrieval is verified and frozen. Current SDG namespace and tiny TRM paths pass strict actual-model
+checks; raw SDG artifact acquisition and original-sized TRM remain incomplete.
+
+The Qwen3.5 port is not the original Qwen3/NeMo/Unsloth implementation.
+Segmented correctness does not establish fused packing throughput. Full
+12,716-step training, original teacher generation, TRM scale/v18 parity and
+general ARC quality remain unverified; no promotion follows from these probes.
+
 ## Original-recipe scope correction (2026-10-01)
 
 Under the owner's [Decision 0050](../../docs/decisions/0050-separate-original-nvarc-reproduction.md),

@@ -11,6 +11,7 @@ import subprocess
 import sys
 import time
 import zipfile
+import zlib
 
 START = time.monotonic()
 PAYLOADS = __PAYLOADS__
@@ -57,7 +58,14 @@ try:
     emit(phase)
     if set(PAYLOADS) != set(HASHES):
         raise RuntimeError("GPU preflight payload coverage differs")
-    decoded = {name: base64.b64decode(value, validate=True) for name, value in PAYLOADS.items()}
+    def decode_payload(value):
+        compressed = base64.b64decode(value, validate=True)
+        decoder = zlib.decompressobj()
+        result = decoder.decompress(compressed, 32 * 1024**2 + 1)
+        if len(result) > 32 * 1024**2 or not decoder.eof or decoder.unconsumed_tail or decoder.unused_data:
+            raise RuntimeError('bounded compressed payload differs')
+        return result
+    decoded = {name: decode_payload(value) for name, value in PAYLOADS.items()}
     if any(hashlib.sha256(value).hexdigest() != HASHES[name] for name, value in decoded.items()):
         raise RuntimeError("GPU preflight payload hash differs")
     plan = json.loads(decoded["plan"])
@@ -156,7 +164,7 @@ try:
     pause = json.loads((work / "worker/pause-result.json").read_bytes())
     final = json.loads((work / "worker/final-result.json").read_bytes())
     if (pause["identity_digest"] != identity or final["identity_digest"] != identity or
-            pause["step"] != 1 or final["step"] != 2 or final["forwards"] != 16 or
+            pause["step"] != 1 or final["step"] != 2 or final["forwards"] != len(samples) or
             final["input_tokens"] != plan["scheduled_input_tokens"] or
             final["restored_fingerprint"] != pause["weight_fingerprint_after"]):
         raise RuntimeError("GPU preflight returned evidence binding differs")
