@@ -182,3 +182,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0050-separate-original-nvarc-reproduction.md`](0050-separate-original-nvarc-reproduction.md)
   records the owner's original-recipe reproduction direction: preserve all
   published recipe inputs and isolate exposure from clean-data comparisons.
+- [`0051-run-qwen35-kaggle-gpu-preflight.md`](0051-run-qwen35-kaggle-gpu-preflight.md)
+  records the consumed private Qwen3.5 resource probe: one source-optimizer
+  step and checkpoint restore gate passed; the long-sequence step failed.

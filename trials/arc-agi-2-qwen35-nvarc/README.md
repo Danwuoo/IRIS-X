@@ -1,5 +1,18 @@
 # Qwen3.5-4B NVARC reproduction development
 
+## Qwen3.5 Kaggle GPU resource probe (2026-10-01)
+
+The owner selected the existing Qwen3.5 port and authorized
+[Decision 0051](../../docs/decisions/0051-run-qwen35-kaggle-gpu-preflight.md).
+The sole private save-and-run version and terminal retrieval are consumed.
+[GPU preflight 001](q35-gpu-preflight-001.md) verified four distinct BF16 L4s,
+one source-optimizer full-parameter step on 4,186 whole input tokens and the
+checkpoint restore gate. Its second step, with four 9,330–11,196-token whole
+sequences, failed during backward with cuBLAS allocation and NCCL watchdog
+errors. There is no completed second optimizer step or exported checkpoint.
+Long-sequence/full-SFT readiness remains false; no quality claim, teacher
+invocation or new execution follows from this partial observation.
+
 ## Original-recipe direction (2026-10-01)
 
 [Decision 0050](../../docs/decisions/0050-separate-original-nvarc-reproduction.md)

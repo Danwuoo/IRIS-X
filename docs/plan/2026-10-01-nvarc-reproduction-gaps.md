@@ -5,18 +5,26 @@
 和 exposure 記錄隔離。此前五來源 filtered HF 是乾淨資料準備，不再用它的
 排除條件阻擋原版重現。原輸出、舊契約及已消耗 run identities 保持不變。
 
+後續依 [Decision 0051](../decisions/0051-run-qwen35-kaggle-gpu-preflight.md)
+執行一次 Qwen3.5 Kaggle 資源檢查，詳見
+[GPU preflight 001](../../trials/arc-agi-2-qwen35-nvarc/q35-gpu-preflight-001.md)。
+四張 BF16 L4、來源 optimizer/loss 的一個全參數步驟及 checkpoint 恢復
+fingerprint gate 通過。第二步的 9,330–11,196-token 完整序列在 backward
+出現 cuBLAS 配置與 NCCL watchdog 錯誤，未完成第二 optimizer step。
+因此最長序列資源／完整 SFT gate 仍關閉；沒有 teacher、生成或評分。
+
 ## 已具備與尚未具備
 
 | 項目 | 現有證據 | 尚缺工作 |
 | --- | --- | --- |
 | 原 Qwen SFT 資料 | 原版六來源 3,255,481 records 與獨立 validation 720 records 已全量封存；HF 位元組與順序保留，逐列 compact projection accounting，input tokens 共 11,509,821,262，最長 11,196；雙親及 evaluation/dev exposure 保留，無篩選/截斷 | 原 Qwen3 tokenizer/NeMo preprocessor 數值 parity、實際 packing/attention isolation 對接；compact projection 計數不等於原 tokenizer parity |
 | 新隔離與 corpus 契約 | 新 original-corpus-v1/contract、雙親 Arrow sidecar、validation split、獨立 materials/manifests/checkpoints/runs/results namespaces 與限定用途 reader 已實作；舊 clean-research/single-parent 契約未改 | 完整訓練及推論的 checkpoint/run/result 綁定待 backend 整合；material preparation 與 training/full-method readiness 保持分開 |
-| Qwen SFT backend | 原 run_sft_4b.sh/YAML 的 optimizer、loss/schedule reference 有本機差分；4-L4 pilot 有八步、2,578-token export | 六來源 distributed loss normalization、原 packing/attention isolation、optimizer/scheduler/checkpoint/resume 完整整合；原 12,716 steps/global batch 256 的完整訓練及匯出未完成；Qwen3.5 hybrid backend 並非原 Qwen3 Megatron backend |
+| Qwen SFT backend | 原 optimizer、token loss/schedule 有本機差分與分散式整合；GPU source-recipe 完成一步、4,186 tokens 與 checkpoint 恢復 gate；舊八步 pilot export 仍獨立 | 長序列 resumed backward 配置／collective 問題未排除；六來源完整訓練、原 packing/attention isolation、12,716 steps/global batch 256 及匯出未完成；Qwen3.5 並非原 Qwen3 Megatron backend |
 | Qwen TTT/推論 | tiny 真實模型完成 source r256/alpha32、128-view epoch、source context cut、DFS/rerank 差分；4B 有小步數 pilot | 4B 的完整 source TTT 與 8192 context 資源/耗時驗證；source batch KV/cache 與 throughput；完整候選搜尋、八視圖驗證、task reset 和 ranking 的目標 GPU 整合 |
 | SDG 全流程 | 103,223 個已發表 pairs puzzles 已取得；source 十階段程式/prompts 和 bounded replay 存在；009 僅有五筆 two-template AST pairs | 若要重現生成過程：42,008,423,274-byte artifacts 包未取得；原 teacher/material bindings、十階段端到端、一般程式隔離、majority/filter/augmentation 對照未完成。使用已發表 pairs 做 SFT 不以重跑 teacher 為前提 |
 | TRM | source 與 tiny CPU train/reload/TTT/inference/joint check 有證據 | published training/evaluation/checkpoint 包仍只有 metadata；原規模 GPU pretraining、EMA/checkpoints、TRM TTT/inference 與完整 Qwen+TRM 整合未完成 |
 | 原版版本與權重 | source commit 固定；Qwen notebook v10、TRM notebook v21 已保存；Qwen3.5 compact 和八步 SFT export 已驗證 | 原 Qwen3-4B-Thinking-2507 compact base/原 ARC-SFT checkpoint 未取得驗證；TRM 原 v18 與已保存 v21 尚未建立 exact-version parity。Qwen3.5 是移植，不宣稱與原 Qwen3 權重或數值相同 |
-| 目標資源與結果 | 過去 bounded 4B pilots 和本機 tests 有證據 | 對完整 recipe 固定硬體、記憶體/磁碟、步數/tokens、wall time/checkpoint/恢復；取得完整執行結果，按 exposure 報告，並把原版結果與移植品質分開 |
+| 目標資源與結果 | 一次原 corpus Qwen3.5 四-L4 資源 probe：CPU RAM/scratch gate 通過；第一步 peak allocated 18.225–18.255 GiB、reserved 21.461–21.637 GiB；長序列第二步失敗並完整保留診斷 | 分離 GPU live-memory、恢復及 NCCL 問題；最長序列訓練仍未通過，不可由短序列 pilot 推估全量 SFT；完整 recipe 的硬體/步數/tokens/耗時/匯出仍未驗證 |
 
 資料的實際下載、digests 與 clean filtering 計數見
 [資料報告](../../trials/arc-agi-2-qwen35-nvarc/dataset-acquisition-20261001.md)。

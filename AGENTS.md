@@ -576,6 +576,23 @@ distributed SFT and target GPU method/resource checks remain incomplete.
 Evidence is `trials/arc-agi-2-qwen35-nvarc/original-corpus-20261001.md`.
 This local preparation grants no new acquisition, execution or scoring.
 
+Decision 0051 records the owner's new Kaggle execution request and explicit
+choice of the existing Qwen3.5 port for GPU resource/backend checks. The distinct
+`nvarc-q35-gpu-preflight-001` may use one private Internet-disabled four-L4
+save-and-run, bounded status checks and one terminal retrieval, at USD 0.
+Eight whole original-corpus records cover six sources and heavy-source maxima;
+two FP32-state/BF16-compute source-optimizer FSDP steps include checkpoint resume.
+This is an unpacked resource probe, not full original NeMo packing/SFT or
+quality evidence. No previous kernel is queried or reused, no Dataset mutation,
+generation, teacher call, hidden scoring or automatic runtime retry is allowed.
+The sole version-1 save-and-run and terminal retrieval are consumed. Four
+distinct BF16 L4s completed one full-parameter step on 4,186 whole input tokens
+and passed the checkpoint restore fingerprint gate. The second long-sequence
+step failed during backward with cuBLAS allocation/NCCL watchdog errors;
+no final step/result or exported checkpoint exists. Preserve the exact partial
+observation at `trials/arc-agi-2-qwen35-nvarc/q35-gpu-preflight-001.md`.
+Decision 0051 grants no further kernel, retrieval, full SFT or promotion.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;
