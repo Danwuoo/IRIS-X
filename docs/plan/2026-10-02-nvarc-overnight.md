@@ -40,29 +40,49 @@ Starting main commit is `01f43cd`. GPU preflight 002 is verified and consumed.
   Complete source shuffle, lazy Arrow lineage and whole long records pass.
   Four-L4 run 002 completed two accumulated steps, 94,156 input tokens,
   process restart and a 724-tensor HF export/reload. Sole terminal retrieval
-  verified the closed diagnostics; local weight transfer/independent tensor
-  verification is pending. Run 003 is accepted and measures global batch 256
+  verified the closed diagnostics and all local exported tensor byte digests.
+  Run 003 is accepted and measures global batch 256
   over the exact first 512 full-shuffle rows (1,770,662 input tokens).
 - Complete task-local adaptation / inference integration: full 128-view tiny
   epoch checkpoint differential and trained-export/search/reset integration
   pass. Four-L4 run `nvarc-overnight-ttt-001` is accepted with a single model
   worker, 128 rank-256 TTT steps and sixteen source DFS calls. Its sole terminal
   retrieval verified a missing notebook mount-path variant before model work.
-  Distinct TTT 002 repairs that transport path and is accepted/running.
-  It uses SFT run 002's
-  immutable output mount and must verify all weight bytes onsite before model
-  work. No terminal TTT observation is claimed yet.
+  Distinct TTT 002 repairs that transport path.
+  TTT 002 is now independently terminal-verified: 128 optimizer steps,
+  13,824 training tokens, sixteen DFS calls, five model candidates, five
+  candidate verifications plus two separate public-demo probes, 874 outer
+  forwards and exact reset. Peak CUDA training allocation is 18.5 GB and the
+  notebook took 715 seconds. It verifies every immutable SFT 002 mounted weight
+  before model work; no candidate correctness is scored.
 - SDG / TRM integration and remaining material parity: current strict profile
   passed 45 tests in 329.491 s, including ten-stage source saved replay under
   actual WSL namespaces and real tiny source TRM train/reload/TTT/joint ranking.
   Published raw SDG artifacts version 1 are downloading; source-linked TRM
-  checkpoint Dataset 031 version 1 was inventoried separately and its exact
-  source-named `step_220708` checkpoint is downloading. The exact TRM
-  v18 source API request returned 404, preserving the v21/v18 gap.
+  checkpoint Dataset 031 version 1 is inventoried separately and its exact
+  `step_220708` is retained/verified. The full 512-width source model strictly
+  loads all fifteen state tensors, applies the source mean embedding reset,
+  completes one CPU demo TTT step/ten ACT forwards and resets exactly.
+  A fixed first published SDG response group completed real isolated NumPy
+  program execution; exact local recovery without new calls and independent
+  8/12/4 reconciliation accept thirty exposed pairs and source augmentation.
+  The full 42 GB artifact archive is resuming from a frozen 16.9 GB partial
+  in a distinct material identity; whole-archive verification is pending.
+  Exact TRM v18 requests returned 404 (version label) and 403 (official CLI
+  slug convention), preserving the v21/v18 gap.
+  Published TRM evaluation arrays are fully inventoried and quarantined from
+  solver staging. Training arrays (39.4 GB raw / 2.2 GB compressed) are in a
+  distinct bounded acquisition; numeric-header/closed-member verification is
+  pending. No evaluation array payload or answer enters a solver.
   Full original teacher generation, raw artifact verification, TRM scale and v18 parity
   remain unverified and cannot be replaced by these engineering observations.
 - Repository validation: 314 tests passed in 267.771 s for milestone 002.
-  Final runtime observations, durable handoff and substantive completion remain
+  Later ML validation passed 46 tests plus the new recovery oracle; the current
+  profile contains all 47. A Windows atomic-ledger lock surfaced in a later
+  system-Python check, now repaired with bounded replacement retry and an
+  independent transient/persistent-lock regression. Required full revalidation
+  passed 315 tests in 253.887 seconds using the ML runtime.
+  Final source-prefix runtime, durable handoff and substantive completion remain
   pending. Required validation will be repeated only after further changes.
 
 The bounded two-step GPU probe is not a full SFT checkpoint or quality result.

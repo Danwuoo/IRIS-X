@@ -469,7 +469,8 @@ class WSLNamespaceProgramExecutor:
         return ["wsl", "-d", self.distribution, "--", "sh", linux_path]
 
     def execute_entry(self, code: str, entry: str, *, input_grid: Any | None = None,
-                      seed: int | None = None) -> Any:
+                      seed: int | None = None, source_numpy: bool = False,
+                      validation_code: str = "") -> Any:
         from .arc_nvarc_data import grid
 
         if not shutil.which("wsl") or entry not in {"transform", "generate_puzzle_input",
@@ -477,13 +478,18 @@ class WSLNamespaceProgramExecutor:
             raise ValidationError("WSL sandbox unavailable or SDG entry unknown")
         if not isinstance(code, str) or not code or len(code.encode()) > self.output_bytes:
             raise ValidationError("SDG program exceeds input bound")
+        if (type(source_numpy) is not bool or not isinstance(validation_code, str) or
+                len(validation_code.encode()) > self.output_bytes or
+                (validation_code and entry != "generate_puzzle_input")):
+            raise ValidationError("source SDG execution options differ")
         if entry == "generate_puzzle_input":
             if type(seed) is not int or not 0 <= seed <= 1000000:
                 raise ValidationError("SDG input generation seed differs")
             argument = {"seed": seed}
         else:
             argument = {"grid": grid(input_grid)}
-        payload = json.dumps({"code": code, "entry": entry, **argument}).encode()
+        payload = json.dumps({"code": code, "entry": entry, **argument,
+                              "source_numpy": source_numpy, "validation_code": validation_code}).encode()
         return grid(self._execute_payload(payload))
 
     def _execute_payload(self, payload: bytes) -> Any:

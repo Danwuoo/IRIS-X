@@ -38,6 +38,40 @@ def fixture_validator(root):
     return value["counters"]
 
 
+class AtomicLedgerTests(unittest.TestCase):
+    def test_transient_windows_lock_keeps_old_complete_ledger_until_replace(self):
+        import irisx.arc_nvarc_combined as runtime
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "ledger.json"
+            atomic(path, {"reserved": 1})
+            original = runtime.os.replace
+            observed = []
+
+            def locked_twice(source, target):
+                observed.append(read(path))
+                if len(observed) <= 2:
+                    error = PermissionError("injected Windows sharing lock")
+                    error.winerror = 32
+                    raise error
+                return original(source, target)
+
+            with patch.object(runtime.os, "replace", side_effect=locked_twice), patch.object(runtime.time, "sleep"):
+                atomic(path, {"reserved": 2})
+            self.assertEqual([{"reserved": 1}] * 3, observed)
+            self.assertEqual({"reserved": 2}, read(path))
+            persistent = PermissionError("persistent Windows access denial")
+            persistent.winerror = 5
+            with patch.object(runtime.os, "replace", side_effect=persistent) as replace, patch.object(runtime.time, "sleep"):
+                with self.assertRaises(PermissionError):
+                    atomic(path, {"reserved": 3})
+            self.assertEqual(5, replace.call_count)
+            self.assertEqual({"reserved": 2}, read(path))
+            with patch.object(runtime.os, "replace", side_effect=PermissionError("ordinary permission denial")) as replace:
+                with self.assertRaises(PermissionError):
+                    atomic(path, {"reserved": 4})
+            self.assertEqual(1, replace.call_count)
+
+
 class CombinedProcessTests(unittest.TestCase):
     def launch(self, modes, *, work_seconds=3, readiness=0.6, setup=None):
         root = Path(self.temp.name) / ("out-" + str(self.serial))

@@ -84,15 +84,19 @@ runtime identity is `sha256:eb7abf3529a8888e831bd6b0f0f943c3427dc202f8584944ab46
 The ledger and exact package live under
 `.irisx/nvarc-original/runs/nvarc-overnight-sft-002/`.
 The terminal provider status is COMPLETE. Its sole terminal retrieval retained
-the exact closed diagnostic archive and is transferring the four HF shards.
+the exact closed diagnostic archive and all four HF shards.
 The runtime completed two global-batch-eight accumulated steps, 94,156 input
 and 48,670 supervised tokens, sixteen whole forwards and an exact process
 restart at step one. Its FP32 saved/consolidated fingerprints agree within the
 bound tolerance, and all 724 exported tensors reloaded identically onsite.
 Material digest is `sha256:2f367df415813dbb82b96192750f334f2a91e84c9d6812daa92e7a2a5bd04ca7`.
 The complete notebook took 2,454.945 seconds; actual rank optimizer steps took
-128.101–140.096 seconds. An independent local tensor reader will verify the
-transferred files before claiming the local weight recovery complete.
+128.101–140.096 seconds. Independent local safetensors reading verifies every
+one of the 724 tensor byte digests against the retained export inventory.
+Archive SHA-256 is `d2c98e971d0d406430a0c5db178b81d2ddd2de622336536a312f95ec50f18d97`;
+independent verification SHA-256 is
+`8052eb7a8662cf9159a05bca1c507c159e10e4ec7dafbec4a5eab25cbf7a5901`.
+The original-scale SFT and original Qwen3/NeMo claims remain false.
 
 The distinct `nvarc-overnight-sft-003` is accepted as private version 1,
 kernel ID `136689146`, with a 10,800-second finite limit. It freezes the actual
@@ -142,7 +146,19 @@ bounded mount inventory diagnostic, keeping the same scientific workload and
 material bytes. It was accepted as private version 1, kernel ID `136690164`.
 Plan digest is `sha256:9fcf49abeeece59eac5bb503240bc01d23dac3d64ba7e0860f02017f222fbc69`.
 [Kaggle notebook](https://www.kaggle.com/code/danielwuu/nvarc-overnight-ttt-002).
-Its 4B memory/performance and terminal outcome remain pending.
+Its terminal status is COMPLETE. The sole terminal retrieval and independent
+verification reconcile 128 optimizer events, 13,824 source training tokens,
+sixteen DFS calls, five unique model candidates and five candidate verifications.
+Two separately labelled public-demo probes remain outside that candidate pool.
+Eight-view verification and search reserved 874 total outer model forwards;
+the adapter reset is exact. Rank-256 LoRA has 520,757,248 trainable parameters.
+Training peak CUDA allocated/reserved was 18,535,515,648 / 19,266,535,424 bytes;
+the complete notebook took 715.065 seconds. Runtime mount diagnostics confirm
+the exact owner-qualified notebook export root. No candidate correctness,
+full-scale SFT or original Qwen3/Unsloth parity is asserted.
+Archive SHA-256 is `fdddaf6b06bb280343ddcb4b4536196bd772650944c9533e3da1ac3d2d38a5fd`;
+independent verification SHA-256 is
+`d350a62fbe3fd80c53a1d20459749cff6daa760eca6b75467093848a736da002`.
 
 ## SDG/TRM and milestone validation
 
@@ -154,15 +170,92 @@ ranking. Log SHA-256 is
 These are engineering checks, not original teacher yield or full-size TRM proof.
 
 Published SDG artifact version 1 has a closed provider inventory of 192
-Parquet members and 47,514,077,184 uncompressed bytes. Its original-namespace
-download is pending full archive SHA/CRC/member verification; no generated
-program is executed during acquisition. The source-linked public TRM Dataset
-`cpmpml/arc-prize-trm-031` version 1 contains seven 2,159,719,349-byte
-checkpoints. Only the source's `step_220708` is being downloaded, with its exact
-2,159,719,349-byte provider bound. Exact v18 notebook source
-was requested once with version label 18 and returned HTTP 404; retained v21
-source is not silently substituted for v18 parity.
+Parquet members and 47,514,077,184 uncompressed bytes. The 42,008,423,274-byte
+compressed archive exceeded its first 5,400-second transport bound. Its
+16,879,976,448 retained bytes and official ETag/size resume marker are frozen;
+a distinct material identity copies both and uses the official validator-bound
+range downloader, with a 10,800-second bound. Full archive SHA/CRC/member
+verification remains pending; no program executes during acquisition.
+
+Four exact first Parquet shards were separately retained and SHA-verified for
+bounded replay: summaries, mixtures, inputs and outputs (280,415,271 bytes).
+The fixed first provider-ordered complete twenty-output group joins both
+parents `00576224` and `84db8fc4`, without searching for a favorable result.
+The retained summary rows use `claude-sonnet-4-20250514`; its mix uses the same
+teacher, and input/output logic uses `gpt-oss-120b / medium`. The whole summary
+first shard also contains `gpt-oss-120b / high`. Teacher identities are observed
+row metadata, not fresh provider calls.
+
+Real WSL NumPy execution uses the existing read-only `/usr`, namespace,
+chroot and process/memory/time limits; fixed BLAS paths avoid `/etc/alternatives`
+without exposing `/etc`. Source-recognized input tests run inside that same
+sandbox, and output functions receive NumPy arrays as the original script does.
+Local replay 001 stopped after 635 invocations on tuple-to-canonical-JSON I/O.
+Replay 002 retained all 635 invocation results, then stopped on Windows' default
+text encoding. Both are frozen (1,270 actual program invocations in total).
+Recovery 003 retained a packaging basename/reused-rejection reporting error;
+recovery 004 rebuilds only the UTF-8/canonical envelope from exact 002 results,
+with **zero new program or teacher calls**. Twenty-seven actual program
+rejections remain visible; 578/600 output attempts are valid and nonidentity.
+The unchanged source 8-vote/12-pair/4-consistent-solution filter accepts 30
+pairs: every input has 19–20 agreeing outputs and nineteen solution IDs agree
+across all thirty inputs. Independent Counter/intersection reconciliation
+verifies that exact selection and the closed artifacts. Source augmentation
+also completes. Both parent/exposure tags (`protected-parent-or-visible-family`,
+`pilot-ancestor`) remain on the new data; it is not clean holdout evidence.
+Independent verification SHA-256 is
+`838c8a21f3948172bbaa989f8d4fb5cbc9091f26ee311fffed00f62fa13e53dc`.
+
+The source-linked public TRM Dataset `cpmpml/arc-prize-trm-031` version 1
+contains seven 2,159,719,349-byte checkpoints. The exact source-named
+`step_220708` is retained at SHA-256
+`dbf771737d9799b84faf009c24c5376831f095d2cfd66debbe9a505a445bfc31`.
+The full-width source model (512 hidden, 8 heads, 2 layers, H4/L4) strictly loads
+all fifteen state tensors, with the source mean reset from 1,041,208×512 puzzle
+embeddings to 1×512 and zero dropped keys. Distinct local CPU run 001 completes
+one public-demo TTT step, changes thirteen state tensors, advances ten ACT
+forwards, returns one legal 10×10 candidate and resets exactly, in 33.344 seconds.
+This is float32 compatibility evidence, not original BF16 numerics, ten separate
+attempts, full training, 2,000-epoch TTT or ARC correctness. Independent
+verification SHA-256 is
+`ec12fe8ebb1d539c8bbf6c938165f4215914306c635f1e09dd25b9b2049a9db6`.
+The exact v18 source request with version label 18 returned HTTP 404. A distinct
+request using the official CLI's `/18` slug convention returned HTTP 403.
+Retained v21 source is not silently substituted for v18 parity.
 
 Required repository validation passed 314 tests in 267.771 seconds for this
 milestone. Log SHA-256 is
 `bf5441a7801db8633f43d0191855b1f9a0f78184bcafe2542e74bb07e2e5fe06`.
+
+The later strict ML profile passed 46 tests in 394.148 seconds (SHA-256
+`e095c36246ee7ea2ccd1fb2fcec427ef25191fd3353d5f326db890b74867b4c9`),
+including actual NumPy namespace calls and strict published TRM embedding/state
+loading. One additional independent fixture oracle passes in 4.233 seconds,
+checking Unicode I/O, the thirty-pair filter oracle, zero-execution recovery,
+preservation of the original artifacts and rejection of altered program/shard
+bytes. Its log SHA-256 is
+`28b15b6b9be36d141433c5ec152e5aa6057ac687e49edce4e4f072facf823616`;
+the current ML profile contains all 47 tests.
+
+A later system-Python repository check retained a transient Windows replacement
+denial and a short process/log deadline failure under concurrent I/O. Both
+targeted rechecks pass. Atomic replacement now retries only Windows error
+5/32/33 up to five attempts/150 ms total backoff, retains the previous complete
+ledger during a lock, and still raises ordinary or persistent permission errors.
+Its independent fault-injection regression passes. The required full repository
+recheck using the ML runtime passed 315 tests in 253.887 seconds; log SHA-256 is
+`255afcd09b4f0ac064d69913b251467290bef6634119af0ea5bc3237d42ea29e`.
+The preceding failed log remains retained rather than counted as a pass.
+
+The original TRM evaluation Dataset `cpmpml/arc-prize-trm-evaluation-data/1`
+is retained only in `evaluator-materials`: all fourteen files (124,574,189 raw
+bytes), archive/member SHA-256 and CRC verify. Numeric NPY headers and dataset
+metadata were read without loading array payloads. Its 8,380,437-byte archive
+SHA-256 is `735150bcc19f2e9f06b1ab30a2190b0bb969073121e763a62c63ba8104408d42`.
+It contains evaluation labels and is forbidden from solver staging.
+The original training Dataset version 1 has sixteen files totaling
+39,447,934,651 raw bytes; its provider ZIP is 2,218,651,916 bytes. Acquisition
+001 stopped before download at an undersized raw-byte gate. Distinct 002
+separately caps compressed bytes at 4 GiB and raw inventory at 48 GiB while
+reserving the outstanding SDG transfer and model storage; verification remains
+pending. Neither material acquisition trains, generates or scores.

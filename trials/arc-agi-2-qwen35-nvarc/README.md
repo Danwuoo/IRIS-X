@@ -11,19 +11,30 @@ Logical MFFD packing and hybrid state isolation, explicit CPU-shard accumulation
 the complete original shuffle/lineage stream, checkpoint restart and exact
 export tensor reload pass local differential checks. Complete rank-256 TTT now
 has a verified activation-checkpoint path and a bounded 128-view/16-call runtime.
-Current SDG namespace and tiny TRM integration checks also pass.
+Real NumPy namespace execution and a full-width published TRM checkpoint path
+also pass. Their source/material/scale differences remain explicit.
 
 The first new integration submission received HTTP 400 without a receipt; its
 identity remains frozen. Distinct `nvarc-overnight-sft-002` was accepted as
 private version 1 and completed accumulated SFT, restart and a 724-tensor
-HF export/reload. Its diagnostic archive is verified; local shard transfer
-is pending. The distinct global-256 source-prefix SFT 003 and complete
-128-view TTT 002 are accepted with finite limits and terminal outcomes pending.
+HF export/reload. Its sole retrieval and independent local reading verify all
+724 exported tensor byte digests. The distinct global-256 source-prefix SFT 003
+remains pending. Complete 128-view TTT 002 is terminal and independently
+verified: 128 optimizer steps, sixteen DFS calls, five model candidates, seven
+eight-view verifications including two separate public-demo probes, exact reset,
+18.5 GB CUDA training peak and 715 seconds notebook time. Candidates are unscored.
 TTT 001's exact retrieved failure is preserved; 002 adds the omitted notebook
 mount-path variant with unchanged model/data/workload bytes.
+Four published SDG first shards and a fixed twenty-response group verify:
+isolated replay plus the unchanged source 8/12/4 filter accepts thirty pairs,
+with nineteen solution IDs consistently agreeing. Frozen execution 002 is
+recovered in new packaging 004 without another teacher/program call; both
+ancestor/exposure tags remain. Source-named TRM `step_220708` strictly loads
+the actual 512-width model and completes bounded CPU demo-TTT/ACT/reset.
 Published SDG artifacts version 1
 (192 Parquet members, 47,514,077,184 raw bytes) are being acquired into the
-isolated original namespace. No new runtime, complete acquisition, ARC quality,
+isolated original namespace; a distinct validator-bound resume preserves the
+first timed-out partial. Full archive verification remains pending. No ARC quality,
 original backend/model parity or full-scale training is claimed before proof.
 
 ## Second GPU resource preflight (2026-10-01)

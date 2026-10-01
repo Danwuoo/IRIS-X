@@ -1,5 +1,10 @@
 # NVARC 原配方重現：剩餘項目
 
+2026-10-02 的 [Goal 與整合證據](../../trials/arc-agi-2-qwen35-nvarc/overnight-source-integration.md)
+更新了下列歷史缺口：packing/state isolation、累積 SFT/export/resume、完整
+128-view 4B TTT、已發表 SDG 回放與實際 TRM checkpoint 均已有新增驗證。
+下列日期快照保留；完整原模型/backend、全量訓練及品質仍需各自的證據。
+
 日期：2026-10-01。依 [Decision 0050](../decisions/0050-separate-original-nvarc-reproduction.md)，
 原版重現照收原配方與資料，透過獨立 materials/manifests/checkpoints/results
 和 exposure 記錄隔離。此前五來源 filtered HF 是乾淨資料準備，不再用它的

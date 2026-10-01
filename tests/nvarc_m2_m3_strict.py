@@ -152,6 +152,24 @@ class M2M3StrictTests(unittest.TestCase):
         subprocess.run(["wsl", "-d", sandbox.distribution, "--", "true"],
                        check=True, capture_output=True, timeout=90)
         self.assertEqual([[1, 2]], sandbox.execute("def transform(grid): return grid", [[1, 2]]))
+        numpy_input = ('import numpy as np\n'
+                       'def generate_puzzle_input(seed): return np.array([[seed, 2]], dtype=np.int8)\n'
+                       'def test_input(grid): assert grid.shape == (1, 2)')
+        self.assertEqual([[1, 2]], sandbox.execute_entry(
+            numpy_input, "generate_puzzle_input", seed=1, source_numpy=True,
+            validation_code="test_input(input_grid)"))
+        numpy_output = ('import numpy as np\n'
+                        'def generate_puzzle_output(input_grid):\n'
+                        ' assert type(input_grid) is np.ndarray\n'
+                        ' return np.fliplr(input_grid)')
+        self.assertEqual([[2, 1]], sandbox.execute_entry(
+            numpy_output, "generate_puzzle_output", input_grid=[[1, 2]], source_numpy=True))
+        with self.assertRaises(ValidationError):
+            sandbox.execute_entry(numpy_input, "generate_puzzle_input", seed=1,
+                                  source_numpy=True, validation_code="assert False")
+        with self.assertRaises(ValidationError):
+            sandbox.execute_entry("def generate_puzzle_input(seed): return [[seed]]",
+                                  "generate_puzzle_input", seed=1, source_numpy=True)
         Path(".irisx").mkdir(exist_ok=True)
         with tempfile.TemporaryDirectory(dir=Path(".irisx")) as temp:
             canary = Path(temp).resolve() / "sandbox-canary.txt"

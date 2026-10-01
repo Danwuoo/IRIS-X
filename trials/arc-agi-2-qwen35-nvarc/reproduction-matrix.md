@@ -11,11 +11,14 @@ pinned NeMo reference; segmented Qwen3.5 execution passes real hybrid state,
 loss and gradient isolation checks. Distributed CPU-shard accumulation,
 optimizer/RNG/scheduler/cursor restart and exact export pass independent CPU
 checks. Four-L4 SFT 002 completed two accumulated steps and a 724-tensor export;
-local shard recovery remains pending. Full-source global-256 prefix SFT 003
-and complete rank-256 128-view TTT 002 are accepted, with terminal outcomes
-pending. TTT 001 stopped before model work on an omitted notebook mount root;
-its sole retrieval is verified and frozen. Current SDG namespace and tiny TRM paths pass strict actual-model
-checks; raw SDG artifact acquisition and original-sized TRM remain incomplete.
+every transferred tensor independently verifies locally. Full-source
+global-256 prefix SFT 003 is accepted/pending. Complete rank-256 128-view TTT
+002 verifies sixteen DFS calls, five model candidates, eight-view ranking and
+exact reset on L4, with 18.5 GB training peak. TTT 001's mount failure is frozen.
+Real isolated published SDG program replay and the unchanged 8/12/4 source
+filter accept thirty pairs with both exposure ancestors retained. Full-width
+published TRM checkpoint loading/demo-TTT/ACT/reset verifies on CPU float32;
+the 192-member raw SDG archive, exact TRM v18 and original scale remain pending.
 
 The Qwen3.5 port is not the original Qwen3/NeMo/Unsloth implementation.
 Segmented correctness does not establish fused packing throughput. Full

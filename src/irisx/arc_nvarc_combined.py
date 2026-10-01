@@ -50,7 +50,18 @@ def atomic(path: Path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_bytes(canonical_bytes(value, newline=True))
-    os.replace(temporary, path)
+    for attempt in range(5):
+        try:
+            os.replace(temporary, path)
+            return
+        except PermissionError as error:
+            # Windows readers can briefly hold a file without delete sharing.
+            # Keep the old complete ledger until replacement succeeds; ordinary
+            # permissions fail immediately; persistent locks get at most 150 ms
+            # of backoff before the original error is raised.
+            if getattr(error, "winerror", None) not in {5, 32, 33} or attempt == 4:
+                raise
+            time.sleep(0.01 * 2**attempt)
 
 
 def member(root: Path, name: str) -> Path:
