@@ -19,8 +19,8 @@ identity remains frozen. Distinct `nvarc-overnight-sft-002` was accepted as
 private version 1 and completed accumulated SFT, restart and a 724-tensor
 HF export/reload. Its sole retrieval and independent local reading verify all
 724 exported tensor byte digests. The distinct global-256 source-prefix SFT 003
-reports both steps/restart/export complete; local export transfer/tensor proof
-remain pending. Complete 128-view TTT 002 is terminal and independently
+completed both steps/restart/export, with all 724 exported tensors independently
+verified locally. Complete 128-view TTT 002 is terminal and independently
 verified: 128 optimizer steps, sixteen DFS calls, five model candidates, seven
 eight-view verifications including two separate public-demo probes, exact reset,
 18.5 GB CUDA training peak and 715 seconds notebook time. Candidates are unscored.
@@ -35,12 +35,22 @@ the actual 512-width model and completes bounded CPU demo-TTT/ACT/reset.
 Published SDG artifacts version 1
 (192 Parquet members, 47,514,077,184 raw bytes) are being acquired into the
 isolated original namespace; a distinct validator-bound resume preserves the
-first timed-out partial. Full archive verification remains pending. Both TRM
+first timed-out partial. All 192 members, CRC, SHA and complete teacher/parent
+metadata profiling verify; program semantics remain separately bounded. Both TRM
 array Datasets now verify; all training identifiers/groups/indices retain their
 ancestors and exposure, with evaluation bytes quarantined. Joint Qwen/TRM
 ranking shares adapted task state and retains all model votes. GPU TTT 004
-stopped before optimizer/inference on a non-leaf buffer; final-device
-construction is submitted in distinct 005. All 49 strict ML tests and 315
+stopped before optimizer/inference on a non-leaf buffer; 005 then exposed a
+source carry-device mismatch. Both repairs have real failure regressions.
+Distinct 006 completed the full Qwen epoch/DFS and bounded full-width TRM
+adaptation/eight-view joint ranking, with exact reset and independent terminal
+verification. Long resource check 007 retained a second-forward OOM after one
+step. Distinct 008 uses CPU AdamW state with tied adapter storage preserved;
+the CPU differential and actual long GPU workload pass. Source TRM
+pretraining now retains ACT carry/EMA and exact resume with a source-step
+oracle. Full-width/all-identifier TRM 001 completes two steps/restart and all
+fifteen exported EMA tensors independently verify. Joint 010 using the actual
+SFT 003/TRM 001 exports is accepted and pending. All 50 strict ML tests and 315
 repository tests pass; the later leaf failure/optimizer regressions also pass.
 No ARC quality,
 original backend/model parity or full-scale training is claimed before proof.

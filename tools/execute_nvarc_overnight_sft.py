@@ -18,8 +18,10 @@ import re
 RUN = None
 from irisx.canonical import digest_value
 def preflight(package):
-    if read(package/'plan.json')['format']=='irisx/nvarc-complete-ttt-v1':
+    if read(package/'plan.json')['format'] in {'irisx/nvarc-complete-ttt-v1','irisx/nvarc-long-ttt-resource-v1'}:
         from tools.stage_nvarc_overnight_ttt import preflight as check
+    elif read(package/'plan.json')['format']=='irisx/nvarc-source-trm-training-v1':
+        from tools.stage_nvarc_overnight_trm import preflight as check
     else:
         from tools.stage_nvarc_overnight_sft import preflight as check
     return check(package)
@@ -95,7 +97,7 @@ def bindings(package):
 def execute(action, package, journal_dir):
     global RUN
     RUN = read(package / "plan.json")["run_id"]
-    assert re.fullmatch(r"nvarc-overnight-(?:sft|ttt)-\d{3}", RUN)
+    assert re.fullmatch(r"nvarc-overnight-(?:sft|ttt|trm)-\d{3}", RUN)
     # This immutable identity has one journal, including after a process restart.
     # A fresh journal argument must never create a second submission allowance.
     run_root = ROOT / ".irisx/nvarc-original/runs" / RUN
@@ -294,8 +296,12 @@ def execute(action, package, journal_dir):
                         download_event.update(verified=True,sha256=digest.hexdigest(),completed_utc=utc())
                         atomic(ledger,journal)
                         print(json.dumps({'export_member_verified':relative,'bytes':written}),flush=True)
-                    from irisx.arc_nvarc_representation import verify_model_material
-                    verified = verify_model_material(destination/'export',terminal['export_material_digest'])
+                    if read(package/'plan.json')['format']=='irisx/nvarc-source-trm-training-v1':
+                        from irisx.arc_nvarc_trm_training import verify_trm_export
+                        verified=verify_trm_export(destination/'export',terminal['export_material_digest'])
+                    else:
+                        from irisx.arc_nvarc_representation import verify_model_material
+                        verified = verify_model_material(destination/'export',terminal['export_material_digest'])
                     assert verified['training_identity_digest'] == terminal['identity_digest']
                     event['export_verified'] = True
                     event['export_material_digest'] = terminal['export_material_digest']

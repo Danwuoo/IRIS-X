@@ -15,7 +15,7 @@ import sys
 import time
 
 from .arc_nvarc_data import visible_task, transform_grid
-from .arc_nvarc_m3_trm import _batch, _step
+from .arc_nvarc_m3_trm import _batch, _step, _initial_carry_on_device
 from .arc_nvarc_trm import _decode_trm_tensor, TRM_REVISION
 from .arc_nvarc_trm_checkpoint import load_published_state, published_model_config
 from .canonical import canonical_bytes, digest_value
@@ -131,7 +131,8 @@ def run_published_trm(plan: dict, task: dict, checkpoint: Path, bundle: Path, ou
         with runtime_classes(bundle, settings['source_bundle_digest']) as classes:
             core, loss_cls, sparse_cls, adam_cls = classes
             model = construct_source_model(classes, settings['model_config'], device)
-            loaded = load_published_state(model, checkpoint, settings['checkpoint_sha256'])
+            loaded = load_published_state(model, checkpoint, settings['checkpoint_sha256'],
+                compiler_prefix='' if settings.get('kernel_source') else '_orig_mod.')
             initial = {name: value.detach().cpu().clone() for name, value in model.state_dict().items()}
             if device != 'cpu':
                 torch.cuda.reset_peak_memory_stats(device)
@@ -160,7 +161,7 @@ def run_published_trm(plan: dict, task: dict, checkpoint: Path, bundle: Path, ou
                         batch = {name: value.to(device) for name, value in _batch(input_grid, None, identifier=0).items()}
                         ledger['inference_views_reserved'] += 1
                         emit('view-reserved', view=view)
-                        carry = model.model.initial_carry(batch)
+                        carry = _initial_carry_on_device(model.model, batch)
                         calls = 0
                         while calls < 10:
                             ledger['act_forwards_reserved'] += 1
@@ -212,6 +213,8 @@ def verify_joint_trm_result(plan, result):
     import math
     settings = plan['joint_trm']
     loaded, ledger = result['checkpoint_load'], result['ledger']
+    if settings.get('kernel_source') and loaded.get('explicit_compiler_prefix')!='':
+        raise ValidationError('trained TRM export prefix binding differs')
     if (result['format'] != 'irisx/nvarc-published-trm-joint-result-v1' or
             result['plan_digest'] != digest_value(plan) or result['visible_digest'] != plan['visible_digest'] or
             result['model_config'] != settings['model_config'] or

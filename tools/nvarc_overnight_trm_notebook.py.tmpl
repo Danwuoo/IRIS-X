@@ -1,0 +1,114 @@
+"""Decision 0053: bounded original-source TRM pretraining and process resume."""
+import base64,hashlib,importlib.util,json,os,signal,shutil,subprocess,sys,time,zipfile,zlib
+from pathlib import Path
+START=time.monotonic()
+RUN=__RUN__
+PAYLOADS=__PAYLOADS__
+HASHES=__HASHES__
+FILES=__FILES__
+work=Path('/kaggle/working')/RUN
+temp=Path('/kaggle/temp')/RUN
+if work.exists() or temp.exists():raise RuntimeError('new TRM training identity required')
+work.mkdir(parents=True);temp.mkdir(parents=True)
+plan=None;phase='payload-validation'
+def save(name,value):
+    (work/name).write_text(json.dumps(value,sort_keys=True,allow_nan=False)+'\n',encoding='utf-8')
+def digest_file(path):
+    with path.open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
+def emit(name):
+    with (work/'events.jsonl').open('a',encoding='utf-8') as stream:
+        stream.write(json.dumps({'phase':name,'elapsed_seconds':time.monotonic()-START})+'\n')
+__HARDWARE_HELPER__
+try:
+    decoded={}
+    if set(PAYLOADS)!=set(HASHES) or set(PAYLOADS)!=set(FILES):raise RuntimeError('TRM payload coverage differs')
+    for key,value in PAYLOADS.items():
+        inflater=zlib.decompressobj();raw=inflater.decompress(base64.b64decode(value,validate=True),8*1024**2+1)
+        if not inflater.eof or inflater.unused_data or len(raw)>8*1024**2 or hashlib.sha256(raw).hexdigest()!=HASHES[key]:
+            raise RuntimeError('TRM payload bytes differ')
+        decoded[key]=raw
+        relative=FILES[key]
+        if '\\' in relative or ':' in relative or any(part in {'','.','..'} for part in relative.split('/')):
+            raise RuntimeError('TRM payload target differs')
+        path=temp/relative;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
+    plan=json.loads(decoded['plan']);save('plan.json',plan);save('payload-bindings.json',HASHES)
+    phase='hardware-inventory';emit(phase)
+    os.environ.update(HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',HF_DATASETS_OFFLINE='1',
+        TOKENIZERS_PARALLELISM='false',WANDB_DISABLED='true',OMP_NUM_THREADS='2',PYTHONIOENCODING='utf-8')
+    import torch
+    smi=subprocess.run(['nvidia-smi','--query-gpu=index,name,memory.total,uuid','--format=csv,noheader,nounits'],
+        capture_output=True,text=True,timeout=30,check=True)
+    inventory=collect_hardware_inventory(torch,smi.stdout,lambda raw:save('hardware-raw.json',raw))
+    if len(inventory)!=4 or len({item['uuid'] for item in inventory})!=4 or any(item['name']!='NVIDIA L4' or not item['bf16'] for item in inventory):
+        raise RuntimeError('four distinct BF16 L4 GPUs required')
+    save('hardware.json',{'inventory':inventory,'distinct_uuid_count':4,'model_worker_count':1,
+        'selected_local_rank':0,'selected_uuid':inventory[0]['uuid']})
+    competition=Path('/kaggle/input/competitions/arc-prize-2026-arc-agi-2')
+    if not competition.is_dir():raise RuntimeError('exact official competition entitlement mount required')
+    save('mount-policy.json',{'competition_root':str(competition),'competition_files_opened':0,'evaluation_members_staged':False})
+    if shutil.disk_usage(temp).free<9*1024**3 or shutil.disk_usage(work).free<3*1024**3:
+        raise RuntimeError('TRM checkpoint/export disk reserve unavailable')
+    roots=[Path('/kaggle/input/datasets/danielwuu/irisx-arc-agi-2-trial-002-smoke-001'),
+        Path('/kaggle/input/irisx-arc-agi-2-trial-002-smoke-001')]
+    matches=[root for root in roots if (root/'peft-0.21.0-py3-none-any.whl').is_file()]
+    if len(matches)!=1:raise RuntimeError('TRM exact offline wheel mount required')
+    wheels=matches[0]
+    manifest=json.loads(decoded['wheel_manifest'])
+    names={'transformers-5.8.1-py3-none-any.whl','accelerate-1.10.1-py3-none-any.whl','peft-0.21.0-py3-none-any.whl',
+        'huggingface_hub-1.32.0-py3-none-any.whl','safetensors-0.8.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl',
+        'tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl'}
+    entries={item['path']:item for item in manifest['files']}
+    for name in names:
+        path=wheels/name;entry=entries[name]
+        if not path.is_file() or path.stat().st_size!=entry['byte_size'] or 'sha256:'+digest_file(path)!=entry['content_digest']:
+            raise RuntimeError('TRM offline wheel bytes differ')
+    if importlib.util.find_spec('torchao') is not None:
+        subprocess.run([sys.executable,'-m','pip','uninstall','-y','torchao'],check=True,timeout=60)
+    subprocess.run([sys.executable,'-m','pip','install','--no-index','--find-links',str(wheels),
+        'transformers==5.8.1','accelerate==1.10.1','peft==0.21.0','huggingface-hub==1.32.0',
+        'safetensors==0.8.0','tokenizers==0.22.2',str(temp/FILES['runtime_wheel'])],check=True,timeout=180)
+    subprocess.run([sys.executable,'-m','pip','install','--no-index','--no-deps',str(temp/FILES['optimizer_wheel'])],check=True,timeout=60)
+    from irisx.canonical import digest_value
+    checkpoint=temp/'checkpoint-1.pt'
+    for mode in ('pause','resume'):
+        phase='source-training-'+mode;emit(phase)
+        command=[sys.executable,'-m','irisx.arc_nvarc_trm_training','--mode',mode,'--plan',str(temp/FILES['plan']),
+            '--bundle',str(temp/'trm-source-bundle'),'--reference',str(temp/'training-reference'),
+            '--prefix',str(temp/FILES['training_prefix']),'--checkpoint',str(checkpoint),
+            '--output',str(work/mode),'--export',str(work/'export')]
+        with (work/(mode+'-stdout.log')).open('w',encoding='utf-8') as stdout,(work/(mode+'-stderr.log')).open('w',encoding='utf-8') as stderr:
+            process=subprocess.Popen(command,stdout=stdout,stderr=stderr,start_new_session=True)
+            try:
+                code=process.wait(timeout=max(1,plan['maximum_notebook_wall_seconds']-120-(time.monotonic()-START)))
+                if code:raise subprocess.CalledProcessError(code,command)
+            finally:
+                if process.poll() is None:
+                    os.killpg(process.pid,signal.SIGTERM)
+                    try:process.wait(timeout=15)
+                    except subprocess.TimeoutExpired:os.killpg(process.pid,signal.SIGKILL);process.wait(timeout=15)
+    result=json.loads((work/'resume/result.json').read_bytes())
+    if result['plan_digest']!=digest_value(plan) or not result['process_restart_exact']:
+        raise RuntimeError('TRM returned restart/plan differs')
+    save('export-inventory.json',[{'path':p.relative_to(work).as_posix(),'bytes':p.stat().st_size,'sha256':digest_file(p)}
+        for p in sorted((work/'export').iterdir())])
+    save('terminal.json',{'run_id':RUN,'outcome':'complete','plan_digest':digest_value(plan),
+        'identity_digest':plan['identity_digest'],'export_material_digest':result['export_material_digest'],
+        'optimizer_steps':2,'generation_calls':0,'full_scale_training_verified':False,
+        'contains_evaluator_truth':False,'wall_seconds':time.monotonic()-START})
+except BaseException as error:
+    save('terminal.json',{'run_id':RUN,'outcome':'failed','phase':phase,'error_type':type(error).__name__,
+        'error_message':str(error)[:1200],'contains_evaluator_truth':False,'wall_seconds':time.monotonic()-START})
+    raise
+finally:
+    entries=[]
+    for path in sorted(work.rglob('*')):
+        if path.is_file() and 'export' not in path.relative_to(work).parts:
+            if path.is_symlink() or path.stat().st_size>8*1024**2:raise RuntimeError('TRM diagnostic bytes exceed bound')
+            entries.append({'path':path.relative_to(work).as_posix(),'bytes':path.stat().st_size,'sha256':digest_file(path)})
+    if sum(item['bytes'] for item in entries)>64*1024**2:raise RuntimeError('TRM diagnostic archive exceeds bound')
+    manifest={'format':'irisx/nvarc-overnight-trm-archive-v1','run_id':RUN,
+        'plan_digest':None if plan is None else 'sha256:'+hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest(),
+        'members':entries}
+    with zipfile.ZipFile(work.parent/'gpu-preflight-result.zip','x',compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr('manifest.json',json.dumps(manifest,sort_keys=True,separators=(',',':')))
+        for item in entries:archive.write(work/item['path'],item['path'])

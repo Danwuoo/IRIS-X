@@ -15,6 +15,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'src')]
 from tools import irisx_build_backend as build
 from irisx.arc_nvarc_complete_ttt import check_plan,complete_config
+from irisx.arc_nvarc_long_ttt import check_plan as check_resource_plan,resource_config
 from irisx.arc_nvarc_data import visible_task
 from irisx.arc_nvarc_datasets import sha_file
 from irisx.arc_nvarc_representation import verify_model_material
@@ -79,8 +80,58 @@ def source_export(run,*,remote_reference=False):
     return model,chain,final
 
 
-def stage(output:Path,run:str,sft_run:str,*,remote_reference=False,joint_trm=False):
+def selected_long_task():
+    """Select by public demonstration size alone; never inspect test answers."""
+    root=SOURCE/'NVARC/external/ARC-AGI-2/data/training'
+    estimates=[]
+    for path in sorted(root.glob('*.json')):
+        raw=json.loads(path.read_bytes())
+        size=sum(sum(len(row)+1 for row in demo[side])+2 for demo in raw['train'] for side in ('input','output'))
+        estimates.append((-size,path.stem,path))
+    candidates=[]
+    for _,name,path in sorted(estimates)[:32]:
+        task=visible_task(name,json.loads(path.read_bytes()))
+        task['test']=task['test'][:1]
+        rows=task_local_sequences(task,seed=42,augmentation_count=1,source_qwen=True,
+            source_augmentation_seed=1,source_max_length=8192)
+        candidates.append((-max(len(row['input_ids']) for row in rows),name,task,rows,path))
+    _,name,task,rows,path=min(candidates,key=lambda item:item[:2])
+    if not 6000<=max(len(row['input_ids']) for row in rows)<=8192:
+        raise ValidationError('public long resource task unavailable')
+    from irisx.arc_nvarc_original_corpus import parent_metadata
+    catalog_path=ROOT/'.irisx/nvarc-original/materials/corpus-20261001-001/catalog.json'
+    parents,tags=parent_metadata('arc2_training',name,json.loads(catalog_path.read_bytes()),{})
+    selection={'policy':'largest actual source view among 32 largest public training-demo size estimates; lexical ID tie break',
+        'preselected_tasks':32,'parent_ids':parents,'exposure_tags':tags,'parent_sha256':sha_file(path),
+        'catalog_sha256':sha_file(catalog_path),'test_answer_selection':False}
+    return task,rows,selection
+
+
+def validate_plan(plan,config,tasks):
+    validator=check_resource_plan if plan['format']=='irisx/nvarc-long-ttt-resource-v1' else check_plan
+    validator(plan,config,tasks)
+
+
+def source_trm_export(run):
+    from tools.verify_nvarc_overnight_run import closed_archive
+    from irisx.arc_nvarc_trm_training import verify_trm_export
+    if not re.fullmatch(r'nvarc-overnight-trm-\d{3}',run):raise ValidationError('exact source TRM run required')
+    folder=ROOT/'.irisx/nvarc-original/runs'/run
+    plan,event,data,archive_sha=closed_archive(folder,run)
+    terminal=json.loads(data['terminal.json'])
+    if terminal['outcome']!='complete' or plan['format']!='irisx/nvarc-source-trm-training-v1' or not event.get('export_verified'):
+        raise ValidationError('verified source TRM training export required')
+    material=verify_trm_export(folder/'execution-final/retrieved/export',terminal['export_material_digest'])
+    if material['training_identity_digest']!=terminal['identity_digest'] or material['optimizer_steps']!=2:
+        raise ValidationError('source TRM export training identity differs')
+    return material,terminal,archive_sha
+
+
+def stage(output:Path,run:str,sft_run:str,*,remote_reference=False,joint_trm=False,resource_long=False,cpu_optimizer_state=False,trm_export_run=None):
     if output.exists() or not re.fullmatch(r'nvarc-overnight-ttt-\d{3}',run):raise ValidationError('new complete TTT package required')
+    if joint_trm and resource_long:raise ValidationError('separate resource and joint workload required')
+    if cpu_optimizer_state and not resource_long:raise ValidationError('CPU optimizer state requires distinct resource workload')
+    if trm_export_run and not joint_trm:raise ValidationError('source TRM export requires joint model workload')
     model,chain,final=source_export(sft_run,remote_reference=remote_reference)
     binding=build_bundle(SOURCE,TRIAL/'source-manifest.json',output/'source-bundle')
     raw=json.loads((SOURCE/'NVARC/external/ARC-AGI-2/data/training/00576224.json').read_bytes())
@@ -89,6 +140,10 @@ def stage(output:Path,run:str,sft_run:str,*,remote_reference=False,joint_trm=Fal
     config=complete_config()
     rows=task_local_sequences(task,seed=42,augmentation_count=16,source_qwen=True,source_augmentation_seed=1,source_max_length=8192)
     if len(rows)!=128:raise ValidationError('full public task source epoch differs')
+    if resource_long:
+        task,rows,selection=selected_long_task()
+        visible={task['task_id']:{'train':task['train'],'test':task['test']}}
+        config=resource_config(cpu_optimizer_state=cpu_optimizer_state)
     plan={'format':'irisx/nvarc-complete-ttt-v1','run_id':run,'kernel_id':'danielwuu/'+run,
         'backend':'cuda-l4','approved':True,'owner_decision':'Decision 0053','maximum_paid_usd':0,'maximum_teacher_calls':0,
         'config_digest':digest_value(config),'visible_digest':digest_value([task]),'maximum_tasks':1,
@@ -105,6 +160,13 @@ def stage(output:Path,run:str,sft_run:str,*,remote_reference=False,joint_trm=Fal
         'retain_export':False,'contains_evaluator_truth':False,'correctness_scored':False,'full_scale_sft_verified':False,
         'exposure':'repeated public tuning parent; original-source exposure retained; not a fresh holdout',
         'demonstration_probe_policy':'two public-demo outputs scored under eight views; never model candidates or solutions'}
+    if resource_long:
+        plan.update(format='irisx/nvarc-long-ttt-resource-v1',maximum_generations=0,
+            maximum_optimizer_steps=8,maximum_verifications=0,maximum_outer_model_forwards=8,
+            resource_selection=selection,original_128_view_epoch_verified=False,
+            exposure='public training parent selected by sequence length; source ancestry retained; no correctness scoring',
+            demonstration_probe_policy='no inference or verifier calls; eight reduced source views for resource checking')
+        if cpu_optimizer_state:plan['optimizer_state_device']='cpu'
     if joint_trm:
         from irisx.arc_nvarc_trm_runtime import build_runtime_bundle
         from irisx.arc_nvarc_trm_checkpoint import published_model_config
@@ -121,7 +183,16 @@ def stage(output:Path,run:str,sft_run:str,*,remote_reference=False,joint_trm=Fal
             'workload_variant':'one public demo update; eight D4 views; no color augmentation; not original 2000-epoch TTT'}
         plan['maximum_verifications']=42
         plan['datasets']['trm']='cpmpml/arc-prize-trm-031'
-    check_plan(plan,config,[task])
+        if trm_export_run:
+            trm_material,trm_terminal,trm_archive_sha=source_trm_export(trm_export_run)
+            settings=plan['joint_trm'];del settings['dataset']
+            settings.update(file='trm-ema.pt',kernel_source='danielwuu/'+trm_export_run,kernel_source_version=1,
+                checkpoint_sha256=trm_material['checkpoint_sha256'],export_material_digest=trm_terminal['export_material_digest'],
+                training_identity_digest=trm_material['training_identity_digest'],source_terminal_archive_sha256=trm_archive_sha,
+                checkpoint_format='source-ema-unwrapped',source_training_steps=2)
+            del plan['datasets']['trm']
+            plan['source_kernels']=[plan['source_kernel'],settings['kernel_source']]
+    validate_plan(plan,config,[task])
     (output/'wheel').mkdir()
     wheel=output/'wheel'/build.build_wheel(str(output/'wheel'))
     payloads={'plan':canonical_bytes(plan,newline=True),'config':canonical_bytes(config,newline=True),
@@ -148,7 +219,7 @@ def stage(output:Path,run:str,sft_run:str,*,remote_reference=False,joint_trm=Fal
     (kernel/'notebook.ipynb').write_bytes(canonical_bytes(notebook,newline=True))
     meta={'id':plan['kernel_id'],'title':run,'code_file':'notebook.ipynb','language':'python','kernel_type':'notebook',
         'is_private':True,'enable_gpu':True,'enable_tpu':False,'enable_internet':False,'machine_shape':'NvidiaL4',
-        'dataset_sources':[plan['datasets'][key] for key in sorted(plan['datasets'])],'kernel_sources':[plan['source_kernel']],
+        'dataset_sources':[plan['datasets'][key] for key in sorted(plan['datasets'])],'kernel_sources':plan.get('source_kernels',[plan['source_kernel']]),
         'competition_sources':plan['competition_sources'],'model_sources':[]}
     (kernel/'kernel-metadata.json').write_bytes(canonical_bytes(meta,newline=True))
     summary={'format':'irisx/nvarc-overnight-stage-v1','run_id':run,'plan_digest':digest_value(plan),
@@ -170,7 +241,7 @@ def preflight(output:Path):
     if {key:hashlib.sha256(value).hexdigest() for key,value in decoded.items()}!=values['HASHES'] or values['HASHES']!=summary['payload_sha256']:
         raise ValidationError('complete TTT payload hashes differ')
     plan=json.loads(decoded['plan']);config=json.loads(decoded['config']);visible=json.loads(decoded['visible'])
-    check_plan(plan,config,[visible_task(key,value) for key,value in sorted(visible.items())])
+    validate_plan(plan,config,[visible_task(key,value) for key,value in sorted(visible.items())])
     if digest_value(plan)!=summary['plan_digest'] or plan['run_id']!=values['RUN']:raise ValidationError('complete TTT plan identity differs')
     for key,path in values['FILES'].items():
         if key=='runtime_wheel':target=next((output/'wheel').glob('*.whl'))
@@ -179,25 +250,37 @@ def preflight(output:Path):
     with zipfile.ZipFile(next((output/'wheel').glob('*.whl'))) as archive:
         for name in ('arc_nvarc_complete_ttt.py','arc_nvarc_training.py','arc_nvarc_source_recipe.py','arc_nvarc_candidates.py'):
             if archive.read('irisx/'+name)!=(ROOT/'src/irisx'/name).read_bytes():raise ValidationError('complete TTT implementation differs')
+        if plan['format']=='irisx/nvarc-long-ttt-resource-v1' and archive.read('irisx/arc_nvarc_long_ttt.py')!=(ROOT/'src/irisx/arc_nvarc_long_ttt.py').read_bytes():
+            raise ValidationError('long resource implementation differs')
         if plan.get('joint_trm') is not None:
             from irisx.arc_nvarc_trm_runtime import verify_runtime_bundle
             verify_runtime_bundle(output/'trm-source-bundle',plan['joint_trm']['source_bundle_digest'])
             if (hashlib.sha256(decoded['trm_optimizer_wheel']).hexdigest()!=plan['joint_trm']['optimizer_wheel_sha256'] or
-                    archive.read('irisx/arc_nvarc_trm_runtime.py')!=(ROOT/'src/irisx/arc_nvarc_trm_runtime.py').read_bytes()):
+                    archive.read('irisx/arc_nvarc_trm_runtime.py')!=(ROOT/'src/irisx/arc_nvarc_trm_runtime.py').read_bytes() or
+                    archive.read('irisx/arc_nvarc_m3_trm.py')!=(ROOT/'src/irisx/arc_nvarc_m3_trm.py').read_bytes()):
                 raise ValidationError('joint TRM optimizer/runtime differs')
+            if plan['joint_trm'].get('kernel_source'):
+                for name in ('arc_nvarc_trm_checkpoint.py','arc_nvarc_trm_training.py'):
+                    if archive.read('irisx/'+name)!=(ROOT/'src/irisx'/name).read_bytes():
+                        raise ValidationError('trained TRM export bridge differs')
     verify_bundle(output/'source-bundle',plan['source_bundle_digest'])
     _,chain,_=source_export(plan['source_kernel'].split('/')[1],remote_reference=not plan['local_export_bytes_verified_at_stage'])
     if chain['export_material_digest']!=plan['material_digest'] or chain['identity_digest']!=plan['training_identity_digest']:
         raise ValidationError('complete TTT source export differs')
     if chain['source_terminal_archive_sha256']!=plan['source_terminal_archive_sha256'] or not plan['runtime_export_bytes_verification_required']:
         raise ValidationError('complete TTT source archive/onsite material verification differs')
+    if plan.get('joint_trm',{}).get('kernel_source'):
+        settings=plan['joint_trm'];material,terminal,archive_sha=source_trm_export(settings['kernel_source'].split('/')[1])
+        if (material['checkpoint_sha256']!=settings['checkpoint_sha256'] or terminal['export_material_digest']!=settings['export_material_digest'] or
+            material['training_identity_digest']!=settings['training_identity_digest'] or archive_sha!=settings['source_terminal_archive_sha256']):
+            raise ValidationError('source TRM training/export chain differs')
     meta=json.loads((output/'kernel/kernel-metadata.json').read_bytes())
     if (meta['id']!=plan['kernel_id'] or meta['title']!=plan['run_id'] or meta['is_private'] is not True or
             meta['enable_internet'] is not False or meta['machine_shape']!='NvidiaL4' or
-            meta['dataset_sources']!=list(plan['datasets'].values()) or meta['kernel_sources']!=[plan['source_kernel']] or
+            meta['dataset_sources']!=list(plan['datasets'].values()) or meta['kernel_sources']!=plan.get('source_kernels',[plan['source_kernel']]) or
             meta['competition_sources']!=plan['competition_sources']):raise ValidationError('complete TTT private transport differs')
     return {'run_id':plan['run_id'],'plan_digest':digest_value(plan),'offline_package_verified':True,'external_calls':0,
-        'runtime_verified':False,'maximum_optimizer_steps':128,'maximum_generations':16,'maximum_paid_usd':0,
+        'runtime_verified':False,'maximum_optimizer_steps':plan['maximum_optimizer_steps'],'maximum_generations':plan['maximum_generations'],'maximum_paid_usd':0,
         'joint_trm_enabled':plan.get('joint_trm') is not None,'maximum_verifications':plan['maximum_verifications']}
 
 
@@ -206,5 +289,8 @@ if __name__=='__main__':
     parser.add_argument('--output',type=Path,required=True);parser.add_argument('--run');parser.add_argument('--sft-run')
     parser.add_argument('--remote-export-proof',action='store_true',help='Use the exact retrieved export manifest; verify all mounted weight bytes before model work on Kaggle.')
     parser.add_argument('--joint-trm',action='store_true')
+    parser.add_argument('--resource-long',action='store_true')
+    parser.add_argument('--cpu-optimizer-state',action='store_true')
+    parser.add_argument('--trm-export-run')
     args=parser.parse_args()
-    print(json.dumps(stage(args.output,args.run,args.sft_run,remote_reference=args.remote_export_proof,joint_trm=args.joint_trm) if args.action=='stage' else preflight(args.output),indent=2))
+    print(json.dumps(stage(args.output,args.run,args.sft_run,remote_reference=args.remote_export_proof,joint_trm=args.joint_trm,resource_long=args.resource_long,cpu_optimizer_state=args.cpu_optimizer_state,trm_export_run=args.trm_export_run) if args.action=='stage' else preflight(args.output),indent=2))

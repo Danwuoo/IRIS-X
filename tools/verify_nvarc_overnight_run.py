@@ -226,8 +226,104 @@ def verify_ttt(folder,plan,data):
         'joint_trm':joint_proof}
 
 
+def verify_long_resource(folder,plan,data):
+    from irisx.arc_nvarc_data import visible_task
+    from irisx.arc_nvarc_long_ttt import check_plan,resource_config
+    from irisx.arc_nvarc_source_bundle import verify_bundle
+    from irisx.arc_nvarc_training import task_local_sequences
+    from irisx.arc_nvarc_upstream import source_bundle
+    result=json.loads(data['worker/result.json']);ttt=result['ttt'];ledger=result['ledger']
+    require(result['plan_digest']==digest_value(plan) and result['material_digest']==plan['material_digest'] and
+        result['training_identity_digest']==plan['training_identity_digest'],'long resource export identity differs')
+    raw=json.loads((folder/'package-l4/visible.json').read_bytes())
+    require(all(set(item)=={'input'} for task in raw.values() for item in task['test']),'long resource test answer present')
+    tasks=[visible_task(key,value) for key,value in sorted(raw.items())]
+    config=resource_config(cpu_optimizer_state=plan.get('optimizer_state_device')=='cpu');check_plan(plan,config,tasks)
+    require(ttt['optimizer_state_device']==plan.get('optimizer_state_device','model'),'long resource optimizer device differs')
+    bundle=folder/'package-l4/source-bundle';verify_bundle(bundle,plan['source_bundle_digest'])
+    with source_bundle(bundle,plan['source_bundle_digest']):
+        rows=task_local_sequences(tasks[0],seed=42,augmentation_count=1,source_qwen=True,
+            source_augmentation_seed=1,source_max_length=8192)
+    import torch
+    order=torch.randperm(8,generator=torch.Generator().manual_seed(42)).tolist()
+    require(ttt['status']=='complete' and ttt['steps']==ttt['source_view_count']==8 and ttt['complete_epoch'] and
+        ttt['consumed_view_indices']==order,'reduced source resource view coverage differs')
+    require(ttt['training_tokens']==plan['source_epoch_input_tokens']==sum(len(row['input_ids']) for row in rows) and
+        ttt['source_sequence_keys']==[row['source'] for row in rows] and
+        result['maximum_sequence_length_observed']==plan['source_epoch_max_sequence_length']==max(len(row['input_ids']) for row in rows),
+        'long source resource sequence/token binding differs')
+    require(len(ttt['losses_by_step'])==len(ttt['gradient_groups_by_step'])==8 and
+        all(math.isfinite(value) for value in ttt['losses_by_step']) and
+        all(all(group[key]>0 for key in ('attention','delta','embedding','head')) for group in ttt['gradient_groups_by_step']),
+        'long resource finite loss/gradient coverage differs')
+    peak=config['adaptation']['learning_rate']
+    expected=[0.0]+[peak*0.5*(1+math.cos(math.pi*(index-1)/7)) for index in range(1,8)]
+    require(ttt['warmup_steps']==1 and len(ttt['learning_rates_by_step'])==8 and
+        all(math.isclose(a,b,rel_tol=1e-12,abs_tol=1e-15) for a,b in zip(ttt['learning_rates_by_step'],expected)),
+        'reduced source resource schedule differs')
+    require(ledger['phase']=='complete' and ledger['optimizer_steps_completed']==ledger['outer_model_forwards_reserved']==8 and
+        ledger['generation_calls_completed']==ledger['verification_calls_completed']==0 and
+        result['adapter_reset_exact'] and result['changed_adapter_tensor_count']>0 and
+        result['reduced_color_repeats']==1 and result['original_128_view_epoch_verified'] is False,
+        'long resource forward/reset/claim ledger differs')
+    events=[json.loads(line) for line in data['worker/events.jsonl'].splitlines()]
+    steps=[item for item in events if item['event']=='ttt-optimizer-returned']
+    require(len(steps)==8 and [item['completed_steps'] for item in steps]==list(range(1,9)) and
+        [item['source_view_index'] for item in steps]==order and
+        [item['training_tokens'] for item in steps]==[sum(len(rows[j]['input_ids']) for j in order[:i]) for i in range(1,9)],
+        'long resource actual optimizer-returned events differ')
+    require(not result['contains_evaluator_truth'] and not result['correctness_scored'] and not result['full_scale_sft_verified'] and
+        not result['original_qwen3_unsloth_parity'],'long resource unearned scientific claim present')
+    return {'optimizer_steps':8,'source_epoch_training_tokens':ttt['training_tokens'],
+        'maximum_sequence_length':result['maximum_sequence_length_observed'],'generation_calls':0,'verification_calls':0,
+        'outer_model_forwards':8,'adapter_reset_exact':True,'original_128_view_epoch_verified':False,
+        'trainable_parameter_count':ttt['trainable_parameter_count'],'cuda_peak_allocated_bytes':ttt['peak_cuda_allocated_bytes'],
+        'cuda_peak_reserved_bytes':ttt['peak_cuda_reserved_bytes']}
+
+
+def verify_trm_training(folder,plan,event,data):
+    from irisx.arc_nvarc_trm_training import verify_trm_export,training_config,training_model_config
+    require(plan['config']==training_config() and plan['model_config']==training_model_config(),
+        'TRM source configuration differs')
+    result=json.loads(data['resume/result.json']);restart=json.loads(data['resume/restart.json'])
+    paused=json.loads(data['pause/checkpoint-manifest.json'])
+    require(restart['checkpoint_sha256']==paused['checkpoint_sha256'] and paused['step']==1 and
+        paused['identity_digest']==plan['identity_digest'],'TRM exact step-one checkpoint digest differs')
+    steps=[json.loads(data[mode+'/step.json']) for mode in ('pause','resume')]
+    require(result['plan_digest']==digest_value(plan) and result['identity_digest']==plan['identity_digest'] and
+        result['optimizer_steps']==2 and result['generation_calls']==0 and result['process_restart_exact'] and
+        result['ema_export_actual_tensor_reload'] and restart['exact_model_optimizer_carry_ema_rng'],
+        'TRM process/carry/optimizer/EMA chain differs')
+    require([item['step'] for item in steps]==[1,2] and all(math.isfinite(item['loss']) and
+        item['nonzero_gradient_tensors']>0 and item['input_tokens']==7200 and item['supervised_tokens']==792 for item in steps),
+        'TRM actual finite optimizer-step coverage differs')
+    require(all(item['learning_rates']==[.01*item['step']/2000,.0003*item['step']/2000] for item in steps),
+        'TRM source warmup schedule differs')
+    require(result['input_tokens']==14400 and result['supervised_tokens']==1584 and
+        not result['full_scale_training_verified'] and not result['correctness_scored'] and not result['contains_evaluator_truth'],
+        'TRM bounded workload/scientific claim differs')
+    require(event['export_verified'] and event['export_material_digest']==result['export_material_digest'],
+        'TRM retained export proof absent')
+    exported=verify_trm_export(folder/'execution-final/retrieved/export',result['export_material_digest'])
+    checkpoint=json.loads(data['resume/checkpoint-manifest.json'])
+    require(checkpoint['step']==2 and not checkpoint['optimizer_checkpoint_bytes_retained'] and
+        checkpoint['identity_digest']==plan['identity_digest'],'TRM ephemeral checkpoint binding differs')
+    inventory=checkpoint['tensor_inventory']
+    for name,expected in exported['tensor_inventory'].items():
+        suffix=name.removeprefix('root/')
+        original=inventory.get('root/ema/'+suffix,inventory.get('root/model/'+suffix))
+        require(original==expected,'TRM exact source EMA export tensor differs: '+name)
+    require(len(exported['tensor_inventory'])==15 and exported['training_identity_digest']==plan['identity_digest'] and
+        exported['model_config']==plan['model_config'],'TRM actual full-width embedding export differs')
+    return {'optimizer_steps':2,'global_batch_size':8,'input_tokens':14400,'supervised_tokens':1584,
+        'state_tensor_count':15,'puzzle_embedding_identifiers':1041208,'process_restart_exact':True,
+        'ema_export_actual_tensor_bytes_verified':True,'optimizer_checkpoint_bytes_retained':False,
+        'cuda_peak_allocated_bytes':result['cuda_peak_allocated_bytes'],'cuda_peak_reserved_bytes':result['cuda_peak_reserved_bytes'],
+        'full_scale_training_verified':False,'correctness_scored':False}
+
+
 def verify(run):
-    require(re.fullmatch(r'nvarc-overnight-(?:sft|ttt)-\d{3}',run),'exact Goal run identity required')
+    require(re.fullmatch(r'nvarc-overnight-(?:sft|ttt|trm)-\d{3}',run),'exact Goal run identity required')
     folder=ROOT/'.irisx/nvarc-original/runs'/run
     plan,event,data,archive_sha=closed_archive(folder,run)
     terminal=json.loads(data['terminal.json'])
@@ -238,6 +334,10 @@ def verify(run):
         report['runtime']=verify_sft(folder,plan,event,data)
     elif terminal['outcome']=='complete' and plan['format']=='irisx/nvarc-complete-ttt-v1':
         report['runtime']=verify_ttt(folder,plan,data)
+    elif terminal['outcome']=='complete' and plan['format']=='irisx/nvarc-long-ttt-resource-v1':
+        report['runtime']=verify_long_resource(folder,plan,data)
+    elif terminal['outcome']=='complete' and plan['format']=='irisx/nvarc-source-trm-training-v1':
+        report['runtime']=verify_trm_training(folder,plan,event,data)
     elif terminal['outcome']=='failed':
         report['claim']='digest-bound failure only; no absent runtime work is inferred'
     else:

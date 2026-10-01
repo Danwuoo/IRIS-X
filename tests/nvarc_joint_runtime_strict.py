@@ -10,7 +10,7 @@ import unittest
 import torch
 
 from irisx.arc_nvarc_candidates import FixtureCandidateBackend, solve_task
-from irisx.arc_nvarc_m3_trm import _source_classes, _model_config, _batch, _step
+from irisx.arc_nvarc_m3_trm import _source_classes, _model_config, _batch, _step, _initial_carry_on_device
 from irisx.arc_nvarc_trm_runtime import build_runtime_bundle, runtime_classes, verify_runtime_bundle, construct_source_model
 from irisx.arc_nvarc_upstream import SOURCE
 from irisx.errors import ValidationError
@@ -81,6 +81,15 @@ class JointRuntimeStrictTests(unittest.TestCase):
             self.assertTrue(any(value.requires_grad and not value.is_leaf for value in moved.buffers()))
             with self.assertRaisesRegex(ValueError, 'non-leaf'):
                 sparse(moved.model.puzzle_emb.buffers(), world_size=1)
+            cpu_model = construct_source_model(original_classes, config, 'cpu')
+            batch = _batch([[1, 2]], [[2, 1]], identifier=0)
+            with torch.device('meta'):
+                broken = cpu_model.initial_carry(batch)
+                corrected = _initial_carry_on_device(cpu_model, batch)
+            self.assertEqual('meta', broken.inner_carry.z_H.device.type)
+            self.assertTrue(all(value.device.type == 'cpu' for value in
+                [corrected.inner_carry.z_H, corrected.inner_carry.z_L, corrected.steps, corrected.halted,
+                 *corrected.current_data.values()]))
             with tempfile.TemporaryDirectory() as directory:
                 bundle = Path(directory) / 'bundle'
                 binding = build_runtime_bundle(root, bundle)

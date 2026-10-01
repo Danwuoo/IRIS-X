@@ -60,6 +60,42 @@ def cut_source_dataset(dataset: Any, *, name: str, max_length: int) -> Any:
     return dataset.cut_to_len(formatter=formatter, name=name, max_len=max_length)
 
 
+def cpu_state_adamw(parameters,*,lr):
+    """Keep AdamW mirrors/moments on CPU, copying clipped gradients and updates.
+
+    This opt-in resource adapter uses the same PyTorch AdamW algorithm. CPU/GPU
+    kernel parity is not inferred; the CPU differential oracle is bitwise.
+    """
+    import torch
+    originals=list(parameters)
+    class CPUStateAdamW(torch.optim.AdamW):
+        def __init__(self):
+            # PEFT's tied embedding/head adapters can be different Parameter
+            # objects sharing transposed storage. Preserve that alias topology;
+            # independent clones silently change AdamW's two updates.
+            storages={};mirrors=[]
+            for value in originals:
+                storage=value.untyped_storage()
+                key=(str(value.device),storage.data_ptr(),storage.nbytes(),str(value.dtype))
+                if key not in storages:
+                    storages[key]=value.detach().as_strided((storage.nbytes()//value.element_size(),),(1,),0).cpu().clone()
+                mirrors.append(torch.nn.Parameter(storages[key].as_strided(value.shape,value.stride(),value.storage_offset())))
+            super().__init__(mirrors,lr=lr,weight_decay=0.)
+            self.mirrors=mirrors
+        def step(self,closure=None):
+            if closure is not None:raise ValidationError('CPU source optimizer closure unsupported')
+            for original,mirror in zip(originals,self.mirrors):
+                mirror.grad=None if original.grad is None else original.grad.detach().cpu().clone()
+            result=super().step()
+            with torch.no_grad():
+                for original,mirror in zip(originals,self.mirrors):original.copy_(mirror)
+            return result
+        def zero_grad(self,set_to_none=True):
+            super().zero_grad(set_to_none=set_to_none)
+            for original in originals:original.grad=None
+    return CPUStateAdamW()
+
+
 def train_source_epoch(adapter: Any, task: dict) -> Any:
     """Consume every source augmentation exactly once with notebook scheduling."""
     import torch
@@ -89,9 +125,11 @@ def train_source_epoch(adapter: Any, task: dict) -> Any:
         torch.cuda.manual_seed_all(int(config["seed"]))
     generator = torch.Generator().manual_seed(int(config["seed"]))
     order = torch.randperm(steps, generator=generator).tolist()
-    optimizer = torch.optim.AdamW(
-        (p for p in adapter.model.parameters() if p.requires_grad),
-        lr=float(config["learning_rate"]), weight_decay=0.0)
+    state_device=config.get('optimizer_state_device','model')
+    if state_device not in {'model','cpu'}:raise ValidationError('source optimizer state device differs')
+    trainable=(p for p in adapter.model.parameters() if p.requires_grad)
+    optimizer=(cpu_state_adamw(trainable,lr=float(config['learning_rate'])) if state_device=='cpu' else
+        torch.optim.AdamW(trainable,lr=float(config['learning_rate']),weight_decay=0.))
     device = next(adapter.model.parameters()).device
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device)
@@ -143,6 +181,7 @@ def train_source_epoch(adapter: Any, task: dict) -> Any:
         "warmup_steps": math.ceil(steps * ratio), "complete_epoch": sorted(consumed) == list(range(steps)),
         "sample_order_policy": "seeded-torch-randperm-reference",
         "gradient_checkpointing": bool(adapter.model.is_gradient_checkpointing),
+        "optimizer_state_device": state_device,
         "trainable_parameter_count": sum(p.numel() for p in adapter.model.parameters() if p.requires_grad),
         "peak_cuda_allocated_bytes": torch.cuda.max_memory_allocated(device) if device.type == "cuda" else None,
         "peak_cuda_reserved_bytes": torch.cuda.max_memory_reserved(device) if device.type == "cuda" else None}

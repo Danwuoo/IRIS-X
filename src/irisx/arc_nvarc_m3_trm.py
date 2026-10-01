@@ -55,11 +55,19 @@ def _batch(input_grid: Any, output_grid: Any | None, *, identifier: int) -> dict
             "puzzle_identifiers": torch.tensor([identifier], dtype=torch.int64)}
 
 
+def _initial_carry_on_device(model: Any, batch: Mapping[str, Any]):
+    import torch
+    # Upstream pretrain initializes carry inside its device context; the source
+    # factories for hidden states/steps/halted otherwise use the CPU default.
+    with torch.device(batch['inputs'].device):
+        return model.initial_carry(batch)
+
+
 def _step(model: Any, batch: Mapping[str, Any], optimizers: list[Any]) -> tuple[float, int]:
     import torch
 
     model.train()
-    carry = model.initial_carry(batch)
+    carry = _initial_carry_on_device(model, batch)
     carry, loss, _, _, _ = model(carry=carry, batch=batch, return_keys=[])
     if not bool(torch.isfinite(loss)):
         raise ValidationError("TRM training loss is non-finite")

@@ -43,7 +43,7 @@ Starting main commit is `01f43cd`. GPU preflight 002 is verified and consumed.
   verified the closed diagnostics and all local exported tensor byte digests.
   Run 003 reports both global-batch-256 steps complete over the exact first
   512 full-shuffle rows (1,770,662 input / 764,883 supervised tokens), restart
-  and export/reload; sole export transfer/local tensor proof remains pending.
+  and export/reload; sole export transfer/local reading verifies all 724 tensors.
 - Complete task-local adaptation / inference integration: full 128-view tiny
   epoch checkpoint differential and trained-export/search/reset integration
   pass. Four-L4 run `nvarc-overnight-ttt-001` is accepted with a single model
@@ -68,7 +68,9 @@ Starting main commit is `01f43cd`. GPU preflight 002 is verified and consumed.
   program execution; exact local recovery without new calls and independent
   8/12/4 reconciliation accept thirty exposed pairs and source augmentation.
   The full 42 GB artifact archive is resuming from a frozen 16.9 GB partial
-  in a distinct material identity; whole-archive verification is pending.
+  in a distinct material identity; all 192 members, CRC and SHA now verify.
+  All-member teacher/parent metadata profiling also verifies, preserving all
+  265,492 parent sets and exposure without filtering or executing programs.
   Exact TRM v18 requests returned 404 (version label) and 403 (official CLI
   slug convention), preserving the v21/v18 gap.
   Both published TRM array Datasets fully verify; evaluation bytes remain
@@ -78,16 +80,33 @@ Starting main commit is `01f43cd`. GPU preflight 002 is verified and consumed.
   Joint Qwen/TRM ranking retains the complete Qwen workload and adds one demo
   TRM update/eight D4 views on a separate L4. Inert 003 failed preflight ordering;
   004 failed on a moved non-leaf sparse buffer. Distinct 005 constructs on the
-  final device, passes the actual failure regression and is accepted/pending.
-  Full original teacher generation, raw artifact verification, TRM scale and v18 parity
+  final device and then exposed the carry factory's CPU/CUDA mismatch. Both
+  failure modes have actual source regressions. Distinct 006 completed and its
+  single terminal retrieval/independent verification reconcile one full-width
+  TRM update/eight views/eighty ACT forwards with all 128 Qwen steps, sixteen
+  DFS calls, eight unique joint candidates and exact task reset.
+  The previous task's longest sequence was 108 tokens. Resource check 007 is
+  accepted: eight reduced complete D4 views / 59,712 tokens, max 7,464, zero
+  inference or scoring. Selection uses only public demonstration size and
+  retains protected/locked ancestry. Its second-forward OOM is frozen after
+  one step. Distinct 008 uses optional CPU AdamW state with tied adapter storage
+  preserved; bitwise CPU differential and all eight long GPU views pass.
+  Source TRM pretraining now has persistent ACT carry, source normalization,
+  optimizers/schedule/EMA and exact resume; the unchanged source-step oracle
+  passes. Full-width/all-identifier TRM 001 is accepted with a public-training
+  prefix, two steps/process restart/EMA export and zero inference. Runtime and
+  all fifteen retained export tensor byte digests independently verify. Joint
+  010 using actual SFT 003/TRM 001 exports is accepted and pending; inert 009
+  preserves a published-only plan-gate rejection with no provider call.
+  Full original teacher generation, whole-archive program semantics, TRM scale and v18 parity
   remain unverified and cannot be replaced by these engineering observations.
 - Repository validation: 314 tests passed in 267.771 s for milestone 002.
-  Later ML validation passed all 49 tests in 308.211 seconds. A Windows atomic-ledger lock surfaced in a later
+  Later ML validation passed all 50 tests in 304.273 seconds. A Windows atomic-ledger lock surfaced in a later
   system-Python check, now repaired with bounded replacement retry and an
   independent transient/persistent-lock regression. Required full revalidation
-  passed 315 tests in 264.130 seconds using the ML runtime. The later joint
-  leaf-buffer repair's source optimizer/state regressions also pass.
-  Final source-prefix runtime, durable handoff and substantive completion remain
+  passed 315 tests in 253.016 seconds using the ML runtime. The later source-EMA
+  inference bridge's five focused tests pass in 26.419 seconds.
+  Final trained-export joint runtime, durable handoff and substantive completion remain
   pending. Required validation will be repeated only after further changes.
 
 The bounded two-step GPU probe is not a full SFT checkpoint or quality result.

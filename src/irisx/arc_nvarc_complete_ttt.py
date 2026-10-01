@@ -51,8 +51,17 @@ def check_plan(plan,config,tasks):
     if joint is not None:
         from .arc_nvarc_trm_checkpoint import published_model_config
         from .arc_nvarc_trm_runtime import SOURCE_HASHES
-        if (joint.get('dataset')!='cpmpml/arc-prize-trm-031/1' or joint.get('file')!='step_220708' or
-                joint.get('checkpoint_sha256')!='dbf771737d9799b84faf009c24c5376831f095d2cfd66debbe9a505a445bfc31' or
+        if joint.get('kernel_source'):
+            valid_checkpoint=(re.fullmatch(r'danielwuu/nvarc-overnight-trm-\d{3}',joint['kernel_source']) is not None and
+                joint.get('kernel_source_version')==1 and joint.get('source_training_steps')==2 and
+                joint.get('file')=='trm-ema.pt' and joint.get('checkpoint_format')=='source-ema-unwrapped' and
+                'dataset' not in joint and
+                all(re.fullmatch(r'[0-9a-f]{64}',joint.get(key,'')) is not None for key in ('checkpoint_sha256','source_terminal_archive_sha256')) and
+                all(re.fullmatch(r'sha256:[0-9a-f]{64}',joint.get(key,'')) is not None for key in ('export_material_digest','training_identity_digest')))
+        else:
+            valid_checkpoint=(joint.get('dataset')=='cpmpml/arc-prize-trm-031/1' and joint.get('file')=='step_220708' and
+                joint.get('checkpoint_sha256')=='dbf771737d9799b84faf009c24c5376831f095d2cfd66debbe9a505a445bfc31')
+        if (not valid_checkpoint or
                 joint.get('source_bundle_digest')!=digest_value(SOURCE_HASHES) or
                 joint.get('model_config')!=published_model_config(device_dtype='bfloat16') or
                 joint.get('maximum_optimizer_steps')!=1 or joint.get('maximum_views')!=8 or

@@ -30,6 +30,18 @@ class PublishedTRMCheckpointTests(unittest.TestCase):
                 self.assertTrue(torch.equal(value,expected))
             with self.assertRaisesRegex(ValidationError,'digest'):
                 load_published_state(target,path,'0'*64)
+            exported=Path(directory)/'ema-export';torch.save(source.state_dict(),exported)
+            exported_sha=hashlib.sha256(exported.read_bytes()).hexdigest()
+            with self.assertRaisesRegex(ValidationError,'compiler state'):
+                load_published_state(target,exported,exported_sha)
+            # Explicit source EMA export mode uses every original state key,
+            # including the same full-to-task mean reset, without key dropping.
+            unwrapped=load_published_state(target,exported,exported_sha,compiler_prefix='')
+            self.assertEqual('',unwrapped['explicit_compiler_prefix'])
+            self.assertEqual(len(source.state_dict()),unwrapped['state_tensor_count'])
+            for name,value in target.state_dict().items():
+                expected=source.state_dict()[name].mean(0,keepdim=True) if name==PUZZLE_EMBEDDING else source.state_dict()[name]
+                self.assertTrue(torch.equal(value,expected))
             raw['_orig_mod.unexpected.weight']=torch.ones(1);torch.save(raw,path)
             with self.assertRaisesRegex(ValidationError,'closed state names'):
                 load_published_state(target,path,hashlib.sha256(path.read_bytes()).hexdigest())

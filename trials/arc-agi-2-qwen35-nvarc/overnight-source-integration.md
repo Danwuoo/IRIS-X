@@ -107,7 +107,8 @@ Plan digest is `sha256:c5196971143abe73774581b17e5f7ac11b239d686520cf32e4a7f5d3b
 identity is `sha256:95bb2b4ddf8151cf4cb7005276c4872b25e650596eda4df72986cb44f9773884`.
 [Kaggle notebook](https://www.kaggle.com/code/danielwuu/nvarc-overnight-sft-003).
 This is the source epoch's exact prefix, not a completed original-scale epoch.
-Its runtime outcome is pending.
+It completed; all 724 exported tensor digests are independently verified
+locally. See the final source-prefix report below.
 
 ## Complete TTT memory path
 
@@ -175,7 +176,28 @@ compressed archive exceeded its first 5,400-second transport bound. Its
 16,879,976,448 retained bytes and official ETag/size resume marker are frozen;
 a distinct material identity copies both and uses the official validator-bound
 range downloader, with a 10,800-second bound. Full archive SHA/CRC/member
-verification remains pending; no program executes during acquisition.
+verification is now complete: 192 closed members, exact sizes, CRC and every
+member SHA verify. Archive SHA-256 is
+`43c4df0b9da13f38f0da2071a4e94299e94f15036a5f86693d3e377aa6cee8ab`;
+inventory SHA-256 is
+`97239ee8456229a8bd393ceddcc04495b6634ea40b24d20ad175fb794d35d588`.
+No program executes or full archive extraction occurs during acquisition.
+Separate metadata profiling also completed in 430.141 seconds, rechecking
+all 192 raw member digests while decoding only teacher/parent columns.
+It covers 3,263 summaries, 266,593 mixtures, 193,793 input programs and
+2,050,249 output programs, with all 265,492 unique parent sets and exposure
+tags retained. Observed summaries include Sonnet 4 (716), Sonnet 4.5 (1,091),
+OSS-120B/high (1,427) and human-authored metadata (29); mix/input/output stages
+retain their observed OSS high/medium and Sonnet 4 profiles. These identities
+are original row metadata, not regenerated teacher calls. In particular,
+932,411 output records have an evaluation ancestor and 463,393 have protected
+ancestry; categories overlap and no row is filtered. All-member program
+semantics remain unverified. This audit has zero program/model/teacher calls,
+zero accepted pairs and no score. Parent-lineage/member-metadata SHA-256 is
+`b54b584e0b9ecd34db506889fb2308add6dbf61dc90dd89d4c6497c0422b541a` /
+`d842b6bb1c4f94bdfb7b08f4994b09a9d4e6f5c9f72febe742e083bd047cfa03`.
+Complete profile SHA-256 is
+`b819e72b8904b6a63c5cd9c15a13f6103221d7bc70eee107026924edf48d0e1b`.
 
 Four exact first Parquet shards were separately retained and SHA-verified for
 bounded replay: summaries, mixtures, inputs and outputs (280,415,271 bytes).
@@ -295,16 +317,58 @@ CPU-to-GPU `.to`. Archive SHA-256 is
 `cf8d725fd949bdc52b7cc186185ae22c7a8b3020a7535fab713ead10cdca0d62`.
 Repair constructs directly on the final device, as upstream does. Actual CPU
 dtype transfer reproduces the failure, and the repaired source optimizer
-matches every control tensor. Distinct private TTT 005 is accepted as version
+matches every control tensor. Distinct private TTT 005 version
 1, kernel `136697897`, plan
 `sha256:fc5e7de45510e5a3de3cd810dd8e0ac4dfb82a853a6248893a2df1b1874794a1`;
-terminal outcome remains pending.
+failed during its first ACT training forward: source carry factories omitted
+the device and created CPU state for a CUDA batch. It completed no optimizer
+step; its partial forward is retained rather than claimed absent. One retrieval
+and independent failure verification are consumed. Carry initialization now
+uses the batch's device context, matching upstream's calling convention.
+A real default-meta versus CPU-batch regression reproduces the factory mismatch
+and verifies every repaired carry tensor, loss, optimizer and reset.
+
+Distinct TTT 006 version 1, kernel `136699426`, completed on four distinct L4s.
+Plan digest is `sha256:632dd89ec115f1dd6e2b9c72bb14313ec1fb5d9e8821ec8019325c0e45dc2a5e`.
+Its sole terminal retrieval and independent reconstruction verify 128 Qwen
+steps / 13,824 tokens, sixteen DFS calls, one TRM demo update, eight D4 views
+and eighty ACT forwards. All eight TRM model votes enter the same adapted
+Qwen state before reset. The combined pool has eight unique grids, eight
+candidate verifications and two selected attempts; two public-demo probes
+remain separate. There are 880 Qwen outer forwards, exact reset and no
+correctness score. Notebook time is 789.174 seconds. Archive SHA-256 is
+`6dd2a519e63d2de62c9e0f2a12858f4f49ff85a101468ab1abcba94ec8b0763e`;
+independent verification SHA-256 is
+`181dc2f21ecb065854125212f67b07cb5f733fa48d39659451baa6bfd1e6dd98`.
+[Kaggle notebook](https://www.kaggle.com/code/danielwuu/nvarc-overnight-ttt-006).
+
+The complete short-task epoch's longest view is only 108 tokens. Distinct
+resource check TTT 007 is accepted as private version 1, kernel `136702996`,
+plan `sha256:32f296bbf268430370f87844c5416a5012a9a3e8e807611bf48a22163c28402b`.
+It selects by public-demo size alone, retaining the chosen `f9d67f8b` parent's
+protected/locked-holdout ancestry. No test answer enters the outbound and no
+score is computed. Eight reduced source D4 views total 59,712 input tokens,
+with a 7,464-token maximum; rank/alpha/checkpointing remain source-profile.
+One color repeat and one warmup step are explicitly reduced resource settings,
+not a verified original 128-view epoch. No generation or verifier call is
+permitted. Its sole retrieval verifies CUDA OOM during the second forward:
+one optimizer step / 7,464 tokens completed, two forwards were reserved.
+Archive SHA-256 is `2a1d3c9c0c48cc8b8ba517130e625ad8813bd2138837e2849cead7941c103afe`.
+The actual tiny trained-export resource path, independent schedule/token/event
+reader, altered-ledger rejection and exact reset pass in the extended
+integration test (16.472 seconds, SHA-256
+`c2062e6605a11d277e8cecd01f172ed6ecf1be829d6e6368e22c0b8f47e0d43e`).
 
 Global-batch-256 SFT 003 reports completion: two steps, cursor 512, 1,770,662
 input / 764,883 supervised tokens, restart and export/reload. Notebook wall time
 was 5,590.946 seconds; its resumed step took 1,637.64–1,637.66 seconds per rank.
 The segmented CPU-offload backend proves resource/semantics feasibility, not
-practical whole-SFT throughput. Sole export transfer/local tensor proof is pending.
+practical whole-SFT throughput. Sole export transfer and independent local
+reading verify every one of the 724 tensors. Material digest is
+`sha256:e701de11e9e58c52c60b35ab50af0c7cbca61a3d7f670cb56e7b55a07660e703`;
+archive SHA-256 is `0d39432c767d7963e87f3d17c485cc72d43bf8468b78f650bd081b2c4a28776c`;
+independent verification SHA-256 is
+`34684dae0a36c4f161954f888369783d8beeb1a8617088d87e38ecaafda8925d`.
 
 All 49 strict ML tests pass in 308.211 seconds; log SHA-256 is
 `1fd8d3c61c5bd85f2579fb39897dd155607a1960e96687ae99a99f494c2b3723`.
@@ -312,3 +376,91 @@ The later leaf repair's two regressions pass in 2.950 seconds, SHA-256
 `3667b0ada31ebbf43d3430da9f7f208c3b953a79e7dbea1999819410e4966516`.
 Required repository validation passes 315 tests in 264.130 seconds, SHA-256
 `5c82d5c46569f79ac0a8055575a062270c8f4cfc181c65598af29831d25d2cd3`.
+
+Distinct TTT 008 retains the long task/eight-view workload using optional CPU
+AdamW mirrors/moments. Tied embedding/head adapter storage remains shared:
+independent clones failed the real differential and were never submitted.
+The corrected path matches all 128 CPU source-epoch losses, schedules and
+adapter tensors bitwise, with exact reset (27.255 seconds, SHA-256
+`21ea2980309845e6d032bd5f25175625a1f27895268caf92a43ef21a85d36935`).
+This does not infer CPU/CUDA kernel parity. Private version 1 is accepted,
+kernel `136704162`, plan
+`sha256:91ea08995eeae2711c1347b75f39c4381e96c9ed587cb0febd4792565d56f713`;
+The sole terminal retrieval and independent reader verify all eight optimizer
+events / 59,712 tokens, max 7,464, finite gradients, exact reset and zero
+generation/verification. Notebook time is 618.370 seconds; CUDA training peak
+allocated/reserved is 18,140,578,304 / 18,826,133,504 bytes. Archive SHA-256 is
+`83cb1d8ad21b79cdd8c9a368da1d91e5bd57f878686a11c9a0326d9c953946f6`;
+independent proof SHA-256 is
+`43690b73c2367cb1e021ceec80725d6da418443c4a2e05efcc0b804081d47732`.
+It does not establish a full 128-view long-task epoch.
+
+## Persistent TRM pretraining path
+
+`arc_nvarc_trm_training` retains source loss/global-batch normalization,
+Sparse SignSGD + AdamAtan2, source warmup, persistent ACT carry and unchanged
+EMAHelper. Resume restores model, optimizers, carry, EMA and CPU/CUDA RNG.
+A real tiny-model oracle executes the unchanged pinned `train_batch` with
+only CUDA transfer made identity for CPU replay; all model/optimizer/carry/EMA
+tensors and RNG match bitwise. A separately reconstructed step-one checkpoint
+produces the same second step. Altered identities and exported checkpoint
+bytes are rejected. Actual EMA export loads and verifies every tensor.
+Its one test passes in 3.044 seconds, SHA-256
+`e0ff41d0b8008e3dad0b3157ad88d17ed4aeaf44b16d6e0b42baa7c9781e9a9d`.
+Training function file SHA-256 is
+`59dfb2523507046af3126790c473f371111f7b7ded77233266a71ea13d3104ac`;
+EMA source SHA-256 is
+`41f92b2ec89a53ebcd69ced5903ccc4519a199ec2208d9694dd49ec398379ece`.
+
+Full-width private TRM 001 is accepted as version 1, kernel `136704165`, plan
+`sha256:187a8bfaebfb2cbaf770aaa913be7f2bc8e1ee6e75fcb1ac88e6779e7790f412`.
+It initializes all 1,041,208×512 puzzle embeddings, H3/L4 training model,
+one L4/global batch eight, two steps, process restart, EMA export/reload,
+zero generations and a finite 2,700-second limit. The first eight verified
+training-array rows belong to public training parent `8b28cd80`; no evaluation
+member is staged. Repeating this prefix is an explicit reduced sample policy,
+not the original shuffled/global-3072/10,000-epoch run. It completed two actual
+steps, 14,400 input / 1,584 supervised tokens, exact process-restarted
+model/optimizer/carry/EMA/RNG and onsite EMA export/reload. Notebook time was
+146.543 seconds and CUDA peak allocation was 4,244,938,240 bytes. Its sole
+retrieval retains the 2,159,717,494-byte EMA checkpoint. All fifteen actual
+tensor digests verify independently, including the exact source EMA-versus-
+ordinary-buffer choice from the final checkpoint inventory. Checkpoint optimizer
+bytes remain explicitly ephemeral. EMA checkpoint SHA-256 is
+`0f78afda8d59be6089e20b55e3aad49582cc8ed13a2e735ee9ac3fe32bbe8ea8`;
+material digest is `sha256:52ede3821bb6b6c418d2ab99bab4c0023f68201eede8f04b5277ece1beeeef07`;
+archive SHA-256 is `03badb20b327e5fa95ef1566230d03683e2144ea9fa072fdb6a2269af2e6f970`;
+independent proof SHA-256 is
+`de6e5508a42964569cbbef69579e582210dfbb2b7e44073a63ac18bad718f7aa`.
+
+The stronger source oracle also checks a batch of two with unequal label counts:
+normalization, sparse duplicated-ID handling, persistent carry, schedule and EMA
+still match exactly, including resumed second-step/export (5.788 seconds,
+SHA-256 `7e4e94d54465803b2b48de31c35094593597040eb48567b2e1779799a5f27e88`).
+The unwrapped source EMA export is accepted only by explicit prefix mode;
+published compiler-prefixed loading retains its previous strict default.
+Actual mean reset/all closed state tensors and shared-state candidate oracle
+pass three tests in 3.180 seconds, SHA-256
+`c69b61847efee9f9679808b33fdf47b493d169183c13295756c605265bb1c40b`.
+
+Joint trained-export integration uses SFT 003 and TRM 001, each immutable private
+version 1, with both mounted exports independently byte-checked before loading.
+Inert staging 009 retained an old published-only plan-gate rejection and made
+no provider call. Distinct 010 is accepted as private version 1, kernel
+`136705403`, plan
+`sha256:d3bf79a8b2bd62c757dd4362b2acb13a3bd060ce664cd86356240b7993152426`.
+It retains the exact 128-step Qwen/16-DFS plus one TRM update/eight-view workload,
+same adapted Qwen ranking/reset, four-L4 gate, finite 4,500 seconds and USD 0.
+Its runtime remains pending. Latest five focused source/export/TTT/joint tests
+pass in 26.419 seconds, SHA-256
+`329c25e33ebfb6335939e685adcf43f3c75149ca98cfdbace95b880dd19d72d3`.
+
+Required repository validation at milestone 006 passed 315 tests in 243.661
+seconds, SHA-256 `9569ae852f8d28b952ccb970fb5e910b6550c5c7a7a7001eb42e4ecb2d12a2f1`.
+It precedes the later CPU optimizer/TRM trainer additions; their targeted
+checks pass. Full ML recheck passes all fifty tests in 304.273 seconds,
+SHA-256 `ef17ec36a15b1488a9d5b1637965043d78d53732561e3a63fd91169817a6af8c`.
+Repository milestone 007 passes 315 tests in 253.016 seconds, SHA-256
+`f9734e3416b963acd76770fba1da427a51a6778527253ddb09910098c5b2144b`.
+Later source-EMA inference bridge changes have the five focused checks above;
+final repository verification follows those changes.

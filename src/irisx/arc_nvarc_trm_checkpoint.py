@@ -14,18 +14,19 @@ from .errors import ValidationError
 PUZZLE_EMBEDDING='model.inner.puzzle_emb.weights'
 
 
-def load_published_state(model,checkpoint:Path,expected_sha256:str):
+def load_published_state(model,checkpoint:Path,expected_sha256:str,*,compiler_prefix='_orig_mod.'):
     import torch
     if checkpoint.is_symlink() or not checkpoint.is_file():
         raise ValidationError('published TRM checkpoint path differs')
     with checkpoint.open('rb') as stream:actual=hashlib.file_digest(stream,'sha256').hexdigest()
     if actual!=expected_sha256:raise ValidationError('published TRM checkpoint digest differs')
+    if compiler_prefix not in {'_orig_mod.',''}:raise ValidationError('explicit TRM compiler prefix differs')
     raw=torch.load(checkpoint,map_location='cpu',weights_only=True,mmap=True)
     if (not isinstance(raw,dict) or not raw or
-            any(not isinstance(name,str) or not name.startswith('_orig_mod.') or
+            any(not isinstance(name,str) or not name.startswith(compiler_prefix) or
                 not isinstance(value,torch.Tensor) for name,value in raw.items())):
         raise ValidationError('published TRM tensor-only compiler state differs')
-    state={name.removeprefix('_orig_mod.'):value for name,value in raw.items()}
+    state={name.removeprefix(compiler_prefix):value for name,value in raw.items()}
     target=model.state_dict()
     if set(state)!=set(target):raise ValidationError('published TRM closed state names differ')
     source_shape=list(state[PUZZLE_EMBEDDING].shape);target_shape=list(target[PUZZLE_EMBEDDING].shape)
@@ -45,7 +46,7 @@ def load_published_state(model,checkpoint:Path,expected_sha256:str):
     return {'checkpoint_sha256':actual,'checkpoint_bytes':checkpoint.stat().st_size,'state_tensor_count':len(state),
         'source_puzzle_embedding_shape':source_shape,'target_puzzle_embedding_shape':target_shape,
         'source_mean_reset_applied':reset,'dropped_state_keys':0,'loaded_tensors_exact_after_explicit_dtype_cast':True,
-        'original_notebook_v18_verified':False}
+        'original_notebook_v18_verified':False,'explicit_compiler_prefix':compiler_prefix}
 
 
 def published_model_config(*,device_dtype='float32'):

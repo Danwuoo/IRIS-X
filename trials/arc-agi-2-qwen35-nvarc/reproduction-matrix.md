@@ -12,8 +12,8 @@ loss and gradient isolation checks. Distributed CPU-shard accumulation,
 optimizer/RNG/scheduler/cursor restart and exact export pass independent CPU
 checks. Four-L4 SFT 002 completed two accumulated steps and a 724-tensor export;
 every transferred tensor independently verifies locally. Full-source
-global-256 prefix SFT 003 reports both steps/restart/export complete; local
-export transfer/tensor proof remains pending. Complete rank-256 128-view TTT
+global-256 prefix SFT 003 completes both steps/restart/export and every local
+tensor byte digest verifies. Complete rank-256 128-view TTT
 002 verifies sixteen DFS calls, five model candidates, eight-view ranking and
 exact reset on L4, with 18.5 GB training peak. TTT 001's mount failure is frozen.
 Real isolated published SDG program replay and the unchanged 8/12/4 source
@@ -21,10 +21,28 @@ filter accept thirty pairs with both exposure ancestors retained. Full-width
 published TRM checkpoint loading/demo-TTT/ACT/reset verifies on CPU float32;
 both published TRM array Datasets and all training identifiers/groups/indices
 verify with exposure retained and evaluation labels quarantined. Joint 4B
-Qwen/TRM GPU TTT 004 failed before an optimizer step on a non-leaf sparse
-buffer; final-device construction is submitted in distinct 005.
-The 192-member raw SDG archive, joint GPU outcome, exact TRM v18 and original
-scale remain pending.
+Qwen/TRM GPU TTT 004/005 failures are frozen; their device repairs have actual
+regressions. Distinct 006 completes the full Qwen epoch/DFS plus full-width TRM
+demo adaptation/eight views and joint same-state ranking/reset. Long resource
+008 passes eight 7,464-token views with CPU AdamW state, tied adapter storage
+preserved, 59,712 tokens and exact reset. It is a reduced resource workload.
+All 192 SDG artifact members (47,514,077,184 raw bytes) now verify against
+the closed provider inventory, CRC and every SHA. Complete teacher/parent
+metadata profiles preserve all 265,492 parent sets without filtering, program
+execution or fresh teacher calls. Source TRM
+pretraining/ACT carry/EMA/resume has an unchanged-step differential oracle;
+full-width/all-identifier GPU 001 completes two steps and an exact fifteen-tensor
+EMA export retained and independently verified locally. New joint 010 using
+both actual source-training exports is accepted and pending. Exact TRM v18,
+original model/backend and scale remain unverified.
+
+| Component | Verified engineering evidence | Remaining original reproduction evidence |
+|---|---|---|
+| Packing/isolation | 503 exact MFFD cases; hybrid logits/loss/gradient isolation | Original exact NeMo version and fused backend throughput |
+| SFT | Four-L4 global-256 prefix; accumulation; process restart; 724 actual exported tensors | Original Qwen3/NeMo, all 12,716 steps, practical full-run throughput |
+| TTT/search/rank | Complete 128-view short-task epoch; 16 DFS calls; same-state joint ranking/reset; long reduced resource check | Original Unsloth numerics, full long-task epoch and independent quality |
+| SDG | All 192 raw members; isolated real published-program replay; exact 8/12/4 filter and thirty exposed pairs | Original teachers regenerated, whole-archive program semantics/yield |
+| TRM | Full-width published load/TTT; original arrays/lineage/collator; persistent-carry training/EMA/exact resume/export | Eight-H100/global-3072/10,000-epoch training, 2,000-epoch TTT and exact v18 |
 
 The Qwen3.5 port is not the original Qwen3/NeMo/Unsloth implementation.
 Segmented correctness does not establish fused packing throughput. Full

@@ -14,12 +14,13 @@ class TTTCheckpointStrictTests(unittest.TestCase):
         try:
             torch.manual_seed(24)
             model=ml_tests.NvarcMLTests()._tiny_qwen();model.resize_token_embeddings(16)
-            other=copy.deepcopy(model)
+            other=copy.deepcopy(model);offloaded=copy.deepcopy(model)
             config={'rank':256,'alpha':32,'seed':42,'use_rslora':True,
                 'training_schedule':'source-one-epoch','source_qwen':True,'augmentation_count':16,
                 'source_augmentation_seed':1,'max_sequence_length':8192,'learning_rate':5e-5,
                 'warmup_ratio':.1,'maximum_optimizer_steps':128,'maximum_training_tokens':1048576}
-            adapters=[TaskLocalAdapter(model,config),TaskLocalAdapter(other,{**config,'gradient_checkpointing':True})]
+            adapters=[TaskLocalAdapter(model,config),TaskLocalAdapter(other,{**config,'gradient_checkpointing':True}),
+                TaskLocalAdapter(offloaded,{**config,'gradient_checkpointing':True,'optimizer_state_device':'cpu'})]
             states=[]
             for index,adapter in enumerate(adapters):
                 adapter.adapt(method_tests.TASK)
@@ -34,6 +35,10 @@ class TTTCheckpointStrictTests(unittest.TestCase):
             for name in states[0]:torch.testing.assert_close(states[0][name],states[1][name],rtol=0,atol=0)
             self.assertEqual(adapters[0].last_observation['losses_by_step'],adapters[1].last_observation['losses_by_step'])
             self.assertEqual(adapters[0].last_observation['learning_rates_by_step'],adapters[1].last_observation['learning_rates_by_step'])
+            for name in states[0]:torch.testing.assert_close(states[0][name],states[2][name],rtol=0,atol=0)
+            self.assertEqual(adapters[0].last_observation['losses_by_step'],adapters[2].last_observation['losses_by_step'])
+            self.assertEqual(adapters[0].last_observation['learning_rates_by_step'],adapters[2].last_observation['learning_rates_by_step'])
+            self.assertEqual('cpu',adapters[2].last_observation['optimizer_state_device'])
         finally:torch.set_num_threads(threads)
 
 

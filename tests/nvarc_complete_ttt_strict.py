@@ -6,6 +6,7 @@ import tempfile
 import unittest
 import torch
 from irisx.arc_nvarc_complete_ttt import run,complete_config
+from irisx.arc_nvarc_long_ttt import run as run_resource,resource_config
 from irisx.arc_nvarc_m2 import create_tiny_qwen_material
 from irisx.arc_nvarc_representation import export_trained_model
 from irisx.arc_nvarc_source_sft import tensor_inventory
@@ -15,7 +16,7 @@ from irisx.arc_nvarc_data import visible_task
 from irisx.canonical import canonical_bytes,digest_value
 from irisx.errors import ValidationError
 from tests import nvarc_method_strict as method_tests
-from tools.verify_nvarc_overnight_run import verify_export_tensors,verify_ttt
+from tools.verify_nvarc_overnight_run import verify_export_tensors,verify_ttt,verify_long_resource
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -73,6 +74,27 @@ class CompleteTTTStrictTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValidationError,'model forward ledger'):
                     verify_ttt(root,plan,{'worker/result.json':canonical_bytes(altered),
                         'worker/events.jsonl':(root/'output/events.jsonl').read_bytes()})
+                resource=resource_config()
+                resource_rows=task_local_sequences(tasks[0],seed=42,augmentation_count=1,source_qwen=True,
+                    source_augmentation_seed=1,source_max_length=8192)
+                resource_plan={**plan,'format':'irisx/nvarc-long-ttt-resource-v1','approved':True,'owner_decision':'Decision 0053',
+                    'config_digest':digest_value(resource),'maximum_optimizer_steps':8,'maximum_generations':0,
+                    'maximum_verifications':0,'maximum_outer_model_forwards':8,
+                    'source_epoch_input_tokens':sum(len(row['input_ids']) for row in resource_rows),
+                    'source_epoch_max_sequence_length':max(len(row['input_ids']) for row in resource_rows)}
+                (root/'resource-plan.json').write_bytes(canonical_bytes(resource_plan,newline=True))
+                (root/'resource-config.json').write_bytes(canonical_bytes(resource,newline=True))
+                resource_report=run_resource(root/'resource-plan.json',root/'trained',root/'visible.json',
+                    root/'resource-config.json',root/'bundle',root/'resource-output')
+                resource_data={'worker/result.json':(root/'resource-output/result.json').read_bytes(),
+                    'worker/events.jsonl':(root/'resource-output/events.jsonl').read_bytes()}
+                proof=verify_long_resource(root,resource_plan,resource_data)
+                self.assertEqual((8,0,0),(proof['optimizer_steps'],proof['generation_calls'],proof['verification_calls']))
+                self.assertTrue(resource_report['adapter_reset_exact'])
+                self.assertFalse(resource_report['original_128_view_epoch_verified'])
+                altered=copy.deepcopy(resource_report);altered['ledger']['outer_model_forwards_reserved']=9
+                with self.assertRaisesRegex(ValidationError,'forward/reset/claim'):
+                    verify_long_resource(root,resource_plan,{**resource_data,'worker/result.json':canonical_bytes(altered)})
                 raw[task['task_id']]['test'][0]['output']=[[1]]
                 (root/'visible.json').write_bytes(canonical_bytes(raw,newline=True))
                 with self.assertRaisesRegex(ValidationError,'test answers'):

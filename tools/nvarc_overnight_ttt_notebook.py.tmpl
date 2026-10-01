@@ -92,9 +92,18 @@ try:
         'competition_mount':str(competition),'competition_files_opened':0})
     trm_checkpoint=None
     if plan.get('joint_trm'):
-        owner,slug,_=plan['joint_trm']['dataset'].split('/')
-        roots=[Path('/kaggle/input/datasets')/owner/slug,Path('/kaggle/input')/slug]
-        matches=[root/plan['joint_trm']['file'] for root in roots if (root/plan['joint_trm']['file']).is_file()]
+        settings=plan['joint_trm']
+        if settings.get('kernel_source'):
+            # Runtime wheel is installed below; defer the package import until
+            # then while binding the checkpoint bytes at the mount gate.
+            owner,slug=settings['kernel_source'].split('/')
+            roots=[Path('/kaggle/input/notebooks')/owner/slug,Path('/kaggle/input/kernels')/owner/slug,Path('/kaggle/input')/slug]
+            candidates=[root/suffix for root in roots for suffix in (Path(slug)/'export',Path('export'))]
+            matches=[root/settings['file'] for root in candidates if (root/'material.json').is_file()]
+        else:
+            owner,slug,_=settings['dataset'].split('/')
+            roots=[Path('/kaggle/input/datasets')/owner/slug,Path('/kaggle/input')/slug]
+            matches=[root/settings['file'] for root in roots if (root/settings['file']).is_file()]
         if len(matches)!=1 or digest_file(matches[0])!=plan['joint_trm']['checkpoint_sha256']:
             raise RuntimeError('exact published TRM checkpoint mount differs')
         trm_checkpoint=matches[0]
@@ -119,7 +128,15 @@ try:
         'safetensors==0.8.0','tokenizers==0.22.2',str(temp/FILES['runtime_wheel'])],check=True,timeout=180)
     if plan.get('joint_trm'):
         subprocess.run([sys.executable,'-m','pip','install','--no-index','--no-deps',str(temp/FILES['trm_optimizer_wheel'])],check=True,timeout=60)
-    from irisx.arc_nvarc_complete_ttt import check_plan
+        if plan['joint_trm'].get('kernel_source'):
+            from irisx.arc_nvarc_trm_training import verify_trm_export
+            material=verify_trm_export(trm_checkpoint.parent,plan['joint_trm']['export_material_digest'])
+            if material['training_identity_digest']!=plan['joint_trm']['training_identity_digest']:
+                raise RuntimeError('TRM source training identity differs')
+    if plan['format']=='irisx/nvarc-long-ttt-resource-v1':
+        from irisx.arc_nvarc_long_ttt import check_plan
+    else:
+        from irisx.arc_nvarc_complete_ttt import check_plan
     from irisx.arc_nvarc_data import visible_task
     from irisx.arc_nvarc_representation import verify_model_material
     from irisx.arc_nvarc_source_bundle import verify_bundle
@@ -151,7 +168,8 @@ try:
             '--bundle',str(temp/'trm-source-bundle'),'--output',str(work/'trm-worker')],'trm')
         verify_joint_trm_result(plan,json.loads((work/'trm-worker/result.json').read_bytes()))
     phase='complete-source-ttt-and-inference';emit(phase)
-    command=[sys.executable,'-m','irisx.arc_nvarc_complete_ttt','--plan',str(temp/FILES['plan']),
+    runtime='irisx.arc_nvarc_long_ttt' if plan['format']=='irisx/nvarc-long-ttt-resource-v1' else 'irisx.arc_nvarc_complete_ttt'
+    command=[sys.executable,'-m',runtime,'--plan',str(temp/FILES['plan']),
         '--model',str(model),'--visible',str(temp/FILES['visible']),'--config',str(temp/FILES['config']),
         '--bundle',str(temp/'source-bundle'),'--output',str(work/'worker')]
     if trm_checkpoint is not None:
