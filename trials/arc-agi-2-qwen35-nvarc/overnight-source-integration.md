@@ -257,5 +257,58 @@ The original training Dataset version 1 has sixteen files totaling
 39,447,934,651 raw bytes; its provider ZIP is 2,218,651,916 bytes. Acquisition
 001 stopped before download at an undersized raw-byte gate. Distinct 002
 separately caps compressed bytes at 4 GiB and raw inventory at 48 GiB while
-reserving the outstanding SDG transfer and model storage; verification remains
-pending. Neither material acquisition trains, generates or scores.
+reserving the outstanding SDG transfer and model storage. All sixteen members,
+numeric headers, CRC and member SHA-256 now verify. Archive SHA-256 is
+`2f28e5bb82f50df9938bf0f817b8eeda4744e36c85cd68eb5a91614ff4444d4c`.
+Neither material acquisition trains, generates or scores.
+
+The training audit verifies all 1,041,208 identifiers, puzzle/example/group
+index axes and 4,073 groups: 1,000 public ARC training, 120 public ARC evaluation,
+160 ConceptARC and 2,793 published SDG mixtures. Both parents and all exposure
+tags remain: 2,913 groups have an evaluation ancestor and 593 have protected
+ancestry. No group is filtered. The 1,041,207 augmented puzzles index 21,845,065
+examples, and the identifier count matches the checkpoint embedding exactly.
+Actual source `_collate_batch` on eight training-only rows matches an independent
+PAD-to-ignore/identifier oracle (7,200 input / 792 supervised tokens).
+No evaluation member was read; the full 39 GB arrays stay in the verified ZIP
+to preserve the download/model disk reserve. Audit SHA-256 is
+`d4909980423a99189634f3140519242beb80563a471ab01d063c9098057d3457`.
+
+## Joint model integration continuation
+
+Source `solve_task` now includes TRM views before Qwen task reset. New unique
+grids receive the same adapted Qwen eight-view NLL; duplicate grids share their
+score while retaining every model vote. Unchanged source `getter_kgmon` ranks
+the combined pool. Public-demo probes remain separate. An independent active
+state/vote/cache oracle and bitwise comparison with pinned TRM optimizers pass.
+The source bundle binds five unchanged TRM model/loss files and its license at
+revision `e7b68717f0a6c4cbb4ce6fbef787b14f42083bd9`. Exact AdamAtan2 0.2.4
+wheel SHA-256 is `404d1c5ba331633a6f6e395891ed28cb13a7cf622ac824ba9913b8286ad97e99`.
+
+TRM uses a distinct L4, one demo update and eight D4 views / at most eighty ACT
+forwards. Qwen retains complete 128-view TTT, sixteen DFS calls and at most 42
+total verifications. Reduced TRM work is not original 2,000-epoch TTT/v18 parity.
+Inert TTT 003 failed offline transport ordering without a submission. TTT 004's
+sole private version and retrieval are consumed: it loaded TRM, then stopped
+before optimizer/model forward on a non-leaf sparse gradient buffer created by
+CPU-to-GPU `.to`. Archive SHA-256 is
+`cf8d725fd949bdc52b7cc186185ae22c7a8b3020a7535fab713ead10cdca0d62`.
+Repair constructs directly on the final device, as upstream does. Actual CPU
+dtype transfer reproduces the failure, and the repaired source optimizer
+matches every control tensor. Distinct private TTT 005 is accepted as version
+1, kernel `136697897`, plan
+`sha256:fc5e7de45510e5a3de3cd810dd8e0ac4dfb82a853a6248893a2df1b1874794a1`;
+terminal outcome remains pending.
+
+Global-batch-256 SFT 003 reports completion: two steps, cursor 512, 1,770,662
+input / 764,883 supervised tokens, restart and export/reload. Notebook wall time
+was 5,590.946 seconds; its resumed step took 1,637.64–1,637.66 seconds per rank.
+The segmented CPU-offload backend proves resource/semantics feasibility, not
+practical whole-SFT throughput. Sole export transfer/local tensor proof is pending.
+
+All 49 strict ML tests pass in 308.211 seconds; log SHA-256 is
+`1fd8d3c61c5bd85f2579fb39897dd155607a1960e96687ae99a99f494c2b3723`.
+The later leaf repair's two regressions pass in 2.950 seconds, SHA-256
+`3667b0ada31ebbf43d3430da9f7f208c3b953a79e7dbea1999819410e4966516`.
+Required repository validation passes 315 tests in 264.130 seconds, SHA-256
+`5c82d5c46569f79ac0a8055575a062270c8f4cfc181c65598af29831d25d2cd3`.

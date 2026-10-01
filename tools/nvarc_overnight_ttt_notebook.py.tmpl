@@ -66,7 +66,9 @@ try:
     if len(inventory)!=4 or len({item['uuid'] for item in inventory})!=4 or any(item['name']!='NVIDIA L4' or not item['bf16'] for item in inventory):
         raise RuntimeError('four distinct BF16 L4 hardware gate differs')
     save('hardware.json',{'inventory':inventory,'torch':torch.__version__,'cuda':torch.version.cuda,
-        'model_worker_count':1,'selected_local_rank':0,'selected_uuid':inventory[0]['uuid']})
+        'model_worker_count':2 if plan.get('joint_trm') else 1,'selected_local_rank':0,'selected_uuid':inventory[0]['uuid'],
+        'trm_selected_local_rank':1 if plan.get('joint_trm') else None,
+        'trm_selected_uuid':inventory[1]['uuid'] if plan.get('joint_trm') else None})
     phase='exact-export-mount';emit(phase)
     owner,slug=plan['source_kernel'].split('/')
     roots=[Path('/kaggle/input/notebooks')/owner/slug,
@@ -88,6 +90,16 @@ try:
     if not competition.is_dir():raise RuntimeError('four-L4 official competition entitlement mount required')
     save('mount-policy.json',{'export_mount':str(model),'wheel_mount':str(wheels),
         'competition_mount':str(competition),'competition_files_opened':0})
+    trm_checkpoint=None
+    if plan.get('joint_trm'):
+        owner,slug,_=plan['joint_trm']['dataset'].split('/')
+        roots=[Path('/kaggle/input/datasets')/owner/slug,Path('/kaggle/input')/slug]
+        matches=[root/plan['joint_trm']['file'] for root in roots if (root/plan['joint_trm']['file']).is_file()]
+        if len(matches)!=1 or digest_file(matches[0])!=plan['joint_trm']['checkpoint_sha256']:
+            raise RuntimeError('exact published TRM checkpoint mount differs')
+        trm_checkpoint=matches[0]
+        save('trm-mount-policy.json',{'checkpoint':str(trm_checkpoint),'checkpoint_sha256':digest_file(trm_checkpoint),
+            'competition_files_opened':0,'evaluation_dataset_mounted':False})
     phase='dependency-setup';emit(phase)
     manifest=json.loads(decoded['wheel_manifest'])
     names={'transformers-5.8.1-py3-none-any.whl','accelerate-1.10.1-py3-none-any.whl',
@@ -105,6 +117,8 @@ try:
     subprocess.run([sys.executable,'-m','pip','install','--no-index','--find-links',str(wheels),
         'transformers==5.8.1','accelerate==1.10.1','peft==0.21.0','huggingface-hub==1.32.0',
         'safetensors==0.8.0','tokenizers==0.22.2',str(temp/FILES['runtime_wheel'])],check=True,timeout=180)
+    if plan.get('joint_trm'):
+        subprocess.run([sys.executable,'-m','pip','install','--no-index','--no-deps',str(temp/FILES['trm_optimizer_wheel'])],check=True,timeout=60)
     from irisx.arc_nvarc_complete_ttt import check_plan
     from irisx.arc_nvarc_data import visible_task
     from irisx.arc_nvarc_representation import verify_model_material
@@ -115,10 +129,33 @@ try:
     material=verify_model_material(model,plan['material_digest'])
     if material['training_identity_digest']!=plan['training_identity_digest']:raise RuntimeError('TTT training identity differs')
     verify_bundle(temp/'source-bundle',plan['source_bundle_digest'])
+    def invoke(command,label):
+        with (work/(label+'-stdout.log')).open('w',encoding='utf-8') as stdout,(work/(label+'-stderr.log')).open('w',encoding='utf-8') as stderr:
+            process=subprocess.Popen(command,stdout=stdout,stderr=stderr,start_new_session=True)
+            try:
+                remaining=plan['maximum_notebook_wall_seconds']-120-(time.monotonic()-START)
+                code=process.wait(timeout=max(1,remaining))
+                if code:raise subprocess.CalledProcessError(code,command)
+            finally:
+                if process.poll() is None:
+                    os.killpg(process.pid,signal.SIGTERM)
+                    try:process.wait(timeout=15)
+                    except subprocess.TimeoutExpired:
+                        os.killpg(process.pid,signal.SIGKILL);process.wait(timeout=15)
+    if trm_checkpoint is not None:
+        from irisx.arc_nvarc_trm_runtime import verify_runtime_bundle,verify_joint_trm_result
+        verify_runtime_bundle(temp/'trm-source-bundle',plan['joint_trm']['source_bundle_digest'])
+        phase='published-trm-demo-adaptation-and-eight-views';emit(phase)
+        invoke([sys.executable,'-m','irisx.arc_nvarc_trm_runtime','--plan',str(temp/FILES['plan']),
+            '--visible',str(temp/FILES['visible']),'--checkpoint',str(trm_checkpoint),
+            '--bundle',str(temp/'trm-source-bundle'),'--output',str(work/'trm-worker')],'trm')
+        verify_joint_trm_result(plan,json.loads((work/'trm-worker/result.json').read_bytes()))
     phase='complete-source-ttt-and-inference';emit(phase)
     command=[sys.executable,'-m','irisx.arc_nvarc_complete_ttt','--plan',str(temp/FILES['plan']),
         '--model',str(model),'--visible',str(temp/FILES['visible']),'--config',str(temp/FILES['config']),
         '--bundle',str(temp/'source-bundle'),'--output',str(work/'worker')]
+    if trm_checkpoint is not None:
+        command.extend(['--trm-result',str(work/'trm-worker/result.json')])
     process=None
     with (work/'stdout.log').open('w',encoding='utf-8') as stdout,(work/'stderr.log').open('w',encoding='utf-8') as stderr:
         process=subprocess.Popen(command,stdout=stdout,stderr=stderr,start_new_session=True)

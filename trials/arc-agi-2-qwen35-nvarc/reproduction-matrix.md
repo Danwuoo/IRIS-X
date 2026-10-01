@@ -12,13 +12,19 @@ loss and gradient isolation checks. Distributed CPU-shard accumulation,
 optimizer/RNG/scheduler/cursor restart and exact export pass independent CPU
 checks. Four-L4 SFT 002 completed two accumulated steps and a 724-tensor export;
 every transferred tensor independently verifies locally. Full-source
-global-256 prefix SFT 003 is accepted/pending. Complete rank-256 128-view TTT
+global-256 prefix SFT 003 reports both steps/restart/export complete; local
+export transfer/tensor proof remains pending. Complete rank-256 128-view TTT
 002 verifies sixteen DFS calls, five model candidates, eight-view ranking and
 exact reset on L4, with 18.5 GB training peak. TTT 001's mount failure is frozen.
 Real isolated published SDG program replay and the unchanged 8/12/4 source
 filter accept thirty pairs with both exposure ancestors retained. Full-width
 published TRM checkpoint loading/demo-TTT/ACT/reset verifies on CPU float32;
-the 192-member raw SDG archive, exact TRM v18 and original scale remain pending.
+both published TRM array Datasets and all training identifiers/groups/indices
+verify with exposure retained and evaluation labels quarantined. Joint 4B
+Qwen/TRM GPU TTT 004 failed before an optimizer step on a non-leaf sparse
+buffer; final-device construction is submitted in distinct 005.
+The 192-member raw SDG archive, joint GPU outcome, exact TRM v18 and original
+scale remain pending.
 
 The Qwen3.5 port is not the original Qwen3/NeMo/Unsloth implementation.
 Segmented correctness does not establish fused packing throughput. Full

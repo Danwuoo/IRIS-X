@@ -79,7 +79,7 @@ def source_export(run,*,remote_reference=False):
     return model,chain,final
 
 
-def stage(output:Path,run:str,sft_run:str,*,remote_reference=False):
+def stage(output:Path,run:str,sft_run:str,*,remote_reference=False,joint_trm=False):
     if output.exists() or not re.fullmatch(r'nvarc-overnight-ttt-\d{3}',run):raise ValidationError('new complete TTT package required')
     model,chain,final=source_export(sft_run,remote_reference=remote_reference)
     binding=build_bundle(SOURCE,TRIAL/'source-manifest.json',output/'source-bundle')
@@ -105,6 +105,22 @@ def stage(output:Path,run:str,sft_run:str,*,remote_reference=False):
         'retain_export':False,'contains_evaluator_truth':False,'correctness_scored':False,'full_scale_sft_verified':False,
         'exposure':'repeated public tuning parent; original-source exposure retained; not a fresh holdout',
         'demonstration_probe_policy':'two public-demo outputs scored under eight views; never model candidates or solutions'}
+    if joint_trm:
+        from irisx.arc_nvarc_trm_runtime import build_runtime_bundle
+        from irisx.arc_nvarc_trm_checkpoint import published_model_config
+        from tools.nvarc_source import verify as verify_source
+        verify_source(SOURCE,json.loads((TRIAL/'source-manifest.json').read_bytes()))
+        trm_binding=build_runtime_bundle(SOURCE/'NVARC/external/TinyRecursiveModels',output/'trm-source-bundle')
+        optimizer_wheel=ROOT/'.irisx/nvarc-original/materials/trm-runtime-wheels-20261002-001/adam_atan2_pytorch-0.2.4-py3-none-any.whl'
+        plan['joint_trm']={'dataset':'cpmpml/arc-prize-trm-031/1','file':'step_220708',
+            'checkpoint_sha256':'dbf771737d9799b84faf009c24c5376831f095d2cfd66debbe9a505a445bfc31',
+            'source_bundle_digest':trm_binding['bundle_digest'],'model_config':published_model_config(device_dtype='bfloat16'),
+            'maximum_optimizer_steps':1,'maximum_views':8,'maximum_act_forwards':80,'maximum_candidates':8,
+            'joint_verification_state':'same adapted Qwen state before task reset',
+            'optimizer_wheel_sha256':sha_file(optimizer_wheel),'optimizer_version':'0.2.4',
+            'workload_variant':'one public demo update; eight D4 views; no color augmentation; not original 2000-epoch TTT'}
+        plan['maximum_verifications']=42
+        plan['datasets']['trm']='cpmpml/arc-prize-trm-031'
     check_plan(plan,config,[task])
     (output/'wheel').mkdir()
     wheel=output/'wheel'/build.build_wheel(str(output/'wheel'))
@@ -112,10 +128,18 @@ def stage(output:Path,run:str,sft_run:str,*,remote_reference=False):
         'visible':canonical_bytes(visible,newline=True),'wheel_manifest':(TRIAL/'configs/base-wheel-manifest.json').read_bytes(),
         'runtime_wheel':wheel.read_bytes()}
     files={key:key+'.json' for key in payloads};files['runtime_wheel']=wheel.name
+    if joint_trm:
+        payloads['trm_optimizer_wheel']=optimizer_wheel.read_bytes()
+        files['trm_optimizer_wheel']=optimizer_wheel.name
+        (output/optimizer_wheel.name).write_bytes(payloads['trm_optimizer_wheel'])
     for key in ('plan','config','visible','wheel_manifest'):(output/files[key]).write_bytes(payloads[key])
     for index,path in enumerate(sorted((output/'source-bundle').rglob('*'))):
         if path.is_file():
             key='bundle_'+str(index);payloads[key]=path.read_bytes();files[key]='source-bundle/'+path.relative_to(output/'source-bundle').as_posix()
+    if joint_trm:
+        for index,path in enumerate(sorted((output/'trm-source-bundle').rglob('*'))):
+            if path.is_file():
+                key='trm_bundle_'+str(index);payloads[key]=path.read_bytes();files[key]='trm-source-bundle/'+path.relative_to(output/'trm-source-bundle').as_posix()
     hashes={key:hashlib.sha256(value).hexdigest() for key,value in payloads.items()}
     source=render({key:base64.b64encode(zlib.compress(value,9)).decode() for key,value in payloads.items()},hashes,files,run)
     notebook={'nbformat':4,'nbformat_minor':5,'metadata':{'kernelspec':{'display_name':'Python 3','language':'python','name':'python3'}},
@@ -124,7 +148,7 @@ def stage(output:Path,run:str,sft_run:str,*,remote_reference=False):
     (kernel/'notebook.ipynb').write_bytes(canonical_bytes(notebook,newline=True))
     meta={'id':plan['kernel_id'],'title':run,'code_file':'notebook.ipynb','language':'python','kernel_type':'notebook',
         'is_private':True,'enable_gpu':True,'enable_tpu':False,'enable_internet':False,'machine_shape':'NvidiaL4',
-        'dataset_sources':list(plan['datasets'].values()),'kernel_sources':[plan['source_kernel']],
+        'dataset_sources':[plan['datasets'][key] for key in sorted(plan['datasets'])],'kernel_sources':[plan['source_kernel']],
         'competition_sources':plan['competition_sources'],'model_sources':[]}
     (kernel/'kernel-metadata.json').write_bytes(canonical_bytes(meta,newline=True))
     summary={'format':'irisx/nvarc-overnight-stage-v1','run_id':run,'plan_digest':digest_value(plan),
@@ -153,8 +177,14 @@ def preflight(output:Path):
         else:target=output/path
         if target.read_bytes()!=decoded[key]:raise ValidationError('complete TTT file bytes differ')
     with zipfile.ZipFile(next((output/'wheel').glob('*.whl'))) as archive:
-        for name in ('arc_nvarc_complete_ttt.py','arc_nvarc_training.py','arc_nvarc_source_recipe.py'):
+        for name in ('arc_nvarc_complete_ttt.py','arc_nvarc_training.py','arc_nvarc_source_recipe.py','arc_nvarc_candidates.py'):
             if archive.read('irisx/'+name)!=(ROOT/'src/irisx'/name).read_bytes():raise ValidationError('complete TTT implementation differs')
+        if plan.get('joint_trm') is not None:
+            from irisx.arc_nvarc_trm_runtime import verify_runtime_bundle
+            verify_runtime_bundle(output/'trm-source-bundle',plan['joint_trm']['source_bundle_digest'])
+            if (hashlib.sha256(decoded['trm_optimizer_wheel']).hexdigest()!=plan['joint_trm']['optimizer_wheel_sha256'] or
+                    archive.read('irisx/arc_nvarc_trm_runtime.py')!=(ROOT/'src/irisx/arc_nvarc_trm_runtime.py').read_bytes()):
+                raise ValidationError('joint TRM optimizer/runtime differs')
     verify_bundle(output/'source-bundle',plan['source_bundle_digest'])
     _,chain,_=source_export(plan['source_kernel'].split('/')[1],remote_reference=not plan['local_export_bytes_verified_at_stage'])
     if chain['export_material_digest']!=plan['material_digest'] or chain['identity_digest']!=plan['training_identity_digest']:
@@ -167,12 +197,14 @@ def preflight(output:Path):
             meta['dataset_sources']!=list(plan['datasets'].values()) or meta['kernel_sources']!=[plan['source_kernel']] or
             meta['competition_sources']!=plan['competition_sources']):raise ValidationError('complete TTT private transport differs')
     return {'run_id':plan['run_id'],'plan_digest':digest_value(plan),'offline_package_verified':True,'external_calls':0,
-        'runtime_verified':False,'maximum_optimizer_steps':128,'maximum_generations':16,'maximum_paid_usd':0}
+        'runtime_verified':False,'maximum_optimizer_steps':128,'maximum_generations':16,'maximum_paid_usd':0,
+        'joint_trm_enabled':plan.get('joint_trm') is not None,'maximum_verifications':plan['maximum_verifications']}
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('action',choices=('stage','preflight'))
     parser.add_argument('--output',type=Path,required=True);parser.add_argument('--run');parser.add_argument('--sft-run')
     parser.add_argument('--remote-export-proof',action='store_true',help='Use the exact retrieved export manifest; verify all mounted weight bytes before model work on Kaggle.')
+    parser.add_argument('--joint-trm',action='store_true')
     args=parser.parse_args()
-    print(json.dumps(stage(args.output,args.run,args.sft_run,remote_reference=args.remote_export_proof) if args.action=='stage' else preflight(args.output),indent=2))
+    print(json.dumps(stage(args.output,args.run,args.sft_run,remote_reference=args.remote_export_proof,joint_trm=args.joint_trm) if args.action=='stage' else preflight(args.output),indent=2))

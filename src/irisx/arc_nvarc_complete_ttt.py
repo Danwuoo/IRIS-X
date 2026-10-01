@@ -36,16 +36,29 @@ def complete_config():
 
 
 def check_plan(plan,config,tasks):
+    joint = plan.get('joint_trm')
+    maximum_verifications = 42 if joint is not None else 34
     if (plan.get('format')!='irisx/nvarc-complete-ttt-v1' or
             not re.fullmatch(r'nvarc-overnight-ttt-\d{3}',plan.get('run_id','')) or
             plan.get('maximum_paid_usd')!=0 or plan.get('maximum_teacher_calls')!=0 or
             plan.get('config_digest')!=digest_value(config) or plan.get('visible_digest')!=digest_value(tasks) or
             plan.get('maximum_tasks')!=len(tasks) or len(tasks)!=1 or plan.get('maximum_generations')!=16 or
-            plan.get('maximum_optimizer_steps')!=128 or plan.get('maximum_verifications')!=34 or
+            plan.get('maximum_optimizer_steps')!=128 or plan.get('maximum_verifications')!=maximum_verifications or
             plan.get('maximum_outer_model_forwards')!=66000):
         raise ValidationError('complete source TTT immutable plan differs')
     if config!=complete_config():
         raise ValidationError('complete source rank-256 epoch settings differ')
+    if joint is not None:
+        from .arc_nvarc_trm_checkpoint import published_model_config
+        from .arc_nvarc_trm_runtime import SOURCE_HASHES
+        if (joint.get('dataset')!='cpmpml/arc-prize-trm-031/1' or joint.get('file')!='step_220708' or
+                joint.get('checkpoint_sha256')!='dbf771737d9799b84faf009c24c5376831f095d2cfd66debbe9a505a445bfc31' or
+                joint.get('source_bundle_digest')!=digest_value(SOURCE_HASHES) or
+                joint.get('model_config')!=published_model_config(device_dtype='bfloat16') or
+                joint.get('maximum_optimizer_steps')!=1 or joint.get('maximum_views')!=8 or
+                joint.get('maximum_act_forwards')!=80 or joint.get('maximum_candidates')!=8 or
+                joint.get('joint_verification_state')!='same adapted Qwen state before task reset'):
+            raise ValidationError('joint published TRM immutable settings differ')
     candidate=config.get('candidate',{})
     if (candidate.get('augmentation')!='source-qwen' or candidate.get('representation')!='source-qwen' or
             candidate.get('ranking')!='source-kgmon' or candidate.get('maximum_calls_per_task')!=16 or
@@ -63,7 +76,8 @@ def check_plan(plan,config,tasks):
         raise ValidationError('complete source TTT backend differs')
 
 
-def run(plan_path:Path,model_path:Path,visible_path:Path,config_path:Path,bundle:Path,output:Path):
+def run(plan_path:Path,model_path:Path,visible_path:Path,config_path:Path,bundle:Path,output:Path,
+        *,trm_result_path:Path|None=None):
     import torch
     from peft import get_peft_model_state_dict
     plan=json.loads(plan_path.read_bytes());config=json.loads(config_path.read_bytes())
@@ -72,6 +86,14 @@ def run(plan_path:Path,model_path:Path,visible_path:Path,config_path:Path,bundle
         raise ValidationError('runtime visible bytes cannot contain test answers')
     tasks=[visible_task(key,value) for key,value in sorted(raw.items())]
     check_plan(plan,config,tasks)
+    joint=None
+    if plan.get('joint_trm') is not None:
+        from .arc_nvarc_trm_runtime import verify_joint_trm_result
+        if trm_result_path is None:raise ValidationError('joint TRM result required before Qwen work')
+        joint=json.loads(trm_result_path.read_bytes())
+        verify_joint_trm_result(plan,joint)
+    elif trm_result_path is not None:
+        raise ValidationError('unplanned TRM result forbidden')
     material=verify_model_material(model_path,plan['material_digest'])
     if material.get('training_identity_digest')!=plan['training_identity_digest']:
         raise ValidationError('complete TTT export training binding differs')
@@ -99,7 +121,7 @@ def run(plan_path:Path,model_path:Path,visible_path:Path,config_path:Path,bundle
             else:ledger['generation_calls_completed']+=1
         elif kind=='verification':
             if status=='reserved':
-                if ledger['verification_calls_reserved']>=32:raise ValidationError('model candidate verification ceiling reached')
+                if ledger['verification_calls_reserved']>=plan['maximum_verifications']-2:raise ValidationError('model candidate verification ceiling reached')
                 ledger['verification_calls_reserved']+=1
             else:ledger['verification_calls_completed']+=1
         else:raise ValidationError('source call observer kind differs')
@@ -137,13 +159,15 @@ def run(plan_path:Path,model_path:Path,visible_path:Path,config_path:Path,bundle
                     ledger['phase']='source-dfs-and-model-candidate-ranking'
                     emit(ledger['phase'])
             backend=ObservedBackend(model,task_adapter=adapter,dfs_max_score=candidate_score_limit(config['candidate']),dfs_max_expansions=4096)
+            if joint is not None:
+                backend.supplemental_candidates=lambda task,test_index:joint['candidates']
             # Configuration is also applied by solve_task before begin_task.
             results=solve_task(tasks[0],backend,config['candidate'],call_observer=generation_observer)
             observed_generations=sum(len(row['generation_observations']) for row in results)
             observation=adapter.last_observation
             if (observation['steps']!=128 or not observation['complete_epoch'] or
                     ledger['generation_calls_reserved']!=16 or ledger['generation_calls_completed']!=16 or
-                    observed_generations!=16 or backend.verification_calls>34):
+                    observed_generations!=16 or backend.verification_calls>plan['maximum_verifications']):
                 raise ValidationError('complete TTT returned workload differs')
             reset_equal=all(torch.equal(value.detach().cpu(),adapter.initial[name])
                 for name,value in get_peft_model_state_dict(adapter.model).items())
@@ -156,6 +180,11 @@ def run(plan_path:Path,model_path:Path,visible_path:Path,config_path:Path,bundle
                 'explicit_inference_forwards':backend.forward_calls,'adapter_reset_exact':True,
                 'contains_evaluator_truth':False,'correctness_scored':False,'full_scale_sft_verified':False,
                 'original_qwen3_unsloth_parity':False,'wall_seconds':time.monotonic()-started}
+            if joint is not None:
+                result['joint_trm']={'result_digest':digest_value(joint),
+                    'raw_candidates':len(joint['candidates']),'supplemental_sequences':results[0]['supplemental_sequences'],
+                    'verification_state':plan['joint_trm']['joint_verification_state'],
+                    'published_checkpoint_sha256':plan['joint_trm']['checkpoint_sha256']}
             (output/'result.json').write_bytes(canonical_bytes(result,newline=True))
             emit('complete',outer_model_forwards=ledger['outer_model_forwards_reserved'])
             return result
@@ -173,5 +202,6 @@ def run(plan_path:Path,model_path:Path,visible_path:Path,config_path:Path,bundle
 if __name__=='__main__':
     parser=argparse.ArgumentParser()
     for key in ('plan','model','visible','config','bundle','output'):parser.add_argument('--'+key,type=Path,required=True)
+    parser.add_argument('--trm-result',type=Path)
     args=parser.parse_args()
-    run(args.plan,args.model,args.visible,args.config,args.bundle,args.output)
+    run(args.plan,args.model,args.visible,args.config,args.bundle,args.output,trm_result_path=args.trm_result)

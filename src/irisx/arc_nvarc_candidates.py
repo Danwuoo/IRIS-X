@@ -464,6 +464,24 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any],
                                        "source": f"qwen:view{view_index}:seq{sequence_index}",
                                        "beam_nll": float(sequence["beam_nll"]),
                                        "verification_nll": float(verification)})
+            supplemental = (backend.supplemental_candidates(task, test_index)
+                            if hasattr(backend, "supplemental_candidates") else [])
+            for sequence_index, item in enumerate(supplemental):
+                restored = grid(item["grid"])
+                canonical_grid = tuple(tuple(row) for row in restored)
+                if canonical_grid not in verified_grids:
+                    verify_call = {"kind": "verification", "index": verification_calls + 1,
+                                   "task_id": task["task_id"], "test_index": test_index,
+                                   "branch": "trm"}
+                    if call_observer is not None:
+                        call_observer({**verify_call, "status": "reserved"})
+                    verified_grids[canonical_grid] = float(backend.verify(task, test_index, restored))
+                    verification_calls += 1
+                    if call_observer is not None:
+                        call_observer({**verify_call, "status": "complete"})
+                candidates.append({"grid": restored, "complete": True,
+                                   "source": "trm:" + str(item.get("source", sequence_index)),
+                                   "beam_nll": 0.0, "verification_nll": verified_grids[canonical_grid]})
             rank_started = time.monotonic()
             ranked = rank_candidates(candidates, policy=profile["ranking"])
             if hasattr(backend, "rank_seconds"):
@@ -474,6 +492,7 @@ def solve_task(task: Mapping[str, Any], backend: Any, config: Mapping[str, Any],
                             "ranked": ranked, "generation_calls_so_far": calls,
                             "verification_calls_so_far": verification_calls,
                             "returned_sequences": returned_sequences,
+                            "supplemental_sequences": len(supplemental),
                             "parse_rejections": parse_rejections,
                             "generation_observations": generation_observations,
                             "status": "complete" if len(attempts) == 2 else "missing-candidate"})

@@ -161,7 +161,7 @@ def verify_ttt(folder,plan,data):
         all(all(group[key]>0 for key in ('attention','delta','embedding','head')) for group in ttt['gradient_groups_by_step']),
         'full-epoch finite loss/gradient coverage differs')
     require(ledger['ttt_optimizer_steps_observed']==128 and ledger['generation_calls_reserved']==ledger['generation_calls_completed']==16 and
-        ledger['verification_calls_reserved']==ledger['verification_calls_completed']==result['candidate_verification_calls']<=32,
+        ledger['verification_calls_reserved']==ledger['verification_calls_completed']==result['candidate_verification_calls']<=plan['maximum_verifications']-2,
         'generation/verification reserved-completed ledger differs')
     require(result['adapter_reset_exact'] and result['demonstration_probe_calls']==2 and
         len(result['demonstration_verifier_probes'])==2 and all(not item['model_candidate'] and not item['correctness_scored']
@@ -172,8 +172,40 @@ def verify_ttt(folder,plan,data):
         'source model candidate pool differs')
     require(calls['attempts']==[item['grid'] for item in calls['ranked'][:2]] and calls['missing_attempts']==2-len(calls['attempts']),
         'selected top-two candidates differ')
-    require(calls['returned_sequences']==sum(item['votes'] for item in calls['ranked'])+sum(calls['parse_rejections'].values()),
+    supplemental=calls.get('supplemental_sequences',0)
+    require(calls['returned_sequences']+supplemental==sum(item['votes'] for item in calls['ranked'])+sum(calls['parse_rejections'].values()),
         'candidate parse and vote ledger differs')
+    joint_proof=None
+    if plan.get('joint_trm') is not None:
+        from irisx.arc_nvarc_trm_runtime import verify_joint_trm_result
+        trm=json.loads(data['trm-worker/result.json'])
+        joint_proof=verify_joint_trm_result(plan,trm)
+        require(result['joint_trm']['result_digest']==digest_value(trm) and
+            result['joint_trm']['raw_candidates']==supplemental==len(trm['candidates']) and
+            result['joint_trm']['verification_state']==plan['joint_trm']['joint_verification_state'],
+            'joint TRM result/pool bindings differ')
+        reconstructed={}
+        for item in calls['ranked']:
+            require(item['votes']==len(item['sources']) and all(source.startswith(('qwen:','trm:')) for source in item['sources']),
+                'joint model vote provenance differs')
+            for source in item['sources']:
+                if source.startswith('trm:'):
+                    require(source not in reconstructed,'joint TRM view counted twice')
+                    reconstructed[source]=item['grid']
+        require(reconstructed=={'trm:'+item['source']:item['grid'] for item in trm['candidates']},
+            'joint TRM inverse-mapped model views differ')
+        with source_bundle(bundle,plan['source_bundle_digest']):
+            from irisx.arc_nvarc_upstream import qwen_cell
+            getter=qwen_cell('arc_decoder.py').getter_kgmon
+            for item in calls['ranked']:
+                score=float(getter([{'score_aug':[item['mean_verification_nll']]}]*item['votes']))
+                require(math.isclose(score,item['score'],rel_tol=1e-9,abs_tol=1e-9),'joint source ranking differs')
+        trm_events=[json.loads(line) for line in data['trm-worker/events.jsonl'].splitlines()]
+        require(len([item for item in trm_events if item['event']=='optimizer-complete'])==1 and
+            len([item for item in trm_events if item['event']=='view-complete'])==8,
+            'joint TRM returned workload events differ')
+    else:
+        require(supplemental==0,'unplanned supplemental candidates present')
     events=[json.loads(line) for line in data['worker/events.jsonl'].splitlines()]
     steps=[item for item in events if item['event']=='ttt-optimizer-returned']
     require(len(steps)==128 and [item['completed_steps'] for item in steps]==list(range(1,129)),
@@ -190,7 +222,8 @@ def verify_ttt(folder,plan,data):
         'cuda_peak_allocated_bytes':ttt['peak_cuda_allocated_bytes'],
         'cuda_peak_reserved_bytes':ttt['peak_cuda_reserved_bytes'],
         'trainable_parameter_count':ttt['trainable_parameter_count'],
-        'full_scale_sft_verified':False,'original_qwen3_unsloth_parity':False}
+        'full_scale_sft_verified':False,'original_qwen3_unsloth_parity':False,
+        'joint_trm':joint_proof}
 
 
 def verify(run):

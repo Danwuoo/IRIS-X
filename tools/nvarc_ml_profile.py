@@ -44,7 +44,8 @@ def main() -> int:
                             "tests.nvarc_packing_strict", "tests.nvarc_sft_step_strict",
                             "tests.nvarc_source_stream_strict", "tests.nvarc_source_sft_strict",
                             "tests.nvarc_ttt_checkpoint_strict", "tests.nvarc_complete_ttt_strict",
-                            "tests.nvarc_trm_checkpoint_strict", "tests.nvarc_sdg_artifacts_strict", "-v"],
+                            "tests.nvarc_trm_checkpoint_strict", "tests.nvarc_sdg_artifacts_strict",
+                            "tests.nvarc_joint_runtime_strict", "-v"],
                            env=env)
 
 

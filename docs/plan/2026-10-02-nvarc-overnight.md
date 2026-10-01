@@ -41,8 +41,9 @@ Starting main commit is `01f43cd`. GPU preflight 002 is verified and consumed.
   Four-L4 run 002 completed two accumulated steps, 94,156 input tokens,
   process restart and a 724-tensor HF export/reload. Sole terminal retrieval
   verified the closed diagnostics and all local exported tensor byte digests.
-  Run 003 is accepted and measures global batch 256
-  over the exact first 512 full-shuffle rows (1,770,662 input tokens).
+  Run 003 reports both global-batch-256 steps complete over the exact first
+  512 full-shuffle rows (1,770,662 input / 764,883 supervised tokens), restart
+  and export/reload; sole export transfer/local tensor proof remains pending.
 - Complete task-local adaptation / inference integration: full 128-view tiny
   epoch checkpoint differential and trained-export/search/reset integration
   pass. Four-L4 run `nvarc-overnight-ttt-001` is accepted with a single model
@@ -70,18 +71,22 @@ Starting main commit is `01f43cd`. GPU preflight 002 is verified and consumed.
   in a distinct material identity; whole-archive verification is pending.
   Exact TRM v18 requests returned 404 (version label) and 403 (official CLI
   slug convention), preserving the v21/v18 gap.
-  Published TRM evaluation arrays are fully inventoried and quarantined from
-  solver staging. Training arrays (39.4 GB raw / 2.2 GB compressed) are in a
-  distinct bounded acquisition; numeric-header/closed-member verification is
-  pending. No evaluation array payload or answer enters a solver.
+  Both published TRM array Datasets fully verify; evaluation bytes remain
+  quarantined. Every training identifier, 4,073 groups and 21,845,065 example
+  indices reconcile with all exposure retained. Eight training rows pass the
+  actual source collator against an independent mask/identifier oracle.
+  Joint Qwen/TRM ranking retains the complete Qwen workload and adds one demo
+  TRM update/eight D4 views on a separate L4. Inert 003 failed preflight ordering;
+  004 failed on a moved non-leaf sparse buffer. Distinct 005 constructs on the
+  final device, passes the actual failure regression and is accepted/pending.
   Full original teacher generation, raw artifact verification, TRM scale and v18 parity
   remain unverified and cannot be replaced by these engineering observations.
 - Repository validation: 314 tests passed in 267.771 s for milestone 002.
-  Later ML validation passed 46 tests plus the new recovery oracle; the current
-  profile contains all 47. A Windows atomic-ledger lock surfaced in a later
+  Later ML validation passed all 49 tests in 308.211 seconds. A Windows atomic-ledger lock surfaced in a later
   system-Python check, now repaired with bounded replacement retry and an
   independent transient/persistent-lock regression. Required full revalidation
-  passed 315 tests in 253.887 seconds using the ML runtime.
+  passed 315 tests in 264.130 seconds using the ML runtime. The later joint
+  leaf-buffer repair's source optimizer/state regressions also pass.
   Final source-prefix runtime, durable handoff and substantive completion remain
   pending. Required validation will be repeated only after further changes.
 

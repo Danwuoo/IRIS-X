@@ -19,7 +19,8 @@ identity remains frozen. Distinct `nvarc-overnight-sft-002` was accepted as
 private version 1 and completed accumulated SFT, restart and a 724-tensor
 HF export/reload. Its sole retrieval and independent local reading verify all
 724 exported tensor byte digests. The distinct global-256 source-prefix SFT 003
-remains pending. Complete 128-view TTT 002 is terminal and independently
+reports both steps/restart/export complete; local export transfer/tensor proof
+remain pending. Complete 128-view TTT 002 is terminal and independently
 verified: 128 optimizer steps, sixteen DFS calls, five model candidates, seven
 eight-view verifications including two separate public-demo probes, exact reset,
 18.5 GB CUDA training peak and 715 seconds notebook time. Candidates are unscored.
@@ -34,7 +35,14 @@ the actual 512-width model and completes bounded CPU demo-TTT/ACT/reset.
 Published SDG artifacts version 1
 (192 Parquet members, 47,514,077,184 raw bytes) are being acquired into the
 isolated original namespace; a distinct validator-bound resume preserves the
-first timed-out partial. Full archive verification remains pending. No ARC quality,
+first timed-out partial. Full archive verification remains pending. Both TRM
+array Datasets now verify; all training identifiers/groups/indices retain their
+ancestors and exposure, with evaluation bytes quarantined. Joint Qwen/TRM
+ranking shares adapted task state and retains all model votes. GPU TTT 004
+stopped before optimizer/inference on a non-leaf buffer; final-device
+construction is submitted in distinct 005. All 49 strict ML tests and 315
+repository tests pass; the later leaf failure/optimizer regressions also pass.
+No ARC quality,
 original backend/model parity or full-scale training is claimed before proof.
 
 ## Second GPU resource preflight (2026-10-01)
