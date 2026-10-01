@@ -1,5 +1,17 @@
 # Qwen3.5-4B NVARC reproduction development
 
+## Published material acquisition (2026-10-01)
+
+Under [Decision 0049](../../docs/decisions/0049-acquire-and-audit-nvarc-datasets.md),
+both published puzzle datasets were acquired at version 1. ZIP/member hashes
+and CRCs verify; the augmented HF data has seven subsets and the synthetic
+ZIP has 103,223 puzzles. The [acquisition report](dataset-acquisition-20261001.md)
+records local processing, exclusions and verification. Both ancestors of each
+synthetic mix are retained. All 55,886 `nvarc_full` puzzles have an evaluation
+ancestor, so that source is quarantined under clean-research policy. Actual
+material is available, but a clean six-source corpus remains unavailable.
+No real-data training, teacher call, kernel operation or scoring follows.
+
 ## Current method-completeness development (2026-09-30)
 
 The [005 paired result](compact-abc-005-editor-diagnosis.md) is complete:

@@ -116,3 +116,15 @@ SHA-256 bindings：
 Provisional parents：`337b420f`、`73ccf9c2`、`c0f76784`、`c4d1a9ae`、
 `cf5fd0ad`、`d23f8c26`、`e1baa8a4`、`f3cdc58f`。這是 pending training-data
 exclusion 的公開 development manifest，沒有 locked-holdout 或 solver 分數。
+
+## 2026-10-01 資料取得後的修正
+
+依 [Decision 0049](../decisions/0049-acquire-and-audit-nvarc-datasets.md)，
+已取得固定第 1 版 augmented 與 synthetic puzzles；詳見
+[資料查核](../../trials/arc-agi-2-qwen35-nvarc/dataset-acquisition-20261001.md)。
+先前「尚未下載」的缺口已排除，但原六來源與 clean-research 有實質衝突：
+`nvarc_full` 的 55,886 題全部含 evaluation parent，不能納入乾淨訓練。
+合成題保留雙 parent lineage，不能塞成單一 `parent_id` 來通過既有 freezer。
+現在準備的五來源 HF 資料是可查核的本機材料，並未改寫原方法契約或解除
+六來源 gate。後續需要明確區分原已發表配方與乾淨移植配方，再補分散式
+backend 與資源量測；不能把缺一來源包裝成完整重現。

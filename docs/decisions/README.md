@@ -176,3 +176,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0048-save-compact-abc-base-ttt-pair.md`](0048-save-compact-abc-base-ttt-pair.md)
   authorizes one owner-Editor QUICK_SAVE comparing base and eight-step SFT
   pilot weights with and without the same one-step task TTT.
+- [`0049-acquire-and-audit-nvarc-datasets.md`](0049-acquire-and-audit-nvarc-datasets.md)
+  authorizes fixed-version acquisition and local lineage/exposure processing
+  of the two published NVARC puzzle datasets, without model execution.

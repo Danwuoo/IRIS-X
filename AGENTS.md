@@ -542,6 +542,20 @@ The new comparison proposal is inert and materials-blocked; it grants no
 external acquisition, Dataset mutation, save/run, retrieval, teacher call,
 hidden/locked scoring or promotion. Preserve all consumed ABC identities.
 
+Decision 0049 records the owner's explicit approval to download and locally
+process the published NVARC augmented and synthetic puzzle datasets, both
+fixed at version 1. Preserve raw ZIPs and inventories, quarantine unresolved
+lineage/evaluation exposure, and exclude protected development ancestors.
+This source acquisition does not authorize model execution, Dataset mutation,
+kernel save/run, teacher calls, hidden/locked scoring or promotion. The larger
+artifacts dataset is outside scope. Current acquisition status is
+`trials/arc-agi-2-qwen35-nvarc/dataset-acquisition-20261001.md`.
+The downloads and local processing are complete and independently verified:
+five-source HF material has 1,101,555 filtered rows. All published nvarc_full
+puzzles have an evaluation ancestor; the entire source remains quarantined.
+The original clean six-source gate remains false, and multi-parent lineage
+must not be collapsed into a false single parent to satisfy the old importer.
+
 ## Authority order
 
 1. explicit owner instructions for the current task;

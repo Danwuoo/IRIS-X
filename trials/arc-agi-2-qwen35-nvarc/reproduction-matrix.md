@@ -1,5 +1,17 @@
 # Component completion and reproduction gaps
 
+## Actual dataset audit (2026-10-01)
+
+The [dataset acquisition](dataset-acquisition-20261001.md) supersedes the
+missing-download state below: both puzzle datasets are retained at version 1,
+with ZIP/member digest and CRC verification. Synthetic lineage is a pair of
+published ARC IDs, not a single parent. Every `nvarc_full` puzzle combines an
+evaluation and training parent; clean-research excludes that whole source.
+Five-source filtered HF preparation is distinct from the frozen six-source
+contract. Distributed source-recipe integration, target GPU checks, semantic
+overlap beyond declared ancestry and a reviewed clean method/data design remain
+open. This acquisition is not SFT, full-method completion or execution authority.
+
 ## Method-completeness continuation (2026-09-30)
 
 The [new method report](../../docs/plan/2026-09-30-nvarc-method-completeness.md)

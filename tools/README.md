@@ -21,6 +21,14 @@ a terminal normalization gate. It never moves or deletes files.
 Historical tools are recoverable from the cold-archive tag and are not active
 commands.
 
+`nvarc_datasets.py` inventories and safely extracts downloaded ZIPs, builds
+public parent catalogs with frozen development/locked exclusions, prepares
+filtered HF material with ordered multi-parent lineage, and independently
+verifies digests and real upstream-loader samples. It is offline and never
+executes downloaded programs or starts training. Decision 0049 covers the
+separate fixed-version Kaggle acquisition; see the
+[dataset report](../trials/arc-agi-2-qwen35-nvarc/dataset-acquisition-20261001.md).
+
 `stage_nvarc_source_continuation.py` and
 `preflight_nvarc_source_continuation.py` prepare and check a local, inert
 post-SFT source solve from the retained M2 export. They perform no upload,

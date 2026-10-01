@@ -1,5 +1,42 @@
 # Development and future execution runbook
 
+## Published dataset acquisition and processing (2026-10-01)
+
+[Decision 0049](../../docs/decisions/0049-acquire-and-audit-nvarc-datasets.md)
+authorizes the two version-1 puzzle downloads and local processing. Actual
+digests, exclusions and counts are in the [dataset report](dataset-acquisition-20261001.md).
+Retain ZIPs; the CLI's `--unzip` removes them and is unsuitable here. These
+commands acquire source data only, with no Dataset mutation or model run:
+
+```powershell
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle datasets download sorokin/nvarc-augmented-puzzles/1 -p .irisx/nvarc-data/raw/augmented-v1 --quiet
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m kaggle datasets download sorokin/nvarc-synthetic-puzzles/1 -p .irisx/nvarc-data/raw/synthetic-v1 --quiet
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_datasets.py inventory-archive --archive <downloaded-zip> --output <new-inventory.json> --extract <new-extraction-dir>
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_datasets.py build-catalog --source .irisx/arc-agi-2/qwen35-nvarc/source --protected-split .irisx/nvarc-data/protected-split.json --comparison .irisx/arc-agi-2/qwen35-nvarc/method-reference-20260930/comparison-review-001/proposal.json --output <new-catalog.json>
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_datasets.py prepare --augmented <verified-augmented-tree> --augmented-inventory <inventory.json> --synthetic-archive <synthetic.zip> --synthetic-inventory <inventory.json> --catalog <catalog.json> --output <new-processing-dir>
+& .irisx/nvarc-ml-venv/Scripts/python.exe tools/nvarc_datasets.py verify-prepared --prepared <processing-dir> --catalog <catalog.json> --output <new-verification.json>
+$env:PYTHONPATH = 'src'
+& .irisx/nvarc-ml-venv/Scripts/python.exe -m unittest tests.test_nvarc_datasets tests.nvarc_datasets_strict -v
+```
+
+The synthetic ZIP can remain compressed; member SHA-256/CRC inventories and
+pair/parent auditing read it directly. The frozen protected split digest must
+match `6176d88ce9a66dcc45584aa09c110898c0f782b1f97e42e1f268c3ef1f25bd2b`.
+Generated filenames retain two parents and matching first-parent directories;
+check both ancestors and retain uncertainty about semantic ancestry beyond
+the published naming. Mini/Concept parents are source-namespaced; cross-source
+semantic overlap remains unestablished. No protected/evaluation bytes enter
+filtered HF exports. Records beyond the local 8192-token review cap remain
+quarantined intact; this cap is not a new approved SFT workload or truncation
+recipe.
+
+Published `nvarc_full` mixes evaluation and training parents and has no
+clean-research eligible records. The processed five-source HF material is
+preparation evidence, not the existing six-source frozen-corpus format. Its
+`parent_ids` list must never be collapsed to a false single `parent_id` to
+satisfy that importer. Keep original six-source readiness false until a
+separately reviewed method/data design resolves this incompatibility.
+
 ## Current offline method reference (2026-09-30)
 
 Use the [method-completeness report](../../docs/plan/2026-09-30-nvarc-method-completeness.md)
