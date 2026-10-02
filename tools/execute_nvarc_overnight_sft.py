@@ -19,7 +19,7 @@ import re
 RUN = None
 from irisx.canonical import digest_value
 def preflight(package):
-    if read(package/'plan.json')['format']=='irisx/nvarc-original-native-long-ttt-v1':
+    if read(package/'plan.json')['format'] in {'irisx/nvarc-original-native-long-ttt-v1','irisx/nvarc-original-native-long-ttt-v2'}:
         from tools.stage_nvarc_native_long_ttt import preflight as check
     elif read(package/'plan.json')['format']=='irisx/nvarc-original-training-inspection-v1':
         from tools.stage_nvarc_original_training_inspection import preflight as check

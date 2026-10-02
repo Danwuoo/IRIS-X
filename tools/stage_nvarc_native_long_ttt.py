@@ -17,8 +17,10 @@ from tools import stage_nvarc_original_training_inspection as inspection
 from tools.audit_nvarc_native_ttt_optimizer import MATERIAL as OPTIMIZER,EXACT
 
 FORMAT='irisx/nvarc-original-native-long-ttt-v1'
+PORTABLE_FORMAT='irisx/nvarc-original-native-long-ttt-v2'
 WORKER=ROOT/'tools/nvarc_original_native_ttt_worker.py'
 BUDGET=ROOT/'tools/nvarc_native_ttt_budget.py'
+SCHEDULE=ROOT/'tools/nvarc_native_ttt_schedule.py'
 HARDWARE=ROOT/'src/irisx/arc_nvarc_hardware.py'
 OPTIMIZER_PROOF=ROOT/'.irisx/nvarc-original/manifests/native-ttt-optimizer-20261002-001/result.json'
 OPTIMIZER_PROOF_SHA='e519d70b696c9bbcb76102a53c4cde3a3cd68bf560a8769879f1856e2eec4031'
@@ -41,9 +43,9 @@ def native_inventory():
     return binding
 
 
-def plan_for(run,session_seconds=10800):
+def plan_for(run,session_seconds=10800,portable_schedule=False):
     require(re.fullmatch(r'nvarc-original-qwen3-native-ttt-\d{3}',run),'new distinct native full-epoch identity required')
-    require(type(session_seconds) is int and session_seconds in (1300,10800),'reviewed finite native epoch envelope required')
+    require(type(session_seconds) is int and session_seconds in (1300,1500,10800),'reviewed finite native epoch envelope required')
     observed=inspection.verify(PREPARATION/'execution-final/retrieved/gpu-preflight-result.zip',PREPARATION/'package-l4')
     require(observed['source_long_ttt_prerequisite_qualified'] is True and sha(OPTIMIZER_PROOF)==OPTIMIZER_PROOF_SHA,
         'qualified native preparation and exact scalar recipe required')
@@ -67,7 +69,42 @@ def plan_for(run,session_seconds=10800):
         scope='complete native 128-view source epoch plus exact adapter reset; no solve, clock parity, export or ARC score')
     require(len(plan['source_learning_rates'])==129 and len(plan['native_trainer_origins'])==5,
         'all native scheduler indices and prepared Trainer origins required')
+    if portable_schedule:
+        from tools.nvarc_native_ttt_schedule import SOURCES,FUNCTIONS
+        plan.update(format=PORTABLE_FORMAT,native_schedule_policy={
+            'source_sha256':SOURCES,'function_sha256':FUNCTIONS,'maximum_reference_ulp_distance':4,
+            'optimizer_comparison':'exact same-platform replay of the unchanged pinned source functions'})
     return plan
+
+
+def portable_worker():
+    source=WORKER.read_text(encoding='utf-8')
+    anchor="budget=EpochBudget(torch,model,trainer,rows,plan['source_learning_rates'],lambda value:save('training-ledger.json',value),"
+    require(source.count(anchor)==1 and source.count("FORMAT='"+FORMAT+"'")==1,
+        'reviewed immutable legacy worker anchors required')
+    source=source.replace("FORMAT='"+FORMAT+"'","FORMAT='"+PORTABLE_FORMAT+"'")
+    source=source.replace(anchor,"from nvarc_native_ttt_schedule import native_schedule\n    rates,schedule=native_schedule(dependency,trainer.args,plan['source_learning_rates'])\n    save('native-schedule.json',schedule)\n    budget=EpochBudget(torch,model,trainer,rows,rates,lambda value:save('training-ledger.json',value),")
+    anchor="    with budget.installed():\n        metrics=trainer.train()\n        moments=budget.complete()"
+    require(source.count(anchor)==1,'reviewed native train diagnostic anchor required')
+    source=source.replace(anchor,"""    try:
+        with budget.installed():
+            metrics=trainer.train()
+            moments=budget.complete()
+    except BaseException as error:
+        save('training-failure.json',{'error_type':type(error).__name__,'error_message':str(error),
+            'training_wall_seconds':time.monotonic()-training_start,'worker_wall_seconds':time.monotonic()-started,
+            'cuda_peak_allocated_bytes':torch.cuda.max_memory_allocated(),'cuda_peak_reserved_bytes':torch.cuda.max_memory_reserved(),
+            'optimizer_learning_rates':[float(group['lr']) for group in budget.optimizer.param_groups] if budget.optimizer else []})
+        raise""")
+    compile(source,'native-portable-epoch-worker','exec');return source.encode()
+
+
+def portable_budget():
+    source=BUDGET.read_text(encoding='utf-8')
+    anchor="            require(all(group['lr']==self.rates[i] for group in owner.param_groups),'exact native cosine learning rate required')"
+    require(source.count(anchor)==1,'reviewed unchanged native budget anchor required')
+    source=source.replace(anchor,"            self.state['last_learning_rate_check']={'index':i,'expected':self.rates[i],'actual_rates':[group['lr'] for group in owner.param_groups]}\n            self._save()\n"+anchor)
+    compile(source,'native-portable-epoch-budget','exec');return source.encode()
 
 
 def raw_payloads(plan):
@@ -77,10 +114,12 @@ def raw_payloads(plan):
     require(digest_value(binding)==plan['source_inventory_digest'],'complete native source plan binding required')
     payload.update(plan=canonical_bytes(plan,newline=True),source_inventory=canonical_bytes(binding,newline=True),
         helper=payload['worker'],worker=WORKER.read_bytes(),budget=BUDGET.read_bytes(),hardware=HARDWARE.read_bytes())
+    if plan['format']==PORTABLE_FORMAT:
+        payload.update(worker=portable_worker(),budget=portable_budget(),schedule=SCHEDULE.read_bytes())
     return payload
 
 
-def parent_template():
+def parent_template(portable_schedule=False):
     source=(ROOT/'tools/nvarc_original_training_inspection.py.tmpl').read_text(encoding='utf-8')
     anchor="def save(name,value):"
     helper="""def counts():
@@ -96,6 +135,8 @@ def parent_template():
     require(source.count(anchor)==1,'reviewed native parent anchor required')
     source=source.replace(anchor,helper+anchor)
     source=source.replace("('inspection.py','worker')","('inspection.py','worker'),('inspection_helpers.py','helper'),('nvarc_native_ttt_budget.py','budget'),('hardware_helpers.py','hardware')")
+    if portable_schedule:
+        source=source.replace("('hardware_helpers.py','hardware')","('hardware_helpers.py','hardware'),('nvarc_native_ttt_schedule.py','schedule')")
     source=source.replace("phase='zero-work-native-inspection'","phase='complete-native-source-epoch'")
     require(source.count("'model_forwards':0,'optimizer_steps':0")==2,
         'exact successful and failed native terminal count anchors required')
@@ -105,15 +146,15 @@ def parent_template():
 
 
 def render(run,payloads,hashes):
-    source=parent_template()
+    source=parent_template('schedule' in payloads)
     for key,value in {'__RUN__':json.dumps(run),'__PAYLOADS__':json.dumps(payloads),'__HASHES__':json.dumps(hashes),
         '__HARDWARE_HELPER__':HARDWARE.read_text(encoding='utf-8')}.items():source=source.replace(key,value)
     compile(source,'native-full-epoch-parent','exec');return source
 
 
-def stage(package,run,session_seconds=10800):
+def stage(package,run,session_seconds=10800,portable_schedule=False):
     require(not package.exists(),'new immutable native epoch package required')
-    plan=plan_for(run,session_seconds);raw=raw_payloads(plan)
+    plan=plan_for(run,session_seconds,portable_schedule);raw=raw_payloads(plan)
     hashes={key:hashlib.sha256(value).hexdigest() for key,value in raw.items()}
     (package/'kernel').mkdir(parents=True);(package/'plan.json').write_bytes(raw['plan'])
     notebook={'nbformat':4,'nbformat_minor':5,'metadata':{'kernelspec':{'display_name':'Python 3','language':'python','name':'python3'}},
@@ -130,7 +171,7 @@ def stage(package,run,session_seconds=10800):
 
 def preflight(package):
     plan=json.loads((package/'plan.json').read_bytes());summary=json.loads((package/'stage-summary.json').read_bytes())
-    require(plan==plan_for(plan['run_id'],plan['maximum_notebook_wall_seconds']) and digest_value(plan)==summary['plan_digest'] and
+    require(plan==plan_for(plan['run_id'],plan['maximum_notebook_wall_seconds'],plan['format']==PORTABLE_FORMAT) and digest_value(plan)==summary['plan_digest'] and
         {p.relative_to(package).as_posix():sha(p) for p in package.rglob('*') if p.is_file() and p.name!='stage-summary.json'}==summary['inventory'],
         'exact immutable native epoch plan/package required')
     source=''.join(json.loads((package/'kernel/notebook.ipynb').read_bytes())['cells'][0]['source'])
@@ -152,5 +193,6 @@ def preflight(package):
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('action',choices=('stage','preflight'))
     parser.add_argument('--package',type=Path,required=True);parser.add_argument('--run-id')
-    parser.add_argument('--session-seconds',type=int,choices=(1300,10800),default=10800)
-    args=parser.parse_args();print(json.dumps(stage(args.package,args.run_id,args.session_seconds) if args.action=='stage' else preflight(args.package)))
+    parser.add_argument('--session-seconds',type=int,choices=(1300,1500,10800),default=10800)
+    parser.add_argument('--portable-schedule',action='store_true')
+    args=parser.parse_args();print(json.dumps(stage(args.package,args.run_id,args.session_seconds,args.portable_schedule) if args.action=='stage' else preflight(args.package)))

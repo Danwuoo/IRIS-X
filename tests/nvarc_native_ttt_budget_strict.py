@@ -1,5 +1,6 @@
 """Actual CPU NN/AdamW exercise of native-epoch guards, not native Unsloth parity."""
 import copy
+import math
 import unittest
 import torch
 from types import SimpleNamespace
@@ -80,6 +81,22 @@ class NativeEpochStrictTests(unittest.TestCase):
             self.assertTrue(all(row['parameter_dtype']=='torch.bfloat16' and row['moment_bytes']==row['elements']*4 for row in states))
             self.assertGreater(torch.count_nonzero(model.head.weight).item(),0)
             optimizer.state.clear();self.assertFalse(optimizer.state)
+
+    def test_portable_render_records_an_actual_rejected_rate_before_optimizer_work(self):
+        from tools.stage_nvarc_native_long_ttt import portable_budget
+        namespace={};exec(compile(portable_budget(),'trusted-native-portable-budget','exec'),namespace)
+        model,trainer,batches,old,retained=self.budget()
+        budget=namespace['EpochBudget'](torch,model,trainer,old.rows,old.rates,
+            lambda value:retained.append(copy.deepcopy(value)),
+            expected_parameters=sum(p.numel() for p in model.parameters()),expected_dtype='torch.float32')
+        with budget.installed():
+            optimizer=torch.optim.AdamW(model.parameters(),lr=5e-5,betas=(.9,.999),eps=1e-8,weight_decay=0)
+            scheduler=torch.optim.lr_scheduler.LambdaLR(optimizer,lambda i:[0.,1.,0.][i])
+            trainer.training_step(batches[0]);torch.nn.utils.clip_grad_norm_(model.parameters(),1.)
+            optimizer.param_groups[0]['lr']=math.nextafter(0.,math.inf)
+            with self.assertRaisesRegex(RuntimeError,'exact native cosine'):optimizer.step()
+            self.assertEqual(retained[-1]['last_learning_rate_check'],{'index':0,'expected':0.,'actual_rates':[math.nextafter(0.,math.inf)]})
+            self.assertEqual(retained[-1]['optimizer_steps'],[]);self.assertFalse(optimizer.state)
 
 
 if __name__=='__main__':unittest.main()

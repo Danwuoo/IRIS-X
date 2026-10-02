@@ -3,6 +3,7 @@ from array import array
 import copy
 import hashlib
 import json
+import math
 from pathlib import Path
 import tempfile
 import unittest
@@ -102,6 +103,41 @@ class NativeEpochEvidenceTests(unittest.TestCase):
             data['terminal.json']=canonical_bytes(terminal);result=self.check(root,fixture,data)
             self.assertEqual(result['model_forwards_reserved'],1);self.assertEqual(result['model_forwards'],0)
             self.assertFalse(result['full_native_long_ttt_completed'])
+            self.assertTrue(result['native_preparation_verified'])
+            altered=dict(data);altered.pop('native/preparation.json')
+            with self.assertRaises(ValidationError):self.check(root,fixture,altered)
+            altered=dict(data);altered['native/prepared-tokens.i16le']=b'\x01\x00'+altered['native/prepared-tokens.i16le'][2:]
+            with self.assertRaises(ValidationError):self.check(root,fixture,altered)
+
+    def test_portable_protocol_uses_exact_local_oracle_not_a_tolerant_optimizer_rate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);package,original,binding,raw,data=self.fixture(root)
+            plan=json.loads((package/'plan.json').read_bytes());plan['format']=reader.PORTABLE_FORMAT
+            (package/'plan.json').write_bytes(canonical_bytes(plan));binding=digest_value(plan)
+            reference=plan['source_learning_rates'];rates=reference[:];rates[49]=math.nextafter(rates[49],0.)
+            raw['schedule']=b'artificial scalar helper';data['nvarc_native_ttt_schedule.py']=raw['schedule']
+            data['plan.json']=canonical_bytes(plan)
+            data['payload-bindings.json']=canonical_bytes({key:hashlib.sha256(value).hexdigest() for key,value in raw.items()})
+            distances=[reader.ulp_distance(a,b) for a,b in zip(rates,reference)]
+            schedule={'rates':rates,'source_sha256':reader.SOURCES,'function_sha256':reader.FUNCTIONS,
+                'warmup_steps':13,'epoch_steps':128,'model_calls':0,'optimizer_steps':0,
+                'reference_rates_sha256':hashlib.sha256(json.dumps(reference,separators=(',',':')).encode()).hexdigest(),
+                'reference_ulp_distances':distances,'maximum_reference_ulp_distance':1}
+            data['native/native-schedule.json']=canonical_bytes(schedule)
+            state=json.loads(data['native/training-ledger.json']);state['optimizer_steps'][49]['learning_rate']=rates[49]
+            state['last_learning_rate_check']={'index':127,'expected':rates[127],'actual_rates':[rates[127]]}
+            data['native/training-ledger.json']=canonical_bytes(state)
+            result=json.loads(data['native/training-result.json']);result['plan_digest']=binding
+            data['native/training-result.json']=canonical_bytes(result)
+            fixture=package,original,binding,raw,data
+            self.assertTrue(self.check(root,fixture,data)['full_native_long_ttt_completed'])
+            altered=dict(data);bad=copy.deepcopy(state);bad['optimizer_steps'][49]['learning_rate']=reference[49]
+            altered['native/training-ledger.json']=canonical_bytes(bad)
+            with self.assertRaises(ValidationError):self.check(root,fixture,altered)
+            for key,value in [('model_calls',False),('source_sha256',{}),('maximum_reference_ulp_distance',5)]:
+                altered=dict(data);bad=copy.deepcopy(schedule);bad[key]=value
+                altered['native/native-schedule.json']=canonical_bytes(bad)
+                with self.subTest(key=key),self.assertRaises(ValidationError):self.check(root,fixture,altered)
 
 
 if __name__=='__main__':unittest.main()

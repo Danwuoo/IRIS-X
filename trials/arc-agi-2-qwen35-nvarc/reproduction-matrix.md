@@ -68,10 +68,18 @@ guards and independent prefix/reset reader now pass offline controls. Inert
 native 003 needs 43,200 conservative GPU seconds and remains unsubmitted.
 Distinct native 004 preserves all work under 1,300/1,000-second limits; its
 preflight and 382-test full validation pass. Snapshot 014's 5,523.863 free
-seconds admits one 5,200-second conservative reserve. Completion, native
-memory/time and original-clock parity remain unobserved. A complete native
-epoch is now submitted once as private native 004 version 1, kernel ID
-136815175, with terminal monitoring/retrieval pending. The older compatible
+seconds admitted one 5,200-second conservative reserve. Its private version 1,
+kernel ID 136815175, is now terminal ERROR and its sole retrieval is consumed.
+Independent reading verifies native preparation, 50 forwards/backwards,
+373,200 input tokens and 49 finite-gradient AdamW steps. The equality guard
+rejects index 49 before its optimizer step. Local replay of the exact native
+cosine source first differs between Windows/Linux at that same index by 1 ULP;
+the actual rejected Kaggle value is unretained, so this is a supported cause
+inference. Full epoch, trained reset, native memory/time and original-clock
+parity remain unverified. A distinct same-platform scalar-oracle repair,
+native 006, passes offline verification under 1,500/1,200-second limits with
+the unchanged 128-view workload. It is unsubmitted: snapshot 015's 4,063.873
+free seconds do not admit its 6,000-second conservative reserve. The older compatible
 4.53.3 tiny CPU fixture constructs/resets its projection/full-save adapter under
 the production guard and matches all 128 source collator views with zero
 forwards. Its artificial Trainer routing does not establish native Unsloth

@@ -14,8 +14,8 @@ contract now verify. The native cache probe retains four completed forwards,
 with numerical differences still explicit. Packing diagnostics localize the
 merged BF16 difference to Q projection. Full-model segmented-GEMM probe 004
 completes and independently verifies bitwise full-logit/layer-state agreement,
-tiny gradients and sample isolation. The qualified variant now feeds an
-global-256 full-gradient candidate. Distinct packed-step-002 is accepted as
+tiny gradients and sample isolation. The qualified variant feeds a
+global-256 full-gradient step. Distinct packed-step-002 is accepted as
 private version 1 under a 1,500-second session bound. Its sole retrieval
 verifies one complete global-256 AdamW step on four L4s: 916,739 input tokens
 in 446.777 seconds, finite CPU state and changed global weights. This is a
@@ -24,11 +24,18 @@ uncompleted.
 Native zero-work Trainer inspection 003 completes and verifies context 8,192,
 all 128 prepared source views, adapter reset and checkpoint flags. It qualifies
 native preparation with zero model/optimizer calls; the full TTT epoch remains
-unexecuted. All three inspection retrievals are consumed.
+unverified. All three inspection retrievals are consumed.
 The original-runtime full-epoch worker, source-row/AdamW guards and independent
 result reader now pass offline verification. Private native TTT-004 version 1
-is accepted under a 1,300-second free-budget cap, preserving all 128 source
-views/steps. Its runtime is pending; full native TTT remains unverified.
+was accepted under a 1,300-second free-budget cap, preserving all 128 source
+views/steps. Its sole terminal retrieval verifies 50 forwards/backwards and
+49 AdamW steps before the cross-platform learning-rate equality guard stops
+training. The same pinned cosine function differs by 1 ULP at that first
+failure index on local Windows/Linux replay; the rejected Kaggle value was
+not retained. Distinct native 006 repairs the oracle locally and passes
+offline verification, but remains unsubmitted: its conservative 6,000 GPU
+seconds exceed the latest 4,063.873 free seconds. Full native TTT, trained
+adapter reset, optimizer memory and native-clock parity remain unverified.
 
 The complete published SDG material inventory and ordered parent/program joins
 verify. A fixed ten-program published-output replay reproduces its diagnostic

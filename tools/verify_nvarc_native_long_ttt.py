@@ -13,7 +13,8 @@ import zipfile
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'src')]
 from irisx.arc_nvarc_combined import atomic,sha
 from irisx.canonical import digest_value,canonical_bytes
-from tools.stage_nvarc_native_long_ttt import preflight,raw_payloads,native_inventory,PREPARATION,require
+from tools.stage_nvarc_native_long_ttt import preflight,raw_payloads,native_inventory,PREPARATION,PORTABLE_FORMAT,require
+from tools.nvarc_native_ttt_schedule import SOURCES,FUNCTIONS,ulp_distance
 
 
 def verify(archive,package):
@@ -38,6 +39,24 @@ def verify(archive,package):
         'bounded truth-free native terminal required')
     state=read('native/training-ledger.json') if 'native/training-ledger.json' in data else {
         'forwards':[],'optimizer_steps':[],'training_steps':[],'optimizer_constructions':[],'generation_calls':0,'teacher_calls':0}
+    rates=plan['source_learning_rates'];portable=plan.get('format')==PORTABLE_FORMAT
+    if portable and 'native/native-schedule.json' in data:
+        schedule=read('native/native-schedule.json');actual=schedule['rates']
+        require(data['nvarc_native_ttt_schedule.py']==raw['schedule'] and len(actual)==129 and
+            schedule['source_sha256']==SOURCES and schedule['function_sha256']==FUNCTIONS and
+            type(schedule['warmup_steps']) is int and schedule['warmup_steps']==13 and
+            type(schedule['epoch_steps']) is int and schedule['epoch_steps']==128 and
+            all(type(schedule[key]) is int and schedule[key]==0 for key in ('model_calls','optimizer_steps')) and
+            schedule['reference_rates_sha256']==hashlib.sha256(json.dumps(rates,separators=(',',':')).encode()).hexdigest(),
+            'exact retained native scalar oracle required')
+        distances=[ulp_distance(a,b) for a,b in zip(actual,rates)]
+        require(max(distances)<=4 and schedule['reference_ulp_distances']==distances and
+            schedule['maximum_reference_ulp_distance']==max(distances) and actual[0]==actual[-1]==0 and actual[13]==5e-5,
+            'unchanged native scalar recipe within cross-platform ULP bound required')
+        rates=actual
+    elif portable:
+        require(not state['forwards'] and not state['training_steps'] and not state['optimizer_steps'],
+            'same-platform scalar oracle required before any training work')
     expected=json.loads(raw['expected_rows']);remaining=Counter((row['input_ids_digest'],row['labels_digest']) for row in expected)
     expected_counts={(row['input_ids_digest'],row['labels_digest']):(row['input_tokens'],row['supervised_tokens']) for row in expected}
     for key in ('forwards','training_steps','optimizer_steps'):
@@ -50,7 +69,7 @@ def verify(archive,package):
             (row['input_tokens'],row['supervised_tokens'])==expected_counts[pair],'actual complete source token/label counts differ')
         if row['completed']:require(type(row['loss']) in (int,float) and math.isfinite(row['loss']),'finite completed native loss required')
     for i,row in enumerate(state['optimizer_steps']):
-        require(type(row['learning_rate']) is float and row['learning_rate']==plan['source_learning_rates'][i] and
+        require(type(row['learning_rate']) is float and row['learning_rate']==rates[i] and
             type(row['gradient_tensors']) is int and row['gradient_tensors']==506 and
             type(row['gradient_norm_after_clip']) in (int,float) and math.isfinite(row['gradient_norm_after_clip']) and
             0<=row['gradient_norm_after_clip']<=1.05,'actual source learning-rate/gradient gate differs')
@@ -66,11 +85,16 @@ def verify(archive,package):
     proof={'run_id':plan['run_id'],'outcome':terminal['outcome'],'plan_digest':checked['plan_digest'],'archive_sha256':sha(archive),
         **cost,'closed_members':len(data),'generations':0,'teacher_calls':0,'paid_usd':0,'full_native_long_ttt_completed':False,
         'correctness_scored':False,'checkpoint_exported':False,'scope':'closed original-runtime epoch/material/actual work/reset evidence; no native clock, ARC score or full-method parity'}
+    proof.update(completed_training_steps=sum(row['completed'] for row in state['training_steps']),
+        completed_input_tokens=sum(row['input_tokens'] for row in state['forwards'] if row['completed']),
+        completed_supervised_tokens=sum(row['supervised_tokens'] for row in state['forwards'] if row['completed']),
+        native_preparation_verified=False)
     if terminal['outcome']=='failed':
-        proof.update(failure_phase=terminal['phase'],error_type=terminal['error_type'],error_message=terminal['error_message']);return proof
-    require(not +remaining and all(len(state[key])==128 and all(row['completed'] for row in state[key]) for key in
-        ('forwards','optimizer_steps','training_steps')) and len(state['optimizer_constructions'])==1 and
-        state['optimizer_constructions'][0]['completed'],'every native source row/backward/step must complete')
+        proof.update(failure_phase=terminal['phase'],error_type=terminal['error_type'],error_message=terminal['error_message'])
+        if 'native/preparation.json' not in data:
+            require(cost['model_forwards_reserved']==cost['optimizer_steps_reserved']==cost['training_steps_reserved']==0,
+                'verified native preparation must precede any reserved training work')
+            return proof
     for name,key in [('inspection.py','worker'),('inspection_helpers.py','helper'),('nvarc_native_ttt_budget.py','budget'),
         ('hardware_helpers.py','hardware'),('solver.py','solver'),('expected-rows.json','expected_rows')]:
         require(data[name]==raw[key],'exact retained trusted program/source data differs')
@@ -98,6 +122,15 @@ def verify(archive,package):
             digest_value(labels)==wanted['labels_digest']==row['labels_digest'] and
             sum(value>=0 for value in labels[1:])==wanted['supervised_tokens'],'raw actual native source inputs/labels differ')
     require(offset==len(tokens),'no unlisted native token bytes allowed')
+    proof.update(native_preparation_verified=True)
+    if terminal['outcome']=='failed':return proof
+    require(not +remaining and all(len(state[key])==128 and all(row['completed'] for row in state[key]) for key in
+        ('forwards','optimizer_steps','training_steps')) and len(state['optimizer_constructions'])==1 and
+        state['optimizer_constructions'][0]['completed'],'every native source row/backward/step must complete')
+    if portable:
+        last=state['last_learning_rate_check']
+        require(last['index']==127 and last['expected']==rates[127] and last['actual_rates'] and
+            all(value==rates[127] for value in last['actual_rates']),'exact same-platform optimizer oracle must complete')
     with zipfile.ZipFile(PREPARATION/'execution-final/retrieved/gpu-preflight-result.zip') as original:
         baseline=json.loads(original.read('native/baseline-inventory.json'))
     require(read('native/baseline-inventory.json')==read('native/reset-inventory.json')==baseline,

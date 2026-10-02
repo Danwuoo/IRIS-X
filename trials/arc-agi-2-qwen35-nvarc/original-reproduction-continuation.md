@@ -1426,3 +1426,82 @@ subsequent changed weights, exact two-moment byte counts and explicit state
 discard. All three strict NN controls pass in 1.771 seconds under local
 Torch 2.12.1 CPU. This adds no original Unsloth or 4B runtime evidence and
 changes no submitted native 004 bytes.
+
+### Native 004 terminal prefix and same-platform schedule repair
+
+The second backed-off status check observes ERROR at 18:56:28 UTC on October 2.
+The sole terminal retrieval is reserved and consumed, retaining one closed
+archive and provider log. Archive SHA-256:
+`a48d861ea3abd6f9db53cbc84f361d9dc67e03bf2032e409a743668443979f80`.
+The initial cost-prefix proof remains immutable. The strengthened independent
+reader additionally verifies all actual preparation/material/worker evidence
+before accepting a training failure prefix; its distinct proof SHA-256 is
+`11e8c1f62bc122aec4f3b0ada30aaf51cdbb7b82d8b840b51675dadbb9bf4629`.
+All 28 data members match; four distinct BF16 L4s, the exact native worker,
+41 source/metadata files, published model, adapter topology, Trainer origins,
+checkpoint flags and all raw prepared-token/label vectors verify.
+
+Native 004 completes 50 outer forwards and Trainer backwards, 373,200 inputs
+and 186,000 supervised tokens. One actual AdamW is constructed and 49 updates
+complete; every admitted update covers all 506 finite gradient tensors under
+the source clipping and optimizer recipe. The 50th backward returns, but its
+optimizer entry is denied before reservation/update because its rate differs
+from the locally precomputed exact float. The parent terminates after
+685.495 seconds with CalledProcessError; retained worker stderr identifies
+`exact native cosine learning rate required`. This is a guard failure, not a
+timeout or zero-work attempt. No generation, teacher, export or scoring occurs.
+Full 128-step completion, final moment inventory, trained-state reset and native
+peak memory remain unverified. The push and sole retrieval are consumed.
+
+A reviewed scalar-only replay of the exact pinned cosine source executes on
+local Windows and Ubuntu, without ML work or network calls. Its first differing
+index is 49: Windows `3.885374458130437e-5`, Linux
+`3.885374458130438e-5`, exactly one ULP apart. Indices 96, 102 and 104 also
+differ, by at most three ULPs. Proof SHA-256:
+`c30bf3a1ba4da21d324c01e2e9e21934e692b26f728ebe4ecc8aef2bf5649f54`.
+The first local script has a keyword-only call error and is retained as an
+inert failed fixture; the corrected replay is distinct. Native 004 did not
+retain its rejected actual rate, so the cross-platform cause remains a
+strongly supported inference, not a recovered Kaggle float.
+
+The new v2 transport leaves the consumed v1 worker/budget bytes unchanged. It
+binds the same two exact source functions and computes all 129 scalar rates
+on the worker platform. AdamW must equal that local oracle exactly; there is
+no tolerance at optimizer entry. The frozen Windows reference permits at most
+four ULPs solely for cross-platform scalar verification, with exact zero and
+warmup/maximum rates. Generated programs retain the actual rejected rates and
+failure timing/peak memory. The reader binds the helper and local rate vector,
+then requires every admitted optimizer rate to equal that vector exactly.
+Source recipe, view count, model calls and acceptance of complete epochs stay
+unchanged. An actual pinned-source replay through the new helper verifies on
+both local platforms: Windows maximum difference 0, Linux 3 ULPs. Its proof
+SHA-256 is `69bbbdd9131197328d6e9c8756c01f00b3ccde9ed2e36022cd779442cd4d60e0`.
+These scalar controls do not add native 4B work.
+
+Intermediate native 005 is an unsubmitted rendering before unused-import
+cleanup; its bytes remain inert. Final distinct native 006 passes preflight:
+`sha256:ddb90fdbf28fb7bd6d0402161e97d508f5289909e53d4fbcd199e1a77eee681a`.
+It retains the full 128 views, 955,392 inputs and 476,160 labels under a
+1,500/1,200-second parent/child envelope. The larger finite envelope is an
+engineering bound, not a completion prediction. Fresh quota snapshot 015
+reconciles 4,063.873 remaining free GPU seconds, zero provider reservations
+and disabled pay-to-scale. A conservative four-GPU reserve needs 6,000 seconds;
+the exact no-submission gate SHA-256 is
+`2006c9f63caedd53bf04ad2d62b3e71fbc6cec3c376df1542c13b13b9d8a08b3`.
+No execution journal, push reservation or provider request exists for 005/006.
+The remaining free quota does not admit another complete-epoch attempt under
+these bounds; reducing the scientific workload would not close this gap.
+
+Six focused scalar/reader tests pass, including rehashed failure preparation,
+rate, cost and source faults. Four actual CPU NN/AdamW strict controls pass in
+1.813 seconds, including the rendered v2 budget's rejected-rate capture before
+any optimizer state/update. These use a tiny CPU model, not native Unsloth or
+an original 4B epoch. All earlier immutable native 003/004 packages remain
+offline-verifiable; no active kernel or monitoring remains.
+
+Full repository validation 029 passes 386 tests with four optional skips
+(242.270-second test suite; 245.225-second complete command). Log SHA-256:
+`db50410cb54c0615c37ded640b899705febf4a898042a7f9324df330dffeb0a4`.
+Consumed native 004, inert native 003 and final inert native 006 also pass
+their current exact offline package gates. Reviewed work remains on main;
+no git push, paid execution, new Dataset, teacher call or ARC scoring occurs.
