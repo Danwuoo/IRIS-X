@@ -1283,6 +1283,11 @@ admission SHA-256
 `0ba2b393c08c78921110184ad5d3ca783fafef426bea8745b37d2474d66f476e`.
 The account's actual multiplier is unverified. One distinct private push may
 now proceed; no throughput or original-scale completion is presumed.
+The sole `packed-step-002` push was accepted as private version 1, kernel ID
+136810446 at 17:36:16 UTC on October 2. Receipt SHA-256
+`10f361e23136d28af3890b85614a9f8fa431bcae5e797cf0b228e68818eb0f20`.
+Its reviewed code is committed on main as `443f633`. Runtime remains pending;
+backed-off monitoring and one terminal retrieval remain within Decision 0054.
 Full repository validation 024 passes 376 tests with four optional skips in
 255.461 seconds; log SHA-256
 `665d0632818eaf6b629fe8c1c1a9eea913ea3531104fea0c218a11e5e3ce2790`.

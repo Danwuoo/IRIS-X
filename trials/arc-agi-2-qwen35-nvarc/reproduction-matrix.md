@@ -148,6 +148,8 @@ AdamW gate under 1,500/1,260-second parent/worker bounds and needs 6,000 seconds
 Its offline preflight and full 378-test repository check pass. Fresh snapshot
 012 reconciles 6,746.535 free seconds and admits one 6,000-second conservative
 reserve without enabling pay-to-scale or creating a provider reservation.
+The sole push is accepted as private version 1, kernel ID 136810446. Runtime
+remains pending backed-off monitoring and one terminal retrieval.
 No original-family full-gradient step is executed. Neither numerical probe supplies
 training throughput, ARC score or promotion. All 103,223 published synthetic
 puzzles and 2,984,385 pairs now have

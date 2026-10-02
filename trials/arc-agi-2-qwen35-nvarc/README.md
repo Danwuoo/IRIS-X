@@ -15,7 +15,9 @@ with numerical differences still explicit. Packing diagnostics localize the
 merged BF16 difference to Q projection. Full-model segmented-GEMM probe 004
 completes and independently verifies bitwise full-logit/layer-state agreement,
 tiny gradients and sample isolation. The qualified variant now feeds an
-offline global-256 full-gradient candidate, with no GPU optimizer step yet.
+global-256 full-gradient candidate. Distinct packed-step-002 is accepted as
+private version 1 under a 1,500-second session bound; its runtime is pending.
+No GPU optimizer step from this original-family candidate is verified yet.
 Native zero-work Trainer inspection 003 completes and verifies context 8,192,
 all 128 prepared source views, adapter reset and checkpoint flags. It qualifies
 native preparation with zero model/optimizer calls; the full TTT epoch remains
