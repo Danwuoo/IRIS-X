@@ -349,6 +349,22 @@ snapshot. Every shard byte and response join is rechecked, while completed AST
 diagnostics are carried without repeating them. A new immutable identity and
 its own finite local time limit are required after a retained incomplete pass.
 
+The new independent static reader recounts the closed response stream without
+repeating raw-Parquet reads, generated-code AST analysis or program execution.
+Every shard's count must match the earlier independently read Parquet headers;
+every normalized parent/stage count and exposure must match the complete raw
+metadata profile. The reader also checks exact diagnostic row schemas, report
+counters, source-parser and analysis snapshot hashes, and unchanged preceding
+prefix evidence. A real 170-shard Parquet fixture exercises both complete and
+carried-prefix paths and rejects changed row/exposure/schema bindings. Its two
+tests pass in 18.072 seconds, SHA-256
+`a32435c4b32e8ed9e8294accc201091885fd55b6976b0d7fd670f3ff6b8940fd`.
+The real whole-response terminal recount has not yet run.
+
+After adding the independent static reader, full repository validation passes
+328 tests in 474.911 seconds with four skips. Log SHA-256:
+`a7a560e92ac3cabb0a3800078c4004a64d6a91551ddb79d20d8732e594fea192`.
+
 All seventeen current original evidence/runtime/cost/transport tests pass in
 0.551 seconds, SHA-256
 `99ca41e2a1ef01351a49a277e5518ad43400000200e0b224fecd60448c74492d`.

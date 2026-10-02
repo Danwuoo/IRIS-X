@@ -13,6 +13,7 @@ import pyarrow.parquet as pq
 from irisx.arc_nvarc_datasets import sha_file
 from irisx.canonical import canonical_bytes
 from tools import audit_nvarc_sdg_programs as analysis
+from tools import verify_nvarc_sdg_static as reader
 
 
 class WholeStaticRecoveryTests(unittest.TestCase):
@@ -32,17 +33,24 @@ class WholeStaticRecoveryTests(unittest.TestCase):
             members=[]
             with zipfile.ZipFile(material/'nvarc-artifacts-puzzles.zip','w') as archive:
                 for stage,rows in values.items():
-                    path=material/(stage+'.parquet');pq.write_table(pa.Table.from_pylist(rows),path)
-                    raw=path.read_bytes();name=stage+'/data-00000.parquet';archive.writestr(name,raw)
-                    members.append({'path':name,'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()})
-            members += [{'path':f'summaries/fixture-{i:03d}','bytes':0,'sha256':hashlib.sha256(b'').hexdigest()} for i in range(190)]
+                    table=pa.Table.from_pylist(rows)
+                    for index in range(50 if stage=='inputs' else 120):
+                        path=material/(stage+'.parquet')
+                        pq.write_table(table if index==0 else pa.Table.from_pylist([],schema=table.schema),path)
+                        raw=path.read_bytes();name=stage+f'/data-{index:05d}.parquet';archive.writestr(name,raw)
+                        members.append({'path':name,'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()})
+            members += [{'path':f'summaries/fixture-{i:03d}','bytes':0,'sha256':hashlib.sha256(b'').hexdigest()} for i in range(22)]
             (material/'archive-inventory.json').write_bytes(canonical_bytes({'member_count':192,'members':members}))
             (material/'acquisition.json').write_bytes(canonical_bytes({'state':'verified-published-raw-artifacts',
                 'inventory_sha256':sha_file(material/'archive-inventory.json')}))
-            parent={'parent_ids':['11111111','22222222'],'exposure_tags':['evaluation','protected']}
+            parent={'parent_ids':['11111111','22222222'],'exposure_tags':['evaluation','protected'],
+                'records_by_stage':{'inputs':2,'outputs':2}}
             (profile/'parent-lineage.jsonl').write_bytes(canonical_bytes(parent,newline=True))
+            (profile/'members.jsonl').write_bytes(b''.join(canonical_bytes({**row,'parquet_rows':
+                2 if row['path'] in {'inputs/data-00000.parquet','outputs/data-00000.parquet'} else 0},newline=True)
+                for row in members))
             (profile/'profile.json').write_bytes(canonical_bytes({'parent_lineage_sha256':sha_file(profile/'parent-lineage.jsonl'),
-                'rows_by_stage':{'inputs':2,'outputs':2}}))
+                'member_metadata_sha256':sha_file(profile/'members.jsonl'),'rows_by_stage':{'inputs':2,'outputs':2}}))
             manifest=root/'trials/arc-agi-2-qwen35-nvarc/source-manifest.json';manifest.parent.mkdir(parents=True)
             manifest.write_bytes((analysis.ROOT/'trials/arc-agi-2-qwen35-nvarc/source-manifest.json').read_bytes())
             full=root/'full'
@@ -50,6 +58,9 @@ class WholeStaticRecoveryTests(unittest.TestCase):
             report=json.loads((full/'report.json').read_bytes())
             self.assertEqual(report['rows_by_stage'],{'inputs':2,'outputs':2})
             self.assertEqual(report['states_by_stage']['outputs'],{'one-argument-contract':1,'one-argument-rejected':1})
+            with patch.object(reader,'ROOT',root):proof=reader.verify(full)
+            self.assertTrue(proof['all_retained_rows_recounted'])
+            self.assertFalse(proof['program_semantics_verified'])
             frozen=root/'frozen';frozen.mkdir()
             for name in ('analysis-source.py','analysis-source-binding.json'):
                 (frozen/name).write_bytes((full/name).read_bytes())
@@ -71,6 +82,10 @@ class WholeStaticRecoveryTests(unittest.TestCase):
                 self.assertEqual(recovered[key],report[key])
             self.assertEqual(recovered['generated_program_executions'],0)
             self.assertFalse(recovered['program_semantics_verified'])
+            with patch.object(reader,'ROOT',root):proof=reader.verify(resumed)
+            self.assertEqual(proof['carried_static_diagnostics'],1)
+            self.assertEqual(proof['new_ast_diagnostics'],0)
+            self.assertEqual(previous,{p.name:sha_file(p) for p in frozen.iterdir()})
 
 
 if __name__=='__main__':unittest.main()
