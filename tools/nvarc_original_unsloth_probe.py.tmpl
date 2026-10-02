@@ -1,0 +1,91 @@
+import base64
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+import zipfile
+
+RUN=__RUN__
+PAYLOADS=__PAYLOADS__
+HASHES=__HASHES__
+__HARDWARE_HELPER__
+START=time.monotonic();work=Path('/kaggle/working')/RUN;work.mkdir(exist_ok=False)
+plan=None;phase='payload-verification'
+def save(name,value):
+    (work/name).write_text(json.dumps(value,sort_keys=True,separators=(',',':')),encoding='utf-8')
+try:
+    raw={k:base64.b64decode(v,validate=True) for k,v in PAYLOADS.items()}
+    if set(raw)!=set(HASHES) or any(hashlib.sha256(v).hexdigest()!=HASHES[k] for k,v in raw.items()):
+        raise RuntimeError('exact original numerical payload differs')
+    plan=json.loads(raw['plan']);binding=json.loads(raw['binding']);inventory=json.loads(raw['model_inventory'])
+    save('plan.json',plan);save('payload-bindings.json',HASHES)
+    if sys.version_info[:3]!=(3,11,13):raise RuntimeError('original Python version differs')
+    phase='original-dependency'
+    roots=[Path(p) for p in sys.path if Path(p).is_absolute() and Path(p).is_relative_to('/kaggle/usr/lib/notebooks')]
+    matches=[p for p in dict.fromkeys(roots) if (p/'qwen3.patch').is_file()]
+    if len(roots)>32 or len(matches)!=1:raise RuntimeError('verified original notebook dependency path required')
+    dependency=matches[0]
+    for name,item in binding['inventory'].items():
+        path=dependency/name
+        if path.stat().st_size!=item['bytes'] or hashlib.sha256(path.read_bytes()).hexdigest()!=item['sha256']:
+            raise RuntimeError('original dependency bytes differ: '+name)
+    save('dependency-verification.json',{'root':str(dependency),'inventory':binding['inventory'],
+        'script_version_id':binding['script_version_id']})
+    sys.path.insert(0,str(dependency))
+    phase='hardware-inventory'
+    import torch
+    smi=subprocess.run(['nvidia-smi','--query-gpu=index,name,memory.total,uuid','--format=csv,noheader,nounits'],
+        capture_output=True,text=True,check=True,timeout=30)
+    hardware=collect_hardware_inventory(torch,smi.stdout,lambda value:save('hardware-raw.json',value))
+    save('hardware.json',{'inventory':hardware,'torch':torch.__version__,'cuda':torch.version.cuda})
+    if len(hardware)!=4 or len({row['uuid'] for row in hardware})!=4 or any(row['name']!='NVIDIA L4' or not row['bf16'] for row in hardware):
+        raise RuntimeError('four distinct BF16 L4s required')
+    if torch.__version__!='2.8.0+cu128' or torch.version.cuda!='12.8':raise RuntimeError('original Torch CUDA build differs')
+    if not Path('/kaggle/input/competitions/arc-prize-2026-arc-agi-2').is_dir():raise RuntimeError('official competition entitlement mount required')
+    roots=[Path('/kaggle/input/models/sorokin/qwen3_4b_grids15_sft139/transformers/bfloat16/1'),
+        Path('/kaggle/input/qwen3_4b_grids15_sft139/transformers/bfloat16/1')]
+    matches=[p for p in roots if (p/'config.json').is_file()]
+    if len(matches)!=1:raise RuntimeError('exact published original SFT mount required')
+    model=matches[0];phase='model-byte-verification'
+    for name,item in inventory.items():
+        path=model/name
+        with path.open('rb') as stream:actual=hashlib.file_digest(stream,'sha256').hexdigest()
+        if path.stat().st_size!=item['bytes'] or actual!=item['sha256']:raise RuntimeError('exact original model file differs: '+name)
+    save('model-verification.json',{'all_ten_files_verified':True,'model_material_digest':plan['model_material_digest'],
+        'model_mount':str(model),'competition_files_opened':0})
+    # Mirror the original notebook's ephemeral removal; no source Dataset is changed.
+    phase='transient-tensorflow-removal'
+    with (work/'dependency-setup.log').open('w',encoding='utf-8') as output:
+        subprocess.run([sys.executable,'-m','pip','uninstall','-y','tensorflow'],stdout=output,stderr=subprocess.STDOUT,
+            check=True,timeout=60)
+    worker=work/'probe.py';worker.write_bytes(raw['worker'])
+    environment=dict(os.environ,PYTHONPATH=str(dependency),CUDA_VISIBLE_DEVICES='0',HF_HUB_OFFLINE='1',
+        TRANSFORMERS_OFFLINE='1',HF_DATASETS_OFFLINE='1',UNSLOTH_DISABLE_STATISTICS='1',WANDB_DISABLED='true',
+        TOKENIZERS_PARALLELISM='false',PYTHONIOENCODING='utf-8',TRITON_PTXAS_PATH='/usr/local/cuda/bin/ptxas',OMP_NUM_THREADS='2')
+    for mode in ('reference','unsloth'):
+        phase=mode+'-two-forwards'
+        remaining=min(450,plan['maximum_notebook_wall_seconds']-120-(time.monotonic()-START))
+        if remaining<=0:raise TimeoutError('original numerical terminal reserve reached')
+        with (work/(mode+'-stdout.log')).open('w',encoding='utf-8') as stdout,(work/(mode+'-stderr.log')).open('w',encoding='utf-8') as stderr:
+            subprocess.run([sys.executable,str(worker),mode,str(model),str(work),str(dependency)],
+                env=environment,stdout=stdout,stderr=stderr,check=True,timeout=remaining)
+    save('terminal.json',{'run_id':RUN,'outcome':'complete','phase':phase,'contains_evaluator_truth':False,
+        'optimizer_steps':0,'generations':0,'teacher_calls':0,'paid_usd':0,'wall_seconds':time.monotonic()-START})
+except BaseException as error:
+    save('terminal.json',{'run_id':RUN,'outcome':'failed','phase':phase,'error_type':type(error).__name__,
+        'error_message':str(error)[:1000],'contains_evaluator_truth':False,'optimizer_steps':0,'generations':0,
+        'teacher_calls':0,'paid_usd':0,'wall_seconds':time.monotonic()-START})
+    raise
+finally:
+    entries=[{'path':p.relative_to(work).as_posix(),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+        for p in sorted(work.rglob('*')) if p.is_file()]
+    if sum(row['bytes'] for row in entries)>8*1024**2:raise RuntimeError('bounded original numerical archive required')
+    digest=None if plan is None else 'sha256:'+hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+    with zipfile.ZipFile(work.parent/'gpu-preflight-result.zip','x',compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr('manifest.json',json.dumps({'format':'irisx/nvarc-gpu-preflight-archive-v1','run_id':RUN,
+            'plan_digest':digest,'members':entries},sort_keys=True,separators=(',',':')))
+        for row in entries:archive.write(work/row['path'],row['path'])
+    print(json.dumps({'terminal':json.loads((work/'terminal.json').read_bytes())}))

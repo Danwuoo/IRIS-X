@@ -32,7 +32,12 @@ def prerequisite(folder):
             ledger['events'][-1].get('outcome')!='retrieved'):
         raise ValidationError('sole verified terminal retrieval of the distinct native probe required')
     archive=folder/'execution-final/retrieved/gpu-preflight-result.zip'
-    proof=verify(archive,folder/'package-l4')
+    package=folder/'package-l4'
+    if json.loads((package/'plan.json').read_bytes())['format']=='irisx/nvarc-original-qwen3-packing-diagnostic-v1':
+        from tools.verify_nvarc_qwen3_packing_diagnostic import verify as verify_diagnostic
+        proof=verify_diagnostic(archive,package)
+    else:
+        proof=verify(archive,package)
     if (proof['outcome']!='complete' or proof.get('native_varlen_gpu_differential_observed') is not True or
             proof.get('model_material_digest')!=BASE):
         raise ValidationError('actual exact-material native CUDA numeric prerequisite has not passed')

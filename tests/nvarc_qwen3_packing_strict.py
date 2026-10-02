@@ -17,7 +17,9 @@ from transformers import Qwen3Config, Qwen3ForCausalLM
 
 from irisx.arc_nvarc_packing import pack_sequences
 from irisx.arc_nvarc_qwen3_packing import TORCH_VARLEN, packed_forward, register_torch_varlen
+from irisx.arc_nvarc_qwen3_packing import TORCH_VARLEN_GQA,native_gqa_inputs,register_torch_varlen_gqa
 from irisx.errors import ValidationError
+from irisx.arc_nvarc_qwen3_packing_diagnostic import TINY,ForwardBudget,schedule
 
 
 class OriginalQwen3PackingTests(unittest.TestCase):
@@ -38,6 +40,62 @@ class OriginalQwen3PackingTests(unittest.TestCase):
              'labels': [-100] * 8 + [7, 15], 'parents': ['c']},
             {'input_ids': [14, 11, 10, 0, 2, 1, 15, 14, 12, 10, 1, 2, 0, 15],
              'labels': [-100] * 10 + [1, 2, 0, 15], 'parents': ['d']}]
+
+    def test_diagnostic_budget_hooks_actual_qwen3_entry_without_extra_forward(self):
+        rows=[copy.deepcopy(self.rows[i%3]) for i in range(8)];allowed=schedule(rows);journal=[]
+        budget=ForwardBudget(rows,{'maximum_outer_forwards':len(allowed),
+            'maximum_input_tokens':sum(x['input_tokens'] for x in allowed),'maximum_worker_wall_seconds':1200},
+            lambda name,value:journal.append(copy.deepcopy(value)))
+        original=torch.nn.Module._call_impl
+        observed=[]
+        def guarded(module,*args,**kwargs):
+            if type(module).__name__=='Qwen3ForCausalLM':observed.append('outer-entry')
+            return budget.guard_call(module,args,kwargs,original)
+        torch.nn.Module._call_impl=guarded
+        try:
+            with self.assertRaises(ValidationError):self.model(torch.tensor([TINY[0]['input_ids']]),use_cache=False)
+            for row in TINY:
+                logits=budget.perform('tiny-independent-gradients',lambda:
+                    self.model(torch.tensor([row['input_ids']]),use_cache=False).logits)
+                self.assertEqual(list(logits.shape),[1,len(row['input_ids']),16])
+            self.assertEqual([e['completed'] for e in journal[0]],[False])
+            self.assertEqual([e['completed'] for e in budget.events],[True,True])
+            self.assertEqual(len(observed),3)  # One rejected entry and two actual model forwards.
+        finally:torch.nn.Module._call_impl=original
+
+    def test_native_gqa_cpu_layout_arithmetic_gradients_and_boundaries(self):
+        q=torch.randn(1,4,9,16,requires_grad=True)
+        k=torch.randn(1,2,9,16,requires_grad=True)
+        v=torch.randn(1,2,9,16,requires_grad=True)
+        query,key,value=native_gqa_inputs(q,k,v)
+        self.assertEqual(tuple(query.shape),(9,4,16))
+        self.assertEqual(tuple(key.shape),(9,2,16))
+        self.assertEqual(tuple(value.shape),(9,2,16))
+        torch.testing.assert_close(key.transpose(0,1).unsqueeze(0),k,atol=0,rtol=0)
+        # Explicit CPU per-segment arithmetic is not the CUDA varlen operator.
+        chunks=[]
+        for start,stop in ((0,4),(4,9)):
+            chunks.append(torch.nn.functional.scaled_dot_product_attention(
+                query[start:stop].transpose(0,1).unsqueeze(0),
+                key[start:stop].transpose(0,1).unsqueeze(0),
+                value[start:stop].transpose(0,1).unsqueeze(0),is_causal=True,enable_gqa=True))
+        grouped=torch.cat(chunks,dim=2)
+        independent=torch.cat([torch.nn.functional.scaled_dot_product_attention(
+            q[:,:,start:stop],k[:,:,start:stop].repeat_interleave(2,dim=1),
+            v[:,:,start:stop].repeat_interleave(2,dim=1),is_causal=True)
+            for start,stop in ((0,4),(4,9))],dim=2)
+        torch.testing.assert_close(grouped,independent,atol=2e-6,rtol=2e-5)
+        actual_grad=torch.autograd.grad(grouped.square().sum(),(q,k,v),retain_graph=True)
+        reference_grad=torch.autograd.grad(independent.square().sum(),(q,k,v))
+        for actual,reference in zip(actual_grad,reference_grad):
+            torch.testing.assert_close(actual,reference,atol=3e-6,rtol=3e-5)
+        with self.assertRaises(ValidationError):native_gqa_inputs(q[:,:3],k,v)
+        with self.assertRaises(ValidationError):native_gqa_inputs(q,k,v[:,:,:8])
+        with self.assertRaises(ValidationError):native_gqa_inputs(q.expand(2,-1,-1,-1),k,v)
+        register_torch_varlen_gqa();config=copy.deepcopy(self.model.config)
+        config._attn_implementation=TORCH_VARLEN_GQA;model=Qwen3ForCausalLM(config)
+        with self.assertRaises(ValidationError):
+            packed_forward(model,pack_sequences(self.rows,capacity=256)[0],backend='torch-varlen-flash-gqa')
 
     def test_real_logits_global_loss_and_every_gradient(self):
         pack = pack_sequences(self.rows, capacity=256)[0]

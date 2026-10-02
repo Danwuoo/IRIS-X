@@ -6,6 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 import zipfile
+from unittest.mock import patch
 
 from irisx.canonical import digest_value
 from irisx.errors import ValidationError
@@ -69,6 +70,18 @@ class OriginalEvidenceTests(unittest.TestCase):
                 'run_id':folder.name,'owner_decision':'Decision 0054','accepted':True,'push_reserved':1,
                 'retrieval_reserved':0,'provider_version':1,'last_status':'QUEUED','terminal_observed':False}),encoding='utf-8')
             with self.assertRaises(ValidationError):prerequisite(folder)
+
+    def test_full_gradient_stage_refuses_failed_retrieved_numeric_observation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            folder=Path(directory)/'nvarc-original-qwen3-probe-001'
+            (folder/'execution-final').mkdir(parents=True);(folder/'package-l4').mkdir()
+            (folder/'execution-final/execution-ledger.json').write_text(json.dumps({
+                'run_id':folder.name,'owner_decision':'Decision 0054','accepted':True,'push_reserved':1,
+                'retrieval_reserved':1,'provider_version':1,'terminal_observed':True,'events':[{'outcome':'retrieved'}]}),encoding='utf-8')
+            (folder/'package-l4/plan.json').write_text(json.dumps({'format':'irisx/nvarc-original-qwen3-probe-v1'}),encoding='utf-8')
+            with patch('tools.stage_nvarc_qwen3_packed_step.verify',return_value={
+                    'outcome':'failed','tiny_gradient_differential_observed':True}):
+                with self.assertRaises(ValidationError):prerequisite(folder)
 
     def test_static_recovery_requires_exact_response_and_exposure(self):
         binding={'member':'outputs/data-00000.parquet','row':0,'completion_sha256':'abc',

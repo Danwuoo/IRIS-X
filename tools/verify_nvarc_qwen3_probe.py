@@ -87,6 +87,16 @@ def verify(archive_path,package):
             raise ValidationError('returned cost exceeds plan')
         proof['reserved_outer_forwards']=ledger[-1]['cumulative_forwards']
         proof['reserved_input_tokens']=ledger[-1]['cumulative_input_tokens']
+    if 'worker/tiny-gradient-differential.json' in content:
+        gradient=read('worker/tiny-gradient-differential.json')
+        if (gradient['dtype']!='bfloat16' or gradient['original_scale'] is not False or
+                len(gradient['gradient_tensors'])!=24 or len({r['name'] for r in gradient['gradient_tensors']})!=24 or
+                gradient['atol']!=0.006 or gradient['rtol']!=0.06 or
+                any(not math.isfinite(r['max_absolute_error']) or r['max_absolute_error']<0 for r in gradient['gradient_tensors']) or
+                any(not math.isfinite(gradient[key]) for key in ('packed_token_mean_loss','independent_token_mean_loss'))):
+            raise ValidationError('retained tiny gradient observation differs')
+        proof['tiny_gradient_differential_observed']=True
+        proof['tiny_gradient_verification_scope']='worker-internal CUDA backward gate; retained schema/count/numerics independently checked'
     if terminal['outcome']=='complete':
         if (len(inventory)!=4 or len({item['uuid'] for item in inventory})!=4 or
                 any(item['name']!='NVIDIA L4' or not item['bf16'] for item in inventory) or

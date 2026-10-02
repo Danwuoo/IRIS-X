@@ -12,6 +12,26 @@ revisions remain unknown. The exact original dependency script-version ID now
 binds Unsloth 2025.9.7, Zoo 2025.9.9, Torch 2.8.0, Transformers 4.55.4,
 PEFT 0.17.1 and FlashAttention 2.8.2, including the byte-verified decode patch.
 Full environment inventory and historical CUDA numerical parity remain open.
+The distinct original-runtime Unsloth prefill/cache GPU probe is accepted as
+private version 1 under four forwards/26 input tokens and a 1,200-second bound;
+it remains queued with no terminal retrieval. Exact source-policy audit also
+finds the original full embedding/head save modules and BF16 snapshot cast.
+Its inferred trainable count is 528,564,224; the earlier 254-LoRA/FP32 topology
+is a different compatibility configuration. Original `for_training()` enables
+checkpoint flags by default despite two declared False options; its effective
+training backend remains unmeasured.
+Thirty exact dependency files now bind sixteen installed distribution
+versions, including native TRL 0.22.2 and Accelerate 1.11.0. Source inspection
+and explicitly artificial fixtures trace the context-keyword patch chain and
+verify the complete worker's independent cloned/detached baseline snapshot.
+Two additional exact source files show the import-time RL patch's generated
+SFT length handling; its literal fixture takes model context 8,192 over the
+raw TRL default 1,024. The outer-wrapper fixture alone is incomplete.
+Raw PEFT extractor references do not establish an original reset defect.
+Effective native Trainer preprocessing and actual
+original-adapter reset remain unverified; these fixtures do not establish a
+runtime failure or authorize treating the compatible long-task proposal as
+the original method.
 A private CPU-only 600-second import/tokenizer probe 001 was accepted as
 version 1, then failed its dependency mount gate with zero model work; its sole
 terminal retrieval and independent binding check are complete. Distinct 002
@@ -47,12 +67,25 @@ Linux/universal runtime wheels have vendor-bound bytes and a ready private
 version-1 Dataset. Long-task 002 is offline verified and initialized with zero
 pushes, 128 views, 955,392 input tokens, 128 steps, zero generations and finite
 10,800-second session ceiling. It remains inert pending GPU prerequisites and
-free-resource accounting; 001 stays a frozen unsubmitted local prototype.
+free-resource accounting as a compatibility/resource proposal with known
+original target/precision/backend differences. It cannot prove exact original
+TTT; 001 stays a frozen unsubmitted local prototype.
+The original formatter/tokenizer/collator-mask replay now matches every input
+and label across the full long task's 128 views (955,392 inputs, 476,160
+supervised tokens). Its original loss-method clone/DDP fixture is explicitly
+artificial; no original Trainer/model/optimizer call or full epoch is observed.
 The new original-family private Dataset is version 1 ready. The distinct
-native-varlen 4B GPU probe is accepted as private version 1 and remains queued
-at the last observed check; no terminal archive is retrieved yet. It reserves
-no optimizer step and supplies no full-training throughput, ARC score or
-promotion. All 103,223 published synthetic puzzles and 2,984,385 pairs now have
+native-varlen 4B GPU probe 001's push/retrieval are consumed. Four L4s and exact
+materials verify, and tiny BF16 CUDA gradients pass, but the full 4B numerical
+gate fails with maximum absolute logit error 8.125 at fixed 0.25/0.03 tolerance.
+Isolation was not reached. A distinct 21-forward/126,260-token diagnostic fixes
+the SDPA Flash backend and retains complete numerical vectors before gating;
+its reader independently recounts actual calls, numerical errors and isolation.
+Diagnostic 002 is accepted as private version 1, with its sole push consumed
+and no terminal retrieval yet; the immutable package and receipt are retained.
+No original-family full-gradient step is staged. Neither probe supplies
+training throughput, ARC score or promotion. All 103,223 published synthetic
+puzzles and 2,984,385 pairs now have
 complete byte/structural/parent/stage/exposure yield reconciliation, recovered
 from immutable per-member evidence after final histogram serialization failed.
 Whole-program semantics and original 8/12/4 filter replay remain open.

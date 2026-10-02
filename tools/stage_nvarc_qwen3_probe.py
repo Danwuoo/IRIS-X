@@ -19,9 +19,10 @@ from irisx.arc_nvarc_combined import atomic,sha
 from irisx.arc_nvarc_packing import pack_sequences
 from irisx.canonical import canonical_bytes,digest_value
 from irisx.errors import ValidationError
+from irisx.arc_nvarc_qwen3_packing_diagnostic import FORMAT as DIAGNOSTIC_FORMAT, schedule as diagnostic_schedule
 
 
-def stage(output,run):
+def stage(output,run,diagnostic=False):
     if output.exists() or not re.fullmatch(r'nvarc-original-qwen3-probe-\d{3}',run):
         raise ValidationError('new immutable original-family probe required')
     material=json.loads((DEFAULT/'conversion.json').read_bytes())
@@ -50,12 +51,25 @@ def stage(output,run):
         'original_nemo_version':None,'original_unsloth_version':None,
         'material_policy':'original-reproduction; retain all source parent/exposure tags; no evaluator answers',
         'execution_control':'private Internet-disabled SAVE_AND_RUN_ALL; finite status checks; one terminal retrieval'}
+    if diagnostic:
+        scheduled=diagnostic_schedule(rows)
+        plan.update(format=DIAGNOSTIC_FORMAT, predecessor_run_id='nvarc-original-qwen3-probe-001',
+            predecessor_archive_sha256='be6cfbb2e0608e9d328c8eec9b8d3a3df562aa00a6e36e8a06f40c32aee33025',
+            maximum_outer_forwards=len(scheduled),maximum_input_tokens=sum(x['input_tokens'] for x in scheduled),
+            actual_model_passes=4,forward_schedule=scheduled,atol=0.25,rtol=0.03,
+            sdpa_backend='FLASH_ATTENTION only; no math/cuDNN fallback',
+            numerical_modes=['independent-flash-sdpa','single-varlen','packed-varlen','packed-isolation'],
+            retain_full_logits=True,retain_sampled_states={'layers':38,'rows':8,'positions_per_row':3,'hidden_size':2560},
+            extra_model_calls_from_hooks=0,maximum_attention_reference_calls=0,
+            diagnostic_scope='backend and physical batch-shape decomposition; unchanged fixed numerical gate')
     (output/'wheel').mkdir(parents=True)
     wheel=output/'wheel'/build.build_wheel(str(output/'wheel'))
     payload={'plan':canonical_bytes(plan,newline=True),'samples':canonical_bytes(rows,newline=True),
         'runtime_wheel':wheel.read_bytes(),'wheel_manifest':(ROOT/'trials/arc-agi-2-qwen35-nvarc/configs/base-wheel-manifest.json').read_bytes()}
     hashes={key:hashlib.sha256(value).hexdigest() for key,value in payload.items()}
     source=(ROOT/'tools/nvarc_qwen3_probe_notebook.py.tmpl').read_text(encoding='utf-8')
+    if diagnostic:
+        source=source.replace('irisx.arc_nvarc_qwen3_probe','irisx.arc_nvarc_qwen3_packing_diagnostic')
     for key,value in {'__RUN__':json.dumps(run),'__PAYLOADS__':json.dumps({k:base64.b64encode(zlib.compress(v,9)).decode() for k,v in payload.items()}),
         '__HASHES__':json.dumps(hashes),'__HARDWARE_HELPER__':(ROOT/'src/irisx/arc_nvarc_hardware.py').read_text(encoding='utf-8')}.items():
         source=source.replace(key,value)
@@ -77,20 +91,34 @@ def preflight(package):
     actual={p.relative_to(package).as_posix():sha(p) for p in package.rglob('*') if p.is_file() and p.name!='stage-summary.json'}
     if actual!=summary['inventory']:raise ValidationError('closed package bytes differ')
     plan=json.loads((package/'plan.json').read_bytes());rows=json.loads((package/'samples.json').read_bytes())
-    if (plan['owner_decision']!='Decision 0054' or plan['format']!='irisx/nvarc-original-qwen3-probe-v1' or
+    diagnostic=plan['format']==DIAGNOSTIC_FORMAT
+    expected_schedule=diagnostic_schedule(rows) if diagnostic else None
+    expected_calls=len(expected_schedule) if diagnostic else 13
+    expected_tokens=sum(x['input_tokens'] for x in expected_schedule) if diagnostic else sum(len(row['input_ids']) for row in rows)*3+44
+    if (plan['owner_decision']!='Decision 0054' or plan['format'] not in {'irisx/nvarc-original-qwen3-probe-v1',DIAGNOSTIC_FORMAT} or
             not re.fullmatch(r'nvarc-original-qwen3-probe-\d{3}',plan['run_id']) or
             plan['maximum_notebook_wall_seconds']!=1800 or plan['maximum_worker_wall_seconds']!=1200 or
             plan['maximum_generations']!=0 or plan['maximum_teacher_calls']!=0 or plan['maximum_optimizer_steps']!=0 or
             plan['maximum_paid_usd']!=0 or plan['retain_export'] is not False or
-            len(rows)!=8 or digest_value(rows)!=plan['data_digest'] or plan['maximum_outer_forwards']!=13 or
-            plan['maximum_input_tokens']!=sum(len(row['input_ids']) for row in rows)*3+44 or
+            len(rows)!=8 or digest_value(rows)!=plan['data_digest'] or plan['maximum_outer_forwards']!=expected_calls or
+            plan['maximum_input_tokens']!=expected_tokens or
             digest_value(plan)!=summary['plan_digest']):raise ValidationError('bounded owner probe plan differs')
+    if diagnostic and (plan['forward_schedule']!=expected_schedule or plan['atol']!=0.25 or plan['rtol']!=0.03 or
+            plan['sdpa_backend']!='FLASH_ATTENTION only; no math/cuDNN fallback' or
+            plan['actual_model_passes']!=4 or plan['retain_full_logits'] is not True or
+            plan['extra_model_calls_from_hooks']!=0 or plan['maximum_attention_reference_calls']!=0 or
+            plan['retain_sampled_states']!={'layers':38,'rows':8,'positions_per_row':3,'hidden_size':2560} or
+            plan['predecessor_run_id']!='nvarc-original-qwen3-probe-001' or
+            plan['predecessor_archive_sha256']!='be6cfbb2e0608e9d328c8eec9b8d3a3df562aa00a6e36e8a06f40c32aee33025'):
+        raise ValidationError('fixed numerical diagnostic boundaries differ')
     pack_sequences(rows)
     notebook=json.loads((package/'kernel/notebook.ipynb').read_bytes())
     source=''.join(notebook['cells'][0]['source']);tree=ast.parse(source)
     values={node.targets[0].id:ast.literal_eval(node.value) for node in tree.body if isinstance(node,ast.Assign)
         and isinstance(node.targets[0],ast.Name) and node.targets[0].id in {'RUN','PAYLOADS','HASHES'}}
     if values['RUN']!=plan['run_id'] or values['HASHES']!=summary['payload_sha256']:raise ValidationError('notebook payload binding differs')
+    if diagnostic and "'irisx.arc_nvarc_qwen3_packing_diagnostic'" not in source:
+        raise ValidationError('diagnostic worker differs')
     for key,encoded in values['PAYLOADS'].items():
         raw=zlib.decompress(base64.b64decode(encoded,validate=True))
         if hashlib.sha256(raw).hexdigest()!=values['HASHES'][key]:raise ValidationError('embedded payload bytes differ')
@@ -100,10 +128,11 @@ def preflight(package):
     if meta['id']!=plan['kernel_id'] or not meta['is_private'] or meta['enable_internet'] or meta['kernel_sources'] or meta['dataset_sources']!=list(plan['datasets'].values()):
         raise ValidationError('private offline exact material transport differs')
     return {'offline_package_verified':True,'external_calls':0,'run_id':plan['run_id'],'plan_digest':digest_value(plan),
-        'maximum_input_tokens':plan['maximum_input_tokens'],'maximum_outer_forwards':13}
+        'maximum_input_tokens':plan['maximum_input_tokens'],'maximum_outer_forwards':expected_calls}
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('action',choices=('stage','preflight'))
     parser.add_argument('--package',type=Path,required=True);parser.add_argument('--run-id')
-    args=parser.parse_args();print(json.dumps(stage(args.package,args.run_id) if args.action=='stage' else preflight(args.package)))
+    parser.add_argument('--diagnostic',action='store_true')
+    args=parser.parse_args();print(json.dumps(stage(args.package,args.run_id,args.diagnostic) if args.action=='stage' else preflight(args.package)))

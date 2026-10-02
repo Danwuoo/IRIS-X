@@ -19,7 +19,9 @@ import re
 RUN = None
 from irisx.canonical import digest_value
 def preflight(package):
-    if read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-environment-probe-v1':
+    if read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-unsloth-probe-v1':
+        from tools.stage_nvarc_original_unsloth_probe import preflight as check
+    elif read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-environment-probe-v1':
         from tools.stage_nvarc_original_environment import preflight as check
     elif read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-long-ttt-v1':
         # The credential SDK environment deliberately has no ML packages.
@@ -31,7 +33,8 @@ def preflight(package):
         return json.loads(output)
     elif read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-packed-step-v1':
         from tools.stage_nvarc_qwen3_packed_step import preflight as check
-    elif read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-probe-v1':
+    elif read(package/'plan.json')['format'] in {'irisx/nvarc-original-qwen3-probe-v1',
+            'irisx/nvarc-original-qwen3-packing-diagnostic-v1'}:
         from tools.stage_nvarc_qwen3_probe import preflight as check
     elif read(package/'plan.json')['format'] in {'irisx/nvarc-complete-ttt-v1','irisx/nvarc-long-ttt-resource-v1'}:
         from tools.stage_nvarc_overnight_ttt import preflight as check
@@ -72,6 +75,8 @@ def request(package):
         fields['docker_image']=meta['docker_image']
     else:
         fields['machine_shape']='NvidiaL4'
+        if meta.get('docker_image'):
+            fields['docker_image']=meta['docker_image']
     for key, value in fields.items():
         setattr(req, key, value)
     req.kernel_execution_type = KernelExecutionType.SAVE_AND_RUN_ALL
@@ -128,7 +133,7 @@ def bindings(package):
 def execute(action, package, journal_dir):
     global RUN
     RUN = read(package / "plan.json")["run_id"]
-    original = re.fullmatch(r'nvarc-original-qwen3-(?:probe|packed-step|long-ttt|environment)-\d{3}', RUN)
+    original = re.fullmatch(r'nvarc-original-qwen3-(?:probe|packed-step|long-ttt|environment|unsloth-probe)-\d{3}', RUN)
     assert original or re.fullmatch(r"nvarc-overnight-(?:sft|ttt|trm)-\d{3}", RUN)
     authority = 'Decision 0054' if original else 'Decision 0053'
     assert read(package/'plan.json')['owner_decision'] == authority

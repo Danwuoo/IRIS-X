@@ -12,6 +12,7 @@ from .canonical import digest_value
 from .errors import ValidationError
 
 TORCH_VARLEN = 'irisx_qwen3_torch_varlen'
+TORCH_VARLEN_GQA = 'irisx_qwen3_torch_varlen_native_gqa'
 
 
 def execution_slices(pack,maximum_input_tokens):
@@ -73,8 +74,8 @@ def torch_varlen_attention(module, query, key, value, attention_mask, *, dropout
             abs(scaling - query.shape[-1] ** -0.5) > 1e-12 or
             any(x is None for x in (cu_seq_lens_q, cu_seq_lens_k, max_length_q, max_length_k))):
         raise ValidationError('explicit causal zero-dropout packed CUDA varlen contract required')
-    # PyTorch 2.10's public API has no enable_gqa argument. Explicit head repeat
-    # keeps the Qwen grouped-query math with a version-independent signature.
+    # Preserve the repeated-KV backend used by the frozen earlier probes.
+    # The separate native-GQA variant keeps distinct KV heads for diagnosis.
     repeat = query.shape[1] // key.shape[1]
     if query.shape[1] != key.shape[1] * repeat:
         raise ValidationError('Qwen3 GQA head ratio differs')
@@ -83,6 +84,41 @@ def torch_varlen_attention(module, query, key, value, attention_mask, *, dropout
     q, k, v = (x.transpose(1, 2).squeeze(0).contiguous() for x in (query, key, value))
     output = varlen_attn(q, k, v, cu_seq_lens_q, cu_seq_lens_k, max_length_q, max_length_k, is_causal=True)
     return output.unsqueeze(0), None
+
+
+def native_gqa_inputs(query, key, value):
+    """Keep distinct query/KV head counts in the public [tokens, heads, dim] layout.
+
+    PyTorch v2.10.0's native Flash forward/backward support this head ratio.
+    This layout helper is testable on CPU; it establishes no CUDA numerics.
+    """
+    if (any(x.ndim != 4 or x.shape[0] != 1 for x in (query,key,value)) or
+            key.shape != value.shape or query.shape[1] < 1 or key.shape[1] < 1 or
+            query.shape[1] % key.shape[1] or query.shape[2:] != key.shape[2:]):
+        raise ValidationError('complete self-attention GQA head/token/dimension layout required')
+    return tuple(x.transpose(1,2).squeeze(0).contiguous() for x in (query,key,value))
+
+
+def register_torch_varlen_gqa():
+    """Register a separate experiment; preserve the earlier repeated-KV backend."""
+    from transformers import AttentionInterface, AttentionMaskInterface
+    AttentionInterface.register(TORCH_VARLEN_GQA,torch_varlen_gqa_attention)
+    AttentionMaskInterface.register(TORCH_VARLEN_GQA,lambda **kwargs:None)
+
+
+def torch_varlen_gqa_attention(module,query,key,value,attention_mask,*,dropout=0.0,
+                              scaling=None,cu_seq_lens_q=None,cu_seq_lens_k=None,
+                              max_length_q=None,max_length_k=None,**kwargs):
+    import torch
+    from torch.nn.attention.varlen import varlen_attn
+    if (torch.__version__.split('+')[0] != '2.10.0' or query.device.type != 'cuda' or
+            attention_mask is not None or dropout != 0 or module.sliding_window is not None or
+            scaling is None or abs(scaling-query.shape[-1]**-0.5)>1e-12 or
+            any(x is None for x in (cu_seq_lens_q,cu_seq_lens_k,max_length_q,max_length_k))):
+        raise ValidationError('pinned Torch 2.10 causal zero-dropout CUDA native-GQA contract required')
+    q,k,v=native_gqa_inputs(query,key,value)
+    output=varlen_attn(q,k,v,cu_seq_lens_q,cu_seq_lens_k,max_length_q,max_length_k,is_causal=True)
+    return output.unsqueeze(0),None
 
 
 def packed_tensors(pack, device):
@@ -129,8 +165,9 @@ def packed_forward(model, pack, *, backend='dense-sdpa-reference', maximum_dense
         mask = dense_mask(tensors['offsets'], tensors['input_ids'].device, next(model.parameters()).dtype,
                           maximum_tokens=maximum_dense_tokens)
         common['attention_mask'] = {'full_attention': mask}
-    elif backend in {'flash-attention-2-varlen', 'torch-varlen-flash'}:
-        expected = 'flash_attention_2' if backend == 'flash-attention-2-varlen' else TORCH_VARLEN
+    elif backend in {'flash-attention-2-varlen', 'torch-varlen-flash', 'torch-varlen-flash-gqa'}:
+        expected = {'flash-attention-2-varlen':'flash_attention_2',
+            'torch-varlen-flash':TORCH_VARLEN,'torch-varlen-flash-gqa':TORCH_VARLEN_GQA}[backend]
         if impl != expected or tensors['input_ids'].device.type != 'cuda':
             raise ValidationError('varlen requires explicitly configured CUDA backend')
         common.update(attention_mask={'full_attention': None}, cu_seq_lens_q=tensors['cu_seqlens'],
