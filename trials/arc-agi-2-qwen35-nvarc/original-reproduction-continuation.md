@@ -1419,3 +1419,10 @@ on October 2; receipt SHA-256
 `600f94f471ce42a822b1bc16b310c0933425fabaf17dc539f0d376991fab77ee`.
 Runtime is pending backed-off monitoring and one terminal retrieval. No
 completion, native gradient/memory or quality observation is presumed.
+
+An additional actual CPU BF16 NN/AdamW control retains BF16 parameters and
+moments without a master-parameter cast. It verifies the zero-LR first step,
+subsequent changed weights, exact two-moment byte counts and explicit state
+discard. All three strict NN controls pass in 1.771 seconds under local
+Torch 2.12.1 CPU. This adds no original Unsloth or 4B runtime evidence and
+changes no submitted native 004 bytes.

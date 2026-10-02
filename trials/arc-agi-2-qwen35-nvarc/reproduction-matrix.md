@@ -69,7 +69,7 @@ native 003 needs 43,200 conservative GPU seconds and remains unsubmitted.
 Distinct native 004 preserves all work under 1,300/1,000-second limits; its
 preflight and 382-test full validation pass. Snapshot 014's 5,523.863 free
 seconds admits one 5,200-second conservative reserve. Completion, native
-memory/time and original-clock parity remain unobserved. A real compatible
+memory/time and original-clock parity remain unobserved. A complete native
 epoch is now submitted once as private native 004 version 1, kernel ID
 136815175, with terminal monitoring/retrieval pending. The older compatible
 4.53.3 tiny CPU fixture constructs/resets its projection/full-save adapter under

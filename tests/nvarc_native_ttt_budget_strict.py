@@ -63,5 +63,23 @@ class NativeEpochStrictTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):optimizer.step()
             with self.assertRaises(RuntimeError):torch.optim.AdamW(budget.model.parameters())
 
+    def test_actual_bf16_moments_and_zero_lr_step_without_a_master_cast(self):
+        model,trainer,batches,old,_=self.budget();model=model.to(torch.bfloat16)
+        with torch.no_grad():model.head.weight.zero_()
+        rows=[{'input_ids_digest':digest(batch['input_ids'][0].tolist()),'labels_digest':digest(batch['labels'][0].tolist())} for batch in batches]
+        budget=EpochBudget(torch,model,trainer,rows,[0.,5e-5,0.],lambda value:None,
+            expected_parameters=sum(p.numel() for p in model.parameters()),expected_dtype='torch.bfloat16')
+        with budget.installed():
+            optimizer=torch.optim.AdamW(model.parameters(),lr=5e-5,betas=(.9,.999),eps=1e-8,weight_decay=0)
+            scheduler=torch.optim.lr_scheduler.LambdaLR(optimizer,lambda i:[0.,1.,0.][i])
+            for i,batch in enumerate(batches):
+                trainer.training_step(batch);torch.nn.utils.clip_grad_norm_(model.parameters(),1.)
+                optimizer.step();optimizer.zero_grad(set_to_none=True);scheduler.step()
+                if i==0:self.assertEqual(torch.count_nonzero(model.head.weight).item(),0)
+            states=budget.complete()
+            self.assertTrue(all(row['parameter_dtype']=='torch.bfloat16' and row['moment_bytes']==row['elements']*4 for row in states))
+            self.assertGreater(torch.count_nonzero(model.head.weight).item(),0)
+            optimizer.state.clear();self.assertFalse(optimizer.state)
+
 
 if __name__=='__main__':unittest.main()
