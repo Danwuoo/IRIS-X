@@ -100,6 +100,73 @@ every loss, rate and final adapter tensor bitwise against ordinary Adam;
 reset is exact. This is a tiny-model differential, not an actual rank-256 4B
 long-task epoch. Existing hybrid TTT/reset/export checks still pass.
 
+## Original runtime and full long-task candidate
+
+The separate Transformers 4.53.3 environment first rejected the tiny epoch
+before training because PEFT was absent; that failed log stays retained.
+After installing pinned PEFT 0.21.0, Accelerate 1.10.1 and Psutil 7.2.2 there,
+the unchanged full 128-view checkpoint/CPU-Adam differential passes in 14.085
+seconds. A later real training-path test also attaches the production forward
+reservation hook and independently reconciles all 128 optimizer events;
+it passes in 15.098 seconds, SHA-256
+`2212506baae1ab77fa61eb0ffe9966b3de173fc50df5d0b426d645ff50d1beb6`.
+These are actual tiny CPU training observations, not 4B GPU epochs.
+
+The actual untied published 4B checkpoint was separately loaded on CPU with
+its original-family rank-256, alpha-32 rsLoRA. All 254 targets and
+529,801,216 trainable FP32 parameters were observed. One manual parameter
+perturbation changes the state hash and reset restores every retained state
+byte exactly. No model forward, training token, optimizer or generation occurs.
+The 39.735-second observation is
+`.irisx/nvarc-original/runs/nvarc-original-qwen3-adapter-material-001/result.json`,
+SHA-256 `149779b012478bf49aa03a9657e49f4f8fc22e7b0554d3fa20e6d422d4f10739`.
+This exposes the real adapter's size without asserting L4 memory feasibility.
+
+Seven exact Linux/universal wheels—Transformers 4.53.3, Tokenizers 0.21.4,
+Hub 0.35.3, PEFT 0.21.0, Accelerate 1.10.1, Safetensors 0.8.0 and
+Psutil 7.2.2—total 16,385,462 bytes. All filenames, sizes and SHA-256 values
+match seven bounded official PyPI release reads. The earlier pinned pip
+download's individual HTTP count was not independently retained. Material
+digest: `sha256:9fa3f0e5365f99a15ee48643842123bfe1867d16eeb84d110d84af63bc4d995f`.
+Their sole private Dataset creation and one ready check are consumed:
+[`danielwuu/irisx-nvarc-original-qwen3-ttt-runtime-001`](https://www.kaggle.com/datasets/danielwuu/irisx-nvarc-original-qwen3-ttt-runtime-001),
+version 1. Existing Dataset versions are not mutated. The checkpoint's recorded
+Transformers version is retained; unknown historical Unsloth and the complete
+historical runtime lock remain unknown.
+
+The full-long-task runner reserves only exact approved input/label row digests
+before actual model forwards. It retains every returned step, original
+13-step warmup/cosine rates, finite gradient-group coverage, changed adapter
+bytes and exact reset. An independent closed result reader reconstructs all
+128 source views and their multiplicities, per-step tokens and schedule. It
+checks actual worker UUID against four-L4 inventory and preserves failed
+prefixes without asserting completed epochs. Artificial local archives against
+the real frozen package pass failure-prefix reading and reject rehashed Boolean
+costs; they are explicitly fixtures, not provider outputs. Fixture report
+SHA-256 `2887bf09e207cc881e86e39a8000467bf0996c628f3260b5f4f8e3819c4bb454`.
+
+`nvarc-original-qwen3-long-ttt-001` remains an immutable, unsubmitted local
+prototype. The distinct reviewed `002` package is offline verified and its
+sole transport journal is initialized with push/status/retrieval reservations
+all zero. Plan digest:
+`sha256:df58ebb4e99b9c2f56117bc7f3b5fd171ff43884e0e741db069817f00d1d6e2a`.
+It binds the same public long task's 128 complete views, 955,392 input tokens,
+128 optimizer steps, one rank-zero model worker on a four-L4 gate, original
+untied published material, offline dependencies, zero generations/teacher/
+verification calls, no export, USD 0 and a 10,800-second notebook ceiling.
+The initial offline SDK initialization failed on absent ML packages before
+creating any submission budget. Its log is retained; bounded offline preflight
+now uses the separate ML interpreter while credential transport stays in the
+SDK environment. The kernel package bytes remain unchanged. No C kernel has
+been submitted. Actual CUDA long-epoch memory/time remain unobserved; execution
+is deferred for the queued numerical prerequisite and free-resource accounting.
+No historical task-clock parity follows.
+
+The explicitly referenced TRM v18 source remains unverified. Prior exact SDK
+forms retain HTTP 404/403, and the separate public source-page read reports
+the URL inaccessible. This does not establish that the version is absent;
+the acquired v21 is not relabelled v18.
+
 ## Packed execution
 
 `arc_nvarc_qwen3_packing` supplies one model forward per logical pack with
@@ -222,6 +289,20 @@ Retained member stream SHA-256:
 
 ## Remaining scale and quality boundaries
 
+The earlier fixed published-group dynamic replay is separately reconciled
+from its full retained ledger: 635 reserved isolated invocations (35 input
+attempts and 600 outputs), 27 sandbox rejections, 578 valid nonidentity output
+observations and thirty accepted pairs under the exact 8/12/4 filter. The
+latest recovery performs zero new invocations. Result SHA-256:
+`f6fe8d74bcd9490053b931b80444ad854f2d6fc53f727558fc45950efbfd6511`.
+The 630 figure in earlier shorthand describes the thirty-input/six-hundred-
+output successful-path workload; it is not the actual reservation count.
+This remains one fixed exposed group, not complete dynamic SDG verification.
+
+The current long-epoch/runtime milestone's required full repository check
+passes 327 tests in 448.486 seconds with four skips. Log SHA-256:
+`4805aca59f5cdb301b2f6d09d8bfefcd17787a2df9cb67afd71225c4868337d1`.
+
 Required full repository validation passes 320 tests in 346.026 seconds,
 log SHA-256 `9f601f6ba177c4180df93faf5fc8943c49b5a9065319de9a356d04905fe4b09a`.
 This follows one retained full-run failure in seven existing subprocess timing
@@ -249,19 +330,28 @@ The prefix test rechecks source bytes and every row binding, performs only the
 three missing static AST analyses, yields identical full row bytes/counters,
 and leaves predecessor files unchanged. No generated program is executed.
 
-A separate complete input/output response static analysis is running at
-`.irisx/nvarc-original/manifests/sdg-program-static-20261002-001/`, against all
+A separate complete input/output response static analysis targets all
 170 input/output shards and 2,244,042 expected raw responses. It retains
 program/response digests, exact five-field joins, both parent exposures,
 source-parser syntax and one-argument entry diagnostics. A finite 3,600-second
 local limit and immutable analysis-source snapshot apply. It never executes
-generated code or claims dynamic semantics; full coverage is pending its
-closed terminal report.
+generated code or claims dynamic semantics. The first pass retained 80 closed
+shards, 81 reserved shards and 1,023,189 analyzed rows when its 3,600-second
+wall ceiling ended. Its immutable response stream SHA-256 is
+`91ebd3372e109100a88a585ae80c177ef02e2553f37cc02d3aa205e159c75773`.
+The distinct `sdg-program-static-20261002-002` continuation has a 10,800-second
+local ceiling and carries those exact rows without repeating AST diagnostics.
+Every shard, response/code and both parent/exposure bindings are rechecked.
+It is still running; whole coverage remains pending a closed terminal report.
 The continuation implementation can carry only an exact frozen response/code/
 parent/exposure prefix with the same static diagnostic function AST and source
 snapshot. Every shard byte and response join is rechecked, while completed AST
 diagnostics are carried without repeating them. A new immutable identity and
 its own finite local time limit are required after a retained incomplete pass.
+
+All seventeen current original evidence/runtime/cost/transport tests pass in
+0.551 seconds, SHA-256
+`99ca41e2a1ef01351a49a277e5518ad43400000200e0b224fecd60448c74492d`.
 
 One read-only accelerator quota snapshot is retained separately at
 `.irisx/nvarc-original/manifests/free-resource-20261002-001/`. The SDK's

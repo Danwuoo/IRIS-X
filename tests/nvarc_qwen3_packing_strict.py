@@ -171,8 +171,11 @@ class OriginalQwen3PackingTests(unittest.TestCase):
             if mode=='fsdp-physical':self.assertEqual(proof['logical_pack_counts'],[1,1])
 
     def test_original_untied_source_epoch_checkpoint_and_cpu_adam_differential(self):
+        from collections import Counter
         from peft import get_peft_model_state_dict
-        from irisx.arc_nvarc_training import TaskLocalAdapter
+        from irisx.arc_nvarc_training import TaskLocalAdapter,task_local_sequences
+        from irisx.arc_nvarc_qwen3_long_ttt import reserve_row,row_digest
+        from tools.verify_nvarc_original_long_ttt import validate_progress
         # Published SFT differs from the tied base. Keep that distinction in
         # the real original-family adapter differential and exact reset.
         config=copy.deepcopy(self.model.config);config.tie_word_embeddings=False
@@ -187,7 +190,23 @@ class OriginalQwen3PackingTests(unittest.TestCase):
         reference=TaskLocalAdapter(copy.deepcopy(base),adaptation)
         actual=TaskLocalAdapter(copy.deepcopy(base),{**adaptation,'gradient_checkpointing':True,
             'optimizer_state_device':'cpu'})
+        rows=task_local_sequences(task,seed=42,augmentation_count=16,source_qwen=True,
+            source_augmentation_seed=1,source_max_length=8192)
+        ledger={'outer_forwards_reserved':0,'input_tokens_reserved':0,'optimizer_steps_completed':0,
+            'generation_calls':0,'teacher_calls':0,'verification_calls':0,'maximum_paid_usd':0,
+            'forward_row_digests':[]}
+        remaining=Counter(row_digest(row) for row in rows);events=[]
+        def reserve(module,args,kwargs):
+            reserve_row(ledger,remaining,{k:kwargs[k].tolist()[0] for k in ('input_ids','labels')},
+                sum(len(row['input_ids']) for row in rows))
+        def observe(event):
+            ledger['optimizer_steps_completed']=event['completed_steps']
+            events.append({'event':'ttt-optimizer-returned',**event})
+        hook=actual.model.base_model.model.register_forward_pre_hook(reserve,with_kwargs=True)
+        actual.step_observer=observe
         reference.adapt(task);actual.adapt(task)
+        hook.remove();validate_progress(ledger,events,rows,True)
+        self.assertFalse(any(remaining.values()))
         self.assertEqual(reference.last_observation['steps'],128)
         self.assertEqual(actual.last_observation['losses_by_step'],reference.last_observation['losses_by_step'])
         self.assertEqual(actual.last_observation['learning_rates_by_step'],reference.last_observation['learning_rates_by_step'])

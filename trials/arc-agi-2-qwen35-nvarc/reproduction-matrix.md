@@ -26,6 +26,15 @@ untied embedding/head). Its config records Transformers 4.53.3; actual 4.53.3
 and 5.8.1 CPU logits match bitwise on one fixed chat. An untied tiny original
 Qwen3 completes all 128 source views with checkpoint/CPU-Adam differential and
 exact reset, without claiming a 4B long-task epoch or historical Unsloth parity.
+The isolated 4.53.3 runtime also passes the real 128-view tiny differential,
+including actual forward/optimizer cost hooks. The published 4B's actual
+rank-256 adapter has 254 targets and 529,801,216 trainable FP32 parameters;
+its zero-forward topology/perturb/reset observation passes on CPU. Seven exact
+Linux/universal runtime wheels have vendor-bound bytes and a ready private
+version-1 Dataset. Long-task 002 is offline verified and initialized with zero
+pushes, 128 views, 955,392 input tokens, 128 steps, zero generations and finite
+10,800-second session ceiling. It remains inert pending GPU prerequisites and
+free-resource accounting; 001 stays a frozen unsubmitted local prototype.
 The new original-family private Dataset is version 1 ready. The distinct
 native-varlen 4B GPU probe is accepted as private version 1 and remains queued
 at the last observed check; no terminal archive is retrieved yet. It reserves
@@ -34,6 +43,10 @@ promotion. All 103,223 published synthetic puzzles and 2,984,385 pairs now have
 complete byte/structural/parent/stage/exposure yield reconciliation, recovered
 from immutable per-member evidence after final histogram serialization failed.
 Whole-program semantics and original 8/12/4 filter replay remain open.
+The first whole-response static pass retains 1,023,189 rows after its local
+wall ceiling. A distinct bounded continuation carries exact frozen response/
+code/parent/exposure bindings and analyzes the missing suffix. No generated
+program executes; complete coverage is pending the closed report.
 
 ## Overnight implementation (2026-10-02)
 

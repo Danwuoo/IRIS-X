@@ -1,0 +1,150 @@
+"""Decision 0054: full original-checkpoint long-demo epoch, without generation."""
+import base64
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import time
+import zipfile
+import zlib
+
+START=time.monotonic()
+PAYLOADS=__PAYLOADS__
+HASHES=__HASHES__
+RUN=__RUN__
+work=Path('/kaggle/working')/RUN
+temporary=Path('/kaggle/temp')/RUN
+if work.exists() or temporary.exists():
+    raise RuntimeError('new immutable probe identity required')
+work.mkdir();temporary.mkdir(parents=True)
+phase='payload-validation'
+plan=None
+
+def save(name,value):
+    (work/name).write_text(json.dumps(value,sort_keys=True,allow_nan=False)+'\n',encoding='utf-8')
+
+def emit(name,**details):
+    with (work/'events.jsonl').open('a',encoding='utf-8') as stream:
+        stream.write(json.dumps({'phase':name,'elapsed_seconds':time.monotonic()-START,**details},sort_keys=True)+'\n')
+
+__HARDWARE_HELPER__
+
+try:
+    if set(PAYLOADS)!=set(HASHES):raise RuntimeError('payload inventory differs')
+    decoded={}
+    for key,value in PAYLOADS.items():
+        decoder=zlib.decompressobj()
+        raw=decoder.decompress(base64.b64decode(value,validate=True),32*1024**2+1)
+        if len(raw)>32*1024**2 or not decoder.eof or decoder.unused_data or decoder.unconsumed_tail:
+            raise RuntimeError('bounded payload expansion differs')
+        if hashlib.sha256(raw).hexdigest()!=HASHES[key]:raise RuntimeError('payload hash differs')
+        decoded[key]=raw
+    plan=json.loads(decoded['plan'])
+    if (plan['owner_decision']!='Decision 0054' or plan['run_id']!=RUN or
+            plan['maximum_paid_usd']!=0 or plan['maximum_generations']!=0 or
+            plan['maximum_optimizer_steps']!=128 or plan['maximum_notebook_wall_seconds']!=10800):
+        raise RuntimeError('bounded private original probe plan differs')
+    save('plan.json',plan);save('payload-bindings.json',HASHES)
+    os.environ.update(HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',HF_DATASETS_OFFLINE='1',
+        WANDB_DISABLED='true',TOKENIZERS_PARALLELISM='false',PYTHONIOENCODING='utf-8',OMP_NUM_THREADS='2')
+    phase='hardware-inventory';emit(phase)
+    import torch
+    smi=subprocess.run(['nvidia-smi','--query-gpu=index,name,memory.total,uuid','--format=csv,noheader,nounits'],
+        capture_output=True,text=True,check=True,timeout=30)
+    inventory=collect_hardware_inventory(torch,smi.stdout,lambda raw:save('hardware-raw.json',raw))
+    save('hardware.json',{'inventory':inventory,'torch':torch.__version__,'cuda':torch.version.cuda})
+    if len(inventory)!=4 or len({x['uuid'] for x in inventory})!=4 or any(x['name']!='NVIDIA L4' or not x['bf16'] for x in inventory):
+        raise RuntimeError('four distinct BF16 L4s required; only worker zero performs task-local training')
+    if torch.__version__!='2.10.0+cu128':raise RuntimeError('exact reviewed PyTorch runtime required')
+    def mount(dataset,marker):
+        owner,slug=dataset.split('/')
+        roots=[Path('/kaggle/input/datasets')/owner/slug,Path('/kaggle/input')/slug]
+        matches=[p for p in roots if (p/marker).is_file()]
+        if len(matches)!=1:raise RuntimeError('exact Dataset mount required: '+dataset)
+        return matches[0]
+    roots=[Path('/kaggle/input/models/sorokin/qwen3_4b_grids15_sft139/transformers/bfloat16/1'),
+        Path('/kaggle/input/qwen3_4b_grids15_sft139/transformers/bfloat16/1')]
+    matches=[p for p in roots if (p/'config.json').is_file()]
+    if len(matches)!=1:raise RuntimeError('exact owner-qualified or explicit legacy published SFT mount required')
+    model=matches[0]
+    wheels=mount(plan['datasets']['wheels'],'runtime-manifest.json')
+    competition=Path('/kaggle/input/competitions/arc-prize-2026-arc-agi-2')
+    if not competition.is_dir():raise RuntimeError('official competition hardware entitlement mount required')
+    save('mount-policy.json',{'competition_files_opened':0,'model_mount':str(model),'wheel_mount':str(wheels)})
+    phase='material-verification';emit(phase)
+    material=json.loads(decoded['model_inventory'])
+    if material['material_digest']!=plan['model_material_digest']:raise RuntimeError('published material identity differs')
+    actual={p.name for p in model.iterdir() if p.is_file()}
+    if actual-set(material['inventory'])-{'model-metadata.json','model-metadata.yaml'}:
+        raise RuntimeError('unexpected model Dataset file')
+    for name,item in material['inventory'].items():
+        path=model/name
+        with path.open('rb') as stream:sha=hashlib.file_digest(stream,'sha256').hexdigest()
+        if path.stat().st_size!=item['bytes'] or sha!=item['sha256']:raise RuntimeError('model bytes differ: '+name)
+    save('material-verification.json',{'all_files_verified':True,'material_digest':material['material_digest']})
+    phase='dependency-setup';emit(phase)
+    manifest=json.loads(decoded['wheel_manifest'])
+    if json.loads((wheels/'runtime-manifest.json').read_bytes())!=manifest:
+        raise RuntimeError('exact reviewed runtime manifest differs')
+    entries=manifest['inventory']
+    for name,item in entries.items():
+        path=wheels/name
+        if path.stat().st_size!=item['bytes'] or hashlib.sha256(path.read_bytes()).hexdigest()!=item['sha256']:
+            raise RuntimeError('offline dependency bytes differ: '+name)
+    if importlib.util.find_spec('torchao') is not None:
+        subprocess.run([sys.executable,'-m','pip','uninstall','-y','torchao'],check=True,timeout=60)
+    if importlib.util.find_spec('torchao') is not None:raise RuntimeError('incompatible optional torchao remains')
+    runtime=temporary/'irisx-0.2.0-py3-none-any.whl';runtime.write_bytes(decoded['runtime_wheel'])
+    subprocess.run([sys.executable,'-m','pip','install','--no-deps','--no-index','--find-links',str(wheels),
+        'transformers==4.53.3','accelerate==1.10.1','safetensors==0.8.0','tokenizers==0.21.4',
+        'huggingface-hub==0.35.3','peft==0.21.0','psutil==7.2.2',str(runtime)],check=True,timeout=180)
+    save('selected-lineage.json',plan['public_task_selection'])
+    for key in ('visible','config'):(temporary/(key+'.json')).write_bytes(decoded[key])
+    bundle=temporary/'source-bundle';bundle.mkdir()
+    binding=json.loads(decoded['source_files'])
+    for name,encoded in binding.items():
+        path=bundle/name
+        if path.resolve().is_relative_to(bundle.resolve()) is not True:raise RuntimeError('unsafe source bundle path')
+        path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(base64.b64decode(encoded,validate=True))
+    phase='full-long-source-epoch';emit(phase)
+    remaining=min(plan['maximum_worker_wall_seconds'],plan['maximum_notebook_wall_seconds']-120-(time.monotonic()-START))
+    if remaining<=0:raise TimeoutError('terminal reserve reached')
+    command=[sys.executable,'-m','irisx.arc_nvarc_qwen3_long_ttt','--plan',str(work/'plan.json'),
+        '--config',str(temporary/'config.json'),'--visible',str(temporary/'visible.json'),
+        '--model',str(model),'--bundle',str(bundle),'--output',str(work/'worker')]
+    with (work/'worker-stdout.log').open('w',encoding='utf-8') as stdout,(work/'worker-stderr.log').open('w',encoding='utf-8') as stderr:
+        process=subprocess.Popen(command,stdout=stdout,stderr=stderr,start_new_session=True)
+        try:
+            code=process.wait(timeout=remaining)
+            if code:raise subprocess.CalledProcessError(code,command)
+        except BaseException:
+            if process.poll() is None:
+                os.killpg(process.pid,signal.SIGTERM)
+                try:process.wait(timeout=20)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid,signal.SIGKILL);process.wait(timeout=20)
+            raise
+    result=json.loads((work/'worker/worker-result.json').read_bytes())
+    if result['run_id']!=RUN or result['outcome']!='complete':raise RuntimeError('worker result differs')
+    save('terminal.json',{**result,'wall_seconds':time.monotonic()-START,'maximum_paid_usd':0})
+except BaseException as error:
+    save('terminal.json',{'run_id':RUN,'outcome':'failed','phase':phase,'error_type':type(error).__name__,
+        'error_message':str(error)[:1000],'wall_seconds':time.monotonic()-START,'contains_evaluator_truth':False})
+    raise
+finally:
+    entries=[]
+    for path in sorted(work.rglob('*')):
+        if path.is_file():
+            with path.open('rb') as stream:sha=hashlib.file_digest(stream,'sha256').hexdigest()
+            entries.append({'path':path.relative_to(work).as_posix(),'bytes':path.stat().st_size,'sha256':sha})
+    if sum(x['bytes'] for x in entries)>64*1024**2:raise RuntimeError('diagnostic archive ceiling exceeded')
+    plan_digest=None if plan is None else 'sha256:'+hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+    index={'format':'irisx/nvarc-gpu-preflight-archive-v1','run_id':RUN,'plan_digest':plan_digest,'members':entries}
+    with zipfile.ZipFile(work.parent/'gpu-preflight-result.zip','x',compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr('manifest.json',json.dumps(index,sort_keys=True,separators=(',',':')))
+        for entry in entries:archive.write(work/entry['path'],entry['path'])
+    print(json.dumps({'terminal':json.loads((work/'terminal.json').read_bytes())}))

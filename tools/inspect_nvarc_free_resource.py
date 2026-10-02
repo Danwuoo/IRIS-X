@@ -1,4 +1,5 @@
 """One read-only free accelerator quota snapshot; no kernel-state request."""
+import argparse
 import json
 from pathlib import Path
 import re
@@ -19,9 +20,8 @@ def duration_seconds(value):
     return float(value[:-1])
 
 
-def inspect():
+def inspect(output):
     from kagglesdk.kernels.types.kernels_api_service import ApiGetAcceleratorQuotaStatisticsRequest
-    output=ROOT/'.irisx/nvarc-original/manifests/free-resource-20261002-001'
     if output.exists():raise ValidationError('resource snapshot identity is immutable')
     output.mkdir(parents=True)
     atomic(output/'ledger.json',{'owner_decision':'Decision 0054','quota_read_reserved':1,
@@ -38,4 +38,6 @@ def inspect():
     print(json.dumps(result),flush=True)
 
 
-if __name__=='__main__':inspect()
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--output',type=Path,required=True)
+    inspect(parser.parse_args().output)
