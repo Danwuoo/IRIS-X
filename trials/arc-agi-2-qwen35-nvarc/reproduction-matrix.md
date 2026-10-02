@@ -59,7 +59,11 @@ as private version 1 within the unchanged zero-work limits. Its second status
 is COMPLETE and its sole retrieval verifies native Trainer context 8,192,
 all 128 source input/label views, BF16 adapter topology, detached reset and
 all 36 layer checkpoint flags. This qualifies native preparation with zero
-model/optimizer calls; the full TTT epoch remains unexecuted. A real compatible
+model/optimizer calls; the full TTT epoch remains unexecuted. Four additional
+exact optimizer/scheduler/clipping source files bind 13-step warmup, default
+0.9/0.999 AdamW betas and a zero-LR first step. A scalar-only replay verifies
+all 129 cosine indices; native gradient/optimizer memory and training time
+remain unobserved. A real compatible
 4.53.3 tiny CPU fixture constructs/resets its projection/full-save adapter under
 the production guard and matches all 128 source collator views with zero
 forwards. Its artificial Trainer routing does not establish native Unsloth
@@ -148,9 +152,14 @@ AdamW gate under 1,500/1,260-second parent/worker bounds and needs 6,000 seconds
 Its offline preflight and full 378-test repository check pass. Fresh snapshot
 012 reconciles 6,746.535 free seconds and admits one 6,000-second conservative
 reserve without enabling pay-to-scale or creating a provider reservation.
-The sole push is accepted as private version 1, kernel ID 136810446. Runtime
-remains pending backed-off monitoring and one terminal retrieval.
-No original-family full-gradient step is executed. Neither numerical probe supplies
+The sole push is accepted as private version 1, kernel ID 136810446. Its first
+status is COMPLETE and sole retrieval verifies all 32 actual root forwards,
+full global-256 AdamW update, finite CPU FP32 state and changed global weights.
+The one cold step takes 446.777 seconds: 2,051.895 aggregate input tokens/s,
+maximum peak allocated/reserved CUDA memory 13.898/22.605 GB and process RSS
+22.781–23.355 GB per rank. No checkpoint is exported. Sustained training rate,
+historical NeMo equivalence and full 12,716-step SFT remain unestablished.
+Neither numerical probe supplies
 training throughput, ARC score or promotion. All 103,223 published synthetic
 puzzles and 2,984,385 pairs now have
 complete byte/structural/parent/stage/exposure yield reconciliation, recovered

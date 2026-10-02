@@ -16,8 +16,11 @@ merged BF16 difference to Q projection. Full-model segmented-GEMM probe 004
 completes and independently verifies bitwise full-logit/layer-state agreement,
 tiny gradients and sample isolation. The qualified variant now feeds an
 global-256 full-gradient candidate. Distinct packed-step-002 is accepted as
-private version 1 under a 1,500-second session bound; its runtime is pending.
-No GPU optimizer step from this original-family candidate is verified yet.
+private version 1 under a 1,500-second session bound. Its sole retrieval
+verifies one complete global-256 AdamW step on four L4s: 916,739 input tokens
+in 446.777 seconds, finite CPU state and changed global weights. This is a
+single cold backend observation; full original SFT and a trained export remain
+uncompleted.
 Native zero-work Trainer inspection 003 completes and verifies context 8,192,
 all 128 prepared source views, adapter reset and checkpoint flags. It qualifies
 native preparation with zero model/optimizer calls; the full TTT epoch remains
