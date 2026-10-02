@@ -44,9 +44,37 @@ class OriginalUnslothProbeTests(unittest.TestCase):
             self.assertEqual(executed,['prefill','cached-token'])
             self.assertEqual(sum(row['input_tokens_reserved'] for row in namespace['events']),13)
 
-    def fixture(self, root, fault=None):
+    def test_repaired_guard_requires_positions_and_records_completion_before_next_call(self):
+        function=next(n for n in ast.parse(probe.worker_source(True)).body if isinstance(n,ast.FunctionDef) and n.name=='bounded_call')
+        class Tensor:
+            def __init__(self,rows):self.rows=rows
+            def detach(self):return self
+            def cpu(self):return self
+            def tolist(self):return self.rows
+        model=type('Qwen3ForCausalLM',(),{})()
+        with tempfile.TemporaryDirectory() as temporary:
+            output=Path(temporary);calls=[]
+            def actual(*args,**kwargs):
+                self.assertIs(json.loads((output/'reference-ledger.json').read_bytes())[-1]['completed'],False)
+                calls.append(kwargs['position_ids'].tolist())
+                if len(calls)==2:raise RuntimeError('cached device failure')
+                return 'prefill'
+            scope={'active':'prefill','events':[],'ids':probe.IDS,'mode':'reference','output':output,'json':json,'original_call':actual}
+            exec(compile(ast.Module(body=[function],type_ignores=[]),'source-bound-position-guard','exec'),scope)
+            with self.assertRaises(RuntimeError):scope['bounded_call'](model,input_ids=Tensor([probe.IDS]))
+            with self.assertRaises(RuntimeError):scope['bounded_call'](model,input_ids=Tensor([probe.IDS]),position_ids=Tensor([[12]*12]))
+            self.assertEqual(calls,[])
+            scope['bounded_call'](model,input_ids=Tensor([probe.IDS]),position_ids=Tensor([list(range(12))]))
+            self.assertIs(scope['events'][0]['completed'],True)
+            scope['active']='cached-token'
+            with self.assertRaises(RuntimeError):scope['bounded_call'](model,input_ids=Tensor([[0]]),position_ids=Tensor([[12]]))
+            self.assertEqual([e['completed'] for e in scope['events']],[True,False])
+            self.assertEqual(calls,[[list(range(12))],[[12]]])
+
+    def fixture(self, root, fault=None, positions=False):
         package=root/'package';package.mkdir();run='nvarc-original-qwen3-unsloth-probe-999'
         plan={'run_id':run};atomic(package/'plan.json',plan);atomic(package/'stage-summary.json',{'payload_sha256':{}})
+        if positions:plan['format']=probe.POSITION_FORMAT;atomic(package/'plan.json',plan)
         content={'plan.json':plan,'payload-bindings.json':{},'terminal.json':{'run_id':run,'outcome':'complete',
             'contains_evaluator_truth':False,'wall_seconds':100.0,'optimizer_steps':0,'generations':0,'teacher_calls':0,'paid_usd':0},
             'hardware.json':{'inventory':[{'uuid':str(i),'name':'NVIDIA L4','bf16':True} for i in range(4)],
@@ -62,12 +90,21 @@ class OriginalUnslothProbeTests(unittest.TestCase):
                 'torch':'2.8.0+cu128','cuda':'12.8','outer_forwards':2,'input_tokens':13,
                 'untied_storage_observed':True,'parameter_dtypes':['torch.bfloat16'],
                 'model_class':'Qwen3ForCausalLM','optimizer_steps':0,'generations':0,'teacher_calls':0,'vectors':vectors}
+            if positions:
+                for i,row in enumerate(content[mode+'-ledger.json']):row.update(completed=True,position_ids=[list(range(12)) if i==0 else [12]])
+                content[mode+'-prefill.json']={'mode':mode,'vector':vectors[0].copy(),'shape':[1,12,16]}
         if fault=='bool-cost':content['unsloth-ledger.json'][0]['outer_forwards_reserved']=True
         elif fault=='wrong-token':content['unsloth-ledger.json'][1]['input_ids']=[[1]]
         elif fault=='extra-call':content['reference-ledger.json'].append(dict(content['reference-ledger.json'][1]))
         elif fault=='trained':content['unsloth-result.json']['optimizer_steps']=1
         elif fault=='nonfinite':content['unsloth-result.json']['vectors'][0][0]=float('inf')
         elif fault=='bad-hardware':content['hardware.json']['inventory'][3]['uuid']='0'
+        elif fault=='bool-completed':content['unsloth-ledger.json'][0]['completed']=1
+        elif fault=='missing-pos':content['unsloth-ledger.json'][1].pop('position_ids')
+        elif fault=='prefill-vector-lie':content['unsloth-prefill.json']['vector'][0]+=1.0
+        elif fault=='failed-cached-position':
+            content['terminal.json']['outcome']='failed';content.pop('unsloth-result.json')
+            content['unsloth-ledger.json'][1]['completed']=False
         elif fault=='failure-prefix':
             content['terminal.json']['outcome']='failed'
             for name in ('reference-result.json','unsloth-result.json','unsloth-ledger.json'):
@@ -108,6 +145,22 @@ class OriginalUnslothProbeTests(unittest.TestCase):
             self.assertEqual(result['outcome'],'failed')
             self.assertEqual((result['reserved_outer_forwards'],result['reserved_input_tokens']),(1,12))
             self.assertEqual(result['comparisons'],{})
+
+    def test_position_result_recounts_completed_prefix_and_retained_prefill(self):
+        for fault,completed in ((None,4),('failed-cached-position',3)):
+            with self.subTest(fault=fault),tempfile.TemporaryDirectory() as temporary:
+                path,package,checked=self.fixture(Path(temporary),fault,positions=True)
+                with patch.object(probe,'preflight',return_value=checked),patch.object(probe,'binding',return_value={'inventory':{}}):
+                    result=probe.verify_archive(path,package)
+                self.assertEqual(result['completed_outer_forwards'],completed)
+                self.assertEqual(result['retained_prefill_modes'],['reference','unsloth'])
+                self.assertTrue(result['comparisons']['prefill']['bitwise_equal'])
+                self.assertTrue(result['explicit_position_ids_observed'])
+        for fault in ('bool-completed','missing-pos','prefill-vector-lie'):
+            with self.subTest(fault=fault),tempfile.TemporaryDirectory() as temporary:
+                path,package,checked=self.fixture(Path(temporary),fault,positions=True)
+                with patch.object(probe,'preflight',return_value=checked),patch.object(probe,'binding',return_value={'inventory':{}}),self.assertRaises(ValidationError):
+                    probe.verify_archive(path,package)
 
 
 if __name__=='__main__':unittest.main()

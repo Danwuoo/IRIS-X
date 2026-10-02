@@ -152,13 +152,46 @@ Plan digest:
 `sha256:36f613243728f604577a74efb4166507ea6541d574924d739f7f3c81a0708b45`;
 sole save receipt SHA-256:
 `0bd3152e38980e15f89ffede9cf100728ead68fa548b260ab26f6aa70e67afd5`.
-The push is consumed. Its last observed status is queued and no terminal
-retrieval has occurred. A fresh free-quota snapshot retains 13,695.029 seconds
-available, zero provider-reserved seconds and pay-to-scale disabled. The two
-new GPU probes' combined session ceilings are 3,000 seconds, before the
-separate conditional full-gradient/long-task work. This snapshot does not
-explain provider queueing. Four production guard/closed-reader tests pass;
-all five existing original transport tests also pass.
+The push and sole terminal retrieval are consumed. Version 1 failed in
+212.817 seconds at the original Unsloth cached-token call. Four distinct
+BF16 L4s, the original Torch 2.8.0 CUDA 12.8 build and all ten model files
+verify. The same-runtime SDPA reference completed both calls; original
+Unsloth returned its prefill, then rejected `position_ids=None` in
+`move_to_device`. Four outer calls/26 tokens were reserved, with zero
+optimizer steps, generations or teacher calls. The first native prefill
+vector was not persisted before the failed cached call; no native numerical
+comparison or full-runtime prerequisite follows. Frozen archive SHA-256:
+`4d367632ebd6cd60fc2bf6f420ef3f6b5ff85f222a53eef8ce93c460eaec5cc6`.
+
+The exact original DFS passes an explicit position tensor for cached tokens.
+Distinct private
+[`nvarc-original-qwen3-unsloth-probe-002`](https://www.kaggle.com/code/danielwuu/nvarc-original-qwen3-unsloth-probe-002)
+therefore binds prefill positions 0–11 and cached position 12. It also records
+completion after each actual call and saves each prefill vector before the
+cached call. The original Docker, dependency, model, four-L4 entitlement,
+four-forward/26-token/zero-training envelope and 1,200-second bound remain
+fixed. Version 1 was accepted with its one push consumed and no retrieval yet.
+Plan digest:
+`sha256:98dd97a73e30f31d445cd64ba703cc47d4a92b6f2001d4833e0209b71eaf8c54`;
+receipt SHA-256:
+`815dc64495063be69d351311350309a0340ec320ce2924ef68f930333786e92f`.
+Six source-call-guard/closed-reader tests pass, including missing/wrong
+positions, failed completed-prefix accounting and altered retained prefill
+vectors. The frozen 001 package still passes offline preflight.
+An actual tiny current CPU Qwen3 compares default cache positions with the
+production guarded explicit positions: both complete prefill `[1,12,16]`
+and cached `[1,1,16]` logits match bitwise. Exactly four tiny forwards/26 input
+tokens and zero optimizer/generation calls occur. This is a compatible CPU
+reference check, not the original 4B/Unsloth CUDA observation. Proof SHA-256:
+`4b8e92f6fda1d8060472856dd63f3b123e7d8c1ec3a3932a663c1727332de711`.
+
+The current read-only free-quota snapshot 004 reconciles to 12,814.729 free
+seconds remaining, zero reserved seconds and pay-to-scale disabled before
+the repair push. It is an account snapshot, not a queue-cause diagnosis or
+permission for paid/full-scale work. The inert native-training inspection
+draft has no transport package, push or model observation; native adapter,
+prepared complete-row context and scalar task-reset checks must wait for the
+complete original Unsloth GPU prerequisite and a reviewed finite envelope.
 
 ## Exact published original ARC-SFT checkpoint
 
@@ -680,6 +713,9 @@ in 258.139 seconds with four skips, log SHA-256
 All eleven real tiny-Qwen3 packing/optimizer/collective/guard/layout tests
 also pass in 63.679 seconds, SHA-256
 `86e03b178e7139cbe99d0e772567606e0ab7c3b35a278348b0e266245f242883`.
+Full validation 017 covers the cached-position repair and completed-prefix
+reader: 347 tests pass in 280.664 seconds with four skips, SHA-256
+`5987e6c17e01d1831d683db9ca7593fb46dfee81b3b33fc5756dd912f237017d`.
 
 One read-only accelerator quota snapshot is retained separately at
 `.irisx/nvarc-original/manifests/free-resource-20261002-001/`. The SDK's

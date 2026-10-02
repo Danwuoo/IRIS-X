@@ -19,7 +19,8 @@ import re
 RUN = None
 from irisx.canonical import digest_value
 def preflight(package):
-    if read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-unsloth-probe-v1':
+    if read(package/'plan.json')['format'] in {'irisx/nvarc-original-qwen3-unsloth-probe-v1',
+            'irisx/nvarc-original-qwen3-unsloth-positions-probe-v1'}:
         from tools.stage_nvarc_original_unsloth_probe import preflight as check
     elif read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-environment-probe-v1':
         from tools.stage_nvarc_original_environment import preflight as check

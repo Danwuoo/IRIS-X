@@ -12,9 +12,13 @@ revisions remain unknown. The exact original dependency script-version ID now
 binds Unsloth 2025.9.7, Zoo 2025.9.9, Torch 2.8.0, Transformers 4.55.4,
 PEFT 0.17.1 and FlashAttention 2.8.2, including the byte-verified decode patch.
 Full environment inventory and historical CUDA numerical parity remain open.
-The distinct original-runtime Unsloth prefill/cache GPU probe is accepted as
-private version 1 under four forwards/26 input tokens and a 1,200-second bound;
-it remains queued with no terminal retrieval. Exact source-policy audit also
+The original-runtime Unsloth probe 001's push/retrieval are consumed. Four L4s,
+exact materials and both SDPA reference calls verify; native prefill returned
+but the cached call failed on missing position IDs. No native numerical
+comparison completed. Distinct private 002 supplies the original DFS's
+explicit positions and retains completed calls/prefill vectors within the
+same four-forward/26-token/1,200-second bounds. Version 1 is accepted with its
+push consumed and no retrieval yet. Exact source-policy audit also
 finds the original full embedding/head save modules and BF16 snapshot cast.
 Its inferred trainable count is 528,564,224; the earlier 254-LoRA/FP32 topology
 is a different compatibility configuration. Original `for_training()` enables

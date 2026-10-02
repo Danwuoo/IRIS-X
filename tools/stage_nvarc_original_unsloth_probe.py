@@ -20,6 +20,7 @@ from tools.acquire_nvarc_original_environment import DOCKER,REF,PACKAGES
 from tools.stage_nvarc_original_environment import binding,TOKENIZER,BINDING
 
 FORMAT='irisx/nvarc-original-qwen3-unsloth-probe-v1'
+POSITION_FORMAT='irisx/nvarc-original-qwen3-unsloth-positions-probe-v1'
 MODEL_REF='sorokin/qwen3_4b_grids15_sft139/transformers/bfloat16/1'
 MATERIAL='sha256:27de51ef22658a0cce3a9fc04fac8fc456165645e2665a82b215f72e20194b03'
 IDS=[14,11,10,0,1,15,14,12,10,1,0,15]
@@ -90,6 +91,35 @@ def require(value,message):
     if not value:raise ValidationError(message)
 
 
+def worker_source(explicit_positions=False):
+    source=WORKER
+    if explicit_positions:
+        source=source.replace("        events.append({'stage':active", "        positions=kwargs.get('position_ids')\n        actual_positions=positions.detach().cpu().tolist() if positions is not None else None\n        wanted_positions=[list(range(len(ids))) if len(events)==0 else [len(ids)]]\n        if actual_positions!=wanted_positions:raise RuntimeError('exact original cached position IDs required')\n        events.append({'completed':False,'position_ids':actual_positions,'stage':active")
+        source=source.replace('    return original_call(self,*args,**kwargs)', "    result=original_call(self,*args,**kwargs)\n    if type(self).__name__=='Qwen3ForCausalLM':\n        events[-1]['completed']=True\n        (output/(mode+'-ledger.json')).write_text(json.dumps(events,separators=(',',':')),encoding='utf-8')\n    return result")
+        source=source.replace('model(input_ids=torch.tensor([ids],device=\'cuda:0\'),use_cache=True)',
+            "model(input_ids=torch.tensor([ids],device='cuda:0'),position_ids=torch.arange(len(ids),device='cuda:0').unsqueeze(0),use_cache=True)")
+        source=source.replace("    active='cached-token';second=model", "    if not all(__import__('math').isfinite(x) for x in vectors[0]):raise RuntimeError('nonfinite prefill vector')\n    (output/(mode+'-prefill.json')).write_text(json.dumps({'mode':mode,'vector':vectors[0],'shape':shapes[0]},allow_nan=False),encoding='utf-8')\n    active='cached-token';second=model")
+        source=source.replace("past_key_values=first.past_key_values,use_cache=True)",
+            "position_ids=torch.tensor([[len(ids)]],device='cuda:0'),past_key_values=first.past_key_values,use_cache=True)")
+    return source.replace('__VERSIONS__',repr(PACKAGES)).replace('__IDS__',repr(IDS))
+
+
+def failed_position_prerequisite():
+    folder=ROOT/'.irisx/nvarc-original/runs/nvarc-original-qwen3-unsloth-probe-001'
+    archive=folder/'execution-final/retrieved/gpu-preflight-result.zip'
+    ledger=json.loads((folder/'execution-final/execution-ledger.json').read_bytes())
+    require(ledger.get('accepted') is True and ledger.get('retrieval_reserved')==1 and ledger.get('terminal_observed') is True and
+        ledger['events'][-1].get('outcome')=='retrieved' and sha(archive)=='4d367632ebd6cd60fc2bf6f420ef3f6b5ff85f222a53eef8ce93c460eaec5cc6',
+        'exact consumed original position-failure version required')
+    proof=verify_archive(archive,folder/'package-l4')
+    with zipfile.ZipFile(archive) as stream:stderr=stream.read('unsloth-stderr.log').decode('utf-8')
+    require(proof['outcome']=='failed' and proof['terminal']['phase']=='unsloth-two-forwards' and
+        proof['reserved_outer_forwards']==4 and proof['reserved_input_tokens']==26 and
+        "AttributeError: 'NoneType' object has no attribute 'device'" in stderr and 'active=\'cached-token\'' in stderr,
+        'verified original cached-position failure required')
+    return sha(archive)
+
+
 def inventory():
     proof=json.loads((TOKENIZER.parent/'independent-verification.json').read_bytes())
     entries=proof['inventory'];require(len(entries)==10 and digest_value(entries)==MATERIAL and
@@ -111,9 +141,9 @@ def render(run,payloads,hashes):
     compile(source,'original-unsloth-numerics','exec');return source
 
 
-def stage(package,run):
+def stage(package,run,explicit_positions=False):
     require(not package.exists() and re.fullmatch(r'nvarc-original-qwen3-unsloth-probe-\d{3}',run),'new immutable original Unsloth probe required')
-    entries=inventory();proof=binding();worker=WORKER.replace('__VERSIONS__',repr(PACKAGES)).replace('__IDS__',repr(IDS))
+    entries=inventory();proof=binding();worker=worker_source(explicit_positions)
     compile(worker,'original-unsloth-worker','exec')
     plan={'format':FORMAT,'approved':True,'owner_decision':'Decision 0054','run_id':run,'kernel_id':'danielwuu/'+run,
         'maximum_notebook_wall_seconds':1200,'maximum_child_wall_seconds':450,'maximum_outer_forwards':4,
@@ -126,6 +156,10 @@ def stage(package,run):
         'input_ids':IDS,'cached_input_ids':[0],'transient_tensorflow_uninstall':True,
         'lora_adaptation':False,'historical_full_solver_parity':False,'correctness_scored':False,
         'comparison':'reported original Unsloth versus same-runtime SDPA prefill/cache logits; no ARC score'}
+    if explicit_positions:
+        plan.update(format=POSITION_FORMAT,explicit_position_ids=True,prefill_position_ids=list(range(len(IDS))),
+            cached_position_ids=[len(IDS)],retain_completed_forward_prefix=True,retain_prefill_before_cached_call=True,
+            predecessor_run_id='nvarc-original-qwen3-unsloth-probe-001',predecessor_archive_sha256=failed_position_prerequisite())
     raw={'plan':canonical_bytes(plan,newline=True),'binding':canonical_bytes(proof,newline=True),
         'model_inventory':canonical_bytes(entries,newline=True),'worker':worker.encode('utf-8')}
     payloads={k:base64.b64encode(v).decode() for k,v in raw.items()};hashes={k:hashlib.sha256(v).hexdigest() for k,v in raw.items()}
@@ -146,12 +180,18 @@ def preflight(package):
     summary=json.loads((package/'stage-summary.json').read_bytes());plan=json.loads((package/'plan.json').read_bytes())
     require({p.relative_to(package).as_posix():sha(p) for p in package.rglob('*') if p.is_file() and p.name!='stage-summary.json'}==summary['inventory'] and
         digest_value(plan)==summary['plan_digest'],'closed immutable original numerical package differs')
-    require(plan['format']==FORMAT and plan['owner_decision']=='Decision 0054' and plan['approved'] is True and
+    positions=plan['format']==POSITION_FORMAT
+    require(plan['format'] in {FORMAT,POSITION_FORMAT} and plan['owner_decision']=='Decision 0054' and plan['approved'] is True and
         all(type(plan[k]) is int and plan[k]==v for k,v in {'maximum_notebook_wall_seconds':1200,'maximum_child_wall_seconds':450,
             'maximum_outer_forwards':4,'maximum_input_tokens':26,'maximum_optimizer_steps':0,'maximum_generations':0,
             'maximum_teacher_calls':0,'maximum_paid_usd':0,'competition_files_opened':0}.items()) and
         plan['input_ids']==IDS and plan['cached_input_ids']==[0] and plan['lora_adaptation'] is False and
         plan['retain_export'] is False and plan['model_material_digest']==MATERIAL,'exact four-forward zero-training bounds differ')
+    if positions:
+        require(plan['explicit_position_ids'] is True and plan['prefill_position_ids']==list(range(len(IDS))) and
+            plan['cached_position_ids']==[len(IDS)] and plan['retain_completed_forward_prefix'] is True and
+            plan['retain_prefill_before_cached_call'] is True and plan['predecessor_run_id']=='nvarc-original-qwen3-unsloth-probe-001' and
+            plan['predecessor_archive_sha256']==failed_position_prerequisite(),'exact original position repair differs')
     source=''.join(json.loads((package/'kernel/notebook.ipynb').read_bytes())['cells'][0]['source'])
     values={node.targets[0].id:ast.literal_eval(node.value) for node in ast.parse(source).body if isinstance(node,ast.Assign)
         and len(node.targets)==1 and isinstance(node.targets[0],ast.Name) and node.targets[0].id in {'RUN','PAYLOADS','HASHES'}}
@@ -162,7 +202,7 @@ def preflight(package):
     require(all(len(v)<2*1024**2 and hashlib.sha256(v).hexdigest()==values['HASHES'][k] for k,v in raw.items()) and
         raw['plan']==(package/'plan.json').read_bytes() and json.loads(raw['binding'])==binding() and
         json.loads(raw['model_inventory'])==inventory() and
-        raw['worker']==WORKER.replace('__VERSIONS__',repr(PACKAGES)).replace('__IDS__',repr(IDS)).encode('utf-8') and
+        raw['worker']==worker_source(positions).encode('utf-8') and
         plan['cpu_environment_proof_sha256']==prerequisites() and plan['dependency_binding_sha256']==sha(BINDING),
         'exact original material/worker/prerequisite payload differs')
     meta=json.loads((package/'kernel/kernel-metadata.json').read_bytes())
@@ -194,14 +234,28 @@ def verify_archive(path,package):
         type(terminal['wall_seconds']) in (int,float) and math.isfinite(terminal['wall_seconds']) and
         0<=terminal['wall_seconds']<=1200 and all(type(terminal[k]) is int and terminal[k]==0 for k in
             ('optimizer_steps','generations','teacher_calls','paid_usd')),'original numerical terminal cost differs')
-    calls=tokens=0;results={}
+    positions=plan.get('format')==POSITION_FORMAT
+    calls=tokens=completed=0;results={};prefills={}
     for mode in ('reference','unsloth'):
         ledger=read(mode+'-ledger.json') if mode+'-ledger.json' in content else []
         require(len(ledger)<=2,'extra original model forwards observed')
         for i,row in enumerate(ledger):
-            require(canonical_bytes(row)==canonical_bytes({'stage':('prefill','cached-token')[i],'input_ids':[IDS if i==0 else [0]],
-                'outer_forwards_reserved':1,'input_tokens_reserved':12 if i==0 else 1}),'exact original forward reservation prefix differs')
+            expected={'stage':('prefill','cached-token')[i],'input_ids':[IDS if i==0 else [0]],
+                'outer_forwards_reserved':1,'input_tokens_reserved':12 if i==0 else 1}
+            if positions:
+                require(type(row.get('completed')) is bool and (row['completed'] or i==len(ledger)-1),
+                    'closed completed-forward prefix required')
+                expected.update(position_ids=[list(range(len(IDS))) if i==0 else [len(IDS)]],completed=row['completed'])
+                completed+=row['completed']
+            require(canonical_bytes(row)==canonical_bytes(expected),'exact original forward reservation prefix differs')
             calls+=1;tokens+=row['input_tokens_reserved']
+        if mode+'-prefill.json' in content:
+            prefill=read(mode+'-prefill.json')
+            require(positions and ledger and ledger[0]['completed'] is True and set(prefill)=={'mode','vector','shape'} and
+                prefill['mode']==mode and prefill['shape']==[1,12,16] and len(prefill['vector'])==16 and
+                all(type(x) in (int,float) and math.isfinite(x) for x in prefill['vector']),
+                'finite completed prefill vector required')
+            prefills[mode]=prefill['vector']
         if mode+'-result.json' in content:
             result=read(mode+'-result.json');require(len(ledger)==2 and result['mode']==mode and result['versions']==PACKAGES and
                 result['python']=='3.11.13' and result['torch']=='2.8.0+cu128' and result['cuda']=='12.8' and
@@ -211,6 +265,8 @@ def verify_archive(path,package):
                 len(result['vectors'])==2 and all(len(row)==16 and all(type(x) in (int,float) and math.isfinite(x) for x in row)
                     for row in result['vectors']),'finite original numeric observation/cost differs')
             results[mode]=result
+            if positions:require(all(e['completed'] for e in ledger) and prefills.get(mode)==result['vectors'][0],
+                'complete result must match its persisted completed prefill')
     if terminal['outcome']=='complete':
         hardware=read('hardware.json');gpu=hardware['inventory']
         require(len(gpu)==4 and len({row['uuid'] for row in gpu})==4 and all(row['name']=='NVIDIA L4' and row['bf16'] for row in gpu) and
@@ -218,23 +274,42 @@ def verify_archive(path,package):
             read('model-verification.json')['all_ten_files_verified'] is True and
             read('model-verification.json')['model_material_digest']==MATERIAL and
             read('dependency-verification.json')['inventory']==binding()['inventory'],'complete original hardware/material/cost differs')
+        if positions:require(completed==4,'complete original four-forward completion count required')
     comparisons={}
     if len(results)==2:
         for i,stage in enumerate(('prefill','cached-token')):
             reference,actual=results['reference']['vectors'][i],results['unsloth']['vectors'][i]
             comparisons[stage]={'maximum_absolute_logit_difference':max(abs(a-b) for a,b in zip(reference,actual)),
                 'bitwise_equal':reference==actual,'argmax_equal':max(range(16),key=reference.__getitem__)==max(range(16),key=actual.__getitem__)}
-    return {'run_id':plan['run_id'],'outcome':terminal['outcome'],'terminal':terminal,'archive_sha256':sha(path),
+    elif len(prefills)==2:
+        reference,actual=prefills['reference'],prefills['unsloth']
+        comparisons['prefill']={'maximum_absolute_logit_difference':max(abs(a-b) for a,b in zip(reference,actual)),
+            'bitwise_equal':reference==actual,'argmax_equal':max(range(16),key=reference.__getitem__)==max(range(16),key=actual.__getitem__)}
+    proof={'run_id':plan['run_id'],'outcome':terminal['outcome'],'terminal':terminal,'archive_sha256':sha(path),
         'plan_digest':checked['plan_digest'],'reserved_outer_forwards':calls,'reserved_input_tokens':tokens,
         'comparisons':comparisons,'optimizer_steps':0,'generations':0,'correctness_scored':False,
         'historical_full_solver_parity':False,'full_environment_inventory_verified':False}
+    if positions:proof.update(completed_outer_forwards=completed,explicit_position_ids_observed=True,
+        retained_prefill_modes=sorted(prefills))
+    if 'hardware.json' in content:
+        hardware=read('hardware.json');gpu=hardware['inventory']
+        proof.update(observed_gpu_count=len(gpu),distinct_gpu_uuids=len({x['uuid'] for x in gpu}),
+            four_bf16_l4_hardware_observed=len(gpu)==len({x['uuid'] for x in gpu})==4 and
+                all(x['name']=='NVIDIA L4' and x['bf16'] is True for x in gpu))
+    if 'model-verification.json' in content:
+        observation=read('model-verification.json')
+        require(observation['all_ten_files_verified'] is True and observation['model_material_digest']==MATERIAL,
+            'retained original model binding differs')
+        proof['exact_original_model_material_observed']=True
+    return proof
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('action',choices=('stage','preflight','verify'))
     parser.add_argument('--package',type=Path,required=True);parser.add_argument('--run-id')
+    parser.add_argument('--explicit-positions',action='store_true')
     parser.add_argument('--archive',type=Path);parser.add_argument('--output',type=Path);args=parser.parse_args()
-    if args.action=='stage':result=stage(args.package,args.run_id)
+    if args.action=='stage':result=stage(args.package,args.run_id,args.explicit_positions)
     elif args.action=='preflight':result=preflight(args.package)
     else:
         require(args.output is not None and not args.output.exists(),'new independent original numerical proof required')
