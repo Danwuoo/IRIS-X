@@ -1,5 +1,34 @@
 # Component completion and reproduction gaps
 
+## Original continuation (2026-10-02)
+
+[Decision 0054](../../docs/decisions/0054-nvarc-original-reproduction-continuation.md)
+opens a new continuation without the completed Goal's timer or deadline.
+The [current continuation record](original-reproduction-continuation.md)
+retains exact source-override/version audit, the acquired original-family
+Qwen3-4B-Thinking-2507 commit, all thirteen verified raw files and all 398
+byte-verified compact tensors. Historical base commit and exact NeMo/Unsloth
+package revisions remain unknown. The original WordLevel tokenizer works via
+explicit JSON interpretation; modern AutoTokenizer role loss is recorded.
+Actual raw-base versus compact BF16 CPU selected logits match bitwise on the
+fixed twelve-token chat. Tiny actual Qwen3 packed logits/loss/gradients,
+isolation, source Adam moments and unequal two-rank collective slots pass.
+Original-Qwen3 CPU FSDP shards also reconstruct the independent global weight/
+Adam oracle. The exact published ARC-SFT version 1 / model version ID 627758
+is now acquired and independently verified (ten files, 399 finite BF16 tensors,
+untied embedding/head). Its config records Transformers 4.53.3; actual 4.53.3
+and 5.8.1 CPU logits match bitwise on one fixed chat. An untied tiny original
+Qwen3 completes all 128 source views with checkpoint/CPU-Adam differential and
+exact reset, without claiming a 4B long-task epoch or historical Unsloth parity.
+The new original-family private Dataset is version 1 ready. The distinct
+native-varlen 4B GPU probe is accepted as private version 1 and remains queued
+at the last observed check; no terminal archive is retrieved yet. It reserves
+no optimizer step and supplies no full-training throughput, ARC score or
+promotion. All 103,223 published synthetic puzzles and 2,984,385 pairs now have
+complete byte/structural/parent/stage/exposure yield reconciliation, recovered
+from immutable per-member evidence after final histogram serialization failed.
+Whole-program semantics and original 8/12/4 filter replay remain open.
+
 ## Overnight implementation (2026-10-02)
 
 [Decision 0053](../../docs/decisions/0053-nvarc-overnight-development-goal.md)

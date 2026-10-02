@@ -18,7 +18,9 @@ import re
 RUN = None
 from irisx.canonical import digest_value
 def preflight(package):
-    if read(package/'plan.json')['format'] in {'irisx/nvarc-complete-ttt-v1','irisx/nvarc-long-ttt-resource-v1'}:
+    if read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-probe-v1':
+        from tools.stage_nvarc_qwen3_probe import preflight as check
+    elif read(package/'plan.json')['format'] in {'irisx/nvarc-complete-ttt-v1','irisx/nvarc-long-ttt-resource-v1'}:
         from tools.stage_nvarc_overnight_ttt import preflight as check
     elif read(package/'plan.json')['format']=='irisx/nvarc-source-trm-training-v1':
         from tools.stage_nvarc_overnight_trm import preflight as check
@@ -29,6 +31,12 @@ def preflight(package):
 
 def utc():
     return datetime.now(timezone.utc).isoformat()
+
+
+def session_state(response):
+    # The SDK omits zero-valued enums from to_dict(). KernelWorkerStatus.QUEUED
+    # is zero, so an empty wire object still has the typed QUEUED status.
+    return response.status.name
 
 
 def request(package):
@@ -97,7 +105,10 @@ def bindings(package):
 def execute(action, package, journal_dir):
     global RUN
     RUN = read(package / "plan.json")["run_id"]
-    assert re.fullmatch(r"nvarc-overnight-(?:sft|ttt|trm)-\d{3}", RUN)
+    original = re.fullmatch(r'nvarc-original-qwen3-probe-\d{3}', RUN)
+    assert original or re.fullmatch(r"nvarc-overnight-(?:sft|ttt|trm)-\d{3}", RUN)
+    authority = 'Decision 0054' if original else 'Decision 0053'
+    assert read(package/'plan.json')['owner_decision'] == authority
     # This immutable identity has one journal, including after a process restart.
     # A fresh journal argument must never create a second submission allowance.
     run_root = ROOT / ".irisx/nvarc-original/runs" / RUN
@@ -113,14 +124,14 @@ def execute(action, package, journal_dir):
         atomic(journal_dir / "preflight.json", checked)
         _, wire = request(package)
         atomic(wire_path, wire)
-        atomic(ledger, {"owner_decision": "Decision 0053", "run_id": RUN,
+        atomic(ledger, {"owner_decision": authority, "run_id": RUN,
             "execution_type": "SAVE_AND_RUN_ALL", "push_reserved": 0, "status_checks_reserved": 0,
             "retrieval_reserved": 0, "maximum_status_checks": 40, "bindings": bindings(package),
             "request_sha256": sha(wire_path), "prepared_utc": utc(), "events": []})
         print(json.dumps(checked))
         return
     journal = read(ledger)
-    assert journal["owner_decision"] == "Decision 0053" and journal["run_id"] == RUN
+    assert journal["owner_decision"] == authority and journal["run_id"] == RUN
     assert journal["bindings"] == bindings(package) and journal["request_sha256"] == sha(wire_path)
     if action == "submit":
         req, wire = request(package)
@@ -192,12 +203,12 @@ def execute(action, package, journal_dir):
             try:
                 response = client.kernels.kernels_api_client.get_kernel_session_status(req)
                 result = response.to_dict()
-                status = str(result.get("status", "UNSPECIFIED"))
-                event.update(completed_utc=utc(), result=result)
+                status = session_state(response)
+                event.update(completed_utc=utc(), result=result, typed_status=status)
                 journal["last_status"] = status
                 journal["terminal_observed"] = status in {"COMPLETE", "ERROR", "CANCEL_ACKNOWLEDGED"}
                 atomic(ledger, journal)
-                print(json.dumps({"kernel_id": "danielwuu/" + RUN, "saved_version": 1, **result}))
+                print(json.dumps({"kernel_id": "danielwuu/" + RUN, "saved_version": 1, **result, "status": status}))
             except Exception as error:
                 event.update(completed_utc=utc(), error_type=type(error).__name__)
                 if getattr(error, "response", None) is not None:

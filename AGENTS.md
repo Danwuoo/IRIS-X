@@ -616,6 +616,15 @@ exported checkpoint, teacher, generation, scoring or further kernel follows.
 
 ## Authority order
 
+Decision 0054 records the owner's new original-reproduction continuation after
+Decision 0053's Goal completed. The old `nvarc-07-00` timer is paused and must
+not be restarted; no new deadline, Goal or automation was requested. Standing
+private USD 0 Kaggle GPU authority continues for new precisely bound, finite
+packages, necessary material preparation, backed-off monitoring, one terminal
+retrieval and independent verification. Preserve every consumed identity and
+use a distinct identity for changed/repaired bytes. Follow Decision 0054 for
+this chat; the following Decision 0053 timer paragraph is historical.
+
 Decision 0053 records the owner's development Goal through substantial NVARC
 completion or 2026-10-02 07:00 Taipei and explicit autonomous free Kaggle GPU
 authorization. New private runtime/material Datasets, distinct GPU probes,

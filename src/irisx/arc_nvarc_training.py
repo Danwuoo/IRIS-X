@@ -282,8 +282,11 @@ def _torch_batch(batch: Mapping[str, list[list[int]]], device: Any) -> dict[str,
 
 
 def inspect_lora_targets(model: Any) -> list[str]:
-    """Require projection coverage in both attention and DeltaNet layers."""
-    from .arc_nvarc_qwen35_adapter import lora_targets
+    """Dispatch explicit original full-attention and hybrid model boundaries."""
+    if model.config.model_type == 'qwen3':
+        from .arc_nvarc_qwen3_adapter import lora_targets
+    else:
+        from .arc_nvarc_qwen35_adapter import lora_targets
 
     return lora_targets(model)
 
@@ -535,8 +538,10 @@ class TaskLocalAdapter:
                      "head" if "lm_head" in name else "other")
             if bool(torch.any(gradient != 0)):
                 groups[group] += 1
-        if not saw_gradient or not all(groups[name] for name in
-                                       ("attention", "delta", "embedding", "head")):
+        required = (("attention", "other", "embedding", "head")
+                    if self.model.config.model_type == 'qwen3'
+                    else ("attention", "delta", "embedding", "head"))
+        if not saw_gradient or not all(groups[name] for name in required):
             raise ValidationError(f"task adaptation gradient coverage differs at step {step}")
         return groups
 

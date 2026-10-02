@@ -2,6 +2,11 @@
 
 This directory contains only current product-era guidance.
 
+- [Decision 0054](decisions/0054-nvarc-original-reproduction-continuation.md)
+  governs the new original-reproduction continuation after the completed Goal;
+  [current evidence and gaps](../trials/arc-agi-2-qwen35-nvarc/original-reproduction-continuation.md)
+  distinguish original-family material, backend compatibility and full scale.
+
 - [`plan/2026-09-30-nvarc-method-completeness.md`](plan/2026-09-30-nvarc-method-completeness.md)
   records the source/method boundaries, six-source lineage importer, complete
   task epoch, SFT training semantics and data-gated inert development comparison.
