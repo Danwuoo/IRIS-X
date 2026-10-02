@@ -7,8 +7,20 @@ opens a new continuation without the completed Goal's timer or deadline.
 The [current continuation record](original-reproduction-continuation.md)
 retains exact source-override/version audit, the acquired original-family
 Qwen3-4B-Thinking-2507 commit, all thirteen verified raw files and all 398
-byte-verified compact tensors. Historical base commit and exact NeMo/Unsloth
-package revisions remain unknown. The original WordLevel tokenizer works via
+byte-verified compact tensors. Historical base commit and exact NeMo/Megatron
+revisions remain unknown. The exact original dependency script-version ID now
+binds Unsloth 2025.9.7, Zoo 2025.9.9, Torch 2.8.0, Transformers 4.55.4,
+PEFT 0.17.1 and FlashAttention 2.8.2, including the byte-verified decode patch.
+Full environment inventory and historical CUDA numerical parity remain open.
+A private CPU-only 600-second import/tokenizer probe 001 was accepted as
+version 1, then failed its dependency mount gate with zero model work; its sole
+terminal retrieval and independent binding check are complete. Distinct 002
+adds Kaggle notebook Python dependency directories, with unchanged zero model/
+training/generation/GPU bounds. Its version-1 session and sole terminal
+retrieval now complete and independently verify the exact dependency files,
+actual original import paths and correct original AutoTokenizer role/chat
+mapping. No model is forwarded and CUDA numerical parity remains open.
+The original WordLevel tokenizer works via
 explicit JSON interpretation; modern AutoTokenizer role loss is recorded.
 Actual raw-base versus compact BF16 CPU selected logits match bitwise on the
 fixed twelve-token chat. Tiny actual Qwen3 packed logits/loss/gradients,
@@ -19,7 +31,8 @@ logical MFFD bin and the global update under unequal rank slot counts. The
 exact first global-256 batch maps to 8/7/8/8 physical calls at a 32,768-token
 ceiling; this is an unmeasured FSDP resource adaptation. A local full-gradient
 one-step package generator refuses staging before the actual CUDA numerical
-prerequisite passes. No second original-family kernel is submitted.
+prerequisite passes. No original-family full-gradient or long-task training
+kernel is submitted.
 The exact published ARC-SFT version 1 / model version ID 627758
 is now acquired and independently verified (ten files, 399 finite BF16 tensors,
 untied embedding/head). Its config records Transformers 4.53.3; actual 4.53.3
@@ -46,7 +59,10 @@ Whole-program semantics and original 8/12/4 filter replay remain open.
 The first whole-response static pass retains 1,023,189 rows after its local
 wall ceiling. A distinct bounded continuation carries exact frozen response/
 code/parent/exposure bindings and analyzes the missing suffix. No generated
-program executes; complete coverage is pending the closed report.
+program executes. The continuation and independent recount now verify all
+170 shards and 2,244,042 raw responses. Syntax rejects total 10,469, and 61,989
+input groups have no output response. The entry-contract counts and exposure
+are static evidence; full dynamic program/filter semantics remain open.
 
 ## Overnight implementation (2026-10-02)
 

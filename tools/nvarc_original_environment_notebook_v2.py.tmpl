@@ -1,0 +1,82 @@
+import base64
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+import zipfile
+
+RUN=__RUN__
+PAYLOADS=__PAYLOADS__
+HASHES=__HASHES__
+START=time.monotonic()
+work=Path('/kaggle/working')/RUN
+work.mkdir(exist_ok=False)
+plan=None
+phase='payload-verification'
+
+def save(name,value):
+    (work/name).write_text(json.dumps(value,sort_keys=True,separators=(',',':')),encoding='utf-8')
+
+try:
+    raw={k:base64.b64decode(v,validate=True) for k,v in PAYLOADS.items()}
+    if set(raw)!=set(HASHES) or any(hashlib.sha256(v).hexdigest()!=HASHES[k] for k,v in raw.items()):
+        raise RuntimeError('exact environment payload differs')
+    plan=json.loads(raw['plan']);binding=json.loads(raw['binding'])
+    save('plan.json',plan);save('payload-bindings.json',HASHES)
+    if sys.version_info[:3]!=(3,11,13):raise RuntimeError('original Python 3.11.13 required')
+    phase='dependency-mount'
+    candidates=[Path('/kaggle/input/pip-install-unsloth-flash-patch'),
+        Path('/kaggle/input/notebooks/sorokin/pip-install-unsloth-flash-patch'),
+        Path('/kaggle/input/kernels/sorokin/pip-install-unsloth-flash-patch'),
+        Path('/kaggle/input/sorokin/pip-install-unsloth-flash-patch'),Path('/kaggle/working'),
+        Path('/kaggle/usr/lib/notebooks/sorokin/pip-install-unsloth-flash-patch'),
+        Path('/kaggle/usr/lib/notebooks/pip-install-unsloth-flash-patch')]
+    candidates.extend(Path(p) for p in sys.path if Path(p).is_absolute() and
+        Path(p).is_relative_to('/kaggle/usr/lib/notebooks'))
+    candidates=list(dict.fromkeys(candidates))
+    if len(candidates)>32:raise RuntimeError('bounded Kaggle Python dependency path inventory required')
+    matches=[p for p in candidates if (p/'qwen3.patch').is_file()]
+    save('mount-inventory.json',{'candidate_exists':{str(p):p.is_dir() for p in candidates},
+        'patch_roots':[str(p) for p in matches], 'input_roots':[str(p) for p in Path('/kaggle/input').iterdir()],
+        'python_paths':sys.path})
+    if len(matches)!=1:raise RuntimeError('one exact original dependency output mount required')
+    dependency=matches[0]
+    for name,item in binding['inventory'].items():
+        path=dependency/name
+        if path.stat().st_size!=item['bytes'] or hashlib.sha256(path.read_bytes()).hexdigest()!=item['sha256']:
+            raise RuntimeError('exact original dependency output differs: '+name)
+    save('dependency-verification.json',{'all_eight_files_verified':True,'dependency_root':str(dependency),
+        'script_version_id':binding['script_version_id'],'inventory':binding['inventory']})
+    phase='isolated-import-tokenizer'
+    tokenizer=work/'tokenizer';tokenizer.mkdir()
+    for name,encoded in json.loads(raw['tokenizer']).items():
+        (tokenizer/name).write_bytes(base64.b64decode(encoded,validate=True))
+    worker=work/'probe.py';worker.write_bytes(raw['worker'])
+    environment=dict(os.environ,HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',HF_DATASETS_OFFLINE='1',
+        PYTHONPATH=str(dependency),UNSLOTH_DISABLE_STATISTICS='1',TOKENIZERS_PARALLELISM='false',
+        PYTHONIOENCODING='utf-8',CUDA_VISIBLE_DEVICES='',OMP_NUM_THREADS='2')
+    with (work/'worker-stdout.log').open('w',encoding='utf-8') as stdout,(work/'worker-stderr.log').open('w',encoding='utf-8') as stderr:
+        subprocess.run([sys.executable,str(worker),str(tokenizer),str(work/'worker-result.json'),str(dependency)],
+            env=environment,stdout=stdout,stderr=stderr,check=True,timeout=420)
+    result=json.loads((work/'worker-result.json').read_bytes())
+    save('terminal.json',{'run_id':RUN,'outcome':'complete','phase':phase,'model_calls':0,
+        'optimizer_steps':0,'generations':0,'source_program_executions':0,'paid_usd':0,
+        'contains_evaluator_truth':False,'wall_seconds':time.monotonic()-START})
+except BaseException as error:
+    save('terminal.json',{'run_id':RUN,'outcome':'failed','phase':phase,'error_type':type(error).__name__,
+        'error_message':str(error)[:1000],'model_calls':0,'optimizer_steps':0,'generations':0,
+        'source_program_executions':0,'paid_usd':0,'contains_evaluator_truth':False,'wall_seconds':time.monotonic()-START})
+    raise
+finally:
+    entries=[{'path':p.relative_to(work).as_posix(),'bytes':p.stat().st_size,
+        'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(work.rglob('*')) if p.is_file()]
+    if sum(row['bytes'] for row in entries)>8*1024**2:raise RuntimeError('bounded environment archive required')
+    digest=None if plan is None else 'sha256:'+hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+    with zipfile.ZipFile(work.parent/'gpu-preflight-result.zip','x',compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr('manifest.json',json.dumps({'format':'irisx/nvarc-gpu-preflight-archive-v1',
+            'run_id':RUN,'plan_digest':digest,'members':entries},sort_keys=True,separators=(',',':')))
+        for row in entries:archive.write(work/row['path'],row['path'])
+    print(json.dumps({'terminal':json.loads((work/'terminal.json').read_bytes())}))

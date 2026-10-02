@@ -39,11 +39,80 @@ remain retained; they produced no model output before the corrected interpreter.
 
 The exact notebook v10 binds Python 3.11.13, Kaggle Docker image 31090, model
 instance version 627758, model path `qwen3_4b_grids15_sft139/transformers/bfloat16/1`
-and Unsloth code. It does not lock the Unsloth wheels. The NVARC source does not
-lock NeMo-RL or Megatron revisions. These remain `null` in the machine audit;
+and Unsloth code. Its dependency kernel was not yet acquired at the first
+audit. The NVARC source does not lock NeMo-RL or Megatron revisions. These
+remain `null` in that frozen machine audit;
 the previous NeMo-RL v0.3.0 MFFD placement reference is not relabelled as the
 historical training environment. Audit SHA-256:
 `5c7335b01175945d17ecbf659ef807aa8b4d1731cdcf50518f96a0bf6f9b25d7`.
+
+The subsequent exact public dependency acquisition resolves the Unsloth version
+gap. Original notebook v10 names dependency script-version ID `272622465`.
+The public installer version 2 output index and all eight separately downloaded
+small files resolve to precisely that ID. Its distribution metadata and
+installation log bind Unsloth **2025.9.7**, Unsloth Zoo **2025.9.9**, Torch
+**2.8.0**, Transformers **4.55.4**, PEFT **0.17.1** and FlashAttention **2.8.2**,
+under Python 3.11.13 and original Docker image 31090 / OCI digest
+`sha256:320043e14c68293f1c946585b9257123385205a58af4b94b17d31868cae4e868`.
+The installer source's literal 3,029-byte patch equals the exact output patch;
+the 16,701-byte patched Qwen3 source contains its corrected batch output shape
+and `flash_attn_func` cached decode. The original notebook metadata, source,
+version-specific files, installation log and distribution versions pass a
+separate local binding check without importing or executing installer/package
+code. Its proof is
+`.irisx/nvarc-original/manifests/original-environment-binding-20261002-001/result.json`,
+SHA-256 `8e9b0f15da091f7f4b14584a775e18c20e38fe5e4f20cb0020f1d39027cc0691`.
+This establishes these original dependency identities, not every environment
+file, historical CUDA numerics or the unknown NeMo/Megatron training revisions.
+The earlier config audit and compatibility runtime are preserved unchanged.
+
+One source read, one bounded 100-file output-index/log read and eight exact
+version-2 small-file reads are retained. The first local index collector failed
+on its `inspect.py` filename shadowing Python's standard library, before its
+intended provider call; its failed identity remains frozen. A distinct collector
+with Python's safe-path mode made the successful index read. Signed URLs and
+credentials are never retained. No source installer or model is run locally.
+
+The distinct private CPU-only environment probe
+[`nvarc-original-qwen3-environment-001`](https://www.kaggle.com/code/danielwuu/nvarc-original-qwen3-environment-001)
+was accepted as version 1. It requests the exact Docker image and existing
+public dependency, requires all eight bound files, and checks imported Torch/
+Transformers/Tokenizers paths plus the original twelve-token WordLevel chat.
+Its private, Internet-disabled 600-second session has zero model forwards,
+optimizer steps, generations, teacher calls and GPU/TPU allocation. The plan
+digest is `sha256:6d67b521706111559adfed250224713b3ab9fa96666a285371468295939aad99`.
+The sole push and terminal retrieval are consumed. The frozen version failed
+at `dependency-mount`, after Python 3.11.13 passed, because `/kaggle/input` was
+empty and none of the explicit input/working roots contained its dependency.
+The 0.002547-second terminal envelope records zero model work; the sole archive
+SHA-256 is `59399c452717505c8aee7982e2d2a22d861aa567c8deb5550032a346756d5c76`.
+Independent package/archive verification passes without asserting imported
+packages. The original version-1 template and bytes remain frozen.
+
+Distinct private CPU-only
+[`nvarc-original-qwen3-environment-002`](https://www.kaggle.com/code/danielwuu/nvarc-original-qwen3-environment-002)
+adds the exact Kaggle notebook library roots and bounded Python dependency
+paths, still requiring every eight-file digest. All model/compute/Internet/
+USD 0 boundaries are unchanged; the solver is not run. Its private version 1
+was accepted under plan digest
+`sha256:ba75b92f2097a2eb07fdb913ec744b45d731ae956ef48d9293168fba3ebc897a`.
+The sole push and terminal retrieval are now consumed. The 121.725-second
+CPU session completes and its archive and exact plan verify independently.
+All eight original dependency files match. Torch, Transformers and Tokenizers
+actually import from
+`/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/`; all six
+bound distribution versions match and Torch reports CUDA build 12.8 with no
+available CUDA hardware. Original `Qwen2TokenizerFast` encodes `user` as `[11]`,
+`assistant` as `[12]` and the complete chat as
+`[14,11,10,0,1,15,14,12,10,1,0,15]`. Package installation, model forward,
+optimizer, generation and source-program execution counts are zero.
+Archive SHA-256:
+`720594415c8733149d4b358ca257943ac18579878a2ab6f791e00e3ae802d570`;
+independent proof SHA-256:
+`355f7c4bf81fe5b34f35b506b9d865c85c406c7e863c9a2299121d9b65f806cd`.
+Neither probe imports Unsloth's GPU-only loader or asserts CUDA parity. The
+verified original tokenizer behavior remains distinct from the earlier 5.8.1
+compatibility failure.
 
 Materials, exact acquisition/conversion/independent verification, Dataset ledger
 and logs are isolated under
@@ -131,8 +200,10 @@ digest: `sha256:9fa3f0e5365f99a15ee48643842123bfe1867d16eeb84d110d84af63bc4d995f
 Their sole private Dataset creation and one ready check are consumed:
 [`danielwuu/irisx-nvarc-original-qwen3-ttt-runtime-001`](https://www.kaggle.com/datasets/danielwuu/irisx-nvarc-original-qwen3-ttt-runtime-001),
 version 1. Existing Dataset versions are not mutated. The checkpoint's recorded
-Transformers version is retained; unknown historical Unsloth and the complete
-historical runtime lock remain unknown.
+Transformers version is retained. The later dependency acquisition establishes
+original Unsloth and the notebook's Transformers 4.55.4; the complete historical
+runtime byte inventory remains unverified. These seven wheels are the earlier
+checkpoint-config compatibility runtime, not the original dependency overlay.
 
 The full-long-task runner reserves only exact approved input/label row digests
 before actual model forwards. It retains every returned step, original
@@ -342,7 +413,10 @@ wall ceiling ended. Its immutable response stream SHA-256 is
 The distinct `sdg-program-static-20261002-002` continuation has a 10,800-second
 local ceiling and carries those exact rows without repeating AST diagnostics.
 Every shard, response/code and both parent/exposure bindings are rechecked.
-It is still running; whole coverage remains pending a closed terminal report.
+It completed all 170 shards and 2,244,042 responses in 9,069.032 seconds,
+carrying 1,023,189 prior diagnostics and adding the missing 1,220,853. Complete
+response-stream SHA-256:
+`411d2dfac850dc6d0025bd5654d104c12ff6b0c5c6e23375bf9c12d6a2ef3500`.
 The continuation implementation can carry only an exact frozen response/code/
 parent/exposure prefix with the same static diagnostic function AST and source
 snapshot. Every shard byte and response join is rechecked, while completed AST
@@ -359,11 +433,42 @@ prefix evidence. A real 170-shard Parquet fixture exercises both complete and
 carried-prefix paths and rejects changed row/exposure/schema bindings. Its two
 tests pass in 18.072 seconds, SHA-256
 `a32435c4b32e8ed9e8294accc201091885fd55b6976b0d7fd670f3ff6b8940fd`.
-The real whole-response terminal recount has not yet run.
+The real whole-response terminal recount now passes. It independently checks
+all retained rows, the earlier raw Parquet header counts, every parent/stage
+count, both parent exposures, unchanged predecessor bindings and all reported
+histograms. Proof SHA-256:
+`b9320669b9fa411dbbf02078016909976ac71ccf0a13d90265604606dc091778`.
+It consumes zero new AST diagnostics, raw-Parquet reads, program executions,
+teacher/model calls or accepted pairs. The closed static counts are:
+
+| Stage | Raw responses | One-argument entry contract | Python syntax rejected | Other entry rejection |
+|---|---:|---:|---:|---:|
+| Input programs | 193,793 | 192,415 | 1,221 | 157 |
+| Output programs | 2,050,249 | 2,040,730 | 9,248 | 271 |
+
+There are 131,804 output groups: 73,139 retain twenty solutions, 58,566 retain
+ten, and 99 retain another observed count. All output groups have an input
+response; 61,989 input groups have no output response. These are raw source
+joins and static entry observations, not executed semantics or accepted
+synthetic pairs. Whole 8/12/4 filter replay and dynamic program yield remain open.
 
 After adding the independent static reader, full repository validation passes
 328 tests in 474.911 seconds with four skips. Log SHA-256:
 `a7a560e92ac3cabb0a3800078c4004a64d6a91551ddb79d20d8732e594fea192`.
+
+The subsequent environment acquisition and CPU-only transport tests reject
+rehash attacks on version, dependency identity, patch, source inventory and
+GPU-enable metadata. All four focused tests pass after adding the separate
+immutable version-2 transport template. Full validation 008 passes 332 tests
+in 516.444 seconds with four skips, log SHA-256
+`1999de9763b0b6675bad31b4577bd2dd8a7545f6effb5261a52b8af0d18c19df`.
+The frozen environment 001 preflight still passes after the distinct 002 repair.
+
+One exact-integer public TRM version-18 request for its presumed converted
+script filename returned HTTP 404 and acquired no source bytes. The attempted
+public page also could not open in the browser runtime. These observations
+do not establish that version 18 is absent. Exact TRM v18 remains unverified;
+the separately retained v21 notebook and original claimed v18 ID remain distinct.
 
 All seventeen current original evidence/runtime/cost/transport tests pass in
 0.551 seconds, SHA-256

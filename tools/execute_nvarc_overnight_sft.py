@@ -19,7 +19,9 @@ import re
 RUN = None
 from irisx.canonical import digest_value
 def preflight(package):
-    if read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-long-ttt-v1':
+    if read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-environment-probe-v1':
+        from tools.stage_nvarc_original_environment import preflight as check
+    elif read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-long-ttt-v1':
         # The credential SDK environment deliberately has no ML packages.
         # Reconstruct the pinned notebook rows in the separate local ML env;
         # this bounded subprocess is offline and does not load model weights.
@@ -54,25 +56,34 @@ def request(package):
     from kagglesdk.kernels.types.kernels_api_service import ApiSaveKernelRequest
     from kagglesdk.kernels.types.kernels_enums import KernelExecutionType
     meta = read(package / "kernel/kernel-metadata.json")
+    cpu = read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-environment-probe-v1'
     notebook = read(package / "kernel/notebook.ipynb")
     for cell in notebook["cells"]:
         if isinstance(cell["source"], list):
             cell["source"] = "".join(cell["source"])
     req = ApiSaveKernelRequest()
     fields = dict(slug=meta["id"], new_title=meta["title"], text=json.dumps(notebook),
-        language="python", kernel_type="notebook", is_private=True, enable_gpu=True,
-        enable_tpu=False, enable_internet=False, machine_shape="NvidiaL4",
+        language="python", kernel_type="notebook", is_private=True, enable_gpu=not cpu,
+        enable_tpu=False, enable_internet=False,
         session_timeout_seconds=read(package / "plan.json")["maximum_notebook_wall_seconds"], dataset_data_sources=meta["dataset_sources"],
         competition_data_sources=meta["competition_sources"], kernel_data_sources=meta['kernel_sources'],
         model_data_sources=meta.get('model_sources',[]))
+    if cpu:
+        fields['docker_image']=meta['docker_image']
+    else:
+        fields['machine_shape']='NvidiaL4'
     for key, value in fields.items():
         setattr(req, key, value)
     req.kernel_execution_type = KernelExecutionType.SAVE_AND_RUN_ALL
     wire = req.to_dict()
     assert wire["kernelExecutionType"] == "SAVE_AND_RUN_ALL"
     assert wire["isPrivate"] is True and wire.get("enableInternet", False) is False
-    assert wire["machineShape"] == "NvidiaL4" and wire["sessionTimeoutSeconds"] == read(package / "plan.json")["maximum_notebook_wall_seconds"]
-    assert wire["competitionDataSources"] == ["arc-prize-2026-arc-agi-2"]
+    assert wire["sessionTimeoutSeconds"] == read(package / "plan.json")["maximum_notebook_wall_seconds"]
+    if cpu:
+        assert not wire.get('enableGpu',False) and not wire.get('machineShape')
+        assert wire['dockerImage']==meta['docker_image'] and not wire.get('competitionDataSources',[])
+    else:
+        assert wire["machineShape"] == "NvidiaL4" and wire["competitionDataSources"] == ["arc-prize-2026-arc-agi-2"]
     assert wire["slug"] == "danielwuu/" + RUN and wire["newTitle"] == RUN
     return req, wire
 
@@ -117,14 +128,15 @@ def bindings(package):
 def execute(action, package, journal_dir):
     global RUN
     RUN = read(package / "plan.json")["run_id"]
-    original = re.fullmatch(r'nvarc-original-qwen3-(?:probe|packed-step|long-ttt)-\d{3}', RUN)
+    original = re.fullmatch(r'nvarc-original-qwen3-(?:probe|packed-step|long-ttt|environment)-\d{3}', RUN)
     assert original or re.fullmatch(r"nvarc-overnight-(?:sft|ttt|trm)-\d{3}", RUN)
     authority = 'Decision 0054' if original else 'Decision 0053'
     assert read(package/'plan.json')['owner_decision'] == authority
     # This immutable identity has one journal, including after a process restart.
     # A fresh journal argument must never create a second submission allowance.
     run_root = ROOT / ".irisx/nvarc-original/runs" / RUN
-    if package.resolve() != (run_root / "package-l4").resolve() or journal_dir.resolve() != (run_root / "execution-final").resolve():
+    package_name='package-cpu' if read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-environment-probe-v1' else 'package-l4'
+    if package.resolve() != (run_root / package_name).resolve() or journal_dir.resolve() != (run_root / "execution-final").resolve():
         raise ValueError("the consumed run identity requires its sole fixed package/journal")
     journal_dir.mkdir(parents=True, exist_ok=True)
     ledger, wire_path, receipt_path = (journal_dir / name for name in
