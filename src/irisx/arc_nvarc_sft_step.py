@@ -30,7 +30,8 @@ def source_optimizer(model: Any, recipe: dict) -> tuple[Any, Any]:
 def train_source_step(model: Any, optimizer: Any, scheduler: Any, rows: Sequence[dict],
                       *, device: Any, recipe: dict, capacity: int = 256000,
                       length_multiple: int = 64, distributed: bool = True,
-                      packed_backend: str | None = None) -> dict:
+                      packed_backend: str | None = None,
+                      maximum_packed_input_tokens: int | None = None) -> dict:
     """One full optimizer step; every rank runs equal forward/backward slots.
 
     The default process group must be CPU Gloo. Model/FSDP collectives may use
@@ -47,7 +48,12 @@ def train_source_step(model: Any, optimizer: Any, scheduler: Any, rows: Sequence
         sum(p["supervised_tokens"] for p in packs), len(rows)], dtype=torch.int64)
     if packed_backend not in {None, 'dense-sdpa-reference', 'torch-varlen-flash'}:
         raise ValidationError('unknown source packed-step backend')
-    local_slots = len(rows) if packed_backend is None else len(packs)
+    if maximum_packed_input_tokens is not None:
+        if packed_backend is None:raise ValidationError('physical chunking requires explicit packed execution')
+        from .arc_nvarc_qwen3_packing import execution_slices
+        physical_packs=[piece for pack in packs for piece in execution_slices(pack,maximum_packed_input_tokens)]
+    else:physical_packs=packs
+    local_slots = len(rows) if packed_backend is None else len(physical_packs)
     slots = torch.tensor([local_slots], dtype=torch.int64)
     if distributed:
         dist.all_reduce(totals)
@@ -64,12 +70,12 @@ def train_source_step(model: Any, optimizer: Any, scheduler: Any, rows: Sequence
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device)
     def forwards():
-        for pack in packs:
+        for pack in (packs if packed_backend is None else physical_packs):
             if packed_backend is None:
                 yield from iter_isolated_forwards(model, pack, device)
             else:
                 from .arc_nvarc_qwen3_packing import packed_forward
-                yield packed_forward(model, pack, backend=packed_backend)
+                yield packed_forward(model, pack, backend=packed_backend,device=device)
     iterator = forwards()
     try:
         for slot in range(int(slots.item())):
@@ -88,7 +94,7 @@ def train_source_step(model: Any, optimizer: Any, scheduler: Any, rows: Sequence
                     from .arc_nvarc_qwen3_packing import packed_forward
                     dummy_pack=pack_sequences([{'input_ids':[14,15],'labels':[-100,15]}],
                         capacity=capacity,length_multiple=length_multiple)[0]
-                    value=packed_forward(model,dummy_pack,backend=packed_backend)['logits']
+                    value=packed_forward(model,dummy_pack,backend=packed_backend,device=device)['logits']
                 loss = value.float().sum() * 0
                 dummy += 1
             if not bool(torch.isfinite(loss)):
@@ -145,7 +151,12 @@ def train_source_step(model: Any, optimizer: Any, scheduler: Any, rows: Sequence
             "global_sequence_count": global_rows, "global_token_mean_loss": float(detached_loss) / global_supervised,
             "learning_rate": rate, "gradient_norm_before_clip": float(norm.cpu()),
             "finite_nonzero_shards": nonzero, "cpu_accumulation_bytes": accumulated_bytes,
+            "owned_parameter_shards":sum(bool(p.numel()) for p in parameters.values()),
+            "accumulated_parameter_shards":len(summed),
+            "missing_owned_gradient_shards":[name for name,p in parameters.items() if p.numel() and name not in summed],
             "state_residency": snapshot, "packing_layout_digests": [digest_value(p) for p in packs],
+            "physical_packing_layout_digests": [digest_value(p) for p in physical_packs],
+            "maximum_packed_input_tokens":maximum_packed_input_tokens,
             "wall_seconds": time.monotonic() - started,
             "packing_execution": packed_backend or "isolated-segments",
             "fused_packing_verified": packed_backend == 'torch-varlen-flash'}

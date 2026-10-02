@@ -122,6 +122,41 @@ weight and optimizer state after the unequal packed slots. All weights and
 Adam moments match the independent global oracle. CPU sharding correctness
 does not prove four-L4 memory or timing.
 
+Physical execution can now split a retained logical MFFD bin only at whole
+sample boundaries. Every original label, position, row digest, ordered parent,
+exposure and logical segment order is retained. The 256,000-token logical bin
+is not treated as a feasible four-L4 physical forward. A 32,768-input-token
+ceiling is an explicit FSDP resource adaptation, not original TP8/CP2 parity.
+The original first seed-24 global-256 batch has 916,739 input / 403,115
+supervised tokens and a 10,338-token longest whole row, across all six source
+families without filtering. Its four logical rank bins become 8/7/8/8 physical
+forwards, with one connected-zero dummy on rank 1. This is layout evidence,
+not measured memory or throughput. Profile SHA-256:
+`c2c64b91fa756c2ebce0883136ca75894e4b2aeb24fca927eb9d62d1d61a6705`.
+The first local profile failed report serialization after reading the wrong
+source metadata field; its failure stays at `physical-packing-20261002-001`.
+The corrected distinct complete profile is `physical-packing-20261002-002`.
+
+The independent optimizer oracle also passes after physical splitting. A
+two-rank CPU FSDP case retains one logical bin per rank but forces one versus
+three physical calls; every weight and Adam moment matches the global oracle.
+Distributed callers now explicitly pass the rank compute device because an
+idle CPU-offloaded parameter shard does not identify the CUDA input device.
+Owned/missing gradient-shard coverage is reported separately.
+
+The new one-step Qwen3 full-gradient runner, parent template, stage tool and
+closed input/cost reader are local development only. No such package has been
+staged or submitted. Staging requires a successful independently read exact
+material CUDA differential and its terminal archive binding; the queued
+prerequisite is rejected before creating an execution package. The prospective
+finite envelope is one optimizer step, 32 outer forwards including the dummy,
+916,741 physical input tokens, 36 checkpointed layers, four L4s, FP32 CPU
+parameter/gradient/Adam state, 4,500 notebook seconds, zero generations/teachers,
+USD 0 and no exported checkpoint. It retains the acquired base's tying;
+published SFT remains separately untied and historical NeMo tying is unknown.
+The actual source step, memory and timing remain unobserved. Parent template
+compilation and rehashed rank-reservation/Boolean attacks pass locally.
+
 The CUDA candidate uses the public
 [PyTorch 2.10 varlen FlashAttention API](https://docs.pytorch.org/docs/2.10/nn.attention.varlen.html),
 explicit cumulative lengths and no dense attention mask. Its grouped-query
@@ -199,6 +234,21 @@ source-step tests pass in 70.448 seconds, followed by the new original tiny
 (16.708 seconds), and three existing hybrid TTT/reset/export checks
 (53.312 seconds). These exact logs stay with the Qwen3 base material.
 
+The continuation milestone's full repository check passes 321 tests in
+266.923 seconds with four skips; SHA-256:
+`40923964c3df89e0499328dec67b75667628080d1a75ba4036ea82ba1193b5a0`.
+The later one-step reservation test and integer-bound repair are covered by
+all twelve current source/evidence/transport tests (0.464 seconds), SHA-256:
+`dd5906274b59ca9f0659036437bdc6a51e9398022a170cc4e8cf4bb5190cc056`.
+All ten current packed/source-step strict tests pass in 72.478 seconds,
+SHA-256 `71bb6eb32c0032adf6ae8af21a95bd7655121968dea3607753dd5d6ec0f33a07`.
+A real Parquet complete-static-profile/immutable-prefix recovery test passes
+in 7.355 seconds, SHA-256:
+`dfe1f33fd0e19e099df49bcf88781153663d0c05333e8228ee3b0ba9e71aa532`.
+The prefix test rechecks source bytes and every row binding, performs only the
+three missing static AST analyses, yields identical full row bytes/counters,
+and leaves predecessor files unchanged. No generated program is executed.
+
 A separate complete input/output response static analysis is running at
 `.irisx/nvarc-original/manifests/sdg-program-static-20261002-001/`, against all
 170 input/output shards and 2,244,042 expected raw responses. It retains
@@ -207,6 +257,11 @@ source-parser syntax and one-argument entry diagnostics. A finite 3,600-second
 local limit and immutable analysis-source snapshot apply. It never executes
 generated code or claims dynamic semantics; full coverage is pending its
 closed terminal report.
+The continuation implementation can carry only an exact frozen response/code/
+parent/exposure prefix with the same static diagnostic function AST and source
+snapshot. Every shard byte and response join is rechecked, while completed AST
+diagnostics are carried without repeating them. A new immutable identity and
+its own finite local time limit are required after a retained incomplete pass.
 
 One read-only accelerator quota snapshot is retained separately at
 `.irisx/nvarc-original/manifests/free-resource-20261002-001/`. The SDK's

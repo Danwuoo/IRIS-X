@@ -100,8 +100,7 @@ class OriginalQwen3PackingTests(unittest.TestCase):
     def test_packed_source_optimizer_matches_independent_global_token_oracle(self):
         from irisx.arc_nvarc_gpu_preflight_v2 import RECIPE
         from irisx.arc_nvarc_sft_step import source_optimizer, train_source_step
-        model=copy.deepcopy(self.model);oracle=copy.deepcopy(self.model)
-        optimizer,scheduler=source_optimizer(model,RECIPE)
+        oracle=copy.deepcopy(self.model)
         reference_optimizer,reference_scheduler=source_optimizer(oracle,RECIPE)
         tokens=sum(sum(label>=0 for label in row['labels'][1:]) for row in self.rows)
         loss=torch.tensor(0.0)
@@ -112,22 +111,33 @@ class OriginalQwen3PackingTests(unittest.TestCase):
         (loss/tokens).backward()
         torch.nn.utils.clip_grad_norm_(oracle.parameters(),RECIPE['clip_grad_norm'])
         reference_optimizer.step();reference_scheduler.step()
-        result=train_source_step(model,optimizer,scheduler,self.rows,device=torch.device('cpu'),
-            recipe=RECIPE,capacity=256,distributed=False,packed_backend='dense-sdpa-reference')
-        self.assertEqual(result['real_forward_calls'],1)
-        self.assertEqual(result['global_sequence_count'],3)
-        self.assertEqual(result['global_supervised_tokens'],tokens)
-        self.assertFalse(result['fused_packing_verified'])
-        for (_,actual),(_,expected) in zip(model.named_parameters(),oracle.named_parameters()):
-            torch.testing.assert_close(actual,expected,atol=1e-7,rtol=2e-5)
-            for key in ('exp_avg','exp_avg_sq'):
-                torch.testing.assert_close(optimizer.state[actual][key],reference_optimizer.state[expected][key],atol=1e-7,rtol=3e-5)
+        for ceiling,calls in ((None,1),(24,2)):
+            with self.subTest(physical_token_ceiling=ceiling):
+                model=copy.deepcopy(self.model);optimizer,scheduler=source_optimizer(model,RECIPE)
+                result=train_source_step(model,optimizer,scheduler,self.rows,device=torch.device('cpu'),
+                    recipe=RECIPE,capacity=256,distributed=False,packed_backend='dense-sdpa-reference',
+                    maximum_packed_input_tokens=ceiling)
+                self.assertEqual(result['real_forward_calls'],calls)
+                self.assertEqual(len(result['packing_layout_digests']),1)
+                self.assertEqual(len(result['physical_packing_layout_digests']),calls)
+                self.assertEqual(result['global_sequence_count'],3)
+                self.assertEqual(result['global_supervised_tokens'],tokens)
+                self.assertFalse(result['fused_packing_verified'])
+                self.assertEqual(result['missing_owned_gradient_shards'],[])
+                self.assertEqual(result['owned_parameter_shards'],result['accumulated_parameter_shards'])
+                for (_,actual),(_,expected) in zip(model.named_parameters(),oracle.named_parameters()):
+                    torch.testing.assert_close(actual,expected,atol=1e-7,rtol=2e-5)
+                    for key in ('exp_avg','exp_avg_sq'):
+                        torch.testing.assert_close(optimizer.state[actual][key],reference_optimizer.state[expected][key],atol=1e-7,rtol=3e-5)
 
     def test_unequal_packed_slots_global_token_loss_and_zero_dummy_ddp(self):
         self._distributed_packing('ddp')
 
     def test_unequal_packed_fsdp_shards_match_global_weight_and_adam_oracle(self):
         self._distributed_packing('fsdp')
+
+    def test_physical_fsdp_chunks_preserve_one_logical_pack_per_rank(self):
+        self._distributed_packing('fsdp-physical')
 
     def _distributed_packing(self,mode):
         with tempfile.TemporaryDirectory() as directory:
@@ -158,6 +168,7 @@ class OriginalQwen3PackingTests(unittest.TestCase):
             self.assertEqual(proof['dummy_calls'],[2,0])
             self.assertEqual(proof['collective_slots'],[3,3])
             self.assertTrue(proof['all_model_and_adam_moments_match_independent_global_oracle'])
+            if mode=='fsdp-physical':self.assertEqual(proof['logical_pack_counts'],[1,1])
 
     def test_original_untied_source_epoch_checkpoint_and_cpu_adam_differential(self):
         from peft import get_peft_model_state_dict
@@ -206,7 +217,7 @@ def ddp_worker(output,rank,port,mode):
         ids=[14,11,10]+[color]*120+[15,14,12,10,4,15]
         long.append({'input_ids':ids,'labels':[-100]*(len(ids)-2)+[4,15]})
     rows=short if dist.get_rank()==0 else long
-    if mode=='fsdp':
+    if mode.startswith('fsdp'):
         from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
         from torch.distributed.fsdp.wrap import ModuleWrapPolicy
         model=FSDP(copy.deepcopy(fixture.model),device_id=torch.device('cpu'),use_orig_params=True,
@@ -218,10 +229,11 @@ def ddp_worker(output,rank,port,mode):
     if mode=='ddp':model.clip_grad_norm_=lambda limit:torch.nn.utils.clip_grad_norm_(model.parameters(),limit)
     optimizer,scheduler=source_optimizer(model,RECIPE)
     observation=train_source_step(model,optimizer,scheduler,rows,device=torch.device('cpu'),
-        recipe=RECIPE,capacity=256,distributed=True,packed_backend='dense-sdpa-reference')
+        recipe=RECIPE,capacity=768 if mode=='fsdp-physical' else 256,distributed=True,
+        packed_backend='dense-sdpa-reference',maximum_packed_input_tokens=140 if mode=='fsdp-physical' else None)
     observations=[None,None];dist.all_gather_object(observations,observation)
     actual_model=actual_optimizer=None
-    if mode=='fsdp':
+    if mode.startswith('fsdp'):
         from torch.distributed.checkpoint.state_dict import StateDictOptions,get_state_dict
         actual_model,actual_optimizer=get_state_dict(model,optimizer,
             options=StateDictOptions(full_state_dict=True,cpu_offload=False))
@@ -236,7 +248,7 @@ def ddp_worker(output,rank,port,mode):
                 torch.tensor(row['labels'][1:]),ignore_index=-100,reduction='sum')
         (loss/supervised).backward();torch.nn.utils.clip_grad_norm_(oracle.parameters(),RECIPE['clip_grad_norm'])
         ref_optimizer.step();ref_scheduler.step()
-        if mode=='fsdp':
+        if mode.startswith('fsdp'):
             from torch.distributed.checkpoint.state_dict import get_optimizer_state_dict
             for name,value in oracle.state_dict().items():
                 torch.testing.assert_close(actual_model[name],value,atol=1e-7,rtol=2e-5)
@@ -250,6 +262,7 @@ def ddp_worker(output,rank,port,mode):
                 for key in ('exp_avg','exp_avg_sq'):
                     torch.testing.assert_close(optimizer.state[actual][key],ref_optimizer.state[expected][key],atol=1e-7,rtol=4e-5)
         proof={'real_calls':[r['real_forward_calls'] for r in observations],
+            'logical_pack_counts':[len(r['packing_layout_digests']) for r in observations],
             'dummy_calls':[r['dummy_forward_calls'] for r in observations],
             'collective_slots':[r['collective_slots'] for r in observations],
             'all_model_and_adam_moments_match_independent_global_oracle':True,'global_supervised_tokens':supervised,

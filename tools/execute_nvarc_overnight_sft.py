@@ -18,7 +18,9 @@ import re
 RUN = None
 from irisx.canonical import digest_value
 def preflight(package):
-    if read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-probe-v1':
+    if read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-packed-step-v1':
+        from tools.stage_nvarc_qwen3_packed_step import preflight as check
+    elif read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-probe-v1':
         from tools.stage_nvarc_qwen3_probe import preflight as check
     elif read(package/'plan.json')['format'] in {'irisx/nvarc-complete-ttt-v1','irisx/nvarc-long-ttt-resource-v1'}:
         from tools.stage_nvarc_overnight_ttt import preflight as check
@@ -105,7 +107,7 @@ def bindings(package):
 def execute(action, package, journal_dir):
     global RUN
     RUN = read(package / "plan.json")["run_id"]
-    original = re.fullmatch(r'nvarc-original-qwen3-probe-\d{3}', RUN)
+    original = re.fullmatch(r'nvarc-original-qwen3-(?:probe|packed-step)-\d{3}', RUN)
     assert original or re.fullmatch(r"nvarc-overnight-(?:sft|ttt|trm)-\d{3}", RUN)
     authority = 'Decision 0054' if original else 'Decision 0053'
     assert read(package/'plan.json')['owner_decision'] == authority

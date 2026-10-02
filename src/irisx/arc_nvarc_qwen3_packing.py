@@ -8,9 +8,50 @@ The Qwen3.5 hybrid port deliberately retains its segmented state executor.
 from __future__ import annotations
 
 from .arc_nvarc_packing import validate_pack
+from .canonical import digest_value
 from .errors import ValidationError
 
 TORCH_VARLEN = 'irisx_qwen3_torch_varlen'
+
+
+def execution_slices(pack,maximum_input_tokens):
+    """Partition a retained logical MFFD bin at whole-sample boundaries.
+
+    Source placement, row order, labels, lineage and each complete sequence
+    remain unchanged. Only the physical forward sizes change; gradients must
+    accumulate before the one original global-token optimizer update.
+    """
+    validate_pack(pack)
+    if type(maximum_input_tokens) is not int or maximum_input_tokens<2:
+        raise ValidationError('positive whole-sample physical token ceiling required')
+    groups=[];group=[];used=0
+    for index,segment in enumerate(pack['segments']):
+        length=segment['input_tokens']
+        if length>maximum_input_tokens:
+            raise ValidationError('whole source sequence exceeds physical token ceiling; truncation forbidden')
+        if group and used+length>maximum_input_tokens:
+            groups.append(group);group=[];used=0
+        group.append(index);used+=length
+    if group:groups.append(group)
+    result=[];parent=digest_value(pack)
+    tensor_keys=('input_ids','labels','position_ids','attention_mask')
+    for indices in groups:
+        piece={k:v for k,v in pack.items() if k not in {*tensor_keys,'segments','cu_seqlens','input_tokens','supervised_tokens'}}
+        piece.update({key:[] for key in tensor_keys});piece.update(segments=[],cu_seqlens=[0])
+        for index in indices:
+            segment=pack['segments'][index];start,stop=segment['start'],segment['end'];offset=len(piece['input_ids'])
+            for key in tensor_keys:piece[key].extend(pack[key][start:stop])
+            piece['segments'].append({**segment,'start':offset,
+                'valid_end':offset+segment['valid_end']-start,'end':offset+stop-start})
+            piece['cu_seqlens'].append(offset+stop-start)
+        piece.update(input_tokens=sum(s['input_tokens'] for s in piece['segments']),
+            supervised_tokens=sum(s['supervised_tokens'] for s in piece['segments']),
+            execution_slice={'logical_pack_digest':parent,'logical_segment_indices':indices,
+                'maximum_physical_input_tokens':maximum_input_tokens})
+        validate_pack(piece);result.append(piece)
+    if sum(p['input_tokens'] for p in result)!=pack['input_tokens']:
+        raise ValidationError('physical source coverage differs')
+    return result
 
 
 def register_torch_varlen():
@@ -73,12 +114,14 @@ def dense_mask(offsets, device, dtype, maximum_tokens=8192):
     return mask[None, None]
 
 
-def packed_forward(model, pack, *, backend='dense-sdpa-reference', maximum_dense_tokens=8192):
+def packed_forward(model, pack, *, backend='dense-sdpa-reference', maximum_dense_tokens=8192, device=None):
     import torch
     if model.config.model_type != 'qwen3' or model.config.vocab_size != 16 or model.config.attention_dropout != 0:
         raise ValidationError('zero-dropout compact original-family Qwen3 required')
     impl = model.config._attn_implementation
-    tensors = packed_tensors(pack, next(model.parameters()).device)
+    # An idle CPU-offloaded FSDP shard does not identify the compute device.
+    # Distributed callers must provide the explicit rank-local input device.
+    tensors = packed_tensors(pack, next(model.parameters()).device if device is None else device)
     common = {'input_ids': tensors['input_ids'], 'position_ids': tensors['position_ids'], 'use_cache': False}
     if backend == 'dense-sdpa-reference':
         if impl != 'sdpa':

@@ -14,7 +14,13 @@ Actual raw-base versus compact BF16 CPU selected logits match bitwise on the
 fixed twelve-token chat. Tiny actual Qwen3 packed logits/loss/gradients,
 isolation, source Adam moments and unequal two-rank collective slots pass.
 Original-Qwen3 CPU FSDP shards also reconstruct the independent global weight/
-Adam oracle. The exact published ARC-SFT version 1 / model version ID 627758
+Adam oracle. Whole-sample physical splitting additionally preserves each
+logical MFFD bin and the global update under unequal rank slot counts. The
+exact first global-256 batch maps to 8/7/8/8 physical calls at a 32,768-token
+ceiling; this is an unmeasured FSDP resource adaptation. A local full-gradient
+one-step package generator refuses staging before the actual CUDA numerical
+prerequisite passes. No second original-family kernel is submitted.
+The exact published ARC-SFT version 1 / model version ID 627758
 is now acquired and independently verified (ten files, 399 finite BF16 tensors,
 untied embedding/head). Its config records Transformers 4.53.3; actual 4.53.3
 and 5.8.1 CPU logits match bitwise on one fixed chat. An untied tiny original

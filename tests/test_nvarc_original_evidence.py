@@ -1,5 +1,6 @@
 """Rehashed hostile evidence and source grid-contract controls, offline."""
 import hashlib
+import copy
 import json
 from pathlib import Path
 import tempfile
@@ -10,10 +11,98 @@ from irisx.canonical import digest_value
 from irisx.errors import ValidationError
 from tools.reconcile_nvarc_published_yield import inspect_pairs
 from tools.verify_nvarc_qwen3_probe import verify,check_architecture
-from tools.audit_nvarc_sdg_programs import inspect_program
+from tools.audit_nvarc_sdg_programs import inspect_program,carry_observation
+from irisx.arc_nvarc_packing import pack_sequences,validate_pack
+from irisx.arc_nvarc_qwen3_packing import execution_slices
+from tools.stage_nvarc_qwen3_packed_step import prerequisite
+from tools.verify_nvarc_qwen3_packed_step import verify as verify_packed_step
+from irisx.arc_nvarc_qwen3_packed_step import FORMAT,BASE,PREFIX_SHA,schedule
+from irisx.arc_nvarc_gpu_preflight_v2 import RECIPE
 
 
 class OriginalEvidenceTests(unittest.TestCase):
+    def test_packed_step_reader_reconstructs_rehashed_rank_cost(self):
+        rows=[{'input_ids':[14,15],'labels':[-100,15],'shuffle_position':i} for i in range(256)]
+        placement=schedule(rows)
+        plan={'format':FORMAT,'run_id':'nvarc-original-qwen3-packed-step-001','owner_decision':'Decision 0054',
+            'world_size':4,'source_recipe':RECIPE,'data_digest':digest_value(rows),'source_prefix_sha256':PREFIX_SHA,
+            'model_material_digest':BASE,'maximum_optimizer_steps':1,'maximum_paid_usd':0,
+            'maximum_generations':0,'maximum_teacher_calls':0,'retain_export':False,
+            'maximum_physical_input_tokens':32768,'packing_capacity':256000,'packing_length_multiple':64,
+            'maximum_notebook_wall_seconds':4500,'maximum_worker_wall_seconds':4200,
+            'scheduled_input_tokens':512,'scheduled_supervised_tokens':256,'maximum_input_tokens':512,
+            'maximum_outer_forwards':4,'physical_schedule':placement}
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);package=root/'package';package.mkdir()
+            for name,value in (('plan.json',plan),('samples.json',rows),('stage-summary.json',{'payload_sha256':{'runtime':'abc'}})):
+                (package/name).write_text(json.dumps(value),encoding='utf-8')
+            reservation={'run_id':plan['run_id'],'plan_digest':digest_value(plan),'optimizer_steps_reserved':1,
+                'outer_forwards_reserved':1,'input_tokens_reserved':128,'dummy_input_tokens_reserved':0,
+                'generation_calls':0,'teacher_calls':0,'maximum_paid_usd':0}
+            values={'plan.json':plan,'payload-bindings.json':{'runtime':'abc'},
+                'terminal.json':{'run_id':plan['run_id'],'outcome':'failed','contains_evaluator_truth':False,
+                    'phase':'full-gradient-step','error_type':'RuntimeError','error_message':'fixture failure'},
+                'worker/rank-0-reservation.json':reservation}
+            def archive():
+                raw={name:json.dumps(value).encode() for name,value in values.items()}
+                manifest={'run_id':plan['run_id'],'plan_digest':digest_value(plan),'members':[
+                    {'path':name,'bytes':len(content),'sha256':hashlib.sha256(content).hexdigest()} for name,content in raw.items()]}
+                path=root/'result.zip'
+                with zipfile.ZipFile(path,'w') as stream:
+                    stream.writestr('manifest.json',json.dumps(manifest))
+                    for name,content in raw.items():stream.writestr(name,content)
+                return path
+            proof=verify_packed_step(archive(),package)
+            self.assertEqual(proof['reserved_training_ranks'],[0])
+            self.assertEqual(proof['outcome'],'failed')
+            self.assertNotIn('actual_original_family_full_gradient_step_observed',proof)
+            reservation['input_tokens_reserved']=127
+            with self.assertRaises(ValidationError):verify_packed_step(archive(),package)
+            reservation['input_tokens_reserved']=128;reservation['optimizer_steps_reserved']=True
+            with self.assertRaises(ValidationError):verify_packed_step(archive(),package)
+
+    def test_full_gradient_stage_refuses_queued_numeric_prerequisite(self):
+        with tempfile.TemporaryDirectory() as directory:
+            folder=Path(directory)/'nvarc-original-qwen3-probe-001'
+            (folder/'execution-final').mkdir(parents=True)
+            (folder/'execution-final/execution-ledger.json').write_text(json.dumps({
+                'run_id':folder.name,'owner_decision':'Decision 0054','accepted':True,'push_reserved':1,
+                'retrieval_reserved':0,'provider_version':1,'last_status':'QUEUED','terminal_observed':False}),encoding='utf-8')
+            with self.assertRaises(ValidationError):prerequisite(folder)
+
+    def test_static_recovery_requires_exact_response_and_exposure(self):
+        binding={'member':'outputs/data-00000.parquet','row':0,'completion_sha256':'abc',
+            'code_sha256':'def','parent_ids':['public','protected'],'exposure_tags':['evaluation'],
+            'filtered':False,'program_semantics_verified':False}
+        observed={'state':'one-argument-contract','imports':['numpy'],'positional_parameters':['grid']}
+        self.assertEqual(carry_observation({**binding,**observed},binding),observed)
+        for key,value in (('completion_sha256','foreign'),('exposure_tags',[]),('row',1),('filtered',True)):
+            with self.subTest(key=key),self.assertRaises(ValidationError):
+                carry_observation({**binding,**observed,key:value},binding)
+        with self.assertRaises(ValidationError):carry_observation({**binding,'state':'dynamic-success'},binding)
+
+    def test_physical_slices_keep_whole_ordered_source_rows_and_lineage(self):
+        rows=[{'input_ids':[14]+[n]*length+[15],'labels':[-100]+[n]*length+[15],
+            'parents':['public-parent',str(n)],'exposure':['evaluation']} for n,length in ((1,15),(2,9),(3,7))]
+        original=pack_sequences(rows,capacity=256)[0];before=copy.deepcopy(original)
+        pieces=execution_slices(original,20)
+        self.assertEqual(original,before)
+        self.assertEqual([p['input_tokens'] for p in pieces],[17,20])
+        self.assertEqual([i for p in pieces for i in p['execution_slice']['logical_segment_indices']],[0,1,2])
+        self.assertEqual(sum(p['supervised_tokens'] for p in pieces),original['supervised_tokens'])
+        for piece in pieces:
+            validate_pack(piece)
+            self.assertEqual(piece['execution_slice']['logical_pack_digest'],digest_value(original))
+            for segment in piece['segments']:
+                reference=original['segments'][segment['row_index']]
+                self.assertEqual(segment['sequence_digest'],reference['sequence_digest'])
+                self.assertEqual(segment['lineage'],reference['lineage'])
+                for key in ('input_ids','labels','position_ids','attention_mask'):
+                    self.assertEqual(piece[key][segment['start']:segment['end']],
+                        original[key][reference['start']:reference['end']])
+        for invalid in (16,True,0):
+            with self.assertRaises(ValidationError):execution_slices(original,invalid)
+
     def test_legacy_and_modern_rotary_config_require_same_original_value(self):
         config={'model_type':'qwen3','vocab_size':16,'num_hidden_layers':36,'hidden_size':2560,
             'num_attention_heads':32,'num_key_value_heads':8,'head_dim':128,'intermediate_size':9728,
