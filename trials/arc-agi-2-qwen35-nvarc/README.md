@@ -25,6 +25,10 @@ Native zero-work Trainer inspection 003 completes and verifies context 8,192,
 all 128 prepared source views, adapter reset and checkpoint flags. It qualifies
 native preparation with zero model/optimizer calls; the full TTT epoch remains
 unexecuted. All three inspection retrievals are consumed.
+The original-runtime full-epoch worker, source-row/AdamW guards and independent
+result reader now pass offline verification. Private native TTT-004 version 1
+is accepted under a 1,300-second free-budget cap, preserving all 128 source
+views/steps. Its runtime is pending; full native TTT remains unverified.
 
 The complete published SDG material inventory and ordered parent/program joins
 verify. A fixed ten-program published-output replay reproduces its diagnostic

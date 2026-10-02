@@ -1411,3 +1411,11 @@ and distinct 003/004 offline package gates.
 Full repository validation 028 passes 382 tests with four optional skips in
 250.756 seconds; log SHA-256
 `f3098f8cb7fcab513030042e3480f9ee2a0869175736ddfb2f43494bdf172040`.
+Snapshot 014's exact one-push admission SHA-256 is
+`881f14149eb32e4c349676791617b217cd09de9fe9d5b207264f71f8aa225acb`.
+Reviewed native-epoch code is committed on main as `ebe7cbe`. The sole native
+004 push is accepted as private version 1, kernel ID 136815175 at 18:36:03 UTC
+on October 2; receipt SHA-256
+`600f94f471ce42a822b1bc16b310c0933425fabaf17dc539f0d376991fab77ee`.
+Runtime is pending backed-off monitoring and one terminal retrieval. No
+completion, native gradient/memory or quality observation is presumed.
