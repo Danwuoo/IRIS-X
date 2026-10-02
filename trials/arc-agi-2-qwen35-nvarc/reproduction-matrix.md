@@ -52,7 +52,7 @@ accepted as private version 1 after the operator probe completed and quota was
 rechecked. Its sole terminal retrieval verifies a pre-model failure: Python
 3.11 and local 3.12 render empty AST fields differently. The immutable source
 bytes match; zero model calls or optimizer work occurs. Distinct inspection
-002 is offline staged with explicit empty-field AST rendering that preserves
+002 is accepted as private version 1 with explicit empty-field AST rendering that preserves
 the frozen 3.12 class hashes, all materials and the zero-work limits. A real compatible
 4.53.3 tiny CPU fixture constructs/resets its projection/full-save adapter under
 the production guard and matches all 128 source collator views with zero
@@ -126,7 +126,7 @@ forwards, 220,878 input tokens and 1,200/900-second parent/child bounds. Full
 operator vectors and actual-call accounting have an independent closed reader;
 this partial model can never qualify the whole-model numerical gate. No
 optimizer, generation, teacher or evaluator call is authorized by that probe.
-Distinct 004 is offline staged to preserve each sample's unchanged BF16 linear
+Distinct 004 is accepted as private version 1 to preserve each sample's unchanged BF16 linear
 GEMM shape while attention remains physically packed. It retains all 36 layers,
 the fixed 0.25/0.03 numerical gate, full logits, two tiny gradient backwards
 and sample isolation within 13 forwards/94,706 inputs. CPU control-flow and

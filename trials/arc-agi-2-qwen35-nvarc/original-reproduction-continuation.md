@@ -1117,8 +1117,8 @@ Independent and packed timings are cold, partial-model observations; they
 do not supply whole-model training throughput. Whole-model qualification
 remains false and there are no backwards, optimizer steps or generations.
 
-Distinct `nvarc-original-qwen3-probe-004` is offline staged, not submitted at
-this checkpoint. It retains all 36 decoder layers and all eight complete
+Distinct `nvarc-original-qwen3-probe-004` is offline verified and accepted as
+private version 1, kernel ID 136804856. It retains all 36 decoder layers and all eight complete
 source samples. Every Linear runs one unchanged BF16 GEMM per whole sample;
 native repeated-KV varlen attention, positions, causal boundaries and the
 0.25/0.03 whole-logit gate stay fixed. There are exactly 13 outer forwards,
@@ -1136,6 +1136,10 @@ The real tiny CPU control-flow fixture passes all 13 calls, two backwards,
 do not qualify the width-2,560 CUDA gate. The primitive additionally checks
 unequal sample gradients and checkpoint recomputation. Plan digest:
 `sha256:963c2f5813380fefff7fd04f590b6ebb9729d1f9d0db446645db52876537819e`.
+The sole push completed at 16:35:55 UTC on October 2; receipt SHA-256
+`32dc0199ed575f37f01105ee6e08e77fb45fa5bfd9b2d678abf1536f204c52a0`.
+Runtime state remains unqueried at this receipt checkpoint; backed-off
+monitoring and one terminal retrieval remain under Decision 0054.
 
 After the operator diagnostic's terminal retrieval, quota snapshot 008
 reconciled 10,103.497 remaining free seconds with no provider reservation or
@@ -1165,8 +1169,11 @@ bytes, hashes, all 128 source views, zero-work guards and 1,200/900-second
 limits remain fixed. The consumed 001 package still passes exact legacy
 preflight and its worker bytes are unchanged. New 002 plan:
 `sha256:f43ea20828233c5429c7de19a0809d13f6e0f4bc07f45b98cb4ad6eb5546de79`.
-It is unsubmitted at this checkpoint; native topology/reset/preprocessing
-and full long TTT remain unqualified.
+The sole push completed at 16:36:01 UTC on October 2 and accepted private
+version 1, kernel ID 136804867; receipt SHA-256
+`132addb12181a60f1866ae403615b391a76584d1e341f520d66f614e530b83d6`.
+Runtime state remains unqueried at this receipt checkpoint; native topology,
+reset, preprocessing and full long TTT remain unqualified.
 
 The consumed inspection 001 independent proof SHA-256 is
 `193ff6c40417f6e7b2e5eb32a8ce3a4e9268d0e9bd5a9b74f9d97e83e567518f`.
