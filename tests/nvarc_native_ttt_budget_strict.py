@@ -1,0 +1,67 @@
+"""Actual CPU NN/AdamW exercise of native-epoch guards, not native Unsloth parity."""
+import copy
+import unittest
+import torch
+from types import SimpleNamespace
+from tools.nvarc_native_ttt_budget import EpochBudget,digest
+
+
+class Model(torch.nn.Module):
+    def __init__(self):
+        super().__init__();self.embed=torch.nn.Embedding(16,4);self.head=torch.nn.Linear(4,16,bias=False)
+    def forward(self,input_ids,labels):
+        return {'loss':torch.nn.functional.cross_entropy(self.head(self.embed(input_ids)).reshape(-1,16),labels.reshape(-1))}
+
+
+class Trainer:
+    def __init__(self,model):self.model=model
+    def training_step(self,batch):
+        loss=self.model(**batch)['loss'];loss.backward();return loss.detach()
+
+
+class NativeEpochStrictTests(unittest.TestCase):
+    def budget(self):
+        torch.manual_seed(42);model=Model();trainer=Trainer(model)
+        batches=[{'input_ids':torch.tensor([[14,11,2,15]]),'labels':torch.tensor([[-100,-100,2,15]])},
+            {'input_ids':torch.tensor([[14,11,3,15]]),'labels':torch.tensor([[-100,-100,3,15]])}]
+        rows=[{'input_ids_digest':digest(batch['input_ids'][0].tolist()),'labels_digest':digest(batch['labels'][0].tolist())} for batch in batches]
+        retained=[];budget=EpochBudget(torch,model,trainer,rows,[0.,5e-5,0.],lambda value:retained.append(copy.deepcopy(value)),
+            expected_parameters=sum(p.numel() for p in model.parameters()),expected_dtype='torch.float32')
+        return model,trainer,batches,budget,retained
+
+    def test_real_epoch_tracks_zero_lr_moments_and_restores_all_patched_calls(self):
+        model,trainer,batches,budget,retained=self.budget();constructor,step=torch.optim.AdamW.__init__,torch.optim.AdamW.step
+        before=[p.detach().clone() for p in model.parameters()]
+        with budget.installed():
+            optimizer=torch.optim.AdamW(model.parameters(),lr=5e-5,betas=(.9,.999),eps=1e-8,weight_decay=0)
+            scheduler=torch.optim.lr_scheduler.LambdaLR(optimizer,lambda i:[0.,1.,0.][i])
+            for i,batch in enumerate(batches):
+                trainer.training_step(batch);torch.nn.utils.clip_grad_norm_(model.parameters(),1.)
+                optimizer.step()
+                if i==0:
+                    self.assertTrue(all(torch.equal(a,p) for a,p in zip(before,model.parameters())))
+                    self.assertTrue(any(torch.count_nonzero(s['exp_avg']) for s in optimizer.state.values()))
+                optimizer.zero_grad(set_to_none=True);scheduler.step()
+            self.assertEqual(len(budget.complete()),2)
+            with self.assertRaises(RuntimeError):trainer.training_step(batches[0])
+            with self.assertRaises(RuntimeError):model.generate()
+        self.assertIs(torch.optim.AdamW.__init__,constructor);self.assertIs(torch.optim.AdamW.step,step)
+        self.assertEqual(len(retained[-1]['optimizer_steps']),2)
+        self.assertTrue(all(row['completed'] for row in retained[-1]['optimizer_steps']))
+        self.assertTrue(any(not torch.equal(a,p) for a,p in zip(before,model.parameters())))
+
+    def test_bad_row_and_unreserved_optimizer_fail_before_nn_or_update(self):
+        model,trainer,batches,budget,_=self.budget();entered=[]
+        hook=model.register_forward_hook(lambda *args:entered.append(1))
+        original=torch.optim.AdamW.step
+        with self.assertRaises(RuntimeError),budget.installed():
+            bad={**batches[0],'input_ids':batches[0]['input_ids']+1};trainer.training_step(bad)
+        hook.remove();self.assertEqual(entered,[]);self.assertIs(torch.optim.AdamW.step,original)
+        _,_,_,budget,_=self.budget()
+        with budget.installed():
+            optimizer=torch.optim.AdamW(budget.model.parameters(),lr=5e-5,betas=(.9,.999),weight_decay=0)
+            with self.assertRaises(RuntimeError):optimizer.step()
+            with self.assertRaises(RuntimeError):torch.optim.AdamW(budget.model.parameters())
+
+
+if __name__=='__main__':unittest.main()

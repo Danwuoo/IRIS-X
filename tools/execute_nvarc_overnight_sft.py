@@ -19,7 +19,9 @@ import re
 RUN = None
 from irisx.canonical import digest_value
 def preflight(package):
-    if read(package/'plan.json')['format']=='irisx/nvarc-original-training-inspection-v1':
+    if read(package/'plan.json')['format']=='irisx/nvarc-original-native-long-ttt-v1':
+        from tools.stage_nvarc_native_long_ttt import preflight as check
+    elif read(package/'plan.json')['format']=='irisx/nvarc-original-training-inspection-v1':
         from tools.stage_nvarc_original_training_inspection import preflight as check
     elif read(package/'plan.json')['format'] in {'irisx/nvarc-original-qwen3-unsloth-probe-v1',
             'irisx/nvarc-original-qwen3-unsloth-positions-probe-v1',
@@ -140,7 +142,7 @@ def bindings(package):
 def execute(action, package, journal_dir):
     global RUN
     RUN = read(package / "plan.json")["run_id"]
-    original = re.fullmatch(r'nvarc-original-qwen3-(?:probe|packed-step|long-ttt|environment|unsloth-probe|training-inspect)-\d{3}', RUN)
+    original = re.fullmatch(r'nvarc-original-qwen3-(?:probe|packed-step|long-ttt|native-ttt|environment|unsloth-probe|training-inspect)-\d{3}', RUN)
     assert original or re.fullmatch(r"nvarc-overnight-(?:sft|ttt|trm)-\d{3}", RUN)
     authority = 'Decision 0054' if original else 'Decision 0053'
     assert read(package/'plan.json')['owner_decision'] == authority

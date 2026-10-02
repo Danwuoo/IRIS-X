@@ -1360,3 +1360,54 @@ existing inert compatible 10,800-second long-epoch proposal still needs a
 43,200-second conservative reserve and is not admitted. Native preparation and
 scalar recipe are qualified; an actual native full-epoch transport remains
 separate work and cannot reuse that compatibility identity or configuration.
+
+### Native complete-epoch transport
+
+The native epoch worker uses the original, hash-bound Trainer classes and
+exact published untied SFT checkpoint under original Docker/dependency versions.
+All 41 source/metadata files, 128 views, BF16 528,564,224-parameter layout,
+actual native Trainer origins and checkpoint flags are bound. Preparation
+remains under the zero-work guard. Each exact input/label pair is consumed once;
+each Trainer microstep permits one root forward/backward before one actual
+AdamW step. Every finite gradient, source clipping and exact 129-index native
+learning-rate vector are checked, including the first zero-LR step. No
+generation, verification, teacher or export is allowed. Complete acceptance
+requires every row/step, finite BF16 Adam moments, changed saved state and exact
+restoration of all seeded baseline tensors. Optimizer tensor state and
+Accelerate optimizer/scheduler references are cleared before adapter reset.
+Atomic prefixes retain completed versus reserved work on failure. Parent/child
+time limits remain hard, including a terminal archive reserve.
+
+The first three packages are inert, unsubmitted local proposals. Initial 001
+needed complete 41-file plan binding; 002 needed explicit optimizer-state
+discard. Both bytes remain retained. Corrected native 003 passes preflight:
+`sha256:bb34ecdc641d85bb024ec59b1d9e9c6e8bc7632129680b0743dde1ef284b0454`.
+Its 10,800/10,500-second envelope needs 43,200 conservative GPU seconds;
+snapshot 013's 5,523.863 seconds does not admit it. Its no-submission gate is
+`7e416ef81859e1718f4bba73509290d43fc74f547fca6e34e6582f3f0947b9a2`.
+No execution journal or provider request exists for these proposals.
+
+Distinct native 004 preserves the same complete scientific workload and gates
+under a 1,300/1,000-second parent/child envelope. Its preflight passes:
+`sha256:211dc7053e473e0d2003ac1116aff5b6c78ccd92d2c62b4a14ffe5706f278549`.
+This is an engineering free-budget cap, not a runtime prediction. Timeout
+retains a failed prefix, never a completed TTT epoch. Snapshot 014 reconciles
+the unchanged 5,523.863 seconds, zero reservations and disabled pay-to-scale;
+the candidate needs 5,200 conservative seconds. Submission waits for full
+validation and exact admission. No original-clock or ARC quality claim follows.
+
+Two actual CPU NN/AdamW tests pass in 2.766 seconds: zero-LR moment updates,
+subsequent changed weights, exact call dependency/restoration and rejection
+of extra/altered rows or unreserved optimizer entry. These are controls, not
+original 4B/Unsloth training. Independent-reader tests use explicitly artificial
+digest archives with preflight mocked; they exercise complete/failure prefixes
+and reject rehashed count, mask, moment and reset faults. They cannot qualify
+a real package/model. Full repository validation 027 passes 382 tests with
+four optional skips in 241.675 seconds; log SHA-256
+`876ef3328ebd296f057a42ab3c1829a51acd18ba8abc230f7be3c2e10c19e26a`.
+The optimizer-discard repair additionally passes current-source compilation
+and distinct 003/004 offline package gates.
+
+Full repository validation 028 passes 382 tests with four optional skips in
+250.756 seconds; log SHA-256
+`f3098f8cb7fcab513030042e3480f9ee2a0869175736ddfb2f43494bdf172040`.

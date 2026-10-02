@@ -63,7 +63,13 @@ model/optimizer calls; the full TTT epoch remains unexecuted. Four additional
 exact optimizer/scheduler/clipping source files bind 13-step warmup, default
 0.9/0.999 AdamW betas and a zero-LR first step. A scalar-only replay verifies
 all 129 cosine indices; native gradient/optimizer memory and training time
-remain unobserved. A real compatible
+remain unobserved. A complete native 128-view epoch worker, actual NN/AdamW
+guards and independent prefix/reset reader now pass offline controls. Inert
+native 003 needs 43,200 conservative GPU seconds and remains unsubmitted.
+Distinct native 004 preserves all work under 1,300/1,000-second limits; its
+preflight and 382-test full validation pass. Snapshot 014's 5,523.863 free
+seconds admits one 5,200-second conservative reserve. Completion, native
+memory/time and original-clock parity remain unobserved. A real compatible
 4.53.3 tiny CPU fixture constructs/resets its projection/full-save adapter under
 the production guard and matches all 128 source collator views with zero
 forwards. Its artificial Trainer routing does not establish native Unsloth
@@ -87,10 +93,10 @@ Original-Qwen3 CPU FSDP shards also reconstruct the independent global weight/
 Adam oracle. Whole-sample physical splitting additionally preserves each
 logical MFFD bin and the global update under unequal rank slot counts. The
 exact first global-256 batch maps to 8/7/8/8 physical calls at a 32,768-token
-ceiling; this is an unmeasured FSDP resource adaptation. A local full-gradient
+ceiling; this is an FSDP resource adaptation. A local full-gradient
 one-step package generator refuses staging before the actual CUDA numerical
-prerequisite passes. No original-family full-gradient or long-task training
-kernel is submitted.
+prerequisite passes. The distinct packed-step-002 subsequently completes the
+full source step, as quantified below; original-scale SFT remains incomplete.
 The exact published ARC-SFT version 1 / model version ID 627758
 is now acquired and independently verified (ten files, 399 finite BF16 tensors,
 untied embedding/head). Its config records Transformers 4.53.3; actual 4.53.3
