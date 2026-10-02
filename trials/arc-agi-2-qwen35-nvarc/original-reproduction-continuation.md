@@ -188,10 +188,10 @@ reference check, not the original 4B/Unsloth CUDA observation. Proof SHA-256:
 The current read-only free-quota snapshot 004 reconciles to 12,814.729 free
 seconds remaining, zero reserved seconds and pay-to-scale disabled before
 the repair push. It is an account snapshot, not a queue-cause diagnosis or
-permission for paid/full-scale work. The inert native-training inspection
-draft has no transport package, push or model observation; native adapter,
-prepared complete-row context and scalar task-reset checks must wait for the
-complete original Unsloth GPU prerequisite and a reviewed finite envelope.
+permission for paid/full-scale work. Native-training inspection tooling is now
+implemented and locally checked, with no transport package, push or original
+runtime observation. Its package generator refuses to write any package before
+the original explicit-position Unsloth GPU prerequisite completes and verifies.
 
 ## Exact published original ARC-SFT checkpoint
 
@@ -319,6 +319,71 @@ both corrected observations use distinct identities. Exact source-expression
 tests reject removing clone or detach and check that baseline dictionary copies
 survive perturbation. Original runtime preprocessing and task reset remain
 explicit prerequisites.
+
+## Native adapter and Trainer inspection preparation
+
+The new zero-work inspection tool binds all thirty-seven exact dependency
+source/metadata files, sixteen versions, the published original untied model,
+the complete original classes and recipes, and the completed cache prerequisite.
+It has a 1,200-second parent and 900-second child ceiling, four distinct BF16
+L4 gate, one rank-zero worker, Internet disabled and USD 0. The parent kills the
+worker process group on timeout or interruption. It creates no source Dataset.
+The tooling blocks normal/compiled module call dispatch, both autograd entry
+points, tensor backward, optimizer construction and Adam/AdamW step before
+execution, and detects a guard replaced during imports or construction. It
+retains topology before Trainer construction, all finite detached baseline and
+reset tensor fingerprints, actual prepared arguments, checkpoint flags and
+native Trainer class sources. It makes no call to `train()` or the loss method.
+
+Complete source-view materialization preserves all 128 original `as_list()`
+rows, the existing parent/exposure tags, exact solver cell and source-mask
+digests. Every text/token digest agrees with the earlier closed replay; no mask
+AST replay, model, teacher or evaluator call occurs. It retains 3,309,314
+uncompressed bytes and 242,886 gzip bytes. Proof SHA-256:
+`88ee3161a7f82eb051ae846161a6cfd2d9ebdbfa145b0d84cb3d52098763b134`.
+The first local materializer failed before writing source output because it
+compared the raw visible mapping with the normalized task digest. Its source
+and failure are frozen; distinct materialization 002 uses the existing
+`visible_task` normalization and passes.
+
+Native inspection mirrors the actual HF Dataset dataloader's unused-column
+removal before the original collator. It retains every resulting input ID and
+label as closed signed-int16 little-endian vectors. The independent reader
+recomputes every vector digest, length and supervised count against the frozen
+complete source-mask proof, all baseline/reset fingerprint equality, and the
+complete source-inferred projection/full-save topology. Completion remains
+separate from qualification for long-task source TTT: a context, dtype,
+topology or mask difference does not unlock it. Nine offline budget/vector/
+state/envelope tests pass, including faults that rehash the entire archive.
+The original numerical 001/002 packages stay unchanged.
+
+An actual tiny CPU construction fixture first passes under current Torch/
+Transformers/PEFT with zero model forwards, five prohibited operations blocked
+before execution and restored guard methods. Its SHA-256 is
+`a08baf9ff66084db0f022957cffaf556d07706e3519a95618eee2c0c21bd1248`.
+The later full-source fixture 002 retains a failed Transformers 5.8.1 frontend
+observation. Each source view loses the eight user/assistant role IDs (7,456
+instead of 7,464 tokens), so the unchanged completion mask has zero supervised
+tokens. Its exact source and 3,817,472-byte binary are frozen. This agrees with
+the earlier standalone role-loss observation, not an original 4.55.4 failure.
+
+Distinct fixture 003 uses the retained compatible Transformers 4.53.3,
+Torch 2.12.1 CPU and PEFT 0.21.0. Under the same production guard, an actual
+tiny Qwen3/rank-2 projection adapter with full embedding/head save modules
+constructs, its original clone/detach recipe remains independent, and every
+saved tensor resets exactly after one scalar perturbation. The exact original
+completion class runs over the actual compatible Transformers parent collator.
+All 128 source input/label vectors agree, totaling 955,392 input and 476,160
+supervised tokens. Five work attempts are blocked, with zero forwards,
+optimizer construction/steps or provider calls. It completes in 40.234 seconds;
+proof SHA-256:
+`fdb516ade19474ad2bc494d1b5de72a0d5deacc8e3df8e58458096355b53d982`.
+An independent zero-tokenizer/zero-mask-replay reader recounts all 3,821,568
+vector bytes and every source digest. Its SHA-256 is
+`e04f18152c495d09fc82a7fd9dadc8b4ee54df53a58fdad44c47adfeb9167d65`.
+The fixture's Trainer base and unused-column routing are explicitly artificial;
+no actual Unsloth Trainer, original 4B adapter, optimizer state or long epoch
+is observed. The original runtime and free-resource prerequisites remain open.
 
 ## Compatibility runtime and full long-task candidate
 
@@ -716,6 +781,9 @@ also pass in 63.679 seconds, SHA-256
 Full validation 017 covers the cached-position repair and completed-prefix
 reader: 347 tests pass in 280.664 seconds with four skips, SHA-256
 `5987e6c17e01d1831d683db9ca7593fb46dfee81b3b33fc5756dd912f237017d`.
+Full validation 018 covers the native zero-work inspection and independent
+raw-vector reader: 356 tests pass in 302.871 seconds with four skips, SHA-256
+`b4e2b3c7ae22ea6e30d8660a94b684f15fdf26b966765dde04f54e3817d0a471`.
 
 One read-only accelerator quota snapshot is retained separately at
 `.irisx/nvarc-original/manifests/free-resource-20261002-001/`. The SDK's
@@ -755,6 +823,27 @@ and rejects invalid head ratios/shapes and CPU varlen dispatch. It passes in
 0.267 seconds. This is no native CUDA operator or 4B numerical observation;
 no GQA-variant package is staged or submitted. Earlier probes and the existing
 full-gradient prerequisite remain on their exact repeated-KV backend.
+Diagnostic 002 is now terminal. Its fifth backed-off status returned ERROR;
+the sole retrieval consumed one output listing and archive download. All
+twenty-one forwards and 126,260 input tokens completed on four distinct BF16
+L4s; the retained vectors pass an independent twenty-five-member recount.
+Archive SHA-256:
+`1a300e4a60ed062e1f3c6036910e47bcc464d3de2a4612def8472d997825de14`;
+independent proof SHA-256:
+`13f56f4ebb7fef1f43b6fa911055fa8c7115d2337b1470be41c065adec058970`.
+The 177.802-second session fails only after retaining every mode's logits,
+sampled states, isolation vector and exact completed-call ledger. Every
+single-sequence varlen logit and all thirty-eight sampled states match the
+forced Flash SDPA reference bitwise across all eight complete samples. Merged
+packing's embedding samples match, but layer 0 already differs by up to 0.0625
+and the maximum final-logit difference is 13.59375. In total 9,147 of 504,864
+logits exceed the unchanged 0.25/0.03 gate, with 58 argmax disagreements across
+31,554 token positions. Changing the first sample leaves every later packed
+logit bitwise unchanged. No optimizer, generation, teacher or scoring occurs.
+This localizes the open difference to merged execution after embedding;
+KV repetition alone is not established as its cause because single varlen
+already matches. Any new first-layer/operator diagnostic needs a new immutable
+identity and exact bounds. Full-gradient staging remains blocked.
 Neither the 32-H100 original SFT allocation nor eight-H100 TRM pretraining is
 provided by four-L4 free Kaggle sessions. Durable cross-session optimizer
 checkpoint transport remains a requirement before whole training.

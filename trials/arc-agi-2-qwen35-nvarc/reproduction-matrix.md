@@ -36,6 +36,17 @@ Effective native Trainer preprocessing and actual
 original-adapter reset remain unverified; these fixtures do not establish a
 runtime failure or authorize treating the compatible long-task proposal as
 the original method.
+Native zero-work inspection tooling now has a reviewed finite parent/child
+envelope, all 37 exact source/metadata files, full detached baseline/reset
+fingerprints and independently recounted raw prepared-token/label vectors.
+Its package generator blocks before any write until the original cache probe
+completes and verifies; no inspection package or push exists. A real compatible
+4.53.3 tiny CPU fixture constructs/resets its projection/full-save adapter under
+the production guard and matches all 128 source collator views with zero
+forwards. Its artificial Trainer routing does not establish native Unsloth
+behavior. The frozen full-source 5.8.1 fixture drops eight role tokens per view
+and produces zero supervised labels; it remains a separate compatibility
+failure, not a historical-runtime claim.
 A private CPU-only 600-second import/tokenizer probe 001 was accepted as
 version 1, then failed its dependency mount gate with zero model work; its sole
 terminal retrieval and independent binding check are complete. Distinct 002
@@ -85,8 +96,13 @@ gate fails with maximum absolute logit error 8.125 at fixed 0.25/0.03 tolerance.
 Isolation was not reached. A distinct 21-forward/126,260-token diagnostic fixes
 the SDPA Flash backend and retains complete numerical vectors before gating;
 its reader independently recounts actual calls, numerical errors and isolation.
-Diagnostic 002 is accepted as private version 1, with its sole push consumed
-and no terminal retrieval yet; the immutable package and receipt are retained.
+Diagnostic 002's private version 1 and sole retrieval are now consumed. All
+21 forwards/126,260 inputs complete and independently verify. Single varlen
+matches every forced Flash SDPA logit and sampled state bitwise; merged packing
+differs from layer 0, reaches maximum logit error 13.59375 and fails the same
+fixed tolerance. Later packed samples remain bitwise isolated after changing
+the first. The failure has complete retained vectors and no optimizer step;
+merged first-layer/operator numerics remain open.
 No original-family full-gradient step is staged. Neither probe supplies
 training throughput, ARC score or promotion. All 103,223 published synthetic
 puzzles and 2,984,385 pairs now have
