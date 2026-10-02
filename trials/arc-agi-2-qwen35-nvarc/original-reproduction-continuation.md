@@ -660,6 +660,47 @@ program or predicate execution, at
 Retained member stream SHA-256:
 `c9b57f7450932327c66e58d19d7e3643e881e059bba1001eb133b27856755cd6`.
 
+The next metadata-only join independently binds every published ordered parent
+pair to complete raw input/output groups, without sorting away the generation
+direction or choosing among multiple mix/summary groups. All 2,244,042 retained
+response rows and 103,223 published members are recounted. The frozen source
+`generate_output_grids.py` defaults `--min-solutions-per-puzzle` to twenty;
+43,936 published members have no same-order group with twenty retained output
+responses. Every such member is in `nvarc_full`. The family breakdown is:
+
+| Published family | Same-order raw output response counts | Published members |
+| --- | --- | ---: |
+| `nvarc_full` | one group with 10 | 43,874 |
+| `nvarc_full` | one group with 11–19 | 62 |
+| `nvarc_full` | one group with 20 | 11,950 |
+| `nvarc_training` | one group with 20 | 47,299 |
+| `nvarc_training` | two distinct groups, each with 20 | 38 |
+
+The other 59,287 members have a twenty-response group. Twenty raw responses
+are only a necessary condition for twenty source-accepted programs: source
+parsing/removal and dynamic checks are not established by the response count.
+For the 38 multiple-group members, the historical selected mix is unknown.
+The retained historical CLI, production source revision and completeness of
+historical execution responses are also unknown. The current defaults alone
+cannot establish the published generation route, nor prove corruption or a
+historical execution failure. All parent/exposure bindings are retained.
+
+The bound join is at
+`.irisx/nvarc-original/manifests/sdg-published-groups-20261002-001/`.
+It completes in 56.220 seconds; a separate 34.616-second reader independently
+reconstructs every raw group, SID, same-order/reversed-order mapping and
+published binding. Its source snapshot is retained after completion, with
+the unchanged-launch timing stated explicitly. Three metadata parser tests
+preserve direction/mix ambiguity and reject duplicate/bool SIDs, changed
+exposure and duplicate input records. No new generated-code AST analysis,
+raw-Parquet read, program execution, teacher/model call, accepted pair or score
+occurs. Result SHA-256:
+`37ddc4c7ddac498482b6924b031adf714477e2fffcbea9efd5730e9c1df53d1f`;
+binding stream SHA-256:
+`d9632d61143a742759dad93283f27920f5df3fc67bba1e9ab89f939d04e9d5c8`;
+independent proof SHA-256:
+`dafaba7addf62618e291f0132f695dbffbccfe38e7f3eb00f885062b8d185f79`.
+
 ## Remaining scale and quality boundaries
 
 The earlier fixed published-group dynamic replay is separately reconciled
@@ -774,6 +815,9 @@ the separately retained v21 notebook and original claimed v18 ID remain distinct
 One subsequent source request with that explicit script ID as `version_label`
 also returned HTTP 404 with zero source bytes. That failed acquisition remains
 frozen and likewise establishes no absence claim.
+The explicit public version-18 page was also unavailable to the web reader;
+its separate acquisition ledger retains one read, zero source bytes and no
+own-kernel query. Exact historical v18 remains unknown.
 One distinct public version-18 output-index request likewise returned HTTP
 404. It retained no source, log or model bytes and requested no own-kernel
 runtime state. These failed acquisition methods are preserved without retry.
@@ -826,6 +870,9 @@ fixture uses dense CPU attention, two-layer random weights reduced to one
 layer and modern compatible dependencies; it proves no original CUDA or
 native-varlen numerics. Strict log SHA-256:
 `2b046ce0d27aa6f29760fcbab8ad7e198bd9547b305e7c1fed9c472059549728`.
+Full validation 020 covers the complete published-group metadata join:
+365 tests pass in 294.475 seconds with four skips, SHA-256
+`7c711d2dc18779dcc06a50bd4a730c75f25a4233ba770499278c70b44b5623f2`.
 
 One read-only accelerator quota snapshot is retained separately at
 `.irisx/nvarc-original/manifests/free-resource-20261002-001/`. The SDK's
@@ -839,6 +886,17 @@ The distinct snapshot 003, after 001's terminal failure, reconciles to
 13,290.199 free seconds and zero reserved seconds, with pay-to-scale disabled.
 Its raw and typed SDK duration representations retain their identical
 remaining-duration difference; no paid capacity is used.
+The official competition's
+[upgraded-accelerator description](https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview/upgraded-accelerators)
+is now checked through its retrievable search-index text. It documents twice
+the older-machine quota rate and reserves the right to increase that rate.
+The index was crawled four weeks earlier; a direct page open supplies no
+extractable lines. This is retained as primary documentation, not verification
+of this account's actual multiplier. The current packages retain the more
+conservative four-times local planning reserve. The existing 10,800-second
+compatibility long-TTT proposal needs 21,600 quota seconds even at the
+documented two-times rate, beyond snapshot 006's remaining 11,332.267. Its
+submission remains blocked by both runtime and resource prerequisites.
 
 The old Qwen3.5 segmented global-256 step takes 27–31 minutes. Multiplying by
 12,716 gives 5,722–6,570 GPU-session hours (238–274 days), before checkpoint,

@@ -126,6 +126,13 @@ program executes. The continuation and independent recount now verify all
 170 shards and 2,244,042 raw responses. Syntax rejects total 10,469, and 61,989
 input groups have no output response. The entry-contract counts and exposure
 are static evidence; full dynamic program/filter semantics remain open.
+The subsequent complete ordered-parent/group join and independent SID recount
+find 43,936 published `nvarc_full` members without twenty retained output
+responses, while the source CLI defaults to twenty programs. Another 38
+`nvarc_training` members have two eligible raw groups. Historical CLI/source
+and selected-group identity remain unknown; twenty responses alone do not
+prove twenty usable programs. All 103,223 member and 2,244,042 response bindings
+are retained without new program, teacher, model or evaluator execution.
 
 ## Overnight implementation (2026-10-02)
 
