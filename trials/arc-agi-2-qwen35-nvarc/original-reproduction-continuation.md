@@ -210,8 +210,9 @@ download. All four forwards and 26 input tokens complete in 412.480 seconds
 on four distinct BF16 L4s with exact original dependency and model materials.
 The reference returns model-output objects twice; Unsloth returns a
 model-output prefill and a tuple for its cached call. Independent comparison
-finds maximum absolute logit differences 0.03125 for prefill and 0.5 for the
-cached token, with equal argmax for both. This closes output capture, not
+of the sixteen vocabulary logits at the last prefill position and the cached
+token finds maximum absolute differences 0.03125 and 0.5, with equal argmax
+for both. Full-prefix logits are not retained by this probe. This closes output capture, not
 bitwise/numerical or historical full-solver parity. No optimizer, generation,
 teacher or correctness scoring occurs. Archive SHA-256:
 `9899ee1b58a3673cefd586e111c6d745006161b3213fa6bd59b0f817093eb8c7`;
@@ -1094,11 +1095,91 @@ vectors. It always leaves whole-model qualification false. Rehashed vector,
 cost, precision, parameter, hardware and full-model-claim faults are rejected.
 Actual tiny CPU hook/precision/guard tests pass; the local dense attention
 fixture makes no CUDA varlen claim. Version 1 (kernel ID 136792365) was
-accepted after one reserved private push; no retrieval has occurred.
+accepted after one reserved private push. Its sixth backed-off status returned
+COMPLETE, and its sole terminal retrieval is consumed.
 Plan digest:
 `sha256:c06b4737feebe271ec410fe34e38eba34705a937e6c9c152c44585b058f9a3f3`;
 receipt SHA-256:
 `867493cf28426cf5c4330adbaf28847f03434bb76ec3174f79cabb1101f882c0`.
+
+All 21 partial-model forwards and 220,878 input tokens independently verify
+on four distinct BF16 L4s. The session takes 129.524 seconds. Archive SHA-256
+is `3f54f470163a0b35a6baba75c3ebd57f9afca021542864b6768a9b3a09fb0f07`;
+independent proof is
+`a2514650b8b87ca7c0eddd53329e4a77b0216d4afd17edc053c6a63890c7e417`.
+All four BF16 packed modes have identical retained operator comparisons and
+first differ at Q projection (maximum 0.0078125); changing native GQA or
+BF16 reduced-precision reduction does not repair this observation. K/V
+projection differences are 0.00390625, K norm reaches 2.0, layer-0 output
+0.0625 and the final logits 0.125. FP32 linear compute still first differs
+at K projection (0.0000019073486), with final-logit difference 0.125.
+Independent and packed timings are cold, partial-model observations; they
+do not supply whole-model training throughput. Whole-model qualification
+remains false and there are no backwards, optimizer steps or generations.
+
+Distinct `nvarc-original-qwen3-probe-004` is offline staged, not submitted at
+this checkpoint. It retains all 36 decoder layers and all eight complete
+source samples. Every Linear runs one unchanged BF16 GEMM per whole sample;
+native repeated-KV varlen attention, positions, causal boundaries and the
+0.25/0.03 whole-logit gate stay fixed. There are exactly 13 outer forwards,
+94,706 input tokens and two tiny native-varlen backwards, with no optimizer,
+generation, teacher, export or ARC scoring. Its 4,078 counted segmented GEMMs
+are forward calls; the two separately reserved tiny backwards also perform
+their ordinary autograd arithmetic. Full-model gradients are not part of
+this probe. Parent/worker limits remain 1,200/900 seconds on four distinct
+BF16 L4s and one model worker. The independent reader recounts all 55 retained
+vectors, each tiny parameter gradient, full logits and sample isolation.
+An honestly failed numerical gate remains complete but unqualified; rehashed
+numerical, budget, precision, shape, GPU and scope faults are rejected.
+The real tiny CPU control-flow fixture passes all 13 calls, two backwards,
+36 layers and restoration checks; its dense CPU attention and width-32 model
+do not qualify the width-2,560 CUDA gate. The primitive additionally checks
+unequal sample gradients and checkpoint recomputation. Plan digest:
+`sha256:963c2f5813380fefff7fd04f590b6ebb9729d1f9d0db446645db52876537819e`.
+
+After the operator diagnostic's terminal retrieval, quota snapshot 008
+reconciled 10,103.497 remaining free seconds with no provider reservation or
+pay-to-scale. Native zero-work inspection 001 was then accepted as private
+version 1, kernel ID 136800150; its plan is
+`sha256:13aee59319e1745c98138d65fa92ddaa4d62fa04facd6fced4913a866fb93dea`
+and receipt SHA-256
+`563456397d7dda9420813614c9f45a191ad0c871b2061100998cdd75f4453924`.
+Its second backed-off status returned ERROR. The sole terminal retrieval
+retains archive
+`ea4149e992b11a8de5864b03537db55e412937d837f84c056c707a8c78227d19`.
+The 214.138-second session verifies dependencies/materials and installs the
+zero-work guard before native import, then rejects the original class AST
+hash before loading a model or constructing an adapter/Trainer. Its source
+bytes are unchanged; the local Python 3.12 AST digest includes empty
+`type_params` fields, whereas provider Python 3.11 omits that nonexistent
+field. No model forward, backward, optimizer construction/step, generation,
+teacher or scoring occurs. This is a transport verification error, not an
+original Trainer failure or long-task observation.
+
+Distinct inspection 002 is offline staged with only a reviewed AST rendering
+repair: insert an empty `type_params` field when absent and show empty fields
+explicitly. Both frozen 3.12 hashes match on the local runtime, and an
+artificial 3.11-field fixture also matches while a changed method fails the
+binding; nonempty type parameters are rejected. Original source/material
+bytes, hashes, all 128 source views, zero-work guards and 1,200/900-second
+limits remain fixed. The consumed 001 package still passes exact legacy
+preflight and its worker bytes are unchanged. New 002 plan:
+`sha256:f43ea20828233c5429c7de19a0809d13f6e0f4bc07f45b98cb4ad6eb5546de79`.
+It is unsubmitted at this checkpoint; native topology/reset/preprocessing
+and full long TTT remain unqualified.
+
+The consumed inspection 001 independent proof SHA-256 is
+`193ff6c40417f6e7b2e5eb32a8ce3a4e9268d0e9bd5a9b74f9d97e83e567518f`.
+The separate AST repair proof is
+`4d655627c4d1e6a117873e8b9796b66e40e0852c4e19d3b10e91214acff0afba`;
+its missing-field fixture is explicitly artificial, not a Python 3.11 native
+Trainer observation. Fresh account snapshot 009 independently reconciles
+9,610.329 free GPU seconds, zero provider reservations and pay-to-scale False.
+The two new 1,200-second packages require 9,600 seconds at the conservative
+four-times reserve; no original-scale training is admitted by that budget.
+Full repository validation 023 passes 374 tests with four optional skips in
+222.993 seconds; log SHA-256
+`08041ab344e5069f2f89dc1842639a65eca3564349bdf70ab49efc44c574f831`.
 
 Neither the 32-H100 original SFT allocation nor eight-H100 TRM pretraining is
 provided by four-L4 free Kaggle sessions. Durable cross-session optimizer

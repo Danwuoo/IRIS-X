@@ -1,8 +1,31 @@
 """Offline budget and prepared-row contracts; no native ML package imports."""
 from types import SimpleNamespace
+import ast
+import hashlib
 import unittest
 
 from tools.nvarc_original_training_inspection_worker import digest, prepared_evidence, zero_work_guard
+from tools.nvarc_original_ast_binding import portable_ast_dump
+
+
+class AstBindingTests(unittest.TestCase):
+    def test_empty_python_311_fields_match_frozen_312_but_code_changes_do_not(self):
+        source = 'class Sample:\n def loss(self, value):\n  return value + 1\n'
+        node = ast.parse(source).body[0]
+        expected = portable_ast_dump(node)
+        for item in ast.walk(node):
+            if isinstance(item, (ast.ClassDef, ast.FunctionDef)):
+                item._fields = tuple(key for key in item._fields if key != 'type_params')
+                if hasattr(item, 'type_params'): del item.type_params
+        self.assertEqual(portable_ast_dump(node), expected)
+        changed = portable_ast_dump(ast.parse(source.replace('+ 1', '+ 2')).body[0])
+        self.assertNotEqual(hashlib.sha256(changed.encode()).digest(), hashlib.sha256(expected.encode()).digest())
+
+    def test_nonempty_type_parameters_remain_rejected(self):
+        node = ast.parse('class Sample: pass').body[0]
+        node.type_params = [ast.Name(id='T', ctx=ast.Load())]
+        with self.assertRaisesRegex(RuntimeError, 'no type parameters'):
+            portable_ast_dump(node)
 
 
 class ZeroWorkTests(unittest.TestCase):

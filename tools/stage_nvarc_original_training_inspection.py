@@ -128,7 +128,7 @@ def plan_for(run):
     require(sha(config_path) == inventory()['config.json']['sha256'], 'exact published original topology configuration required')
     layout = trainable_layout(json.loads(config_path.read_bytes()), policy['peft_parameters']['r'])
     require(sum(math.prod(shape) for shape in layout.values()) == PARAMETERS, 'complete source-inferred trainable layout required')
-    return {'format': FORMAT, 'approved': True, 'owner_decision': 'Decision 0054', 'run_id': run,
+    plan = {'format': FORMAT, 'approved': True, 'owner_decision': 'Decision 0054', 'run_id': run,
         'kernel_id': 'danielwuu/' + run, 'maximum_notebook_wall_seconds': 1200, 'maximum_child_wall_seconds': 900,
         'maximum_outer_forwards': 0, 'maximum_optimizer_steps': 0, 'maximum_generations': 0,
         'maximum_teacher_calls': 0, 'maximum_paid_usd': 0, 'competition_files_opened': 0,
@@ -149,13 +149,29 @@ def plan_for(run):
         'parent_ids': view['parent_ids'], 'exposure_tags': view['exposure_tags'],
         'full_long_ttt_completed': False, 'correctness_scored': False, 'retain_export': False,
         'scope': 'native source adapter topology/BF16/reset/Trainer preparation; zero forward/backward/optimizer work'}
+    if run != 'nvarc-original-qwen3-training-inspect-001':
+        plan['class_ast_binding_policy'] = 'frozen Python 3.12 representation; explicit empty fields and type_params only'
+    return plan
+
+
+def worker_bytes(plan):
+    original = WORKER.read_bytes()
+    if plan['run_id'] == 'nvarc-original-qwen3-training-inspect-001':
+        return original  # Preserve the consumed version's exact legacy worker.
+    source = original.decode('utf-8')
+    anchor = 'def original_definitions(source, namespace, class_hashes):'
+    expression = 'ast.dump(node, include_attributes=False)'
+    require(source.count(anchor) == source.count(expression) == 1, 'exact narrow AST transport repair required')
+    helper = (ROOT / 'tools/nvarc_original_ast_binding.py').read_text(encoding='utf-8')
+    source = source.replace(anchor, helper + '\n\n' + anchor).replace(expression, 'portable_ast_dump(node)')
+    return source.encode('utf-8')
 
 
 def payloads_for(plan):
     return {'plan': canonical_bytes(plan, newline=True), 'source_inventory': canonical_bytes(source_inventory(), newline=True),
         'model_inventory': canonical_bytes(inventory(), newline=True), 'texts_gzip': (VIEWS / 'texts.json.gz').read_bytes(),
         'expected_rows': (VIEWS / 'expected-rows.json').read_bytes(), 'solver': (VIEWS / 'solver.py').read_bytes(),
-        'worker': WORKER.read_bytes()}
+        'worker': worker_bytes(plan)}
 
 
 def render(run, payloads, hashes):

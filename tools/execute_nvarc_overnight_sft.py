@@ -39,6 +39,7 @@ def preflight(package):
         from tools.stage_nvarc_qwen3_packed_step import preflight as check
     elif read(package/'plan.json')['format'] in {'irisx/nvarc-original-qwen3-probe-v1',
             'irisx/nvarc-original-qwen3-packing-diagnostic-v1',
+            'irisx/nvarc-original-qwen3-segmented-linear-probe-v1',
             'irisx/nvarc-original-qwen3-first-layer-operators-v1'}:
         from tools.stage_nvarc_qwen3_probe import preflight as check
     elif read(package/'plan.json')['format'] in {'irisx/nvarc-complete-ttt-v1','irisx/nvarc-long-ttt-resource-v1'}:
