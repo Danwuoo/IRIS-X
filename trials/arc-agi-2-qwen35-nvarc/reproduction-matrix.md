@@ -133,6 +133,14 @@ responses, while the source CLI defaults to twenty programs. Another 38
 and selected-group identity remain unknown; twenty responses alone do not
 prove twenty usable programs. All 103,223 member and 2,244,042 response bindings
 are retained without new program, teacher, model or evaluator execution.
+The separately fixed first ten-response `nvarc_full` output diagnostic now
+recounts 301 isolated attempts: one trusted canary, 270 legal outputs equal
+to the thirty published synthetic outputs and thirty SID-6 program errors.
+Nine consistent programs per input reproduce thirty diagnostic pairs under
+the unchanged 8/12/4 filter. The twenty-program source precondition, input
+generation and helper removal are not replayed; accepted-source-pair count
+stays zero. This remains a partial exposed synthetic diagnostic, with no
+teacher call, ARC score or whole-archive dynamic qualification.
 
 ## Overnight implementation (2026-10-02)
 

@@ -701,6 +701,58 @@ binding stream SHA-256:
 independent proof SHA-256:
 `dafaba7addf62618e291f0132f695dbffbccfe38e7f3eb00f885062b8d185f79`.
 
+### Fixed ten-response published-output diagnostic
+
+The first frozen binding is
+`nvarc_full/0934a4d8/0934a4d8_00576224.json`, with the original ordered
+parents `0934a4d8`, `00576224`. Its evaluation-ancestor, protected-family and
+pilot-ancestor exposure remains attached. Its sole same-order raw group is
+`mix9/summary5/summary6`, with output SIDs 0–9 in
+`outputs/data-00102.parquet`, rows 13,629–13,638. The selection is retained
+before execution. One exact Parquet shard is read; all ten completion/code
+hashes and the published member hash are checked before any program attempt.
+Published member SHA-256:
+`c60487d9133bcedf3193e0b37caac1d2b824664491ae089effb7438a0f80fe6f`.
+
+Distinct local `nvarc-original-published-output-replay-001` uses the existing
+WSL user/mount/PID/network namespace, read-only chroot and capability-drop
+executor. Generated Python never executes on the host. The fixed workload
+reserves one trusted isolation canary and ten output programs on each of the
+thirty already-published synthetic inputs: 301 total attempts, under
+1,800/1,200-second parent/execution ceilings. It does not regenerate inputs,
+remove unused source helpers, call a teacher/model, score ARC answers or
+change generated programs. Current source minimum twenty output programs is
+not met; whole-method completion and accepted-source-pair count stay false/zero.
+
+All 301 attempts return an observation in 85.547 seconds. SID 6 is rejected
+on all thirty inputs: its line 127 calls `seed.flat.tolist()`, with retained
+`AttributeError: 'numpy.flatiter' object has no attribute 'tolist'`. That
+program is preserved without repair. The other nine SIDs produce 270 legal
+nonidentity grids, every one equal to the published output for that input.
+Every input has a 9/10 majority and the same nine consistent SIDs. Invoking
+only the pinned source's pure 8/12/4 filter on these returned grids produces
+thirty diagnostic pairs equal to the published pairs. This demonstrates one
+partial output-program/filter route, not historical teacher parity or the
+missing twenty-program precondition. No hidden-answer or ARC quality claim
+follows from the synthetic-output comparison.
+
+The independent reader recounts all reservations, result digests, legal grids,
+majorities and global SID intersection without another program execution.
+Three tests reject insufficient globally consistent programs, identity or
+uniform outputs, hidden failed-prefix attempts, changed workload ceilings,
+relaxed filtering and expanded material inventories. Its second proof has
+the same content/digest as the first proof. Local evidence is retained under
+`.irisx/nvarc-original/runs/nvarc-original-published-output-replay-001/`.
+Plan digest:
+`sha256:21602c38e3e0b1a30c7fc6868efa2fe760c3033a3b7ee9d2737d86203da8a15d`;
+result SHA-256:
+`146420aa2156143a741cc961ca8b6fde74ccd4e98a696b608fc7f98cd176eded`;
+independent proof SHA-256:
+`98a678d18b60165fb1de1ac876fb668667b04e234d27d5f85c3da4969a934a68`.
+The subsequent `python tools/repository_check.py --all` passes all 368 tests
+in 250.140 seconds, with four optional-dependency skips. Validation log
+SHA-256: `c2e2d805ac52840774fbd7ac685edd64174d2554e81e6aeda62eb29c583a9129`.
+
 ## Remaining scale and quality boundaries
 
 The earlier fixed published-group dynamic replay is separately reconciled
