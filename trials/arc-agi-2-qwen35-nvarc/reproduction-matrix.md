@@ -21,7 +21,11 @@ same four-forward/26-token/1,200-second bounds. Its push/retrieval are consumed:
 all four forwards return, but native cached-result extraction fails on the
 original tuple contract. Retained prefill differs by at most 0.03125 with equal
 argmax. Distinct private 003 repairs extraction only; version 1 is accepted
-within the same bounds, with no retrieval yet. Exact source-policy audit also
+within the same bounds, and its sole terminal retrieval independently verifies
+all four forwards/26 tokens on four distinct BF16 L4s. Native cached output is
+a tuple; prefill/cached logit differences are at most 0.03125/0.5 with equal
+argmax. Output capture is complete; numerical and historical full-solver parity
+remain open. Exact source-policy audit also
 finds the original full embedding/head save modules and BF16 snapshot cast.
 Its inferred trainable count is 528,564,224; the earlier 254-LoRA/FP32 topology
 is a different compatibility configuration. Original `for_training()` enables
@@ -43,7 +47,9 @@ Native zero-work inspection tooling now has a reviewed finite parent/child
 envelope, all 37 exact source/metadata files, full detached baseline/reset
 fingerprints and independently recounted raw prepared-token/label vectors.
 Its package generator blocks before any write until the original cache probe
-003 completes and verifies; no inspection package or push exists. A real compatible
+003 completes and verifies. Its distinct zero-work inspection 001 is now
+packaged and preflighted, but unsubmitted pending the still-running operator
+probe's terminal state and a conservative remaining-quota check. A real compatible
 4.53.3 tiny CPU fixture constructs/resets its projection/full-save adapter under
 the production guard and matches all 128 source collator views with zero
 forwards. Its artificial Trainer routing does not establish native Unsloth
@@ -141,6 +147,13 @@ the unchanged 8/12/4 filter. The twenty-program source precondition, input
 generation and helper removal are not replayed; accepted-source-pair count
 stays zero. This remains a partial exposed synthetic diagnostic, with no
 teacher call, ARC score or whole-archive dynamic qualification.
+The unchanged original tree-sitter parser/helper cleanup now statically checks
+both fixed replay groups in a separately verified compatible runtime. All
+twenty output programs in the prior group satisfy the current sequential
+source precondition; one loses only trailing comments, and every Python AST
+is unchanged. The ten-response group's code is byte unchanged but still lacks
+twenty responses. Historical parser versions and whole-group dynamic coverage
+remain unknown; no generated program is executed by this static audit.
 
 ## Overnight implementation (2026-10-02)
 

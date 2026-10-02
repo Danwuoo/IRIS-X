@@ -204,13 +204,25 @@ positions, immutable materials, versions, four-forward/26-token workload and
 1,200-second session are unchanged. Original source bytes and the consumed
 002 archive are bound in the new plan. Eight offline guard/result tests pass;
 the old 001/002 preflights still pass. Version 1 (kernel ID 136791873) was
-accepted after one reserved private push. No retrieval has occurred.
+accepted after one reserved private push. The third backed-off status observes
+COMPLETE; the sole terminal retrieval consumes one listing and one archive
+download. All four forwards and 26 input tokens complete in 412.480 seconds
+on four distinct BF16 L4s with exact original dependency and model materials.
+The reference returns model-output objects twice; Unsloth returns a
+model-output prefill and a tuple for its cached call. Independent comparison
+finds maximum absolute logit differences 0.03125 for prefill and 0.5 for the
+cached token, with equal argmax for both. This closes output capture, not
+bitwise/numerical or historical full-solver parity. No optimizer, generation,
+teacher or correctness scoring occurs. Archive SHA-256:
+`9899ee1b58a3673cefd586e111c6d745006161b3213fa6bd59b0f817093eb8c7`;
+independent proof SHA-256:
+`23f387b52d46ead3d3d3e69ae4b378f9d4a11eebdc06352efb0ae14c21b5f1d6`.
 Plan digest:
 `sha256:1c1815ecfce27842880187f6693cdfe78e836545923902b3a20b744bf2508e0e`;
 receipt SHA-256:
 `446512fd13a150eac9d1f120311f1ef2382e7f3e00b8466ccc1b8ff3bac01477`.
-Native Trainer inspection now waits for this distinct original cache probe;
-failed 002 does not unlock it.
+This completed, once-retrieved original cache probe unlocks only the reviewed
+zero-work Trainer inspection; failed 002 remains consumed.
 
 The current read-only free-quota snapshot 004 reconciles to 12,814.729 free
 seconds remaining, zero reserved seconds and pay-to-scale disabled before
@@ -224,6 +236,12 @@ to 11,332.267 free seconds, zero provider-reserved seconds and pay-to-scale
 disabled. Conservatively charging four GPUs for both 1,200-second session
 ceilings reserves 9,600 seconds locally; this fits those account snapshots.
 This does not supply original-scale or paid training capacity.
+Snapshot 007 after the cache retrieval reconciles to 8,807.201 free seconds,
+zero provider-reserved seconds and pay-to-scale disabled. A conservative
+four-GPU reserve for the still-running 1,200-second operator probe plus a new
+1,200-second inspection would total 9,600 seconds and exceed this snapshot.
+The inspection is prepared offline and waits for the operator probe's terminal
+state and another exact quota check before submission.
 
 ## Exact published original ARC-SFT checkpoint
 
@@ -388,6 +406,12 @@ separate from qualification for long-task source TTT: a context, dtype,
 topology or mask difference does not unlock it. Nine offline budget/vector/
 state/envelope tests pass, including faults that rehash the entire archive.
 The original numerical 001/002 packages stay unchanged.
+After original cache probe 003 completes and verifies, distinct inert
+`nvarc-original-qwen3-training-inspect-001` stages and passes exact offline
+preflight, with no external calls and no permitted forward/optimizer step.
+Plan digest:
+`sha256:13aee59319e1745c98138d65fa92ddaa4d62fa04facd6fced4913a866fb93dea`.
+It is not submitted while the conservative remaining-resource check fails.
 
 An actual tiny CPU construction fixture first passes under current Torch/
 Transformers/PEFT with zero model forwards, five prohibited operations blocked
@@ -752,6 +776,51 @@ independent proof SHA-256:
 The subsequent `python tools/repository_check.py --all` passes all 368 tests
 in 250.140 seconds, with four optional-dependency skips. Validation log
 SHA-256: `c2e2d805ac52840774fbd7ac685edd64174d2554e81e6aeda62eb29c583a9129`.
+
+### Original static parser and helper cleanup
+
+The unchanged Git-verified `SDG/scripts/parser.py` now runs against the two
+fixed retained groups using compatible
+[tree-sitter 0.23.2](https://pypi.org/project/tree-sitter/0.23.2/) and
+[tree-sitter-python 0.23.6](https://pypi.org/project/tree-sitter-python/0.23.6/).
+These historical SDG package versions are unknown; the selected versions
+establish only current-source API compatibility. Both Windows wheels are
+verified against exact primary PyPI version metadata and installed offline.
+The first acquisition retained one wheel before a metadata connection reset;
+its failed ledger remains frozen. A distinct acquisition carries those exact
+bytes and retains the second wheel, with no paid or GPU request.
+
+The first static audit and its source snapshot remain frozen. The second
+adds closed runtime-material verification and independent Python AST
+comparison. It completes in 0.985 seconds, parsing the prior fixed input
+program and all twenty plus ten output programs, with zero generated-program,
+teacher or model execution. The twenty-response group satisfies the current
+source's sequential parse/cleanup/entry precondition for all twenty programs.
+Only SID 5 changes text: the source removes trailing comments, with no function
+removed and no Python AST change. The ten-response group's programs are all
+byte unchanged after source cleanup; its twenty-program precondition stays
+false. Both fixed groups preserve their original parents and exposure.
+
+This is a static equivalence observation for the previously replayed programs;
+it does not add dynamic outcomes or qualify all raw groups. Literal contract
+canaries confirm that generated top-level text is parsed without execution
+and that the source's own cleanup-regex `AttributeError` is retained rather
+than repaired when a first unused helper lacks the expected preceding block.
+The latter is an artificial fixture, not an observed archive failure.
+Evidence is at
+`.irisx/nvarc-original/manifests/sdg-source-parser-20261002-002/`.
+Parser source SHA-256:
+`28da4f039e1e308f4cb31543e8875403045ce376425e488ed964f535649cfb04`;
+result SHA-256:
+`bab6e2fef90f1109af5c1b221404aadb51cb2817f819923f00257b6f0d8f3c86`;
+literal contract proof SHA-256:
+`a3ae91701e1e6c65371301369c7ce3026f1b2f4e1146ad5d7bff51bef8d625cc`.
+An independent default-Python AST recount covers every cleaned/original output
+program without tree-sitter queries or generated-program execution; proof
+SHA-256: `d93d5b1fe2db6b04fb02095fae0b85b2ba35c83d380f95b37af81ae95e7620c7`.
+The full repository check passes 368 tests in 279.611 seconds, with four
+optional-dependency skips. Log SHA-256:
+`bd2fb88a45f6b3be223990e239bec508e553c9c379ab6a4dc849e5e797791153`.
 
 ## Remaining scale and quality boundaries
 
