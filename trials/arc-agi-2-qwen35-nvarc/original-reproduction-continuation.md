@@ -170,7 +170,17 @@ therefore binds prefill positions 0–11 and cached position 12. It also records
 completion after each actual call and saves each prefill vector before the
 cached call. The original Docker, dependency, model, four-L4 entitlement,
 four-forward/26-token/zero-training envelope and 1,200-second bound remain
-fixed. Version 1 was accepted with its one push consumed and no retrieval yet.
+fixed. Version 1 was accepted; its push and sole terminal retrieval are now
+consumed. The fourth backed-off status returned ERROR. Both reference calls
+and both native Unsloth calls returned with their exact position IDs, but
+cached-result extraction assumed `.logits` on the original tuple output.
+The 507.520-second terminal envelope preserves all four completed calls and
+26 input tokens, with zero training/generation/teacher work. Both prefill
+vectors are retained: maximum absolute difference 0.03125 and equal argmax,
+without bitwise equality or a retained native cached vector. Archive SHA-256:
+`74868ffbb99de934dbc6713b5af6846d478227cee4d231e7a86024b995238cd7`;
+independent proof SHA-256:
+`d652bc8ed9356b7bdfcec5aa401788b80e1af7f966c05f8b3bbfcf316656fcdd`.
 Plan digest:
 `sha256:98dd97a73e30f31d445cd64ba703cc47d4a92b6f2001d4833e0209b71eaf8c54`;
 receipt SHA-256:
@@ -185,6 +195,23 @@ tokens and zero optimizer/generation calls occur. This is a compatible CPU
 reference check, not the original 4B/Unsloth CUDA observation. Proof SHA-256:
 `4b8e92f6fda1d8060472856dd63f3b123e7d8c1ec3a3932a663c1727332de711`.
 
+The exact original `llama.py` causal-LM wrapper explicitly returns
+`(logits,) + outputs[1:]` when `return_dict` is false. Distinct private
+[`nvarc-original-qwen3-unsloth-probe-003`](https://www.kaggle.com/code/danielwuu/nvarc-original-qwen3-unsloth-probe-003)
+repairs only result extraction: attributes or tuple indices 0/1 must contain
+the exact `[1,12,16]` / `[1,1,16]` logits and nonempty cache. Original explicit
+positions, immutable materials, versions, four-forward/26-token workload and
+1,200-second session are unchanged. Original source bytes and the consumed
+002 archive are bound in the new plan. Eight offline guard/result tests pass;
+the old 001/002 preflights still pass. Version 1 (kernel ID 136791873) was
+accepted after one reserved private push. No retrieval has occurred.
+Plan digest:
+`sha256:1c1815ecfce27842880187f6693cdfe78e836545923902b3a20b744bf2508e0e`;
+receipt SHA-256:
+`446512fd13a150eac9d1f120311f1ef2382e7f3e00b8466ccc1b8ff3bac01477`.
+Native Trainer inspection now waits for this distinct original cache probe;
+failed 002 does not unlock it.
+
 The current read-only free-quota snapshot 004 reconciles to 12,814.729 free
 seconds remaining, zero reserved seconds and pay-to-scale disabled before
 the repair push. It is an account snapshot, not a queue-cause diagnosis or
@@ -192,6 +219,11 @@ permission for paid/full-scale work. Native-training inspection tooling is now
 implemented and locally checked, with no transport package, push or original
 runtime observation. Its package generator refuses to write any package before
 the original explicit-position Unsloth GPU prerequisite completes and verifies.
+Distinct snapshots 005/006, before the two current submissions, each reconcile
+to 11,332.267 free seconds, zero provider-reserved seconds and pay-to-scale
+disabled. Conservatively charging four GPUs for both 1,200-second session
+ceilings reserves 9,600 seconds locally; this fits those account snapshots.
+This does not supply original-scale or paid training capacity.
 
 ## Exact published original ARC-SFT checkpoint
 
@@ -784,6 +816,16 @@ reader: 347 tests pass in 280.664 seconds with four skips, SHA-256
 Full validation 018 covers the native zero-work inspection and independent
 raw-vector reader: 356 tests pass in 302.871 seconds with four skips, SHA-256
 `b4e2b3c7ae22ea6e30d8660a94b684f15fdf26b966765dde04f54e3817d0a471`.
+Full validation 019 covers the tuple-output repair and first-layer operator
+guard/reader: 362 tests pass in 259.663 seconds with four skips, SHA-256
+`67dde869ff8d6e22d34fc0e62ab51afed9e76f27ef5166aaea143ce9b928a5a3`.
+Three additional actual tiny CPU tests pass: all 21 first-layer operator
+forwards under the real entry guard, precision/method/storage restoration
+after injected failure, and real ModelOutput/cached-tuple extraction. The
+fixture uses dense CPU attention, two-layer random weights reduced to one
+layer and modern compatible dependencies; it proves no original CUDA or
+native-varlen numerics. Strict log SHA-256:
+`2b046ce0d27aa6f29760fcbab8ad7e198bd9547b305e7c1fed9c472059549728`.
 
 One read-only accelerator quota snapshot is retained separately at
 `.irisx/nvarc-original/manifests/free-resource-20261002-001/`. The SDK's
@@ -821,8 +863,10 @@ layout/arithmetic test preserves four query heads and two KV heads, compares
 both segmented forward values and every Q/K/V gradient to explicit KV repeat,
 and rejects invalid head ratios/shapes and CPU varlen dispatch. It passes in
 0.267 seconds. This is no native CUDA operator or 4B numerical observation;
-no GQA-variant package is staged or submitted. Earlier probes and the existing
-full-gradient prerequisite remain on their exact repeated-KV backend.
+at that local implementation checkpoint no GQA-variant package was staged or
+submitted. The subsequent separate first-layer diagnostic below includes a
+native-GQA mode; the earlier probes and existing full-gradient prerequisite
+remain on their exact repeated-KV backend.
 Diagnostic 002 is now terminal. Its fifth backed-off status returned ERROR;
 the sole retrieval consumed one output listing and archive download. All
 twenty-one forwards and 126,260 input tokens completed on four distinct BF16
@@ -844,6 +888,39 @@ This localizes the open difference to merged execution after embedding;
 KV repetition alone is not established as its cause because single varlen
 already matches. Any new first-layer/operator diagnostic needs a new immutable
 identity and exact bounds. Full-gradient staging remains blocked.
+
+Distinct private
+[`nvarc-original-qwen3-probe-003`](https://www.kaggle.com/code/danielwuu/nvarc-original-qwen3-probe-003)
+is a first-layer operator diagnostic, not a full 4B solver. It byte-verifies
+the same compact base, removes decoder layers 1–35 without changing retained
+weights, and verifies all thirteen remaining named parameter shapes/dtypes.
+Seven modes compare independent forced Flash SDPA, repeated-KV packing and
+native-GQA packing, BF16 reduced-precision reduction enabled/disabled, and a
+separate FP32 linear-compute diagnostic with outputs cast back to BF16. The
+FP32 diagnostic changes arithmetic only; it never changes stored weights or
+the earlier whole-model acceptance gate. PyTorch's official
+[numerical-accuracy notes](https://docs.pytorch.org/docs/2.10/notes/numerical_accuracy.html)
+describe batching and BF16 reduced-precision numerical effects; these are
+hypotheses to test, not a diagnosis of the observed mismatch.
+
+The bound workload is exactly 21 partial-model forwards and 220,878 input
+tokens, one retained decoder layer per call, zero backwards/optimizers/
+generations/teachers, four distinct BF16 L4s and one rank-zero worker. It
+retains every sixteen-row logit and three fixed token samples per row at
+sixteen operators, without extra model calls. The parent/child limits are
+1,200/900 seconds. The independent reader rehashes every member, recounts
+actual completed-call prefixes, verifies the partial parameter subset and
+precision flags, and recomputes every operator difference from raw FP32-LE
+vectors. It always leaves whole-model qualification false. Rehashed vector,
+cost, precision, parameter, hardware and full-model-claim faults are rejected.
+Actual tiny CPU hook/precision/guard tests pass; the local dense attention
+fixture makes no CUDA varlen claim. Version 1 (kernel ID 136792365) was
+accepted after one reserved private push; no retrieval has occurred.
+Plan digest:
+`sha256:c06b4737feebe271ec410fe34e38eba34705a937e6c9c152c44585b058f9a3f3`;
+receipt SHA-256:
+`867493cf28426cf5c4330adbaf28847f03434bb76ec3174f79cabb1101f882c0`.
+
 Neither the 32-H100 original SFT allocation nor eight-H100 TRM pretraining is
 provided by four-L4 free Kaggle sessions. Durable cross-session optimizer
 checkpoint transport remains a requirement before whole training.

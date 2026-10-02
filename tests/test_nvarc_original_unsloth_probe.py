@@ -15,6 +15,26 @@ from irisx.errors import ValidationError
 
 
 class OriginalUnslothProbeTests(unittest.TestCase):
+    def test_source_bound_tuple_and_model_output_extraction_validates_logits_and_cache(self):
+        from types import SimpleNamespace
+        class Tensor:
+            def __init__(self,shape): self.shape=shape
+        scope={'torch':SimpleNamespace(Tensor=Tensor),'contracts':[]}
+        exec(compile(probe.OUTPUT_HELPER,'original-output-contract','exec'),scope)
+        logits=Tensor([1,12,16]);cache=object()
+        self.assertEqual(scope['observed_output'](SimpleNamespace(logits=logits,past_key_values=cache),12),(logits,cache))
+        logits=Tensor([1,1,16])
+        self.assertEqual(scope['observed_output']((logits,cache),1),(logits,cache))
+        self.assertEqual(scope['contracts'],['model-output-logits-cache','tuple-logits-cache'])
+        for value in ((logits,), (logits,None), (Tensor([1,1,17]),cache), ('logits',cache)):
+            with self.assertRaises(RuntimeError):scope['observed_output'](value,1)
+        self.assertEqual(len(scope['contracts']),2)
+        repaired=probe.worker_source(True,True)
+        compile(repaired,'tuple-extraction-repair','exec')
+        self.assertNotIn('second.logits',repaired)
+        self.assertIn('past_key_values=first_cache',repaired)
+        with self.assertRaises(ValidationError):probe.worker_source(False,True)
+
     def test_production_call_guard_reserves_before_call_and_blocks_extra_work(self):
         function=next(node for node in ast.parse(probe.WORKER).body if isinstance(node,ast.FunctionDef) and node.name=='bounded_call')
         class Tensor:
@@ -71,10 +91,11 @@ class OriginalUnslothProbeTests(unittest.TestCase):
             self.assertEqual([e['completed'] for e in scope['events']],[True,False])
             self.assertEqual(calls,[[list(range(12))],[[12]]])
 
-    def fixture(self, root, fault=None, positions=False):
+    def fixture(self, root, fault=None, positions=False,outputs=False):
         package=root/'package';package.mkdir();run='nvarc-original-qwen3-unsloth-probe-999'
         plan={'run_id':run};atomic(package/'plan.json',plan);atomic(package/'stage-summary.json',{'payload_sha256':{}})
         if positions:plan['format']=probe.POSITION_FORMAT;atomic(package/'plan.json',plan)
+        if outputs:plan['format']=probe.OUTPUT_FORMAT;atomic(package/'plan.json',plan)
         content={'plan.json':plan,'payload-bindings.json':{},'terminal.json':{'run_id':run,'outcome':'complete',
             'contains_evaluator_truth':False,'wall_seconds':100.0,'optimizer_steps':0,'generations':0,'teacher_calls':0,'paid_usd':0},
             'hardware.json':{'inventory':[{'uuid':str(i),'name':'NVIDIA L4','bf16':True} for i in range(4)],
@@ -93,6 +114,10 @@ class OriginalUnslothProbeTests(unittest.TestCase):
             if positions:
                 for i,row in enumerate(content[mode+'-ledger.json']):row.update(completed=True,position_ids=[list(range(12)) if i==0 else [12]])
                 content[mode+'-prefill.json']={'mode':mode,'vector':vectors[0].copy(),'shape':[1,12,16]}
+            if outputs:
+                content[mode+'-result.json'].update(output_shapes=[[1,12,16],[1,1,16]],
+                    observed_output_contracts=['model-output-logits-cache',
+                        'tuple-logits-cache' if mode=='unsloth' else 'model-output-logits-cache'])
         if fault=='bool-cost':content['unsloth-ledger.json'][0]['outer_forwards_reserved']=True
         elif fault=='wrong-token':content['unsloth-ledger.json'][1]['input_ids']=[[1]]
         elif fault=='extra-call':content['reference-ledger.json'].append(dict(content['reference-ledger.json'][1]))
@@ -102,6 +127,8 @@ class OriginalUnslothProbeTests(unittest.TestCase):
         elif fault=='bool-completed':content['unsloth-ledger.json'][0]['completed']=1
         elif fault=='missing-pos':content['unsloth-ledger.json'][1].pop('position_ids')
         elif fault=='prefill-vector-lie':content['unsloth-prefill.json']['vector'][0]+=1.0
+        elif fault=='wrong-contract':content['unsloth-result.json']['observed_output_contracts'][1]='unknown-output'
+        elif fault=='wrong-shape':content['unsloth-result.json']['output_shapes'][1]=[1,1,17]
         elif fault=='failed-cached-position':
             content['terminal.json']['outcome']='failed';content.pop('unsloth-result.json')
             content['unsloth-ledger.json'][1]['completed']=False
@@ -129,6 +156,19 @@ class OriginalUnslothProbeTests(unittest.TestCase):
             self.assertTrue(result['comparisons']['prefill']['bitwise_equal'])
             self.assertFalse(result['historical_full_solver_parity'])
             self.assertFalse(result['correctness_scored'])
+
+    def test_tuple_output_result_requires_shapes_contracts_and_original_four_call_budget(self):
+        for fault in (None,'wrong-contract','wrong-shape','bool-completed','missing-pos'):
+            with self.subTest(fault=fault),tempfile.TemporaryDirectory() as temporary:
+                path,package,checked=self.fixture(Path(temporary),fault,positions=True,outputs=True)
+                with patch.object(probe,'preflight',return_value=checked),patch.object(probe,'binding',return_value={'inventory':{}}):
+                    if fault:
+                        with self.assertRaises(ValidationError):probe.verify_archive(path,package)
+                    else:
+                        result=probe.verify_archive(path,package)
+                        self.assertEqual(result['completed_outer_forwards'],4)
+                        self.assertEqual(result['observed_output_contracts']['unsloth'][-1],'tuple-logits-cache')
+                        self.assertFalse(result['historical_full_solver_parity'])
 
     def test_rehashed_cost_input_result_and_hardware_faults_are_rejected(self):
         for fault in ('bool-cost','wrong-token','extra-call','trained','nonfinite','bad-hardware'):

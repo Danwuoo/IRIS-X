@@ -87,7 +87,7 @@ def views():
 
 
 def prerequisite():
-    folder = ROOT / '.irisx/nvarc-original/runs/nvarc-original-qwen3-unsloth-probe-002'
+    folder = ROOT / '.irisx/nvarc-original/runs/nvarc-original-qwen3-unsloth-probe-003'
     archive = folder / 'execution-final/retrieved/gpu-preflight-result.zip'
     ledger = json.loads((folder / 'execution-final/execution-ledger.json').read_bytes())
     require(ledger['accepted'] is True and ledger['terminal_observed'] is True and ledger['retrieval_reserved'] == 1 and

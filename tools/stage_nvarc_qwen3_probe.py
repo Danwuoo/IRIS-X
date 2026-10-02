@@ -20,9 +20,26 @@ from irisx.arc_nvarc_packing import pack_sequences
 from irisx.canonical import canonical_bytes,digest_value
 from irisx.errors import ValidationError
 from irisx.arc_nvarc_qwen3_packing_diagnostic import FORMAT as DIAGNOSTIC_FORMAT, schedule as diagnostic_schedule
+from irisx.arc_nvarc_qwen3_operator_probe import FORMAT as OPERATOR_FORMAT, schedule as operator_schedule, MODES as OPERATOR_MODES
 
 
-def stage(output,run,diagnostic=False):
+def operator_prerequisite():
+    folder=ROOT/'.irisx/nvarc-original/runs/nvarc-original-qwen3-probe-002'
+    path=folder/'independent-verification.json';ledger=json.loads((folder/'execution-final/execution-ledger.json').read_bytes())
+    proof=json.loads(path.read_bytes())
+    if (sha(path)!='13f56f4ebb7fef1f43b6fa911055fa8c7115d2337b1470be41c065adec058970' or
+            ledger['terminal_observed'] is not True or ledger['retrieval_reserved']!=1 or
+            ledger['events'][-1]['outcome']!='retrieved' or
+            sha(folder/'execution-final/retrieved/gpu-preflight-result.zip')!='1a300e4a60ed062e1f3c6036910e47bcc464d3de2a4612def8472d997825de14' or
+            proof['completed_outer_forwards']!=21 or proof['fixed_numerical_gate_passed'] is not False or
+            proof['independently_recomputed_packed_isolation'] is not True or any(row['max_absolute_error']!=0 for row in
+                proof['independently_recomputed_logit_comparisons']['single-varlen-vs-independent-flash-sdpa'])):
+        raise ValidationError('exact closed merged-shape numerical failure required')
+    return sha(path)
+
+
+def stage(output,run,diagnostic=False,operator=False):
+    if diagnostic and operator:raise ValidationError('one distinct probe purpose required')
     if output.exists() or not re.fullmatch(r'nvarc-original-qwen3-probe-\d{3}',run):
         raise ValidationError('new immutable original-family probe required')
     material=json.loads((DEFAULT/'conversion.json').read_bytes())
@@ -62,6 +79,20 @@ def stage(output,run,diagnostic=False):
             retain_full_logits=True,retain_sampled_states={'layers':38,'rows':8,'positions_per_row':3,'hidden_size':2560},
             extra_model_calls_from_hooks=0,maximum_attention_reference_calls=0,
             diagnostic_scope='backend and physical batch-shape decomposition; unchanged fixed numerical gate')
+    if operator:
+        prerequisite=operator_prerequisite();scheduled=operator_schedule(rows)
+        plan.update(format=OPERATOR_FORMAT,predecessor_run_id='nvarc-original-qwen3-probe-002',
+            maximum_notebook_wall_seconds=1200,maximum_worker_wall_seconds=900,
+            predecessor_archive_sha256='1a300e4a60ed062e1f3c6036910e47bcc464d3de2a4612def8472d997825de14',
+            predecessor_verification_sha256=prerequisite,maximum_outer_forwards=len(scheduled),
+            maximum_input_tokens=sum(x['input_tokens'] for x in scheduled),actual_model_passes=7,
+            forward_schedule=scheduled,original_decoder_layers=36,retained_decoder_layers=[0],
+            maximum_decoder_layer_invocations=len(scheduled),tiny_gradient_rows=0,tiny_gradient_input_tokens=0,
+            tiny_gradient_backwards=0,numerical_modes=list(OPERATOR_MODES),whole_model_numerical_qualification=False,
+            weights_modified=False,retain_full_first_layer_logits=True,retain_all_sampled_operator_vectors=True,
+            extra_model_calls_from_hooks=0,maximum_attention_reference_calls=0,
+            precision_source_reference='https://docs.pytorch.org/docs/2.10/notes/numerical_accuracy.html',
+            diagnostic_scope='one-layer operator localization only; fixed whole-model numerical gate remains unsatisfied')
     (output/'wheel').mkdir(parents=True)
     wheel=output/'wheel'/build.build_wheel(str(output/'wheel'))
     payload={'plan':canonical_bytes(plan,newline=True),'samples':canonical_bytes(rows,newline=True),
@@ -70,6 +101,9 @@ def stage(output,run,diagnostic=False):
     source=(ROOT/'tools/nvarc_qwen3_probe_notebook.py.tmpl').read_text(encoding='utf-8')
     if diagnostic:
         source=source.replace('irisx.arc_nvarc_qwen3_probe','irisx.arc_nvarc_qwen3_packing_diagnostic')
+    if operator:
+        source=source.replace('irisx.arc_nvarc_qwen3_probe','irisx.arc_nvarc_qwen3_operator_probe')
+        source=source.replace("plan['maximum_notebook_wall_seconds']!=1800", "plan['maximum_notebook_wall_seconds']!=1200")
     for key,value in {'__RUN__':json.dumps(run),'__PAYLOADS__':json.dumps({k:base64.b64encode(zlib.compress(v,9)).decode() for k,v in payload.items()}),
         '__HASHES__':json.dumps(hashes),'__HARDWARE_HELPER__':(ROOT/'src/irisx/arc_nvarc_hardware.py').read_text(encoding='utf-8')}.items():
         source=source.replace(key,value)
@@ -92,12 +126,14 @@ def preflight(package):
     if actual!=summary['inventory']:raise ValidationError('closed package bytes differ')
     plan=json.loads((package/'plan.json').read_bytes());rows=json.loads((package/'samples.json').read_bytes())
     diagnostic=plan['format']==DIAGNOSTIC_FORMAT
-    expected_schedule=diagnostic_schedule(rows) if diagnostic else None
-    expected_calls=len(expected_schedule) if diagnostic else 13
-    expected_tokens=sum(x['input_tokens'] for x in expected_schedule) if diagnostic else sum(len(row['input_ids']) for row in rows)*3+44
-    if (plan['owner_decision']!='Decision 0054' or plan['format'] not in {'irisx/nvarc-original-qwen3-probe-v1',DIAGNOSTIC_FORMAT} or
+    operator=plan['format']==OPERATOR_FORMAT
+    expected_schedule=operator_schedule(rows) if operator else diagnostic_schedule(rows) if diagnostic else None
+    expected_calls=len(expected_schedule) if expected_schedule is not None else 13
+    expected_tokens=sum(x['input_tokens'] for x in expected_schedule) if expected_schedule is not None else sum(len(row['input_ids']) for row in rows)*3+44
+    if (plan['owner_decision']!='Decision 0054' or plan['format'] not in {'irisx/nvarc-original-qwen3-probe-v1',DIAGNOSTIC_FORMAT,OPERATOR_FORMAT} or
             not re.fullmatch(r'nvarc-original-qwen3-probe-\d{3}',plan['run_id']) or
-            plan['maximum_notebook_wall_seconds']!=1800 or plan['maximum_worker_wall_seconds']!=1200 or
+            plan['maximum_notebook_wall_seconds']!=(1200 if operator else 1800) or
+            plan['maximum_worker_wall_seconds']!=(900 if operator else 1200) or
             plan['maximum_generations']!=0 or plan['maximum_teacher_calls']!=0 or plan['maximum_optimizer_steps']!=0 or
             plan['maximum_paid_usd']!=0 or plan['retain_export'] is not False or
             len(rows)!=8 or digest_value(rows)!=plan['data_digest'] or plan['maximum_outer_forwards']!=expected_calls or
@@ -111,6 +147,22 @@ def preflight(package):
             plan['predecessor_run_id']!='nvarc-original-qwen3-probe-001' or
             plan['predecessor_archive_sha256']!='be6cfbb2e0608e9d328c8eec9b8d3a3df562aa00a6e36e8a06f40c32aee33025'):
         raise ValidationError('fixed numerical diagnostic boundaries differ')
+    if operator and (plan['forward_schedule']!=expected_schedule or plan['actual_model_passes']!=7 or
+            plan['original_decoder_layers']!=36 or plan['retained_decoder_layers']!=[0] or
+            plan['maximum_decoder_layer_invocations']!=expected_calls or plan['tiny_gradient_rows']!=0 or
+            plan['tiny_gradient_input_tokens']!=0 or plan['tiny_gradient_backwards']!=0 or
+            plan['whole_model_numerical_qualification'] is not False or plan['weights_modified'] is not False or
+            plan['numerical_modes']!=list(OPERATOR_MODES) or plan['retain_full_first_layer_logits'] is not True or
+            plan['retain_all_sampled_operator_vectors'] is not True or plan['extra_model_calls_from_hooks']!=0 or
+            plan['maximum_attention_reference_calls']!=0 or plan['predecessor_run_id']!='nvarc-original-qwen3-probe-002' or
+            plan['predecessor_archive_sha256']!='1a300e4a60ed062e1f3c6036910e47bcc464d3de2a4612def8472d997825de14' or
+            plan['predecessor_verification_sha256']!=operator_prerequisite()):
+        raise ValidationError('exact partial-model operator boundaries differ')
+    if operator and any(type(plan[k]) is not int for k in ('maximum_notebook_wall_seconds','maximum_worker_wall_seconds',
+            'maximum_outer_forwards','maximum_input_tokens','maximum_generations','maximum_teacher_calls',
+            'maximum_optimizer_steps','maximum_paid_usd','tiny_gradient_backwards','tiny_gradient_input_tokens',
+            'maximum_decoder_layer_invocations','extra_model_calls_from_hooks','maximum_attention_reference_calls')):
+        raise ValidationError('integer partial-model workload ceilings required')
     pack_sequences(rows)
     notebook=json.loads((package/'kernel/notebook.ipynb').read_bytes())
     source=''.join(notebook['cells'][0]['source']);tree=ast.parse(source)
@@ -119,6 +171,8 @@ def preflight(package):
     if values['RUN']!=plan['run_id'] or values['HASHES']!=summary['payload_sha256']:raise ValidationError('notebook payload binding differs')
     if diagnostic and "'irisx.arc_nvarc_qwen3_packing_diagnostic'" not in source:
         raise ValidationError('diagnostic worker differs')
+    if operator and "'irisx.arc_nvarc_qwen3_operator_probe'" not in source:
+        raise ValidationError('first-layer operator worker differs')
     for key,encoded in values['PAYLOADS'].items():
         raw=zlib.decompress(base64.b64decode(encoded,validate=True))
         if hashlib.sha256(raw).hexdigest()!=values['HASHES'][key]:raise ValidationError('embedded payload bytes differ')
@@ -134,5 +188,6 @@ def preflight(package):
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('action',choices=('stage','preflight'))
     parser.add_argument('--package',type=Path,required=True);parser.add_argument('--run-id')
-    parser.add_argument('--diagnostic',action='store_true')
-    args=parser.parse_args();print(json.dumps(stage(args.package,args.run_id,args.diagnostic) if args.action=='stage' else preflight(args.package)))
+    group=parser.add_mutually_exclusive_group()
+    group.add_argument('--diagnostic',action='store_true');group.add_argument('--operator',action='store_true')
+    args=parser.parse_args();print(json.dumps(stage(args.package,args.run_id,args.diagnostic,args.operator) if args.action=='stage' else preflight(args.package)))

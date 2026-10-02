@@ -17,8 +17,11 @@ exact materials and both SDPA reference calls verify; native prefill returned
 but the cached call failed on missing position IDs. No native numerical
 comparison completed. Distinct private 002 supplies the original DFS's
 explicit positions and retains completed calls/prefill vectors within the
-same four-forward/26-token/1,200-second bounds. Version 1 is accepted with its
-push consumed and no retrieval yet. Exact source-policy audit also
+same four-forward/26-token/1,200-second bounds. Its push/retrieval are consumed:
+all four forwards return, but native cached-result extraction fails on the
+original tuple contract. Retained prefill differs by at most 0.03125 with equal
+argmax. Distinct private 003 repairs extraction only; version 1 is accepted
+within the same bounds, with no retrieval yet. Exact source-policy audit also
 finds the original full embedding/head save modules and BF16 snapshot cast.
 Its inferred trainable count is 528,564,224; the earlier 254-LoRA/FP32 topology
 is a different compatibility configuration. Original `for_training()` enables
@@ -40,7 +43,7 @@ Native zero-work inspection tooling now has a reviewed finite parent/child
 envelope, all 37 exact source/metadata files, full detached baseline/reset
 fingerprints and independently recounted raw prepared-token/label vectors.
 Its package generator blocks before any write until the original cache probe
-completes and verifies; no inspection package or push exists. A real compatible
+003 completes and verifies; no inspection package or push exists. A real compatible
 4.53.3 tiny CPU fixture constructs/resets its projection/full-save adapter under
 the production guard and matches all 128 source collator views with zero
 forwards. Its artificial Trainer routing does not establish native Unsloth
@@ -102,7 +105,14 @@ matches every forced Flash SDPA logit and sampled state bitwise; merged packing
 differs from layer 0, reaches maximum logit error 13.59375 and fails the same
 fixed tolerance. Later packed samples remain bitwise isolated after changing
 the first. The failure has complete retained vectors and no optimizer step;
-merged first-layer/operator numerics remain open.
+merged first-layer/operator numerics remain open. Distinct private 003's
+first-layer operator diagnostic is accepted as version 1, with no retrieval
+yet. It retains unchanged embedding/layer-0/norm/head weights, compares seven
+batching/reduction/native-GQA/FP32-compute modes within 21 partial-model
+forwards, 220,878 input tokens and 1,200/900-second parent/child bounds. Full
+operator vectors and actual-call accounting have an independent closed reader;
+this partial model can never qualify the whole-model numerical gate. No
+optimizer, generation, teacher or evaluator call is authorized by that probe.
 No original-family full-gradient step is staged. Neither probe supplies
 training throughput, ARC score or promotion. All 103,223 published synthetic
 puzzles and 2,984,385 pairs now have

@@ -22,7 +22,8 @@ def preflight(package):
     if read(package/'plan.json')['format']=='irisx/nvarc-original-training-inspection-v1':
         from tools.stage_nvarc_original_training_inspection import preflight as check
     elif read(package/'plan.json')['format'] in {'irisx/nvarc-original-qwen3-unsloth-probe-v1',
-            'irisx/nvarc-original-qwen3-unsloth-positions-probe-v1'}:
+            'irisx/nvarc-original-qwen3-unsloth-positions-probe-v1',
+            'irisx/nvarc-original-qwen3-unsloth-output-probe-v1'}:
         from tools.stage_nvarc_original_unsloth_probe import preflight as check
     elif read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-environment-probe-v1':
         from tools.stage_nvarc_original_environment import preflight as check
@@ -37,7 +38,8 @@ def preflight(package):
     elif read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-packed-step-v1':
         from tools.stage_nvarc_qwen3_packed_step import preflight as check
     elif read(package/'plan.json')['format'] in {'irisx/nvarc-original-qwen3-probe-v1',
-            'irisx/nvarc-original-qwen3-packing-diagnostic-v1'}:
+            'irisx/nvarc-original-qwen3-packing-diagnostic-v1',
+            'irisx/nvarc-original-qwen3-first-layer-operators-v1'}:
         from tools.stage_nvarc_qwen3_probe import preflight as check
     elif read(package/'plan.json')['format'] in {'irisx/nvarc-complete-ttt-v1','irisx/nvarc-long-ttt-resource-v1'}:
         from tools.stage_nvarc_overnight_ttt import preflight as check

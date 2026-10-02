@@ -21,6 +21,7 @@ from tools.stage_nvarc_original_environment import binding,TOKENIZER,BINDING
 
 FORMAT='irisx/nvarc-original-qwen3-unsloth-probe-v1'
 POSITION_FORMAT='irisx/nvarc-original-qwen3-unsloth-positions-probe-v1'
+OUTPUT_FORMAT='irisx/nvarc-original-qwen3-unsloth-output-probe-v1'
 MODEL_REF='sorokin/qwen3_4b_grids15_sft139/transformers/bfloat16/1'
 MATERIAL='sha256:27de51ef22658a0cce3a9fc04fac8fc456165645e2665a82b215f72e20194b03'
 IDS=[14,11,10,0,1,15,14,12,10,1,0,15]
@@ -91,7 +92,21 @@ def require(value,message):
     if not value:raise ValidationError(message)
 
 
-def worker_source(explicit_positions=False):
+OUTPUT_HELPER='''def observed_output(value, expected_length):
+    if isinstance(value, tuple):
+        if len(value)<2:raise RuntimeError('original cached tuple requires logits and past values')
+        logits,cache=value[:2];contract='tuple-logits-cache'
+    else:
+        logits,cache=value.logits,value.past_key_values;contract='model-output-logits-cache'
+    if not isinstance(logits,torch.Tensor) or list(logits.shape)!=[1,expected_length,16] or cache is None:
+        raise RuntimeError('exact original output tensor/cache contract differs')
+    contracts.append(contract)
+    return logits,cache
+'''
+
+
+def worker_source(explicit_positions=False,tuple_outputs=False):
+    require(not tuple_outputs or explicit_positions,'tuple-output repair retains exact positions')
     source=WORKER
     if explicit_positions:
         source=source.replace("        events.append({'stage':active", "        positions=kwargs.get('position_ids')\n        actual_positions=positions.detach().cpu().tolist() if positions is not None else None\n        wanted_positions=[list(range(len(ids))) if len(events)==0 else [len(ids)]]\n        if actual_positions!=wanted_positions:raise RuntimeError('exact original cached position IDs required')\n        events.append({'completed':False,'position_ids':actual_positions,'stage':active")
@@ -101,6 +116,16 @@ def worker_source(explicit_positions=False):
         source=source.replace("    active='cached-token';second=model", "    if not all(__import__('math').isfinite(x) for x in vectors[0]):raise RuntimeError('nonfinite prefill vector')\n    (output/(mode+'-prefill.json')).write_text(json.dumps({'mode':mode,'vector':vectors[0],'shape':shapes[0]},allow_nan=False),encoding='utf-8')\n    active='cached-token';second=model")
         source=source.replace("past_key_values=first.past_key_values,use_cache=True)",
             "position_ids=torch.tensor([[len(ids)]],device='cuda:0'),past_key_values=first.past_key_values,use_cache=True)")
+    if tuple_outputs:
+        source=source.replace('model.eval();torch.cuda.reset_peak_memory_stats();vectors=[];shapes=[]',
+            OUTPUT_HELPER+'\nmodel.eval();torch.cuda.reset_peak_memory_stats();vectors=[];shapes=[];contracts=[]')
+        source=source.replace('    vectors.append(first.logits[0,-1].float().cpu().tolist());shapes.append(list(first.logits.shape))',
+            '    first_logits,first_cache=observed_output(first,len(ids))\n    vectors.append(first_logits[0,-1].float().cpu().tolist());shapes.append(list(first_logits.shape))')
+        source=source.replace('past_key_values=first.past_key_values,use_cache=True)', 'past_key_values=first_cache,use_cache=True)')
+        source=source.replace('    vectors.append(second.logits[0,-1].float().cpu().tolist());shapes.append(list(second.logits.shape))',
+            '    second_logits,second_cache=observed_output(second,1)\n    vectors.append(second_logits[0,-1].float().cpu().tolist());shapes.append(list(second_logits.shape))')
+        source=source.replace("'input_tokens':sum(row['input_tokens_reserved'] for row in events)",
+            "'observed_output_contracts':contracts,'input_tokens':sum(row['input_tokens_reserved'] for row in events)")
     return source.replace('__VERSIONS__',repr(PACKAGES)).replace('__IDS__',repr(IDS))
 
 
@@ -117,6 +142,21 @@ def failed_position_prerequisite():
         proof['reserved_outer_forwards']==4 and proof['reserved_input_tokens']==26 and
         "AttributeError: 'NoneType' object has no attribute 'device'" in stderr and 'active=\'cached-token\'' in stderr,
         'verified original cached-position failure required')
+    return sha(archive)
+
+
+def failed_output_prerequisite():
+    folder=ROOT/'.irisx/nvarc-original/runs/nvarc-original-qwen3-unsloth-probe-002'
+    archive=folder/'execution-final/retrieved/gpu-preflight-result.zip'
+    ledger=json.loads((folder/'execution-final/execution-ledger.json').read_bytes())
+    require(ledger['accepted'] is True and ledger['terminal_observed'] is True and ledger['retrieval_reserved']==1 and
+        ledger['events'][-1]['outcome']=='retrieved' and sha(archive)=='74868ffbb99de934dbc6713b5af6846d478227cee4d231e7a86024b995238cd7',
+        'exact consumed tuple-output failure required')
+    proof=verify_archive(archive,folder/'package-l4')
+    with zipfile.ZipFile(archive) as stream:stderr=stream.read('unsloth-stderr.log').decode('utf-8')
+    require(proof['outcome']=='failed' and proof['completed_outer_forwards']==4 and proof['reserved_input_tokens']==26 and
+        "AttributeError: 'tuple' object has no attribute 'logits'" in stderr and 'second.logits' in stderr,
+        'verified cached tuple extraction failure required')
     return sha(archive)
 
 
@@ -141,9 +181,9 @@ def render(run,payloads,hashes):
     compile(source,'original-unsloth-numerics','exec');return source
 
 
-def stage(package,run,explicit_positions=False):
+def stage(package,run,explicit_positions=False,tuple_outputs=False):
     require(not package.exists() and re.fullmatch(r'nvarc-original-qwen3-unsloth-probe-\d{3}',run),'new immutable original Unsloth probe required')
-    entries=inventory();proof=binding();worker=worker_source(explicit_positions)
+    entries=inventory();proof=binding();worker=worker_source(explicit_positions,tuple_outputs)
     compile(worker,'original-unsloth-worker','exec')
     plan={'format':FORMAT,'approved':True,'owner_decision':'Decision 0054','run_id':run,'kernel_id':'danielwuu/'+run,
         'maximum_notebook_wall_seconds':1200,'maximum_child_wall_seconds':450,'maximum_outer_forwards':4,
@@ -160,6 +200,11 @@ def stage(package,run,explicit_positions=False):
         plan.update(format=POSITION_FORMAT,explicit_position_ids=True,prefill_position_ids=list(range(len(IDS))),
             cached_position_ids=[len(IDS)],retain_completed_forward_prefix=True,retain_prefill_before_cached_call=True,
             predecessor_run_id='nvarc-original-qwen3-unsloth-probe-001',predecessor_archive_sha256=failed_position_prerequisite())
+    if tuple_outputs:
+        plan.update(format=OUTPUT_FORMAT,accept_original_tuple_output=True,
+            output_contract='logits and cache via attributes or tuple indices zero and one; exact shapes required',
+            output_contract_source_sha256=sha(ROOT/'.irisx/nvarc-original/materials/qwen3-original-training-source-20261002-001/unsloth/models/llama.py'),
+            predecessor_run_id='nvarc-original-qwen3-unsloth-probe-002',predecessor_archive_sha256=failed_output_prerequisite())
     raw={'plan':canonical_bytes(plan,newline=True),'binding':canonical_bytes(proof,newline=True),
         'model_inventory':canonical_bytes(entries,newline=True),'worker':worker.encode('utf-8')}
     payloads={k:base64.b64encode(v).decode() for k,v in raw.items()};hashes={k:hashlib.sha256(v).hexdigest() for k,v in raw.items()}
@@ -180,8 +225,9 @@ def preflight(package):
     summary=json.loads((package/'stage-summary.json').read_bytes());plan=json.loads((package/'plan.json').read_bytes())
     require({p.relative_to(package).as_posix():sha(p) for p in package.rglob('*') if p.is_file() and p.name!='stage-summary.json'}==summary['inventory'] and
         digest_value(plan)==summary['plan_digest'],'closed immutable original numerical package differs')
-    positions=plan['format']==POSITION_FORMAT
-    require(plan['format'] in {FORMAT,POSITION_FORMAT} and plan['owner_decision']=='Decision 0054' and plan['approved'] is True and
+    outputs=plan['format']==OUTPUT_FORMAT
+    positions=plan['format'] in {POSITION_FORMAT,OUTPUT_FORMAT}
+    require(plan['format'] in {FORMAT,POSITION_FORMAT,OUTPUT_FORMAT} and plan['owner_decision']=='Decision 0054' and plan['approved'] is True and
         all(type(plan[k]) is int and plan[k]==v for k,v in {'maximum_notebook_wall_seconds':1200,'maximum_child_wall_seconds':450,
             'maximum_outer_forwards':4,'maximum_input_tokens':26,'maximum_optimizer_steps':0,'maximum_generations':0,
             'maximum_teacher_calls':0,'maximum_paid_usd':0,'competition_files_opened':0}.items()) and
@@ -190,8 +236,14 @@ def preflight(package):
     if positions:
         require(plan['explicit_position_ids'] is True and plan['prefill_position_ids']==list(range(len(IDS))) and
             plan['cached_position_ids']==[len(IDS)] and plan['retain_completed_forward_prefix'] is True and
-            plan['retain_prefill_before_cached_call'] is True and plan['predecessor_run_id']=='nvarc-original-qwen3-unsloth-probe-001' and
-            plan['predecessor_archive_sha256']==failed_position_prerequisite(),'exact original position repair differs')
+            plan['retain_prefill_before_cached_call'] is True,'exact original position repair differs')
+        require(plan['predecessor_run_id']==('nvarc-original-qwen3-unsloth-probe-002' if outputs else 'nvarc-original-qwen3-unsloth-probe-001') and
+            plan['predecessor_archive_sha256']==(failed_output_prerequisite() if outputs else failed_position_prerequisite()),
+            'exact original predecessor failure differs')
+    if outputs:require(plan['accept_original_tuple_output'] is True and
+        plan['output_contract_source_sha256']==sha(ROOT/'.irisx/nvarc-original/materials/qwen3-original-training-source-20261002-001/unsloth/models/llama.py') and
+        plan['output_contract']=='logits and cache via attributes or tuple indices zero and one; exact shapes required',
+        'exact original tuple extraction repair differs')
     source=''.join(json.loads((package/'kernel/notebook.ipynb').read_bytes())['cells'][0]['source'])
     values={node.targets[0].id:ast.literal_eval(node.value) for node in ast.parse(source).body if isinstance(node,ast.Assign)
         and len(node.targets)==1 and isinstance(node.targets[0],ast.Name) and node.targets[0].id in {'RUN','PAYLOADS','HASHES'}}
@@ -202,7 +254,7 @@ def preflight(package):
     require(all(len(v)<2*1024**2 and hashlib.sha256(v).hexdigest()==values['HASHES'][k] for k,v in raw.items()) and
         raw['plan']==(package/'plan.json').read_bytes() and json.loads(raw['binding'])==binding() and
         json.loads(raw['model_inventory'])==inventory() and
-        raw['worker']==worker_source(positions).encode('utf-8') and
+        raw['worker']==worker_source(positions,outputs).encode('utf-8') and
         plan['cpu_environment_proof_sha256']==prerequisites() and plan['dependency_binding_sha256']==sha(BINDING),
         'exact original material/worker/prerequisite payload differs')
     meta=json.loads((package/'kernel/kernel-metadata.json').read_bytes())
@@ -234,7 +286,8 @@ def verify_archive(path,package):
         type(terminal['wall_seconds']) in (int,float) and math.isfinite(terminal['wall_seconds']) and
         0<=terminal['wall_seconds']<=1200 and all(type(terminal[k]) is int and terminal[k]==0 for k in
             ('optimizer_steps','generations','teacher_calls','paid_usd')),'original numerical terminal cost differs')
-    positions=plan.get('format')==POSITION_FORMAT
+    outputs=plan.get('format')==OUTPUT_FORMAT
+    positions=plan.get('format') in {POSITION_FORMAT,OUTPUT_FORMAT}
     calls=tokens=completed=0;results={};prefills={}
     for mode in ('reference','unsloth'):
         ledger=read(mode+'-ledger.json') if mode+'-ledger.json' in content else []
@@ -265,6 +318,10 @@ def verify_archive(path,package):
                 len(result['vectors'])==2 and all(len(row)==16 and all(type(x) in (int,float) and math.isfinite(x) for x in row)
                     for row in result['vectors']),'finite original numeric observation/cost differs')
             results[mode]=result
+            if outputs:require(result['output_shapes']==[[1,12,16],[1,1,16]] and
+                len(result['observed_output_contracts'])==2 and all(value in
+                    {'tuple-logits-cache','model-output-logits-cache'} for value in result['observed_output_contracts']),
+                'retained original output contracts/shapes differ')
             if positions:require(all(e['completed'] for e in ledger) and prefills.get(mode)==result['vectors'][0],
                 'complete result must match its persisted completed prefill')
     if terminal['outcome']=='complete':
@@ -291,6 +348,7 @@ def verify_archive(path,package):
         'historical_full_solver_parity':False,'full_environment_inventory_verified':False}
     if positions:proof.update(completed_outer_forwards=completed,explicit_position_ids_observed=True,
         retained_prefill_modes=sorted(prefills))
+    if outputs:proof['observed_output_contracts']={mode:value['observed_output_contracts'] for mode,value in results.items()}
     if 'hardware.json' in content:
         hardware=read('hardware.json');gpu=hardware['inventory']
         proof.update(observed_gpu_count=len(gpu),distinct_gpu_uuids=len({x['uuid'] for x in gpu}),
@@ -308,8 +366,9 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('action',choices=('stage','preflight','verify'))
     parser.add_argument('--package',type=Path,required=True);parser.add_argument('--run-id')
     parser.add_argument('--explicit-positions',action='store_true')
+    parser.add_argument('--tuple-outputs',action='store_true')
     parser.add_argument('--archive',type=Path);parser.add_argument('--output',type=Path);args=parser.parse_args()
-    if args.action=='stage':result=stage(args.package,args.run_id,args.explicit_positions)
+    if args.action=='stage':result=stage(args.package,args.run_id,args.explicit_positions,args.tuple_outputs)
     elif args.action=='preflight':result=preflight(args.package)
     else:
         require(args.output is not None and not args.output.exists(),'new independent original numerical proof required')
