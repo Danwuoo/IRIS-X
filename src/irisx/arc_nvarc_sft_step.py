@@ -7,6 +7,7 @@ no full unsharded GPU gradients are retained through no_sync().
 from __future__ import annotations
 
 import time
+from contextlib import ExitStack
 from typing import Any, Sequence
 
 from .arc_nvarc_gpu_preflight_v2 import memory_snapshot, require_cpu_residency
@@ -31,7 +32,8 @@ def train_source_step(model: Any, optimizer: Any, scheduler: Any, rows: Sequence
                       *, device: Any, recipe: dict, capacity: int = 256000,
                       length_multiple: int = 64, distributed: bool = True,
                       packed_backend: str | None = None,
-                      maximum_packed_input_tokens: int | None = None) -> dict:
+                      maximum_packed_input_tokens: int | None = None,
+                      packed_linear_context=None) -> dict:
     """One full optimizer step; every rank runs equal forward/backward slots.
 
     The default process group must be CPU Gloo. Model/FSDP collectives may use
@@ -48,6 +50,8 @@ def train_source_step(model: Any, optimizer: Any, scheduler: Any, rows: Sequence
         sum(p["supervised_tokens"] for p in packs), len(rows)], dtype=torch.int64)
     if packed_backend not in {None, 'dense-sdpa-reference', 'torch-varlen-flash'}:
         raise ValidationError('unknown source packed-step backend')
+    if packed_linear_context is not None and packed_backend is None:
+        raise ValidationError('segmented linear scope requires physically packed execution')
     if maximum_packed_input_tokens is not None:
         if packed_backend is None:raise ValidationError('physical chunking requires explicit packed execution')
         from .arc_nvarc_qwen3_packing import execution_slices
@@ -80,26 +84,33 @@ def train_source_step(model: Any, optimizer: Any, scheduler: Any, rows: Sequence
     try:
         for slot in range(int(slots.item())):
             optimizer.zero_grad(set_to_none=True)
-            if slot < local_slots:
-                item = next(iterator)
-                loss = item["loss_sum"] * world / global_supervised
-                detached_loss += item["loss_sum"].detach().double().cpu()
-                real += 1
-            else:
-                ids = torch.tensor([[14, 15]], dtype=torch.long, device=device)
-                if packed_backend is None:
-                    value = model(input_ids=ids, attention_mask=torch.ones_like(ids),
-                        use_cache=False, past_key_values=None).logits
+            # Exit every per-pack override after its checkpoint backward,
+            # before CPU accumulation or a differently sized dummy slot.
+            with ExitStack() as microstep:
+                if slot < local_slots:
+                    if packed_linear_context is not None:
+                        microstep.enter_context(packed_linear_context(physical_packs[slot]))
+                    item = next(iterator)
+                    loss = item["loss_sum"] * world / global_supervised
+                    detached_loss += item["loss_sum"].detach().double().cpu()
+                    real += 1
                 else:
-                    from .arc_nvarc_qwen3_packing import packed_forward
-                    dummy_pack=pack_sequences([{'input_ids':[14,15],'labels':[-100,15]}],
-                        capacity=capacity,length_multiple=length_multiple)[0]
-                    value=packed_forward(model,dummy_pack,backend=packed_backend,device=device)['logits']
-                loss = value.float().sum() * 0
-                dummy += 1
-            if not bool(torch.isfinite(loss)):
-                raise ValidationError("nonfinite source microstep loss")
-            loss.backward()
+                    ids = torch.tensor([[14, 15]], dtype=torch.long, device=device)
+                    if packed_backend is None:
+                        value = model(input_ids=ids, attention_mask=torch.ones_like(ids),
+                            use_cache=False, past_key_values=None).logits
+                    else:
+                        from .arc_nvarc_qwen3_packing import packed_forward
+                        dummy_pack=pack_sequences([{'input_ids':[14,15],'labels':[-100,15]}],
+                            capacity=capacity,length_multiple=length_multiple)[0]
+                        if packed_linear_context is not None:
+                            microstep.enter_context(packed_linear_context(dummy_pack))
+                        value=packed_forward(model,dummy_pack,backend=packed_backend,device=device)['logits']
+                    loss = value.float().sum() * 0
+                    dummy += 1
+                if not bool(torch.isfinite(loss)):
+                    raise ValidationError("nonfinite source microstep loss")
+                loss.backward()
             del loss
             if slot < local_slots:
                 del item

@@ -1,5 +1,34 @@
 # Qwen3.5-4B NVARC reproduction development
 
+## Active original NVARC continuation (2026-10-03)
+
+[Decision 0054](../../docs/decisions/0054-nvarc-original-reproduction-continuation.md)
+opens the current untimed continuation on main. The
+[continuation record](original-reproduction-continuation.md) and
+[reproduction matrix](reproduction-matrix.md) retain current component evidence
+and gaps. The previous Goal is complete and its timer stays paused.
+
+Exact original-family base and published SFT tensors, compact tokenizer,
+sixteen original Unsloth training distribution versions and the decode tuple
+contract now verify. The native cache probe retains four completed forwards,
+with numerical differences still explicit. Packing diagnostics localize the
+merged BF16 difference to Q projection. Full-model segmented-GEMM probe 004
+completes and independently verifies bitwise full-logit/layer-state agreement,
+tiny gradients and sample isolation. The qualified variant now feeds an
+offline global-256 full-gradient candidate, with no GPU optimizer step yet.
+Native zero-work Trainer inspection 003 completes and verifies context 8,192,
+all 128 prepared source views, adapter reset and checkpoint flags. It qualifies
+native preparation with zero model/optimizer calls; the full TTT epoch remains
+unexecuted. All three inspection retrievals are consumed.
+
+The complete published SDG material inventory and ordered parent/program joins
+verify. A fixed ten-program published-output replay reproduces its diagnostic
+pairs but cannot satisfy the source's twenty-response prerequisite. Whole SDG
+semantics/yield, original-scale SFT/TRM, full native long-task TTT, historical
+NeMo/TRM-v18 identities and independent ARC quality remain open. All current
+external work is private and USD 0; no promotion or competition submission
+follows from bounded probes.
+
 ## Completed overnight implementation Goal (2026-10-02)
 
 [Decision 0053](../../docs/decisions/0053-nvarc-overnight-development-goal.md)

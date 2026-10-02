@@ -6,7 +6,7 @@ from .errors import ValidationError
 
 
 @contextmanager
-def segmented_linear(model, offsets, *, maximum_invocations_per_module=None):
+def segmented_linear(model, offsets, *, maximum_invocations_per_module=None, maximum_segments=8):
     """Keep this scope open through backward/checkpoint recomputation.
 
     Each original Linear receives one whole sample at a time, using its
@@ -15,10 +15,11 @@ def segmented_linear(model, offsets, *, maximum_invocations_per_module=None):
     """
     import torch
     offsets=tuple(offsets)
-    if (len(offsets)<2 or len(offsets)>9 or offsets[0]!=0 or
+    if (type(maximum_segments) is not int or not 1<=maximum_segments<=256 or
+            len(offsets)<2 or len(offsets)>maximum_segments+1 or offsets[0]!=0 or
             any(type(value) is not int for value in offsets) or
             any(a>=b for a,b in zip(offsets,offsets[1:]))):
-        raise ValidationError('one to eight closed whole-sample linear offsets required')
+        raise ValidationError('bounded closed whole-sample linear offsets required')
     if maximum_invocations_per_module is not None and (type(maximum_invocations_per_module) is not int or
             maximum_invocations_per_module<1):raise ValidationError('positive finite per-module invocation ceiling required')
     modules=[(name,module) for name,module in model.named_modules() if isinstance(module,torch.nn.Linear)]
@@ -42,9 +43,11 @@ def segmented_linear(model, offsets, *, maximum_invocations_per_module=None):
                 if maximum_invocations_per_module is not None and state['linear_calls_by_name'][_name]>=maximum_invocations_per_module:
                     raise ValidationError('per-module segmented GEMM ceiling reached')
                 state['linear_calls_by_name'][_name]+=1
-                state['segment_gemm_calls']+=len(offsets)-1
-                return torch.cat([torch.nn.functional.linear(value[:,a:b,:],self.weight,self.bias)
-                    for a,b in zip(offsets,offsets[1:])],dim=1)
+                results=[]
+                for a,b in zip(offsets,offsets[1:]):
+                    state['segment_gemm_calls']+=1
+                    results.append(torch.nn.functional.linear(value[:,a:b,:],self.weight,self.bias))
+                return torch.cat(results,dim=1)
             module.forward=MethodType(forward,module)
         yield state
     finally:

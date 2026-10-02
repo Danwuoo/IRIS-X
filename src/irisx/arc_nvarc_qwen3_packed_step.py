@@ -5,6 +5,7 @@ parity, a trained checkpoint, a full SFT epoch or ARC quality evidence.
 """
 from __future__ import annotations
 import argparse
+from contextlib import contextmanager
 from functools import partial
 import json
 import os
@@ -22,8 +23,49 @@ from .canonical import digest_value
 from .errors import ValidationError
 
 FORMAT='irisx/nvarc-original-qwen3-packed-step-v1'
+SEGMENTED_FORMAT='irisx/nvarc-original-qwen3-segmented-packed-step-v1'
 PREFIX_SHA='82d5e1f60f7d8a2748d9aa4011e7cd5478106405f06089b6cea7b9085b9521e6'
 BASE='sha256:6c93bb738c9203ef19cc02deeac67c6a659e3128807f5c5d02a74104a479d430'
+
+
+def call_schedule(rows,rank):
+    placement=schedule(rows)
+    logical=pack_sequences(rows[rank::4],capacity=256000,length_multiple=64)
+    packs=[p for logical_pack in logical for p in execution_slices(logical_pack,32768)]
+    dummy=pack_sequences([{'input_ids':[14,15],'labels':[-100,15]}],capacity=256000,length_multiple=64)[0]
+    real=len(packs);packs.extend([dummy]*(placement['collective_slots_per_rank']-real));result=[]
+    for i,pack in enumerate(packs):
+        ids=[];positions=[];offsets=[0]
+        for segment in pack['segments']:
+            values=pack['input_ids'][segment['start']:segment['valid_end']]
+            ids.extend(values);positions.extend(range(len(values)));offsets.append(len(ids))
+        result.append({'input_tokens':len(ids),'input_ids_digest':digest_value(ids),
+            'position_ids_digest':digest_value(positions),'cu_seqlens':offsets,
+            'max_seqlen':max(b-a for a,b in zip(offsets,offsets[1:])),'dummy':i>=real})
+    return result
+
+
+class StepCallBudget:
+    def __init__(self,rows,rank,retain):
+        self.allowed=call_schedule(rows,rank);self.events=[];self.retain=retain;self.started=time.monotonic()
+
+    def before(self,module,args,kwargs):
+        if len(self.events)>=len(self.allowed) or time.monotonic()-self.started>=1500:
+            raise ValidationError('full-gradient outer-forward/time ceiling reached')
+        wanted=self.allowed[len(self.events)];ids=kwargs['input_ids'].tolist();positions=kwargs['position_ids'].tolist()
+        if (len(ids)!=1 or len(positions)!=1 or digest_value(ids[0])!=wanted['input_ids_digest'] or
+                digest_value(positions[0])!=wanted['position_ids_digest'] or
+                kwargs['cu_seq_lens_q'].tolist()!=wanted['cu_seqlens'] or kwargs['cu_seq_lens_k'].tolist()!=wanted['cu_seqlens'] or
+                kwargs['max_length_q']!=wanted['max_seqlen'] or kwargs['max_length_k']!=wanted['max_seqlen'] or kwargs['use_cache'] is not False):
+            raise ValidationError('actual source input/position/causal packing differs before model entry')
+        if self.events and self.events[-1]['completed'] is not True:
+            raise ValidationError('previous packed forward has not returned')
+        self.events.append({**wanted,'completed':False});self.retain(self.events)
+
+    def after(self,module,args,output):
+        if not self.events or self.events[-1]['completed'] is not False:
+            raise ValidationError('unreserved packed forward completion')
+        self.events[-1]['completed']=True;self.retain(self.events)
 
 
 def schedule(rows,ceiling=32768):
@@ -43,12 +85,13 @@ def schedule(rows,ceiling=32768):
 
 
 def check_plan(plan,rows):
+    segmented=plan.get('format')==SEGMENTED_FORMAT
     integers=('world_size','maximum_optimizer_steps','maximum_paid_usd','maximum_generations','maximum_teacher_calls',
         'maximum_physical_input_tokens','packing_capacity','packing_length_multiple','maximum_notebook_wall_seconds',
         'maximum_worker_wall_seconds','scheduled_input_tokens','scheduled_supervised_tokens','maximum_outer_forwards','maximum_input_tokens')
     if any(type(plan.get(key)) is not int for key in integers):
         raise ValidationError('integer original one-step bounds required')
-    if (plan.get('format')!=FORMAT or plan.get('owner_decision')!='Decision 0054' or
+    if (plan.get('format') not in {FORMAT,SEGMENTED_FORMAT} or plan.get('owner_decision')!='Decision 0054' or
             not re.fullmatch(r'nvarc-original-qwen3-packed-step-\d{3}',plan.get('run_id','')) or
             plan.get('world_size')!=4 or plan.get('source_recipe')!=RECIPE or len(rows)!=256 or
             plan.get('data_digest')!=digest_value(rows) or plan.get('source_prefix_sha256')!=PREFIX_SHA or
@@ -57,11 +100,15 @@ def check_plan(plan,rows):
             plan.get('maximum_generations')!=0 or plan.get('maximum_teacher_calls')!=0 or
             plan.get('retain_export') is not False or plan.get('maximum_physical_input_tokens')!=32768 or
             plan.get('packing_capacity')!=256000 or plan.get('packing_length_multiple')!=64 or
-            plan.get('maximum_notebook_wall_seconds')!=4500 or plan.get('maximum_worker_wall_seconds')!=4200 or
+            (plan.get('maximum_notebook_wall_seconds'),plan.get('maximum_worker_wall_seconds')) not in
+                ({(1800,1560),(1500,1260)} if segmented else {(4500,4200)}) or
             [r['shuffle_position'] for r in rows]!=list(range(256)) or
             plan.get('scheduled_input_tokens')!=sum(len(r['input_ids']) for r in rows) or
             plan.get('scheduled_supervised_tokens')!=sum(sum(v>=0 for v in r['labels'][1:]) for r in rows)):
         raise ValidationError('exact original source global-256 one-step resource plan required')
+    if segmented and (plan.get('packed_linear_policy')!='per-sample unchanged GEMM through checkpoint backward' or
+            plan.get('cuda_differential_prerequisite',{}).get('segmented_linear_observed') is not True):
+        raise ValidationError('qualified segmented numerical variant must propagate into full-gradient execution')
     expected=schedule(rows)
     if (plan.get('physical_schedule')!=expected or
             plan.get('maximum_outer_forwards')!=expected['collective_slots_per_rank']*4 or
@@ -83,7 +130,7 @@ def run(plan,rows,compact,output):
     if world!=4 or rank not in range(4) or local!=rank:
         raise ValidationError('four rank-local distinct L4 workers required')
     device,hardware,group=initialize_groups(rank,local,world,True)
-    phase='output-gate';started=time.monotonic();wrapped=optimizer=None
+    phase='output-gate';started=time.monotonic();wrapped=optimizer=None;hooks=[]
     try:
         if rank==0:
             if output.exists():raise ValidationError('new immutable training observation required')
@@ -118,9 +165,23 @@ def run(plan,rows,compact,output):
             'dummy_input_tokens_reserved':2*(expected['collective_slots_per_rank']-len(expected['ranks'][rank]['physical_digests'])),
             'generation_calls':0,'teacher_calls':0,'maximum_paid_usd':0})
         torch.cuda.synchronize(device);step_start=time.monotonic()
+        linear_policies=[]
+        @contextmanager
+        def linear_scope(pack):
+            from .arc_nvarc_segmented_linear import segmented_linear
+            offsets=[0]
+            for segment in pack['segments']:offsets.append(offsets[-1]+segment['valid_end']-segment['start'])
+            with segmented_linear(wrapped,offsets,maximum_segments=64,maximum_invocations_per_module=2) as policy:
+                linear_policies.append(policy)
+                yield policy
+        segmented=plan['format']==SEGMENTED_FORMAT
+        if segmented:
+            budget=StepCallBudget(rows,rank,lambda events:atomic(output/f'rank-{rank}-forward-ledger.json',events))
+            hooks=[wrapped.register_forward_pre_hook(budget.before,with_kwargs=True),wrapped.register_forward_hook(budget.after)]
         observation=train_source_step(wrapped,optimizer,scheduler,rows[rank::4],device=device,
             recipe=RECIPE,capacity=256000,length_multiple=64,distributed=True,
-            packed_backend='torch-varlen-flash',maximum_packed_input_tokens=32768)
+            packed_backend='torch-varlen-flash',maximum_packed_input_tokens=32768,
+            packed_linear_context=linear_scope if segmented else None)
         torch.cuda.synchronize(device);elapsed=time.monotonic()-step_start
         planned=expected['ranks'][rank]
         if (observation['packing_layout_digests']!=planned['logical_digests'] or
@@ -134,6 +195,11 @@ def run(plan,rows,compact,output):
         if before==after:raise ValidationError('global full-parameter fingerprint did not change')
         observation.update(hardware=hardware,checkpointed_layers=checkpointed,
             synchronized_step_wall_seconds=elapsed)
+        if segmented:
+            if len(budget.events)!=len(budget.allowed) or not all(event['completed'] for event in budget.events):
+                raise ValidationError('every reserved real/dummy outer forward must return')
+            observation.update(packed_linear_policy=plan['packed_linear_policy'],segmented_linear_policies=linear_policies,
+                segment_gemm_invocations_including_checkpoint=sum(p['segment_gemm_calls'] for p in linear_policies))
         atomic(output/f'rank-{rank}-step.json',observation)
         observations=[None]*4;dist.all_gather_object(observations,observation)
         result={'run_id':plan['run_id'],'plan_digest':digest_value(plan),'outcome':'complete',
@@ -154,6 +220,7 @@ def run(plan,rows,compact,output):
                 'error_type':type(error).__name__,'message':str(error)[:1200],'worker_wall_seconds':time.monotonic()-started})
         raise
     finally:
+        for hook in hooks:hook.remove()
         if optimizer is not None:optimizer.zero_grad(set_to_none=True)
         if dist.is_initialized():dist.destroy_process_group()
 

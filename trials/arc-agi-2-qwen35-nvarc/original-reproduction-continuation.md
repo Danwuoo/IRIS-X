@@ -1138,8 +1138,21 @@ unequal sample gradients and checkpoint recomputation. Plan digest:
 `sha256:963c2f5813380fefff7fd04f590b6ebb9729d1f9d0db446645db52876537819e`.
 The sole push completed at 16:35:55 UTC on October 2; receipt SHA-256
 `32dc0199ed575f37f01105ee6e08e77fb45fa5bfd9b2d678abf1536f204c52a0`.
-Runtime state remains unqueried at this receipt checkpoint; backed-off
-monitoring and one terminal retrieval remain under Decision 0054.
+Its first backed-off status returned COMPLETE and its sole terminal retrieval
+is consumed. All 76 listed members verify. Archive SHA-256
+`b86559a95b7d35d61c4f85d9f7d0f23065bcc213ffe982a6b63cd1f66604b52d`;
+independent proof
+`5287640750119929edf156e5b99e0c40cdac6b425c193e78c65514615262dac1`.
+All 13 forwards/94,706 inputs and both tiny backwards return. Every one of
+504,864 full logits and all 38 sampled layer states match forced independent
+Flash SDPA bitwise across all eight samples. Tiny gradients pass the fixed
+0.006/0.06 gate; changing the first sample leaves all later logits bitwise
+unchanged. This satisfies the bounded native-varlen numerical prerequisite
+with the segmented-linear variant, not the previously failing merged GEMMs.
+Cold independent/packed forward timings are 6.942/8.117 seconds including
+diagnostic capture. They establish no throughput improvement or full-gradient
+training rate. The session takes 406.191 seconds, with 54.044 worker seconds;
+zero optimizer, generation, teacher, export or scoring occurs.
 
 After the operator diagnostic's terminal retrieval, quota snapshot 008
 reconciled 10,103.497 remaining free seconds with no provider reservation or
@@ -1172,8 +1185,17 @@ preflight and its worker bytes are unchanged. New 002 plan:
 The sole push completed at 16:36:01 UTC on October 2 and accepted private
 version 1, kernel ID 136804867; receipt SHA-256
 `132addb12181a60f1866ae403615b391a76584d1e341f520d66f614e530b83d6`.
-Runtime state remains unqueried at this receipt checkpoint; native topology,
-reset, preprocessing and full long TTT remain unqualified.
+Its first backed-off status returned ERROR and its sole terminal retrieval is
+consumed. Archive SHA-256
+`4f81fb87e951e5468fd26e7c9fcfd55c90889a9b61758764f1b6c5a58b2e5883`;
+independent proof
+`bd4d53164018f9891f97b8823e6fefce17812bd70e48e47e6d19a609afc6569b`.
+The 208.543-second session again stops before model loading. The worker
+renderer replaced the AST expression after inserting the helper, changing
+its old-API fallback to a recursive self-call. Python 3.11 rejects the new
+`show_empty` keyword and then reaches RecursionError. This is an agent worker
+generation error, not an original source or Trainer failure; no model,
+backward, optimizer, generation or teacher work occurs.
 
 The consumed inspection 001 independent proof SHA-256 is
 `193ff6c40417f6e7b2e5eb32a8ce3a4e9268d0e9bd5a9b74f9d97e83e567518f`.
@@ -1187,6 +1209,83 @@ four-times reserve; no original-scale training is admitted by that budget.
 Full repository validation 023 passes 374 tests with four optional skips in
 222.993 seconds; log SHA-256
 `08041ab344e5069f2f89dc1842639a65eca3564349bdf70ab49efc44c574f831`.
+
+Distinct inspection 003 replaces only the original AST expression before
+helper insertion. A test executes the generated reviewed worker against a
+literal old AST API: frozen 002 reproduces the recursion and new 003 retains
+the correct digest. Both consumed packages retain exact legacy preflight.
+New plan:
+`sha256:5ac07ec65e30d1a67f9b7ada571e36edb5a30791515995fc162ef57a092c99aa`.
+Fresh quota 010 reconciles 8,270.497 free seconds with no provider reservation
+and pay-to-scale False; 4,800 conservative seconds are admitted for this
+unchanged zero-work 1,200-second envelope. Its sole push was accepted as
+private version 1, kernel ID 136806318 at 16:50:09 UTC on October 2;
+receipt SHA-256
+`7d09bebffcd65d6ff626bb426a970f3ad83a2715416fdd37028687857044570e`.
+The second backed-off status is COMPLETE, and its sole terminal retrieval is
+consumed. Archive SHA-256
+`dfb30e1fdbc2816920a7a39eefb06af881f8a20cc093570b1291455c44c7f7d4`;
+independent proof
+`b7fc6e38e97e1112c45c778c296394737991398d809457305a87defbd2b54fa1`.
+The 704.831-second session verifies all sixteen native versions, the
+528,564,224-parameter BF16 adapter topology, detached baseline/reset, and
+actual Trainer context 8,192. All 128 prepared input/label vectors match the
+source (955,392 inputs and 476,160 supervised tokens), and checkpoint flags
+are enabled on the model and all 36 layers. This qualifies native long-task
+TTT preparation. Guards observe zero model forwards, backwards, optimizer
+construction/steps, generations or teacher calls; no TTT epoch has run.
+
+The exact qualified segmented numerical variant is now propagated into a
+new offline `nvarc-original-qwen3-packed-step-001` candidate. It preserves
+the full first global-256 source batch: 916,739 real input tokens, 403,115
+supervised tokens, 31 real physically packed forwards and one connected dummy
+across four FSDP ranks. Every rank verifies actual input IDs, reset positions
+and causal offsets before root model entry and retains completed-call prefixes.
+Each per-pack segmented Linear scope spans the nonreentrant checkpoint
+backward and is restored before CPU accumulation or a different-length dummy.
+All 36 layers, unchanged source Adam/clip/schedule and FP32 owned CPU shard
+accumulation remain. The full step uses the acquired base's tying; historical
+NeMo parameter tying remains unknown. No export, generation, teacher or ARC
+score is included. Independent reading verifies both source/material bindings
+and every actual rank prefix, real/dummy layout, segmented checkpoint policy,
+CPU state residency and changed global weight fingerprint.
+
+This candidate caps parent/worker time at 1,800/1,560 seconds instead of the
+earlier unsubmitted 4,500-second draft. Its scientific batch is not reduced.
+Completion of one whole global step is still mandatory for a throughput
+observation; timeout preserves only a failed prefix. The cap is an engineering
+free-resource bound, not a prediction derived from inference timing. Host
+available memory and container limits must both leave at least 140 GB before
+model loading. Its initial offline preflight passed. This 001 proposal remains
+unsubmitted: quota snapshot 011 reconciles 6,746.535 free GPU seconds, less
+than its conservative 7,200-second reserve. Preserve its inert bytes and plan:
+`sha256:898a62650f878b17a655d84ef0c2f1eeca6319bc4f9d13299d1337845bde16ae`.
+Actual tiny CPU Qwen3/Adam and every optimizer moment match an independent
+isolated oracle with checkpoint recomputation. A separate real/dummy test
+uses artificial control collectives only, executes actual NN/backward/Adam,
+and verifies both scope lengths and restoration. The existing real two-rank
+FSDP accumulation/Adam differential still passes. These are CPU regressions,
+not a 4B GPU gradient or training-rate observation.
+
+Distinct offline `nvarc-original-qwen3-packed-step-002` caps parent/worker time
+at 1,500/1,260 seconds. It retains the same complete global-256 batch, source
+AdamW recipe, one-step completion gate and all resource/numerical checks.
+Its conservative reserve is 6,000 seconds; no throughput claim follows if it
+times out. Its package preflight passes with plan
+`sha256:feb174a069a90e388422a0f710bbc90a9d80936eff84c247fd6dbf5a945f7550`.
+Full repository validation 025 passes 378 tests with four optional skips in
+285.981 seconds; log SHA-256
+`aee0ef3382ddfc9e771a075628529e7398caca01cacecf2076965a9bad24dcc9`.
+Fresh snapshot 012 independently reconciles the unchanged 6,746.535 free
+seconds, zero reservations and disabled pay-to-scale. Its admission reserves
+6,000 conservative GPU seconds locally, without a provider reservation;
+admission SHA-256
+`0ba2b393c08c78921110184ad5d3ca783fafef426bea8745b37d2474d66f476e`.
+The account's actual multiplier is unverified. One distinct private push may
+now proceed; no throughput or original-scale completion is presumed.
+Full repository validation 024 passes 376 tests with four optional skips in
+255.461 seconds; log SHA-256
+`665d0632818eaf6b629fe8c1c1a9eea913ea3531104fea0c218a11e5e3ce2790`.
 
 Neither the 32-H100 original SFT allocation nor eight-H100 TRM pretraining is
 provided by four-L4 free Kaggle sessions. Durable cross-session optimizer

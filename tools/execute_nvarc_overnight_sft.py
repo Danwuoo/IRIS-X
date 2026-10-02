@@ -35,7 +35,8 @@ def preflight(package):
         output=subprocess.check_output([str(runtime),str(ROOT/'tools/stage_nvarc_original_long_ttt.py'),
             'preflight','--package',str(package)],timeout=300,text=True,encoding='utf-8')
         return json.loads(output)
-    elif read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-packed-step-v1':
+    elif read(package/'plan.json')['format'] in {'irisx/nvarc-original-qwen3-packed-step-v1',
+            'irisx/nvarc-original-qwen3-segmented-packed-step-v1'}:
         from tools.stage_nvarc_qwen3_packed_step import preflight as check
     elif read(package/'plan.json')['format'] in {'irisx/nvarc-original-qwen3-probe-v1',
             'irisx/nvarc-original-qwen3-packing-diagnostic-v1',

@@ -151,6 +151,8 @@ def plan_for(run):
         'scope': 'native source adapter topology/BF16/reset/Trainer preparation; zero forward/backward/optimizer work'}
     if run != 'nvarc-original-qwen3-training-inspect-001':
         plan['class_ast_binding_policy'] = 'frozen Python 3.12 representation; explicit empty fields and type_params only'
+    if run not in {'nvarc-original-qwen3-training-inspect-001','nvarc-original-qwen3-training-inspect-002'}:
+        plan['ast_worker_renderer_policy'] = 'replace original AST expression before helper insertion'
     return plan
 
 
@@ -163,7 +165,10 @@ def worker_bytes(plan):
     expression = 'ast.dump(node, include_attributes=False)'
     require(source.count(anchor) == source.count(expression) == 1, 'exact narrow AST transport repair required')
     helper = (ROOT / 'tools/nvarc_original_ast_binding.py').read_text(encoding='utf-8')
-    source = source.replace(anchor, helper + '\n\n' + anchor).replace(expression, 'portable_ast_dump(node)')
+    if plan['run_id'] == 'nvarc-original-qwen3-training-inspect-002':
+        source = source.replace(anchor, helper + '\n\n' + anchor).replace(expression, 'portable_ast_dump(node)')
+    else:
+        source = source.replace(expression, 'portable_ast_dump(node)').replace(anchor, helper + '\n\n' + anchor)
     return source.encode('utf-8')
 
 

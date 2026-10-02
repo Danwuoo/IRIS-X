@@ -46,7 +46,8 @@ try:
     plan=json.loads(decoded['plan'])
     if (plan['owner_decision']!='Decision 0054' or plan['run_id']!=RUN or
             plan['maximum_paid_usd']!=0 or plan['maximum_generations']!=0 or
-            plan['maximum_optimizer_steps']!=1 or plan['maximum_notebook_wall_seconds']!=4500):
+            plan['maximum_optimizer_steps']!=1 or plan['maximum_notebook_wall_seconds'] not in
+            ({1500,1800} if plan['format']=='irisx/nvarc-original-qwen3-segmented-packed-step-v1' else {4500})):
         raise RuntimeError('bounded private original probe plan differs')
     save('plan.json',plan);save('payload-bindings.json',HASHES)
     os.environ.update(HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',HF_DATASETS_OFFLINE='1',
@@ -62,7 +63,17 @@ try:
     if torch.__version__!='2.10.0+cu128':raise RuntimeError('exact reviewed PyTorch runtime required')
     available=int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines()
         if line.startswith('MemAvailable:')))*1024
-    save('host-resource-gate.json',{'host_available_bytes':available,'minimum_required_bytes':140000000000})
+    limits={}
+    for limit_path,current_path in [('/sys/fs/cgroup/memory.max','/sys/fs/cgroup/memory.current'),
+        ('/sys/fs/cgroup/memory/memory.limit_in_bytes','/sys/fs/cgroup/memory/memory.usage_in_bytes')]:
+        if Path(limit_path).is_file():
+            limit_raw=Path(limit_path).read_text().strip()
+            if limit_raw!='max':
+                limit=int(limit_raw);used=int(Path(current_path).read_text().strip())
+                if limit<1 or used<0:raise RuntimeError('positive container memory accounting required')
+                limits[limit_path]={'limit_bytes':limit,'used_bytes':used,'remaining_bytes':max(0,limit-used)}
+                available=min(available,max(0,limit-used))
+    save('host-resource-gate.json',{'host_available_bytes':available,'minimum_required_bytes':140000000000,'container_limits':limits})
     if available<140000000000:raise RuntimeError('full-gradient CPU state host-memory gate failed')
     def mount(dataset,marker):
         owner,slug=dataset.split('/')

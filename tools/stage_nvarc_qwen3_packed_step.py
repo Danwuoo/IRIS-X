@@ -18,7 +18,7 @@ from tools.nvarc_qwen3_material import DEFAULT,inventory
 from tools.verify_nvarc_qwen3_probe import verify
 from irisx.arc_nvarc_combined import atomic,sha
 from irisx.arc_nvarc_gpu_preflight_v2 import RECIPE
-from irisx.arc_nvarc_qwen3_packed_step import FORMAT,BASE,PREFIX_SHA,check_plan,schedule
+from irisx.arc_nvarc_qwen3_packed_step import FORMAT,SEGMENTED_FORMAT,BASE,PREFIX_SHA,check_plan,schedule
 from irisx.canonical import canonical_bytes,digest_value
 from irisx.errors import ValidationError
 
@@ -33,7 +33,11 @@ def prerequisite(folder):
         raise ValidationError('sole verified terminal retrieval of the distinct native probe required')
     archive=folder/'execution-final/retrieved/gpu-preflight-result.zip'
     package=folder/'package-l4'
-    if json.loads((package/'plan.json').read_bytes())['format']=='irisx/nvarc-original-qwen3-packing-diagnostic-v1':
+    source_format=json.loads((package/'plan.json').read_bytes())['format']
+    if source_format=='irisx/nvarc-original-qwen3-segmented-linear-probe-v1':
+        from tools.verify_nvarc_qwen3_segmented import verify as verify_segmented
+        proof=verify_segmented(archive,package)
+    elif source_format=='irisx/nvarc-original-qwen3-packing-diagnostic-v1':
         from tools.verify_nvarc_qwen3_packing_diagnostic import verify as verify_diagnostic
         proof=verify_diagnostic(archive,package)
     else:
@@ -41,9 +45,12 @@ def prerequisite(folder):
     if (proof['outcome']!='complete' or proof.get('native_varlen_gpu_differential_observed') is not True or
             proof.get('model_material_digest')!=BASE):
         raise ValidationError('actual exact-material native CUDA numeric prerequisite has not passed')
-    return {'run_id':folder.name,'archive_sha256':sha(archive),
+    binding={'run_id':folder.name,'archive_sha256':sha(archive),
         'plan_digest':ledger['bindings']['plan_digest'],'model_material_digest':BASE,
         'native_cuda_differential_observed':True}
+    if source_format=='irisx/nvarc-original-qwen3-segmented-linear-probe-v1':
+        binding['segmented_linear_observed']=proof['segmented_linear_observed']
+    return binding
 
 
 def render(payloads,hashes,run):
@@ -54,7 +61,7 @@ def render(payloads,hashes,run):
     compile(source,'original-qwen3-packed-step','exec');return source
 
 
-def stage(output,run,probe):
+def stage(output,run,probe,session_seconds=None):
     if output.exists() or not re.fullmatch(r'nvarc-original-qwen3-packed-step-\d{3}',run):
         raise ValidationError('new immutable original-family one-step package required')
     dependency=prerequisite(probe)
@@ -70,9 +77,13 @@ def stage(output,run,probe):
         raise ValidationError('exact complete original first two shuffled batches required')
     rows=samples[:256];placement=schedule(rows)
     total=sum(len(r['input_ids']) for r in rows)
-    plan={'format':FORMAT,'approved':True,'owner_decision':'Decision 0054','run_id':run,'kernel_id':'danielwuu/'+run,
+    segmented=dependency.get('segmented_linear_observed') is True
+    seconds=(1800 if segmented else 4500) if session_seconds is None else session_seconds
+    if (segmented and seconds not in (1500,1800)) or (not segmented and seconds!=4500):
+        raise ValidationError('reviewed finite full-gradient session bound required')
+    plan={'format':SEGMENTED_FORMAT if segmented else FORMAT,'approved':True,'owner_decision':'Decision 0054','run_id':run,'kernel_id':'danielwuu/'+run,
         'world_size':4,'backend':'torch-2.10-native-varlen-flash-fsdp-cpu-state',
-        'maximum_notebook_wall_seconds':4500,'maximum_worker_wall_seconds':4200,
+        'maximum_notebook_wall_seconds':seconds,'maximum_worker_wall_seconds':seconds-(240 if segmented else 300),
         'maximum_optimizer_steps':1,'maximum_paid_usd':0,'maximum_generations':0,'maximum_teacher_calls':0,
         'retain_export':False,'source_recipe':RECIPE,'global_batch_size':256,
         'packing_capacity':256000,'packing_length_multiple':64,'maximum_physical_input_tokens':32768,
@@ -92,6 +103,7 @@ def stage(output,run,probe):
         'parameter_tying_policy':'retain acquired HF base tying; published SFT is separately untied',
         'material_policy':'retain every source/dual parent/exposure; no evaluator answers',
         'execution_control':'private offline one-step SAVE_AND_RUN_ALL, finite monitoring, one terminal retrieval'}
+    if segmented:plan['packed_linear_policy']='per-sample unchanged GEMM through checkpoint backward'
     check_plan(plan,rows);(output/'wheel').mkdir(parents=True)
     wheel=output/'wheel'/build.build_wheel(str(output/'wheel'))
     raw={'plan':canonical_bytes(plan,newline=True),'samples':canonical_bytes(rows,newline=True),
@@ -117,6 +129,13 @@ def preflight(package):
         raise ValidationError('closed one-step package differs')
     plan=json.loads((package/'plan.json').read_bytes());rows=json.loads((package/'samples.json').read_bytes())
     check_plan(plan,rows)
+    prefix=ROOT/'.irisx/nvarc-original/materials/source-shuffle-prefix-20261002-001'
+    material=json.loads((DEFAULT/'conversion.json').read_bytes())
+    if (sha(prefix/'samples.json')!=PREFIX_SHA or rows!=json.loads((prefix/'samples.json').read_bytes())[:256] or
+            plan['source_prefix_verification_sha256']!=sha(prefix/'verification.json') or
+            plan['material_manifest_sha256']!=sha(DEFAULT/'conversion.json') or
+            any(plan[key]!=material[value] for key,value in [('model_material_digest','material_digest'),('model_repo','repo'),('model_revision','revision')])):
+        raise ValidationError('exact original full source prefix and model material binding required')
     probe=ROOT/'.irisx/nvarc-original/runs'/plan['cuda_differential_prerequisite']['run_id']
     if prerequisite(probe)!=plan['cuda_differential_prerequisite']:
         raise ValidationError('successful actual CUDA prerequisite binding differs')
@@ -133,10 +152,11 @@ def preflight(package):
         if key in {'plan','samples'} and raw!=(package/(key+'.json')).read_bytes():raise ValidationError('embedded inputs differ')
         if key=='runtime_wheel' and raw!=next((package/'wheel').glob('*.whl')).read_bytes():raise ValidationError('runtime wheel differs')
     with zipfile.ZipFile(next((package/'wheel').glob('*.whl'))) as archive:
-        for name in ('arc_nvarc_qwen3_packed_step.py','arc_nvarc_sft_step.py','arc_nvarc_qwen3_packing.py','arc_nvarc_packing.py'):
+        for name in ('arc_nvarc_qwen3_packed_step.py','arc_nvarc_sft_step.py','arc_nvarc_qwen3_packing.py','arc_nvarc_packing.py',
+                'arc_nvarc_segmented_linear.py'):
             if archive.read('irisx/'+name)!=(ROOT/'src/irisx'/name).read_bytes():raise ValidationError('reviewed source wheel binding differs')
     meta=json.loads((package/'kernel/kernel-metadata.json').read_bytes())
-    if (meta['id']!=plan['kernel_id'] or meta['title']!=plan['run_id'] or meta['is_private'] is not True or
+    if (meta['id']!=plan['kernel_id'] or meta['title']!=plan['run_id'] or meta['is_private'] is not True or meta['enable_gpu'] is not True or
             meta['enable_internet'] is not False or meta['kernel_sources'] or
             meta['dataset_sources']!=list(plan['datasets'].values()) or meta['competition_sources']!=plan['competition_sources']):
         raise ValidationError('private exact offline provider metadata differs')
@@ -147,4 +167,5 @@ def preflight(package):
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('action',choices=('stage','preflight'))
     parser.add_argument('--package',type=Path,required=True);parser.add_argument('--run-id');parser.add_argument('--probe',type=Path)
-    args=parser.parse_args();print(json.dumps(stage(args.package,args.run_id,args.probe) if args.action=='stage' else preflight(args.package)))
+    parser.add_argument('--session-seconds',type=int,choices=(1500,1800,4500))
+    args=parser.parse_args();print(json.dumps(stage(args.package,args.run_id,args.probe,args.session_seconds) if args.action=='stage' else preflight(args.package)))

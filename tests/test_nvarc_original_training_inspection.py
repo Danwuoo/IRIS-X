@@ -3,12 +3,30 @@ from types import SimpleNamespace
 import ast
 import hashlib
 import unittest
+from unittest.mock import patch
 
 from tools.nvarc_original_training_inspection_worker import digest, prepared_evidence, zero_work_guard
 from tools.nvarc_original_ast_binding import portable_ast_dump
+from tools.stage_nvarc_original_training_inspection import worker_bytes
 
 
 class AstBindingTests(unittest.TestCase):
+    def test_generated_worker_fallback_preserves_legacy_failure_and_new_fix(self):
+        original=ast.dump
+        def old_api(node,*,include_attributes=False):
+            try:return original(node,include_attributes=include_attributes,show_empty=True)
+            except TypeError:return original(node,include_attributes=include_attributes)
+        node=ast.parse('class Sample:\n def loss(self, value): return value + 1').body[0]
+        expected=portable_ast_dump(node)
+        for number in ('002','003'):
+            namespace={'__name__':'literal_worker_fixture'}
+            raw=worker_bytes({'run_id':'nvarc-original-qwen3-training-inspect-'+number})
+            exec(compile(raw,'reviewed-generated-worker','exec'),namespace)
+            with patch.object(ast,'dump',old_api):
+                if number=='002':
+                    with self.assertRaises(RecursionError):namespace['portable_ast_dump'](node)
+                else:self.assertEqual(namespace['portable_ast_dump'](node),expected)
+
     def test_empty_python_311_fields_match_frozen_312_but_code_changes_do_not(self):
         source = 'class Sample:\n def loss(self, value):\n  return value + 1\n'
         node = ast.parse(source).body[0]

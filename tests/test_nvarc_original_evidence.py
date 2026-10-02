@@ -17,11 +17,28 @@ from irisx.arc_nvarc_packing import pack_sequences,validate_pack
 from irisx.arc_nvarc_qwen3_packing import execution_slices
 from tools.stage_nvarc_qwen3_packed_step import prerequisite
 from tools.verify_nvarc_qwen3_packed_step import verify as verify_packed_step
-from irisx.arc_nvarc_qwen3_packed_step import FORMAT,BASE,PREFIX_SHA,schedule
+from irisx.arc_nvarc_qwen3_packed_step import FORMAT,BASE,PREFIX_SHA,schedule,StepCallBudget,call_schedule
 from irisx.arc_nvarc_gpu_preflight_v2 import RECIPE
 
 
 class OriginalEvidenceTests(unittest.TestCase):
+    def test_actual_full_gradient_causal_or_extra_forward_is_blocked_before_entry(self):
+        rows=[{'input_ids':[14,15],'labels':[-100,15],'shuffle_position':i} for i in range(256)]
+        retained=[];budget=StepCallBudget(rows,0,lambda events:retained.append(copy.deepcopy(events)))
+        class Tensor:
+            def __init__(self,value):self.value=value
+            def tolist(self):return self.value
+        want=call_schedule(rows,0)[0]
+        kwargs={'input_ids':Tensor([[14,15]*64]),'position_ids':Tensor([[0,1]*64]),
+            'cu_seq_lens_q':Tensor(want['cu_seqlens']),'cu_seq_lens_k':Tensor(want['cu_seqlens']),
+            'max_length_q':2,'max_length_k':2,'use_cache':False}
+        with self.assertRaises(ValidationError):budget.before(None,(),{**kwargs,'position_ids':Tensor([list(range(128))])})
+        self.assertEqual(retained,[])
+        budget.before(None,(),kwargs);self.assertFalse(retained[-1][0]['completed'])
+        budget.after(None,(),None);self.assertTrue(retained[-1][0]['completed'])
+        with self.assertRaises(ValidationError):budget.before(None,(),kwargs)
+        self.assertEqual(len(budget.events),1)
+
     def test_packed_step_reader_reconstructs_rehashed_rank_cost(self):
         rows=[{'input_ids':[14,15],'labels':[-100,15],'shuffle_position':i} for i in range(256)]
         placement=schedule(rows)
@@ -53,14 +70,17 @@ class OriginalEvidenceTests(unittest.TestCase):
                     stream.writestr('manifest.json',json.dumps(manifest))
                     for name,content in raw.items():stream.writestr(name,content)
                 return path
-            proof=verify_packed_step(archive(),package)
+            def read_fixture():
+                with patch('tools.stage_nvarc_qwen3_packed_step.preflight',return_value={'offline_package_verified':True}):
+                    return verify_packed_step(archive(),package)
+            proof=read_fixture()
             self.assertEqual(proof['reserved_training_ranks'],[0])
             self.assertEqual(proof['outcome'],'failed')
             self.assertNotIn('actual_original_family_full_gradient_step_observed',proof)
             reservation['input_tokens_reserved']=127
-            with self.assertRaises(ValidationError):verify_packed_step(archive(),package)
+            with self.assertRaises(ValidationError):read_fixture()
             reservation['input_tokens_reserved']=128;reservation['optimizer_steps_reserved']=True
-            with self.assertRaises(ValidationError):verify_packed_step(archive(),package)
+            with self.assertRaises(ValidationError):read_fixture()
 
     def test_full_gradient_stage_refuses_queued_numeric_prerequisite(self):
         with tempfile.TemporaryDirectory() as directory:

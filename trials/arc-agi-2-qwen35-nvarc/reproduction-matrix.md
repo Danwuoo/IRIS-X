@@ -52,8 +52,14 @@ accepted as private version 1 after the operator probe completed and quota was
 rechecked. Its sole terminal retrieval verifies a pre-model failure: Python
 3.11 and local 3.12 render empty AST fields differently. The immutable source
 bytes match; zero model calls or optimizer work occurs. Distinct inspection
-002 is accepted as private version 1 with explicit empty-field AST rendering that preserves
-the frozen 3.12 class hashes, all materials and the zero-work limits. A real compatible
+002's sole terminal retrieval verifies a second pre-model worker failure:
+generated replacement made the old AST API fallback recursive. New 003
+repairs replacement order, has a generated-worker regression, and is accepted
+as private version 1 within the unchanged zero-work limits. Its second status
+is COMPLETE and its sole retrieval verifies native Trainer context 8,192,
+all 128 source input/label views, BF16 adapter topology, detached reset and
+all 36 layer checkpoint flags. This qualifies native preparation with zero
+model/optimizer calls; the full TTT epoch remains unexecuted. A real compatible
 4.53.3 tiny CPU fixture constructs/resets its projection/full-save adapter under
 the production guard and matches all 128 source collator views with zero
 forwards. Its artificial Trainer routing does not establish native Unsloth
@@ -126,12 +132,23 @@ forwards, 220,878 input tokens and 1,200/900-second parent/child bounds. Full
 operator vectors and actual-call accounting have an independent closed reader;
 this partial model can never qualify the whole-model numerical gate. No
 optimizer, generation, teacher or evaluator call is authorized by that probe.
-Distinct 004 is accepted as private version 1 to preserve each sample's unchanged BF16 linear
+Distinct 004 is terminal-complete with its sole retrieval independently verified.
+It preserves each sample's unchanged BF16 linear
 GEMM shape while attention remains physically packed. It retains all 36 layers,
 the fixed 0.25/0.03 numerical gate, full logits, two tiny gradient backwards
 and sample isolation within 13 forwards/94,706 inputs. CPU control-flow and
-independent-reader tests pass; the CUDA gate remains unobserved.
-No original-family full-gradient step is staged. Neither probe supplies
+independent-reader tests pass. All 504,864 full logits and all 38 sampled
+layer states match bitwise; tiny native gradients and later-sample isolation
+pass. This qualifies only the exact segmented numerical variant. A full
+global-256 one-step FSDP candidate now carries that variant through checkpoint
+backward, without reduced/truncated source rows. The inert 001 proposal's
+1,800-second ceiling needs a 7,200-second reserve, exceeding snapshot 011's
+6,746.535 free seconds. Distinct 002 keeps the same complete batch and one-step
+AdamW gate under 1,500/1,260-second parent/worker bounds and needs 6,000 seconds.
+Its offline preflight and full 378-test repository check pass. Fresh snapshot
+012 reconciles 6,746.535 free seconds and admits one 6,000-second conservative
+reserve without enabling pay-to-scale or creating a provider reservation.
+No original-family full-gradient step is executed. Neither numerical probe supplies
 training throughput, ARC score or promotion. All 103,223 published synthetic
 puzzles and 2,984,385 pairs now have
 complete byte/structural/parent/stage/exposure yield reconciliation, recovered
