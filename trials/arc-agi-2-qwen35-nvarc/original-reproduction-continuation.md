@@ -1605,3 +1605,37 @@ restoring the existing published verifier byte-for-byte before this validation.
 Original NVARC reproduction remains incomplete. Native 006's provider queue
 and the durable SFT storage requirement are explicit pending gates, not proof
 of zero runtime work, completion, an ARC score or promotion.
+
+## Owner-Editor native epoch replacement (2026-10-03)
+
+[Decision 0055](../../docs/decisions/0055-save-native-ttt-for-owner-editor.md)
+records the owner's request to stop waiting, save a new notebook without
+agent execution and download the needed files as `結果.zip`. The owner reports
+personally cancelling native 006. Its original package, version-1 receipt and
+six-query ledger remain frozen; the cancellation is a separate owner report,
+without a provider query or inference about actual model work.
+
+Distinct [native 007](native-ttt-007-editor.md) preserves every scientific plan
+field from 006. Offline byte comparison finds only identity/authority and
+owner-Editor ZIP transport differences. Its native worker changes only the
+owner-decision guard; source, solver, helper, budget and same-platform scheduler
+payloads are otherwise byte-identical. Parent/child limits stay 1,500/1,200
+seconds, with the unchanged 128-view/128-step epoch and exact original materials.
+
+The notebook's `finally` block writes a verified closed diagnostic ZIP after
+success or handled failure, and its final cell displays the exact archive's
+download link without any new model invocation. The offline failure test
+executes emitted parent bytes up to a deliberate Python-version rejection,
+verifies every archived file through the independent reader, then reruns the
+download cell twice without changing the ZIP. It performs no GPU/model work.
+No agent execution, monitoring, status/log/output request or retrieval follows
+the sole QUICK_SAVE. Original full reproduction remains open.
+
+The sole 007 QUICK_SAVE is accepted as private version 1, kernel ID 136902910.
+The journal retains one wire send, zero status checks and zero retrievals; the
+agent did not initiate a session. Its receipt and exact bindings are retained
+in the linked status page and
+[durable evidence](configs/native-ttt-007-editor-evidence.json). Full repository
+validation passes 400 tests with four optional skips in 360.477 test seconds.
+The owner will execute in Editor; no runtime or epoch-completion claim follows
+from this consumed save receipt.

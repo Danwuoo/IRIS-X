@@ -18,7 +18,13 @@ from tools.nvarc_native_ttt_schedule import SOURCES,FUNCTIONS,ulp_distance
 
 
 def verify(archive,package):
-    checked=preflight(package);plan=json.loads((package/'plan.json').read_bytes());raw=raw_payloads(plan);data={}
+    plan=json.loads((package/'plan.json').read_bytes())
+    if plan.get('owner_editor_only') is True:
+        from tools.stage_nvarc_native_editor import preflight as editor_preflight,raw_payloads as editor_payloads
+        checked=editor_preflight(package);raw=editor_payloads(plan)
+    else:
+        checked=preflight(package);raw=raw_payloads(plan)
+    data={}
     with zipfile.ZipFile(archive) as stream:
         require(len(stream.namelist())==len(set(stream.namelist())) and sum(row.file_size for row in stream.infolist())<=16*1024**2,
             'closed bounded native epoch archive required')

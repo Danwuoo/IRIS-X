@@ -7,6 +7,10 @@ This directory contains only current product-era guidance.
   synchronization and retained ignored-material boundaries before a storage
   audit without cleanup.
 
+- [Decision 0055](decisions/0055-save-native-ttt-for-owner-editor.md) records
+  the owner's native TTT QUICK_SAVE and final ZIP download direction, stopping
+  after the save receipt for manual Editor execution.
+
 - [Decision 0054](decisions/0054-nvarc-original-reproduction-continuation.md)
   governs the new original-reproduction continuation after the completed Goal;
   [current evidence and gaps](../trials/arc-agi-2-qwen35-nvarc/original-reproduction-continuation.md)

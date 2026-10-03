@@ -6,6 +6,13 @@ original-reproduction gates. Full original NVARC reproduction is not complete.
 
 ## Active original NVARC continuation (2026-10-03)
 
+[Decision 0055](../../docs/decisions/0055-save-native-ttt-for-owner-editor.md)
+now records the owner's manual Editor direction. The owner reports cancelling
+native 006; it remains unqueried. Distinct [native 007](native-ttt-007-editor.md)
+retains the exact full epoch and adds the final `結果.zip` download. It uses
+one private QUICK_SAVE, now accepted as version 1 with no agent execution or
+runtime monitoring. The owner will start it manually and return `結果.zip`.
+
 [Decision 0054](../../docs/decisions/0054-nvarc-original-reproduction-continuation.md)
 opens the current untimed continuation on main. The
 [continuation record](original-reproduction-continuation.md) and
@@ -38,8 +45,9 @@ training. The same pinned cosine function differs by 1 ULP at that first
 failure index on local Windows/Linux replay; the rejected Kaggle value was
 not retained. Distinct native 006 repairs the oracle locally and passes
 offline verification. Fresh October 3 quota now admits its unchanged bytes;
-its sole push is accepted as private version 1 and backed-off status is QUEUED.
-No terminal retrieval or completion is observed yet. Full native TTT, trained
+its sole push was accepted as private version 1 and the last backed-off status
+was QUEUED before the owner's cancellation report. No terminal retrieval or
+completion is observed. Full native TTT, trained
 adapter reset, optimizer memory and native-clock parity remain unverified.
 
 The [October 3 continuation](original-reproduction-continuation.md#fresh-continuation-and-original-family-sft-controls-2026-10-03)

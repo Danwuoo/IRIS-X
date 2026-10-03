@@ -616,6 +616,20 @@ exported checkpoint, teacher, generation, scoring or further kernel follows.
 
 ## Authority order
 
+Decision 0055 supersedes the native TTT 006 waiting workflow for the owner's
+new Editor direction. The owner reports cancelling 006; preserve that report,
+its immutable package and accepted receipt without further queries or claims
+about actual model work. Submit exactly one distinct private native TTT 007
+QUICK_SAVE after offline verification, retaining the unchanged complete native
+epoch and adding the final truth-free `結果.zip` download. Stop at the receipt:
+no agent execution, monitoring, status/log/output request, retrieval, Dataset
+mutation or automatic retry. Follow
+`docs/decisions/0055-save-native-ttt-for-owner-editor.md` and
+`trials/arc-agi-2-qwen35-nvarc/native-ttt-007-editor.md` for exact bindings.
+The sole QUICK_SAVE was accepted as private version 1 and is consumed. The
+agent did not start a session or query runtime state. The owner will run it
+in Editor and return `結果.zip`; no automatic action follows from acceptance.
+
 Decision 0054 records the owner's new original-reproduction continuation after
 Decision 0053's Goal completed. The old `nvarc-07-00` timer is paused and must
 not be restarted; no new deadline, Goal or automation was requested. Standing

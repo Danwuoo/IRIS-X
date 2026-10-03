@@ -2,10 +2,17 @@
 
 ## Fresh continuation (2026-10-03)
 
+The owner's [Decision 0055](../../docs/decisions/0055-save-native-ttt-for-owner-editor.md)
+supersedes the waiting workflow: native 006 is owner-reported cancelled and
+unqueried; [native 007](native-ttt-007-editor.md) preserves the full workload
+in a separate private QUICK_SAVE with final `結果.zip` download. The owner
+will execute in Editor; no new GPU outcome follows from that save.
+
 The [current local/GPU record](original-reproduction-continuation.md#fresh-continuation-and-original-family-sft-controls-2026-10-03)
 supersedes prior native 006's unsubmitted state: its unchanged bytes are now
 accepted as private version 1 after fresh quota admission. Backed-off status
-is QUEUED; no terminal retrieval or epoch-completion evidence exists yet.
+was QUEUED before the owner's cancellation report; no terminal retrieval or
+epoch-completion evidence exists.
 New original-Qwen3 SFT passes actual tiny two-rank full model/Adam/RNG/scheduler
 restart and unpacked numerical controls, plus all 25 export state tensors.
 The complete corpus inventory and first 512 original WordLevel rows verify.
