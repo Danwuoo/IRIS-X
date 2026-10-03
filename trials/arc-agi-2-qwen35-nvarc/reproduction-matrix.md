@@ -1,5 +1,15 @@
 # Component completion and reproduction gaps
 
+## Independent acceptance (2026-10-03)
+
+The [local acceptance review](original-reproduction-acceptance-20261003.md)
+accepts main `a9abaef`'s bounded engineering and retained evidence, with fresh
+386-test repository validation (four optional skips), 24 strict ML checks and
+independent material/GPU/SDG re-reading. It does not close the original
+reproduction gaps: native TTT 004 is a failed 50-forward/49-step prefix and
+repair 006 remains unexecuted; original full SFT, SDG dynamic semantics, TRM
+scale/version and independent ARC quality remain open.
+
 ## Original continuation (2026-10-02)
 
 [Decision 0054](../../docs/decisions/0054-nvarc-original-reproduction-continuation.md)

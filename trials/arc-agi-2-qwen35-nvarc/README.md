@@ -1,5 +1,9 @@
 # Qwen3.5-4B NVARC reproduction development
 
+The [2026-10-03 independent acceptance](original-reproduction-acceptance-20261003.md)
+accepts the latest bounded engineering/evidence and records the remaining
+original-reproduction gates. Full original NVARC reproduction is not complete.
+
 ## Active original NVARC continuation (2026-10-03)
 
 [Decision 0054](../../docs/decisions/0054-nvarc-original-reproduction-continuation.md)
