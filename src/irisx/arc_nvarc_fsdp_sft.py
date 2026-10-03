@@ -189,16 +189,24 @@ def verify_checkpoint(directory: Path, identity: str, world: int) -> dict:
 
 def _save_checkpoint(wrapped: Any, optimizer: Any, scheduler: Any,
                      output: Path, state: dict, rank: int, world: int,
-                     device: Any) -> dict:
+                     device: Any, *, directory_name: str | None = None, before_publish=None) -> dict:
     import torch
     import torch.distributed as dist
     import torch.distributed.checkpoint as dcp
     from torch.distributed.checkpoint.state_dict import StateDictOptions, get_state_dict
 
     step = state["step"]
-    directory = output / f"checkpoint-step-{step:04d}"
+    name = directory_name or f"checkpoint-step-{step:04d}"
+    if not name.startswith('checkpoint-step-') or any(value in name for value in ('/', '\\', ':')):
+        raise ValidationError('safe checkpoint transaction name required')
+    directory = output / name
+    error = None
     if rank == 0:
-        directory.mkdir(parents=True, exist_ok=False)
+        try:
+            directory.mkdir(parents=True, exist_ok=False)
+        except Exception as caught:
+            error = f'{type(caught).__name__}: {caught}'
+    _broadcast_error(error,rank)
     dist.barrier()
     model_state, optimizer_state = get_state_dict(
         wrapped, optimizer, options=StateDictOptions(full_state_dict=False, cpu_offload=True))
@@ -209,13 +217,23 @@ def _save_checkpoint(wrapped: Any, optimizer: Any, scheduler: Any,
                "scheduler": scheduler.state_dict()}
     torch.save(sidecar, directory / f"rank-{rank}.pt")
     dist.barrier()
+    error = None
     if rank == 0:
-        manifest = _checkpoint_inventory(directory, state)
-        reference = {"path": directory.name, "manifest_digest": digest_value(manifest),
-                     "step": step}
-        temporary = output / "latest.tmp"
-        temporary.write_bytes(canonical_bytes(reference, newline=True))
-        temporary.replace(output / "latest.json")
+        try:
+            manifest = _checkpoint_inventory(directory, state)
+            reference = {"path": directory.name, "manifest_digest": digest_value(manifest),
+                         "step": step}
+            if before_publish is not None:
+                before_publish(directory)
+            temporary = output / "latest.tmp"
+            temporary.write_bytes(canonical_bytes(reference, newline=True))
+            if before_publish is not None:
+                with temporary.open('rb+') as stream:
+                    os.fsync(stream.fileno())
+            temporary.replace(output / "latest.json")
+        except Exception as caught:
+            error = f'{type(caught).__name__}: {caught}'
+    _broadcast_error(error,rank)
     dist.barrier()
     reference = json.loads((output / "latest.json").read_bytes())
     return reference

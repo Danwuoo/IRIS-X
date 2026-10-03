@@ -98,7 +98,7 @@ def _retain(output: Path, scratch: Path, reference: dict, identity: str, world: 
 
 
 def run(plan_path: Path, compact: Path, data_path: Path, output: Path, scratch: Path,
-        *, resume=False, stop_after_step=None):
+        *, resume=False, stop_after_step=None, _policy=None):
     import torch
     import torch.distributed as dist
     from torch.distributed.fsdp import FullyShardedDataParallel as FSDP, CPUOffload, MixedPrecision
@@ -107,12 +107,12 @@ def run(plan_path: Path, compact: Path, data_path: Path, output: Path, scratch: 
         apply_activation_checkpointing, checkpoint_wrapper, CheckpointImpl, CheckpointWrapper)
     plan = json.loads(plan_path.read_bytes())
     rank, local, world = (int(os.environ.get(key,'-1')) for key in ('RANK','LOCAL_RANK','WORLD_SIZE'))
-    check_plan(plan,world)
+    (check_plan if _policy is None else _policy.check_plan)(plan,world)
     if rank not in range(world) or local not in range(world):
         raise ValidationError('source SFT requires torchrun ranks')
     if stop_after_step is not None and (type(stop_after_step) is not int or not 1 <= stop_after_step <= plan['maximum_optimizer_steps']):
         raise ValidationError('controlled stop must be a planned optimizer step')
-    data = open_data(data_path,plan)
+    data = (open_data if _policy is None else _policy.open_data)(data_path,plan)
     identity = identity_for(plan,data)
     device, hardware, group = initialize_groups(rank,local,world,plan['backend']=='cuda-l4')
     phase, step, cursor, tokens, supervised, calls = 'material-gate', 0, 0, 0, 0, 0
@@ -122,7 +122,10 @@ def run(plan_path: Path, compact: Path, data_path: Path, output: Path, scratch: 
         error = None
         if rank == 0:
             try:
-                _verify_compact_base(compact,plan['base_material_digest'])
+                if _policy is None:
+                    _verify_compact_base(compact,plan['base_material_digest'])
+                else:
+                    _policy.verify_model(compact,plan)
                 if not resume and (output.exists() or scratch.exists()):
                     raise ValidationError('source SFT needs new output and scratch')
                 if resume and not (scratch/'latest.json').is_file():
@@ -136,10 +139,12 @@ def run(plan_path: Path, compact: Path, data_path: Path, output: Path, scratch: 
         dist.barrier()
         torch.manual_seed(plan['seed']+rank)
         phase = 'model-load'
-        model = load_compact_model(compact,dtype='float32')
+        model = (load_compact_model(compact,dtype='float32') if _policy is None
+                 else _policy.load_model(compact,plan))
         model.gradient_checkpointing_disable()
-        layer_type = type(model.model.language_model.layers[0])
-        expected_layers = len(model.model.language_model.layers)
+        layers = model.model.language_model.layers if _policy is None else model.model.layers
+        layer_type = type(layers[0])
+        expected_layers = len(layers)
         gpu = device.type == 'cuda'
         wrapped = FSDP(model,auto_wrap_policy=ModuleWrapPolicy({layer_type}),device_id=device,
             process_group=group,cpu_offload=CPUOffload(offload_params=gpu),use_orig_params=True,
@@ -170,7 +175,8 @@ def run(plan_path: Path, compact: Path, data_path: Path, output: Path, scratch: 
             if rank == 0:
                 try:
                     _retain(output,scratch,reference,identity,world)
-                    shutil.rmtree(scratch/reference['path'])
+                    if _policy is None:
+                        shutil.rmtree(scratch/reference['path'])
                 except Exception as caught:
                     error = f'{type(caught).__name__}: {caught}'
             _broadcast_error(error,rank)
@@ -186,7 +192,8 @@ def run(plan_path: Path, compact: Path, data_path: Path, output: Path, scratch: 
             if tokens+total.item() > plan['maximum_training_tokens'] or longest.item() > plan['maximum_sequence_length']:
                 raise ValidationError('source step must fit whole, untruncated planned material')
             phase = f'step-{step+1}-accumulation'
-            observation = train_source_step(wrapped,optimizer,scheduler,rows,device=device,recipe=plan['source_recipe'])
+            observation = (train_source_step(wrapped,optimizer,scheduler,rows,device=device,recipe=plan['source_recipe'])
+                           if _policy is None else _policy.train_step(wrapped,optimizer,scheduler,rows,device,plan))
             changed = cpu_fingerprint(wrapped)
             if changed == after:
                 raise ValidationError('source SFT optimizer did not change weights')
@@ -212,12 +219,13 @@ def run(plan_path: Path, compact: Path, data_path: Path, output: Path, scratch: 
                 gc.collect()
                 if gpu:torch.cuda.empty_cache()
                 old_reference = json.loads((scratch/'latest.json').read_bytes()) if (scratch/'latest.json').is_file() else None
-                reference = _save_checkpoint(wrapped,optimizer,scheduler,scratch,state,rank,world,device)
+                reference = (_save_checkpoint(wrapped,optimizer,scheduler,scratch,state,rank,world,device)
+                    if _policy is None else _policy.save_checkpoint(wrapped,optimizer,scheduler,scratch,state,rank,world,device))
                 error = None
                 if rank == 0:
                     try:
                         _retain(output,scratch,reference,identity,world)
-                        if old_reference is not None and old_reference['path'] != reference['path']:
+                        if _policy is None and old_reference is not None and old_reference['path'] != reference['path']:
                             old = scratch/old_reference['path']
                             if old.parent.resolve() != scratch.resolve() or not old.name.startswith('checkpoint-step-'):
                                 raise ValidationError('source checkpoint eviction path differs')
@@ -235,6 +243,8 @@ def run(plan_path: Path, compact: Path, data_path: Path, output: Path, scratch: 
             'packing_execution':'isolated-segments','fused_packing_verified':False,
             'full_sft_completed':plan['data_kind']=='original-corpus' and step==12716,
             'original_qwen3_nemo_parity':False,'generation_calls':0,'teacher_calls':0,'contains_evaluator_truth':False}
+        if _policy is not None:
+            _policy.finish_result(result,plan)
         if rank == 0:
             (output/('final-result.json' if step==plan['maximum_optimizer_steps'] else 'pause-result.json')).write_bytes(canonical_bytes(result,newline=True))
         dist.barrier()
@@ -264,15 +274,19 @@ def tensor_inventory(model):
     return result
 
 
-def export(plan_path: Path, compact: Path, data_path: Path, output: Path, scratch: Path, target: Path):
+def export(plan_path: Path, compact: Path, data_path: Path, output: Path, scratch: Path, target: Path, *, _policy=None):
     import torch
     import torch.distributed.checkpoint as dcp
     from .arc_nvarc_representation import export_trained_model, verify_model_material
-    plan = json.loads(plan_path.read_bytes());check_plan(plan,plan['world_size'])
-    data = open_data(data_path,plan)
+    plan = json.loads(plan_path.read_bytes())
+    (check_plan if _policy is None else _policy.check_plan)(plan,plan['world_size'])
+    data = (open_data if _policy is None else _policy.open_data)(data_path,plan)
     try:identity = identity_for(plan,data)
     finally:data.close()
-    _verify_compact_base(compact,plan['base_material_digest'])
+    if _policy is None:
+        _verify_compact_base(compact,plan['base_material_digest'])
+    else:
+        _policy.verify_model(compact,plan)
     result = json.loads((output/'final-result.json').read_bytes())
     reference = json.loads((scratch/'latest.json').read_bytes())
     if (result['identity_digest'] != identity or result['checkpoint'] != reference or
@@ -282,7 +296,7 @@ def export(plan_path: Path, compact: Path, data_path: Path, output: Path, scratc
     manifest = verify_checkpoint(checkpoint,identity,plan['world_size'])
     if digest_value(manifest) != reference['manifest_digest'] or target.exists():
         raise ValidationError('checkpoint digest or new export target differs')
-    model = load_compact_model(compact,dtype='float32')
+    model = (load_compact_model(compact,dtype='float32') if _policy is None else _policy.load_model(compact,plan))
     tensors = model.state_dict()
     dcp.load({'model':tensors},checkpoint_id=checkpoint/'dcp',no_dist=True)
     model.load_state_dict(tensors);del tensors
@@ -293,10 +307,14 @@ def export(plan_path: Path, compact: Path, data_path: Path, output: Path, scratc
         raise ValidationError('consolidated FP32 checkpoint fingerprint differs')
     if plan['backend']=='cuda-l4':model.to(dtype=torch.bfloat16)
     inventory = tensor_inventory(model)
-    material = export_trained_model(model,compact,target,training_identity_digest=identity)
-    verify_model_material(target,material)
+    if _policy is None:
+        material = export_trained_model(model,compact,target,training_identity_digest=identity)
+        verify_model_material(target,material)
+    else:
+        material = _policy.export_model(model,compact,target,identity,plan)
     del model;gc.collect()
-    reloaded = load_compact_model(target,dtype='bfloat16' if plan['backend']=='cuda-l4' else 'float32')
+    reloaded = (load_compact_model(target,dtype='bfloat16' if plan['backend']=='cuda-l4' else 'float32')
+                if _policy is None else _policy.load_model(target,plan,exported=True))
     if inventory != tensor_inventory(reloaded):
         raise ValidationError('source export tensor bytes changed on reload')
     del reloaded;gc.collect()
@@ -306,6 +324,9 @@ def export(plan_path: Path, compact: Path, data_path: Path, output: Path, scratc
         'export_material_digest':material,'fp32_saved_fingerprint':expected,'fp32_consolidated_fingerprint':fingerprint,
         'export_tensor_inventory':inventory,'reload_tensor_bytes_identical':True,
         'full_sft_completed':result['full_sft_completed'],'original_qwen3_nemo_parity':False,'contains_evaluator_truth':False}
+    if _policy is not None:
+        chain.update(format='irisx/nvarc-original-qwen3-sft-export-v1',model_family='qwen3',
+                     optimizer_checkpoint_retained=True)
     (output/'export-chain.json').write_bytes(canonical_bytes(chain,newline=True))
     return chain
 

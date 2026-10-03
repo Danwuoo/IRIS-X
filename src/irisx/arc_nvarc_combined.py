@@ -227,6 +227,47 @@ def _reap(process, close_job, term_seconds, kill_seconds):
             pass
 
 
+def _launch_worker(command, *, cwd, env):
+    """Establish the Windows descendant job before allowing worker execution.
+
+    Assigning a running short-lived worker races its exit. A pipe-gated Python
+    parent stays alive until assignment and its worker inherits the same job.
+    Closing the gate without authorization starts no worker.
+    """
+    gated = os.name == "nt"
+    if gated:
+        bootstrap = ("import json, subprocess, sys\n"
+                     "if sys.stdin.buffer.read(1) != b'1':\n"
+                     "    raise SystemExit(125)\n"
+                     "raise SystemExit(subprocess.call(json.loads(sys.argv[1]), "
+                     "stdin=subprocess.DEVNULL))\n")
+        command = [sys.executable, "-c", bootstrap, json.dumps(command)]
+    process = subprocess.Popen(command, cwd=cwd, env=env,
+        stdin=subprocess.PIPE if gated else None,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        start_new_session=os.name == "posix",
+        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if gated else 0)
+    job = None
+    try:
+        job = _windows_job(process)
+        if gated:
+            process.stdin.write(b"1")
+            process.stdin.flush()
+            process.stdin.close()
+        return process, job
+    except BaseException:
+        if gated and not process.stdin.closed:
+            process.stdin.close()
+        if job is not None:
+            job()
+        if process.poll() is None:
+            process.kill()
+        process.wait(timeout=5)
+        for pipe in (process.stdout, process.stderr):
+            pipe.close()
+        raise
+
+
 def _drain(pipe, path):
     retained = 0
     with path.open("wb") as stream:
@@ -410,11 +451,7 @@ def supervise(children: dict, output: Path, *, run_id: str, plan_digest: str,
                 if spec.get("device") is not None:
                     env["CUDA_VISIBLE_DEVICES"] = spec["device"]["uuid"]
                 try:
-                    process = subprocess.Popen(spec["command"], cwd=spec.get("cwd"), env=env,
-                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                        start_new_session=os.name == "posix",
-                        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0)
-                    job = _windows_job(process)
+                    process, job = _launch_worker(spec["command"], cwd=spec.get("cwd"), env=env)
                     threads = [threading.Thread(target=_drain, args=(pipe, root / name), daemon=True)
                                for pipe, name in ((process.stdout, "stdout.log"), (process.stderr, "stderr.log"))]
                     for thread in threads:

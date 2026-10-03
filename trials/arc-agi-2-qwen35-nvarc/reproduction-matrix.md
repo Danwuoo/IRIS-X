@@ -1,5 +1,20 @@
 # Component completion and reproduction gaps
 
+## Fresh continuation (2026-10-03)
+
+The [current local/GPU record](original-reproduction-continuation.md#fresh-continuation-and-original-family-sft-controls-2026-10-03)
+supersedes prior native 006's unsubmitted state: its unchanged bytes are now
+accepted as private version 1 after fresh quota admission. Backed-off status
+is QUEUED; no terminal retrieval or epoch-completion evidence exists yet.
+New original-Qwen3 SFT passes actual tiny two-rank full model/Adam/RNG/scheduler
+restart and unpacked numerical controls, plus all 25 export state tensors.
+The complete corpus inventory and first 512 original WordLevel rows verify.
+The distinct global-256 two-step GPU package remains inert, with a 98.8 GB
+durable checkpoint/export requirement versus the prior verified 20.9 GB
+working disk. This is not a fresh GPU result or provider failure. GPU durable
+restart/export, sustained rate and full original SFT remain open. Windows
+process launch and SDK quota serialization have focused reproduced repairs.
+
 ## Independent acceptance (2026-10-03)
 
 The [local acceptance review](original-reproduction-acceptance-20261003.md)

@@ -37,9 +37,19 @@ views/steps. Its sole terminal retrieval verifies 50 forwards/backwards and
 training. The same pinned cosine function differs by 1 ULP at that first
 failure index on local Windows/Linux replay; the rejected Kaggle value was
 not retained. Distinct native 006 repairs the oracle locally and passes
-offline verification, but remains unsubmitted: its conservative 6,000 GPU
-seconds exceed the latest 4,063.873 free seconds. Full native TTT, trained
+offline verification. Fresh October 3 quota now admits its unchanged bytes;
+its sole push is accepted as private version 1 and backed-off status is QUEUED.
+No terminal retrieval or completion is observed yet. Full native TTT, trained
 adapter reset, optimizer memory and native-clock parity remain unverified.
+
+The [October 3 continuation](original-reproduction-continuation.md#fresh-continuation-and-original-family-sft-controls-2026-10-03)
+adds the original-family reusable SFT path and real tiny CPU model/Adam/RNG/
+scheduler restart and export differentials. Its distinct two-step global-256
+GPU package remains inert: complete retained model/Adam checkpoints and export
+need 98.8 GB, while the verified prior working-disk observation is 20.9 GB.
+That is a prior resource comparison, not a new provider rejection. GPU restart,
+sustained throughput and full original SFT remain open. A Windows worker-launch
+race and primary quota duration serialization are repaired with regressions.
 
 The complete published SDG material inventory and ordered parent/program joins
 verify. A fixed ten-program published-output replay reproduces its diagnostic

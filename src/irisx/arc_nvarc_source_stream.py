@@ -15,13 +15,16 @@ from .errors import ValidationError
 
 
 class OriginalSequenceStream:
-    def __init__(self, root: Path, manifest_sha256: str, *, split: str = "train"):
+    def __init__(self, root: Path, manifest_sha256: str, *, split: str = "train", representation="qwen35"):
         import numpy as np
         import pyarrow as pa
         if split not in {"train", "validation"}:
             raise ValidationError("explicit original corpus split required")
+        if representation not in {"qwen35", "original-qwen3"}:
+            raise ValidationError("explicit source representation required")
+        self.representation = representation
         self.store = OriginalCorpusStore(root, expected_manifest_sha256=manifest_sha256,
-                                         purpose="qwen35-port")
+                                         purpose="original-reproduction" if representation == "original-qwen3" else "qwen35-port")
         self.split, self.manifest_sha256 = split, manifest_sha256
         self.sources = list(SOURCES) if split == "train" else [VALIDATION]
         self.ends, self._lineage, count = [], {}, 0
@@ -49,7 +52,8 @@ class OriginalSequenceStream:
                 "split": split, "source_order": self.sources, "records": count,
                 "shuffle_seed": self.store.contract["source_recipe"]["shuffle_seed"] if split == "train" else None,
                 "order_sha256": __import__('hashlib').sha256(self.order.astype('<i8').tobytes()).hexdigest(),
-                "representation": "qwen35-compact-source-chat-newlines"})
+                "representation": "original-qwen3-source-16-wordlevel" if representation == "original-qwen3"
+                                  else "qwen35-compact-source-chat-newlines"})
         except BaseException:
             self.close()
             raise
@@ -76,8 +80,12 @@ class OriginalSequenceStream:
             pair = row["messages"][index:index + 2]
             if [value["role"] for value in pair] != ["user", "assistant"]:
                 raise ValidationError("source message role order differs")
-            grids = [[[int(c) for c in line] for line in value["content"].split("\n")] for value in pair]
-            ids, targets = self.tokenizer.encode_pair(*grids)
+            if self.representation == "original-qwen3":
+                from .arc_nvarc_qwen3_sft import encode_source_pair
+                ids, targets = encode_source_pair(pair)
+            else:
+                grids = [[[int(c) for c in line] for line in value["content"].split("\n")] for value in pair]
+                ids, targets = self.tokenizer.encode_pair(*grids)
             tokens.extend(ids)
             labels.extend(targets)
         if (len(tokens) != lineage["compact_input_tokens"] or

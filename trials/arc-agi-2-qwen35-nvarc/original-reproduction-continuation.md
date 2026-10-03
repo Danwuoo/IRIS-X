@@ -1505,3 +1505,103 @@ Full repository validation 029 passes 386 tests with four optional skips
 Consumed native 004, inert native 003 and final inert native 006 also pass
 their current exact offline package gates. Reviewed work remains on main;
 no git push, paid execution, new Dataset, teacher call or ARC scoring occurs.
+
+## Fresh continuation and original-family SFT controls (2026-10-03)
+
+This continuation starts from main `c6e1796`, after the independent acceptance.
+The [digest-bound local record](configs/original-continuation-20261003-evidence.json)
+binds material checks, failed diagnostics, strict ML logs, source files,
+quota admission and the immutable native 006 receipt. Large retained bytes stay
+under `.irisx/nvarc-original/continuation-20261003-001/`.
+
+All nine pinned source trees verify again. Direct byte/tensor rereading matches
+all 398 compact-base tensors and all 399 finite BF16 published-SFT tensors.
+The new original-Qwen3 corpus representation checks the entire closed corpus
+inventory and preserves six-source shuffle, both synthetic parents and exposure.
+All 512 first-shuffle rows match the frozen original WordLevel prefix exactly:
+1,770,662 inputs and 764,883 supervised tokens, including role masks and EOS.
+There is no filtering, truncation, new forward or evaluator call in these checks.
+
+The previously intermittent Windows process test has a concrete controlled
+reproducer: delaying Job Object assignment by 350 ms allows a short worker to
+exit first, producing `cannot establish worker process job`. The launcher now
+uses a pipe-gated Python parent, assigns the descendant job, then releases the
+worker. The injected-delay regression and all nine process tests pass. Five
+uninjected repetitions (25 subcases) also passed before repair. The older full
+failure lacks branch diagnostics; this establishes a race and repair, but does
+not prove that race caused that particular historical failure.
+
+The distinct `arc_nvarc_qwen3_sft` policy uses the original Qwen3 family and
+WordLevel messages over the shared FSDP checkpoint engine. It carries qualified
+whole-sample segmented GEMMs through activation-checkpoint backward, equal
+collective slots, global token-normalized loss and FP32 CPU Adam state. Actual
+input/position/sequence-boundary guards and cumulative reservations survive
+restart. Each complete checkpoint has a new transaction name, fsynced payloads
+and atomic latest pointer; interrupted transactions are preserved and the two
+latest complete states remain. Restore no longer deletes its only checkpoint.
+Publication and retention errors broadcast before sibling barriers.
+
+Actual two-rank tiny Qwen3 CPU training completes three steps, including unequal
+physical chunks and dummy slots: twelve outer forwards, 108 source inputs,
+114 actual inputs and 27 supervised tokens. Every model tensor and Adam moment
+matches an independent unpacked global-update oracle. Continuous and restarted
+model/Adam/RNG/scheduler states are exact; failure after restore preserves the
+previous checkpoint, and a partial step-2 transaction is not overwritten. All
+25 export/reload state tensors match. An initial read-only-file fsync on Windows
+failed and stranded the other rank until the bounded test timeout; its log and
+tiny failed state remain retained. The corrected writable handle and broadcast
+path pass. These are tiny CPU controls, not original 4B GPU or NeMo observations.
+The latest original strict pair passes in 78.058 seconds; a broader 16-test
+packing/SFT/segmented/port ML run passes in 216.278 seconds.
+
+Inert `nvarc-original-qwen3-sft-001` passes exact offline preflight with plan
+`sha256:c14678e802c97247110af4c5ab2864d654f21d44d658e8a7df7a491c45139dbe`.
+It retains two global-256 batches, two optimizer steps, sixty bounded outer
+forwards including dummy work, a process restart, complete model/Adam state and
+native HF export within 3,600/3,000-second parent/worker limits. It opens no
+competition data and makes no generation or teacher call. The closed reader
+reconstructs source placement and actual-call prefixes. The single terminal
+transport can retain the latest complete checkpoint even after failure and
+verify every transferred byte; worker CUDA gradient/moment observations are
+explicitly distinct from local numerical differentials. Artificial archive,
+storage and transport fixtures do not qualify a real GPU result.
+
+For the actual 3,633,880,576 unique parameters, one FP32 model plus two Adam
+moments needs 43,606,566,912 bytes per transaction. Two retained transactions,
+BF16 export and a 4 GiB reserve need **98,775,862,272 bytes**. Independently
+rereading the closed earlier Qwen3.5 SFT 003 archive finds only 20,938,477,568
+free working bytes, despite 1.20 TB of ephemeral scratch. That prior environment
+does not admit this durable package. It is not a fresh storage observation or
+a submitted-package failure. Original SFT 001 has no execution journal, push or
+GPU observation. Scratch-only checkpoints, reducing the source batch, or
+discarding optimizer state would not close this distinct durability question.
+GPU restart/export, sustained useful rate and all 12,716 original steps remain
+open, as do historical NeMo/Megatron versions and numerical equivalence.
+
+Fresh quota snapshot 001 shows zero used/reserved quota and disabled pay-to-scale.
+The installed SDK serializer drops `timedelta.days`: its projection reports
+21,600 seconds while its typed duration reports 108,000. Native 006's 6,000-second
+reserve was admitted against the smaller figure after the 387-test full check.
+The repaired quota reader retains the primary response before SDK projection
+and reconciles typed durations, including sub-microsecond rounding. Snapshot
+002's actual primary response confirms 108,000 seconds and zero used/reserved;
+no kernel-state request is part of that read.
+
+Native 006's unchanged exact v2 bytes are accepted as private version 1,
+kernel ID 136879574, at 07:43:41 UTC on October 3. Receipt SHA-256:
+`5f3af12b13d501e6a9b1d56857736b8185cc063979a84604caa9d6465d5568bb`.
+This supersedes the October 2 no-submission observation above. Its sole push
+is consumed; the latest backed-off status remains QUEUED, with no terminal
+retrieval or model-completion observation yet. The full 128-view workload,
+1,500/1,200-second limits, no paid work and no generations stay unchanged.
+No new Dataset, timer, automation, Goal or git push was created.
+
+Final clean-source repository validation passes 397 tests with four optional
+skips in 350.359 test seconds. Its log digest and six-query QUEUED ledger
+snapshot are retained in the local evidence record. Existing published-model
+and historical long-TTT verifier imports remain intact. The new source-SFT
+reader has a distinct name; its initial filename collision was corrected by
+restoring the existing published verifier byte-for-byte before this validation.
+Original NVARC reproduction remains incomplete. Native 006's provider queue
+and the durable SFT storage requirement are explicit pending gates, not proof
+of zero runtime work, completion, an ARC score or promotion.

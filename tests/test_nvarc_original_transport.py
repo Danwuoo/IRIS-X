@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 from tools.execute_nvarc_overnight_sft import session_state,preflight
 from tools.nvarc_qwen3_material import dataset_receipt_accepted
-from tools.inspect_nvarc_free_resource import duration_seconds
+from tools.inspect_nvarc_free_resource import duration_seconds,reconcile_quota
 
 
 class OriginalTransportTests(unittest.TestCase):
@@ -36,6 +36,17 @@ class OriginalTransportTests(unittest.TestCase):
         response=SimpleNamespace(status=SimpleNamespace(name='QUEUED'),to_dict=lambda:{})
         self.assertEqual(response.to_dict(),{})
         self.assertEqual(session_state(response),'QUEUED')
+
+    def test_primary_quota_retains_days_and_reconciles_typed_fractional_seconds(self):
+        from irisx.errors import ValidationError
+        raw={'gpuQuota':{'totalTimeAllowed':'108000s','timeUsed':'86400.123456789s','timeReserved':'1500s'}}
+        typed={'gpu_total_seconds':108000.,'gpu_used_seconds':86400.123456,
+               'gpu_reserved_seconds':1500.,'gpu_pay_to_scale_enabled':False}
+        result=reconcile_quota(raw,typed)
+        self.assertAlmostEqual(20099.876543211,result['remaining_free_seconds'])
+        self.assertTrue(result['primary_wire_and_typed_quota_agree'])
+        with self.assertRaises(ValidationError):reconcile_quota(raw,{**typed,'gpu_total_seconds':21600.})
+        with self.assertRaises(ValidationError):reconcile_quota(raw,{**typed,'gpu_pay_to_scale_enabled':True})
 
     def test_terminal_and_running_typed_enum(self):
         for state in ('RUNNING','COMPLETE','ERROR','CANCEL_ACKNOWLEDGED'):

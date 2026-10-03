@@ -111,9 +111,24 @@ class CombinedProcessTests(unittest.TestCase):
         for mode in ("pre-ready-fail", "work-fail", "tampered", "no-result", "forged-counters"):
             with self.subTest(mode=mode):
                 _, report = self.launch([mode, "success"])
-                self.assertEqual("partial", report["outcome"])
+                self.assertEqual("partial", report["outcome"], report)
                 self.assertEqual("failed", report["branches"]["m2"]["outcome"])
                 self.assertEqual("complete", report["branches"]["m3"]["outcome"])
+
+    def test_delayed_job_assignment_cannot_race_fast_worker_exit(self):
+        import irisx.arc_nvarc_combined as runtime
+        original = runtime._windows_job
+
+        def delayed(process):
+            time.sleep(0.35)
+            return original(process)
+
+        with patch.object(runtime, "_windows_job", side_effect=delayed):
+            _, report = self.launch(["pre-ready-fail", "success"], work_seconds=5, readiness=2)
+        self.assertEqual("partial", report["outcome"], report)
+        self.assertEqual("failed", report["branches"]["m2"]["outcome"])
+        self.assertEqual("complete", report["branches"]["m3"]["outcome"])
+        self.assertTrue(all(row["launch_count"] == 1 for row in report["branches"].values()))
 
     def test_pre_ready_hang_is_bounded_and_sibling_launches(self):
         _, report = self.launch(["pre-ready-hang", "success"])

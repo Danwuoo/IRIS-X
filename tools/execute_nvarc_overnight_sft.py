@@ -19,7 +19,9 @@ import re
 RUN = None
 from irisx.canonical import digest_value
 def preflight(package):
-    if read(package/'plan.json')['format'] in {'irisx/nvarc-original-native-long-ttt-v1','irisx/nvarc-original-native-long-ttt-v2'}:
+    if read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-source-sft-v1':
+        from tools.stage_nvarc_qwen3_sft import preflight as check
+    elif read(package/'plan.json')['format'] in {'irisx/nvarc-original-native-long-ttt-v1','irisx/nvarc-original-native-long-ttt-v2'}:
         from tools.stage_nvarc_native_long_ttt import preflight as check
     elif read(package/'plan.json')['format']=='irisx/nvarc-original-training-inspection-v1':
         from tools.stage_nvarc_original_training_inspection import preflight as check
@@ -142,7 +144,7 @@ def bindings(package):
 def execute(action, package, journal_dir):
     global RUN
     RUN = read(package / "plan.json")["run_id"]
-    original = re.fullmatch(r'nvarc-original-qwen3-(?:probe|packed-step|long-ttt|native-ttt|environment|unsloth-probe|training-inspect)-\d{3}', RUN)
+    original = re.fullmatch(r'nvarc-original-qwen3-(?:probe|packed-step|sft|long-ttt|native-ttt|environment|unsloth-probe|training-inspect)-\d{3}', RUN)
     assert original or re.fullmatch(r"nvarc-overnight-(?:sft|ttt|trm)-\d{3}", RUN)
     authority = 'Decision 0054' if original else 'Decision 0053'
     assert read(package/'plan.json')['owner_decision'] == authority
@@ -279,7 +281,8 @@ def execute(action, package, journal_dir):
                     (destination / "provider.log").write_text(response.log, encoding="utf-8")
                 for file in response.files or []:
                     names.append(file.file_name)
-                    if file.file_name.startswith(RUN + '/export/'):
+                    original_sft=read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-source-sft-v1'
+                    if file.file_name.startswith(RUN + '/export/') or (original_sft and file.file_name.startswith(RUN+'/checkpoints/')):
                         assert file.file_name not in export_urls and file.url.startswith('https://')
                         export_urls[file.file_name] = file.url
                     if file.file_name != "gpu-preflight-result.zip":
@@ -317,7 +320,11 @@ def execute(action, package, journal_dir):
                     assert json.loads(archive.read('payload-bindings.json')) == read(package/'stage-summary.json')['payload_sha256']
                     terminal = json.loads(archive.read('terminal.json'))
                     entries = json.loads(archive.read('export-inventory.json')) if 'export-inventory.json' in expected_names else []
-                if terminal['outcome'] == 'complete' and read(package/'plan.json').get('retain_export',True):
+                if read(package/'plan.json')['format']=='irisx/nvarc-original-qwen3-source-sft-v1':
+                    from tools.verify_nvarc_qwen3_source_sft import retrieve_materials
+                    event['original_sft_materials']=retrieve_materials(archive_path,package,destination,export_urls,
+                        lambda value:(event.update(original_sft_materials=value),atomic(ledger,journal)))
+                elif terminal['outcome'] == 'complete' and read(package/'plan.json').get('retain_export',True):
                     assert entries and sum(item['bytes'] for item in entries) < 9 * 1024**3
                     assert shutil.disk_usage(destination).free > sum(item['bytes'] for item in entries) + 2 * 1024**3
                     event['export_downloads'] = []
