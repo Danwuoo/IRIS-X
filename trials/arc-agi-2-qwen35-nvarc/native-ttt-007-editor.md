@@ -1,7 +1,13 @@
 # Original native TTT 007 owner-Editor notebook
 
 Authority: [Decision 0055](../../docs/decisions/0055-save-native-ttt-for-owner-editor.md).
-Status: QUICK_SAVE accepted as private version 1; owner-Editor execution pending.
+Status: owner-Editor timeout locally verified; 96 of 128 optimizer steps complete.
+
+The owner's returned `結果.zip` is verified in the
+[terminal diagnosis](native-ttt-007-editor-diagnosis.md). Its parent wait deadline
+interrupts the 97th training step after 97 completed forwards and 96 optimizer
+updates. Diagnostics packaging succeeds. Full epoch, final optimizer moments,
+trained/reset fingerprints and checkpoint export remain unverified.
 
 The owner requests QUICK_SAVE and will run the notebook in Editor. The owner
 reports cancelling predecessor native 006. Its immutable bytes and receipt
@@ -62,6 +68,8 @@ Receipt SHA-256:
 The journal reserves exactly one push and records one `SaveKernel/QUICK_SAVE`
 wire send. Status and retrieval reservations are zero. No agent session was
 started; runtime remains unobserved pending the owner's Editor report.
+That statement describes the save stop point. The later owner-supplied ZIP now
+establishes the bounded timeout observation above, without a provider query.
 
 Full repository validation passes **400 tests, four optional skips**, in
 360.477 test seconds. Its retained log SHA-256 is

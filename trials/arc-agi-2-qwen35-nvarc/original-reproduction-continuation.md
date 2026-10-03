@@ -1639,3 +1639,35 @@ in the linked status page and
 validation passes 400 tests with four optional skips in 360.477 test seconds.
 The owner will execute in Editor; no runtime or epoch-completion claim follows
 from this consumed save receipt.
+
+## Native 007 owner-Editor timeout observation (2026-10-03)
+
+The owner supplies the exact `結果.zip` locally. Independent verification
+matches the saved plan, all 32 manifest members, 41 original source bindings,
+published checkpoint and four distinct BF16 L4 UUIDs. The
+[diagnosis](native-ttt-007-editor-diagnosis.md) retains 97 completed forwards,
+96 completed Trainer/optimizer steps and an incomplete 97th training step.
+All 96 observed updates use the exact same-platform cosine oracle and finite
+506-gradient groups. No generation, teacher, checkpoint export or scoring ran.
+The full 128-step epoch, terminal optimizer moments and trained/reset tensor
+fingerprints remain unverified.
+
+Its 1,500-second parent budget reserves 120 seconds for packaging and spends
+about 401 seconds before worker launch, leaving 979.018 worker seconds. The
+worker progresses through step 96 at training elapsed 11:06 and recent rate
+6.62 seconds/step; the parent's wait deadline kills and reaps the process group.
+ZIP finalization succeeds. The retained archive SHA-256 is
+`f238b7614d9f7838fc690ddc2e7aae1011e7a3827e7e9837be010bcc4e8e630c`.
+The original root input and an exact verification copy are retained under
+007's ignored `owner-editor-report-20261003-001` directory after the repository
+validator rejects the unexpected top-level binary. Both files retain exact bytes;
+the initial layout/console-encoding failure log is preserved.
+
+The [inert 008 proposal](native-ttt-008-timeout-proposal.md) keeps every scientific
+payload byte and raises only the finite parent/child budget to 3,600/3,000 seconds.
+Its approval flag is false, the parent rejects before runtime work and its
+stager exposes no provider calls. The emitted deadline expression replays both
+007's observed timeout and the proposed longer budget in offline tests. A
+separate reader regression accepts the real hardware helper's `memory_bytes`
+field while rejecting conflicting legacy aliases. No saved package changes.
+The returned evidence grants no new external action or automatic retry.

@@ -109,6 +109,19 @@ class NativeEpochEvidenceTests(unittest.TestCase):
             altered=dict(data);altered['native/prepared-tokens.i16le']=b'\x01\x00'+altered['native/prepared-tokens.i16le'][2:]
             with self.assertRaises(ValidationError):self.check(root,fixture,altered)
 
+    def test_complete_actual_hardware_memory_field_and_conflicting_alias(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);fixture=self.fixture(root);data=dict(fixture[-1])
+            hardware=json.loads(data['hardware.json'])
+            for row in hardware['inventory']:
+                row['memory_bytes']=row.pop('total_memory_bytes')
+            data['hardware.json']=canonical_bytes(hardware)
+            self.assertTrue(self.check(root,fixture,data)['full_native_long_ttt_completed'])
+            hardware['inventory'][0]['total_memory_bytes']=101
+            data['hardware.json']=canonical_bytes(hardware)
+            with self.assertRaisesRegex(ValidationError,'consistent verified native GPU memory'):
+                self.check(root,fixture,data)
+
     def test_portable_protocol_uses_exact_local_oracle_not_a_tolerant_optimizer_rate(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);package,original,binding,raw,data=self.fixture(root)

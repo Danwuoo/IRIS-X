@@ -11,7 +11,11 @@ now records the owner's manual Editor direction. The owner reports cancelling
 native 006; it remains unqueried. Distinct [native 007](native-ttt-007-editor.md)
 retains the exact full epoch and adds the final `結果.zip` download. It uses
 one private QUICK_SAVE, now accepted as version 1 with no agent execution or
-runtime monitoring. The owner will start it manually and return `結果.zip`.
+runtime monitoring. The owner's returned [007 ZIP](native-ttt-007-editor-diagnosis.md)
+now verifies 97 forwards and 96 of 128 optimizer steps before the parent wait
+deadline. Final ZIP packaging works; no full epoch or adapter reset is verified.
+The [008 time-limit proposal](native-ttt-008-timeout-proposal.md) remains inert
+and unapproved, with no new external action.
 
 [Decision 0054](../../docs/decisions/0054-nvarc-original-reproduction-continuation.md)
 opens the current untimed continuation on main. The

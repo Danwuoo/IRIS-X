@@ -7,6 +7,11 @@ supersedes the waiting workflow: native 006 is owner-reported cancelled and
 unqueried; [native 007](native-ttt-007-editor.md) preserves the full workload
 in a separate private QUICK_SAVE with final `結果.zip` download. The owner
 will execute in Editor; no new GPU outcome follows from that save.
+The owner's subsequent [007 ZIP diagnosis](native-ttt-007-editor-diagnosis.md)
+verifies 97 forwards and 96 optimizer steps before the parent wait timeout.
+The full epoch, final optimizer moments and trained/reset fingerprints remain
+unverified. Distinct [008](native-ttt-008-timeout-proposal.md) is a local inert
+proposal for a longer finite time envelope, without a save or execution.
 
 The [current local/GPU record](original-reproduction-continuation.md#fresh-continuation-and-original-family-sft-controls-2026-10-03)
 supersedes prior native 006's unsubmitted state: its unchanged bytes are now

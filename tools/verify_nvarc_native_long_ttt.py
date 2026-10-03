@@ -159,9 +159,14 @@ def verify(archive,package):
         all(result[key] is True for key in ('full_native_long_ttt_completed','optimizer_discarded','all_saved_tensors_restored')) and
         all(result[key] is False for key in ('checkpoint_exported','correctness_scored','contains_evaluator_truth')),
         'complete bounded native epoch result required')
+    capacity=gpus[0].get('memory_bytes',gpus[0].get('total_memory_bytes'))
+    require(type(capacity) is int and capacity>0 and
+        ('memory_bytes' not in gpus[0] or 'total_memory_bytes' not in gpus[0] or
+            gpus[0]['memory_bytes']==gpus[0]['total_memory_bytes']),
+        'one consistent verified native GPU memory capacity required')
     require(all(type(result[key]) in (int,float) and math.isfinite(result[key]) for key in ('training_wall_seconds','worker_wall_seconds')) and
         0<result['training_wall_seconds']<=result['worker_wall_seconds']<=plan['maximum_child_wall_seconds'] and
-        all(type(result[key]) is int and 0<result[key]<=gpus[0]['total_memory_bytes'] for key in
+        all(type(result[key]) is int and 0<result[key]<=capacity for key in
             ('cuda_peak_allocated_bytes','cuda_peak_reserved_bytes')) and
         result['cuda_peak_allocated_bytes']<=result['cuda_peak_reserved_bytes'],'finite complete native epoch timing/memory required')
     proof.update(full_native_long_ttt_completed=True,input_tokens=955392,supervised_tokens=476160,

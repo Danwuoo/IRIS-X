@@ -629,6 +629,14 @@ mutation or automatic retry. Follow
 The sole QUICK_SAVE was accepted as private version 1 and is consumed. The
 agent did not start a session or query runtime state. The owner will run it
 in Editor and return `結果.zip`; no automatic action follows from acceptance.
+The owner has returned 007's Editor ZIP. All 32 member digests, the exact saved
+plan/materials and four distinct BF16 L4 devices verify locally. Its parent
+wait deadline stops the 97th training step after 97 completed forwards and
+96 optimizer steps; no full epoch, final moments, trained/reset fingerprint
+or export exists. Preserve the diagnosis at
+`trials/arc-agi-2-qwen35-nvarc/native-ttt-007-editor-diagnosis.md`.
+The local 008 time-limit proposal is inert and unapproved. This owner report
+does not authorize another save, run, query, retrieval or automatic retry.
 
 Decision 0054 records the owner's new original-reproduction continuation after
 Decision 0053's Goal completed. The old `nvarc-07-00` timer is paused and must
