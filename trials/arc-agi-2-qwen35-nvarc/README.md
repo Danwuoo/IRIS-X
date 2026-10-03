@@ -15,7 +15,12 @@ runtime monitoring. The owner's returned [007 ZIP](native-ttt-007-editor-diagnos
 now verifies 97 forwards and 96 of 128 optimizer steps before the parent wait
 deadline. Final ZIP packaging works; no full epoch or adapter reset is verified.
 The [008 time-limit proposal](native-ttt-008-timeout-proposal.md) remains inert
-and unapproved, with no new external action.
+and is retained unchanged. The owner subsequently accepts
+[Decision 0056](../../docs/decisions/0056-save-native-ttt-timeout-repair-for-owner-editor.md)
+for one separate [approved 008 QUICK_SAVE](native-ttt-008-editor.md), retaining
+the original workload and increasing only its finite time envelope.
+That sole private save is accepted as version 1 and consumed. The agent did not
+start or query runtime; the owner's Editor report is pending.
 
 [Decision 0054](../../docs/decisions/0054-nvarc-original-reproduction-continuation.md)
 opens the current untimed continuation on main. The

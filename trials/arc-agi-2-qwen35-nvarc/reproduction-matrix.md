@@ -12,6 +12,11 @@ verifies 97 forwards and 96 optimizer steps before the parent wait timeout.
 The full epoch, final optimizer moments and trained/reset fingerprints remain
 unverified. Distinct [008](native-ttt-008-timeout-proposal.md) is a local inert
 proposal for a longer finite time envelope, without a save or execution.
+The owner subsequently authorizes a separate
+[Decision 0056 approval envelope](native-ttt-008-editor.md) for one private
+008 QUICK_SAVE, with 3,600/3,000-second parent/child limits and the same workload.
+The sole private save is accepted as version 1 and consumed. No agent execution
+or GPU result follows from the save; the owner's Editor report is pending.
 
 The [current local/GPU record](original-reproduction-continuation.md#fresh-continuation-and-original-family-sft-controls-2026-10-03)
 supersedes prior native 006's unsubmitted state: its unchanged bytes are now

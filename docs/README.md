@@ -7,6 +7,10 @@ This directory contains only current product-era guidance.
   synchronization and retained ignored-material boundaries before a storage
   audit without cleanup.
 
+- [Decision 0056](decisions/0056-save-native-ttt-timeout-repair-for-owner-editor.md)
+  authorizes one reviewed native 008 QUICK_SAVE with a longer finite timeout,
+  retaining the original workload and owner Editor execution.
+
 - [Decision 0055](decisions/0055-save-native-ttt-for-owner-editor.md) records
   the owner's native TTT QUICK_SAVE and final ZIP download direction, stopping
   after the save receipt for manual Editor execution.

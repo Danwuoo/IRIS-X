@@ -1,6 +1,12 @@
 # Inert native TTT 008 timeout repair proposal
 
-Status: local offline-verified proposal; not owner-approved, saved or executed.
+Status: immutable inert proposal retained; owner approved a separate Decision 0056 envelope.
+
+The owner subsequently directs 「對，提交 quick save」. The separate
+[approved 008 package](native-ttt-008-editor.md) now follows
+[Decision 0056](../../docs/decisions/0056-save-native-ttt-timeout-repair-for-owner-editor.md).
+The original proposal bytes and false approval flag remain unchanged; the
+description below records its original inert review state.
 Date: 2026-10-03 (Asia/Taipei).
 
 The [007 diagnosis](native-ttt-007-editor-diagnosis.md) verifies a 96-of-128-step

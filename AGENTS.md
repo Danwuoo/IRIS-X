@@ -616,6 +616,18 @@ exported checkpoint, teacher, generation, scoring or further kernel follows.
 
 ## Authority order
 
+Decision 0056 records the owner's explicit acceptance of the reviewed native
+TTT 008 timeout proposal and instruction to submit QUICK_SAVE. Exactly one
+private 008 save is authorized after exact offline verification, with unchanged
+128-step original workload and increased 3,600/3,000-second parent/child limits.
+Preserve the inert proposal and all 007 evidence. Stop at the sole receipt:
+the owner will run in Editor and download `結果.zip`. No agent execution,
+status/log/output request, retrieval, Dataset mutation, monitoring or retry.
+Follow `docs/decisions/0056-save-native-ttt-timeout-repair-for-owner-editor.md`
+and `trials/arc-agi-2-qwen35-nvarc/native-ttt-008-editor.md`.
+The sole QUICK_SAVE was accepted as private version 1 and is consumed. No agent
+session was started or runtime queried; the owner's Editor report is pending.
+
 Decision 0055 supersedes the native TTT 006 waiting workflow for the owner's
 new Editor direction. The owner reports cancelling 006; preserve that report,
 its immutable package and accepted receipt without further queries or claims

@@ -1671,3 +1671,33 @@ stager exposes no provider calls. The emitted deadline expression replays both
 separate reader regression accepts the real hardware helper's `memory_bytes`
 field while rejecting conflicting legacy aliases. No saved package changes.
 The returned evidence grants no new external action or automatic retry.
+
+## Approved native 008 owner-Editor timeout repair (2026-10-03)
+
+The owner's explicit 「對，提交 quick save」 direction is recorded in
+[Decision 0056](../../docs/decisions/0056-save-native-ttt-timeout-repair-for-owner-editor.md).
+It authorizes one separate [approved 008 envelope](native-ttt-008-editor.md),
+while preserving the inert reviewed proposal and all 007 bytes/evidence.
+Parent/child bounds increase to 3,600/3,000 seconds with the unchanged 120-second
+ZIP reserve and complete 128-view/128-step native epoch. Source/model/helper,
+budget, same-platform cosine and download payloads remain byte-identical to the
+proposal; the worker changes only its owner-decision guard. The owner will start
+the notebook in Editor. No agent execution, runtime query, retrieval, Dataset
+mutation, monitoring or automatic retry follows the sole QUICK_SAVE.
+
+The approved plan digest is
+`sha256:6e7b20de68182151e3f92511bc9202d6b7e813e690f39ee8ca3bfac2e240f897`.
+All eleven focused native Editor/proposal/reader tests pass in 6.956 seconds.
+The actual installed SDK enum/wire is QUICK_SAVE with a 3,600-second session.
+The preceding Windows SDG file-replacement failure remains a separate local
+validation observation; it does not alter the notebook method or result claims.
+
+The sole private QUICK_SAVE is accepted as version 1, kernel ID `136911962`,
+at `2026-10-03T13:21:53.570505+00:00`. Its exact receipt, one-send journal and
+package bindings are retained in the linked status page and
+[durable evidence](configs/native-ttt-008-editor-evidence.json). Full repository
+validation passes 405 tests with four optional skips in 334.311 test seconds.
+The preceding Windows SDG file-replacement error did not recur in this run;
+its historical failures remain retained without an unrelated runtime change.
+The save is consumed. No agent session, runtime query or retrieval was made;
+the owner's Editor report is pending.

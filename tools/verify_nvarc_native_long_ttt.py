@@ -20,7 +20,10 @@ from tools.nvarc_native_ttt_schedule import SOURCES,FUNCTIONS,ulp_distance
 def verify(archive,package):
     plan=json.loads((package/'plan.json').read_bytes())
     if plan.get('owner_editor_only') is True:
-        from tools.stage_nvarc_native_editor import preflight as editor_preflight,raw_payloads as editor_payloads
+        if plan.get('run_id')=='nvarc-original-qwen3-native-ttt-008':
+            from tools.stage_nvarc_native_editor_008 import preflight as editor_preflight,raw_payloads as editor_payloads
+        else:
+            from tools.stage_nvarc_native_editor import preflight as editor_preflight,raw_payloads as editor_payloads
         checked=editor_preflight(package);raw=editor_payloads(plan)
     else:
         checked=preflight(package);raw=raw_payloads(plan)
