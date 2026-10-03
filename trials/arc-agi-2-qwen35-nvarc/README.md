@@ -1,8 +1,12 @@
 # Qwen3.5-4B NVARC reproduction development
 
-The [2026-10-03 independent acceptance](original-reproduction-acceptance-20261003.md)
-accepts the latest bounded engineering/evidence and records the remaining
-original-reproduction gates. Full original NVARC reproduction is not complete.
+The [2026-10-04 independent acceptance](original-reproduction-acceptance-20261004.md)
+accepts the complete native 008 TTT epoch/reset observation and original-Qwen3
+CPU SFT controls. Fresh validation passes 405 discovered tests (four optional
+skips) and 63 strict ML checks with no skips. GPU original SFT restart/export,
+the trained solve/ranking/reset loop and full original NVARC reproduction
+remain incomplete. The [previous acceptance](original-reproduction-acceptance-20261003.md)
+is retained as historical evidence.
 
 ## Active original NVARC continuation (2026-10-03)
 

@@ -1731,3 +1731,23 @@ historical native-clock parity and independent ARC quality remain open. The
 returned result does not authorize new execution, saving, retrieval or promotion.
 Full repository validation passes all 405 tests with four optional skips in
 392.583 test seconds; its exact log digest is retained in the diagnostic evidence.
+
+## Independent continuation acceptance (2026-10-04)
+
+The owner's completed-chat acceptance request is answered by a
+[fresh local review](original-reproduction-acceptance-20261004.md) of main
+`4ee7e61`. Both native Editor readers exactly reproduce their frozen proofs;
+008's 128 steps and all 506 changed/reset tensor fingerprints verify.
+The source corpus's 53 closed members and all first 512 original WordLevel
+rows recheck, including independent actual-tokenizer encodings and masks.
+The original SFT proposal remains unchanged and unsubmitted.
+
+Full repository validation passes 405 discovered tests with four optional
+skips. The new original-Qwen3 SFT strict module was absent from the standard
+optional ML profile; the review adds it and runs the complete profile:
+63 actual ML tests pass with no skips. Original CPU restart/export controls
+again match every model/Adam/RNG/scheduler state and all 25 export tensors.
+No consumed runner or package bytes change. The next missing gate is the
+native trained solve/ranking/reset loop; original GPU durable SFT, full
+SDG/TRM and independent quality remain open. This review makes no provider
+request and leaves the completed Goal's timer paused.

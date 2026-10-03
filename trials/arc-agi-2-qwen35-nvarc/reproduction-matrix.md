@@ -1,5 +1,19 @@
 # Component completion and reproduction gaps
 
+## Independent acceptance (2026-10-04)
+
+The [latest acceptance](original-reproduction-acceptance-20261004.md) rechecks
+main `4ee7e61`, both native Editor archives and their frozen submissions, all
+53 corpus members and 512 actual WordLevel prefix encodings. Native 008 closes
+the complete 128-step epoch and trained-state reset observation; it has zero
+generations. Original-Qwen3 SFT passes exact CPU model/Adam/RNG/scheduler
+restart and all 25 export/reload tensors, while its two-step GPU package
+remains inert. Full repository validation passes 405 discovered tests (four
+optional skips); the amended standard ML profile includes the original SFT
+strict module and passes 63 tests with no skips. The native trained
+solve/ranking/reset loop, GPU durable SFT and the other full-method/quality
+gates remain open. No provider call or scientific package mutation occurs.
+
 ## Fresh continuation (2026-10-03)
 
 The owner's [Decision 0055](../../docs/decisions/0055-save-native-ttt-for-owner-editor.md)
