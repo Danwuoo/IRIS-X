@@ -1,7 +1,7 @@
 # Original native TTT 008 owner-Editor timeout repair
 
 Authority: [Decision 0056](../../docs/decisions/0056-save-native-ttt-timeout-repair-for-owner-editor.md).
-Status: sole private QUICK_SAVE accepted as version 1; owner-Editor execution pending.
+Status: sole private QUICK_SAVE consumed; owner-Editor complete native epoch verified.
 Date: 2026-10-03 (Asia/Taipei).
 
 The owner explicitly accepts the [reviewed proposal](native-ttt-008-timeout-proposal.md)
@@ -58,3 +58,12 @@ seconds. The full repository check passes 405 tests with four optional skips in
 file-replacement error; its historical logs remain retained, and no unrelated
 runtime repair is claimed. Exact receipt, package and validation bindings are in
 [durable evidence](configs/native-ttt-008-editor-evidence.json).
+
+The owner subsequently returns `結果.zip` and reports `Run success`.
+[Local diagnosis](native-ttt-008-editor-diagnosis.md) verifies all 36 manifest
+members, the exact saved inputs, four distinct BF16 L4s, 128 completed
+forwards/backwards/optimizer updates and every trained/reset fingerprint.
+All 506 terminal optimizer states are finite at step 128. Training takes
+862.043 seconds and the parent terminates successfully in 1,068.026 seconds.
+No agent session or provider request is made for this local verification.
+No generation, ARC score, checkpoint export or further save follows.

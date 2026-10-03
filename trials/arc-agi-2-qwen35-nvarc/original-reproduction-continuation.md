@@ -1701,3 +1701,33 @@ The preceding Windows SDG file-replacement error did not recur in this run;
 its historical failures remain retained without an unrelated runtime change.
 The save is consumed. No agent session, runtime query or retrieval was made;
 the owner's Editor report is pending.
+
+## Native 008 complete owner-Editor epoch observation (2026-10-03)
+
+The owner supplies `結果.zip` locally and reports `Run success`.
+[Independent diagnosis](native-ttt-008-editor-diagnosis.md) verifies the exact
+approved package/plan, all 36 manifest members, original source/model materials
+and four distinct BF16 L4 UUIDs. Archive SHA-256 is
+`2a8acbc25e5f4b673e3982c550914728ddf8db350191cc4b9cf823db8014dfec`.
+One sequential rank-zero worker completes all 128 original views, 128 native
+forwards/backwards/optimizer updates, 955,392 input and 476,160 supervised tokens.
+All 506 gradients are finite at every update; every actual update rate matches
+the same-platform source cosine oracle. All 506 terminal BF16 Adam states are
+finite at step 128, and all 506 changed saved tensor fingerprints restore exactly
+to the retained seeded baseline after optimizer discard.
+
+Training/worker/parent times are 862.043/974.204/1,068.026 seconds. CUDA peak
+allocated/reserved bytes are 13,897,781,248/15,451,815,936, within the L4 capacity.
+The [durable observation](configs/native-ttt-008-editor-diagnosis.json) binds
+the immutable proof and unchanged consumed save receipt/journal. Exact source
+ZIP bytes remain under ignored `.irisx`; the original root input is retained
+reversibly as `owner-root-結果.zip` to maintain the repository root layout.
+
+This closes the full native long-task training-epoch, trained-reset and terminal
+optimizer-inventory evidence gates. No new model or provider calls are made in
+diagnosis. Zero generations, no ARC score and no checkpoint export are retained.
+Original full SFT, native solve/numerical parity, SDG yield, TRM scale/version,
+historical native-clock parity and independent ARC quality remain open. The
+returned result does not authorize new execution, saving, retrieval or promotion.
+Full repository validation passes all 405 tests with four optional skips in
+392.583 test seconds; its exact log digest is retained in the diagnostic evidence.

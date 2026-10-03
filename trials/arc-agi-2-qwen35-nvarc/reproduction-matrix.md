@@ -16,7 +16,14 @@ The owner subsequently authorizes a separate
 [Decision 0056 approval envelope](native-ttt-008-editor.md) for one private
 008 QUICK_SAVE, with 3,600/3,000-second parent/child limits and the same workload.
 The sole private save is accepted as version 1 and consumed. No agent execution
-or GPU result follows from the save; the owner's Editor report is pending.
+or GPU result follows from the save itself. The owner subsequently supplies
+[008's complete Editor ZIP](native-ttt-008-editor-diagnosis.md). Local digest-bound
+verification confirms all 36 members, every exact source input, 128 completed
+forwards/backwards/optimizer steps, all 506 finite terminal Adam states and
+changed trained tensors followed by exact reset. Training takes 862.043 seconds;
+CUDA peak allocated/reserved bytes are 13,897,781,248/15,451,815,936. This closes
+the complete native task-local training-epoch gate. There are zero generations,
+no ARC score/export and no full-method or historical native-clock parity claim.
 
 The [current local/GPU record](original-reproduction-continuation.md#fresh-continuation-and-original-family-sft-controls-2026-10-03)
 supersedes prior native 006's unsubmitted state: its unchanged bytes are now

@@ -20,7 +20,11 @@ and is retained unchanged. The owner subsequently accepts
 for one separate [approved 008 QUICK_SAVE](native-ttt-008-editor.md), retaining
 the original workload and increasing only its finite time envelope.
 That sole private save is accepted as version 1 and consumed. The agent did not
-start or query runtime; the owner's Editor report is pending.
+start or query runtime. The owner's [successful 008 Editor ZIP](native-ttt-008-editor-diagnosis.md)
+now verifies every exact input and all 36 data members, 128 completed native
+forwards/backwards/updates, 955,392 input tokens, all 506 finite terminal Adam
+states and exact reset. Training takes 862.043 seconds; no generation or ARC
+score follows. This closes the complete native task-local epoch evidence gate.
 
 [Decision 0054](../../docs/decisions/0054-nvarc-original-reproduction-continuation.md)
 opens the current untimed continuation on main. The
@@ -43,8 +47,8 @@ single cold backend observation; full original SFT and a trained export remain
 uncompleted.
 Native zero-work Trainer inspection 003 completes and verifies context 8,192,
 all 128 prepared source views, adapter reset and checkpoint flags. It qualifies
-native preparation with zero model/optimizer calls; the full TTT epoch remains
-unverified. All three inspection retrievals are consumed.
+native preparation with zero model/optimizer calls. The later owner-Editor 008
+result verifies the full TTT epoch. All three inspection retrievals are consumed.
 The original-runtime full-epoch worker, source-row/AdamW guards and independent
 result reader now pass offline verification. Private native TTT-004 version 1
 was accepted under a 1,300-second free-budget cap, preserving all 128 source
@@ -56,8 +60,9 @@ not retained. Distinct native 006 repairs the oracle locally and passes
 offline verification. Fresh October 3 quota now admits its unchanged bytes;
 its sole push was accepted as private version 1 and the last backed-off status
 was QUEUED before the owner's cancellation report. No terminal retrieval or
-completion is observed. Full native TTT, trained
-adapter reset, optimizer memory and native-clock parity remain unverified.
+completion is observed for 006. The subsequent 008 Editor observation verifies
+full native TTT, trained adapter reset and terminal optimizer inventory/memory.
+Historical native-clock parity remains unverified.
 
 The [October 3 continuation](original-reproduction-continuation.md#fresh-continuation-and-original-family-sft-controls-2026-10-03)
 adds the original-family reusable SFT path and real tiny CPU model/Adam/RNG/
@@ -71,7 +76,7 @@ race and primary quota duration serialization are repaired with regressions.
 The complete published SDG material inventory and ordered parent/program joins
 verify. A fixed ten-program published-output replay reproduces its diagnostic
 pairs but cannot satisfy the source's twenty-response prerequisite. Whole SDG
-semantics/yield, original-scale SFT/TRM, full native long-task TTT, historical
+semantics/yield, original-scale SFT/TRM, full native solve/ranking quality, historical
 NeMo/TRM-v18 identities and independent ARC quality remain open. All current
 external work is private and USD 0; no promotion or competition submission
 follows from bounded probes.

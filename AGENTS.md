@@ -626,7 +626,16 @@ status/log/output request, retrieval, Dataset mutation, monitoring or retry.
 Follow `docs/decisions/0056-save-native-ttt-timeout-repair-for-owner-editor.md`
 and `trials/arc-agi-2-qwen35-nvarc/native-ttt-008-editor.md`.
 The sole QUICK_SAVE was accepted as private version 1 and is consumed. No agent
-session was started or runtime queried; the owner's Editor report is pending.
+session was started or runtime queried. The owner has returned 008's successful
+Editor ZIP. All 36 member digests, exact saved inputs and four distinct BF16 L4s
+verify locally. One rank-zero worker completes all 128 forwards/backwards/updates,
+955,392 input tokens and 476,160 supervised tokens; all 506 saved tensor
+fingerprints change and restore exactly, and all terminal Adam states are finite
+at step 128. Preserve the complete native-epoch observation at
+`trials/arc-agi-2-qwen35-nvarc/native-ttt-008-editor-diagnosis.md`.
+Zero generation, teacher, ARC score or checkpoint export follows. Full method
+parity and historical native-clock parity remain open; this observation grants
+no new external execution, QUICK_SAVE, retrieval or promotion.
 
 Decision 0055 supersedes the native TTT 006 waiting workflow for the owner's
 new Editor direction. The owner reports cancelling 006; preserve that report,
