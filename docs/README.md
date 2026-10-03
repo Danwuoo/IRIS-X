@@ -2,6 +2,11 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-10-03-main-worktree-integration.md`](plan/2026-10-03-main-worktree-integration.md)
+  records the verified existing worktree integration, requested main
+  synchronization and retained ignored-material boundaries before a storage
+  audit without cleanup.
+
 - [Decision 0054](decisions/0054-nvarc-original-reproduction-continuation.md)
   governs the new original-reproduction continuation after the completed Goal;
   [current evidence and gaps](../trials/arc-agi-2-qwen35-nvarc/original-reproduction-continuation.md)
