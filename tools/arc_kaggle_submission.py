@@ -205,6 +205,12 @@ def canonical(value):
                        ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8")
 
 
+def build_verified_native_submission(challenges, plan, evidence, source_directory, tokenizer):
+    """Strict native route; raw prediction records never establish native provenance."""
+    from tools.nvarc_native_submission import build_native_submission
+    return build_native_submission(challenges, plan, evidence, source_directory, tokenizer)
+
+
 def write_new(path, body):
     """An existing result is never overwritten, including on a retry."""
     with Path(path).open("xb") as stream:
