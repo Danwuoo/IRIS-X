@@ -27,6 +27,34 @@ def require(condition, message):
         raise RuntimeError(message)
 
 
+class InferenceLimitReached(RuntimeError):
+    """A planned inference stop, distinct from a model/interface failure."""
+    def __init__(self, reason):
+        self.reason = reason
+        super().__init__('native inference ceiling reached: ' + reason)
+
+
+def discard_optimizer_state(model, trainer, budget):
+    """Attempt every cleanup even when zero_grad or another cleanup fails."""
+    errors = []
+    optimizer = None if budget is None else budget.optimizer
+    actions = [lambda: model.zero_grad(set_to_none=True)]
+    if optimizer is not None:
+        actions += [lambda: optimizer.zero_grad(set_to_none=True), optimizer.state.clear]
+    actions += [trainer.accelerator._optimizers.clear, trainer.accelerator._schedulers.clear]
+    for action in actions:
+        try:
+            action()
+        except BaseException as error:
+            errors.append(error)
+    trainer.optimizer = None
+    trainer.lr_scheduler = None
+    if budget is not None:
+        budget.optimizer = None
+    if errors:
+        raise errors[0]
+
+
 def load_sources(directory, torch, np):
     definitions = {}
     for name, expected in SOURCE_HASHES.items():
@@ -124,6 +152,9 @@ class SourceModel:
         self.input_tokens = 0
         self.input_by_phase = dict(self.reserved)
         self.context_tokens = context_tokens
+        require(type(context_tokens) is int and context_tokens > 0 and
+                type(generation_deadline) in (int, float) and math.isfinite(generation_deadline),
+                'finite context/deadline required')
         self.generation_deadline = generation_deadline
         self.active = None
 
@@ -142,15 +173,16 @@ class SourceModel:
         shape = list(input_ids.shape)
         require(len(shape) == 2 and shape[0] == 4 and 1 <= shape[1] <= self.context_tokens,
                 'fixed four-view batch and finite context required')
-        require(self.reserved[phase] < self.forward_limits[phase], 'native phase forward ceiling reached')
-        if phase != 'control':
-            require(time.time() < self.generation_deadline, 'native inference deadline reached')
+        if self.reserved[phase] >= self.forward_limits[phase]:
+            raise InferenceLimitReached('forward_limit')
+        if phase != 'control' and time.time() >= self.generation_deadline:
+            raise InferenceLimitReached('inference_deadline')
         tokens = shape[0] * shape[1]
         if phase == 'control':
             require(self.input_by_phase['control'] + tokens <= 168, 'fixed synthetic control-token ceiling reached')
         else:
-            require(sum(v for k, v in self.input_by_phase.items() if k != 'control') + tokens <= self.input_token_limit,
-                    'native inference physical input-token ceiling reached')
+            if sum(v for k, v in self.input_by_phase.items() if k != 'control') + tokens > self.input_token_limit:
+                raise InferenceLimitReached('input_token_limit')
         cached = kwargs.get('past_key_values') is not None
         positions = kwargs.get('position_ids')
         if positions is None:
@@ -161,6 +193,8 @@ class SourceModel:
         require(len(values) == shape[0] and all(len(row) == shape[1] and
                 all(type(v) is int and 0 <= v < self.context_tokens for v in row)
                 for row in values), 'bounded explicit position IDs required')
+        require(all(row == list(range(values[0][0], values[0][0]+shape[1])) for row in values),
+                'one contiguous source position range across all four views required')
         if not cached:
             require(all(row == list(range(shape[1])) for row in values), 'prefill positions must start at zero')
         require(type(kwargs.get('use_cache')) is bool and kwargs.get('return_dict', True) is True,
@@ -179,7 +213,7 @@ class SourceModel:
             logits, cache = output[0], output[1] if len(output) >= 2 else None
             contract = 'tuple-logits-cache'
         else:
-            logits, cache = output.logits, output.past_key_values
+            logits, cache = output.logits, getattr(output, 'past_key_values', None)
             contract = 'model-output-logits-cache'
         require(list(logits.shape) == [shape[0], shape[1], 16] and
                 bool(self.torch.isfinite(logits).all().item()), 'finite exact sixteen-row native logits required')
@@ -276,16 +310,27 @@ def solve_visible(visible, loader, solver, decoder, tokenizer, adapter, *, task_
         batches = source_batches(views.keys)
         known_scores, candidates = {}, {}
         completed_batches = 0
+        reserved_batches = 0
+        stop_reason = None
         raw_candidates = invalid_candidates = sequences = 0
         batch_coverage = []
         for batch in batches:
-            if time.time() - task_started >= task_seconds or time.time() >= adapter.generation_deadline:
+            if time.time() - task_started >= task_seconds:
+                stop_reason = 'task_deadline'
+                break
+            if time.time() >= adapter.generation_deadline:
+                stop_reason = 'inference_deadline'
                 break
             prefixes = [tokenizer.encode(views.get(key, formatter)['input']) for key in batch]
             require(len({len(row) for row in prefixes}) == 1, 'original unpadded batch lengths differ')
             emit('generation_reserved', batch_index=completed_batches, view_count=4)
-            with adapter.scope('generation'):
-                result = solver.inference_turbo_dfs(adapter, prefixes, 931, -math.log(.2), adapter.generation_deadline)
+            reserved_batches += 1
+            try:
+                with adapter.scope('generation'):
+                    result = solver.inference_turbo_dfs(adapter, prefixes, 931, -math.log(.2), adapter.generation_deadline)
+            except InferenceLimitReached as error:
+                stop_reason = error.reason
+                break
             rows = source_result_rows(result)
             coverage = {'batch_index': completed_batches, 'attempted_views': 4,
                 'returned_row_ids': sorted(rows),
@@ -294,6 +339,9 @@ def solve_visible(visible, loader, solver, decoder, tokenizer, adapter, *, task_
                 'explicit_empty_rows': sum(not beams for beams in rows.values())}
             coverage['empty_rows'] = coverage['absent_rows'] + coverage['explicit_empty_rows']
             batch_coverage.append(coverage)
+            completed_batches += 1
+            emit('generation_completed', batch_index=completed_batches-1,
+                 source_result_coverage=coverage)
             for batch_index, beams in rows.items():
                 key = batch[batch_index]; base_key = key.split('.')[0]
                 for score, tokens in beams:
@@ -320,17 +368,24 @@ def solve_visible(visible, loader, solver, decoder, tokenizer, adapter, *, task_
                         rows = dataset.as_list(formatter)
                         require(len(rows) == 8, 'eight original verification views required')
                         queries, answers = [r['input'] for r in rows], [r['reply'] for r in rows]
-                        with adapter.scope('verification'):
-                            scores = solver.calc_scores(queries[:4], answers[:4], tokenizer, adapter)
-                            scores += solver.calc_scores(queries[4:], answers[4:], tokenizer, adapter)
+                        try:
+                            with adapter.scope('verification'):
+                                scores = solver.calc_scores(queries[:4], answers[:4], tokenizer, adapter)
+                                scores += solver.calc_scores(queries[4:], answers[4:], tokenizer, adapter)
+                        except InferenceLimitReached as error:
+                            stop_reason = error.reason
+                            break
                         require(len(scores) == 8 and all(math.isfinite(float(s)) for s in scores), 'finite eight-view scores required')
                         known_scores[identity] = scores
                     candidates[str(len(candidates))] = {'beam_score': float(score),
                         'score_aug': known_scores[identity], 'solution': solution}
-            completed_batches += 1
-            emit('generation_completed', batch_index=completed_batches-1,
-                 raw_candidates=raw_candidates, unique_candidates=len(known_scores),
-                 source_result_coverage=coverage)
+                    emit('candidate_ranked', source_view=key, candidate_grid=solution.tolist(),
+                         source_tokens=tokens, beam_score=float(score),
+                         score_aug=[float(s) for s in known_scores[identity]])
+                if stop_reason is not None:
+                    break
+            if stop_reason is not None:
+                break
         ranked = decoder.score_kgmon(candidates)
         grids = [value.tolist() for value in ranked]
         for value in grids:
@@ -338,13 +393,19 @@ def solve_visible(visible, loader, solver, decoder, tokenizer, adapter, *, task_
         require(len(grids) == len({grid_key(value) for value in grids}) == len(known_scores),
                 'source inverse/deduplication/ranking closure differs')
         return {'task_id': task_id, 'completed_generation_batches': completed_batches,
-                'attempted_source_views': completed_batches * 4, 'raw_candidates': raw_candidates,
+                'reserved_generation_batches': reserved_batches,
+                'termination_reason': stop_reason or 'all_source_batches_completed',
+                'attempted_source_views': reserved_batches * 4,
+                'completed_source_views': completed_batches * 4,
+                'unfinished_source_views': (reserved_batches-completed_batches) * 4,
+                'raw_candidates': raw_candidates,
                 'returned_sequences': sequences, 'generation_batch_coverage': batch_coverage,
-                'source_views_without_sequences': sum(row['empty_rows'] for row in batch_coverage),
+                'source_views_without_sequences': sum(row['empty_rows'] for row in batch_coverage)
+                    + (reserved_batches-completed_batches) * 4,
                 'unique_candidates': len(known_scores), 'invalid_parsed_candidates': invalid_candidates,
                 'ranked_grids': grids, 'attempts': grids[:2], 'missing_attempts': max(0, 2-len(grids)),
                 'nonempty_ranking': bool(grids), 'all_source_batches_completed': completed_batches == 4,
-                'outcome': 'complete' if completed_batches == 4 and grids else 'inconclusive',
+                'outcome': 'complete' if completed_batches == 4 and grids and stop_reason is None else 'inconclusive',
                 'correctness_scored': False, 'original_convenience_scorer_called': False,
                 'search_exhaustiveness_claim': False,
                 'ranking_policy': 'unchanged_source_score_kgmon', 'verification_seed_policy': 'hash(base_key), PYTHONHASHSEED=0'}

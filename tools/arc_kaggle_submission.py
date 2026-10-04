@@ -20,6 +20,8 @@ class SubmissionError(ValueError):
 FAILURE_STATUSES = {"invalid", "timeout", "worker_crash", "oom",
                     "interrupted_pending", "not_executed", "session_limit", "failed"}
 TEST_STATUSES = FAILURE_STATUSES | {"complete", "missing-candidate"}
+EVALUATOR_FIELDS = {"expected_output", "expected_outputs", "evaluator_truth", "solutions",
+                    "correct_output", "correct_outputs", "exact_match", "official_score"}
 
 
 def require(condition, message):
@@ -102,6 +104,18 @@ def build_submission(challenges, records):
     """
     counts = challenge_counts(challenges)
     require(isinstance(records, list), "prediction records must be a list")
+    def reject_evaluator_fields(value):
+        if isinstance(value, dict):
+            require(not EVALUATOR_FIELDS.intersection(value), "evaluator fields are forbidden in prediction records")
+            require(value.get("contains_evaluator_truth", False) is False and
+                    value.get("correctness_scored", False) is False,
+                    "evaluated records cannot cross the submission boundary")
+            for child in value.values():
+                reject_evaluator_fields(child)
+        elif isinstance(value, list):
+            for child in value:
+                reject_evaluator_fields(child)
+    reject_evaluator_fields(records)
     by_task = {}
     for record in records:
         require(isinstance(record, dict) and isinstance(record.get("task_id"), str) and
@@ -135,8 +149,9 @@ def build_submission(challenges, records):
                 require(type(item["missing_attempts"]) is int and
                         item["missing_attempts"] == 2 - len(attempts),
                         "missing-attempt accounting differs")
-            require(task_status not in FAILURE_STATUSES or not attempts,
-                    "failed task cannot claim model candidates")
+            require(task_status not in FAILURE_STATUSES or not attempts or
+                    status in {"complete", "missing-candidate"},
+                    "failed task candidates need explicit per-test nonfailure status")
             outputs[index] = {"attempts": [grid(value) for value in attempts], "status": status}
         if task_status == "complete":
             require(len(outputs) == counts[task_id] and
@@ -166,6 +181,8 @@ def build_submission(challenges, records):
                                "input_task_status": "not_supplied" if record is None else record["status"],
                                "input_test_status": "not_supplied" if item is None else item["status"],
                                "model_attempt_slots_missing": 2 - supplied,
+                               "attempt_sources": ["model" if slot < supplied else "filler"
+                                                   for slot in range(2)],
                                "fill_policy": "none" if supplied == 2 else
                                "duplicate_first" if supplied == 1 else "constant_zero_1x1"})
     coverage = validate_submission(challenges, submission)

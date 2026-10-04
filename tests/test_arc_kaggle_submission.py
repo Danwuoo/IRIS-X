@@ -30,6 +30,8 @@ class KaggleSubmissionTests(unittest.TestCase):
         self.assertEqual((audit["task_count"], audit["test_output_count"]), (2, 3))
         self.assertEqual(audit["tests_without_model_candidates"], 1)
         self.assertEqual(audit["model_attempt_slots_missing"], 3)
+        self.assertEqual([row['attempt_sources'] for row in audit['rows']],
+                         [['model','filler'],['model','model'],['filler','filler']])
         self.assertFalse(audit["correctness_scored"])
         self.assertEqual(original, records)
 
@@ -49,6 +51,42 @@ class KaggleSubmissionTests(unittest.TestCase):
         raw = challenges(); raw["a"]["test"][0]["output"] = [[0]]
         with self.assertRaisesRegex(export.SubmissionError, "truth"):
             export.build_submission(raw, [])
+
+    def test_evaluator_metadata_cannot_enter_records_or_hashed_export_audit(self):
+        for metadata in ({'expected_output':[[9]]},{'contains_evaluator_truth':True},
+                         {'correctness_scored':True},{'diagnostics':{'exact_match':False}}):
+            record={'task_id':'a','tests':[{'test_index':0,'attempts':[],**metadata}]}
+            with self.subTest(metadata=metadata),self.assertRaises(export.SubmissionError):
+                export.build_submission(challenges(),[record])
+        export.build_submission(challenges(),[{'task_id':'a','tests':[],
+            'contains_evaluator_truth':False,'correctness_scored':False}])
+
+    def test_all_failure_statuses_keep_all_tasks_tests_and_named_attempt_slots(self):
+        for status in export.FAILURE_STATUSES:
+            result,audit=export.build_submission(challenges(),[
+                {'task_id':'a','status':status,'tests':[
+                    {'test_index':1,'attempts':[],'status':status}]}])
+            self.assertEqual(list(result),list(challenges()))
+            self.assertEqual(sum(len(rows) for rows in result.values()),3)
+            self.assertEqual(audit['model_attempt_slots_missing'],6)
+            self.assertTrue(all(set(item)=={'attempt_1','attempt_2'}
+                                for rows in result.values() for item in rows))
+
+    def test_worker_failure_after_first_test_keeps_explicit_completed_test_candidates(self):
+        record={'task_id':'a','status':'worker_crash','tests':[
+            {'test_index':0,'status':'complete','attempts':[[[1]],[[2]]]},
+            {'test_index':1,'status':'oom','attempts':[]}]}
+        result,audit=export.build_submission(challenges(),[record])
+        self.assertEqual(result['a'][0],{'attempt_1':[[1]],'attempt_2':[[2]]})
+        self.assertEqual(result['a'][1],{'attempt_1':[[0]],'attempt_2':[[0]]})
+        self.assertEqual(audit['test_output_count'],3)
+        self.assertEqual(audit['model_supplied_attempts'],2)
+        self.assertEqual(audit['model_attempt_slots_missing'],4)
+        self.assertEqual(audit['rows'][0]['input_task_status'],'worker_crash')
+        self.assertEqual(audit['rows'][1]['input_test_status'],'oom')
+        record['tests'][0].pop('status')
+        with self.assertRaisesRegex(export.SubmissionError,'explicit per-test'):
+            export.build_submission(challenges(),[record])
 
     def test_failed_test_is_audited_and_cannot_claim_candidates(self):
         records = [{"task_id": "a", "tests": [

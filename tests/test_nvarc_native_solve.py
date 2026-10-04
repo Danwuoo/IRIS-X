@@ -130,8 +130,57 @@ class NativeSolveControlTests(unittest.TestCase):
             proof=reader.verify(work/'結果.zip',package)
             self.assertFalse(proof['trained_solve_gate'])
             self.assertEqual(proof['outcome'],'failed-before-pipeline-result')
+            extra=package/'kernel/stage-summary.json';extra.write_text('{}')
+            with self.assertRaises(RuntimeError):stage.preflight(package)
+            extra.unlink()
             with (package/'kernel/notebook.ipynb').open('ab') as stream:stream.write(b' ')
             with self.assertRaises(RuntimeError):stage.preflight(package)
+
+    def test_optimizer_zero_grad_failure_does_not_skip_state_and_reference_cleanup(self):
+        actions=[]
+        def failed_zero(**_kwargs):
+            actions.append('optimizer-zero');raise RuntimeError('synthetic-zero-failure')
+        optimizer=SimpleNamespace(zero_grad=failed_zero,state={'tensor':'retained'})
+        budget=SimpleNamespace(optimizer=optimizer)
+        trainer=SimpleNamespace(optimizer=optimizer,lr_scheduler=object(),
+            accelerator=SimpleNamespace(_optimizers=[optimizer],_schedulers=[object()]))
+        model=SimpleNamespace(zero_grad=lambda **_k:actions.append('model-zero'))
+        with self.assertRaisesRegex(RuntimeError,'synthetic-zero-failure'):
+            runtime.discard_optimizer_state(model,trainer,budget)
+        self.assertEqual(actions,['model-zero','optimizer-zero'])
+        self.assertEqual(optimizer.state,{})
+        self.assertIsNone(budget.optimizer);self.assertIsNone(trainer.optimizer)
+        self.assertIsNone(trainer.lr_scheduler)
+        self.assertEqual(trainer.accelerator._optimizers,[])
+        self.assertEqual(trainer.accelerator._schedulers,[])
+
+    def test_no_cache_model_output_may_omit_cache_attribute(self):
+        class Model(FakeModel):
+            def __call__(self,**kwargs):
+                return SimpleNamespace(logits=super().__call__(**kwargs)[0])
+        wrapped,_=adapter(Model())
+        with wrapped.scope('generation'):
+            self.assertIsNone(wrapped(input_ids=FakeTensor([[1]]*4),use_cache=False).past_key_values)
+        with wrapped.scope('generation'),self.assertRaisesRegex(RuntimeError,'cache result missing'):
+            wrapped(input_ids=FakeTensor([[1]]*4),use_cache=True)
+
+    def test_physical_token_and_deadline_stops_leave_no_new_reservation(self):
+        for reason in ('input_token_limit','inference_deadline'):
+            wrapped,_=adapter()
+            if reason=='input_token_limit':wrapped.input_token_limit=3
+            else:wrapped.generation_deadline=0
+            with wrapped.scope('generation'),self.assertRaises(runtime.InferenceLimitReached) as error:
+                wrapped(input_ids=FakeTensor([[1]]*4),use_cache=True)
+            self.assertEqual(error.exception.reason,reason)
+            self.assertEqual(wrapped.reserved['generation'],0)
+            self.assertIsNone(wrapped.active)
+
+    def test_cached_position_ranges_must_match_four_source_rows(self):
+        for positions in ([[1,3]]*4,[[1],[1],[2],[1]]):
+            wrapped,_=adapter();length=len(positions[0])
+            with wrapped.scope('generation'),self.assertRaisesRegex(RuntimeError,'contiguous'):
+                wrapped(input_ids=FakeTensor([[1]*length]*4),position_ids=FakeTensor(positions),
+                        past_key_values=object(),use_cache=True)
 
     def test_no_call_outside_phase_and_no_boolean_limits(self):
         wrapped, _ = adapter()
@@ -291,6 +340,19 @@ class NativeSolveControlTests(unittest.TestCase):
 
 
 class NativeFailureAccountingTests(unittest.TestCase):
+    def test_reader_rejects_negative_tokens_invalid_shapes_and_completion_before_reservation(self):
+        plan={'inference_forward_limits':{'control':7,'generation':2,'verification':2},
+            'maximum_control_input_tokens':168,'maximum_inference_input_tokens':100}
+        entry={'event':'forward_reserved','call_id':1,'phase':'generation','batch_shape':[4,2],
+            'physical_input_tokens':8,'cached':False,'position_start':0,'position_end':1}
+        done={'event':'forward_completed','call_id':1,'phase':'generation','output_contract':'tuple-logits-cache'}
+        self.assertEqual(reader.validate_inference_events([entry,done],plan)[2]['generation'],1)
+        for delta in ({'physical_input_tokens':-1},{'batch_shape':[True,2]},{'position_end':8192},
+                      {'call_id':True},{'phase':'unknown'}):
+            with self.subTest(delta=delta),self.assertRaises(RuntimeError):
+                reader.validate_inference_events([{**entry,**delta},done],plan)
+        with self.assertRaises(RuntimeError):reader.validate_inference_events([done,entry],plan)
+
     def test_sparse_source_rows_and_malformed_rows(self):
         self.assertEqual(runtime.source_result_rows([]), {})
         self.assertEqual(runtime.source_result_rows([(2, []), (0, [])]), {2: [], 0: []})
@@ -316,7 +378,8 @@ class NativeFailureAccountingTests(unittest.TestCase):
         row={'batch_index':0,'attempted_views':4,'returned_row_ids':[0,2],
             'absent_rows':2,'explicit_empty_rows':0,'rows_with_sequences':2,'empty_rows':2}
         result={'generation_batch_coverage':[row],'completed_generation_batches':1,
-            'attempted_source_views':4,'source_views_without_sequences':2}
+            'reserved_generation_batches':1,'attempted_source_views':4,'completed_source_views':4,
+            'unfinished_source_views':0,'source_views_without_sequences':2}
         reader.validate_batch_coverage(result)
         for change in ({'attempted_source_views':2},{'source_views_without_sequences':0}):
             with self.assertRaises(RuntimeError):reader.validate_batch_coverage({**result,**change})
@@ -350,6 +413,7 @@ class NativeFailureAccountingTests(unittest.TestCase):
             'post_reset':None,'plan':{'run_id':'synthetic'},'digest':lambda _p:'synthetic','training_complete':True,
             'trainer':trainer,'elapsed':1,'started':time.monotonic(),'time':time,'budget':None,
             'torch':SimpleNamespace(cuda=SimpleNamespace(max_memory_allocated=lambda:0,max_memory_reserved=lambda:0))}
+        ns['model'] = SimpleNamespace(parameters=lambda: [])
         if fail_phases or primary:
             with self.assertRaises(RuntimeError):exec(compile(program,'exact-finalizer-fixture','exec'),ns)
         else:exec(compile(program,'exact-finalizer-fixture','exec'),ns)
@@ -474,7 +538,63 @@ class OriginalSourceSyntheticTests(unittest.TestCase):
     def test_sparse_valid_fixture_candidates_can_complete_without_full_row_return(self):
         self._fixture(nonempty=True, sparse=True)
 
-    def _fixture(self, nonempty, sparse=False):
+    def test_source_binding_rejects_changed_code_before_loading(self):
+        import numpy as np
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp)
+            for name in runtime.SOURCE_HASHES:(path/name).write_bytes((self.directory/name).read_bytes())
+            (path/'solver.py').write_bytes((path/'solver.py').read_bytes()+b'\n')
+            with self.assertRaisesRegex(RuntimeError,'exact original code cell differs'):
+                runtime.load_sources(path,FakeTorch,np)
+
+    def test_bounded_generation_stop_preserves_verified_candidates_as_inconclusive(self):
+        self._fixture(nonempty=True,stop_phase='generation')
+
+    def test_bounded_verification_stop_preserves_prior_candidate_votes_as_inconclusive(self):
+        self._fixture(nonempty=True,stop_phase='verification')
+
+    def test_multiple_candidates_source_votes_likelihood_and_inverse_recompute(self):
+        import re
+        class Tokens:
+            def encode(self,text):
+                vocab={'<|im_start|>':14,'<|im_end|>':15,'user':11,'assistant':12,'\n':10}
+                return [vocab[t] if t in vocab else int(t) for t in
+                    re.findall(r'<\|im_start\|>|<\|im_end\|>|user|assistant|\n|[0-9]',text)]
+            def decode(self,tokens):return ''.join('\n' if t==10 else str(t) for t in tokens)
+        tokenizer=Tokens();formatter=self.loader.QwenFormatter(tokenizer)
+        puzzle=self.loader.ArcDataset(queries=visible(),keys=['fixture']).split_multi_replies()
+        state=self.loader.np.random.get_state()
+        try:
+            views=puzzle.augment(n=2,seed=2).cut_to_len(formatter=formatter,name='input',max_len=8192-931)
+        finally:self.loader.np.random.set_state(state)
+        batches=runtime.source_batches(views.keys);batch_calls=[];verification=[]
+        canonical=[visible()['fixture']['test'][0]['input'],[[9]]]
+        def infer(*_args):
+            index=len(batch_calls);batch_calls.append(index);result=[]
+            for row,key in enumerate(batches[index]):
+                choices=canonical if index==row==0 else canonical[:1]
+                result.append((row,[(.1,tokenizer.encode(formatter.fmt_reply([
+                    puzzle.forward_mod(self.loader.np.asarray(g),key).tolist()]))) for g in choices]))
+            return result
+        def scores(*_args):
+            value=2. if len(verification)<2 else .1
+            verification.append(value);return [value]*4
+        class Adapter:
+            generation_deadline=time.time()+60
+            @contextmanager
+            def scope(self,_phase):yield
+        events=[]
+        result=runtime.solve_visible(visible(),self.loader,SimpleNamespace(inference_turbo_dfs=infer,
+            calc_scores=scores),self.decoder,tokenizer,Adapter(),task_started=time.time(),
+            emit=lambda event,**details:events.append({'event':event,**details}))
+        self.assertEqual(result['raw_candidates'],17);self.assertEqual(len(verification),4)
+        self.assertEqual(result['ranked_grids'],canonical)  # 16 votes - 2 NLL beats 1 vote - .1 NLL.
+        raw={'loader':(self.directory/'arc_loader.py').read_bytes(),'decoder':(self.directory/'arc_decoder.py').read_bytes()}
+        reader.validate_solve_evidence(result,events,raw)
+        wrong=copy.deepcopy(result);wrong['ranked_grids'].reverse();wrong['attempts'].reverse()
+        with self.assertRaisesRegex(RuntimeError,'ranking differs'):reader.validate_solve_evidence(wrong,events,raw)
+
+    def _fixture(self, nonempty, sparse=False, stop_phase=None):
         class Tokens:
             def encode(self, text):
                 import re
@@ -488,27 +608,48 @@ class OriginalSourceSyntheticTests(unittest.TestCase):
             def scope(self, _phase): yield
         calls=[]
         def infer(_model, prefixes, _max_tokens, _score, _deadline):
+            if stop_phase=='generation' and calls.count('generation')==1:
+                raise runtime.InferenceLimitReached('forward_limit')
             result=[]
             for index, prefix in enumerate(prefixes):
                 if sparse and index not in (0,2):continue
                 user=max(i for i,value in enumerate(prefix) if value==11)
                 end=prefix.index(15,user)
                 result.append((index,[(.1,prefix[user+2:end]+[15])] if nonempty else []))
+            if stop_phase=='verification':
+                # First candidate can be verified; a distinct second grid reaches the ceiling.
+                result[1]=(1,[(.1,[0,15])])
             calls.append('generation');return result
         def scores(queries, answers, _tokenizer, _model):
+            if stop_phase=='verification' and calls.count('verification')==2:
+                raise runtime.InferenceLimitReached('forward_limit')
             self.assertEqual((len(queries),len(answers)),(4,4));calls.append('verification');return [1.]*4
         solver=SimpleNamespace(inference_turbo_dfs=infer,calc_scores=scores)
+        events=[]
         result=runtime.solve_visible(visible(),self.loader,solver,self.decoder,Tokens(),FixtureAdapter(),
-                                     task_started=time.time())
-        self.assertEqual(calls.count('generation'),4)
-        self.assertEqual(result['outcome'],'complete' if nonempty else 'inconclusive')
+            task_started=time.time(),emit=lambda event,**details:events.append({'event':event,**details}))
+        self.assertEqual(calls.count('generation'),1 if stop_phase else 4)
+        self.assertEqual(result['outcome'],'complete' if nonempty and not stop_phase else 'inconclusive')
         self.assertFalse(result['correctness_scored'])
         if nonempty:
             self.assertEqual(calls.count('verification'),2)  # one unique grid, eight source views
             self.assertEqual(result['ranked_grids'],[visible()['fixture']['test'][0]['input']])
-            self.assertEqual(result['raw_candidates'],8 if sparse else 16)
-            self.assertEqual(result['source_views_without_sequences'],8 if sparse else 0)
+            self.assertEqual(result['raw_candidates'],2 if stop_phase=='verification' else 4 if stop_phase else 8 if sparse else 16)
+            self.assertEqual(result['source_views_without_sequences'],4 if stop_phase=='generation' else 8 if sparse else 0)
+            if stop_phase=='generation':
+                self.assertEqual(result['attempted_source_views'],8)
+                self.assertEqual(result['completed_source_views'],4)
+                self.assertEqual(result['unfinished_source_views'],4)
         reader.validate_batch_coverage(result)
+        raw={'loader':(self.directory/'arc_loader.py').read_bytes(),'decoder':(self.directory/'arc_decoder.py').read_bytes()}
+        reader.validate_solve_evidence(result,events,raw)
+        if nonempty:
+            wrong=copy.deepcopy(result);wrong['ranked_grids']=[[[9]]]
+            with self.assertRaisesRegex(RuntimeError,'ranking differs'):
+                reader.validate_solve_evidence(wrong,events,raw)
+            wrong=copy.deepcopy(events)
+            next(row for row in wrong if row['event']=='candidate_ranked')['source_tokens']=[9,15]
+            with self.assertRaises(RuntimeError):reader.validate_solve_evidence(result,wrong,raw)
 
 
 if __name__ == '__main__':

@@ -188,8 +188,10 @@ def preflight(package):
     plan, raw, notebook, metadata = construct(saved['run_id'], path if path.is_file() else None)
     summary = json.loads((package / 'stage-summary.json').read_bytes())
     require(saved == plan and summary['plan_digest'] == digest_value(plan) and
+        summary['run_id'] == plan['run_id'] and
         summary['inventory'] == {p.relative_to(package).as_posix(): sha(p) for p in package.rglob('*')
-                                if p.is_file() and p.name != 'stage-summary.json'} and
+                                if p.is_file() and p.relative_to(package).as_posix() != 'stage-summary.json'} and
+        not any(p.is_symlink() for p in package.rglob('*')) and
         json.loads((package / 'kernel/notebook.ipynb').read_bytes()) == notebook and
         json.loads((package / 'kernel/kernel-metadata.json').read_bytes()) == metadata and
         summary['payload_sha256'] == {key: hashlib.sha256(value).hexdigest() for key, value in raw.items()},

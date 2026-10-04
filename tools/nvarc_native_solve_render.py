@@ -8,7 +8,7 @@ FORMAT = 'irisx/nvarc-native-trained-solve-v1'
 
 TAIL = r'''
     from nvarc_native_solve_runtime import (load_sources, SourceModel, cache_controls,
-        reset_control, solve_visible, validate_visible)
+        reset_control, solve_visible, validate_visible, discard_optimizer_state)
     import os
     require(os.environ.get('PYTHONHASHSEED')=='0','frozen source verification hash seed required')
     visible=json.loads((output.parent/'visible.json').read_bytes())
@@ -25,13 +25,7 @@ TAIL = r'''
     budget=None;control=None;solve=None;trained=None;moments=None;post_reset=None
     training_complete=False;failures=[];pending_error=None;reset_verified=False;task_started=None;elapsed=None
     def release_optimizer():
-        if budget is not None and budget.optimizer is not None:
-            budget.optimizer.zero_grad(set_to_none=True)
-            budget.optimizer.state.clear()
-            require(not budget.optimizer.state,'all optimizer tensor state must be discarded')
-            budget.optimizer=None
-        trainer.optimizer=None;trainer.lr_scheduler=None
-        trainer.accelerator._optimizers.clear();trainer.accelerator._schedulers.clear()
+        discard_optimizer_state(model,trainer,budget)
     try:
         FastLanguageModel.for_inference(model)
         control=cache_controls(adapter)
@@ -98,7 +92,7 @@ TAIL = r'''
                 failures.append({'phase':'post_reset_control','error_type':type(error).__name__,'error_message':str(error)[:1200]})
         optimizer_discarded=(trainer.optimizer is None and trainer.lr_scheduler is None
             and not trainer.accelerator._optimizers and not trainer.accelerator._schedulers
-            and (budget is None or budget.optimizer is None))
+            and (budget is None or budget.optimizer is None) and all(p.grad is None for p in model.parameters()))
         if failures:
             save('pipeline-failure.json',{'failures':failures})
         result={'run_id':plan['run_id'],'plan_digest':digest(plan),

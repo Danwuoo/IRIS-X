@@ -1,6 +1,7 @@
 """Independent closed-archive reader for the bounded native trained solve."""
 from __future__ import annotations
 import argparse
+import ast
 from array import array
 from collections import Counter
 import hashlib
@@ -15,7 +16,7 @@ sys.path[:0] = [str(ROOT), str(ROOT / 'src')]
 from irisx.canonical import digest_value
 from irisx.arc_nvarc_combined import atomic, sha
 from tools.stage_nvarc_native_solve import preflight, construct
-from tools.nvarc_native_solve_runtime import require, grid_key, compare_vectors
+from tools.nvarc_native_solve_runtime import require, grid_key, compare_vectors, SOURCE_HASHES
 
 
 
@@ -39,8 +40,15 @@ def qualified_outcome(terminal, result, failure_evidence):
 
 def validate_batch_coverage(solve):
     coverage = solve['generation_batch_coverage']
-    require(isinstance(coverage, list) and len(coverage) == solve['completed_generation_batches'] and
-            solve['attempted_source_views'] == 4*len(coverage), 'source attempted-view denominator differs')
+    require(type(solve['completed_generation_batches']) is int and
+            0 <= solve['completed_generation_batches'] <= 4 and
+            isinstance(coverage, list) and len(coverage) == solve['completed_generation_batches'] and
+            type(solve['reserved_generation_batches']) is int and
+            len(coverage) <= solve['reserved_generation_batches'] <= 4 and
+            solve['attempted_source_views'] == 4*solve['reserved_generation_batches'] and
+            solve['completed_source_views'] == 4*len(coverage) and
+            solve['unfinished_source_views'] == 4*(solve['reserved_generation_batches']-len(coverage)),
+            'source attempted/completed/unfinished-view denominators differ')
     for index, row in enumerate(coverage):
         ids = row['returned_row_ids']
         require(row['batch_index'] == index and row['attempted_views'] == 4 and
@@ -49,8 +57,123 @@ def validate_batch_coverage(solve):
             type(row['explicit_empty_rows']) is int and 0 <= row['explicit_empty_rows'] <= len(ids) and
             row['rows_with_sequences'] == len(ids)-row['explicit_empty_rows'] and
             row['empty_rows'] == row['absent_rows']+row['explicit_empty_rows'], 'source sparse-row coverage differs')
-    require(solve['source_views_without_sequences'] == sum(row['empty_rows'] for row in coverage),
+    require(solve['source_views_without_sequences'] == sum(row['empty_rows'] for row in coverage)
+            + solve['unfinished_source_views'],
             'source empty-row count differs')
+    return coverage
+
+
+def validate_inference_events(events, plan):
+    reservations = [r for r in events if r['event'] == 'forward_reserved']
+    completions = [r for r in events if r['event'] == 'forward_completed']
+    by_id = {}
+    completed_ids = set()
+    for event in events:
+        if event['event'] == 'forward_reserved':
+            shape = event['batch_shape']
+            require(type(event['call_id']) is int and event['call_id'] == len(by_id)+1 and
+                    event['phase'] in plan['inference_forward_limits'] and
+                    isinstance(shape, list) and len(shape) == 2 and
+                    all(type(v) is int for v in shape) and shape[0] == 4 and 1 <= shape[1] <= 8192 and
+                    type(event['physical_input_tokens']) is int and
+                    event['physical_input_tokens'] == shape[0]*shape[1] and
+                    type(event['cached']) is bool and
+                    type(event['position_start']) is int and type(event['position_end']) is int and
+                    0 <= event['position_start'] <= event['position_end'] < 8192 and
+                    event['position_end']-event['position_start'] == shape[1]-1 and
+                    (event['cached'] or event['position_start'] == 0),
+                    'bounded actual inference reservation differs')
+            by_id[event['call_id']] = event
+        elif event['event'] == 'forward_completed':
+            require(type(event['call_id']) is int and event['call_id'] in by_id and
+                    event['call_id'] not in completed_ids and
+                    event['phase'] == by_id[event['call_id']]['phase'] and
+                    event['output_contract'] in {'tuple-logits-cache', 'model-output-logits-cache'},
+                    'completion must follow one matching reservation')
+            completed_ids.add(event['call_id'])
+    counts = {p: sum(r['phase'] == p for r in reservations) for p in plan['inference_forward_limits']}
+    done = {p: sum(r['phase'] == p for r in completions) for p in counts}
+    tokens = {p: sum(r['physical_input_tokens'] for r in reservations if r['phase'] == p) for p in counts}
+    require(all(counts[p] <= n for p,n in plan['inference_forward_limits'].items()) and
+            tokens['control'] <= plan['maximum_control_input_tokens'] and
+            sum(n for p,n in tokens.items() if p != 'control') <= plan['maximum_inference_input_tokens'],
+            'actual inference count/token ceiling differs')
+    return reservations, completions, counts, done, tokens
+
+
+def validate_solve_evidence(solve, events, raw):
+    coverage = validate_batch_coverage(solve)
+    generated = [r for r in events if r['event'] == 'generation_completed']
+    reserved = [r for r in events if r['event'] == 'generation_reserved']
+    require([r['batch_index'] for r in reserved] == list(range(len(reserved))) and
+            all(r['view_count'] == 4 for r in reserved) and
+            len(generated) <= len(reserved) <= 4 and
+            solve['reserved_generation_batches'] == len(reserved) and
+            [r['batch_index'] for r in generated] == list(range(len(generated))) and
+            [r['source_result_coverage'] for r in generated] == coverage,
+            'source generation reservation/coverage differs')
+    require(solve['termination_reason'] in {'all_source_batches_completed', 'task_deadline',
+            'inference_deadline', 'forward_limit', 'input_token_limit'} and
+            solve['all_source_batches_completed'] is (len(generated) == 4) and
+            solve['correctness_scored'] is False and solve['original_convenience_scorer_called'] is False,
+            'source solve termination/isolation differs')
+    parsed = [r for r in events if r['event'] == 'candidate_parsed']
+    ranked = [r for r in events if r['event'] == 'candidate_ranked']
+    require(type(solve['returned_sequences']) is int and
+            type(solve['invalid_parsed_candidates']) is int and
+            0 <= solve['invalid_parsed_candidates'] <= solve['returned_sequences'] <= 64 and
+            solve['raw_candidates'] == len(parsed) == solve['returned_sequences']-solve['invalid_parsed_candidates'] and
+            len(ranked) <= len(parsed), 'candidate parsing/verification accounting differs')
+    grids = []
+    if ranked:
+        # Execute only the exact public formatter/inverse and four ranking definitions.
+        # This reader has no solution loader, evaluator or model call.
+        import numpy as np
+        namespace = {'np': np, 'AutoTokenizer': object}
+        for name, wanted in [('arc_loader.py', {'QwenFormatter', 'ArcDataset',
+                'convert_grid_to_string', 'is_valid_solution', 'permute_mod'}),
+                ('arc_decoder.py', {'hashable', 'score_sum', 'getter_kgmon', 'score_kgmon'})]:
+            body = raw['loader' if name == 'arc_loader.py' else 'decoder']
+            require(hashlib.sha256(body).hexdigest() == SOURCE_HASHES[name], 'exact reader source differs')
+            nodes = [n for n in ast.parse(body).body if isinstance(n, (ast.FunctionDef, ast.ClassDef)) and n.name in wanted]
+            require({n.name for n in nodes} == wanted, 'reader source definitions missing')
+            exec(compile(ast.Module(body=nodes, type_ignores=[]), name, 'exec'), namespace)
+        class Tokens:
+            def decode(self, values):
+                return ''.join('\n' if t == 10 else str(t) for t in values)
+        formatter = namespace['QwenFormatter'](Tokens())
+        candidates = {}
+        scores_by_grid = {}
+        for index, row in enumerate(ranked):
+            require(row['source_view'] == parsed[index]['source_view'] and
+                    row['candidate_grid'] == parsed[index]['candidate_grid'] and
+                    row['beam_score'] == parsed[index]['beam_score'], 'ranked candidate differs from parsed prefix')
+            tokens = row['source_tokens']
+            require(isinstance(tokens, list) and 2 <= len(tokens) <= 931 and tokens[-1] == 15 and
+                    all(type(t) is int and 0 <= t <= 10 for t in tokens[:-1]) and
+                    type(row['beam_score']) in (int, float) and math.isfinite(row['beam_score']) and
+                    0 <= row['beam_score'] < -math.log(.2) and
+                    isinstance(row['source_view'], str) and row['source_view'].split('.')[0] == solve['task_id']+'_0' and
+                    isinstance(row['score_aug'], list) and len(row['score_aug']) == 8 and
+                    all(type(s) in (int,float) and math.isfinite(s) and s >= 0 for s in row['score_aug']),
+                    'exact EOS/score/source-view candidate evidence required')
+            array = formatter.convert_tokens_to_array(tokens)
+            require(array is not None, 'retained source tokens must parse')
+            solution = namespace['ArcDataset'].invert_mod(array, row['source_view'], inv_perm=True)
+            require(solution.tolist() == row['candidate_grid'], 'retained source inverse differs')
+            key = grid_key(row['candidate_grid'])
+            require(parsed[index]['already_verified'] is (key in scores_by_grid) and
+                    (key not in scores_by_grid or scores_by_grid[key] == row['score_aug']),
+                    'duplicate votes must share one verified score vector')
+            scores_by_grid[key] = row['score_aug']
+            candidates[str(index)] = {**row, 'solution': solution}
+        grids = [g.tolist() for g in namespace['score_kgmon'](candidates)]
+    require(solve['ranked_grids'] == grids and solve['unique_candidates'] == len(grids) and
+            solve['attempts'] == grids[:2] and solve['missing_attempts'] == max(0,2-len(grids)) and
+            solve['nonempty_ranking'] is bool(grids) and
+            solve['outcome'] == ('complete' if len(generated) == 4 and grids and
+                solve['termination_reason'] == 'all_source_batches_completed' else 'inconclusive'),
+            'independent inverse/deduplication/vote ranking differs')
     return coverage
 
 
@@ -84,6 +207,14 @@ def verify(archive, package):
     require(terminal['run_id'] == plan['run_id'] and terminal['outcome'] in {'complete', 'failed'} and
             terminal['contains_evaluator_truth'] is False and terminal['teacher_calls'] == terminal['paid_usd'] == 0 and
             0 <= terminal['wall_seconds'] <= plan['maximum_notebook_wall_seconds'], 'bounded terminal differs')
+    for key, limit in [('model_forwards', plan['maximum_outer_forwards']),
+                       ('model_forwards_reserved', plan['maximum_outer_forwards']),
+                       ('optimizer_steps', plan['maximum_optimizer_steps']),
+                       ('optimizer_steps_reserved', plan['maximum_optimizer_steps']),
+                       ('training_steps_reserved', plan['maximum_training_forwards']),
+                       ('generations', plan['maximum_generations'])]:
+        require(type(terminal[key]) is int and 0 <= terminal[key] <= limit,
+                'bounded terminal work counter differs: ' + key)
     proof = {'run_id': plan['run_id'], 'plan_digest': checked['plan_digest'], 'archive_sha256': sha(archive),
              'closed_members': len(content), 'process_outcome': terminal['outcome'],
              'trained_solve_gate': False, 'correctness_scored': False, 'full_numerical_parity_claim': False,
@@ -108,22 +239,7 @@ def verify(archive, package):
         read('source-verification.json')['inventory'] == json.loads(raw['source_inventory']),
         'native model/source/four-L4 envelope differs')
     events = [json.loads(line) for line in content.get('native/solve-events.jsonl', b'').splitlines()]
-    reservations = [r for r in events if r['event'] == 'forward_reserved']
-    completions = [r for r in events if r['event'] == 'forward_completed']
-    require([r['call_id'] for r in reservations] == list(range(1, len(reservations)+1)) and
-            len({r['call_id'] for r in completions}) == len(completions) and
-            {r['call_id'] for r in completions}.issubset({r['call_id'] for r in reservations}),
-            'one reservation per actual native call required')
-    by_id = {r['call_id']: r for r in reservations}
-    require(all(row['phase'] == by_id[row['call_id']]['phase'] for row in completions), 'completed call phase differs')
-    counts = {phase: sum(r['phase'] == phase for r in reservations) for phase in plan['inference_forward_limits']}
-    done = {phase: sum(r['phase'] == phase for r in completions) for phase in counts}
-    require(sum(counts.values()) == len(reservations) and all(counts[p] <= n
-            for p, n in plan['inference_forward_limits'].items()), 'native phase counts exceed plan')
-    input_by_phase = {phase: sum(r['physical_input_tokens'] for r in reservations if r['phase'] == phase)
-                      for phase in counts}
-    require(input_by_phase['control'] <= 168 and sum(n for p,n in input_by_phase.items() if p != 'control') <=
-            plan['maximum_inference_input_tokens'], 'physical input-token budget differs')
+    reservations, completions, counts, done, input_by_phase = validate_inference_events(events, plan)
     result = read('native/pipeline-result.json')
     require(result['run_id'] == plan['run_id'] and result['plan_digest'] == digest_value(plan) and
             result['inference_forwards_reserved'] == counts and result['inference_forwards_completed'] == done and
@@ -132,6 +248,8 @@ def verify(archive, package):
             result['contains_evaluator_truth'] is False and result['correctness_scored'] is False and
             result['checkpoint_exported'] is False and result['teacher_calls'] == result['paid_usd'] == 0,
             'pipeline identity/cost/isolation differs')
+    require(all(type(result[k]) is bool for k in ('training_complete', 'all_saved_tensors_restored',
+            'post_reset_control_verified', 'optimizer_discarded')), 'explicit pipeline qualification flags required')
     outcome = qualified_outcome(terminal, result,
         read('native/pipeline-failure.json') if 'native/pipeline-failure.json' in content else None)
     proof.update(outcome=outcome, pipeline_outcome=result['outcome'], failures=result['failures'],
@@ -141,12 +259,19 @@ def verify(archive, package):
         'forwards': [], 'optimizer_steps': [], 'training_steps': []}
     for key in ('forwards', 'optimizer_steps', 'training_steps'):
         require(len(ledger[key]) <= 128 and all(type(r['completed']) is bool for r in ledger[key]), 'bounded training prefix required')
+    require(all(type(r['input_tokens']) is int and 1 <= r['input_tokens'] <= 8192 and
+                type(r['supervised_tokens']) is int and 0 <= r['supervised_tokens'] <= r['input_tokens']
+                for r in ledger['forwards']) and
+            result['training_input_tokens'] == sum(r['input_tokens'] for r in ledger['forwards']) <=
+                plan['maximum_training_tokens'], 'physical reserved training tokens differ')
     actual_training = sum(r['completed'] for r in ledger['forwards'])
     actual_steps = sum(r['completed'] for r in ledger['optimizer_steps'])
     require(result['training_forwards'] == actual_training and result['optimizer_steps'] == actual_steps and
             terminal['model_forwards'] == actual_training + len(completions) and
             terminal['model_forwards_reserved'] == len(ledger['forwards']) + len(reservations) and
-            terminal['optimizer_steps'] == actual_steps, 'parent/training/inference cost mismatch')
+            terminal['optimizer_steps'] == actual_steps and
+            terminal['optimizer_steps_reserved'] == len(ledger['optimizer_steps']) and
+            terminal['training_steps_reserved'] == len(ledger['training_steps']), 'parent/training/inference cost mismatch')
     proof.update(training_forwards=actual_training, optimizer_steps=actual_steps)
     if result['training_complete']:
         expected = json.loads(raw['expected_rows'])
@@ -191,16 +316,12 @@ def verify(archive, package):
         proof['exact_reset_verified'] = True
     if result['solve'] is not None:
         require(read('native/solve-result.json') == result['solve'], 'retained solve evidence differs')
-        coverage = validate_batch_coverage(result['solve'])
-        generation_events = [r for r in events if r['event'] == 'generation_completed']
-        require([r['source_result_coverage'] for r in generation_events] == coverage,
-                'source batch event coverage differs')
-    if outcome == 'complete':
-        require(plan['approved'] is True and terminal['outcome'] == 'complete' and
-                result['training_complete'] is True and result['all_saved_tensors_restored'] is True and
-                result['optimizer_discarded'] is True and result['post_reset_control_verified'] is True and
-                counts == done and counts['control'] == 7 and input_by_phase['control'] == 168,
-                'complete pipeline qualification differs')
+        validate_solve_evidence(result['solve'], events, raw)
+        require(result['solve']['reserved_generation_batches'] == terminal['generations'],
+                'parent/solve generation reservations differ')
+    if result['post_reset_control_verified']:
+        require(result['all_saved_tensors_restored'] and counts['control'] == done['control'] == 7 and
+                input_by_phase['control'] == 168, 'post-reset control must follow complete cache controls and reset')
         controls = [r for r in events if r['event'] == 'cache_control_result']
         require(len(controls) == 1, 'one complete same-run cache control required')
         control = controls[0]
@@ -210,6 +331,12 @@ def verify(archive, package):
                 read('native/post-reset-control.json')['prefill_bitwise_equal'] is True and
                 read('native/post-reset-control.json')['prefill'] == control['baseline_prefill'],
                 'cache/reset control evidence differs')
+    if outcome == 'complete':
+        require(plan['approved'] is True and terminal['outcome'] == 'complete' and
+                result['training_complete'] is True and result['all_saved_tensors_restored'] is True and
+                result['optimizer_discarded'] is True and result['post_reset_control_verified'] is True and
+                counts == done and counts['control'] == 7 and input_by_phase['control'] == 168,
+                'complete pipeline qualification differs')
         solve = read('native/solve-result.json')
         require(result['solve'] == solve and solve['outcome'] == 'complete' and
                 solve['completed_generation_batches'] == 4 and solve['attempted_source_views'] == 16 and
