@@ -81,9 +81,15 @@ processes, public-cost dispatch order, per-test clocks/forward limits and the
 fresh startup seed-0 CPU export. The scientific DFS threshold and original
 TTT scalar recipe are unchanged. The runtime export replays exact transcripts
 with its own pinned Torch 2.8 environment; local cross-Torch portability remains
-unverified and is not upgraded by an official score. Unknown quota and session
-closure facts remain null/unavailable. The website's rate is not an account
-reservation or proof of sufficient remaining quota.
+unverified and is not upgraded by an official score. The frozen candidate's
+quota and session closure fields remain null/unavailable. A later, separate
+read-only `kaggle quota --format json` observation at 2026-10-04
+18:04:07.864 UTC / 2026-10-05 02:04:07.864 Taipei reports GPU **4.25h used,
+25.75h remaining, 30.00h total**, with raw refresh string
+`2026-10-10T00:00:00` (no timezone supplied). At the published 2x rate,
+the 11h50m private runtime cap would consume at most 23h40m. This observation
+does not provide a reservation ID or establish closure/reconciliation of other
+sessions. It is retained separately from the unchanged candidate and launch.
 
 ## Submission guard and evidence
 
@@ -124,3 +130,8 @@ Its command, wire-script/package hashes and receipt are retained in
 The first read at 17:48:50 UTC reports `KernelWorkerStatus.QUEUED`.
 No formal competition submission is reserved or sent and no official score
 exists yet. This accepted launch alone proves no hardware, execution or output.
+One local foreground continuation owns subsequent backed-off status reads,
+terminal output retrieval, the sole formal submission and terminal score reads.
+It is bounded to 80 status reads/20 hours for each provider phase and is not a
+recurring automation. Its script hash and the separate quota observation are
+retained in the launch evidence configuration.

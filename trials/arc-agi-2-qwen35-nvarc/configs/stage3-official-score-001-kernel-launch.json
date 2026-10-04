@@ -21,13 +21,13 @@
     ],
     "completed": {
       "taipei": "2026-10-05T01:47:23.840009+08:00",
-      "utc": "2026-10-05T01:47:23.840009+08:00"
+      "utc": "2026-10-04T17:47:23.840009+00:00"
     },
     "error": null,
     "returncode": 0,
     "started": {
-      "taipei": "2026-10-05T01:47:19.90566+08:00",
-      "utc": "2026-10-05T01:47:19.90566+08:00"
+      "taipei": "2026-10-05T01:47:19.905660+08:00",
+      "utc": "2026-10-04T17:47:19.905660+00:00"
     },
     "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "stdout_sha256": "7d99e9d25c75a4eaccb62d88926746ac250c41d87ec906dbaf1392419bb737fa",
@@ -120,6 +120,86 @@
       "path": ".irisx/stage3-official-score-20261005-001/stage-first.stdout",
       "bytes": 250,
       "sha256": "b9276ec2d10d9f53be5cca65a3eba54dad4b28911e262d138859264f2e64b7cd"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/quota-observation-001.command.json",
+      "bytes": 286,
+      "sha256": "b5f9d9759346b2fae9bf0edcc539c4b31ee68254855c15058dfd5e4d4634fad4"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/quota-observation-001.receipt.json",
+      "bytes": 548,
+      "sha256": "194abb69563d7e5a052d20f9a4923c4541bebaa622701cb382ac84325bcd3598"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/quota-observation-001.stdout",
+      "bytes": 303,
+      "sha256": "44260c9f66ccbe76f990ab334b59c18437f79bdc81e8c364da260472214b0556"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/quota-observation-001.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/continue_cli.py",
+      "bytes": 7040,
+      "sha256": "331ffb46b6c0595a51e130c101751e38fd68ee3555c85386292635e49c6d7627"
     }
-  ]
+  ],
+  "later_quota_observation": {
+    "receipt": {
+      "command": [
+        "C:\\Users\\wurre\\AppData\\Local\\Programs\\Python\\Python312\\Scripts\\kaggle.exe",
+        "quota",
+        "--format",
+        "json"
+      ],
+      "completed": {
+        "taipei": "2026-10-05T02:04:07.864315+08:00",
+        "utc": "2026-10-04T18:04:07.864315+00:00"
+      },
+      "error": null,
+      "returncode": 0,
+      "started": {
+        "taipei": "2026-10-05T02:04:06.168350+08:00",
+        "utc": "2026-10-04T18:04:06.168350+00:00"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "44260c9f66ccbe76f990ab334b59c18437f79bdc81e8c364da260472214b0556",
+      "unknown_outcome_for_write": false
+    },
+    "data": [
+      {
+        "resource": "GPU",
+        "used": "4.25h",
+        "remaining": "25.75h",
+        "total": "30.00h",
+        "refreshAt": "2026-10-10T00:00:00"
+      },
+      {
+        "resource": "TPU",
+        "used": "0.00h",
+        "remaining": "20.00h",
+        "total": "20.00h",
+        "refreshAt": "2026-10-10T00:00:00"
+      }
+    ],
+    "reservation_id": null,
+    "session_closure_or_reconciliation": null,
+    "refresh_string_time_zone": null,
+    "published_l4_quota_factor": 2,
+    "account_quota_factor_observed": false,
+    "frozen_candidate_or_launch_amended": false
+  },
+  "foreground_continuation": {
+    "path": ".irisx/stage3-official-score-20261005-001/continue_cli.py",
+    "sha256": "331ffb46b6c0595a51e130c101751e38fd68ee3555c85386292635e49c6d7627",
+    "recurring_automation": false,
+    "maximum_private_status_reads": 80,
+    "maximum_official_submission_list_reads": 80,
+    "maximum_wait_hours_per_phase": 20,
+    "maximum_formal_submissions": 1,
+    "automatic_resend": false
+  }
 }
