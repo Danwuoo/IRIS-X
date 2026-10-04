@@ -1,6 +1,6 @@
 # Stage 3 single official CLI score
 
-Date: 2026-10-05 (Asia/Taipei). Status: **private version 1 accepted/QUEUED; formal submission pending**.
+Date: 2026-10-05 (Asia/Taipei). Status: **private version 1 RUNNING; formal submission pending**.
 Authority: [Decision 0059](../../docs/decisions/0059-obtain-one-official-stage3-cli-score.md).
 Stage 4 remains unopened. Paid cost ceiling is USD 0. Existing consumed 007–010
 packages, receipts and returned observations remain immutable. The 010 engineering
@@ -128,8 +128,14 @@ The reserved CLI push was accepted as private version 1 at
 Its command, wire-script/package hashes and receipt are retained in
 [`stage3-official-score-001-kernel-launch.json`](configs/stage3-official-score-001-kernel-launch.json).
 The first read at 17:48:50 UTC reports `KernelWorkerStatus.QUEUED`.
+Read 014 at 2026-10-04 20:40:01.300 UTC / 2026-10-05 04:40:01.300
+Taipei reports `KernelWorkerStatus.RUNNING`, after earlier reads remained
+queued. A read-only diagnostic log request at 19:24:28.495 UTC returned only
+an empty line; that observation does not establish zero model work.
 No formal competition submission is reserved or sent and no official score
-exists yet. This accepted launch alone proves no hardware, execution or output.
+exists yet. Provider `RUNNING` alone does not verify the hardware, task epochs
+or exported output. Current provider-read bindings are retained in
+[`stage3-official-score-001-progress.json`](configs/stage3-official-score-001-progress.json).
 One local foreground continuation owns subsequent backed-off status reads,
 terminal output retrieval, the sole formal submission and terminal score reads.
 It is bounded to 80 status reads/20 hours for each provider phase and is not a

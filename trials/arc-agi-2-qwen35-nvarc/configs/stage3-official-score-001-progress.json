@@ -1,0 +1,325 @@
+{
+  "format": "irisx/stage3-official-progress-v1",
+  "competition": "arc-prize-2026-arc-agi-2",
+  "run_id": "nvarc-stage3-official-001",
+  "kernel": "danielwuu/nvarc-stage3-official-001",
+  "kernel_version": 1,
+  "candidate_digest": "sha256:9c23325a7eec8158c145c922d46512b1287a003ec423db5ea85932b9d95816b9",
+  "source_commit": "6b26925d09a5f6a0180012efe0374a49fd024308",
+  "observed": {
+    "taipei": "2026-10-05T04:40:01.300088+08:00",
+    "utc": "2026-10-04T20:40:01.300088+00:00"
+  },
+  "latest_status_label": "kernel-status-014",
+  "provider_status": "RUNNING",
+  "terminal": false,
+  "formal_submission_reserved": false,
+  "official_submission_ref": null,
+  "official_score": null,
+  "verified_hardware": null,
+  "verified_task_completion": null,
+  "strict_portable_gpu_gate": false,
+  "stage4_started": false,
+  "artifacts": [
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-001.command.json",
+      "bytes": 317,
+      "sha256": "6e5e52215080c03ec760be88657f3394c077bddbb446fa296aaeb8205a8c5195"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-001.receipt.json",
+      "bytes": 579,
+      "sha256": "b575b5d04cb05c217840c5b911708c2a2df6d63e48652a370dd173193fa57b28"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-001.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-001.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-002.command.json",
+      "bytes": 317,
+      "sha256": "b4ec6ddbc3bba3dd6b2192e04af4fb129831cb46ce4cb4b1dc5ad2f4a83197f5"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-002.receipt.json",
+      "bytes": 579,
+      "sha256": "f731381edb5fad7eb72ae090fb3703eef993d095a5f8339a1b4c8f8d3eca3ec1"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-002.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-002.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-003.command.json",
+      "bytes": 317,
+      "sha256": "bc1a224b72bf78d84b2beb43deca1763e36b7dd1911bc34b39f0a834149ad138"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-003.receipt.json",
+      "bytes": 579,
+      "sha256": "4bb1881837600c632de50a068880bc91922b3b3d675ee86ef1fcedef5854a02f"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-003.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-003.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-004.command.json",
+      "bytes": 317,
+      "sha256": "ec075cfd0c534813b642faa9812fbb3d70ebe1f0a0cfe56b4edeb86d9db82ca0"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-004.receipt.json",
+      "bytes": 579,
+      "sha256": "e9b56b5b98205878ac90d90e49431ea50f19c09c8645e0c94d03eddc3544f993"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-004.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-004.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-005.command.json",
+      "bytes": 317,
+      "sha256": "f939099c82c50186314797efee1f4a29bf04e9427d8cf2478f79c59274dae504"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-005.receipt.json",
+      "bytes": 579,
+      "sha256": "f60173a215a1c6a72926dc99ab95b1479c0745b6c8cafcf6fd315502045be5e1"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-005.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-005.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-006.command.json",
+      "bytes": 317,
+      "sha256": "5fa310739a091021640194d9e674c2a1d93912ff4099980e59910ff3dc70fb21"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-006.receipt.json",
+      "bytes": 579,
+      "sha256": "e74e725e98a0d7b46eeafc2528365e2f5d8541d15596a48cfc8903931855d0f1"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-006.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-006.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-007.command.json",
+      "bytes": 317,
+      "sha256": "acca42b3871078c2d39f729509f56c8ac3a8aa6597784284fe5eafbf1de76e02"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-007.receipt.json",
+      "bytes": 579,
+      "sha256": "6c0e750edbf250bd735f6a26073ba0dd6efbce24b9f44fce4ca18b44d52b2182"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-007.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-007.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-008.command.json",
+      "bytes": 317,
+      "sha256": "34262e91eb53190ca2b315e471ddbecd3696b650629e93333f442cf5ea61fa64"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-008.receipt.json",
+      "bytes": 579,
+      "sha256": "c6be4e0ff02bcf0b12cbc305b378059bc42e6b14d55b48becfb7bbeedc280817"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-008.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-008.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-009.command.json",
+      "bytes": 317,
+      "sha256": "cd5c46e97d46f394046cd7866242974435c0e1626ffb3fa6f00b16c2334eccc0"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-009.receipt.json",
+      "bytes": 579,
+      "sha256": "bdd1d6429566c17be24d870bce6a1abb3b5a0fc598fcf680fbc0e18af2102900"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-009.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-009.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-010.command.json",
+      "bytes": 317,
+      "sha256": "5d630088fbd97c38b1d3f89d79d787729cfa16a294907b46375af9b64be0c964"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-010.receipt.json",
+      "bytes": 579,
+      "sha256": "778daa5971574251fadc33f6352c7b44f4ebc54e874007d9f8f62dc47dbeed44"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-010.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-010.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-011.command.json",
+      "bytes": 317,
+      "sha256": "b241717a485db6527a10fb4cec0cac411bbeb0b2ea636ccd6de354ceec647368"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-011.receipt.json",
+      "bytes": 579,
+      "sha256": "c5082dcd79599cbe938103a39256997956c2654fd141e2b805cf0258a569d1ff"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-011.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-011.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-012.command.json",
+      "bytes": 317,
+      "sha256": "ad6cd32a1e2671b264be00bd95377f2176d045bba380b23d9bd4e0a3cec345e3"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-012.receipt.json",
+      "bytes": 579,
+      "sha256": "d72aa524517147abb3f2fd17fa35cf1fbf55809d81534b68ca64902d082138a3"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-012.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-012.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-013.command.json",
+      "bytes": 317,
+      "sha256": "8321e6e7cb4d4130db73164fd9eb82556e4db200441e6765e4941ce5a9f37777"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-013.receipt.json",
+      "bytes": 579,
+      "sha256": "326a0cc2c1aa233d9412d96c23585b9f18d8b39e80cb5f38f47f58fbdaaa1a91"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-013.stdout",
+      "bytes": 76,
+      "sha256": "140ac2851c33b1b2d79004510bae9bacc86b552a23559a4ea8f59c232091e32a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-013.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-014.command.json",
+      "bytes": 317,
+      "sha256": "a5c49ce2527215964ec8ff62ce21faecd53ef304756f83ff00897d9add75ab01"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-014.receipt.json",
+      "bytes": 579,
+      "sha256": "020779fd05c43db2228d7cae9f23b03e904b83c45bcb387b19d37c1c96c1f992"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-014.stdout",
+      "bytes": 77,
+      "sha256": "6738a7446dc59a6cf19b99c84741ff2febad43b6d46b99e51e50bdbfe83634f0"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-status-014.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/queued-diagnostic-logs-001.command.json",
+      "bytes": 315,
+      "sha256": "314a79f9b70ab9463189e895b624f68ce21713231982faf5ff1d3f5edb52bd71"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/queued-diagnostic-logs-001.receipt.json",
+      "bytes": 577,
+      "sha256": "a6f767503601ee93f9bc20fdb80d7428ca9f0e58b89b2ac4500a415cc07741eb"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/queued-diagnostic-logs-001.stdout",
+      "bytes": 2,
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/queued-diagnostic-logs-001.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
