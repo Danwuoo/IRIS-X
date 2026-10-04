@@ -32,7 +32,7 @@ class MultiTaskTests(unittest.TestCase):
         cls.original_plan,cls.raw,_,_=stage.construct('nvarc-original-qwen3-native-multitask-990')
         cls.temp=tempfile.TemporaryDirectory(prefix='iris-multitask-tests-')
         cls.directory=Path(cls.temp.name)
-        for name,key in stage.FILES.items():
+        for name,key in stage.files_for(cls.raw).items():
             path=cls.directory/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(cls.raw[key])
         cls.loader,cls.solver,cls.decoder=load_sources(cls.directory,torch,np)
         tok=Tokenizer.from_file(str(stage.MODEL/'model/tokenizer.json'))

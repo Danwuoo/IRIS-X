@@ -1,6 +1,6 @@
 # Native multitask 008 owner-Editor save
 
-Status: **private QUICK_SAVE version 1 accepted; save consumed; runtime unobserved**.
+Status: **private save consumed; owner Editor workers complete; parent export failed**.
 
 Decision 0057 records the owner's exact direction to mark missing resource
 information unavailable and submit the reviewed candidate. This is one private
@@ -87,8 +87,10 @@ after its exclusive durable reservation. No agent session was started.
 Full offline bindings, owner instruction provenance, exact command/log digests
 and the safe receipt summary are retained in
 [`configs/native-multitask-008-editor-save-evidence.json`](configs/native-multitask-008-editor-save-evidence.json).
-The sole save authority is consumed. Runtime remains unobserved pending the
-owner's manual Editor report. Status/log/output requests, retrievals and Dataset
+The sole save authority is consumed. Runtime was unobserved at the save receipt.
+The owner's subsequent root ZIP and local diagnosis are retained in
+[`native-multitask-008-editor-diagnosis.md`](native-multitask-008-editor-diagnosis.md).
+Status/log/output requests, retrievals and Dataset
 mutations are zero; there was no external action after the receipt.
 Missing resource information remains unavailable and null. Acceptance makes
 no quota reservation, resource sufficiency, GPU runtime, correctness or

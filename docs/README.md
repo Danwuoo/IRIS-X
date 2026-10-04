@@ -10,6 +10,8 @@ This directory contains only current product-era guidance.
 - [Decision 0057](decisions/0057-save-native-multitask-with-unavailable-quota.md)
   records the owner's exact native multitask 008 save exception with quota
   information explicitly unavailable, stopping at the sole QUICK_SAVE receipt.
+  Its [Editor diagnosis and local export repair](../trials/arc-agi-2-qwen35-nvarc/native-multitask-008-editor-diagnosis.md)
+  retain the failed parent export, observed worker gates and inert proposal.
 
 - [Decision 0056](decisions/0056-save-native-ttt-timeout-repair-for-owner-editor.md)
   authorizes one reviewed native 008 QUICK_SAVE with a longer finite timeout,

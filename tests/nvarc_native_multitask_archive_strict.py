@@ -49,7 +49,7 @@ class ArchiveQualificationTests(unittest.TestCase):
             for a in self.plan['worker_attempts']]
         self.put('plan.json',self.plan)
         self.put('payload-bindings.json',{k:hashlib.sha256(v).hexdigest() for k,v in self.raw.items()})
-        for name,key in stage.FILES.items():self.content[name]=self.raw[key]
+        for name,key in stage.files_for(self.raw).items():self.content[name]=self.raw[key]
         self.put('hardware.json',{'torch':'2.8.0+cu128','cuda':'12.8','inventory':[
             {'uuid':'GPU-synthetic-'+str(i),'name':'NVIDIA L4','bf16':True} for i in range(4)]})
         self.put('model-verification.json',{'all_ten_files_verified':True,'model_material_digest':self.plan['model_material_digest']})
@@ -188,6 +188,31 @@ class ArchiveQualificationTests(unittest.TestCase):
         self.assertTrue(proof['all_expected_attempts_gate']);self.assertTrue(all(p['cache_reset_gate'] for p in proof['attempts']))
         # Without the explicit test substitutions, no authorized package exists.
         with self.assertRaises(Exception):verifier.verify(self.directory/'synthetic-result.zip',self.directory/'inert-package-not-created')
+
+    def test_exported_peft_names_and_order_match_full_exact_topology(self):
+        inventory=[dict(r,finite=True,sha256='0'*64) for r in self.plan['native_adapter_topology']]
+        for r in inventory:
+            r['name']=r['name'].replace('.modules_to_save.default.','.').replace(
+                '.lora_A.default.','.lora_A.').replace('.lora_B.default.','.lora_B.')
+        inventory.sort(key=lambda r:r['name'])
+        verifier.verify_inventory(inventory,self.plan)
+        for field,value in [('shape',[1,1]),('elements',1),('dtype','torch.float32'),('finite',False),('sha256','bad')]:
+            changed=copy.deepcopy(inventory);changed[0][field]=value
+            with self.subTest(field=field),self.assertRaises(RuntimeError):verifier.verify_inventory(changed,self.plan)
+        changed=copy.deepcopy(inventory);changed[0]['name']=changed[1]['name']
+        with self.assertRaises(RuntimeError):verifier.verify_inventory(changed,self.plan)
+
+    def test_diagnostic_candidate_replay_failure_keeps_gpu_gate_false(self):
+        path=self.archive()
+        for message in ('original source DFS token/beam/clock replay differs',
+                'eight-view actual source verification input/answer differs'):
+            with patch.object(verifier,'preflight',return_value={'run_id':self.plan['run_id']}),\
+                    patch.object(verifier,'construct',return_value=(self.plan,self.raw,None,None)),\
+                    patch.object(verifier,'build_native_submission',side_effect=RuntimeError(message)):
+                proof=verifier.verify(path,self.directory/'fixture-only',diagnostic_only=True)
+                self.assertFalse(proof['gpu_validation_gate']);self.assertFalse(proof['native_candidate_export_verified'])
+                self.assertTrue(proof['all_expected_attempts_gate']);self.assertEqual(proof['export_replay_error'],message)
+                with self.assertRaises(RuntimeError):verifier.verify(path,self.directory/'fixture-only')
 
     def test_fourth_nonzero_or_terminated_after_result_never_passes(self):
         original=copy.deepcopy(self.receipts[3])

@@ -27,6 +27,12 @@ FILES={'solver.py':'solver','arc_loader.py':'loader','arc_decoder.py':'decoder',
     'tools/nvarc_native_submission.py':'bridge','editor-archive.py':'editor_archive'}
 
 
+def files_for(raw):
+    files=dict(FILES)
+    if 'native_export' in raw:files['tools/nvarc_native_export.py']='native_export'
+    return files
+
+
 def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
@@ -65,6 +71,7 @@ def admission_for(path,run_id):
 
 def construct(run_id,admission_path=None):
     require(re.fullmatch(r'nvarc-original-qwen3-native-multitask-\d{3}',run_id),'new distinct multi-task identity required')
+    isolated_export=int(run_id.rsplit('-',1)[1])>=9
     previous,raw,_,bodies=frozen.frozen_inputs()
     require(sha(CHALLENGES)==CHALLENGES_SHA,'exact retained public training2 source required')
     challenges={k:json.loads(CHALLENGES.read_bytes())[k] for k in TASKS}
@@ -94,6 +101,8 @@ def construct(run_id,admission_path=None):
     raw['helper']=raw['helper'].replace(b"len(trainer.train_dataset) == len(expected_rows) == 128",b"len(trainer.train_dataset) == len(expected_rows)")
     raw.pop('texts_gzip');raw.pop('expected_rows');raw.pop('visible')
     producer_names=('worker','helper','budget','schedule','solve_runtime','multitask','bridge','exporter')
+    if isolated_export:
+        raw['native_export']=(ROOT/'tools/nvarc_native_export.py').read_bytes()
     producer={k:hashlib.sha256(raw[k]).hexdigest() for k in producer_names}
     specs={}
     for task_id,material in materials.items():
@@ -155,6 +164,11 @@ def construct(run_id,admission_path=None):
             'tasks/<normal-task>/native/{events.jsonl,checkpoint.json,prepared-tokens.i16le}',
             'all exact producer/source scripts and public challenge bytes','manifest.json'])
     admission=admission_for(admission_path,run_id)
+    if isolated_export:
+        plan.update(source_commit='425d3e0f96b05df95e933ee524815c58545ebe4b',
+            owner_decision='local-008-export-repair-proposal-only',
+            export_verification_process='fresh-cpu-startup-hashseed-0',maximum_export_process_seconds=240,
+            export_helper_sha256=hashlib.sha256(raw['native_export']).hexdigest())
     if admission is not None:
         plan.update(approved=True,controller_admission=admission,controller_admission_sha256=sha(admission_path))
         if admission['format'] in ('irisx/native-multitask-editor-admission-v2',
@@ -172,7 +186,7 @@ def construct(run_id,admission_path=None):
     source=frozen.old.proposal.predecessor.base.render(run_id,
         {k:__import__('base64').b64encode(v).decode() for k,v in raw.items()},
         {k:hashlib.sha256(v).hexdigest() for k,v in raw.items()})
-    source=render.parent(source,FILES,raw['editor_archive'].decode())
+    source=render.parent(source,files_for(raw),raw['editor_archive'].decode(),isolated_export=isolated_export)
     notebook={'nbformat':4,'nbformat_minor':5,'metadata':{'kernelspec':{'display_name':'Python 3','language':'python','name':'python3'}},
         'cells':[{'cell_type':'code','execution_count':None,'metadata':{},'outputs':[],
                   'source':s.splitlines(keepends=True)} for s in (source,frozen.download_cell(plan).replace('>16*1024**2','>96*1024**2'))]}

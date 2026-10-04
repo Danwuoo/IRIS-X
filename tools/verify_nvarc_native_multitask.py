@@ -14,7 +14,7 @@ import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'src')]
-from tools.stage_nvarc_native_multitask import preflight,construct,FILES
+from tools.stage_nvarc_native_multitask import preflight,construct,files_for
 from tools.arc_kaggle_submission import parse_json
 from tools.nvarc_native_multitask import digest,canonical,require,write
 from tools.nvarc_native_submission import read_task_evidence,build_native_submission,reject_truth,check_events,task_binding
@@ -40,11 +40,20 @@ def verify_receipt(receipt,attempt,maximum_seconds):
 
 def verify_inventory(value,plan):
     expected=plan['native_adapter_topology']
+    def name(value):
+        # PEFT state_dict exports remove these reviewed wrapper/adapter names
+        # and sort keys. Match all 506 tensors by their exact canonical name.
+        return value.replace('.modules_to_save.default.','.').replace(
+            '.lora_A.default.','.lora_A.').replace('.lora_B.default.','.lora_B.')
     require(isinstance(value,list) and len(value)==len(expected)==506 and
-        all(set(row)==set(wanted)|{'finite','sha256'} and
-            {k:row[k] for k in wanted}==wanted and row['finite'] is True and
+        all(set(row)==set(expected[0])|{'finite','sha256'} and
+            isinstance(row['name'],str) and row['finite'] is True and
             isinstance(row['sha256'],str) and re.fullmatch(r'[0-9a-f]{64}',row['sha256'])
-            for row,wanted in zip(value,expected)),
+            for row in value),
+        'exact finite BF16 adapter fingerprint topology required')
+    wanted={name(r['name']):{k:v for k,v in r.items() if k!='name'} for r in expected}
+    actual={name(r['name']):{k:r[k] for k in expected[0] if k!='name'} for r in value}
+    require(len(actual)==len(wanted)==506 and actual==wanted,
         'exact finite BF16 adapter fingerprint topology required')
 
 
@@ -169,7 +178,7 @@ def verify_training(content,prefix,spec,mode,plan,material):
             'supervised_tokens':sum(r['supervised_tokens'] for r in ledger['forwards'])}
 
 
-def verify(archive,package):
+def verify(archive,package,*,diagnostic_only=False):
     checked=preflight(package);admission=package/'controller-admission.json'
     plan,raw,_,_=construct(checked['run_id'],admission if admission.is_file() else None);content={}
     with zipfile.ZipFile(archive) as stream:
@@ -205,7 +214,7 @@ def verify(archive,package):
         require(terminal['outcome']=='failed','success needs worker dispatch evidence')
         proof.update(outcome='failed-before-dispatch',failure_phase=terminal['phase']);return proof
     require(plan['approved'] is True,'an inert package cannot have native runtime evidence')
-    for name,key in FILES.items():require(content[name]==raw[key],'actual retained producer source differs: '+name)
+    for name,key in files_for(raw).items():require(content[name]==raw[key],'actual retained producer source differs: '+name)
     receipts=read('worker-receipts.json');attempts=plan['worker_attempts']
     require(len(receipts)<=len(attempts) and [(r['task_id'],r['attempt_id']) for r in receipts]==
         [(a['task_id'],a['attempt_id']) for a in attempts[:len(receipts)]],'parent sequential attempt order/denominator differs')
@@ -303,6 +312,15 @@ def verify(archive,package):
         terminal['optimizer_steps_reserved']==sum(p['reserved_steps'] for p in proofs) and
         terminal['generations']==generation_batches<=plan['maximum_generations'], 'parent session reserved/completed cost differs')
     challenges=json.loads(raw['challenges'])
+    # These gates do not depend on candidate replay/export succeeding. Keep
+    # strict candidate replay failures separate from verified worker ledgers.
+    proof.update(gpu_runtime='observed',attempts=proofs,
+        isolation_baseline_gate=len(baselines)==len(prefills)==4 and
+            all(b==baselines[0] for b in baselines) and all(p==prefills[0] for p in prefills),
+        all_expected_attempts_gate=len(receipts)==len(attempts)==len(proofs)==4 and all(p['attempt_gate'] for p in proofs),
+        parent_cost={k:terminal[k] for k in ('model_forwards','model_forwards_reserved','optimizer_steps',
+            'optimizer_steps_reserved','training_steps_reserved','generations')},
+        parent_failure_phase=terminal['phase'],native_candidate_export_verified=False)
     with tempfile.TemporaryDirectory(prefix='iris-native-reader-') as temp:
         directory=Path(temp)
         for name,body in content.items():
@@ -314,9 +332,24 @@ def verify(archive,package):
             def encode(self,text):return tok.encode(text).ids
             def decode(self,ids):return tok.decode(ids,skip_special_tokens=False)
         evidence=read_task_evidence(directory,plan,challenges,receipts)
-        submission,audit=build_native_submission(challenges,plan,evidence,directory,Tokens())
-        require(read('native-evidence.json')==evidence and read('submission.json')==submission and
-                read('submission-audit.json')==audit,'retained producer/export/audit differs')
+        try:submission,audit=build_native_submission(challenges,plan,evidence,directory,Tokens())
+        except RuntimeError as error:
+            if not diagnostic_only or str(error) not in {
+                    'original source DFS token/beam/clock replay differs',
+                    'eight-view actual source verification input/answer differs'}:raise
+            proof.update(outcome='failed-export-replay',export_replay_error=str(error),
+                parent_finalization_gate=False,diagnostic_only=True,
+                recorded_tests=sum(len(e['checkpoint']['tests']) for e in evidence if e['checkpoint'] is not None),
+                native_export_artifacts_present=all(n in content for n in
+                    ('native-evidence.json','submission.json','submission-audit.json')))
+            return proof
+        exported=all(n in content for n in ('native-evidence.json','submission.json','submission-audit.json'))
+        if exported:
+            require(read('native-evidence.json')==evidence and read('submission.json')==submission and
+                    read('submission-audit.json')==audit,'retained producer/export/audit differs')
+        else:
+            require(diagnostic_only and terminal['outcome']=='failed','retained native export artifacts required')
+        proof.update(native_candidate_export_verified=True,native_export_artifacts_present=exported)
     ordinary=proofs[:len(plan['task_order'])]
     nonempty=all(e['checkpoint'] is not None and all(t.get('ranked_grids') for t in e['checkpoint']['tests']) for e in evidence)
     complete_tests=all(e['checkpoint'] is not None and all(t.get('native_complete') for t in e['checkpoint']['tests']) for e in evidence)
@@ -331,7 +364,7 @@ def verify(archive,package):
         all_expected_attempts_gate=all_attempts,parent_finalization_gate=parent_finalized,
         model_attempt_slots_missing=audit['model_attempt_slots_missing'],task_count=audit['task_count'],
         test_output_count=audit['test_output_count'],submission_sha256=hashlib.sha256(canonical(submission)).hexdigest(),
-        gpu_validation_gate=nonempty and complete_tests and isolation and fault_gate and all_attempts and parent_finalized and
+        gpu_validation_gate=exported and nonempty and complete_tests and isolation and fault_gate and all_attempts and parent_finalized and
             len(ordinary)==2 and all(p['training_gate'] and p['process_status']=='complete' for p in ordinary))
     return proof
 
@@ -341,8 +374,11 @@ def main(argv=None):
     for name in ('archive','package','output'):parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--require-gpu-gate',action='store_true',
         help='retain diagnostic proof but return 2 unless every native GPU qualification gate passes')
+    parser.add_argument('--diagnostic-only',action='store_true',
+        help='retain verified worker gates when strict candidate replay fails; never waive that GPU gate')
     args=parser.parse_args(argv);require(not args.output.exists(),'new immutable proof required')
-    proof=verify(args.archive,args.package);write(args.output,proof);print(json.dumps(proof))
+    proof=verify(args.archive,args.package,diagnostic_only=True) if args.diagnostic_only else verify(args.archive,args.package)
+    write(args.output,proof);print(json.dumps(proof))
     return 2 if args.require_gpu_gate and proof['gpu_validation_gate'] is not True else 0
 
 

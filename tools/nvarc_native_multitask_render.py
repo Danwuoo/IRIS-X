@@ -224,11 +224,29 @@ def final_export():
 '''
 
 
-def parent(source, files, archive_source):
+ISOLATED_EXPORT = r'''
+def final_export():
+    remaining=plan['maximum_notebook_wall_seconds']-(time.monotonic()-START)
+    limit=min(plan['maximum_export_process_seconds'],remaining)
+    if limit<=0:raise RuntimeError('native CPU export deadline exhausted')
+    environment=dict(os.environ,PYTHONHASHSEED='0',CUDA_VISIBLE_DEVICES='',
+        PYTHONPATH=str(work)+os.pathsep+str(dependency),HF_HUB_OFFLINE='1',HF_DATASETS_OFFLINE='1',
+        TRANSFORMERS_OFFLINE='1',PYTHONIOENCODING='utf-8',OMP_NUM_THREADS='2')
+    command=[sys.executable,str(work/'tools/nvarc_native_export.py'),'--root',str(work),
+        '--tokenizer',str(model/'tokenizer.json')]
+    with (work/'export.stdout.log').open('ab') as stdout,(work/'export.stderr.log').open('ab') as stderr:
+        subprocess.run(command,env=environment,stdout=stdout,stderr=stderr,timeout=limit,check=True)
+'''
+
+
+def parent(source, files, archive_source, *, isolated_export=False):
     # Reuse exact native source/model/hardware verification, replace the whole
     # single-worker dispatch and both terminal paths, never historic bytes.
     start_counts=source.index('def counts():');end_counts=source.index('def save(name,value):',start_counts)
-    source=source[:start_counts]+PARENT_HELPERS+'\n'+source[end_counts:]
+    helpers=PARENT_HELPERS
+    if isolated_export:
+        helpers=helpers[:helpers.index('\ndef final_export():')]+ISOLATED_EXPORT
+    source=source[:start_counts]+helpers+'\n'+source[end_counts:]
     source=source.replace("save('plan.json',plan);save('payload-bindings.json',HASHES)",
         "save('plan.json',plan);save('payload-bindings.json',HASHES)\n    if plan['approved'] is not True or plan['controller_admission'] is None:\n        raise RuntimeError('inert package: new owner-Editor resource admission required')")
     source=source.replace("    phase='original-source-inventory'", "    import shutil\n    if shutil.disk_usage(work).free < plan['minimum_free_working_bytes']:\n        raise RuntimeError('native multi-task working-space reserve unavailable')\n    phase='original-source-inventory'")

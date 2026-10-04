@@ -630,6 +630,16 @@ The sole QUICK_SAVE was accepted as private version 1 and is consumed. Its
 exact package, admission exception and receipt bindings are retained. No
 agent session was started or runtime queried; quota information remains
 unavailable and resource sufficiency unverified pending owner Editor operation.
+The owner has supplied native multitask 008's Editor ZIP. All 111 data members
+bind to its exact saved plan; both normal tasks complete their 128-step TTT,
+and all four baseline/cache/reset observations agree. Parent export failed on
+eight-view token bindings consistent with differing startup Python hash seeds.
+Local seed-0 replay matches all 24 verifier rows. Exact DFS score replay remains
+unverified under local Torch 2.12 versus recorded Torch 2.8, so the GPU gate is
+false and no submission was recovered. Preserve
+`trials/arc-agi-2-qwen35-nvarc/native-multitask-008-editor-diagnosis.md`.
+The fresh-CPU-export 009 review is inert local work only; it grants no new
+QUICK_SAVE, execution, provider query/retrieval, Dataset mutation or scoring.
 
 Decision 0056 records the owner's explicit acceptance of the reviewed native
 TTT 008 timeout proposal and instruction to submit QUICK_SAVE. Exactly one
