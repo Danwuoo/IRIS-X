@@ -7,6 +7,10 @@ This directory contains only current product-era guidance.
   synchronization and retained ignored-material boundaries before a storage
   audit without cleanup.
 
+- [Decision 0057](decisions/0057-save-native-multitask-with-unavailable-quota.md)
+  records the owner's exact native multitask 008 save exception with quota
+  information explicitly unavailable, stopping at the sole QUICK_SAVE receipt.
+
 - [Decision 0056](decisions/0056-save-native-ttt-timeout-repair-for-owner-editor.md)
   authorizes one reviewed native 008 QUICK_SAVE with a longer finite timeout,
   retaining the original workload and owner Editor execution.

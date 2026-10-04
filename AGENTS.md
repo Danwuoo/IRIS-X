@@ -616,6 +616,21 @@ exported checkpoint, teacher, generation, scoring or further kernel follows.
 
 ## Authority order
 
+Decision 0057 records the owner's explicit instruction to mark missing quota
+information unavailable and submit distinct native multitask 008. Exactly one
+private, Internet-disabled, USD 0 QUICK_SAVE may derive from immutable reviewed
+007 using identity/admission-only differences. Keep quota hours, observation
+time, factor and reservation ID null; this owner save exception does not assert
+resource sufficiency. Preserve Stage 3 and all prior identities. Stop at the
+sole receipt without agent execution, runtime queries, retrieval, monitoring,
+Dataset mutation or retry. Follow
+`docs/decisions/0057-save-native-multitask-with-unavailable-quota.md` and
+`trials/arc-agi-2-qwen35-nvarc/native-multitask-008-editor.md`.
+The sole QUICK_SAVE was accepted as private version 1 and is consumed. Its
+exact package, admission exception and receipt bindings are retained. No
+agent session was started or runtime queried; quota information remains
+unavailable and resource sufficiency unverified pending owner Editor operation.
+
 Decision 0056 records the owner's explicit acceptance of the reviewed native
 TTT 008 timeout proposal and instruction to submit QUICK_SAVE. Exactly one
 private 008 save is authorized after exact offline verification, with unchanged

@@ -216,5 +216,53 @@ class NativeEditorTransportTests(unittest.TestCase):
         ledger=json.loads((self.journal/'save-ledger.json').read_bytes())
         self.assertEqual(ledger['push_reserved'],1);self.assertEqual(ledger['events'][0]['sends'],0)
 
+    def test_save_only_exception_roundtrip_preserves_unknowns_and_payloads(self):
+        # All resources here are explicitly synthetic, including patched IDs.
+        # No fixture authorizes or creates the real 008 package/provider call.
+        review='nvarc-original-qwen3-native-multitask-994';run='nvarc-original-qwen3-native-multitask-993'
+        _,reviewed,_=save.paths(review);_,package,journal=save.paths(run)
+        checked=stage.stage(reviewed,review)
+        authority=self.root/save.RESOURCE_EXCEPTION_REF;authority.parent.mkdir(parents=True)
+        authority.write_bytes((stage.ROOT/save.RESOURCE_EXCEPTION_REF).read_bytes())
+        value={'format':save.SAVE_ONLY_ADMISSION_FORMAT,'run_id':run,'reviewed_run_id':review,
+            'reviewed_plan_digest':checked['plan_digest'],'reviewed_notebook_sha256':save.sha(reviewed/'kernel/notebook.ipynb'),
+            'source_commit':save.REVIEW_COMMIT,'control_review_sha256':save.REVIEW_SHA,'maximum_paid_usd':0,
+            'prior_sessions_reconciled':True,'quota_reservation_id':None,'reserved_quota_hours':None,
+            'quota_observed_at':None,'local_resource_admission':False,'ui_operator':'user',
+            'private':True,'internet':False,'owner_editor_sessions_closed':True,'owner_clearance_ref':'SYNTHETIC TEST ONLY',
+            'l4_quota_multiplier':None,'quick_save_authorized':True,'maximum_quick_saves':1,'agent_execution_authorized':False,
+            'resource_information_status':'unavailable','resource_information_unavailable':list(save.UNAVAILABLE_QUOTA_FIELDS),
+            'owner_resource_exception_ref':save.RESOURCE_EXCEPTION_REF,'owner_resource_exception_sha256':save.sha(authority)}
+        path=self.root/'synthetic-save-only-admission.json';path.write_bytes(canonical(value))
+        with patch.object(save,'RESOURCE_EXCEPTION_RUN',run),patch.object(save,'RESOURCE_EXCEPTION_REVIEW_RUN',review),\
+                patch.object(save,'RESOURCE_EXCEPTION_PLAN',checked['plan_digest']),\
+                patch.object(save,'RESOURCE_EXCEPTION_NOTEBOOK',value['reviewed_notebook_sha256']):
+            for key,bad in [('reserved_quota_hours',2.5),('quota_observed_at','2026-10-04T22:00:00+08:00'),
+                    ('l4_quota_multiplier',2),('quota_reservation_id','UNAVAILABLE'),('local_resource_admission',True),
+                    ('resource_information_status','verified'),('resource_information_unavailable',[]),
+                    ('owner_resource_exception_sha256','wrong'),('maximum_quick_saves',2),('agent_execution_authorized',True)]:
+                with self.subTest(key=key):
+                    changed=dict(value);changed[key]=bad;path.write_bytes(canonical(changed))
+                    with self.assertRaises(RuntimeError):save.validate_admission(path,run)
+            changed=dict(value);changed['run_id']='nvarc-original-qwen3-native-multitask-992';path.write_bytes(canonical(changed))
+            with self.assertRaises(RuntimeError):save.validate_admission(path,changed['run_id'])
+            path.write_bytes(canonical(value))
+            with patch.object(save,'token',side_effect=AssertionError('offline preparation must not access credentials')):
+                admitted=save.prepare_admitted(reviewed,package,path)
+                self.assertTrue(admitted['approved_for_save']);self.assertFalse(admitted['approved_for_runtime'])
+                self.assertFalse(admitted['resource_sufficiency_verified']);save.execute('init',package)
+            before=json.loads((reviewed/'stage-summary.json').read_bytes())['payload_sha256']
+            after=json.loads((package/'stage-summary.json').read_bytes())['payload_sha256']
+            self.assertEqual({k:v for k,v in before.items() if k!='plan'},{k:v for k,v in after.items() if k!='plan'})
+            plan=json.loads((package/'plan.json').read_bytes())
+            self.assertTrue(plan['approved']);self.assertFalse(plan['controller_admission']['local_resource_admission'])
+            self.assertTrue(all(plan['controller_admission'][k] is None for k in save.UNAVAILABLE_QUOTA_FIELDS))
+            self.run,self.package,self.journal=run,package,journal
+            client,sends,_=self.fake_client('accepted')
+            with patch.object(save,'token',return_value='synthetic-not-a-credential'),patch.object(save,'client_for',return_value=client):
+                result=save.execute('save',package)
+            self.assertTrue(result['accepted']);self.assertEqual(sends,[save.SAVE_URL])
+            with self.assertRaisesRegex(RuntimeError,'unused admitted'):save.execute('save',package)
+
 
 if __name__=='__main__':unittest.main()

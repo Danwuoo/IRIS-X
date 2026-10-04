@@ -41,7 +41,8 @@ def admission_for(path,run_id):
     from datetime import datetime
     import math
     value=json.loads(Path(path).read_bytes())
-    if value.get('format')=='irisx/native-multitask-editor-admission-v2':
+    if value.get('format') in ('irisx/native-multitask-editor-admission-v2',
+            'irisx/native-multitask-editor-save-only-admission-v3'):
         from tools.save_nvarc_native_multitask import validate_admission
         return validate_admission(Path(path),run_id)
     fields={'format','run_id','control_sha256','source_commit','maximum_paid_usd','prior_sessions_reconciled',
@@ -156,13 +157,17 @@ def construct(run_id,admission_path=None):
     admission=admission_for(admission_path,run_id)
     if admission is not None:
         plan.update(approved=True,controller_admission=admission,controller_admission_sha256=sha(admission_path))
-        if admission['format']=='irisx/native-multitask-editor-admission-v2':
+        if admission['format'] in ('irisx/native-multitask-editor-admission-v2',
+                'irisx/native-multitask-editor-save-only-admission-v3'):
             plan.update(source_commit=admission['source_commit'],
                 owner_decision='explicit-stage3-owner-Editor-clearance',
                 owner_execution_instruction_ref=admission['owner_clearance_ref'],
                 approved_proposal_plan_digest=admission['reviewed_plan_digest'],
                 reviewed_proposal_run_id=admission['reviewed_run_id'],
                 quota_observed_at=admission['quota_observed_at'],owner_editor_sessions_closed=True)
+            if admission['format']=='irisx/native-multitask-editor-save-only-admission-v3':
+                plan.update(owner_decision='Decision 0057: owner-authorized save with quota information unavailable',
+                    resource_information_status='unavailable',resource_sufficiency_verified=False)
     raw['plan']=canonical(plan)
     source=frozen.old.proposal.predecessor.base.render(run_id,
         {k:__import__('base64').b64encode(v).decode() for k,v in raw.items()},
@@ -207,9 +212,13 @@ def preflight(package):
         json.loads((package/'kernel/kernel-metadata.json').read_bytes())==metadata and
         summary['payload_sha256']=={k:hashlib.sha256(v).hexdigest() for k,v in raw.items()},
         'closed exact multi-task plan/material/program bytes differ')
-    return {'run_id':plan['run_id'],'plan_digest':digest(plan),'offline_package_verified':True,
+    result={'run_id':plan['run_id'],'plan_digest':digest(plan),'offline_package_verified':True,
         'approved_for_runtime':plan['approved'],'gpu_runtime':'unverified','tasks':len(plan['task_order']),
         'test_inputs':sum(s['test_count'] for s in plan['task_specs'].values()),'external_calls':0}
+    if plan.get('resource_information_status')=='unavailable':
+        result.update(approved_for_runtime=False,approved_for_save=True,approved_for_owner_editor=True,
+            resource_information_status='unavailable',resource_sufficiency_verified=False)
+    return result
 
 
 if __name__=='__main__':

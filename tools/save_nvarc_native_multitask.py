@@ -24,6 +24,13 @@ REVIEW_COMMIT='c2079c9132fe855ca69e359109069e29fa6eb707'
 REVIEW_SHA='2755f5c7f3498c2eef826a4e3c2cf3b0e77bd2490c48da7bef25c958a746a3a1'
 REVIEW_FILE=ROOT/'.irisx/control-review-c2079c9-caadb179/acceptance.json'
 ADMISSION_FORMAT='irisx/native-multitask-editor-admission-v2'
+SAVE_ONLY_ADMISSION_FORMAT='irisx/native-multitask-editor-save-only-admission-v3'
+RESOURCE_EXCEPTION_REF='docs/decisions/0057-save-native-multitask-with-unavailable-quota.md'
+RESOURCE_EXCEPTION_RUN='nvarc-original-qwen3-native-multitask-008'
+RESOURCE_EXCEPTION_REVIEW_RUN='nvarc-original-qwen3-native-multitask-007'
+RESOURCE_EXCEPTION_PLAN='sha256:ccacce536d11058dd9d3d0b531f68a0c6e6dc1a49ba52c2bc8e263e76534abef'
+RESOURCE_EXCEPTION_NOTEBOOK='a4d9d481fa2693f8b9a1d79a363e804532171d396d3fbf1dc6b0cac7131e1e19'
+UNAVAILABLE_QUOTA_FIELDS=('reserved_quota_hours','quota_observed_at','l4_quota_multiplier','quota_reservation_id')
 SAVE_URL='https://api.kaggle.com/v1/kernels.KernelsApiService/SaveKernel'
 
 
@@ -45,21 +52,42 @@ def validate_admission(path,run):
         'quota_reservation_id','reserved_quota_hours','quota_observed_at','local_resource_admission',
         'ui_operator','private','internet','owner_editor_sessions_closed','owner_clearance_ref',
         'l4_quota_multiplier','quick_save_authorized','maximum_quick_saves','agent_execution_authorized'}
-    require(set(value)==fields and value['format']==ADMISSION_FORMAT and value['run_id']==identity(run) and
+    save_only=value.get('format')==SAVE_ONLY_ADMISSION_FORMAT
+    if save_only:
+        fields|={'resource_information_status','resource_information_unavailable',
+            'owner_resource_exception_ref','owner_resource_exception_sha256'}
+    require(set(value)==fields and value['format'] in (ADMISSION_FORMAT,SAVE_ONLY_ADMISSION_FORMAT) and value['run_id']==identity(run) and
         identity(value['reviewed_run_id'])!=run and value['source_commit']==REVIEW_COMMIT and
         value['control_review_sha256']==REVIEW_SHA and sha(REVIEW_FILE)==REVIEW_SHA and
         type(value['maximum_paid_usd']) is int and value['maximum_paid_usd']==0 and
         value['prior_sessions_reconciled'] is value['owner_editor_sessions_closed'] is
-            value['local_resource_admission'] is value['quick_save_authorized'] is value['private'] is True and
+            value['quick_save_authorized'] is value['private'] is True and
         value['internet'] is value['agent_execution_authorized'] is False and value['ui_operator']=='user' and
         type(value['maximum_quick_saves']) is int and value['maximum_quick_saves']==1 and
-        all(isinstance(value[k],str) and bool(value[k].strip()) for k in ('owner_clearance_ref','quota_reservation_id')) and
-        type(value['reserved_quota_hours']) in (int,float) and math.isfinite(value['reserved_quota_hours']) and
-        value['reserved_quota_hours']>=2.5 and type(value['l4_quota_multiplier']) in (int,float) and
-        value['l4_quota_multiplier']==2 and isinstance(value['quota_observed_at'],str),
-        'exact owner/controller admission with real closed sessions and reserved quota required')
-    require(datetime.fromisoformat(value['quota_observed_at'].replace('Z','+00:00')).utcoffset() is not None,
-        'timezone-qualified quota observation required')
+        isinstance(value['owner_clearance_ref'],str) and bool(value['owner_clearance_ref'].strip()),
+        'exact owner/controller save clearance required')
+    if save_only:
+        # The owner explicitly waived missing resource information for this one
+        # save. Nulls remain unknown; this never asserts a quota reservation.
+        require(run==RESOURCE_EXCEPTION_RUN and value['reviewed_run_id']==RESOURCE_EXCEPTION_REVIEW_RUN and
+            value['reviewed_plan_digest']==RESOURCE_EXCEPTION_PLAN and
+            value['reviewed_notebook_sha256']==RESOURCE_EXCEPTION_NOTEBOOK and
+            value['local_resource_admission'] is False and
+            all(value[k] is None for k in UNAVAILABLE_QUOTA_FIELDS) and
+            value['resource_information_status']=='unavailable' and
+            value['resource_information_unavailable']==list(UNAVAILABLE_QUOTA_FIELDS) and
+            value['owner_resource_exception_ref']==RESOURCE_EXCEPTION_REF and
+            value['owner_resource_exception_sha256']==sha(ROOT/RESOURCE_EXCEPTION_REF),
+            'only exact 008 owner-authorized save exception with explicitly unavailable quota permitted')
+    else:
+        require(value['local_resource_admission'] is True and
+            isinstance(value['quota_reservation_id'],str) and bool(value['quota_reservation_id'].strip()) and
+            type(value['reserved_quota_hours']) in (int,float) and math.isfinite(value['reserved_quota_hours']) and
+            value['reserved_quota_hours']>=2.5 and type(value['l4_quota_multiplier']) in (int,float) and
+            value['l4_quota_multiplier']==2 and isinstance(value['quota_observed_at'],str),
+            'exact owner/controller admission with real closed sessions and reserved quota required')
+        require(datetime.fromisoformat(value['quota_observed_at'].replace('Z','+00:00')).utcoffset() is not None,
+            'timezone-qualified quota observation required')
     _,reviewed,_=paths(value['reviewed_run_id'])
     checked=stage.preflight(reviewed)
     require(checked['approved_for_runtime'] is False and checked['plan_digest']==value['reviewed_plan_digest'] and
