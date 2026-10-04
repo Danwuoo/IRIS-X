@@ -1,0 +1,1511 @@
+{
+  "format": "irisx/native-multitask-010-editor-diagnosis-v1",
+  "date": "2026-10-05",
+  "timezone": "Asia/Taipei",
+  "source_commit": "2e447cade47f743071d51adef7053086d7a501f7",
+  "owner_report": "notebook 成功執行，結果.zip 在 main root",
+  "archive": {
+    "original_supplied_path": "結果.zip",
+    "retained_original_path": ".irisx/native-multitask-010-diagnosis-20261005-001/owner-editor-original-result.zip",
+    "analysis_copy_path": ".irisx/native-multitask-010-diagnosis-20261005-001/owner-editor-result.zip",
+    "bytes": 751137,
+    "sha256": "cba8d464b1b0cd92ba9f47f00993c79367188fefdde5725f477b32b0606829c0",
+    "data_members": 118,
+    "all_member_sizes_and_digests_verified": true,
+    "closed_member_count": 119,
+    "uncompressed_bytes": 4240129,
+    "manifest": {
+      "format": "irisx/nvarc-gpu-preflight-archive-v1",
+      "members": [
+        {
+          "bytes": 6332,
+          "path": "__pycache__/hardware_helpers.cpython-311.pyc",
+          "sha256": "59592273ec27a283fb9decdd9d6d52482a5446842124cb3764b78d081aebdf2a"
+        },
+        {
+          "bytes": 32775,
+          "path": "__pycache__/inspection_helpers.cpython-311.pyc",
+          "sha256": "f2a88816da84f61cb7033017c31dfcaae2c0a9ed45654bf3afd82477e4a528c9"
+        },
+        {
+          "bytes": 20217,
+          "path": "__pycache__/nvarc_native_ttt_budget.cpython-311.pyc",
+          "sha256": "3f0d7c3aebee230dbbbfeb18625627d545ff1a53513da6f6a51eca2d624b84e1"
+        },
+        {
+          "bytes": 8943,
+          "path": "__pycache__/nvarc_native_ttt_schedule.cpython-311.pyc",
+          "sha256": "a31aa2cf2c258a6ca3dbffa99284104cbc9acf69bf949938a81acce59b057f9e"
+        },
+        {
+          "bytes": 4156,
+          "path": "arc_decoder.py",
+          "sha256": "965cfd910777d9bbec9681c6c15c5e2ea3924569734248046f5e58f16cb28222"
+        },
+        {
+          "bytes": 12640,
+          "path": "arc_loader.py",
+          "sha256": "d01cd56167e534ae156706ef62ab11662fc7b403964614a7a55131940bde970c"
+        },
+        {
+          "bytes": 601,
+          "path": "challenges.json",
+          "sha256": "fa6d9af3a8a69adcf9ad678a677d6583944335c888c4b6be67adc4f813a0db96"
+        },
+        {
+          "bytes": 124,
+          "path": "dependency-setup.log",
+          "sha256": "8940d95f9e7a2c9730a6a9cac62f9c255ae635c0464e58aa02442f4a69af26e6"
+        },
+        {
+          "bytes": 3088,
+          "path": "editor-archive.py",
+          "sha256": "e27271aed999e350413836776e5076b958d523feda5da7300d11ff6740882c2d"
+        },
+        {
+          "bytes": 366,
+          "path": "export-process.json",
+          "sha256": "fb7f7466c7828f6b158b2c697392251e7153a48946475c4ea13e9c0add9f30ef"
+        },
+        {
+          "bytes": 0,
+          "path": "export.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 413,
+          "path": "export.stdout.log",
+          "sha256": "ec2efd85712fab223ba8f55027f62940f314d85891258b8588c17492ecbf1ea9"
+        },
+        {
+          "bytes": 2155,
+          "path": "hardware-raw.json",
+          "sha256": "d2dc24875180ab7f9593284ec2792d5ea5af4ef7e7516cb6a7245b9bafaeae63"
+        },
+        {
+          "bytes": 683,
+          "path": "hardware.json",
+          "sha256": "388e9ad857c1346a8fda1d375aac47e82c727e0c7801075c8f46cb96f77748c3"
+        },
+        {
+          "bytes": 3829,
+          "path": "hardware_helpers.py",
+          "sha256": "61316aa900b47106e2bc9b0ffb04b02045839e411759973a10de53c5168af642"
+        },
+        {
+          "bytes": 15186,
+          "path": "inspection.py",
+          "sha256": "d70135dd2c8cdcf3d7ace12007663856eddaaf09c9959d58aea6a44fa2d40237"
+        },
+        {
+          "bytes": 16983,
+          "path": "inspection_helpers.py",
+          "sha256": "c073e2839f7013d24c9aaaffd92ad82a2c0a44180efc6d3dffc09084999cd8e2"
+        },
+        {
+          "bytes": 251,
+          "path": "model-verification.json",
+          "sha256": "07aca10b46e14a6c9fc1ff7122deaec32910d49d7f1813af5a8f9603614f5c51"
+        },
+        {
+          "bytes": 332689,
+          "path": "native-evidence.json",
+          "sha256": "f8bc5f6f3c346318a0d446e139a6055f2c8e020d1b649055847abc0a66202656"
+        },
+        {
+          "bytes": 8489,
+          "path": "nvarc_native_ttt_budget.py",
+          "sha256": "cbde3bb4eb4353355d02e70f471d867c85619f6e620ea039836d2578e8218b7f"
+        },
+        {
+          "bytes": 4329,
+          "path": "nvarc_native_ttt_schedule.py",
+          "sha256": "e40a70266132a78174e8fe0b73b02c4a1a9e9239e3431c362c8bb7b40f32cbcc"
+        },
+        {
+          "bytes": 250,
+          "path": "parent-verification.json",
+          "sha256": "ad2eeccffc7443800030277f165019277b893c2070be4bf03cc66eef64379231"
+        },
+        {
+          "bytes": 1511,
+          "path": "payload-bindings.json",
+          "sha256": "6aee36bb67af4421fdfb9509cc37ec16ab1e11cb82b6101a21137ce3c04d2091"
+        },
+        {
+          "bytes": 135927,
+          "path": "plan.json",
+          "sha256": "d0e0e2084929a411e4cfa9464cbfe8a20fc73b91466aa7e4f8f4f1a905d0ab81"
+        },
+        {
+          "bytes": 16556,
+          "path": "solver.py",
+          "sha256": "1387c5b0b188dcc8570659dd5905ec2e824e5e0dfd7b20d8be9c2e13d0f12962"
+        },
+        {
+          "bytes": 5162,
+          "path": "source-verification.json",
+          "sha256": "5ec64566d9a9aaf628468ead6b50dfaf7869df4913b33204f848aeee91331576"
+        },
+        {
+          "bytes": 5855,
+          "path": "submission-audit.json",
+          "sha256": "0efc467c67082a6e16acd9a0b7d3fc260d55c46840a606abf2b289e75c893706"
+        },
+        {
+          "bytes": 173,
+          "path": "submission.json",
+          "sha256": "80312c1d0b0b5532b3b6581b7f479477a6dad365c0485ba35ed0b72ec60b459e"
+        },
+        {
+          "bytes": 50195,
+          "path": "tasks/44f52bb0/expected-rows.json",
+          "sha256": "7425df25ccf35322ec91c43399598b80229cd216afe5c5b6a58f88031a319c14"
+        },
+        {
+          "bytes": 72594,
+          "path": "tasks/44f52bb0/native/adapter-topology.json",
+          "sha256": "1c83c439338ea8535dbbb0f02d4032634e32889a1a206fee0b0c961583c481c9"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/44f52bb0/native/baseline-inventory.json",
+          "sha256": "4f83cfc93e909edb33bc0d647ffbdf7708d38bb460104a37cf8a6dbc7bf2654e"
+        },
+        {
+          "bytes": 1745,
+          "path": "tasks/44f52bb0/native/cache-control.json",
+          "sha256": "0b7b632d3c431cf41929c514501ab1d15e673528abc4a33f8e2ab24e85cd26db"
+        },
+        {
+          "bytes": 2366,
+          "path": "tasks/44f52bb0/native/checkpoint.json",
+          "sha256": "e9a4867cbf823190f819b71e81a1288ed40313c3fce578a43f27a5aa017665f0"
+        },
+        {
+          "bytes": 168812,
+          "path": "tasks/44f52bb0/native/events.jsonl",
+          "sha256": "713de5878498e028697357769b4e0e882899ba1097d7ad99b2e15f79848ea434"
+        },
+        {
+          "bytes": 99,
+          "path": "tasks/44f52bb0/native/hardware.json",
+          "sha256": "ff449c5b41a4484da370fe460665ae357e358d43fed40c0a7af8e23e9541d259"
+        },
+        {
+          "bytes": 4000,
+          "path": "tasks/44f52bb0/native/native-schedule.json",
+          "sha256": "cb04e497bee885fae877be61665e47444c968e121c0d21d91c33f1ca899d5f88"
+        },
+        {
+          "bytes": 66463,
+          "path": "tasks/44f52bb0/native/optimizer-state.json",
+          "sha256": "fe9d93cb4a5ee47b6af91834ad90c88dc7e4dc11b5c1b45c4e23ad828a44be62"
+        },
+        {
+          "bytes": 506,
+          "path": "tasks/44f52bb0/native/post-reset-control.json",
+          "sha256": "8b72effca0cde1655a5914f50fb3c6eea74f0e396bb0c89ffb90803326944e69"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/44f52bb0/native/pre-reset-inventory.json",
+          "sha256": "a2311e999b47df5e7db9a0bc78fc06727cbf2a59883064896a9301119798cfde"
+        },
+        {
+          "bytes": 3077,
+          "path": "tasks/44f52bb0/native/preparation.json",
+          "sha256": "e61afce2f4ef634893e8be855f552e43a22f286f8dd074fe3d92ed07ecd483f3"
+        },
+        {
+          "bytes": 49273,
+          "path": "tasks/44f52bb0/native/prepared-rows.json",
+          "sha256": "49b9d0bfaec9ca28112e3167a78e1dd9d664488e0715485e13127096a6c7fa41"
+        },
+        {
+          "bytes": 61440,
+          "path": "tasks/44f52bb0/native/prepared-tokens.i16le",
+          "sha256": "6234fcab9230628a104afc51670725d2a63630c843714df72c1faba61098868d"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/44f52bb0/native/reset-inventory.json",
+          "sha256": "4f83cfc93e909edb33bc0d647ffbdf7708d38bb460104a37cf8a6dbc7bf2654e"
+        },
+        {
+          "bytes": 2844,
+          "path": "tasks/44f52bb0/native/result.json",
+          "sha256": "efc6036a85ad4a8cf3e02b20ec19c5d15dd49f49499155188b1e1f369e3fcf2d"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/44f52bb0/native/trained-inventory.json",
+          "sha256": "a2311e999b47df5e7db9a0bc78fc06727cbf2a59883064896a9301119798cfde"
+        },
+        {
+          "bytes": 53434,
+          "path": "tasks/44f52bb0/native/training-ledger.json",
+          "sha256": "259be22c5312075991a5912b79cc7d3c3bd2b91a3a8fe5f3cf1963df955f396c"
+        },
+        {
+          "bytes": 13031,
+          "path": "tasks/44f52bb0/stderr.log",
+          "sha256": "1850a9bf3bfded6ea1f39f52617dd703767a66cbeee594ee4599cf222bcda45e"
+        },
+        {
+          "bytes": 864,
+          "path": "tasks/44f52bb0/stdout.log",
+          "sha256": "63204cbbaa7fffc18b815821e3ababf69f13273b2c60e3af42f8471adeb41f7c"
+        },
+        {
+          "bytes": 66561,
+          "path": "tasks/44f52bb0/texts.json",
+          "sha256": "ef585e7806be916e2dd3d823207f40b627264eab2a237cfa86ca6ceaba3abaac"
+        },
+        {
+          "bytes": 49555,
+          "path": "tasks/833966f4/expected-rows.json",
+          "sha256": "8df2f46a5e9069347f70d6d002c313649ab9b13b6325bd1189df355d8b228fb2"
+        },
+        {
+          "bytes": 72594,
+          "path": "tasks/833966f4/native/adapter-topology.json",
+          "sha256": "1c83c439338ea8535dbbb0f02d4032634e32889a1a206fee0b0c961583c481c9"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/833966f4/native/baseline-inventory.json",
+          "sha256": "4f83cfc93e909edb33bc0d647ffbdf7708d38bb460104a37cf8a6dbc7bf2654e"
+        },
+        {
+          "bytes": 1745,
+          "path": "tasks/833966f4/native/cache-control.json",
+          "sha256": "0b7b632d3c431cf41929c514501ab1d15e673528abc4a33f8e2ab24e85cd26db"
+        },
+        {
+          "bytes": 1509,
+          "path": "tasks/833966f4/native/checkpoint.json",
+          "sha256": "dc70baa8ab6e4ff01c4a9493c7c4f60550867b663f9c7681bd5053463d82acdf"
+        },
+        {
+          "bytes": 158545,
+          "path": "tasks/833966f4/native/events.jsonl",
+          "sha256": "688ea31998b51ec42499140e14701d2e5dd038a8b7e734ec3772ef1e858edf9d"
+        },
+        {
+          "bytes": 99,
+          "path": "tasks/833966f4/native/hardware.json",
+          "sha256": "ff449c5b41a4484da370fe460665ae357e358d43fed40c0a7af8e23e9541d259"
+        },
+        {
+          "bytes": 4000,
+          "path": "tasks/833966f4/native/native-schedule.json",
+          "sha256": "cb04e497bee885fae877be61665e47444c968e121c0d21d91c33f1ca899d5f88"
+        },
+        {
+          "bytes": 66463,
+          "path": "tasks/833966f4/native/optimizer-state.json",
+          "sha256": "fe9d93cb4a5ee47b6af91834ad90c88dc7e4dc11b5c1b45c4e23ad828a44be62"
+        },
+        {
+          "bytes": 506,
+          "path": "tasks/833966f4/native/post-reset-control.json",
+          "sha256": "8b72effca0cde1655a5914f50fb3c6eea74f0e396bb0c89ffb90803326944e69"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/833966f4/native/pre-reset-inventory.json",
+          "sha256": "0eba39df7b533af232cb9058f0f03ca74b5069284a52cf3bcd2353add6719f86"
+        },
+        {
+          "bytes": 3077,
+          "path": "tasks/833966f4/native/preparation.json",
+          "sha256": "bcc0f32961481feb4eb57bfdbb72ee162e8f82665efc3a25e561dedbffbaf733"
+        },
+        {
+          "bytes": 49106,
+          "path": "tasks/833966f4/native/prepared-rows.json",
+          "sha256": "cb1b5f49a2cb62fb342c49234b049c418c358b4dceb14d0d01d88fea8e2e8ae9"
+        },
+        {
+          "bytes": 22528,
+          "path": "tasks/833966f4/native/prepared-tokens.i16le",
+          "sha256": "000622a34d9dba0436bd9225eccf5ff1296fb911c6232f4201b4dfa3dcd61a3c"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/833966f4/native/reset-inventory.json",
+          "sha256": "4f83cfc93e909edb33bc0d647ffbdf7708d38bb460104a37cf8a6dbc7bf2654e"
+        },
+        {
+          "bytes": 1991,
+          "path": "tasks/833966f4/native/result.json",
+          "sha256": "3b25401ab239de3945dd17d54e789020bbbf4c816b8ea0b9de2e2d2b2a6c6481"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/833966f4/native/trained-inventory.json",
+          "sha256": "0eba39df7b533af232cb9058f0f03ca74b5069284a52cf3bcd2353add6719f86"
+        },
+        {
+          "bytes": 52382,
+          "path": "tasks/833966f4/native/training-ledger.json",
+          "sha256": "fefc1518077f7801541c0e6e4e280a5aa2538f236d2c33933f8f681ff3441b8e"
+        },
+        {
+          "bytes": 13020,
+          "path": "tasks/833966f4/stderr.log",
+          "sha256": "e3a15dbd73eac4c8101444c8c8e6a18a30fd390171b584ab4249ac9bff9a7f99"
+        },
+        {
+          "bytes": 864,
+          "path": "tasks/833966f4/stdout.log",
+          "sha256": "775349b647da5fd72734f3ec87e0f1e2b2f9bd8068dcac75ac9f0edad1d59dd3"
+        },
+        {
+          "bytes": 28673,
+          "path": "tasks/833966f4/texts.json",
+          "sha256": "1244f238c0a765bfdd6df6b3a04b839ba7936d26bacd507f194b95d6633381ad"
+        },
+        {
+          "bytes": 49555,
+          "path": "tasks/baseline-after-fault/expected-rows.json",
+          "sha256": "8df2f46a5e9069347f70d6d002c313649ab9b13b6325bd1189df355d8b228fb2"
+        },
+        {
+          "bytes": 72594,
+          "path": "tasks/baseline-after-fault/native/adapter-topology.json",
+          "sha256": "1c83c439338ea8535dbbb0f02d4032634e32889a1a206fee0b0c961583c481c9"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/baseline-after-fault/native/baseline-inventory.json",
+          "sha256": "4f83cfc93e909edb33bc0d647ffbdf7708d38bb460104a37cf8a6dbc7bf2654e"
+        },
+        {
+          "bytes": 1745,
+          "path": "tasks/baseline-after-fault/native/cache-control.json",
+          "sha256": "0b7b632d3c431cf41929c514501ab1d15e673528abc4a33f8e2ab24e85cd26db"
+        },
+        {
+          "bytes": 15550,
+          "path": "tasks/baseline-after-fault/native/events.jsonl",
+          "sha256": "f44f3af78796e0482d1a89672f670cb127d8742c5470f58fd6bd7ab4c0833d45"
+        },
+        {
+          "bytes": 99,
+          "path": "tasks/baseline-after-fault/native/hardware.json",
+          "sha256": "ff449c5b41a4484da370fe460665ae357e358d43fed40c0a7af8e23e9541d259"
+        },
+        {
+          "bytes": 4000,
+          "path": "tasks/baseline-after-fault/native/native-schedule.json",
+          "sha256": "cb04e497bee885fae877be61665e47444c968e121c0d21d91c33f1ca899d5f88"
+        },
+        {
+          "bytes": 506,
+          "path": "tasks/baseline-after-fault/native/post-reset-control.json",
+          "sha256": "8b72effca0cde1655a5914f50fb3c6eea74f0e396bb0c89ffb90803326944e69"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/baseline-after-fault/native/pre-reset-inventory.json",
+          "sha256": "4f83cfc93e909edb33bc0d647ffbdf7708d38bb460104a37cf8a6dbc7bf2654e"
+        },
+        {
+          "bytes": 3077,
+          "path": "tasks/baseline-after-fault/native/preparation.json",
+          "sha256": "bcc0f32961481feb4eb57bfdbb72ee162e8f82665efc3a25e561dedbffbaf733"
+        },
+        {
+          "bytes": 49106,
+          "path": "tasks/baseline-after-fault/native/prepared-rows.json",
+          "sha256": "cb1b5f49a2cb62fb342c49234b049c418c358b4dceb14d0d01d88fea8e2e8ae9"
+        },
+        {
+          "bytes": 22528,
+          "path": "tasks/baseline-after-fault/native/prepared-tokens.i16le",
+          "sha256": "000622a34d9dba0436bd9225eccf5ff1296fb911c6232f4201b4dfa3dcd61a3c"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/baseline-after-fault/native/reset-inventory.json",
+          "sha256": "4f83cfc93e909edb33bc0d647ffbdf7708d38bb460104a37cf8a6dbc7bf2654e"
+        },
+        {
+          "bytes": 1071,
+          "path": "tasks/baseline-after-fault/native/result.json",
+          "sha256": "286c4be6a411f9b1c888bbfc38e9767fe3aa16d488dd7f5ece1ad3201cba2fd8"
+        },
+        {
+          "bytes": 4739,
+          "path": "tasks/baseline-after-fault/stderr.log",
+          "sha256": "ae1e833b2bd8d1038f8fcbb1564d04c7c15bc993255212f3f28c7476b48e66db"
+        },
+        {
+          "bytes": 720,
+          "path": "tasks/baseline-after-fault/stdout.log",
+          "sha256": "e23ece0054249dd69958cb7594fd69f693f1617fcd0eb508f6eccbf6d1fdd94f"
+        },
+        {
+          "bytes": 28673,
+          "path": "tasks/baseline-after-fault/texts.json",
+          "sha256": "1244f238c0a765bfdd6df6b3a04b839ba7936d26bacd507f194b95d6633381ad"
+        },
+        {
+          "bytes": 50195,
+          "path": "tasks/fault-first/expected-rows.json",
+          "sha256": "7425df25ccf35322ec91c43399598b80229cd216afe5c5b6a58f88031a319c14"
+        },
+        {
+          "bytes": 72594,
+          "path": "tasks/fault-first/native/adapter-topology.json",
+          "sha256": "1c83c439338ea8535dbbb0f02d4032634e32889a1a206fee0b0c961583c481c9"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/fault-first/native/baseline-inventory.json",
+          "sha256": "4f83cfc93e909edb33bc0d647ffbdf7708d38bb460104a37cf8a6dbc7bf2654e"
+        },
+        {
+          "bytes": 1745,
+          "path": "tasks/fault-first/native/cache-control.json",
+          "sha256": "0b7b632d3c431cf41929c514501ab1d15e673528abc4a33f8e2ab24e85cd26db"
+        },
+        {
+          "bytes": 15415,
+          "path": "tasks/fault-first/native/events.jsonl",
+          "sha256": "9e620ef0e43514908e8c778adf28c20b61cbd08fc22fa62adc44dde1534696d5"
+        },
+        {
+          "bytes": 99,
+          "path": "tasks/fault-first/native/hardware.json",
+          "sha256": "ff449c5b41a4484da370fe460665ae357e358d43fed40c0a7af8e23e9541d259"
+        },
+        {
+          "bytes": 4000,
+          "path": "tasks/fault-first/native/native-schedule.json",
+          "sha256": "cb04e497bee885fae877be61665e47444c968e121c0d21d91c33f1ca899d5f88"
+        },
+        {
+          "bytes": 506,
+          "path": "tasks/fault-first/native/post-reset-control.json",
+          "sha256": "8b72effca0cde1655a5914f50fb3c6eea74f0e396bb0c89ffb90803326944e69"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/fault-first/native/pre-reset-inventory.json",
+          "sha256": "ee6209c87af18aa0203151431a966a2938701f9636db0e5e6a20aefd7d56baa2"
+        },
+        {
+          "bytes": 3077,
+          "path": "tasks/fault-first/native/preparation.json",
+          "sha256": "e61afce2f4ef634893e8be855f552e43a22f286f8dd074fe3d92ed07ecd483f3"
+        },
+        {
+          "bytes": 49273,
+          "path": "tasks/fault-first/native/prepared-rows.json",
+          "sha256": "49b9d0bfaec9ca28112e3167a78e1dd9d664488e0715485e13127096a6c7fa41"
+        },
+        {
+          "bytes": 61440,
+          "path": "tasks/fault-first/native/prepared-tokens.i16le",
+          "sha256": "6234fcab9230628a104afc51670725d2a63630c843714df72c1faba61098868d"
+        },
+        {
+          "bytes": 114054,
+          "path": "tasks/fault-first/native/reset-inventory.json",
+          "sha256": "4f83cfc93e909edb33bc0d647ffbdf7708d38bb460104a37cf8a6dbc7bf2654e"
+        },
+        {
+          "bytes": 1185,
+          "path": "tasks/fault-first/native/result.json",
+          "sha256": "a2f98447b593365bc349153868f8beda8bb50752edb42bde9523e12ad59419ca"
+        },
+        {
+          "bytes": 1103,
+          "path": "tasks/fault-first/native/training-ledger.json",
+          "sha256": "24b26416bbae9189e7ed13ea3da3d62739449162c31903d271636f52b641599a"
+        },
+        {
+          "bytes": 5949,
+          "path": "tasks/fault-first/stderr.log",
+          "sha256": "ec21d7dd85c7a297bd5e71cdc22069599d1c1aa9fa6eff49c4376f6a4bd2c5e3"
+        },
+        {
+          "bytes": 720,
+          "path": "tasks/fault-first/stdout.log",
+          "sha256": "e23ece0054249dd69958cb7594fd69f693f1617fcd0eb508f6eccbf6d1fdd94f"
+        },
+        {
+          "bytes": 66561,
+          "path": "tasks/fault-first/texts.json",
+          "sha256": "ef585e7806be916e2dd3d823207f40b627264eab2a237cfa86ca6ceaba3abaac"
+        },
+        {
+          "bytes": 497,
+          "path": "terminal.json",
+          "sha256": "2174fc716889878cddb5f52dc79b06e9535bd623c1bfb674315e1c1ba96fbb3a"
+        },
+        {
+          "bytes": 0,
+          "path": "tools/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 184,
+          "path": "tools/__pycache__/__init__.cpython-311.pyc",
+          "sha256": "f9d2dac91f1fd59d55b216198542c3fe5aa764e8a249781ebb3096a1534db6fa"
+        },
+        {
+          "bytes": 21245,
+          "path": "tools/__pycache__/arc_kaggle_submission.cpython-311.pyc",
+          "sha256": "97d538b4421fb51f5f93b2aec56860506eb08e801db5cfa348e53913b81f206e"
+        },
+        {
+          "bytes": 34270,
+          "path": "tools/__pycache__/nvarc_native_multitask.cpython-311.pyc",
+          "sha256": "49fb06fc625c37171a25e7301379a8f50b5e78bcff9f9d0566196e2fe055485b"
+        },
+        {
+          "bytes": 46423,
+          "path": "tools/__pycache__/nvarc_native_solve_runtime.cpython-311.pyc",
+          "sha256": "3ed4439c970486b9ebdafc7e4d4e4fb8387bf0bd98c4b725373c14d2d64fe46a"
+        },
+        {
+          "bytes": 63532,
+          "path": "tools/__pycache__/nvarc_native_submission.cpython-311.pyc",
+          "sha256": "ee741de67bed41367def246e8437f2167abb70e67459e24b38b81c75c63bbc98"
+        },
+        {
+          "bytes": 12447,
+          "path": "tools/arc_kaggle_submission.py",
+          "sha256": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf"
+        },
+        {
+          "bytes": 2821,
+          "path": "tools/nvarc_native_export.py",
+          "sha256": "a092cb4d426dbef1672e4c2c2ee263cbdae1e7b00c32d820b39061c84f8668a5"
+        },
+        {
+          "bytes": 17690,
+          "path": "tools/nvarc_native_multitask.py",
+          "sha256": "4224e8cc4004d106661ec8678952b20d8dc54cf48b84f638ee6416fabc2abf64"
+        },
+        {
+          "bytes": 23130,
+          "path": "tools/nvarc_native_solve_runtime.py",
+          "sha256": "6007cd3cb8feeb78c7506631d6fd2f1511581318ca49d43adcfa87dec52ec64d"
+        },
+        {
+          "bytes": 32635,
+          "path": "tools/nvarc_native_submission.py",
+          "sha256": "8cc5a5095bef1a0e65cd0a2c54e697d510590086dc88509045b1205b27b6cbff"
+        },
+        {
+          "bytes": 594,
+          "path": "worker-receipts.json",
+          "sha256": "485e21a90e69cbb572d7098febb3efd6c9302170f6a850d19ed01f83d8d7bd0f"
+        }
+      ],
+      "plan_digest": "sha256:d0e0e2084929a411e4cfa9464cbfe8a20fc73b91466aa7e4f8f4f1a905d0ab81",
+      "run_id": "nvarc-original-qwen3-native-multitask-010"
+    },
+    "original_moved_losslessly_for_repository_layout": true
+  },
+  "runtime_observation": {
+    "terminal.json": {
+      "contains_evaluator_truth": false,
+      "correctness_scored": false,
+      "generations": 12,
+      "inference_ledger_truncated": false,
+      "model_forwards": 340,
+      "model_forwards_reserved": 340,
+      "optimizer_steps": 258,
+      "optimizer_steps_reserved": 258,
+      "outcome": "failed",
+      "paid_usd": 0,
+      "phase": "terminal",
+      "run_id": "nvarc-original-qwen3-native-multitask-010",
+      "teacher_calls": 0,
+      "training_steps_reserved": 259,
+      "wall_seconds": 632.992446149,
+      "worker_receipts_digest": "sha256:485e21a90e69cbb572d7098febb3efd6c9302170f6a850d19ed01f83d8d7bd0f"
+    },
+    "worker-receipts.json": [
+      {
+        "attempt_id": "44f52bb0",
+        "launched": true,
+        "reserved_seconds": 1000,
+        "reset_inferred": false,
+        "returncode": 0,
+        "status": "complete",
+        "task_id": "44f52bb0"
+      },
+      {
+        "attempt_id": "833966f4",
+        "launched": true,
+        "reserved_seconds": 1000,
+        "reset_inferred": false,
+        "returncode": 0,
+        "status": "complete",
+        "task_id": "833966f4"
+      },
+      {
+        "attempt_id": "fault-first",
+        "launched": true,
+        "reserved_seconds": 1000,
+        "reset_inferred": false,
+        "returncode": 1,
+        "status": "failed",
+        "task_id": "44f52bb0"
+      },
+      {
+        "attempt_id": "baseline-after-fault",
+        "launched": true,
+        "reserved_seconds": 1000,
+        "reset_inferred": false,
+        "returncode": 0,
+        "status": "complete",
+        "task_id": "833966f4"
+      }
+    ],
+    "hardware.json": {
+      "cuda": "12.8",
+      "inventory": [
+        {
+          "bf16": true,
+          "index": 0,
+          "memory_bytes": 23659151360,
+          "memory_mib": 23034,
+          "name": "NVIDIA L4",
+          "physical_index": 0,
+          "uuid": "GPU-a866177d-379e-b0d0-5075-12b28af92f15"
+        },
+        {
+          "bf16": true,
+          "index": 1,
+          "memory_bytes": 23659151360,
+          "memory_mib": 23034,
+          "name": "NVIDIA L4",
+          "physical_index": 1,
+          "uuid": "GPU-fc01be62-2fca-665e-d997-c7c7482af0e9"
+        },
+        {
+          "bf16": true,
+          "index": 2,
+          "memory_bytes": 23659151360,
+          "memory_mib": 23034,
+          "name": "NVIDIA L4",
+          "physical_index": 2,
+          "uuid": "GPU-1dac21c1-b830-4fb6-ff60-e8643872da90"
+        },
+        {
+          "bf16": true,
+          "index": 3,
+          "memory_bytes": 23659151360,
+          "memory_mib": 23034,
+          "name": "NVIDIA L4",
+          "physical_index": 3,
+          "uuid": "GPU-d47f0468-e3a2-1e4d-3a5c-24e898813d87"
+        }
+      ],
+      "torch": "2.8.0+cu128"
+    },
+    "export-process.json": {
+      "base_key_hashes": {
+        "44f52bb0_0": -5423078971293786112,
+        "44f52bb0_1": 4158296836997603158,
+        "833966f4_0": 9160581649318560762
+      },
+      "cpu_only": true,
+      "hash_randomization_flag": 0,
+      "new_model_calls": 0,
+      "plan_digest": "sha256:d0e0e2084929a411e4cfa9464cbfe8a20fc73b91466aa7e4f8f4f1a905d0ab81",
+      "python": "3.11.13",
+      "pythonhashseed": "0",
+      "run_id": "nvarc-original-qwen3-native-multitask-010"
+    },
+    "submission.json": {
+      "44f52bb0": [
+        {
+          "attempt_1": [
+            [
+              7
+            ]
+          ],
+          "attempt_2": [
+            [
+              7
+            ]
+          ]
+        },
+        {
+          "attempt_1": [
+            [
+              1
+            ]
+          ],
+          "attempt_2": [
+            [
+              1
+            ]
+          ]
+        }
+      ],
+      "833966f4": [
+        {
+          "attempt_1": [
+            [
+              5
+            ],
+            [
+              4
+            ],
+            [
+              6
+            ],
+            [
+              2
+            ],
+            [
+              7
+            ]
+          ],
+          "attempt_2": [
+            [
+              5
+            ],
+            [
+              4
+            ],
+            [
+              6
+            ],
+            [
+              2
+            ],
+            [
+              7
+            ]
+          ]
+        }
+      ]
+    },
+    "archive_sha256": "cba8d464b1b0cd92ba9f47f00993c79367188fefdde5725f477b32b0606829c0",
+    "data_members": 118,
+    "plan_digest": "sha256:d0e0e2084929a411e4cfa9464cbfe8a20fc73b91466aa7e4f8f4f1a905d0ab81"
+  },
+  "worker_summary": {
+    "44f52bb0": {
+      "mode": "solve",
+      "outcome": "complete",
+      "training_complete": true,
+      "all_saved_tensors_restored": true,
+      "post_reset_control_verified": true,
+      "optimizer_discarded": true,
+      "worker_wall_seconds": 190.84542830799998,
+      "training_wall_seconds": 70.950400462,
+      "inference_forwards_reserved": {
+        "control": 7,
+        "generation": 16,
+        "verification": 4
+      },
+      "inference_forwards_completed": {
+        "control": 7,
+        "generation": 16,
+        "verification": 4
+      },
+      "inference_input_tokens_by_phase": {
+        "control": 168,
+        "generation": 4448,
+        "verification": 2240
+      },
+      "failures": []
+    },
+    "833966f4": {
+      "mode": "solve",
+      "outcome": "complete",
+      "training_complete": true,
+      "all_saved_tensors_restored": true,
+      "post_reset_control_verified": true,
+      "optimizer_discarded": true,
+      "worker_wall_seconds": 162.22770801300004,
+      "training_wall_seconds": 69.80765804199996,
+      "inference_forwards_reserved": {
+        "control": 7,
+        "generation": 32,
+        "verification": 2
+      },
+      "inference_forwards_completed": {
+        "control": 7,
+        "generation": 32,
+        "verification": 2
+      },
+      "inference_input_tokens_by_phase": {
+        "control": 168,
+        "generation": 1040,
+        "verification": 624
+      },
+      "failures": []
+    },
+    "fault-first": {
+      "mode": "fault-after-two-updates",
+      "outcome": "failed",
+      "training_complete": false,
+      "all_saved_tensors_restored": true,
+      "post_reset_control_verified": true,
+      "optimizer_discarded": true,
+      "worker_wall_seconds": 85.08814812699995,
+      "training_wall_seconds": null,
+      "inference_forwards_reserved": {
+        "control": 7,
+        "generation": 0,
+        "verification": 0
+      },
+      "inference_forwards_completed": {
+        "control": 7,
+        "generation": 0,
+        "verification": 0
+      },
+      "inference_input_tokens_by_phase": {
+        "control": 168,
+        "generation": 0,
+        "verification": 0
+      },
+      "failures": [
+        {
+          "error_message": "planned isolation fault after two native updates",
+          "error_type": "RuntimeError",
+          "phase": "pipeline"
+        }
+      ]
+    },
+    "baseline-after-fault": {
+      "mode": "baseline-only",
+      "outcome": "complete",
+      "training_complete": false,
+      "all_saved_tensors_restored": true,
+      "post_reset_control_verified": true,
+      "optimizer_discarded": true,
+      "worker_wall_seconds": 81.64624589700009,
+      "training_wall_seconds": null,
+      "inference_forwards_reserved": {
+        "control": 7,
+        "generation": 0,
+        "verification": 0
+      },
+      "inference_forwards_completed": {
+        "control": 7,
+        "generation": 0,
+        "verification": 0
+      },
+      "inference_input_tokens_by_phase": {
+        "control": 168,
+        "generation": 0,
+        "verification": 0
+      },
+      "failures": []
+    }
+  },
+  "independent_diagnostic_proof": {
+    "all_expected_attempts_gate": true,
+    "archive_sha256": "cba8d464b1b0cd92ba9f47f00993c79367188fefdde5725f477b32b0606829c0",
+    "attempts": [
+      {
+        "attempt_gate": true,
+        "attempt_id": "44f52bb0",
+        "cache_observed": true,
+        "cache_reset_gate": true,
+        "forwards": 128,
+        "mode": "solve",
+        "process_status": "complete",
+        "reserved_forwards": 128,
+        "reserved_microsteps": 128,
+        "reserved_steps": 128,
+        "reset_call_observed": true,
+        "result_qualified": true,
+        "returncode": 0,
+        "steps": 128,
+        "supervised_tokens": 1536,
+        "tokens": 15360,
+        "training_gate": true,
+        "worker_outcome": "complete"
+      },
+      {
+        "attempt_gate": true,
+        "attempt_id": "833966f4",
+        "cache_observed": true,
+        "cache_reset_gate": true,
+        "forwards": 128,
+        "mode": "solve",
+        "process_status": "complete",
+        "reserved_forwards": 128,
+        "reserved_microsteps": 128,
+        "reserved_steps": 128,
+        "reset_call_observed": true,
+        "result_qualified": true,
+        "returncode": 0,
+        "steps": 128,
+        "supervised_tokens": 2048,
+        "tokens": 5632,
+        "training_gate": true,
+        "worker_outcome": "complete"
+      },
+      {
+        "attempt_gate": true,
+        "attempt_id": "fault-first",
+        "cache_observed": true,
+        "cache_reset_gate": true,
+        "forwards": 2,
+        "mode": "fault-after-two-updates",
+        "process_status": "failed",
+        "reserved_forwards": 2,
+        "reserved_microsteps": 3,
+        "reserved_steps": 2,
+        "reset_call_observed": true,
+        "result_qualified": true,
+        "returncode": 1,
+        "steps": 2,
+        "supervised_tokens": 24,
+        "tokens": 240,
+        "training_gate": false,
+        "worker_outcome": "failed"
+      },
+      {
+        "attempt_gate": true,
+        "attempt_id": "baseline-after-fault",
+        "cache_observed": true,
+        "cache_reset_gate": true,
+        "forwards": 0,
+        "mode": "baseline-only",
+        "process_status": "complete",
+        "reserved_forwards": 0,
+        "reserved_microsteps": 0,
+        "reserved_steps": 0,
+        "reset_call_observed": true,
+        "result_qualified": true,
+        "returncode": 0,
+        "steps": 0,
+        "supervised_tokens": 0,
+        "tokens": 0,
+        "training_gate": false,
+        "worker_outcome": "complete"
+      }
+    ],
+    "closed_members": 118,
+    "correctness_scored": false,
+    "diagnostic_only": true,
+    "digest_is_execution_attestation": false,
+    "expected_attempt_slots": 6,
+    "expected_task_count": 2,
+    "expected_test_count": 3,
+    "expected_worker_attempts": 4,
+    "export_replay_error": "original source DFS token/beam/clock replay differs",
+    "gpu_runtime": "observed",
+    "gpu_validation_gate": false,
+    "isolation_baseline_gate": true,
+    "native_candidate_export_verified": false,
+    "native_export_artifacts_present": true,
+    "official_score": null,
+    "outcome": "failed-export-replay",
+    "parent_cost": {
+      "generations": 12,
+      "model_forwards": 340,
+      "model_forwards_reserved": 340,
+      "optimizer_steps": 258,
+      "optimizer_steps_reserved": 258,
+      "training_steps_reserved": 259
+    },
+    "parent_failure_phase": "terminal",
+    "parent_finalization_gate": false,
+    "parent_outcome": "failed",
+    "plan_digest": "sha256:d0e0e2084929a411e4cfa9464cbfe8a20fc73b91466aa7e4f8f4f1a905d0ab81",
+    "recorded_tests": 3,
+    "run_id": "nvarc-original-qwen3-native-multitask-010"
+  },
+  "partial_export_audit": {
+    "audit_sha256": "0efc467c67082a6e16acd9a0b7d3fc260d55c46840a606abf2b289e75c893706",
+    "correctness_scored": false,
+    "exact_saved_producer_bytes_verified": true,
+    "format": "irisx/native-multitask-partial-export-audit-v1",
+    "gpu_validation_gate": false,
+    "model_attempt_slots_missing": 3,
+    "model_supplied_attempts": 3,
+    "native_candidate_export_verified": false,
+    "native_evidence_exactly_reconstructed": true,
+    "new_model_calls": 0,
+    "new_provider_calls": 0,
+    "parent_terminal_record_verified": true,
+    "recorded_export_context": {
+      "base_key_hashes": {
+        "44f52bb0_0": -5423078971293786112,
+        "44f52bb0_1": 4158296836997603158,
+        "833966f4_0": 9160581649318560762
+      },
+      "cpu_only": true,
+      "hash_randomization_flag": 0,
+      "new_model_calls": 0,
+      "plan_digest": "sha256:d0e0e2084929a411e4cfa9464cbfe8a20fc73b91466aa7e4f8f4f1a905d0ab81",
+      "python": "3.11.13",
+      "pythonhashseed": "0",
+      "run_id": "nvarc-original-qwen3-native-multitask-010"
+    },
+    "recorded_strict_export_completed": true,
+    "run_id": "nvarc-original-qwen3-native-multitask-010",
+    "separate_strict_DFS_replay_gate_passed": false,
+    "source_DFS_replay_skipped_only_in_this_partial_row_ranking_analysis": true,
+    "submission_and_audit_exactly_reconstructed_from_retained_tokens_and_scores": true,
+    "submission_sha256": "80312c1d0b0b5532b3b6581b7f479477a6dad365c0485ba35ed0b72ec60b459e",
+    "terminal_failed_label_is_expected_isolation_fault": true,
+    "tests": [
+      {
+        "all_eight_actual_rows_match": true,
+        "invalid_candidates": 0,
+        "missing_model_attempts": 1,
+        "ranked_grids": [
+          [
+            [
+              7
+            ]
+          ]
+        ],
+        "returned_sequences_processed": 16,
+        "row_binding_digest": "sha256:e3dd0242f38d223194f8e0049937cef933bdbc8023e54e03dba2e711facb0667",
+        "source_batches_complete": 4,
+        "source_view_denominator": 16,
+        "task_id": "44f52bb0",
+        "test_index": 0
+      },
+      {
+        "all_eight_actual_rows_match": true,
+        "invalid_candidates": 0,
+        "missing_model_attempts": 1,
+        "ranked_grids": [
+          [
+            [
+              1
+            ]
+          ]
+        ],
+        "returned_sequences_processed": 16,
+        "row_binding_digest": "sha256:31ba3792a1319ca8464262811fcce542611b821d103e61ee1f5456f3f2a1e884",
+        "source_batches_complete": 4,
+        "source_view_denominator": 16,
+        "task_id": "44f52bb0",
+        "test_index": 1
+      },
+      {
+        "all_eight_actual_rows_match": true,
+        "invalid_candidates": 0,
+        "missing_model_attempts": 1,
+        "ranked_grids": [
+          [
+            [
+              5
+            ],
+            [
+              4
+            ],
+            [
+              6
+            ],
+            [
+              2
+            ],
+            [
+              7
+            ]
+          ]
+        ],
+        "returned_sequences_processed": 16,
+        "row_binding_digest": "sha256:143923f765675d259c013b314abb38f6d025e5f6226bc2454a05d652a6c69f32",
+        "source_batches_complete": 4,
+        "source_view_denominator": 16,
+        "task_id": "833966f4",
+        "test_index": 0
+      }
+    ],
+    "threshold_relaxed": false,
+    "verified_verifier_rows": 24
+  },
+  "numeric_probe": {
+    "acceptance_threshold_changed": false,
+    "canonical_topology_exact_match": true,
+    "local_torch": "2.12.1+cpu",
+    "new_model_calls": 0,
+    "recorded_torch": "2.8.0+cu128",
+    "strict_replay_not_relaxed": true,
+    "topology_elements": 528564224,
+    "batches": [
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 0,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 2.3841676011215895e-07,
+        "strict_replay_passed": false,
+        "task_id": "44f52bb0",
+        "test_index": 0,
+        "actual_result_digest": "sha256:d2e37eb97fd584940f1ed139bc990e088e3afe9dcd9a5638813497f41122b529",
+        "retained_result_digest": "sha256:916bddace0823d8594274f9e9218a4c9ecff96a7a77d7cf47c97c5b8d260df3c"
+      },
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 1,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 1.192074705613777e-07,
+        "strict_replay_passed": false,
+        "task_id": "44f52bb0",
+        "test_index": 0,
+        "actual_result_digest": "sha256:28cd3887fb429255ae53163911b0dd410deebdd90b852fdcca16084754fdd0b9",
+        "retained_result_digest": "sha256:19e6fcb2043ae44b55d3f6c58d9d96bbb84923d7a3711a8276bf2ec8ae4d0e43"
+      },
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 2,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 2.383749233558774e-07,
+        "strict_replay_passed": false,
+        "task_id": "44f52bb0",
+        "test_index": 0,
+        "actual_result_digest": "sha256:4f7d9cdc6397cbc8493d01bee4f3ab2a3f06426b814979b6d13a3dadd829353d",
+        "retained_result_digest": "sha256:7c8403af540dbe9d2379a74e21eb831b004f62f562fae9f1c282cb1335cc9173"
+      },
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 3,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 1.192074705613777e-07,
+        "strict_replay_passed": false,
+        "task_id": "44f52bb0",
+        "test_index": 0,
+        "actual_result_digest": "sha256:3ab254e55637f671b5c35a73fb7881cced3a08530ca5aec48e7041271ddc2078",
+        "retained_result_digest": "sha256:2c8bede9c739023186b97b472e5c121c57caf5a085bab1e3d0ff87584606e8b2"
+      },
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 0,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 1.1920838005607948e-07,
+        "strict_replay_passed": false,
+        "task_id": "44f52bb0",
+        "test_index": 1,
+        "actual_result_digest": "sha256:ba0a1995b7d3b9e6a143cc57a1c16d115c6ca2bb68ef1dc7b3a098d8bd49352c",
+        "retained_result_digest": "sha256:228022afa493e9589a3263cb11a8e2c47bba1431985135f1a53f3e55a5b8d359"
+      },
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 1,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 1.1920838005607948e-07,
+        "strict_replay_passed": false,
+        "task_id": "44f52bb0",
+        "test_index": 1,
+        "actual_result_digest": "sha256:198550958c91219eaed9754fcb229c1cbc975c0de7492bc748b27ee6642ff6ab",
+        "retained_result_digest": "sha256:c194181a9d8d53a398c58a3ee5a95e0ef351f05b1f213c67dea4f2f4a864d8b9"
+      },
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 2,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 1.1920917586394353e-07,
+        "strict_replay_passed": false,
+        "task_id": "44f52bb0",
+        "test_index": 1,
+        "actual_result_digest": "sha256:34ba3ba0b5cd73dded0a9d24f54c5331a44e3a1d73cc807ecf04032265cce1f6",
+        "retained_result_digest": "sha256:c8be08ad1c5595ca55369bd24d1dae39ebd5850bd50058fe060ca5d82b2f66db"
+      },
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 3,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 1.1920838005607948e-07,
+        "strict_replay_passed": false,
+        "task_id": "44f52bb0",
+        "test_index": 1,
+        "actual_result_digest": "sha256:944ffd7b3d04b3aec80e58a1896c35747f3f9e920b98fe2173b657106095727d",
+        "retained_result_digest": "sha256:9a23252a89748e4f227500b2c6b0a59e2102bccd22b48e4cf6230c10dcdc638e"
+      },
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 0,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 0.0,
+        "strict_replay_passed": true,
+        "task_id": "833966f4",
+        "test_index": 0,
+        "actual_result_digest": "sha256:e6cca78364956c9c76d6bbc4b5e4ca4419d00daee3ab9940f6c55be7e382d5d8",
+        "retained_result_digest": "sha256:e6cca78364956c9c76d6bbc4b5e4ca4419d00daee3ab9940f6c55be7e382d5d8"
+      },
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 1,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 0.0,
+        "strict_replay_passed": true,
+        "task_id": "833966f4",
+        "test_index": 0,
+        "actual_result_digest": "sha256:564a2fc5f1575c80481363c82348bdd8d993b6118b336b348f892e7fb6106b33",
+        "retained_result_digest": "sha256:564a2fc5f1575c80481363c82348bdd8d993b6118b336b348f892e7fb6106b33"
+      },
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 2,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 0.0,
+        "strict_replay_passed": true,
+        "task_id": "833966f4",
+        "test_index": 0,
+        "actual_result_digest": "sha256:8d0c4edf57abf56d7368da4dd19b6e6122865e860dcd6cfccee36616c5e040a9",
+        "retained_result_digest": "sha256:8d0c4edf57abf56d7368da4dd19b6e6122865e860dcd6cfccee36616c5e040a9"
+      },
+      {
+        "all_row_ids_and_token_suffixes_identical": true,
+        "batch_index": 3,
+        "clock_reads_complete": true,
+        "forward_path_complete": true,
+        "maximum_beam_score_absolute_delta": 0.0,
+        "strict_replay_passed": true,
+        "task_id": "833966f4",
+        "test_index": 0,
+        "actual_result_digest": "sha256:868da9178a64fdee75480d6043753899cb57d112d6baa80b40bdf9358104c6ba",
+        "retained_result_digest": "sha256:868da9178a64fdee75480d6043753899cb57d112d6baa80b40bdf9358104c6ba"
+      }
+    ]
+  },
+  "strict_numeric_summary": {
+    "batches": 12,
+    "exact_passed": 4,
+    "all_token_paths_and_clock_read_counts_identical": true,
+    "maximum_score_absolute_delta": 2.3841676011215895e-07
+  },
+  "available_alternate_runtime": {
+    "path": ".irisx/nvarc-original/runtime-transformers-4533/Scripts/python.exe",
+    "torch": "2.12.1+cpu",
+    "transformers": "4.53.3",
+    "tokenizers": "0.21.4",
+    "inspection": "local importlib.metadata only"
+  },
+  "partial_audit_limit": "Explicit no-DFS verification branch checks retained parsing/inverse rows/ranking/export only; separate strict replay remains failed and never upgrades the GPU gate.",
+  "local_harness_correction": "First partial harness incorrectly required checkpoint event_count to include later reset events. Corrected harness verifies exact committed prefix/head. Both versions/logs retained; no returned bytes changed.",
+  "saved_plan_and_receipt_unchanged": true,
+  "predecessor_packages_and_journals_unchanged": true,
+  "diagnostic_files": {
+    "inspect_archive.py": {
+      "bytes": 3613,
+      "sha256": "efcd3ed0249c903a1afd69d8896b342108204537345b61e9ef62b8af303ffc1a"
+    },
+    "numeric_probe.py": {
+      "bytes": 3923,
+      "sha256": "19ec6c66531c921445375a8730c8663d0a4c9935eaac103cf9f3dbe2aa79a105"
+    },
+    "partial_export_audit-first.py": {
+      "bytes": 8064,
+      "sha256": "f180aa20534375d3e77e0f5004aab8fde200956875196f4e0ff6d92fd877a435"
+    },
+    "partial_export_audit.py": {
+      "bytes": 8120,
+      "sha256": "4b825f96c92cc526847f336af712bc5367609d01ec01293193b3799ce4383084"
+    },
+    "archive-inventory.json": {
+      "bytes": 21950,
+      "sha256": "4a383214ce63185d931409a833bb3b0a09b9650258401aa17147698542190d86"
+    },
+    "initial-summary.json": {
+      "bytes": 189432,
+      "sha256": "97f3c9a6e4399701d9ae4c1900f28468c886ff8c44915969f5230382645d1093"
+    },
+    "diagnostic-proof.json": {
+      "bytes": 2621,
+      "sha256": "ce259effda50844d8fc7fcb3d9a5613a9da193abf42c0cf5ca14e39b43d2478e"
+    },
+    "numeric-probe-detail.json": {
+      "bytes": 7237,
+      "sha256": "a0b13aff7a2a7a95bf5331027ac6a4fbd7f734c58bd44cc4c9347cdedf934de3"
+    },
+    "partial-export-proof.json": {
+      "bytes": 2377,
+      "sha256": "edacfc553d29ed35ab9649ea3ceef961de81c135f604b69d4c90520cd16c7897"
+    }
+  },
+  "reader_implementation_sha256": {
+    "tools/verify_nvarc_native_multitask.py": "d78596a7ac85332f803a670960b0bc898552f0a14f8c55fb0e60a9b8a43f0d65",
+    "tools/stage_nvarc_native_multitask.py": "d920246c47d27155347decbc5f846e9dce2eea53966eb98c63bf1a9825f0e59d",
+    "tools/nvarc_native_submission.py": "8cc5a5095bef1a0e65cd0a2c54e697d510590086dc88509045b1205b27b6cbff",
+    "tools/nvarc_native_solve_runtime.py": "6007cd3cb8feeb78c7506631d6fd2f1511581318ca49d43adcfa87dec52ec64d"
+  },
+  "validation_commands": {
+    "inventory": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        ".irisx/native-multitask-010-diagnosis-20261005-001/inspect_archive.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2733639999933075,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-diagnosis-20261005-001\\inventory.log",
+      "log_sha256": "2bc8a09db9d2cdbb0883cc7bdd147da7f4e8a2c8b240ca153c8a9737ef08f9af",
+      "log_bytes": 8178,
+      "test_counts": [],
+      "skip_summaries": [],
+      "concurrent_task_heavy_workloads": 0
+    },
+    "strict-reader": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/verify_nvarc_native_multitask.py",
+        "--archive",
+        ".irisx/native-multitask-010-diagnosis-20261005-001/owner-editor-result.zip",
+        "--package",
+        ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/package-l4",
+        "--output",
+        ".irisx/native-multitask-010-diagnosis-20261005-001/strict-proof.json",
+        "--require-gpu-gate"
+      ],
+      "exit_code": 1,
+      "seconds": 18.645912200008752,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-diagnosis-20261005-001\\strict-reader.log",
+      "log_sha256": "04fdc733ab567eeca93d0b0f685f7b9662fe90f4fe954f486df91586bb4591d0",
+      "log_bytes": 1836,
+      "test_counts": [],
+      "skip_summaries": [],
+      "concurrent_task_heavy_workloads": 0
+    },
+    "diagnostic-reader": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/verify_nvarc_native_multitask.py",
+        "--archive",
+        ".irisx/native-multitask-010-diagnosis-20261005-001/owner-editor-result.zip",
+        "--package",
+        ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/package-l4",
+        "--output",
+        ".irisx/native-multitask-010-diagnosis-20261005-001/diagnostic-proof.json",
+        "--require-gpu-gate",
+        "--diagnostic-only"
+      ],
+      "exit_code": 2,
+      "seconds": 18.179616999987047,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-diagnosis-20261005-001\\diagnostic-reader.log",
+      "log_sha256": "95024ef6a2e55a67b8e79180402fddbf233a2a7b1ed0093a47b290574b229b14",
+      "log_bytes": 2828,
+      "test_counts": [],
+      "skip_summaries": [],
+      "concurrent_task_heavy_workloads": 0
+    },
+    "numeric-replay": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        ".irisx/native-multitask-010-diagnosis-20261005-001/numeric_probe.py"
+      ],
+      "exit_code": 0,
+      "seconds": 3.0066494999919087,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-diagnosis-20261005-001\\numeric-replay.log",
+      "log_sha256": "f67d5a0395c3ee84531dc5682e280bac662a470792b4449d82af846d4de680ca",
+      "log_bytes": 334,
+      "test_counts": [],
+      "skip_summaries": [],
+      "concurrent_task_heavy_workloads": 0
+    },
+    "partial-export": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        ".irisx/native-multitask-010-diagnosis-20261005-001/partial_export_audit.py"
+      ],
+      "exit_code": 1,
+      "seconds": 6.038897199992789,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-diagnosis-20261005-001\\partial-export.log",
+      "log_sha256": "492ff80503e3bbf7263888ada7c12bed41c2a9f3026da4f4b051b0e11f5872e9",
+      "log_bytes": 425,
+      "test_counts": [],
+      "skip_summaries": [],
+      "concurrent_task_heavy_workloads": 0
+    },
+    "partial-export-corrected": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        ".irisx/native-multitask-010-diagnosis-20261005-001/partial_export_audit.py"
+      ],
+      "exit_code": 0,
+      "seconds": 5.836410799995065,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-diagnosis-20261005-001\\partial-export-corrected.log",
+      "log_sha256": "edc0f7f02f93d35100c2f786a282c88fbb69279ea572fa7bc014dd51d11d51c4",
+      "log_bytes": 2507,
+      "test_counts": [],
+      "skip_summaries": [
+        "skipped_only_in_this_partial_row_ranking_analysis\": true, \"separate_strict_DFS_replay_gate_passed\": false, \"native_candidate_export_verified\": false, \"gpu_validation_gate\": false, \"verified_verifier_rows\": 24, \"tests\": [{\"task_id\": \"44f52bb0\", \"test_index\": 0, \"all_eight_actual_rows_match\": true, \"row_binding_digest\": \"sha256:e3dd0242f38d223194f8e0049937cef933bdbc8023e54e03dba2e711facb0667\", \"ranked_grids\": [[[7]]], \"source_view_denominator\": 16, \"source_batches_complete\": 4, \"returned_sequences_processed\": 16, \"invalid_candidates\": 0, \"missing_model_attempts\": 1}, {\"task_id\": \"44f52bb0\", \"test_index\": 1, \"all_eight_actual_rows_match\": true, \"row_binding_digest\": \"sha256:31ba3792a1319ca8464262811fcce542611b821d103e61ee1f5456f3f2a1e884\", \"ranked_grids\": [[[1]]], \"source_view_denominator\": 16, \"source_batches_complete\": 4, \"returned_sequences_processed\": 16, \"invalid_candidates\": 0, \"missing_model_attempts\": 1}, {\"task_id\": \"833966f4\", \"test_index\": 0, \"all_eight_actual_rows_match\": true, \"row_binding_digest\": \"sha256:143923f765675d259c013b314abb38f6d025e5f6226bc2454a05d652a6c69f32\", \"ranked_grids\": [[[5], [4], [6], [2], [7]]], \"source_view_denominator\": 16, \"source_batches_complete\": 4, \"returned_sequences_processed\": 16, \"invalid_candidates\": 0, \"missing_model_attempts\": 1}], \"submission_sha256\": \"80312c1d0b0b5532b3b6581b7f479477a6dad365c0485ba35ed0b72ec60b459e\", \"audit_sha256\": \"0efc467c67082a6e16acd9a0b7d3fc260d55c46840a606abf2b289e75c893706\", \"model_supplied_attempts\": 3, \"model_attempt_slots_missing\": 3, \"correctness_scored\": false, \"new_model_calls\": 0, \"new_provider_calls\": 0, \"threshold_relaxed\": false}"
+      ],
+      "concurrent_task_heavy_workloads": 0
+    },
+    "repository-all": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/repository_check.py",
+        "--all"
+      ],
+      "exit_code": 0,
+      "seconds": 453.0063009999867,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-diagnosis-20261005-001\\repository-all.log",
+      "log_sha256": "bb9b6f61e40468da96155b1c4fecbda23db2debcb653e4e0b0cd5de4f17bdfc1",
+      "log_bytes": 93157,
+      "test_counts": [
+        3,
+        511
+      ],
+      "skip_summaries": [],
+      "concurrent_task_heavy_workloads": 0
+    },
+    "evidence-build": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        ".irisx/native-multitask-010-diagnosis-20261005-001/build_evidence.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2080405000015162,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-diagnosis-20261005-001\\evidence-build.log",
+      "log_sha256": "a6d324dd6c6c807f93ac41704c9be33bcd5e5c69c943a9e00d12cf9911b6578a",
+      "log_bytes": 377,
+      "test_counts": [],
+      "skip_summaries": [],
+      "concurrent_task_heavy_workloads": 0
+    }
+  },
+  "repository_validation": "passed; 3 helper and 511 unit tests; no skips",
+  "new_Kaggle_save_calls": 0,
+  "new_provider_status_or_output_calls": 0,
+  "new_retrieval_calls": 0,
+  "new_Dataset_mutations": 0,
+  "new_published_model_training_steps": 0,
+  "new_published_model_generation_calls": 0,
+  "new_model_calls_for_archive_analysis": 0,
+  "source_or_dependency_acquisition_calls": 0,
+  "ARC_correctness_scored": false,
+  "official_score": null,
+  "gpu_validation_gate": false,
+  "original_method_parity_established": false,
+  "full_SFT_completed": false,
+  "method_promotion": false,
+  "acceptance_threshold_changed": false,
+  "returned_artifacts_rewritten": false,
+  "Decision_0058_save_consumed": true,
+  "new_execution_or_save_authorized": false,
+  "validation_environment": {
+    "OMP_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "HF_HUB_OFFLINE": "1",
+    "HF_DATASETS_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "thread_limits_apply_only_to_local_validation": "no submitted/returned notebook bytes or numerical qualification threshold changed"
+  }
+}

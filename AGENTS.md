@@ -628,6 +628,16 @@ or retry. Follow `docs/decisions/0058-save-native-multitask-export-repair.md` an
 The sole QUICK_SAVE was accepted as private version 1 and is consumed. Exact
 package/admission/request/receipt bindings are retained. No agent session was
 started and no runtime query or retrieval was made. The owner will run in Editor.
+The owner returned 010's complete Editor ZIP. All 118 data members, the exact
+saved plan and four distinct BF16 L4s bind both complete 128-step normal TTT
+epochs, all cache/reset/isolation observations and successful fresh seed-0 CPU
+export. The planned fault explains the parent's failed label. All three test
+outputs/audit and 24 verifier row bindings verify in partial local analysis;
+three second slots are explicit duplicate fillers. Strict source DFS numerical
+replay remains unverified under local Torch 2.12 versus recorded Torch 2.8, so
+the strict GPU gate remains false and correctness is unscored. Preserve
+`trials/arc-agi-2-qwen35-nvarc/native-multitask-010-editor-diagnosis.md`.
+No further external execution, save, retrieval, scoring or promotion follows.
 
 Decision 0057 records the owner's explicit instruction to mark missing quota
 information unavailable and submit distinct native multitask 008. Exactly one

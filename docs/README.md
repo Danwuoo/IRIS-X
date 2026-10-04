@@ -7,6 +7,9 @@ This directory contains only current product-era guidance.
   frozen export-repair review 009, with current resource/session facts unknown.
   The [save record](../trials/arc-agi-2-qwen35-nvarc/native-multitask-010-editor.md)
   retains package and receipt bindings for manual Editor operation.
+  The [returned Editor diagnosis](../trials/arc-agi-2-qwen35-nvarc/native-multitask-010-editor-diagnosis.md)
+  retains the complete bounded worker flow/export and unresolved strict local
+  numerical replay, without ARC scoring or promotion.
 
 - [`plan/2026-10-03-main-worktree-integration.md`](plan/2026-10-03-main-worktree-integration.md)
   records the verified existing worktree integration, requested main

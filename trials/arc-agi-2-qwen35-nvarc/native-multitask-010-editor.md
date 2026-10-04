@@ -1,6 +1,6 @@
 # Native multitask 010 owner-Editor export-repair save
 
-Status: **private QUICK_SAVE accepted as version 1; save consumed; runtime unobserved**.
+Status: **private save consumed; owner-Editor flow/export complete; strict local replay unverified**.
 
 [Decision 0058](../../docs/decisions/0058-save-native-multitask-export-repair.md)
 records the owner's instruction 「提交」 following the local 008 diagnosis and
@@ -74,3 +74,13 @@ offline derivation and SDK wire checks passed. `python tools/repository_check.py
 No further provider action follows from this consumed save.
 
 Final repository invariants passed after the targeted repair and exact package reconstruction.
+
+The owner returned 010's complete Editor ZIP on 2026-10-05. Its 118 listed
+data members and exact saved plan bind four distinct BF16 L4s, both complete
+128-step normal task epochs, all cache/reset/isolation observations and the
+fresh seed-0 CPU export. All three test outputs and their audit are retained.
+Each test has one model candidate and a duplicate filler. The parent's failed
+label belongs to the planned two-update isolation fault; no parent/export error
+is retained. Strict local source DFS numerical replay remains unverified across
+the recorded/local Torch builds, so no GPU-gate or correctness promotion follows.
+See [the retained Editor diagnosis](native-multitask-010-editor-diagnosis.md).
