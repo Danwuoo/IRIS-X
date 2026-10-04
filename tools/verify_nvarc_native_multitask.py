@@ -5,6 +5,7 @@ from array import array
 from collections import Counter
 import hashlib
 import json
+import math
 from pathlib import Path, PurePosixPath
 import sys
 import tempfile
@@ -16,7 +17,73 @@ from tools.stage_nvarc_native_multitask import preflight,construct,FILES
 from tools.arc_kaggle_submission import parse_json
 from tools.nvarc_native_multitask import digest,canonical,require,write
 from tools.nvarc_native_submission import read_task_evidence,build_native_submission,reject_truth,check_events,task_binding
-from tools.nvarc_native_solve_runtime import compare_vectors
+from tools.nvarc_native_solve_runtime import compare_vectors,CONTROL_PREFIXES
+
+
+def verify_receipt(receipt,attempt,maximum_seconds):
+    required={'task_id','attempt_id','status','launched','returncode','reset_inferred'}
+    require(required<=set(receipt)<=required|{'reserved_seconds','error_type','error_message'} and
+        (receipt['task_id'],receipt['attempt_id'])==(attempt['task_id'],attempt['attempt_id']) and
+        receipt['status'] in {'complete','failed','worker_crash','timeout','oom','interrupted_pending',
+            'not_executed','session_limit'} and type(receipt['launched']) is bool and
+        receipt['reset_inferred'] is False and
+        (receipt['returncode'] is None or type(receipt['returncode']) is int) and
+        (receipt['launched'] or receipt['status'] in {'not_executed','session_limit'}),
+        'closed actual worker receipt required')
+    require(receipt['status']!='complete' or receipt['launched'] and receipt['returncode']==0,
+        'complete receipt requires successful process exit')
+    if receipt['launched']:
+        require(type(receipt.get('reserved_seconds')) in (int,float) and math.isfinite(receipt['reserved_seconds']) and
+            0<receipt['reserved_seconds']<=maximum_seconds,'bounded dispatch reservation required')
+
+
+def verify_controls(content,prefix,events,result):
+    """Recount six branch controls and the final reset call, separately from flags."""
+    controls=[e for e in events if e['event']=='forward_reserved' and e['phase']=='control']
+    completed={e['call_id']:e for e in events if e['event']=='forward_completed' and e['phase']=='control'}
+    expected=[(CONTROL_PREFIXES,False,0),([[0]]*4,True,9),([[1]]*4,True,10),([[2]]*4,True,9),
+        ([r+[0,1] for r in CONTROL_PREFIXES],False,0),([r+[2] for r in CONTROL_PREFIXES],False,0),
+        (CONTROL_PREFIXES,False,0)]
+    for event,(ids,cached,start) in zip(controls,expected):
+        require(event['input_ids_digest']==digest(ids) and event['batch_shape']==[4,len(ids[0])] and
+            event['cached'] is cached and event['position_start']==start and
+            event['position_end']==start+len(ids[0])-1,'actual cache/reset control inputs differ')
+    observed=[e for e in events if e['event']=='cache_control_result']
+    cache=None;baseline=None;prefill=None
+    if prefix+'cache-control.json' in content:
+        cache=parse_json(content[prefix+'cache-control.json']);reject_truth(cache)
+        require(set(cache)=={'comparisons','baseline_prefill','model_calls','synthetic_tokens_only',
+            'full_numerical_parity_claim'} and cache['model_calls']==6 and type(cache['model_calls']) is int and
+            cache['synthetic_tokens_only'] is True and cache['full_numerical_parity_claim'] is False and
+            len(observed)==1 and len(controls)>=6 and all(e['call_id'] in completed for e in controls[:6]) and
+            max(completed[e['call_id']]['sequence'] for e in controls[:6])<observed[0]['sequence'],
+            'complete six-call raw cache transcript required')
+        event=observed[0]
+        recomputed={'deep':compare_vectors(event['deep_reference'],event['deep_cached']),
+            'sibling_after_deep':compare_vectors(event['sibling_reference'],event['sibling_cached'])}
+        require(event['comparisons']==cache['comparisons']==recomputed and
+            event['baseline_prefill']==cache['baseline_prefill'] and
+            all(v['gate_passed'] for v in recomputed.values()),'raw native cache branch control differs')
+        compare_vectors(cache['baseline_prefill'],cache['baseline_prefill'])
+        baseline=parse_json(content[prefix+'baseline-inventory.json']);prefill=cache['baseline_prefill']
+    restored=result['all_saved_tensors_restored']
+    if restored:
+        require(parse_json(content[prefix+'baseline-inventory.json'])==
+            parse_json(content[prefix+'reset-inventory.json']),'exact reset bytes differ')
+    reset_call=(len(controls)==7 and len(completed)==7 and cache is not None and
+        controls[-1]['sequence']>observed[0]['sequence'] and
+        all(e['call_id'] in completed and completed[e['call_id']]['sequence']>e['sequence'] for e in controls) and
+        sum(e['physical_input_tokens'] for e in controls)==168)
+    if result['post_reset_control_verified']:
+        post=parse_json(content[prefix+'post-reset-control.json']);reject_truth(post)
+        require(cache is not None and set(post)=={'prefill_bitwise_equal','prefill','synthetic_tokens_only',
+            'additional_model_calls'} and post['prefill']==cache['baseline_prefill'] and
+            post['prefill_bitwise_equal'] is post['synthetic_tokens_only'] is True and
+            type(post['additional_model_calls']) is int and post['additional_model_calls']==1,
+            'reset actual logits/one-call contract differs')
+    return {'cache_observed':cache is not None,'reset_call_observed':reset_call,
+        'complete':reset_call and restored and result['post_reset_control_verified'] and result['optimizer_discarded'],
+        'baseline':baseline,'prefill':prefill}
 
 
 def verify_training(content,prefix,spec,mode,plan,material):
@@ -122,6 +189,9 @@ def verify(archive,package):
     receipts=read('worker-receipts.json');attempts=plan['worker_attempts']
     require(len(receipts)<=len(attempts) and [(r['task_id'],r['attempt_id']) for r in receipts]==
         [(a['task_id'],a['attempt_id']) for a in attempts[:len(receipts)]],'parent sequential attempt order/denominator differs')
+    for attempt,receipt in zip(attempts,receipts):verify_receipt(receipt,attempt,plan['maximum_child_wall_seconds'])
+    if 'worker_receipts_digest' in terminal:
+        require(terminal['worker_receipts_digest']==digest(receipts),'parent terminal receipt binding differs')
     hardware=read('hardware.json');devices=hardware['inventory']
     require(hardware['torch']=='2.8.0+cu128' and hardware['cuda']=='12.8' and
         len(devices)==len({r['uuid'] for r in devices})==4 and
@@ -130,16 +200,30 @@ def verify(archive,package):
         read('model-verification.json')['model_material_digest']==plan['model_material_digest'] and
         read('source-verification.json')['inventory']==json.loads(raw['source_inventory']),
         'exact native source/model/four-L4 gate differs')
-    proofs=[];baselines=[];prefills=[];reset_flags=[];inference_reserved=0;inference_completed=0;generation_batches=0
+    proofs=[];baselines=[];prefills=[];inference_reserved=0;inference_completed=0;generation_batches=0
     material=json.loads(__import__('gzip').decompress(raw['task_materials_gzip']))
     for attempt,receipt in zip(attempts,receipts):
         prefix='tasks/'+attempt['attempt_id']+'/native/'
         if prefix+'hardware.json' in content:
             require(read(prefix+'hardware.json')['device_uuid']==devices[0]['uuid'],'worker UUID mapping differs')
         p=verify_training(content,prefix,plan['task_specs'][attempt['task_id']],attempt['mode'],plan,material)
-        p.update(attempt_id=attempt['attempt_id'],process_status=receipt['status']);proofs.append(p)
+        p.update(attempt_id=attempt['attempt_id'],mode=attempt['mode'],process_status=receipt['status'],
+            returncode=receipt['returncode'],cache_observed=False,reset_call_observed=False,
+            cache_reset_gate=False,result_qualified=False,attempt_gate=False);proofs.append(p)
         if prefix+'result.json' in content:
             r=read(prefix+'result.json');reject_truth(r)
+            require(set(r)=={'binding','mode','outcome','failures','training_complete','all_saved_tensors_restored',
+                'post_reset_control_verified','optimizer_discarded','worker_wall_seconds','training_wall_seconds',
+                'inference_forwards_reserved','inference_forwards_completed','inference_input_tokens_by_phase','tests',
+                'contains_evaluator_truth','correctness_scored','teacher_calls','paid_usd'} and
+                r['contains_evaluator_truth'] is r['correctness_scored'] is False and
+                type(r['teacher_calls']) is type(r['paid_usd']) is int and r['teacher_calls']==r['paid_usd']==0 and
+                type(r['worker_wall_seconds']) in (int,float) and math.isfinite(r['worker_wall_seconds']) and
+                0<=r['worker_wall_seconds']<=receipt['reserved_seconds'] and
+                (r['training_wall_seconds'] is None or type(r['training_wall_seconds']) in (int,float) and
+                 math.isfinite(r['training_wall_seconds']) and 0<=r['training_wall_seconds']<=r['worker_wall_seconds']) and
+                (r['training_complete'] is not True or r['training_wall_seconds'] is not None),
+                'closed bounded truth-free worker result required')
             e=[parse_json(x) for x in content[prefix+'events.jsonl'].splitlines()]
             binding=task_binding(plan,json.loads(raw['challenges']),attempt['task_id']);binding['attempt_id']=attempt['attempt_id']
             _,counts,tokens=check_events(e,binding,plan['task_specs'][attempt['task_id']])
@@ -148,23 +232,33 @@ def verify(archive,package):
                     r['inference_forwards_completed']==done and r['inference_input_tokens_by_phase']==tokens and
                     all(type(r[k]) is bool for k in ('training_complete','all_saved_tensors_restored',
                         'post_reset_control_verified','optimizer_discarded')), 'exact worker work/identity/qualification flags required')
-            require(r['mode']==attempt['mode'] and (receipt['status']!='complete' or r['outcome']!='failed'),
+            require(r['mode']==attempt['mode'] and r['outcome'] in {'complete','failed','inconclusive'} and
+                isinstance(r['failures'],list) and (receipt['status']!='complete' or r['outcome']!='failed'),
                 'child failure cannot become parent success')
-            if r['all_saved_tensors_restored']:
-                require(read(prefix+'baseline-inventory.json')==read(prefix+'reset-inventory.json'),'exact reset bytes differ')
-            if r['post_reset_control_verified']:
-                c=read(prefix+'cache-control.json');post=read(prefix+'post-reset-control.json')
-                require(post['prefill']==c['baseline_prefill'] and post['prefill_bitwise_equal'] is True,
-                    'reset actual logits differ')
-            if prefix+'cache-control.json' in content:
-                c=read(prefix+'cache-control.json')
-                observed=[x for x in e if x['event']=='cache_control_result'];require(len(observed)==1,'one complete cache transcript required')
-                o=observed[0];recomputed={'deep':compare_vectors(o['deep_reference'],o['deep_cached']),
-                    'sibling_after_deep':compare_vectors(o['sibling_reference'],o['sibling_cached'])}
-                require(o['comparisons']==c['comparisons']==recomputed and all(v['gate_passed'] for v in recomputed.values()),
-                    'raw native cache branch control differs')
-                baselines.append(read(prefix+'baseline-inventory.json'));prefills.append(c['baseline_prefill'])
-            reset_flags.append(r['all_saved_tensors_restored'] and r['post_reset_control_verified'] and r['optimizer_discarded'])
+            controls=verify_controls(content,prefix,e,r)
+            p.update(cache_observed=controls['cache_observed'],reset_call_observed=controls['reset_call_observed'],
+                cache_reset_gate=controls['complete'],worker_outcome=r['outcome'])
+            if controls['cache_observed']:
+                baselines.append(controls['baseline']);prefills.append(controls['prefill'])
+            normal=(receipt['launched'] and receipt['status']=='complete' and receipt['returncode']==0 and
+                r['outcome']=='complete' and r['failures']==[])
+            if attempt['mode']=='solve':
+                checkpoint=read(prefix+'checkpoint.json') if prefix+'checkpoint.json' in content else None
+                p['result_qualified']=(normal and p['training_gate'] and checkpoint is not None and
+                    r['tests']==checkpoint['tests'] and len(r['tests'])==plan['task_specs'][attempt['task_id']]['test_count'] and
+                    all(t.get('native_complete') is True for t in r['tests']))
+            elif attempt['mode']=='baseline-only':
+                p['result_qualified']=(normal and r['training_complete'] is False and r['tests']==[] and
+                    p['reserved_forwards']==p['reserved_steps']==0 and counts['generation']==counts['verification']==0)
+            elif attempt['mode']=='fault-after-two-updates':
+                expected_failure=[{'phase':'pipeline','error_type':'RuntimeError',
+                    'error_message':'planned isolation fault after two native updates'}]
+                p['result_qualified']=(receipt['launched'] and receipt['status']=='failed' and receipt['returncode']==1 and
+                    r['outcome']=='failed' and r['failures']==expected_failure and r['training_complete'] is False and
+                    r['tests']==[] and p['forwards']==p['reserved_forwards']==p['steps']==p['reserved_steps']==2 and
+                    counts['generation']==counts['verification']==0 and
+                    read(prefix+'pre-reset-inventory.json')!=read(prefix+'baseline-inventory.json'))
+            p['attempt_gate']=p['result_qualified'] and p['cache_reset_gate']
         if prefix+'events.jsonl' in content:
             e=[]
             for line in content[prefix+'events.jsonl'].splitlines(keepends=True):
@@ -201,15 +295,16 @@ def verify(archive,package):
     complete_tests=all(e['checkpoint'] is not None and all(t.get('native_complete') for t in e['checkpoint']['tests']) for e in evidence)
     isolation=len(baselines)==len(prefills)==4 and all(b==baselines[0] for b in baselines) and all(p==prefills[0] for p in prefills)
     fault=next((p for p in proofs if p['attempt_id']=='fault-first'),None)
-    fault_gate=(fault is not None and fault['process_status']=='failed' and fault['steps']==2 and
-        read('tasks/fault-first/native/result.json')['failures']==[{'phase':'pipeline','error_type':'RuntimeError',
-            'error_message':'planned isolation fault after two native updates'}] and
-        read('tasks/fault-first/native/pre-reset-inventory.json')!=read('tasks/fault-first/native/baseline-inventory.json'))
+    fault_gate=fault is not None and fault['attempt_gate']
+    all_attempts=(len(receipts)==len(attempts)==len(proofs)==4 and all(p['attempt_gate'] for p in proofs))
+    parent_finalized=(terminal['outcome']=='failed' and terminal['phase']=='terminal' and
+        terminal.get('worker_receipts_digest')==digest(receipts) and 'error' not in terminal)
     proof.update(outcome=terminal['outcome'],gpu_runtime='observed',attempts=proofs,
         nonempty_all_tests=nonempty,complete_all_tests=complete_tests,isolation_baseline_gate=isolation,expected_injected_failure_observed=fault_gate,
+        all_expected_attempts_gate=all_attempts,parent_finalization_gate=parent_finalized,
         model_attempt_slots_missing=audit['model_attempt_slots_missing'],task_count=audit['task_count'],
         test_output_count=audit['test_output_count'],submission_sha256=hashlib.sha256(canonical(submission)).hexdigest(),
-        gpu_validation_gate=nonempty and complete_tests and isolation and fault_gate and len(reset_flags)==4 and all(reset_flags) and
+        gpu_validation_gate=nonempty and complete_tests and isolation and fault_gate and all_attempts and parent_finalized and
             len(ordinary)==2 and all(p['training_gate'] and p['process_status']=='complete' for p in ordinary))
     return proof
 

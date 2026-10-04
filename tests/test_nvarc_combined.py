@@ -174,8 +174,15 @@ class CombinedProcessTests(unittest.TestCase):
     def test_descendant_is_cleaned_after_primary_worker_exits(self):
         root, report = self.launch(["descendant", "success"])
         self.assertEqual("complete", report["outcome"])
+        self.assert_descendant_gone(root, report)
+
+    def assert_descendant_gone(self, root, report):
         pid = read(root / "m2/descendant.json")["pid"]
         if os.name == "nt":
+            cleanup = report["branches"]["m2"]["process_tree_cleanup"]
+            self.assertEqual("owned-windows-job", cleanup["kind"])
+            self.assertIn(pid, cleanup["initial_process_ids"])
+            self.assertEqual(0, cleanup["active_processes_after_termination"])
             import ctypes
             from ctypes import wintypes
             kernel = ctypes.WinDLL("kernel32", use_last_error=True)
@@ -193,6 +200,45 @@ class CombinedProcessTests(unittest.TestCase):
             status_path = Path("/proc") / str(pid) / "stat"
             if status_path.exists():
                 self.assertEqual("Z", status_path.read_text().split()[2])
+
+    def test_delayed_job_assignment_contains_redirector_and_descendant(self):
+        import irisx.arc_nvarc_combined as runtime
+        original = runtime._windows_job
+
+        def delayed(process):
+            # An unsuspended venv redirector can spawn its interpreter while
+            # this delay elapses, even though Python code waits on the pipe gate.
+            time.sleep(0.35)
+            return original(process)
+
+        with patch.object(runtime, "_windows_job", side_effect=delayed):
+            root, report = self.launch(["descendant", "success"], work_seconds=5, readiness=2)
+        self.assertEqual("complete", report["outcome"])
+        self.assert_descendant_gone(root, report)
+        self.assertTrue(all(row["launch_count"] == 1 for row in report["branches"].values()))
+
+    def test_log_drain_uses_terminal_reserve_and_closes_files_before_completion(self):
+        import irisx.arc_nvarc_combined as runtime
+        original = runtime._drain
+
+        def delayed_close(pipe, path):
+            original(pipe, path)
+            # Retain the log lock for a finite delay after real EOF. The caller
+            # still has its original 3s work + 2s terminal deadline and 0.3s
+            # kill grace; complete requires both readers and locks to be gone.
+            with path.open("ab"):
+                time.sleep(0.45)
+
+        with patch.object(runtime, "_drain", side_effect=delayed_close):
+            root, report = self.launch(["descendant", "success"])
+        self.assertEqual("complete", report["outcome"])
+        self.assert_descendant_gone(root, report)
+        for branch in ("m2", "m3"):
+            for name in ("stdout.log", "stderr.log"):
+                path = root / branch / name
+                renamed = path.with_suffix(".closed")
+                path.rename(renamed)
+                renamed.rename(path)
 
 
 class CombinedHardwareAndPlanTests(unittest.TestCase):

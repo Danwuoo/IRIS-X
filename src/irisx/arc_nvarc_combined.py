@@ -188,6 +188,9 @@ def _windows_job(process):
     kernel.CreateJobObjectW.argtypes = [ctypes.c_void_p, wintypes.LPCWSTR]
     kernel.SetInformationJobObject.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD]
     kernel.AssignProcessToJobObject.argtypes = [wintypes.HANDLE, wintypes.HANDLE]
+    kernel.TerminateJobObject.argtypes = [wintypes.HANDLE, wintypes.UINT]
+    kernel.QueryInformationJobObject.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p,
+                                                wintypes.DWORD, ctypes.c_void_p]
     kernel.CloseHandle.argtypes = [wintypes.HANDLE]
     handle = kernel.CreateJobObjectW(None, None)
     limits = Extended()
@@ -198,13 +201,65 @@ def _windows_job(process):
         process.kill()
         process.wait(timeout=5)
         raise OSError("cannot establish worker process job")
-    return lambda: kernel.CloseHandle(handle)
+    class Accounting(ctypes.Structure):
+        _fields_ = [(name, ctypes.c_int64) for name in
+                    ("TotalUserTime", "TotalKernelTime", "ThisPeriodTotalUserTime", "ThisPeriodTotalKernelTime")]
+        _fields_ += [(name, wintypes.DWORD) for name in
+                     ("TotalPageFaultCount", "TotalProcesses", "ActiveProcesses", "TotalTerminatedProcesses")]
+
+    class Processes(ctypes.Structure):
+        _fields_ = [("assigned", wintypes.DWORD), ("listed", wintypes.DWORD),
+                    ("pids", ctypes.c_size_t * 64)]
+
+    closed = False
+
+    def close():
+        nonlocal closed
+        if not closed:
+            if not kernel.CloseHandle(handle):
+                raise ctypes.WinError(ctypes.get_last_error())
+            closed = True
+
+    def terminate(timeout):
+        # Closing a job starts asynchronous teardown. A bootstrap's successful
+        # exit does not establish that descendants released inherited log pipes.
+        # Keep the owned job queryable until every associated process is gone.
+        deadline = time.monotonic() + max(0, timeout)
+        try:
+            members = Processes()
+            if not kernel.QueryInformationJobObject(handle, 3, ctypes.byref(members), ctypes.sizeof(members), None):
+                raise ctypes.WinError(ctypes.get_last_error())
+            observation = {"kind": "owned-windows-job", "initial_process_ids": list(members.pids)[:members.listed],
+                           "active_processes_after_termination": None}
+            if not kernel.TerminateJobObject(handle, 1):
+                raise ctypes.WinError(ctypes.get_last_error())
+            while True:
+                accounting = Accounting()
+                if not kernel.QueryInformationJobObject(handle, 1, ctypes.byref(accounting),
+                                                        ctypes.sizeof(accounting), None):
+                    raise ctypes.WinError(ctypes.get_last_error())
+                if accounting.ActiveProcesses == 0:
+                    observation["active_processes_after_termination"] = 0
+                    return observation
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("owned worker job descendants did not terminate")
+                time.sleep(min(0.005, remaining))
+        finally:
+            close()
+
+    close.terminate = terminate
+    return close
 
 
 def _reap(process, close_job, term_seconds, kill_seconds):
     # Also clean descendants after a normal primary-process exit.
     if close_job is not None:
-        close_job()
+        terminate = getattr(close_job, "terminate", None)
+        if terminate is None:
+            close_job()
+        else:
+            tree_cleanup = terminate(kill_seconds)
     elif os.name == "posix":
         try:
             os.killpg(process.pid, signal.SIGTERM)
@@ -225,13 +280,62 @@ def _reap(process, close_job, term_seconds, kill_seconds):
             os.killpg(process.pid, signal.SIGKILL)
         except ProcessLookupError:
             pass
+    return tree_cleanup if close_job is not None and terminate is not None else None
+
+
+def _resume_windows_worker(process):
+    """Resume only the initial thread of our still-suspended owned launcher.
+
+    Popen closes CreateProcess's initial thread handle. Enumerate the owned
+    process's thread to reopen it; no unrelated process/thread is modified.
+    """
+    import ctypes
+    from ctypes import wintypes
+
+    class ThreadEntry(ctypes.Structure):
+        _fields_ = [("dwSize", wintypes.DWORD), ("cntUsage", wintypes.DWORD),
+                    ("th32ThreadID", wintypes.DWORD), ("th32OwnerProcessID", wintypes.DWORD),
+                    ("tpBasePri", wintypes.LONG), ("tpDeltaPri", wintypes.LONG), ("dwFlags", wintypes.DWORD)]
+
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.CreateToolhelp32Snapshot.argtypes = [wintypes.DWORD, wintypes.DWORD]
+    kernel.CreateToolhelp32Snapshot.restype = wintypes.HANDLE
+    for name in ("Thread32First", "Thread32Next"):
+        getattr(kernel, name).argtypes = [wintypes.HANDLE, ctypes.POINTER(ThreadEntry)]
+    kernel.OpenThread.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel.OpenThread.restype = wintypes.HANDLE
+    kernel.ResumeThread.argtypes = [wintypes.HANDLE]
+    kernel.ResumeThread.restype = wintypes.DWORD
+    kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+    snapshot = kernel.CreateToolhelp32Snapshot(4, 0)  # TH32CS_SNAPTHREAD
+    if snapshot == ctypes.c_void_p(-1).value:
+        raise ctypes.WinError(ctypes.get_last_error())
+    thread = None
+    try:
+        entry = ThreadEntry(); entry.dwSize = ctypes.sizeof(entry)
+        found = []
+        more = kernel.Thread32First(snapshot, ctypes.byref(entry))
+        while more:
+            if entry.th32OwnerProcessID == process.pid:
+                found.append(entry.th32ThreadID)
+            more = kernel.Thread32Next(snapshot, ctypes.byref(entry))
+        require(len(found) == 1, "owned suspended launcher must have one initial thread")
+        thread = kernel.OpenThread(2, False, found[0])  # THREAD_SUSPEND_RESUME
+        if not thread or kernel.ResumeThread(thread) != 1:
+            raise OSError("cannot resume owned suspended worker launcher")
+    finally:
+        if thread:
+            kernel.CloseHandle(thread)
+        kernel.CloseHandle(snapshot)
 
 
 def _launch_worker(command, *, cwd, env):
-    """Establish the Windows descendant job before allowing worker execution.
+    """Assign the suspended Windows launcher before any interpreter can spawn.
 
     Assigning a running short-lived worker races its exit. A pipe-gated Python
-    parent stays alive until assignment and its worker inherits the same job.
+    The pipe gate alone cannot stop a venv redirector creating its interpreter
+    before assignment. CREATE_SUSPENDED covers that launcher race as well.
+    The Python gate stays closed until the owned job and resume both succeed.
     Closing the gate without authorization starts no worker.
     """
     gated = os.name == "nt"
@@ -246,11 +350,12 @@ def _launch_worker(command, *, cwd, env):
         stdin=subprocess.PIPE if gated else None,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         start_new_session=os.name == "posix",
-        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if gated else 0)
+        creationflags=(subprocess.CREATE_NEW_PROCESS_GROUP | 0x4) if gated else 0)  # CREATE_SUSPENDED
     job = None
     try:
         job = _windows_job(process)
         if gated:
+            _resume_windows_worker(process)
             process.stdin.write(b"1")
             process.stdin.flush()
             process.stdin.close()
@@ -334,8 +439,10 @@ def supervise(children: dict, output: Path, *, run_id: str, plan_digest: str,
         cleanup_errors = []
         try:
             remaining = max(0, terminal_deadline - time.monotonic())
-            _reap(worker["process"], worker["job"], min(term_seconds, remaining / 3),
-                  min(kill_seconds, remaining / 3))
+            tree_cleanup = _reap(worker["process"], worker["job"], min(term_seconds, remaining / 3),
+                                 min(kill_seconds, remaining / 3))
+            if tree_cleanup is not None:
+                results[branch]["process_tree_cleanup"] = tree_cleanup
         except Exception as exception:
             cleanup_errors.append(str(exception)[:2000])
             try:
@@ -345,7 +452,9 @@ def supervise(children: dict, output: Path, *, run_id: str, plan_digest: str,
             except Exception as fallback:
                 cleanup_errors.append(str(fallback)[:2000])
         for thread in worker["threads"]:
-            thread.join(timeout=min(kill_seconds, max(0, terminal_deadline - time.monotonic())))
+            # Drain completion is bounded by the common terminal reserve. The
+            # process kill grace is not a deadline for Python reader scheduling.
+            thread.join(timeout=max(0, terminal_deadline - time.monotonic()))
             if thread.is_alive():
                 cleanup_errors.append("worker log drain did not terminate")
         root = output / branch

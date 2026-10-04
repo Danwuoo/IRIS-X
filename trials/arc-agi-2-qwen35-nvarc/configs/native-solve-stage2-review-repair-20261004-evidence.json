@@ -1,0 +1,812 @@
+{
+  "Dataset_mutations": 0,
+  "GPU_execution_calls": 0,
+  "authority": "same local main, offline CPU repair only; stage 3 undispatched",
+  "automation_created": false,
+  "baseline_commit": "a42698104f151b27646fbefa30a4f80bd3cfa31c",
+  "branch": "main",
+  "commands": {
+    "archive-focused-001": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_native_multitask_archive",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "archive-focused-001.log",
+      "log_binding": {
+        "bytes": 2094,
+        "sha256": "fea9360d85a41846654d6338dd29387a58b1cd8ba9d65206099d2edc55fab605"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 244,
+        "sha256": "4459dfa1ec41803bacfebe9cb8a8ef05ee5007a3c3c31bd4771caae7aff23716"
+      },
+      "tests": [
+        10
+      ],
+      "wall_seconds": 6.827999999979511
+    },
+    "archive-focused-002": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.nvarc_native_multitask_archive_strict",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "archive-focused-002.log",
+      "log_binding": {
+        "bytes": 2742,
+        "sha256": "2ade0ff9b2cff3297ebc8dd51f217dd02f8480af987eaf44cbfd5c17835d75e7"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 246,
+        "sha256": "5e8c3044cd5d7e5dec20f147161b2254653d1a7faeab3e68799e664ff3e7e367"
+      },
+      "tests": [
+        13
+      ],
+      "wall_seconds": 7.687999999994645
+    },
+    "archive-real-fates": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.nvarc_native_multitask_archive_strict",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "archive-real-fates.log",
+      "log_binding": {
+        "bytes": 2964,
+        "sha256": "642071aba3395c1f750dd2e9aefd5a7ce77ca9456e6697020768067ceb014482"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 244,
+        "sha256": "0669a6a92d823d7ed7100bd044fb6472fa21c417bd617756f4fe0f12c8976f80"
+      },
+      "tests": [
+        14
+      ],
+      "wall_seconds": 8.96799999999348
+    },
+    "combined-focused": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_combined",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "combined-focused.log",
+      "log_binding": {
+        "bytes": 3527,
+        "sha256": "a15edb12d4ad833d1f512ddb5a05983b894fe827a2c1698ddb8af4eea1a6b766"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 214,
+        "sha256": "6676cf3a0a601a6e7492b8efe2f2e9d92f75c51d8a7fef66053e434822222029"
+      },
+      "tests": [
+        19
+      ],
+      "wall_seconds": 11.625
+    },
+    "cpu-replay": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        ".irisx/native-solve-stage2-review-repair-20261004-001/independent_cpu.py"
+      ],
+      "exit_code": 0,
+      "log": "cpu-replay.log",
+      "log_binding": {
+        "bytes": 504,
+        "sha256": "5c6ee5d854e610ce5a6c3e2666c0f402fe242c752d4bb3f6060d5721f57f95fe"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 241,
+        "sha256": "08e2d49b75fe172cbecc6722728b3a1dcb2ed0e2afd7fe98ef9b6ad6e39cfa16"
+      },
+      "tests": [],
+      "wall_seconds": 3.2339999999967404
+    },
+    "delivery-invariants": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "tools/repository_check.py"
+      ],
+      "exit_code": 0,
+      "log": "delivery-invariants.log",
+      "log_binding": {
+        "bytes": 358,
+        "sha256": "68c9f1441c9085b5ed8cb7b94e60c2e9456bbff930fa60cce744c0ca4b1593ca"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 203,
+        "sha256": "ca33aed0c4c0d6bd984397cd41ed265946259cf884e7e208d5dca633979f4a43"
+      },
+      "tests": [],
+      "wall_seconds": 2.0310000000172295
+    },
+    "descendant-after-001": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_combined.CombinedProcessTests.test_descendant_is_cleaned_after_primary_worker_exits",
+        "-v"
+      ],
+      "exit_code": 1,
+      "log": "descendant-after-001.log",
+      "log_binding": {
+        "bytes": 3142,
+        "sha256": "4f2cdcb71ac451146a58ff7b053399c872ab5648e18a12a9f099618c52bca47c"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 303,
+        "sha256": "4ac9137c8860037c18ef6f63e149f4d2e887c7e3b696d455df37be4aee07099b"
+      },
+      "tests": [
+        1
+      ],
+      "wall_seconds": 5.265999999974156
+    },
+    "descendant-after-suspended": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_combined.CombinedProcessTests.test_descendant_is_cleaned_after_primary_worker_exits",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "descendant-after-suspended.log",
+      "log_binding": {
+        "bytes": 267,
+        "sha256": "7120dacb6c6c7272faea9d8df71857ac3730d44f14be1b108b98c0da22107ca7"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 310,
+        "sha256": "734bf0595e61d98edb3d083cee473a4f8ac589e6230612cac8b2b745e646653e"
+      },
+      "tests": [
+        1
+      ],
+      "wall_seconds": 0.8280000000086147
+    },
+    "descendant-before": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_combined.CombinedProcessTests.test_descendant_is_cleaned_after_primary_worker_exits",
+        "-v"
+      ],
+      "exit_code": 1,
+      "log": "descendant-before.log",
+      "log_binding": {
+        "bytes": 2940,
+        "sha256": "63e77512fe9d438be6bc2917a0e1202210f4a8927c7c801a8311f4c0c156fd18"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 301,
+        "sha256": "bf457ab8ffaa2e7dd583e30d6843cf0a499c97017ab2668ea7b2a4b6b00f13a5"
+      },
+      "tests": [
+        1
+      ],
+      "wall_seconds": 1.2820000000065193
+    },
+    "descendant-job-observed": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_combined.CombinedProcessTests.test_descendant_is_cleaned_after_primary_worker_exits",
+        "-v"
+      ],
+      "exit_code": 1,
+      "log": "descendant-job-observed.log",
+      "log_binding": {
+        "bytes": 3143,
+        "sha256": "f17b3eab802a139fe46466ef915882dc653efa4982cbe4a7b96b6988e95b0d00"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 307,
+        "sha256": "3fc5ea8a24bd3aa63a30d500f5e8557a6b9fae56594702a6ddb2ad0e6d039ba4"
+      },
+      "tests": [
+        1
+      ],
+      "wall_seconds": 5.2960000000020955
+    },
+    "focused-complete": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_native_solve",
+        "tests.test_arc_kaggle_submission",
+        "tests.test_nvarc_native_multitask",
+        "tests.nvarc_native_solve_strict",
+        "tests.nvarc_native_multitask_strict",
+        "tests.nvarc_native_multitask_archive_strict",
+        "tests.test_nvarc_combined",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "focused-complete.log",
+      "log_binding": {
+        "bytes": 23281,
+        "sha256": "6e48d45d9b4d8efb21a91b238d4831eb751df049e5e1c737539616cd217ddbfd"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 454,
+        "sha256": "1f378ceabed7f9928c25b31d85171cb457261bfcf3517340f3176049c44e7993"
+      },
+      "tests": [
+        120
+      ],
+      "wall_seconds": 53.703000000008615
+    },
+    "focused-final": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_native_solve",
+        "tests.test_arc_kaggle_submission",
+        "tests.test_nvarc_native_multitask",
+        "tests.nvarc_native_solve_strict",
+        "tests.nvarc_native_multitask_strict",
+        "tests.nvarc_native_multitask_archive_strict",
+        "tests.test_nvarc_combined",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "focused-final.log",
+      "log_binding": {
+        "bytes": 23059,
+        "sha256": "906cd0151920fcc2c90c80838159ab2a9ad3d4589c7231fe9e01a40bd6affdd3"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 450,
+        "sha256": "ae4ee4ae972549a802518513ba3768849689a7b53e418a5df0f3888efaabc1f4"
+      },
+      "tests": [
+        119
+      ],
+      "wall_seconds": 76.82800000000861
+    },
+    "inert-replay": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        ".irisx/native-solve-stage2-review-repair-20261004-001/inert_replay.py"
+      ],
+      "exit_code": 0,
+      "log": "inert-replay.log",
+      "log_binding": {
+        "bytes": 403,
+        "sha256": "bf86bad43b4114d7d341d65421af83aa6f92af06654dcf0d5b75b655f85e8c94"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 240,
+        "sha256": "e4eba37519ecb2ea44f3cb82d1da2d8a43555bfcb3b8458835674df767cb41b8"
+      },
+      "tests": [],
+      "wall_seconds": 0.1879999999946449
+    },
+    "inert-verifier": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "tools/verify_nvarc_native_multitask.py",
+        "--archive",
+        ".irisx/native-solve-stage2-review-repair-20261004-001/inert-work-006/\u7d50\u679c.zip",
+        "--package",
+        ".irisx/native-solve-stage2-20261004-001/proposal-006",
+        "--output",
+        ".irisx/native-solve-stage2-review-repair-20261004-001/inert-proof.json"
+      ],
+      "exit_code": 0,
+      "log": "inert-verifier.log",
+      "log_binding": {
+        "bytes": 514,
+        "sha256": "62542e79b83ca911219b0ae2d69d33dbdfecfb023c8a6c041a8ba568d059a750"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 467,
+        "sha256": "ad6d8ca60754e005229735147635cbab91817af6d35d8617849d8d68a75518a2"
+      },
+      "tests": [],
+      "wall_seconds": 5.282000000006519
+    },
+    "preflight": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "tools/stage_nvarc_native_multitask.py",
+        "preflight",
+        "--package",
+        ".irisx/native-solve-stage2-20261004-001/proposal-006"
+      ],
+      "exit_code": 0,
+      "log": "preflight.log",
+      "log_binding": {
+        "bytes": 292,
+        "sha256": "acc6e6915107f89994c953d96e21c12e376595c731dda7d66c3f02b09926fce3"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 287,
+        "sha256": "c1692ea067cd7bed78ed44cd9a916bb9955a7872c7fb2461e93ff97bb199116d"
+      },
+      "tests": [],
+      "wall_seconds": 3.3280000000086147
+    },
+    "redirector-race-baseline": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        ".irisx/native-solve-stage2-review-repair-20261004-001/reproduce_redirector_race.py"
+      ],
+      "exit_code": 0,
+      "log": "redirector-race-baseline.log",
+      "log_binding": {
+        "bytes": 849,
+        "sha256": "1b9aa252e0c1a39fa3e92e1c94a781a39c4007b86e9a2122f7949e9785882b80"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 265,
+        "sha256": "8faf9bc6a89b6092ae0c0301539281c090def720d874a0cd04082889161ea0e9"
+      },
+      "tests": [],
+      "wall_seconds": 1.9060000000172295
+    },
+    "redirector-race-fixed": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        ".irisx/native-solve-stage2-review-repair-20261004-001/prove_redirector_fix.py"
+      ],
+      "exit_code": 0,
+      "log": "redirector-race-fixed.log",
+      "log_binding": {
+        "bytes": 579,
+        "sha256": "050700ab6051a1e525b087174f2528d549697f4b395664212a78e54ded9b8b7c"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 257,
+        "sha256": "4c82330d2728b6994d9c186fe409b217dfdc385dada43ea2d1c9df904acbfa30"
+      },
+      "tests": [],
+      "wall_seconds": 1.4689999999827705
+    },
+    "repository-all-final": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "tools/repository_check.py",
+        "--all"
+      ],
+      "exit_code": 0,
+      "log": "repository-all-final.log",
+      "log_binding": {
+        "bytes": 89502,
+        "sha256": "95ea2004f7b18fc351947f75536fa2aea111ad66f975ecbae4de634a42223f5c"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 218,
+        "sha256": "ffe07290cb3749c5c05e3162a530e64b27ed2906ebc31edb9d3d08cd16dd6845"
+      },
+      "tests": [
+        3,
+        491
+      ],
+      "wall_seconds": 298.6720000000205
+    },
+    "windows-job-before": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        ".irisx/native-solve-stage2-review-repair-20261004-001/diagnose_job.py"
+      ],
+      "exit_code": 0,
+      "log": "windows-job-before.log",
+      "log_binding": {
+        "bytes": 408,
+        "sha256": "f16f3e599268f1e3c8b77db0ca30b90f6962e1c169271643ef8f9f7744f6ed5f"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 246,
+        "sha256": "3db4327716244424bfa6e35418bf3f7c71e5cc614cf609ca99e4289d64dcd728"
+      },
+      "tests": [],
+      "wall_seconds": 0.4379999999946449
+    },
+    "windows-supervisor-before": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        ".irisx/native-solve-stage2-review-repair-20261004-001/diagnose_supervisor.py"
+      ],
+      "exit_code": 0,
+      "log": "windows-supervisor-before.log",
+      "log_binding": {
+        "bytes": 702,
+        "sha256": "e11bcc98c7e040b3dcfe20317fd76e468337e958185c1c5b64da83c11ebd3b87"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 247,
+        "sha256": "b46d9339bf238612da7ed690599db975bebafc07abb35650483f31cf9e4f89c8"
+      },
+      "tests": [],
+      "wall_seconds": 0.625
+    },
+    "windows-test-before": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        ".irisx/native-solve-stage2-review-repair-20261004-001/diagnose_test.py"
+      ],
+      "exit_code": 0,
+      "log": "windows-test-before.log",
+      "log_binding": {
+        "bytes": 337,
+        "sha256": "0c723f047595df75dca420acb0537e067bd1481c7e5a7c239fe5c070b8f46461"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 248,
+        "sha256": "17e662a99ac3f9a837e18490420f717763e47f5744601238414b1eaf4557c25a"
+      },
+      "tests": [],
+      "wall_seconds": 0.7809999999881256
+    },
+    "windows-textrunner-retained": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        ".irisx/native-solve-stage2-review-repair-20261004-001/diagnose_textrunner.py"
+      ],
+      "exit_code": 0,
+      "log": "windows-textrunner-retained.log",
+      "log_binding": {
+        "bytes": 580,
+        "sha256": "6df412b05ff9055336a1b5a4a3deb587dd07e278b269ebdcbc14e033883ba5e0"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 263,
+        "sha256": "074ec42f57b7290a3344e5397a94af6c6e286b56d1fe721e7b870bcbcfa82cf9"
+      },
+      "tests": [
+        1
+      ],
+      "wall_seconds": 0.7659999999741558
+    },
+    "windows-unittest-retained": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        ".irisx/native-solve-stage2-review-repair-20261004-001/diagnose_unittest.py"
+      ],
+      "exit_code": 0,
+      "log": "windows-unittest-retained.log",
+      "log_binding": {
+        "bytes": 313,
+        "sha256": "35c8f871679ff93f54bba53aaf6b09e35ddb906afcc134ea0fbcdac352ae9abc"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 258,
+        "sha256": "c8bb7f77767421dccd96c106130cba4e6e8fdefdf4af760cc67f8e471383f97b"
+      },
+      "tests": [],
+      "wall_seconds": 0.7660000000032596
+    }
+  },
+  "competition_submissions": 0,
+  "controller_review": {
+    "bytes": 1602,
+    "path": ".irisx/control-review-a426981-f81c211b/review.json",
+    "sha256": "ea7820de88a038e68d437a980101786941b9f818bf18e24c052af0c0e7b43643"
+  },
+  "correctness_scored": false,
+  "delivery_commit_lookup": "git log -1 --format=%H -- trials/arc-agi-2-qwen35-nvarc/native-solve-stage2-review-repair-20261004.md",
+  "environment": {
+    "HF_DATASETS_OFFLINE": "1",
+    "HF_HUB_OFFLINE": "1",
+    "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONHASHSEED": "0",
+    "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+    "PYTHONUTF8": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "external_model_or_teacher_calls": 0,
+  "external_provider_calls": 0,
+  "finding_1": {
+    "cache_initial_calls_required_per_attempt": 6,
+    "control_input_tokens_required_per_attempt": 168,
+    "earlier_candidates_retained_on_auxiliary_failure": true,
+    "exact_attempts_required": 4,
+    "fixture_positive_is_gpu_observation": false,
+    "full_archive_negative_regressions": true,
+    "only_failure_exception": "fault-first: exact two completed updates, expected RuntimeError, process returncode 1, full reset",
+    "package_admission_and_candidate_fixture_substitutions_explicit": true,
+    "real_cpu_post_artifact_nonzero_and_termination_regression": true,
+    "reset_calls_required_per_attempt": 1
+  },
+  "finding_2": {
+    "ACL_or_security_token_changes": false,
+    "baseline_race_reproduction": {
+      "bootstrap_assignment_delay_seconds": 0.35,
+      "descendant_exit_code_before_cleanup": 259,
+      "drains_after_cleanup": [],
+      "drains_before_cleanup": [
+        "Thread-1 (_drain)",
+        "Thread-2 (_drain)"
+      ],
+      "exit_query_ok": true,
+      "job_closures": [
+        {
+          "bootstrap_pid": 31676,
+          "job_pids_before_close": [],
+          "job_query_ok": true
+        },
+        {
+          "bootstrap_pid": 18800,
+          "job_pids_before_close": [],
+          "job_query_ok": true
+        }
+      ],
+      "outcome": "partial",
+      "owned_descendant_pid": 19872,
+      "owned_tree_cleanup": {
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "SUCCESS: The process with PID 21848 (child process of PID 19872) has been terminated.\nSUCCESS: The process with PID 19872 (child process of PID 33960) has been terminated.\n"
+      },
+      "scope": "synthetic CPU regression against retained a426981 source; no GPU or model",
+      "source_sha256": "6dc05433d731a07c75c50f90c35a2d3dc4a83042889b93c35eb33a4747d35afe"
+    },
+    "cause": "Windows venv redirector can spawn actual interpreter before running launcher is assigned; stdin gate cannot protect launcher creation",
+    "complete_standard_not_relaxed": true,
+    "fixed_same_delay_proof": {
+      "bootstrap_assignment_delay_seconds": 0.35,
+      "descendant_still_active": false,
+      "drains_alive": [],
+      "job_cleanup": {
+        "active_processes_after_termination": 0,
+        "initial_process_ids": [
+          29512,
+          8144
+        ],
+        "kind": "owned-windows-job"
+      },
+      "launch_counts": {
+        "m2": 1,
+        "m3": 1
+      },
+      "outcome": "complete",
+      "owned_descendant_in_job_before_cleanup": true,
+      "owned_descendant_pid": 29512,
+      "scope": "synthetic CPU descendant cleanup proof, no GPU/model",
+      "source_sha256": "c4999fdcb9d7aec39516674c21ccc6428b2188c8ed3af9032aca75ce56992918",
+      "terminal_limit_seconds": 7,
+      "wall_seconds": 1.3280000000086147
+    },
+    "line_ending_normalization": {
+      "AST_identical": true,
+      "after_sha256": "b2b60a61cdb09c277d4ed5b990795dce45c9523704e49314f939b51e87a9fc7e",
+      "before_sha256": "06937b4eec705a27604b3b32e0fc97f2fd2fbb0aa21d9a097084c1e068634173",
+      "only_CRLF_to_LF": true,
+      "path": "tests\\test_nvarc_combined.py"
+    },
+    "original_fixture_limits_unchanged": true,
+    "owned_tree_only_fallback_cleanup": {
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "SUCCESS: The process with PID 21848 (child process of PID 19872) has been terminated.\nSUCCESS: The process with PID 19872 (child process of PID 33960) has been terminated.\n"
+    }
+  },
+  "format": "irisx/native-stage2-review-repair-v1",
+  "git_push": false,
+  "gpu_runtime": "unverified",
+  "independent_cpu_replay": {
+    "correctness_scored": false,
+    "gpu_invocations": 0,
+    "independent_process_replay": true,
+    "new_generations": 0,
+    "paid_usd": 0,
+    "run_id": "native-stage2-cpu-replay-005",
+    "scope": "independent retained tiny CPU evidence replay, not GPU",
+    "source_DFS_inverse_ranking_verified": true,
+    "source_evidence_digest": "sha256:dc519ff81eaeae4b95ce88d875d6c522e2d6b7d2c4a2a89de3f41ed0cf538466",
+    "submission_sha256": "cfa5b6eef06343795627e7d51550d82d5c0d041f128ab3be7bae509db98423fa",
+    "task_count": 2,
+    "test_count": 3
+  },
+  "local_delivery_manifest": {
+    "bytes": 33112,
+    "path": ".irisx/native-solve-stage2-review-repair-20261004-001/delivery-manifest.json",
+    "sha256": "b1af34986c80bf2dc604bbaa3e61ac310ca81db282ed972b6754853bdc48c012"
+  },
+  "method_promoted": false,
+  "native_gpu_gates": [
+    "raw cache",
+    "trained nonempty rankings",
+    "native producer/export",
+    "target GPU process isolation",
+    "resource sufficiency",
+    "cross-profile DFS numerical replay"
+  ],
+  "native_package": {
+    "approved": false,
+    "inert_proof": {
+      "archive_sha256": "35b46744c57db063625646a4e7b7ac78c871473501f4106c6c9a42eca92b280b",
+      "closed_members": 3,
+      "correctness_scored": false,
+      "digest_is_execution_attestation": false,
+      "failure_phase": "payload-verification",
+      "gpu_runtime": "unverified",
+      "gpu_validation_gate": false,
+      "official_score": null,
+      "outcome": "failed-before-dispatch",
+      "parent_outcome": "failed",
+      "plan_digest": "sha256:6addcdc7c292cfb3a562b47e629690f2ff6f8fbd3c85c3f82ea843d9eadc7557",
+      "run_id": "nvarc-original-qwen3-native-multitask-006"
+    },
+    "inventory": {
+      "kernel/kernel-metadata.json": "36baec65394ea14819044a6a6e97024b503d939818b3050813f00fa7010b73fb",
+      "kernel/notebook.ipynb": "681171ccd765fd61f5d83f5abc2da1d37d9bab7bc131a88a5daf42ea669af910",
+      "plan.json": "6addcdc7c292cfb3a562b47e629690f2ff6f8fbd3c85c3f82ea843d9eadc7557"
+    },
+    "new_package_identity": null,
+    "path": ".irisx/native-solve-stage2-20261004-001/proposal-006",
+    "payload_sha256": {
+      "bridge": "8cc5a5095bef1a0e65cd0a2c54e697d510590086dc88509045b1205b27b6cbff",
+      "budget": "cbde3bb4eb4353355d02e70f471d867c85619f6e620ea039836d2578e8218b7f",
+      "challenges": "fa6d9af3a8a69adcf9ad678a677d6583944335c888c4b6be67adc4f813a0db96",
+      "decoder": "965cfd910777d9bbec9681c6c15c5e2ea3924569734248046f5e58f16cb28222",
+      "editor_archive": "e27271aed999e350413836776e5076b958d523feda5da7300d11ff6740882c2d",
+      "exporter": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf",
+      "hardware": "61316aa900b47106e2bc9b0ffb04b02045839e411759973a10de53c5168af642",
+      "helper": "c073e2839f7013d24c9aaaffd92ad82a2c0a44180efc6d3dffc09084999cd8e2",
+      "loader": "d01cd56167e534ae156706ef62ab11662fc7b403964614a7a55131940bde970c",
+      "model_inventory": "12bff7ba56480b2165742cce03bf2bfc9b1e6d908f34ad815c77f8286c0b943a",
+      "multitask": "4224e8cc4004d106661ec8678952b20d8dc54cf48b84f638ee6416fabc2abf64",
+      "plan": "6addcdc7c292cfb3a562b47e629690f2ff6f8fbd3c85c3f82ea843d9eadc7557",
+      "schedule": "e40a70266132a78174e8fe0b73b02c4a1a9e9239e3431c362c8bb7b40f32cbcc",
+      "solve_runtime": "6007cd3cb8feeb78c7506631d6fd2f1511581318ca49d43adcfa87dec52ec64d",
+      "solver": "1387c5b0b188dcc8570659dd5905ec2e824e5e0dfd7b20d8be9c2e13d0f12962",
+      "source_inventory": "1fe9bf4cda59fb323928bf7037e6058363f2c25f2cf31b40c4c4c5befa1a9c93",
+      "task_materials_gzip": "2c3277712626a02992c7c1f94dfe81b272e3d911bc45389641e4d5524b15732c",
+      "worker": "d70135dd2c8cdcf3d7ace12007663856eddaaf09c9959d58aea6a44fa2d40237"
+    },
+    "plan_digest": "sha256:6addcdc7c292cfb3a562b47e629690f2ff6f8fbd3c85c3f82ea843d9eadc7557",
+    "preflight": {
+      "command": [
+        ".irisx/nvarc-ml-venv/Scripts/python.exe",
+        "tools/stage_nvarc_native_multitask.py",
+        "preflight",
+        "--package",
+        ".irisx/native-solve-stage2-20261004-001/proposal-006"
+      ],
+      "exit_code": 0,
+      "log": "preflight.log",
+      "log_binding": {
+        "bytes": 292,
+        "sha256": "acc6e6915107f89994c953d96e21c12e376595c731dda7d66c3f02b09926fce3"
+      },
+      "skip_counts": [],
+      "summary_binding": {
+        "bytes": 287,
+        "sha256": "c1692ea067cd7bed78ed44cd9a916bb9955a7872c7fb2461e93ff97bb199116d"
+      },
+      "tests": [],
+      "wall_seconds": 3.3280000000086147
+    },
+    "producer_and_plan_unchanged": true
+  },
+  "new_chat": false,
+  "new_goal": false,
+  "next_step": "controller re-acceptance; stage 3 or external execution require separate direction",
+  "official_score": null,
+  "original_controller_partial_directory": {
+    "path": ".irisx/combined-cpu-gojdseuc",
+    "retained_members": 12,
+    "unchanged": true
+  },
+  "paid_usd": 0,
+  "preservation": {
+    "all_historical_bytes_preserved": true,
+    "changed_authorized_sources_with_exact_copies": {
+      "src/irisx/arc_nvarc_combined.py": {
+        "before": {
+          "bytes": 26667,
+          "sha256": "6dc05433d731a07c75c50f90c35a2d3dc4a83042889b93c35eb33a4747d35afe"
+        },
+        "current": {
+          "bytes": 32283,
+          "sha256": "c4999fdcb9d7aec39516674c21ccc6428b2188c8ed3af9032aca75ce56992918"
+        },
+        "exact_baseline_copy": ".irisx/native-solve-stage2-review-repair-20261004-001/baseline/src/irisx/arc_nvarc_combined.py",
+        "git_baseline_blob_sha256": "6dc05433d731a07c75c50f90c35a2d3dc4a83042889b93c35eb33a4747d35afe"
+      },
+      "tests/test_nvarc_combined.py": {
+        "before": {
+          "bytes": 16581,
+          "sha256": "8c7bfcfa6a47bc0988f8a9006e45692a600be00db6039d4e529bc3dfc43cc222"
+        },
+        "current": {
+          "bytes": 18602,
+          "sha256": "b2b60a61cdb09c277d4ed5b990795dce45c9523704e49314f939b51e87a9fc7e"
+        },
+        "exact_baseline_copy": ".irisx/native-solve-stage2-review-repair-20261004-001/baseline/tests/test_nvarc_combined.py",
+        "git_baseline_blob_sha256": "c9db4b78544cc452c3999cc760520ad5e8a79d5d141f94d7693567c0e1594f9d"
+      },
+      "tools/verify_nvarc_native_multitask.py": {
+        "before": {
+          "bytes": 17507,
+          "sha256": "cdd0181d6bbf419e6ae929e4ed5e40ac5bc24ae92bce323f81ac604c2b5876d8"
+        },
+        "current": {
+          "bytes": 25075,
+          "sha256": "5655c6a927e382f422174b87d91df1b54aa50b24256eca58a9723bb53030fe04"
+        },
+        "exact_baseline_copy": ".irisx/native-solve-stage2-review-repair-20261004-001/baseline/tools/verify_nvarc_native_multitask.py",
+        "git_baseline_blob_sha256": "cdd0181d6bbf419e6ae929e4ed5e40ac5bc24ae92bce323f81ac604c2b5876d8"
+      }
+    },
+    "historical_bindings_unchanged": 175,
+    "total_before_bindings": 275,
+    "unchanged_in_place": 272
+  },
+  "preservation_file": {
+    "bytes": 53371,
+    "path": ".irisx/native-solve-stage2-review-repair-20261004-001/preservation.json",
+    "sha256": "e682e2d81a1019d63752f0d399daa5659b6704665cabb647a182feca05f27c0a"
+  },
+  "repository_skips": [],
+  "source_file_bindings": {
+    "src/irisx/arc_nvarc_combined.py": {
+      "bytes": 32283,
+      "sha256": "c4999fdcb9d7aec39516674c21ccc6428b2188c8ed3af9032aca75ce56992918"
+    },
+    "tests/nvarc_native_multitask_archive_strict.py": {
+      "bytes": 21952,
+      "sha256": "6dffadfa8835935f50f4bdb340a990e6edb9a32c9cd6b4d6bddb2d1bcde489bc"
+    },
+    "tests/test_nvarc_combined.py": {
+      "bytes": 18602,
+      "sha256": "b2b60a61cdb09c277d4ed5b990795dce45c9523704e49314f939b51e87a9fc7e"
+    },
+    "tools/verify_nvarc_native_multitask.py": {
+      "bytes": 25075,
+      "sha256": "5655c6a927e382f422174b87d91df1b54aa50b24256eca58a9723bb53030fe04"
+    },
+    "trials/arc-agi-2-qwen35-nvarc/native-solve-stage2-review-repair-20261004.md": {
+      "bytes": 7156,
+      "sha256": "06c786525f11971bbc3dc1e065a1f427e3b17007fbe860adb89e49a408ad9f13"
+    }
+  },
+  "staged_source_byte_parity": true,
+  "status": "offline-repair-complete-controller-review-pending"
+}
