@@ -627,6 +627,17 @@ unavailable, and strict cross-Torch DFS replay remains unverified. Stop after
 the official terminal outcome; Stage 4 stays unopened. Follow
 `docs/decisions/0059-obtain-one-official-stage3-cli-score.md`.
 
+The owner subsequently instructed `先停止監看`. At 2026-10-05 07:17:03
+Taipei, the local foreground monitor/continuation and its future automatic
+formal-submit path were stopped; no continuation helper remains. The last
+read, at 07:10:20 Taipei, reported the distinct official 001 version 1
+`RUNNING`. No provider cancellation was requested, and current runtime state
+is unqueried. No formal submission reservation or receipt exists. Preserve
+the candidate and receipts; do not restart monitoring or the automatic
+continuation without owner direction. Stage 4 stays unopened. The stop and
+read bindings are retained in
+`trials/arc-agi-2-qwen35-nvarc/stage3-official-score-001.md`.
+
 Decision 0058 records the owner's instruction to submit the reviewed local
 native multitask export repair. Exactly one private, Internet-disabled, USD 0
 QUICK_SAVE may derive new 010 from frozen review 009 with identity/admission

@@ -1,6 +1,6 @@
 # Stage 3 single official CLI score
 
-Date: 2026-10-05 (Asia/Taipei). Status: **private version 1 RUNNING; formal submission pending**.
+Date: 2026-10-05 (Asia/Taipei). Status: **owner stopped monitoring; last observed private version 1 RUNNING; formal submission pending**.
 Authority: [Decision 0059](../../docs/decisions/0059-obtain-one-official-stage3-cli-score.md).
 Stage 4 remains unopened. Paid cost ceiling is USD 0. Existing consumed 007–010
 packages, receipts and returned observations remain immutable. The 010 engineering
@@ -136,8 +136,19 @@ No formal competition submission is reserved or sent and no official score
 exists yet. Provider `RUNNING` alone does not verify the hardware, task epochs
 or exported output. Current provider-read bindings are retained in
 [`stage3-official-score-001-progress.json`](configs/stage3-official-score-001-progress.json).
-One local foreground continuation owns subsequent backed-off status reads,
-terminal output retrieval, the sole formal submission and terminal score reads.
-It is bounded to 80 status reads/20 hours for each provider phase and is not a
-recurring automation. Its script hash and the separate quota observation are
-retained in the launch evidence configuration.
+The local foreground continuation was bounded to 80 status reads/20 hours
+for each provider phase and was not a recurring automation. Its script hash
+and the separate quota observation are retained in the launch evidence
+configuration. The owner subsequently instructed `先停止監看`. At
+2026-10-04 23:17:03 UTC / 2026-10-05 07:17:03 Taipei, both local Python
+processes for this continuation were stopped and zero remaining helpers were
+verified. The local session exited with code 1 because it was stopped; this
+is not a Kaggle runtime failure.
+
+The last provider read is 024, at 23:10:20.059 UTC / 07:10:20.059 Taipei,
+and reports `RUNNING`. Current Kaggle state is unqueried after the owner's
+stop. No provider cancellation, subsequent provider query, terminal retrieval
+or formal submission occurred. No formal reservation or receipt exists and no
+automatic submission path remains active. Monitoring/automatic continuation
+will not restart without owner direction. The stop and all retained reads are
+bound in the progress configuration; Stage 4 remains unopened.
