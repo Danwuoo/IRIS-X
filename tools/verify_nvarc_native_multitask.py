@@ -6,6 +6,7 @@ from collections import Counter
 import hashlib
 import json
 import math
+import re
 from pathlib import Path, PurePosixPath
 import sys
 import tempfile
@@ -37,7 +38,17 @@ def verify_receipt(receipt,attempt,maximum_seconds):
             0<receipt['reserved_seconds']<=maximum_seconds,'bounded dispatch reservation required')
 
 
-def verify_controls(content,prefix,events,result):
+def verify_inventory(value,plan):
+    expected=plan['native_adapter_topology']
+    require(isinstance(value,list) and len(value)==len(expected)==506 and
+        all(set(row)==set(wanted)|{'finite','sha256'} and
+            {k:row[k] for k in wanted}==wanted and row['finite'] is True and
+            isinstance(row['sha256'],str) and re.fullmatch(r'[0-9a-f]{64}',row['sha256'])
+            for row,wanted in zip(value,expected)),
+        'exact finite BF16 adapter fingerprint topology required')
+
+
+def verify_controls(content,prefix,events,result,plan):
     """Recount six branch controls and the final reset call, separately from flags."""
     controls=[e for e in events if e['event']=='forward_reserved' and e['phase']=='control']
     completed={e['call_id']:e for e in events if e['event']=='forward_completed' and e['phase']=='control'}
@@ -66,6 +77,7 @@ def verify_controls(content,prefix,events,result):
             all(v['gate_passed'] for v in recomputed.values()),'raw native cache branch control differs')
         compare_vectors(cache['baseline_prefill'],cache['baseline_prefill'])
         baseline=parse_json(content[prefix+'baseline-inventory.json']);prefill=cache['baseline_prefill']
+        verify_inventory(baseline,plan)
     restored=result['all_saved_tensors_restored']
     if restored:
         require(parse_json(content[prefix+'baseline-inventory.json'])==
@@ -89,7 +101,8 @@ def verify_controls(content,prefix,events,result):
 def verify_training(content,prefix,spec,mode,plan,material):
     def read(name):return parse_json(content[prefix+name])
     if prefix+'training-ledger.json' not in content:
-        return {'training_gate':False,'forwards':0,'steps':0,'reserved_forwards':0,'reserved_steps':0,'tokens':0}
+        return {'training_gate':False,'forwards':0,'steps':0,'reserved_forwards':0,'reserved_steps':0,
+            'reserved_microsteps':0,'tokens':0,'supervised_tokens':0}
     ledger=read('training-ledger.json');rows=read('prepared-rows.json')
     expected=material[next(a['task_id'] for a in plan['worker_attempts'] if prefix=='tasks/'+a['attempt_id']+'/native/')]['rows']
     require(len(rows)==len(expected)==spec['training_forwards'],'actual task-derived row denominator differs')
@@ -139,6 +152,7 @@ def verify_training(content,prefix,spec,mode,plan,material):
                 for k in ('forwards','optimizer_steps','training_steps')) and actual_counts==expected_counts,
                 'complete epoch must consume every exact public row once')
         before,after=read('baseline-inventory.json'),read('trained-inventory.json')
+        verify_inventory(before,plan);verify_inventory(after,plan)
         require(len(before)==len(after)==506 and [r['name'] for r in before]==[r['name'] for r in after] and
                 all(r['finite'] is True and r['dtype']=='torch.bfloat16' for r in before+after) and before!=after,
                 'finite changed exact native BF16 tensor topology required')
@@ -150,7 +164,9 @@ def verify_training(content,prefix,spec,mode,plan,material):
     return {'training_gate':bool(complete),'forwards':sum(r['completed'] for r in ledger['forwards']),
             'steps':sum(r['completed'] for r in ledger['optimizer_steps']),
             'reserved_forwards':len(ledger['forwards']),'reserved_steps':len(ledger['optimizer_steps']),
-            'tokens':sum(r['input_tokens'] for r in ledger['forwards'])}
+            'reserved_microsteps':len(ledger['training_steps']),
+            'tokens':sum(r['input_tokens'] for r in ledger['forwards']),
+            'supervised_tokens':sum(r['supervised_tokens'] for r in ledger['forwards'])}
 
 
 def verify(archive,package):
@@ -180,7 +196,11 @@ def verify(archive,package):
         'finite parent terminal required')
     proof={'run_id':plan['run_id'],'plan_digest':digest(plan),'archive_sha256':hashlib.sha256(Path(archive).read_bytes()).hexdigest(),
         'closed_members':len(content),'parent_outcome':terminal['outcome'],'gpu_validation_gate':False,
-        'gpu_runtime':'unverified','correctness_scored':False,'official_score':None,'digest_is_execution_attestation':False}
+        'gpu_runtime':'unverified','correctness_scored':False,'official_score':None,'digest_is_execution_attestation':False,
+        'expected_task_count':len(plan['task_order']),
+        'expected_test_count':sum(s['test_count'] for s in plan['task_specs'].values()),
+        'expected_attempt_slots':2*sum(s['test_count'] for s in plan['task_specs'].values()),
+        'expected_worker_attempts':len(plan['worker_attempts'])}
     if 'worker-receipts.json' not in content:
         require(terminal['outcome']=='failed','success needs worker dispatch evidence')
         proof.update(outcome='failed-before-dispatch',failure_phase=terminal['phase']);return proof
@@ -235,7 +255,10 @@ def verify(archive,package):
             require(r['mode']==attempt['mode'] and r['outcome'] in {'complete','failed','inconclusive'} and
                 isinstance(r['failures'],list) and (receipt['status']!='complete' or r['outcome']!='failed'),
                 'child failure cannot become parent success')
-            controls=verify_controls(content,prefix,e,r)
+            require(prefix+'hardware.json' in content and
+                read(prefix+'hardware.json')['device_uuid']==devices[0]['uuid'],
+                'every retained worker result needs physical GPU zero identity')
+            controls=verify_controls(content,prefix,e,r,plan)
             p.update(cache_observed=controls['cache_observed'],reset_call_observed=controls['reset_call_observed'],
                 cache_reset_gate=controls['complete'],worker_outcome=r['outcome'])
             if controls['cache_observed']:
@@ -251,6 +274,7 @@ def verify(archive,package):
                 p['result_qualified']=(normal and r['training_complete'] is False and r['tests']==[] and
                     p['reserved_forwards']==p['reserved_steps']==0 and counts['generation']==counts['verification']==0)
             elif attempt['mode']=='fault-after-two-updates':
+                verify_inventory(read(prefix+'pre-reset-inventory.json'),plan)
                 expected_failure=[{'phase':'pipeline','error_type':'RuntimeError',
                     'error_message':'planned isolation fault after two native updates'}]
                 p['result_qualified']=(receipt['launched'] and receipt['status']=='failed' and receipt['returncode']==1 and
@@ -269,7 +293,10 @@ def verify(archive,package):
             generation_batches+=sum(x['event']=='generation_reserved' for x in e)
     require(sum(p['reserved_forwards'] for p in proofs)<=plan['maximum_training_forwards'] and
         sum(p['reserved_steps'] for p in proofs)<=plan['maximum_optimizer_steps'] and
-        sum(p['tokens'] for p in proofs)<=plan['maximum_training_tokens'],'session training reservations differ')
+        sum(p['tokens'] for p in proofs)<=plan['maximum_training_tokens'] and
+        sum(p['supervised_tokens'] for p in proofs)<=plan['maximum_supervised_tokens'] and
+        terminal['training_steps_reserved']==sum(p['reserved_microsteps'] for p in proofs)<=plan['maximum_training_microsteps'],
+        'session training reservations differ')
     require(terminal['model_forwards']==sum(p['forwards'] for p in proofs)+inference_completed and
         terminal['model_forwards_reserved']==sum(p['reserved_forwards'] for p in proofs)+inference_reserved<=plan['maximum_outer_forwards'] and
         terminal['optimizer_steps']==sum(p['steps'] for p in proofs) and
@@ -309,8 +336,14 @@ def verify(archive,package):
     return proof
 
 
-if __name__=='__main__':
+def main(argv=None):
     parser=argparse.ArgumentParser()
     for name in ('archive','package','output'):parser.add_argument('--'+name,type=Path,required=True)
-    args=parser.parse_args();require(not args.output.exists(),'new immutable proof required')
+    parser.add_argument('--require-gpu-gate',action='store_true',
+        help='retain diagnostic proof but return 2 unless every native GPU qualification gate passes')
+    args=parser.parse_args(argv);require(not args.output.exists(),'new immutable proof required')
     proof=verify(args.archive,args.package);write(args.output,proof);print(json.dumps(proof))
+    return 2 if args.require_gpu_gate and proof['gpu_validation_gate'] is not True else 0
+
+
+if __name__=='__main__':sys.exit(main())

@@ -1,0 +1,1297 @@
+{
+  "format": "irisx/native-solve-stage3-evidence-v1",
+  "date": "2026-10-04",
+  "baseline_commit": "c2079c9132fe855ca69e359109069e29fa6eb707",
+  "branch": "main",
+  "development_profile": "gpt-6.1-sol / xhigh",
+  "authority": "local implementation/offline CPU replay/inert handoff only",
+  "status": "review-ready-inert-GPU-unverified",
+  "review_ready": true,
+  "GPU_runtime_verified": false,
+  "official_score": null,
+  "candidate": {
+    "ARC_scoring": false,
+    "GPU_calls": 0,
+    "GPU_runtime_verified": false,
+    "admission_facts": {
+      "observed_l4_quota_multiplier": null,
+      "owner_clearance_ref": null,
+      "owner_editor_sessions_closed": null,
+      "prior_sessions_reconciled": null,
+      "quick_save_authorized": null,
+      "quota_observed_at": null,
+      "quota_reservation_id": null,
+      "reserved_quota_hours": null
+    },
+    "admission_required_before_derived_package_and_save": true,
+    "approved": false,
+    "changed_plan_fields_from_006": [
+      "kernel_id",
+      "run_id"
+    ],
+    "external_calls": 0,
+    "format": "irisx/native-stage3-review-candidate-v1",
+    "kernel_metadata": {
+      "code_file": "notebook.ipynb",
+      "competition_sources": [
+        "arc-prize-2026-arc-agi-2"
+      ],
+      "dataset_sources": [],
+      "docker_image": "gcr.io/kaggle-private-byod/python@sha256:320043e14c68293f1c946585b9257123385205a58af4b94b17d31868cae4e868",
+      "enable_gpu": true,
+      "enable_internet": false,
+      "id": "danielwuu/nvarc-original-qwen3-native-multitask-007",
+      "is_private": true,
+      "kernel_sources": [
+        "sorokin/pip-install-unsloth-flash-patch"
+      ],
+      "kernel_type": "notebook",
+      "language": "python",
+      "model_sources": [
+        "sorokin/qwen3_4b_grids15_sft139/transformers/bfloat16/1"
+      ],
+      "title": "nvarc-original-qwen3-native-multitask-007"
+    },
+    "limits": {
+      "maximum_child_wall_seconds": 1000,
+      "maximum_generations": 12,
+      "maximum_notebook_wall_seconds": 3600,
+      "maximum_optimizer_steps": 258,
+      "maximum_outer_forwards": 12958,
+      "maximum_paid_usd": 0,
+      "maximum_result_uncompressed_bytes": 100663296,
+      "maximum_supervised_tokens": 3824,
+      "maximum_teacher_calls": 0,
+      "maximum_training_forwards": 258,
+      "maximum_training_microsteps": 259,
+      "maximum_training_tokens": 21232,
+      "minimum_free_working_bytes": 4294967296,
+      "minimum_worker_admission_seconds": 240,
+      "packaging_reserve_seconds": 240,
+      "required_quota_reservation_hours": 2.5
+    },
+    "new_admitted_identity_suggested": "nvarc-original-qwen3-native-multitask-008",
+    "next_identity_is_not_reserved_or_approved": true,
+    "notebook_sha256": "a4d9d481fa2693f8b9a1d79a363e804532171d396d3fbf1dc6b0cac7131e1e19",
+    "official_score": null,
+    "package": ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-007/package-l4",
+    "payload_sha256": {
+      "bridge": "8cc5a5095bef1a0e65cd0a2c54e697d510590086dc88509045b1205b27b6cbff",
+      "budget": "cbde3bb4eb4353355d02e70f471d867c85619f6e620ea039836d2578e8218b7f",
+      "challenges": "fa6d9af3a8a69adcf9ad678a677d6583944335c888c4b6be67adc4f813a0db96",
+      "decoder": "965cfd910777d9bbec9681c6c15c5e2ea3924569734248046f5e58f16cb28222",
+      "editor_archive": "e27271aed999e350413836776e5076b958d523feda5da7300d11ff6740882c2d",
+      "exporter": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf",
+      "hardware": "61316aa900b47106e2bc9b0ffb04b02045839e411759973a10de53c5168af642",
+      "helper": "c073e2839f7013d24c9aaaffd92ad82a2c0a44180efc6d3dffc09084999cd8e2",
+      "loader": "d01cd56167e534ae156706ef62ab11662fc7b403964614a7a55131940bde970c",
+      "model_inventory": "12bff7ba56480b2165742cce03bf2bfc9b1e6d908f34ad815c77f8286c0b943a",
+      "multitask": "4224e8cc4004d106661ec8678952b20d8dc54cf48b84f638ee6416fabc2abf64",
+      "plan": "ccacce536d11058dd9d3d0b531f68a0c6e6dc1a49ba52c2bc8e263e76534abef",
+      "schedule": "e40a70266132a78174e8fe0b73b02c4a1a9e9239e3431c362c8bb7b40f32cbcc",
+      "solve_runtime": "6007cd3cb8feeb78c7506631d6fd2f1511581318ca49d43adcfa87dec52ec64d",
+      "solver": "1387c5b0b188dcc8570659dd5905ec2e824e5e0dfd7b20d8be9c2e13d0f12962",
+      "source_inventory": "1fe9bf4cda59fb323928bf7037e6058363f2c25f2cf31b40c4c4c5befa1a9c93",
+      "task_materials_gzip": "2c3277712626a02992c7c1f94dfe81b272e3d911bc45389641e4d5524b15732c",
+      "worker": "d70135dd2c8cdcf3d7ace12007663856eddaaf09c9959d58aea6a44fa2d40237"
+    },
+    "plan_digest": "sha256:ccacce536d11058dd9d3d0b531f68a0c6e6dc1a49ba52c2bc8e263e76534abef",
+    "producer_files": {
+      "bridge": "8cc5a5095bef1a0e65cd0a2c54e697d510590086dc88509045b1205b27b6cbff",
+      "budget": "cbde3bb4eb4353355d02e70f471d867c85619f6e620ea039836d2578e8218b7f",
+      "exporter": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf",
+      "helper": "c073e2839f7013d24c9aaaffd92ad82a2c0a44180efc6d3dffc09084999cd8e2",
+      "multitask": "4224e8cc4004d106661ec8678952b20d8dc54cf48b84f638ee6416fabc2abf64",
+      "schedule": "e40a70266132a78174e8fe0b73b02c4a1a9e9239e3431c362c8bb7b40f32cbcc",
+      "solve_runtime": "6007cd3cb8feeb78c7506631d6fd2f1511581318ca49d43adcfa87dec52ec64d",
+      "worker": "d70135dd2c8cdcf3d7ace12007663856eddaaf09c9959d58aea6a44fa2d40237"
+    },
+    "review_ledger_sha256": "b3d5ba750bec2febe83848b21f563e54817a74d765c4b286239f5214ee7e3f94",
+    "review_ready": true,
+    "run_id": "nvarc-original-qwen3-native-multitask-007",
+    "runtime_mounts": [
+      "/kaggle/input/competitions/arc-prize-2026-arc-agi-2",
+      "/kaggle/input/models/sorokin/qwen3_4b_grids15_sft139/transformers/bfloat16/1",
+      "/kaggle/input/qwen3_4b_grids15_sft139/transformers/bfloat16/1",
+      "/kaggle/usr/lib/notebooks"
+    ],
+    "same_frozen_proposal006_producer_and_nonplan_payload": true,
+    "save_request_sha256": "ab477cc59f1e4101bdb344a6ffc6cec98ab60ec5f1dfdfb1d996a3671d0cf2d8",
+    "save_wire_fields": {
+      "competitionDataSources": [
+        "arc-prize-2026-arc-agi-2"
+      ],
+      "dockerImage": "gcr.io/kaggle-private-byod/python@sha256:320043e14c68293f1c946585b9257123385205a58af4b94b17d31868cae4e868",
+      "enableGpu": true,
+      "enableInternet": false,
+      "enableTpu": false,
+      "isPrivate": true,
+      "kernelDataSources": [
+        "sorokin/pip-install-unsloth-flash-patch"
+      ],
+      "kernelExecutionType": "QUICK_SAVE",
+      "kernelType": "notebook",
+      "language": "python",
+      "machineShape": "NvidiaL4",
+      "modelDataSources": [
+        "sorokin/qwen3_4b_grids15_sft139/transformers/bfloat16/1"
+      ],
+      "newTitle": "nvarc-original-qwen3-native-multitask-007",
+      "sessionTimeoutSeconds": 3600,
+      "slug": "danielwuu/nvarc-original-qwen3-native-multitask-007"
+    },
+    "summary_sha256": "1f1945343451eee04cdc41aa19446738d4f3526454131ce0f346cd9dfe096f6e",
+    "task_specs": {
+      "44f52bb0": {
+        "expected_rows_digest": "sha256:7425df25ccf35322ec91c43399598b80229cd216afe5c5b6a58f88031a319c14",
+        "inference_forward_limits": {
+          "control": 7,
+          "generation": 8192,
+          "verification": 256
+        },
+        "inference_reserve_seconds": 300,
+        "inference_seconds": 450,
+        "maximum_candidate_sequences_per_test": 64,
+        "maximum_inference_input_tokens": 10485760,
+        "maximum_sequence_tokens": 120,
+        "optimizer_steps": 128,
+        "per_test_limits": {
+          "generation": 4096,
+          "input_tokens": 5242880,
+          "verification": 128
+        },
+        "reset_reserve_seconds": 60,
+        "source_learning_rates": [
+          0.0,
+          3.846153846153847e-06,
+          7.692307692307694e-06,
+          1.153846153846154e-05,
+          1.5384615384615387e-05,
+          1.923076923076923e-05,
+          2.307692307692308e-05,
+          2.6923076923076923e-05,
+          3.0769230769230774e-05,
+          3.461538461538462e-05,
+          3.846153846153846e-05,
+          4.230769230769231e-05,
+          4.615384615384616e-05,
+          5e-05,
+          4.999067203154777e-05,
+          4.99626950870707e-05,
+          4.991609004401324e-05,
+          4.985089168080509e-05,
+          4.976714865090827e-05,
+          4.966492344651005e-05,
+          4.9544292351888966e-05,
+          4.9405345386488614e-05,
+          4.924818623774178e-05,
+          4.907293218369499e-05,
+          4.88797140054912e-05,
+          4.8668675889776095e-05,
+          4.843997532110051e-05,
+          4.819378296439961e-05,
+          4.793028253763633e-05,
+          4.76496706747041e-05,
+          4.735215677869128e-05,
+          4.703796286561679e-05,
+          4.6707323398753346e-05,
+          4.6360485113662216e-05,
+          4.599770683406991e-05,
+          4.5619259278724214e-05,
+          4.522542485937369e-05,
+          4.4816497470021454e-05,
+          4.43927822676105e-05,
+          4.395459544430407e-05,
+          4.35022639915313e-05,
+          4.3036125455973896e-05,
+          4.2556527687676186e-05,
+          4.206382858046636e-05,
+          4.1558395804882695e-05,
+          4.1040606533804024e-05,
+          4.051084716098921e-05,
+          3.996951301273557e-05,
+          3.941700805287168e-05,
+          3.885374458130437e-05,
+          3.828014292634509e-05,
+          3.769663113104516e-05,
+          3.7103644633774014e-05,
+          3.6501625943278805e-05,
+          3.589102430846773e-05,
+          3.527229538316371e-05,
+          3.464590088607839e-05,
+          3.401230825626037e-05,
+          3.3371990304274656e-05,
+          3.272542485937369e-05,
+          3.207309441292325e-05,
+          3.1415485758349346e-05,
+          3.075308962787466e-05,
+          3.008640032631585e-05,
+          2.9415915362214692e-05,
+          2.874213507657861e-05,
+          2.8065562269507463e-05,
+          2.7386701824985255e-05,
+          2.6706060334116777e-05,
+          2.6024145717090358e-05,
+          2.5341466844148775e-05,
+          2.4658533155851228e-05,
+          2.3975854282909644e-05,
+          2.329393966588323e-05,
+          2.261329817501475e-05,
+          2.1934437730492543e-05,
+          2.1257864923421404e-05,
+          2.0584084637785317e-05,
+          1.991359967368416e-05,
+          1.9246910372125342e-05,
+          1.8584514241650666e-05,
+          1.7926905587076747e-05,
+          1.7274575140626318e-05,
+          1.6628009695725346e-05,
+          1.5987691743739636e-05,
+          1.5354099113921615e-05,
+          1.4727704616836296e-05,
+          1.4108975691532272e-05,
+          1.3498374056721197e-05,
+          1.2896355366225999e-05,
+          1.2303368868954848e-05,
+          1.1719857073654922e-05,
+          1.1146255418695634e-05,
+          1.0582991947128324e-05,
+          1.0030486987264437e-05,
+          9.489152839010797e-06,
+          8.95939346619597e-06,
+          8.441604195117314e-06,
+          7.936171419533653e-06,
+          7.4434723123238236e-06,
+          6.9638745440261084e-06,
+          6.497736008468702e-06,
+          6.045404555695938e-06,
+          5.607217732389503e-06,
+          5.183502529978546e-06,
+          4.7745751406263165e-06,
+          4.380740721275786e-06,
+          4.002293165930087e-06,
+          3.6395148863377858e-06,
+          3.292676601246661e-06,
+          2.962037134383211e-06,
+          2.6478432213087213e-06,
+          2.3503293252959136e-06,
+          2.0697174623636794e-06,
+          1.8062170356003855e-06,
+          1.5600246788994938e-06,
+          1.3313241102239054e-06,
+          1.120285994508799e-06,
+          9.270678163050217e-07,
+          7.518137622582188e-07,
+          5.946546135113862e-07,
+          4.5570764811103674e-07,
+          3.350765534899519e-07,
+          2.3285134909173112e-07,
+          1.4910831919490996e-07,
+          8.390995598676066e-08,
+          3.730491292930072e-08,
+          9.327968452232938e-09,
+          0.0
+        ],
+        "task_seconds": 800,
+        "test_count": 2,
+        "texts_digest": "sha256:ef585e7806be916e2dd3d823207f40b627264eab2a237cfa86ca6ceaba3abaac",
+        "training_forwards": 128,
+        "training_input_tokens": 15360,
+        "training_supervised_tokens": 1536
+      },
+      "833966f4": {
+        "expected_rows_digest": "sha256:8df2f46a5e9069347f70d6d002c313649ab9b13b6325bd1189df355d8b228fb2",
+        "inference_forward_limits": {
+          "control": 7,
+          "generation": 4096,
+          "verification": 128
+        },
+        "inference_reserve_seconds": 300,
+        "inference_seconds": 450,
+        "maximum_candidate_sequences_per_test": 64,
+        "maximum_inference_input_tokens": 5242880,
+        "maximum_sequence_tokens": 52,
+        "optimizer_steps": 128,
+        "per_test_limits": {
+          "generation": 4096,
+          "input_tokens": 5242880,
+          "verification": 128
+        },
+        "reset_reserve_seconds": 60,
+        "source_learning_rates": [
+          0.0,
+          3.846153846153847e-06,
+          7.692307692307694e-06,
+          1.153846153846154e-05,
+          1.5384615384615387e-05,
+          1.923076923076923e-05,
+          2.307692307692308e-05,
+          2.6923076923076923e-05,
+          3.0769230769230774e-05,
+          3.461538461538462e-05,
+          3.846153846153846e-05,
+          4.230769230769231e-05,
+          4.615384615384616e-05,
+          5e-05,
+          4.999067203154777e-05,
+          4.99626950870707e-05,
+          4.991609004401324e-05,
+          4.985089168080509e-05,
+          4.976714865090827e-05,
+          4.966492344651005e-05,
+          4.9544292351888966e-05,
+          4.9405345386488614e-05,
+          4.924818623774178e-05,
+          4.907293218369499e-05,
+          4.88797140054912e-05,
+          4.8668675889776095e-05,
+          4.843997532110051e-05,
+          4.819378296439961e-05,
+          4.793028253763633e-05,
+          4.76496706747041e-05,
+          4.735215677869128e-05,
+          4.703796286561679e-05,
+          4.6707323398753346e-05,
+          4.6360485113662216e-05,
+          4.599770683406991e-05,
+          4.5619259278724214e-05,
+          4.522542485937369e-05,
+          4.4816497470021454e-05,
+          4.43927822676105e-05,
+          4.395459544430407e-05,
+          4.35022639915313e-05,
+          4.3036125455973896e-05,
+          4.2556527687676186e-05,
+          4.206382858046636e-05,
+          4.1558395804882695e-05,
+          4.1040606533804024e-05,
+          4.051084716098921e-05,
+          3.996951301273557e-05,
+          3.941700805287168e-05,
+          3.885374458130437e-05,
+          3.828014292634509e-05,
+          3.769663113104516e-05,
+          3.7103644633774014e-05,
+          3.6501625943278805e-05,
+          3.589102430846773e-05,
+          3.527229538316371e-05,
+          3.464590088607839e-05,
+          3.401230825626037e-05,
+          3.3371990304274656e-05,
+          3.272542485937369e-05,
+          3.207309441292325e-05,
+          3.1415485758349346e-05,
+          3.075308962787466e-05,
+          3.008640032631585e-05,
+          2.9415915362214692e-05,
+          2.874213507657861e-05,
+          2.8065562269507463e-05,
+          2.7386701824985255e-05,
+          2.6706060334116777e-05,
+          2.6024145717090358e-05,
+          2.5341466844148775e-05,
+          2.4658533155851228e-05,
+          2.3975854282909644e-05,
+          2.329393966588323e-05,
+          2.261329817501475e-05,
+          2.1934437730492543e-05,
+          2.1257864923421404e-05,
+          2.0584084637785317e-05,
+          1.991359967368416e-05,
+          1.9246910372125342e-05,
+          1.8584514241650666e-05,
+          1.7926905587076747e-05,
+          1.7274575140626318e-05,
+          1.6628009695725346e-05,
+          1.5987691743739636e-05,
+          1.5354099113921615e-05,
+          1.4727704616836296e-05,
+          1.4108975691532272e-05,
+          1.3498374056721197e-05,
+          1.2896355366225999e-05,
+          1.2303368868954848e-05,
+          1.1719857073654922e-05,
+          1.1146255418695634e-05,
+          1.0582991947128324e-05,
+          1.0030486987264437e-05,
+          9.489152839010797e-06,
+          8.95939346619597e-06,
+          8.441604195117314e-06,
+          7.936171419533653e-06,
+          7.4434723123238236e-06,
+          6.9638745440261084e-06,
+          6.497736008468702e-06,
+          6.045404555695938e-06,
+          5.607217732389503e-06,
+          5.183502529978546e-06,
+          4.7745751406263165e-06,
+          4.380740721275786e-06,
+          4.002293165930087e-06,
+          3.6395148863377858e-06,
+          3.292676601246661e-06,
+          2.962037134383211e-06,
+          2.6478432213087213e-06,
+          2.3503293252959136e-06,
+          2.0697174623636794e-06,
+          1.8062170356003855e-06,
+          1.5600246788994938e-06,
+          1.3313241102239054e-06,
+          1.120285994508799e-06,
+          9.270678163050217e-07,
+          7.518137622582188e-07,
+          5.946546135113862e-07,
+          4.5570764811103674e-07,
+          3.350765534899519e-07,
+          2.3285134909173112e-07,
+          1.4910831919490996e-07,
+          8.390995598676066e-08,
+          3.730491292930072e-08,
+          9.327968452232938e-09,
+          0.0
+        ],
+        "task_seconds": 800,
+        "test_count": 1,
+        "texts_digest": "sha256:1244f238c0a765bfdd6df6b3a04b839ba7936d26bacd507f194b95d6633381ad",
+        "training_forwards": 128,
+        "training_input_tokens": 5632,
+        "training_supervised_tokens": 2048
+      }
+    },
+    "truth_opened": false,
+    "worker_attempts": [
+      {
+        "attempt_id": "44f52bb0",
+        "mode": "solve",
+        "task_id": "44f52bb0"
+      },
+      {
+        "attempt_id": "833966f4",
+        "mode": "solve",
+        "task_id": "833966f4"
+      },
+      {
+        "attempt_id": "fault-first",
+        "mode": "fault-after-two-updates",
+        "task_id": "44f52bb0"
+      },
+      {
+        "attempt_id": "baseline-after-fault",
+        "mode": "baseline-only",
+        "task_id": "833966f4"
+      }
+    ]
+  },
+  "commands": {
+    "archive-focused": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "tests.nvarc_native_multitask_archive_strict",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 15.477853899996262,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\archive-focused.log",
+      "log_sha256": "3364dff95e38e17a013603d059d63e8e26226ed3a4a7a9f96c422d0736ddea86",
+      "log_bytes": 3559,
+      "test_counts": [
+        17
+      ],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 965,
+        "sha256": "5b03279d715edb3fdde9ad88cd1894824c448fbf30f8b651a79ad6512a44d874"
+      }
+    },
+    "candidate-audit": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        ".irisx/native-solve-stage3-20261004-001/audit_candidate.py"
+      ],
+      "exit_code": 0,
+      "seconds": 15.884458599990467,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\candidate-audit.log",
+      "log_sha256": "10cfb68f4cf7abe1f7334e1958a979cd4aa974c7d2429e5b6c58999c6f1419a6",
+      "log_bytes": 353,
+      "test_counts": [],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 928,
+        "sha256": "e1e730c729812a088c652e070cc8170e00d5c5de54cec19900b0a8b7b81f9de3"
+      }
+    },
+    "candidate007-review": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/save_nvarc_native_multitask.py",
+        "review",
+        "--package",
+        ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-007/package-l4"
+      ],
+      "exit_code": 0,
+      "seconds": 4.252440200012643,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\candidate007-review.log",
+      "log_sha256": "97c4e99a2b4b8e138707c065e2efa28fa005b1313595334c41bbdebcf5c7e08e",
+      "log_bytes": 420,
+      "test_counts": [],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 1030,
+        "sha256": "a02dad335d5352c56969101b3a6225868711d7419484fb1b09bdf5fee3583694"
+      }
+    },
+    "candidate007-stage": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/stage_nvarc_native_multitask.py",
+        "stage",
+        "--package",
+        ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-007/package-l4",
+        "--run-id",
+        "nvarc-original-qwen3-native-multitask-007"
+      ],
+      "exit_code": 0,
+      "seconds": 8.311974399985047,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\candidate007-stage.log",
+      "log_sha256": "265e6a23894d6afca59d7c62f243216a11bc4e5deb6b6a45e2b4bdf1421584e2",
+      "log_bytes": 292,
+      "test_counts": [],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 1096,
+        "sha256": "b7c3503779139149855f9b00207e8970c018090d54509e31789824592a197b6e"
+      }
+    },
+    "frozen006-archive": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/verify_nvarc_native_multitask.py",
+        "--archive",
+        ".irisx/native-solve-stage2-20261004-001/inert-work-006/結果.zip",
+        "--package",
+        ".irisx/native-solve-stage2-20261004-001/proposal-006",
+        "--output",
+        ".irisx/native-solve-stage3-20261004-001/frozen006-archive-proof.json",
+        "--require-gpu-gate"
+      ],
+      "exit_code": 2,
+      "seconds": 7.555634499993175,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\frozen006-archive.log",
+      "log_sha256": "99ffadf8c61b890655894989ebda76c22cfd35800dc72700bc1fbbf70b1e5cf6",
+      "log_bytes": 626,
+      "test_counts": [],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 1207,
+        "sha256": "b2bbb57128a467a7c5e4c8ecf1030c769413ecfc77129565c3de4517b6de0361"
+      }
+    },
+    "frozen006-preflight": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/stage_nvarc_native_multitask.py",
+        "preflight",
+        "--package",
+        ".irisx/native-solve-stage2-20261004-001/proposal-006"
+      ],
+      "exit_code": 0,
+      "seconds": 3.7893172999902163,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\frozen006-preflight.log",
+      "log_sha256": "acc6e6915107f89994c953d96e21c12e376595c731dda7d66c3f02b09926fce3",
+      "log_bytes": 292,
+      "test_counts": [],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 1008,
+        "sha256": "8ecd7e61fc10e4753f44bbda4b0cd5623f87cda0f9ba2132190436f163ae0573"
+      }
+    },
+    "inert007-acceptance": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/verify_nvarc_native_multitask.py",
+        "--archive",
+        ".irisx/native-solve-stage3-20261004-001/inert-work-007/結果.zip",
+        "--package",
+        ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-007/package-l4",
+        "--output",
+        ".irisx/native-solve-stage3-20261004-001/inert007-archive-proof.json",
+        "--require-gpu-gate"
+      ],
+      "exit_code": 2,
+      "seconds": 8.540073899988784,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\inert007-acceptance.log",
+      "log_sha256": "a2b8f3cca00ed35b02f23c84162ac16e418239e3f0c2cdf73f5174f35e425a83",
+      "log_bytes": 626,
+      "test_counts": [],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 1235,
+        "sha256": "9422628a7baa9be0b8ec447101e342ac2396705cc83ca1faa768fea663d53032"
+      }
+    },
+    "inert007-local": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        ".irisx/native-solve-stage3-20261004-001/inert007.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.23901540000224486,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\inert007-local.log",
+      "log_sha256": "817998848fd10da5b990428f65fdae9a6753f508168cc09159d836b1face3fa0",
+      "log_bytes": 375,
+      "test_counts": [],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 921,
+        "sha256": "c7a134a56468b7b19b98f1dcffee9c98f59a51603757cb0c2a1f80baee42fec8"
+      }
+    },
+    "repository-all": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/repository_check.py",
+        "--all"
+      ],
+      "exit_code": 1,
+      "seconds": 459.8434841000126,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\repository-all.log",
+      "log_sha256": "6688e692a0f22d6fdec6b6662e33ec7c98ff108a8f937ca345b8a32ab2e9e95c",
+      "log_bytes": 93365,
+      "test_counts": [
+        3,
+        504
+      ],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 930,
+        "sha256": "6a964fd4b5bc88d3046acbe403e8f7cf470b10adca93123ad50ae30971cf4b5e"
+      }
+    },
+    "repository-confirmation": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/repository_check.py",
+        "--all"
+      ],
+      "exit_code": 0,
+      "seconds": 460.6710114000016,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\repository-confirmation.log",
+      "log_sha256": "96d8617ebbb4025ca07e8654c3ab69f27afcf849dab1073b3724d86d02c7f071",
+      "log_bytes": 91835,
+      "test_counts": [
+        3,
+        504
+      ],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 939,
+        "sha256": "10af648bf380bb1d7660599ca8223176a95c74a420c6751d7b908d35083d2242"
+      }
+    },
+    "repository-failure-isolated": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_combined_repair.StructuredTeacherTests.test_paired_descriptions_four_dependent_saved_stages_and_fail_closed_replay",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 0.4342297999828588,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\repository-failure-isolated.log",
+      "log_sha256": "2e4c10f6eda3a17d953c76dd46eeac636841737533d1cdb64af00290aab7b011",
+      "log_bytes": 320,
+      "test_counts": [
+        1
+      ],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 1063,
+        "sha256": "924f82561666a8540573c25d50c40a7748d36cf7386ecbccd9c030d08b5fe60e"
+      }
+    },
+    "risk-offline-fixed": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        ".irisx/native-solve-stage3-20261004-001/risk_probe.py"
+      ],
+      "exit_code": 0,
+      "seconds": 21.869911299989326,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\risk-offline-fixed.log",
+      "log_sha256": "9c1e3674ed358c22e1330eee8d65c8426ee751f4dd38671aa158b99868dc0c1f",
+      "log_bytes": 1235,
+      "test_counts": [],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 927,
+        "sha256": "7cd48e6a874d687e31a009bc2404ba2906e0f263a8b9c70c22a275d18ed9ccf6"
+      }
+    },
+    "risk-offline": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        ".irisx/native-solve-stage3-20261004-001/risk_probe.py"
+      ],
+      "exit_code": 1,
+      "seconds": 4.3170633999980055,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\risk-offline.log",
+      "log_sha256": "372e5f7f7b6f2cc3dd85b5c068a4bb0ae1b7299967af07fc338d1d5db8ef0a8a",
+      "log_bytes": 1306,
+      "test_counts": [],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 921,
+        "sha256": "59cf908eccce4e134bd4c726b904e5702cf739e48c8a82666aad26d151e25ffe"
+      }
+    },
+    "strict-final": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_native_editor_transport",
+        "tests.nvarc_native_solve_strict",
+        "tests.nvarc_native_multitask_strict",
+        "tests.nvarc_native_multitask_archive_strict",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 43.49509290000424,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\strict-final.log",
+      "log_sha256": "7e530d3d90275aed7d531b450f10e339e878655b09a24ea54c02b6482e28c238",
+      "log_bytes": 7319,
+      "test_counts": [
+        36
+      ],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 1094,
+        "sha256": "9757decd2de27c2086147f5eb90cac99bee6384b8aceb6e1549da0a853ac47d2"
+      }
+    },
+    "transport-first": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_native_editor_transport",
+        "-v"
+      ],
+      "exit_code": 1,
+      "seconds": 13.128692500002217,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\transport-first.log",
+      "log_sha256": "691e24e9476680194849ec4484d8ec00e226b3fe88070dc9157ad85ee572991d",
+      "log_bytes": 3658,
+      "test_counts": [
+        9
+      ],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 961,
+        "sha256": "651b9e7cd997c7dd1f1688d00afb52bad088424988fddc607be6b21ce5bdf528"
+      }
+    },
+    "transport-fixed": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_native_editor_transport",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 12.650540400005411,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\transport-fixed.log",
+      "log_sha256": "79a462bee6d268786a5c42301a3844571911c3bd421f8d9f9a5043708c02f91f",
+      "log_bytes": 1818,
+      "test_counts": [
+        9
+      ],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 961,
+        "sha256": "84a6802d89d05ab10259e9323319f08cc7221321d1692465c2eab5cffecb96f8"
+      }
+    },
+    "transport-roundtrip": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_native_editor_transport",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 58.11125680000987,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\transport-roundtrip.log",
+      "log_sha256": "029d2ee3cdc864e97b7b08187f10f38c7314e568318073844101bea07b918828",
+      "log_bytes": 2621,
+      "test_counts": [
+        13
+      ],
+      "skip_summaries": [],
+      "environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+        "HF_HUB_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+      },
+      "concurrent_task_heavy_workloads": 0,
+      "summary_binding": {
+        "bytes": 965,
+        "sha256": "3174c08f46fb32bf6dee1013ad5dd66a6f2df420b2d1bfb08c3023f005796878"
+      }
+    }
+  },
+  "offline_risks": {
+    "CPU_fixture_model_forwards": 10,
+    "boundary_observations": [
+      {
+        "eligible": true,
+        "float32_logits": [
+          -1.6094379425048828,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637
+        ],
+        "input_probability": 0.19999999,
+        "nll": 1.6094378232955933,
+        "strict_threshold": 1.6094379124341003
+      },
+      {
+        "eligible": true,
+        "float32_logits": [
+          -1.6094379425048828,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637
+        ],
+        "input_probability": 0.2,
+        "nll": 1.6094378232955933,
+        "strict_threshold": 1.6094379124341003
+      },
+      {
+        "eligible": true,
+        "float32_logits": [
+          -1.6094379425048828,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637,
+          -2.9311938285827637
+        ],
+        "input_probability": 0.20000001,
+        "nll": 1.6094378232955933,
+        "strict_threshold": 1.6094379124341003
+      }
+    ],
+    "correctness_scored": false,
+    "cross_profile_exact_DFS_replay": "unverified; no target Torch 2.8 native GPU logit/clock transcript in this workload",
+    "deep_sibling_source_replay": {
+      "exact": true,
+      "fixture_only": true,
+      "forwards": 4,
+      "seen_suffixes": [
+        [],
+        [
+          0
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1
+        ]
+      ]
+    },
+    "external_calls": 0,
+    "format": "irisx/native-stage3-offline-risk-v1",
+    "local_profile": {
+      "kagglesdk": "0.1.36",
+      "numpy": "2.3.5",
+      "peft": "0.21.0",
+      "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+      "tokenizers": "0.22.2",
+      "torch": "2.12.1+cpu",
+      "transformers": "5.8.1"
+    },
+    "mutable_HF_cache": {
+      "actual_model": "tiny random Qwen3/CPU",
+      "cache_repair_applied": false,
+      "expected_failure": "native cache branch control failed before training"
+    },
+    "native_GPU_cache_deep_sibling": "unverified",
+    "native_GPU_new_calls": 0,
+    "official_score": null,
+    "original_DFS_normalization": "logits.float().cpu().log_softmax(-1); source float32 cumulative score and strict < -log(0.2) unchanged",
+    "paid_usd": 0,
+    "retained_cpu005_replay": {
+      "all_test_export_equal": true,
+      "evidence_digest": "sha256:dc519ff81eaeae4b95ce88d875d6c522e2d6b7d2c4a2a89de3f41ed0cf538466",
+      "model_calls": 0,
+      "submission_sha256": "cfa5b6eef06343795627e7d51550d82d5c0d041f128ab3be7bae509db98423fa",
+      "task_count": 2,
+      "test_count": 3
+    },
+    "scientific_threshold_changes": 0,
+    "source_cells_sha256": {
+      "arc_decoder.py": "965cfd910777d9bbec9681c6c15c5e2ea3924569734248046f5e58f16cb28222",
+      "arc_loader.py": "d01cd56167e534ae156706ef62ab11662fc7b403964614a7a55131940bde970c",
+      "solver.py": "1387c5b0b188dcc8570659dd5905ec2e824e5e0dfd7b20d8be9c2e13d0f12962"
+    },
+    "target_profile": {
+      "native_cache": "Unsloth pinned native008",
+      "python": "3.11.13",
+      "torch": "2.8.0+cu128"
+    }
+  },
+  "strict_validation": {
+    "tests": 36,
+    "skips": 0,
+    "command_record": "strict-final"
+  },
+  "repository_validation": {
+    "command": [
+      "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+      "tools/repository_check.py",
+      "--all"
+    ],
+    "exit_code": 0,
+    "seconds": 460.6710114000016,
+    "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage3-20261004-001\\repository-confirmation.log",
+    "log_sha256": "96d8617ebbb4025ca07e8654c3ab69f27afcf849dab1073b3724d86d02c7f071",
+    "log_bytes": 91835,
+    "test_counts": [
+      3,
+      504
+    ],
+    "skip_summaries": [],
+    "environment": {
+      "PYTHONHASHSEED": "0",
+      "PYTHONUTF8": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "C:\\Users\\wurre\\Desktop\\IRIS-X\\src",
+      "HF_HUB_OFFLINE": "1",
+      "HF_DATASETS_OFFLINE": "1",
+      "TRANSFORMERS_OFFLINE": "1",
+      "IRIS_NATIVE_CODE_ONLY_DIR": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-solve-stage1-20261004-001\\code-only"
+    },
+    "concurrent_task_heavy_workloads": 0,
+    "summary_binding": {
+      "bytes": 939,
+      "sha256": "10af648bf380bb1d7660599ca8223176a95c74a420c6751d7b908d35083d2242"
+    }
+  },
+  "preservation": {
+    "path": ".irisx/native-solve-stage3-20261004-001/preservation-final.json",
+    "binding": {
+      "bytes": 125005,
+      "sha256": "707a9d421e9d1f108fa78ed575e07d554691fcdea1edd538c1725908c9aca783"
+    },
+    "unchanged_files_rehashed": 619,
+    "mismatches": 0,
+    "exact_c2079c9_source_copies": 3
+  },
+  "controller_acceptance": {
+    "path": ".irisx/control-review-c2079c9-caadb179/acceptance.json",
+    "sha256": "2755f5c7f3498c2eef826a4e3c2cf3b0e77bd2490c48da7bef25c958a746a3a1",
+    "prior_concurrent_timing_failure_cause": "unproven; original failure retained"
+  },
+  "retained_first_failures": [
+    {
+      "command_record": "transport-first",
+      "cause": "synthetic duplicate-init admission fixture mismatch; preserved; init now rejects existing journal before reconstruction",
+      "resolution_record": "transport-fixed and strict-final"
+    },
+    {
+      "command_record": "risk-offline",
+      "cause": "local fixture used synthetic source clock as actual adapter deadline; preserved source risk_probe_first.py",
+      "resolution_record": "risk-offline-fixed",
+      "scientific_or_runtime_deadline_changed": false
+    },
+    {
+      "command_record": "repository-all",
+      "cause": "one unchanged saved-teacher CPU fixture raised WinError 5 at os.replace; cause unproven",
+      "diagnostic_record": "repository-failure-isolated",
+      "confirmation_record": "repository-confirmation",
+      "failure_source_modified": false,
+      "timeout_or_test_expectation_relaxed": false,
+      "confirmation_runs_permitted": 1
+    }
+  ],
+  "expected_nonzero": {
+    "inert007-acceptance": 2,
+    "frozen006-archive": 2
+  },
+  "source_file_bindings": {
+    "tools/save_nvarc_native_multitask.py": {
+      "bytes": 13467,
+      "sha256": "48bab40600604c254212fe74e92b476dc5816606bf16fc85ac18fa7861e12549"
+    },
+    "tools/stage_nvarc_native_multitask.py": {
+      "bytes": 16558,
+      "sha256": "4673971c2864e25a5d06e95109d9f85315ade6d3128d6527121c276536d8fb91"
+    },
+    "tools/verify_nvarc_native_multitask.py": {
+      "bytes": 27050,
+      "sha256": "cd5f329a669da559315b2a66d482f7bc60acbce7f863efcb51131ff1cc31c7d0"
+    },
+    "tests/test_nvarc_native_editor_transport.py": {
+      "bytes": 16345,
+      "sha256": "f0a54da0cac7807b153e44debeafc5abe07c914d14b06792f2b66d737b392e9d"
+    },
+    "tests/nvarc_native_multitask_archive_strict.py": {
+      "bytes": 23204,
+      "sha256": "d39928df17a2d24077b4a3c2e0ec5b0fce911ec76e90009c3be5d40cc2084f6e"
+    },
+    "trials/arc-agi-2-qwen35-nvarc/native-solve-stage3-20261004.md": {
+      "bytes": 15772,
+      "sha256": "f0ebf41aa7caf5a6f9ab070c73ef1a7af0329feaf23ee157a1e0901cdba494bc"
+    }
+  },
+  "local_delivery_manifest": {
+    "path": ".irisx/native-solve-stage3-20261004-001/delivery-manifest.json",
+    "binding": {
+      "bytes": 12687,
+      "sha256": "670cdef8bf19d63b02b4d85d0fd32103dce0697da79c63cd6704b75ddb66cfc5"
+    },
+    "files": 65
+  },
+  "external_provider_calls": 0,
+  "credential_calls": 0,
+  "Kaggle_saves": 0,
+  "GPU_execution_calls": 0,
+  "Dataset_mutations": 0,
+  "status_log_output_retrieval_calls": 0,
+  "ARC_correctness_scoring": false,
+  "competition_submission": false,
+  "paid_usd": 0,
+  "teacher_calls": 0,
+  "publication": false,
+  "new_chat": false,
+  "goal_created": false,
+  "automation_created": false,
+  "delegation": false,
+  "stage4_dispatched": false,
+  "git_pushed": false,
+  "affirmative_admission_written": false,
+  "acceptance_command": "tools/verify_nvarc_native_multitask.py --archive <exact returned ZIP> --package <actual admitted derived package> --output <new proof path> --require-gpu-gate",
+  "next_boundary": "exact candidate admission-only derivation and sole private QUICK_SAVE require genuine direct owner authorization and observed reconciled resources; owner runs Editor"
+}

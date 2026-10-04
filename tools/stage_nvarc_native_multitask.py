@@ -41,6 +41,9 @@ def admission_for(path,run_id):
     from datetime import datetime
     import math
     value=json.loads(Path(path).read_bytes())
+    if value.get('format')=='irisx/native-multitask-editor-admission-v2':
+        from tools.save_nvarc_native_multitask import validate_admission
+        return validate_admission(Path(path),run_id)
     fields={'format','run_id','control_sha256','source_commit','maximum_paid_usd','prior_sessions_reconciled',
         'quota_reservation_id','reserved_quota_hours','quota_observed_at','local_resource_admission','ui_operator',
         'private','internet','owner_editor_sessions_closed','owner_clearance_ref','l4_quota_multiplier'}
@@ -153,6 +156,13 @@ def construct(run_id,admission_path=None):
     admission=admission_for(admission_path,run_id)
     if admission is not None:
         plan.update(approved=True,controller_admission=admission,controller_admission_sha256=sha(admission_path))
+        if admission['format']=='irisx/native-multitask-editor-admission-v2':
+            plan.update(source_commit=admission['source_commit'],
+                owner_decision='explicit-stage3-owner-Editor-clearance',
+                owner_execution_instruction_ref=admission['owner_clearance_ref'],
+                approved_proposal_plan_digest=admission['reviewed_plan_digest'],
+                reviewed_proposal_run_id=admission['reviewed_run_id'],
+                quota_observed_at=admission['quota_observed_at'],owner_editor_sessions_closed=True)
     raw['plan']=canonical(plan)
     source=frozen.old.proposal.predecessor.base.render(run_id,
         {k:__import__('base64').b64encode(v).decode() for k,v in raw.items()},
@@ -167,6 +177,13 @@ def construct(run_id,admission_path=None):
 
 def stage(package,run_id,admission_path=None):
     require(not package.exists(),'new immutable multi-task package directory required')
+    # Never create a second package for a retained identity, even in another
+    # staging directory. Old stage/preflight bytes are otherwise unchanged.
+    roots=ROOT/'.irisx'
+    retained=list((roots/'nvarc-original/runs').glob('*/package-*/plan.json'))
+    retained+=list(roots.glob('native-solve-stage*/**/plan.json'))
+    require(not any(json.loads(p.read_bytes()).get('run_id')==run_id for p in retained),
+        'retained native multi-task identity cannot be reused')
     plan,raw,notebook,metadata=construct(run_id,admission_path)
     (package/'kernel').mkdir(parents=True);write(package/'plan.json',plan)
     write(package/'kernel/notebook.ipynb',notebook);write(package/'kernel/kernel-metadata.json',metadata)

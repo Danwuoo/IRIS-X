@@ -147,11 +147,13 @@ class ArchiveQualificationTests(unittest.TestCase):
 
     def archive(self):
         self.put('worker-receipts.json',self.receipts)
-        counters=dict(model_forwards=0,model_forwards_reserved=0,optimizer_steps=0,optimizer_steps_reserved=0,generations=0)
+        counters=dict(model_forwards=0,model_forwards_reserved=0,optimizer_steps=0,optimizer_steps_reserved=0,
+            training_steps_reserved=0,generations=0)
         for attempt in self.plan['worker_attempts']:
             prefix='tasks/'+attempt['attempt_id']+'/native/'
             if prefix+'training-ledger.json' in self.content:
                 ledger=self.get(prefix+'training-ledger.json')
+                counters['training_steps_reserved']+=len(ledger['training_steps'])
                 for kind,key in [('forwards','model_forwards'),('optimizer_steps','optimizer_steps')]:
                     counters[key]+=sum(r['completed'] for r in ledger[kind]);counters[key+'_reserved']+=len(ledger[kind])
             if prefix+'events.jsonl' in self.content:
@@ -307,3 +309,20 @@ class ArchiveQualificationTests(unittest.TestCase):
     def test_fault_signal_exit_is_not_the_expected_python_exception(self):
         self.receipts[2]['returncode']=-9;proof=self.verify()
         self.assertFalse(proof['gpu_validation_gate']);self.assertFalse(proof['expected_injected_failure_observed'])
+
+    def test_fault_changed_fingerprint_must_be_finite_and_exact_topology(self):
+        name='tasks/fault-first/native/pre-reset-inventory.json';original=self.get(name)
+        for change in ({'finite':False},{'shape':[1]},{'sha256':'unbound'}):
+            with self.subTest(change=change):
+                value=copy.deepcopy(original);value[0].update(change);self.put(name,value)
+                with self.assertRaisesRegex(RuntimeError,'fingerprint topology'):self.verify()
+
+    def test_auxiliary_worker_cannot_omit_physical_gpu_identity(self):
+        del self.content['tasks/baseline-after-fault/native/hardware.json']
+        with self.assertRaisesRegex(RuntimeError,'physical GPU zero'):self.verify()
+
+    def test_parent_training_microstep_recount_cannot_be_a_flag(self):
+        with patch.object(verifier,'parse_json',side_effect=lambda body:
+                dict(json.loads(body),training_steps_reserved=259) if b'worker_receipts_digest' in body and
+                    b'"phase":"terminal"' in body else json.loads(body)):
+            with self.assertRaisesRegex(RuntimeError,'training reservations'):self.verify()
