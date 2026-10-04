@@ -2,6 +2,12 @@
 
 This directory contains only current product-era guidance.
 
+- [Decision 0058](decisions/0058-save-native-multitask-export-repair.md)
+  records the owner's single native multitask 010 QUICK_SAVE instruction for
+  frozen export-repair review 009, with current resource/session facts unknown.
+  The [save record](../trials/arc-agi-2-qwen35-nvarc/native-multitask-010-editor.md)
+  retains package and receipt bindings for manual Editor operation.
+
 - [`plan/2026-10-03-main-worktree-integration.md`](plan/2026-10-03-main-worktree-integration.md)
   records the verified existing worktree integration, requested main
   synchronization and retained ignored-material boundaries before a storage

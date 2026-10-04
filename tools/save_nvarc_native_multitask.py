@@ -31,6 +31,14 @@ RESOURCE_EXCEPTION_REVIEW_RUN='nvarc-original-qwen3-native-multitask-007'
 RESOURCE_EXCEPTION_PLAN='sha256:ccacce536d11058dd9d3d0b531f68a0c6e6dc1a49ba52c2bc8e263e76534abef'
 RESOURCE_EXCEPTION_NOTEBOOK='a4d9d481fa2693f8b9a1d79a363e804532171d396d3fbf1dc6b0cac7131e1e19'
 UNAVAILABLE_QUOTA_FIELDS=('reserved_quota_hours','quota_observed_at','l4_quota_multiplier','quota_reservation_id')
+EXPORT_SAVE_ADMISSION_FORMAT='irisx/native-multitask-editor-save-only-admission-v4'
+EXPORT_SAVE_REF='docs/decisions/0058-save-native-multitask-export-repair.md'
+EXPORT_SAVE_RUN='nvarc-original-qwen3-native-multitask-010'
+EXPORT_REVIEW_RUN='nvarc-original-qwen3-native-multitask-009'
+EXPORT_REVIEW_PLAN='sha256:02ac331440fdb44642225bc5f9977fb18f7af8c1ccab32ffb532f4a6292bb75d'
+EXPORT_REVIEW_NOTEBOOK='8641f929504f77182992d362669af532fbde4f134a5154237c8473d781fa9b32'
+EXPORT_SOURCE_COMMIT='425d3e0f96b05df95e933ee524815c58545ebe4b'
+UNAVAILABLE_EXPORT_FACTS=UNAVAILABLE_QUOTA_FIELDS+('prior_sessions_reconciled','owner_editor_sessions_closed')
 SAVE_URL='https://api.kaggle.com/v1/kernels.KernelsApiService/SaveKernel'
 
 
@@ -47,6 +55,8 @@ def paths(run):
 
 def validate_admission(path,run):
     value=read(path)
+    if value.get('format')==EXPORT_SAVE_ADMISSION_FORMAT:
+        return validate_export_save_admission(value,run)
     fields={'format','run_id','reviewed_run_id','reviewed_plan_digest','reviewed_notebook_sha256',
         'source_commit','control_review_sha256','maximum_paid_usd','prior_sessions_reconciled',
         'quota_reservation_id','reserved_quota_hours','quota_observed_at','local_resource_admission',
@@ -93,6 +103,39 @@ def validate_admission(path,run):
     require(checked['approved_for_runtime'] is False and checked['plan_digest']==value['reviewed_plan_digest'] and
         sha(reviewed/'kernel/notebook.ipynb')==value['reviewed_notebook_sha256'],
         'exact frozen unapproved review candidate required')
+    return value
+
+
+def validate_export_save_admission(value,run):
+    """Exact 009-to-010 save approval; unavailable facts remain null."""
+    fields={'format','run_id','reviewed_run_id','reviewed_plan_digest','reviewed_notebook_sha256',
+        'source_commit','control_review_sha256','maximum_paid_usd','prior_sessions_reconciled',
+        'quota_reservation_id','reserved_quota_hours','quota_observed_at','local_resource_admission',
+        'ui_operator','private','internet','owner_editor_sessions_closed','owner_clearance_ref',
+        'l4_quota_multiplier','quick_save_authorized','maximum_quick_saves','agent_execution_authorized',
+        'resource_information_status','resource_information_unavailable',
+        'owner_resource_exception_ref','owner_resource_exception_sha256'}
+    require(set(value)==fields and value['format']==EXPORT_SAVE_ADMISSION_FORMAT and
+        run==value['run_id']==EXPORT_SAVE_RUN and value['reviewed_run_id']==EXPORT_REVIEW_RUN and
+        value['reviewed_plan_digest']==EXPORT_REVIEW_PLAN and
+        value['reviewed_notebook_sha256']==EXPORT_REVIEW_NOTEBOOK and
+        value['source_commit']==EXPORT_SOURCE_COMMIT and value['control_review_sha256']==REVIEW_SHA and
+        sha(REVIEW_FILE)==REVIEW_SHA and type(value['maximum_paid_usd']) is int and value['maximum_paid_usd']==0 and
+        value['quick_save_authorized'] is value['private'] is True and
+        value['internet'] is value['agent_execution_authorized'] is value['local_resource_admission'] is False and
+        value['ui_operator']=='user' and type(value['maximum_quick_saves']) is int and value['maximum_quick_saves']==1 and
+        value['owner_clearance_ref']=='Decision 0058; owner instruction: 提交' and
+        all(value[k] is None for k in UNAVAILABLE_EXPORT_FACTS) and
+        value['resource_information_status']=='unavailable' and
+        value['resource_information_unavailable']==list(UNAVAILABLE_EXPORT_FACTS) and
+        value['owner_resource_exception_ref']==EXPORT_SAVE_REF and
+        value['owner_resource_exception_sha256']==sha(ROOT/EXPORT_SAVE_REF),
+        'only exact owner-authorized 009-to-010 save with unavailable resource/session facts permitted')
+    _,reviewed,_=paths(EXPORT_REVIEW_RUN)
+    checked=stage.preflight(reviewed)
+    require(checked['approved_for_runtime'] is False and checked['plan_digest']==EXPORT_REVIEW_PLAN and
+        sha(reviewed/'kernel/notebook.ipynb')==EXPORT_REVIEW_NOTEBOOK,
+        'exact frozen unapproved export-repair review candidate required')
     return value
 
 

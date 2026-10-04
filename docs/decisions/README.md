@@ -191,3 +191,7 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0053-nvarc-overnight-development-goal.md`](0053-nvarc-overnight-development-goal.md)
   records the timed NVARC implementation Goal and autonomous free Kaggle GPU
   direction, preserving prior identities and explicit parity gaps.
+- [`0058-save-native-multitask-export-repair.md`](0058-save-native-multitask-export-repair.md)
+  authorizes exactly one private native multitask 010 QUICK_SAVE derived from
+  frozen export-repair review 009, with resource/session facts unavailable,
+  stopping at the receipt for manual owner Editor operation.

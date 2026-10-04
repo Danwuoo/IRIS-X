@@ -616,6 +616,19 @@ exported checkpoint, teacher, generation, scoring or further kernel follows.
 
 ## Authority order
 
+Decision 0058 records the owner's instruction to submit the reviewed local
+native multitask export repair. Exactly one private, Internet-disabled, USD 0
+QUICK_SAVE may derive new 010 from frozen review 009 with identity/admission
+differences only. Quota and current session closure/reconciliation facts remain
+null and explicitly unavailable; resource sufficiency and strict GPU validation
+remain unverified. Preserve consumed 008 and inert 009. Stop at the sole receipt
+without agent execution, runtime queries, retrieval, monitoring, Dataset mutation
+or retry. Follow `docs/decisions/0058-save-native-multitask-export-repair.md` and
+`trials/arc-agi-2-qwen35-nvarc/native-multitask-010-editor.md`.
+The sole QUICK_SAVE was accepted as private version 1 and is consumed. Exact
+package/admission/request/receipt bindings are retained. No agent session was
+started and no runtime query or retrieval was made. The owner will run in Editor.
+
 Decision 0057 records the owner's explicit instruction to mark missing quota
 information unavailable and submit distinct native multitask 008. Exactly one
 private, Internet-disabled, USD 0 QUICK_SAVE may derive from immutable reviewed

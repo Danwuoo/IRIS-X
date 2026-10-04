@@ -48,7 +48,8 @@ def admission_for(path,run_id):
     import math
     value=json.loads(Path(path).read_bytes())
     if value.get('format') in ('irisx/native-multitask-editor-admission-v2',
-            'irisx/native-multitask-editor-save-only-admission-v3'):
+            'irisx/native-multitask-editor-save-only-admission-v3',
+            'irisx/native-multitask-editor-save-only-admission-v4'):
         from tools.save_nvarc_native_multitask import validate_admission
         return validate_admission(Path(path),run_id)
     fields={'format','run_id','control_sha256','source_commit','maximum_paid_usd','prior_sessions_reconciled',
@@ -172,15 +173,21 @@ def construct(run_id,admission_path=None):
     if admission is not None:
         plan.update(approved=True,controller_admission=admission,controller_admission_sha256=sha(admission_path))
         if admission['format'] in ('irisx/native-multitask-editor-admission-v2',
-                'irisx/native-multitask-editor-save-only-admission-v3'):
+                'irisx/native-multitask-editor-save-only-admission-v3',
+                'irisx/native-multitask-editor-save-only-admission-v4'):
             plan.update(source_commit=admission['source_commit'],
                 owner_decision='explicit-stage3-owner-Editor-clearance',
                 owner_execution_instruction_ref=admission['owner_clearance_ref'],
                 approved_proposal_plan_digest=admission['reviewed_plan_digest'],
                 reviewed_proposal_run_id=admission['reviewed_run_id'],
-                quota_observed_at=admission['quota_observed_at'],owner_editor_sessions_closed=True)
+                quota_observed_at=admission['quota_observed_at'],
+                owner_editor_sessions_closed=(admission['owner_editor_sessions_closed']
+                    if admission['format']=='irisx/native-multitask-editor-save-only-admission-v4' else True))
             if admission['format']=='irisx/native-multitask-editor-save-only-admission-v3':
                 plan.update(owner_decision='Decision 0057: owner-authorized save with quota information unavailable',
+                    resource_information_status='unavailable',resource_sufficiency_verified=False)
+            if admission['format']=='irisx/native-multitask-editor-save-only-admission-v4':
+                plan.update(owner_decision='Decision 0058: owner-authorized export-repair save with resource/session information unavailable',
                     resource_information_status='unavailable',resource_sufficiency_verified=False)
     raw['plan']=canonical(plan)
     source=frozen.old.proposal.predecessor.base.render(run_id,

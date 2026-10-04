@@ -1,0 +1,319 @@
+{
+  "accepted": true,
+  "accepted_utc": "2026-10-04T15:57:42.742445+00:00",
+  "agent_execution_started": false,
+  "decision_ref": "docs/decisions/0058-save-native-multitask-export-repair.md",
+  "decision_sha256": "b36f337b1cc941adaf02e81471289ec0ef032922832e0003fdf1ed0196956320",
+  "execution_type": "QUICK_SAVE",
+  "files": {
+    ".irisx/native-multitask-010-save-20261004/focused.json": {
+      "bytes": 573,
+      "sha256": "6dc951086f778e7384fd1d2d1f6d759cf42bea4c60bf14a324c62358bc7f12fe"
+    },
+    ".irisx/native-multitask-010-save-20261004/offline-proof.json": {
+      "bytes": 1755,
+      "sha256": "c4cb101b5379c018d890354601ff9883119943bb1eb4ead7c101fc583ea4abad"
+    },
+    ".irisx/native-multitask-010-save-20261004/prepare.json": {
+      "bytes": 511,
+      "sha256": "c48603c326593cc05653977e2d06fb8f66458315678c5e98a5c9b6c7414ee4d9"
+    },
+    ".irisx/native-multitask-010-save-20261004/preservation-before-save.json": {
+      "bytes": 5404,
+      "sha256": "cca8553d5f07fd1d998c469b808905431bb2d8995eab0512359daef4c0966d89"
+    },
+    ".irisx/native-multitask-010-save-20261004/save.json": {
+      "bytes": 607,
+      "sha256": "c88c8cc9482b641e3b8dd59d74f5ef7d16fed7329becd5f3044bc53d7189d28c"
+    },
+    ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/editor-save-final/save-ledger.json": {
+      "bytes": 1368,
+      "sha256": "ba9f30e638a087ba6d6da0c0516dbb5e72cc83042a43c8690b3a825e52c7031a"
+    },
+    ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/editor-save-final/save-receipt.json": {
+      "bytes": 195,
+      "sha256": "aa904d4f76d6d5c1743568c3e0f5157adc65174637845e791725ffd94be4f5fd"
+    },
+    ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/editor-save-final/save-request.json": {
+      "bytes": 512489,
+      "sha256": "c4aea62cde23aa9e0ddda11f914ae327dabec7a10c514e4eb0a37b766222198c"
+    },
+    ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/package-l4/controller-admission.json": {
+      "bytes": 1379,
+      "sha256": "895a1bd2a85c38201ff7f9825d02fdf4b3c68e9f3a6a40b10a3179afff48074e"
+    },
+    ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/package-l4/kernel/kernel-metadata.json": {
+      "bytes": 578,
+      "sha256": "9756fddca2eb87dde154851a38ac51e6b2b45ece41387974f9324e4ecb3ba57f"
+    },
+    ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/package-l4/kernel/notebook.ipynb": {
+      "bytes": 511981,
+      "sha256": "0d1e82b8310b70e1633a0f4728fc4d4dce3fea7a636c08088def22b2e7f2cb6e"
+    },
+    ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/package-l4/plan.json": {
+      "bytes": 135927,
+      "sha256": "d0e0e2084929a411e4cfa9464cbfe8a20fc73b91466aa7e4f8f4f1a905d0ab81"
+    },
+    ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/package-l4/stage-summary.json": {
+      "bytes": 2047,
+      "sha256": "9f172383ed400d7d28285c2bb0895e6c8941293bcbcbb503f3233d8c7753cf91"
+    },
+    ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/quick-save-reservation.json": {
+      "bytes": 188,
+      "sha256": "12136c40df93953b2cda27bd5646e5e26a90ad975cf19d7db852d388f2cd890c"
+    }
+  },
+  "format": "irisx/native-multitask-010-save-evidence-v1",
+  "future_external_actions_authorized": false,
+  "gpu_validation_gate": "unverified",
+  "internet": false,
+  "known_limitations": [
+    "local cross-Torch strict numeric replay remains unverified",
+    "save approval asserts no available resource reservation or closed Editor session"
+  ],
+  "maximum_paid_usd": 0,
+  "offline_proof": {
+    "admission_sha256": "895a1bd2a85c38201ff7f9825d02fdf4b3c68e9f3a6a40b10a3179afff48074e",
+    "agent_execution_calls": 0,
+    "all_nonplan_payloads_unchanged": true,
+    "all_scientific_resource_limits_unchanged": true,
+    "approved_for_owner_editor": true,
+    "approved_for_runtime": false,
+    "approved_for_save": true,
+    "changed_plan_fields": [
+      "approved",
+      "approved_proposal_plan_digest",
+      "controller_admission",
+      "controller_admission_sha256",
+      "kernel_id",
+      "owner_decision",
+      "owner_execution_instruction_ref",
+      "resource_information_status",
+      "resource_sufficiency_verified",
+      "reviewed_proposal_run_id",
+      "run_id"
+    ],
+    "decision_sha256": "b36f337b1cc941adaf02e81471289ec0ef032922832e0003fdf1ed0196956320",
+    "external_calls": 0,
+    "gpu_runtime": "unverified",
+    "notebook_sha256": "0d1e82b8310b70e1633a0f4728fc4d4dce3fea7a636c08088def22b2e7f2cb6e",
+    "offline_package_verified": true,
+    "package": ".irisx\\nvarc-original\\runs\\nvarc-original-qwen3-native-multitask-010\\package-l4",
+    "plan_digest": "sha256:d0e0e2084929a411e4cfa9464cbfe8a20fc73b91466aa7e4f8f4f1a905d0ab81",
+    "preserved_predecessor_identities": [
+      "nvarc-original-qwen3-native-multitask-007",
+      "nvarc-original-qwen3-native-multitask-008",
+      "nvarc-original-qwen3-native-multitask-009"
+    ],
+    "provider_calls": 0,
+    "request_sha256": "c4aea62cde23aa9e0ddda11f914ae327dabec7a10c514e4eb0a37b766222198c",
+    "resource_information_status": "unavailable",
+    "resource_sufficiency_verified": false,
+    "review_only": false,
+    "review_plan_digest": "sha256:02ac331440fdb44642225bc5f9977fb18f7af8c1ccab32ffb532f4a6292bb75d",
+    "run_id": "nvarc-original-qwen3-native-multitask-010",
+    "sdk_wire_execution_type": "QUICK_SAVE",
+    "tasks": 2,
+    "test_inputs": 3,
+    "unavailable_facts": [
+      "reserved_quota_hours",
+      "quota_observed_at",
+      "l4_quota_multiplier",
+      "quota_reservation_id",
+      "prior_sessions_reconciled",
+      "owner_editor_sessions_closed"
+    ]
+  },
+  "owner_instruction": "提交",
+  "predecessor_packages_and_journals_unchanged": true,
+  "private": true,
+  "provider_version": 1,
+  "resource_information_status": "unavailable",
+  "resource_sufficiency_verified": false,
+  "reviewed_notebook_sha256": "8641f929504f77182992d362669af532fbde4f134a5154237c8473d781fa9b32",
+  "reviewed_plan_digest": "sha256:02ac331440fdb44642225bc5f9977fb18f7af8c1ccab32ffb532f4a6292bb75d",
+  "reviewed_run_id": "nvarc-original-qwen3-native-multitask-009",
+  "run_id": "nvarc-original-qwen3-native-multitask-010",
+  "runtime": "unobserved",
+  "save_sends": 1,
+  "status_or_output_calls": 0,
+  "unavailable_facts": [
+    "reserved_quota_hours",
+    "quota_observed_at",
+    "l4_quota_multiplier",
+    "quota_reservation_id",
+    "prior_sessions_reconciled",
+    "owner_editor_sessions_closed"
+  ],
+  "url": "https://www.kaggle.com/code/danielwuu/nvarc-original-qwen3-native-multitask-010",
+  "validation": {
+    "focused": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_native_save_v4",
+        "tests.test_nvarc_native_export",
+        "-v"
+      ],
+      "concurrent_task_heavy_workloads": 0,
+      "exit_code": 0,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-save-20261004\\focused.log",
+      "log_bytes": 1256,
+      "log_sha256": "6a06a551d00f5f272628f10d534a84fb37854df77c5799519f06810a062b3f23",
+      "seconds": 34.010859200003324,
+      "skip_summaries": [],
+      "test_counts": [
+        6
+      ]
+    },
+    "preparation": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        ".irisx/native-multitask-010-save-20261004/prepare.py"
+      ],
+      "concurrent_task_heavy_workloads": 0,
+      "exit_code": 0,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-save-20261004\\prepare.log",
+      "log_bytes": 1827,
+      "log_sha256": "81f4a31802f1087806e67a7c04966f98dba93306515f59c1f615d8b77b03bc37",
+      "seconds": 46.760026100004325,
+      "skip_summaries": [],
+      "test_counts": []
+    },
+    "repository_all": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/repository_check.py",
+        "--all"
+      ],
+      "exit_code": 1,
+      "seconds": 550.4510131000134,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-save-20261004\\repository-all.log",
+      "log_sha256": "500aac61d64e443210455a01db35b3aadd53314db91b175ae33ef8e12e5ec175",
+      "log_bytes": 94148,
+      "test_counts": [
+        3,
+        511
+      ],
+      "skip_summaries": [],
+      "concurrent_task_heavy_workloads": 0
+    },
+    "save": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/save_nvarc_native_multitask.py",
+        "save",
+        "--package",
+        ".irisx/nvarc-original/runs/nvarc-original-qwen3-native-multitask-010/package-l4"
+      ],
+      "concurrent_task_heavy_workloads": 0,
+      "exit_code": 0,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-save-20261004\\save.log",
+      "log_bytes": 276,
+      "log_sha256": "2e03f69e8f05458a94d32f5e79ec38d614ca3b4170127e577ce4f9a1ab1faab8",
+      "seconds": 16.136484199989354,
+      "skip_summaries": [],
+      "test_counts": []
+    },
+    "transport_repair": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "tests.test_nvarc_native_editor_transport",
+        "tests.test_nvarc_native_save_v4",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 125.21492790000048,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-save-20261004\\transport-repair.log",
+      "log_sha256": "959c1c3a73ea8c07e352f73903f346a2cc08e715b32af2e943eaa8af66790a78",
+      "log_bytes": 3388,
+      "test_counts": [
+        17
+      ],
+      "skip_summaries": [],
+      "concurrent_task_heavy_workloads": 0
+    },
+    "original_full_check_failure": {
+      "test": "test_admission_derivation_changes_only_plan_payload",
+      "error": "KeyError: owner_editor_sessions_closed in historical v2 synthetic fixture",
+      "repair": "keep historical v2/v3 constructor literal True; read unknown session field only for v4",
+      "rerun": "entire owner-Editor transport module plus v4 module",
+      "original_full_command_still_reported_failed": true
+    },
+    "post_repair_exact_010_preflight": {
+      "run_id": "nvarc-original-qwen3-native-multitask-010",
+      "plan_digest": "sha256:d0e0e2084929a411e4cfa9464cbfe8a20fc73b91466aa7e4f8f4f1a905d0ab81",
+      "offline_package_verified": true,
+      "approved_for_runtime": false,
+      "gpu_runtime": "unverified",
+      "tasks": 2,
+      "test_inputs": 3,
+      "external_calls": 0,
+      "approved_for_save": true,
+      "approved_for_owner_editor": true,
+      "resource_information_status": "unavailable",
+      "resource_sufficiency_verified": false
+    },
+    "post_repair_exact_008_preflight": {
+      "run_id": "nvarc-original-qwen3-native-multitask-008",
+      "plan_digest": "sha256:fb16dd865cac10623576120f57c6d8d138bc002765e50a271067eb3351e1a28c",
+      "offline_package_verified": true,
+      "approved_for_runtime": false,
+      "gpu_runtime": "unverified",
+      "tasks": 2,
+      "test_inputs": 3,
+      "external_calls": 0,
+      "approved_for_save": true,
+      "approved_for_owner_editor": true,
+      "resource_information_status": "unavailable",
+      "resource_sufficiency_verified": false
+    },
+    "repository_final": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        "tools/repository_check.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.241464199993061,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-save-20261004\\repository-final.log",
+      "log_sha256": "68c9f1441c9085b5ed8cb7b94e60c2e9456bbff930fa60cce744c0ca4b1593ca",
+      "log_bytes": 358,
+      "test_counts": [],
+      "skip_summaries": [],
+      "concurrent_task_heavy_workloads": 0
+    },
+    "finalization": {
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+        ".irisx/native-multitask-010-save-20261004/finalize_evidence.py"
+      ],
+      "exit_code": 0,
+      "seconds": 15.585009900009027,
+      "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-save-20261004\\finalize.log",
+      "log_sha256": "227d5e75130505b3dcc0ec0b69f760b0a0f519235a4dc6c48d57465465718d45",
+      "log_bytes": 197,
+      "test_counts": [],
+      "skip_summaries": [],
+      "concurrent_task_heavy_workloads": 0
+    }
+  },
+  "retained_receipt_snapshot_sha256": "700a565b58e143765b77adb5724902c69ad7784abaa092f8de36eff9d56552c7",
+  "receipt_verification": {
+    "command": [
+      "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\nvarc-ml-venv\\Scripts\\python.exe",
+      ".irisx/native-multitask-010-save-20261004/retain_receipt.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.40485809999518096,
+    "log": "C:\\Users\\wurre\\Desktop\\IRIS-X\\.irisx\\native-multitask-010-save-20261004\\receipt.log",
+    "log_sha256": "6020b76998d0216c5f4f869b0e4f6fa71d617df10920991ed6cc5de54e5e4782",
+    "log_bytes": 600,
+    "test_counts": [],
+    "skip_summaries": [],
+    "concurrent_task_heavy_workloads": 0
+  },
+  "finalized_utc": "2026-10-04T16:12:23.413597+00:00"
+}
