@@ -2,6 +2,12 @@
 
 This directory contains only current product-era guidance.
 
+- [Decision 0059](decisions/0059-obtain-one-official-stage3-cli-score.md)
+  records one official full-input Stage 3 scoring workflow through Kaggle CLI,
+  without owner Editor operation and without starting Stage 4.
+  The [full-input budget and scoring record](../trials/arc-agi-2-qwen35-nvarc/stage3-official-score-001.md)
+  retains the finite candidate, execution limits and honest coverage boundaries.
+
 - [Decision 0058](decisions/0058-save-native-multitask-export-repair.md)
   records the owner's single native multitask 010 QUICK_SAVE instruction for
   frozen export-repair review 009, with current resource/session facts unknown.

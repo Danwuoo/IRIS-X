@@ -1,0 +1,145 @@
+{
+  "format": "irisx/stage3-official-preparation-v1",
+  "date": "2026-10-05",
+  "timezone": "Asia/Taipei",
+  "owner_decision": "0059",
+  "prior_commit": "47c6b1af5f8cdba1d194a4eb649a88528d9209fe",
+  "controller_acceptance_sha256": "272bedc7c3eea981ed3dc587bca2afb2e5e0d9b9c1d62e102999ea2b30208105",
+  "competition": "arc-prize-2026-arc-agi-2",
+  "cli_version": "2.2.4",
+  "private": true,
+  "internet": false,
+  "paid_usd": 0,
+  "maximum_formal_submissions": 1,
+  "stage4_started": false,
+  "strict_portable_gpu_gate": false,
+  "official_score": null,
+  "kernel_push_reserved": false,
+  "preview": {
+    "all_tasks_allocated": true,
+    "external_calls": 0,
+    "lane_reserved_seconds": [
+      39527.0,
+      39530.0,
+      39529.0,
+      39531.0
+    ],
+    "maximum_child_seconds": 1356,
+    "maximum_sequence": 5598,
+    "preview_only": true,
+    "preview_plan_digest": "sha256:a6d08b903ecfe973247aae85936009f0f9586017e7dffb0b5f3b4b3111e754e0",
+    "seconds": 81.625,
+    "source_payloads": {
+      "bridge": "71358a8e3a926a7f617c1272441319e9a271063cd000ee0dba798f01dafa5539",
+      "budget": "cbde3bb4eb4353355d02e70f471d867c85619f6e620ea039836d2578e8218b7f",
+      "candidate": "c5295ebf4b859307e5da6e28c8ca8d3b7d00ea2980f7ea97ae7fd2dce286b0dc",
+      "decoder": "965cfd910777d9bbec9681c6c15c5e2ea3924569734248046f5e58f16cb28222",
+      "exporter": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf",
+      "hardware": "61316aa900b47106e2bc9b0ffb04b02045839e411759973a10de53c5168af642",
+      "helper": "c073e2839f7013d24c9aaaffd92ad82a2c0a44180efc6d3dffc09084999cd8e2",
+      "loader": "d01cd56167e534ae156706ef62ab11662fc7b403964614a7a55131940bde970c",
+      "model_inventory": "12bff7ba56480b2165742cce03bf2bfc9b1e6d908f34ad815c77f8286c0b943a",
+      "multitask": "4224e8cc4004d106661ec8678952b20d8dc54cf48b84f638ee6416fabc2abf64",
+      "native_export": "a092cb4d426dbef1672e4c2c2ee263cbdae1e7b00c32d820b39061c84f8668a5",
+      "official_adapter": "54b1dd57e8b08aaba0c0c3b9e2eea139e24e6c1c2f236faf61d6ddeafddc9d27",
+      "official_parent": "66dfd23dd1d8e2af23b8d78b354433509a4729b254d7192a9ed592fd311c84fa",
+      "schedule": "e40a70266132a78174e8fe0b73b02c4a1a9e9239e3431c362c8bb7b40f32cbcc",
+      "solve_runtime": "6007cd3cb8feeb78c7506631d6fd2f1511581318ca49d43adcfa87dec52ec64d",
+      "solver": "1387c5b0b188dcc8570659dd5905ec2e824e5e0dfd7b20d8be9c2e13d0f12962",
+      "source_inventory": "1fe9bf4cda59fb323928bf7037e6058363f2c25f2cf31b40c4c4c5befa1a9c93",
+      "worker": "2ba2fe9d3b7b482e674af60374280522fefec0299bb52d4069af31667d6c9a0a"
+    },
+    "tasks": 240,
+    "test_answers_opened": false,
+    "tests": 259,
+    "training_steps": 30720,
+    "training_tokens": 35347968
+  },
+  "validation": {
+    "full_entry_point": "tools/repository_check.py --all",
+    "helper_tests": 3,
+    "unit_tests_initial": 510,
+    "initial_skips": 1,
+    "initial_unit_seconds": 370.967,
+    "supplemental_source_tests": 10,
+    "supplemental_skips": 0,
+    "unique_unit_tests_covered": 520
+  },
+  "evidence": [
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/submissions-before.json",
+      "bytes": 22,
+      "sha256": "b7504732e8f41406860c9f015269e2d59380b69c92017b4b0364082cd2a6c59c"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/submissions-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/files-before.json",
+      "bytes": 780,
+      "sha256": "77991d99c35dbd1d3823b9958b9148cf8e4c1c1c3462ff08928291a33f295250"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/challenge-download.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/official-input/arc-agi_test_challenges.json",
+      "bytes": 1015295,
+      "sha256": "232264c58f825ee77327dcfc9f4e5cb2f83b8d997eb69032be1bf2205bbe1a83"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/official-budget-input.json",
+      "bytes": 21590,
+      "sha256": "c74e4b749a057b6773837b04e9ee12396c119d75e774dcf0413579dbc1077f87"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/offline-completion-preflight.json",
+      "bytes": 1846,
+      "sha256": "17012c6ad867d5160cfb42d2de80d99ef42f633691828ad6bf34975982ca6e17"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/review-offline-first.stdout",
+      "bytes": 454,
+      "sha256": "609f9cb46ecbd484dca2776157d3dc3b5e8655774a825e3116ce791277be5187"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/review-offline-first.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/repository-all-first.stdout",
+      "bytes": 1996,
+      "sha256": "dd3a73717140113f94dec407411b0a729d073884946405aa30fbf793c547f50d"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/repository-all-first.stderr",
+      "bytes": 90859,
+      "sha256": "a79b33bf26e93a10c8e4bb8aa01997a709b208c1e0c31c4458a741b1abaa35ef"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/source-fixture-supplement.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/source-fixture-supplement.stderr",
+      "bytes": 2112,
+      "sha256": "6443dae79348313accfb4e960c05549d80c545b483985bed7ac773fdf65cf0f1"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/focused-first.stderr",
+      "bytes": 1639,
+      "sha256": "6d01048b50ac477b1075d08961b40357f552040efe70d9b7f4b95172c8971f0f"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/focused-final.stderr",
+      "bytes": 1639,
+      "sha256": "051e78fb86698e3567c7d7f70c490b4b12952639367901402742e32eaee7c240"
+    }
+  ]
+}

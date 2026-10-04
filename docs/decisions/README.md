@@ -195,3 +195,7 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes exactly one private native multitask 010 QUICK_SAVE derived from
   frozen export-repair review 009, with resource/session facts unavailable,
   stopping at the receipt for manual owner Editor operation.
+- [`0059-obtain-one-official-stage3-cli-score.md`](0059-obtain-one-official-stage3-cli-score.md)
+  authorizes one distinct full-input Stage 3 official competition score through
+  Kaggle CLI, preserving strict replay limitations and stopping at its terminal
+  outcome without opening Stage 4.

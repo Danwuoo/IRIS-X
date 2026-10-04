@@ -616,6 +616,17 @@ exported checkpoint, teacher, generation, scoring or further kernel follows.
 
 ## Authority order
 
+Decision 0059 records the owner's direct instruction to obtain one official
+Stage 3 ARC-AGI-2 score entirely through Kaggle CLI without owner operation.
+It authorizes a distinct private Internet-disabled USD 0 full-input candidate,
+necessary execution/material preparation, at most one formal competition
+submission and bounded backed-off terminal score/status queries. Reserve exact
+bytes and writes first; reconcile unknown outcomes without blind resend.
+Prior consumed identities remain frozen, unknown quota/session facts remain
+unavailable, and strict cross-Torch DFS replay remains unverified. Stop after
+the official terminal outcome; Stage 4 stays unopened. Follow
+`docs/decisions/0059-obtain-one-official-stage3-cli-score.md`.
+
 Decision 0058 records the owner's instruction to submit the reviewed local
 native multitask export repair. Exactly one private, Internet-disabled, USD 0
 QUICK_SAVE may derive new 010 from frozen review 009 with identity/admission
