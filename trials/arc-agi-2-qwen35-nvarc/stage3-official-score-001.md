@@ -1,6 +1,6 @@
 # Stage 3 single official CLI score
 
-Date: 2026-10-05 (Asia/Taipei). Status: **local full-input preparation; not submitted**.
+Date: 2026-10-05 (Asia/Taipei). Status: **private version 1 accepted/QUEUED; formal submission pending**.
 Authority: [Decision 0059](../../docs/decisions/0059-obtain-one-official-stage3-cli-score.md).
 Stage 4 remains unopened. Paid cost ceiling is USD 0. Existing consumed 007–010
 packages, receipts and returned observations remain immutable. The 010 engineering
@@ -113,5 +113,14 @@ fixture class was initially skipped because the explicit fixture environment
 was absent. All ten omitted source tests then pass separately with the retained
 hash-bound code-only fixture, giving 520 unit tests covered. Initial logs and
 the skip remain retained. Timing checks ran separately from heavy material
-preparation. Exact production package staging remains pending here; no kernel
-or formal submission has been reserved yet.
+preparation. Exact production package staging passes against source commit
+`6b26925d09a5f6a0180012efe0374a49fd024308`. Candidate digest is
+`sha256:9c23325a7eec8158c145c922d46512b1287a003ec423db5ea85932b9d95816b9`.
+The reserved CLI push was accepted as private version 1 at
+2026-10-04 17:47:23.840 UTC / 2026-10-05 01:47:23.840 Taipei:
+[exact kernel](https://www.kaggle.com/code/danielwuu/nvarc-stage3-official-001).
+Its command, wire-script/package hashes and receipt are retained in
+[`stage3-official-score-001-kernel-launch.json`](configs/stage3-official-score-001-kernel-launch.json).
+The first read at 17:48:50 UTC reports `KernelWorkerStatus.QUEUED`.
+No formal competition submission is reserved or sent and no official score
+exists yet. This accepted launch alone proves no hardware, execution or output.

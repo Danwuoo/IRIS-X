@@ -1,0 +1,125 @@
+{
+  "format": "irisx/stage3-official-kernel-launch-v1",
+  "competition": "arc-prize-2026-arc-agi-2",
+  "run_id": "nvarc-stage3-official-001",
+  "kernel": "danielwuu/nvarc-stage3-official-001",
+  "kernel_version": 1,
+  "kernel_url": "https://www.kaggle.com/code/danielwuu/nvarc-stage3-official-001",
+  "source_commit": "6b26925d09a5f6a0180012efe0374a49fd024308",
+  "candidate_digest": "sha256:9c23325a7eec8158c145c922d46512b1287a003ec423db5ea85932b9d95816b9",
+  "receipt": {
+    "command": [
+      "C:\\Users\\wurre\\AppData\\Local\\Programs\\Python\\Python312\\Scripts\\kaggle.exe",
+      "kernels",
+      "push",
+      "-p",
+      ".irisx\\nvarc-original\\runs\\nvarc-stage3-official-001\\package-l4\\kernel",
+      "-t",
+      "42600",
+      "--accelerator",
+      "NvidiaL4"
+    ],
+    "completed": {
+      "taipei": "2026-10-05T01:47:23.840009+08:00",
+      "utc": "2026-10-05T01:47:23.840009+08:00"
+    },
+    "error": null,
+    "returncode": 0,
+    "started": {
+      "taipei": "2026-10-05T01:47:19.90566+08:00",
+      "utc": "2026-10-05T01:47:19.90566+08:00"
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "7d99e9d25c75a4eaccb62d88926746ac250c41d87ec906dbaf1392419bb737fa",
+    "unknown_outcome_for_write": false
+  },
+  "manifest": {
+    "candidate_digest": "sha256:9c23325a7eec8158c145c922d46512b1287a003ec423db5ea85932b9d95816b9",
+    "cli_wire_script_sha256": "18175bec8a02f787b6a25eb1816238ca1d157bc41b92672a6bacccda10481147",
+    "inventory": {
+      "candidate-plan.json": "9c23325a7eec8158c145c922d46512b1287a003ec423db5ea85932b9d95816b9",
+      "kernel/kernel-metadata.json": "c5ff723bc39505dbdb8b023092dc94560a8c3ad32939582a1601036fb213960a",
+      "kernel/notebook.ipynb": "752ec1af04c54dc27926d0fa9c0f5ad1deb9a5cbc8e17b99498aeb8e8fdd262e"
+    },
+    "payload_sha256": {
+      "bridge": "71358a8e3a926a7f617c1272441319e9a271063cd000ee0dba798f01dafa5539",
+      "budget": "cbde3bb4eb4353355d02e70f471d867c85619f6e620ea039836d2578e8218b7f",
+      "candidate": "9c23325a7eec8158c145c922d46512b1287a003ec423db5ea85932b9d95816b9",
+      "decoder": "965cfd910777d9bbec9681c6c15c5e2ea3924569734248046f5e58f16cb28222",
+      "exporter": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf",
+      "hardware": "61316aa900b47106e2bc9b0ffb04b02045839e411759973a10de53c5168af642",
+      "helper": "c073e2839f7013d24c9aaaffd92ad82a2c0a44180efc6d3dffc09084999cd8e2",
+      "loader": "d01cd56167e534ae156706ef62ab11662fc7b403964614a7a55131940bde970c",
+      "model_inventory": "12bff7ba56480b2165742cce03bf2bfc9b1e6d908f34ad815c77f8286c0b943a",
+      "multitask": "4224e8cc4004d106661ec8678952b20d8dc54cf48b84f638ee6416fabc2abf64",
+      "native_export": "a092cb4d426dbef1672e4c2c2ee263cbdae1e7b00c32d820b39061c84f8668a5",
+      "official_adapter": "54b1dd57e8b08aaba0c0c3b9e2eea139e24e6c1c2f236faf61d6ddeafddc9d27",
+      "official_parent": "66dfd23dd1d8e2af23b8d78b354433509a4729b254d7192a9ed592fd311c84fa",
+      "schedule": "e40a70266132a78174e8fe0b73b02c4a1a9e9239e3431c362c8bb7b40f32cbcc",
+      "solve_runtime": "6007cd3cb8feeb78c7506631d6fd2f1511581318ca49d43adcfa87dec52ec64d",
+      "solver": "1387c5b0b188dcc8570659dd5905ec2e824e5e0dfd7b20d8be9c2e13d0f12962",
+      "source_inventory": "1fe9bf4cda59fb323928bf7037e6058363f2c25f2cf31b40c4c4c5befa1a9c93",
+      "worker": "2ba2fe9d3b7b482e674af60374280522fefec0299bb52d4069af31667d6c9a0a"
+    },
+    "run_id": "nvarc-stage3-official-001"
+  },
+  "formal_submission_sent": false,
+  "official_score": null,
+  "strict_portable_gpu_gate": false,
+  "paid_usd": 0,
+  "quota_information": "unavailable",
+  "session_information": "unavailable",
+  "stage4_started": false,
+  "artifacts": [
+    {
+      "path": ".irisx/nvarc-original/runs/nvarc-stage3-official-001/package-l4/manifest.json",
+      "bytes": 1966,
+      "sha256": "093307c1932505e5de36a33ef6cabdb33892a90ca9e4d2068499a9862b6f35c1"
+    },
+    {
+      "path": ".irisx/nvarc-original/runs/nvarc-stage3-official-001/package-l4/candidate-plan.json",
+      "bytes": 53026,
+      "sha256": "9c23325a7eec8158c145c922d46512b1287a003ec423db5ea85932b9d95816b9"
+    },
+    {
+      "path": ".irisx/nvarc-original/runs/nvarc-stage3-official-001/package-l4/kernel/notebook.ipynb",
+      "bytes": 338152,
+      "sha256": "752ec1af04c54dc27926d0fa9c0f5ad1deb9a5cbc8e17b99498aeb8e8fdd262e"
+    },
+    {
+      "path": ".irisx/nvarc-original/runs/nvarc-stage3-official-001/package-l4/kernel/kernel-metadata.json",
+      "bytes": 612,
+      "sha256": "c5ff723bc39505dbdb8b023092dc94560a8c3ad32939582a1601036fb213960a"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-push.reserved.json",
+      "bytes": 662,
+      "sha256": "ee82442a3510846be255b0ce93735e55b075f974425cef34d11c8528357b11b9"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-push.command.json",
+      "bytes": 400,
+      "sha256": "170871b8346c93c8ae242fa2a12f7575a44a732f917ace19f5c887cad00d71e3"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-push.receipt.json",
+      "bytes": 662,
+      "sha256": "649a3e4774dd19324fada9724108ac080ee8f26513db32cf8fc666aa104b9a88"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-push.stdout",
+      "bytes": 129,
+      "sha256": "7d99e9d25c75a4eaccb62d88926746ac250c41d87ec906dbaf1392419bb737fa"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/kernel-push.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".irisx/stage3-official-score-20261005-001/stage-first.stdout",
+      "bytes": 250,
+      "sha256": "b9276ec2d10d9f53be5cca65a3eba54dad4b28911e262d138859264f2e64b7cd"
+    }
+  ]
+}
