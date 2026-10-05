@@ -2,11 +2,17 @@
 
 This directory contains only current product-era guidance.
 
+- [Decision 0060](decisions/0060-save-two-public-evaluation-notebooks.md) records
+  the two public evaluation owner-Editor QUICK_SAVEs. The
+  [implementation and save record](../trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001.md)
+  binds the notebooks, local debug, separate run-named ZIPs and receipts.
+
 - [`plan/2026-10-05-nvarc-public-eval-notebook.md`](plan/2026-10-05-nvarc-public-eval-notebook.md)
   defines the owner-requested public evaluation notebook development design,
   with a bounded baseline, separate complete-TTT comparison, persistent workers
   and independent local scoring. It records offline workload estimates; no
-  runnable notebook or external execution is delivered by the planning change.
+  runnable notebook or external execution was delivered by the original
+  planning change. Decision 0060 supplies the subsequent save-only direction.
 
 - [Decision 0059](decisions/0059-obtain-one-official-stage3-cli-score.md)
   records one official full-input Stage 3 scoring workflow through Kaggle CLI,

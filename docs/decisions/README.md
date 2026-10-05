@@ -199,3 +199,6 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes one distinct full-input Stage 3 official competition score through
   Kaggle CLI, preserving strict replay limitations and stopping at its terminal
   outcome without opening Stage 4.
+- [`0060-save-two-public-evaluation-notebooks.md`](0060-save-two-public-evaluation-notebooks.md)
+  records two owner-Editor public evaluation notebooks, one private QUICK_SAVE
+  each after local debug, with separate BASE/full-TTT budgets and ZIP names.

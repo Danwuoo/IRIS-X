@@ -1,5 +1,11 @@
 # Qwen3.5-4B NVARC reproduction development
 
+The [public evaluation notebooks](public-eval-notebooks-001.md) implement the
+owner's separate BASE-30 and full TTT128-30 comparisons on all 120 public tasks /
+172 tests. [Decision 0060](../../docs/decisions/0060-save-two-public-evaluation-notebooks.md)
+authorizes one private QUICK_SAVE each after offline debug, stopping at receipts
+for manual owner execution. Their ZIP names are distinct; monitoring stays off.
+
 The [2026-10-04 independent acceptance](original-reproduction-acceptance-20261004.md)
 accepts the complete native 008 TTT epoch/reset observation and original-Qwen3
 CPU SFT controls. Fresh validation passes 405 discovered tests (four optional

@@ -1,7 +1,8 @@
 # NVARC public evaluation notebook development
 
 Date: 2026-10-05, Asia/Taipei.
-Status: local development design; notebook/runtime implementation is pending.
+Status: implemented under Decision 0060; exact save receipts and local checks
+are retained in the [public notebook record](../../trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001.md).
 
 ## Objective and first release
 
@@ -17,11 +18,11 @@ Keep **TTT128-30** as a separate comparison using all 128 original task-local
 training rows and the same inference allowance. Do not silently replace the
 original epoch with a few training steps to make a run appear faster.
 
-This request covers planning and local development. This design does not launch
-GPU work, save a provider notebook, change a Dataset, submit to the competition,
-or restart monitoring. The consumed official 001 and prior Editor identities
-remain frozen. A runnable notebook and its exact execution envelope will be
-separate artifacts after implementation and offline verification.
+The original request covered planning and local development. The owner's later
+implementation instruction is recorded in Decision 0060: implement two private
+notebooks, debug locally, QUICK_SAVE each once, then stop for manual owner
+execution. The consumed official 001 and prior Editor identities remain frozen;
+monitoring remains stopped. Current exact artifacts are in the separate save record.
 
 ## Evidence behind the time budget
 
@@ -141,12 +142,13 @@ export reserve must bound this and report its actual overshoot.
 | 5. Hardware and workers | Require four distinct BF16 L4s; one pinned model per persistent worker; record actual GPU/runtime identities |
 | 6. Task dispatch | Queue all selected tasks, cost-order using public input only; report phase timing, test coverage and remaining budget |
 | 7. Incremental results | Commit each verified test result, then merge through a single parent writer; preserve every multi-test slot |
-| 8. Final export | Stop dispatch before export reserve, retain completed checkpoints, validate schema/bindings and package `結果.zip` |
+| 8. Final export | Stop dispatch before export reserve, retain completed checkpoints, validate schema/bindings and package the profile's run-named ZIP |
 | 9. Download summary | Show completed/partial/failed state, model coverage, timeouts and file links; direct returned ZIP to separate local evaluator |
 
 Outputs include `submission.json`, `candidate-pools.json`, `coverage.json`,
 `task-timings.json`, `progress.jsonl`, `terminal.json`, the exact input/config,
-and a digest manifest inside `結果.zip`. Include task errors and worker/reset
+and a digest manifest inside `nvarc-public-base30-001.zip` or
+`nvarc-public-ttt128-30-001.zip`. Include task errors and worker/reset
 failure reasons. Model weights and evaluator answers are not packaged.
 
 The initial skeleton has both attempt fields for every selected test. A single
@@ -191,7 +193,7 @@ pass its existing contract.
 
 The GPU notebook receives public training demonstrations and test inputs only.
 No public solutions are embedded, mounted into solver inputs, loaded by its
-cells, or used for scheduling, tuning, stopping or TTT. After `結果.zip` returns,
+cells, or used for scheduling, tuning, stopping or TTT. After the run-named ZIP returns,
 a separate local evaluator reads the pinned public evaluation solutions.
 
 Report test exact-match pass@1 and pass@2 over **172 tests**, plus task-average
@@ -236,4 +238,9 @@ official hidden score or method promotion.
 
 Design parameters are recorded in
 [`public-eval-notebook-design-001.json`](../../trials/arc-agi-2-qwen35-nvarc/configs/public-eval-notebook-design-001.json).
-No notebook has been rendered or submitted by this planning change.
+The JSON remains the original inert design snapshot. The implementation groups
+the nine responsibilities above into four notebook cells: profile instructions,
+verified payload/bootstrap and full skeleton, parent execution/export, and an
+independently runnable download cell. It reserves the final 10 seconds of each
+30-second test for verification. Decision 0060 and the save record govern the
+two resulting exact notebooks; real public GPU timing remains unmeasured.

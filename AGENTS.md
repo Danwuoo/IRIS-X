@@ -616,6 +616,19 @@ exported checkpoint, teacher, generation, scoring or further kernel follows.
 
 ## Authority order
 
+Decision 0060 records the owner's implementation and QUICK_SAVE direction for
+two distinct public evaluation notebooks: `nvarc-public-base30-001` and
+`nvarc-public-ttt128-30-001`. Locally debug and verify the complete 120-task /
+172-test input, four persistent L4 workers, BASE without TTT and full 128-step
+TTT, shared 30-second test budgets and distinct run-named ZIPs. Each identity
+has one private Internet-disabled USD 0 QUICK_SAVE; reserve its exact package
+and request before credential/provider IO and stop at its receipt. The owner
+runs in Editor. Resource/session facts remain unavailable. No agent execution,
+runtime query, retrieval, monitoring, Dataset mutation, competition submission
+or automatic retry is authorized. Preserve all earlier consumed identities.
+Follow `docs/decisions/0060-save-two-public-evaluation-notebooks.md` and
+`trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001.md`.
+
 Decision 0059 records the owner's direct instruction to obtain one official
 Stage 3 ARC-AGI-2 score entirely through Kaggle CLI without owner operation.
 It authorizes a distinct private Internet-disabled USD 0 full-input candidate,
