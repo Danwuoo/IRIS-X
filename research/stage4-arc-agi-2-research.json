@@ -1,0 +1,235 @@
+{
+  "schema_version": 2,
+  "dispatch_id": "IRIS-STAGE4-RESEARCH-20261005-001",
+  "date": "2026-10-05",
+  "timezone": "Asia/Taipei",
+  "objective": "ARC-AGI-2 official Kaggle score >85; public development evidence is not official score",
+  "controller": {
+    "thread_id": "01a105f2-1643-74e0-845e-d31b426efb50",
+    "role": "Broker, evidence review and acceptance; owner relays cloud messages; local task implements."
+  },
+  "local": {
+    "thread_id": "01a10c8f-f075-77a3-87ba-d08b47fc1365",
+    "host": "local",
+    "model": "gpt-6.1-sol",
+    "effort": "xhigh",
+    "status": "in-progress-at-brief-preparation",
+    "scope": "Offline source identity, evaluation diagnostics and research handoff; no method selection before cloud research review"
+  },
+  "cloud": {
+    "required_environment": "dots cloud computer and built-in threads",
+    "required_model": "gpt-6-astra",
+    "required_effort": "ultra",
+    "status": "prepared-for-owner-relay",
+    "note": "Run in the owner's selected dots cloud computer and built-in threads. Record actual model/effort if exposed; do not claim a setting was verified solely because this prompt names it."
+  },
+  "basis": {
+    "head": "62a849755396520341be8f12b844a37e36ada266",
+    "official_submission": {
+      "ref": "56840442",
+      "status": "Notebook Threw Exception",
+      "score": null,
+      "root_cause": "unknown"
+    },
+    "source_warning": "NVARC variant 120 tasks/172 tests differs from pinned canonical ARC-AGI-2 120/167: five extra tests and two changed demo sets.",
+    "public_variant": {
+      "base": {
+        "pass2": 5,
+        "oracle": 6,
+        "coverage": 32,
+        "tests": 172,
+        "parent_seconds": 1290.417958
+      },
+      "ttt128": {
+        "pass2": 10,
+        "oracle": 11,
+        "coverage": 54,
+        "tests": 172,
+        "parent_seconds": 7896.521911
+      }
+    },
+    "portable_gpu_gate": false,
+    "model_exposure": "unresolved",
+    "observed_budget": {
+      "search_seconds": 20,
+      "shared_search_and_verification_seconds": 30,
+      "hard_deadline": false,
+      "ttt_updates_per_task": 128,
+      "ttt_total_updates": 15360,
+      "model": "published Qwen3-4B SFT139",
+      "worker_count": 4,
+      "gpu": "L4",
+      "torch": "2.8.0+cu128"
+    },
+    "aggregate_failures": {
+      "base_empty": 140,
+      "ttt_empty": 118,
+      "base_pool_miss": 26,
+      "ttt_pool_miss": 43,
+      "base_ranking_miss": 1,
+      "ttt_ranking_miss": 1,
+      "paired_both_correct": 4,
+      "paired_both_wrong": 161,
+      "ttt_gain": 6,
+      "ttt_loss": 1
+    },
+    "historical_acceptance_note": "The ignored controller audit was produced before Stage 4 opened. Its stage4_started:false/new_dispatch:false describe that earlier review, not current scope.",
+    "known_validation_limit": "At the Stage 3 acceptance snapshot, repository --all reported 523 tests / two failures / one skip: owner root ZIP layout and a combined-worker short-timing failure whose isolated rerun passed. Consult the Stage 4 handoff for the current check result."
+  },
+  "boundaries": [
+    "Cloud research may use public primary sources and sanitized project method/aggregate evidence; no credentials, raw task answers, hidden inputs, payloads or weights in the bridge.",
+    "Research is broad across approaches; do not equate reproducing NVARC with reaching the target.",
+    "No new paid compute/API, Kaggle runtime/save/submission, Dataset mutation, scheduled monitoring, or reuse of consumed identities under this dispatch.",
+    "Local implementation owns repository writes. Cloud returns research and specifications; controller selects changes and mediates.",
+    "Current competition rules and actual platform limits must be researched from primary sources; label unknowns and distinguish historical/current leaderboards.",
+    "Use a finite first wave with four distinct visible research threads; no recursive unbounded delegation or continuous schedule."
+  ],
+  "evidence_paths": [
+    "trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001-diagnosis.md",
+    "trials/arc-agi-2-qwen35-nvarc/stage3-official-score-001.md",
+    ".irisx/public-eval-analysis-20261005-001/analysis.json",
+    ".irisx/control-review-public-20261005-001/acceptance.json"
+  ],
+  "research_tasks": [
+    {
+      "id": "R1",
+      "title": "Official constraints and current SOTA",
+      "question": "What is the strongest reproducible route to >85 on the actual official Kaggle ARC-AGI-2 evaluation?",
+      "deliverables": [
+        "Current official competition identity/rules/scoring/compute/data/model constraints with dates and primary links",
+        "Separate ARC-AGI-2 public/private/semi-private benchmarks and Kaggle official evidence; identify whether >85 is presently demonstrated in this exact setting",
+        "Compare leading open/reproducible methods, checkpoint availability, source commit, license, training exposure and compute; rank methods under confirmed deployment limits",
+        "List evidence that would falsify each proposed route; do not promise >85"
+      ]
+    },
+    {
+      "id": "R2",
+      "title": "Candidate coverage and inference/training cost",
+      "question": "Why are most pools empty or wrong, and which changes can improve correct-candidate coverage per unit compute?",
+      "deliverables": [
+        "Analyze observed BASE/TTT coverage, pool miss and verification/search coupling without assuming missing timing values",
+        "Review native NVARC upstream training/inference/DFS/pruning/augmentation/verifier behavior against available evidence",
+        "Compare training allocation, model/reset correctness, batching/cache, candidate diversity and budget allocation; distinguish engineering bugs from method limits",
+        "Propose 3 prioritized controlled experiments with hypothesis, invariant controls, minimal workload, acceptance and stop criteria; no real model execution"
+      ]
+    },
+    {
+      "id": "R3",
+      "title": "Alternative solvers and complementary ensemble",
+      "question": "Which methods beyond the current NVARC path can provide complementary generalization under official deployment constraints?",
+      "deliverables": [
+        "Research executable program synthesis, object-centric/DSL search, test-time neural adaptation and hybrid ensembles from original papers/repos",
+        "Explain complementarity using observable task/demo features rather than answer-derived labels",
+        "Propose a minimal solver interface, candidate provenance and ranking design only if existing interfaces are insufficient",
+        "Recommend a first alternative with reproducible artifacts, cost bounds, failure modes, a minimal offline prototype specification and a disconfirming experiment"
+      ]
+    },
+    {
+      "id": "R4",
+      "title": "Measurement integrity and official-run reliability",
+      "question": "How can Stage 4 produce decision-bearing measurements and complete an official hidden rerun reliably?",
+      "deliverables": [
+        "Audit canonical-vs-variant source identity, multi-test aggregation, truth isolation, contamination/exposure and tuning/holdout policy",
+        "Reason about official Notebook Threw Exception as unresolved; enumerate diagnostic evidence required without claiming a cause",
+        "Design checkpoint/output lifecycle and stress/failure tests for arbitrary official inputs, worker deadlines, packaging and complete submission schema",
+        "Define experiment acceptance gates and publication/official-score claim rules; review R1-R3 proposals adversarially when available"
+      ]
+    }
+  ],
+  "common_return_format": [
+    "actual thread ID/host/model/effort and which settings are verified",
+    "concise conclusion with confidence and critical unknowns",
+    "evidence table: claim, exact primary source/commit/date, relevance and limitations",
+    "ranked experiments: hypothesis, one changed factor, controls, needed artifacts, time/memory estimates with assumptions, acceptance and kill criteria",
+    "implementation handoff: existing module targets or unknowns, minimal diff intent, meaningful tests",
+    "cross-review contradictions and a recommendation for the next local task"
+  ],
+  "transfer_state": {
+    "cloud_sent": false,
+    "owner_will_relay": true,
+    "local_sent": true,
+    "automatic_monitoring": false
+  },
+  "relay": {
+    "mode": "owner-manual",
+    "instruction": "The owner relays this brief and ZIP to Astra ultra and returns research results to the local controller. No direct cross-cloud messaging or local-computer connection is needed.",
+    "cloud_sent": false,
+    "requested_cloud_profile": "dots cloud computer; gpt-6-astra / ultra",
+    "local_profile": "gpt-6.1-sol / xhigh"
+  },
+  "owner_relay_instruction": "訊息由我傳遞，準備好研究題目，如果有 gitignore 的檔案是必要的，打包成 zip，把專案 commit & push，最後準備的短 prompt 讓我傳遞給 astra ultra。",
+  "reading_order": [
+    "research/stage4-arc-agi-2-research.json (this brief; current owner scope)",
+    "AGENTS.md (historical run authorities stay consumed; the owner has now opened Stage 4 research and local development)",
+    "trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001-diagnosis.md",
+    "trials/arc-agi-2-qwen35-nvarc/stage3-official-score-001.md",
+    "docs/plan/2026-10-05-nvarc-public-eval-notebook.md",
+    "Attached evidence ZIP: READ_FIRST.json, MANIFEST.json and aggregate evidence. The ongoing local foundation implementation is not part of this snapshot."
+  ],
+  "code_reading_guide": {
+    "canonical_sources_and_scoring": [
+      "tools/score_nvarc_public_eval.py",
+      "tools/nvarc_public_eval.py",
+      "tests/test_nvarc_public_eval.py"
+    ],
+    "runtime_and_budget": [
+      "tools/nvarc_public_eval_runtime.py",
+      "tools/nvarc_public_eval_parent.py",
+      "tools/nvarc_native_solve_runtime.py",
+      "tools/nvarc_native_export.py"
+    ],
+    "official_submission": [
+      "tools/nvarc_official_adapter.py",
+      "tools/nvarc_official_parent.py",
+      "tools/nvarc_official_render.py",
+      "tools/arc_kaggle_submission.py"
+    ],
+    "instruction": "Trace imports and pinned upstream references as needed. Cached model weights, source datasets and full runtime payloads are not in the research ZIP. Acquire public source code at the pinned commit for read-only research if needed; do not run a solver/model workload."
+  },
+  "public_sources": [
+    {
+      "role": "canonical ARC-AGI-2 source",
+      "url": "https://github.com/arcprize/ARC-AGI-2",
+      "commit": "f3283f727488ad98fe575ea6a5ac981e4a188e49"
+    },
+    {
+      "role": "official competition to verify current rules and scoring",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2"
+    },
+    {
+      "role": "observed published model identity",
+      "reference": "sorokin/qwen3_4b_grids15_sft139/transformers/bfloat16/1",
+      "note": "This is the model used in the measured public BASE/TTT runs; do not substitute Qwen3.5-4B from older compact pilots."
+    },
+    {
+      "role": "NVARC variant upstream binding",
+      "url": "https://github.com/1ytic/NVARC",
+      "commit": "846d0198efa752534594e321fc3289fc0a06c657",
+      "path": "external/TinyRecursiveModels/kaggle/combined/arc-agi_evaluation2_challenges.json",
+      "sha256": "e7c62a4bd211867c6b538f66b8013b81f299663c82ca062f49a52bf439d6e4e8",
+      "note": "Resolve direct submodule commits from trials/arc-agi-2-qwen35-nvarc/source-manifest.json."
+    }
+  ],
+  "research_execution": "First wave: R1–R4 in separate built-in cloud research threads, followed by cross-review and a single prioritized synthesis. Public browsing and read-only repository analysis are authorized. No cloud implementation commits, local task control, paid API/GPU execution or Kaggle operations.",
+  "expected_return": {
+    "files": [
+      "RESEARCH_REPORT.md",
+      "EXPERIMENT_BACKLOG.json"
+    ],
+    "language": "Traditional Chinese, keeping primary-source titles and technical identifiers in original form",
+    "backlog_fields": [
+      "priority",
+      "hypothesis",
+      "evidence_links_and_commits",
+      "implementation_scope",
+      "controlled_factors",
+      "minimum_experiment",
+      "resource_estimate_and_assumptions",
+      "acceptance_criteria",
+      "kill_criteria",
+      "unknowns",
+      "first_local_task_prompt"
+    ],
+    "handoff": "Return to the owner for manual relay. The controller will verify claims, select an experiment and dispatch local implementation."
+  }
+}
