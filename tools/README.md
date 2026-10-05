@@ -21,6 +21,14 @@ a terminal normalization gate. It never moves or deletes files.
 Historical tools are recoverable from the cold-archive tag and are not active
 commands.
 
+`report_arc_offline.py` and `arc_offline_evaluation.py` provide a shared,
+evaluator-only offline report over SHA-bound frozen pools/archives. They check
+demonstration/input/multi-test identity, preserve exact denominators, separate
+candidate-generation and ranking misses, and retain unknown runtime clocks
+and official null scores. See the [CLI and schemas](../docs/development/arc-offline-evaluation.md)
+and [first Stage 4 local scope](../docs/plan/2026-10-05-stage4-local-foundation.md).
+They do not load a model or authorize new external work.
+
 `nvarc_original_corpus.py` prepares the distinct Decision-0050 original
 reproduction corpus under `.irisx/nvarc-original/`. It copies published
 HF bytes unchanged, retains all six training sources and separate validation,
