@@ -6,6 +6,9 @@ This directory contains only current product-era guidance.
   the two public evaluation owner-Editor QUICK_SAVEs. The
   [implementation and save record](../trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001.md)
   binds the notebooks, local debug, separate run-named ZIPs and receipts.
+  The [returned public comparison](../trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001-diagnosis.md)
+  verifies both owner ZIPs, full TTT/reset evidence and BASE 5/172 versus
+  TTT 10/172, with corrected variant-source qualification and timing costs.
 
 - [`plan/2026-10-05-nvarc-public-eval-notebook.md`](plan/2026-10-05-nvarc-public-eval-notebook.md)
   defines the owner-requested public evaluation notebook development design,

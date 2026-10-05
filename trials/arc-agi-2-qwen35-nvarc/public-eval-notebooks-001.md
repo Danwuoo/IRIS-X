@@ -3,7 +3,8 @@
 Date: 2026-10-05, Asia/Taipei.
 Authority: [Decision 0060](../../docs/decisions/0060-save-two-public-evaluation-notebooks.md).
 Status: both sole private QUICK_SAVEs accepted as version 1 and consumed;
-owner Editor execution and returned ZIPs are pending. Runtime is unqueried.
+owner Editor ZIPs returned and locally verified/scored. No provider runtime
+query was made. See the [returned comparison](public-eval-notebooks-001-diagnosis.md).
 
 The owner requested two notebooks, local debugging before save, manual Editor
 execution, and separate descriptive ZIP names. This implements the
@@ -19,6 +20,9 @@ Both contain **120 tasks / 172 test inputs** and use four persistent, distinct
 BF16 L4 workers with published Qwen3-4B SFT139. Internet is off; paid cost is
 USD 0. The existing dependency/model/competition attachments are retained,
 while runtime reads no competition files. No Dataset mutation is needed.
+This is the pinned NVARC/TinyRecursive public variant: the returned audit found
+five extra tests and two changed demonstration sets relative to the pinned
+ARC-AGI-2 source (120/167). It is not an exact official-input benchmark.
 
 The public challenge SHA-256 is
 `e7c62a4bd211867c6b538f66b8013b81f299663c82ca062f49a52bf439d6e4e8`;
@@ -147,8 +151,17 @@ also passed in the separate credential/runtime environment without provider IO.
 No agent session was started and no provider runtime, log or output query was
 made. Both requests explicitly used `QUICK_SAVE`; no formal competition
 submission or Dataset mutation occurred. All external operations stopped at
-the receipts. GPU runtime/parity and correctness remain unobserved/unscored.
+the receipts. At save, GPU runtime/parity and correctness were unobserved/unscored.
 
-The owner starts each notebook in Editor with Run All and returns its distinct
-ZIP. Agent work stops at save receipts; there is no scheduled or continuous
-monitor. The previous official 001 remains terminal failed without a score.
+The owner subsequently returned both distinct Editor ZIPs and requested local
+analysis, reporting BASE about 24 minutes and TTT about 2 h 21 minutes. Both
+completed all 120 tasks without recorded program/worker errors; planned test
+deadlines explain `partial`. All 15,360 TTT updates and task resets verify.
+Model-only pass@2 is 5/172 (2.91%) for BASE and 10/172 (5.81%) for TTT, with
+verified candidate coverage 32/172 and 54/172. Recorded parent durations are
+1,290.418 and 7,896.522 seconds. The diagnosis retains paired changes, source
+differences, full hashes, training/verifier audits and test limitations.
+Strict portable GPU numerical replay remains false and SFT139 exposure unknown.
+No new save/run, provider query, retrieval or scoring claim beyond this public
+development observation follows. Monitoring stays stopped. The previous
+official 001 remains terminal failed without a score.

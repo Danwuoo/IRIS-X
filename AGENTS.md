@@ -631,7 +631,17 @@ Follow `docs/decisions/0060-save-two-public-evaluation-notebooks.md` and
 Both sole QUICK_SAVEs were accepted as private version 1 and are consumed.
 Exact package, SDK request, reservation and receipt bindings are retained.
 The agent started no session and made no runtime query or retrieval; monitoring
-stays stopped. The owner will run each notebook and return its run-named ZIP.
+stays stopped. The owner subsequently returned both run-named Editor ZIPs and
+requested local analysis, reporting BASE about 24 minutes and TTT about
+2 h 21 minutes. All 120 tasks per run, 15,360 TTT updates and baseline resets
+verify; planned per-test deadlines explain `partial`, without worker exceptions.
+Model-only pass@2 is BASE 5/172 versus TTT 10/172, with coverage 32/172 versus
+54/172. The input is the pinned NVARC/TinyRecursive public variant, with five
+extra tests and two changed demonstration sets relative to pinned ARC-AGI-2
+(120/167); no exact official-input benchmark claim follows. Retain
+`trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001-diagnosis.md`.
+Strict portable GPU replay remains false and model exposure unresolved. This
+local observation grants no new external run, save, retrieval or promotion.
 
 Decision 0059 records the owner's direct instruction to obtain one official
 Stage 3 ARC-AGI-2 score entirely through Kaggle CLI without owner operation.

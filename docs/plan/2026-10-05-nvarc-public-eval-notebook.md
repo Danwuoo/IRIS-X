@@ -3,12 +3,18 @@
 Date: 2026-10-05, Asia/Taipei.
 Status: implemented under Decision 0060; exact save receipts and local checks
 are retained in the [public notebook record](../../trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001.md).
+Both returned Editor ZIPs are now locally analyzed in the
+[paired comparison](../../trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001-diagnosis.md).
 
 ## Objective and first release
 
-Build a private Kaggle notebook for the standard ARC-AGI-2 public evaluation
-input: **120 tasks and 172 test inputs**. Obtain a bounded, reproducible public
+Build a private Kaggle notebook for the pinned NVARC/TinyRecursive public
+evaluation variant: **120 tasks and 172 test inputs**. Obtain a bounded, reproducible public
 development measurement without spending another six hours by default.
+The returned audit corrects the original standard-input designation: pinned
+ARC-AGI-2 has 167 tests, with five extra tests and two changed demonstration sets
+in this variant. Saved decisions, plans and payloads remain frozen. Matching
+task IDs did not establish matching task contents.
 
 The recommended first full-set profile is **BASE-30**: the existing published
 Qwen3-4B SFT139 model, no task-local training, the original DFS/ranking machinery,
@@ -42,7 +48,7 @@ The completed private official-001 preview took 21,681.367 seconds
 
 Public per-task training tokens range from 57,920 to 955,392; median 215,808.
 Sequence lengths, parallel balance and the new worker lifecycle can change
-throughput. No public GPU timing has been measured. In particular, the
+throughput. At planning, no public GPU timing had been measured. In particular, the
 58.17% outside training cannot be described as inference time or model-loading
 time alone.
 
@@ -63,6 +69,10 @@ Its SHA-256 is
 `e7c62a4bd211867c6b538f66b8013b81f299663c82ca062f49a52bf439d6e4e8`.
 The IDs match the 120 evaluation cases at ARC-AGI-2 commit
 `f3283f727488ad98fe575ea6a5ac981e4a188e49`; test entries contain input only.
+The returned input-based audit finds 167 matching upstream tests, five extra
+variant tests and changed public demonstrations on `d8e07eb2` / `faa9f03d`.
+All 167 corresponding solutions agree. The primary comparison retains its
+full 172-test denominator and is labeled as this public variant.
 The prepared local copy is
 `.irisx/stage3-public-eval-20261005-001/public-challenges.json`.
 
@@ -243,4 +253,9 @@ the nine responsibilities above into four notebook cells: profile instructions,
 verified payload/bootstrap and full skeleton, parent execution/export, and an
 independently runnable download cell. It reserves the final 10 seconds of each
 30-second test for verification. Decision 0060 and the save record govern the
-two resulting exact notebooks; real public GPU timing remains unmeasured.
+two resulting exact notebooks. The returned audit now measures parent wall
+times of 21 min 30 s for BASE and 2 h 11 min 37 s for TTT, separately from the
+owner's approximate 24 min / 2 h 21 min. Both completed all tasks, and TTT
+completed every full epoch. Pass@2 is 5/172 versus 10/172; candidate absence is
+140 versus 118 tests. This does not validate a larger training budget or grant
+another save/run. The original inert design JSON remains unchanged.

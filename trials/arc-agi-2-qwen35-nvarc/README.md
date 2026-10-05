@@ -5,6 +5,11 @@ owner's separate BASE-30 and full TTT128-30 comparisons on all 120 public tasks 
 172 tests. [Decision 0060](../../docs/decisions/0060-save-two-public-evaluation-notebooks.md)
 authorizes one private QUICK_SAVE each after offline debug, stopping at receipts
 for manual owner execution. Their ZIP names are distinct; monitoring stays off.
+The [returned comparison](public-eval-notebooks-001-diagnosis.md) verifies all
+120 task completions and full TTT/reset evidence, with BASE pass@2 5/172 and
+TTT 10/172. The input is the pinned NVARC/TinyRecursive public variant, including
+five extra tests and two changed demonstration sets relative to pinned upstream.
+No official or fresh hidden score follows.
 
 The [2026-10-04 independent acceptance](original-reproduction-acceptance-20261004.md)
 accepts the complete native 008 TTT epoch/reset observation and original-Qwen3
