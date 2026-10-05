@@ -359,6 +359,20 @@ class PublicTinySourceTests(unittest.TestCase):
 @unittest.skipUnless(stage.INPUT.is_file() and importlib.util.find_spec('kagglesdk'),
                      'optional cached frozen source and Kaggle SDK; no provider IO')
 class PublicSaveTests(unittest.TestCase):
+    def test_preflight_survives_fresh_interpreter_hash_seed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            package = Path(tmp)/'package'; stage.stage(package, 'BASE-30', '0'*40)
+            original_sha = core.sha(package/'kernel/notebook.ipynb')
+            for seed in ('13', '71'):
+                command = [sys.executable, str(stage.ROOT/'tools/stage_nvarc_public_eval.py'),
+                           'preflight', '--package', str(package)]
+                result = subprocess.run(command, cwd=stage.ROOT,
+                    env=dict(os.environ, PYTHONHASHSEED=seed, PYTHONUTF8='1'),
+                    capture_output=True, text=True, encoding='utf-8', timeout=30)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertTrue(json.loads(result.stdout)['offline_package_verified'])
+                self.assertEqual(core.sha(package/'kernel/notebook.ipynb'), original_sha)
+
     def test_actual_sdk_save_only_wire_and_reservation_before_credentials_no_retry(self):
         from tools import save_nvarc_public_eval as transport
         with tempfile.TemporaryDirectory() as tmp, redirect_stdout(io.StringIO()):

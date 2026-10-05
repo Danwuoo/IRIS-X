@@ -1,6 +1,7 @@
 """Decision 0060: render two immutable owner-Editor public notebooks, offline only."""
 from __future__ import annotations
 import argparse
+import ast
 import base64
 import hashlib
 import json
@@ -38,7 +39,7 @@ def construct(profile, source_commit):
     challenges = parse_json(INPUT.read_bytes()); workload = parse_json(WORKLOAD.read_bytes())
     keys = {'solver', 'loader', 'decoder', 'helper', 'budget', 'schedule', 'hardware',
             'solve_runtime', 'multitask', 'exporter', 'source_inventory', 'model_inventory'}
-    raw = {k: old[k] for k in keys}; raw['challenges'] = INPUT.read_bytes()
+    raw = {k: old[k] for k in sorted(keys)}; raw['challenges'] = INPUT.read_bytes()
     for key, name in [('public_core', 'nvarc_public_eval.py'), ('public_runtime', 'nvarc_public_eval_runtime.py'),
                       ('public_parent', 'nvarc_public_eval_parent.py')]:
         raw[key] = (ROOT/'tools'/name).read_bytes(); compile(raw[key], name, 'exec')
@@ -188,8 +189,20 @@ def preflight(package):
     require(not package.is_symlink() and not any(p.is_symlink() for p in package.rglob('*')), 'regular package required')
     saved = parse_json((package/'plan.json').read_bytes())
     plan, raw, notebook, metadata = construct(saved['profile'], saved['source_commit'])
+    saved_notebook = parse_json((package/'kernel/notebook.ipynb').read_bytes())
+    # Original staged bytes may have a different literal dictionary order from
+    # an earlier interpreter's hash seed. Preserve them while checking every
+    # packed value and all surrounding executable source exactly. No saved
+    # payload is executed or used as authoritative source for reconstruction.
+    tree = ast.parse(''.join(saved_notebook['cells'][1]['source']))
+    assignments = [n for n in tree.body if isinstance(n, ast.Assign) and
+        any(isinstance(t, ast.Name) and t.id == 'PACKED' for t in n.targets)]
+    require(len(assignments) == 1, 'one literal packed payload required')
+    packed = ast.literal_eval(assignments[0].value)
+    require(isinstance(packed, dict) and set(packed) == set(raw), 'closed packed payload keys required')
+    notebook = render(plan, {k: raw[k] for k in packed})
     summary = parse_json((package/'stage-summary.json').read_bytes())
-    require(saved == plan and parse_json((package/'kernel/notebook.ipynb').read_bytes()) == notebook and
+    require(saved == plan and saved_notebook == notebook and
         parse_json((package/'kernel/kernel-metadata.json').read_bytes()) == metadata and
         summary == {'run_id': plan['run_id'], 'plan_digest': digest(plan),
             'payload_sha256': {k: hashlib.sha256(v).hexdigest() for k, v in raw.items()},
