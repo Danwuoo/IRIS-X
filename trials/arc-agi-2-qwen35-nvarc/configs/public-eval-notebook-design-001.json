@@ -1,0 +1,113 @@
+{
+  "format": "irisx/public-eval-notebook-development-design-v1",
+  "design_id": "public-eval-notebook-design-001",
+  "date": "2026-10-05",
+  "timezone": "Asia/Taipei",
+  "status": "proposed-not-implemented",
+  "approved": false,
+  "execution_authorized": false,
+  "controller_admission": null,
+  "launch_on_import": false,
+  "default_proposed_profile": "BASE-30",
+  "one_profile_per_immutable_run": true,
+  "source": {
+    "nvarc_commit": "846d0198efa752534594e321fc3289fc0a06c657",
+    "arc_agi_2_commit": "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+    "challenges_sha256": "e7c62a4bd211867c6b538f66b8013b81f299663c82ca062f49a52bf439d6e4e8",
+    "tasks": 120,
+    "tests": 172,
+    "contains_test_outputs": false
+  },
+  "model": {
+    "source": "sorokin/qwen3_4b_grids15_sft139/transformers/bfloat16/1",
+    "material_digest": "sha256:27de51ef22658a0cce3a9fc04fac8fc456165645e2665a82b215f72e20194b03",
+    "tokenizer_sha256": "af6b9e855f9db3192bd9152607708ebd7700b40f9fc5f792a26af70150a96cd5",
+    "public_evaluation_training_exposure": "unresolved"
+  },
+  "architecture": {
+    "persistent_workers": 4,
+    "required_gpu": "NVIDIA L4",
+    "distinct_gpu_uuids": 4,
+    "bf16_required": true,
+    "initial_model_loads": 4,
+    "fresh_trainer_optimizer_scheduler_per_ttt_task": true,
+    "full_saved_tensor_reset_before_next_ttt_task": true,
+    "retire_worker_on_reset_failure": true,
+    "worker_retry_limit": 0,
+    "python_hash_seed": "0",
+    "internet_enabled": false,
+    "maximum_paid_usd": 0,
+    "solutions_in_notebook": false,
+    "scoring_location": "separate-local-evaluator-after-result-return"
+  },
+  "profiles": {
+    "SMOKE": {
+      "task_ids": ["0934a4d8", "36a08778", "981571dc", "aa4ec2a5"],
+      "tasks": 4,
+      "tests": 5,
+      "session_seconds_by_solver_mode": {"BASE": 1800, "TTT128": 2700},
+      "startup_reserve_seconds": 900,
+      "export_reserve_seconds": 300,
+      "solver_mode_requires_explicit_selection": ["BASE", "TTT128"],
+      "full_set_score_claim": false
+    },
+    "BASE-30": {
+      "tasks": 120,
+      "tests": 172,
+      "training_steps_per_task": 0,
+      "session_seconds": 3600,
+      "startup_reserve_seconds": 900,
+      "export_reserve_seconds": 300,
+      "solve_seconds": 2400,
+      "complete_ttt_method_claim": false
+    },
+    "TTT128-30": {
+      "tasks": 120,
+      "tests": 172,
+      "training_steps_per_task": 128,
+      "maximum_optimizer_steps": 15360,
+      "training_input_tokens": 30713088,
+      "task_training_seconds": 1200,
+      "incomplete_epoch_qualifies": false,
+      "session_seconds": 14400,
+      "startup_reserve_seconds": 900,
+      "export_reserve_seconds": 300,
+      "solve_seconds": 13200,
+      "original_12_hour_performance_parity_claim": false
+    }
+  },
+  "shared_inference": {
+    "per_test_search_and_verification_seconds": 30,
+    "maximum_source_batches_per_test": 4,
+    "source_views_per_batch": 4,
+    "verification_views": 8,
+    "maximum_candidate_sequences_per_test": 64,
+    "maximum_generation_forwards_per_test": 4096,
+    "maximum_verification_forwards_per_test": 128,
+    "maximum_physical_input_tokens_per_test": 5242880,
+    "maximum_context_tokens": 8192,
+    "maximum_answer_tokens": 931,
+    "dfs_probability_threshold": 0.2,
+    "ranking_function": "score_kgmon",
+    "shared_clock_across_batches_and_verification": true,
+    "only_complete_verified_grids_ranked": true
+  },
+  "result_contract": {
+    "format_family": "distinct-public-eval-format-to-be-implemented",
+    "initial_full_submission_skeleton": true,
+    "atomic_single_parent_writer": true,
+    "checkpoint_after_each_test": true,
+    "missing_cases_remain_in_score_denominator": true,
+    "model_coverage_excludes_fillers": true,
+    "program_errors_remain_failures": true,
+    "lightweight_evidence_satisfies_historical_native_gate": false,
+    "strict_portable_gpu_gate": false
+  },
+  "runtime_estimation": {
+    "public_gpu_timing_measured": false,
+    "training_only_four_worker_linear_projection_seconds": 7201.060861145574,
+    "base_balanced_inference_allowance_seconds": 1290,
+    "estimates_are_completion_guarantees": false,
+    "offline_workload_report_sha256": "12479915fd5bc81336c893315c67cd860932ddc51eb2f78d1b19b6ca0e1a5b52"
+  }
+}

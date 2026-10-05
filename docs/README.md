@@ -2,6 +2,12 @@
 
 This directory contains only current product-era guidance.
 
+- [`plan/2026-10-05-nvarc-public-eval-notebook.md`](plan/2026-10-05-nvarc-public-eval-notebook.md)
+  defines the owner-requested public evaluation notebook development design,
+  with a bounded baseline, separate complete-TTT comparison, persistent workers
+  and independent local scoring. It records offline workload estimates; no
+  runnable notebook or external execution is delivered by the planning change.
+
 - [Decision 0059](decisions/0059-obtain-one-official-stage3-cli-score.md)
   records one official full-input Stage 3 scoring workflow through Kaggle CLI,
   without owner Editor operation and without starting Stage 4.
