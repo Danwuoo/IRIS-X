@@ -628,6 +628,10 @@ runtime query, retrieval, monitoring, Dataset mutation, competition submission
 or automatic retry is authorized. Preserve all earlier consumed identities.
 Follow `docs/decisions/0060-save-two-public-evaluation-notebooks.md` and
 `trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001.md`.
+Both sole QUICK_SAVEs were accepted as private version 1 and are consumed.
+Exact package, SDK request, reservation and receipt bindings are retained.
+The agent started no session and made no runtime query or retrieval; monitoring
+stays stopped. The owner will run each notebook and return its run-named ZIP.
 
 Decision 0059 records the owner's direct instruction to obtain one official
 Stage 3 ARC-AGI-2 score entirely through Kaggle CLI without owner operation.

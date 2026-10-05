@@ -2,8 +2,8 @@
 
 Date: 2026-10-05, Asia/Taipei.
 Authority: [Decision 0060](../../docs/decisions/0060-save-two-public-evaluation-notebooks.md).
-Status: local implementation, immutable packaging and handoff checks complete;
-the two sole QUICK_SAVEs are pending.
+Status: both sole private QUICK_SAVEs accepted as version 1 and consumed;
+owner Editor execution and returned ZIPs are pending. Runtime is unqueried.
 
 The owner requested two notebooks, local debugging before save, manual Editor
 execution, and separate descriptive ZIP names. This implements the
@@ -120,7 +120,13 @@ also passed in the separate credential/runtime environment without provider IO.
 - Stage summary SHA-256: `7c184ccd28d5ba54dde3be292c1ca2377076464b90cca77daa29813820ab180b`.
 - SDK request SHA-256: `4aea2a78e3eb704bc720878932e1a689bac7f970589b7041689f17a89012488a`.
 - Offline request: `QUICK_SAVE`, private, Internet off, `NvidiaL4`, 3600 seconds.
-- Save receipt: pending; no save reserved at offline initialization.
+- Accepted version 1, kernel ID `137147166`: [nvarc-public-base30-001](https://www.kaggle.com/code/danielwuu/nvarc-public-base30-001).
+- Reserved UTC: `2026-10-05T07:54:14.875218+00:00`; accepted receipt UTC: `2026-10-05T07:54:18.227356+00:00`.
+- Reservation SHA-256: `2585ef17584822b8f9f62d13ea128fc59447be21d03604a71a9a45d2ba820a05`.
+- Receipt SHA-256: `18d2c360907dd56f3b02d1e86cbafa5d32b7eb1a4f3527a3bbd8817d972d24ea`.
+- Final ledger SHA-256: `c153751d0890dead04d3816b876f3a6035c9999a32361e98070d6debbbc1c08e`.
+- Counts: one save reserved / one exact POST sent; zero status queries,
+  zero retrievals. The identity is consumed without retry.
 
 ### nvarc-public-ttt128-30-001
 
@@ -130,7 +136,18 @@ also passed in the separate credential/runtime environment without provider IO.
 - Stage summary SHA-256: `73e96af750a0951e85b4e25cf835449244350c0949376a65cf583c60477e31f3`.
 - SDK request SHA-256: `7ad5cccbccb56853247ef00336ff37e6e47ee63a52d19ba7a098992849816b0d`.
 - Offline request: `QUICK_SAVE`, private, Internet off, `NvidiaL4`, 14400 seconds.
-- Save receipt: pending; no save reserved at offline initialization.
+- Accepted version 1, kernel ID `137147194`: [nvarc-public-ttt128-30-001](https://www.kaggle.com/code/danielwuu/nvarc-public-ttt128-30-001).
+- Reserved UTC: `2026-10-05T07:54:32.724279+00:00`; accepted receipt UTC: `2026-10-05T07:54:36.332255+00:00`.
+- Reservation SHA-256: `96a56c26c3e0b3b68b64a46194e02ee8e4eb34f4a61b460ac3a924f46b696c6b`.
+- Receipt SHA-256: `abf4d78ae84b703a7e56257e9de0eb26fcf2dc93854cb6195bb8fff3f8123d48`.
+- Final ledger SHA-256: `3bfeb642d387a7bfb03d9e1019a2bfd81571ce9b9c6efea3236e32737957093b`.
+- Counts: one save reserved / one exact POST sent; zero status queries,
+  zero retrievals. The identity is consumed without retry.
+
+No agent session was started and no provider runtime, log or output query was
+made. Both requests explicitly used `QUICK_SAVE`; no formal competition
+submission or Dataset mutation occurred. All external operations stopped at
+the receipts. GPU runtime/parity and correctness remain unobserved/unscored.
 
 The owner starts each notebook in Editor with Run All and returns its distinct
 ZIP. Agent work stops at save receipts; there is no scheduled or continuous
