@@ -2,7 +2,8 @@
 
 Date: 2026-10-05, Asia/Taipei.
 Authority: [Decision 0060](../../docs/decisions/0060-save-two-public-evaluation-notebooks.md).
-Status: local implementation complete; handoff checks and sole QUICK_SAVEs pending.
+Status: local implementation, immutable packaging and handoff checks complete;
+the two sole QUICK_SAVEs are pending.
 
 The owner requested two notebooks, local debugging before save, manual Editor
 execution, and separate descriptive ZIP names. This implements the
@@ -85,15 +86,51 @@ not Unsloth/L4 numerical parity or measured public speed.
 A separate Linux/WSL probe killed a supervisor and observed its guarded worker
 gone in 0.022 seconds, with zero GPU/provider calls. Retained evidence:
 `.irisx/nvarc-public-eval-debug-20261005-001/linux-probe-001/verification.json`.
-Repository handoff check outcome will be recorded before saving.
+`python tools/repository_check.py --all` passed: **522 discovered tests,
+one optional skip, 1,169.309 seconds**, repository invariants and diff checks
+passed. The packaging-only fresh-process fix was followed by the final 13-test
+targeted regression below and a fresh repository invariant check. Its code
+changes no embedded runtime/source/input bytes.
+Retained logs: `.irisx/nvarc-public-eval-debug-20261005-001/repository-check.log`
+and sibling `targeted-final.log`, `sdk-save-tests.log`.
 
 ## Exact packages and save receipts
 
 Each fixed package belongs at
 `.irisx/nvarc-public-eval/runs/<run>/package-l4`, with its sole request,
 reservation, ledger and receipt at sibling `editor-save`.
-The implementation commit, package/request hashes and accepted URLs will be
-recorded after offline validation and the two sequential sole saves.
+
+Implementation commit: `0c19b4ba0e7c70faebb82042ac96f3d0279b6fb9`.
+Offline preflight fix: `56904063494d5c6d4897f3f0f3efc0e08a75854b`.
+The fresh-process preflight found a Python dictionary-order difference before
+credential/provider IO. The fix reconstructs every payload from trusted local
+source while retaining the saved literal ordering; both notebooks and package
+hashes remain unchanged. No save reservation or provider call occurred during
+those failed offline checks.
+
+Targeted final regression: **13 tests, no skips, PASS in 44.806 seconds**.
+This includes fresh interpreters with hash seeds 13 and 71. Actual SDK wire tests
+also passed in the separate credential/runtime environment without provider IO.
+
+### nvarc-public-base30-001
+
+- Plan digest: `sha256:0c05e77adcbb40abd223345122ec84a10e7e67e86b0ecf2d4e041c109871ef58`.
+- Notebook SHA-256: `4bd74f119e202a6fcd09ed1a73ea40531c95845a2b2a3623998d9687852123e4` (179915 bytes).
+- Metadata SHA-256: `00679d1a70dcde3130fd34f0ce7999b4b4723ce71a44ed8c8efdac7076e73265`.
+- Stage summary SHA-256: `7c184ccd28d5ba54dde3be292c1ca2377076464b90cca77daa29813820ab180b`.
+- SDK request SHA-256: `4aea2a78e3eb704bc720878932e1a689bac7f970589b7041689f17a89012488a`.
+- Offline request: `QUICK_SAVE`, private, Internet off, `NvidiaL4`, 3600 seconds.
+- Save receipt: pending; no save reserved at offline initialization.
+
+### nvarc-public-ttt128-30-001
+
+- Plan digest: `sha256:a3001cd4f8d1ddba1cc2e2515bcb4c24c1ee4887e41d40c62fcd7cf85d9668fe`.
+- Notebook SHA-256: `0973b904892e06876a0ef8921353fec866af6d9c1ee14a2331ef6f384df99def` (179952 bytes).
+- Metadata SHA-256: `a4507188fd86acecb6351c1c713c52d2e6bc16956984d10be291c2b94cc915ec`.
+- Stage summary SHA-256: `73e96af750a0951e85b4e25cf835449244350c0949376a65cf583c60477e31f3`.
+- SDK request SHA-256: `7ad5cccbccb56853247ef00336ff37e6e47ee63a52d19ba7a098992849816b0d`.
+- Offline request: `QUICK_SAVE`, private, Internet off, `NvidiaL4`, 14400 seconds.
+- Save receipt: pending; no save reserved at offline initialization.
 
 The owner starts each notebook in Editor with Run All and returns its distinct
 ZIP. Agent work stops at save receipts; there is no scheduled or continuous
