@@ -48,3 +48,28 @@ CLI version and redacted commands, UTC/Taipei timestamps, terminal status, raw
 official score and actual units/type, errors and coverage limitations. Claim
 only a numeric score returned by Kaggle. Commit locally on main and hand off
 a clean worktree.
+
+The owner's later `先停止監看` instruction stopped the local foreground
+continuation at 07:17:03 Taipei on 2026-10-05, including its future automatic
+formal-submit path. It did not cancel the provider notebook. The owner then
+reported notebook completion and their own competition submission, and asked
+this chat to complete acceptance. That direction authorizes targeted
+read-only terminal/output/submission reconciliation and independent local
+verification. Kaggle reports private notebook version 1 `COMPLETE` and
+competition submission ref `56840442`, created at 02:48:23.483 UTC /
+10:48:23.483 Taipei. Preserve the owner's submission as the consumed sole
+formal attempt; the agent must not submit again or restart the old continuation.
+Engineering acceptance, preview coverage, exact submitted-byte association,
+the actual official score and the unresolved strict portable GPU gate remain
+distinct claims. No new execution, method, Stage 4 or automation follows.
+
+At 03:57:39 UTC / 11:57:39 Taipei, the official submission detail confirmed
+an unhandled notebook error during the competition rerun and null public and
+private scores. The owner supplied the matching `Notebook Threw Exception`
+UI screenshot, explicitly naming official 001 version 1. The API's `COMPLETE`
+status is the terminal processing status; it does not mean successful scoring.
+The sole formal attempt is consumed and terminal failed without a numeric
+score. No traceback was exposed by the API or supplied screenshot, so the
+generic hidden-dataset warning is not a verified root cause. Close official
+score monitoring without another submission or GPU run. Retain private-run
+verification and artifact gaps independently on the status page.

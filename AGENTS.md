@@ -631,12 +631,34 @@ The owner subsequently instructed `先停止監看`. At 2026-10-05 07:17:03
 Taipei, the local foreground monitor/continuation and its future automatic
 formal-submit path were stopped; no continuation helper remains. The last
 read, at 07:10:20 Taipei, reported the distinct official 001 version 1
-`RUNNING`. No provider cancellation was requested, and current runtime state
-is unqueried. No formal submission reservation or receipt exists. Preserve
+`RUNNING`. No provider cancellation was requested; at that stop runtime state
+was unqueried and no formal submission reservation or receipt existed. Preserve
 the candidate and receipts; do not restart monitoring or the automatic
 continuation without owner direction. Stage 4 stays unopened. The stop and
 read bindings are retained in
 `trials/arc-agi-2-qwen35-nvarc/stage3-official-score-001.md`.
+
+The owner subsequently reported notebook completion, stated that they had
+already submitted `submission.json` to the competition, and requested
+acceptance. Targeted read-only terminal/output/submission reconciliation and
+local independent verification are authorized for official 001. Kaggle
+reports notebook version 1 `COMPLETE` and submission ref `56840442`; the sole
+formal submission allowance is consumed by the owner's submission. Do not
+submit again, run a new model/GPU job, mutate the notebook or Dataset, restart
+the stopped automatic continuation or heartbeat, or open Stage 4. Retain the
+actual official score/status separately from runtime engineering acceptance;
+pending or unavailable is not a numeric zero. Follow the same status page for
+the final evidence and remaining qualifications.
+
+The owner then supplied the submission error screenshot. It explicitly binds
+official 001 version 1 to `Notebook Threw Exception`; the official API also
+reports an unhandled error during the competition rerun, with no numeric
+public/private score or traceback. API status `COMPLETE` is a terminal
+processing label, not a successful-score claim. The sole official attempt is
+terminal failed without a score; no retry, new kernel or formal submission is
+authorized by that failure. Local acceptance retains the completed private
+run separately, including any artifact-retention gaps and the unchanged false
+strict portable GPU gate. Stop further official score/status monitoring.
 
 Decision 0058 records the owner's instruction to submit the reviewed local
 native multitask export repair. Exactly one private, Internet-disabled, USD 0

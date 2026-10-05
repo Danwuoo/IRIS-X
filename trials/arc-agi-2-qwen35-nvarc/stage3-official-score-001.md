@@ -1,6 +1,6 @@
 # Stage 3 single official CLI score
 
-Date: 2026-10-05 (Asia/Taipei). Status: **owner stopped monitoring; last observed private version 1 RUNNING; formal submission pending**.
+Date: 2026-10-05 (Asia/Taipei). Status: **acceptance completed; official submission 56840442 failed with notebook exception and no score; private-run retention qualification remains partial**.
 Authority: [Decision 0059](../../docs/decisions/0059-obtain-one-official-stage3-cli-score.md).
 Stage 4 remains unopened. Paid cost ceiling is USD 0. Existing consumed 007–010
 packages, receipts and returned observations remain immutable. The 010 engineering
@@ -146,9 +146,101 @@ verified. The local session exited with code 1 because it was stopped; this
 is not a Kaggle runtime failure.
 
 The last provider read is 024, at 23:10:20.059 UTC / 07:10:20.059 Taipei,
-and reports `RUNNING`. Current Kaggle state is unqueried after the owner's
-stop. No provider cancellation, subsequent provider query, terminal retrieval
-or formal submission occurred. No formal reservation or receipt exists and no
+and reports `RUNNING`. At the owner's stop, current Kaggle state was unqueried.
+No provider cancellation, subsequent provider query, terminal retrieval
+or formal submission had occurred. No formal reservation or receipt existed and no
 automatic submission path remains active. Monitoring/automatic continuation
 will not restart without owner direction. The stop and all retained reads are
 bound in the progress configuration; Stage 4 remains unopened.
+
+## Completed owner-submission acceptance
+
+The owner reported completion and their own competition submission, then
+supplied the error screenshot. It explicitly identifies
+`nvarc-stage3-official-001 - Version 1` as **Notebook Threw Exception**.
+The official SDK detail for ref **56840442**, read at 03:57:39.058 UTC /
+11:57:39.058 Taipei, confirms an unhandled error during the competition rerun.
+Both official scores are null; CLI score fields are empty. Its `COMPLETE`
+status describes terminal processing, not successful scoring. The one formal
+attempt is consumed and **official score acceptance failed without a score**.
+This is not score zero. No further official polling, retry, submission or GPU
+run is authorized by the failure, and none was performed during acceptance.
+
+The API and screenshot expose no traceback, hidden input identity, hardware
+inventory or completed workload for the scoring rerun. The generic warning
+that hidden data can differ does not identify its root cause. Actual hidden
+model work remains unobserved; neither zero work nor completion is inferred.
+The screenshot establishes the notebook/version association, while independent
+download of the submitted bytes returned HTTP 403. The returned private
+`submission.json` is verified separately below.
+
+Exact evidence, failure receipts and SHA-256 bindings are retained in
+[the acceptance configuration](configs/stage3-official-score-001-acceptance.json).
+The immutable implementation is commit
+`6b26925d09a5f6a0180012efe0374a49fd024308`; the candidate digest remains
+`sha256:9c23325a7eec8158c145c922d46512b1287a003ec423db5ea85932b9d95816b9`.
+Provider version 1's cell programs and all returned producer programs match
+the approved bytes. No notebook, Dataset or solver implementation was changed.
+
+The completed **private preview run** has `export-complete` terminal outcome,
+four assigned distinct BF16 L4 UUIDs, Torch 2.8.0+cu128 and CUDA 12.8, and
+21,681.367 seconds elapsed (**6h 1m 21.367s**). Its receipt digest and root
+copies of the summary, terminal and submission verify. This is distinct from
+the failed competition rerun.
+
+| Independently checked private-run observation | Result |
+| --- | --- |
+| Public-only runtime plan and native collator tokens | All 240 task epochs rebuilt; all retained tokens match |
+| Full training work | 30,720 training forwards/backwards and optimizer steps; 35,347,968 input tokens |
+| Test denominator | All 259 tests started; no task intentionally skipped |
+| Exported attempt fields | 372 model slots; 146 duplicate-first filler slots; 518 total |
+| Candidate coverage | 113 tests have two model attempts; 146 have one; no constant fallback |
+| Source search completion | 219 native-complete tests; 30 source DFS deadline stops; 10 inference deadline stops |
+| Worker outcomes | 202 complete; 38 inconclusive; no worker failure or deliberate fault |
+| Actual inference forwards | 1,680 control; 217,301 generation; 1,312 verification |
+| Ranking verification | 5,240 ranked verifier rows bound to exact transformed input/answer tokens and EOS-inclusive scores |
+| Reset evidence | 237 complete before/reset tensor comparisons; all 240 post-reset prefill controls and optimizer cleanup records checked |
+
+The independent local audit reconstructs every task event/checkpoint envelope
+and obtains exactly the retained native-evidence digest
+`sha256:99c881c40cca3e4252aa5740b5148a91911f92edc484a7d576bbfca40c63abc0`.
+Parsing, inverse views, deduplication, verifier bindings and source ranking
+reconstruct the complete submission and audit exactly. Submission SHA-256 is
+`0772c3f5a8a5ac92e1947e3f8b2a5213d8c435f72effdc71328492baf888c875`;
+audit SHA-256 is
+`bac6cdebf1e8a50649037efdfa02972074818774149287ebed1792b82a868130`.
+No test answers were opened and no local correctness score was computed.
+
+Artifact qualification remains **partial**. Of 5,080 selected evidence files,
+5,077 are retained with verified hashes. Three startup baseline inventories
+remain unavailable: `17b866bd`, `264363fd` and `39e1d7f9`. Their training
+ledgers, prepared tokens, changed trained/reset inventories and post-reset
+numerical controls are present, but an independent complete before/reset
+tensor claim for those three tasks is not made. Subsequent output catalog
+reads, including explicit version 1, returned HTTP 403
+`Permission 'kernels.get' was denied`. Initial local path assertions, stopped
+CLI transfer, truncated ZIP, 404 and 429 reads remain retained. Five complete
+entries recovered locally from the truncated ZIP passed their individual
+size/CRC checks; the ZIP as a whole remains unverified.
+
+The recorded strict fresh seed-0 export succeeded in the Kaggle runtime.
+Local forensic ranking reconstruction explicitly skips the separate strict
+cross-Torch DFS numeric replay. Its indexed observation join preserves the
+same uniqueness/order predicates, with original/indexed results equal on
+the first task. No tolerance or production verifier was changed.
+**The strict portable GPU gate remains false**, and the three retention gaps
+also prevent a full independent native training/reset qualification.
+Neither official acceptance, correctness, hidden coverage nor method promotion
+is inferred from the private preview.
+
+Repository invariants and whitespace checks pass. The initial full-suite
+attempt used system Python without `tokenizers` and reported three errors,
+eight failures and 27 skips across 491 tests; some Windows readiness fixtures
+also failed in that concurrent run. The dependency/process cause was not
+fully isolated. Focused reruns passed 42 native transport/admission/multitask
+tests in the ML environment, three export tests, and 11 process tests with
+the correct source path. The first full-suite failure is retained; a new
+all-suite pass is not claimed. Tiny CPU unit fixtures are not native GPU
+qualification. No new external model calls, paid work, formal submission,
+automation, Stage 4 or Git push occurred. The earlier stopped continuation
+remains stopped.
