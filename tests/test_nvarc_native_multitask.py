@@ -74,6 +74,7 @@ class MultiTaskTests(unittest.TestCase):
     @classmethod
     def produce(cls,*,fail_test=None,injected=False,candidate_mode=None):
         output=[];results=[]
+        cls.admitted_test_allocations={}
         for task_id in cls.challenges:
             directory=Path(tempfile.mkdtemp(dir=cls.directory));binding=bridge.task_binding(cls.plan,cls.challenges,task_id)
             events=runtime.Events(directory/'events.jsonl',binding)
@@ -102,6 +103,11 @@ class MultiTaskTests(unittest.TestCase):
                                        turbo_dfs=cls.solver.turbo_dfs)
             def solve(i):
                 if fail_test==(task_id,i):raise RuntimeError('injected downstream failure')
+                allocation=None
+                if spec.get('verification_schedule')=='deferred':
+                    allocation=runtime.admit_test_allocation(binding,i,time.time(),time.time()+60)
+                    cls.admitted_test_allocations.setdefault(task_id,{})[str(i)]=copy.deepcopy(allocation)
+                    adapter.generation_deadline,adapter.verification_deadline=runtime.allocation_deadlines(allocation,binding,i)
                 active_solver=solver
                 if candidate_mode is not None:
                     _,_,_,_,batches=runtime.test_views(cls.challenges,task_id,i,cls.loader,cls.tokenizer)
@@ -121,7 +127,7 @@ class MultiTaskTests(unittest.TestCase):
                         turbo_dfs=cls.solver.turbo_dfs)
                 return runtime.solve_test(cls.challenges,task_id,i,cls.loader,active_solver,cls.decoder,cls.tokenizer,adapter,
                     maximum_candidates=64,emit=events.emit,
-                    verification_schedule=spec.get('verification_schedule','interleaved'))
+                    verification_schedule=spec.get('verification_schedule','interleaved'),test_allocation=allocation)
             tests,failure=runtime.run_task_tests(cls.challenges,task_id,solve,checkpoint)
             logs=[json.loads(line) for line in (directory/'events.jsonl').read_bytes().splitlines()]
             output.append({'task_id':task_id,'binding':binding,'checkpoint':checkpoint_value,'events':logs,
@@ -131,9 +137,9 @@ class MultiTaskTests(unittest.TestCase):
             results.append(tests)
         return output,results
 
-    def export(self,evidence=None,plan=None):
+    def export(self,evidence=None,plan=None,*,test_allocations=None):
         return bridge.build_native_submission(self.challenges,plan or self.plan,evidence or self.evidence,
-            self.directory,self.tokenizer,allow_fixture=True)
+            self.directory,self.tokenizer,allow_fixture=True,test_allocations=test_allocations)
 
     @staticmethod
     def rechain(data):
@@ -158,7 +164,8 @@ class MultiTaskTests(unittest.TestCase):
         for spec in plan['task_specs'].values():spec['verification_schedule']='deferred'
         with patch.object(type(self),'plan',plan):
             evidence,results=self.produce()
-            submission,audit=self.export(evidence)
+            allocations=copy.deepcopy(self.admitted_test_allocations)
+            submission,audit=self.export(evidence,test_allocations=allocations)
             self.assertEqual(submission,baseline_submission)
             self.assertEqual((audit['task_count'],audit['test_output_count']),(2,3))
             self.assertTrue(all(t['verification_schedule']['verification_termination']=='queue_completed'
@@ -168,17 +175,34 @@ class MultiTaskTests(unittest.TestCase):
                 path=Path(directory);path.mkdir(parents=True,exist_ok=True)
                 (path/'native-tiny-strict.json').write_bytes(runtime.canonical(
                     {'kind':'tiny CPU; no GPU/native provenance qualification','plan':plan,
-                     'synthetic_challenges':self.challenges,'evidence':evidence,'audit':audit}))
-            for mode in ('fifo','votes','partial','tokens','unplanned','deadline','truth','telemetry'):
+                     'synthetic_challenges':self.challenges,'evidence':evidence,'audit':audit,
+                     'caller_admitted_test_allocations':allocations}))
+            negatives=[]
+            for mode in ('fifo','votes','partial','tokens','unplanned','deadline','joint-deadline',
+                         'joint-all-deadlines','joint-shift-all','joint-allocation-digest','missing-allocation','truth','telemetry'):
                 changed=copy.deepcopy(evidence);data=changed[0]
                 terminal=next(e for e in data['events'] if e['event']=='test_terminal')
                 result=terminal['result'];q=result['verification_schedule']['queue']
                 if mode=='fifo':q[0]['first_sequence_index']+=1
                 if mode=='partial':q[0].update(state='partial',completed_views=4,call_ids=q[0]['call_ids'][:1])
                 if mode=='deadline':result['verification_schedule']['verification_deadline']+=30
+                if mode.startswith('joint-'):
+                    result['verification_schedule']['verification_deadline']+=30
+                    declaration=next(e for e in data['events'] if e['event']=='verification_schedule')
+                    declaration['verification_deadline']+=30
+                    if mode!='joint-deadline':result['telemetry']['cooperative_deadlines']['verification']+=30
+                    if mode=='joint-shift-all':
+                        declaration['generation_deadline']+=30
+                        result['verification_schedule']['generation_deadline']+=30
+                        result['telemetry']['cooperative_deadlines']['generation']+=30
+                    if mode=='joint-allocation-digest':
+                        altered=copy.deepcopy(allocations[data['task_id']]['0']);altered['started_epoch']+=30
+                        d=runtime.digest(altered)
+                        declaration['test_allocation_digest']=result['verification_schedule']['test_allocation_digest']=d
+                        result['telemetry']['cooperative_deadlines']['test_allocation_digest']=d
                 if mode=='truth':result['verification_schedule']['answer_key']=[[0]]
                 if mode=='telemetry':result['telemetry']['counters']['votes_ranked']-=1
-                if mode in ('fifo','partial','deadline','truth','telemetry'):
+                if mode in ('fifo','partial','deadline','truth','telemetry') or mode.startswith('joint-'):
                     data['checkpoint']['tests'][0]=copy.deepcopy(result)
                 if mode=='votes':
                     ranked=next(e for e in data['events'] if e['event']=='candidate_ranked')
@@ -196,7 +220,76 @@ class MultiTaskTests(unittest.TestCase):
                         d['binding']=binding;d['checkpoint']['binding']=binding
                         for e in d['events']:e.update(binding)
                         self.rechain(d)
-                with self.subTest(mode=mode),self.assertRaises(RuntimeError):self.export(changed,bad_plan)
+                with self.subTest(mode=mode),self.assertRaises(RuntimeError) as rejected:
+                    self.export(changed,bad_plan,test_allocations=None if mode=='missing-allocation' else allocations)
+                negatives.append({'mutation':mode,'rejected':True,'reason':str(rejected.exception)})
+            if directory:
+                (Path(directory)/'coordinated-mutation-results.json').write_bytes(runtime.canonical(
+                    {'control_accepted':True,'caller_allocations_digest':runtime.digest(allocations),
+                     'negative_cases':negatives,'real_GPU_or_ARC_claim':False}))
+
+    def test_e10_allocation_is_bound_through_native_generation_recovery(self):
+        from tools import nvarc_native_export as exporter
+        from tools.nvarc_output_lifecycle import GenerationStore
+        plan=copy.deepcopy(self.plan);plan['run_id']='stage4-e10-inert-cpu-native-recovery'
+        for spec in plan['task_specs'].values():spec['verification_schedule']='deferred'
+        with patch.object(type(self),'plan',plan):
+            evidence,_=self.produce();allocations=copy.deepcopy(self.admitted_test_allocations)
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            for name in stage.files_for(self.raw):
+                target=root/name;target.parent.mkdir(parents=True,exist_ok=True)
+                target.write_bytes((self.directory/name).read_bytes())
+            (root/'plan.json').write_bytes(runtime.canonical(plan))
+            (root/'challenges.json').write_bytes(runtime.canonical(self.challenges))
+            original=bridge.build_native_submission
+            def build(*args,**kwargs):return original(*args,**kwargs,allow_fixture=True)
+            with patch.object(exporter,'build_native_submission',build):
+                binding,values=exporter.qualified_values(root,plan,self.challenges,evidence,self.tokenizer,{},
+                    test_allocations=allocations)
+                store=GenerationStore(root,'native',binding)
+                store.publish(values,evidence_qualified=True)
+                def revalidate(manifest,prior):
+                    fresh,current=exporter.qualified_values(root,plan,self.challenges,evidence,self.tokenizer,{},
+                        test_allocations=allocations)
+                    self.assertEqual(fresh,binding);self.assertEqual(current,prior)
+                store.recover(revalidate)
+                altered=copy.deepcopy(allocations);altered['a']['0']['started_epoch']+=30
+                changed_binding=exporter.native_bindings(root,plan,self.challenges,evidence,test_allocations=altered)
+                with self.assertRaisesRegex(RuntimeError,'stale/foreign'):
+                    GenerationStore(root,'native',changed_binding).read()
+                with self.assertRaisesRegex(RuntimeError,'allocations required'):
+                    exporter.qualified_values(root,plan,self.challenges,evidence,self.tokenizer,{})
+
+    def test_e10_admitted_deadline_allows_complete_late_eight_view_return(self):
+        from tests.test_nvarc_phase_telemetry import Clock
+        clock=Clock();source=self.solver;count=0
+        def verify(*args):
+            nonlocal count
+            result=source.calc_scores(*args);count+=1
+            if count==1:clock.advance(29)
+            elif count==2:clock.advance(11)
+            return result
+        plan=copy.deepcopy(self.plan);plan['run_id']='stage4-e10-inert-cpu-native-late'
+        for spec in plan['task_specs'].values():spec['verification_schedule']='deferred'
+        solver=SimpleNamespace(inference_turbo_dfs=source.inference_turbo_dfs,turbo_dfs=source.turbo_dfs,calc_scores=verify)
+        with patch.object(type(self),'plan',plan),patch.object(type(self),'solver',solver),patch.object(runtime.time,'time',clock):
+            evidence,results=self.produce();allocations=copy.deepcopy(self.admitted_test_allocations)
+            self.export(evidence,test_allocations=allocations)
+        first=results[0][0]
+        self.assertEqual(first['verification_schedule']['verification_deadline'],30)
+        self.assertEqual(first['verification_schedule']['verification_finished_at'],40)
+        self.assertEqual(first['telemetry']['counters']['full_verified'],1)
+        self.assertEqual(first['telemetry']['counters']['partial_verified'],0)
+        self.assertEqual(first['telemetry']['forward_completions']['verification'],2)
+        self.assertTrue(first['ranked_grids'])
+        directory=os.environ.get('IRIS_E10_EVIDENCE_DIR')
+        if directory:
+            path=Path(directory);path.mkdir(parents=True,exist_ok=True)
+            (path/'native-tiny-admitted-overrun.json').write_bytes(runtime.canonical(
+                {'kind':'actual tiny CPU NLLs with synthetic host overrun; no GPU claim',
+                 'plan':plan,'synthetic_challenges':self.challenges,'evidence':evidence,
+                 'caller_admitted_test_allocations':allocations}))
 
     def test_multi_test_source_ids_preserve_one_not_fake_zero(self):
         starts=[e for e in self.evidence[0]['events'] if e['event']=='test_started']

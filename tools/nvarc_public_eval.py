@@ -12,7 +12,7 @@ import time
 import errno
 from contextlib import contextmanager
 
-from tools.nvarc_native_multitask import canonical, digest, write, require
+from tools.nvarc_native_multitask import canonical, digest, write, require, allocation_deadlines
 from tools.arc_kaggle_submission import (challenge_counts, grid, grid as legal_grid,
     build_submission, parse_json)
 from tools.nvarc_output_lifecycle import GenerationStore, manifest_snapshot
@@ -258,7 +258,11 @@ def validate_record(plan, challenges, record):
             require(plan.get('verification_schedule')=='deferred','unplanned public schedule evidence')
             life=test.get('telemetry',{});queue=proof['queue'];c=life['counters']
             full={r['candidate_digest'] for r in queue if r['state']=='full'}
-            require(proof['format']=='irisx/nvarc-verification-schedule-v1' and proof['schedule']=='deferred' and
+            allocation=test.get('caller_test_allocation')
+            deadlines=allocation_deadlines(allocation,record['binding'],index)
+            require(proof['format']=='irisx/nvarc-verification-schedule-v2' and proof['schedule']=='deferred' and
+                (proof['generation_deadline'],proof['verification_deadline'])==deadlines and
+                proof['test_allocation_digest']==digest(allocation) and
                 len(queue)==len({r['candidate_digest'] for r in queue})==c['queued']==c['parsed_unique'] and
                 full=={digest(g) for g in test['ranked_grids']} and c['full_verified']==len(full) and
                 c['ranked']==len(full) and c['processed']<=proof['maximum_processed']<=64 and

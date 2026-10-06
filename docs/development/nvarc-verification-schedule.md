@@ -60,8 +60,8 @@ every actual task/test denominator.
 
 ## Evidence and replay
 
-The opt-in adds the optional result field `verification_schedule`, with format
-`irisx/nvarc-verification-schedule-v1`, and a closed coarse declaration event.
+The opt-in adds the optional result field `verification_schedule`, now with
+format `irisx/nvarc-verification-schedule-v2`, and a closed coarse declaration event.
 Its queue records first sequence index, grid digest, state, completed views
 and actual call IDs, plus absolute deadlines and separate generation/verification
 termination and phase-switch observations. E00 telemetry remains v1 with
@@ -73,15 +73,83 @@ IO, device synchronization or GPU-kernel timing is added. Observation overhead
 on real hardware is unmeasured.
 
 Native strict replay requires `task_specs[task_id].verification_schedule`
-to declare deferred. An old or undeclared plan rejects deferred evidence.
+to declare deferred and separately supplied caller admissions. An old or
+undeclared plan rejects deferred candidate evidence.
 It still replays exact DFS logits/clocks, source tokens and inverse transforms.
 It independently reconstructs FIFO from processed source returns, verifies
 actual eight-view token/NLL bindings in queue order, filters the fully verified
 grids, recreates every occurrence vote and calls the original selector.
-Changed FIFO, missing votes, partial promotion, token bindings, renewed deadline,
-undeclared schedule or nested truth are rejected even after event rehashing.
+Changed FIFO, missing votes, partial promotion, token bindings, undeclared
+schedule or nested truth are rejected even after event rehashing. Deadline
+qualification uses the caller admission described below, not agreement among
+producer reports.
 Optional telemetry counters/provenance/forward-token deltas are recounted
 against the transcript, not trusted as qualification evidence.
+
+## E10 controller repair: caller-admitted budget
+
+The controller's review of `4a2e6f2` found that v1 compared the declaration and
+terminal deadlines without binding them to an admitted allocation. Together
+changing both verification deadlines by +30 seconds, copying the terminal to
+the checkpoint and rebuilding its hash chain was accepted. Its unchanged
+submission demonstrates a qualification gap, not actual excess model work.
+The old PASS/handoff and controller reproduction remain unchanged. The local
+repair independently reproduced that acceptance before changing code; evidence
+is under `.irisx/stage4-e10-repair-001/`.
+
+`admit_test_allocation` belongs to the calling coordinator. The closed
+`irisx/nvarc-test-allocation-v1` object binds the exact run/plan/task identity,
+actual test index, admitted host-epoch start, effective common task/session
+deadline, nominal generation 20 seconds, total 30 seconds and verification
+reserve 10 seconds. The caller retains its admission separately from worker
+events and checkpoints. It must not reconstruct trusted admissions from those
+worker reports. Epoch timestamps and this separation do not attest a physical
+clock, authentic GPU runtime or tamper-proof operating system.
+
+Both producer and independent replay derive:
+
+```text
+test deadline = min(admitted start + 30, admitted common session deadline)
+generation cutoff = max(admitted start, test deadline - 10)
+```
+
+An unclipped allocation yields start+20/start+30. A session ending 25 seconds
+after entry yields start+15/start+25, preserving the existing tail reserve;
+with five seconds left, generation admits no call. There is no fresh allowance
+per queue item or at phase switch. Later actual tests get independently admitted
+starts and the same common session deadline. The legacy interleaved call path
+and old single-deadline native fixtures require no allocation and retain their
+existing contract.
+
+Deferred `solve_test` requires the caller allocation and refuses adapter
+deadlines that differ from its derivation. Schedule v2 declaration, proof and
+optional telemetry bind its digest. `build_native_submission(...,
+test_allocations=...)` receives the caller-owned task/test map as a **separate
+argument**; it never takes that authority from producer evidence. It checks
+declarations even in killed/uncommitted prefixes, then checks committed results
+and telemetry against the derived deadlines. Missing admissions or v1 deferred
+envelopes fail closed. Simultaneously changing declaration, terminal, checkpoint,
+telemetry and allocation digest cannot extend the unchanged caller admission.
+Changing the trusted caller argument would cross this trust boundary; validating
+the coordinator's real clock/admission receipt is future runtime work.
+
+The native exporter accepts that same separate Python argument and binds its
+digest into the generation identity and audit. Recovery requires the original
+admissions and repeats strict replay; changed admissions cannot recover a prior
+generation. No worker-file auto-discovery is added. The current legacy exporter
+CLI supplies no admissions, so a new deferred native package through it fails
+closed. A real package still needs a reviewed coordinator-to-export admission
+transport and immutable caller receipt. Nothing here authorizes such a run.
+
+The public caller creates admissions at actual per-test dispatch and retains
+them in its lightweight record. Public record validation is still a consistency
+check with `evidence_qualified=false`, never the independent native timing gate.
+No GPU synchronization, per-token IO, hardkill, ranking or workload change is
+part of this repair. A forward admitted before the derived deadline may return
+after it; complete eight-view scores remain complete, and the next entry is
+refused. Repair tests include coordinated budget mutations, missing admissions,
+fixed/clipped/later-test allocations, actual tiny CPU NLLs with a synthetic
+late host return, and E01 generation recovery with caller-admission binding.
 
 Public lightweight records check full-pool and occurrence closure and remain
 explicitly short of native qualification. Their task binding already includes

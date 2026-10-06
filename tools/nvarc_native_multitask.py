@@ -184,20 +184,57 @@ def verifier_rows(puzzle, base, solution, loader, formatter, tokenizer):
         loader.np.random.set_state(state)
 
 
+def admit_test_allocation(binding, test_index, started_epoch, session_deadline_epoch):
+    """Caller-owned E10 admission, separate from worker transcript/checkpoint.
+
+    Preserve the existing shared 30 seconds and last-ten-second reserve,
+    including session clipping. These host clock values are not attestations.
+    """
+    value = {'format':'irisx/nvarc-test-allocation-v1', 'binding':dict(binding),
+        'test_index':test_index, 'started_epoch':started_epoch,
+        'session_deadline_epoch':session_deadline_epoch,
+        'generation_seconds':20, 'total_seconds':30, 'verification_reserve_seconds':10}
+    allocation_deadlines(value, binding, test_index)
+    return value
+
+
+def allocation_deadlines(value, binding, test_index):
+    require(isinstance(value,dict) and set(value)=={'format','binding','test_index','started_epoch',
+        'session_deadline_epoch','generation_seconds','total_seconds','verification_reserve_seconds'} and
+        value['format']=='irisx/nvarc-test-allocation-v1' and value['binding']==binding and
+        type(value['test_index']) is int and value['test_index']==test_index and
+        all(type(value[k]) is int and value[k]==n for k,n in
+            (('generation_seconds',20),('total_seconds',30),('verification_reserve_seconds',10))) and
+        all(type(value[k]) in (int,float) and math.isfinite(value[k]) for k in
+            ('started_epoch','session_deadline_epoch')) and
+        value['started_epoch']<value['session_deadline_epoch'],
+        'exact caller-admitted E10 test allocation required')
+    final=min(value['started_epoch']+value['total_seconds'],value['session_deadline_epoch'])
+    generation=max(value['started_epoch'],final-value['verification_reserve_seconds'])
+    return generation,final
+
+
 def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
-               adapter, *, maximum_candidates, emit, verification_schedule='interleaved'):
+               adapter, *, maximum_candidates, emit, verification_schedule='interleaved', test_allocation=None):
     require(verification_schedule in ('interleaved', 'deferred'), 'known verification schedule required')
     if verification_schedule == 'deferred':
         require(type(maximum_candidates) is int and 1 <= maximum_candidates <= 64,
                 'bounded deferred processed-sequence queue required')
-        require(getattr(adapter, 'verification_deadline', None) is not None and
-                adapter.verification_deadline >= adapter.generation_deadline,
-                'shared absolute deferred verification deadline required')
+        require(isinstance(test_allocation,dict), 'caller-admitted deferred test allocation required')
+        binding=test_allocation.get('binding',{})
+        require(all(binding.get(k)==v for k,v in {'task_id':task_id,
+            'task_digest':digest(challenges[task_id]),'challenges_digest':digest(challenges)}.items()),
+            'allocation visible task/test binding differs')
+        deadlines=allocation_deadlines(test_allocation,binding,test_index)
+        require((adapter.generation_deadline,getattr(adapter,'verification_deadline',None))==deadlines,
+            'deferred deadlines differ from caller-admitted allocation')
     telemetry = getattr(adapter, 'telemetry', None)
     def phase(name):
         return nullcontext() if telemetry is None else telemetry.scope(name)
     life = None if telemetry is None else telemetry.begin_test(test_index,
         adapter.generation_deadline, getattr(adapter, 'verification_deadline', adapter.generation_deadline))
+    if verification_schedule=='deferred' and life is not None:
+        life['cooperative_deadlines']['test_allocation_digest']=digest(test_allocation)
     start_reserved, start_completed = dict(adapter.reserved), dict(adapter.completed)
     start_tokens = dict(adapter.input_by_phase)
     completed_tokens = getattr(adapter, 'completed_input_by_phase', None)
@@ -214,7 +251,7 @@ def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeniz
         with phase('parse_dedup'):
             result = _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
                 adapter, maximum_candidates=maximum_candidates, emit=emit, phase=phase, life=life,
-                verification_schedule=verification_schedule)
+                verification_schedule=verification_schedule, test_allocation=test_allocation)
             # Bind finalized accounting into the terminal event and checkpoint;
             # mutating telemetry after serializing the event breaks strict replay.
             finish_accounting()
@@ -228,7 +265,7 @@ def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeniz
 
 
 def _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
-                adapter, *, maximum_candidates, emit, phase, life, verification_schedule):
+                adapter, *, maximum_candidates, emit, phase, life, verification_schedule, test_allocation):
     base, puzzle, views, formatter, batches = test_views(challenges, task_id, test_index, loader, tokenizer)
     if getattr(adapter, 'per_test_limits', None) is not None:
         adapter.test_start_counts = (dict(adapter.reserved), adapter.input_tokens)
@@ -245,7 +282,7 @@ def _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeni
     if deferred:
         emit('verification_schedule', test_index=test_index, schedule='deferred',
              maximum_processed=maximum_candidates, generation_deadline=adapter.generation_deadline,
-             verification_deadline=adapter.verification_deadline)
+             verification_deadline=adapter.verification_deadline, test_allocation_digest=digest(test_allocation))
 
     def verify_candidate(solution, candidate_digest):
         verify, bindings = verifier_rows(puzzle, base, solution, loader, formatter, tokenizer)
@@ -407,7 +444,8 @@ def _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeni
             if grid_key(solution) in known: vote(key, score, tokens, solution, source)
         if life is not None:
             life['counters']['pending'] = sum(r['state'] == 'pending' for r in audit)
-        schedule_evidence = {'format': 'irisx/nvarc-verification-schedule-v1', 'schedule': 'deferred',
+        schedule_evidence = {'format': 'irisx/nvarc-verification-schedule-v2', 'schedule': 'deferred',
+            'test_allocation_digest':digest(test_allocation),
             'fifo_policy': 'first_processed_occurrence; batch order, returned row order, beam order',
             'maximum_processed': maximum_candidates, 'generation_deadline': adapter.generation_deadline,
             'verification_deadline': adapter.verification_deadline,

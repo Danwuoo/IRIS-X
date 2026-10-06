@@ -3,6 +3,9 @@
 Controller dispatch: 2026-10-06, starting main
 `90ea1bcd40d9e8c88fb7e849e55257704e9b3c16`. E00/E01 were accepted foundations.
 The original incoming research and all consumed run identities are preserved.
+The controller subsequently requested the finite
+[caller-admitted-budget repair](REPAIR_001.md); the first E10 handoff/PASS remains
+retained and does not imply acceptance.
 This batch implements and tests only interleaved versus deferred verification.
 No E11/E12/E20 dispatch, source/model acquisition, external/API/GPU/paid work,
 QUICK_SAVE, scoring, promotion, push, Goal or automation is included.

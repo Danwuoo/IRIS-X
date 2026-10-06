@@ -302,6 +302,7 @@ class PublicTinySourceTests(unittest.TestCase):
                 self.assertEqual(engine.inventory(),engine.baseline)
                 store=core.ResultStore(Path(tmp)/(schedule+'-store'),current,data,allow_fixture=True)
                 store.commit(rec);store.recover()
+                self.assertFalse(store.generation.read()[0]['outcomes']['evidence_qualified'])
                 results.append(rec)
             for left,right in zip(results[0]['tests'],results[1]['tests']):
                 self.assertEqual(left['ranked_grids'],right['ranked_grids'])

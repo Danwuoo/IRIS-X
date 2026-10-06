@@ -14,7 +14,8 @@ from types import SimpleNamespace
 
 from tools.arc_kaggle_submission import (build_submission, EVALUATOR_FIELDS, canonical as export_bytes)
 from tools.nvarc_native_solve_runtime import require, grid_key, load_sources
-from tools.nvarc_native_multitask import digest, test_views, verifier_rows, validate_challenges, FORMAT,public_training_material
+from tools.nvarc_native_multitask import (digest, test_views, verifier_rows, validate_challenges,
+    FORMAT, public_training_material, allocation_deadlines)
 
 
 def reject_truth(value):
@@ -67,7 +68,8 @@ def check_events(events, binding, limits):
                'verification_schedule'}
     details={
         'test_started':{'test_index','base_key','source_views','source_input_digests'},
-        'verification_schedule':{'test_index','schedule','maximum_processed','generation_deadline','verification_deadline'},
+        'verification_schedule':{'test_index','schedule','maximum_processed','generation_deadline','verification_deadline',
+            'test_allocation_digest'},
         'generation_reserved':{'test_index','batch_index','source_views','prefix_digests'},
         'generation_completed':{'test_index','batch_index','source_result','coverage','source_clock_reads','source_end_time'},
         'candidate_invalid':{'test_index','source_view','source_tokens'},
@@ -86,6 +88,8 @@ def check_events(events, binding, limits):
         require(set(row)==set(binding)|{'sequence','previous','event','digest'}|details[row['event']],
                 'unknown/evaluator fields in native event')
         head = row['digest']; kind = row['event']
+        if kind == 'verification_schedule':
+            require(limits.get('verification_schedule')=='deferred', 'unplanned deferred declaration forbidden')
         if kind == 'forward_reserved':
             p, shape, call = row['phase'], row['batch_shape'], row['call_id']
             require(p in counts and type(call) is int and call == len(reserved)+1 and
@@ -183,7 +187,8 @@ def replay_generation(events, reserved, completed, prefixes, source_directory):
 
 
 def verify_test(challenges, task_id, result, events, loader, decoder, tokenizer, observed, maximum_candidates,
-                source_directory, per_test_limits, *, injected=False, verification_schedule='interleaved'):
+                source_directory, per_test_limits, *, injected=False, verification_schedule='interleaved',
+                test_allocation=None, allocation_binding=None):
     require(verification_schedule in ('interleaved', 'deferred'), 'known planned verification schedule required')
     index = result['test_index']
     base, puzzle, views, formatter, batches = test_views(challenges, task_id, index, loader, tokenizer)
@@ -260,7 +265,7 @@ def verify_test(challenges, task_id, result, events, loader, decoder, tokenizer,
     if verification_schedule == 'deferred':
         votes, verified = verify_deferred_votes(result, local, events, starts[0], terminals[0],
             parsed, ranked, valid, sequence_indices, puzzle, base, loader, formatter, tokenizer,
-            observed, maximum_candidates)
+            observed, maximum_candidates, test_allocation, allocation_binding)
     else:
         require('verification_schedule' not in result and
             not any(e['event']=='verification_schedule' for e in local),
@@ -316,23 +321,29 @@ def verify_test(challenges, task_id, result, events, loader, decoder, tokenizer,
 
 def verify_deferred_votes(result, local, events, start, terminal, parsed, ranked, valid,
                           sequence_indices, puzzle, base, loader, formatter, tokenizer,
-                          observed, maximum_candidates):
+                          observed, maximum_candidates, test_allocation, allocation_binding):
     """Reconstruct FIFO and every vote from source returns and actual NLL rows.
 
     No model call, queue-supplied grid, score or duplicate count is trusted.
     This additional gate does not replace the native DFS/reset/source gates.
     """
     proof = result.get('verification_schedule', {})
+    generation_deadline,verification_deadline=allocation_deadlines(
+        test_allocation,allocation_binding,result['test_index'])
     fields = {'format','schedule','fifo_policy','maximum_processed','generation_deadline',
         'verification_deadline','generation_finished_at','verification_started_at',
-        'verification_finished_at','generation_termination','verification_termination','queue'}
-    require(set(proof) == fields and proof['format']=='irisx/nvarc-verification-schedule-v1' and
+        'verification_finished_at','generation_termination','verification_termination','queue','test_allocation_digest'}
+    require(set(proof) == fields and proof['format']=='irisx/nvarc-verification-schedule-v2' and
         proof['schedule']=='deferred' and proof['fifo_policy']==
         'first_processed_occurrence; batch order, returned row order, beam order' and
         type(proof['maximum_processed']) is int and proof['maximum_processed']==maximum_candidates<=64,
         'closed bounded deferred schedule required')
+    require(proof['test_allocation_digest']==digest(test_allocation) and
+        (proof['generation_deadline'],proof['verification_deadline'])==(generation_deadline,verification_deadline),
+        'deferred deadlines differ from caller-admitted allocation')
     declarations = [e for e in local if e['event']=='verification_schedule']
     require(len(declarations)==1 and declarations[0]['schedule']=='deferred' and
+        declarations[0]['test_allocation_digest']==digest(test_allocation) and
         declarations[0]['maximum_processed']==maximum_candidates and
         start['sequence'] < declarations[0]['sequence'] < min(
             (e['sequence'] for e in local if e['event']=='generation_reserved'), default=terminal['sequence']) and
@@ -340,7 +351,7 @@ def verify_deferred_votes(result, local, events, start, terminal, parsed, ranked
             'generation_deadline','verification_deadline','generation_finished_at',
             'verification_started_at','verification_finished_at')) and
         all(declarations[0][k]==proof[k] for k in ('generation_deadline','verification_deadline')) and
-        proof['generation_deadline']<=proof['verification_deadline'] and
+        proof['generation_finished_at']>=test_allocation['started_epoch'] and
         proof['verification_started_at']==proof['generation_finished_at']<=proof['verification_finished_at'],
         'same absolute deferred deadline/phase declaration required')
     generation_reasons = {'all_source_batches_completed','forward_limit','input_token_limit',
@@ -411,6 +422,11 @@ def verify_candidate_telemetry(result, processed, valid, sequence_indices, verif
                                local, events, start, terminal, observed, schedule):
     """Recount optional E00/E10 observations; telemetry never grants qualification."""
     life=result['telemetry'];unique={};sources=[];valid_by_index=dict(zip(sequence_indices,valid))
+    if schedule=='deferred':
+        proof=result['verification_schedule'];deadlines=life['cooperative_deadlines']
+        require((deadlines['generation'],deadlines['verification'],deadlines.get('test_allocation_digest'))==
+            (proof['generation_deadline'],proof['verification_deadline'],proof['test_allocation_digest']),
+            'telemetry deadlines differ from admitted deferred budget')
     for index,(key,score,tokens) in enumerate(processed):
         value=valid_by_index.get(index);identity=None if value is None else grid_key(value[3])
         sources.append({'sequence_index':index,'source_view':key,'source_tokens_digest':digest(tokens),
@@ -508,11 +524,21 @@ def verify_native_training_gate(root,plan,challenges,task_id,loader,tokenizer):
             'trained_inventory_digest':digest(trained),'reset_verified_by_this_gate':False}
 
 
-def build_native_submission(challenges, plan, evidence, source_directory, tokenizer, *, allow_fixture=False):
+def build_native_submission(challenges, plan, evidence, source_directory, tokenizer, *, allow_fixture=False,
+                            test_allocations=None):
     """Only evidence with exact planned producer bindings reaches the exporter."""
     reject_truth(evidence); counts = validate_challenges(challenges)
     require(plan['format']==FORMAT and plan['challenges_digest']==digest(challenges) and
             plan['task_order']==list(counts) and len(evidence)==len(counts), 'complete planned task denominator required')
+    if any(spec.get('verification_schedule')=='deferred' for spec in plan['task_specs'].values()):
+        require(isinstance(test_allocations,dict), 'caller-admitted deferred allocations required')
+        reject_truth(test_allocations)
+        require(set(test_allocations)<=set(counts),'foreign admitted allocation task')
+        for key,values in test_allocations.items():
+            require(isinstance(values,dict) and set(values)<={str(i) for i in range(counts[key])},
+                'exact admitted allocation test indices required')
+            for index,value in values.items():
+                allocation_deadlines(value,task_binding(plan,challenges,key),int(index))
     producer_paths={'worker':'inspection.py','helper':'inspection_helpers.py','budget':'nvarc_native_ttt_budget.py',
         'schedule':'nvarc_native_ttt_schedule.py','solve_runtime':'tools/nvarc_native_solve_runtime.py',
         'multitask':'tools/nvarc_native_multitask.py','bridge':'tools/nvarc_native_submission.py','exporter':'tools/arc_kaggle_submission.py'}
@@ -542,6 +568,16 @@ def build_native_submission(challenges, plan, evidence, source_directory, tokeni
                     'native completed receipt requires successful process return')
         events=data['events']; spec=plan['task_specs'][task_id]
         observed,forwards,tokens=check_events(events,binding,spec)
+        if spec.get('verification_schedule')=='deferred':
+            # Validate admissions even for a killed/uncommitted worker prefix.
+            # They come from the caller, never from producer events/checkpoint.
+            for event in events:
+                if event['event']=='verification_schedule':
+                    allocation=(test_allocations or {}).get(task_id,{}).get(str(event['test_index']))
+                    deadlines=allocation_deadlines(allocation,binding,event['test_index'])
+                    require((event['generation_deadline'],event['verification_deadline'])==deadlines and
+                        event['test_allocation_digest']==digest(allocation),
+                        'deferred declaration differs from caller-admitted allocation')
         require(all(type(e.get('test_index',0)) is int and 0<=e.get('test_index',0)<counts[task_id] and
                     (e['event']!='test_terminal' or type(e['result']['test_index']) is int and
                      0<=e['result']['test_index']<counts[task_id]) for e in events), 'unknown/duplicate source test identity')
@@ -562,7 +598,9 @@ def build_native_submission(challenges, plan, evidence, source_directory, tokeni
                     tests.append(verify_test(challenges,task_id,result,committed,loader,decoder,tokenizer,observed,
                                              spec['maximum_candidate_sequences_per_test'],source_directory,spec['per_test_limits'],
                                              injected=data['provenance']=='injected-fixture',
-                                             verification_schedule=spec.get('verification_schedule','interleaved')))
+                                             verification_schedule=spec.get('verification_schedule','interleaved'),
+                                             test_allocation=(test_allocations or {}).get(task_id,{}).get(str(result['test_index'])),
+                                             allocation_binding=binding))
                 else:
                     require(set(result)=={'test_index','status','attempts','missing_attempts'} and
                             result['status'] in {'not_executed','budget_stop','timeout','oom','failed','interrupted_pending'} and
@@ -581,6 +619,7 @@ def build_native_submission(challenges, plan, evidence, source_directory, tokeni
     audit.update(native_plan_digest=digest(plan),native_evidence_digest=digest(evidence),native_tasks=audits,
                  producer_sha256=plan['producer_sha256'],native_records_digest=digest(records),
                  digest_is_execution_attestation=False)
+    if test_allocations is not None: audit['admitted_test_allocations_digest']=digest(test_allocations)
     for row in audit['rows']:
         data=next(d for d in evidence if d['task_id']==row['task_id'])
         cp=data['checkpoint'];result=None if cp is None else cp['tests'][row['test_index']]

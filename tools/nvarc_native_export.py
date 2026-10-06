@@ -20,7 +20,7 @@ from tools.nvarc_output_lifecycle import GenerationStore
 from tools.arc_kaggle_submission import parse_json
 
 
-def native_bindings(root, plan, challenges, evidence):
+def native_bindings(root, plan, challenges, evidence, *, test_allocations=None):
     # Explicit snapshot of code/material gates, checkpoint transcript and reset
     # observations. Missing reset evidence remains null, never inferred success.
     root=Path(root)
@@ -42,23 +42,26 @@ def native_bindings(root, plan, challenges, evidence):
         require(not path.is_symlink() and path.resolve().is_relative_to(root.resolve()),
                 'confined regular qualification input required')
         inputs[name]=None if not path.exists() else hashlib.sha256(path.read_bytes()).hexdigest()
-    return {'run_id':plan['run_id'],'plan_digest':digest(plan),
+    result={'run_id':plan['run_id'],'plan_digest':digest(plan),
         'challenges_digest':digest(challenges),'task_counts':{k:len(v['test']) for k,v in challenges.items()},
         'producer_sha256':plan['producer_sha256'],'model_material_digest':plan['model_material_digest'],
         'source_inventory_digest':plan.get('source_inventory_digest'),
         'export_helper_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'lifecycle_code_sha256':hashlib.sha256(Path(__file__).with_name('nvarc_output_lifecycle.py').read_bytes()).hexdigest(),
         'evidence_digest':digest(evidence),'qualification_inputs_sha256':inputs}
+    if test_allocations is not None: result['admitted_test_allocations_digest']=digest(test_allocations)
+    return result
 
 
-def qualified_values(root, plan, challenges, evidence, tokenizer, context):
+def qualified_values(root, plan, challenges, evidence, tokenizer, context, *, test_allocations=None):
     """Strict replay is required even when recovering a previously valid file."""
-    bindings=native_bindings(root,plan,challenges,evidence)
+    bindings=native_bindings(root,plan,challenges,evidence,test_allocations=test_allocations)
     require(parse_json((root/'plan.json').read_bytes())==plan and
         parse_json((root/'challenges.json').read_bytes())==challenges,
         'qualification plan/input snapshot differs')
-    submission,audit=build_native_submission(challenges,plan,evidence,root,tokenizer)
-    require(native_bindings(root,plan,challenges,evidence)==bindings,
+    options={} if test_allocations is None else {'test_allocations':test_allocations}
+    submission,audit=build_native_submission(challenges,plan,evidence,root,tokenizer,**options)
+    require(native_bindings(root,plan,challenges,evidence,test_allocations=test_allocations)==bindings,
         'qualification inputs changed during strict replay')
     context.update(run_id=plan['run_id'],plan_digest=digest(plan),
         base_key_hashes={r['task_id']+'_'+str(i):hash(r['task_id']+'_'+str(i))
@@ -75,7 +78,7 @@ def startup_context():
         'cpu_only':True,'new_model_calls':0,'python':sys.version.split()[0]}
 
 
-def export(root,tokenizer_path):
+def export(root,tokenizer_path, *, test_allocations=None):
     context=startup_context()
     plan=parse_json((root/'plan.json').read_bytes())
     require(plan['pythonhashseed']==0 and plan['approved'] is True and
@@ -96,7 +99,7 @@ def export(root,tokenizer_path):
     evidence=read_task_evidence(root,plan,challenges,receipts)
     require(native_bindings(root,plan,challenges,evidence)['qualification_inputs_sha256']==initial,
         'checkpoint snapshot changed during evidence read')
-    bindings,values=qualified_values(root,plan,challenges,evidence,Tokens(),context)
+    bindings,values=qualified_values(root,plan,challenges,evidence,Tokens(),context,test_allocations=test_allocations)
     store=GenerationStore(root,'native',bindings)
     if (root/'output-commit.json').exists():
         def revalidate(manifest,previous):

@@ -31,6 +31,7 @@ class ScheduleFixture(SolveFixture):
         self.adapter.generation_deadline=generation_deadline
         self.adapter.verification_deadline=verification_deadline
         self.generated=0;self.verification_start_times=[];self.verification_grids=[]
+        self.challenges=fixture()[1]
 
     def generate(self, adapter, prefixes, max_tokens, floor, deadline):
         self.calls.append(('generation',max_tokens,floor,deadline))
@@ -70,10 +71,14 @@ class ScheduleFixture(SolveFixture):
             bindings=[{'source_view':'a_0.v'+str(i),'query_ids':[10],'answer_ids':[value,15]} for i in range(8)]
             return rows,bindings
         args={} if module is not native else {'verification_schedule':schedule}
+        if module is native and schedule=='deferred':
+            binding={'task_id':'a','task_digest':native.digest(self.challenges['a']),
+                'challenges_digest':native.digest(self.challenges),'fixture':'caller-owned synthetic admission'}
+            args['test_allocation']=native.admit_test_allocation(binding,0,0,30)
         with patch.object(module,'test_views',return_value=('a_0',SimpleNamespace(),self.views,self.formatter,batches)), \
              patch.object(module,'verifier_rows',side_effect=verification), \
              patch.object(inference.time,'time',self.clock):
-            return module.solve_test({},'a',0,self.loader,self.solver,self.decoder,self.tokenizer,
+            return module.solve_test(self.challenges,'a',0,self.loader,self.solver,self.decoder,self.tokenizer,
                 self.adapter,maximum_candidates=cap,emit=lambda e,**kw:self.events.append((e,kw)),**args)
 
 
@@ -224,6 +229,35 @@ class VerificationScheduleTests(unittest.TestCase):
         self.assertEqual(plan['confirmation']['maximum_comparisons_across_stage4'],1)
         self.assertTrue(plan['confirmation']['requires_owner_authorization'])
         self.assertFalse(plan['local_validation_claims']['provider_permission'])
+
+    def test_admitted_allocation_fixed_durations_clipping_and_missing_fail_closed(self):
+        binding={'task_id':'a','fixture':'caller'}
+        for session,expected in ((100,(30,40)),(35,(25,35)),(15,(10,15))):
+            allocation=native.admit_test_allocation(binding,0,10,session)
+            self.assertEqual(native.allocation_deadlines(allocation,binding,0),expected)
+        good=native.admit_test_allocation(binding,0,10,100)
+        for name,value in (('total_seconds',60),('generation_seconds',50),('test_index',True),('started_epoch',float('nan'))):
+            changed=copy.deepcopy(good);changed[name]=value
+            with self.subTest(name=name),self.assertRaisesRegex(RuntimeError,'allocation'):
+                native.allocation_deadlines(changed,binding,0)
+        with self.assertRaisesRegex(RuntimeError,'allocation'):native.allocation_deadlines(None,binding,0)
+        f=ScheduleFixture();f.adapter.verification_deadline+=30
+        with self.assertRaisesRegex(RuntimeError,'admitted'):f.run('deferred')
+
+    def test_public_caller_admits_later_tests_independently_and_clips_session(self):
+        plan,data=fixture();plan['verification_schedule']='deferred'
+        rec=record(plan,data,'a');clock=ScheduleFixture().clock;allocations=[]
+        def solve(index,deadline,allocation):
+            allocations.append(copy.deepcopy(allocation))
+            clock.advance(31)
+            result=public.empty_tests(2)[index]
+            result.update(termination_reason='inference_deadline',status='budget_stop')
+            return result
+        runtime.solve_all_tests(plan,data,'a',solve,lambda _:None,rec,now=clock,deadline=55)
+        self.assertEqual([a['started_epoch'] for a in allocations],[0,31])
+        self.assertEqual([native.allocation_deadlines(a,rec['binding'],a['test_index']) for a in allocations],
+            [(20,30),(45,55)])
+        self.assertEqual(len(rec['tests']),2)
 
 
 if __name__=='__main__':unittest.main()

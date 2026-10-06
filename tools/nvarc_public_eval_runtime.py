@@ -16,7 +16,8 @@ from typing import Any, Union
 
 from tools.nvarc_public_eval import task_binding, empty_tests, validate_record, install_owner_guard, PhaseTelemetry, MailboxReader
 from tools.arc_kaggle_submission import parse_json
-from tools.nvarc_native_multitask import write, digest, require, public_training_material, solve_test, training_deadline
+from tools.nvarc_native_multitask import (write, digest, require, public_training_material, solve_test,
+    training_deadline, admit_test_allocation, allocation_deadlines)
 from tools.nvarc_native_solve_runtime import (SourceModel, InferenceLimitReached,
     load_sources, cache_controls, reset_control, discard_optimizer_state)
 
@@ -68,7 +69,11 @@ def solve_all_tests(plan, challenges, key, solve, checkpoint, record, *, now=tim
     for index in range(len(record['tests'])):
         if now() >= deadline: break
         try:
-            record['tests'][index] = solve(index, min(deadline, now()+plan['per_test_seconds']))
+            if plan.get('verification_schedule')=='deferred':
+                allocation=admit_test_allocation(record['binding'],index,now(),deadline)
+                record['tests'][index] = solve(index,allocation_deadlines(allocation,record['binding'],index)[1],allocation)
+            else:
+                record['tests'][index] = solve(index, min(deadline, now()+plan['per_test_seconds']))
         except InferenceLimitReached as error:
             record['tests'][index].update(status='budget_stop', termination_reason=error.reason)
         checkpoint(record)
@@ -259,15 +264,20 @@ def run_one_task(engine, plan, challenges, key, output, solve_deadline, *, detai
             require(trainer.accelerator.unwrap_model(engine.model, keep_fp32_wrapper=False) is engine.model,
                     'native task model identity differs')
         engine.inference()
-        def solve(index, deadline):
+        def solve(index, deadline, allocation=None):
             current.clear(); adapter.observed.clear()
-            adapter.generation_deadline = max(time.time(), deadline-10)
-            adapter.verification_deadline = deadline
+            if plan.get('verification_schedule')=='deferred':
+                adapter.generation_deadline,adapter.verification_deadline=allocation_deadlines(
+                    allocation,record['binding'],index)
+            else:
+                adapter.generation_deadline = max(time.time(), deadline-10)
+                adapter.verification_deadline = deadline
             begin = time.monotonic()
             with engine.torch.inference_mode():
                 test = solve_test(challenges, key, index, engine.loader, engine.solver, engine.decoder,
                     engine.tokenizer, adapter, maximum_candidates=64, emit=emit,
-                    verification_schedule=plan.get('verification_schedule', 'interleaved'))
+                    verification_schedule=plan.get('verification_schedule', 'interleaved'),test_allocation=allocation)
+            if allocation is not None: test['caller_test_allocation']=allocation
             test['candidate_evidence'] = dict(current)
             test['wall_seconds'] = time.monotonic()-begin
             test['forwards_completed'] = dict(adapter.completed)
