@@ -35,6 +35,20 @@ The earlier unobserved cleanup failure and invalid observer run remain frozen;
 the original cleanup failure cause is unknown. A later PASS is not proof of
 a flake. Windows-specific cleanup still needs appropriate cloud-OS coverage.
 
+The controller's subsequent handoff validation on 2026-10-06 ran the same
+625 unit tests in 1053.719 seconds: one subtest failed, with zero errors or
+skips; all three validator tests passed. In
+`CombinedProcessTests.test_failure_before_ready_during_work_and_artifact_failures_keep_sibling`
+(`mode='tampered'`), line 115 expected M2 outcome `failed` but observed
+`timed-out`. This is a distinct observation from the earlier descendant-cleanup
+failure. Its cause is unknown; packaging was running concurrently on the same
+host, which is context, not proof of a timing flake. No product code, assertion
+or deadline was changed, and no green rerun was attempted. Full logs and a
+receipt are in the ZIP's transfer metadata. Prior acceptance/PASS evidence is
+historical; current full validation is FAIL. The independent reliability lane
+must diagnose this before declaring integrated readiness, while other lanes
+continue useful work.
+
 E10 has not yet passed a real GPU screen or demonstrated a quality gain.
 Real coordinator allocation transport and deployable packaging remain pending;
 the CLI fails closed without the independent caller allocations. Synthetic
@@ -74,6 +88,7 @@ Open these complementary lanes, respecting dependencies:
   complementary solved tasks and union coverage before adding a learned router.
 - Evaluation/reliability lane: independently audit exposure, denominators,
   output finalization, replay, fault cases, resource feasibility and integration.
+  Start with the newly retained combined-process failure described above.
   Preserve failures and test meaningful invariants, not just implementation.
 
 After the E10 runtime comparison, evaluate E12 TTT64/128 and E11 DFS0.2/0.1
