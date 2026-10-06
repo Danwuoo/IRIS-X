@@ -58,3 +58,7 @@ official/hidden/locked scoring or method promotion. ENOSPC/EACCES are injected
 IO faults, not claims about actual media exhaustion or a specific ACL.
 Official 56840442 remains Notebook Threw Exception with null score and unknown
 cause. E10/E20 and further execution are outside this task.
+
+[Control-review repair 001](REPAIR_001.md) records the later independent cleanup
+and missing-barrier findings, the finite protocol repair and its separate evidence
+root. Original E01 and controller failures remain retained.

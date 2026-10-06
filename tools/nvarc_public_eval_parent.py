@@ -14,7 +14,7 @@ import time
 from tools.nvarc_public_eval import ResultStore, validate_plan, write_archive, sha, install_owner_guard, PhaseTelemetry, MailboxReader
 from tools.nvarc_native_multitask import write, digest, require
 from tools.arc_kaggle_submission import parse_json
-from tools.nvarc_output_lifecycle import outcomes, diagnostic, terminal_attempt
+from tools.nvarc_output_lifecycle import outcomes, diagnostic, terminal_attempt, cleanup_workers
 
 
 def stop_process(process):
@@ -65,7 +65,7 @@ def run_workers(root, plan, challenges, model, dependency, hardware, store, star
                 *, launch=subprocess.Popen, worker_command=None, now=time.monotonic, pause=time.sleep):
     """Persistent file-mailbox workers; each task is dispatched once, no retries."""
     root = Path(root); states = {}; failures = []; finished = set(); sequence = 0
-    assigned = set(); required_checkpoints = set()
+    assigned = set(); required_checkpoints = set(); summary = {}
     seen = {}; setup_end = started+plan['startup_seconds']; last_progress = started
     end = started+plan['maximum_notebook_wall_seconds']-plan['export_reserve_seconds']
     epoch_end = time.time()+max(0, end-now())
@@ -106,8 +106,10 @@ def run_workers(root, plan, challenges, model, dependency, hardware, store, star
         # Separate cwd/compiler caches prevent shared generated-code races.
         for rank in range(4):
             directory = root/'workers'/str(rank); directory.mkdir(exist_ok=False)
-            stdout = (directory/'stdout.log').open('w', encoding='utf-8')
-            stderr = (directory/'stderr.log').open('w', encoding='utf-8')
+            states[rank] = {'process': None, 'key': None, 'ready': False, 'retired': False,
+                            'sequence': 0, 'end': None, 'stdout': None, 'stderr': None}
+            stdout = states[rank]['stdout'] = (directory/'stdout.log').open('w', encoding='utf-8')
+            stderr = states[rank]['stderr'] = (directory/'stderr.log').open('w', encoding='utf-8')
             environment = dict(os.environ, PYTHONPATH=str(root)+os.pathsep+str(dependency),
                 CUDA_VISIBLE_DEVICES=hardware[rank]['uuid'], PYTHONHASHSEED='0', HF_HUB_OFFLINE='1',
                 TRANSFORMERS_OFFLINE='1', HF_DATASETS_OFFLINE='1', UNSLOTH_DISABLE_STATISTICS='1',
@@ -117,8 +119,6 @@ def run_workers(root, plan, challenges, model, dependency, hardware, store, star
             command = worker_command or [sys.executable, str(root/'tools/nvarc_public_eval_runtime.py')]
             command = [*command, '--root', str(root), '--model', str(model), '--dependency', str(dependency),
                        '--rank', str(rank), '--deadline', str(epoch_end), '--parent-pid', str(os.getpid())]
-            states[rank] = {'process': None, 'key': None, 'ready': False, 'retired': False,
-                            'sequence': 0, 'end': None, 'stdout': stdout, 'stderr': stderr}
             event('worker-start-reserved', rank=rank)
             states[rank]['process'] = launch(command, cwd=directory, env=environment,
                 stdout=stdout, stderr=stderr, start_new_session=os.name != 'nt')
@@ -185,21 +185,22 @@ def run_workers(root, plan, challenges, model, dependency, hardware, store, star
         for rank, state in states.items():
             if state['key'] is not None: consume(state['key'])
             if not state['retired']: write(root/'workers'/str(rank)/'job.json', {'stop': True})
-        return {'finished_tasks': len(finished), 'dispatched_tasks': sequence, 'worker_failures': failures,
-                'undispatched_tasks': len(queue), 'all_four_models_ready': all(s['ready'] for s in states.values()),
-                'mailbox_reads': {'maximum_denied_attempts': reader.MAX_ATTEMPTS,
-                    'deferred_reads': reader.deferred_reads, 'recovered_paths': reader.recovered_paths}}
+        summary.update(finished_tasks=len(finished), dispatched_tasks=sequence, worker_failures=failures,
+                undispatched_tasks=len(queue), all_four_models_ready=all(s['ready'] for s in states.values()),
+                mailbox_reads={'maximum_denied_attempts': reader.MAX_ATTEMPTS,
+                    'deferred_reads': reader.deferred_reads, 'recovered_paths': reader.recovered_paths})
+        return summary
     finally:
-        for state in states.values():
-            if state['process'] is not None: stop_process(state['process'])
-            state['stdout'].close(); state['stderr'].close()
-        # Consume the last atomic checkpoint after all producers have stopped.
-        for key in sorted(assigned): consume(key, final=True)
+        summary['cleanup'] = cleanup_workers([
+            {'identity': rank, 'process': state['process'],
+             'streams': {name: state[name] for name in ('stdout', 'stderr')}}
+            for rank, state in states.items()], stop_process, primary=sys.exception(),
+            drains=[(key, lambda key=key: consume(key, final=True)) for key in sorted(assigned)])
 
 
 def execute(root, plan, dependency, started):
     root = Path(root); phase = 'input'; store = None; summary = {}; errors = []
-    telemetry = PhaseTelemetry()
+    telemetry = PhaseTelemetry(); producers_stopped = True
     try:
         require(os.environ.get('PYTHONHASHSEED') == '0' and sys.flags.hash_randomization == 0, 'parent startup hash seed zero required')
         require(sha(root/'challenges.json') == plan['challenges_sha256'], 'exact public input bytes differ')
@@ -211,6 +212,7 @@ def execute(root, plan, dependency, started):
         summary = run_workers(root, plan, challenges, model, dependency, hardware, store, started)
     except BaseException as error:
         errors.append(diagnostic(error, phase))
+        producers_stopped = getattr(error, 'cleanup_report', {}).get('all_producers_stopped', True)
     if store is not None:
         try:
             with telemetry.scope('export'): store.flush()
@@ -234,6 +236,7 @@ def execute(root, plan, dependency, started):
         **outcomes(output_valid, 'failure' if failed else 'success', False)}
     terminal_attempt(terminal, lambda: write(root/'terminal.json', terminal))
     try:
+        require(producers_stopped, 'archive requires confirmed producer stop; final drain was skipped')
         with telemetry.scope('export'): write_archive(root, root.parent/plan['download_archive'], plan)
     except BaseException as error:
         terminal['outcome'] = 'failed'; terminal['notebook_exit'] = 'failure'

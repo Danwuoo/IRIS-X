@@ -231,8 +231,64 @@ class GenerationStore:
 
 
 def diagnostic(error, phase):
-    return {'phase': phase, 'type': type(error).__name__, 'message': str(error)[:2400],
-            'traceback': ''.join(traceback.format_exception(error))[-12000:]}
+    value = {'phase': phase, 'type': type(error).__name__, 'message': str(error)[:2400],
+             'traceback': ''.join(traceback.format_exception(error))[-12000:]}
+    if hasattr(error, 'cleanup_report'): value['cleanup'] = error.cleanup_report
+    return value
+
+
+def cleanup_workers(resources, stop, *, primary=None, drains=()):
+    """Attempt each bounded stop/close independently; drain only stopped producers.
+
+    The caller supplies a finite stop function. A successful stop call alone is
+    insufficient: poll must confirm exit. Never replace an active exception.
+    Without one, raise the first cleanup error after attempting all resources.
+    """
+    report = {'workers': [], 'secondary_errors': [], 'all_producers_stopped': True,
+              'drain_status': 'not-requested'}
+    errors = []
+    def failed(error, phase):
+        errors.append(error); report['secondary_errors'].append(diagnostic(error, phase))
+    for item in resources:
+        identity = str(item['identity']); process = item.get('process')
+        row = {'identity': identity, 'pid': None if process is None else process.pid,
+               'stop_attempted': process is not None, 'returncode': None,
+               'stop_confirmed': None, 'streams': {}}
+        report['workers'].append(row)
+        if process is not None:
+            try: stop(process)
+            except BaseException as error: failed(error, 'stop:'+identity)
+            try:
+                row['returncode'] = process.poll()
+                row['stop_confirmed'] = row['returncode'] is not None
+                if not row['stop_confirmed']:
+                    failed(RuntimeError('producer exit unconfirmed: '+identity), 'poll:'+identity)
+            except BaseException as error: failed(error, 'poll:'+identity)
+            if row['stop_confirmed'] is not True: report['all_producers_stopped'] = False
+        for name, stream in item.get('streams', {}).items():
+            if stream is None: continue
+            row['streams'][name] = {'close_attempted': True, 'closed': None}
+            try: stream.close()
+            except BaseException as error: failed(error, 'close:'+identity+':'+name)
+            try:
+                row['streams'][name]['closed'] = stream.closed
+                if not stream.closed: failed(RuntimeError('stream close unconfirmed'), 'closed:'+identity+':'+name)
+            except BaseException as error: failed(error, 'closed:'+identity+':'+name)
+    drains = list(drains)
+    if drains:
+        report['drain_status'] = 'attempted' if report['all_producers_stopped'] else 'skipped-unconfirmed-producers'
+        if report['all_producers_stopped']:
+            for identity, action in drains:
+                try: action()
+                except BaseException as error: failed(error, 'drain:'+str(identity))
+    target = primary if primary is not None else errors[0] if errors else None
+    if target is not None:
+        target.cleanup_report = report
+        # Add compact notes; the structured diagnostic retains every failure.
+        for value in report['secondary_errors']:
+            target.add_note('cleanup secondary '+value['phase']+': '+value['type']+': '+value['message'])
+    if primary is None and errors: raise target
+    return report
 
 
 def terminal_attempt(value, action, *, phase='terminal-logger', stderr=None):

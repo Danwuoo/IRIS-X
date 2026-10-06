@@ -13,7 +13,7 @@ from types import SimpleNamespace
 
 from tools.nvarc_native_multitask import write,require,digest,canonical
 from tools.nvarc_official_adapter import runtime_plan,receipt_for,coverage_summary
-from tools.nvarc_output_lifecycle import GenerationStore, outcomes, terminal_attempt, diagnostic, sha, atomic_bytes
+from tools.nvarc_output_lifecycle import GenerationStore, outcomes, terminal_attempt, diagnostic, sha, atomic_bytes, cleanup_workers
 
 
 def _working_output(native_store, working_root, challenges, summary):
@@ -49,7 +49,7 @@ def recover_working_output(native_store, working_root, challenges, summary):
 
 
 def execute(root, candidate, raw, started):
-    active={};receipts=[];plan=None;phase='source-inventory';published=None;qualified=False
+    active={};resources=[];receipts=[];plan=None;phase='source-inventory';published=None;qualified=False
     def save(name,value):write(root/name,value)
     def kill(process):
         if process.poll() is None:
@@ -143,13 +143,18 @@ def execute(root, candidate, raw, started):
                     '--rows',str(directory/'expected-rows.json'),'--output',str(directory/'native')]
                 receipt.update(status='interrupted_pending',launched=True,reserved_seconds=remaining)
                 save('worker-receipts.json',receipts) # reservation before Popen
-                stdout=(directory/'stdout.log').open('w',encoding='utf-8');stderr=(directory/'stderr.log').open('w',encoding='utf-8')
+                resource={'identity':key,'process':None,'streams':{}}
+                resources.append(resource)
+                stdout=resource['streams']['stdout']=(directory/'stdout.log').open('w',encoding='utf-8')
+                stderr=resource['streams']['stderr']=(directory/'stderr.log').open('w',encoding='utf-8')
                 try:
                     process=subprocess.Popen(command,env=environment,cwd=directory,stdout=stdout,stderr=stderr,start_new_session=True)
+                    resource['process']=process
                     active[index]=(process,key,time.monotonic()+remaining,stdout,stderr)
                 except Exception as error:
-                    stdout.close();stderr.close()
+                    cleanup_workers([resource],kill,primary=error)
                     receipt.update(status='worker_crash',error_type=type(error).__name__,error_message=str(error)[:1000])
+                    if error.cleanup_report['secondary_errors']: raise
                     save('worker-receipts.json',receipts)
             for index,(process,key,end,stdout,stderr) in list(active.items()):
                 code=process.poll()
@@ -221,9 +226,18 @@ def execute(root, candidate, raw, started):
         error.add_note('terminal diagnostics: '+json.dumps(terminal,ensure_ascii=False))
         raise
     finally:
-        for process,key,end,stdout,stderr in active.values():
-            primary=sys.exception()
-            try:kill(process);stdout.close();stderr.close()
-            except BaseException as cleanup:
-                if primary is None:raise
-                primary.add_note('process cleanup secondary: '+repr(cleanup))
+        primary=sys.exception()
+        try:
+            cleanup=cleanup_workers(resources,kill,primary=primary)
+        except BaseException as error:
+            terminal={'run_id':candidate['run_id'],'phase':'worker-cleanup','outcome':'failed',
+                'primary_error':diagnostic(error,'worker-cleanup'),'paid_usd':0,
+                **outcomes(False,'failure',qualified)}
+            terminal_attempt(terminal,lambda:save('terminal.json',terminal))
+            terminal_attempt(terminal,lambda:atomic_bytes(root.parent/'terminal.json',canonical(terminal)))
+            raise
+        if primary is not None and cleanup['secondary_errors']:
+            terminal['primary_error']=diagnostic(primary,phase)
+            terminal['cleanup']=cleanup
+            terminal_attempt(terminal,lambda:save('terminal.json',terminal))
+            terminal_attempt(terminal,lambda:atomic_bytes(root.parent/'terminal.json',canonical(terminal)))

@@ -294,96 +294,45 @@ class OutputLifecycleTests(unittest.TestCase):
                                   'linux_os_kill_run_here': False})
 
     def test_actual_cpu_writer_kill_at_transaction_and_projection_boundaries(self):
-        script = r'''
-import json,os,sys,time
-from pathlib import Path
-from tools import nvarc_output_lifecycle as life,nvarc_public_eval as public
-from tests.test_nvarc_public_eval import record
-root=Path(sys.argv[1]);mode=sys.argv[2]
-plan=json.loads((root/'fixture-plan.json').read_bytes());data=json.loads((root/'fixture-input.json').read_bytes())
-store=public.ResultStore(root,plan,data,allow_fixture=True)
-def barrier(stage,path):
- hit=(stage==mode or mode=='after-commit-replace' and stage=='after-replace' and path.name=='output-commit.json'
-      or mode=='root-submission-replace' and stage=='after-replace' and path==root/'submission.json')
- if hit:
-  (root/'kill-ready.json').write_text(json.dumps({'stage':stage,'path':str(path),'pid':os.getpid()}))
-  time.sleep(20)
-store.generation.observe=barrier
-actual=life.write_exclusive
-def partial(path,body):
- if mode=='temp-write' and Path(path).name=='submission.json':
-  with Path(path).open('xb') as stream:
-   stream.write(body[:max(1,len(body)//2)]);stream.flush();os.fsync(stream.fileno())
-   barrier('temp-write',Path(path))
- else:actual(path,body)
-life.write_exclusive=partial
-store.commit(record(plan,data,'b',[[3]]))
-raise AssertionError('barrier should be killed')
-'''
+        from tests.nvarc_output_fault_harness import run_case
+        import uuid
+        evidence = Path(os.environ.get('IRIS_E01_EVIDENCE_DIR', str(ROOT/'.irisx/e01-local-fault-cases')))
         for mode in ('temp-write', 'after-member', 'before-commit', 'after-commit-replace',
                      'after-commit', 'root-submission-replace', 'before-projection-marker'):
-            with self.subTest(mode=mode), tempfile.TemporaryDirectory(prefix='iris-e01-kill-') as folder:
-                root = Path(folder); store = public.ResultStore(root, self.plan, self.data, allow_fixture=True)
+            with self.subTest(mode=mode):
+                # Retain controlled case files even on failure; never remove an
+                # uncertain producer's tree as TemporaryDirectory cleanup.
+                root = evidence/'kill-cases'/(mode+'-'+uuid.uuid4().hex)
+                store = public.ResultStore(root, self.plan, self.data, allow_fixture=True)
                 store.commit(self.first); old, bodies = store.generation.read()
                 (root/'fixture-plan.json').write_bytes(canonical(self.plan))
                 (root/'fixture-input.json').write_bytes(canonical(self.data))
-                process = subprocess.Popen([sys.executable, '-c', script, str(root), mode], cwd=ROOT,
-                    env=dict(os.environ, PYTHONHASHSEED='0', PYTHONUTF8='1', PYTHONPATH=str(ROOT)),
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=os.name != 'nt')
-                reached = False; started = time.monotonic()
-                try:
-                    end = started+10
-                    while time.monotonic() < end and process.poll() is None:
-                        if (root/'kill-ready.json').exists():
-                            reached = True; break
-                        time.sleep(.02)
-                    worker_pid = json.loads((root/'kill-ready.json').read_bytes())['pid'] if reached else None
-                    handle = None
-                    if os.name == 'nt' and worker_pid is not None:
-                        import ctypes
-                        from ctypes import wintypes
-                        kernel = ctypes.WinDLL('kernel32', use_last_error=True)
-                        kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
-                        kernel.OpenProcess.restype = wintypes.HANDLE
-                        kernel.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
-                        kernel.GetExitCodeProcess.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
-                        kernel.CloseHandle.argtypes = [wintypes.HANDLE]
-                        handle = kernel.OpenProcess(0x100000 | 0x1000, False, worker_pid)
-                        self.assertTrue(handle)
-                        self.assertEqual(kernel.WaitForSingleObject(handle, 0), 258)
-                    parent.stop_process(process); out, err = process.communicate(timeout=5)
-                    worker_stopped = process.poll() is not None; worker_exit = process.returncode
-                    if handle:
-                        try:
-                            worker_stopped = kernel.WaitForSingleObject(handle, 1000) == 0
-                            code = wintypes.DWORD(); self.assertTrue(kernel.GetExitCodeProcess(handle, code))
-                            worker_exit = code.value
-                        finally: kernel.CloseHandle(handle)
-                    receipt = {'mode': mode, 'pid': process.pid, 'returncode': process.returncode,
-                        'worker_pid': worker_pid, 'worker_exit_code': worker_exit,
-                        'worker_stopped_handle_verified': worker_stopped,
-                        'barrier_reached': reached, 'alive_after_wait': process.poll() is None,
-                        'elapsed_seconds': time.monotonic()-started, 'stdout': out.decode('utf-8', 'replace'),
-                        'stderr': err.decode('utf-8', 'replace'), 'platform': sys.platform}
-                    retain('process-receipts.jsonl', receipt)
-                    self.assertTrue(reached, receipt); self.assertNotEqual(process.returncode, 0)
-                    self.assertFalse(receipt['alive_after_wait']); self.assertTrue(worker_stopped)
-                    self.assertTrue((root/'.output-writer.lock').exists())
-                    # Explicit cleanup only after our exact child has been killed/waited.
-                    lock = submission.load_json(root/'.output-writer.lock')
-                    self.assertEqual(lock['pid'], worker_pid); (root/'.output-writer.lock').unlink()
-                    manifest, current = store.generation.read()
-                    after = mode in {'after-commit-replace', 'after-commit', 'root-submission-replace', 'before-projection-marker'}
-                    self.assertEqual(manifest['generation'] != old['generation'], after)
-                    old_directory = root/'.output-generations'/old['generation']
-                    self.assertEqual({n: (old_directory/n).read_bytes() for n in bodies}, bodies)
-                    if after:
-                        with self.assertRaises((RuntimeError, FileNotFoundError)): store.generation.verify_projection()
-                    recovered = public.ResultStore(root, self.plan, self.data, allow_fixture=True)
-                    recovered.generation.verify_projection()
-                    self.assertEqual(set(recovered.records), {'a', 'b'} if after else {'a'})
-                finally:
-                    if process.poll() is None: parent.stop_process(process); process.communicate(timeout=5)
+                (root/'update-record.json').write_bytes(canonical(record(self.plan, self.data, 'b', [[3]])))
+                receipt = run_case(root, mode)
+                retain('process-receipts.jsonl', receipt)
+                self.assertTrue(receipt['barrier_reached'], receipt)
+                self.assertEqual(receipt['errors'], [], receipt)
+                self.assertNotEqual(receipt['launcher_returncode'], 0)
+                self.assertTrue(receipt['launcher_stop_confirmed'])
+                self.assertTrue(receipt['writer_stop_confirmed'])
+                if os.name == 'nt': self.assertIs(receipt['worker_stopped_handle_verified'], True)
+                self.assertEqual([p['phase'] for p in receipt['phases']],
+                                 ['startup', 'imports-ready', 'store-ready', 'barrier'])
+                self.assertFalse(receipt['phases'][1]['torch_imported'])
+                self.assertTrue((root/'.output-writer.lock').exists())
+                lock = submission.load_json(root/'.output-writer.lock')
+                self.assertEqual(lock['pid'], receipt['writer_pid'])
+                (root/'.output-writer.lock').unlink()  # exact stopped writer, explicit test recovery
+                manifest, current = store.generation.read()
+                after = mode in {'after-commit-replace', 'after-commit', 'root-submission-replace', 'before-projection-marker'}
+                self.assertEqual(manifest['generation'] != old['generation'], after)
+                old_directory = root/'.output-generations'/old['generation']
+                self.assertEqual({n: (old_directory/n).read_bytes() for n in bodies}, bodies)
+                if after:
+                    with self.assertRaises((RuntimeError, FileNotFoundError)): store.generation.verify_projection()
+                recovered = public.ResultStore(root, self.plan, self.data, allow_fixture=True)
+                recovered.generation.verify_projection()
+                self.assertEqual(set(recovered.records), {'a', 'b'} if after else {'a'})
 
 
 class FiniteFaultReplayTests(unittest.TestCase):

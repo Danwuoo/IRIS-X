@@ -69,7 +69,16 @@ is introduced. Timeout/kill can leave temps/orphans/locks for diagnosis.
 Terminal logging records primary and secondary exceptions separately and makes
 a bounded stderr attempt if disk logging fails. No storage means diagnostics may
 exist only in the returned exception/stderr. A logger error cannot replace the
-primary exception. Cleanup failures are also secondary.
+primary exception. Cleanup attempts each registered producer and each acquired
+stream independently, including partial log-open and launch failures. Stops keep
+their existing finite wait bounds; the coordinator checks `poll()` independently
+and records unconfirmed exits. Stop, poll, close and final-drain exceptions stay
+in the structured primary diagnostic. Without an active primary exception, the
+first cleanup error is raised after all resources have been attempted. A cleanup
+failure cannot become notebook success. Final checkpoint drain requires every
+started producer's confirmed exit; otherwise it is explicitly skipped and public
+archive creation is refused. Previously committed output remains independently
+inspectable and does not establish a quiescent checkpoint snapshot.
 
 Four outcomes remain independent: `output_valid` (schema/full denominator),
 `notebook_exit` (success/failure/unknown), `evidence_qualified` (strict native
@@ -90,3 +99,27 @@ Blocking kernel IO is not forcibly preempted by an application deadline.
 
 The finite F01–F24 mapping and actual test/replay/process receipts are retained
 under `.irisx/stage4-e01-001/`; failure and never-run evidence stays explicit.
+
+## E01 control-review repair
+
+The original handoff and the controller's failed observations remain immutable.
+Repair evidence lives in `.irisx/stage4-e01-repair-001/`. The CPU kill harness
+prepares the synthetic update in the parent, so the child imports only the core
+publication modules and never imports the Torch-bearing test fixture. It uses
+four atomic control files: startup, imports ready, store ready, and the requested
+barrier. Each earlier phase needs an atomic nonce-bound parent acknowledgement.
+Each phase has a ten-second deadline, with a forty-second overall protocol cap;
+the child acknowledgement wait is fifteen seconds and its kill barrier twenty.
+These are test protocol bounds, not changes to solver or notebook timeouts.
+Control reads use the existing five-attempt Windows EACCES probation inside those
+deadlines. Invalid JSON, duplicate fields and foreign identities fail immediately.
+
+Receipts distinguish launcher exit from actual writer exit. Only the known Popen
+tree is stopped. A writer must identify itself as that launcher or its direct
+child before a Windows process handle is opened; exit is verified through that
+handle. Missing startup or failed handle acquisition leaves writer stop/exit
+null (unknown), even after the launcher exits. Missing barriers still trigger
+bounded cleanup and retain every observed phase, error, stdout/stderr and case
+directory. Only confirmed stopped writers permit explicit test lock removal.
+This establishes Windows CPU process observations; POSIX and power-loss claims
+still require their own execution evidence.
