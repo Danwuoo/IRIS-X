@@ -10,10 +10,11 @@ import signal
 from pathlib import Path
 import sys
 import time
+from contextlib import nullcontext
 from types import ModuleType
 from typing import Any, Union
 
-from tools.nvarc_public_eval import task_binding, empty_tests, validate_record, install_owner_guard
+from tools.nvarc_public_eval import task_binding, empty_tests, validate_record, install_owner_guard, PhaseTelemetry
 from tools.nvarc_native_multitask import write, digest, require, public_training_material, solve_test, training_deadline
 from tools.nvarc_native_solve_runtime import (SourceModel, InferenceLimitReached,
     load_sources, cache_controls, reset_control, discard_optimizer_state)
@@ -26,6 +27,7 @@ class LightModel(SourceModel):
         self.per_test_limits = per_test_limits; self.test_start_counts = None
         self.verification_rows = None; self.observed = {}
         self.verification_deadline = None
+        self.telemetry = None
 
     def __call__(self, *, input_ids, **kwargs):
         phase = self.active
@@ -48,12 +50,14 @@ class LightModel(SourceModel):
         finally:
             self.generation_deadline = search_deadline
         if phase == 'verification':
-            logits = value.logits.float().cpu().log_softmax(-1); observed = []
-            for n, row in enumerate(rows):
-                start = len(row['query_ids'])-1; answer = row['answer_ids']
-                score = -logits[n, start:start+len(answer)][self.torch.arange(len(answer)), answer].sum().item()
-                observed.append({'source_view': row['source_view'], 'query_digest': digest(row['query_ids']),
-                    'answer_digest': digest(answer), 'score': score})
+            detail = nullcontext() if self.telemetry is None else self.telemetry.detail('verifier_readback')
+            with detail:
+                logits = value.logits.float().cpu().log_softmax(-1); observed = []
+                for n, row in enumerate(rows):
+                    start = len(row['query_ids'])-1; answer = row['answer_ids']
+                    score = -logits[n, start:start+len(answer)][self.torch.arange(len(answer)), answer].sum().item()
+                    observed.append({'source_view': row['source_view'], 'query_digest': digest(row['query_ids']),
+                        'answer_digest': digest(answer), 'score': score})
             self.observed[sum(self.reserved.values())] = observed
         return value
 
@@ -183,9 +187,10 @@ class NativeEngine:
         return trainer
 
 
-def run_one_task(engine, plan, challenges, key, output, solve_deadline):
+def run_one_task(engine, plan, challenges, key, output, solve_deadline, *, detailed_profiling=False):
     """One task; no optimizer/model reload reuse, retry or answer IO."""
     output.mkdir(exist_ok=False); started = time.monotonic(); trainer = budget = before = None
+    telemetry = PhaseTelemetry(detailed=detailed_profiling)
     record = {'binding': task_binding(plan, challenges, key), 'baseline_verified': False,
         'training_complete': False, 'training_steps': 0, 'reset_verified': None,
         'training_accounting': 'pending-see-ledger' if plan['profile'] == 'TTT128-30' else 'no-TTT',
@@ -208,15 +213,18 @@ def run_one_task(engine, plan, challenges, key, output, solve_deadline):
             details.pop('source_clock_reads', None)
             events.append({'event': event, **details})
     adapter = engine.adapter(emit, len(record['tests']))
+    adapter.telemetry = telemetry
     fatal = False
     try:
         require(engine.inventory() == engine.baseline, 'baseline differs before task entry')
         write(output/'baseline-inventory.json', engine.baseline)
-        engine.inference(); before = cache_controls(adapter)
+        engine.inference()
+        with telemetry.scope('control'): before = cache_controls(adapter)
         require(before['baseline_prefill'] == engine.initial_control['baseline_prefill'], 'cross-task baseline control differs')
         record['baseline_verified'] = True
         if plan['profile'] == 'TTT128-30':
-            material = public_training_material(engine.loader, engine.tokenizer, key, challenges[key])
+            with telemetry.scope('preparation'):
+                material = public_training_material(engine.loader, engine.tokenizer, key, challenges[key])
             expected = plan['task_materials'][key]
             require(digest(material['rows']) == expected['rows_digest'] and digest(material['texts']) == expected['texts_digest'],
                     'public-demo-derived full epoch differs')
@@ -225,16 +233,19 @@ def run_one_task(engine, plan, challenges, key, output, solve_deadline):
             from nvarc_native_ttt_budget import EpochBudget
             rates, schedule = native_schedule(engine.dependency, trainer.args, plan['native_source_learning_rates'])
             write(output/'native-schedule.json', schedule)
+            def retain_training(value):
+                with telemetry.detail('training_ledger_io'): write(output/'training-ledger.json', value)
             budget = EpochBudget(engine.torch, engine.model, trainer, material['rows'], rates,
-                lambda value: write(output/'training-ledger.json', value), expected_parameters=528564224,
+                retain_training, expected_parameters=528564224,
                 expected_dtype='torch.bfloat16')
             training_start = time.monotonic()
             deadline = min(time.time()+1200, solve_deadline-120-plan['per_test_seconds']*len(record['tests']))
-            with training_deadline(budget, deadline): trainer.train(); moments = budget.complete()
-            engine.torch.cuda.synchronize()
-            require(trainer.state.global_step == 128 and trainer.state.epoch == 1, 'complete 128-step epoch required')
-            trained = engine.inventory(); require(trained != engine.baseline, 'full TTT did not change tensors')
-            write(output/'trained-inventory.json', trained)
+            with telemetry.scope('training'):
+                with training_deadline(budget, deadline): trainer.train(); moments = budget.complete()
+                engine.torch.cuda.synchronize()
+                require(trainer.state.global_step == 128 and trainer.state.epoch == 1, 'complete 128-step epoch required')
+                trained = engine.inventory(); require(trained != engine.baseline, 'full TTT did not change tensors')
+                write(output/'trained-inventory.json', trained)
             record.update(training_complete=True, training_steps=128)
             record['timings']['training_seconds'] = time.monotonic()-training_start
             discard_optimizer_state(engine.model, trainer, budget)
@@ -264,8 +275,9 @@ def run_one_task(engine, plan, challenges, key, output, solve_deadline):
         begin = time.monotonic()
         try:
             if before is None: raise RuntimeError('baseline control missing; retire worker')
-            reset = restore_task_state(engine, trainer, budget, adapter, before)
-            write(output/'reset-inventory.json', engine.baseline); write(output/'post-reset-control.json', reset)
+            with telemetry.scope('reset'):
+                reset = restore_task_state(engine, trainer, budget, adapter, before)
+                write(output/'reset-inventory.json', engine.baseline); write(output/'post-reset-control.json', reset)
             record['reset_verified'] = True
         except BaseException as error:
             fatal = True; record['reset_verified'] = False
@@ -279,6 +291,15 @@ def run_one_task(engine, plan, challenges, key, output, solve_deadline):
         record['inference_forwards_reserved'] = dict(adapter.reserved)
         record['inference_forwards_completed'] = dict(adapter.completed)
         record['inference_input_tokens_by_phase'] = dict(adapter.input_by_phase)
+        record['telemetry'] = telemetry.snapshot()
+        if budget is not None:
+            record['telemetry']['training_forwards'] = {
+                'reserved': len(budget.state['forwards']),
+                'completed': sum(r['completed'] for r in budget.state['forwards']),
+                'reserved_input_tokens': sum(r['input_tokens'] for r in budget.state['forwards']),
+                'completed_input_tokens': sum(r['input_tokens'] for r in budget.state['forwards'] if r['completed']),
+                'reserved_supervised_tokens': sum(r['supervised_tokens'] for r in budget.state['forwards']),
+                'completed_supervised_tokens': sum(r['supervised_tokens'] for r in budget.state['forwards'] if r['completed'])}
         record['outcome'] = 'failed' if fatal else 'partial' if record['errors'] or any(
             t['termination_reason'] != 'all_source_batches_completed' for t in record['tests']) else 'complete'
         validate_record(plan, challenges, record)
@@ -288,13 +309,16 @@ def run_one_task(engine, plan, challenges, key, output, solve_deadline):
     return record, fatal
 
 
-def worker(root, model, dependency, rank, deadline, parent_pid):
+def worker(root, model, dependency, rank, deadline, parent_pid, *, detailed_profiling=False):
     install_owner_guard(parent_pid, signal.SIGKILL)
     require(os.environ.get('PYTHONHASHSEED') == '0' and sys.flags.hash_randomization == 0,
             'worker startup hash seed zero required')
     plan = json.loads((root/'plan.json').read_bytes()); challenges = json.loads((root/'challenges.json').read_bytes())
     directory = root/'workers'/str(rank); last = 0
-    engine = NativeEngine(root, plan, model, dependency, rank)
+    load_telemetry = PhaseTelemetry(detailed=detailed_profiling)
+    with load_telemetry.scope('load'):
+        engine = NativeEngine(root, plan, model, dependency, rank)
+    write(directory/'load-telemetry.json', load_telemetry.snapshot())
     while time.time() < deadline:
         job = directory/'job.json'
         if not job.is_file(): time.sleep(.1); continue
@@ -302,7 +326,8 @@ def worker(root, model, dependency, rank, deadline, parent_pid):
         if value.get('stop'): return
         if value['sequence'] <= last: time.sleep(.1); continue
         last = value['sequence']; key = value['task_id']
-        record, fatal = run_one_task(engine, plan, challenges, key, root/'tasks'/key, deadline)
+        record, fatal = run_one_task(engine, plan, challenges, key, root/'tasks'/key, deadline,
+                                    detailed_profiling=detailed_profiling)
         write(directory/'done.json', {'sequence': last, 'task_id': key, 'outcome': record['outcome'], 'retired': fatal})
         print(json.dumps({'task_id': key, 'outcome': record['outcome']}), flush=True)
         if fatal: return
@@ -313,8 +338,10 @@ def main():
     for name in ('root', 'model', 'dependency'): parser.add_argument('--'+name, type=Path, required=True)
     parser.add_argument('--rank', type=int, required=True); parser.add_argument('--deadline', type=float, required=True)
     parser.add_argument('--parent-pid', type=int, required=True)
+    parser.add_argument('--detailed-profiling', action='store_true')
     args = parser.parse_args()
-    worker(args.root, args.model, args.dependency, args.rank, args.deadline, args.parent_pid)
+    worker(args.root, args.model, args.dependency, args.rank, args.deadline, args.parent_pid,
+           detailed_profiling=args.detailed_profiling)
 
 
 if __name__ == '__main__': main()

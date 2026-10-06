@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import subprocess
 from types import SimpleNamespace
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -20,6 +21,9 @@ CHALLENGES=ROOT/'.irisx/nvarc-source-bundle-9198fd4-v4/NVARC/external/TinyRecurs
 CHALLENGES_SHA='779eaba89790ebad9af02514a7efc0aefaf2cf8236f046a31bbf8b9ec48f20f5'
 TASKS=('44f52bb0','833966f4')
 MODEL=ROOT/'.irisx/nvarc-original/materials/qwen3-published-sft139-20261002-001'
+# Historical 001..010 constructors must not silently rebind old identities to
+# later instrumentation. Their reviewed native producers are immutable Git data.
+LEGACY_PRODUCER_COMMIT='cd3d93242f4a46c553ae349002778ea2885faa21'
 FILES={'solver.py':'solver','arc_loader.py':'loader','arc_decoder.py':'decoder','inspection.py':'worker',
     'inspection_helpers.py':'helper','nvarc_native_ttt_budget.py':'budget','nvarc_native_ttt_schedule.py':'schedule',
     'hardware_helpers.py':'hardware','challenges.json':'challenges','tools/arc_kaggle_submission.py':'exporter',
@@ -34,6 +38,13 @@ def files_for(raw):
 
 
 def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def producer_bytes(run_id,name):
+    if int(run_id.rsplit('-',1)[1])<=10:
+        return subprocess.run(['git','show',LEGACY_PRODUCER_COMMIT+':tools/'+name],
+            cwd=ROOT,capture_output=True,check=True).stdout
+    return (ROOT/'tools'/name).read_bytes()
 
 
 def training_material(challenges, directory, tokenizer):
@@ -93,9 +104,9 @@ def construct(run_id,admission_path=None):
         for name,body in bodies.items():(Path(temp)/name).write_bytes(body)
         materials=training_material(challenges,temp,Tokens())
     raw.update(loader=bodies['arc_loader.py'],decoder=bodies['arc_decoder.py'],visible=b'{}',
-        solve_runtime=(ROOT/'tools/nvarc_native_solve_runtime.py').read_bytes(),
-        multitask=(ROOT/'tools/nvarc_native_multitask.py').read_bytes(),bridge=(ROOT/'tools/nvarc_native_submission.py').read_bytes(),
-        exporter=(ROOT/'tools/arc_kaggle_submission.py').read_bytes(),challenges=canonical(challenges),
+        solve_runtime=producer_bytes(run_id,'nvarc_native_solve_runtime.py'),
+        multitask=producer_bytes(run_id,'nvarc_native_multitask.py'),bridge=producer_bytes(run_id,'nvarc_native_submission.py'),
+        exporter=producer_bytes(run_id,'arc_kaggle_submission.py'),challenges=canonical(challenges),
         task_materials_gzip=gzip.compress(canonical(materials),mtime=0))
     raw['worker']=render.worker(raw['worker'])
     raw['editor_archive']=raw['editor_archive'].replace(b'limit = 16 * 1024**2',b"limit = plan['maximum_result_uncompressed_bytes']")

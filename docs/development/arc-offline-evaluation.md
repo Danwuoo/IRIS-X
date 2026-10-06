@@ -176,3 +176,11 @@ mechanism, expected observable benefit, smallest local test, failure criteria,
 compute/data/exposure assumptions and required instrumentation. Source-bound
 measurement alone selects neither a new model nor method and grants no GPU
 or provider quota.
+
+E00's [host telemetry contract](nvarc-phase-telemetry.md) adds measurements to
+the current producer without inventing clocks for frozen archives.
+`paired_task_cluster_bootstrap` resamples complete paired task clusters with a
+local seeded RNG and recomputes `sum(correct)/sum(tests)` on every draw. It
+reports task-macro deltas separately. Technical reruns do not create more task
+clusters, and this evaluator helper does not authorize confirmation or scoring
+of a locked set.

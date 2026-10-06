@@ -1,0 +1,60 @@
+{
+  "format": "irisx.stage4.research.deliverables.v1",
+  "date_utc": "2026-10-05",
+  "repository_commit": "6e04ee3cfcb8ebc3a43e7cff5ac32baf808dd08f",
+  "files": [
+    {
+      "path": "CROSS_REVIEW.md",
+      "bytes": 6101,
+      "sha256": "344108a4182464259a7b333d3026161b6aec130dd25593e189865e22cc024722"
+    },
+    {
+      "path": "EXPERIMENT_BACKLOG.json",
+      "bytes": 71719,
+      "sha256": "5fb3e2bd9a8d6d6da83ea8b37272bebfc9af018bf8b430f15edfc2f4899899a2"
+    },
+    {
+      "path": "EXPERIMENT_BACKLOG.schema.json",
+      "bytes": 4799,
+      "sha256": "26346bd705e2ee6069ed9bd19fe861962d63b0f01611efef99ff1a4b0c0053b1"
+    },
+    {
+      "path": "FIRST_LOCAL_TASK_PROMPT.md",
+      "bytes": 9666,
+      "sha256": "9ee949dce42a107cde7aa39a4e399ac651c4ceeac133615e83cf6224faf94def"
+    },
+    {
+      "path": "INPUT_VERIFICATION.json",
+      "bytes": 15239,
+      "sha256": "2a80a03048eebdd02a8bba75d2bb3bfcd086c1fb57ab1c165ad21e52085f2557"
+    },
+    {
+      "path": "RELIABILITY_ACCEPTANCE.md",
+      "bytes": 4001,
+      "sha256": "38dc94404d991153e378dc2e8e3688d78e641a547543c741542c316f2c716f27"
+    },
+    {
+      "path": "RESEARCH_GOAL.json",
+      "bytes": 1823,
+      "sha256": "d28fbbc606820a458140ef3a888aaa0514c7e32f549a044664687b3858a97744"
+    },
+    {
+      "path": "RESEARCH_REPORT.md",
+      "bytes": 30971,
+      "sha256": "74f7693b588ea0cfc83a207243246f267121d9447a56f569035a0638ec734f11"
+    },
+    {
+      "path": "SOURCES.json",
+      "bytes": 12443,
+      "sha256": "283836849e5469ad6f0a7b131d5bcf104a312d049c1a70839cdaa7e0ddfa4de3"
+    },
+    {
+      "path": "VALIDATION.json",
+      "bytes": 1305,
+      "sha256": "ae07e40451e200eba5326f9bd8f1e208a68fdc5adb490e85258915c821a266a2"
+    }
+  ],
+  "manifest_excludes_itself": true,
+  "raw_sources_weights_or_credentials_included": false,
+  "dispatch_status": "not_dispatched"
+}

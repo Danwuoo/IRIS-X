@@ -302,6 +302,17 @@ class PublicTinySourceTests(unittest.TestCase):
             self.assertFalse(retired); self.assertTrue(completed['training_complete']); self.assertEqual(completed['training_steps'], 128)
             self.assertEqual(completed['training_forwards_completed'], 128); self.assertTrue(completed['reset_verified'])
             self.assertEqual(engine.inventory(), engine.baseline)
+            self.assertIsNotNone(completed['telemetry']['exclusive_host_seconds']['training'])
+            self.assertEqual(completed['telemetry']['training_forwards']['completed'], 128)
+            profiled, retired = runtime.run_one_task(engine, plan, data, 'a', Path(tmp)/'profiled', time.time()+600,
+                                                     detailed_profiling=True)
+            self.assertFalse(retired); self.assertEqual(profiled['training_steps'], 128)
+            self.assertEqual(json.loads((Path(tmp)/'complete/training-ledger.json').read_bytes()),
+                             json.loads((Path(tmp)/'profiled/training-ledger.json').read_bytes()))
+            self.assertEqual(json.loads((Path(tmp)/'complete/trained-inventory.json').read_bytes()),
+                             json.loads((Path(tmp)/'profiled/trained-inventory.json').read_bytes()))
+            self.assertEqual(engine.inventory(), engine.baseline)
+            self.assertIn('training_ledger_io', profiled['telemetry']['detail_inclusive_host_seconds'])
             next_task, retired = runtime.run_one_task(engine, plan, data, 'b', Path(tmp)/'next', time.time()+600)
             self.assertFalse(retired); self.assertEqual(next_task['training_steps'], 128)
             self.assertEqual(engine.inventory(), engine.baseline)
@@ -310,9 +321,12 @@ class PublicTinySourceTests(unittest.TestCase):
             self.assertTrue(retired); self.assertFalse(failed['training_complete']); self.assertEqual(failed['training_steps'], 10)
             self.assertTrue(failed['reset_verified']); self.assertEqual(broken.inventory(), broken.baseline)
             self.assertTrue(all(not t['ranked_grids'] for t in failed['tests']))
+            self.assertEqual(failed['telemetry']['training_forwards']['completed'], 10)
+            self.assertTrue(any(e['phase'] == 'training' for e in failed['telemetry']['events']))
             poisoned = self.engine(plan, fail_after=10); poisoned.restore = lambda: None
             bad, retired = runtime.run_one_task(poisoned, plan, data, 'a', Path(tmp)/'bad-reset', time.time()+600)
             self.assertTrue(retired); self.assertFalse(bad['reset_verified'])
+            self.assertTrue(any(e['phase'] == 'reset' for e in bad['telemetry']['events']))
 
     def test_two_rendered_profiles_compile_bind_source_and_have_distinct_zip_names(self):
         second, raw, notebook, meta = stage.construct('TTT128-30', '0'*40)

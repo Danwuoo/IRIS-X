@@ -11,7 +11,7 @@ import subprocess
 import sys
 import time
 
-from tools.nvarc_public_eval import ResultStore, validate_plan, write_archive, sha, install_owner_guard
+from tools.nvarc_public_eval import ResultStore, validate_plan, write_archive, sha, install_owner_guard, PhaseTelemetry
 from tools.nvarc_native_multitask import write, digest, require
 from tools.arc_kaggle_submission import parse_json
 
@@ -87,7 +87,11 @@ def run_workers(root, plan, challenges, model, dependency, hardware, store, star
         if state['key'] is not None:
             consume(state['key']); finished.add(state['key'])
         state['retired'] = True; state['key'] = None
-        failures.append({'rank': rank, 'reason': reason}); event('worker-retired', rank=rank, reason=reason)
+        observation = {'rank': rank, 'reason': reason, 'worker_pid': state['process'].pid,
+            'returncode': state['process'].poll(),
+            'parent_hard_watchdog': reason == 'task-watchdog-timeout',
+            'watchdog_deadline_monotonic': state['end']}
+        failures.append(observation); event('worker-retired', **observation)
     try:
         # Separate cwd/compiler caches prevent shared generated-code races.
         for rank in range(4):
@@ -172,18 +176,20 @@ def run_workers(root, plan, challenges, model, dependency, hardware, store, star
 
 def execute(root, plan, dependency, started):
     root = Path(root); phase = 'input'; store = None; summary = {}; errors = []
+    telemetry = PhaseTelemetry()
     try:
         require(os.environ.get('PYTHONHASHSEED') == '0' and sys.flags.hash_randomization == 0, 'parent startup hash seed zero required')
         require(sha(root/'challenges.json') == plan['challenges_sha256'], 'exact public input bytes differ')
         challenges = parse_json((root/'challenges.json').read_bytes()); validate_plan(plan, challenges)
         store = ResultStore(root, plan, challenges)
         phase = 'material-and-hardware'
-        model, hardware = prepare(root, plan, dependency)
+        with telemetry.scope('load'): model, hardware = prepare(root, plan, dependency)
         phase = 'persistent-public-workers'
         summary = run_workers(root, plan, challenges, model, dependency, hardware, store, started)
     except BaseException as error:
         errors.append({'phase': phase, 'type': type(error).__name__, 'message': str(error)[:2400]})
-    if store is not None: store.flush()
+    if store is not None:
+        with telemetry.scope('export'): store.flush()
     coverage = parse_json((root/'coverage.json').read_bytes()) if (root/'coverage.json').is_file() else None
     failures = summary.get('worker_failures', [])
     failed = bool(errors or failures)
@@ -194,10 +200,13 @@ def execute(root, plan, dependency, started):
         'paid_usd': 0, 'correctness_scored': False, 'strict_portable_gpu_gate': False}
     write(root/'terminal.json', terminal)
     try:
-        write_archive(root, root.parent/plan['download_archive'], plan)
+        with telemetry.scope('export'): write_archive(root, root.parent/plan['download_archive'], plan)
     except BaseException as error:
         terminal['outcome'] = 'failed'; terminal['errors'].append({'phase': 'archive', 'type': type(error).__name__, 'message': str(error)[:2000]})
         write(root/'terminal.json', terminal)
+    # The archive cannot contain its own completed duration. Retain that final
+    # observation separately rather than asserting it was in the frozen ZIP.
+    write(root/'parent-telemetry.json', telemetry.snapshot())
     print(json.dumps(terminal), flush=True)
     return 1 if terminal['outcome'] == 'failed' else 0
 

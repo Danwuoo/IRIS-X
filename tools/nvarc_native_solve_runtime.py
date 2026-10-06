@@ -6,7 +6,7 @@ loaded, never their notebook runner, solution loader, pickle IO or score helper.
 from __future__ import annotations
 import ast
 from collections import defaultdict
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import hashlib
 import math
 from pathlib import Path
@@ -151,12 +151,17 @@ class SourceModel:
         self.input_token_limit = input_token_limit
         self.input_tokens = 0
         self.input_by_phase = dict(self.reserved)
+        self.completed_input_by_phase = dict(self.reserved)
+        self.telemetry = None
         self.context_tokens = context_tokens
         require(type(context_tokens) is int and context_tokens > 0 and
                 type(generation_deadline) in (int, float) and math.isfinite(generation_deadline),
                 'finite context/deadline required')
         self.generation_deadline = generation_deadline
         self.active = None
+
+    def profile(self, name):
+        return nullcontext() if self.telemetry is None else self.telemetry.detail(name)
 
     @contextmanager
     def scope(self, phase):
@@ -189,7 +194,8 @@ class SourceModel:
             require(not cached, 'cached native call needs explicit source positions')
             positions = self.torch.arange(shape[1], device=self.device).unsqueeze(0).expand(shape[0], -1).contiguous()
             kwargs['position_ids'] = positions
-        values = positions.detach().cpu().tolist()
+        with self.profile('positions_cpu_copy'):
+            values = positions.detach().cpu().tolist()
         require(len(values) == shape[0] and all(len(row) == shape[1] and
                 all(type(v) is int and 0 <= v < self.context_tokens for v in row)
                 for row in values), 'bounded explicit position IDs required')
@@ -207,7 +213,8 @@ class SourceModel:
         self.emit('forward_reserved', call_id=call_id, phase=phase, batch_shape=shape,
                   physical_input_tokens=tokens, cached=cached,
                   position_start=values[0][0], position_end=values[0][-1])
-        output = self.model(input_ids=input_ids, **kwargs)
+        with self.profile('model_entry_host_wall'):
+            output = self.model(input_ids=input_ids, **kwargs)
         if isinstance(output, tuple):
             require(len(output) >= (2 if kwargs['use_cache'] else 1), 'native tuple must contain requested outputs')
             logits, cache = output[0], output[1] if len(output) >= 2 else None
@@ -215,10 +222,12 @@ class SourceModel:
         else:
             logits, cache = output.logits, getattr(output, 'past_key_values', None)
             contract = 'model-output-logits-cache'
-        require(list(logits.shape) == [shape[0], shape[1], 16] and
-                bool(self.torch.isfinite(logits).all().item()), 'finite exact sixteen-row native logits required')
+        with self.profile('finite_logits_guard'):
+            require(list(logits.shape) == [shape[0], shape[1], 16] and
+                    bool(self.torch.isfinite(logits).all().item()), 'finite exact sixteen-row native logits required')
         require(kwargs['use_cache'] is False or cache is not None, 'native cache result missing')
         self.completed[phase] += 1
+        self.completed_input_by_phase[phase] += tokens
         self.emit('forward_completed', call_id=call_id, phase=phase, output_contract=contract)
         return SimpleNamespace(logits=logits, past_key_values=cache)
 

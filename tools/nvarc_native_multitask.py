@@ -5,7 +5,7 @@ The source DFS, formatter, augmentation, inverse and score_kgmon are unchanged.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import hashlib
 import json
 import math
@@ -182,6 +182,34 @@ def verifier_rows(puzzle, base, solution, loader, formatter, tokenizer):
 
 def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
                adapter, *, maximum_candidates, emit):
+    telemetry = getattr(adapter, 'telemetry', None)
+    def phase(name):
+        return nullcontext() if telemetry is None else telemetry.scope(name)
+    life = None if telemetry is None else telemetry.begin_test(test_index,
+        adapter.generation_deadline, getattr(adapter, 'verification_deadline', adapter.generation_deadline))
+    start_reserved, start_completed = dict(adapter.reserved), dict(adapter.completed)
+    start_tokens = dict(adapter.input_by_phase)
+    completed_tokens = getattr(adapter, 'completed_input_by_phase', None)
+    start_completed_tokens = None if completed_tokens is None else dict(completed_tokens)
+    try:
+        with phase('parse_dedup'):
+            return _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
+                adapter, maximum_candidates=maximum_candidates, emit=emit, phase=phase, life=life)
+    except BaseException as error:
+        if life is not None: life['termination_reason'] = 'exception:'+type(error).__name__
+        raise
+    finally:
+        if life is not None:
+            life['forward_reservations'] = {k: adapter.reserved[k]-v for k, v in start_reserved.items()}
+            life['forward_completions'] = {k: adapter.completed[k]-v for k, v in start_completed.items()}
+            life['reserved_physical_input_tokens'] = {k: adapter.input_by_phase[k]-v for k, v in start_tokens.items()}
+            if start_completed_tokens is not None:
+                life['completed_physical_input_tokens'] = {k: adapter.completed_input_by_phase[k]-v
+                                                         for k, v in start_completed_tokens.items()}
+
+
+def _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
+                adapter, *, maximum_candidates, emit, phase, life):
     base, puzzle, views, formatter, batches = test_views(challenges, task_id, test_index, loader, tokenizer)
     if getattr(adapter, 'per_test_limits', None) is not None:
         adapter.test_start_counts = (dict(adapter.reserved), adapter.input_tokens)
@@ -210,13 +238,18 @@ def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeniz
                     value=source_clock.time();clocks.append(value);return value
             namespace['time']=Clock
         try:
-            with adapter.scope('generation'):
+            with phase('generation'), adapter.scope('generation'):
                 result = solver.inference_turbo_dfs(adapter, prefixes, 931, -math.log(.2), adapter.generation_deadline)
         except InferenceLimitReached as error:
             stop = error.reason; break
         finally:
             if namespace is not None:namespace['time']=source_clock
         rows = source_result_rows(result)
+        if life is not None:
+            life['counters']['raw_returned'] += sum(len(beams) for beams in rows.values())
+            stamp = time.time()
+            life['cooperative_deadlines'].update(latest_generation_return=stamp,
+                generation_return_after_deadline=stamp >= adapter.generation_deadline)
         record = {'batch_index': batch_index, 'returned_row_ids': sorted(rows),
                   'empty_rows': 4-sum(bool(r) for r in rows.values()),
                   'source_dfs_deadline_observed': bool(clocks and
@@ -232,45 +265,79 @@ def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeniz
                 if sequences >= maximum_candidates:
                     stop = 'candidate_limit'; break
                 sequences += 1
+                source = None
+                if life is not None:
+                    life['counters']['processed'] += 1
                 require(isinstance(tokens, list) and 1 <= len(tokens) <= 931 and tokens[-1] == 15 and
                         all(type(t) is int and t in list(range(11)) for t in tokens[:-1]) and
                         math.isfinite(float(score)) and 0 <= float(score) < -math.log(.2),
                         'original EOS/beam score contract differs')
+                if life is not None:
+                    source = {'sequence_index': sequences-1, 'source_view': key,
+                        'source_tokens_digest': digest(tokens), 'returned_token_count': len(tokens),
+                        'candidate_digest': None, 'duplicate': False, 'voted': False}
+                    life['sequences'].append(source)
                 array = formatter.convert_tokens_to_array(tokens)
                 if array is None:
                     invalid += 1
+                    if life is not None: life['counters']['invalid'] += 1
                     emit('candidate_invalid', test_index=test_index, source_view=key, source_tokens=tokens)
                     continue
                 solution = loader.ArcDataset.invert_mod(array, key, inv_perm=True).tolist()
                 identity = grid_key(solution)
+                if life is not None:
+                    candidate_digest = digest(solution)
+                    duplicate = any(r['candidate_digest'] == candidate_digest for r in life['sequences'][:-1])
+                    source.update(candidate_digest=candidate_digest, duplicate=duplicate)
+                    life['counters']['duplicate' if duplicate else 'parsed_unique'] += 1
                 emit('candidate_parsed', test_index=test_index, source_view=key, source_tokens=tokens,
                      candidate_grid=solution, beam_score=float(score), already_verified=identity in known)
                 if identity not in known:
                     verify, bindings = verifier_rows(puzzle, base, solution, loader, formatter, tokenizer)
                     scores = []; calls = []
+                    observation = None
+                    if life is not None:
+                        life['counters']['verification_started'] += 1
+                        observation = {'candidate_digest': candidate_digest, 'completed_views': 0,
+                            'required_views': 8, 'state': 'started', 'call_ids': []}
+                        life['verifications'].append(observation)
                     try:
-                        with adapter.scope('verification'):
+                        with phase('verification'), adapter.scope('verification'):
                             for offset in (0, 4):
                                 adapter.verification_rows = bindings[offset:offset+4]
                                 scores += solver.calc_scores([r['input'] for r in verify[offset:offset+4]],
                                     [r['reply'] for r in verify[offset:offset+4]], tokenizer, adapter)
                                 calls.append(sum(adapter.reserved.values()))
+                                if observation is not None:
+                                    observation.update(completed_views=len(scores), call_ids=list(calls))
+                                    stamp = time.time()
+                                    life['cooperative_deadlines'].update(latest_verification_return=stamp,
+                                        verification_return_after_deadline=stamp >=
+                                            getattr(adapter, 'verification_deadline', adapter.generation_deadline))
                     except InferenceLimitReached as error:
                         stop = error.reason; break
                     finally:
                         adapter.verification_rows = None
+                        if observation is not None and observation['completed_views'] < 8:
+                            observation['state'] = 'partial' if observation['completed_views'] else 'unfinished'
+                            if observation['completed_views']: life['counters']['partial_verified'] += 1
                     require(len(scores) == 8 and all(math.isfinite(float(s)) and s >= 0 for s in scores),
                             'finite eight-view verification required')
                     known[identity] = ([float(s) for s in scores], calls)
+                    if observation is not None:
+                        observation['state'] = 'full'; life['counters']['full_verified'] += 1
                 scores, calls = known[identity]
                 votes[str(len(votes))] = {'beam_score': float(score), 'score_aug': scores,
                                          'solution': loader.np.asarray(solution)}
+                if life is not None:
+                    source['voted'] = True; life['counters']['votes_ranked'] += 1
                 emit('candidate_ranked', test_index=test_index, source_view=key, source_tokens=tokens,
                      candidate_grid=solution, beam_score=float(score), score_aug=scores, verification_call_ids=calls)
             if stop: break
         if not stop and record['source_dfs_deadline_observed']:stop='source_dfs_deadline'
         if stop: break
-    grids = [g.tolist() for g in decoder.score_kgmon(votes)]
+    with phase('ranking'):
+        grids = [g.tolist() for g in decoder.score_kgmon(votes)]
     require(len(grids) == len({grid_key(g) for g in grids}) == len(known), 'original vote/ranking closure differs')
     result = {'test_index': test_index, 'base_key': base, 'ranked_grids': grids, 'attempts': grids[:2],
               'missing_attempts': max(0, 2-len(grids)), 'reserved_generation_batches': reserved,
@@ -283,6 +350,10 @@ def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeniz
               'native_complete': completed == 4 and bool(grids) and stop is None,
               'search_exhaustiveness_claim': False,
               'correctness_scored': False}
+    if life is not None:
+        life['counters']['ranked'] = len(grids)
+        life['termination_reason'] = result['termination_reason']
+        result['telemetry'] = life
     emit('test_terminal', result=result)
     return result
 

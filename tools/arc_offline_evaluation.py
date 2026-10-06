@@ -9,6 +9,7 @@ from collections import Counter
 import math
 from pathlib import Path
 import re
+import random
 
 from tools.arc_kaggle_submission import challenge_counts, grid, parse_json, require
 from tools.nvarc_native_multitask import digest
@@ -240,6 +241,34 @@ def paired(left, right):
         result[label] = {k: counter[k] for k in ('both', 'gain', 'loss', 'neither')}
         result[label]['denominator'] = len(left['rows'])
     return result
+
+
+def paired_task_cluster_bootstrap(left, right, *, repeats=1000, seed=0):
+    """Evaluator-only paired resampling; technical repeats are not new tasks.
+
+    Every draw repeats whole tasks and recomputes sum(correct)/sum(tests).
+    The separate task-macro diagnostic deliberately uses another denominator.
+    This does not unlock a confirmation set or select a solver configuration.
+    """
+    paired(left, right)
+    require(type(repeats) is int and 1 <= repeats <= 100000 and type(seed) is int,
+            'finite seeded bootstrap required')
+    keys = sorted({r['task_id'] for r in left['rows']})
+    require(keys, 'nonempty task clusters required')
+    counts = {k: [0, 0, 0] for k in keys}
+    for a, b in zip(left['rows'], right['rows']):
+        require(type(a['pass2']) is bool and type(b['pass2']) is bool, 'boolean correctness required')
+        row = counts[a['task_id']]; row[0] += int(a['pass2']); row[1] += int(b['pass2']); row[2] += 1
+    rng = random.Random(seed); samples = []
+    for _ in range(repeats):
+        selected = [counts[keys[rng.randrange(len(keys))]] for _ in keys]
+        denominator = sum(r[2] for r in selected)
+        samples.append({'test_micro_delta': sum(r[1]-r[0] for r in selected)/denominator,
+            'task_macro_delta': sum((r[1]-r[0])/r[2] for r in selected)/len(selected),
+            'test_denominator': denominator})
+    return {'unit': 'paired task cluster', 'seed': seed, 'repeats': repeats,
+        'task_clusters': len(keys), 'aggregation': 'resampled sum(correct)/sum(tests)',
+        'samples': samples, 'evaluator_only': True}
 
 
 def official_observation(value):

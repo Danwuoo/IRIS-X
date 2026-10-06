@@ -2,6 +2,12 @@
 
 This directory contains only current product-era guidance.
 
+- [Stage 4 E00 telemetry](development/nvarc-phase-telemetry.md) defines the
+  local host clock, candidate lifecycle and unchanged-default measurement
+  contract. The [research/controller scope](../research/stage4-e00/CONTROLLER_SCOPE.md)
+  retains Astra intake and the deferred E01/E10 boundaries; no new external
+  execution is authorized.
+
 - [Decision 0060](decisions/0060-save-two-public-evaluation-notebooks.md) records
   the two public evaluation owner-Editor QUICK_SAVEs. The
   [implementation and save record](../trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001.md)

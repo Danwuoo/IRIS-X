@@ -8,6 +8,8 @@ import re
 import os
 import sys
 import zipfile
+import time
+from contextlib import contextmanager
 
 from tools.nvarc_native_multitask import canonical, digest, write, require
 from tools.arc_kaggle_submission import (challenge_counts, grid, grid as legal_grid,
@@ -20,7 +22,95 @@ ARCHIVE_LIMIT = 512 * 1024**2
 TASK_FILES = {'checkpoint.json', 'result.json', 'training-ledger.json', 'prepared-rows.json',
     'preparation.json', 'native-schedule.json', 'baseline-inventory.json', 'trained-inventory.json',
     'reset-inventory.json', 'post-reset-control.json'}
-WORKER_FILES = {'ready.json', 'process.json', 'job.json', 'done.json'}
+WORKER_FILES = {'ready.json', 'process.json', 'job.json', 'done.json', 'load-telemetry.json'}
+
+
+class PhaseTelemetry:
+    """In-memory host clocks; no IO, device synchronization or solver decisions.
+
+    Inclusive scopes may nest. Exclusive time is charged to the innermost
+    phase, so it can be added within ONE collector (never across workers).
+    Detail scopes only run when explicitly enabled and retain the parent phase.
+    """
+    PHASES = ('generation', 'verification', 'parse_dedup', 'ranking', 'training',
+              'reset', 'load', 'export', 'control', 'preparation')
+
+    def __init__(self, *, clock=time.monotonic, detailed=False):
+        require(type(detailed) is bool, 'explicit boolean profiling switch required')
+        self.clock, self.detailed = clock, detailed
+        self.started = clock(); self.stack = []; self.last = self.started
+        self.inclusive = {}; self.exclusive = {}; self.details = {}; self.events = []
+        self.tests = {}
+
+    def _charge(self, stamp):
+        require(math.isfinite(stamp) and stamp >= self.last, 'monotonic finite host clock required')
+        if self.stack:
+            phase = self.stack[-1]['phase']
+            self.exclusive[phase] = self.exclusive.get(phase, 0.0) + stamp-self.last
+        self.last = stamp
+
+    @contextmanager
+    def scope(self, phase):
+        require(phase in self.PHASES, 'known telemetry phase required')
+        begin = self.clock(); self._charge(begin)
+        frame = {'phase': phase}; self.stack.append(frame)
+        self.inclusive.setdefault(phase, 0.0)
+        try:
+            yield
+        except BaseException as error:
+            self.events.append({'event': 'phase_exception', 'phase': phase,
+                                'type': type(error).__name__})
+            raise
+        finally:
+            end = self.clock(); self._charge(end)
+            require(self.stack.pop() is frame, 'balanced host timing scope required')
+            self.inclusive[phase] += end-begin
+
+    @contextmanager
+    def detail(self, name):
+        # No additional clock read at all in the default per-forward hot path.
+        if not self.detailed:
+            yield
+            return
+        begin = self.clock()
+        try:
+            yield
+        finally:
+            self.details[name] = self.details.get(name, 0.0) + self.clock()-begin
+
+    def begin_test(self, index, generation_deadline, verification_deadline):
+        row = {'counters': {k: 0 for k in ('raw_returned', 'processed', 'invalid',
+            'duplicate', 'parsed_unique', 'verification_started', 'partial_verified',
+            'full_verified', 'ranked', 'votes_ranked')}, 'sequences': [], 'verifications': [],
+            'forward_reservations': None, 'forward_completions': None,
+            'reserved_physical_input_tokens': None, 'completed_physical_input_tokens': None,
+            'cooperative_deadlines': {'clock': 'time.time epoch seconds',
+                'generation': generation_deadline, 'verification': verification_deadline,
+                'preemption': False, 'in_flight_may_overrun': True,
+                'latest_generation_return': None, 'latest_verification_return': None,
+                'generation_return_after_deadline': None, 'verification_return_after_deadline': None},
+            'parent_hard_watchdog': None, 'termination_reason': 'interrupted_pending'}
+        require(str(index) not in self.tests, 'one telemetry lifecycle per test required')
+        self.tests[str(index)] = row
+        return row
+
+    def snapshot(self):
+        require(not self.stack, 'close scopes before telemetry snapshot')
+        elapsed = self.clock()-self.started
+        return {'format': 'irisx/nvarc-host-telemetry-v1',
+            'clock': 'time.monotonic host wall seconds',
+            'gpu_kernel_seconds': None, 'gpu_timing_semantics':
+                'asynchronous host wall; includes existing guards/readbacks/synchronization/IO where inside scope',
+            'added_device_synchronizations': 0, 'per_token_telemetry_writes': 0,
+            'detailed_profiling': self.detailed, 'elapsed_host_seconds': elapsed,
+            'inclusive_host_seconds': {p: self.inclusive.get(p) for p in self.PHASES},
+            'exclusive_host_seconds': {p: self.exclusive.get(p, 0.0) if p in self.inclusive else None
+                                       for p in self.PHASES},
+            'unscoped_host_seconds': max(0.0, elapsed-sum(self.exclusive.values())),
+            'detail_inclusive_host_seconds': dict(self.details) if self.detailed else None,
+            'aggregation': 'exclusive phases plus unscoped partition this collector; inclusive/detail scopes overlap; worker sums are not parent wall',
+            'unobserved_phase_policy': 'null; absent scope is not measured zero',
+            'training_forwards': None, 'tests': self.tests, 'events': list(self.events)}
 
 
 def install_owner_guard(expected_pid, signal_number):
@@ -81,7 +171,9 @@ def validate_record(plan, challenges, record):
     def truth_free(value):
         if isinstance(value, dict):
             require(not {'expected_output', 'expected_outputs', 'solutions', 'evaluator_truth',
-                'ground_truth', 'answer_key', 'exact_match', 'official_score'}.intersection(value),
+                'ground_truth', 'answer_key', 'exact_match', 'official_score', 'diagnostic_label',
+                'answer_rank', 'stratum', 'pass_at_1', 'pass_at_2', 'candidate_oracle',
+                'oracle', 'evaluator_label', 'route_label'}.intersection(value),
                 'evaluator fields forbidden in public predictions')
             for child in value.values(): truth_free(child)
         elif isinstance(value, list):
@@ -91,7 +183,7 @@ def validate_record(plan, challenges, record):
     require(record['binding'] == task_binding(plan, challenges, key), 'foreign task/profile checkpoint')
     require(len(record['tests']) == len(challenges[key]['test']), 'all task tests required')
     for index, test in enumerate(record['tests']):
-        require(test['test_index'] == index and test['attempts'] == test['ranked_grids'][:2] and
+        require(type(test['test_index']) is int and test['test_index'] == index and test['attempts'] == test['ranked_grids'][:2] and
             test['missing_attempts'] == max(0, 2-len(test['attempts'])), 'ordered complete test binding differs')
         pool = [legal_grid(g) for g in test['ranked_grids']]
         require(len(pool) == len({digest(g) for g in pool}) <= 64, 'bounded unique candidate pool required')

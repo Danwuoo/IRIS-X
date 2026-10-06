@@ -29,6 +29,11 @@ and official null scores. See the [CLI and schemas](../docs/development/arc-offl
 and [first Stage 4 local scope](../docs/plan/2026-10-05-stage4-local-foundation.md).
 They do not load a model or authorize new external work.
 
+E00 extends the public/native adapters with in-memory host phase and candidate
+telemetry, preserving the original budget, schedule, guards and ranking. Fine
+profiling is opt-in. See the [timing/lifecycle contract](../docs/development/nvarc-phase-telemetry.md)
+and [research intake and deferred work](../research/stage4-e00/CONTROLLER_SCOPE.md).
+
 `nvarc_original_corpus.py` prepares the distinct Decision-0050 original
 reproduction corpus under `.irisx/nvarc-original/`. It copies published
 HF bytes unchanged, retains all six training sources and separate validation,
