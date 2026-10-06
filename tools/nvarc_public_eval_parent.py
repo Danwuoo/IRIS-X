@@ -11,7 +11,7 @@ import subprocess
 import sys
 import time
 
-from tools.nvarc_public_eval import ResultStore, validate_plan, write_archive, sha, install_owner_guard, PhaseTelemetry
+from tools.nvarc_public_eval import ResultStore, validate_plan, write_archive, sha, install_owner_guard, PhaseTelemetry, MailboxReader
 from tools.nvarc_native_multitask import write, digest, require
 from tools.arc_kaggle_submission import parse_json
 
@@ -64,6 +64,7 @@ def run_workers(root, plan, challenges, model, dependency, hardware, store, star
                 *, launch=subprocess.Popen, worker_command=None, now=time.monotonic, pause=time.sleep):
     """Persistent file-mailbox workers; each task is dispatched once, no retries."""
     root = Path(root); states = {}; failures = []; finished = set(); sequence = 0
+    assigned = set(); required_checkpoints = set()
     seen = {}; setup_end = started+plan['startup_seconds']; last_progress = started
     end = started+plan['maximum_notebook_wall_seconds']-plan['export_reserve_seconds']
     epoch_end = time.time()+max(0, end-now())
@@ -76,22 +77,30 @@ def run_workers(root, plan, challenges, model, dependency, hardware, store, star
         with (root/'progress.jsonl').open('ab') as stream:
             stream.write(json.dumps(row, sort_keys=True).encode()+b'\n'); stream.flush(); os.fsync(stream.fileno())
         print(json.dumps(row), flush=True)
-    def consume(key):
+    reader = MailboxReader(observe=lambda kind, path, **details:
+        event(kind, path=path.relative_to(root).as_posix(), **details))
+    def consume(key, *, final=False):
         path = root/'tasks'/key/'checkpoint.json'
-        if path.is_file():
-            signature = (path.stat().st_mtime_ns, path.stat().st_size)
-            if seen.get(key) != signature:
-                store.commit(parse_json(path.read_bytes())); seen[key] = signature
+        required = key in required_checkpoints
+        body = reader.final_read(path, required=required) if final else reader.read(path, required=required)
+        if body is None: return False
+        signature = hashlib.sha256(body).digest()
+        if seen.get(key) != signature:
+            record = parse_json(body)
+            require(record['binding']['task_id'] == key, 'checkpoint mailbox task differs')
+            store.commit(record); seen[key] = signature
+        return True
     def retire(rank, reason):
         state = states[rank]; stop_process(state['process'])
-        if state['key'] is not None:
-            consume(state['key']); finished.add(state['key'])
-        state['retired'] = True; state['key'] = None
         observation = {'rank': rank, 'reason': reason, 'worker_pid': state['process'].pid,
             'returncode': state['process'].poll(),
             'parent_hard_watchdog': reason == 'task-watchdog-timeout',
             'watchdog_deadline_monotonic': state['end']}
         failures.append(observation); event('worker-retired', **observation)
+        state['retired'] = True
+        if state['key'] is not None:
+            consume(state['key']); finished.add(state['key'])
+        state['key'] = None
     try:
         # Separate cwd/compiler caches prevent shared generated-code races.
         for rank in range(4):
@@ -118,22 +127,34 @@ def run_workers(root, plan, challenges, model, dependency, hardware, store, star
         while now() < end:
             for rank, state in states.items():
                 if state['retired']: continue
+                code = state['process'].poll()
+                if code is not None:
+                    retire(rank, 'unexpected-worker-exit-'+str(code)); continue
+                if state['key'] is not None and now() >= state['end']:
+                    retire(rank, 'task-watchdog-timeout'); continue
                 directory = root/'workers'/str(rank); ready = directory/'ready.json'
-                if not state['ready'] and ready.is_file():
-                    observed = parse_json(ready.read_bytes())
-                    require(observed['rank'] == rank and observed['uuid'] == hardware[rank]['uuid'] and
-                        observed['model_material_digest'] == plan['model_material_digest'], 'actual model-ready identity differs')
-                    state['ready'] = True; event('model-ready', rank=rank, uuid=observed['uuid'])
+                if not state['ready']:
+                    body = reader.read(ready)
+                    if body is not None:
+                        observed = parse_json(body)
+                        require(type(observed['rank']) is int and observed['rank'] == rank and observed['uuid'] == hardware[rank]['uuid'] and
+                            observed['model_material_digest'] == plan['model_material_digest'], 'actual model-ready identity differs')
+                        state['ready'] = True; event('model-ready', rank=rank, uuid=observed['uuid'])
                 if state['key'] is not None:
-                    consume(state['key'])
+                    checkpoint_available = consume(state['key'])
                     done = directory/'done.json'
-                    if done.is_file():
-                        result = parse_json(done.read_bytes())
+                    body = reader.read(done)
+                    if body is not None:
+                        result = parse_json(body)
+                        require(type(result['sequence']) is int and 0 < result['sequence'] <= state['sequence'],
+                            'worker completion sequence differs')
                         if result['sequence'] == state['sequence']:
                             require(result['task_id'] == state['key'], 'worker completion task differs')
-                            key = state['key']; consume(key); finished.add(key); state['key'] = None
-                            event('task-finished', rank=rank, task_id=key, outcome=result['outcome'])
-                            if result['retired']: retire(rank, 'task-error-or-reset-failure'); continue
+                            key = state['key']; required_checkpoints.add(key)
+                            if checkpoint_available:
+                                finished.add(key); state['key'] = None
+                                event('task-finished', rank=rank, task_id=key, outcome=result['outcome'])
+                                if result['retired']: retire(rank, 'task-error-or-reset-failure'); continue
                     if state['key'] is not None and now() >= state['end']:
                         retire(rank, 'task-watchdog-timeout'); continue
                 code = state['process'].poll()
@@ -148,7 +169,7 @@ def run_workers(root, plan, challenges, model, dependency, hardware, store, star
                 for rank, state in states.items():
                     if state['retired'] or state['key'] is not None or not queue: continue
                     if now()+120+(30 if not ttt else 150) >= end: continue
-                    key = queue.pop(0); sequence += 1
+                    key = queue.pop(0); sequence += 1; assigned.add(key)
                     state.update(key=key, sequence=sequence, end=min(end, now()+120+(1200 if ttt else 0)+30*len(challenges[key]['test'])))
                     event('task-dispatch-reserved', rank=rank, task_id=key, sequence=sequence)
                     write(root/'workers'/str(rank)/'job.json', {'sequence': sequence, 'task_id': key})
@@ -164,14 +185,15 @@ def run_workers(root, plan, challenges, model, dependency, hardware, store, star
             if state['key'] is not None: consume(state['key'])
             if not state['retired']: write(root/'workers'/str(rank)/'job.json', {'stop': True})
         return {'finished_tasks': len(finished), 'dispatched_tasks': sequence, 'worker_failures': failures,
-                'undispatched_tasks': len(queue), 'all_four_models_ready': all(s['ready'] for s in states.values())}
+                'undispatched_tasks': len(queue), 'all_four_models_ready': all(s['ready'] for s in states.values()),
+                'mailbox_reads': {'maximum_denied_attempts': reader.MAX_ATTEMPTS,
+                    'deferred_reads': reader.deferred_reads, 'recovered_paths': reader.recovered_paths}}
     finally:
         for state in states.values():
             if state['process'] is not None: stop_process(state['process'])
             state['stdout'].close(); state['stderr'].close()
         # Consume the last atomic checkpoint after all producers have stopped.
-        for state in states.values():
-            if state['key'] is not None: consume(state['key'])
+        for key in sorted(assigned): consume(key, final=True)
 
 
 def execute(root, plan, dependency, started):

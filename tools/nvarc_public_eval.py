@@ -9,6 +9,7 @@ import os
 import sys
 import zipfile
 import time
+import errno
 from contextlib import contextmanager
 
 from tools.nvarc_native_multitask import canonical, digest, write, require
@@ -23,6 +24,62 @@ TASK_FILES = {'checkpoint.json', 'result.json', 'training-ledger.json', 'prepare
     'preparation.json', 'native-schedule.json', 'baseline-inventory.json', 'trained-inventory.json',
     'reset-inventory.json', 'post-reset-control.json'}
 WORKER_FILES = {'ready.json', 'process.json', 'job.json', 'done.json', 'load-telemetry.json'}
+
+
+class MailboxReader:
+    """One read per poll; bounded Windows access deferral, never a model retry.
+
+    CRT reads can report only EACCES for a sharing/delete-pending conflict.
+    An ACL denial is indistinguishable until it persists: fifth denied read
+    fails closed. Callers keep their exit/deadline checks between attempts.
+    JSON and identity validation deliberately happen outside this class.
+    """
+    MAX_ATTEMPTS = 5
+
+    def __init__(self, *, read_bytes=Path.read_bytes, windows=os.name == 'nt', observe=None):
+        self.read_bytes, self.windows, self.observe = read_bytes, windows, observe
+        self.pending = {}; self.deferred_reads = 0; self.recovered_paths = 0
+
+    def read(self, path, *, required=False):
+        path = Path(path)
+        if path in self.pending and self.pending[path][0] >= self.MAX_ATTEMPTS:
+            raise self.pending[path][1]
+        try:
+            body = self.read_bytes(path)
+        except FileNotFoundError as error:
+            if not required and path not in self.pending:
+                return None
+            return self._defer(path, error)
+        except PermissionError as error:
+            if not (self.windows and error.errno == errno.EACCES and
+                    getattr(error, 'winerror', None) in (None, 5, 32, 33)):
+                raise
+            return self._defer(path, error)
+        if self.pending.pop(path, None) is not None:
+            self.recovered_paths += 1
+            if self.observe: self.observe('mailbox-read-recovered', path=path)
+        return body
+
+    def _defer(self, path, error):
+        count = self.pending.get(path, (0, None))[0] + 1
+        self.pending[path] = (count, error); self.deferred_reads += 1
+        exhausted = count >= self.MAX_ATTEMPTS
+        if self.observe:
+            self.observe('mailbox-read-exhausted' if exhausted else 'mailbox-read-deferred',
+                path=path, attempts=count, error_type=type(error).__name__,
+                errno=error.errno, winerror=getattr(error, 'winerror', None))
+        if exhausted:
+            error.add_note('mailbox remained unreadable after five bounded read attempts')
+            raise error
+        return None
+
+    def final_read(self, path, *, required=False, pause=time.sleep):
+        """After producer termination only: at most four .2s deferred waits."""
+        while True:
+            body = self.read(path, required=required)
+            if body is not None or Path(path) not in self.pending:
+                return body
+            pause(.2)
 
 
 class PhaseTelemetry:

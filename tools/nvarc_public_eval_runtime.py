@@ -14,7 +14,8 @@ from contextlib import nullcontext
 from types import ModuleType
 from typing import Any, Union
 
-from tools.nvarc_public_eval import task_binding, empty_tests, validate_record, install_owner_guard, PhaseTelemetry
+from tools.nvarc_public_eval import task_binding, empty_tests, validate_record, install_owner_guard, PhaseTelemetry, MailboxReader
+from tools.arc_kaggle_submission import parse_json
 from tools.nvarc_native_multitask import write, digest, require, public_training_material, solve_test, training_deadline
 from tools.nvarc_native_solve_runtime import (SourceModel, InferenceLimitReached,
     load_sources, cache_controls, reset_control, discard_optimizer_state)
@@ -314,16 +315,19 @@ def worker(root, model, dependency, rank, deadline, parent_pid, *, detailed_prof
     require(os.environ.get('PYTHONHASHSEED') == '0' and sys.flags.hash_randomization == 0,
             'worker startup hash seed zero required')
     plan = json.loads((root/'plan.json').read_bytes()); challenges = json.loads((root/'challenges.json').read_bytes())
-    directory = root/'workers'/str(rank); last = 0
+    directory = root/'workers'/str(rank); last = 0; reader = MailboxReader()
     load_telemetry = PhaseTelemetry(detailed=detailed_profiling)
     with load_telemetry.scope('load'):
         engine = NativeEngine(root, plan, model, dependency, rank)
     write(directory/'load-telemetry.json', load_telemetry.snapshot())
     while time.time() < deadline:
         job = directory/'job.json'
-        if not job.is_file(): time.sleep(.1); continue
-        value = json.loads(job.read_bytes())
+        body = reader.read(job)
+        if body is None: time.sleep(.1); continue
+        value = parse_json(body)
         if value.get('stop'): return
+        require(type(value['sequence']) is int and value['sequence'] > 0 and
+            value['task_id'] in challenges, 'worker job identity differs')
         if value['sequence'] <= last: time.sleep(.1); continue
         last = value['sequence']; key = value['task_id']
         record, fatal = run_one_task(engine, plan, challenges, key, root/'tasks'/key, deadline,

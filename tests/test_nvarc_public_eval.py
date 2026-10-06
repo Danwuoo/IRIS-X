@@ -146,13 +146,17 @@ def save(path,value):
 plan=json.loads((root/'plan.json').read_bytes());ch=json.loads((root/'challenges.json').read_bytes())
 import sys
 sys.path.insert(0,plan['fixture_repository'])
-from tools.nvarc_public_eval import task_binding,empty_tests
+from tools.nvarc_public_eval import task_binding,empty_tests,MailboxReader
+from tools.arc_kaggle_submission import parse_json
+reader=MailboxReader()
 save(d/'ready.json',{'rank':rank,'uuid':'fixture-'+str(rank),'model_material_digest':plan['model_material_digest']})
 last=0
 while True:
  path=d/'job.json'
  if not path.exists():time.sleep(.02);continue
- job=json.loads(path.read_bytes())
+ body=reader.read(path)
+ if body is None:time.sleep(.02);continue
+ job=parse_json(body)
  if job.get('stop'):break
  if job['sequence']<=last:time.sleep(.02);continue
  last=job['sequence'];key=job['task_id'];out=root/'tasks'/key;out.mkdir()

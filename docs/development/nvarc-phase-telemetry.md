@@ -117,3 +117,9 @@ not introduce a multi-file exporter transaction, atomic root copy or fallback
 policy. Output validity, notebook exit, evidence qualification and promotion
 remain distinct. Official submission 56840442 still has an exception, null
 scores and an unknown root cause.
+
+The finite [E00 mailbox repair](../../research/stage4-e00/REPAIR_001.md)
+records the later controller failure and Windows read/replace reproduction.
+Mutable ready/done/checkpoint/job reads now allow at most five denied reads,
+with process/deadline checks between polls; invalid content still fails closed.
+Producer writes, exporter/root transactions and frozen payloads are unchanged.

@@ -273,13 +273,17 @@ a=p.parse_args();root=Path(a.root);rank=int(a.rank);d=root/'workers'/str(rank)
 plan=json.loads((root/'plan.json').read_bytes());data=json.loads((root/'challenges.json').read_bytes())
 sys.path.insert(0,plan['fixture_repository'])
 from tools.nvarc_native_multitask import write
-from tools.nvarc_public_eval import task_binding,empty_tests
+from tools.nvarc_public_eval import task_binding,empty_tests,MailboxReader
+from tools.arc_kaggle_submission import parse_json
+reader=MailboxReader()
 write(d/'ready.json',{'rank':rank,'uuid':'fake-'+str(rank),'model_material_digest':plan['model_material_digest']})
 until=time.monotonic()+15
 while time.monotonic()<until:
  job=d/'job.json'
  if job.is_file():
-  value=json.loads(job.read_bytes())
+  body=reader.read(job)
+  if body is None:time.sleep(.01);continue
+  value=parse_json(body)
   if value.get('stop'):sys.exit(0)
   key=value['task_id'];out=root/'tasks'/key;out.mkdir(exist_ok=True)
   tests=empty_tests(len(data[key]['test']))
