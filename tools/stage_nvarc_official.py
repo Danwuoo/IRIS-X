@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import subprocess
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
@@ -51,7 +52,9 @@ def construct(run_id, source_commit):
     raw={key:old[key] for key in keys}
     raw['worker']=worker(raw['worker']);raw['bridge']=bridge(raw['bridge'])
     for key,name in [('official_adapter','nvarc_official_adapter.py'),('official_parent','nvarc_official_parent.py')]:
-        raw[key]=(ROOT/'tools'/name).read_bytes()
+        # This legacy stager cannot rebind a consumed official identity to E01.
+        raw[key]=subprocess.run(['git','show','089589652f6f4f9b3d9c3d68f4b65a2dbe331641:tools/'+name],
+            cwd=ROOT,capture_output=True,check=True).stdout
     keep=('format','model_material_digest','versions','original_peft_parameters','original_training_arguments',
           'native_trainer_origins','native_checkpoint_flags','source_inferred_trainable_layout',
           'original_class_ast_sha256','solver_cell_sha256','source_inventory_digest','original_solve_source_sha256',

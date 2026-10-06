@@ -14,6 +14,7 @@ import time
 from tools.nvarc_public_eval import ResultStore, validate_plan, write_archive, sha, install_owner_guard, PhaseTelemetry, MailboxReader
 from tools.nvarc_native_multitask import write, digest, require
 from tools.arc_kaggle_submission import parse_json
+from tools.nvarc_output_lifecycle import outcomes, diagnostic, terminal_attempt
 
 
 def stop_process(process):
@@ -209,28 +210,40 @@ def execute(root, plan, dependency, started):
         phase = 'persistent-public-workers'
         summary = run_workers(root, plan, challenges, model, dependency, hardware, store, started)
     except BaseException as error:
-        errors.append({'phase': phase, 'type': type(error).__name__, 'message': str(error)[:2400]})
+        errors.append(diagnostic(error, phase))
     if store is not None:
-        with telemetry.scope('export'): store.flush()
-    coverage = parse_json((root/'coverage.json').read_bytes()) if (root/'coverage.json').is_file() else None
+        try:
+            with telemetry.scope('export'): store.flush()
+        except BaseException as error:
+            errors.append(diagnostic(error, 'output-publication'))
+    coverage = None; output_valid = False
+    if store is not None:
+        try:
+            _, bodies = store.generation.read()
+            coverage = parse_json(bodies['coverage.json'])
+            store.generation.verify_projection(); output_valid = True
+        except BaseException as error:
+            errors.append(diagnostic(error, 'output-validation'))
     failures = summary.get('worker_failures', [])
     failed = bool(errors or failures)
     partial = coverage is None or any(r['termination_reason'] != 'all_source_batches_completed' for r in coverage['rows'])
     terminal = {'format': plan['format'], 'run_id': plan['run_id'], 'plan_digest': digest(plan),
         'phase': phase, 'outcome': 'failed' if failed else 'partial' if partial else 'complete',
         'errors': errors, 'summary': summary, 'wall_seconds': time.monotonic()-started,
-        'paid_usd': 0, 'correctness_scored': False, 'strict_portable_gpu_gate': False}
-    write(root/'terminal.json', terminal)
+        'paid_usd': 0, 'correctness_scored': False, 'strict_portable_gpu_gate': False,
+        **outcomes(output_valid, 'failure' if failed else 'success', False)}
+    terminal_attempt(terminal, lambda: write(root/'terminal.json', terminal))
     try:
         with telemetry.scope('export'): write_archive(root, root.parent/plan['download_archive'], plan)
     except BaseException as error:
-        terminal['outcome'] = 'failed'; terminal['errors'].append({'phase': 'archive', 'type': type(error).__name__, 'message': str(error)[:2000]})
-        write(root/'terminal.json', terminal)
+        terminal['outcome'] = 'failed'; terminal['notebook_exit'] = 'failure'
+        terminal['errors'].append(diagnostic(error, 'archive'))
+        terminal_attempt(terminal, lambda: write(root/'terminal.json', terminal))
     # The archive cannot contain its own completed duration. Retain that final
     # observation separately rather than asserting it was in the frozen ZIP.
-    write(root/'parent-telemetry.json', telemetry.snapshot())
-    print(json.dumps(terminal), flush=True)
-    return 1 if terminal['outcome'] == 'failed' else 0
+    terminal_attempt(terminal, lambda: write(root/'parent-telemetry.json', telemetry.snapshot()), phase='telemetry-logger')
+    terminal_attempt(terminal, lambda: print(json.dumps(terminal), flush=True), phase='stdout-logger')
+    return 1 if terminal['notebook_exit'] == 'failure' else 0
 
 
 def main():

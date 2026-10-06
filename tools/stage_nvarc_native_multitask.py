@@ -34,6 +34,7 @@ FILES={'solver.py':'solver','arc_loader.py':'loader','arc_decoder.py':'decoder',
 def files_for(raw):
     files=dict(FILES)
     if 'native_export' in raw:files['tools/nvarc_native_export.py']='native_export'
+    if 'output_lifecycle' in raw:files['tools/nvarc_output_lifecycle.py']='output_lifecycle'
     return files
 
 
@@ -114,7 +115,11 @@ def construct(run_id,admission_path=None):
     raw.pop('texts_gzip');raw.pop('expected_rows');raw.pop('visible')
     producer_names=('worker','helper','budget','schedule','solve_runtime','multitask','bridge','exporter')
     if isolated_export:
-        raw['native_export']=(ROOT/'tools/nvarc_native_export.py').read_bytes()
+        raw['native_export']=producer_bytes(run_id,'nvarc_native_export.py') if int(run_id.rsplit('-',1)[1])>10 else subprocess.run(
+            ['git','show','089589652f6f4f9b3d9c3d68f4b65a2dbe331641:tools/nvarc_native_export.py'],
+            cwd=ROOT,capture_output=True,check=True).stdout
+        if int(run_id.rsplit('-',1)[1])>10:
+            raw['output_lifecycle']=(ROOT/'tools/nvarc_output_lifecycle.py').read_bytes()
     producer={k:hashlib.sha256(raw[k]).hexdigest() for k in producer_names}
     specs={}
     for task_id,material in materials.items():
@@ -181,6 +186,8 @@ def construct(run_id,admission_path=None):
             owner_decision='local-008-export-repair-proposal-only',
             export_verification_process='fresh-cpu-startup-hashseed-0',maximum_export_process_seconds=240,
             export_helper_sha256=hashlib.sha256(raw['native_export']).hexdigest())
+        if 'output_lifecycle' in raw:
+            plan['output_lifecycle_sha256']=hashlib.sha256(raw['output_lifecycle']).hexdigest()
     if admission is not None:
         plan.update(approved=True,controller_admission=admission,controller_admission_sha256=sha(admission_path))
         if admission['format'] in ('irisx/native-multitask-editor-admission-v2',

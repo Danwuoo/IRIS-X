@@ -2,6 +2,11 @@
 
 This directory contains only current product-era guidance.
 
+- [Stage 4 E01 output lifecycle](development/nvarc-output-lifecycle.md) defines
+  immutable generations, single-marker commit, verified root projection and
+  strict recovery, with the [finite fault matrix](../research/stage4-e01/RELIABILITY_MATRIX.md).
+  This local development does not authorize external execution or promotion.
+
 - [Stage 4 E00 telemetry](development/nvarc-phase-telemetry.md) defines the
   local host clock, candidate lifecycle and unchanged-default measurement
   contract. The [research/controller scope](../research/stage4-e00/CONTROLLER_SCOPE.md)

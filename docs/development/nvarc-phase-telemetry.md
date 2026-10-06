@@ -123,3 +123,8 @@ records the later controller failure and Windows read/replace reproduction.
 Mutable ready/done/checkpoint/job reads now allow at most five denied reads,
 with process/deadline checks between polls; invalid content still fails closed.
 Producer writes, exporter/root transactions and frozen payloads are unchanged.
+E01 subsequently adds the separately documented
+[committed output lifecycle](nvarc-output-lifecycle.md) to current local code.
+The E00 observations above and legacy staged runtime bytes remain frozen;
+the E01 [matrix](../../research/stage4-e01/RELIABILITY_MATRIX.md) maps recovery
+checks without changing the solver or mailbox probation contract.

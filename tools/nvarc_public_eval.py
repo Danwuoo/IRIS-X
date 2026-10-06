@@ -15,6 +15,7 @@ from contextlib import contextmanager
 from tools.nvarc_native_multitask import canonical, digest, write, require
 from tools.arc_kaggle_submission import (challenge_counts, grid, grid as legal_grid,
     build_submission, parse_json)
+from tools.nvarc_output_lifecycle import GenerationStore, manifest_snapshot
 
 FORMAT = 'irisx/nvarc-public-eval-v1'
 INPUT_SHA = 'e7c62a4bd211867c6b538f66b8013b81f299663c82ca062f49a52bf439d6e4e8'
@@ -267,7 +268,33 @@ class ResultStore:
     def __init__(self, root, plan, challenges, *, allow_fixture=False):
         self.root, self.plan, self.challenges = Path(root), plan, challenges
         self.counts = validate_plan(plan, challenges, allow_fixture=allow_fixture)
-        self.records = {}; self.flush()
+        bindings = {'run_id': plan['run_id'], 'plan_digest': digest(plan),
+            'challenges_digest': digest(challenges), 'task_counts': self.counts,
+            'model_material_digest': plan['model_material_digest'],
+            'producer_sha256': plan.get('producer_sha256'),
+            'source_inventory_digest': plan.get('source_inventory_digest'),
+            'store_code_sha256': sha(Path(__file__)),
+            'lifecycle_code_sha256': sha(Path(__file__).with_name('nvarc_output_lifecycle.py'))}
+        self.generation = GenerationStore(root, 'public', bindings)
+        self.records = {}
+        if (self.root/'output-commit.json').exists():
+            self.recover()
+        else:
+            self.flush()
+
+    def recover(self):
+        def validate(manifest, values):
+            pools = values['candidate-pools.json']
+            require(set(pools) == {'format', 'run_id', 'plan_digest', 'records'} and
+                pools['format'] == FORMAT and pools['run_id'] == self.plan['run_id'] and
+                pools['plan_digest'] == digest(self.plan), 'foreign candidate pool generation')
+            for key, record in pools['records'].items():
+                require(validate_record(self.plan, self.challenges, record) == key,
+                        'generation record task mapping differs')
+            self.records = pools['records']
+            require(values == self._values() and manifest['outcomes']['evidence_qualified'] is False,
+                    'generation semantic files differ')
+        return self.generation.recover(validate)
 
     def commit(self, record):
         key = validate_record(self.plan, self.challenges, record)
@@ -280,6 +307,12 @@ class ResultStore:
         self.flush()
 
     def flush(self):
+        return self.generation.publish(self._values(), evidence_qualified=False)
+
+    def _values(self):
+        for key, record in self.records.items():
+            require(validate_record(self.plan, self.challenges, record) == key,
+                    'generation record task mapping differs')
         exported = []
         for key, record in sorted(self.records.items()):
             tests = []
@@ -290,9 +323,8 @@ class ResultStore:
                               if t['status'] != 'not_executed' else 'not_executed'})
             exported.append({'task_id': key, 'tests': tests})
         submission, audit = build_submission(self.challenges, exported)
-        write(self.root/'submission.json', submission); write(self.root/'submission-audit.json', audit)
-        write(self.root/'candidate-pools.json', {'format': FORMAT, 'run_id': self.plan['run_id'],
-            'plan_digest': digest(self.plan), 'records': self.records})
+        pools = {'format': FORMAT, 'run_id': self.plan['run_id'],
+            'plan_digest': digest(self.plan), 'records': self.records}
         rows = []
         for key, count in sorted(self.counts.items()):
             rec = self.records.get(key)
@@ -301,18 +333,36 @@ class ResultStore:
                 rows.append({'task_id': key, 'test_index': i, 'model_candidates': 0 if test is None else len(test['ranked_grids']),
                     'status': 'not_executed' if test is None else test['status'],
                     'termination_reason': 'not_executed' if test is None else test['termination_reason']})
-        write(self.root/'coverage.json', {'tasks': len(self.counts), 'tests': len(rows), 'rows': rows,
+        coverage = {'tasks': len(self.counts), 'tests': len(rows), 'rows': rows,
             'tests_with_model_candidates': sum(r['model_candidates'] > 0 for r in rows),
             'tests_not_executed': sum(r['status'] == 'not_executed' for r in rows),
-            'correctness_scored': False, 'strict_portable_gpu_gate': False})
-        write(self.root/'task-timings.json', {k: r.get('timings', {}) for k, r in self.records.items()})
+            'correctness_scored': False, 'strict_portable_gpu_gate': False}
+        return {'submission.json': submission, 'submission-audit.json': audit,
+            'candidate-pools.json': pools, 'coverage.json': coverage,
+            'task-timings.json': {k: r.get('timings', {}) for k, r in self.records.items()}}
 
 
 def write_archive(root, destination, plan):
     """Whitelist diagnostics; never walk model weights or compiler caches into ZIP."""
     root, destination = Path(root), Path(destination)
+    # Do not archive root sidecars of different generations after a failed flush.
+    if (root/'output-commit.json').exists():
+        _, _, manifest = manifest_snapshot(root)
+        require(manifest['kind'] == 'public' and manifest['bindings']['run_id'] == plan['run_id'] and
+                manifest['bindings']['plan_digest'] == digest(plan), 'archive generation plan differs')
+        store = GenerationStore(root, 'public', manifest['bindings'])
+        with store.writer():
+            manifest = store.verify_projection()
+            return _write_archive(root, destination, plan,
+                committed_directory=root/'.output-generations'/manifest['generation'])
+    return _write_archive(root, destination, plan)
+
+
+def _write_archive(root, destination, plan, *, committed_directory=None):
     require(destination.name == plan['run_id']+'.zip' and not destination.exists(), 'new run-named ZIP required')
     selected = [p for p in root.iterdir() if p.is_file() and p.suffix in {'.json', '.jsonl', '.py'}]
+    if committed_directory is not None:
+        selected += list(committed_directory.iterdir())
     selected += [p for p in (root/'tools').glob('*.py') if p.is_file()]
     selected += [p for p in (root/'tasks').glob('*/*') if p.name in TASK_FILES and p.is_file()]
     selected += [p for p in (root/'workers').glob('*/*') if p.name in WORKER_FILES and p.is_file()]

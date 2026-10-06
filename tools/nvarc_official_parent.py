@@ -11,12 +11,45 @@ import sys
 import time
 from types import SimpleNamespace
 
-from tools.nvarc_native_multitask import write,require,digest
+from tools.nvarc_native_multitask import write,require,digest,canonical
 from tools.nvarc_official_adapter import runtime_plan,receipt_for,coverage_summary
+from tools.nvarc_output_lifecycle import GenerationStore, outcomes, terminal_attempt, diagnostic, sha, atomic_bytes
+
+
+def _working_output(native_store, working_root, challenges, summary):
+    """Called only after the fresh strict exporter succeeds. No copyfile window."""
+    from tools.arc_kaggle_submission import parse_json, validate_submission
+    manifest,bodies=native_store.read()
+    require(manifest['outcomes']['evidence_qualified'] is True and
+        summary['run_id']==manifest['bindings']['run_id'] and
+        summary['runtime_plan_digest']==manifest['bindings']['plan_digest'] and
+        summary['strict_same_runtime_export_completed'] is True and
+        summary['submission_sha256']==sha(bodies['submission.json']) and
+        summary['audit_sha256']==sha(bodies['submission-audit.json']), 'strict working publication binding differs')
+    validate_submission(challenges,parse_json(bodies['submission.json']))
+    bindings={**manifest['bindings'],'native_manifest_digest':digest(manifest)}
+    working=GenerationStore(working_root,'official',bindings)
+    return working,{**{n:parse_json(b) for n,b in bodies.items()},'official-summary.json':summary}
+
+
+def publish_working_output(native_store, working_root, challenges, summary):
+    working,values=_working_output(native_store,working_root,challenges,summary)
+    working.publish(values,evidence_qualified=True)
+    return working
+
+
+def recover_working_output(native_store, working_root, challenges, summary):
+    """After zero-model strict native re-export/revalidation and producer stop."""
+    working,values=_working_output(native_store,working_root,challenges,summary)
+    def validate(manifest,previous):
+        require(previous==values and manifest['outcomes']['evidence_qualified'] is True,
+            'strict working recovery differs')
+    working.recover(validate)
+    return working
 
 
 def execute(root, candidate, raw, started):
-    active={};receipts=[];plan=None;phase='source-inventory'
+    active={};receipts=[];plan=None;phase='source-inventory';published=None;qualified=False
     def save(name,value):write(root/name,value)
     def kill(process):
         if process.poll() is None:
@@ -147,31 +180,50 @@ def execute(root, candidate, raw, started):
                 timeout=min(plan['maximum_export_process_seconds'],remaining),check=True,cwd=root)
         coverage=coverage_summary(root,plan,receipts)
         from tools.arc_kaggle_submission import validate_submission
-        submission=json.loads((root/'submission.json').read_bytes());audit=json.loads((root/'submission-audit.json').read_bytes())
+        from tools.nvarc_native_export import native_bindings
+        from tools.nvarc_native_submission import read_task_evidence
+        from tools.arc_kaggle_submission import parse_json
+        native_store=GenerationStore(root,'native',native_bindings(root,plan,challenges,
+            read_task_evidence(root,plan,challenges,receipts)))
+        native_manifest,native_bodies=native_store.read()
+        require(native_manifest['outcomes']['evidence_qualified'] is True,'strict exporter commit required')
+        native_store.verify_projection();qualified=True
+        submission=parse_json(native_bodies['submission.json']);audit=parse_json(native_bodies['submission-audit.json'])
         counts=validate_submission(challenges,submission)
         summary={'run_id':plan['run_id'],'candidate_digest':digest(candidate),'runtime_plan_digest':digest(plan),
             'input':json.loads((root/'input-provenance.json').read_bytes()),'coverage':coverage,'output_counts':counts,
-            'submission_sha256':hashlib.sha256((root/'submission.json').read_bytes()).hexdigest(),
-            'audit_sha256':hashlib.sha256((root/'submission-audit.json').read_bytes()).hexdigest(),
+            'submission_sha256':sha(native_bodies['submission.json']),
+            'audit_sha256':sha(native_bodies['submission-audit.json']),
             'attempt_source_counts':{'model':sum(row['attempt_sources'].count('model') for row in audit['rows']),
                                     'filler':sum(row['attempt_sources'].count('filler') for row in audit['rows'])},
             'strict_same_runtime_export_completed':True,'strict_portable_gpu_gate':False,
             'official_score':None,'paid_usd':0,'teacher_calls':0,'correctness_scored':False}
         save('official-summary.json',summary)
-        # Competition filename lives at working root, copied only after strict export.
-        shutil.copyfile(root/'submission.json',root.parent/'submission.json')
-        shutil.copyfile(root/'official-summary.json',root.parent/'official-summary.json')
+        # Competition filename is projected only after strict generation validation.
+        published=GenerationStore(root.parent,'official',
+            {**native_manifest['bindings'],'native_manifest_digest':digest(native_manifest)})
+        publish_working_output(native_store,root.parent,challenges,summary)
         phase='terminal'
         save('terminal.json',{'run_id':plan['run_id'],'phase':phase,'outcome':'export-complete',
-            'wall_seconds':time.monotonic()-started,'worker_receipts_digest':digest(receipts),'paid_usd':0})
-        shutil.copyfile(root/'terminal.json',root.parent/'terminal.json')
+            'wall_seconds':time.monotonic()-started,'worker_receipts_digest':digest(receipts),'paid_usd':0,
+            **outcomes(True,'success',qualified)})
+        atomic_bytes(root.parent/'terminal.json',(root/'terminal.json').read_bytes())
         return summary
     except BaseException as error:
-        save('terminal.json',{'run_id':candidate['run_id'],'phase':phase,'outcome':'failed',
-            'error_type':type(error).__name__,'error_message':str(error)[:2000],
-            'wall_seconds':time.monotonic()-started,'paid_usd':0})
-        shutil.copyfile(root/'terminal.json',root.parent/'terminal.json')
+        terminal={'run_id':candidate['run_id'],'phase':phase,'outcome':'failed',
+            'primary_error':diagnostic(error,phase), 'wall_seconds':time.monotonic()-started,'paid_usd':0,
+            **outcomes(False,'failure',qualified)}
+        if published is not None:
+            try:published.verify_projection();terminal['output_valid']=True
+            except BaseException as check_error:terminal['secondary_errors']=[diagnostic(check_error,'projection-validation')]
+        terminal_attempt(terminal,lambda: save('terminal.json',terminal))
+        terminal_attempt(terminal,lambda: atomic_bytes(root.parent/'terminal.json',canonical(terminal)))
+        error.add_note('terminal diagnostics: '+json.dumps(terminal,ensure_ascii=False))
         raise
     finally:
         for process,key,end,stdout,stderr in active.values():
-            kill(process);stdout.close();stderr.close()
+            primary=sys.exception()
+            try:kill(process);stdout.close();stderr.close()
+            except BaseException as cleanup:
+                if primary is None:raise
+                primary.add_note('process cleanup secondary: '+repr(cleanup))

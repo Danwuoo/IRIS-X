@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import subprocess
 import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -42,7 +43,12 @@ def construct(profile, source_commit):
     raw = {k: old[k] for k in sorted(keys)}; raw['challenges'] = INPUT.read_bytes()
     for key, name in [('public_core', 'nvarc_public_eval.py'), ('public_runtime', 'nvarc_public_eval_runtime.py'),
                       ('public_parent', 'nvarc_public_eval_parent.py')]:
-        raw[key] = (ROOT/'tools'/name).read_bytes(); compile(raw[key], name, 'exec')
+        # Frozen legacy identities retain the pre-E01 producers. A future
+        # lifecycle runtime requires a separate inert constructor/envelope.
+        raw[key] = subprocess.run(['git', 'show',
+            '089589652f6f4f9b3d9c3d68f4b65a2dbe331641:tools/'+name],
+            cwd=ROOT, capture_output=True, check=True).stdout
+        compile(raw[key], name, 'exec')
     retained = ('model_material_digest', 'versions', 'original_peft_parameters', 'original_training_arguments',
         'native_trainer_origins', 'native_checkpoint_flags', 'source_inferred_trainable_layout',
         'original_class_ast_sha256', 'solver_cell_sha256', 'model_instance_version_id', 'dependency_script_version_id',
