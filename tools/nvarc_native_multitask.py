@@ -123,10 +123,14 @@ class EvidenceModel(SourceModel):
             if event == 'forward_reserved': details['input_ids_digest'] = digest(input_ids.tolist())
             original_emit(event, **details)
         self.emit = bound
+        search_deadline = self.generation_deadline
         try:
+            if self.active == 'verification' and getattr(self, 'verification_deadline', None) is not None:
+                self.generation_deadline = self.verification_deadline
             value = super().__call__(input_ids=input_ids, **kwargs)
         finally:
             self.emit = original_emit
+            self.generation_deadline = search_deadline
         if self.active == 'generation':
             self.emit('generation_observed', call_id=sum(self.reserved.values()),
                       last_logits=value.logits[:, -1].float().cpu().tolist())
@@ -181,7 +185,14 @@ def verifier_rows(puzzle, base, solution, loader, formatter, tokenizer):
 
 
 def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
-               adapter, *, maximum_candidates, emit):
+               adapter, *, maximum_candidates, emit, verification_schedule='interleaved'):
+    require(verification_schedule in ('interleaved', 'deferred'), 'known verification schedule required')
+    if verification_schedule == 'deferred':
+        require(type(maximum_candidates) is int and 1 <= maximum_candidates <= 64,
+                'bounded deferred processed-sequence queue required')
+        require(getattr(adapter, 'verification_deadline', None) is not None and
+                adapter.verification_deadline >= adapter.generation_deadline,
+                'shared absolute deferred verification deadline required')
     telemetry = getattr(adapter, 'telemetry', None)
     def phase(name):
         return nullcontext() if telemetry is None else telemetry.scope(name)
@@ -191,14 +202,7 @@ def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeniz
     start_tokens = dict(adapter.input_by_phase)
     completed_tokens = getattr(adapter, 'completed_input_by_phase', None)
     start_completed_tokens = None if completed_tokens is None else dict(completed_tokens)
-    try:
-        with phase('parse_dedup'):
-            return _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
-                adapter, maximum_candidates=maximum_candidates, emit=emit, phase=phase, life=life)
-    except BaseException as error:
-        if life is not None: life['termination_reason'] = 'exception:'+type(error).__name__
-        raise
-    finally:
+    def finish_accounting():
         if life is not None:
             life['forward_reservations'] = {k: adapter.reserved[k]-v for k, v in start_reserved.items()}
             life['forward_completions'] = {k: adapter.completed[k]-v for k, v in start_completed.items()}
@@ -206,18 +210,85 @@ def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeniz
             if start_completed_tokens is not None:
                 life['completed_physical_input_tokens'] = {k: adapter.completed_input_by_phase[k]-v
                                                          for k, v in start_completed_tokens.items()}
+    try:
+        with phase('parse_dedup'):
+            result = _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
+                adapter, maximum_candidates=maximum_candidates, emit=emit, phase=phase, life=life,
+                verification_schedule=verification_schedule)
+            # Bind finalized accounting into the terminal event and checkpoint;
+            # mutating telemetry after serializing the event breaks strict replay.
+            finish_accounting()
+            emit('test_terminal', result=result)
+            return result
+    except BaseException as error:
+        if life is not None: life['termination_reason'] = 'exception:'+type(error).__name__
+        raise
+    finally:
+        finish_accounting()
 
 
 def _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
-                adapter, *, maximum_candidates, emit, phase, life):
+                adapter, *, maximum_candidates, emit, phase, life, verification_schedule):
     base, puzzle, views, formatter, batches = test_views(challenges, task_id, test_index, loader, tokenizer)
     if getattr(adapter, 'per_test_limits', None) is not None:
         adapter.test_start_counts = (dict(adapter.reserved), adapter.input_tokens)
     known, votes = {}, {}
+    deferred = verification_schedule == 'deferred'
+    queue, occurrences, verification_records = {}, [], []
+    generation_stop = verification_stop = None
+    if deferred and life is not None:
+        life['counters'].update(queued=0, pending=0)
     completed = reserved = sequences = invalid = 0; stop = None; coverage = []
     emit('test_started', test_index=test_index, base_key=base,
          source_views=views.keys, source_input_digests={k: digest(tokenizer.encode(views.get(k, formatter)['input']))
                                                      for k in views.keys})
+    if deferred:
+        emit('verification_schedule', test_index=test_index, schedule='deferred',
+             maximum_processed=maximum_candidates, generation_deadline=adapter.generation_deadline,
+             verification_deadline=adapter.verification_deadline)
+
+    def verify_candidate(solution, candidate_digest):
+        verify, bindings = verifier_rows(puzzle, base, solution, loader, formatter, tokenizer)
+        scores = []; calls = []
+        observation = {'candidate_digest': candidate_digest, 'completed_views': 0,
+            'required_views': 8, 'state': 'started', 'call_ids': []}
+        verification_records.append(observation)
+        if life is not None:
+            life['counters']['verification_started'] += 1
+            life['verifications'].append(observation)
+        try:
+            with phase('verification'), adapter.scope('verification'):
+                for offset in (0, 4):
+                    adapter.verification_rows = bindings[offset:offset+4]
+                    scores += solver.calc_scores([r['input'] for r in verify[offset:offset+4]],
+                        [r['reply'] for r in verify[offset:offset+4]], tokenizer, adapter)
+                    calls.append(sum(adapter.reserved.values()))
+                    observation.update(completed_views=len(scores), call_ids=list(calls))
+                    if life is not None:
+                        stamp = time.time()
+                        life['cooperative_deadlines'].update(latest_verification_return=stamp,
+                            verification_return_after_deadline=stamp >=
+                                getattr(adapter, 'verification_deadline', adapter.generation_deadline))
+        finally:
+            adapter.verification_rows = None
+            if observation['completed_views'] < 8:
+                observation['state'] = 'partial' if observation['completed_views'] else 'unfinished'
+                if life is not None and observation['completed_views']:
+                    life['counters']['partial_verified'] += 1
+        require(len(scores) == 8 and all(math.isfinite(float(s)) and s >= 0 for s in scores),
+                'finite eight-view verification required')
+        observation['state'] = 'full'
+        if life is not None: life['counters']['full_verified'] += 1
+        return ([float(s) for s in scores], calls), observation
+
+    def vote(key, score, tokens, solution, source):
+        scores, calls = known[grid_key(solution)]
+        votes[str(len(votes))] = {'beam_score': float(score), 'score_aug': scores,
+                                 'solution': loader.np.asarray(solution)}
+        if life is not None:
+            source['voted'] = True; life['counters']['votes_ranked'] += 1
+        emit('candidate_ranked', test_index=test_index, source_view=key, source_tokens=tokens,
+             candidate_grid=solution, beam_score=float(score), score_aug=scores, verification_call_ids=calls)
     for batch_index, batch in enumerate(batches):
         if time.time() >= adapter.generation_deadline:
             stop = 'inference_deadline'; break
@@ -292,50 +363,58 @@ def _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeni
                     life['counters']['duplicate' if duplicate else 'parsed_unique'] += 1
                 emit('candidate_parsed', test_index=test_index, source_view=key, source_tokens=tokens,
                      candidate_grid=solution, beam_score=float(score), already_verified=identity in known)
+                if deferred:
+                    # Dict insertion order is the first processed occurrence FIFO,
+                    # independent of beam score and duplicate count.
+                    if identity not in queue:
+                        queue[identity] = {'solution': solution, 'first_sequence_index': sequences-1,
+                            'candidate_digest': digest(solution)}
+                        if life is not None: life['counters']['queued'] += 1
+                    occurrences.append((key, score, tokens, solution, source))
+                    continue
                 if identity not in known:
-                    verify, bindings = verifier_rows(puzzle, base, solution, loader, formatter, tokenizer)
-                    scores = []; calls = []
-                    observation = None
-                    if life is not None:
-                        life['counters']['verification_started'] += 1
-                        observation = {'candidate_digest': candidate_digest, 'completed_views': 0,
-                            'required_views': 8, 'state': 'started', 'call_ids': []}
-                        life['verifications'].append(observation)
                     try:
-                        with phase('verification'), adapter.scope('verification'):
-                            for offset in (0, 4):
-                                adapter.verification_rows = bindings[offset:offset+4]
-                                scores += solver.calc_scores([r['input'] for r in verify[offset:offset+4]],
-                                    [r['reply'] for r in verify[offset:offset+4]], tokenizer, adapter)
-                                calls.append(sum(adapter.reserved.values()))
-                                if observation is not None:
-                                    observation.update(completed_views=len(scores), call_ids=list(calls))
-                                    stamp = time.time()
-                                    life['cooperative_deadlines'].update(latest_verification_return=stamp,
-                                        verification_return_after_deadline=stamp >=
-                                            getattr(adapter, 'verification_deadline', adapter.generation_deadline))
+                        known[identity], _ = verify_candidate(solution, digest(solution))
                     except InferenceLimitReached as error:
                         stop = error.reason; break
-                    finally:
-                        adapter.verification_rows = None
-                        if observation is not None and observation['completed_views'] < 8:
-                            observation['state'] = 'partial' if observation['completed_views'] else 'unfinished'
-                            if observation['completed_views']: life['counters']['partial_verified'] += 1
-                    require(len(scores) == 8 and all(math.isfinite(float(s)) and s >= 0 for s in scores),
-                            'finite eight-view verification required')
-                    known[identity] = ([float(s) for s in scores], calls)
-                    if observation is not None:
-                        observation['state'] = 'full'; life['counters']['full_verified'] += 1
-                scores, calls = known[identity]
-                votes[str(len(votes))] = {'beam_score': float(score), 'score_aug': scores,
-                                         'solution': loader.np.asarray(solution)}
-                if life is not None:
-                    source['voted'] = True; life['counters']['votes_ranked'] += 1
-                emit('candidate_ranked', test_index=test_index, source_view=key, source_tokens=tokens,
-                     candidate_grid=solution, beam_score=float(score), score_aug=scores, verification_call_ids=calls)
+                vote(key, score, tokens, solution, source)
             if stop: break
         if not stop and record['source_dfs_deadline_observed']:stop='source_dfs_deadline'
         if stop: break
+    schedule_evidence = None
+    if deferred:
+        generation_stop = stop or 'all_source_batches_completed'
+        generation_finished = time.time()
+        verification_started = generation_finished
+        audit = []
+        for identity, item in queue.items():
+            row = {k: item[k] for k in ('candidate_digest', 'first_sequence_index')}
+            row.update(state='pending', completed_views=0, call_ids=[])
+            audit.append(row)
+            if verification_stop is not None: continue
+            # Admission uses the SAME test deadline; neither queue items nor
+            # the phase switch receive another budget. In-flight calls can overrun.
+            if time.time() >= adapter.verification_deadline:
+                verification_stop = 'inference_deadline'; continue
+            try:
+                known[identity], observation = verify_candidate(item['solution'], item['candidate_digest'])
+                row.update({k: observation[k] for k in ('state', 'completed_views', 'call_ids')})
+            except InferenceLimitReached as error:
+                verification_stop = error.reason
+                observation = verification_records[-1]
+                row.update({k: observation[k] for k in ('state', 'completed_views', 'call_ids')})
+        for key, score, tokens, solution, source in occurrences:
+            if grid_key(solution) in known: vote(key, score, tokens, solution, source)
+        if life is not None:
+            life['counters']['pending'] = sum(r['state'] == 'pending' for r in audit)
+        schedule_evidence = {'format': 'irisx/nvarc-verification-schedule-v1', 'schedule': 'deferred',
+            'fifo_policy': 'first_processed_occurrence; batch order, returned row order, beam order',
+            'maximum_processed': maximum_candidates, 'generation_deadline': adapter.generation_deadline,
+            'verification_deadline': adapter.verification_deadline,
+            'generation_finished_at': generation_finished, 'verification_started_at': verification_started,
+            'verification_finished_at': time.time(), 'generation_termination': generation_stop,
+            'verification_termination': verification_stop or 'queue_completed', 'queue': audit}
+        stop = verification_stop or stop
     with phase('ranking'):
         grids = [g.tolist() for g in decoder.score_kgmon(votes)]
     require(len(grids) == len({grid_key(g) for g in grids}) == len(known), 'original vote/ranking closure differs')
@@ -350,11 +429,11 @@ def _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeni
               'native_complete': completed == 4 and bool(grids) and stop is None,
               'search_exhaustiveness_claim': False,
               'correctness_scored': False}
+    if deferred: result['verification_schedule'] = schedule_evidence
     if life is not None:
         life['counters']['ranked'] = len(grids)
         life['termination_reason'] = result['termination_reason']
         result['telemetry'] = life
-    emit('test_terminal', result=result)
     return result
 
 

@@ -190,6 +190,10 @@ class NativeEngine:
 
 def run_one_task(engine, plan, challenges, key, output, solve_deadline, *, detailed_profiling=False):
     """One task; no optimizer/model reload reuse, retry or answer IO."""
+    if plan.get('verification_schedule','interleaved')!='interleaved':
+        require(plan.get('local_fixture') is True and plan['run_id'].startswith('stage4-e10-inert-cpu-') and
+            plan['approved'] is False and plan['kernel_execution_type']=='INERT',
+            'deferred public runtime requires a distinct inert local fixture envelope')
     output.mkdir(exist_ok=False); started = time.monotonic(); trainer = budget = before = None
     telemetry = PhaseTelemetry(detailed=detailed_profiling)
     record = {'binding': task_binding(plan, challenges, key), 'baseline_verified': False,
@@ -262,7 +266,8 @@ def run_one_task(engine, plan, challenges, key, output, solve_deadline, *, detai
             begin = time.monotonic()
             with engine.torch.inference_mode():
                 test = solve_test(challenges, key, index, engine.loader, engine.solver, engine.decoder,
-                    engine.tokenizer, adapter, maximum_candidates=64, emit=emit)
+                    engine.tokenizer, adapter, maximum_candidates=64, emit=emit,
+                    verification_schedule=plan.get('verification_schedule', 'interleaved'))
             test['candidate_evidence'] = dict(current)
             test['wall_seconds'] = time.monotonic()-begin
             test['forwards_completed'] = dict(adapter.completed)

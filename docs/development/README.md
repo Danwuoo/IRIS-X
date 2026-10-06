@@ -9,6 +9,8 @@ claims, and irreversible operations.
 
 Use these documents by purpose:
 
+- [`nvarc-verification-schedule.md`](nvarc-verification-schedule.md) describes
+  the local E10 opt-in FIFO schedule, replay gates and inert future screen;
 - [`operating-model.md`](operating-model.md) defines the daily loop and the
   routine-versus-gated boundary;
 - [`data-and-execution-policy.md`](data-and-execution-policy.md) defines secrets,

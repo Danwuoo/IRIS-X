@@ -1,0 +1,285 @@
+{
+  "accept_criteria": [
+    "calibration observation gate passed before comparative E10 work",
+    "unchanged source/reset/schema/vote/ranking and matched budgets",
+    "repeatable source-view or fully verified coverage gain; dev oracle >=2 net tests across >=1 task and nonnegative pass@2 is positive screen signal only",
+    "one final confirmation only after independent authorization/configuration freeze; CI crossing zero remains inconclusive"
+  ],
+  "bindings": {
+    "current_local_producer_sha256": null,
+    "future_runtime_package": null,
+    "historical_control_plan_sha256": "a3001cd4f8d1ddba1cc2e2515bcb4c24c1ee4887e41d40c62fcd7cf85d9668fe",
+    "implementation_base_commit": "90ea1bcd40d9e8c88fb7e849e55257704e9b3c16",
+    "partition_manifest": null,
+    "research_base_commit": "6e04ee3cfcb8ebc3a43e7cff5ac32baf808dd08f",
+    "research_manifest_sha256": "163e20334f861e2be6816f3e527ce26f68d3a1047888967916e00a0bf678a762",
+    "research_zip_sha256": "0786ce310fca2fd9ebd89df89ca84b3e74f8759b8a59c6b353dec80c97445a93",
+    "implementation_commit_to_freeze": null,
+    "research_source": "original research bytes preserved"
+  },
+  "calibration_gate_before_E10": {
+    "additional_calibration_runs": 0,
+    "failure_action": "stop without comparative candidate dispatch, no retry; remaining ceiling is not authority",
+    "first_control_tasks": 6,
+    "included_in_screen_task_runs": true,
+    "required": [
+      "complete exclusive host phase observations with explicit overlap and unknowns",
+      "reservations/completions/tokens reconcile; partial verifier never enters pool",
+      "default vote/ranking/reset/source evidence parity; record observation overhead"
+    ],
+    "status": "not measured on real runtime"
+  },
+  "changed_factor": "interleaved versus first-occurrence FIFO deferred verification schedule",
+  "confirmation": {
+    "arms": 2,
+    "counts_and_resource_budget": null,
+    "maximum_comparisons_across_stage4": 1,
+    "requires_owner_authorization": true,
+    "status": "not authorized, not independently assigned to E10",
+    "task_clusters": 96,
+    "task_runs": 192
+  },
+  "controls": {
+    "cap_includes_duplicate_and_invalid": true,
+    "detailed_profiling": false,
+    "dfs_sequence_probability_floor": 0.2,
+    "fallback": "existing separately audited filler; never model-pool credit",
+    "generation_batches": 4,
+    "generation_cutoff_seconds_from_test_start": 20,
+    "generation_views": 16,
+    "learning_rates_digest": "sha256:42e532114ebdb7cf20f9423848f051757958e40a4ac680ccc5c71c75b4d9d499",
+    "maximum_answer_tokens": 931,
+    "model": "sorokin/qwen3_4b_grids15_sft139/transformers/bfloat16/1",
+    "model_material_digest": "sha256:27de51ef22658a0cce3a9fc04fac8fc456165645e2665a82b215f72e20194b03",
+    "native_checkpoint_flags_digest": "sha256:7292347b713dcd406d92cd6ab41f31ab964252bfeb23ae0727e38e1c144f6b71",
+    "native_checkpoint_true_count": 37,
+    "parent_hard_watchdog": "identical task/session watchdog in both arms; no candidate-only test kill",
+    "peft_parameters_digest": "sha256:76e215ea96ba8123fb19208e01cebca870316a26026f89528e63a4fa85359af0",
+    "per_test_cooperative_seconds": 30,
+    "processed_sequence_cap": 64,
+    "ranking": "unchanged score_kgmon",
+    "sampler_and_augmentation": "unchanged source full 128-row epoch; generation augment(n=2,seed=2); verification hash(base_key) with startup seed 0",
+    "training_arguments_digest": "sha256:925369216c7087b7695f87f748e3a6f581f336f88c4dd5c524404e5db84c01ee",
+    "ttt_scheduler_horizon": 128,
+    "ttt_steps": 128,
+    "verification_cutoff_seconds_from_test_start": 30,
+    "verification_views": 8,
+    "vote_multiplicity": "retain every original occurrence/provenance; score reuse only"
+  },
+  "created_date": "2026-10-06",
+  "deployment_claims": "research licensing/model/rules statements not independently revalidated for deployment",
+  "format": "irisx/stage4-controlled-plan-v1",
+  "future_item": "E10",
+  "future_item_implementation": "local opt-in implemented; real quality/mechanism unmeasured",
+  "kill_criteria": [
+    "truth/source/reset/binding or quota gate failure",
+    "lost votes, changed default method, budget overrun or repeatable verified oracle/pass@2 regression",
+    "only raw-returned gain without fully verified mechanism/quality support: stop expansion as no-support or inconclusive"
+  ],
+  "new_model_calls": 0,
+  "new_provider_calls": 0,
+  "official": {
+    "new_requests": 0,
+    "private_score": null,
+    "public_score": null,
+    "reference": "56840442",
+    "root_cause": "unknown",
+    "status": "Notebook Threw Exception"
+  },
+  "owner_authorized_executions": 0,
+  "partition": {
+    "allowed_inputs": "train input/output and test input only; no test output, label, score, oracle or difficulty route",
+    "confirmation_tasks": 96,
+    "confirmation_unlock": "one frozen final configuration and one separately authorized comparison across all Stage4 searches",
+    "development_tasks": 24,
+    "freeze_before_label_access": true,
+    "qualification": "previously examined public data and unresolved checkpoint exposure; Stage4 decision isolation, never fresh holdout",
+    "seed": 20261006,
+    "selection": "proposed visible-demo strata with proportional largest-remainder quotas, then task hash within stratum",
+    "status": "draft_method_only_no_task_list_no_label_access",
+    "unit": "whole task including every actual test",
+    "proposed_strata": {
+      "demo_count": [
+        "1-2",
+        "3-4",
+        "5+"
+      ],
+      "maximum_demo_grid_area": [
+        "1-100",
+        "101-400",
+        "401+"
+      ],
+      "demo_shape_relation": [
+        "all input/output shapes equal",
+        "one uniform nonzero shape delta",
+        "mixed"
+      ]
+    },
+    "strata_inputs": "training demonstrations only; test inputs retained in full-task identity, never answers",
+    "deterministic_allocation": "24 * stratum task count / 120; floor each quota then largest fractional remainders, ties by canonical stratum tuple; no answer-derived minimum quotas",
+    "within_stratum_order": "SHA256(UTF8(seed) || NUL || canonical_visible_task_digest || NUL || task_id), ascending digest then task_id",
+    "dev_order": "merge selected whole tasks, same global task-hash order; first six are calibration tasks",
+    "freeze_manifest": "task IDs, visible full task hashes, source/file/provenance hashes, ordered input test hashes, stratum/quota/seed/method hashes; evaluator never exports strata to solver",
+    "prior_E00_method": "pure task-hash draft; strata refinement requires controller review before a future manifest freeze"
+  },
+  "plan_id": "stage4-e10-inert-screen-001",
+  "promotion": false,
+  "requires_owner_authorization": true,
+  "screen": {
+    "action_time_rules_verified": false,
+    "allocated_gpu_hours_upper_bound": 12,
+    "arms": 2,
+    "development_clusters": 24,
+    "export_seconds_reserved": 300,
+    "generation_batches_upper_bound": 1136,
+    "generation_forwards_upper_bound": 1163264,
+    "hardware": "four distinct BF16 NVIDIA L4s, four independent workers",
+    "inference_physical_input_tokens_upper_bound": 1488977920,
+    "internet": false,
+    "paid_usd_ceiling": 0,
+    "processed_sequences_upper_bound": 18176,
+    "proposed_private_kernels_maximum": 1,
+    "provider": "Kaggle private proposed only",
+    "purpose_of_bounds": "planning caps, not throughput estimates or execution permission; bind exact test/material counts in a new plan before approval",
+    "quota_factor": null,
+    "quota_hours_available": null,
+    "quota_reservation_id": null,
+    "screen_test_count": null,
+    "screen_test_count_upper_bound": 71,
+    "startup_seconds_reserved": 900,
+    "status": "not_authorized; review and freeze exact new envelope first",
+    "task_runs_maximum": 96,
+    "technical_repeats_per_arm": 2,
+    "test_runs_upper_bound": 284,
+    "training_input_tokens_upper_bound": 100663296,
+    "training_steps_upper_bound": 12288,
+    "verification_forwards_upper_bound": 36352,
+    "whole_session_seconds_maximum": 10800,
+    "source_test_count": null,
+    "task_parent_hard_seconds": null,
+    "exact_training_tokens": null,
+    "exact_training_rows_digest": null,
+    "exact_learning_rates_digest": null,
+    "exact_outbound_digest": null,
+    "workload_order_digest": null,
+    "exact_model_source_bindings": null,
+    "coupled_arm_rule": "same task, seed, rows, rates, weights, floor, views, caps, parent allocation and watchdog; only verification schedule differs",
+    "repeats_rule": "two independent same-seed technical repeats per task/arm; failures retained, no best-seed selection or automatic retry",
+    "calibration_order": "first six interleaved repeat-1 control tasks included in the 96 task-run ceiling; gate before candidate dispatch; no extra calibration runs",
+    "allocated_cost_observation": "allocated GPU count integrated over observed full session wall, including startup/final output; incomplete observed intervals report proxy and unknown financial total"
+  },
+  "selected_local_scope": "E10 finite offline scheduling implementation and tiny CPU/fake verification only",
+  "source": {
+    "challenges_digest": "sha256:93d3e1b76403937ce5424ae507a37d62a94c0d0e74c8fa01314c0e5572061d98",
+    "commit": "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+    "file_inventory_digest": "sha256:943b68555c15b5d5eff6e8a36e51eab36e76b9ddd5aebba6bb69c2c5e1c95839",
+    "provenance_sha256": "7b1c8a33ce7d82f0bcdc19dee926776fe9cf3d7e1bbef2069ff66f463b9b7913",
+    "repository": "https://github.com/arcprize/ARC-AGI-2.git",
+    "tasks": 120,
+    "tests": 167
+  },
+  "statistic": {
+    "draws": 10000,
+    "paired_task_cluster_bootstrap": "recompute sum(correct)/sum(tests) after each whole-task paired draw",
+    "primary": "test-micro pass@2 and verified pool oracle; complete actual denominator",
+    "seed": 20261006,
+    "task_macro": "separate diagnostic, never substituted for test-micro",
+    "technical_repeats": "average paired repeated observations within task; do not count as independent clusters"
+  },
+  "status": "inert_draft_not_authorized",
+  "stop_criteria": [
+    "stop at workload or session cap, including startup/load/training/guards/export/cleanup",
+    "no automatic retry, new identity, quota expansion, confirmation unlock or official submission",
+    "unknown license/source/deployment/rules/hardware/resource sufficiency must resolve before any owner execution"
+  ],
+  "timezone": "Asia/Taipei",
+  "resource_estimates": {
+    "hardware": "4×L4 24GB；四個獨立worker，無外部API",
+    "wall_hours_range": [
+      1,
+      3
+    ],
+    "gpu_hours_range": [
+      4,
+      12
+    ],
+    "host_ram_gib_range": [
+      16,
+      64
+    ],
+    "incremental_storage_gib_range": [
+      2,
+      20
+    ],
+    "currency": "USD",
+    "paid_cost_estimate_range": [
+      4,
+      16
+    ],
+    "pricing_source": "https://modal.com/pricing",
+    "price_accessed_date": "2026-10-05",
+    "estimate_kind": "planning_range_not_measurement",
+    "assumptions": [
+      "L4 reference rate USD 0.7992/GPU-hour; actual Kaggle private runtime cash may be zero but quota is finite.",
+      "All model/GPU/external operations need a new explicit authorization; these ranges are not spending permission.",
+      "Host costs, warm-up, verification, output retention and task length variation must be measured; a cap is a stopping policy, not predicted throughput."
+    ],
+    "scope": "screen_only_unless_explicitly_stated",
+    "host_ram_scope": "aggregate host RAM planning allowance, actual competition limit unknown",
+    "confirmation_if_selected": {
+      "workload": "96 tasks × selected candidate/baseline 2 arms × 1 run = 192 task-runs; technical repeats not included",
+      "wall_hours_range": [
+        2,
+        6
+      ],
+      "gpu_hours_range": [
+        8,
+        24
+      ],
+      "usd_range": [
+        8,
+        32
+      ],
+      "assumptions": "按128step歷史workload作保守區間；64step支線可能較低但未測；confirmation不含在screen表中。"
+    },
+    "screen_and_confirmation_if_selected_total": {
+      "wall_hours_range": [
+        3,
+        9
+      ],
+      "gpu_hours_range": [
+        12,
+        36
+      ],
+      "usd_range": [
+        12,
+        48
+      ]
+    },
+    "calibration_note": "24tasks×2arms×2technical repeats=96task-runs。TTT歷史training-only代理5.62GPUh、task-worker代理6.76GPUh；192task-run confirmation約2倍，暖機/retention另計。Phase timers含觀測/guard/IO成本，非純kernel time。"
+  },
+  "research_acceptance_verbatim": [
+    "機制gate：相同cooperative test budget及共同parent hard cap內completed source views或verified unique coverage有可重現增加，並保存完整vote multiplicity、reset/schema不退化。",
+    "品質screen：若oracle有>=2test且>=1task淨增、pass@2非負，記positive signal；若無足夠correct outcomes但機制改善，記inconclusive而非整體否定。",
+    "只有最終選定configuration進一次locked confirmation；報paired task-cluster CI，跨0則不能稱確立增益。"
+  ],
+  "research_kill_verbatim": [
+    "固定排程造成verified oracle或pass@2可重現下降、超資源、丟votes、truth/reset失敗，拒收此配置。",
+    "若只有raw candidates增加而verified coverage/oracle沒有訊號，停止擴大並標no-support/inconclusive；不追加未批准算力。"
+  ],
+  "local_validation_claims": {
+    "fake_clock": "admission/mechanism only; cannot establish GPU gain or kernel preemption",
+    "tiny_CPU": "source semantics, NLL/DFS transcript replay and matched synthetic 128-step epoch only; no real SFT139 benchmark",
+    "real_execution": "never run; mechanism/quality gate pending",
+    "paid_permission": false,
+    "provider_permission": false
+  },
+  "remaining_freeze_fields": [
+    "exact canonical visible source/task manifest and all actual tests",
+    "row/token/LR/model/code/outbound hashes and technical repeat order",
+    "common task/session parent hardcaps and resources/quota/session sufficiency",
+    "action-time rules, source/model license and checkpoint exposure review",
+    "separate owner real screen authorization; no existing saved identity reuse",
+    "one final chosen configuration and separately authorized public development confirmation budget"
+  ]
+}

@@ -193,6 +193,18 @@ def sha(path):
 
 def validate_plan(plan, challenges, *, allow_fixture=False):
     counts = challenge_counts(challenges)
+    schedule=plan.get('verification_schedule','interleaved')
+    require(schedule in ('interleaved','deferred'),'known public verification schedule required')
+    inert_fixture=allow_fixture and plan.get('local_fixture') is True and bool(
+        re.fullmatch(r'stage4-e10-inert-cpu-[a-z0-9-]+',plan['run_id']))
+    if inert_fixture:
+        require(plan['format']==FORMAT and plan['profile'] in RUNS and plan['approved'] is False and
+            plan['agent_execution_authorized'] is False and plan['kernel_execution_type']=='INERT' and
+            plan['maximum_paid_usd']==plan['maximum_teacher_calls']==0 and plan['per_test_seconds']==30 and
+            plan['challenges_digest']==digest(challenges) and plan['task_counts']==counts and
+            set(plan['task_materials'])==set(counts), 'closed offline inert CPU fixture required')
+        return counts
+    require(schedule=='interleaved','historical public identities cannot acquire deferred bytes')
     require(plan['format'] == FORMAT and plan['profile'] in RUNS and
         plan['run_id'] == RUNS[plan['profile']], 'exact public profile/run required')
     require(plan['approved'] is True and plan['owner_editor_only'] is True and
@@ -241,6 +253,22 @@ def validate_record(plan, challenges, record):
     require(record['binding'] == task_binding(plan, challenges, key), 'foreign task/profile checkpoint')
     require(len(record['tests']) == len(challenges[key]['test']), 'all task tests required')
     for index, test in enumerate(record['tests']):
+        proof=test.get('verification_schedule')
+        if proof is not None:
+            require(plan.get('verification_schedule')=='deferred','unplanned public schedule evidence')
+            life=test.get('telemetry',{});queue=proof['queue'];c=life['counters']
+            full={r['candidate_digest'] for r in queue if r['state']=='full'}
+            require(proof['format']=='irisx/nvarc-verification-schedule-v1' and proof['schedule']=='deferred' and
+                len(queue)==len({r['candidate_digest'] for r in queue})==c['queued']==c['parsed_unique'] and
+                full=={digest(g) for g in test['ranked_grids']} and c['full_verified']==len(full) and
+                c['ranked']==len(full) and c['processed']<=proof['maximum_processed']<=64 and
+                c['votes_ranked']==sum(r['voted'] for r in life['sequences']) and
+                all(r['voted'] is (r['candidate_digest'] in full) for r in life['sequences']),
+                'public deferred full-pool/vote closure differs')
+        elif plan.get('verification_schedule')=='deferred':
+            require(not test['ranked_grids'] and test['status'] in
+                {'not_executed','budget_stop','timeout','oom','failed','interrupted_pending'},
+                'completed deferred test requires schedule evidence')
         require(type(test['test_index']) is int and test['test_index'] == index and test['attempts'] == test['ranked_grids'][:2] and
             test['missing_attempts'] == max(0, 2-len(test['attempts'])), 'ordered complete test binding differs')
         pool = [legal_grid(g) for g in test['ranked_grids']]

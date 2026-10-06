@@ -81,6 +81,10 @@ class MultiTaskTests(unittest.TestCase):
             adapter=runtime.EvidenceModel(cls.model,torch,events.emit,forward_limits=spec['inference_forward_limits'],
                 input_token_limit=spec['maximum_inference_input_tokens'],generation_deadline=time.time()+60,
                 per_test_limits=spec['per_test_limits'])
+            if 'verification_schedule' in spec:
+                started=time.time();adapter.generation_deadline=started+20;adapter.verification_deadline=started+30
+                from tools.nvarc_public_eval import PhaseTelemetry
+                adapter.telemetry=PhaseTelemetry()
             checkpoint_value=None
             def checkpoint(tests):
                 nonlocal checkpoint_value
@@ -116,7 +120,8 @@ class MultiTaskTests(unittest.TestCase):
                     active_solver=SimpleNamespace(inference_turbo_dfs=scripted,calc_scores=cls.solver.calc_scores,
                         turbo_dfs=cls.solver.turbo_dfs)
                 return runtime.solve_test(cls.challenges,task_id,i,cls.loader,active_solver,cls.decoder,cls.tokenizer,adapter,
-                    maximum_candidates=64,emit=events.emit)
+                    maximum_candidates=64,emit=events.emit,
+                    verification_schedule=spec.get('verification_schedule','interleaved'))
             tests,failure=runtime.run_task_tests(cls.challenges,task_id,solve,checkpoint)
             logs=[json.loads(line) for line in (directory/'events.jsonl').read_bytes().splitlines()]
             output.append({'task_id':task_id,'binding':binding,'checkpoint':checkpoint_value,'events':logs,
@@ -146,6 +151,52 @@ class MultiTaskTests(unittest.TestCase):
         self.assertEqual(len(submission['a']),2)
         self.assertTrue(all(s in {'tiny_cpu_model','filler'} for r in audit['rows'] for s in r['attempt_sources']))
         self.assertFalse(audit['digest_is_execution_attestation'])
+
+    def test_e10_real_tiny_deferred_strict_replay_multiplicity_and_rehashed_negatives(self):
+        baseline_submission=self.export()[0]
+        plan=copy.deepcopy(self.plan);plan['run_id']='stage4-e10-inert-cpu-native-deferred'
+        for spec in plan['task_specs'].values():spec['verification_schedule']='deferred'
+        with patch.object(type(self),'plan',plan):
+            evidence,results=self.produce()
+            submission,audit=self.export(evidence)
+            self.assertEqual(submission,baseline_submission)
+            self.assertEqual((audit['task_count'],audit['test_output_count']),(2,3))
+            self.assertTrue(all(t['verification_schedule']['verification_termination']=='queue_completed'
+                for task in results for t in task))
+            directory=os.environ.get('IRIS_E10_EVIDENCE_DIR')
+            if directory:
+                path=Path(directory);path.mkdir(parents=True,exist_ok=True)
+                (path/'native-tiny-strict.json').write_bytes(runtime.canonical(
+                    {'kind':'tiny CPU; no GPU/native provenance qualification','plan':plan,
+                     'synthetic_challenges':self.challenges,'evidence':evidence,'audit':audit}))
+            for mode in ('fifo','votes','partial','tokens','unplanned','deadline','truth','telemetry'):
+                changed=copy.deepcopy(evidence);data=changed[0]
+                terminal=next(e for e in data['events'] if e['event']=='test_terminal')
+                result=terminal['result'];q=result['verification_schedule']['queue']
+                if mode=='fifo':q[0]['first_sequence_index']+=1
+                if mode=='partial':q[0].update(state='partial',completed_views=4,call_ids=q[0]['call_ids'][:1])
+                if mode=='deadline':result['verification_schedule']['verification_deadline']+=30
+                if mode=='truth':result['verification_schedule']['answer_key']=[[0]]
+                if mode=='telemetry':result['telemetry']['counters']['votes_ranked']-=1
+                if mode in ('fifo','partial','deadline','truth','telemetry'):
+                    data['checkpoint']['tests'][0]=copy.deepcopy(result)
+                if mode=='votes':
+                    ranked=next(e for e in data['events'] if e['event']=='candidate_ranked')
+                    ranked['source_view']='a_0.foreign'
+                if mode=='tokens':
+                    row=next(e for e in data['events'] if e['event']=='verification_observed')['rows'][0]
+                    row['answer_ids'][0]=9
+                self.rechain(data)
+                bad_plan=plan
+                if mode=='unplanned':
+                    bad_plan=copy.deepcopy(plan)
+                    for spec in bad_plan['task_specs'].values():spec.pop('verification_schedule')
+                    for d in changed:
+                        binding=bridge.task_binding(bad_plan,self.challenges,d['task_id'])
+                        d['binding']=binding;d['checkpoint']['binding']=binding
+                        for e in d['events']:e.update(binding)
+                        self.rechain(d)
+                with self.subTest(mode=mode),self.assertRaises(RuntimeError):self.export(changed,bad_plan)
 
     def test_multi_test_source_ids_preserve_one_not_fake_zero(self):
         starts=[e for e in self.evidence[0]['events'] if e['event']=='test_started']

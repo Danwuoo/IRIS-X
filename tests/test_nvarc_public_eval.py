@@ -278,6 +278,69 @@ class PublicTinySourceTests(unittest.TestCase):
             self.assertTrue(all(len(p['rows']) == 8 for t in rec['tests'] for p in t['candidate_evidence'].values()))
             self.assertEqual(rec['training_steps'], 0); self.assertEqual(engine.inventory(), engine.baseline)
 
+    def test_e10_inert_tiny_128_epoch_arm_parity_reset_and_transaction_recovery(self):
+        plan,data=fixture('TTT128-30');plan['native_source_learning_rates']=self.plan['native_source_learning_rates']
+        for key in data:
+            material=runtime.public_training_material(self.loader,self.tokenizer,key,data[key])
+            plan['task_materials'][key].update(rows_digest=digest(material['rows']),texts_digest=digest(material['texts']))
+        real_budget=self.budget_module.EpochBudget
+        def budget_factory(*a,**kwargs):
+            kwargs.update(expected_parameters=sum(p.numel() for p in a[1].parameters()),expected_dtype='torch.float32')
+            return real_budget(*a,**kwargs)
+        modules={'nvarc_native_ttt_budget':SimpleNamespace(EpochBudget=budget_factory),
+            'nvarc_native_ttt_schedule':SimpleNamespace(native_schedule=lambda *a:
+                (plan['native_source_learning_rates'],{'fixture':'tiny-cpu'}))}
+        results=[]
+        with fixture_modules(modules),patch.object(torch.cuda,'synchronize',lambda:None),tempfile.TemporaryDirectory() as tmp:
+            for schedule in ('interleaved','deferred'):
+                current=copy.deepcopy(plan)
+                current.update(run_id='stage4-e10-inert-cpu-public-'+schedule,approved=False,
+                    kernel_execution_type='INERT',verification_schedule=schedule)
+                engine=self.engine(current);directory=Path(tmp)/schedule
+                rec,retired=runtime.run_one_task(engine,current,data,'a',directory,time.time()+600)
+                self.assertFalse(retired);self.assertTrue(rec['reset_verified']);self.assertEqual(rec['training_steps'],128)
+                self.assertEqual(engine.inventory(),engine.baseline)
+                store=core.ResultStore(Path(tmp)/(schedule+'-store'),current,data,allow_fixture=True)
+                store.commit(rec);store.recover()
+                results.append(rec)
+            for left,right in zip(results[0]['tests'],results[1]['tests']):
+                self.assertEqual(left['ranked_grids'],right['ranked_grids'])
+                self.assertEqual(left['candidate_evidence'],right['candidate_evidence'])
+                self.assertEqual(left['telemetry']['sequences'],right['telemetry']['sequences'])
+            self.assertEqual(json.loads((Path(tmp)/'interleaved/training-ledger.json').read_bytes()),
+                json.loads((Path(tmp)/'deferred/training-ledger.json').read_bytes()))
+            self.assertEqual(json.loads((Path(tmp)/'interleaved/trained-inventory.json').read_bytes()),
+                json.loads((Path(tmp)/'deferred/trained-inventory.json').read_bytes()))
+            evidence_dir=os.environ.get('IRIS_E10_EVIDENCE_DIR')
+            if evidence_dir:
+                path=Path(evidence_dir);path.mkdir(parents=True,exist_ok=True)
+                (path/'public-tiny-128-parity.json').write_bytes(core.canonical(
+                    {'kind':'two matched synthetic tiny CPU 128-step epochs; no SFT139/GPU claim',
+                     'records':results,'training_ledger':json.loads((Path(tmp)/'deferred/training-ledger.json').read_bytes()),
+                     'trained_inventory':json.loads((Path(tmp)/'deferred/trained-inventory.json').read_bytes())}))
+
+    def test_e10_prior_verified_test_survives_later_model_and_reset_errors(self):
+        plan,data=fixture();plan.update(run_id='stage4-e10-inert-cpu-public-fault',approved=False,
+            kernel_execution_type='INERT',verification_schedule='deferred')
+        engine=self.engine(plan);source=engine.solver;calls=0
+        def generate(*args):
+            nonlocal calls
+            calls+=1
+            if calls==5:raise RuntimeError('synthetic later-test primary failure')
+            return source.inference_turbo_dfs(*args)
+        engine.solver=SimpleNamespace(inference_turbo_dfs=generate,turbo_dfs=source.turbo_dfs,calc_scores=source.calc_scores)
+        def reset_error():raise RuntimeError('synthetic secondary reset failure')
+        engine.restore=reset_error
+        with tempfile.TemporaryDirectory() as tmp:
+            rec,retired=runtime.run_one_task(engine,plan,data,'a',Path(tmp)/'task',time.time()+600)
+            self.assertTrue(retired);self.assertFalse(rec['reset_verified']);self.assertEqual(rec['outcome'],'failed')
+            self.assertTrue(rec['tests'][0]['ranked_grids']);self.assertFalse(rec['tests'][1]['ranked_grids'])
+            self.assertEqual([e['phase'] for e in rec['errors']],['task','reset'])
+            store=core.ResultStore(Path(tmp)/'output',plan,data,allow_fixture=True);store.commit(rec)
+            store.recover()
+            self.assertEqual(json.loads((Path(tmp)/'output/coverage.json').read_bytes())['tests'],3)
+            self.assertTrue(json.loads((Path(tmp)/'output/submission.json').read_bytes())['a'][0])
+
     def test_verification_uses_reserved_tail_with_one_shared_final_deadline(self):
         plan, _ = fixture(); engine = self.engine(plan); adapter = engine.adapter(lambda *_a, **_k: None)
         rows = [{'source_view': 'a_0.r'+str(i), 'query_ids': [14, 11, 10, 1, 15, 14, 12, 10], 'answer_ids': [2, 15]} for i in range(4)]
