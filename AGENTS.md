@@ -1,5 +1,19 @@
 # IRIS-X Repository Governance
 
+## Active Stage 4 owner handoff (2026-10-06)
+
+The owner now transfers continuing Stage 4 development to dots built-in threads
+using Astra ultra, with parallel subagents and autonomous independent validation.
+Decision 0061 and `docs/plan/2026-10-06-dots-stage4-handoff.md` govern this new
+continuation. Continue implementation, private free Kaggle GPU experiments,
+diagnosis and repair until a verified official-scoring-ready candidate exists;
+do not stop merely at a task boundary or inherit an old task's wait instruction.
+Official competition submission/scoring is the handoff endpoint, not authorized
+execution in this continuation. Paid spend remains USD 0. Preserve prior run
+identities, evidence and truth isolation. The local controller's current work
+is packaging the required ignored materials and committing/pushing the handoff;
+it does not initiate the cloud development or handle login credentials.
+
 ## Current authority and scope
 
 IRIS-X has adopted the product direction defined in

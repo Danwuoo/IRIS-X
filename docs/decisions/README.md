@@ -202,3 +202,6 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0060-save-two-public-evaluation-notebooks.md`](0060-save-two-public-evaluation-notebooks.md)
   records two owner-Editor public evaluation notebooks, one private QUICK_SAVE
   each after local debug, with separate BASE/full-TTT budgets and ZIP names.
+- [`0061-transfer-stage4-development-to-dots.md`](0061-transfer-stage4-development-to-dots.md)
+  records autonomous Astra ultra development with parallel subagents and free
+  private Kaggle GPU experiments, ending at official-scoring readiness.
