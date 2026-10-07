@@ -149,3 +149,5 @@ This directory contains only current product-era guidance.
 Pre-product documentation remains at its original paths in the cold-archive
 tag and is cataloged under [`../archive/`](../archive/README.md). It is not
 active guidance.
+
+- [Stage 4 recovery checkpoint (2026-10-07)](development/stage4-recovery-20261007.md): preservation snapshot, recovered exact E12 package and historical limitations.

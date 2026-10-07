@@ -1,3 +1,9 @@
+# Original portions/source flow: sorokin's Kaggle notebook Version10,
+# arc2-qwen3-unsloth-flash-lora-batch4-queue, Apache-2.0.
+# https://www.kaggle.com/code/sorokin/arc2-qwen3-unsloth-flash-lora-batch4-queue
+# IRIS-X adaptations: original model preparation/search within bounded public worker lifecycle.
+# See notices/NOTICE-native.txt and notices/LICENSE-Apache-2.0.txt.
+# This does not relicense independently authored portions or the entire file.
 """Persistent original-model public worker. Heavy imports occur only in worker startup."""
 from __future__ import annotations
 import argparse

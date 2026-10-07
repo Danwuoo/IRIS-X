@@ -1,3 +1,9 @@
+# Original portions/source flow: sorokin's Kaggle notebook Version10,
+# arc2-qwen3-unsloth-flash-lora-batch4-queue, Apache-2.0.
+# https://www.kaggle.com/code/sorokin/arc2-qwen3-unsloth-flash-lora-batch4-queue
+# IRIS-X adaptations: reviewed original ARC definitions and bounded cache/reset inference.
+# See notices/NOTICE-native.txt and notices/LICENSE-Apache-2.0.txt.
+# This does not relicense independently authored portions or the entire file.
 """Hash-bound native Qwen3 solve integration; no data/weight/provider acquisition.
 
 The three original code cells remain byte-frozen. Only reviewed definitions are
@@ -32,6 +38,80 @@ class InferenceLimitReached(RuntimeError):
     def __init__(self, reason):
         self.reason = reason
         super().__init__('native inference ceiling reached: ' + reason)
+
+
+class HostForwardObserver:
+    """Opt-in bounded Python observations; never inspect tensors or drive search.
+
+    Model-return timing is asynchronous host wall. The existing finite-logit
+    guard can synchronize; its completion is recorded separately. No device
+    synchronization, logit copy, token stream, EOS decision or per-call IO is
+    added. Callers retain snapshots only at their existing checkpoints.
+    """
+    def __init__(self, maximum_rows, *, clock=time.monotonic):
+        require(type(maximum_rows) is int and 1 <= maximum_rows <= 25344,
+                'bounded observer row ceiling required')
+        self.maximum_rows, self.clock = maximum_rows, clock
+        self.test_index = None
+        self.rows = []
+        self.dropped_rows = 0
+        self.prefix_lengths = {}
+        self.last_depths = {}
+
+    def begin_test(self, index):
+        require(type(index) is int and index >= 0, 'observer test index required')
+        self.test_index = index
+
+    def reserve(self, call_id, phase, shape, cached, start, end, entered):
+        if len(self.rows) >= self.maximum_rows:
+            self.dropped_rows += 1
+            return None
+        key = (self.test_index, phase)
+        depth = backtrack = None
+        if phase == 'generation':
+            if not cached:
+                self.prefix_lengths[key] = shape[1]
+                self.last_depths.pop(key, None)
+                depth, backtrack = 0, False
+            elif key in self.prefix_lengths:
+                depth = start - self.prefix_lengths[key] + 1
+                previous = self.last_depths.get(key)
+                backtrack = previous is not None and depth <= previous
+                self.last_depths[key] = depth
+        row = {'call_id':call_id, 'test_index':self.test_index, 'phase':phase,
+            'batch_shape':list(shape), 'cached':cached, 'position_start':start,
+            'position_end':end, 'batched_source_depth':depth,
+            'position_backtrack':backtrack, 'state':'reserved', 'error_type':None,
+            'host_monotonic':{'call_entered':entered, 'reservation':self.clock(),
+                'model_entered':None, 'model_returned':None, 'guard_completed':None,
+                'call_finished':None}}
+        self.rows.append(row)
+        return row
+
+    def mark(self, row, stage):
+        if row is None: return
+        require(stage in ('model_entered','model_returned','guard_completed'),
+                'known observer host stage required')
+        row['host_monotonic'][stage] = self.clock()
+
+    def finish(self, row, error=None):
+        if row is None: return
+        row['host_monotonic']['call_finished'] = self.clock()
+        row['state'] = 'complete' if error is None else 'failed'
+        row['error_type'] = None if error is None else type(error).__name__
+
+    def snapshot(self):
+        return {'format':'irisx/native-forward-host-observer-v1',
+            'clock':'time.monotonic host wall seconds', 'maximum_rows':self.maximum_rows,
+            'timing_boundary':'SourceModel only; excludes later verifier NLL readback and subclass receipts',
+            'observed_rows':len(self.rows), 'added_device_synchronizations':0,
+            'truncated':bool(self.dropped_rows), 'dropped_rows':self.dropped_rows,
+            'added_tensor_readbacks':0, 'per_forward_file_writes':0,
+            'gpu_kernel_timing_attestation':False, 'correctness_scored':False,
+            'eos_eligibility_observed':False, 'cumulative_dfs_scores_observed':False,
+            'batched_depth_policy':'positions relative to most recent generation prefill; not per-view alive beams',
+            'rows':[dict(row, batch_shape=list(row['batch_shape']),
+                host_monotonic=dict(row['host_monotonic'])) for row in self.rows]}
 
 
 def discard_optimizer_state(model, trainer, budget):
@@ -138,7 +218,7 @@ class SourceModel:
     changes the interface only, retaining the exact logits and cache objects.
     """
     def __init__(self, model, torch, emit, *, forward_limits, input_token_limit,
-                 generation_deadline, context_tokens=8192):
+                 generation_deadline, context_tokens=8192, forward_observer=None):
         self.model, self.torch, self.emit = model, torch, emit
         self.device = model.device
         self.forward_limits = dict(forward_limits)
@@ -158,6 +238,9 @@ class SourceModel:
                 type(generation_deadline) in (int, float) and math.isfinite(generation_deadline),
                 'finite context/deadline required')
         self.generation_deadline = generation_deadline
+        require(forward_observer is None or isinstance(forward_observer, HostForwardObserver),
+                'optional host-only forward observer required')
+        self.forward_observer = forward_observer
         self.active = None
 
     def profile(self, name):
@@ -173,6 +256,8 @@ class SourceModel:
             self.active = None
 
     def __call__(self, *, input_ids, **kwargs):
+        observer = self.forward_observer
+        entered = None if observer is None else observer.clock()
         phase = self.active
         require(phase in self.reserved, 'unreserved native model entry')
         shape = list(input_ids.shape)
@@ -210,25 +295,35 @@ class SourceModel:
         self.input_tokens += tokens
         self.input_by_phase[phase] += tokens
         call_id = sum(self.reserved.values())
-        self.emit('forward_reserved', call_id=call_id, phase=phase, batch_shape=shape,
-                  physical_input_tokens=tokens, cached=cached,
-                  position_start=values[0][0], position_end=values[0][-1])
-        with self.profile('model_entry_host_wall'):
-            output = self.model(input_ids=input_ids, **kwargs)
-        if isinstance(output, tuple):
-            require(len(output) >= (2 if kwargs['use_cache'] else 1), 'native tuple must contain requested outputs')
-            logits, cache = output[0], output[1] if len(output) >= 2 else None
-            contract = 'tuple-logits-cache'
-        else:
-            logits, cache = output.logits, getattr(output, 'past_key_values', None)
-            contract = 'model-output-logits-cache'
-        with self.profile('finite_logits_guard'):
-            require(list(logits.shape) == [shape[0], shape[1], 16] and
-                    bool(self.torch.isfinite(logits).all().item()), 'finite exact sixteen-row native logits required')
-        require(kwargs['use_cache'] is False or cache is not None, 'native cache result missing')
-        self.completed[phase] += 1
-        self.completed_input_by_phase[phase] += tokens
-        self.emit('forward_completed', call_id=call_id, phase=phase, output_contract=contract)
+        observation = None if observer is None else observer.reserve(
+            call_id, phase, shape, cached, values[0][0], values[0][-1], entered)
+        try:
+            self.emit('forward_reserved', call_id=call_id, phase=phase, batch_shape=shape,
+                      physical_input_tokens=tokens, cached=cached,
+                      position_start=values[0][0], position_end=values[0][-1])
+            if observer is not None: observer.mark(observation, 'model_entered')
+            with self.profile('model_entry_host_wall'):
+                output = self.model(input_ids=input_ids, **kwargs)
+            if observer is not None: observer.mark(observation, 'model_returned')
+            if isinstance(output, tuple):
+                require(len(output) >= (2 if kwargs['use_cache'] else 1), 'native tuple must contain requested outputs')
+                logits, cache = output[0], output[1] if len(output) >= 2 else None
+                contract = 'tuple-logits-cache'
+            else:
+                logits, cache = output.logits, getattr(output, 'past_key_values', None)
+                contract = 'model-output-logits-cache'
+            with self.profile('finite_logits_guard'):
+                require(list(logits.shape) == [shape[0], shape[1], 16] and
+                        bool(self.torch.isfinite(logits).all().item()), 'finite exact sixteen-row native logits required')
+            if observer is not None: observer.mark(observation, 'guard_completed')
+            require(kwargs['use_cache'] is False or cache is not None, 'native cache result missing')
+            self.completed[phase] += 1
+            self.completed_input_by_phase[phase] += tokens
+            self.emit('forward_completed', call_id=call_id, phase=phase, output_contract=contract)
+        except BaseException as error:
+            if observer is not None: observer.finish(observation, error)
+            raise
+        if observer is not None: observer.finish(observation)
         return SimpleNamespace(logits=logits, past_key_values=cache)
 
 

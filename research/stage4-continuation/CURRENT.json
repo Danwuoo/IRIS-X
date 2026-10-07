@@ -1,0 +1,44 @@
+{
+  "base_commit": "aa2107164b8911c267743210ff3557b4f73ed0dc",
+  "confirmation_scored": false,
+  "current_authority": "Owner requests continued private USD-0 development, active waiting for admitted runs, Quick Save then rest if quota insufficient, and commit/push preservation on a dedicated branch; no official competition submission.",
+  "current_phase": "Recovered exact inert E12 package after filesystem rollback; preserving recovery snapshot; Kaggle authentication unavailable",
+  "format": "irisx/stage4-current-development-state-v1",
+  "goal": {
+    "completed": false,
+    "objective": "ARC-AGI-2 official Kaggle score strictly greater than 85",
+    "observed_official_score": null,
+    "official_scoring_ready": false,
+    "official_submission_authorized": false,
+    "storage": "repository record only; no dedicated system Goal claimed"
+  },
+  "historical_state": {
+    "authority": "Historical evidence only. Superseded; prior version-4 no-monitor instruction is not current.",
+    "path": "research/stage4-continuation/HISTORICAL-CURRENT-cb5ea253.json",
+    "sha256": "366c4d39f170e935a0348b260a0b521067f280d8cfc3fc325d104d0d4ebc379b"
+  },
+  "latest_completed_user_result": {
+    "notebook_version": 9,
+    "original_zip_sha256": "02ba4851e7d5006b3bec27ceabf8f764ec491be20e5c624238efdd9484c069e4",
+    "run_id": "stage4-e11-probe-paired-dfs-floor-20261007-003",
+    "scope": "public development pilot; no official score, no confirmation evaluation"
+  },
+  "next": "Preserve recovery tree and surviving history. Resume Kaggle only after owner-authorized login recovery and fresh quota checks; no E12 run or version-10 save has occurred.",
+  "official_score": null,
+  "original_newer_git_history_restored": false,
+  "prepared_E12": {
+    "authentication_available": false,
+    "free_gpu_hours_last_observed": 3.1953150277777764,
+    "package_bytes_recovered": true,
+    "published": false,
+    "quota_is_current": false,
+    "quota_observed_at": "2026-10-07T15:56:57.883451Z",
+    "required_conservative_gpu_hours": 4,
+    "run_id": "stage4-e12-probe-prefix-20261007-001",
+    "run_started": false
+  },
+  "recorded_at": "2026-10-07T16:57:26.556222+00:00",
+  "recovery_report": "docs/development/stage4-recovery-20261007.md",
+  "source_provenance": "research/stage4-recovery-20261007/source-provenance.json",
+  "validation": "Current recovery validation and publication receipts are preserved separately. Historical full-suite results are not current pass evidence."
+}

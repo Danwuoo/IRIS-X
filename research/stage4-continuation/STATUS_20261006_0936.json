@@ -1,0 +1,139 @@
+{
+  "format": "irisx/stage4-continuation-status-v1",
+  "observed_at": "2026-10-06T09:38:22.040099+00:00",
+  "implementation_before_status_commit": "310ebf322aa686374f3d7ede4a1351c3d3dcacbb",
+  "base_commit": "aa2107164b8911c267743210ff3557b4f73ed0dc",
+  "objective": {
+    "competition": "arc-prize-2026-arc-agi-2",
+    "official_score_strictly_greater_than": 85,
+    "observed_official_score": null,
+    "achieved": false,
+    "official_submission_authorized": false
+  },
+  "input_bundle": {
+    "sha256": "6e09d337503d4c3191381997825365f93b67afbb22ef61de755bae8f7d4d4949",
+    "members_verified": 7439,
+    "files_extracted": 7440,
+    "bytes": 316896493,
+    "contains_evaluator_truth": true,
+    "safe_runtime_dataset": false,
+    "restoration": "isolated; no checkout overwrite"
+  },
+  "partition": {
+    "development_tasks": 24,
+    "development_tests": 35,
+    "confirmation_tasks": 96,
+    "confirmation_tests": 132,
+    "confirmation_scored": false,
+    "fresh_holdout": false,
+    "qualification": "previously exposed public data; Stage4 decision isolation only",
+    "partition_manifest_sha256": "85ee338fbf02c0b48d969cfc44f9b2ab355c2958f35bff1c32cfd23bef12fe39"
+  },
+  "E20": {
+    "state": "implemented; frozen configuration rejected",
+    "source_for_measured_screen": "432bb061f0362d27ecb6450a7d7ba705f4f846d1",
+    "pass_at_2": {
+      "numerator": 0,
+      "denominator": 35
+    },
+    "candidate_oracle": {
+      "numerator": 0,
+      "denominator": 35
+    },
+    "candidate_coverage": {
+      "numerator": 0,
+      "denominator": 35
+    },
+    "task_runs": 24,
+    "wall_limit_tasks": 17,
+    "literal_complete_tasks": 7,
+    "complete_task_states_each": 50000,
+    "parent_wall_seconds": 216.02972244400007,
+    "new_screen_after_repair": false,
+    "labels_or_confirmation_used_by_solver": false,
+    "aggregate_sha256": "6c2437817fe0879ccec2c07b488de3e783d4e84646dbfbd2dd7c3ba9057452ca"
+  },
+  "reliability": {
+    "accepted_branch_commit": "cdae9b997eb90aa4d72d445b271717e03f239e27",
+    "independent_process_invariants_passed": 15,
+    "additional_hardware_type_negatives_passed": 6,
+    "producer_focused_tests_passed": 71,
+    "integrated_validation_after_final_repair": "pending",
+    "windows_executed_here": false,
+    "historical_failure_cause": "unknown; original log confirms symptom but lacks branch runtime artifacts"
+  },
+  "execution_journal": {
+    "accepted_offline_commit": "5e8a0c1b4db0fad7170667cb2a348335b77f6acb",
+    "independent_tests_passed": 46,
+    "producer_tests_passed": 24,
+    "provider_transport_verified": false
+  },
+  "provider_evidence_parsers": {
+    "commit": "059204ed833057e42b879456bb073c40d30ebc0e",
+    "local_tests_passed": 15,
+    "independent_review": "pending",
+    "account_IO": false
+  },
+  "E10": {
+    "state": "runtime implementation under independent changes-required review",
+    "planned_task_runs": 96,
+    "planned_test_runs": 140,
+    "exact_training_input_tokens": 22961408,
+    "old_3h_plan": "inert resource rejection retained",
+    "new_5h_plan": "inert proposal; no quota admission",
+    "minimum_probe": {
+      "session_cap_seconds": 1800,
+      "required_hardware": "four BF16 L4s, unverified current availability",
+      "synthetic_forwards": 28,
+      "synthetic_input_tokens": 672,
+      "ttt_steps": 0,
+      "generations": 0,
+      "scientific_task_runs": 0,
+      "state": "preparation, no execution"
+    },
+    "first_six_scientific_control_calibration": "included in96run ceiling, must pass before candidate dispatch"
+  },
+  "candidate_builder": {
+    "state": "new inert builder prepared; independent review and empty-pool epoch/reset qualification repair pending",
+    "selected_candidate": null,
+    "official_scoring_ready": false,
+    "legacy_Stage3_stager_reused": false
+  },
+  "validation": {
+    "last_full_source": "5e8a0c1b4db0fad7170667cb2a348335b77f6acb",
+    "last_full_tests": 690,
+    "last_full_failures": 1,
+    "last_full_errors": 33,
+    "last_full_skipped": 42,
+    "last_full_seconds": 41.91,
+    "last_full_pass": false,
+    "classifications": {
+      "historical_ABC_artifact_errors": 10,
+      "historical_save_authority_artifact_errors": 20,
+      "affected_native_default_export_regressions": 3,
+      "disk_reserve_environment_error": 1
+    },
+    "disk_reserve_case_rechecked_pass": true,
+    "prior_integrated_focused_tests": 159,
+    "prior_integrated_focused_skips": 1,
+    "no_gold_or_tests_deleted": true
+  },
+  "external_state": {
+    "new_Kaggle_account_calls": 0,
+    "GPU_runs": 0,
+    "paid_usd": 0,
+    "OAuth_ready": false,
+    "current_quota": null,
+    "CPU_torch_available": false,
+    "CPU_torch_installation": "proxy403 and cancelled tool review retained; not retried",
+    "local_tokenizers": "0.21.4 officialPyPIhashverified suppliedwheel; offline install only"
+  },
+  "next_required_work": [
+    "Complete independent E10 runtime fixes and integrate",
+    "Rebase and independently review candidate builder, including empty-pool training/reset provenance",
+    "Run new-identity integrated focused and full validation, with historical missing coverage explicit",
+    "After authentication/current free quota, run minimum probe before any scientific screen",
+    "Evaluate E10 then dependency-ordered finite E12/E11 branches; select only supported configuration",
+    "Freeze one final confirmation comparison and production rehearsal; stop before official submission"
+  ]
+}

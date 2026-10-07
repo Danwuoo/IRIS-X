@@ -1,0 +1,226 @@
+{
+  "format": "irisx/stage4-auth-checkpoint-v1",
+  "recorded_at": "2026-10-06T11:17:19.263547+00:00",
+  "base_commit": "aa2107164b8911c267743210ff3557b4f73ed0dc",
+  "remote_main_rechecked_at": "2026-10-06T10:56:00Z",
+  "remote_main_matches_base": true,
+  "tested_code_commit": "71b4ef70048b417b17cce2f18c3461c4a72c71d0",
+  "goal": {
+    "storage": "repository record only",
+    "objective": "ARC-AGI-2 official Kaggle score strictly greater than85",
+    "completed": false,
+    "official_scoring_ready": false
+  },
+  "state": "paused_at_auth_and_read_only_provenance_checkpoint",
+  "next_external_action": "After separately approved OAuth, bounded read-only current account/quota/dependency identity/listing; no GPU or output-byte acquisition admission yet",
+  "provider_execution": {
+    "kaggle_account_calls": 0,
+    "kernel_pushes": 0,
+    "gpu_runs": 0,
+    "model_calls": 0,
+    "paid_usd": 0,
+    "official_submissions": 0
+  },
+  "full_validation": {
+    "format": "irisx/stage4-integrated-full-suite-v1",
+    "source_commit": "71b4ef70048b417b17cce2f18c3461c4a72c71d0",
+    "started_at": "2026-10-06T11:09:04Z",
+    "recorded_at": "2026-10-06T11:10:53.508134+00:00",
+    "tests": 856,
+    "failures": 1,
+    "errors": 32,
+    "skipped": 42,
+    "unit_seconds": 70.457,
+    "exit_code": 1,
+    "all_suite_pass": false,
+    "log_sha256": "3d20fd35fd231f49c0fbe909ac02bf0710f4ffe8e1c6e54f679a403e710be49b",
+    "failure_groups": {
+      "historical_abc_artifacts": [
+        "ERROR: test_exact_package_preflight_and_save_guard (test_nvarc_abc.ABCBoundaryTests.test_exact_package_preflight_and_save_guard)",
+        "ERROR: test_fixed_material_representation_and_budgets (test_nvarc_abc.ABCBoundaryTests.test_fixed_material_representation_and_budgets)",
+        "ERROR: test_notebook_guard_accepts_exact_plan_and_rejects_rehashed_bytes_before_setup (test_nvarc_abc.ABCBoundaryTests.test_notebook_guard_accepts_exact_plan_and_rejects_rehashed_bytes_before_setup)",
+        "ERROR: test_public_shape_and_palette_fail_closed_without_truth (test_nvarc_abc.ABCBoundaryTests.test_public_shape_and_palette_fail_closed_without_truth)",
+        "ERROR: test_worker_sidecar_detection_and_exact_plan (test_nvarc_abc_002.ABCRepairTests.test_worker_sidecar_detection_and_exact_plan)",
+        "ERROR: test_control_treatments_and_total_ceiling (test_nvarc_abc_003.ABCTuningBoundaries.test_control_treatments_and_total_ceiling)",
+        "ERROR: test_003_analysis_uses_all_five_approved_arms (test_nvarc_abc_004.ABCBeamBoundaries.test_003_analysis_uses_all_five_approved_arms)",
+        "ERROR: test_exact_plan_and_quick_save_projection (test_nvarc_abc_004.ABCBeamBoundaries.test_exact_plan_and_quick_save_projection)",
+        "ERROR: test_004_predecessor_analysis_has_three_approved_arms (test_nvarc_abc_005.ABCPairedBoundaries.test_004_predecessor_analysis_has_three_approved_arms)",
+        "ERROR: test_exact_plan_and_quick_save_projection (test_nvarc_abc_005.ABCPairedBoundaries.test_exact_plan_and_quick_save_projection)"
+      ],
+      "affected_native_default_export_regression": [
+        "ERROR: setUpClass (test_nvarc_native_editor_transport.NativeEditorTransportTests)",
+        "ERROR: test_legacy_review_bytes_stay_frozen_and_new_export_proposal_is_inert (test_nvarc_native_export.NativeExportProcessTests.test_legacy_review_bytes_stay_frozen_and_new_export_proposal_is_inert)",
+        "FAIL: test_mixed_seed_parent_exports_real_tiny_cpu_evidence_in_fresh_child (test_nvarc_native_export.NativeExportProcessTests.test_mixed_seed_parent_exports_real_tiny_cpu_evidence_in_fresh_child)"
+      ],
+      "historical_save_authorization_artifact": [
+        "ERROR: test_exact_review_allows_save_with_unknown_facts_and_preserves_v3 (test_nvarc_native_save_v4.NativeSaveV4Tests.test_exact_review_allows_save_with_unknown_facts_and_preserves_v3)",
+        "ERROR: test_format_field_closure_and_unavailable_list_order_required (test_nvarc_native_save_v4.NativeSaveV4Tests.test_format_field_closure_and_unavailable_list_order_required) (change='order')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='maximum_paid_usd')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='local_resource_admission')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='private')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='internet')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='quick_save_authorized')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='maximum_quick_saves')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='agent_execution_authorized')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_clearance_ref')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='resource_information_status')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='resource_information_unavailable')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_resource_exception_ref')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_resource_exception_sha256')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='reserved_quota_hours')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='quota_observed_at')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='l4_quota_multiplier')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='quota_reservation_id')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='prior_sessions_reconciled')",
+        "ERROR: test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_editor_sessions_closed')"
+      ]
+    },
+    "counts_note": "ERROR observations include subtests; do not infer passing methods by subtraction",
+    "prior_missing_fixture_classification": ".irisx/stage4-integration-001/FULL_SUITE_SCOPE_CLASSIFICATION.json",
+    "tmpdir": "workspace-backed .irisx/stage4-integration-004/tmp",
+    "changed_gold_or_skipped_tests": false,
+    "new_provider_actions": 0
+  },
+  "four_gates": {
+    "output_valid": "synthetic/CPU lifecycle cases verified; production native output unobserved",
+    "notebook_exit": "unobserved on current GPU candidate",
+    "evidence_qualified": "offline bounded scopes only; actual native GPU qualification pending",
+    "promotion": false
+  },
+  "scientific": {
+    "dev_tasks": 24,
+    "dev_tests": 35,
+    "confirmation_tasks": 96,
+    "confirmation_tests": 132,
+    "confirmation_locked": true,
+    "fresh_holdout_claim": false,
+    "new_official_score": null,
+    "e20_configuration": "rejected",
+    "e10_gpu_outcomes": 0,
+    "protocol001": "immutable reviewed mathematics, not valid current scientific admission",
+    "enforcement_prototype": "reviewed standalone draft; protocol002/native receipt adapter/runtime binding not completed",
+    "dev_answer_reread_disclosure": "After protocol001 freeze, one unnecessary older harness rerun reread quarantined dev answers. No scoring/E10outcomes/confirmation/solver transfer; corrected receipts retained."
+  },
+  "artifacts": [
+    {
+      "name": "probe004",
+      "source_commit": "28bab3b047b1af041bea8696412de283be876776",
+      "manifest_sha256": "7c244cd5ab57032e280575b3c2532ed3206585927fa08fc933558f8cae7f5d26",
+      "approved": false
+    },
+    {
+      "name": "screen005",
+      "source_commit": "5c835b0315dc92c9dd8218766ba9af83b340a61d",
+      "manifest_sha256": "99fecfb99211c33d59349d632a94c739ba1f8c94236b46199bf5277125246cd6",
+      "approved": false
+    },
+    {
+      "name": "candidate006",
+      "source_commit": "4a2f6ff647bb825057ea94856b2e36f7d5c7e6af",
+      "manifest_sha256": "ae94a3a828fc72454e96f1df3db02a66227d891ebdece0ba82c3abbd11280e23",
+      "approved": false
+    },
+    {
+      "name": "dependency-inventory-api001",
+      "source_commit": "455eb1c060c1c36925cc428bdf2f85f740c7f698",
+      "zip_sha256": "4b54b018d90bc0938e4d8c8d8563124747501ad905f5e0e103cf50ad6b7ad737",
+      "approved": false,
+      "byte_stage_requests": 0,
+      "byte_stage_bytes": 0
+    }
+  ],
+  "resource_accounting": {
+    "allocated_gpu_hours_used": 0,
+    "total_cpu_seconds": null,
+    "total_wall_seconds": null,
+    "note": "Parallel total CPU/wall usage was not globally instrumented. Per-run measurements and caps are retained; planning estimates are not observations.",
+    "small_probe_proposed_wall_seconds": 1800,
+    "small_probe_proposed_allocated_gpu_hours": 2,
+    "small_probe_proposed_control_forwards": 28,
+    "small_probe_proposed_physical_input_tokens": 672,
+    "small_probe_scientific_task_runs": 0,
+    "full_e10_session_proposal_seconds": 18000,
+    "full_e10_barrier_reservation_seconds": 15157,
+    "full_e10_work_allowance_seconds": 15300,
+    "full_e10_actual_training_throughput_qualified": false
+  },
+  "backlog": [
+    {
+      "id": "E00",
+      "title": "接合現有 Stage 4 foundation 與量測契約",
+      "status": "offline_engineering_verified",
+      "next_gate": "Real GPU telemetry calibration remains unmeasured.",
+      "original_numeric_thresholds_changed": false
+    },
+    {
+      "id": "E01",
+      "title": "驗證官方輸出與故障隔離",
+      "status": "offline_fault_and_publication_verified",
+      "next_gate": "Full-size native replay, production recovery and notebook exit remain unmeasured; official56840442 cause unknown.",
+      "original_numeric_thresholds_changed": false
+    },
+    {
+      "id": "E10",
+      "title": "量測並分離候選生成與驗證預算",
+      "status": "offline_runtime_verified_scientific_admission_blocked",
+      "next_gate": "Auth/provenance, specific third-party execution permission, minimum probe, token/TTT calibration, protocol002/runtime/receipt integration and actual comparison remain pending.",
+      "original_numeric_thresholds_changed": false
+    },
+    {
+      "id": "E20",
+      "title": "最小物件 DSL 搜尋互補實驗",
+      "status": "rejected_frozen_configuration",
+      "next_gate": "One frozen public dev execution:24tasks35tests,0candidate coverage/oracle/pass@1/pass@2. No deeper rerun.",
+      "original_numeric_thresholds_changed": false
+    },
+    {
+      "id": "E12",
+      "title": "降低 TTT 更新數以檢驗成本效率",
+      "status": "conditional_not_admitted",
+      "next_gate": "Only after actual E10 mechanism/resource evidence and a separately frozen finite budget.",
+      "original_numeric_thresholds_changed": false
+    },
+    {
+      "id": "E11",
+      "title": "檢驗 DFS 機率門檻對完整答案的影響",
+      "status": "conditional_not_admitted",
+      "next_gate": "Only after actual E10 mechanism/resource evidence and a separately frozen finite budget.",
+      "original_numeric_thresholds_changed": false
+    },
+    {
+      "id": "E21",
+      "title": "有限本地 code LM 程式修正",
+      "status": "conditional_not_started",
+      "next_gate": "No new model search launched.",
+      "original_numeric_thresholds_changed": false
+    },
+    {
+      "id": "E22",
+      "title": "當代 open reasoner 本地部署探針",
+      "status": "conditional_not_started",
+      "next_gate": "No new model search launched.",
+      "original_numeric_thresholds_changed": false
+    },
+    {
+      "id": "E30",
+      "title": "小型神經替代分支與 ensemble gate",
+      "status": "conditional_not_started",
+      "next_gate": "No new branch or ensemble promoted.",
+      "original_numeric_thresholds_changed": false
+    },
+    {
+      "id": "E40",
+      "title": "新合成資料與專項訓練可行性",
+      "status": "conditional_not_started",
+      "next_gate": "Data/exposure/license and small evidence gates unresolved; no new training.",
+      "original_numeric_thresholds_changed": false
+    },
+    {
+      "id": "E90",
+      "title": "準備一次新的官方 hidden rerun",
+      "status": "not_ready_not_authorized",
+      "next_gate": "Official scoring is the eventual handoff endpoint, never an automatic action.",
+      "original_numeric_thresholds_changed": false
+    }
+  ]
+}

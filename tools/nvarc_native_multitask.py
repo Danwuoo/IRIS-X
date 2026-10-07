@@ -1,3 +1,9 @@
+# Original portions/source flow: sorokin's Kaggle notebook Version10,
+# arc2-qwen3-unsloth-flash-lora-batch4-queue, Apache-2.0.
+# https://www.kaggle.com/code/sorokin/arc2-qwen3-unsloth-flash-lora-batch4-queue
+# IRIS-X adaptations: original augmentation/search/ranking within bounded task lifecycle.
+# See notices/NOTICE-native.txt and notices/LICENSE-Apache-2.0.txt.
+# This does not relicense independently authored portions or the entire file.
 """Finite native multi-task producer. No provider, acquisition, or evaluator IO.
 
 Every task is a fresh process/model/Trainer; every test shares that task's epoch.
@@ -199,24 +205,51 @@ def admit_test_allocation(binding, test_index, started_epoch, session_deadline_e
 
 
 def allocation_deadlines(value, binding, test_index):
+    paired = isinstance(value,dict) and value.get('format') == 'irisx/nvarc-paired-test-allocation-v1'
+    e11 = isinstance(value,dict) and value.get('format') == 'irisx/nvarc-dfs-floor-test-allocation-v1'
+    reviewed = (120,150,30) if paired or e11 else (20,30,10)
     require(isinstance(value,dict) and set(value)=={'format','binding','test_index','started_epoch',
         'session_deadline_epoch','generation_seconds','total_seconds','verification_reserve_seconds'} and
-        value['format']=='irisx/nvarc-test-allocation-v1' and value['binding']==binding and
+        value['format'] in ('irisx/nvarc-test-allocation-v1','irisx/nvarc-paired-test-allocation-v1',
+            'irisx/nvarc-dfs-floor-test-allocation-v1') and value['binding']==binding and
         type(value['test_index']) is int and value['test_index']==test_index and
         all(type(value[k]) is int and value[k]==n for k,n in
-            (('generation_seconds',20),('total_seconds',30),('verification_reserve_seconds',10))) and
+            zip(('generation_seconds','total_seconds','verification_reserve_seconds'),reviewed)) and
         all(type(value[k]) in (int,float) and math.isfinite(value[k]) for k in
             ('started_epoch','session_deadline_epoch')) and
         value['started_epoch']<value['session_deadline_epoch'],
         'exact caller-admitted E10 test allocation required')
+    if paired:
+        require(binding.get('schedule') in ('interleaved','deferred') and
+            binding.get('experiment') == 'paired-schedule-v8' and
+            value['started_epoch']+150 <= value['session_deadline_epoch'],
+            'paired allocation requires the declared schedule and a full unclipped window')
+    if e11:
+        from tools.nvarc_e11_dfs_contract import validate_binding
+        validate_binding(binding)
+        require(value['started_epoch']+150 <= value['session_deadline_epoch'],
+            'E11 allocation requires a full unclipped window')
     final=min(value['started_epoch']+value['total_seconds'],value['session_deadline_epoch'])
     generation=max(value['started_epoch'],final-value['verification_reserve_seconds'])
     return generation,final
 
 
 def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
-               adapter, *, maximum_candidates, emit, verification_schedule='interleaved', test_allocation=None):
+               adapter, *, maximum_candidates, emit, verification_schedule='interleaved', test_allocation=None, dfs_arm=None):
     require(verification_schedule in ('interleaved', 'deferred'), 'known verification schedule required')
+    max_score = -math.log(.2)
+    if dfs_arm is not None or (isinstance(test_allocation,dict) and
+            test_allocation.get('format') == 'irisx/nvarc-dfs-floor-test-allocation-v1'):
+        from tools.nvarc_e11_dfs_contract import source_max_score
+        max_score = source_max_score(dfs_arm,test_allocation)
+        require(verification_schedule=='interleaved' and type(maximum_candidates) is int and maximum_candidates==64,
+            'E11 keeps interleaved verification and exactly 64 processed sequences')
+        binding=test_allocation['binding']
+        require(all(binding.get(k)==v for k,v in {'task_id':task_id,
+            'task_digest':digest(challenges[task_id]),'challenges_digest':digest(challenges)}.items()),
+            'E11 allocation visible task/test binding differs')
+        require((adapter.generation_deadline,getattr(adapter,'verification_deadline',None))==
+            allocation_deadlines(test_allocation,binding,test_index), 'E11 caller deadlines differ')
     if verification_schedule == 'deferred':
         require(type(maximum_candidates) is int and 1 <= maximum_candidates <= 64,
                 'bounded deferred processed-sequence queue required')
@@ -251,7 +284,7 @@ def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeniz
         with phase('parse_dedup'):
             result = _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
                 adapter, maximum_candidates=maximum_candidates, emit=emit, phase=phase, life=life,
-                verification_schedule=verification_schedule, test_allocation=test_allocation)
+                verification_schedule=verification_schedule, test_allocation=test_allocation, max_score=max_score)
             # Bind finalized accounting into the terminal event and checkpoint;
             # mutating telemetry after serializing the event breaks strict replay.
             finish_accounting()
@@ -265,7 +298,7 @@ def solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeniz
 
 
 def _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokenizer,
-                adapter, *, maximum_candidates, emit, phase, life, verification_schedule, test_allocation):
+                adapter, *, maximum_candidates, emit, phase, life, verification_schedule, test_allocation, max_score):
     base, puzzle, views, formatter, batches = test_views(challenges, task_id, test_index, loader, tokenizer)
     if getattr(adapter, 'per_test_limits', None) is not None:
         adapter.test_start_counts = (dict(adapter.reserved), adapter.input_tokens)
@@ -347,7 +380,7 @@ def _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeni
             namespace['time']=Clock
         try:
             with phase('generation'), adapter.scope('generation'):
-                result = solver.inference_turbo_dfs(adapter, prefixes, 931, -math.log(.2), adapter.generation_deadline)
+                result = solver.inference_turbo_dfs(adapter, prefixes, 931, max_score, adapter.generation_deadline)
         except InferenceLimitReached as error:
             stop = error.reason; break
         finally:
@@ -378,7 +411,7 @@ def _solve_test(challenges, task_id, test_index, loader, solver, decoder, tokeni
                     life['counters']['processed'] += 1
                 require(isinstance(tokens, list) and 1 <= len(tokens) <= 931 and tokens[-1] == 15 and
                         all(type(t) is int and t in list(range(11)) for t in tokens[:-1]) and
-                        math.isfinite(float(score)) and 0 <= float(score) < -math.log(.2),
+                        math.isfinite(float(score)) and 0 <= float(score) < max_score,
                         'original EOS/beam score contract differs')
                 if life is not None:
                     source = {'sequence_index': sequences-1, 'source_view': key,
