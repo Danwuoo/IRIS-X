@@ -1,0 +1,67 @@
+{
+  "format": "irisx/offline-host-test-fix-independent-review-v1",
+  "status": "PASS",
+  "reviewed_at_utc": "2026-10-08T12:54:00Z",
+  "baseline_local_commit": "8a1d71a2a392965344ac42e43eb180982236f81c",
+  "baseline_remote_commit": "33b820228216caecb00ab70d4b411fc1808d41a7",
+  "changed_path": "tests/test_arc_next_offline_environment.py",
+  "changed_file_sha256": "24c144d8ce4b47745142fc3ca8f60f9f415810f17f946145b9e22000bcaba642",
+  "changed_git_blob": "b697d890fefe05d25978879281e4c7a4edd6a0bb",
+  "scope_verification": {
+    "only_one_test_method_changed": true,
+    "all_other_python_ast_identical": true,
+    "only_one_worktree_path_changed": true,
+    "git_diff_check_pass": true,
+    "runtime_notebook_dataset_workflow_and_historical_fixtures_unchanged": true
+  },
+  "reason": "Old old-glibc negative branch inherited actual CI Python/OS and failed the earlier CPython3.12 Linux gate. New method establishes a valid synthetic host baseline, overrides exactly one invalid fact per subtest, checks the exact intended error and forbids resolution subprocesses.",
+  "independent_validation": {
+    "actual_cpython31214_full_module": {
+      "tests": 47,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "status": "PASS",
+      "log_sha256": "03dc3723045390994cc778ca38e73a26e5c22a8cf3596097e1a9e69b8a262fdc"
+    },
+    "actual_cpython3135_static_class": {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "status": "PASS",
+      "log_sha256": "b4cdb3cc9356a523b2ac7e6b5a61a6318da217961f30af4fc387716ed4ee103b"
+    },
+    "ambient_profiles": [
+      {
+        "ambient_profile": "CPython311Linux",
+        "test_status": "PASS",
+        "native_platform_claimed": false
+      },
+      {
+        "ambient_profile": "CPython314Linux",
+        "test_status": "PASS",
+        "native_platform_claimed": false
+      },
+      {
+        "ambient_profile": "CPython314Windows",
+        "test_status": "PASS",
+        "native_platform_claimed": false
+      },
+      {
+        "ambient_profile": "PyPy314WindowsARMMusl",
+        "test_status": "PASS",
+        "native_platform_claimed": false
+      }
+    ],
+    "previous_exact_test_reproduced_one_old_glibc_failure_under_311_profile": true,
+    "regression_log_sha256": "aa42b5fa43b26e2a2a1fdf5889dbcabe7aab5196383f9aa34a7400232c8ee12b"
+  },
+  "limitations": [
+    "No native Python3.11/3.14 or Windows execution performed locally.",
+    "Synthetic ambient profile passes do not claim native interpreter/platform validation.",
+    "Prior main CI remains failed; automatic CI on the next exact main commit must establish actual target test results.",
+    "This test-only fix does not repair or hide broader historical/environmental aggregate failures."
+  ],
+  "publication_boundary": "Only this test edit plus separately reviewed concise evidence may be added in a normal nonforce follow-up main commit; preserve 33b8202 and its CI evidence."
+}

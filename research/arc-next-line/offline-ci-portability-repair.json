@@ -1,0 +1,42 @@
+{
+  "format": "irisx/offline-ci-test-portability-repair-v1",
+  "first_main_commit": "33b820228216caecb00ab70d4b411fc1808d41a7",
+  "first_ci_run": 37778875742,
+  "first_ci_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/37778875742",
+  "first_ci_status": "completed-failure",
+  "first_ubuntu_python311": {
+    "tests": 1548,
+    "errors": 96,
+    "failures": 6,
+    "skipped": 107
+  },
+  "introduced_test_regression": "test_wrong_host_rejected_before_resolution inherited real host facts, causing an earlier CPython/Linux gate to mask its intended old-glibc rejection",
+  "repair": "Establish all valid target-host facts, prove baseline acceptance, then separately override invalid architecture, old glibc and wrong Python; require exact errors and prohibit resolution subprocesses.",
+  "production_runtime_notebook_dataset_or_workflow_changes": false,
+  "new_skips_added": false,
+  "actual_local_validation": {
+    "CPython_3_12_14": {
+      "tests": 47,
+      "status": "PASS"
+    },
+    "CPython_3_13_5_static_class": {
+      "tests": 16,
+      "status": "PASS"
+    }
+  },
+  "mocked_outer_host_profiles": [
+    "CPython3.11/Linux",
+    "CPython3.14/Linux",
+    "Python3.14/Windows with unrelated implementation/architecture/libc facts"
+  ],
+  "actual_local_3_11_or_3_14_execution": false,
+  "remaining_ci_categories_not_repaired": [
+    "missing retained historical fixtures",
+    "missing .irisx temporary parent",
+    "missing required startup hash seed",
+    "absent optional numpy/packaging in minimal CI environment"
+  ],
+  "all_green_ci_claimed": false,
+  "followup_exact_commit_ci": "Observe terminal results after normal nonforce main update; retain in final source audit.",
+  "other_jobs_cancelled_after_matrix_failure": 3
+}

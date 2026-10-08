@@ -134,15 +134,27 @@ class OfflineEnvironmentTests(unittest.TestCase):
         self.assertEqual(result["wheel_count"], 9)
 
     def test_wrong_host_rejected_before_resolution(self):
-        with mock.patch.object(offline.platform, "machine", return_value="aarch64"):
-            with self.assertRaisesRegex(offline.OfflineEnvironmentError, "CPython 3.12 Linux x86_64"):
-                self.validate()
-        with mock.patch.object(offline.platform, "libc_ver", return_value=("glibc", "2.27")):
-            with self.assertRaisesRegex(offline.OfflineEnvironmentError, "glibc"):
-                self.validate()
-        with mock.patch.object(offline.sys, "version_info", (3, 11)):
-            with self.assertRaises(offline.OfflineEnvironmentError):
-                self.validate()
+        # Each invalid-host case starts from the same complete synthetic target,
+        # rather than inheriting unrelated Python/OS facts from the CI runner.
+        with mock.patch.object(offline.platform, "python_implementation", return_value="CPython"), \
+             mock.patch.object(offline.sys, "version_info", (3, 12)), \
+             mock.patch.object(offline.platform, "system", return_value="Linux"), \
+             mock.patch.object(offline.platform, "machine", return_value="x86_64"), \
+             mock.patch.object(offline.platform, "libc_ver", return_value=("glibc", "2.28")):
+            self.assertEqual(offline._runtime()["glibc"], "2.28")
+            with mock.patch.object(offline.subprocess, "run", side_effect=AssertionError("Resolution must not start")):
+                with self.subTest(host="wrong architecture"), \
+                     mock.patch.object(offline.platform, "machine", return_value="aarch64"):
+                    with self.assertRaisesRegex(offline.OfflineEnvironmentError, r"^CPython 3\.12 Linux x86_64 runtime required$"):
+                        self.validate()
+                with self.subTest(host="old glibc"), \
+                     mock.patch.object(offline.platform, "libc_ver", return_value=("glibc", "2.27")):
+                    with self.assertRaisesRegex(offline.OfflineEnvironmentError, r"^glibc >= 2\.28 required$"):
+                        self.validate()
+                with self.subTest(host="wrong Python"), \
+                     mock.patch.object(offline.sys, "version_info", (3, 11)):
+                    with self.assertRaisesRegex(offline.OfflineEnvironmentError, r"^CPython 3\.12 Linux x86_64 runtime required$"):
+                        self.validate()
 
     def test_unpinned_and_embedded_pip_options_rejected(self):
         for line in ["tiny-leaf>=1", "--index-url https://example.invalid", "-r elsewhere.txt",
