@@ -1,0 +1,115 @@
+{
+  "binding": {
+    "expected_version": 12,
+    "format": "irisx/e13-run-transport-review-v1",
+    "kernel_id": 137327571,
+    "notebook_sha256": "afd0e5a74a5d376fd93b886e8c798d9d72ab530721a23d964e71768b382aa00b",
+    "offline_package_verified": true,
+    "package_manifest_sha256": "fbbaa55a2622e31d7ee6b0897af71b9dff6ec3112fd0cdb62f0b087e936e3820",
+    "plan_sha256": "45a833b265f85fae7de4a431aca0ecad25be47f9f08b448cb2b9a667db571981",
+    "prepared_body_sha256": "87292c08c03de395dbd1269ab87a10a8f04961547f2b16aca857912866a396fc",
+    "previous_notebook_sha256": "abb786330caef8cbe57774c36762fffbd127ccc43219de4e93d265f3adf6615c",
+    "previous_source_digest": "c6afc9b940bfb2b4882725297e0a69bf819591870a5c05bc2615353ddd557ad7",
+    "ref": "danielwuu/stage4-e10-probe-20261006-001",
+    "request_sha256": "5313358a2a5834e71c2ba03f55f4b2f2aa05452a1efbf78af5715f2bda4b841b",
+    "run_id": "stage4-e13-search-budget-20261008-001",
+    "source_digest": "6b35c6159bf1c3338121a3da60e27c50068a8a2364a5254da979f4f2b4a77e98",
+    "transport_sha256": "303b8487d3069686fa9798d063987c660063cc9ca03a70da88e0825b291ec3f6"
+  },
+  "candidate_difference": {
+    "all55_source_bytes_unchanged": true,
+    "both_journals_prepared_unsent": true,
+    "no_publication_claim": true,
+    "plan_changes": [
+      ".resource_admission.exact_scope_digest",
+      ".resource_admission.resource_snapshot.observed_at",
+      ".resource_admission.resource_snapshot_digest",
+      ".source_commit"
+    ],
+    "scientific_runtime_unchanged": true
+  },
+  "explicit_upload_permission_message": "Sentinel_a8a052f7c92881918901f01b01a11074",
+  "historical_tool_count": 268,
+  "historical_tool_mutations": 0,
+  "limitations": [
+    "CPU validation does not prove native GPU success, completion, numerical source-logit replay, quality or promotion.",
+    "Whole repository aggregate is not green:36 retained historical failure labels plus one unchanged process-timing test that failed once and passed a correctly prepared targeted rerun; causal explanation unproven."
+  ],
+  "new_gpu_calls": 0,
+  "new_model_calls": 0,
+  "new_provider_calls": 0,
+  "notebook_embedded_inventory_exact": true,
+  "offline_preflight": {
+    "agent_execution_authorized": true,
+    "gpu_probe_run": false,
+    "new_model_calls": 0,
+    "new_provider_calls": 0,
+    "offline_package_verified": true,
+    "owner_config_required": false,
+    "package_manifest_sha256": "fbbaa55a2622e31d7ee6b0897af71b9dff6ec3112fd0cdb62f0b087e936e3820",
+    "plan_digest": "sha256:45a833b265f85fae7de4a431aca0ecad25be47f9f08b448cb2b9a667db571981",
+    "publication_authorized": true,
+    "publication_mode": "RUN",
+    "run_id": "stage4-e13-search-budget-20261008-001",
+    "runtime_authorized": true
+  },
+  "payload_file_count": 78,
+  "previous_v11_notebook_exact": true,
+  "receipts_sha256": {
+    "candidate002-all-e13.log": "166b3a861c990e8a20a8b49221230cebe77b4b25383fcc0887e7634525ed39e6",
+    "candidate002-difference-review.json": "356ea5bc8a050bb319039371c154959e37ac455b6fcb390e059b724805ef5a36",
+    "candidate002-exact-binding-review.log": "befcb2c002d64c48675c5d70a2800c740e02d6f109d0ff80d3715611af1a1e37",
+    "candidate002-sdk-transport.log": "8bc32d7a0ce65b8d834ec4197788e174e0b76674d8f07806cdb24f28f31825bf",
+    "independent-final-report.json": "eef1561afe7c8ac571cf8e5e19636cd02921ca90caf510f1279ef3910e8c79e9"
+  },
+  "resource_scope": "private L4x4,Internetoff,USD0,3600seconds; fresh actual positivefree, noreserve, paidfalse checked again by publisher",
+  "reviewed_at": "2026-10-08T02:27:38.187485+00:00",
+  "safety_review": {
+    "fresh_exact_previous_source_and_positive_free_quota_required_at_send": true,
+    "independent_no_provider_model_gpu_calls": true,
+    "native_gpu_success_not_claimed": true,
+    "no_http_retries_or_redirects": true,
+    "one_send_exclusive_global_claim_before_network": true,
+    "truth_free_runtime_and_no_official_submission": true,
+    "unknown_send_freezes_identity": true
+  },
+  "scientific_scope": "one shared128 training per task;512updates;120/240generation+30verification;4tasks6tests per arm;unchanged caps,p02,views,ranker",
+  "sdk_recapture_exact": true,
+  "source_commit": "23018f6aaaba81ca7281c2893a1c4b92c45576be",
+  "source_file_count": 55,
+  "status": "PASS-scoped-E13-prelaunch-candidate002",
+  "tests": {
+    "aggregate_final": {
+      "errors": 35,
+      "failures": 2,
+      "new_failure_labels": [
+        "test_grandchildren_ignoring_term_are_killed_after_primary_exit (test_nvarc_combined.CombinedProcessTests.test_grandchildren_ignoring_term_are_killed_after_primary_exit)"
+      ],
+      "run": 1265,
+      "skipped": 47
+    },
+    "aggregate_first": {
+      "errors": 35,
+      "failures": 1,
+      "new_failure_labels": [],
+      "run": 1252,
+      "skipped": 47
+    },
+    "e13_default_interpreter": {
+      "passed": 147,
+      "run": 149,
+      "skipped": 2
+    },
+    "extra_unchanged_historical_test_targeted_rerun": {
+      "cause_proven": false,
+      "passed": 1,
+      "run": 1
+    },
+    "official_sdk_transport": {
+      "passed": 20,
+      "run": 20,
+      "skipped": 0
+    },
+    "whole_repository_green": false
+  }
+}

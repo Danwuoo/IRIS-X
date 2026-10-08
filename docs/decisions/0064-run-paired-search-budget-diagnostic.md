@@ -60,3 +60,15 @@ to the existing private recovery branch. Main remains unchanged.
 No official competition submission, hidden evaluation, paid scaling, GCP
 execution, new model or broad replacement methodology is authorized here.
 A failed diagnostic does not automatically authorize another GPU attempt.
+
+## Explicit package disclosure approval
+
+The first publication command was blocked before any provider request because
+package disclosure needed explicit confirmation. At 2026-10-08 02:22:38 UTC,
+the owner answered “同意” (message
+`Sentinel_a8a052f7c92881918901f01b01a11074`) to the exact question identifying
+the E13 code and embedded package, existing private Kaggle notebook, version
+12, one execution, Internet disabled, USD 0 and maximum 60 minutes. This
+explicitly authorizes that upload and single run. Preserve the unsent expired
+package and journal, refresh quota, independently review a new immutable binding,
+and retry the same bounded action once. No runtime/scientific scope expands.

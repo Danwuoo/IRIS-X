@@ -2,6 +2,12 @@
 
 ## Active Stage 4 owner handoff (2026-10-06)
 
+E13 run001/version12 is terminal ERROR on its inference-event byte ceiling.
+The exact output is retrieved and partial evidence verified; no matched test
+pair completed. Its one GPU run is consumed. Preserve submitted source and
+failure bytes; the current source of further authority is the latest owner
+direction, not another run under Decision 0064.
+
 Current execution follows Decision 0064: the owner authorized one distinct
 E13 120/240-second paired-search diagnostic on the same four-task/six-test
 footprint, sharing one post-TTT128 state per task. E12 run003/version11 is

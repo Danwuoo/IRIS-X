@@ -1,0 +1,74 @@
+{
+  "0/search120": {
+    "bytes": 7085359,
+    "sha256": "8727924389f928b24b1ed7602499eb70db9f07d0309ecbc654afafb98879fe0d",
+    "events": 6102,
+    "started_tests": 2,
+    "committed_tests": 2,
+    "views_started": 8,
+    "last_event": "test_committed",
+    "last_test_index": 1,
+    "reserved_forwards": 3035,
+    "completed_forwards": 3035
+  },
+  "1/search120": {
+    "bytes": 1698733,
+    "sha256": "e0a38871e753318b16074fdcec2c1a5c16cb7089b428a3086cc675b8b1dcd629",
+    "events": 1472,
+    "started_tests": 1,
+    "committed_tests": 0,
+    "views_started": 4,
+    "last_event": "forward_reserved",
+    "last_test_index": 0,
+    "reserved_forwards": 731,
+    "completed_forwards": 730
+  },
+  "1/search240": {
+    "bytes": 6108612,
+    "sha256": "4b103bf3c80c106b0149c267ffb5fdf9c86699642de9eb941765a4cce23f138f",
+    "events": 5290,
+    "started_tests": 1,
+    "committed_tests": 1,
+    "views_started": 16,
+    "last_event": "test_committed",
+    "last_test_index": 0,
+    "reserved_forwards": 2623,
+    "completed_forwards": 2623
+  },
+  "2/search120": {
+    "bytes": 3575508,
+    "sha256": "41fcb8f47c02fdb10699506bb64244995f6bfcdb9cced0480589623b145c74eb",
+    "events": 3122,
+    "started_tests": 1,
+    "committed_tests": 1,
+    "views_started": 4,
+    "last_event": "test_committed",
+    "last_test_index": 0,
+    "reserved_forwards": 1553,
+    "completed_forwards": 1553
+  },
+  "2/search240": {
+    "bytes": 5334595,
+    "sha256": "331b155a0a75f3c410ecd07cfa7f58dd52f4d2213fec5174384ba8935e96b48a",
+    "events": 4757,
+    "started_tests": 1,
+    "committed_tests": 0,
+    "views_started": 8,
+    "last_event": "forward_completed",
+    "last_test_index": 0,
+    "reserved_forwards": 2371,
+    "completed_forwards": 2371
+  },
+  "3/search240": {
+    "bytes": 8387879,
+    "sha256": "7eff0f8cbbd80c823bfe02afd5b9cd82095606e70062e04ed44d27e9f1c758ad",
+    "events": 7433,
+    "started_tests": 2,
+    "committed_tests": 1,
+    "views_started": 12,
+    "last_event": "forward_completed",
+    "last_test_index": 1,
+    "reserved_forwards": 3703,
+    "completed_forwards": 3703
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "SaveKernel_sends": 1,
+  "accepted_at": "2026-10-08T02:28:07.963886+00:00",
+  "active_monitoring": true,
+  "actual_hardware_verified": false,
+  "bindings": {
+    "notebook_sha256": "afd0e5a74a5d376fd93b886e8c798d9d72ab530721a23d964e71768b382aa00b",
+    "offline_package_verified": true,
+    "package_manifest_sha256": "fbbaa55a2622e31d7ee6b0897af71b9dff6ec3112fd0cdb62f0b087e936e3820",
+    "plan_sha256": "45a833b265f85fae7de4a431aca0ecad25be47f9f08b448cb2b9a667db571981",
+    "source_digest": "6b35c6159bf1c3338121a3da60e27c50068a8a2364a5254da979f4f2b4a77e98"
+  },
+  "disclosure_authorization_ref": "Sentinel_a8a052f7c92881918901f01b01a11074",
+  "execution_type": "SAVE_AND_RUN_ALL",
+  "format": "irisx/e13-v12-admission-summary-v1",
+  "gpu_execution_verified": false,
+  "independent_review_sha256": "fc8fbf2201e64316947306bf43c90852082abe0f6574d348f0f6615a0f2eaeb5",
+  "notebook_id": 137327571,
+  "notebook_ref": "danielwuu/stage4-e10-probe-20261006-001",
+  "official_submission_authorized": false,
+  "raw_receipt_sha256": "9f979f0ca55518cf0df3a1ad5e0d01f5f8db4087cf5b6ba24c49000b40c60244",
+  "resource_snapshot": {
+    "account": "danielwuu",
+    "duration_units": "provider charged quota seconds",
+    "format": "irisx/stage4-quota-observation-v1",
+    "observed_at": "2026-10-08T02:28:05.954808+00:00",
+    "pay_to_scale_enabled": false,
+    "permission_granted": false,
+    "primary_sha256": "902cd0bdea973ca365d9145a0d4234f471dcbc2995fafcbb4cdd9eb5dbb88e7f",
+    "provider": "kaggle",
+    "refresh_at": "2026-10-10T00:00:00+00:00",
+    "remaining_free_seconds": 6139.246100000004,
+    "reserved_seconds": 0.0,
+    "total_seconds": 108000.0,
+    "typed_projection_sha256": "4fadddeaf75a2deba8b10a7dd6b6db6f84bbc9f2770db38e196fa07bce157053",
+    "used_seconds": 101860.7539
+  },
+  "run_id": "stage4-e13-search-budget-20261008-001",
+  "source_commit": "23018f6aaaba81ca7281c2893a1c4b92c45576be",
+  "version": 12
+}
