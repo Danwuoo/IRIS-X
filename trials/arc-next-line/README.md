@@ -1,7 +1,13 @@
 # First G4 training / ARC-AGI-2 architecture notebook
 
-Status: built and independently reviewed; exact private upload approval pending.
-No accepted Kaggle notebook/version or source-readback is claimed yet.
+Status: new private QUICK_SAVE accepted and exact source read back.
+Notebook ID **137630087**, version **1**, saved on 2026-10-08.
+https://www.kaggle.com/code/danielwuu/iris-arc2-g4-agent-pilot-20261008-6deaf904
+
+The outgoing genuine SDK request proves QUICK_SAVE; SOURCE does not expose a
+provider SaveType attestation. Source is private, Internet/GPU off, output-free,
+and every manual switch remains False. No RUN or runtime/status query occurred.
+The sole save authorization is consumed; no further save or execution is implied.
 
 - Intended new private owner reference: `danielwuu/iris-arc2-g4-agent-pilot-20261008-6deaf904`
 - Exact runtime source commit: `89650beb0049273458f56e8ecb7326a03f87f967`

@@ -2,9 +2,11 @@
 
 ## 結論與第一份 notebook
 
-第一份 G4 訓練／架構實驗 notebook 已完成開發與獨立 CPU 驗收；目前等待指定私人 Kaggle 目的地的上傳確認，尚未取得 QuickSave 成功收據。訓練目標是單張 RTX PRO 6000 的 g4-standard-48，正式提交仍是離線 L4 ×4。沒有執行 GPU、開啟付費硬體或正式提交。
+第一份 G4 訓練／架構實驗 notebook 已完成開發與獨立 CPU 驗收；已在指定新的私人 Kaggle notebook 完成唯一一次 QuickSave，ID 137630087、version 1，並核對完整執行來源。訓練目標是單張 RTX PRO 6000 的 g4-standard-48，正式提交仍是離線 L4 ×4。沒有執行 GPU、開啟付費硬體或正式提交。
 
 本線最重要的問題是：相同模型與可比的總資源預算下，程式提案、示例驗證與失敗回饋，能否增加 ARC-AGI-2 正確候選與 top-2 命中？研究不因來源主要在 ARC-AGI-3 就排除它們，而是把可以移植的機制拆成可驗證的 ablation。
+
+Notebook：https://www.kaggle.com/code/danielwuu/iris-arc2-g4-agent-pilot-20261008-6deaf904
 
 ## 完成的 uncapped 結果
 

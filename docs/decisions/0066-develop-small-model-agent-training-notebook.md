@@ -72,3 +72,13 @@ AGENTS update. Local `7ac9cca0795e8d8f98f1e2cdb7bcb546fbe30b67` has that exact
 969-file recovery tree and is the non-destructive working base. Main is not
 rewritten, reset or assumed wrong. Preserve source/history and the final receipt
 on the existing private recovery branch with a non-force expected-head lease.
+
+## Sole save completed
+
+The exact private destination was approved by the owner in
+`Sentinel_3b187e8b7ba08191adead0c901a29fcd`, replying to confirmation request
+`Sentinel_02d7dffb3e548191ba0b2f38278184b9`. The one genuine QUICK_SAVE created
+private notebook 137630087/version 1. Exact executable source, empty outputs,
+Internet/GPU OFF and all default-False manual controls were read back. No RUN,
+GPU admission, runtime query, GCP provisioning or competition submission occurred.
+This save permission is consumed. Preserve the receipt and do not resend.

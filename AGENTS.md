@@ -10,6 +10,9 @@ No agent paid compute, provisioning, GPU run, credential changes, dataset/weight
 upload or official submission. Keep manual budgeted smoke/train/eval/export
 phases separate, full native vocabularies, task-group truth isolation, and all
 historical notebook/source/evidence identities unchanged.
+The sole new private QUICK_SAVE is now consumed as notebook 137630087/version 1,
+with exact source readback and all manual switches False. No further save, GPU
+run, runtime query, paid provisioning or official submission is authorized.
 
 ## Active uncapped owner notebook (2026-10-08)
 
