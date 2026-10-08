@@ -1,0 +1,84 @@
+{
+  "actual_rejected_input_ids_digest_not_retained": true,
+  "auditor_sha256": "fce0d71245c9eeda4344069b39029244bc574b70017987ae674feabb230f93cd",
+  "cap_remaining_bytes": 729,
+  "checkpoints_accounting": {
+    "generation": {
+      "completed": 3697,
+      "input_tokens_completed": 59488,
+      "input_tokens_reserved": 59492,
+      "reserved": 3698
+    },
+    "verification": {
+      "completed": 6,
+      "input_tokens_completed": 113616,
+      "input_tokens_reserved": 113616,
+      "reserved": 6
+    }
+  },
+  "controls": [
+    {
+      "completions": 6,
+      "rank": 0,
+      "reservations": 6,
+      "reserved_input_tokens": 132
+    },
+    {
+      "completions": 6,
+      "rank": 1,
+      "reservations": 6,
+      "reserved_input_tokens": 132
+    },
+    {
+      "completions": 6,
+      "rank": 2,
+      "reservations": 6,
+      "reserved_input_tokens": 132
+    },
+    {
+      "completions": 7,
+      "rank": 3,
+      "reservations": 7,
+      "reserved_input_tokens": 168
+    }
+  ],
+  "correction_changed_runtime_or_evidence": false,
+  "delivery_sha256": "0acbfa23a453450a7a78c19b7da05a8d604b0858b1e63f0b5590f3f69be26d6a",
+  "durable_reserved_and_completed_pairs": 3703,
+  "expected_serialized_event_bytes_given_observed_shape_and_fixed_length_digest": 1160,
+  "observer_rows": 3704,
+  "partial_auditor_correction": "recover_completed_tests returns None for arms with no committed tests; handled without inventing or qualifying such tests",
+  "preserved_failures": [
+    "terminal-audit-001/failure.json",
+    "partial-audit-001/failure.json"
+  ],
+  "rejected_call_observer": {
+    "batch_shape": [
+      4,
+      1
+    ],
+    "batched_source_depth": 519,
+    "cached": true,
+    "call_id": 3704,
+    "error_type": "RuntimeError",
+    "host_monotonic": {
+      "call_entered": 2261.681257911,
+      "call_finished": 2261.681457552,
+      "guard_completed": null,
+      "model_entered": null,
+      "model_returned": null,
+      "reservation": 2261.681330948
+    },
+    "phase": "generation",
+    "position_backtrack": false,
+    "position_end": 4130,
+    "position_start": 4130,
+    "state": "failed",
+    "test_index": 1
+  },
+  "report_sha256": "b337efebd0ecad84f024cd195348d0a660f675234d8647bc1e067f4e16ddea68",
+  "skipped_complete_audit_reason": "default interpreter lacked tokenizers; retained original failure; existing v11 venv then used",
+  "source_cap_violation_before_model_call": true,
+  "total_control_forwards": 25,
+  "total_control_input_tokens": 564
+}

@@ -30,11 +30,13 @@ def native_bindings(root, plan, challenges, evidence, *, test_allocations=None):
         'nvarc_native_ttt_budget.py','nvarc_native_ttt_schedule.py',
         'tools/nvarc_native_solve_runtime.py','tools/nvarc_native_multitask.py',
         'tools/nvarc_native_submission.py','tools/arc_kaggle_submission.py',
-        'tools/nvarc_native_export.py','tools/nvarc_output_lifecycle.py'}
+        'tools/nvarc_native_export.py','tools/nvarc_output_lifecycle.py',
+        'tools/nvarc_allocation_transport.py','tools/nvarc_public_eval.py','hardware_helpers.py',
+        'tools/nvarc_calibration_gate.py','tools/nvarc_source_verification.py','source-verification-prepare.json'}
     for key in challenges:
         names.update('tasks/'+key+'/native/'+name for name in (
             'events.jsonl','checkpoint.json','result.json','hardware.json','preparation.json',
-            'prepared-rows.json','training-ledger.json','baseline-inventory.json',
+            'prepared-rows.json','training-ledger.json','native-schedule.json','baseline-inventory.json',
             'trained-inventory.json','reset-inventory.json','post-reset-control.json','cache-control.json'))
     inputs={}
     for name in sorted(names):
@@ -78,8 +80,10 @@ def startup_context():
         'cpu_only':True,'new_model_calls':0,'python':sys.version.split()[0]}
 
 
-def export(root,tokenizer_path, *, test_allocations=None):
+def export(root,tokenizer_path, *, test_allocations=None, caller_admissions=None,
+           caller_admissions_sha256=None, validate_only=False, verify_committed=False, require_tasks=None):
     context=startup_context()
+    require(not verify_committed or validate_only, 'committed verification is a read-only replay option')
     plan=parse_json((root/'plan.json').read_bytes())
     require(plan['pythonhashseed']==0 and plan['approved'] is True and
         plan.get('export_verification_process')=='fresh-cpu-startup-hashseed-0' and
@@ -94,12 +98,41 @@ def export(root,tokenizer_path, *, test_allocations=None):
         def encode(self,text):return tok.encode(text).ids
         def decode(self,values):return tok.decode(values,skip_special_tokens=False)
     challenges=parse_json((root/'challenges.json').read_bytes())
+    if caller_admissions is not None or caller_admissions_sha256 is not None:
+        from tools.nvarc_allocation_transport import load_caller_receipt
+        require(test_allocations is None, 'one independent caller admission input required')
+        test_allocations=load_caller_receipt(caller_admissions,caller_admissions_sha256,plan,challenges)
+        context.update(caller_admission_receipt_sha256=caller_admissions_sha256,
+                       caller_receipt_is_gpu_timing_attestation=False)
     receipts=parse_json((root/'worker-receipts.json').read_bytes())
     initial=native_bindings(root,plan,challenges,[])['qualification_inputs_sha256']
     evidence=read_task_evidence(root,plan,challenges,receipts)
+    if caller_admissions is not None:
+        from tools.nvarc_allocation_transport import validate_caller_deadlines
+        validate_caller_deadlines(evidence,test_allocations,plan,challenges)
     require(native_bindings(root,plan,challenges,evidence)['qualification_inputs_sha256']==initial,
         'checkpoint snapshot changed during evidence read')
     bindings,values=qualified_values(root,plan,challenges,evidence,Tokens(),context,test_allocations=test_allocations)
+    if require_tasks:
+        from tools.nvarc_calibration_gate import require_task_gates
+        context['mandatory_task_gates']=require_task_gates(root,plan,challenges,evidence,Tokens(),require_tasks)
+        require(native_bindings(root,plan,challenges,evidence,test_allocations=test_allocations)==bindings,
+                'qualification inputs changed during mandatory calibration gates')
+    if caller_admissions is not None:
+        require(load_caller_receipt(caller_admissions,caller_admissions_sha256,plan,challenges)==test_allocations,
+                'caller admission receipt changed during strict replay')
+    if validate_only:
+        if verify_committed:
+            store=GenerationStore(root,'native',bindings)
+            _,bodies=store.read();store.verify_projection()
+            previous={name:parse_json(body) for name,body in bodies.items()}
+            require(all(previous[name]==value for name,value in values.items() if name!='export-process.json'),
+                    'committed native output differs from independent strict replay')
+            require({k:v for k,v in previous['export-process.json'].items() if k!='python'}==
+                    {k:v for k,v in context.items() if k!='python'},
+                    'committed native export identity differs from independent replay')
+        return {'strict_replay_validated':True,'output_published':False,
+                'committed_projection_verified':verify_committed,**context}
     store=GenerationStore(root,'native',bindings)
     if (root/'output-commit.json').exists():
         def revalidate(manifest,previous):
@@ -115,7 +148,14 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--tokenizer',type=Path,required=True)
-    args=parser.parse_args();print(json.dumps(export(args.root,args.tokenizer)))
+    parser.add_argument('--caller-admissions',type=Path)
+    parser.add_argument('--caller-admissions-sha256')
+    parser.add_argument('--validate-only',action='store_true')
+    parser.add_argument('--verify-committed',action='store_true')
+    parser.add_argument('--require-task-gates',action='append')
+    args=parser.parse_args();print(json.dumps(export(args.root,args.tokenizer,
+        caller_admissions=args.caller_admissions,caller_admissions_sha256=args.caller_admissions_sha256,
+        validate_only=args.validate_only,verify_committed=args.verify_committed,require_tasks=args.require_task_gates)))
 
 
 if __name__=='__main__':main()

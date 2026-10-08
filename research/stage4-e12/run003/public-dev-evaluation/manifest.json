@@ -1,0 +1,22 @@
+{
+  "confirmation_scored": false,
+  "contains_gold_grids": false,
+  "contains_per_test_labels": false,
+  "files": {
+    "README.md": {
+      "bytes": 3790,
+      "sha256": "83e809f92e05cadff316e46057a28ecc6eb92e495d875bd1542620d50fe74122"
+    },
+    "aggregate.json": {
+      "bytes": 4863,
+      "sha256": "58cd57ddb7eba78904c1596ba1608dfb180dc9d9d944f7d0592dbbcc47fddb55"
+    },
+    "validation.json": {
+      "bytes": 758,
+      "sha256": "6c26a43d262ab8e6d0309d40e181879d0a250aaeef7aabf87a39e99ad14bdf23"
+    }
+  },
+  "format": "irisx/e12-run003-public-dev-shareable-evidence-v1",
+  "retention": "private development evidence only; never GPU outbound or solver runtime",
+  "uploaded": false
+}

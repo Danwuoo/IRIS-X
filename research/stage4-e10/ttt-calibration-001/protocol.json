@@ -1,0 +1,118 @@
+{
+  "acceptance": [
+    "all four complete 128 forwards/backwards/updates with exact row multiset and native learning rates",
+    "finite losses and every native gradient and Adam state; exact original 528564224 BF16 trainable elements",
+    "trained inventory changes and baseline inventory plus post-reset control restore exactly; optimizer and gradients discarded",
+    "all four training intervals overlap on shared host monotonic clock",
+    "exact complete evidence ZIP and independently retained post-stop outer exit; all worker producers stopped",
+    "all declared resource/time/token/step bounds hold, with failures and incomplete reservations retained"
+  ],
+  "base_native_probe_acceptance_sha256": "d9c4c62eb8f35f371dff08342fd33164cb7cd0d121357d338f3fa26d1982596a",
+  "elimination": [
+    "source, hardware, preparation, nonfinite, cache or reset mismatch: fail closed; no retry or larger replacement under this run identity",
+    "any incomplete epoch, no four-way training overlap, missing evidence or exit failure: calibration unqualified; no full E10 admission",
+    "successful calibration permits planning inference only; no automatic E10, quality promotion or official submission"
+  ],
+  "entry_gates": [
+    "same exact model/dependency/source/config hashes as accepted native load probe",
+    "each task has exactly its unchanged 128 native source rows and masks",
+    "all four trainers prepared and six initial cache controls complete before shared training release",
+    "zero model/optimizer work allowed during preparation"
+  ],
+  "format": "irisx/stage4-four-worker-ttt-calibration-protocol-v1",
+  "limits": {
+    "ARC_scoring": false,
+    "allocated_gpu_hours_cap_from_code_wall": 4,
+    "answer_generation": false,
+    "backward_steps": 512,
+    "control_forwards": 28,
+    "control_input_tokens": 672,
+    "current_quota_observed": false,
+    "finalization_reserve_seconds": 600,
+    "generations": 0,
+    "hardware": "four distinct BF16 NVIDIA L4 devices",
+    "internet": false,
+    "manual_editor_idle_session_cap_attested": false,
+    "maximum_notebook_wall_seconds": 3600,
+    "maximum_training_seconds_per_worker": 1800,
+    "maximum_worker_seconds": 2100,
+    "metered_quota_claim": null,
+    "official_submission": false,
+    "optimizer_updates": 512,
+    "paid_usd_ceiling": 0,
+    "private": true,
+    "reset_reserve_seconds_per_worker": 180,
+    "startup_seconds": 900,
+    "supervised_tokens": 789888,
+    "teacher_calls": 0,
+    "total_forward_calls": 540,
+    "total_input_tokens": 1589664,
+    "training_forwards": 512,
+    "training_input_tokens": 1588992,
+    "workers": 4
+  },
+  "prior_publication_protocol_sha256": "5bc5f9e5f6f863e1c12244dd945c3492c471766ab9312b8d622264c97fbfd66d",
+  "publication_authorization": "User: 這次 notebook 直接提交 run，我要睡覺了明天上課，你再確定一次兩個 threads 都正常 / 提交了就不用監看",
+  "publication_mode": "one SAVE_AND_RUN_ALL after exact package/review and fresh quota; explicit 3600-second provider cap; stop at admission receipt; no monitoring",
+  "purpose": "measure simultaneous complete native task-local TTT epochs, training memory/time and exact reset before considering full E10; no ARC quality claim",
+  "reporting": [
+    "host timing includes native guards/readback/ledger overhead; not GPU-kernel timing",
+    "sum of worker RSS peaks is an upper envelope, not simultaneous total memory",
+    "charged Kaggle quota and Editor idle time are not inferred from allocated-GPU-hour proxy",
+    "historical native TTT008 single-worker 955392-token epoch timing is planning background, not this experiment result"
+  ],
+  "run_id": "stage4-e10-probe-ttt-20261006-001",
+  "selection": {
+    "candidate_count": 24,
+    "confirmation_or_holdout_read": false,
+    "data_status": "historically exposed public development tasks; not a fresh holdout",
+    "first_six_E10_screen_controls_replaced": false,
+    "rule": "descending frozen public training-input-token cost, then task ID; select first four",
+    "source_plan_sha256": "88d5c2420a13fd0c13807b8c59c0734764491620edaf256719028a41b224bc38",
+    "source_run": "stage4-e10-integrated-005 inert interleaved-r1 proposal",
+    "uses_answers_for_selection": false
+  },
+  "tasks": [
+    {
+      "maximum_sequence_tokens": 3458,
+      "rank": 0,
+      "rows_digest": "sha256:2560a6998b99c866516593acb865610aa5d5c84dab55077691334e67c2c4e7dd",
+      "source_rows": 128,
+      "supervised_tokens": 220160,
+      "task_id": "195c6913",
+      "texts_digest": "sha256:e6b63b2a13de69a5f0e3a1c9b281a6223ae9cc663a5c9cad5fecac8e32d69dc2",
+      "training_input_tokens": 442624
+    },
+    {
+      "maximum_sequence_tokens": 3198,
+      "rank": 1,
+      "rows_digest": "sha256:ab78ffab52637be202d69521f215869f0c97e23572443ac5c74e429c50b50bb2",
+      "source_rows": 128,
+      "supervised_tokens": 203008,
+      "task_id": "aa4ec2a5",
+      "texts_digest": "sha256:db95d52b5c70649959d441781bc9e617492ae88e1dedca4c12144ca201b3774d",
+      "training_input_tokens": 408320
+    },
+    {
+      "maximum_sequence_tokens": 2922,
+      "rank": 2,
+      "rows_digest": "sha256:93790369380691e105cb60a519082145b8887899cafd7c49f3e051d7a115ec1c",
+      "source_rows": 128,
+      "supervised_tokens": 185664,
+      "task_id": "a47bf94d",
+      "texts_digest": "sha256:347c168c376ce7d27fcd987f9d363de13b5b7e524434dd3664951b71d61f82ba",
+      "training_input_tokens": 373632
+    },
+    {
+      "maximum_sequence_tokens": 2868,
+      "rank": 3,
+      "rows_digest": "sha256:d94cada0e88448834e53854157477f838636b474913f007128537d020d73f7aa",
+      "source_rows": 128,
+      "supervised_tokens": 181056,
+      "task_id": "a25697e4",
+      "texts_digest": "sha256:983222c70508689ee6bf97886c7a559c98e459dbd59b73f74b3296dc514e2a5c",
+      "training_input_tokens": 364416
+    }
+  ],
+  "user_approval_ref": "Sentinel_2c3753bf2804819187acc861b75da460"
+}

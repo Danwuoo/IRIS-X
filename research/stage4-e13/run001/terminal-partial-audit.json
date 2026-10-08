@@ -1,0 +1,508 @@
+{
+  "allowed_interpretation": "Five unqualified committed checkpoints can be described/scored separately if authorized; no paired comparison or search-budget efficacy claim.",
+  "arms": [
+    {
+      "allocated_tests": [
+        0,
+        1
+      ],
+      "arm": "search120",
+      "committed_prefix_source_replayed": true,
+      "committed_tests": [
+        0,
+        1
+      ],
+      "event_count": 6102,
+      "event_counts": {
+        "candidate_parsed": 6,
+        "candidate_ranked": 6,
+        "forward_completed": 3035,
+        "forward_reserved": 3035,
+        "generation_completed": 2,
+        "generation_reserved": 2,
+        "test_allocation": 2,
+        "test_committed": 2,
+        "test_started": 2,
+        "test_terminal": 2,
+        "verification_observed": 8
+      },
+      "full_arm_qualified": false,
+      "ledger_bytes": 7085359,
+      "rank": 0,
+      "task_id": "195c6913"
+    },
+    {
+      "allocated_tests": [
+        0
+      ],
+      "arm": "search120",
+      "committed_prefix_source_replayed": false,
+      "committed_tests": [],
+      "event_count": 1472,
+      "event_counts": {
+        "candidate_parsed": 3,
+        "candidate_ranked": 2,
+        "forward_completed": 730,
+        "forward_reserved": 731,
+        "generation_completed": 1,
+        "generation_reserved": 1,
+        "test_allocation": 1,
+        "test_started": 1,
+        "verification_observed": 2
+      },
+      "full_arm_qualified": false,
+      "ledger_bytes": 1698733,
+      "rank": 1,
+      "task_id": "aa4ec2a5"
+    },
+    {
+      "allocated_tests": [
+        0
+      ],
+      "arm": "search240",
+      "committed_prefix_source_replayed": true,
+      "committed_tests": [
+        0
+      ],
+      "event_count": 5290,
+      "event_counts": {
+        "candidate_parsed": 13,
+        "candidate_ranked": 13,
+        "forward_completed": 2623,
+        "forward_reserved": 2623,
+        "generation_completed": 4,
+        "generation_reserved": 4,
+        "test_allocation": 1,
+        "test_committed": 1,
+        "test_started": 1,
+        "test_terminal": 1,
+        "verification_observed": 6
+      },
+      "full_arm_qualified": false,
+      "ledger_bytes": 6108612,
+      "rank": 1,
+      "task_id": "aa4ec2a5"
+    },
+    {
+      "allocated_tests": [
+        0
+      ],
+      "arm": "search120",
+      "committed_prefix_source_replayed": true,
+      "committed_tests": [
+        0
+      ],
+      "event_count": 3122,
+      "event_counts": {
+        "candidate_parsed": 3,
+        "candidate_ranked": 3,
+        "forward_completed": 1553,
+        "forward_reserved": 1553,
+        "generation_completed": 1,
+        "generation_reserved": 1,
+        "test_allocation": 1,
+        "test_committed": 1,
+        "test_started": 1,
+        "test_terminal": 1,
+        "verification_observed": 4
+      },
+      "full_arm_qualified": false,
+      "ledger_bytes": 3575508,
+      "rank": 2,
+      "task_id": "a47bf94d"
+    },
+    {
+      "allocated_tests": [
+        0
+      ],
+      "arm": "search240",
+      "committed_prefix_source_replayed": false,
+      "committed_tests": [],
+      "event_count": 4757,
+      "event_counts": {
+        "candidate_parsed": 3,
+        "candidate_ranked": 3,
+        "forward_completed": 2371,
+        "forward_reserved": 2371,
+        "generation_completed": 1,
+        "generation_reserved": 2,
+        "test_allocation": 1,
+        "test_started": 1,
+        "verification_observed": 4
+      },
+      "full_arm_qualified": false,
+      "ledger_bytes": 5334595,
+      "rank": 2,
+      "task_id": "a47bf94d"
+    },
+    {
+      "allocated_tests": [
+        0,
+        1
+      ],
+      "arm": "search240",
+      "committed_prefix_source_replayed": true,
+      "committed_tests": [
+        0
+      ],
+      "event_count": 7433,
+      "event_counts": {
+        "candidate_parsed": 5,
+        "candidate_ranked": 5,
+        "forward_completed": 3703,
+        "forward_reserved": 3703,
+        "generation_completed": 2,
+        "generation_reserved": 3,
+        "test_allocation": 2,
+        "test_committed": 1,
+        "test_started": 2,
+        "test_terminal": 1,
+        "verification_observed": 6
+      },
+      "full_arm_qualified": false,
+      "ledger_bytes": 8387879,
+      "rank": 3,
+      "task_id": "a25697e4"
+    }
+  ],
+  "cap_failure": {
+    "actual_rejected_event_size_not_retained": true,
+    "before_model_entry": true,
+    "failing_event": "forward_reserved",
+    "hypothetical_minimum_next_forward_reservation_bytes": 1154,
+    "ledger_bytes": 8387879,
+    "ledger_cap_bytes": 8388608,
+    "per_arm_cumulative_cap_hit": true,
+    "per_event_cap_hit": false,
+    "remaining_bytes": 729
+  },
+  "committed_output_projections_exact": true,
+  "counts": {
+    "committed_tests": 5,
+    "durable_inference_forward_completions": 14015,
+    "durable_inference_forward_reservations": 14016,
+    "durable_optimizer_updates": 512,
+    "durable_training_backwards": 512,
+    "durable_training_forwards": 512,
+    "finalized_training_reset_updates": 128,
+    "retained_attempts": 10,
+    "started_uncommitted_tests": 3,
+    "training_input_tokens": 1588992,
+    "training_supervised_tokens": 789888,
+    "unstarted_tests": 4
+  },
+  "delivery_sha256": "0acbfa23a453450a7a78c19b7da05a8d604b0858b1e63f0b5590f3f69be26d6a",
+  "envelope_finalization": {
+    "archive_binding": "verified",
+    "correctness_scored": false,
+    "evidence_kind": "post_write_result",
+    "observed_finalization_qualified": true,
+    "promotion": false,
+    "runtime_outcome": "failed",
+    "runtime_qualification": "not_assessed"
+  },
+  "gold_read": false,
+  "guard_counts": {
+    "trusted_original_ast_execution": 12
+  },
+  "limits": [
+    "512 durable training updates are corroborated, not512 fully worker-verified updates.",
+    "Three started tests are uncommitted; four never started. Uncommitted partial candidate events are not promoted.",
+    "Recorded NLL/training values checked for provenance; model logits are not recomputed."
+  ],
+  "matched_committed_pairs": [],
+  "new_gpu_calls": 0,
+  "new_model_calls": 0,
+  "new_provider_calls": 0,
+  "plan_sha256": "45a833b265f85fae7de4a431aca0ecad25be47f9f08b448cb2b9a667db571981",
+  "qualified_tests": 0,
+  "qualified_workers": 0,
+  "returned_python_executed": false,
+  "runtime_outcome": "failed",
+  "source_commit": "23018f6aaaba81ca7281c2893a1c4b92c45576be",
+  "source_replay_function_calls": {
+    "arc_decoder.py:score_kgmon": 5,
+    "arc_loader.py:convert_tokens_to_array": 27,
+    "arc_loader.py:invert_mod": 27,
+    "nvarc_e13_answer_evidence.py:verify_source_provenance": 4,
+    "nvarc_e13_runtime.py:verify_controls": 1,
+    "nvarc_e13_runtime.py:verify_training": 1,
+    "nvarc_native_multitask.py:test_views": 5,
+    "nvarc_native_multitask.py:verifier_rows": 27,
+    "nvarc_native_solve_runtime.py:load_sources": 4
+  },
+  "source_verification_prepare_required": false,
+  "status": "PARTIAL_EVIDENCE_VERIFIED_EXPERIMENT_FAILED",
+  "test_slots": [
+    {
+      "allocated": true,
+      "arm": "search120",
+      "committed": true,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 0,
+      "retained_attempts": 2,
+      "status": "partial-candidates",
+      "task_id": "195c6913",
+      "termination_reason": "source_dfs_deadline",
+      "test_index": 0
+    },
+    {
+      "allocated": true,
+      "arm": "search120",
+      "committed": true,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 0,
+      "retained_attempts": 2,
+      "status": "partial-candidates",
+      "task_id": "195c6913",
+      "termination_reason": "source_dfs_deadline",
+      "test_index": 1
+    },
+    {
+      "allocated": false,
+      "arm": "search240",
+      "committed": false,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 0,
+      "retained_attempts": 0,
+      "status": null,
+      "task_id": "195c6913",
+      "termination_reason": null,
+      "test_index": 0
+    },
+    {
+      "allocated": false,
+      "arm": "search240",
+      "committed": false,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 0,
+      "retained_attempts": 0,
+      "status": null,
+      "task_id": "195c6913",
+      "termination_reason": null,
+      "test_index": 1
+    },
+    {
+      "allocated": true,
+      "arm": "search120",
+      "committed": false,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 1,
+      "retained_attempts": 0,
+      "status": null,
+      "task_id": "aa4ec2a5",
+      "termination_reason": null,
+      "test_index": 0
+    },
+    {
+      "allocated": true,
+      "arm": "search240",
+      "committed": true,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 1,
+      "retained_attempts": 2,
+      "status": "partial-candidates",
+      "task_id": "aa4ec2a5",
+      "termination_reason": "source_dfs_deadline",
+      "test_index": 0
+    },
+    {
+      "allocated": true,
+      "arm": "search120",
+      "committed": true,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 2,
+      "retained_attempts": 2,
+      "status": "partial-candidates",
+      "task_id": "a47bf94d",
+      "termination_reason": "source_dfs_deadline",
+      "test_index": 0
+    },
+    {
+      "allocated": true,
+      "arm": "search240",
+      "committed": false,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 2,
+      "retained_attempts": 0,
+      "status": null,
+      "task_id": "a47bf94d",
+      "termination_reason": null,
+      "test_index": 0
+    },
+    {
+      "allocated": false,
+      "arm": "search120",
+      "committed": false,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 3,
+      "retained_attempts": 0,
+      "status": null,
+      "task_id": "a25697e4",
+      "termination_reason": null,
+      "test_index": 0
+    },
+    {
+      "allocated": false,
+      "arm": "search120",
+      "committed": false,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 3,
+      "retained_attempts": 0,
+      "status": null,
+      "task_id": "a25697e4",
+      "termination_reason": null,
+      "test_index": 1
+    },
+    {
+      "allocated": true,
+      "arm": "search240",
+      "committed": true,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 3,
+      "retained_attempts": 2,
+      "status": "partial-candidates",
+      "task_id": "a25697e4",
+      "termination_reason": "source_dfs_deadline",
+      "test_index": 0
+    },
+    {
+      "allocated": true,
+      "arm": "search240",
+      "committed": false,
+      "model_quality_scored": false,
+      "output_qualified": false,
+      "rank": 3,
+      "retained_attempts": 0,
+      "status": null,
+      "task_id": "a25697e4",
+      "termination_reason": null,
+      "test_index": 1
+    }
+  ],
+  "workers": [
+    {
+      "durable_updates": 128,
+      "final_result_present": false,
+      "full_worker_verified": false,
+      "rank": 0,
+      "task_id": "195c6913",
+      "trace_complete": false,
+      "training_receipt": {
+        "baseline_restored": false,
+        "binding": {
+          "model_material_digest": "sha256:27de51ef22658a0cce3a9fc04fac8fc456165645e2665a82b215f72e20194b03",
+          "plan_digest": "sha256:45a833b265f85fae7de4a431aca0ecad25be47f9f08b448cb2b9a667db571981",
+          "probe_id": "stage4-e13-search-budget-20261008-001",
+          "rank": 0,
+          "task_id": "195c6913"
+        },
+        "completed_updates": 0,
+        "errors": [],
+        "finished_monotonic": null,
+        "optimizer_discarded": false,
+        "started_monotonic": 1627.313619382,
+        "status": "active",
+        "trace_complete": false,
+        "training_seconds": null,
+        "training_updates": 128
+      },
+      "training_reset_trace_verified": false
+    },
+    {
+      "durable_updates": 128,
+      "final_result_present": false,
+      "full_worker_verified": false,
+      "rank": 1,
+      "task_id": "aa4ec2a5",
+      "trace_complete": false,
+      "training_receipt": {
+        "baseline_restored": false,
+        "binding": {
+          "model_material_digest": "sha256:27de51ef22658a0cce3a9fc04fac8fc456165645e2665a82b215f72e20194b03",
+          "plan_digest": "sha256:45a833b265f85fae7de4a431aca0ecad25be47f9f08b448cb2b9a667db571981",
+          "probe_id": "stage4-e13-search-budget-20261008-001",
+          "rank": 1,
+          "task_id": "aa4ec2a5"
+        },
+        "completed_updates": 0,
+        "errors": [],
+        "finished_monotonic": null,
+        "optimizer_discarded": false,
+        "started_monotonic": 1627.337511861,
+        "status": "active",
+        "trace_complete": false,
+        "training_seconds": null,
+        "training_updates": 128
+      },
+      "training_reset_trace_verified": false
+    },
+    {
+      "durable_updates": 128,
+      "final_result_present": false,
+      "full_worker_verified": false,
+      "rank": 2,
+      "task_id": "a47bf94d",
+      "trace_complete": false,
+      "training_receipt": {
+        "baseline_restored": false,
+        "binding": {
+          "model_material_digest": "sha256:27de51ef22658a0cce3a9fc04fac8fc456165645e2665a82b215f72e20194b03",
+          "plan_digest": "sha256:45a833b265f85fae7de4a431aca0ecad25be47f9f08b448cb2b9a667db571981",
+          "probe_id": "stage4-e13-search-budget-20261008-001",
+          "rank": 2,
+          "task_id": "a47bf94d"
+        },
+        "completed_updates": 0,
+        "errors": [],
+        "finished_monotonic": null,
+        "optimizer_discarded": false,
+        "started_monotonic": 1627.334730563,
+        "status": "active",
+        "trace_complete": false,
+        "training_seconds": null,
+        "training_updates": 128
+      },
+      "training_reset_trace_verified": false
+    },
+    {
+      "durable_updates": 128,
+      "final_result_present": true,
+      "full_worker_verified": false,
+      "rank": 3,
+      "task_id": "a25697e4",
+      "trace_complete": true,
+      "training_receipt": {
+        "baseline_restored": true,
+        "binding": {
+          "model_material_digest": "sha256:27de51ef22658a0cce3a9fc04fac8fc456165645e2665a82b215f72e20194b03",
+          "plan_digest": "sha256:45a833b265f85fae7de4a431aca0ecad25be47f9f08b448cb2b9a667db571981",
+          "probe_id": "stage4-e13-search-budget-20261008-001",
+          "rank": 3,
+          "task_id": "a25697e4"
+        },
+        "completed_updates": 128,
+        "errors": [],
+        "finished_monotonic": 2269.187291078,
+        "optimizer_discarded": true,
+        "started_monotonic": 1627.334751761,
+        "status": "complete",
+        "trace_complete": true,
+        "training_seconds": 306.00801079100006,
+        "training_updates": 128
+      },
+      "training_reset_trace_verified": true
+    }
+  ]
+}

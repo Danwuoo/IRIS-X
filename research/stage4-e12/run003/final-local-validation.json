@@ -1,0 +1,23 @@
+{
+  "source_commit": "1c040c7eb8c4e77bcce170dd36cbd5b933453489",
+  "command": [
+    "python",
+    "tools/repository_check.py",
+    "--all"
+  ],
+  "PYTHONHASHSEED": "0",
+  "TMPDIR": "workspace .irisx/run003-tmp",
+  "returncode": 1,
+  "unit_summary": {
+    "ran": 1116,
+    "failures": 1,
+    "error_reports": 35,
+    "skipped": 45
+  },
+  "new_failure_labels": [],
+  "resolved_failure_labels": [
+    "test_nvarc_e12_staging (unittest.loader._FailedTest.test_nvarc_e12_staging)"
+  ],
+  "not_all_tests_green": true,
+  "tmpfs_reserve_error_resolved_with_workspace_temp": true
+}

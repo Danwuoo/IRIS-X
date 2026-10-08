@@ -1,0 +1,367 @@
+{
+  "files": [
+    {
+      "path": "tools/arc_kaggle_submission.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf"
+    },
+    {
+      "path": "tools/nvarc_allocation_transport.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "a3f2c64ac76d98c62672a6964a186caef467e0dd8d7247dff84091ff60b3367c"
+    },
+    {
+      "path": "tools/nvarc_calibration_gate.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "fdefbcbf5cd3589535c959da7ae6df23c5b03b83ef9d5b950b4348dc7c971540"
+    },
+    {
+      "path": "tools/nvarc_dependency_readproof.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "7a43a9f13cd65a9e775d7b7a32b224588a2839da8f412e51dee04b92435b17b6"
+    },
+    {
+      "path": "tools/nvarc_e10_answer_archive.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "f54d43a8159ededef55884488d09846c169087404bbdb1c6404cf8c689ecd248"
+    },
+    {
+      "path": "tools/nvarc_e10_answer_evidence.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "b1d8bdc9a1ade70e2e772d7801fbe75f74a2bda2ddecfc6900e5be00d17565b4"
+    },
+    {
+      "path": "tools/nvarc_e10_end_to_end.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "d56c983ee4ea3d868784371981302a2b85442d5baf800e6108dc41d440fe9dd6"
+    },
+    {
+      "path": "tools/nvarc_e10_future_budget.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "8bc9015a1a774330d5003bbd0c02b78939a1e22d13134c7cdbc49cf22a76ed65"
+    },
+    {
+      "path": "tools/nvarc_e10_generation_profile.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "f6a1fb446489730f3c29dbde5b2a03b18feb20c66e8af17f2aae92bbacfd15ed"
+    },
+    {
+      "path": "tools/nvarc_e10_paired_schedule.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "9226f7e061484a9908e77939a4c233bce3fbcba6c36c20496755444b52aa561b"
+    },
+    {
+      "path": "tools/nvarc_e10_probe.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "d98755d6ec3d491bcab5ba83d24da00fa2fa2e586a949b7ebeea0817e3bf2e9c"
+    },
+    {
+      "path": "tools/nvarc_e10_screen.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "6da31d4bf3e1bf622efb3ec6410d0fc5b1e3eff8f37a51f704ad8d158a20bbad"
+    },
+    {
+      "path": "tools/nvarc_e10_ttt_probe.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "6a2bf9da03960a5678da0c2a5747e99b328ad06a7e891d4e645a472eee9dabd9"
+    },
+    {
+      "path": "tools/nvarc_e11_cleanup.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "74909cad696d621db238e64d390da35c0d3d96cf03a3d6da8525ab61a8b06ad9"
+    },
+    {
+      "path": "tools/nvarc_e11_dfs_contract.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "35d81364d8815bce6c822e86b07196fd65a0797dcf73ee527af061d10f746663"
+    },
+    {
+      "path": "tools/nvarc_e11_owner_editor.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "08cee518ebe3b25aa507dbbecbfdb148326bc848d49fca710b33b15f239e4d62"
+    },
+    {
+      "path": "tools/nvarc_e11_owner_editor_entry.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "71c5eb71a5c21109757d6e6af5d96598e003e6afae0d9a821bed5f646c31e5a7"
+    },
+    {
+      "path": "tools/nvarc_e11_paired_floor.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "1fd6a8afc8cc76facb90466fd468e4e13c8cd7f0e77324e7d8e088689d035ccd"
+    },
+    {
+      "path": "tools/nvarc_e12_admission.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "46bf4b89861b5a1e6bab1d0e4bcc23df91a77b7ea03e3ae930434d7134ad5b40"
+    },
+    {
+      "path": "tools/nvarc_e12_answer_evidence.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "8e10f0ea161ea2de9e74843fd116b3a51b00a517cabafbaa6c7a2a2bafe1259d"
+    },
+    {
+      "path": "tools/nvarc_e12_archive.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "1a4be7d671407b0e4202b1533472a9c5be12789135ad6f8521266389bad6bc1e"
+    },
+    {
+      "path": "tools/nvarc_e12_cleanup.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "621e52ebcbdc58ca7bc4375e3139243bcc89fe8f98b78c166f3b96956a04dd99"
+    },
+    {
+      "path": "tools/nvarc_e12_delivery_envelope.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "6863031e52b6a18e22e859bc97edc349516c845671ed07102ec739751f412bbc"
+    },
+    {
+      "path": "tools/nvarc_e12_entry.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "16ade7264a34fd455f6e311b01528a52f2092f3923e65262e1ff367ff99e0e6f"
+    },
+    {
+      "path": "tools/nvarc_e12_output_lifecycle.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "74464e4ad4f969eb5c6150e3a4ff2fb663a2df83bd56d2ccc6da44467e846dc5"
+    },
+    {
+      "path": "tools/nvarc_e12_prefix_contract.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "77202d6647560a8c7b3b6dc6c28feb0924d5e09823f51e5dde13fe1d83bc0f88"
+    },
+    {
+      "path": "tools/nvarc_e12_runtime.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "9773b3057028e02a3b398f452babc6d6f6d4b434beaba4f9016fa442b8bae2cf"
+    },
+    {
+      "path": "tools/nvarc_e12_training.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "dbcfca86b9d6944bc88a9b598de1a03d40979e3e243791ff900134532bf512af"
+    },
+    {
+      "path": "tools/nvarc_native_export.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "581976553b1daedba6529c750477b078c84d01db20c82804a1e931d492d0e9ee"
+    },
+    {
+      "path": "tools/nvarc_native_multitask.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "274cc5391ee45ee098cba4f002e31425d5bed88993c2b9319b0320c17a08fbdb"
+    },
+    {
+      "path": "tools/nvarc_native_multitask_render.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "0c87d84b3f3f141ede5756c29693616af749f10e48689fa20892ed27eb642d74"
+    },
+    {
+      "path": "tools/nvarc_native_solve_runtime.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "56380d7c5fbb9219acfc846af275d6a334ed9460b6b6448e6feacf78be77b1c1"
+    },
+    {
+      "path": "tools/nvarc_native_submission.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "6ad00435738f514bf5c92055640aa1fb3293a04c41fa006a4bbebf145e627e24"
+    },
+    {
+      "path": "tools/nvarc_native_ttt_budget.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "24c83e33a91cd1589f0fa2bb6aca3adba8a66d08eb8e7e28537c42a1ead90c6e"
+    },
+    {
+      "path": "tools/nvarc_native_ttt_schedule.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "e40a70266132a78174e8fe0b73b02c4a1a9e9239e3431c362c8bb7b40f32cbcc"
+    },
+    {
+      "path": "tools/nvarc_notebook_controls.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "9b7e3446742c2d0674572c98dd349313ff342602eabe0356bc19bf896e7974d4"
+    },
+    {
+      "path": "tools/nvarc_official_render.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "1efc68a6669700a48917d4534abdf06de17237cc4783f3e457db76973b9bb872"
+    },
+    {
+      "path": "tools/nvarc_original_native_ttt_worker.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "1796d9058d32424152d6a89652d6d4ecdf413744f65be1524b2a1272d417d5d4"
+    },
+    {
+      "path": "tools/nvarc_output_lifecycle.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "4dacde096c97ea56c1102bb90ce53aedfb6019ecf939ff522bbca72ebbffe360"
+    },
+    {
+      "path": "tools/nvarc_probe_bootstrap.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "dfb4de1eb1b5075416986188f8ebf2faa78d84db6c25ae21cbaf81f58377cd55"
+    },
+    {
+      "path": "tools/nvarc_process_supervisor.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "d19fca023e599be37a6896743cf74495ab2e8f247f68c4fd556b879527440f5a"
+    },
+    {
+      "path": "tools/nvarc_public_eval.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "fe510e733b1b8841d91b10209ae1f274a5bea958003407308c72ae83b607d67e"
+    },
+    {
+      "path": "tools/nvarc_public_eval_parent.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "3f78bc073370efb662751da6dc17423d880c4ab9b570daca2f76639a33fda770"
+    },
+    {
+      "path": "tools/nvarc_public_eval_runtime.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "589cac397108bbd35455da6df033d6effa3fde70f5e454b91c7c00f58559425d"
+    },
+    {
+      "path": "tools/nvarc_resource_attachment.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "cda9a63f5ca9600deae9e88e750bae9cbc24af17a2a94318f2c9d78f66ac4a80"
+    },
+    {
+      "path": "tools/nvarc_runtime_archive.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "415e367f4ce5e8410850f7ca02243ff689fe11437b601f68deedac50eddb905a"
+    },
+    {
+      "path": "tools/stage_nvarc_e10_end_to_end.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "d65bebe3c222ca131db65d0f7c0fe2b2f7c6af38553f6eb208f6dcabbe03deb0"
+    },
+    {
+      "path": "tools/stage_nvarc_e10_paired_schedule.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "6d4a28738f46f749cbf4235e6b9115a45e7baab3751ff106b1bc0dacc3024d42"
+    },
+    {
+      "path": "tools/stage_nvarc_e10_probe.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "860c364169f9894c48c8985528d14b03a0f178a07bc44af9fe4d127cf48e4498"
+    },
+    {
+      "path": "tools/stage_nvarc_e10_screen.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "9fab886b5ed4f7386abaf2b8daa861dcfd1538c44e869840773472094ccd0b58"
+    },
+    {
+      "path": "tools/stage_nvarc_e10_ttt_probe.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "164d0f624e2e2cd8c2283546ad3bc4c866b3f3176714ebf7dd7b113bd555220b"
+    },
+    {
+      "path": "tools/stage_nvarc_e11_owner_editor.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "a1b7ab1320cef3d8369dc7ca78c20ebc697b84184ba27c5b8bc6898565c0cd0c"
+    },
+    {
+      "path": "tools/stage_nvarc_e11_paired_floor.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "f3ea700c66fb0022953da8693c15e0ee7334664a8f1823287452aa23708ddb2e"
+    },
+    {
+      "path": "tools/stage_nvarc_e12_prefix_probe.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "b5cf926c9ecf8e1df09c05d5e44f0d209a820141403ae343b43b754b2c0bff83"
+    },
+    {
+      "path": "tools/verify_nvarc_e10_screen.py",
+      "provenance": "exact-frozen-E12-package",
+      "sha256": "e4c390e5a780fd004f01d880a2afa83e039d5ee9d547b9254d146c69d8e91176"
+    },
+    {
+      "path": "tools/nvarc_e11_delivery_envelope.py",
+      "provenance": "exact-historical-source-hash",
+      "sha256": "ea443284da20831d01249901fd7b9d1e31100cd2ce5379bc3e5bbb043b3b8d4c"
+    },
+    {
+      "path": "tests/test_nvarc_e11_delivery_envelope.py",
+      "provenance": "literal-author-records",
+      "sha256": "fa9871756c7a1b98856b912027ae3895fd28d21f1b4d090ac2956ebae31c8593"
+    },
+    {
+      "path": "docs/development/stage4-e11-manual-delivery-envelope-inert.md",
+      "provenance": "literal-author-records",
+      "sha256": "1626bc13d43df23fcd0897dddc2c5325fb6aaea5ef6d9e67274a3382518de22d"
+    },
+    {
+      "path": "tests/test_nvarc_e12_archive.py",
+      "provenance": "literal-author-records",
+      "sha256": "fa75d926583e746416ad8ad3c3f6c567a53de2fb016448c564205d8d9b627340"
+    },
+    {
+      "path": "tests/test_nvarc_e12_delivery_envelope.py",
+      "provenance": "literal-author-records",
+      "sha256": "84615d0fc37c28c7f20d4a1196dec0f062c64725021947e30df5faa509c13ab3"
+    },
+    {
+      "path": "docs/development/stage4-e12-archive-delivery.md",
+      "provenance": "literal-author-records",
+      "sha256": "c4a5f6cfcacb8c233b1b4205b9b3041a26b9212c071d7d6ffae54cd5009dd73e"
+    },
+    {
+      "path": "tools/nvarc_e12_prefix_fixture.py",
+      "provenance": "literal-author-records",
+      "sha256": "33b0594e122c38fb64801f88727f63198e7f57f2ee281006fb79e6d519cfb1da"
+    },
+    {
+      "path": "tests/test_nvarc_e12_prefix_contract.py",
+      "provenance": "literal-author-records",
+      "sha256": "4c3b730247b0707fb6265af31b9f8371158ef1310304cce9480edf2a1a7e50c0"
+    },
+    {
+      "path": "docs/development/stage4-e12-prefix-contract.md",
+      "provenance": "literal-author-records",
+      "sha256": "0169c682f3a112e01bbd874a87ee212079fa2cf4cd9bccbcd26bee8930827a49"
+    },
+    {
+      "path": "research/stage4-e12/inert-prefix-plan.json",
+      "provenance": "literal-author-records",
+      "sha256": "2cca230ae184db1b7d84c0b9251ea091f7a021f7d641718fe9d3b3362b1e0a67"
+    },
+    {
+      "path": "tests/test_nvarc_e12_answer_evidence.py",
+      "provenance": "literal-author-records",
+      "sha256": "50232d6ab080d4b54c7f4a0ddef8cc63f27b572eaca3a3db6a7eabb62e29e42e"
+    },
+    {
+      "path": "tests/test_nvarc_e12_runtime.py",
+      "provenance": "literal-author-records",
+      "sha256": "9e172e01a29cfcf7d619473e444eab7eee8742a0d9627c8809d85143d241e49e"
+    },
+    {
+      "path": "tests/test_nvarc_e12_training.py",
+      "provenance": "literal-author-records",
+      "sha256": "af440a700155ef022f33cec8a2e24e24fe5c14f6593db0d19a532ef8433da042"
+    },
+    {
+      "path": "docs/development/stage4-e12-native-runtime-inert.md",
+      "provenance": "literal-author-records",
+      "sha256": "89c9a581a0bcd46ec9fd07901c43d7afa5807795f890fabc77d03006c4d268ae"
+    },
+    {
+      "path": "tests/test_nvarc_e12_staging.py",
+      "provenance": "literal-author-records",
+      "sha256": "1ee9a9443af3afab5892a3e2e7bc9d1a99c02735d511e86c30561ef93e61ad59"
+    }
+  ],
+  "original_E12_execution_source": "f0e449f4d2df567da659a4a9d5c8c6a83a2e8320",
+  "original_E12_integrated_checkpoint": "d99165241d848525c55f461ef852cca834098451",
+  "original_complete_tree_restored": false,
+  "original_git_objects_restored": false,
+  "package_hashes": {
+    "manifest": "07e0bd80b7a4cc8bbaca6ebaad020a56ed404d77c1e0c5b489a8423650187a3c",
+    "notebook": "9617f40cbf9364d675a226687f761d65733bf2326dd96cffa52a240c86ee71f1",
+    "plan": "f8000ab7db2a40795e93ff7482ad17ffa7fc817057207da7a9aadd6266739349"
+  },
+  "recovery_archive_sha256": "57656c3a17a1dd64ec5ff6ddd8ffcee75ba04dc872a3b7ee6c5abad00f278460",
+  "recovery_library_file": "libfile_b398c308e1908191a4d8efccdb0119a4",
+  "schema": "irisx/recovery-tree-provenance-v1",
+  "surviving_local_parent": "cb5ea25336a196bec3571aa3adea437d991c3dcb"
+}

@@ -2,6 +2,29 @@
 
 ## Active Stage 4 owner handoff (2026-10-06)
 
+E13 run001/version12 is terminal ERROR on its inference-event byte ceiling.
+The exact output is retrieved and partial evidence verified; no matched test
+pair completed. Its one GPU run is consumed. Preserve submitted source and
+failure bytes; the current source of further authority is the latest owner
+direction, not another run under Decision 0064.
+
+Current execution follows Decision 0064: the owner authorized one distinct
+E13 120/240-second paired-search diagnostic on the same four-task/six-test
+footprint, sharing one post-TTT128 state per task. E12 run003/version11 is
+terminal COMPLETE and immutable. Preserve its source and evidence. Refresh
+positive free quota with paid scaling off, obtain independent final-wire
+review, send once, actively monitor to terminal, analyze and commit/push the
+result to the existing private recovery branch. No official submission.
+
+The E12-specific paragraph below is historical.
+
+Current E12 execution follows Decision 0063: after run002/version10 failed on
+shared arm telemetry, the owner authorized one repaired run003/version11.
+Decision 0062's conservative four-GPU-hour waiver continues only with actual
+positive free quota, USD 0, unchanged scientific/resource limits, independent
+final-wire review and active terminal monitoring. Recovered run001 and failed
+run002 packages and evidence remain immutable.
+
 The owner now transfers continuing Stage 4 development to dots built-in threads
 using Astra ultra, with parallel subagents and autonomous independent validation.
 Decision 0061 and `docs/plan/2026-10-06-dots-stage4-handoff.md` govern this new
@@ -927,6 +950,15 @@ paths. Do not recreate a legacy root merely to preserve history.
   data, retention, provenance, external execution, and budget authorization.
 
 ## Validation
+
+For Stage 4 CPU aggregate checks, start a fresh Python interpreter with
+`PYTHONHASHSEED=0`, create the ignored repository `.irisx` scratch parent, and
+use a workspace-backed `TMPDIR` with more than 5 GiB free. Keep the inherited
+environment and add the recorded offline flags; do not use `env -i`. Missing
+historical run fixtures remain explicit failures and must not be synthesized
+or removed to obtain a green result. Preserve distinct receipts when correcting
+an incorrectly prepared test environment. See the E12 RUN002 failure report
+for the paired reproduction showing why these prerequisites matter.
 
 Run from the repository root before handoff:
 

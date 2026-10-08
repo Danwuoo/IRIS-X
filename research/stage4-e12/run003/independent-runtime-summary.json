@@ -1,0 +1,111 @@
+{
+  "accounting": {
+    "account_quota_usage_delta_seconds": 3458.162,
+    "all_inference_forwards_completed": 16422,
+    "control_physical_input_tokens": 672,
+    "coordinator_host_wall_seconds": 1656.123758229,
+    "generation_forwards": 16386,
+    "inference_physical_input_tokens": 1134240,
+    "job_specific_billing_attested": false,
+    "outer_host_seconds_through_post_write_receipt": 1666.9628724210002,
+    "paid_scaling_enabled": false,
+    "per_arm_allocated_gpu_cost_seconds": null,
+    "post_terminal_free_quota_seconds": 6139.2461,
+    "processed_sequences": 25,
+    "total_gpu_cost_reduction": null,
+    "training_input_tokens": 2383488,
+    "training_supervised_tokens": 1184832,
+    "verification_forwards": 36
+  },
+  "artifacts": [
+    "FINAL-REPORT.md",
+    "actual-delivery-audit-002.json",
+    "actual-durable-reconciliation-001.json",
+    "transport-cost-reconciliation-001.json",
+    "validator-correction-001.json"
+  ],
+  "correctness": {
+    "assessed_by_this_audit": false,
+    "evaluator_gold_read": false,
+    "exact_match_count": null,
+    "zero_qualified_does_not_mean_zero_correct": true
+  },
+  "delivery": {
+    "bytes": 6333693,
+    "exact_pins_verified": true,
+    "post_write_finalization_qualified": true,
+    "runtime_members": 380,
+    "runtime_sha256": "5bfe73afe5501b3e2a03b82c65e5f9175a5b23847096983bb0cfc70a77dbd647",
+    "sha256": "faea1163e25990b655684e66cafd8d52b568478ecf140ea8debe194edf3aba89",
+    "trusted_local_envelope_replay": "pass"
+  },
+  "execution": {
+    "all_eight_arm_resets_verified": true,
+    "all_four_64_step_prefixes_structurally_match": true,
+    "all_four_final_resets_verified": true,
+    "all_worker_and_aggregate_memory_caps_verified": true,
+    "complete_training_arms": 8,
+    "complete_workers": 4,
+    "controls_completed": 28,
+    "data_level_runtime_checks": "pass after documented optional-member validator correction",
+    "distinct_bf16_l4_devices": 4,
+    "durable_and_crosscorroborated_optimizer_updates": 768,
+    "provider_terminal_status": "COMPLETE",
+    "reserved_and_completed_training_backwards": 768,
+    "reserved_and_completed_training_forwards": 768,
+    "separate_per_arm_inference_telemetry_verified": true
+  },
+  "format": "irisx/e12-run003-shareable-evidence-summary-v1",
+  "limitations": [
+    "Independent native formatter/inverse-transform/ranker CPU replay is outside this no-gold data-audit lane.",
+    "Correctness is unassessed here; answer eligibility and exact-match correctness are different.",
+    "Selected previously exposed public-development pilot does not establish causal quality, full E12 screen, promotion or official submission readiness.",
+    "Host clocks and account quota delta do not establish job-specific or per-arm GPU cost."
+  ],
+  "native_packages_imported": false,
+  "notebook_version": 11,
+  "outputs": {
+    "actual_answer_grids_included": false,
+    "committed_tests": 12,
+    "native_complete_tests": 0,
+    "output_qualified_tests": 0,
+    "overall_deadline_overruns": 0,
+    "retained_answer_attempts": 15,
+    "retained_attempts_by_arm": {
+      "ttt128": 9,
+      "ttt64": 6
+    },
+    "status_counts": {
+      "budget_stop": 2,
+      "partial-candidates": 10
+    },
+    "termination_reason_counts": {
+      "inference_deadline": 1,
+      "source_dfs_deadline": 11
+    },
+    "test_allocations": 12,
+    "test_denominator": 12,
+    "tests_entering_native_inference": 12
+  },
+  "plan_sha256": "db8d4bf61f292c68fc45ba747be2908869bac089d98fbb4c00ad8b178a08f83f",
+  "preserved_operational_exceptions": [
+    {
+      "downloads": 1,
+      "exact_download_later_verified_offline": true,
+      "kind": "local post-download path verification failure",
+      "new_downloads_for_reconciliation": 0,
+      "original_event": "failed-or-partial-no-repeat / ValueError"
+    },
+    {
+      "corrected_full_runtime_errors": 0,
+      "kind": "independent completeness-list defect",
+      "missing_optional_legacy_member": "source-verification-prepare.json",
+      "original_validator_and_rejection_preserved": true,
+      "scientific_acceptance_changed": false
+    }
+  ],
+  "provider_calls_by_this_audit": 0,
+  "returned_source_executed": false,
+  "run_id": "stage4-e12-probe-prefix-20261008-003",
+  "source_commit": "1c040c7eb8c4e77bcce170dd36cbd5b933453489"
+}

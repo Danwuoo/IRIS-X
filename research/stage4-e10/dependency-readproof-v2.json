@@ -1,0 +1,48 @@
+{
+  "dependency_ref": "sorokin/pip-install-unsloth-flash-patch",
+  "evidence_sha256": {
+    "installer_log": "40664760a562e8f3702f63f778203fc6557bfb98250bdcfe1c0aabf24fc4afdc",
+    "installer_source": "60f44fd0ab45a7b28a466714744039191b585e222a5c7ee7467bc936314dc1d8",
+    "minimal_manifest": "8f5701474a190293b8b24cee8a051053a62947347fd5710d6b721c8bd8f77306",
+    "native_manifest": "02b37c16e17effdb9f57d87bb38d64fde585d2e5d5fdd2a49798bf08fb279e9f"
+  },
+  "format": "irisx/stage4-selected-dependency-readproof-v1",
+  "limitations": {
+    "full_import_inventory_verified": false,
+    "import_safety_verified": false,
+    "independent_build_provenance_verified": false,
+    "license_closure_verified": false,
+    "platform_parent_startup_attested": false,
+    "provider_resolved_version_verified": false
+  },
+  "read_limits": {
+    "maximum_chunk_bytes": 1048576,
+    "maximum_total_read_bytes": 997550302,
+    "maximum_wall_seconds": 300,
+    "minimum_free_working_bytes": 10737418240
+  },
+  "script_version_id": 272622465,
+  "selected_files": {
+    "flash_attn-2.8.2.dist-info/METADATA": {
+      "bytes": 23303,
+      "sha256": "eaa62dc5c6229919e6a0b40472ce3f55eef8d2d1b7001664a35bd24a3c0fd0e8"
+    },
+    "flash_attn-2.8.2.dist-info/RECORD": {
+      "bytes": 12624,
+      "sha256": "bbc3050809297f4b246314d123b40005bcfb777194bcf162cb4380b58ef5e479"
+    },
+    "flash_attn_2_cuda.cpython-311-x86_64-linux-gnu.so": {
+      "bytes": 997494640,
+      "sha256": "b9e8fbe638153d8e2f6f458c4cfa1c6339a780c73eb6d40c86be5309fde11a1d"
+    },
+    "qwen3.patch": {
+      "bytes": 3029,
+      "sha256": "33ac957107cd7e4477163072ea6dff5cb2744f00067e8a7b3aea3c89c91d3ad6"
+    },
+    "unsloth/models/qwen3.py": {
+      "bytes": 16701,
+      "sha256": "0c360b0a7c7ed47c05e113c300791a502c878f3087ab24dfd949855429fe0e30"
+    }
+  },
+  "version_number": 2
+}

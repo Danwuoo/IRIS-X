@@ -1,3 +1,9 @@
+# Original portions/source flow: sorokin's Kaggle notebook Version10,
+# arc2-qwen3-unsloth-flash-lora-batch4-queue, Apache-2.0.
+# https://www.kaggle.com/code/sorokin/arc2-qwen3-unsloth-flash-lora-batch4-queue
+# IRIS-X adaptations: generated native preparation and multi-task/reset orchestration.
+# See notices/NOTICE-native.txt and notices/LICENSE-Apache-2.0.txt.
+# This does not relicense independently authored portions or the entire file.
 """New worker/parent bytes derived from retained native008 preparation."""
 from tools.nvarc_native_multitask import FORMAT
 

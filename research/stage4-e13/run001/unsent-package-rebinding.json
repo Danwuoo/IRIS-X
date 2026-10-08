@@ -1,0 +1,22 @@
+{
+  "format": "irisx/e13-unsent-package-rebinding-v1",
+  "old_package": "e13-final-candidate-001",
+  "new_package": "e13-final-candidate-002",
+  "old_journal": "e13-transport-001",
+  "new_journal": "e13-transport-002",
+  "old_package_retained_unchanged": true,
+  "old_journal_unsent": true,
+  "new_plan_changed_fields": [
+    "resource_admission",
+    "source_commit"
+  ],
+  "runtime_source_maps_identical": true,
+  "payload_maps_identical": true,
+  "old_source_commit": "c269fecccd656fa7f11c05095f4fd894217f8f36",
+  "new_source_commit": "23018f6aaaba81ca7281c2893a1c4b92c45576be",
+  "new_disclosure_authorization_ref": "Sentinel_a8a052f7c92881918901f01b01a11074",
+  "one_savekernel_allowed": true,
+  "provider_sends_so_far": 0,
+  "initial_quota_refresh_401_retained": true,
+  "login_renewal": "official SDK renewal of existing authorized session; no new grant or scope"
+}

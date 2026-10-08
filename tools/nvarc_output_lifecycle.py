@@ -21,6 +21,10 @@ from tools.nvarc_native_multitask import canonical, digest, require
 
 FORMAT = 'irisx/output-generation-v1'
 SETS = {
+    'paired-dfs-floor': {'p02-answers.json','p01-answers.json','p02-audit.json','p01-audit.json',
+               'p02-candidate-pools.json','p01-candidate-pools.json','paired-summary.json','paired-task-timings.json'},
+    'paired': {'interleaved-answers.json','deferred-answers.json','interleaved-audit.json','deferred-audit.json',
+               'interleaved-candidate-pools.json','deferred-candidate-pools.json','paired-summary.json','paired-task-timings.json'},
     'public': {'submission.json', 'submission-audit.json', 'candidate-pools.json',
                'coverage.json', 'task-timings.json'},
     'native': {'native-evidence.json', 'submission-audit.json', 'submission.json', 'export-process.json'},
@@ -201,7 +205,9 @@ class GenerationStore:
     def _project(self, manifest, bodies):
         # All root files are replaceable compatibility projections. The marker
         # makes a partially updated set invalid, even when submission is legal.
-        for name in sorted(set(bodies) - {'submission.json'}) + ['submission.json']:
+        ordered=sorted(set(bodies)-{'submission.json'})
+        if 'submission.json' in bodies:ordered.append('submission.json')
+        for name in ordered:
             self.boundary('before-projection', self.root/name)
             atomic_bytes(self.root/name, bodies[name], observe=self.boundary)
             self.boundary('after-projection', self.root/name)

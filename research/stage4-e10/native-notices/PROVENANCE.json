@@ -1,0 +1,91 @@
+{
+  "format": "irisx/minimum-native-license-evidence-v1",
+  "checked_date_utc": "2026-10-06",
+  "scope": "Specific notebook Version 10 source grant and attribution artifacts; not complete NVARC/dependency certification",
+  "primary_license_text": {
+    "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "retrieved": "2026-10-06 approximately 10:30 UTC",
+    "method": "direct unauthenticated HTTPS GET; body saved unchanged",
+    "byte_size": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  "notebook_declaration": {
+    "url": "https://www.kaggle.com/code/sorokin/arc2-qwen3-unsloth-flash-lora-batch4-queue",
+    "owner": "sorokin",
+    "page_version_number": 10,
+    "page_version_count": 10,
+    "license": "Apache-2.0",
+    "evidence": "official search index crawled approximately one week before 2026-10-06",
+    "live_source_redownloaded": false,
+    "retained_notebook_sha256": "506b85db66f9949022e87935ccb06a73fd78cb690883bd600bfb5c7d36c2b3af"
+  },
+  "original_files": [
+    {
+      "path": "arc_loader.py",
+      "cell_index": 2,
+      "original_export_name": "arc_loader.py",
+      "sha256": "d01cd56167e534ae156706ef62ab11662fc7b403964614a7a55131940bde970c",
+      "byte_size": 12640,
+      "unchanged_cell_body": true
+    },
+    {
+      "path": "arc_decoder.py",
+      "cell_index": 3,
+      "original_export_name": "arc_decoder.py",
+      "sha256": "965cfd910777d9bbec9681c6c15c5e2ea3924569734248046f5e58f16cb28222",
+      "byte_size": 4156,
+      "unchanged_cell_body": true
+    },
+    {
+      "path": "solver.py",
+      "cell_index": 4,
+      "original_export_name": "arc_solver.py",
+      "sha256": "1387c5b0b188dcc8570659dd5905ec2e824e5e0dfd7b20d8be9c2e13d0f12962",
+      "byte_size": 16556,
+      "unchanged_cell_body": true,
+      "renamed": true
+    }
+  ],
+  "helper_review": {
+    "hardware_helpers.py": {
+      "sha256": "61316aa900b47106e2bc9b0ffb04b02045839e411759973a10de53c5168af642",
+      "supplied_origin": "stage3-official-score-20261005-001/offline-source/hardware_helpers.py",
+      "observed": "stdlib GPU identity validation; no original notebook class/function implementation copied into this helper found"
+    },
+    "inspection_helpers.py": {
+      "sha256": "c073e2839f7013d24c9aaaffd92ad82a2c0a44180efc6d3dffc09084999cd8e2",
+      "supplied_origin": "stage3-official-score-20261005-001/offline-source/inspection_helpers.py",
+      "observed": "project hash/AST guards; dynamically executes original two trainer/collator definitions/constants and clone/detach snapshot from solver; original portions fall under notebook source grant"
+    },
+    "tools/nvarc_original_native_ttt_worker.py": "tracked project preparation wrapper adapts original source flow; attribution needed for original portions; does not derive rights for entire project file from notebook license",
+    "tools/nvarc_native_multitask_render.py": "tracked project renderer modifies native preparation prefix and supplies project orchestration; generated modified prefix should preserve prominent attribution",
+    "tools/nvarc_native_ttt_schedule.py": "project wrapper dynamically extracts scalar functions from mounted transformers source; full mounted dependency license inventory not independently certified"
+  },
+  "remaining_scope_limits": [
+    "No directly uploaded GitHub NVARC root script was observed among the inspected minimal package members.",
+    "Mounted sorokin/pip-install-unsloth-flash-patch dependency bundle and qwen3.patch license declaration were not recovered by focused official metadata search.",
+    "That mounted dependency is not included as source bytes in the inspected upload package; do not portray its redistribution or complete stack terms as certified.",
+    "Project wrapper rights derive from project ownership/authorization, not a blanket notebook relicense.",
+    "Actual private runtime admission and authentication were not checked."
+  ],
+  "competition_attachment": {
+    "required_source": "arc-prize-2026-arc-agi-2",
+    "evidence_url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview/upgraded-accelerators",
+    "inspected_competition_sources": [],
+    "reconstruction_change_required": true
+  },
+  "artifacts": {
+    "LICENSE-Apache-2.0.txt": {
+      "byte_size": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "MODIFIED-SOURCE-ATTRIBUTION.txt": {
+      "byte_size": 1177,
+      "sha256": "c202a40c7bfed6233e3dd1088bdabaf86505ee81949672e069c67087f09ed9ef"
+    },
+    "NOTICE-native.txt": {
+      "byte_size": 3760,
+      "sha256": "c9e87523811159ebff4469484abab9ee1f368c563bc286d0b12bed142cc96955"
+    }
+  }
+}

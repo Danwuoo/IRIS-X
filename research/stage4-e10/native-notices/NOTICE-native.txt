@@ -1,0 +1,62 @@
+Native ARC source attribution and modification notice
+Prepared for the IRIS-X private native resource probe on 2026-10-06.
+
+Third-party source
+  Author account: sorokin (the official Kaggle page displays ivan +1).
+  Notebook: arc2-qwen3-unsloth-flash-lora-batch4-queue, Version 10.
+  Source URL:
+    https://www.kaggle.com/code/sorokin/arc2-qwen3-unsloth-flash-lora-batch4-queue
+  Author's official page declares Apache License 2.0.
+  The official page search index was checked 2026-10-06 and reports Version 10
+  of 10; its crawl was approximately one week earlier.
+  Retained notebook SHA-256:
+    506b85db66f9949022e87935ccb06a73fd78cb690883bd600bfb5c7d36c2b3af
+  License text: LICENSE-Apache-2.0.txt
+  License source: https://www.apache.org/licenses/LICENSE-2.0.txt
+
+Unchanged original source-cell bodies
+  arc_loader.py is the unchanged body of notebook cell 2 after its writefile
+  directive, SHA-256:
+    d01cd56167e534ae156706ef62ab11662fc7b403964614a7a55131940bde970c
+  arc_decoder.py is the unchanged body of notebook cell 3 after its writefile
+  directive, SHA-256:
+    965cfd910777d9bbec9681c6c15c5e2ea3924569734248046f5e58f16cb28222
+  solver.py is the unchanged body of notebook cell 4 after its writefile
+  directive. The original exported name arc_solver.py was changed to solver.py.
+  Its source-body SHA-256 is:
+    1387c5b0b188dcc8570659dd5905ec2e824e5e0dfd7b20d8be9c2e13d0f12962
+
+IRIS-X adaptations and source-flow use
+  The original notebook supplies trainer/collator classes, role constants,
+  ARC formatting/augmentation, decoder/search/scoring definitions, and native
+  task-local preparation/reset behavior. IRIS-X uses this source through
+  hash-bound reviewed-definition loading and separate bounded orchestration.
+  The IRIS-X wrappers add source/AST verification, truth-safe loading,
+  preparation checks, full tensor reset checks, hardware identity checks,
+  finite resource limits, process supervision, telemetry, and export guards.
+  Relevant adapted/integration files include:
+    inspection_helpers.py: executes reviewed original trainer/collator classes
+      and literal role constants, and replays the original snapshot expression;
+      adds AST/hash, preparation and reset evidence checks.
+    tools/nvarc_original_native_ttt_worker.py: adapts the original task-local
+      training/preparation flow with IRIS-X hash/AST checks and finite guards.
+    tools/nvarc_native_multitask_render.py: modifies that preparation prefix and
+      supplies IRIS-X multi-task execution/reset/telemetry orchestration.
+    tools/nvarc_native_solve_runtime.py: loads reviewed original ARC definitions;
+      excludes notebook file/solution-loading methods and wraps cache/reset/
+      inference operations with finite validation and accounting.
+    tools/nvarc_native_multitask.py and tools/nvarc_public_eval_runtime.py:
+      integrate original augmentation/search/ranking into the bounded task
+      lifecycle and separately implemented candidate scheduling/telemetry.
+  The listed wrappers are not byte-identical copies of the source notebook.
+  This records attribution and modifications to original portions/source flow;
+  it does not assert that every entire IRIS-X file is licensed by the notebook
+  author or change the terms for independently authored IRIS-X portions.
+
+Scope
+  No copyright year or legal-name assertion is invented. No copyright/NOTICE
+  marker was found in the retained notebook's source cells. This is a newly
+  prepared provenance and modification notice, not an upstream NOTICE file.
+  This notice does not grant a license for the separate NVARC GitHub tree,
+  arbitrary SDG/submodule code, models, datasets or the entire dependency stack.
+  Preserve notices attached to any dependency actually redistributed.

@@ -1,0 +1,18 @@
+Suggested prominent header for source files that adapt original notebook code
+or flow. Insert only in newly regenerated, commit/hash-bound project wrappers.
+Do not prepend this to the three frozen byte-identical source-cell files.
+
+# Original portions/source flow derive from sorokin's Kaggle notebook
+# arc2-qwen3-unsloth-flash-lora-batch4-queue, Version 10, Apache-2.0.
+# https://www.kaggle.com/code/sorokin/arc2-qwen3-unsloth-flash-lora-batch4-queue
+# IRIS-X adaptations: reviewed-definition loading and bounded native
+# preparation, verification, scheduling, process/reset and telemetry guards.
+# Attribution/modification notice prepared 2026-10-06. See NOTICE-native.txt
+# and LICENSE-Apache-2.0.txt. Independently authored portions retain their
+# existing terms; this notice does not relicense the entire file.
+
+Use a file-specific adaptation description from NOTICE-native.txt when
+practical. A renderer embedding modified source should preserve equivalent
+notice text in its generated worker/module, rather than claiming the generated
+module is unchanged upstream code. Bind added headers, notice/license members,
+rendered bytes and revised package manifests together.
