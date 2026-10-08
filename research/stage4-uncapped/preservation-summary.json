@@ -1,0 +1,64 @@
+{
+  "agent_runtime_authorized": false,
+  "automatic_run_requested": false,
+  "bindings": {
+    "metadata_sha256": "3f392a69cde642c1ddda7a8ab2923f62f153c41a7d50a653ab1d0d655146241d",
+    "notebook_sha256": "e2e3dbf5599a4edbe8018d871328ae368427724b6805efc813b6460622e6adad",
+    "offline_package_verified": true,
+    "package_manifest_sha256": "bda7f8fde5d1b8b274bf36d9185b879f29899fc7702069d5831f7bc9c5edc989",
+    "plan_sha256": "1e8d68e6c981e9511e9712bacc64c55ae96f42e985f1b2232230ea114d782b47",
+    "source_digest": "5990ba708544c5c1bdc5c992faaffeb56be2944aeeaf569cd9f86ba355671901"
+  },
+  "execution_type": "QUICK_SAVE",
+  "format": "irisx/uncapped-quicksave-preservation-v1",
+  "native_gpu_validation_performed": false,
+  "newness": {
+    "atomic_namespace_absence_guaranteed": false,
+    "create_only_semantics_verified": false,
+    "inventory_row_count": 91,
+    "numeric_id_inventory_complete": false,
+    "operational_newness_verified": true,
+    "pagination_complete": true,
+    "private_anchor_source_verified": true,
+    "private_namespace_anchor_ids": [
+      137327571
+    ],
+    "proof_kind": "complete-official-own-profile-list",
+    "quicksave_draft_coverage_attested": false,
+    "redacted_count": 2,
+    "reference_coverage_complete": false,
+    "source_403_used_as_absence": false,
+    "target_not_listed": true,
+    "visible_reference_count": 89
+  },
+  "notebook_id": 137591923,
+  "notebook_ref": "danielwuu/stage4-uncapped-ttt128-20261008-3baff209a1",
+  "outcome": "new-private-quicksave-source-verified",
+  "prior_e13_delivery_sha256": "0acbfa23a453450a7a78c19b7da05a8d604b0858b1e63f0b5590f3f69be26d6a",
+  "provider_save_type_attested": false,
+  "review_sha256": "375b61cb3876ffeeb34da5f67042f80a33cb7f8588ca35b44165d9bbcd2a67d3",
+  "runtime_status_queried": false,
+  "save_accepted_at": "2026-10-08T03:58:30.302201+00:00",
+  "save_reserved_at": "2026-10-08T03:58:27.399248+00:00",
+  "save_sends": 1,
+  "source_commit": "491a0831fca82829f66d5c66d0182d4680b86b4e",
+  "source_reads": 1,
+  "source_verified_at": "2026-10-08T03:58:37.859022+00:00",
+  "tests": {
+    "final_sdk_transport_passed": 27,
+    "focused_runtime_passed": 48,
+    "full_aggregate": {
+      "errors": 35,
+      "failures": 1,
+      "reason": "missing retained historical fixtures and historical test modules; not synthesized or hidden",
+      "skipped": 47,
+      "status": "FAIL",
+      "tests": 1335
+    },
+    "training_hook_checks_passed": 6,
+    "worker_integration_scenarios_passed": 5
+  },
+  "transport_commit": "9c9e60f",
+  "transport_sha256": "aad06cc475acf69ace95dd8263cb95cac8d011cf0ff5e54381a8e5ad40067d20",
+  "version": 1
+}

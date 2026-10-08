@@ -1,5 +1,17 @@
 # IRIS-X Repository Governance
 
+## Active uncapped owner notebook (2026-10-08)
+
+Decision 0065 supersedes continuing E13 execution for the current request.
+The owner authorized one genuinely NEW private `danielwuu` notebook via
+QUICK_SAVE only, with a False-by-default manual guard, after independent CPU
+and exact-wire review. Remove program resource capacity/time caps only in its
+separate uncapped mode; retain scientific grammar, p=.2, original TTT128 and
+one search per test, approved mounts, privacy/offline/USD 0. No RUN, GPU
+admission, runtime status query, quota bypass or GCP work is authorized.
+Preserve E13/v12 and all earlier source/evidence unchanged. See
+`docs/decisions/0065-save-new-uncapped-owner-notebook.md`.
+
 ## Active Stage 4 owner handoff (2026-10-06)
 
 E13 run001/version12 is terminal ERROR on its inference-event byte ceiling.
