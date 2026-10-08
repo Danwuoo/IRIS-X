@@ -1,0 +1,19 @@
+{
+  "status": "PASS for one private source-only QUICK_SAVE; no runtime authority",
+  "source_commit": "89650beb0049273458f56e8ecb7326a03f87f967",
+  "review_sha256": "b3bba57755f7d1b1e49a5d546dbcaa367f2bb7a941d8b5ad2aec3fef177467ff",
+  "notebook_sha256": "3cfa681dd05954483018624b1a5c5e93826be32c5fadfbcc1886f985d59c390a",
+  "prepared_body_sha256": "d23a4af6bf83bb81e240d3d1780f7b0fde26c8560ccf3e8d9367d535dd6ba81c",
+  "newness_proof": "complete-own-list operational visible-reference noncollision, with exact private anchor; not atomic or complete-private-namespace absence",
+  "newness_checked_before_publication_by_transport": true,
+  "newness_provider_read_performed_by_reviewer": false,
+  "actual_new_numeric_id_version1_and_source_readback_still_required": true,
+  "runtime_or_gpu_verified": false,
+  "paid_compute_authorized": false,
+  "model_weight_downloads": 0,
+  "provider_calls_by_reviewer": 0,
+  "repository_full_aggregate_green": false,
+  "independent_runtime_tests": 11,
+  "independent_report_tests": 8,
+  "frozen_repository_focused_tests": 85
+}

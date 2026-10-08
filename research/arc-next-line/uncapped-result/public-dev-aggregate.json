@@ -1,0 +1,32 @@
+{
+  "created_utc": "2026-10-08T06:59:11.889247+00:00",
+  "run_id": "stage4-uncapped-20261008-001",
+  "plan_sha256": "1e8d68e6c981e9511e9712bacc64c55ae96f42e985f1b2232230ea114d782b47",
+  "archive_sha256": "3452843d477778b1f17ae42666c987fa3ad54072c54da72b08de872b17b8190a",
+  "upstream_commit": "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+  "partition_manifest_sha256": "85ee338fbf02c0b48d969cfc44f9b2ab355c2958f35bff1c32cfd23bef12fe39",
+  "evaluator_binding_sha256": "6b6f3d971244cc81b68f76d4c62a0474fb24ec5496485be2e2f32ab2fae9cd83",
+  "aggregate": {
+    "tasks": 4,
+    "tests": 6,
+    "top1_correct": 1,
+    "top2_correct": 1,
+    "retained_pool_oracle_correct": 1,
+    "pool_candidates": 41,
+    "retained_attempts": 12,
+    "qualified_tests": 6,
+    "tasks_all_tests_top2_correct": 1,
+    "task_macro_top2_accuracy": 0.25
+  },
+  "prediction_bindings": {
+    "195c6913": "eb1de9b140ca714ccb475870c3f820b7dbd3c45babf6ffa7306c99979df7fc56",
+    "aa4ec2a5": "98b5b146aa2f5e5b83e271a0ced213bac691e757cb0ec9531acf466fbe8d1be8",
+    "a47bf94d": "1f2c1a46118fbbb454c20ee2948dc9500a1cc046eaf55f4f4a4027892857dda7",
+    "a25697e4": "8979dde76702b7c245fe8b2b3dc41145b4beacc2c32a4b129810fbb3ac96bb98"
+  },
+  "locked_confirmation_truth_read": false,
+  "gold_grids_written": false,
+  "official_score": null,
+  "scorer_sha256": "64985009bb5ce02f6049f6648d41a45a8e1aea682a9c29586210b2697c499593",
+  "contains_per_test_labels": false
+}

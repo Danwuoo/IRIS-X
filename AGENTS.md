@@ -1,5 +1,16 @@
 # IRIS-X Repository Governance
 
+## Active next-line manual training notebook (2026-10-08)
+
+Decision 0066 is the latest owner scope: analyze the completed uncapped result,
+research the next small-model ARC-AGI-2 architecture and implement the first
+private default-inert QUICK_SAVE. Training targets one G4 RTX PRO 6000; official
+submission remains four L4s. Only CPU development/review is executed here.
+No agent paid compute, provisioning, GPU run, credential changes, dataset/weight
+upload or official submission. Keep manual budgeted smoke/train/eval/export
+phases separate, full native vocabularies, task-group truth isolation, and all
+historical notebook/source/evidence identities unchanged.
+
 ## Active uncapped owner notebook (2026-10-08)
 
 Decision 0065 supersedes continuing E13 execution for the current request.

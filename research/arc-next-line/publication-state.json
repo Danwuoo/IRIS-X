@@ -1,0 +1,17 @@
+{
+  "format": "irisx/arc-next-publication-state-v1",
+  "ref": "danielwuu/iris-arc2-g4-agent-pilot-20261008-6deaf904",
+  "source_commit": "89650beb0049273458f56e8ecb7326a03f87f967",
+  "notebook_sha256": "3cfa681dd05954483018624b1a5c5e93826be32c5fadfbcc1886f985d59c390a",
+  "prepared_body_sha256": "d23a4af6bf83bb81e240d3d1780f7b0fde26c8560ccf3e8d9367d535dd6ba81c",
+  "state": "prepared-not-sent",
+  "publication_reserved": 0,
+  "save_sends": 0,
+  "accepted_id": null,
+  "source_readback_verified": false,
+  "reason": "Awaiting explicit approval for this exact private Kaggle upload destination after reviewer requested confirmation.",
+  "confirmation_message_id": "Sentinel_02d7dffb3e548191ba0b2f38278184b9",
+  "gpu_execution": false,
+  "paid_compute_started": false,
+  "official_submission": false
+}

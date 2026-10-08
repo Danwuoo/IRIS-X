@@ -1,0 +1,37 @@
+{
+  "format": "irisx/arc-next-cpu-validation-checkpoint-v1",
+  "gpu_executed": false,
+  "models_trained": false,
+  "benchmark_improvement_claimed": false,
+  "focused_tests": {
+    "arc_next": 85,
+    "real_jinja_templates": 3,
+    "notebook_inert_tests": 2,
+    "official_sdk_wire_tests": 5,
+    "new_pipeline_status": "PASS"
+  },
+  "independent_controls": {
+    "runtime_negative_tests": 11,
+    "report_negative_tests": 8,
+    "interpreter_negative_corpus": 264
+  },
+  "historical_aggregate": {
+    "status": "FAIL",
+    "tests": 1432,
+    "errors": 35,
+    "failures": 1,
+    "skipped": 59,
+    "reason": "retained historical fixture/model/module availability; no missing evidence fabricated",
+    "final_rerun_pending": false,
+    "log_sha256": "b35ef78d613f79eb4f4ee723bcafebe30524ed87ebea71354c81bf48fa7566d8"
+  },
+  "paid_compute_provisioned": false,
+  "official_submission": false,
+  "native_bpe_checks": {
+    "models": 3,
+    "synthetic_rows_per_model": 24,
+    "tokenizers": "0.22.2",
+    "target_only_mask": "PASS",
+    "model_or_gpu_execution": false
+  }
+}

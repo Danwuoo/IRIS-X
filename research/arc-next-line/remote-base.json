@@ -1,0 +1,180 @@
+{
+  "schema": "irisx/next-arc-line-remote-base-v1",
+  "main_commit": {
+    "sha": "72521b05bf9d217312b2291bdf368cf88915136f",
+    "node_id": "C_kwDOUBSWYdoAKDcyNTIxYjA1YmY5ZDIxNzMxMmIyMjkxYmRmMzY4Y2Y4ODkxNTEzNmY",
+    "url": "https://api.github.com/repos/Danwuoo/IRIS-X/git/commits/72521b05bf9d217312b2291bdf368cf88915136f",
+    "html_url": "https://github.com/Danwuoo/IRIS-X/commit/72521b05bf9d217312b2291bdf368cf88915136f",
+    "author": {
+      "name": "Danwuoo",
+      "email": "wurrenren1006@gmail.com",
+      "date": "2026-10-08T03:50:03Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-08T03:50:03Z"
+    },
+    "tree": {
+      "sha": "d0845922d98ad12d9a73287a7a7e28d4a856b49f",
+      "url": "https://api.github.com/repos/Danwuoo/IRIS-X/git/trees/d0845922d98ad12d9a73287a7a7e28d4a856b49f"
+    },
+    "message": "Merge pull request #3 from Danwuoo/stage4-cloud-recovery-20261007\n\nStage4 cloud recovery 20261007",
+    "parents": [
+      {
+        "sha": "aa2107164b8911c267743210ff3557b4f73ed0dc",
+        "url": "https://api.github.com/repos/Danwuoo/IRIS-X/git/commits/aa2107164b8911c267743210ff3557b4f73ed0dc",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/commit/aa2107164b8911c267743210ff3557b4f73ed0dc"
+      },
+      {
+        "sha": "28336b65d6e100851f507aaaa9cd481da38e784c",
+        "url": "https://api.github.com/repos/Danwuoo/IRIS-X/git/commits/28336b65d6e100851f507aaaa9cd481da38e784c",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/commit/28336b65d6e100851f507aaaa9cd481da38e784c"
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqxxLrCRC1aQ7uu5UhlAAAQzkQAAbdsLhYZltTHhTdIPerfola\np6zQM5qJpECpuv4D+mGJH8mqcuQt9kN2cpOFXAhMDmJkkbtPvybPjuNlSZAD+LwB\nx/6UNRaXEEypUWXBvYnbOjgkdbJiFVJSnIq8zDAqitDGehczH7z/9Me8xCh7oTvy\nn4PUsB8JW54cxlaiu8jvYE2OPjQbOE8m7uoJyd+GgF51odLyr9W5LfB/OuNj9E7n\n+7mwebKVn2iRklfEzCTllMaHdwUk8dqQGCYTD/cdS240qks1Dbl+hC6qTfNHQy9a\ncQyWHwqXrgJQKt2EQ6eOXtWYibKYlfZYHxiGQXZu94clgCDDtKs/yk0bjuaiBCDN\njoi97meVsDwAsrErrYI68Fs/+9PPtW8SCX905M0hMjKLYvEFUSBvQELrbkQiNVPl\nItdFvZv6FYl7ep058Z2zwmDHJesrlGYNUPQqZddaJBlqxY/2FLL2jdNGdJQgJUQq\nuHg84ouWkzEBeiuM7z/DZ6LoZv9h9uxm/7WJrQyou/IJZWC8iJF5dSgoXB4oJoAt\nTQr8mMnXvtQV7721XLkD6QQM/8ZUz1moaAEJ0Lxlf6pzfLu2w+94ssNugS9m1K/I\nr3rZDybk9djdEIJLbvgM/dGocgqSaJOxatKVjy40+2R9gBdUbyfjRyLmmkG1+e2V\nZE5lH1eLi2NeRW1r+Zxn\n=fscM\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree d0845922d98ad12d9a73287a7a7e28d4a856b49f\nparent aa2107164b8911c267743210ff3557b4f73ed0dc\nparent 28336b65d6e100851f507aaaa9cd481da38e784c\nauthor Danwuoo <wurrenren1006@gmail.com> 1791431403 +0800\ncommitter GitHub <noreply@github.com> 1791431403 +0800\n\nMerge pull request #3 from Danwuoo/stage4-cloud-recovery-20261007\n\nStage4 cloud recovery 20261007",
+      "verified_at": "2026-10-08T03:50:04Z"
+    }
+  },
+  "recovery_commit": {
+    "sha": "623e7bb4eae20880f784f2317c8761e979c708f5",
+    "node_id": "C_kwDOUBSWYdoAKDYyM2U3YmI0ZWFlMjA4ODBmNzg0ZjIzMTdjODc2MWU5NzljNzA4ZjU",
+    "url": "https://api.github.com/repos/Danwuoo/IRIS-X/git/commits/623e7bb4eae20880f784f2317c8761e979c708f5",
+    "html_url": "https://github.com/Danwuoo/IRIS-X/commit/623e7bb4eae20880f784f2317c8761e979c708f5",
+    "author": {
+      "name": "Danwuoo",
+      "email": "wurrenren1006@gmail.com",
+      "date": "2026-10-08T04:24:37Z"
+    },
+    "committer": {
+      "name": "Danwuoo",
+      "email": "wurrenren1006@gmail.com",
+      "date": "2026-10-08T04:24:37Z"
+    },
+    "tree": {
+      "sha": "2d1cc2d5287ae8655fcaa6d4c6358f06252107c4",
+      "url": "https://api.github.com/repos/Danwuoo/IRIS-X/git/trees/2d1cc2d5287ae8655fcaa6d4c6358f06252107c4"
+    },
+    "message": "Preserve new private uncapped QuickSave and verified receipt [skip ci]\n\nExact tree of local commit 7ac9cca0795e8d8f98f1e2cdb7bcb546fbe30b67; tree 2d1cc2d5287ae8655fcaa6d4c6358f06252107c4. Connector-created mapped snapshot parented by the existing private recovery-branch head. This is not a literal original-history push. Nine original local commits above e1e25e9673efdb230af7cd789b9b11873b501285 were preserved and independently restored in a 97238-byte incremental source-history bundle, SHA-256 bdd34a8bbbe8434d7de2024c332657ef67800e9b4f7bd434b63b28e8125e7856. The original e1e25e9 prerequisite remains necessary for restoring that bundle.\n\nThe sole genuine QUICK_SAVE was accepted as new private notebook 137591923 version 1. Exact source readback verified executable bytes, private visibility, Internet OFF, empty outputs and a False-by-default manual run guard. Save type is verified from the outgoing request; the source API does not attest it. No agent RUN, GPU admission, runtime/status query or monitoring is authorized. Original native TTT128 and one search per test remain, while program resource/time/log/archive caps are removed only in separate uncapped mode. Physical resources and platform quotas still apply. Historical E13/v12 source and evidence are unchanged.\n\nRetained focused validation: 48 runtime tests, 27 SDK transport tests, six training-hook CPU checks and five worker integration scenarios passed. Native GPU execution was not tested. The historical aggregate remains FAIL: 1335 tests, 35 errors, one failure, 47 skips due to missing historical fixtures/modules; no missing evidence was synthesized. This preservation operation makes no Kaggle calls and does not change main or workflow files.",
+    "parents": [
+      {
+        "sha": "28336b65d6e100851f507aaaa9cd481da38e784c",
+        "url": "https://api.github.com/repos/Danwuoo/IRIS-X/git/commits/28336b65d6e100851f507aaaa9cd481da38e784c",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/commit/28336b65d6e100851f507aaaa9cd481da38e784c"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "main_files": 951,
+  "recovery_files": 969,
+  "differences": [
+    {
+      "path": "AGENTS.md",
+      "main": "e671cd290c47096855160a0a6b406f700a90e38a",
+      "recovery": "214de7e4ec0463ed78de1c23a9b234cb4e746e52"
+    },
+    {
+      "path": "docs/decisions/0065-save-new-uncapped-owner-notebook.md",
+      "main": null,
+      "recovery": "8b6431d2e74a01a976329ef241243e2759363664"
+    },
+    {
+      "path": "research/stage4-uncapped/README.md",
+      "main": null,
+      "recovery": "e842a2a68e1d9324610ab4f30a255780106296e3"
+    },
+    {
+      "path": "research/stage4-uncapped/accepted-save-receipt.json",
+      "main": null,
+      "recovery": "064ec54ddb51e5d419a68dddcbbe4911d1109edb"
+    },
+    {
+      "path": "research/stage4-uncapped/independent-wire-review.json",
+      "main": null,
+      "recovery": "bef7ab7640aa90a43dd3ce8168fc9c7ce6110900"
+    },
+    {
+      "path": "research/stage4-uncapped/preservation-summary.json",
+      "main": null,
+      "recovery": "3ab45122010be0396a76c51d2291952b99de0ad0"
+    },
+    {
+      "path": "research/stage4-uncapped/source-verification.json",
+      "main": null,
+      "recovery": "c1ed36311fbc5e261f61e0ad49c9df0eb63bee20"
+    },
+    {
+      "path": "tests/test_nvarc_uncapped_artifacts.py",
+      "main": null,
+      "recovery": "ccefc67f07606d81d286a3746825787a5cf3bd7b"
+    },
+    {
+      "path": "tests/test_nvarc_uncapped_inference.py",
+      "main": null,
+      "recovery": "ee8b9ff691af0d6b5a46fb90a1c26180d6471709"
+    },
+    {
+      "path": "tests/test_nvarc_uncapped_runtime.py",
+      "main": null,
+      "recovery": "aa5b7e5c5310cf8a4f2973cfcca71bc8d277a251"
+    },
+    {
+      "path": "tests/test_publish_nvarc_uncapped_quicksave.py",
+      "main": null,
+      "recovery": "dd4146ac634ab51acb071439dc305f186c46b1d0"
+    },
+    {
+      "path": "tools/nvarc_uncapped_artifacts.py",
+      "main": null,
+      "recovery": "36ed13e95be3ccf4cff3c89d57b2cf2194ba8227"
+    },
+    {
+      "path": "tools/nvarc_uncapped_entry.py",
+      "main": null,
+      "recovery": "e5b7b5b695fd001b356984f4e6ae90bd4f32b5e9"
+    },
+    {
+      "path": "tools/nvarc_uncapped_inference.py",
+      "main": null,
+      "recovery": "7ffa040ad1cad0a2f1cca293ee3b6f7c6cbf923b"
+    },
+    {
+      "path": "tools/nvarc_uncapped_runtime.py",
+      "main": null,
+      "recovery": "ccd636bccc0b2cd8feedc0ae6f59d5959cfa16c1"
+    },
+    {
+      "path": "tools/nvarc_uncapped_source.py",
+      "main": null,
+      "recovery": "2da28ea8f3cb51bfb5f83b80201c7b010c2d3f27"
+    },
+    {
+      "path": "tools/nvarc_uncapped_training.py",
+      "main": null,
+      "recovery": "1ad77481217bea4abc48ebd5e612c58a1a164866"
+    },
+    {
+      "path": "tools/publish_nvarc_uncapped_quicksave.py",
+      "main": null,
+      "recovery": "320e9ee9c80ad7ffb86153988800c399c708d402"
+    },
+    {
+      "path": "tools/stage_nvarc_uncapped_notebook.py",
+      "main": null,
+      "recovery": "c92d9d84441b5240cfd3a174d5a9a9706af4b513"
+    }
+  ],
+  "recommended_local_base": "7ac9cca0795e8d8f98f1e2cdb7bcb546fbe30b67",
+  "recommended_remote_base": "623e7bb4eae20880f784f2317c8761e979c708f5",
+  "reason": "Main merged previous recovery snapshot. The latest recovery adds the uncapped notebook work without losing any main changes."
+}

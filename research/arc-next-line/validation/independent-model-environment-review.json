@@ -1,0 +1,48 @@
+{
+  "status": "passed_cpu_model_material_and_environment_contract_review",
+  "review_time_utc": "2026-10-08T07:28:37Z",
+  "scope": [
+    "exact three official source identities and full upstream file SHA anchors",
+    "supplemental license provenance and model-card preservation",
+    "full vocabulary/token mapping/template checks",
+    "native model routing and source tensor shape/parameter coverage",
+    "exact per-layer LoRA target coverage",
+    "common exact dependency versions/core wheel hashes and runtime wheel ABI/platform gates",
+    "narrow explicit-only public material preparation"
+  ],
+  "tests": {
+    "command": "python -m unittest tests.test_arc_next_training tests.test_arc_next_materials tests.test_arc_next_agent tests.test_arc_next_workflow -q",
+    "result": "passed",
+    "count": 76,
+    "new_gpu_calls": 0,
+    "weights_downloaded": false
+  },
+  "resolved_findings": [
+    "full HF metadata/README/auxiliary files included",
+    "supplemental LICENSE checked and copied for Granite/Seed",
+    "adapter exports preserve LICENSE and BASE_MODEL_CARD.md",
+    "LoRA exact per-layer 280/248/224 coverage",
+    "full source tensor key/shape/count coverage and explicit Qwen MTP omission",
+    "runtime full token mapping/special IDs compared",
+    "all eight core package versions and official wheel SHA anchored",
+    "each wheel ABI tag checked against runtime and exact Python/Linux x86_64 lock",
+    "baseline forbids optional FLA/causal-conv1d/quantization/serving modules and records pure Torch DeltaNet versus SDPA",
+    "requested G4 driver/UUID/vCPU/host-memory local observations gated"
+  ],
+  "remaining_limits": [
+    "No actual model-weight load, tokenizer package import, optimizer step, GPU kernel probe, or four-L4 qualification performed in this review.",
+    "Qwen full conditional container is deliberately retained with text-only calls; vision memory remains frozen/resident.",
+    "No complete materialized transitive wheel lock or full model weights are delivered by this research.",
+    "GPU, model quality and official submission readiness remain false.",
+    "Qwen baseline deliberately uses pure PyTorch DeltaNet reference operations; its training throughput and memory remain unmeasured."
+  ],
+  "sha256": {
+    "tools/arc_next_models.py": "9b050596953a29ba6b3896b2c9f5b3aa867dec5eb1b3ff23923fe47b6ef0f058",
+    "tools/arc_next_training.py": "103737a2beea853200782232738ffd07fd34b176423f8b0024c08c3aad58e76c",
+    "tools/arc_next_materials.py": "582c82603f271757c56eda846cb4e724d3b90485906e7a48d9bb3ee34af4320c",
+    "tests/test_arc_next_training.py": "229fbfaadacfd97624c7ce3d44b7d55b5e2414a653e599a65787145d4da3c2f0",
+    "tests/test_arc_next_materials.py": "afe171a7eeed3025fa94eae9f54b89b8d6760221a3a05de975fe68aa6639238f",
+    "research/arc-next-line/model-source-lock.json": "8cf82737a0c6c92d0d26f3a7a268e59c55f4a4de213733777f71324930ece239",
+    "research/arc-next-line/model-hardware-memo.md": "e62f5a64471d8090e5781ac81b9f2129fa21edb2af3aa63c1de4a08120c971e6"
+  }
+}
