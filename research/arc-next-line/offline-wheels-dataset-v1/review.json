@@ -1,0 +1,34 @@
+{
+  "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+  "dataset_id": 12444586,
+  "private": true,
+  "provider_status": {
+    "status": "ready",
+    "current_version_number": 1
+  },
+  "file_count": 143,
+  "metadata_total_bytes": 3961235096,
+  "full_wheels_downloaded_here": false,
+  "wheel_count": 52,
+  "locked_wheel_bytes": 3959690542,
+  "remote_lock_files_verified": {
+    "wheel-lock.json": {
+      "bytes": 14045,
+      "sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052"
+    },
+    "requirements.lock": {
+      "bytes": 5147,
+      "sha256": "5fdbd59850d97d8307e8afd1e922b65405e823a0a36aab8f0e3f9c0add7db6f1"
+    }
+  },
+  "core_source_pins_verified": true,
+  "missing_wheel_paths": [],
+  "wrong_wheel_sizes": [],
+  "wheel_paths_and_sizes_verified": true,
+  "local_installation_receipt_still_required": true,
+  "exact_expected_dataset_id_and_version": true,
+  "exact_expected_lock_hashes": true,
+  "listed_total_bytes": 3961235096,
+  "provider_inventory_passed": true,
+  "local_full_roundtrip_attestation": "research/arc-next-line/offline-local-final-attestation.json"
+}

@@ -1,0 +1,37 @@
+{
+  "pypi_metadata_url": "https://pypi.org/pypi/setuptools/84.0.0/json",
+  "wheel_url": "https://files.pythonhosted.org/packages/95/9c/c510029fc6ef33a6275cd2c5d3cecd6613dfd6aa401d57c54f1c18852ccf/setuptools-84.0.0-py3-none-any.whl",
+  "filename": "setuptools-84.0.0-py3-none-any.whl",
+  "bytes": 818216,
+  "published_sha256": "51a52592b3b99e102b609654876bd65f19f999935166d1352678931132b0c670",
+  "actual_sha256": "51a52592b3b99e102b609654876bd65f19f999935166d1352678931132b0c670",
+  "root_metadata": [
+    "setuptools-84.0.0.dist-info/METADATA"
+  ],
+  "nested_metadata": [
+    "setuptools/_vendor/autocommand-2.2.2.dist-info/METADATA",
+    "setuptools/_vendor/backports.tarfile-1.2.0.dist-info/METADATA",
+    "setuptools/_vendor/importlib_metadata-8.7.1.dist-info/METADATA",
+    "setuptools/_vendor/jaraco.text-4.0.0.dist-info/METADATA",
+    "setuptools/_vendor/jaraco_context-6.1.0.dist-info/METADATA",
+    "setuptools/_vendor/jaraco_functools-4.4.0.dist-info/METADATA",
+    "setuptools/_vendor/more_itertools-10.8.0.dist-info/METADATA",
+    "setuptools/_vendor/packaging-26.0.dist-info/METADATA",
+    "setuptools/_vendor/platformdirs-4.4.0.dist-info/METADATA",
+    "setuptools/_vendor/tomli-2.4.0.dist-info/METADATA",
+    "setuptools/_vendor/wheel-0.46.3.dist-info/METADATA",
+    "setuptools/_vendor/zipp-3.23.0.dist-info/METADATA"
+  ],
+  "outer_name": "setuptools",
+  "outer_version": "84.0.0",
+  "old_parser_results": {
+    "offline": {
+      "error_type": "OfflineEnvironmentError",
+      "error": "Exactly one bounded wheel METADATA is required"
+    },
+    "original": {
+      "error_type": "ValueError",
+      "error": "One standard wheel metadata identity required"
+    }
+  }
+}

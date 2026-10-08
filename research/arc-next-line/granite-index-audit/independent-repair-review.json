@@ -1,0 +1,55 @@
+{
+  "blocking_code_findings": [],
+  "contract_checks": [
+    "Original v1 still rejects inconsistent index; corrected bytes cannot replace original in v1",
+    "Global official PINNED_FILES anchors remain unchanged",
+    "Repair restricted to exact known Granite revision, source index and exact original manifest bytes",
+    "Every original pinned file and supplemental license is fully hashed before destination creation",
+    "Fresh non-nested destination; source index/manifest retained independently under provenance",
+    "Only index shard map and payload total repaired; corrected index independently anchored",
+    "All weights, configuration, native tokenizer/template, README and license copied or unchanged hardlinked",
+    "Derived provenance and modification notice exact; altered or missing members rejected",
+    "v2 regenerates index from actual headers before ordinary full-file/hash/config/native-vocabulary validation",
+    "Default disabled; no model imports, network or GPU actions",
+    "Canonical exact provenance/inventory comparisons reject bool/int and int/float aliases"
+  ],
+  "format": "irisx/independent-granite-index-repair-review-v1",
+  "operational_notes": [
+    "Default hardlink mode shares unchanged weight inodes; both source and derived roots must remain immutable. Copy mode isolates them.",
+    "Pinned Transformers 5.8.1 wheel hash verified locally; disk-offload code consumes index weight_map directly, while other loading paths may enumerate actual shard headers. Inconsistent index does not prove every load path fails.",
+    "Public header evidence establishes inconsistency, not the upstream publisher internal cause."
+  ],
+  "remaining_production_gates": [
+    "Local worker must run enabled repair and validate actual full production shard files",
+    "No real HF model load was performed or implied by this review",
+    "No GPU/runtime/training/accuracy/deployment qualification was performed or implied",
+    "Aggregate repository validation and exact published Dataset byte bindings remain parent-owned"
+  ],
+  "result": "PASS_OFFLINE_CODE_AND_PUBLIC_HEADER_PROOF",
+  "review_scope": "Narrow exact-revision derivation and v2 validation, without full production shard bytes or model loading",
+  "source_files": {
+    "tests/test_arc_next_index_repair.py": "961f2b861fde4a3b1c2edd08e93c288c134c5e6b19b93a28ac4d196678cf006a",
+    "tools/arc_next_index_repair.py": "05d2855e6029d873f0e74938e73d11ed7a21b72e0a630619b4415d3ebf3ac030",
+    "tools/arc_next_models.py": "87395d439679c1a6cc563da78e4ed7b5aa6244ec083564b9d5870a1fee8420b1"
+  },
+  "source_revision": "f8de16cdcdbc6c779ca517604e050d82cc119e44",
+  "verification": {
+    "additional_independent_controls": {
+      "passed": 25,
+      "receipt": "additional-controls.json"
+    },
+    "existing_next_line_tests": {
+      "passed": 134,
+      "receipt": "existing-tests.log",
+      "run": 135,
+      "skip": "optional CPU Jinja2 unavailable",
+      "skipped": 1
+    },
+    "focused_unit_tests": {
+      "passed": 35,
+      "receipt": "repair-tests-final.log",
+      "skipped": 0
+    },
+    "independent_public_recomputation": "public-proof-review.json"
+  }
+}

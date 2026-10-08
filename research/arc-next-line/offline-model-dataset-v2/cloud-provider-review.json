@@ -1,0 +1,56 @@
+{
+  "reference": "danielwuu/iris-arc-granite42-8b-offline/2",
+  "dataset_id": 12442718,
+  "private": true,
+  "status": {
+    "status": "ready",
+    "current_version_number": 2
+  },
+  "file_count": 19,
+  "expected_file_count": 19,
+  "file_sizes_match_exact_expected_inventory": true,
+  "metadata_total_bytes": 17593054916,
+  "listed_bytes": 17593054916,
+  "full_shards_downloaded_here": false,
+  "remote_small_file_hashes_verified": {
+    "irisx-model-material.json": {
+      "bytes": 3488,
+      "sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99"
+    },
+    "model.safetensors.index.json": {
+      "bytes": 27695,
+      "sha256": "2a8a723176e2f695b1d7cfa8a704dd41ad8149731dda261b3d9fc50f2a1bd375"
+    },
+    "provenance/model.safetensors.index.json": {
+      "bytes": 31357,
+      "sha256": "d37ecbd9468d7925034dc40e9633509ef746f54d52ac6050e2ffc3e365e31504"
+    },
+    "provenance/irisx-model-material.json": {
+      "bytes": 2342,
+      "sha256": "8a6716cc1a1dfa11c3656024e902f4509ad48ad11d1485d1da401aac17f536e8"
+    },
+    "provenance/INDEX_REPAIR_NOTICE.txt": {
+      "bytes": 900,
+      "sha256": "ff89d8292c773788f7914fc027e73ea0306279d604865f5fdfd2349e8c0845ef"
+    },
+    "LICENSE": {
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "config.json": {
+      "bytes": 907,
+      "sha256": "85611f4e34633d4e148e6a5f64bc2d3a23ebbc2b014bc87fbda764eecf261cd9"
+    },
+    "tokenizer_config.json": {
+      "bytes": 17677,
+      "sha256": "2007f26df166ed10a2d6fa881c1c8f3cdd151e451469f59b274897f14449835f"
+    },
+    "chat_template.jinja": {
+      "bytes": 9013,
+      "sha256": "f0ba43f79b3cabca5e5a7584c77aec92f49feae45cdf7779c87d9fc54cd90258"
+    }
+  },
+  "full_model_loading_verified": false,
+  "gpu_executed": false,
+  "expected_model_manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99"
+}

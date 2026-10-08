@@ -1,0 +1,10 @@
+{
+  "id": "danielwuu/iris-arc-next-runtime",
+  "title": "IRIS ARC Next Runtime",
+  "licenses": [
+    {
+      "name": "other"
+    }
+  ],
+  "description": "Private independently versioned IRIS-X offline runtime. IRIS-X program source is proprietary and is not offered under an open-source license. Derived ARC-AGI-2 training demonstrations retain Apache-2.0 licensing; their full original license and modification attribution are included in licenses/ARC-AGI-2-LICENSE.txt and NOTICE.txt. Exact source commit: 1a996dce0bdb08a3002cba69527dadb72a37bba9. Contains only code, source locks, and 32 training / 4 development task-group demonstrations; original test fields were removed. No model weights, wheel binaries, secrets, hidden/evaluation test answers or executed model outputs. All runtime flags remain manual; GPU compatibility is unverified."
+}

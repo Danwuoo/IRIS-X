@@ -1,0 +1,24 @@
+{
+  "notebook_sha256": "e20e45fa00022ab4cde0895153bd7ea85ef1fd84e16819f52ee6f4d9129be9ed",
+  "all_defaults_inert": true,
+  "execution_type": "QUICK_SAVE",
+  "gpu_executed": false,
+  "pins": {
+    "runtime": {
+      "reference": "danielwuu/iris-arc-next-runtime/4",
+      "manifest_sha256": "ab4e3058f56df5878627520adcf1d172f4121bfed8309c3de0afcefb482f391b",
+      "private": true
+    },
+    "model": {
+      "reference": "danielwuu/iris-arc-granite42-8b-offline/2",
+      "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+      "private": true
+    },
+    "wheels": {
+      "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+      "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+      "private": true
+    }
+  },
+  "path": ".irisx/offline-notebook-v2-package"
+}

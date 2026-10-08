@@ -1,0 +1,29 @@
+{
+  "scope": "exact native Jinja rendering with Transformers 5.8.1 whitespace/sandbox settings; character tokenizer only for label-mask control",
+  "real_tokenizer_executed": false,
+  "model_executed": false,
+  "models": [
+    {
+      "model_key": "granite-4.2-8b",
+      "template_sha256": "f0ba43f79b3cabca5e5a7584c77aec92f49feae45cdf7779c87d9fc54cd90258",
+      "native_plain_completion_extends_generation_prompt": true,
+      "target_text_is_supervised": true,
+      "thinking_prefix_is_masked": true
+    },
+    {
+      "model_key": "qwen3.5-9b",
+      "template_sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+      "native_plain_completion_extends_generation_prompt": true,
+      "target_text_is_supervised": true,
+      "thinking_prefix_is_masked": true
+    },
+    {
+      "model_key": "seed-coder-8b-reasoning",
+      "template_sha256": "4c0696ce96da7decef9d0419c2affed0a1f9c81e5a04d57be3e11c35d760b0c3",
+      "native_plain_completion_extends_generation_prompt": true,
+      "target_text_is_supervised": true,
+      "thinking_prefix_is_masked": true
+    }
+  ],
+  "status": "passed"
+}

@@ -1,0 +1,590 @@
+[
+  {
+    "package": "accelerate",
+    "wheel_member": "accelerate-1.10.1.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/accelerate/743ee73e6ec1-LICENSE",
+    "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "bytes": 11357
+  },
+  {
+    "package": "annotated-doc",
+    "wheel_member": "annotated_doc-0.0.5.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/annotated-doc/ee27fe4541b5-LICENSE",
+    "sha256": "fff170779a6acbf65abdb405c087f1cee1786691e4a96a4034517e4a504a0cdf",
+    "bytes": 1086
+  },
+  {
+    "package": "anyio",
+    "wheel_member": "anyio-4.15.1.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/anyio/320fb46da982-LICENSE",
+    "sha256": "5361ac9dc58f2ef5fd2e9b09c68297c17f04950909bbc8023bdb82eacf22c2b0",
+    "bytes": 1081
+  },
+  {
+    "package": "certifi",
+    "wheel_member": "certifi-2026.7.22.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/certifi/c1aedbaa6db1-LICENSE",
+    "sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7",
+    "bytes": 989
+  },
+  {
+    "package": "click",
+    "wheel_member": "click-8.5.0.dist-info/licenses/LICENSE.txt",
+    "dataset_path": "licenses/click/1c294ee0ed0f-LICENSE.txt",
+    "sha256": "9a8ad106a394e853bfe21f42f4e72d592819a22805d991b5f3275029292b658d",
+    "bytes": 1475
+  },
+  {
+    "package": "filelock",
+    "wheel_member": "filelock-4.0.12.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/filelock/62384427cd8e-LICENSE",
+    "sha256": "608c89d5060ae9921adccf3236695bc654a9946e12323ef6c021dfa04e294d48",
+    "bytes": 1088
+  },
+  {
+    "package": "fsspec",
+    "wheel_member": "fsspec-2026.9.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/fsspec/44ac41031103-LICENSE",
+    "sha256": "2dc35496ce53a7307915c008a844aad53e772b49b34cdd00445067691407ec94",
+    "bytes": 1513
+  },
+  {
+    "package": "h11",
+    "wheel_member": "h11-0.16.0.dist-info/licenses/LICENSE.txt",
+    "dataset_path": "licenses/h11/39d084ff20ff-LICENSE.txt",
+    "sha256": "37db5bb85926db28a427a25867f10b1232003aea1be69ccb851138adb8e6f361",
+    "bytes": 1124
+  },
+  {
+    "package": "hf-xet",
+    "wheel_member": "hf_xet-1.7.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/hf-xet/9f26db9edf15-LICENSE",
+    "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "bytes": 11357
+  },
+  {
+    "package": "httpcore",
+    "wheel_member": "httpcore-1.0.9.dist-info/licenses/LICENSE.md",
+    "dataset_path": "licenses/httpcore/b6618d8dc766-LICENSE.md",
+    "sha256": "fdcb59154c74cbaba16a11242f7740bea9f23d6feb5547917d8c5f94a80392a5",
+    "bytes": 1518
+  },
+  {
+    "package": "httpx",
+    "wheel_member": "httpx-0.28.1.dist-info/licenses/LICENSE.md",
+    "dataset_path": "licenses/httpx/1a79882f84c4-LICENSE.md",
+    "sha256": "4ec59d544f12b5f539a3a716fd321ac58ccd8030b465221f2c880200cdf28d8d",
+    "bytes": 1508
+  },
+  {
+    "package": "huggingface-hub",
+    "wheel_member": "huggingface_hub-1.32.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/huggingface-hub/3ae92f8049b1-LICENSE",
+    "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "bytes": 11357
+  },
+  {
+    "package": "idna",
+    "wheel_member": "idna-3.20.dist-info/licenses/LICENSE.md",
+    "dataset_path": "licenses/idna/d91c8e1dcc4f-LICENSE.md",
+    "sha256": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+    "bytes": 1541
+  },
+  {
+    "package": "jinja2",
+    "wheel_member": "jinja2-3.1.6.dist-info/licenses/LICENSE.txt",
+    "dataset_path": "licenses/jinja2/b0ec1e6164c9-LICENSE.txt",
+    "sha256": "3b49dcee4105eb37bac10faf1be260408fe85d252b8e9df2e0979fc1e094437b",
+    "bytes": 1475
+  },
+  {
+    "package": "markdown-it-py",
+    "wheel_member": "markdown_it_py-4.2.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/markdown-it-py/d0465fdc9e24-LICENSE",
+    "sha256": "4a2260d6e2cd0f5a151a1e86dbfe7d3ed552b1e2beabf9941c1ba5c49cbce484",
+    "bytes": 1078
+  },
+  {
+    "package": "markdown-it-py",
+    "wheel_member": "markdown_it_py-4.2.0.dist-info/licenses/LICENSE.markdown-it",
+    "dataset_path": "licenses/markdown-it-py/b883c1f02568-LICENSE.markdown-it",
+    "sha256": "792c48c5a849a15fdf9e37e8bcf9e6d1dd13b32b46c642a748a0a46a9919d473",
+    "bytes": 1073
+  },
+  {
+    "package": "markupsafe",
+    "wheel_member": "markupsafe-3.0.4.dist-info/licenses/LICENSE.txt",
+    "dataset_path": "licenses/markupsafe/edf850161d51-LICENSE.txt",
+    "sha256": "489a8e1108509ed98a37bb983e11e0f7e1d31f0bd8f99a79c8448e7ff37d07ea",
+    "bytes": 1475
+  },
+  {
+    "package": "mdurl",
+    "wheel_member": "mdurl-0.1.2.dist-info/LICENSE",
+    "dataset_path": "licenses/mdurl/95bd6addf305-LICENSE",
+    "sha256": "7c605df6e28667a9603118e98274f64a49ce3eed0d26fccce9534a345e0ef955",
+    "bytes": 2338
+  },
+  {
+    "package": "mpmath",
+    "wheel_member": "mpmath-1.3.0.dist-info/LICENSE",
+    "dataset_path": "licenses/mpmath/21b64ce33aa4-LICENSE",
+    "sha256": "c26cae81da4508e5e249985777a33821f183223ebb74d7f8cfbf90fe7eef2fb7",
+    "bytes": 1537
+  },
+  {
+    "package": "networkx",
+    "wheel_member": "networkx-3.7.dist-info/licenses/LICENSE.txt",
+    "dataset_path": "licenses/networkx/3a70ad943ce5-LICENSE.txt",
+    "sha256": "6025f323ea29dc2f0ee0abd9523bf910186f55b0e148e6ebf646c55566278e2e",
+    "bytes": 1763
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/LICENSE.txt",
+    "dataset_path": "licenses/numpy/0f552da71ad2-LICENSE.txt",
+    "sha256": "4860083caa0de2ac3292ca98bd074bd8f45d8b32624e37b1e70a240bff61e488",
+    "bytes": 46794
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/_core/include/numpy/libdivide/LICENSE.txt",
+    "dataset_path": "licenses/numpy/14c3180f75c1-LICENSE.txt",
+    "sha256": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
+    "bytes": 1018
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/_core/src/common/pythoncapi-compat/COPYING",
+    "dataset_path": "licenses/numpy/70f18db2fe1d-COPYING",
+    "sha256": "3f2c1ffa76383a55ae0aac01c9737cd70050dff63e1f026694fbe9d662573c98",
+    "bytes": 690
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/_core/src/highway/LICENSE",
+    "dataset_path": "licenses/numpy/c38cab56d01c-LICENSE",
+    "sha256": "e340270d4f64384569a91d546acb5b094d69ce47f0c015db77abb74dc6f815af",
+    "bytes": 20785
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/_core/src/multiarray/dragon4_LICENSE.txt",
+    "dataset_path": "licenses/numpy/ba28e7ff75ea-dragon4_LICENSE.txt",
+    "sha256": "f7b14309e5f54e5022b26448eefd419988ada2aec01d3c1162d84a0ea8f21f2c",
+    "bytes": 1414
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/_core/src/npysort/x86-simd-sort/LICENSE.md",
+    "dataset_path": "licenses/numpy/34e0a8227846-LICENSE.md",
+    "sha256": "211e7d737d6179a08f791ebb0a99897ce7cd2457410c542876d125576edfe910",
+    "bytes": 1514
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/_core/src/umath/svml/LICENSE",
+    "dataset_path": "licenses/numpy/a62d8b7410f9-LICENSE",
+    "sha256": "c17011467b4fe6e20fbfbeda4df09e58c2bca5480a063e55735a4000a379aad9",
+    "bytes": 1543
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/fft/pocketfft/LICENSE.md",
+    "dataset_path": "licenses/numpy/237d5ce190d1-LICENSE.md",
+    "sha256": "a85ca13fdf90160b64a0698215868c13b74d835ad0a4e2ba44713b8c5058a056",
+    "bytes": 1498
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/linalg/lapack_lite/LICENSE.txt",
+    "dataset_path": "licenses/numpy/606163a509c6-LICENSE.txt",
+    "sha256": "a14cc25e10d40a3aa705b7de2fb764a6535d8ee9b2db4e1724900585457dfd55",
+    "bytes": 2266
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/ma/LICENSE",
+    "dataset_path": "licenses/numpy/aefd64774c70-LICENSE",
+    "sha256": "05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6",
+    "bytes": 1593
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/random/LICENSE.md",
+    "dataset_path": "licenses/numpy/68188ef77bc0-LICENSE.md",
+    "sha256": "103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f",
+    "bytes": 3511
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/random/src/distributions/LICENSE.md",
+    "dataset_path": "licenses/numpy/7d261385d7c1-LICENSE.md",
+    "sha256": "469778be8f33d54e1bcaab28c281cc472916d2d273f835e55bc487d30503face",
+    "bytes": 2745
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/random/src/mt19937/LICENSE.md",
+    "dataset_path": "licenses/numpy/caa67dbe4c1e-LICENSE.md",
+    "sha256": "0e111337b25494a773106695f0e799f642b8567aaacca4f116a74a8177179156",
+    "bytes": 2926
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/random/src/pcg64/LICENSE.md",
+    "dataset_path": "licenses/numpy/33f4c2195fc4-LICENSE.md",
+    "sha256": "e7d4f4fb20358f314210a892ae17351e04993813646f697ec387385ca2a36918",
+    "bytes": 1154
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/random/src/philox/LICENSE.md",
+    "dataset_path": "licenses/numpy/f384fe378597-LICENSE.md",
+    "sha256": "6f5828a57223d4cc7f8ea505a2623e7b978b242752c1515e355f46ba2cec1800",
+    "bytes": 1509
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/random/src/sfc64/LICENSE.md",
+    "dataset_path": "licenses/numpy/fa40db527ec8-LICENSE.md",
+    "sha256": "9d4098846018319cd68e228ee6220361787f73bccbf00237a85e4fc9621b998f",
+    "bytes": 1226
+  },
+  {
+    "package": "numpy",
+    "wheel_member": "numpy-2.5.3.dist-info/licenses/numpy/random/src/splitmix64/LICENSE.md",
+    "dataset_path": "licenses/numpy/892e6e9281e0-LICENSE.md",
+    "sha256": "268b0ca06759d31ea3ca68dd35f20e877916e927b1c2a835e4592a3c4354b1f9",
+    "bytes": 332
+  },
+  {
+    "package": "nvidia-cublas-cu12",
+    "wheel_member": "nvidia_cublas_cu12-12.8.4.1.dist-info/License.txt",
+    "dataset_path": "licenses/nvidia-cublas-cu12/5e4ae5d7e2d4-License.txt",
+    "sha256": "ad6f5853fba0ca0d159d0f58d49ae49830c2f8c93f7a92648b9ce90adb4c6ccd",
+    "bytes": 59262
+  },
+  {
+    "package": "nvidia-cuda-cupti-cu12",
+    "wheel_member": "nvidia_cuda_cupti_cu12-12.8.90.dist-info/License.txt",
+    "dataset_path": "licenses/nvidia-cuda-cupti-cu12/5e505b7d0519-License.txt",
+    "sha256": "ad6f5853fba0ca0d159d0f58d49ae49830c2f8c93f7a92648b9ce90adb4c6ccd",
+    "bytes": 59262
+  },
+  {
+    "package": "nvidia-cuda-nvrtc-cu12",
+    "wheel_member": "nvidia_cuda_nvrtc_cu12-12.8.93.dist-info/License.txt",
+    "dataset_path": "licenses/nvidia-cuda-nvrtc-cu12/b489c84cf8fc-License.txt",
+    "sha256": "ad6f5853fba0ca0d159d0f58d49ae49830c2f8c93f7a92648b9ce90adb4c6ccd",
+    "bytes": 59262
+  },
+  {
+    "package": "nvidia-cuda-runtime-cu12",
+    "wheel_member": "nvidia_cuda_runtime_cu12-12.8.90.dist-info/License.txt",
+    "dataset_path": "licenses/nvidia-cuda-runtime-cu12/58ef80990022-License.txt",
+    "sha256": "ad6f5853fba0ca0d159d0f58d49ae49830c2f8c93f7a92648b9ce90adb4c6ccd",
+    "bytes": 59262
+  },
+  {
+    "package": "nvidia-cudnn-cu12",
+    "wheel_member": "nvidia_cudnn_cu12-9.10.2.21.dist-info/licenses/License.txt",
+    "dataset_path": "licenses/nvidia-cudnn-cu12/7f5a404a2325-License.txt",
+    "sha256": "49cf79bdb35734b52fe6203013b3bd759f81e998cd32aa2c65c51db9a88c61d2",
+    "bytes": 18174
+  },
+  {
+    "package": "nvidia-cufft-cu12",
+    "wheel_member": "nvidia_cufft_cu12-11.3.3.83.dist-info/License.txt",
+    "dataset_path": "licenses/nvidia-cufft-cu12/908f2552fff3-License.txt",
+    "sha256": "ad6f5853fba0ca0d159d0f58d49ae49830c2f8c93f7a92648b9ce90adb4c6ccd",
+    "bytes": 59262
+  },
+  {
+    "package": "nvidia-cufile-cu12",
+    "wheel_member": "nvidia_cufile_cu12-1.13.1.3.dist-info/License.txt",
+    "dataset_path": "licenses/nvidia-cufile-cu12/c3438ceefb81-License.txt",
+    "sha256": "ad6f5853fba0ca0d159d0f58d49ae49830c2f8c93f7a92648b9ce90adb4c6ccd",
+    "bytes": 59262
+  },
+  {
+    "package": "nvidia-curand-cu12",
+    "wheel_member": "nvidia_curand_cu12-10.3.9.90.dist-info/License.txt",
+    "dataset_path": "licenses/nvidia-curand-cu12/2e17d9e4eb9e-License.txt",
+    "sha256": "ad6f5853fba0ca0d159d0f58d49ae49830c2f8c93f7a92648b9ce90adb4c6ccd",
+    "bytes": 59262
+  },
+  {
+    "package": "nvidia-cusolver-cu12",
+    "wheel_member": "nvidia_cusolver_cu12-11.7.3.90.dist-info/License.txt",
+    "dataset_path": "licenses/nvidia-cusolver-cu12/b582871f50f2-License.txt",
+    "sha256": "ad6f5853fba0ca0d159d0f58d49ae49830c2f8c93f7a92648b9ce90adb4c6ccd",
+    "bytes": 59262
+  },
+  {
+    "package": "nvidia-cusparse-cu12",
+    "wheel_member": "nvidia_cusparse_cu12-12.5.8.93.dist-info/License.txt",
+    "dataset_path": "licenses/nvidia-cusparse-cu12/2f0e6f806bd1-License.txt",
+    "sha256": "ad6f5853fba0ca0d159d0f58d49ae49830c2f8c93f7a92648b9ce90adb4c6ccd",
+    "bytes": 59262
+  },
+  {
+    "package": "nvidia-nccl-cu12",
+    "wheel_member": "nvidia_nccl_cu12-2.27.3.dist-info/licenses/License.txt",
+    "dataset_path": "licenses/nvidia-nccl-cu12/c4ba5b728a05-License.txt",
+    "sha256": "0f0174a6b4e0b33ac26375bf729533075b32f4c51a5b6802a3d742d7dcdc9a76",
+    "bytes": 1895
+  },
+  {
+    "package": "nvidia-nvjitlink-cu12",
+    "wheel_member": "nvidia_nvjitlink_cu12-12.8.93.dist-info/License.txt",
+    "dataset_path": "licenses/nvidia-nvjitlink-cu12/6459640b141e-License.txt",
+    "sha256": "ad6f5853fba0ca0d159d0f58d49ae49830c2f8c93f7a92648b9ce90adb4c6ccd",
+    "bytes": 59262
+  },
+  {
+    "package": "nvidia-nvtx-cu12",
+    "wheel_member": "nvidia_nvtx_cu12-12.8.90.dist-info/License.txt",
+    "dataset_path": "licenses/nvidia-nvtx-cu12/ce4aa49ddcdd-License.txt",
+    "sha256": "9e45e856bedccee9f67254082ca11851d954de2fed7448c4bed19ad9aab99a91",
+    "bytes": 12262
+  },
+  {
+    "package": "packaging",
+    "wheel_member": "packaging-26.3.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/packaging/11c854e2fea5-LICENSE",
+    "sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+    "bytes": 197
+  },
+  {
+    "package": "packaging",
+    "wheel_member": "packaging-26.3.dist-info/licenses/LICENSE.APACHE",
+    "dataset_path": "licenses/packaging/e9a5bac8b5a0-LICENSE.APACHE",
+    "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+    "bytes": 10174
+  },
+  {
+    "package": "packaging",
+    "wheel_member": "packaging-26.3.dist-info/licenses/LICENSE.BSD",
+    "dataset_path": "licenses/packaging/ef96a0844cda-LICENSE.BSD",
+    "sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+    "bytes": 1344
+  },
+  {
+    "package": "peft",
+    "wheel_member": "peft-0.21.0.dist-info/LICENSE",
+    "dataset_path": "licenses/peft/14f80aa4dbd7-LICENSE",
+    "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "bytes": 11357
+  },
+  {
+    "package": "psutil",
+    "wheel_member": "psutil-7.2.2.dist-info/LICENSE",
+    "dataset_path": "licenses/psutil/7d70cfb623ec-LICENSE",
+    "sha256": "b89c063b3786e28e0c0a38f1931db61fed35e69dd2a2966fbecffee0f46c8d10",
+    "bytes": 1548
+  },
+  {
+    "package": "pygments",
+    "wheel_member": "pygments-2.21.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/pygments/62c35449c976-LICENSE",
+    "sha256": "a9d66f1d526df02e29dce73436d34e56e8632f46c275bbdffc70569e882f9f17",
+    "bytes": 1331
+  },
+  {
+    "package": "pyyaml",
+    "wheel_member": "pyyaml-6.0.3.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/pyyaml/1f5c94674bb0-LICENSE",
+    "sha256": "8d3928f9dc4490fd635707cb88eb26bd764102a7282954307d3e5167a577e8a4",
+    "bytes": 1101
+  },
+  {
+    "package": "regex",
+    "wheel_member": "regex-2026.9.29.dist-info/licenses/LICENSE.txt",
+    "dataset_path": "licenses/regex/0fb05a2e9284-LICENSE.txt",
+    "sha256": "bff55ef4cdcc8c14ce259f8e8ab60e264418440d6335f4dc138273fbd506144d",
+    "bytes": 11584
+  },
+  {
+    "package": "rich",
+    "wheel_member": "rich-15.0.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/rich/bb9c3b1eeeac-LICENSE",
+    "sha256": "deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15",
+    "bytes": 1056
+  },
+  {
+    "package": "safetensors",
+    "wheel_member": "safetensors-0.8.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/safetensors/07c67dcb9a0a-LICENSE",
+    "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "bytes": 11357
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/importlib_metadata-8.7.1.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/setuptools/4a7fd6a9c689-LICENSE",
+    "sha256": "458502e12d97bbf64438606a20044aa85eb05fb0a8a807bb35dbec253fd1fc04",
+    "bytes": 10278
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/jaraco_context-6.1.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/setuptools/4d09286af1bf-LICENSE",
+    "sha256": "9755a18519666e5f0f4cae3daad3d7012bcae48a600b31237d75e9fe134e6683",
+    "bytes": 1076
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/jaraco_functools-4.4.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/setuptools/63a92caf8157-LICENSE",
+    "sha256": "5a57cb4db85e2a2dd88c290628908add57e3451449e0a9a71fdfb38776fd759d",
+    "bytes": 1076
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/more_itertools-10.8.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/setuptools/6562dd76db57-LICENSE",
+    "sha256": "09f1c8c9e941af3e584d59641ea9b87d83c0cb0fd007eb5ef391a7e2643c1a46",
+    "bytes": 1053
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/packaging-26.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/setuptools/c2780f51d142-LICENSE",
+    "sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+    "bytes": 197
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/packaging-26.0.dist-info/licenses/LICENSE.APACHE",
+    "dataset_path": "licenses/setuptools/123439bfbc43-LICENSE.APACHE",
+    "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+    "bytes": 10174
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/packaging-26.0.dist-info/licenses/LICENSE.BSD",
+    "dataset_path": "licenses/setuptools/c80865de46db-LICENSE.BSD",
+    "sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+    "bytes": 1344
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/platformdirs-4.4.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/setuptools/d6b8bc455754-LICENSE",
+    "sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6",
+    "bytes": 1089
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/tomli-2.4.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/setuptools/1ab641e9121b-LICENSE",
+    "sha256": "b80816b0d530b8accb4c2211783790984a6e3b61922c2b5ee92f3372ab2742fe",
+    "bytes": 1072
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/wheel-0.46.3.dist-info/licenses/LICENSE.txt",
+    "dataset_path": "licenses/setuptools/8b28658c9e81-LICENSE.txt",
+    "sha256": "30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654",
+    "bytes": 1107
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/zipp-3.23.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/setuptools/0e45092c306c-LICENSE",
+    "sha256": "5a57cb4db85e2a2dd88c290628908add57e3451449e0a9a71fdfb38776fd759d",
+    "bytes": 1076
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools-84.0.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/setuptools/aeab75b4c277-LICENSE",
+    "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+    "bytes": 1023
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/autocommand-2.2.2.dist-info/LICENSE",
+    "dataset_path": "licenses/setuptools/b8b1f5f03784-LICENSE",
+    "sha256": "ade78d04982d69972d444a8e14a94f87a2334dd3855cc80348ea8e240aa0df2d",
+    "bytes": 7634
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/backports.tarfile-1.2.0.dist-info/LICENSE",
+    "dataset_path": "licenses/setuptools/c9e41e71fb67-LICENSE",
+    "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+    "bytes": 1023
+  },
+  {
+    "package": "setuptools",
+    "wheel_member": "setuptools/_vendor/jaraco.text-4.0.0.dist-info/LICENSE",
+    "dataset_path": "licenses/setuptools/9fe05a3195b3-LICENSE",
+    "sha256": "86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741",
+    "bytes": 1023
+  },
+  {
+    "package": "shellingham",
+    "wheel_member": "shellingham-1.5.4.dist-info/LICENSE",
+    "dataset_path": "licenses/shellingham/e5daa4cc3ae8-LICENSE",
+    "sha256": "f388fd38cad13112c1dc0f669bbe80e7f84541edbafb72f3030d2ca7642c3c9d",
+    "bytes": 751
+  },
+  {
+    "package": "sympy",
+    "wheel_member": "sympy-1.14.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/sympy/767eeaf795db-LICENSE",
+    "sha256": "07a5e9819f727b4986ad2829c7a29a6320d42575f720eb24d71b7fef573a0286",
+    "bytes": 7885
+  },
+  {
+    "package": "torch",
+    "wheel_member": "torch-2.8.0+cu128.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/torch/de9fbd4e9dac-LICENSE",
+    "sha256": "3994910182010c5641a62d98bf6e549a1f59dffad6325536ff1dd46b48bcbdd5",
+    "bytes": 491608
+  },
+  {
+    "package": "torch",
+    "wheel_member": "torch-2.8.0+cu128.dist-info/licenses/NOTICE",
+    "dataset_path": "licenses/torch/03d982984f02-NOTICE",
+    "sha256": "c2cc7bf0caec7652c2b460a8a470bea1677f241e4ab8e431df34cf17f5a9fec0",
+    "bytes": 23632
+  },
+  {
+    "package": "tqdm",
+    "wheel_member": "tqdm-4.70.1.dist-info/licenses/LICENCE",
+    "dataset_path": "licenses/tqdm/6539f81fd7cb-LICENCE",
+    "sha256": "fcff87c3a47ce8028a8512aa182d4fcf0ad1c90544ee75cf9b343684cac194de",
+    "bytes": 1985
+  },
+  {
+    "package": "transformers",
+    "wheel_member": "transformers-5.8.1.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/transformers/38e5695060a6-LICENSE",
+    "sha256": "77fd4710def9ec3c0f6225800e0235f15a425abd4a8b03559127fcd782612049",
+    "bytes": 11418
+  },
+  {
+    "package": "triton",
+    "wheel_member": "triton-3.4.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/triton/cf59c828addb-LICENSE",
+    "sha256": "92640fb97222fd0a698ff28ce0c3782c172623f8d6c609b557636a80f28fb946",
+    "bytes": 1132
+  },
+  {
+    "package": "typer",
+    "wheel_member": "typer-0.27.3.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/typer/a24d40995bb5-LICENSE",
+    "sha256": "58992cebcf8dfb6e40c4e2112ed12126c243666dca3912a3d78b7ecac4859d49",
+    "bytes": 1086
+  },
+  {
+    "package": "typing-extensions",
+    "wheel_member": "typing_extensions-4.16.0.dist-info/licenses/LICENSE",
+    "dataset_path": "licenses/typing-extensions/2231b6c46c06-LICENSE",
+    "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+    "bytes": 13936
+  }
+]

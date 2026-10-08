@@ -20,3 +20,7 @@ PRODUCT_THESIS.md whitespace=-blank-at-eol
 # Decision 0039 QUICK_SAVE package; its local digest inventory binds these bytes.
 src/irisx/arc_nvarc_editor005.py -text whitespace=cr-at-eol
 tools/nvarc_combined_notebook_editor_005.py.tmpl -text whitespace=cr-at-eol
+
+# Exact offline asset/provider evidence binds original bytes, including CRLF.
+research/arc-next-line/offline-wheels-dataset-v1/* -text whitespace=cr-at-eol
+research/arc-next-line/offline-notebook-v2/* -text whitespace=cr-at-eol

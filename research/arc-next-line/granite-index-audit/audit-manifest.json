@@ -1,0 +1,49 @@
+{
+  "format": "irisx/granite-index-audit-manifest-v1",
+  "source_repository": "ibm-granite/granite-4.2-8b",
+  "source_revision": "f8de16cdcdbc6c779ca517604e050d82cc119e44",
+  "source_index_sha256": "d37ecbd9468d7925034dc40e9633509ef746f54d52ac6050e2ffc3e365e31504",
+  "corrected_index_sha256": "2a8a723176e2f695b1d7cfa8a704dd41ad8149731dda261b3d9fc50f2a1bd375",
+  "headers_downloaded_bytes": 42112,
+  "full_weight_files_downloaded_here": false,
+  "full_weight_hashes_verified_here": false,
+  "gpu_executed": false,
+  "exact_index_assignment_mismatches": 241,
+  "tensor_count": 363,
+  "parameter_count": 8791592960,
+  "parameter_dtype": "BF16",
+  "actual_tensor_payload_bytes": 17583185920,
+  "upstream_index_declared_payload_bytes": 16761102336,
+  "source_shape_difference_is_verified": true,
+  "upstream_internal_cause": "unverified; stale index after re-sharding is an inference, not established fact",
+  "files": {
+    "derived-model.safetensors.index.json": {
+      "bytes": 27695,
+      "sha256": "2a8a723176e2f695b1d7cfa8a704dd41ad8149731dda261b3d9fc50f2a1bd375"
+    },
+    "diagnosis.json": {
+      "bytes": 174569,
+      "sha256": "a785ef85afae737ce7fd675198275092a76fd806f0f171098516ebf12177bcfa"
+    },
+    "model-00001-of-00004.safetensors.header.bin": {
+      "bytes": 9872,
+      "sha256": "9818f7bbae91dcd69dbbac145172b41d2e6797b9fbc227e459c674cfa4cb9c0b"
+    },
+    "model-00002-of-00004.safetensors.header.bin": {
+      "bytes": 13736,
+      "sha256": "e99dd6292701872a7ee805dc2f12ea6df25badfc47b37b3dd01af45fcc3bb5b3"
+    },
+    "model-00003-of-00004.safetensors.header.bin": {
+      "bytes": 14176,
+      "sha256": "868e8059a35e89b12ee16ae47f6d4cc42f4d15d0e24028550747659ab7b0fdbb"
+    },
+    "model-00004-of-00004.safetensors.header.bin": {
+      "bytes": 4328,
+      "sha256": "a4b596e7932a775e64c876cb52db080296ec39d7276d7d167fdabb8d47210c30"
+    },
+    "upstream-model.safetensors.index.json": {
+      "bytes": 31357,
+      "sha256": "d37ecbd9468d7925034dc40e9633509ef746f54d52ac6050e2ffc3e365e31504"
+    }
+  }
+}

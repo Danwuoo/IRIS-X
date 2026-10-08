@@ -1,0 +1,10 @@
+{
+  "id": "danielwuu/iris-arc-next-runtime",
+  "title": "IRIS ARC Next Runtime",
+  "licenses": [
+    {
+      "name": "other"
+    }
+  ],
+  "description": "Private independently versioned IRIS-X offline runtime, source commit b9470a1c93fd80d6a337adcff110d577ab6c0c14. This iteration repairs Ubuntu child startup through an exact-path early .pth guard within the isolated venv, and provides a strict existing-environment migration without reinstalling packages. Parent/plain/spawn CPU tests are checked separately from production local acceptance. IRIS-X code remains proprietary; ARC-AGI-2 demonstrations retain Apache-2.0 licensing and modification notices. Strict Granite derived-index provenance and root wheel metadata identity checks remain unchanged. Contains code, locks and 32 training / 4 development demonstration groups; no weights, wheel binaries, credentials or official evaluation answers. Full model/GPU loading remains unverified."
+}

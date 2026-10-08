@@ -1,0 +1,12 @@
+{
+  "id": 12441532,
+  "ref": "danielwuu/iris-arc-next-runtime",
+  "url": null,
+  "title": "IRIS ARC Next Runtime",
+  "isPrivate": true,
+  "licenseName": "Other (specified in description)",
+  "currentVersionNumber": 2,
+  "totalBytes": 597964,
+  "lastUpdated": "2026-10-08T09:15:30.657Z",
+  "description": "Private independently versioned IRIS-X offline runtime, source commit6990c2e023560fe901e49a79e56f5a2808810ad0. IRIS-X code remains proprietary; ARC-AGI-2 training demonstrations retain Apache-2.0 licensing with full license and modification notices. This revision adds a strict explicit derived-material-v2 contract for one upstream Granite4.2 index inconsistency: preserve exact official index and source manifest, verify all official file hashes, then derive only corrected shard map and total_size. All model weights/configs/tokenizers remain unchanged. Original v1 validator still rejects the defective index. Contains code, locks and32training/4development demonstration groups; no weights, wheel binaries, credentials or official evaluation answers. Local production repair and full HF/GPU loading are not attested by this code artifact."
+}

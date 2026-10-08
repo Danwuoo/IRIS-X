@@ -1,0 +1,207 @@
+{
+  "base_commit": "f771ac2103d635d7bd77825cd749b95e06801a38",
+  "focused_tests": {
+    "command": "python -m unittest tests.test_arc_next_offline_environment tests.test_arc_next_offline -v",
+    "environment": {
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "PIP_NO_INDEX": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONHASHSEED": "0",
+      "TMPDIR": "workspace-backed ignored review directory",
+      "TRANSFORMERS_OFFLINE": "1",
+      "WANDB_MODE": "offline"
+    },
+    "failed": 0,
+    "log_path": ".irisx/early-guard-independent-review/focused-final-tests.log",
+    "log_sha256": "dd0cad86a967ac567f3479e4fd0f20e1bfd3e46199447e4d318c44aa7300e561",
+    "passed": 67,
+    "skipped": 0
+  },
+  "format": "irisx/arc-next-offline-early-guard-independent-review-v1",
+  "guard_checks": [
+    "NETWORK_GUARD and _LAUNCHER literal bytes remain exactly equal to base commit.",
+    "Hook binds the exact environment-owned sitecustomize.py path and expected SHA256; no name-based guard-module import.",
+    "Private same-dictionary exec globals survive site startup and retain the real audit callback references.",
+    "Earlier sitecustomize and matching shadow guard module do not replace the actual guard.",
+    "Plain interpreter, plain -> spawn -> plain, and guarded launcher -> spawn -> plain remain guarded.",
+    "All socket/DNS negative tests assert activation before probing; AF_UNIX policy remains permitted.",
+    "Missing/changed guard exits 78 before user code; optimization cannot remove digest verification.",
+    "Runtime admission requires trusted hook bytes and receipt path/hash/startup fields.",
+    "CPU check requires guard marker and exact guard RuntimeError; OS PermissionError cannot count as guard proof."
+  ],
+  "host": {
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "python": "3.12.14"
+  },
+  "independent_interruption_results": [
+    {
+      "interrupted_write_number": 1,
+      "original_evidence_preserved": true,
+      "runtime_rejected": true
+    },
+    {
+      "interrupted_write_number": 2,
+      "original_evidence_preserved": true,
+      "runtime_rejected": true
+    },
+    {
+      "interrupted_write_number": 3,
+      "original_evidence_preserved": true,
+      "runtime_rejected": true
+    },
+    {
+      "optimized_startup_guard": true,
+      "optimized_tamper_returncode": 78
+    },
+    {
+      "atomic_replace_failure_preserves_target": true,
+      "staging_cleaned": true
+    }
+  ],
+  "independent_migration_results": [
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "wrong exact legacy digest",
+      "message": "Legacy installation receipt differs from the exact expected digest"
+    },
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "mismatched receipt pair",
+      "message": "Legacy receipt pair differs"
+    },
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "modified legacy launcher",
+      "message": "Legacy guard or launcher differs from trusted v3 bytes"
+    },
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "modified legacy guard",
+      "message": "Legacy guard or launcher differs from trusted v3 bytes"
+    },
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "modified interpreter",
+      "message": "Legacy interpreter differs from this CPython executable"
+    },
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "host isolation disabled",
+      "message": "Legacy venv must isolate host packages"
+    },
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "source-lock digest changed",
+      "message": "Wheel lock/source lock binding mismatch"
+    },
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "mounted wheel bytes changed",
+      "message": "Wheel bytes/hash mismatch: tiny_leaf-1.0-py3-none-any.whl"
+    },
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "runtime wheel evidence changed",
+      "message": "Legacy runtime wheel evidence differs from prepared closure"
+    },
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "requirements evidence changed",
+      "message": "Legacy requirements evidence differs"
+    },
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "pip report changed",
+      "message": "Pip resolution did not verify every locked wheel"
+    },
+    {
+      "blocked": "OfflineEnvironmentError",
+      "label": "installed package version changed",
+      "message": "Installed versions or prefix differ from legacy lock"
+    },
+    {
+      "changed_files": [
+        "evidence/environment-lock.json",
+        "installation-receipt.json",
+        "lib/python3.12/site-packages/000_irisx_offline_guard.pth"
+      ],
+      "install_calls": 0,
+      "label": "successful one-time migration",
+      "receipt_originals_preserved": true,
+      "runtime_admission": true
+    }
+  ],
+  "independent_startup_results": [
+    {
+      "label": "earlier sitecustomize + generic guard shadow + persistent globals",
+      "stderr": "",
+      "stdout": "plain-shadow-sitecustomize-ok"
+    },
+    {
+      "label": "plain -> spawn -> plain",
+      "stderr": "",
+      "stdout": "spawn-and-nested-plain-ok"
+    },
+    {
+      "label": "launcher -> spawn -> plain",
+      "stderr": "",
+      "stdout": "spawn-and-nested-plain-ok"
+    },
+    {
+      "label": "guard byte tamper aborts before user code",
+      "returncode": 78
+    },
+    {
+      "label": "missing guard aborts before user code",
+      "returncode": 78
+    }
+  ],
+  "limitations": [
+    "Synthetic CPU fixtures do not verify the real CUDA dependency closure, actual Ubuntu target environment migration, model loading, GPU execution, or scientific quality.",
+    "The Python guard remains defense in depth; InternetOFF is still required for native code and non-Python executables.",
+    "This review does not grant provider publication or execution authority."
+  ],
+  "migration_verification": {
+    "actual_installed_versions_and_optional_absence_validated": true,
+    "changed_files_only": [
+      "lib/python3.12/site-packages/000_irisx_offline_guard.pth",
+      "evidence/environment-lock.json",
+      "installation-receipt.json"
+    ],
+    "incomplete_pair_not_admitted": true,
+    "legacy_pair_equality_required": true,
+    "legacy_receipt_digest_required": true,
+    "original_raw_receipts_and_hashes_preserved_in_both_new_receipts": true,
+    "packages_reinstalled": false,
+    "per_file_replace_atomic": true,
+    "repeated_migration_rejected": true,
+    "source_prepared_runtime_wheels_requirements_and_pip_report_validated": true,
+    "trusted_launcher_guard_executable_validated_before_write": true
+  },
+  "resolved_review_findings": [
+    {
+      "finding": "An assert-based new-hook digest gate could disappear under python -O.",
+      "resolution": "Replaced with explicit if/raise; independent optimized tamper probe exits 78 and durable tests cover -O/-OO."
+    }
+  ],
+  "retained_probes": {
+    ".irisx/early-guard-independent-review/interruption-result.json": "c11d80ed47b26a2f47e1e09920f9e677947c902de4e1fa2be2a0a31e9e348a05",
+    ".irisx/early-guard-independent-review/interruption_probe.py": "1e92abc55575424e137e7475f26a6aed8949c878247219f580ce525639776954",
+    ".irisx/early-guard-independent-review/migration-result.json": "b0ec32ebab666c221a9d5349bfc44046716849e2be7696584ae6d2f4afa74a3d",
+    ".irisx/early-guard-independent-review/migration_probe.py": "fb0498023e449f50ae51529c9f3c82d563b065c10962d7e67be2a8d24c7d0f45",
+    ".irisx/early-guard-independent-review/probe-result.json": "72caa85e27508e7bb464769ebed392b30d258536c910ee8624f2fbf7aa45d2c3",
+    ".irisx/early-guard-independent-review/probe.py": "b18c42d45056f3223e267da7b27d0cfe1d3aee4c08bd29b3d4e9ace48befd522"
+  },
+  "reviewed_at_utc": "2026-10-08T11:04:11.772599+00:00",
+  "reviewed_files_sha256": {
+    "tests/test_arc_next_offline.py": "5302267f3ccb81355b8b3cd4efb252e3ce3e63b989e4018fc1fb4b9e287fffb2",
+    "tests/test_arc_next_offline_environment.py": "711cf96139f18fabda304830187186fb60f3a93035c08cda80ef5a9cb0421a16",
+    "tools/arc_next_offline_environment.py": "7f6acd0fee801aad9736c2b1d52df2202a833af1cdeacfb414f6374a6e7c8779",
+    "tools/arc_next_offline_runtime.py": "94db94d64727a522b2f98fe917f4094cef6c027f006a1fa6080000e5b5f76d64"
+  },
+  "root_cause_coverage": "An earlier sys.path sitecustomize reproduces Ubuntu stdlib precedence without editing the system installation. The task-owned .pth exact-path guard executes before that customization.",
+  "scope": "Read-only production-code review; CPU-only synthetic venv/wheel fixtures and ignored review artifacts. No external provider operations, real dependency reinstall, model import/allocation, GPU call, network request, or OS/security-setting change.",
+  "status": "PASS",
+  "unresolved_blockers": []
+}

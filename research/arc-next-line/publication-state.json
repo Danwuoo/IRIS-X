@@ -1,0 +1,23 @@
+{
+  "format": "irisx/arc-next-publication-state-v1",
+  "ref": "danielwuu/iris-arc2-g4-agent-pilot-20261008-6deaf904",
+  "source_commit": "89650beb0049273458f56e8ecb7326a03f87f967",
+  "notebook_sha256": "3cfa681dd05954483018624b1a5c5e93826be32c5fadfbcc1886f985d59c390a",
+  "prepared_body_sha256": "d23a4af6bf83bb81e240d3d1780f7b0fde26c8560ccf3e8d9367d535dd6ba81c",
+  "state": "new-private-quicksave-source-verified",
+  "publication_reserved": 1,
+  "save_sends": 1,
+  "accepted_id": 137630087,
+  "source_readback_verified": true,
+  "reason": "Exact private upload explicitly approved; sole source-only QuickSave accepted and executable source read back.",
+  "confirmation_message_id": "Sentinel_02d7dffb3e548191ba0b2f38278184b9",
+  "gpu_execution": false,
+  "paid_compute_started": false,
+  "official_submission": false,
+  "version": 1,
+  "url": "https://www.kaggle.com/code/danielwuu/iris-arc2-g4-agent-pilot-20261008-6deaf904",
+  "approval_message_id": "Sentinel_3b187e8b7ba08191adead0c901a29fcd",
+  "saved_at": "2026-10-08T08:10:50.183660+00:00",
+  "source_verified_at": "2026-10-08T08:10:57.364762+00:00",
+  "runtime_queried": false
+}

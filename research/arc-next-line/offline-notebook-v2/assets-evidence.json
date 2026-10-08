@@ -1,0 +1,68 @@
+{
+  "format": "irisx/arc-next-offline-assets-evidence-v1",
+  "assets": {
+    "runtime": {
+      "reference": "danielwuu/iris-arc-next-runtime/4",
+      "manifest_sha256": "ab4e3058f56df5878627520adcf1d172f4121bfed8309c3de0afcefb482f391b",
+      "private": true,
+      "dataset_ready": true,
+      "files_verified": true,
+      "receipts": [
+        {
+          "path": "/workspace/scratch/3c2b2502fb1e/iris-next-line-20261008/offline-worktree/research/arc-next-line/offline-code-dataset-v4/roundtrip-verification.json",
+          "sha256": "a08e8c0a86bfc2bdf2a79c3fad19e53f31b643cdc36aff0653f54b6ce464fe03"
+        },
+        {
+          "path": "/workspace/scratch/3c2b2502fb1e/iris-next-line-20261008/offline-worktree/research/arc-next-line/offline-code-dataset-v4/metadata-verification.json",
+          "sha256": "65d120e1f61db566fc6aa9578777fe704bf71788c9978397b991ca28ceb5d456"
+        }
+      ]
+    },
+    "model": {
+      "reference": "danielwuu/iris-arc-granite42-8b-offline/2",
+      "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+      "private": true,
+      "dataset_ready": true,
+      "files_verified": true,
+      "receipts": [
+        {
+          "path": "/workspace/scratch/3c2b2502fb1e/iris-next-line-20261008/offline-worktree/research/arc-next-line/offline-model-dataset-v2/cloud-provider-review.json",
+          "sha256": "20fff14c8405b1575ef11833625b6b18e38d48995198bba070f9feaacd475e8e"
+        },
+        {
+          "path": "/workspace/scratch/3c2b2502fb1e/iris-next-line-20261008/offline-worktree/research/arc-next-line/offline-local-final-attestation.json",
+          "sha256": "59ed2e74d542296e5c268fa8979dea88e8351bca91ba9febd19c95768d64f096"
+        }
+      ]
+    },
+    "wheels": {
+      "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+      "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+      "private": true,
+      "dataset_ready": true,
+      "files_verified": true,
+      "receipts": [
+        {
+          "path": "/workspace/scratch/3c2b2502fb1e/iris-next-line-20261008/offline-worktree/research/arc-next-line/offline-wheels-dataset-v1/review.json",
+          "sha256": "13f7f40d67444c73407f9d19f4069893d7a23bcc8ae2967f23d5bb58e8c68125"
+        },
+        {
+          "path": "/workspace/scratch/3c2b2502fb1e/iris-next-line-20261008/offline-worktree/research/arc-next-line/offline-wheels-dataset-v1/supplemental-readback.json",
+          "sha256": "ea6a33f3cdfc04f286102e80bffbdf6fd8517e81a27157ea9a564f44b9d6b754"
+        },
+        {
+          "path": "/workspace/scratch/3c2b2502fb1e/iris-next-line-20261008/offline-worktree/research/arc-next-line/offline-wheels-dataset-v1/validation-summary.json",
+          "sha256": "7be49d8a89a42435f62ab0c4e766e40c1d0448a5c25c7397e974141feeeec6f1"
+        },
+        {
+          "path": "/workspace/scratch/3c2b2502fb1e/iris-next-line-20261008/offline-worktree/research/arc-next-line/offline-wheels-dataset-v1/files.json",
+          "sha256": "06410dfd9cde6e70f9e33b6b2cece0e27925fe4bb0d453f93a819ef07aeab74f"
+        },
+        {
+          "path": "/workspace/scratch/3c2b2502fb1e/iris-next-line-20261008/offline-worktree/research/arc-next-line/offline-local-final-attestation.json",
+          "sha256": "59ed2e74d542296e5c268fa8979dea88e8351bca91ba9febd19c95768d64f096"
+        }
+      ]
+    }
+  }
+}

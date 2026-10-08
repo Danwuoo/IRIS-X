@@ -1,0 +1,25 @@
+{
+  "format": "irisx/offline-predecessor-source-drift-v1",
+  "same_raw_source_string": true,
+  "same_complete_notebook_semantics": true,
+  "same_all_cells": true,
+  "frozen_notebook_sha256": "4adf1757bd5b2acda3d9d291ce1d281bcb289882a8935df3f5ced38745d76628",
+  "live_notebook_sha256": "4adf1757bd5b2acda3d9d291ce1d281bcb289882a8935df3f5ced38745d76628",
+  "metadata_changes": {
+    "competitionDataSources": {
+      "frozen": null,
+      "live": [
+        "arc-prize-2026-arc-agi-3"
+      ]
+    },
+    "lastRunTime": {
+      "frozen": "2026-10-05T08:10:57.158039200Z",
+      "live": "2026-10-05T11:49:58.976060900Z"
+    }
+  },
+  "save_kernel_calls": 0,
+  "publication_reserved": 0,
+  "journal_state": "prepared-not-sent",
+  "cause": "unestablished; do not infer user edit or provider behavior from this readback",
+  "automatic_retry_performed": false
+}

@@ -1,0 +1,26 @@
+{
+  "reference": "danielwuu/iris-arc-granite42-8b-offline/1",
+  "dataset_id": 12442718,
+  "private": true,
+  "status": {
+    "status": "ready",
+    "current_version_number": 1
+  },
+  "file_count": 19,
+  "expected_file_count": 19,
+  "file_sizes_match_exact_expected_inventory": false,
+  "metadata_total_bytes": 17593054916,
+  "listed_bytes": 17593054916,
+  "full_shards_downloaded_here": false,
+  "missing": [
+    "provenance/INDEX_REPAIR_NOTICE.txt",
+    "provenance/irisx-model-material.json",
+    "provenance/model.safetensors.index.json"
+  ],
+  "unexpected": [
+    "irisx-model-provenance/provenance/INDEX_REPAIR_NOTICE.txt",
+    "irisx-model-provenance/provenance/irisx-model-material.json",
+    "irisx-model-provenance/provenance/model.safetensors.index.json"
+  ],
+  "size_mismatches": {}
+}

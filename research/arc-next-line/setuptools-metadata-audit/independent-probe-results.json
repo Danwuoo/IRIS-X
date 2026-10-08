@@ -1,0 +1,433 @@
+{
+  "official_wheel": {
+    "offline": {
+      "identity": [
+        "setuptools",
+        "84.0.0"
+      ],
+      "bytes": 818216,
+      "sha256": "51a52592b3b99e102b609654876bd65f19f999935166d1352678931132b0c670"
+    },
+    "original": {
+      "identity": [
+        "setuptools",
+        "84.0.0"
+      ],
+      "bytes": 818216,
+      "sha256": "51a52592b3b99e102b609654876bd65f19f999935166d1352678931132b0c670"
+    }
+  },
+  "probes": [
+    {
+      "parser": "offline",
+      "case": "valid_only_root",
+      "expected_accept": true,
+      "identity": [
+        "tiny-package",
+        "1.2.3"
+      ],
+      "accepted": true,
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "valid_nested_metadata",
+      "expected_accept": true,
+      "identity": [
+        "tiny-package",
+        "1.2.3"
+      ],
+      "accepted": true,
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "nested_only",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Exactly one root-level bounded wheel METADATA is required",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "duplicate_root_metadata_path",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Unsafe or duplicate wheel archive member: tiny_package-1.2.3.dist-info/METADATA",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "second_root_metadata",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Exactly one root-level bounded wheel METADATA is required",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "forged_root_distribution",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Root dist-info directory differs from wheel metadata identity",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "forged_root_version",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Root dist-info directory differs from wheel metadata identity",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "metadata_name_mismatch",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Root dist-info directory differs from wheel metadata identity",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "metadata_version_mismatch",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Root dist-info directory differs from wheel metadata identity",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "traversal_payload",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Unsafe or duplicate wheel archive member: tiny_package/../payload",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "traversal_nested_metadata",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Unsafe or duplicate wheel archive member: tiny_package/../_vendor/vendor-2.dist-info/METADATA",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "absolute_payload",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Unsafe or duplicate wheel archive member: /tmp/payload",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "backslash_payload",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Unsafe or duplicate wheel archive member: tiny_package\\payload",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "symlink_payload",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Unsafe or duplicate wheel archive member: tiny_package/vendorlink",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "duplicate_payload",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Unsafe or duplicate wheel archive member: tiny_package/data",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "duplicate_nested_metadata",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Unsafe or duplicate wheel archive member: tiny_package/_vendor/vendor-2.dist-info/METADATA",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "oversized_root_metadata",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Exactly one root-level bounded wheel METADATA is required",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "duplicate_name_field",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Exactly one wheel name/version is required",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "duplicate_version_field",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Exactly one wheel name/version is required",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "no_name_field",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Exactly one wheel name/version is required",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "no_version_field",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Exactly one wheel name/version is required",
+      "pass": true
+    },
+    {
+      "parser": "offline",
+      "case": "forged_wheel_filename",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "OfflineEnvironmentError",
+      "error": "Wheel filename/metadata identity differs: other-1.2.3-py3-none-any.whl",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "valid_only_root",
+      "expected_accept": true,
+      "identity": [
+        "tiny-package",
+        "1.2.3"
+      ],
+      "accepted": true,
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "valid_nested_metadata",
+      "expected_accept": true,
+      "identity": [
+        "tiny-package",
+        "1.2.3"
+      ],
+      "accepted": true,
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "nested_only",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "One bounded root-level wheel metadata identity required",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "duplicate_root_metadata_path",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Unsafe or duplicate wheel archive member",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "second_root_metadata",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "One bounded root-level wheel metadata identity required",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "forged_root_distribution",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Root dist-info directory differs from wheel metadata identity",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "forged_root_version",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Root dist-info directory differs from wheel metadata identity",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "metadata_name_mismatch",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Root dist-info directory differs from wheel metadata identity",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "metadata_version_mismatch",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Root dist-info directory differs from wheel metadata identity",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "traversal_payload",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Unsafe or duplicate wheel archive member",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "traversal_nested_metadata",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Unsafe or duplicate wheel archive member",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "absolute_payload",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Unsafe or duplicate wheel archive member",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "backslash_payload",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Unsafe or duplicate wheel archive member",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "symlink_payload",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Unsafe or duplicate wheel archive member",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "duplicate_payload",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Unsafe or duplicate wheel archive member",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "duplicate_nested_metadata",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Unsafe or duplicate wheel archive member",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "oversized_root_metadata",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "One bounded root-level wheel metadata identity required",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "duplicate_name_field",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "One wheel name/version required",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "duplicate_version_field",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "One wheel name/version required",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "no_name_field",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "One wheel name/version required",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "no_version_field",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "One wheel name/version required",
+      "pass": true
+    },
+    {
+      "parser": "original",
+      "case": "forged_wheel_filename",
+      "expected_accept": false,
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "Wheel filename differs from metadata identity",
+      "pass": true
+    }
+  ],
+  "parser_source_hashes": {
+    "tools/arc_next_offline_environment.py": "a9beae2a08a88d24352d0c63b39dd9ac8a4aabb42a1fb5b117715e00bff3746f",
+    "tools/arc_next_environment.py": "aed0f67b7f3c9b89cc47ca9a341410d9b8708ad65ebed3dc8556dbbbde2c9794"
+  },
+  "all_pass": true,
+  "case_count": 22,
+  "total_probes": 44
+}

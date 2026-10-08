@@ -1,0 +1,19 @@
+{
+  "format": "irisx/arc-next-model-dataset-layout-review-v1",
+  "reference": "danielwuu/iris-arc-granite42-8b-offline/1",
+  "dataset_id": 12442718,
+  "private_verified": true,
+  "provider_status": "ready",
+  "runtime_ready": false,
+  "reason": "three provenance members nested under irisx-model-provenance/provenance rather than required provenance",
+  "no_model_validator_relaxation": true,
+  "full_shards_downloaded_here": false,
+  "model_dataset_mutated_here": false,
+  "local_uploader_owns_repair": true,
+  "files": {
+    "files.json": "e561638584e488f7badf58b6dc7352599b0d52bc27713fc1c9cf9a1694a0e3d4",
+    "metadata-verification.json": "19c6bea091fa19f475f585a947e3c74226f382b54b07ace4609e6f67256ee16b",
+    "review.json": "8a62e1f0053d4a8e7d7046c91707a5843b9bf75bb1f8317428989aaf533e1227",
+    "status.json": "f7ff8b306352dc9a571fff6a4e0c58cb6898a96c8e79744e4a3f6dcbc8a0bf00"
+  }
+}

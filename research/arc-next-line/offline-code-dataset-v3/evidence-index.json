@@ -1,0 +1,24 @@
+{
+  "format": "irisx/arc-next-code-dataset-evidence-index-v1",
+  "reference": "danielwuu/iris-arc-next-runtime/3",
+  "private": true,
+  "dataset_ready": true,
+  "files_verified": true,
+  "source_commit": "94135a858fb650bb0bc7c299ea582184983509ad",
+  "manifest_sha256": "ac9a4274fd7ba148433b63bb7b8ce8650749713c34c0118a86d7c867150f4d14",
+  "files": {
+    "metadata-reviewed.json": "d04acf02ce68919682e80ad587c972afaa8fa284a6ebe785f935f5970d2e556c",
+    "metadata-verification.json": "7ef47ea86b0dddc696b364d252c7ced9cf718605bbc1390e22fd3af6dd92eae0",
+    "remote-files.json": "0639956f75d30713d8021167c231c10f204b97da0bb7d6d3036da95c83892ed7",
+    "roundtrip-verification.json": "d67731754a190be723044295922ef67807049eda88e1091d4c7939ee2d9f0d82",
+    "status.json": "283d36d4e47458559629f84bac0f1643966aab3b8c502e5822415323b257d074",
+    "version-receipt.json": "6c3e30b42a5b962cbb8dc0cdcd3fd9a7c7cbbebe6f49ed1e69a37b657ef30760"
+  },
+  "readback": "Official SDK exact Dataset version3 download; all26file paths,size,SHA256verified",
+  "earlier_versions_ready": [
+    2,
+    1
+  ],
+  "gpu_executed": false,
+  "notebook_saved": false
+}

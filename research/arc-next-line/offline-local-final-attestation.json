@@ -1,0 +1,63 @@
+{
+  "format": "irisx/arc-next-offline-local-final-attestation-v1",
+  "source_thread": "01a11a97-e3ad-732a-ba4c-5e3cb9c440ea",
+  "source_turn": "01a11b32-3604-760c-8fc3-425178deacd2",
+  "source_message": "msg_0234f5f3d8b26a20016ac78144f4f881958f5d9ec59a807442",
+  "origin": "authorized current-task result; full model and wheel downloads verified by local producer, not redownloaded by cloud",
+  "model": {
+    "reference": "danielwuu/iris-arc-granite42-8b-offline/2",
+    "dataset_id": 12442718,
+    "private": true,
+    "dataset_ready": true,
+    "files_verified": 19,
+    "files": 19,
+    "bytes": 17593054916
+  },
+  "wheels": {
+    "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+    "dataset_id": 12444586,
+    "private": true,
+    "dataset_ready": true,
+    "files_verified": 143,
+    "files": 143,
+    "wheels_verified": 52,
+    "wheels": 52,
+    "bytes": 3961235096
+  },
+  "actual_local_acceptance": {
+    "migration": true,
+    "complete_offline_dependency_closure": true,
+    "pip_check": true,
+    "cpu_imports": true,
+    "native_tokenizer_and_template": true,
+    "tensor_headers_and_index_363": true,
+    "parent_network_denial": true,
+    "plain_child_network_denial": true,
+    "spawn_child_network_denial": true,
+    "full_model_load": false,
+    "gpu_execution": false,
+    "notebook_execution": false
+  },
+  "digests": {
+    "runtime_version": 4,
+    "runtime_manifest_sha256": "ab4e3058f56df5878627520adcf1d172f4121bfed8309c3de0afcefb482f391b",
+    "helper_sha256": "7f6acd0fee801aad9736c2b1d52df2202a833af1cdeacfb414f6374a6e7c8779",
+    "legacy_actual_installation_receipt_sha256": "1b92c109649ab284c6139ba17c49131ca8a654734bc34c350ebb5ec82904dc0d",
+    "migrated_actual_environment_lock_sha256": "a2ecf143b49e8318ac41715b83594c408d424971e5c0ea2693a57e1be4e9af32",
+    "offline_install_receipt_v4_sha256": "616d6562bd57866bbe667b952d2e3c47db9edf548a15b08b2d49e71d855d2776",
+    "guard_hook_sha256": "2fd117300a5a540f9af27e483065a1c4dae6ec12b7716048760530dc99d3898e",
+    "cpu_validation_sha256": "5c982538d3f0b5afb282af82337381362422c8529b98297fdf0abee5a6590f49",
+    "source_lock_sha256": "8cf82737a0c6c92d0d26f3a7a268e59c55f4a4de213733777f71324930ece239",
+    "wheel_lock_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+    "requirements_sha256": "5fdbd59850d97d8307e8afd1e922b65405e823a0a36aab8f0e3f9c0add7db6f1",
+    "wheel_receipt_sha256": "34fb5e81fed8841625bc569a5237aac3b2ee1566f69e95369eec790fa149ce77",
+    "wheel_all_member_readback_sha256": "97ff4db2ccf2f617cdf428cee2fbe2b33bc0f9d25d2cf10f582ef832593a2be3",
+    "wheel_upload_manifest_sha256": "cdf014d742b48d3c5d19b582de7fefffd3f93e21fc017a3e3fac74e79e534e95",
+    "dataset_validation_summary_sha256": "7be49d8a89a42435f62ab0c4e766e40c1d0448a5c25c7397e974141feeeec6f1"
+  },
+  "complete_local_checkpoint": {
+    "bytes": 11263,
+    "sha256": "b9f386c7c3974803c6305f7fdbd235ae2aa1d8df186400b54c64570f9a0dafa2"
+  },
+  "verbatim_report": "本地資產階段已完成，無剩餘阻塞。\n\n| 私人 Dataset | 版本／ID | 大小 | 驗收 |\n|---|---|---:|---|\n| [Granite 模型](https://www.kaggle.com/datasets/danielwuu/iris-arc-granite42-8b-offline/versions/2) | v2／12442718 | 17,593,054,916 bytes | 19/19 檔完整 SHA256 回讀通過 |\n| [Linux wheelhouse](https://www.kaggle.com/datasets/danielwuu/iris-arc-next-cu128-cp312-wheels/versions/1) | v1／12444586 | 3,961,235,096 bytes | 143/143 檔、52/52 wheels 完整回讀通過 |\n\nExact runtime v4 migration、離線安裝閉包、`pip check`、CPU/tokenizer/template、363 tensors headers/index，以及 parent/plain/spawn 網路拒絕均通過。原始兩份安裝收據完整保留；GPU/install/network migration calls 均為 0。未載入完整模型或執行 notebook。\n\n交接用必要 digest：\n\n```json\n{\n  \"runtime_version\": 4,\n  \"runtime_manifest_sha256\": \"ab4e3058f56df5878627520adcf1d172f4121bfed8309c3de0afcefb482f391b\",\n  \"helper_sha256\": \"7f6acd0fee801aad9736c2b1d52df2202a833af1cdeacfb414f6374a6e7c8779\",\n  \"legacy_actual_installation_receipt_sha256\": \"1b92c109649ab284c6139ba17c49131ca8a654734bc34c350ebb5ec82904dc0d\",\n  \"migrated_actual_environment_lock_sha256\": \"a2ecf143b49e8318ac41715b83594c408d424971e5c0ea2693a57e1be4e9af32\",\n  \"offline_install_receipt_v4_sha256\": \"616d6562bd57866bbe667b952d2e3c47db9edf548a15b08b2d49e71d855d2776\",\n  \"guard_hook_sha256\": \"2fd117300a5a540f9af27e483065a1c4dae6ec12b7716048760530dc99d3898e\",\n  \"cpu_validation_sha256\": \"5c982538d3f0b5afb282af82337381362422c8529b98297fdf0abee5a6590f49\",\n  \"source_lock_sha256\": \"8cf82737a0c6c92d0d26f3a7a268e59c55f4a4de213733777f71324930ece239\",\n  \"wheel_lock_sha256\": \"2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052\",\n  \"requirements_sha256\": \"5fdbd59850d97d8307e8afd1e922b65405e823a0a36aab8f0e3f9c0add7db6f1\",\n  \"wheel_receipt_sha256\": \"34fb5e81fed8841625bc569a5237aac3b2ee1566f69e95369eec790fa149ce77\",\n  \"wheel_all_member_readback_sha256\": \"97ff4db2ccf2f617cdf428cee2fbe2b33bc0f9d25d2cf10f582ef832593a2be3\",\n  \"wheel_upload_manifest_sha256\": \"cdf014d742b48d3c5d19b582de7fefffd3f93e21fc017a3e3fac74e79e534e95\",\n  \"dataset_validation_summary_sha256\": \"7be49d8a89a42435f62ab0c4e766e40c1d0448a5c25c7397e974141feeeec6f1\"\n}\n```\n\n完整路徑、52 個版本、模型收據及測試證據在 [最終交接 JSON](C:/Users/wurre/Documents/Codex/2026-10-08/task/IRIS-X-Local-Assets-Final-20261008.json)，11,263 bytes，SHA256 `b9f386c7c3974803c6305f7fdbd235ae2aa1d8df186400b54c64570f9a0dafa2`。\n\n目前可用空間約 **176.3 GiB**；原始本地 main 仍為 `aa210716…`，乾淨且未更動。監測已停止，資產與環境保留。父任務可接續 notebook 整合與 main 保存；Kaggle GPU／完整模型載入仍未驗證。"
+}

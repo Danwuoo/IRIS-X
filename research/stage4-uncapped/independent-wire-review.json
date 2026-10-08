@@ -1,0 +1,20 @@
+{
+  "execution_type": "QUICK_SAVE",
+  "expected_version": 1,
+  "format": "irisx/new-uncapped-quicksave-review-v1",
+  "metadata_sha256": "3f392a69cde642c1ddda7a8ab2923f62f153c41a7d50a653ab1d0d655146241d",
+  "newness_proof": "complete-own-list",
+  "notebook_sha256": "e2e3dbf5599a4edbe8018d871328ae368427724b6805efc813b6460622e6adad",
+  "offline_package_verified": true,
+  "package_manifest_sha256": "bda7f8fde5d1b8b274bf36d9185b879f29899fc7702069d5831f7bc9c5edc989",
+  "plan_sha256": "1e8d68e6c981e9511e9712bacc64c55ae96f42e985f1b2232230ea114d782b47",
+  "prepared_body_sha256": "4112b2008fb9614a4d85fd388d573283e70062ffc37dcad8826c94b5e09d563c",
+  "ref": "danielwuu/stage4-uncapped-ttt128-20261008-3baff209a1",
+  "request_sha256": "8b69c794884889943b53d993dcd22ba227a4addc9b7fae6ef9da5f1fcccce079",
+  "reviewed_at": "2026-10-08T03:57:29.044301+00:00",
+  "reviewer": "independent CPU/wire reviewer; visible-reference noncollision plus verified private anchor and disclosed redactions operational standard",
+  "run_id": "stage4-uncapped-20261008-001",
+  "source_digest": "5990ba708544c5c1bdc5c992faaffeb56be2944aeeaf569cd9f86ba355671901",
+  "transport_sha256": "aad06cc475acf69ace95dd8263cb95cac8d011cf0ff5e54381a8e5ad40067d20",
+  "verdict": "PASS"
+}

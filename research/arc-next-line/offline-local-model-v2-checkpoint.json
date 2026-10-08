@@ -1,0 +1,85 @@
+{
+  "format": "irisx/arc-next-local-task-report-v1",
+  "source_thread": "01a11a97-e3ad-732a-ba4c-5e3cb9c440ea",
+  "source_message": "msg_0234f5f3d8b26a20016ac773b4dfcc81959341c7a43d21309e",
+  "source_turn": "01a11b1a-8d08-75f3-9d0b-bbf3f54534bc",
+  "origin": "authorized current-task read; local reported full model readback, not a cloud full-weight download",
+  "report": {
+    "model": {
+      "ref": "danielwuu/iris-arc-granite42-8b-offline",
+      "dataset_id": 12442718,
+      "version_number": 2,
+      "private": true,
+      "status": "ready",
+      "files": 19,
+      "bytes": 17593054916,
+      "canonical_paths_verified": true,
+      "all_19_member_sha256_readback_verified": true,
+      "receipt_sha256": "7a8168608fa28faee6e7bce9707a84fe9061535990cec5a8f65c9699e02e08e9",
+      "full_readback_inventory_sha256": "1b6882272f367b9ad1dcfecc8d77b495d375dc91a402f28502c6bda942ad0c64",
+      "derived_manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+      "derived_index_sha256": "2a8a723176e2f695b1d7cfa8a704dd41ad8149731dda261b3d9fc50f2a1bd375",
+      "original_index_manifest_and_notice_retained": true,
+      "shards": {
+        "model-00001-of-00004.safetensors": {
+          "bytes": 5335320208,
+          "sha256": "baed4f3128d1f2e3792ad896ac5621124929bb4f658722f132e614108751e96c"
+        },
+        "model-00002-of-00004.safetensors": {
+          "bytes": 5285049768,
+          "sha256": "69e7a59b810f4c029339b7a208b4dac0c1eee6b88a66e830e74882cbd191803c"
+        },
+        "model-00003-of-00004.safetensors": {
+          "bytes": 5360555872,
+          "sha256": "c2c52fd2baa6ec5003d3ac9842bfd782c0a5a80fc9a1b406a007cae6af008a89"
+        },
+        "model-00004-of-00004.safetensors": {
+          "bytes": 1602302184,
+          "sha256": "0dfcc074193c1cb81270fd6e99cace27d4b0461e8739691c2a347b657c030ffc"
+        }
+      }
+    },
+    "wheels": {
+      "wheel_count": 52,
+      "wheel_bytes": 3959690542,
+      "wheel_lock_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+      "requirements_sha256": "5fdbd59850d97d8307e8afd1e922b65405e823a0a36aab8f0e3f9c0add7db6f1",
+      "offline_closure_verified": true,
+      "closure_receipt_sha256": "e3a4274062c1449d070104302898df48683b67278da8d1cab7764cbf79ebd092",
+      "offline_install_status": "installed-offline",
+      "isolated_venv": true,
+      "pip_check_passed": true,
+      "all_52_installed_versions_verified": true,
+      "install_receipt_sha256": "226d83e801e04b4c05311665016763bdaeea60946225a0575b31029b171f4d5c",
+      "original_environment_lock_sha256": "1b92c109649ab284c6139ba17c49131ca8a654734bc34c350ebb5ec82904dc0d",
+      "cpu_imports_passed": true,
+      "native_tokenizer_template_mapping_passed": true,
+      "cpu_tensor_matmul_passed": true,
+      "complete_safetensors_headers_passed": true,
+      "parent_network_denial_passed": true,
+      "production_plain_child_guard_passed": false,
+      "production_spawn_child_tested": false,
+      "unguarded_child_dns_request_attempted": false,
+      "dataset_upload_started": false,
+      "archive_filename": "wheels.zip",
+      "archive_bytes": 3959701386,
+      "archive_sha256": "816cb47af1e2ea992635e1a2c3b3a24932f00ab1d794e6d2a052bae599177616",
+      "all_52_archive_member_paths_and_hashes_verified": true
+    },
+    "guard_blocker": {
+      "loaded_sitecustomize": "/usr/lib/python3.12/sitecustomize.py",
+      "production_guard_marker": false,
+      "plain_child_diagnostic_sha256": "d9a6e835bab55205212a76e297fcacc0fe0b0412d8c807edad9e4dccf84d2671",
+      "separate_pth_diagnostic_passed": true,
+      "pth_diagnostic_sha256": "4ad0b8bfd737a875dfa9e30e2557674a63227d7ca41e748431ea19e46275a591",
+      "production_environment_modified_for_pth_fix": false,
+      "awaiting_exact_runtime_version": 4
+    },
+    "checkpoint": {
+      "bytes": 8112,
+      "sha256": "1b3d56c1651a1300cdc16bd525514cb04929abd5d1e8aa2a71576b33c74c07dd"
+    },
+    "gpu_calls": 0,
+    "full_model_load_performed": false
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "format": "irisx/arc-next-code-dataset-roundtrip-v1",
+  "reference": "danielwuu/iris-arc-next-runtime/4",
+  "url": "https://www.kaggle.com/datasets/danielwuu/iris-arc-next-runtime/versions/4",
+  "dataset_id": 12441532,
+  "version": 4,
+  "private": true,
+  "dataset_ready": true,
+  "files_verified": true,
+  "manifest_sha256": "ab4e3058f56df5878627520adcf1d172f4121bfed8309c3de0afcefb482f391b",
+  "source_commit": "b9470a1c93fd80d6a337adcff110d577ab6c0c14",
+  "file_count": 26,
+  "verified_file_bytes": 614221,
+  "metadata_total_bytes_reported": 614221,
+  "files": {
+    "NOTICE.txt": {
+      "bytes": 578,
+      "sha256": "bb324097006875916053136ef7c9df0a5901244067fa5f705ff8dbbddedfc843"
+    },
+    "bundle-manifest.json": {
+      "bytes": 3599,
+      "sha256": "ab4e3058f56df5878627520adcf1d172f4121bfed8309c3de0afcefb482f391b"
+    },
+    "licenses/ARC-AGI-2-LICENSE.txt": {
+      "bytes": 11351,
+      "sha256": "8360699be7ffadd4b460e4287c1f7d0ada282518ee8e375fff603b1b3ecbb43f"
+    },
+    "runtime/research/arc-next-line/licenses/ARC-AGI-2-LICENSE.txt": {
+      "bytes": 11351,
+      "sha256": "8360699be7ffadd4b460e4287c1f7d0ada282518ee8e375fff603b1b3ecbb43f"
+    },
+    "runtime/research/arc-next-line/licenses/granite-4.2-8b-LICENSE.txt": {
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "runtime/research/arc-next-line/model-source-lock.json": {
+      "bytes": 50613,
+      "sha256": "8cf82737a0c6c92d0d26f3a7a268e59c55f4a4de213733777f71324930ece239"
+    },
+    "runtime/research/arc-next-line/training-source-inventory.json": {
+      "bytes": 145339,
+      "sha256": "53fc35f54fa1b8a29403c5ede3e3880e8588c40c75a4a5783692a9a13a3e95cb"
+    },
+    "runtime/tools/__init__.py": {
+      "bytes": 47,
+      "sha256": "f5ed985f7ed9e31ea3be113e86b11a7b44313f467c2e468a034ff789c7b85c76"
+    },
+    "runtime/tools/arc_kaggle_submission.py": {
+      "bytes": 12447,
+      "sha256": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf"
+    },
+    "runtime/tools/arc_next_agent.py": {
+      "bytes": 34755,
+      "sha256": "98c8970f4001cc5e9f57912f8caf74b3a892174cdee574dba2c54b229beb6159"
+    },
+    "runtime/tools/arc_next_environment.py": {
+      "bytes": 6996,
+      "sha256": "aed0f67b7f3c9b89cc47ca9a341410d9b8708ad65ebed3dc8556dbbbde2c9794"
+    },
+    "runtime/tools/arc_next_index_repair.py": {
+      "bytes": 16877,
+      "sha256": "05d2855e6029d873f0e74938e73d11ed7a21b72e0a630619b4415d3ebf3ac030"
+    },
+    "runtime/tools/arc_next_materials.py": {
+      "bytes": 11828,
+      "sha256": "582c82603f271757c56eda846cb4e724d3b90485906e7a48d9bb3ee34af4320c"
+    },
+    "runtime/tools/arc_next_models.py": {
+      "bytes": 36669,
+      "sha256": "87395d439679c1a6cc563da78e4ed7b5aa6244ec083564b9d5870a1fee8420b1"
+    },
+    "runtime/tools/arc_next_offline_bundle.py": {
+      "bytes": 7681,
+      "sha256": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc"
+    },
+    "runtime/tools/arc_next_offline_environment.py": {
+      "bytes": 40955,
+      "sha256": "7f6acd0fee801aad9736c2b1d52df2202a833af1cdeacfb414f6374a6e7c8779"
+    },
+    "runtime/tools/arc_next_offline_runtime.py": {
+      "bytes": 16718,
+      "sha256": "94db94d64727a522b2f98fe917f4094cef6c027f006a1fa6080000e5b5f76d64"
+    },
+    "runtime/tools/arc_next_report.py": {
+      "bytes": 9911,
+      "sha256": "e37f85557da05a70dc921ed0835a68f10e2f8b6219c69c3e8f234fd669f910b9"
+    },
+    "runtime/tools/arc_next_training.py": {
+      "bytes": 45166,
+      "sha256": "25d21850a15ff693546fc8846bbb0496c49ae582b6fe5cf0fb8576bbaa7a7e2d"
+    },
+    "runtime/tools/arc_next_workflow.py": {
+      "bytes": 15531,
+      "sha256": "b8572d724eda88ecc5be2baf71fae5c559d621ff5badb99dd4c10703fd449e63"
+    },
+    "training/development-challenges.json": {
+      "bytes": 10674,
+      "sha256": "2b2d23c7d815cbe6670c2e370b1bec5c1459fe505e4d4428458587c414790704"
+    },
+    "training/evaluator/development-solutions.json": {
+      "bytes": 1530,
+      "sha256": "b8a359ea41b73472c170863c8bb71ad12c9baf88cf87e7082535b49af7cf3d37"
+    },
+    "training/source-receipts.json": {
+      "bytes": 7170,
+      "sha256": "95a9a4934ceec2175400b71e1f276b164d2129749328a51918fa7a2daa1780c8"
+    },
+    "training/task-groups.json": {
+      "bytes": 15763,
+      "sha256": "3cbbb25f182c7f99146580146f3c3758514adf689a0a8ef803f3d8ca82f16acb"
+    },
+    "training/train-demonstrations.json": {
+      "bytes": 85727,
+      "sha256": "137267efe79af47ad668aba9ccbc5d3284c4b61d7870f93b091e80bc3871e2cb"
+    },
+    "training/training-manifest.json": {
+      "bytes": 3588,
+      "sha256": "45100b1b6848c91d948d54a9ad2454f2b2b0c54a0cc2765999efe67a7c452f88"
+    }
+  },
+  "gpu_executed": false,
+  "notebook_saved": false
+}

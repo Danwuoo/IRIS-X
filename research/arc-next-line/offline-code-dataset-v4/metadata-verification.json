@@ -1,0 +1,46 @@
+{
+  "id": 12441532,
+  "ref": "danielwuu/iris-arc-next-runtime",
+  "url": null,
+  "title": "IRIS ARC Next Runtime",
+  "isPrivate": true,
+  "licenseName": "Other (specified in description)",
+  "currentVersionNumber": 4,
+  "totalBytes": 614221,
+  "lastUpdated": "2026-10-08T11:05:45.957Z",
+  "description": "Private independently versioned IRIS-X offline runtime, source commit b9470a1c93fd80d6a337adcff110d577ab6c0c14. This iteration repairs Ubuntu child startup through an exact-path early .pth guard within the isolated venv, and provides a strict existing-environment migration without reinstalling packages. Parent/plain/spawn CPU tests are checked separately from production local acceptance. IRIS-X code remains proprietary; ARC-AGI-2 demonstrations retain Apache-2.0 licensing and modification notices. Strict Granite derived-index provenance and root wheel metadata identity checks remain unchanged. Contains code, locks and 32 training / 4 development demonstration groups; no weights, wheel binaries, credentials or official evaluation answers. Full model/GPU loading remains unverified.",
+  "versions": [
+    {
+      "versionNumber": 4,
+      "creationDate": "2026-10-08T11:05:45.957Z",
+      "creatorName": "Daniel Wu",
+      "creatorRef": "iris-arc-next-runtime",
+      "versionNotes": "Repair isolated Ubuntu child startup with bound early .pth guard and explicit existing-env migration. Preserve prior versions, locked wheels and model provenance. No GPU run.",
+      "status": "Ready"
+    },
+    {
+      "versionNumber": 3,
+      "creationDate": "2026-10-08T09:31:45.733Z",
+      "creatorName": "Daniel Wu",
+      "creatorRef": "iris-arc-next-runtime",
+      "versionNotes": "Fix root-level wheel metadata selection; official setuptools wheel and 44 adversarial probes verified. Preserve prior versions and strict Granite repair. No GPU run.",
+      "status": "Ready"
+    },
+    {
+      "versionNumber": 2,
+      "creationDate": "2026-10-08T09:15:30.657Z",
+      "creatorName": "Daniel Wu",
+      "creatorRef": "iris-arc-next-runtime",
+      "versionNotes": "Strict provenance-preserving Granite index repair; independently reviewed. Preserve code v1 and all original model weights. No GPU run.",
+      "status": "Ready"
+    },
+    {
+      "versionNumber": 1,
+      "creationDate": "2026-10-08T08:43:06.510Z",
+      "creatorName": "Daniel Wu",
+      "creatorRef": "iris-arc-next-runtime",
+      "versionNotes": "Initial release",
+      "status": "Ready"
+    }
+  ]
+}

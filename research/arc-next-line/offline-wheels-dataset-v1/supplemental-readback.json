@@ -1,0 +1,27 @@
+{
+  "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+  "files": {
+    "NOTICE.txt": {
+      "bytes": 721,
+      "sha256": "f2ab149e21defe6f7a84b5def952e05e597af31d61d2ed4b3ef09e8b65a4c07e"
+    },
+    "license-inventory.json": {
+      "bytes": 23386,
+      "sha256": "166655579c476e38dcf18fa67a5f599eb47e56a0d9adc5798b3b6b746023d0a8"
+    },
+    "model-source-lock.json": {
+      "bytes": 50613,
+      "sha256": "8cf82737a0c6c92d0d26f3a7a268e59c55f4a4de213733777f71324930ece239"
+    },
+    "validation-summary.json": {
+      "bytes": 4098,
+      "sha256": "7be49d8a89a42435f62ab0c4e766e40c1d0448a5c25c7397e974141feeeec6f1"
+    },
+    "wheel-provenance.json": {
+      "bytes": 26615,
+      "sha256": "8ab4f0c71c3aafdb4461d2d139227169c441e589fec31fae70db53c18c7181e2"
+    }
+  },
+  "local_validation_summary_exact_hash_matched": true,
+  "source_lock_exact_hash_matched": true
+}

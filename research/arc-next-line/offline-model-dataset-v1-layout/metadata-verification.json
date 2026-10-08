@@ -1,0 +1,19 @@
+{
+  "id": 12442718,
+  "ref": "danielwuu/iris-arc-granite42-8b-offline",
+  "isPrivate": true,
+  "currentVersionNumber": 1,
+  "totalBytes": 17593054916,
+  "lastUpdated": "2026-10-08T09:46:41.597Z",
+  "description": "Private IRIS-X derived Granite 4.2 8B offline material. IBM official weights, tokenizer, configuration, template, model card and Apache-2.0 license are preserved from ibm-granite/granite-4.2-8b revision f8de16cdcdbc6c779ca517604e050d82cc119e44. This is an explicitly modified artifact: the shard weight_map and total_size are rebuilt from all verified official safetensors headers. No tensor values changed. The original official index and v1 manifest are retained in provenance/ alongside INDEX_REPAIR_NOTICE.txt. Root derived-v2 manifest binds every upstream hash and the independently reviewed repaired index. Complete material hash/config/native vocabulary/header/provenance checks passed. No full model load, GPU training or Kaggle notebook execution has been performed. Runtime code and wheels are separately versioned private Datasets.",
+  "versions": [
+    {
+      "versionNumber": 1,
+      "creationDate": "2026-10-08T09:46:41.597Z",
+      "creatorName": "Daniel Wu",
+      "creatorRef": "iris-arc-granite42-8b-offline",
+      "versionNotes": "Initial release",
+      "status": "Ready"
+    }
+  ]
+}

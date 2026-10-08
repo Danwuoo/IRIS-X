@@ -1,0 +1,24 @@
+{
+  "format": "irisx/offline-v2-strict-readback-observation-v1",
+  "accepted": true,
+  "kernel_id": 137630087,
+  "version": 2,
+  "save_kernel_sends": 1,
+  "journal_state": "accepted-source-unverified",
+  "strict_gate_passed": false,
+  "strict_error": "exact numerical Dataset versions must survive SOURCE readback",
+  "observed_dataset_references": [
+    "danielwuu/iris-arc-granite42-8b-offline",
+    "danielwuu/iris-arc-next-cu128-cp312-wheels",
+    "danielwuu/iris-arc-next-runtime"
+  ],
+  "source_cell_representation_change": "list-of-strings to joined string only",
+  "supported_sdk_selected_dataset_version_field_available": false,
+  "provider_selected_dataset_versions_attested": false,
+  "gpu_executed": false,
+  "official_notebook_format": "https://nbformat.readthedocs.io/en/latest/format_description.html",
+  "official_kaggle_metadata_documentation": "https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels_metadata.md",
+  "limitation_accepted_by_coordinator": true,
+  "agent_requested_kaggle_runtime_execution": false,
+  "runtime_state_attested": false
+}

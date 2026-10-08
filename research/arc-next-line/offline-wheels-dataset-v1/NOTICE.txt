@@ -1,0 +1,8 @@
+IRIS-X private offline wheelhouse for Linux x86_64, glibc >= 2.28, CPython 3.12.
+The original upstream wheel files retain their own licenses and notices.
+Extracted license copies and their original archive paths are recorded in license-inventory.json.
+Core package versions and hashes are bound to model-source-lock.json; all 52 resolved distributions
+are pinned by requirements.lock and wheel-lock.json. Resolve with --no-index --find-links wheels
+--require-hashes and the reviewed offline helper in the separately versioned runtime Dataset.
+Native Linux CPU installation, imports, tokenizer and header inspection were verified.
+No full model load, GPU operation or Kaggle notebook execution has been performed.

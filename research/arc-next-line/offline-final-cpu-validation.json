@@ -1,0 +1,180 @@
+{
+  "format": "irisx/arc-next-offline-final-cpu-validation-v1",
+  "source_head": "d0b395ef5e7170058120f2a0498470d8880ecb85",
+  "active_next_line": {
+    "tests": 179,
+    "skipped": 1,
+    "status": "PASS",
+    "log_sha256": "913eecfa95b24907ffd4547a500bc339afc6d1bc61cdc65a0a1b359503ee6268"
+  },
+  "official_sdk_offline_save_transport": {
+    "tests": 21,
+    "skipped": 0,
+    "status": "PASS",
+    "log_sha256": "6d9db8aa972c19446e572149579f49a9bf1f50d40dfa4ba26946ee8d6ab74e3e"
+  },
+  "full_repository": {
+    "tests": 1553,
+    "errors": 35,
+    "failures": 1,
+    "skipped": 74,
+    "status": "FAIL",
+    "exact_failed_test_names_equal_previous_recorded_aggregate": true,
+    "failures_and_errors": [
+      {
+        "kind": "ERROR",
+        "test": "test_exact_package_preflight_and_save_guard (test_nvarc_abc.ABCBoundaryTests.test_exact_package_preflight_and_save_guard)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_fixed_material_representation_and_budgets (test_nvarc_abc.ABCBoundaryTests.test_fixed_material_representation_and_budgets)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_notebook_guard_accepts_exact_plan_and_rejects_rehashed_bytes_before_setup (test_nvarc_abc.ABCBoundaryTests.test_notebook_guard_accepts_exact_plan_and_rejects_rehashed_bytes_before_setup)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_public_shape_and_palette_fail_closed_without_truth (test_nvarc_abc.ABCBoundaryTests.test_public_shape_and_palette_fail_closed_without_truth)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_worker_sidecar_detection_and_exact_plan (test_nvarc_abc_002.ABCRepairTests.test_worker_sidecar_detection_and_exact_plan)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_control_treatments_and_total_ceiling (test_nvarc_abc_003.ABCTuningBoundaries.test_control_treatments_and_total_ceiling)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_003_analysis_uses_all_five_approved_arms (test_nvarc_abc_004.ABCBeamBoundaries.test_003_analysis_uses_all_five_approved_arms)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_exact_plan_and_quick_save_projection (test_nvarc_abc_004.ABCBeamBoundaries.test_exact_plan_and_quick_save_projection)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_004_predecessor_analysis_has_three_approved_arms (test_nvarc_abc_005.ABCPairedBoundaries.test_004_predecessor_analysis_has_three_approved_arms)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_exact_plan_and_quick_save_projection (test_nvarc_abc_005.ABCPairedBoundaries.test_exact_plan_and_quick_save_projection)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_nvarc_e12_answer_evidence (unittest.loader._FailedTest.test_nvarc_e12_answer_evidence)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scalar_fixture_matches_pinned_reference_within_original_four_ulp (test_nvarc_e12_prefix_contract.PrefixContractTests.test_scalar_fixture_matches_pinned_reference_within_original_four_ulp)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_nvarc_e12_runtime (unittest.loader._FailedTest.test_nvarc_e12_runtime)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "setUpClass (test_nvarc_native_editor_transport.NativeEditorTransportTests)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_legacy_review_bytes_stay_frozen_and_new_export_proposal_is_inert (test_nvarc_native_export.NativeExportProcessTests.test_legacy_review_bytes_stay_frozen_and_new_export_proposal_is_inert)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_exact_review_allows_save_with_unknown_facts_and_preserves_v3 (test_nvarc_native_save_v4.NativeSaveV4Tests.test_exact_review_allows_save_with_unknown_facts_and_preserves_v3)"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_format_field_closure_and_unavailable_list_order_required (test_nvarc_native_save_v4.NativeSaveV4Tests.test_format_field_closure_and_unavailable_list_order_required) (change='order')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='maximum_paid_usd')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='local_resource_admission')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='private')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='internet')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='quick_save_authorized')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='maximum_quick_saves')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='agent_execution_authorized')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_clearance_ref')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='resource_information_status')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='resource_information_unavailable')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_resource_exception_ref')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_resource_exception_sha256')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='reserved_quota_hours')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='quota_observed_at')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='l4_quota_multiplier')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='quota_reservation_id')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='prior_sessions_reconciled')"
+      },
+      {
+        "kind": "ERROR",
+        "test": "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_editor_sessions_closed')"
+      },
+      {
+        "kind": "FAIL",
+        "test": "test_mixed_seed_parent_exports_real_tiny_cpu_evidence_in_fresh_child (test_nvarc_native_export.NativeExportProcessTests.test_mixed_seed_parent_exports_real_tiny_cpu_evidence_in_fresh_child)"
+      }
+    ],
+    "log_sha256": "5f478ae138f4a0fbc1b40b586456d446afd769de5ca4c22280693a1e8e731b63"
+  },
+  "actual_model_wheel_installation_verified_in_cloud": false,
+  "full_model_load_verified": false,
+  "gpu_executed": false,
+  "official_sdk_preserved_mount_focus": {
+    "tests": 47,
+    "skipped": 0,
+    "status": "PASS",
+    "log_sha256": "e1abab0cba40136298b7048bcd10de8cca3a1d3668404ef01a4c95f3b84e45e3"
+  }
+}

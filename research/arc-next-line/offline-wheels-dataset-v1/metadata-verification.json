@@ -1,0 +1,20 @@
+{
+  "id": 12444586,
+  "ref": "danielwuu/iris-arc-next-cu128-cp312-wheels",
+  "title": "IRIS ARC Next CUDA 12.8 CP312 Wheels",
+  "isPrivate": true,
+  "licenseName": "Other (specified in description)",
+  "currentVersionNumber": 1,
+  "totalBytes": 3961235096,
+  "description": "Private IRIS-X offline Linux x86_64/glibc>=2.28 CPython 3.12 wheelhouse. 52 original official PyPI/PyTorch distributions are hash pinned; original package licenses apply and are retained in wheels plus extracted licenses/. The source lock, complete requirements/wheel inventory, public provenance and CPU validation summary are included. Torch 2.8.0+cu128, transformers 5.8.1, peft 0.21.0. Native Linux offline dependency resolution, isolated installation, pip check, CPU imports/tokenizer/header checks and Python child network denial passed. No GPU or Kaggle notebook execution was performed. Runtime code is independently versioned in danielwuu/iris-arc-next-runtime.",
+  "versions": [
+    {
+      "versionNumber": 1,
+      "creationDate": "2026-10-08T11:26:34.733Z",
+      "creatorName": "Daniel Wu",
+      "creatorRef": "iris-arc-next-cu128-cp312-wheels",
+      "versionNotes": "Initial release",
+      "status": "Ready"
+    }
+  ]
+}

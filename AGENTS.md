@@ -1,5 +1,67 @@
 # IRIS-X Repository Governance
 
+## Active offline next-line materials (2026-10-08)
+
+Decision 0067 extends the owner request to a fully network-free runtime with
+private Kaggle Datasets for model weights, complete wheels and independently
+versioned code. Prepare Granite first; retain other candidates as research only.
+Local bulk preparation may use the owner's connected desktop in the explicitly
+requested gpt-6.1-sol / xhigh task; cloud storage is insufficient for a safe
+model+wheelhouse+install+packing peak. No GPU execution, paid provisioning,
+credential transfer, public publication or official submission is authorized.
+Preserve the accepted pilot notebook 137630087/version 1 unchanged as evidence.
+Do not reuse its consumed publication identity or journal. A later offline
+QUICK_SAVE needs its own reviewed exact dataset-version and byte bindings.
+The owner's 2026-10-08 10:45 UTC direction is to finish this offline stage,
+integrate and push main, then pause. The stage includes verified private assets,
+source-only offline notebook save/readback and available CPU acceptance. Refresh
+main/recovery, preserve independent changes, test the integration, and verify the
+remote commit and CI before reporting completion. No force push, automatic
+training or next-stage research follows from this finishing instruction.
+At 12:13 UTC the owner confirmed that the existing ARC-AGI-3 competition
+attachment was theirs and explicitly directed preservation. Decision 0068
+permits exactly that existing metadata association in the offline successor;
+no new competition-data reads/use, GPU run or paid execution is authorized.
+The first pre-save check correctly stopped before reservation or SaveKernel
+when this attachment differed from frozen v1 evidence; retain that no-send
+journal. Reconcile the exact predecessor/successor lists under new independent
+wire review rather than weakening the external-input gate generically.
+The sole offline QUICK_SAVE is now consumed as notebook 137630087/version 2.
+Its submitted wire pins code/4, Granite/2 and wheels/1 and preserves the owner's
+ARC3 association, with all switches False and GPU/TPU/Internet OFF. Retain the
+accepted receipt and original strict readback failure. The provider returns
+bare Dataset names and normalizes cell source lists to strings: source text
+verification may use only that documented nbformat normalization, but must not
+claim provider-selected Dataset versions or mounted bytes were attested. Actual
+complete asset downloads/CPU acceptance and fail-closed runtime hashes are
+separate evidence. No second save, GPU execution or next research stage follows.
+
+## Active next-line manual training notebook (2026-10-08)
+
+Decision 0066 is the latest owner scope: analyze the completed uncapped result,
+research the next small-model ARC-AGI-2 architecture and implement the first
+private default-inert QUICK_SAVE. Training targets one G4 RTX PRO 6000; official
+submission remains four L4s. Only CPU development/review is executed here.
+No agent paid compute, provisioning, GPU run, credential changes, dataset/weight
+upload or official submission. Keep manual budgeted smoke/train/eval/export
+phases separate, full native vocabularies, task-group truth isolation, and all
+historical notebook/source/evidence identities unchanged.
+The sole new private QUICK_SAVE is now consumed as notebook 137630087/version 1,
+with exact source readback and all manual switches False. No further save, GPU
+run, runtime query, paid provisioning or official submission is authorized.
+
+## Active uncapped owner notebook (2026-10-08)
+
+Decision 0065 supersedes continuing E13 execution for the current request.
+The owner authorized one genuinely NEW private `danielwuu` notebook via
+QUICK_SAVE only, with a False-by-default manual guard, after independent CPU
+and exact-wire review. Remove program resource capacity/time caps only in its
+separate uncapped mode; retain scientific grammar, p=.2, original TTT128 and
+one search per test, approved mounts, privacy/offline/USD 0. No RUN, GPU
+admission, runtime status query, quota bypass or GCP work is authorized.
+Preserve E13/v12 and all earlier source/evidence unchanged. See
+`docs/decisions/0065-save-new-uncapped-owner-notebook.md`.
+
 ## Active Stage 4 owner handoff (2026-10-06)
 
 E13 run001/version12 is terminal ERROR on its inference-event byte ceiling.

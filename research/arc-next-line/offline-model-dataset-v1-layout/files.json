@@ -1,0 +1,97 @@
+[
+  {
+    "name": "LICENSE",
+    "creationDate": "2026-10-08T09:46:50.083Z",
+    "totalBytes": 11357
+  },
+  {
+    "name": "README.md",
+    "creationDate": "2026-10-08T09:46:50.208Z",
+    "totalBytes": 38624
+  },
+  {
+    "name": "chat_template.jinja",
+    "creationDate": "2026-10-08T09:46:50.421Z",
+    "totalBytes": 9013
+  },
+  {
+    "name": "config.json",
+    "creationDate": "2026-10-08T09:46:50.144Z",
+    "totalBytes": 907
+  },
+  {
+    "name": "generation_config.json",
+    "creationDate": "2026-10-08T09:46:50.310Z",
+    "totalBytes": 207
+  },
+  {
+    "name": "irisx-model-material.json",
+    "creationDate": "2026-10-08T09:46:50.266Z",
+    "totalBytes": 3488
+  },
+  {
+    "name": "irisx-model-provenance/provenance/INDEX_REPAIR_NOTICE.txt",
+    "creationDate": "2026-10-08T09:46:50.321Z",
+    "totalBytes": 900
+  },
+  {
+    "name": "irisx-model-provenance/provenance/irisx-model-material.json",
+    "creationDate": "2026-10-08T09:46:50.342Z",
+    "totalBytes": 2342
+  },
+  {
+    "name": "irisx-model-provenance/provenance/model.safetensors.index.json",
+    "creationDate": "2026-10-08T09:46:50.342Z",
+    "totalBytes": 31357
+  },
+  {
+    "name": "merges.txt",
+    "creationDate": "2026-10-08T09:46:50.310Z",
+    "totalBytes": 916646
+  },
+  {
+    "name": "model-00001-of-00004.safetensors",
+    "creationDate": "2026-10-08T09:48:39.244Z",
+    "totalBytes": 5335320208
+  },
+  {
+    "name": "model-00002-of-00004.safetensors",
+    "creationDate": "2026-10-08T09:48:30.962Z",
+    "totalBytes": 5285049768
+  },
+  {
+    "name": "model-00003-of-00004.safetensors",
+    "creationDate": "2026-10-08T09:48:45.858Z",
+    "totalBytes": 5360555872
+  },
+  {
+    "name": "model-00004-of-00004.safetensors",
+    "creationDate": "2026-10-08T09:47:18.620Z",
+    "totalBytes": 1602302184
+  },
+  {
+    "name": "model.safetensors.index.json",
+    "creationDate": "2026-10-08T09:46:50.451Z",
+    "totalBytes": 27695
+  },
+  {
+    "name": "special_tokens_map.json",
+    "creationDate": "2026-10-08T09:46:50.321Z",
+    "totalBytes": 563
+  },
+  {
+    "name": "tokenizer.json",
+    "creationDate": "2026-10-08T09:46:50.306Z",
+    "totalBytes": 7153414
+  },
+  {
+    "name": "tokenizer_config.json",
+    "creationDate": "2026-10-08T09:46:50.475Z",
+    "totalBytes": 17677
+  },
+  {
+    "name": "vocab.json",
+    "creationDate": "2026-10-08T09:46:50.507Z",
+    "totalBytes": 1612694
+  }
+]

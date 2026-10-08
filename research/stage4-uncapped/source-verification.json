@@ -1,0 +1,27 @@
+{
+  "actual_wire_quicksave_verified": true,
+  "auto_run_requested": false,
+  "dependency_selected_bytes_verified": false,
+  "dependency_version_echo_verified": false,
+  "gpu_allocation_queried": false,
+  "kernel_id": 137591923,
+  "observed_at": "2026-10-08T03:58:37.859022+00:00",
+  "owner_start_default_false_verified": true,
+  "prepared_body_sha256": "4112b2008fb9614a4d85fd388d573283e70062ffc37dcad8826c94b5e09d563c",
+  "primary_sha256": "647a1a3a5e7da16e0d4d74317b267cc9bbca83a0fb8d8100d7daa49db1bf63e2",
+  "provider_read_normalizations": [
+    "known provider dependency version suffix omitted",
+    "known provider Transformers framework capitalization"
+  ],
+  "provider_save_type": null,
+  "provider_save_type_attested": false,
+  "ref": "danielwuu/stage4-uncapped-ttt128-20261008-3baff209a1",
+  "request_execution_type": "QUICK_SAVE",
+  "runtime_state_attested": false,
+  "runtime_state_queried": false,
+  "source_digest": "5990ba708544c5c1bdc5c992faaffeb56be2944aeeaf569cd9f86ba355671901",
+  "source_only_verified": true,
+  "source_outputs_empty": true,
+  "url": "https://www.kaggle.com/code/danielwuu/stage4-uncapped-ttt128-20261008-3baff209a1",
+  "version": 1
+}

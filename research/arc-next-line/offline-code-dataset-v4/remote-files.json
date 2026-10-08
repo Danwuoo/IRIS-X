@@ -1,0 +1,132 @@
+[
+  {
+    "name": "NOTICE.txt",
+    "creationDate": "2026-10-08T11:05:47.224Z",
+    "totalBytes": 578
+  },
+  {
+    "name": "bundle-manifest.json",
+    "creationDate": "2026-10-08T11:05:47.222Z",
+    "totalBytes": 3599
+  },
+  {
+    "name": "licenses/ARC-AGI-2-LICENSE.txt",
+    "creationDate": "2026-10-08T11:05:47.263Z",
+    "totalBytes": 11351
+  },
+  {
+    "name": "runtime/research/arc-next-line/licenses/ARC-AGI-2-LICENSE.txt",
+    "creationDate": "2026-10-08T11:05:47.259Z",
+    "totalBytes": 11351
+  },
+  {
+    "name": "runtime/research/arc-next-line/licenses/granite-4.2-8b-LICENSE.txt",
+    "creationDate": "2026-10-08T11:05:47.268Z",
+    "totalBytes": 11357
+  },
+  {
+    "name": "runtime/research/arc-next-line/model-source-lock.json",
+    "creationDate": "2026-10-08T11:05:47.291Z",
+    "totalBytes": 50613
+  },
+  {
+    "name": "runtime/research/arc-next-line/training-source-inventory.json",
+    "creationDate": "2026-10-08T11:05:47.292Z",
+    "totalBytes": 145339
+  },
+  {
+    "name": "runtime/tools/__init__.py",
+    "creationDate": "2026-10-08T11:05:47.304Z",
+    "totalBytes": 47
+  },
+  {
+    "name": "runtime/tools/arc_kaggle_submission.py",
+    "creationDate": "2026-10-08T11:05:47.260Z",
+    "totalBytes": 12447
+  },
+  {
+    "name": "runtime/tools/arc_next_agent.py",
+    "creationDate": "2026-10-08T11:05:47.288Z",
+    "totalBytes": 34755
+  },
+  {
+    "name": "runtime/tools/arc_next_environment.py",
+    "creationDate": "2026-10-08T11:05:47.273Z",
+    "totalBytes": 6996
+  },
+  {
+    "name": "runtime/tools/arc_next_index_repair.py",
+    "creationDate": "2026-10-08T11:05:47.263Z",
+    "totalBytes": 16877
+  },
+  {
+    "name": "runtime/tools/arc_next_materials.py",
+    "creationDate": "2026-10-08T11:05:47.286Z",
+    "totalBytes": 11828
+  },
+  {
+    "name": "runtime/tools/arc_next_models.py",
+    "creationDate": "2026-10-08T11:05:47.283Z",
+    "totalBytes": 36669
+  },
+  {
+    "name": "runtime/tools/arc_next_offline_bundle.py",
+    "creationDate": "2026-10-08T11:05:47.291Z",
+    "totalBytes": 7681
+  },
+  {
+    "name": "runtime/tools/arc_next_offline_environment.py",
+    "creationDate": "2026-10-08T11:05:47.273Z",
+    "totalBytes": 40955
+  },
+  {
+    "name": "runtime/tools/arc_next_offline_runtime.py",
+    "creationDate": "2026-10-08T11:05:47.316Z",
+    "totalBytes": 16718
+  },
+  {
+    "name": "runtime/tools/arc_next_report.py",
+    "creationDate": "2026-10-08T11:05:47.273Z",
+    "totalBytes": 9911
+  },
+  {
+    "name": "runtime/tools/arc_next_training.py",
+    "creationDate": "2026-10-08T11:05:47.278Z",
+    "totalBytes": 45166
+  },
+  {
+    "name": "runtime/tools/arc_next_workflow.py",
+    "creationDate": "2026-10-08T11:05:47.262Z",
+    "totalBytes": 15531
+  },
+  {
+    "name": "training/development-challenges.json",
+    "creationDate": "2026-10-08T11:05:47.268Z",
+    "totalBytes": 10674
+  },
+  {
+    "name": "training/evaluator/development-solutions.json",
+    "creationDate": "2026-10-08T11:05:47.262Z",
+    "totalBytes": 1530
+  },
+  {
+    "name": "training/source-receipts.json",
+    "creationDate": "2026-10-08T11:05:47.268Z",
+    "totalBytes": 7170
+  },
+  {
+    "name": "training/task-groups.json",
+    "creationDate": "2026-10-08T11:05:47.289Z",
+    "totalBytes": 15763
+  },
+  {
+    "name": "training/train-demonstrations.json",
+    "creationDate": "2026-10-08T11:05:47.299Z",
+    "totalBytes": 85727
+  },
+  {
+    "name": "training/training-manifest.json",
+    "creationDate": "2026-10-08T11:05:47.260Z",
+    "totalBytes": 3588
+  }
+]

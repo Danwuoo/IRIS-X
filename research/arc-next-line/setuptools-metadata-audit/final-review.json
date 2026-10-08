@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "base_commit": "947b62fb63cb0071ccba5c325e4f4f59d55d3d9c",
+  "reviewed_paths_sha256": {
+    "tools/arc_next_offline_environment.py": "a9beae2a08a88d24352d0c63b39dd9ac8a4aabb42a1fb5b117715e00bff3746f",
+    "tools/arc_next_environment.py": "aed0f67b7f3c9b89cc47ca9a341410d9b8708ad65ebed3dc8556dbbbde2c9794",
+    "tests/test_arc_next_offline_environment.py": "206dccd85a32410164201e56b2fde822aca7ea1d696a46daa4e6cb269e5617b4",
+    "tests/test_arc_next_environment.py": "9010e2ebd8a10342bef1a718199a0edabd900062ec933f5c9dabfa45b8c1999e"
+  },
+  "wheel_sha256": "51a52592b3b99e102b609654876bd65f19f999935166d1352678931132b0c670",
+  "wheel_bytes": 818216,
+  "root_metadata_count": 1,
+  "nested_metadata_count": 12,
+  "both_parsers_accept_official_wheel": true,
+  "synthetic_probes_passed": 44,
+  "focused_tests_log": "focused-tests-final.log",
+  "probes_file": "independent-probe-results.json",
+  "public_metadata": "https://pypi.org/pypi/setuptools/84.0.0/json",
+  "no_provider_mutations": true,
+  "no_gpu_calls": true,
+  "no_source_edits_by_reviewer": true
+}

@@ -1,0 +1,53 @@
+{
+  "cells": [
+    {
+      "cell": 0,
+      "different_fields": {
+        "source": {
+          "expected_type": "list",
+          "actual_type": "str"
+        }
+      },
+      "exact_text": true,
+      "text_sha256": "1fc5403877cd472d45e9a8327bbe1be21fc78196a2db5183c2278d336627765c"
+    },
+    {
+      "cell": 1,
+      "different_fields": {
+        "source": {
+          "expected_type": "list",
+          "actual_type": "str"
+        }
+      },
+      "exact_text": true,
+      "text_sha256": "38fbab936934e7fbaad3f6c6f40dbc27647d09b96485df4af00314da8a71ace1"
+    },
+    {
+      "cell": 2,
+      "different_fields": {
+        "source": {
+          "expected_type": "list",
+          "actual_type": "str"
+        }
+      },
+      "exact_text": true,
+      "text_sha256": "26a745f34a5d75023a6832765788a0e4ef6582f9ad62d3be6946f40d38d70af3"
+    },
+    {
+      "cell": 3,
+      "different_fields": {
+        "source": {
+          "expected_type": "list",
+          "actual_type": "str"
+        }
+      },
+      "exact_text": true,
+      "text_sha256": "e290482452e6e66c9ece40763778b0c32a23bc06c3bb691dcf020127388278c3"
+    }
+  ],
+  "cell_count_exact": true,
+  "entire_notebook_exact_after_only_valid_source_string_normalization": true,
+  "expected_executable_source_digest": "327b29a025b27f556d068b69a490c4e239e3f68630e1f45ff992b437de8de8c1",
+  "actual_executable_source_digest": "327b29a025b27f556d068b69a490c4e239e3f68630e1f45ff992b437de8de8c1",
+  "saved_source_pin_metadata_exact": true
+}

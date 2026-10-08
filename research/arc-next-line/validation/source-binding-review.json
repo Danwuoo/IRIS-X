@@ -1,0 +1,78 @@
+{
+  "scope": "independent retained-metadata and non-weight file verification only",
+  "weight_shards_downloaded_or_hashed": false,
+  "gpu_executed": false,
+  "models": [
+    {
+      "model_key": "granite-4.2-8b",
+      "revision": "f8de16cdcdbc6c779ca517604e050d82cc119e44",
+      "metadata_sha256_verified": true,
+      "nonweight_byte_files": [
+        "README.md",
+        "chat_template.jinja",
+        "config.json",
+        "generation_config.json",
+        "merges.txt",
+        "model.safetensors.index.json",
+        "special_tokens_map.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "vocab.json"
+      ],
+      "lfs_metadata_only": [
+        "model-00001-of-00004.safetensors",
+        "model-00002-of-00004.safetensors",
+        "model-00003-of-00004.safetensors",
+        "model-00004-of-00004.safetensors"
+      ]
+    },
+    {
+      "model_key": "qwen3.5-9b",
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "metadata_sha256_verified": true,
+      "nonweight_byte_files": [
+        "LICENSE",
+        "README.md",
+        "chat_template.jinja",
+        "config.json",
+        "merges.txt",
+        "model.safetensors.index.json",
+        "preprocessor_config.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "video_preprocessor_config.json",
+        "vocab.json"
+      ],
+      "lfs_metadata_only": [
+        "model.safetensors-00001-of-00004.safetensors",
+        "model.safetensors-00002-of-00004.safetensors",
+        "model.safetensors-00003-of-00004.safetensors",
+        "model.safetensors-00004-of-00004.safetensors"
+      ]
+    },
+    {
+      "model_key": "seed-coder-8b-reasoning",
+      "revision": "9927b7724deb1f8189da1cc6a50328dfb885d60d",
+      "metadata_sha256_verified": true,
+      "nonweight_byte_files": [
+        "README.md",
+        "config.json",
+        "generation_config.json",
+        "model.safetensors.index.json",
+        "special_tokens_map.json",
+        "tokenizer.json",
+        "tokenizer_config.json"
+      ],
+      "lfs_metadata_only": [
+        "model-00001-of-00007.safetensors",
+        "model-00002-of-00007.safetensors",
+        "model-00003-of-00007.safetensors",
+        "model-00004-of-00007.safetensors",
+        "model-00005-of-00007.safetensors",
+        "model-00006-of-00007.safetensors",
+        "model-00007-of-00007.safetensors"
+      ]
+    }
+  ],
+  "status": "passed"
+}

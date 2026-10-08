@@ -1,0 +1,22 @@
+{
+  "format": "irisx/arc-next-code-dataset-evidence-index-v1",
+  "reference": "danielwuu/iris-arc-next-runtime/1",
+  "raw_typed_metadata_sha256": "0240e8a96ec8247309b4ef176c30cbc7f948a46374b51f1454be949db4a9e7b5",
+  "private": true,
+  "dataset_ready": true,
+  "files_verified": true,
+  "source_commit": "1a996dce0bdb08a3002cba69527dadb72a37bba9",
+  "manifest_sha256": "5294f89b95d51c0003dfd4b5da16e73050ed11ed3d8456ded912ef3927343605",
+  "files": {
+    "create-receipt.json": "9a9ec68b82610b565a9aa5366fa4aac7a9353a5bd0a42853afae816a87fe6dee",
+    "metadata-reviewed.json": "495c3994a113467d15d433a112acec289d404a7c1ec67d2b321491f5fc9a9720",
+    "metadata-verification.json": "3911ee55aa05fd154a222692f4a847cbe8b1260b7bcd4e0314a0202e00d2e2c9",
+    "remote-files.json": "2c7590cd174e3ce04ce0a26d40d83a4646588cc7db338b045a50fb467550187e",
+    "roundtrip-verification.json": "a171470c876f49cfe3533103ad0027a5345aee2e03f43e742b8855d89a5da71d",
+    "status.json": "0c91f0b677a8bc4c6b8494b3a4a23764af2e128f0c43accb222019fce064bcbb"
+  },
+  "readback": "Official SDK Dataset version1 download; all25file paths,size,SHA256verified",
+  "quota_remaining_not_reported_by_sdk": true,
+  "gpu_executed": false,
+  "notebook_saved": false
+}
