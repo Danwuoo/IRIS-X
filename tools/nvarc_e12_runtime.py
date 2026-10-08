@@ -5,6 +5,7 @@ original 128-row epoch and its scheduler remain unchanged. No quality or total
 allocated-GPU cost claim follows from this shared-session pilot.
 """
 from __future__ import annotations
+from contextlib import contextmanager
 import copy
 import functools
 import gc
@@ -39,7 +40,7 @@ from tools.nvarc_e12_training import PrefixBudget,rng_observation,reset_observat
 from tools import nvarc_e12_prefix_contract as prefix
 
 FORMAT='irisx/stage4-e12-prefix-probe-v1'
-RUN_ID='stage4-e12-probe-prefix-20261007-001'
+RUN_ID='stage4-e12-probe-prefix-20261008-003'
 PROFILE='native-prefix-stop-v10'
 BUDGET_PROFILE='conservative-60min-inert'
 ARMS=('ttt64','ttt128')
@@ -57,6 +58,10 @@ MODEL_LAYOUT=dict(parameter_count=905,buffer_count=0,
 PROCESS_POLICY=dict(term_seconds=3290,kill_seconds=3299.8,stop_seconds=3300,final_seconds=3600,
     worker_cleanup_deadline_seconds=3299.8,requires_owned_group_absence=True)
 ALLOCATION='irisx/e12-prefix-test-allocation-v1'
+INFERENCE_TELEMETRY_FORMAT='irisx/e12-arm-inference-telemetry-v1'
+INFERENCE_TELEMETRY_AGGREGATION=(
+    'independent inference collectors per arm; overlap worker elapsed/unscoped time; '
+    'do not add collector elapsed times or infer allocated-GPU cost')
 
 
 def arm_contract(arm):
@@ -81,8 +86,10 @@ def budget_report():
 
 
 def profile_for_plan(plan):
+    from tools.nvarc_e12_admission import validate_plan
+    validate_plan(plan)
     require(plan.get('format')==FORMAT and plan.get('run_id')==plan.get('screen_id')==RUN_ID and
-        plan.get('generation_budget_profile')==PROFILE and plan.get('resource_budget_profile')==BUDGET_PROFILE and
+        plan.get('generation_budget_profile')==PROFILE and plan.get('resource_budget_profile') in (BUDGET_PROFILE,'bounded-60min-run') and
         plan.get('forward_observer_required') is True and
         canonical(plan.get('test_counts'))==canonical(TASK_COUNTS) and plan.get('task_order')==list(TASK_COUNTS) and
         canonical(plan.get('arm_order'))==canonical(counterbalanced_order(TASK_COUNTS)) and
@@ -94,7 +101,7 @@ def profile_for_plan(plan):
         all(type(plan.get(k)) is int and plan[k]==v for k,v in {**TIMING,**CAPS,
             'cleanup_reserve_seconds':310,'maximum_training_forwards':768,'maximum_training_backwards':768,
             'optimizer_steps':768,'per_worker_training_steps':192,'maximum_control_forwards':28,
-            'per_worker_forwards':7,'expected_notebook_version':10,'expected_previous_version':9}.items()),
+            'per_worker_forwards':7,'expected_notebook_version':11,'expected_previous_version':10}.items()),
         'closed E12 native prefix-only 60-minute profile required')
     return dict(profile_id=PROFILE,run_id=RUN_ID,forward_observer_required=True,**TIMING)
 
@@ -170,16 +177,79 @@ def arm_phase_deadlines(plan,key,ordinal,deadline,now_epoch,training_elapsed):
     return training,inference
 
 
-def worker(root,dependency,model,rank,deadline,parent_pid,dependency_receipt_sha256=None,*,runtime_api=None):
+@contextmanager
+def arm_inference_telemetry(snapshots,arm_id):
+    """Keep test indexes local to one arm and freeze its final host observation."""
+    require(arm_id in ARMS and arm_id not in snapshots,'one inference telemetry collector per E12 arm required')
+    snapshots[arm_id]=None
+    collector=PhaseTelemetry()
+    try:
+        yield collector
+    finally:
+        # PhaseTelemetry snapshots include live test dictionaries. Freeze them
+        # here so later work cannot mutate an already completed arm's evidence.
+        snapshots[arm_id]=copy.deepcopy(collector.snapshot())
+
+
+def inference_telemetry_result(snapshots):
+    return dict(format=INFERENCE_TELEMETRY_FORMAT,aggregation=INFERENCE_TELEMETRY_AGGREGATION,
+        arms=copy.deepcopy(snapshots))
+
+
+def verify_inference_telemetry(value,answers):
+    require(type(value) is dict and set(value)=={'format','aggregation','arms'} and
+        value['format']==INFERENCE_TELEMETRY_FORMAT and value['aggregation']==INFERENCE_TELEMETRY_AGGREGATION and
+        type(value['arms']) is dict and set(value['arms'])==set(answers)==set(ARMS),
+        'closed separate E12 arm inference telemetry required')
+    template=PhaseTelemetry().snapshot()
+    variable={'elapsed_host_seconds','inclusive_host_seconds','exclusive_host_seconds','unscoped_host_seconds','tests','events'}
+    for arm_id,tests in answers.items():
+        observed=value['arms'][arm_id]
+        require(type(observed) is dict and set(observed)==set(template) and
+            all(canonical(observed[k])==canonical(template[k]) for k in set(template)-variable),
+            'closed original host telemetry shape and semantics required')
+        # The native solver catches these cooperative inference guards and
+        # returns a checkpoint. PhaseTelemetry still retains the scoped event;
+        # a normal bounded stop must not be turned into a worker failure.
+        eligible=sum(t.get('termination_reason') in {'forward_limit','input_token_limit','inference_deadline'}
+            for t in tests['tests'])
+        require(type(observed['events']) is list and len(observed['events'])<=eligible and
+            all(type(event) is dict and set(event)=={'event','phase','type'} and
+                event['event']=='phase_exception' and event['type']=='InferenceLimitReached' and
+                event['phase'] in {'generation','verification'} for event in observed['events']),
+            'only retained native cooperative inference guard events permitted')
+        inclusive=observed['inclusive_host_seconds'];exclusive=observed['exclusive_host_seconds']
+        require(type(inclusive) is type(exclusive) is dict and
+            set(inclusive)==set(exclusive)==set(PhaseTelemetry.PHASES) and
+            all(v is None or type(v) in (int,float) and math.isfinite(v) and v>=0
+                for v in [*inclusive.values(),*exclusive.values()]) and
+            all(type(observed[k]) in (int,float) and math.isfinite(observed[k]) and observed[k]>=0
+                for k in ('elapsed_host_seconds','unscoped_host_seconds')) and
+            all((inclusive[p] is None)==(exclusive[p] is None) and
+                (inclusive[p] is None or exclusive[p]<=inclusive[p]+1e-9 and
+                    inclusive[p]<=observed['elapsed_host_seconds']+1e-6) for p in inclusive) and
+            all(inclusive[p] is None for p in set(PhaseTelemetry.PHASES)-{'generation','verification','parse_dedup','ranking'}) and
+            math.isclose(sum(v or 0 for v in exclusive.values())+observed['unscoped_host_seconds'],
+                observed['elapsed_host_seconds'],abs_tol=1e-6),
+            'separate inference host phase partition required')
+        require(type(observed['tests']) is dict and set(observed['tests'])=={str(i) for i in range(len(tests['tests']))} and
+            all(t.get('test_index')==i and 'telemetry' in t and
+                canonical(observed['tests'][str(i)])==canonical(t['telemetry']) for i,t in enumerate(tests['tests'])),
+            'arm inference telemetry differs from independently replayed checkpoint')
+
+
+def worker(root,dependency,model,rank,deadline,parent_pid,dependency_receipt_sha256=None,*,runtime_api=None,expected_plan_sha256=None):
     if runtime_api is None:from tools import stage_nvarc_e12_prefix_probe as runtime_api
-    root=Path(root);plan=runtime_api.verify_runtime(root,require_approved=True);profile_for_plan(plan)
+    root=Path(root);plan=runtime_api.verify_runtime(root,require_approved=True,expected_plan_sha256=expected_plan_sha256);profile_for_plan(plan)
+    require(expected_plan_sha256 == digest(plan).removeprefix('sha256:'),
+        'worker retains trusted parent plan pin before native work')
     from tools import nvarc_e12_answer_evidence as evidence
     require(type(rank) is int and 0<=rank<4 and math.isfinite(deadline),'assigned E12 worker required')
     install_owner_guard(parent_pid,signal.SIGKILL)
     output=root/'workers'/str(rank);key=plan['task_order'][rank];spec=plan['task_specs'][key];bound=binding(plan,rank)
     events=Events(output/'events.jsonl',bound);observed=[];adapters=[];telemetry=PhaseTelemetry();errors=[]
     engine=trainer=budget=None;baseline=None;arms={};training_elapsed=0.;reset=None;peak=rss=None
-    common_rng=None
+    common_rng=None;inference_telemetry={}
     def emit(event,**details):
         require(event in ('forward_reserved','forward_completed','cache_control_result'),'only counted controls required')
         if event=='forward_reserved':require(time.time()<deadline,'absolute control deadline exhausted')
@@ -268,8 +338,9 @@ def worker(root,dependency,model,rank,deadline,parent_pid,dependency_receipt_sha
                 receipt['inference_started_monotonic']=time.monotonic()
                 # Small host setup before solve_task would otherwise clip the
                 # last window; the absolute worker cutoff remains authoritative.
-                answers=evidence.solve_task(engine,root,plan,rank,inference_cutoff,telemetry,
-                    observe_forwards=True,schedule='interleaved',directory=arm,arm_id=arm_id)
+                with arm_inference_telemetry(inference_telemetry,arm_id) as arm_telemetry:
+                    answers=evidence.solve_task(engine,root,plan,rank,inference_cutoff,arm_telemetry,
+                        observe_forwards=True,schedule='interleaved',directory=arm,arm_id=arm_id)
                 receipt['inference_finished_monotonic']=time.monotonic()
                 receipt['generation_rng_after']=rng_observation(capture_rng(engine))
                 after_inference=model_metadata(engine.model);write(arm/'model-after-metadata.json',after_inference)
@@ -323,6 +394,7 @@ def worker(root,dependency,model,rank,deadline,parent_pid,dependency_receipt_sha
     value=dict(binding=bound,outcome='failed' if errors else 'complete',errors=errors,arms=arms,
         training_elapsed_seconds=training_elapsed,controls=verify_observations(observed),post_reset_control=reset,
         peak_host_rss_bytes=rss,peak_cuda_allocated_bytes=peak,telemetry=telemetry.snapshot(),
+        inference_telemetry=inference_telemetry_result(inference_telemetry),
         native_model_instances=1 if engine is not None else 0,model_forwards_for_isolation=0,
         completed_training_updates=sum(arm_contract(a)['training_updates'] for a,r in arms.items() if r['trace_complete']),
         finished_epoch=time.time(),correctness_scored=False,promotion=False,total_cost_reduction=None)
@@ -453,7 +525,7 @@ def verify_worker_result(root,plan,rank,uuid):
     from tools import nvarc_e12_answer_evidence as evidence
     result=_read(directory/'result.json');bound=binding(plan,rank)
     fields={'binding','outcome','errors','arms','training_elapsed_seconds','controls','post_reset_control',
-        'peak_host_rss_bytes','peak_cuda_allocated_bytes','telemetry','native_model_instances','model_forwards_for_isolation',
+        'peak_host_rss_bytes','peak_cuda_allocated_bytes','telemetry','inference_telemetry','native_model_instances','model_forwards_for_isolation',
         'completed_training_updates','finished_epoch','correctness_scored','promotion','total_cost_reduction'}
     require(set(result)==fields and result['binding']==bound and result['outcome']=='complete' and result['errors']==[] and
         set(result['arms'])==set(ARMS) and result['completed_training_updates']==192 and
@@ -514,6 +586,11 @@ def verify_worker_result(root,plan,rank,uuid):
         require(set(prefills[arm_id])==set(range(plan['test_counts'][key])) and
             all(r['cached'] is False and r['position_start']==0 for r in prefills[arm_id].values()),
             'every actual test must start with fresh uncached prefill')
+    verify_inference_telemetry(result['inference_telemetry'],answers)
+    require(result['telemetry']['tests']=={} and all(result['telemetry'][kind][p] is None
+        for kind in ('inclusive_host_seconds','exclusive_host_seconds')
+        for p in ('generation','verification','parse_dedup','ranking')),
+        'worker load/control/training telemetry must remain separate from arm inference')
     require(contracts['ttt64']==contracts['ttt128'] and prefills['ttt64']==prefills['ttt128'],
         'independent reset runs must share exact128 source/sampler/RNG/LR and inference input prefix')
     prefix.validate_pair(contracts['ttt64'],traces['ttt64'],traces['ttt128'])
@@ -535,14 +612,16 @@ def worker_deadline_monotonic(plan,started,spawned):
     return min(started+3290,spawned+plan['maximum_worker_seconds'])
 
 
-def execute(root, dependency, started, *, runtime_api=None):
+def execute(root, dependency, started, *, runtime_api=None, expected_plan_sha256=None):
     if runtime_api is None:
         from tools import stage_nvarc_e12_prefix_probe as runtime_api
     from tools.nvarc_e12_cleanup import cleanup_workers
     signal.signal(signal.SIGTERM,lambda *_: (_ for _ in ()).throw(KeyboardInterrupt('E12 coordinator stop requested')))
     cleanup_hook=functools.partial(cleanup_workers,deadline_monotonic=started+3299.8)
     verify_runtime, SCOPE = runtime_api.verify_runtime, runtime_api.SCOPE
-    root = Path(root); plan = verify_runtime(root,require_approved=True)
+    root = Path(root); plan = verify_runtime(root,require_approved=True,expected_plan_sha256=expected_plan_sha256)
+    require(expected_plan_sha256 == digest(plan).removeprefix('sha256:'),
+        'coordinator retains trusted notebook plan pin before native work')
     write(root/'coordinator-admitted.json',{'run_id':plan['run_id'],'plan_digest':digest(plan)})
     states = {}; results = {}; errors = []; cleanup = {'all_producers_stopped':True}; overlap = None
     try:
@@ -567,7 +646,8 @@ def execute(root, dependency, started, *, runtime_api=None):
             worker_path = getattr(runtime_api,'WORKER_PATH','tools/nvarc_e10_end_to_end.py')
             command = [sys.executable,str(root/worker_path),'--root',str(root),'--dependency',str(dependency),
                 '--model',str(model),'--rank',str(rank),'--deadline',str(deadline),'--parent-pid',str(os.getpid()),
-                '--dependency-receipt-sha256',receipt_sha]
+                '--dependency-receipt-sha256',receipt_sha,
+                '--expected-plan-sha256',expected_plan_sha256]
             state['process'] = subprocess.Popen(command,env=environment,cwd=directory,start_new_session=True,
                 stdout=state['streams']['stdout'],stderr=state['streams']['stderr'])
             launch_observer=getattr(runtime_api,'record_worker_launch',None)
@@ -629,7 +709,7 @@ def execute(root, dependency, started, *, runtime_api=None):
 
 def validate_stop_receipts(observation,terminal,plan,root,*,allow_observation_errors=False):
     """Recompute the exact 60-minute caller policy, never trust a success flag."""
-    require(plan['resource_budget_profile']==BUDGET_PROFILE,'exact60minute E12 stop receipt required')
+    require(plan['resource_budget_profile'] in (BUDGET_PROFILE,'bounded-60min-run'),'exact60minute E12 stop receipt required')
     receipt=observation.get('e12_supervision',{});start=receipt.get('started_monotonic')
     finite=lambda value:type(value) in (int,float) and math.isfinite(value)
     require(finite(start) and start>=0 and receipt.get('format')=='irisx/e12-supervision-v1' and

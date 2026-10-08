@@ -42,7 +42,7 @@ def fixture(root):
         e12_process_policy=dict(runtime.PROCESS_POLICY),cleanup_reserve_seconds=310,
         arm_order=runtime.counterbalanced_order(runtime.TASK_COUNTS),maximum_training_forwards=768,
         maximum_training_backwards=768,optimizer_steps=768,per_worker_training_steps=192,
-        maximum_control_forwards=28,per_worker_forwards=7,expected_notebook_version=10,expected_previous_version=9,
+        maximum_control_forwards=28,per_worker_forwards=7,expected_notebook_version=11,expected_previous_version=10,
         verification_schedule='interleaved', verification_schedules=['interleaved'],
         arm_contracts={arm:runtime.arm_contract(arm) for arm in runtime.ARMS})
     return plan

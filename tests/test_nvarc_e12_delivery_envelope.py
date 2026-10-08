@@ -19,17 +19,29 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
         self.run = delivery.RUN_ID
-        self.plan = dict(run_id=self.run, screen_id=self.run, maximum_notebook_wall_seconds=3600,
-                         task_order=list(delivery.TASKS), model_material_digest='sha256:fixture')
+        # Digest-verified historical scope data, never authority or provider evidence.
+        # Only the admission context below is synthetic. Returned-code tripwires
+        # and all archive adversaries remain independent from runtime imports.
+        frozen = (Path(__file__).parent / 'fixtures/e12/frozen-inert-001-plan.json').read_bytes()
+        self.assertEqual(hashlib.sha256(frozen).hexdigest(),
+            'f8000ab7db2a40795e93ff7482ad17ffa7fc817057207da7a9aadd6266739349')
+        self.plan = delivery.parse(frozen)
         source = b'raise AssertionError("returned code must never execute")\n'
-        self.plan.update(format='irisx/stage4-e12-prefix-probe-v1',
-            resource_budget_profile='conservative-60min-inert', generation_budget_profile='native-prefix-stop-v10',
-            test_counts=dict(delivery.TASKS), optimizer_steps=768, test_executions=12, cleanup_reserve_seconds=310,
-            maximum_archive_uncompressed_bytes=8*1024**3,
-            e12_process_policy=dict(term_seconds=3290,kill_seconds=3299.8,stop_seconds=3300,final_seconds=3600,
-                worker_cleanup_deadline_seconds=3299.8,requires_owned_group_absence=True),
-            payload_sha256={'tools/returned-code.py':hashlib.sha256(source).hexdigest()},
-            source_files_sha256={'tools/returned-code.py':hashlib.sha256(source).hexdigest()})
+        self.plan.update(run_id=self.run, screen_id=self.run, source_commit='a' * 40,
+            expected_notebook_version=11, expected_previous_version=10,
+            kernel_execution_type='RUN', owner_editor_only=False,
+            resource_budget_profile=delivery.RUN_BUDGET_PROFILE,
+            owner_editor_admission=None, resource_admission=None,
+            payload_sha256={'tools/returned-code.py': hashlib.sha256(source).hexdigest()},
+            source_files_sha256={'tools/returned-code.py': hashlib.sha256(source).hexdigest()},
+            **{key: key in delivery.RUN_TRUE_FIELDS for key in delivery.FALSE_FIELDS})
+        quota = dict(format='irisx/stage4-quota-observation-v1', provider='kaggle', account='danielwuu',
+            observed_at='2026-10-07T00:00:00+00:00', refresh_at='2026-10-08T00:00:00+00:00',
+            primary_sha256='a' * 64, typed_projection_sha256='b' * 64,
+            used_seconds=30000, reserved_seconds=0, total_seconds=36000, remaining_free_seconds=6000,
+            pay_to_scale_enabled=False, duration_units='provider charged quota seconds', permission_granted=False)
+        self.plan['resource_admission'] = delivery.run_admission(self.plan, quota,
+            delivery.AUTHORIZATION_REF, quota_policy=delivery.WAIVER_POLICY, current=False)
         self.plan_raw = delivery.canonical(self.plan)
         self.sha = hashlib.sha256(self.plan_raw).hexdigest()
         self.observation = dict(confirmed_stopped=True, launched=True, returncode=0, reserve_preserved=True,
@@ -41,7 +53,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
                 coordinator_group_absent=True, errors=[], reserve_preserved=True, finalization_remaining_seconds=2200.))
         self.launch = dict(format='irisx/e12-owned-worker-launch-v1', pid=234, process_group_id=234,
             started_monotonic=200., start_new_session=True, binding=dict(probe_id=self.run,
-            plan_digest='sha256:' + self.sha, rank=0, task_id=list(delivery.TASKS)[0], model_material_digest='sha256:fixture'))
+            plan_digest='sha256:' + self.sha, rank=0, task_id=list(delivery.TASKS)[0], model_material_digest=self.plan['model_material_digest']))
         self.terminal = dict(plan_digest='sha256:' + self.sha, outcome='failed', cleanup=dict(
             format='irisx/e12-collective-cleanup-v1', deadline_monotonic=3399.8, all_producers_stopped=True,
             complete_before_deadline=True, timed_out=False, secondary_errors=[], started_monotonic=1300.,
@@ -54,7 +66,9 @@ class DeliveryEnvelopeTests(unittest.TestCase):
             'outer-supervision.json': delivery.canonical(self.observation),
             'terminal.json': delivery.canonical(self.terminal),
             'workers/0/process-launch.json': delivery.canonical(self.launch),
-            'tools/returned-code.py': b'raise AssertionError("returned code must never execute")\n'}
+            'tools/returned-code.py': source,
+            delivery.RUN_START_FILE: delivery.canonical(dict(delivery.run_start_fields(self.plan),
+                started_epoch=100., started_monotonic=100.))}
         self.write_runtime()
         self.clock = patch.object(delivery.time, 'monotonic', return_value=1700.)
         self.clock.start()
@@ -137,7 +151,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
     def test_diagnostic_fallback_keeps_stopped_workers_without_full_runtime_files(self):
         self.files.pop('workers/0/process-launch.json')
         self.files['diagnostic-only.json'] = delivery.canonical(dict(format='irisx/ttt-probe-diagnostic-only-v1',
-            complete_runtime_evidence=False, promotion=False, errors=['literal export failure']))
+            complete_runtime_evidence=False, correctness_scored=False, promotion=False, errors=['literal export failure']))
         self.write_runtime()
         self.result.update(final_archive_created=False, diagnostic_only_archive_created=True, finalization_qualified=False,
                            diagnostic_errors=['literal export failure'])
@@ -146,7 +160,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
 
     def test_diagnostic_archive_cannot_claim_success_even_with_rehashed_receipt(self):
         self.files['diagnostic-only.json'] = delivery.canonical(dict(format='irisx/ttt-probe-diagnostic-only-v1',
-            complete_runtime_evidence=False, promotion=False))
+            complete_runtime_evidence=False, correctness_scored=False, promotion=False))
         self.write_runtime()
         with self.assertRaisesRegex(ValueError, 'full finalizer'):
             self.build(result=True)
@@ -154,7 +168,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
     def test_diagnostic_omitted_launch_still_requires_exact_task_model_binding(self):
         self.files.pop('workers/0/process-launch.json')
         self.files['diagnostic-only.json'] = delivery.canonical(dict(format='irisx/ttt-probe-diagnostic-only-v1',
-            complete_runtime_evidence=False, promotion=False))
+            complete_runtime_evidence=False, correctness_scored=False, promotion=False))
         self.write_runtime()
         for key in ('task_id', 'model_material_digest'):
             proof = copy.deepcopy(self.proof)
@@ -173,7 +187,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         self.files = {'screen.json': self.plan_raw, 'outer-supervision.json': delivery.canonical(self.observation),
             'bootstrap-failure.json': b'{"message":"literal launch failure"}',
             'diagnostic-only.json': delivery.canonical(dict(format='irisx/ttt-probe-diagnostic-only-v1',
-                                                           complete_runtime_evidence=False, promotion=False))}
+                                                           complete_runtime_evidence=False, correctness_scored=False, promotion=False))}
         self.write_runtime()
         self.result.update(final_archive_created=False, diagnostic_only_archive_created=True, finalization_qualified=False)
         self.receipt['finalization_qualified'] = False
@@ -420,7 +434,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
                 exec(compile(tree, 'delivery-cold', 'exec'), {'__name__': '__main__'})
         modules = [node.module if isinstance(node, ast.ImportFrom) else node.names[0].name
                    for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))]
-        self.assertTrue(all(name.split('.')[0] in {'hashlib', 'json', 'math', 'os', 'pathlib', 're',
+        self.assertTrue(all(name.split('.')[0] in {'datetime', 'hashlib', 'json', 'math', 'os', 'pathlib', 're',
             'stat', 'struct', 'time', 'zipfile'} for name in modules))
 
 

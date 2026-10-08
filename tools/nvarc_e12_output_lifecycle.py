@@ -5,6 +5,7 @@ pilot members and binds every read to its single immutable generation marker.
 """
 from contextlib import contextmanager
 import os
+import re
 from pathlib import Path
 import time
 import uuid
@@ -20,8 +21,15 @@ class GenerationStore:
     def __init__(self, root, kind, bindings, *, observe=lambda *_: None,
                  now=time.monotonic, deadline=None):
         self.root, self.kind = Path(root), kind
-        require(kind in SETS and isinstance(bindings, dict) and bindings.get('run_id'),
-                'exact generation kind/run binding required')
+        from tools.nvarc_e12_admission import RUN_ID, read_plan, verify_execution
+        require(kind in SETS and type(bindings) is dict and
+            set(bindings) == {'run_id', 'plan_digest', 'challenges_digest'} and bindings['run_id'] == RUN_ID and
+            all(type(bindings[k]) is str and re.fullmatch('sha256:[0-9a-f]{64}', bindings[k])
+                for k in ('plan_digest', 'challenges_digest')), 'exact E12 generation kind/run/digest binding required')
+        plan = read_plan(self.root)
+        verify_execution(self.root, plan)
+        require(digest(plan) == bindings['plan_digest'] and plan['challenges_digest'] == bindings['challenges_digest'],
+            'output generation must bind admitted exact plan/challenges')
         self.bindings = parse_json(canonical(bindings))
         self.observe, self.now, self.deadline = observe, now, deadline
 

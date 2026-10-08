@@ -205,3 +205,9 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0061-transfer-stage4-development-to-dots.md`](0061-transfer-stage4-development-to-dots.md)
   records autonomous Astra ultra development with parallel subagents and free
   private Kaggle GPU experiments, ending at official-scoring readiness.
+- [`0062-run-e12-with-explicit-free-quota-waiver.md`](0062-run-e12-with-explicit-free-quota-waiver.md)
+  records the owner's one-run conservative-reservation waiver while preserving
+  actual free-quota checks, USD 0, the unchanged E12 workload and terminal monitoring.
+- [`0063-repair-e12-arm-telemetry-and-rerun.md`](0063-repair-e12-arm-telemetry-and-rerun.md)
+  records the owner-authorized one-run telemetry repair replacement, same scope
+  and free-only bounds, exact wire review, terminal analysis and preservation.

@@ -1,7 +1,8 @@
-"""Build an inert E12 prefix probe from exact immutable v9 material bytes.
+"""Build distinct E12 packages from exact immutable v9 material bytes.
 
-Offline only. No provider query, publication, quota assertion, model import or
-GPU work. The default notebook branch performs no setup or filesystem writes.
+Offline source/packet work only. The default INERT branch performs no setup.
+Explicit RUN admission requires the exact owner reference and real normalized
+provider observation; the publisher separately checks fresh evidence and sends.
 """
 from __future__ import annotations
 import argparse
@@ -31,6 +32,7 @@ WORKER_PATH = 'tools/nvarc_e12_entry.py'
 FROZEN_PLAN = 'frozen-v9-plan.json'
 FROZEN_PLAN_SHA256 = '4267c77e4a68f16415832b80b5219fa9f0261664a97d83d7602d7a2ea7d31183'
 FROZEN_SOURCE_COMMIT = 'c946719b0714b8dbf0ab13a03c76efc144e05d60'
+FROZEN_INERT_PLAN_SHA256 = 'f8000ab7db2a40795e93ff7482ad17ffa7fc817057207da7a9aadd6266739349'
 NEW_FILES = ('tools/stage_nvarc_e12_prefix_probe.py', 'tools/nvarc_e12_admission.py',
     'tools/nvarc_e12_entry.py', 'tools/nvarc_e12_prefix_contract.py',
     'tools/nvarc_e12_training.py', 'tools/nvarc_e12_runtime.py',
@@ -58,13 +60,11 @@ def record_worker_launch(*args, **kwargs):
     return runtime_api().record_worker_launch(*args, **kwargs)
 
 
-def validate_admission(plan, *, required=False, root=None):
-    owner.scope(plan)
-    require(canonical(plan.get('owner_editor_admission')) == canonical(owner.admission(plan)),
-        'exact optional owner E12 admission contract required')
+def validate_admission(plan, *, required=False, root=None, current_resource=False):
+    owner.validate_plan(plan, current_resource=current_resource)
     if required:
         require(root is not None, 'E12 confirmation root required')
-        owner.verify_confirmation(root, plan)
+        owner.verify_execution(root, plan)
     runtime_api().profile_for_plan(plan)
 
 
@@ -104,7 +104,8 @@ def _verify_frozen(parent, frozen_payload):
             for name, body in frozen_payload.items()), 'all original v9 runtime bytes must be retained exactly')
 
 
-def construct(commit, parent, frozen_payload, sources):
+def construct(commit, parent, frozen_payload, sources, *, resource_snapshot=None,
+              authorization_ref=None, quota_policy=owner.CONSERVATIVE_POLICY, current_resource=False):
     require(type(commit) is str and re.fullmatch('[0-9a-f]{40}', commit),
         'full committed E12 source identity required')
     _verify_frozen(parent, frozen_payload)
@@ -112,6 +113,11 @@ def construct(commit, parent, frozen_payload, sources):
         'closed E12 implementation inventory required')
     require(all(sources[name] == frozen_payload[name] for name in historical.FILES),
         'historical source lineage must remain byte-identical')
+    require((resource_snapshot is None) == (authorization_ref is None),
+        'both actual resource observation and exact authorization reference required')
+    automatic = resource_snapshot is not None
+    require(automatic or quota_policy == owner.CONSERVATIVE_POLICY,
+        'INERT package cannot carry a runtime waiver')
     runtime = runtime_api()
     plan = copy.deepcopy(parent)
     plan.pop('e11_process_policy', None)
@@ -129,7 +135,7 @@ def construct(commit, parent, frozen_payload, sources):
         arm_order=runtime.counterbalanced_order(parent['test_counts']),
         per_arm_caps=dict(runtime.PER_ARM_CAPS),
         verification_schedule='interleaved', verification_schedules=['interleaved'],
-        expected_notebook_version=10, expected_previous_version=9,
+        expected_notebook_version=11, expected_previous_version=10,
         expected_previous_script_version_id=None,
         test_executions=12,
         training_reuse='independent baseline reset before each arm; immutable128-row dataset and native full-horizon128 sampler; stop after64 or128 updates',
@@ -145,7 +151,12 @@ def construct(commit, parent, frozen_payload, sources):
     plan['lineage']['historical_v9'] = dict(run_id=parent['run_id'], source_commit=FROZEN_SOURCE_COMMIT,
         plan_sha256=FROZEN_PLAN_SHA256, notebook_version=9, retained_plan=FROZEN_PLAN,
         authority_inherited=False)
-    plan['lineage']['repair'] = 'new prefix experiment; no historical source, material, solver or dependency mutation'
+    plan['lineage']['historical_e12_inert'] = dict(run_id='stage4-e12-probe-prefix-20261007-001',
+        plan_sha256=FROZEN_INERT_PLAN_SHA256, authority_inherited=False, historical_only=True)
+    plan['lineage']['historical_e12_run002'] = dict(run_id='stage4-e12-probe-prefix-20261007-002',
+        notebook_version=10, plan_sha256='be2d94f269dd76c38882a52337d1111911cf1a857ae85dcca79af6284e696604',
+        terminal_status='ERROR', authority_inherited=False, historical_only=True)
+    plan['lineage']['repair'] = 'independent arm inference telemetry only; native source, material, solver, training, limits and dependencies unchanged'
     raw = dict(frozen_payload)
     raw.update(sources)
     raw[FROZEN_PLAN] = canonical(parent)
@@ -153,19 +164,33 @@ def construct(commit, parent, frozen_payload, sources):
         for name, body in sorted(sources.items())}
     plan['payload_sha256'] = {name: hashlib.sha256(body).hexdigest()
         for name, body in sorted(raw.items())}
-    plan['owner_editor_admission'] = owner.admission(plan)
+    if automatic:
+        plan.update(kernel_execution_type='RUN', owner_editor_only=False,
+            resource_budget_profile=owner.RUN_BUDGET_PROFILE,
+            **{key: key in owner.RUN_TRUE_FIELDS for key in FALSE_FIELDS})
+        plan['resource_admission'] = owner.run_admission(plan, resource_snapshot, authorization_ref,
+            quota_policy=quota_policy, current=current_resource)
+        plan['paired_resource_proposal'] = dict(runtime.budget_report(),
+            budget_profile=owner.RUN_BUDGET_PROFILE, status='ADMITTED_RUN_WITHOUT_COMPLETION_GUARANTEE',
+            feasibility='positive observed free quota with unchanged workload; provider may reject or terminate')
+    else:
+        plan['owner_editor_admission'] = owner.admission(plan)
     validate_admission(plan); reject_truth(plan)
     raw['plan.json'] = raw['screen.json'] = canonical(plan)
     return plan, raw
 
 
-def verify_runtime(root, *, require_approved=False):
+def verify_runtime(root, *, require_approved=False, expected_plan_sha256=None):
     root = Path(root)
     require(root.is_dir() and not any(p.is_symlink() for p in (root, *root.parents)),
         'regular E12 runtime root required')
     plan = parse_json((root / 'plan.json').read_bytes())
     require((root / 'plan.json').read_bytes() == (root / 'screen.json').read_bytes() == canonical(plan),
         'identical canonical E12 plan/screen required')
+    if require_approved or expected_plan_sha256 is not None:
+        require(type(expected_plan_sha256) is str and
+            hashlib.sha256(canonical(plan)).hexdigest() == expected_plan_sha256,
+            'runtime plan must retain the independently supplied notebook SHA-256')
     validate_admission(plan, required=require_approved, root=root)
     require(set(plan['source_files_sha256']) == set(FILES) and set(FILES) <= set(plan['payload_sha256']),
         'closed E12 source and payload inventory required')
@@ -178,7 +203,10 @@ def verify_runtime(root, *, require_approved=False):
     _verify_frozen_plan(parent)
     frozen = {name: (root / name).read_bytes() for name in parent['payload_sha256']}
     sources = {name: (ROOT / name).read_bytes() for name in FILES}
-    expected, raw = construct(plan['source_commit'], parent, frozen, sources)
+    resource = plan.get('resource_admission') or {}
+    expected, raw = construct(plan['source_commit'], parent, frozen, sources,
+        resource_snapshot=resource.get('resource_snapshot'), authorization_ref=resource.get('authorization_ref'),
+        quota_policy=resource.get('quota_policy', owner.CONSERVATIVE_POLICY))
     require(plan == expected and all((root / name).read_bytes() == body for name, body in raw.items()),
         'exact E12 source/material/plan reconstruction differs')
     return plan
@@ -191,7 +219,7 @@ def branch(body, message):
 
 
 def configuration_cell():
-    return ('# Set True only to authorize this exact E12 run001 once in a fresh Editor session.\n'
+    return ('# Set True only to authorize this exact E12 run003 once in a fresh Editor session.\n'
         '# True declares acceptance of the original sorokin V2 / Qwen / Torch / Unsloth / FlashAttention native stack and offline setup,\n'
         '# that you personally checked at least 4 free GPU-hours, no conflicting reservation, and pay-to-scale OFF,\n'
         '# and that you will stop the Editor session after downloading.\n'
@@ -201,6 +229,10 @@ def configuration_cell():
 
 
 def embedded_body(notebook):
+    if notebook.get('metadata', {}).get('irisx_execution_mode') == 'RUN':
+        require(len(notebook['cells']) == 3 and notebook['cells'][1]['cell_type'] == 'code',
+            'exact automatic RUN disclosure/execution/download layout required')
+        return ''.join(notebook['cells'][1]['source'])
     tree = ast.parse(''.join(notebook['cells'][2]['source']))
     require(len(tree.body) == 1 and isinstance(tree.body[0], ast.If),
         'one explicit E12 owner execution branch required')
@@ -213,9 +245,14 @@ def embedded_body(notebook):
 
 
 def verify_embedded_payload(notebook, raw):
-    require(len(notebook['cells']) == 4 and
-        ''.join(notebook['cells'][1]['source']) == configuration_cell(),
-        'exact disclosure/config/execution/download with literal False required')
+    plan = parse_json(raw['plan.json'])
+    automatic = owner.is_run(plan)
+    require((notebook.get('metadata', {}).get('irisx_execution_mode') == 'RUN') is automatic,
+        'notebook execution mode must equal exact plan admission')
+    if not automatic:
+        require(len(notebook['cells']) == 4 and
+            ''.join(notebook['cells'][1]['source']) == configuration_cell(),
+            'exact disclosure/config/execution/download with literal False required')
     body = embedded_body(notebook)
     historical.core.ancestor.ancestor.verify_embedded_payload(
         {'cells': [{}, {'source': body.splitlines(keepends=True)}]}, raw)
@@ -236,7 +273,9 @@ def delivery_download_body(plan, raw):
         'DOWNLOAD_CHECKER_SHA256=' + repr(hashlib.sha256(checker).hexdigest()) + '\n'
         'DOWNLOAD_CHECKER_BYTES=' + repr(len(checker)) + '\n'
         "DOWNLOAD_PATH=Path('/kaggle/working')/(DOWNLOAD_RUN_ID+'-delivery.zip')\n")
-    return header + '''if not DOWNLOAD_PATH.is_file():
+    footer = ('This automatic RUN requested a 3600-second provider timeout; verify the actual terminal provider state separately.'
+        if owner.is_run(plan) else 'After downloading, STOP THE EDITOR SESSION. The internal watchdog is not a provider session timeout.')
+    body = header + '''if not DOWNLOAD_PATH.is_file():
     print('No finalized delivery bundle is available yet. No run, rebuild or recovery has been started by this cell.')
 else:
     _checker_path=DOWNLOAD_PATH.parent/DOWNLOAD_RUN_ID/'tools/nvarc_e12_delivery_envelope.py'
@@ -257,12 +296,14 @@ else:
     print('Exact-run delivery bundle verified. It includes the unchanged runtime ZIP and separate post-write evidence; this does not establish model quality or promotion.')
     from IPython.display import FileLink,display
     display(FileLink(str(DOWNLOAD_PATH)))
-    print('After downloading, STOP THE EDITOR SESSION. The internal watchdog is not a provider session timeout.')
+    print('E12_DOWNLOAD_FOOTER')
 '''
+    return body.replace("'E12_DOWNLOAD_FOOTER'", repr(footer))
 
 
 def render(plan, raw):
     validate_admission(plan)
+    automatic = owner.is_run(plan)
     require(raw.get('plan.json') == raw.get('screen.json') == canonical(plan),
         'exact E12 plan/screen bytes required')
     require(plan['payload_sha256'] == {name: hashlib.sha256(body).hexdigest()
@@ -286,15 +327,21 @@ def render(plan, raw):
         "    and screen.get('agent_execution_authorized') is False and screen.get('kernel_execution_type')=='QUICK_SAVE')\n"
         "if (screen['approved_for_runtime'] is not True and not owner_editor) or screen['local_fixture'] is not False:\n"
         "    raise RuntimeError('inert E10 package: current free resource/materials admission required')\n")
-    body = _replace_once(body, old,
+    mode_guard = ("if screen['kernel_execution_type']!='RUN' or screen['approved_for_runtime'] is not True or screen['agent_execution_authorized'] is not True or screen['owner_editor_only'] is not False or screen['local_fixture'] is not False:\n"
+        "    raise RuntimeError('exact admitted E12 RUN package required')\n") if automatic else (
         "if screen['kernel_execution_type']!='INERT' or screen['local_fixture'] is not False:\n"
         "    raise RuntimeError('exact inert E12 package required')\n")
+    body = _replace_once(body, old, mode_guard)
     hook = 'paths=[Path(path) for path in sys.path'
-    body = _replace_once(body, hook,
-        "sys.path.insert(0,str(work))\nfrom tools.nvarc_e12_admission import write_confirmation\n"
-        "write_confirmation(work,screen," + owner.CONFIG_NAME + ",START)\n" + hook)
+    admission_body = ("from tools.nvarc_e12_admission import write_run_start\n"
+        "write_run_start(work,screen,START)\n") if automatic else (
+        "from tools.nvarc_e12_admission import write_confirmation\n"
+        "write_confirmation(work,screen," + owner.CONFIG_NAME + ",START)\n")
+    body = _replace_once(body, hook, "sys.path.insert(0,str(work))\n" + hook)
     body = _replace_once(body, "str(work/'tools/nvarc_e10_ttt_probe.py'),'--bootstrap','--root'",
         "str(work/'tools/nvarc_e12_entry.py'),'--bootstrap','--root'")
+    body = _replace_once(body, "'--started',str(START),'--owner-pid',str(os.getpid())]",
+        "'--started',str(START),'--owner-pid',str(os.getpid()),'--expected-plan-sha256'," + repr(pin) + "]")
     body = _replace_once(body, 'from tools.nvarc_e10_ttt_probe import finalize',
         'from tools.nvarc_e12_runtime import finalize')
     body = _replace_once(body, 'from tools.nvarc_process_supervisor import supervise',
@@ -314,7 +361,7 @@ def render(plan, raw):
     require(body.count(start_hook) == body.count(end_hook) == 1,
         'one exact E12 discovery/dispatch region required')
     start, end = body.index(start_hook), body.index(end_hook)
-    bootstrap = body[start:end]
+    bootstrap = admission_body + body[start:end]
     bootstrap = _replace_once(bootstrap, 'from tools.nvarc_e12_cleanup import supervise\n', '')
     bootstrap = _replace_once(bootstrap, 'observation=supervise(command,',
         '_launch_dispatched=True\nobservation=supervise(command,')
@@ -347,6 +394,16 @@ def render(plan, raw):
         'After downloading, STOP THE EDITOR SESSION. Do not rerun or reuse this identity. No teacher, evaluator truth, official scoring, submission or promotion is enabled.\n']),
         code(configuration_cell()), code(branch(body, owner.NO_RUN)),
         code(branch(download, 'No run was confirmed. This read-only cell will not set up or start anything.'))]
+    if automatic:
+        notebook['metadata']['irisx_execution_mode'] = 'RUN'
+        notebook['cells'] = [dict(cell_type='markdown', metadata={}, source=[
+            'E12 automatic RUN 003; exactly one private, Internet-disabled, USD 0 attempt.\n',
+            'Owner authorization: ' + plan['resource_admission']['authorization_ref'] + '.\n',
+            'Independent 64/128 updates; 768 updates, four selected public-dev tasks, 12 tests, four L4 GPUs. Each test keeps 120 generation seconds and 150 total seconds.\n',
+            'Quota policy: ' + plan['resource_admission']['quota_policy'] + '. The provider observation was checked at submission; it is not an independent statement of current runtime quota. No owner-edited config or four-hour declaration is asserted.\n',
+            'The owner waived only the conservative four-GPU-hour reservation when this policy explicitly says so. Positive actual free quota, paid scaling OFF and no conflicting provider reservation remain required. The platform may reject or terminate this unchanged workload.\n',
+            'The internal watchdog and requested provider timeout remain 3600 seconds. All process cleanup guards and native dependency/model pins remain. No official submission, scoring or promotion is enabled.\n']),
+            code(body), code(download)]
     for cell in notebook['cells'][1:]:
         compile(''.join(cell['source']), 'e12-owner-editor-cell', 'exec')
     verify_embedded_payload(notebook, raw)
@@ -359,9 +416,22 @@ def metadata(plan):
 
 def handoff(plan):
     validate_admission(plan)
+    if owner.is_run(plan):
+        return dict(format='irisx/e12-automatic-run-handoff-v1', run_id=RUN_ID,
+            notebook_ref=NOTEBOOK, notebook_numeric_id=137327571,
+            expected_notebook_version=11, expected_previous_version=10,
+            expected_previous_script_version_id=None, kernel_execution_type='RUN',
+            publication_authorized=True, publication_authorization_ref=plan['resource_admission']['authorization_ref'],
+            agent_execution_authorized=True, runtime_authorized=True, owner_config_required=False,
+            execution_chat_ref=plan['resource_admission']['authorization_ref'],
+            resource_admission=plan['resource_admission'], provider_editor_timeout_attested=False,
+            internal_watchdog_seconds=3600, requested_provider_timeout_seconds=3600,
+            planned_charged_gpu_seconds_ceiling=14400, training_updates=768, test_executions=12,
+            execute_commands=True, monitor_after_submission=True,
+            official_submission_authorized=False, paid_usd_ceiling=0)
     return dict(format='irisx/e12-inert-owner-handoff-v1', run_id=RUN_ID,
         notebook_ref=NOTEBOOK, notebook_numeric_id=137327571,
-        expected_notebook_version=10, expected_previous_version=9,
+        expected_notebook_version=11, expected_previous_version=10,
         expected_previous_script_version_id=None, kernel_execution_type='INERT',
         publication_authorized=False, publication_authorization_ref=None,
         agent_execution_authorized=False, runtime_authorized=False,
@@ -379,7 +449,7 @@ def package_manifest(plan, raw):
     files.update({'kernel/notebook.ipynb': canonical(render(plan, raw)),
         'kernel/kernel-metadata.json': canonical(metadata(plan)),
         'cli-handoff.json': canonical(handoff(plan))})
-    return dict(format='irisx/e12-inert-owner-package-v1', plan_digest=digest(plan),
+    return dict(format='irisx/e12-automatic-run-package-v1' if owner.is_run(plan) else 'irisx/e12-inert-owner-package-v1', plan_digest=digest(plan),
         files_sha256={name: hashlib.sha256(body).hexdigest() for name, body in sorted(files.items())})
 
 
@@ -398,7 +468,7 @@ def stage(package, plan, raw):
     return preflight(package)
 
 
-def preflight(package, *, expected_manifest_sha256=None):
+def preflight(package, *, expected_manifest_sha256=None, current_resource=True):
     package = Path(package); manifest = parse_json((package / 'package-manifest.json').read_bytes())
     require(not any(p.is_symlink() for p in (package, *package.parents, *package.rglob('*'))) and
         manifest['files_sha256'] == {p.relative_to(package).as_posix(): sha(p)
@@ -406,7 +476,9 @@ def preflight(package, *, expected_manifest_sha256=None):
         'closed immutable E12 package required')
     if expected_manifest_sha256 is not None:
         require(sha(package / 'package-manifest.json') == expected_manifest_sha256, 'independent E12 manifest pin differs')
-    plan = verify_runtime(package / 'runtime'); sources = exact_sources(plan['source_commit'])
+    plan = verify_runtime(package / 'runtime')
+    validate_admission(plan, current_resource=current_resource)
+    sources = exact_sources(plan['source_commit'])
     require(plan['source_files_sha256'] == {name: hashlib.sha256(body).hexdigest()
         for name, body in sources.items()}, 'committed E12 sources differ')
     raw = {name: (package / 'runtime' / name).read_bytes()
@@ -416,12 +488,14 @@ def preflight(package, *, expected_manifest_sha256=None):
         parse_json((package / 'kernel/kernel-metadata.json').read_bytes()) == metadata(plan) and
         parse_json((package / 'cli-handoff.json').read_bytes()) == handoff(plan),
         'exact E12 notebook/metadata/handoff differs')
-    require(not (package / 'runtime' / owner.CONFIRMATION_FILE).exists(),
+    require(not (package / 'runtime' / owner.CONFIRMATION_FILE).exists() and
+        not (package / 'runtime' / owner.RUN_START_FILE).exists(),
         'staged E12 package cannot fabricate owner runtime confirmation')
     return dict(run_id=RUN_ID, plan_digest=digest(plan),
         package_manifest_sha256=sha(package / 'package-manifest.json'),
-        offline_package_verified=True, publication_mode='INERT', publication_authorized=False,
-        agent_execution_authorized=False, runtime_authorized=False, owner_config_required=True,
+        offline_package_verified=True, publication_mode=plan['kernel_execution_type'],
+        publication_authorized=owner.is_run(plan), agent_execution_authorized=owner.is_run(plan),
+        runtime_authorized=owner.is_run(plan), owner_config_required=not owner.is_run(plan),
         new_model_calls=0, new_provider_calls=0, gpu_probe_run=False)
 
 

@@ -19,16 +19,17 @@ from tools import nvarc_e12_entry as entry
 from tools import nvarc_e12_cleanup as cleanup
 from tools import stage_nvarc_e12_prefix_probe as stage
 from tools.nvarc_native_multitask import canonical
-from tests.test_nvarc_e11_owner_editor import fixture as historical_fixture
 
 
 def fixture(root):
-    plan = historical_fixture(root)
+    frozen = (Path(__file__).parent / 'fixtures/e12/frozen-inert-001-plan.json').read_bytes()
+    assert hashlib.sha256(frozen).hexdigest() == 'f8000ab7db2a40795e93ff7482ad17ffa7fc817057207da7a9aadd6266739349'
+    plan = owner.parse(frozen)
     plan.pop('e11_process_policy', None)
     plan.update(format='irisx/stage4-e12-prefix-probe-v1',
         run_id=owner.RUN_ID, screen_id=owner.RUN_ID,
         resource_budget_profile=owner.BUDGET_PROFILE, generation_budget_profile='native-prefix-stop-v10',
-        expected_notebook_version=10, expected_previous_version=9,
+        expected_notebook_version=11, expected_previous_version=10,
         expected_previous_script_version_id=None, notebook_numeric_id=137327571,
         maximum_notebook_wall_seconds=3600, optimizer_steps=768,
         maximum_training_forwards=768, maximum_training_backwards=768,
@@ -124,6 +125,7 @@ class AdmissionTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 stage.validate_admission(self.plan, required=True, root=self.root)
         (self.root / 'plan.json').write_bytes(canonical(self.plan))
+        (self.root / 'screen.json').write_bytes(canonical(self.plan))
         import builtins
         original_import = builtins.__import__; imports = []
         def guarded(name, *args, **kwargs):
@@ -191,7 +193,7 @@ class NotebookTests(unittest.TestCase):
         for hook in ("str(work / 'tools/nvarc_e12_entry.py')", 'from tools.nvarc_e12_runtime import finalize',
                 'from tools.nvarc_e12_cleanup import supervise', "capture_path=work / 'coordinator-output.log'",
                 "OMP_NUM_THREADS='2'", "MKL_NUM_THREADS='2'",
-                'write_confirmation(work, screen, E12_CONFIRM_RUN_001, START)'):
+                'write_confirmation(work, screen, '+owner.CONFIG_NAME+', START)'):
             self.assertIn(hook, body)
         self.assertNotIn('from tools.nvarc_e11_paired_floor import finalize', body)
         download = ''.join(self.notebook['cells'][-1]['source'])

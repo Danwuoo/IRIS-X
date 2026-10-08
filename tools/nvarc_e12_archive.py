@@ -263,10 +263,22 @@ def finalize(root, observation, expected_plan_sha256):
             error(exc); diagnostic = True
             files = {'screen.json': raw, 'plan.json': raw, 'outer-supervision.json': delivery.canonical(observation),
                      'coordinator-output.log': capture}
-            for name in ('bootstrap-failure.json', 'terminal.json', 'terminal-fallback.json'):
+            rejected_admission = None
+            for name in ('bootstrap-failure.json', 'terminal.json', 'terminal-fallback.json', 'e12-agent-run-start.json'):
                 try: body = _read(root_fd, name, delivery.MAX_JSON_BYTES, hard)
                 except FileNotFoundError: continue
-                delivery.validate_artifact(name, body, plan); files[name] = body
+                if name == 'e12-agent-run-start.json':
+                    try:
+                        delivery.validate_artifact(name, body, plan)
+                        delivery.verify_start_value(delivery.parse(body), plan, current=False)
+                    except BaseException as exc:
+                        error(exc)
+                        rejected_admission = dict(path=name, bytes=len(body),
+                            sha256=hashlib.sha256(body).hexdigest(), admission_qualified=False)
+                        continue
+                else:
+                    delivery.validate_artifact(name, body, plan)
+                files[name] = body
             if terminal is None and observation.get('launched') is True:
                 files['e12-pre-admission-observation.json'] = delivery.canonical(dict(format='irisx/e12-pre-admission-failure-v1',
                     run_id=root.name, plan_sha256=expected_plan_sha256, coordinator_admitted=False,
@@ -276,7 +288,8 @@ def finalize(root, observation, expected_plan_sha256):
                 files['bootstrap-failure.json'] = delivery.canonical(dict(format='irisx/ttt-probe-entry-failure-v1',
                     run_id=root.name, message='observed coordinator startup failure; see exact captured output', correctness_scored=False, promotion=False))
             files['diagnostic-only.json'] = delivery.canonical(dict(format='irisx/ttt-probe-diagnostic-only-v1',
-                complete_runtime_evidence=False, correctness_scored=False, promotion=False, errors=result['diagnostic_errors']))
+                complete_runtime_evidence=False, correctness_scored=False, promotion=False,
+                rejected_admission_receipt=rejected_admission, errors=result['diagnostic_errors']))
         observe('validation_complete')
         def write_archive(stream):
             observe('archive_write_started')

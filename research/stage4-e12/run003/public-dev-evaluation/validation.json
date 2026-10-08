@@ -1,0 +1,18 @@
+{
+  "aggregate_has_no_per_test_labels": true,
+  "aggregate_sha256": "58cd57ddb7eba78904c1596ba1608dfb180dc9d9d944f7d0592dbbcc47fddb55",
+  "confirmation_truth_read": false,
+  "denominator_tests_per_arm": 6,
+  "evaluator_report_sha256": "31a210f565fde9cb085c0ebe57a3314b9f545f19f5ea5b89dfa76c2ff556a4a3",
+  "format": "irisx/e12-retained-score-crosscheck-v1",
+  "gold_grids_written": false,
+  "independent_canonical_grid_comparison_matches": true,
+  "new_model_calls": 0,
+  "new_provider_requests": 0,
+  "original_delivery_unchanged": true,
+  "per_test_rows_recomputed": 12,
+  "reviewer_sha256": "2a94194b31b43ffcf1dcce9a25e66630621b788fa3885a5bcd3945f285dbe123",
+  "source_script_unchanged": true,
+  "synthetic_test_count": 9,
+  "synthetic_tests_pass": true
+}

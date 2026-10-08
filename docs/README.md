@@ -151,3 +151,7 @@ tag and is cataloged under [`../archive/`](../archive/README.md). It is not
 active guidance.
 
 - [Stage 4 recovery checkpoint (2026-10-07)](development/stage4-recovery-20261007.md): preservation snapshot, recovered exact E12 package and historical limitations.
+
+- [`development/stage4-e12-run003-terminal.md`](development/stage4-e12-run003-terminal.md): verified E12 v11 execution, isolated public-development diagnostic and terminal preservation limits.
+
+- [E12 RUN002 failure evidence](development/stage4-e12-run002-failure.md): exact terminal result, partial work and telemetry lifecycle diagnosis.

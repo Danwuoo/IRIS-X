@@ -7,6 +7,7 @@ Callers supply already observed stop evidence and exact expected identity.
 if __name__ == '__main__':
     raise RuntimeError('INERT E12 delivery: explicit caller integration required')
 
+from datetime import datetime, timezone
 import hashlib
 import json
 import math
@@ -31,7 +32,7 @@ STAGES = ('finalizer_entry', 'validation_complete', 'archive_write_started',
           'archive_closed', 'archive_published', 'finalizer_returned')
 MEMBERS = {'runtime.zip', 'stop-evidence.json', 'sidecar.json',
            'finalizer-result.json', 'manifest.json'}
-RUN_ID = 'stage4-e12-probe-prefix-20261007-001'
+RUN_ID = 'stage4-e12-probe-prefix-20261008-003'
 ARMS = ('ttt64', 'ttt128')
 TASKS = {'195c6913': 2, 'aa4ec2a5': 1, 'a47bf94d': 1, 'a25697e4': 2}
 ROOT_FILES = {'screen.json', 'plan.json', 'material-contract.json', 'terminal.json',
@@ -42,7 +43,7 @@ ROOT_FILES = {'screen.json', 'plan.json', 'material-contract.json', 'terminal.js
     'outer-supervision.json', 'coordinator-output.log', 'coordinator-admitted.json',
     'training-release.json', 'output-commit.json', 'output-projection.json', '.output-writer.lock',
     'diagnostic-only.json', 'e12-supervision-observation.json', 'e12-owner-confirmation.json',
-    'e12-pre-admission-observation.json'}
+    'e12-pre-admission-observation.json', 'e12-agent-run-start.json'}
 OUTPUT_FILES = {'paired-summary.json', 'paired-task-timings.json'} | {
     arm + '-' + suffix + '.json' for arm in ARMS for suffix in ('answers', 'audit', 'candidate-pools')}
 WORKER_FILES = {'stdout.log', 'stderr.log', 'ready.json', 'launch-reservation.json', 'result.json',
@@ -70,9 +71,10 @@ def safe_name(name):
 
 
 def validate_plan(plan, run_id):
+    validate_execution_admission(plan)
     require(plan.get('format') == 'irisx/stage4-e12-prefix-probe-v1' and
             plan.get('run_id') == plan.get('screen_id') == run_id == RUN_ID and
-            plan.get('resource_budget_profile') == 'conservative-60min-inert' and
+            plan.get('resource_budget_profile') in ('conservative-60min-inert', 'bounded-60min-run') and
             plan.get('generation_budget_profile') == 'native-prefix-stop-v10' and
             plan.get('task_order') == list(TASKS) and canonical(plan.get('test_counts')) == canonical(TASKS) and
             all(type(plan.get(k)) is int and plan[k] == v for k, v in {
@@ -157,6 +159,17 @@ def validate_artifact(name, body, plan, *, uncommitted_generation=False):
 
 
 def validate_runtime_artifacts(bodies, plan):
+    if is_run(plan):
+        require(CONFIRMATION_FILE not in bodies, 'automatic RUN cannot carry owner declarations')
+        if 'diagnostic-only.json' not in bodies:
+            require(RUN_START_FILE in bodies, 'automatic RUN archive requires honest start receipt')
+        else:
+            diagnostic = parse(bodies['diagnostic-only.json'])
+            require(diagnostic.get('complete_runtime_evidence') is False and
+                diagnostic.get('correctness_scored') is False and diagnostic.get('promotion') is False,
+                'missing RUN admission requires explicit unqualified diagnostic evidence')
+        if RUN_START_FILE in bodies:
+            verify_start_value(parse(bodies[RUN_START_FILE]), plan, current=False)
     selected = data_json(bodies['output-commit.json']).get('generation') if 'output-commit.json' in bodies else None
     partials = []
     for name, body in sorted(bodies.items()):
@@ -463,6 +476,11 @@ def inspect_runtime(stream, proof, run_id, plan_sha256, deadline):
                 plan.get('run_id') == plan.get('screen_id') == run_id and
                 plan.get('maximum_notebook_wall_seconds') == 3600, 'runtime exact run/plan differs')
         validate_plan(plan, run_id)
+        if is_run(plan):
+            require(CONFIRMATION_FILE not in names, 'RUN archive cannot assert owner config declarations')
+            if RUN_START_FILE in names:
+                verify_start_value(json_member(archive, RUN_START_FILE, deadline)[1], plan, current=False)
+            require('diagnostic-only.json' in names or RUN_START_FILE in names, 'RUN start receipt missing')
         if 'plan.json' in names:
             plan_raw, _ = json_member(archive, 'plan.json', deadline)
             require(hashlib.sha256(plan_raw).hexdigest() == plan_sha256, 'runtime plan copies differ')
@@ -725,3 +743,158 @@ def verify_envelope(directory, *, run_id, plan_sha256):
             return manifest
     finally:
         os.close(directory_fd)
+
+
+# Standalone admission projection: standard library only. Never import code from a returned ZIP.
+BUDGET_PROFILE = 'conservative-60min-inert'
+
+RUN_BUDGET_PROFILE = 'bounded-60min-run'
+
+RUN_START_FILE = 'e12-agent-run-start.json'
+
+AUTHORIZATION_REF = 'Sentinel_f5427e757f54819193ef59565b8c7b23'
+
+CONSERVATIVE_POLICY = 'conservative-four-gpu-hours-v1'
+
+WAIVER_POLICY = 'owner-positive-free-quota-waiver-v1'
+
+RUN_TRUE_FIELDS = {'approved_for_runtime', 'agent_execution_authorized', 'publication_authorized'}
+
+CONFIG_NAME = 'E12_CONFIRM_RUN_003'
+
+CONFIRMATION_FILE = 'e12-owner-confirmation.json'
+
+FALSE_FIELDS = ('approved_for_runtime', 'approved_for_owner_editor', 'agent_execution_authorized', 'publication_authorized', 'official_submission_authorized', 'official_submission_ready', 'correctness_scored', 'promotion', 'official_submission', 'full_screen_feasibility_established', 'causal_quality_comparison', 'full_E10_first_six_controls_replaced')
+
+SCOPE_FIELDS = ('run_id', 'source_commit', 'model_material_digest', 'dependency_readproof_digest', 'dependency_script_version_id', 'arm_contracts', 'arm_order', 'task_order', 'test_counts', 'optimizer_steps', 'maximum_training_forwards', 'maximum_training_backwards', 'maximum_training_input_tokens', 'maximum_training_supervised_tokens', 'maximum_generation_forwards', 'maximum_verification_forwards', 'maximum_inference_input_tokens', 'maximum_processed_sequences_total', 'generation_seconds', 'per_test_seconds', 'maximum_notebook_wall_seconds', 'maximum_training_seconds', 'startup_seconds', 'reset_reserve_seconds', 'finalization_reserve_seconds', 'inference_reserve_seconds', 'e12_process_policy', 'source_replay_policy')
+
+def digest(value):
+    return 'sha256:' + hashlib.sha256(canonical(value)).hexdigest()
+
+def scope(plan):
+    require(type(plan) is dict and
+        plan.get('run_id') == plan.get('screen_id') == RUN_ID and
+        plan.get('resource_budget_profile') == (RUN_BUDGET_PROFILE if is_run(plan) else BUDGET_PROFILE) and
+        type(plan.get('source_commit')) is str and
+        re.fullmatch('[0-9a-f]{40}', plan['source_commit']) and
+        plan.get('kernel_execution_type') in ('INERT', 'RUN') and
+        (is_run(plan) or plan.get('resource_admission') is None) and
+        plan.get('owner_editor_only') is (not is_run(plan)) and plan.get('local_fixture') is False and
+        all(plan.get(key) is (is_run(plan) and key in RUN_TRUE_FIELDS) for key in FALSE_FIELDS) and
+        all(type(plan.get(key)) is int and plan[key] == value for key, value in (
+            ('maximum_notebook_wall_seconds', 3600), ('optimizer_steps', 768),
+            ('maximum_training_forwards', 768), ('maximum_training_backwards', 768),
+            ('per_worker_training_steps', 192), ('expected_notebook_version', 11),
+            ('notebook_numeric_id', 137327571))),
+        'exact E12 run003, unchanged 60-minute workload and typed admission mode required')
+    return {key: plan[key] for key in SCOPE_FIELDS}
+
+def admission(plan):
+    require(not is_run(plan), 'INERT owner config contract cannot authorize automatic RUN')
+    return dict(format='irisx/e12-owner-config-admission-v1', run_id=RUN_ID,
+        config_name=CONFIG_NAME, default_config_value=False,
+        confirmation_file=CONFIRMATION_FILE, exact_scope_digest=digest(scope(plan)),
+        publication_authorized=False, publication_authorization_ref=None,
+        agent_execution_authorized=False, runtime_authorized=False,
+        execution_chat_ref=None, minimum_owner_declared_free_gpu_hours=4,
+        mode='INERT; owner may explicitly enable this exact run once in a fresh Editor session',
+        resource_information='owner declarations only; no independent quota or provider Editor timeout attestation')
+
+def is_run(plan):
+    return type(plan) is dict and plan.get('kernel_execution_type') == 'RUN'
+
+def _timestamp(value):
+    require(type(value) is str, 'timezone-qualified quota timestamp required')
+    stamp = datetime.fromisoformat(value.replace('Z', '+00:00'))
+    require(stamp.utcoffset() is not None, 'timezone-qualified quota timestamp required')
+    return stamp.timestamp()
+
+def validate_resource_snapshot(value, *, current=True, now=time.time):
+    """Validate the exact normalized provider projection; no permission is inferred.
+
+    This standard-library projection matches stage4_provider_evidence. The
+    authenticated publisher must retain and independently reconcile both raw
+    primary and typed responses; caller-supplied hashes do not authenticate them.
+    Freshness belongs to submission, never a fictitious offline runtime refresh.
+    """
+    fields = {'format', 'provider', 'account', 'observed_at', 'refresh_at', 'primary_sha256',
+        'typed_projection_sha256', 'used_seconds', 'reserved_seconds', 'total_seconds',
+        'remaining_free_seconds', 'pay_to_scale_enabled', 'duration_units', 'permission_granted'}
+    require(type(value) is dict and set(value) == fields and
+        value['format'] == 'irisx/stage4-quota-observation-v1' and value['provider'] == 'kaggle' and
+        value['account'] == 'danielwuu' and value['pay_to_scale_enabled'] is False and
+        value['permission_granted'] is False and value['duration_units'] == 'provider charged quota seconds',
+        'exact authenticated account and paid-disabled normalized quota required')
+    require(all(type(value[k]) is str and re.fullmatch('[0-9a-f]{64}', value[k])
+        for k in ('primary_sha256', 'typed_projection_sha256')), 'raw and typed quota evidence hashes required')
+    require(all(type(value[k]) in (int, float) and math.isfinite(value[k]) and value[k] >= 0
+        for k in ('used_seconds', 'reserved_seconds', 'total_seconds', 'remaining_free_seconds')) and
+        value['reserved_seconds'] == 0 and value['remaining_free_seconds'] > 0 and
+        abs(value['total_seconds'] - value['used_seconds'] - value['reserved_seconds'] -
+            value['remaining_free_seconds']) <= 1e-6,
+        'real positive free quota and no conflicting provider reservation required')
+    observed, refresh = _timestamp(value['observed_at']), _timestamp(value['refresh_at'])
+    require(0 <= observed < refresh, 'quota observation must precede its refresh')
+    if current:
+        stamp = now()
+        require(type(stamp) in (int, float) and math.isfinite(stamp) and
+            0 <= stamp - observed <= 900 and stamp < refresh,
+            'submission quota must be fresh within 900 seconds and current window')
+    return value
+
+def run_admission(plan, resource_snapshot, authorization_ref, *, quota_policy=CONSERVATIVE_POLICY,
+                  current=True, now=time.time):
+    require(is_run(plan) and authorization_ref == AUTHORIZATION_REF and
+        type(authorization_ref) is str, 'exact owner authorization for distinct automatic RUN required')
+    validate_resource_snapshot(resource_snapshot, current=current, now=now)
+    require(quota_policy in (CONSERVATIVE_POLICY, WAIVER_POLICY), 'explicit recognized quota policy required')
+    require(quota_policy == WAIVER_POLICY or resource_snapshot['remaining_free_seconds'] >= 14400,
+        'conservative four-GPU-hour rule requires explicit per-run owner waiver below four hours')
+    return dict(format='irisx/e12-automatic-run-admission-v1', run_id=RUN_ID,
+        authorization_ref=authorization_ref, exact_scope_digest=digest(scope(plan)),
+        resource_snapshot=parse(canonical(resource_snapshot)), resource_snapshot_digest=digest(resource_snapshot),
+        quota_policy=quota_policy, conservative_required_quota_seconds=14400,
+        allocated_gpu_hours_per_quota_hour=1, quota_rate_is_conservative_planning_assumption=True,
+        quota_rate_independently_verified=False, conservative_reservation_waived=quota_policy == WAIVER_POLICY,
+        minimum_positive_free_quota_required=True, paid_usd_ceiling=0,
+        quota_observation_role='historical submission observation; not current offline-runtime quota',
+        provider_may_reject_or_terminate=True, completion_guaranteed=False,
+        owner_edited_notebook_config=False, owner_minimum_four_hour_declaration=False)
+
+def validate_execution_admission(plan, *, current_resource=False, now=time.time):
+    scope(plan)
+    if is_run(plan):
+        value = plan.get('resource_admission')
+        require(type(value) is dict and plan.get('owner_editor_admission') is None,
+            'RUN requires separate resource admission and no owner-Editor declaration')
+        expected = run_admission(plan, value.get('resource_snapshot'), value.get('authorization_ref'),
+            quota_policy=value.get('quota_policy'), current=current_resource, now=now)
+        require(canonical(value) == canonical(expected), 'exact typed RUN admission and scope binding required')
+    else:
+        require(canonical(plan.get('owner_editor_admission')) == canonical(admission(plan)),
+            'exact INERT owner declaration contract required')
+    return plan
+
+def run_start_fields(plan):
+    validate_execution_admission(plan)
+    require(is_run(plan), 'automatic run receipt cannot admit INERT packages')
+    value = plan['resource_admission']
+    return dict(format='irisx/e12-automatic-run-start-v1', run_id=RUN_ID,
+        plan_digest=digest(plan), source_commit=plan['source_commit'],
+        exact_scope_digest=digest(scope(plan)), resource_admission_digest=digest(value),
+        resource_snapshot_digest=value['resource_snapshot_digest'], authorization_ref=value['authorization_ref'],
+        quota_policy=value['quota_policy'], mode='agent-automatic-RUN',
+        owner_edited_notebook_config=False, owner_minimum_four_hour_declaration=False,
+        quota_current_at_runtime=False, provider_hardware_verified_at_start=False)
+
+def verify_start_value(value, plan, *, current=True, now=time.time, monotonic=time.monotonic):
+    expected = run_start_fields(plan)
+    require(type(value) is dict and set(value) == set(expected) | {'started_epoch', 'started_monotonic'} and
+        all(type(value.get(k)) is type(v) and value[k] == v for k, v in expected.items()) and
+        all(type(value[k]) in (int, float) and math.isfinite(value[k]) and value[k] >= 0
+            for k in ('started_epoch', 'started_monotonic')), 'exact honest RUN start receipt required')
+    if current:
+        require(0 <= now() - value['started_epoch'] <= 3600 and
+            0 <= monotonic() - value['started_monotonic'] <= 3600,
+            'RUN receipt belongs to this actual bounded session only')
+    return value

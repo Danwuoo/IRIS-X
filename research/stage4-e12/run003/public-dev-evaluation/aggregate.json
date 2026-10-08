@@ -1,0 +1,95 @@
+{
+  "aggregate_only": true,
+  "contains_gold_grids": false,
+  "contains_per_test_labels": false,
+  "created_utc": "2026-10-08T01:32:19.530592+00:00",
+  "delivery_sha256": "faea1163e25990b655684e66cafd8d52b568478ecf140ea8debe194edf3aba89",
+  "denominator": {
+    "planned_attempt_slots_per_arm": 12,
+    "tasks": 4,
+    "tests_per_arm": 6
+  },
+  "evaluator_report_sha256": "31a210f565fde9cb085c0ebe57a3314b9f545f19f5ea5b89dfa76c2ff556a4a3",
+  "format": "irisx/e12-run003-isolated-public-dev-retained-score-v1",
+  "limitations": [
+    "Four selected previously examined public-development task clusters / six tests per arm; one technical repeat. This is not the complete 24-task/35-test development comparison or the planned two-repeat full E12 screen.",
+    "Selection bias, historical public-data exposure and unresolved checkpoint-training exposure preclude fresh-holdout or generalization claims.",
+    "Retained-candidate exact-match is a descriptive evaluator-side diagnostic. All tests remain in the denominator; missing slots are misses and no filler receives credit.",
+    "Qualified-test coverage is distinct from candidate correctness. Retained candidates do not repair missed native completion/deadline gates, permit promotion, or qualify this comparison.",
+    "No base/no-TTT control, randomization proof, repeatability evidence or qualified matched-compute comparison; no causal 64-versus-128 claim.",
+    "No locked confirmation truth was opened/projected/scored. No new GPU/model/provider work, official Kaggle score/readiness, method promotion or cost-reduction claim.",
+    "Per-test labels and answer-derived diagnostics remain evaluator-only and must not enter runtime packages, GPU bundles, solver features or configuration selection."
+  ],
+  "locked_confirmation_truth_read": false,
+  "methods": {
+    "ttt128": {
+      "missing_attempt_slots": 3,
+      "qualified_test_cases": 0,
+      "qualified_test_coverage": 0.0,
+      "retained_attempts": 9,
+      "retained_pool_oracle_correct_tests": 1,
+      "retained_ranked_pool_candidates": 10,
+      "task_macro_top2_accuracy": 0.25,
+      "tasks": 4,
+      "tasks_all_tests_top2_correct": 1,
+      "tests": 6,
+      "tests_with_retained_attempts": 6,
+      "top1_accuracy": 0.16666666666666666,
+      "top1_correct_tests": 1,
+      "top2_accuracy": 0.16666666666666666,
+      "top2_correct_tests": 1
+    },
+    "ttt64": {
+      "missing_attempt_slots": 6,
+      "qualified_test_cases": 0,
+      "qualified_test_coverage": 0.0,
+      "retained_attempts": 6,
+      "retained_pool_oracle_correct_tests": 1,
+      "retained_ranked_pool_candidates": 8,
+      "task_macro_top2_accuracy": 0.25,
+      "tasks": 4,
+      "tasks_all_tests_top2_correct": 1,
+      "tests": 6,
+      "tests_with_retained_attempts": 4,
+      "top1_accuracy": 0.16666666666666666,
+      "top1_correct_tests": 1,
+      "top2_accuracy": 0.16666666666666666,
+      "top2_correct_tests": 1
+    }
+  },
+  "metric_definition": {
+    "qualification": "independent native completion/deadline/evidence gate, never inferred from exact match",
+    "top1": "first retained attempt exact match, with absent attempt counted as incorrect",
+    "top2": "any of the first two retained attempts exact match, with all six actual tests retained"
+  },
+  "new_model_calls": 0,
+  "new_provider_requests": 0,
+  "official_score": null,
+  "parser_sha256": "876a1bd5f478df6245e37a3be4204180bc3685cbeead3aff5542bc5fb123b31f",
+  "plan_sha256": "db8d4bf61f292c68fc45ba747be2908869bac089d98fbb4c00ad8b178a08f83f",
+  "pool_bindings": {
+    "ttt128": {
+      "answers_sha256": "2480d0d915874ec99eedf388839766f6e92d05b994756f5ea5da0629c5ef0f64",
+      "audit_sha256": "6145ca4a401772b3622435f1b85db2a8ded0c92e73ea40771ac906cf38778d6a",
+      "candidate-pools_sha256": "d80a333f0fcec417e7697ebebad4dcd31b39fbe90054fe64db9f1a1e165feb61"
+    },
+    "ttt64": {
+      "answers_sha256": "fbb6e1d54f2f7b7058475ead032772e7bc37911edff24462678af99bd71270bc",
+      "audit_sha256": "680067913b101ca33d680b09c71c824bc2ac0e47439c44f175242383af37e663",
+      "candidate-pools_sha256": "7b0136147aa032500ca3480f241f04b06fa83eaeabc560f156291e56eb0ce997"
+    }
+  },
+  "promotion": false,
+  "quality_comparison_qualified": false,
+  "run_id": "stage4-e12-probe-prefix-20261008-003",
+  "runtime_sha256": "5bfe73afe5501b3e2a03b82c65e5f9175a5b23847096983bb0cfc70a77dbd647",
+  "scorer_sha256": "e7088c2fbae895738155c7fbbfd6899b52cda2805307300a5eb77fe5e83e6c43",
+  "source_commit": "1c040c7eb8c4e77bcce170dd36cbd5b933453489",
+  "truth_provenance": {
+    "evaluator_binding_sha256": "6b6f3d971244cc81b68f76d4c62a0474fb24ec5496485be2e2f32ab2fae9cd83",
+    "exact_visible_content_verified": true,
+    "partition_manifest_sha256": "85ee338fbf02c0b48d969cfc44f9b2ab355c2958f35bff1c32cfd23bef12fe39",
+    "upstream_commit": "f3283f727488ad98fe575ea6a5ac981e4a188e49"
+  },
+  "version": 11
+}
