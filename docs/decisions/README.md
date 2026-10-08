@@ -211,3 +211,7 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0063-repair-e12-arm-telemetry-and-rerun.md`](0063-repair-e12-arm-telemetry-and-rerun.md)
   records the owner-authorized one-run telemetry repair replacement, same scope
   and free-only bounds, exact wire review, terminal analysis and preservation.
+- [`0064-run-paired-search-budget-diagnostic.md`](0064-run-paired-search-budget-diagnostic.md)
+  records one small paired 120/240-second search diagnostic sharing one native
+  TTT128 state per task, with unchanged non-time caps, free-only resources,
+  independent review, terminal monitoring and audited preservation.

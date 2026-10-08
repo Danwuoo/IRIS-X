@@ -1,0 +1,104 @@
+{
+  "binding": {
+    "expected_version": 12,
+    "format": "irisx/e13-run-transport-review-v1",
+    "kernel_id": 137327571,
+    "notebook_sha256": "44bb475bdf83e0b9c45d0e516512fc541b73df836d84f0bcc8bfbc21a18b97a6",
+    "offline_package_verified": true,
+    "package_manifest_sha256": "1ccd7fae5aefe6dd9064d524b130457ca43ee887ad01b00bb0a8a10b3b42a3bb",
+    "plan_sha256": "cfb9ff4b79c30d67c415fc940d86711254a2b66f104bd65eb7c0fd3224716bbc",
+    "prepared_body_sha256": "bb6ec589670c8d37a5dbdc7315b504b84fdbe89cca4dbeef19a650a727618240",
+    "previous_notebook_sha256": "abb786330caef8cbe57774c36762fffbd127ccc43219de4e93d265f3adf6615c",
+    "previous_source_digest": "c6afc9b940bfb2b4882725297e0a69bf819591870a5c05bc2615353ddd557ad7",
+    "ref": "danielwuu/stage4-e10-probe-20261006-001",
+    "request_sha256": "58a1d9c0ef124f8aa65d285c4943cd693abc5ecfc32720f4e55a77fbd60ab37a",
+    "run_id": "stage4-e13-search-budget-20261008-001",
+    "source_digest": "6454fa18f084413f3f863d669ce3dad10364472be32033c16c9e032d62b8518a",
+    "transport_sha256": "303b8487d3069686fa9798d063987c660063cc9ca03a70da88e0825b291ec3f6"
+  },
+  "historical_tool_count": 268,
+  "historical_tool_mutations": 0,
+  "limitations": [
+    "CPU validation does not prove native GPU success, completion, numerical source-logit replay, quality or promotion.",
+    "Whole repository aggregate is not green:36 retained historical failure labels plus one unchanged process-timing test that failed once and passed a correctly prepared targeted rerun; causal explanation unproven."
+  ],
+  "new_gpu_calls": 0,
+  "new_model_calls": 0,
+  "new_provider_calls": 0,
+  "notebook_embedded_inventory_exact": true,
+  "offline_preflight": {
+    "agent_execution_authorized": true,
+    "gpu_probe_run": false,
+    "new_model_calls": 0,
+    "new_provider_calls": 0,
+    "offline_package_verified": true,
+    "owner_config_required": false,
+    "package_manifest_sha256": "1ccd7fae5aefe6dd9064d524b130457ca43ee887ad01b00bb0a8a10b3b42a3bb",
+    "plan_digest": "sha256:cfb9ff4b79c30d67c415fc940d86711254a2b66f104bd65eb7c0fd3224716bbc",
+    "publication_authorized": true,
+    "publication_mode": "RUN",
+    "run_id": "stage4-e13-search-budget-20261008-001",
+    "runtime_authorized": true
+  },
+  "payload_file_count": 78,
+  "previous_v11_notebook_exact": true,
+  "resource_scope": "private L4x4,Internetoff,USD0,3600seconds; fresh actual positivefree, noreserve, paidfalse checked again by publisher",
+  "retained_receipts_sha256": {
+    "e13-independent-001/exact-binding-review-002.log": "00c0758ba0e404b77d0bd6ac1e5d6a4646952aab411e7bb0f026f3e797a750f8",
+    "e13-independent-001/final-all-e13-001.log": "556ebd7518cbf3824e5c9448d9ef9b66a9094dbac9ee73c65b44ba8bc0c91c8a",
+    "e13-independent-001/final-sdk-transport-001.log": "661ec2a6d707e1daf3ae2fb62feda0ebe9b0dea0c0805c259cb811ef8beddb8b",
+    "e13-preparation/aggregate-001.log": "b7cc868f9a65c66aa02ea8c688ebad82671393ac12a5e10dc677276ae9640d59",
+    "e13-preparation/aggregate-final-002.log": "f556bb509583eaec2605c99f9a0c256f2ff9abf09aad57727b4ec97e9065280d",
+    "e13-preparation/aggregate-process-failure-focused-001.log": "99966103775dc229a49652599020ecd8ea923a9cf104b4d158eadcc5e541aa2f",
+    "e13-preparation/aggregate-process-failure-focused-002.log": "4658457ca7ee47e797973d4cb7e862e581ef298bb58473407fa2c6a9af9ea23d"
+  },
+  "reviewed_at": "2026-10-08T02:11:27.547418+00:00",
+  "safety_review": {
+    "fresh_exact_previous_source_and_positive_free_quota_required_at_send": true,
+    "independent_no_provider_model_gpu_calls": true,
+    "native_gpu_success_not_claimed": true,
+    "no_http_retries_or_redirects": true,
+    "one_send_exclusive_global_claim_before_network": true,
+    "truth_free_runtime_and_no_official_submission": true,
+    "unknown_send_freezes_identity": true
+  },
+  "scientific_scope": "one shared128 training per task;512updates;120/240generation+30verification;4tasks6tests per arm;unchanged caps,p02,views,ranker",
+  "sdk_recapture_exact": true,
+  "source_commit": "c269fecccd656fa7f11c05095f4fd894217f8f36",
+  "source_file_count": 55,
+  "status": "PASS-scoped-E13-prelaunch",
+  "tests": {
+    "aggregate_final": {
+      "errors": 35,
+      "failures": 2,
+      "new_failure_labels": [
+        "test_grandchildren_ignoring_term_are_killed_after_primary_exit (test_nvarc_combined.CombinedProcessTests.test_grandchildren_ignoring_term_are_killed_after_primary_exit)"
+      ],
+      "run": 1265,
+      "skipped": 47
+    },
+    "aggregate_first": {
+      "errors": 35,
+      "failures": 1,
+      "new_failure_labels": [],
+      "run": 1252,
+      "skipped": 47
+    },
+    "e13_default_interpreter": {
+      "passed": 147,
+      "run": 149,
+      "skipped": 2
+    },
+    "extra_unchanged_historical_test_targeted_rerun": {
+      "cause_proven": false,
+      "passed": 1,
+      "run": 1
+    },
+    "official_sdk_transport": {
+      "passed": 20,
+      "run": 20,
+      "skipped": 0
+    },
+    "whole_repository_green": false
+  }
+}

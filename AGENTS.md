@@ -2,6 +2,16 @@
 
 ## Active Stage 4 owner handoff (2026-10-06)
 
+Current execution follows Decision 0064: the owner authorized one distinct
+E13 120/240-second paired-search diagnostic on the same four-task/six-test
+footprint, sharing one post-TTT128 state per task. E12 run003/version11 is
+terminal COMPLETE and immutable. Preserve its source and evidence. Refresh
+positive free quota with paid scaling off, obtain independent final-wire
+review, send once, actively monitor to terminal, analyze and commit/push the
+result to the existing private recovery branch. No official submission.
+
+The E12-specific paragraph below is historical.
+
 Current E12 execution follows Decision 0063: after run002/version10 failed on
 shared arm telemetry, the owner authorized one repaired run003/version11.
 Decision 0062's conservative four-GPU-hour waiver continues only with actual

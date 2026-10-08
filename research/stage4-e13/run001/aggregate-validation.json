@@ -1,0 +1,33 @@
+{
+  "source_commit": "c269fecccd656fa7f11c05095f4fd894217f8f36",
+  "baseline_logs": [
+    "/workspace/scratch/3c2b2502fb1e/iris-recovery-20261007-rollback-001/run003-telemetry-fix-validation-001/final-aggregate-workspace-tmp.stdout.log",
+    "/workspace/scratch/3c2b2502fb1e/iris-recovery-20261007-rollback-001/run003-telemetry-fix-validation-001/final-aggregate-workspace-tmp.stderr.log"
+  ],
+  "final_tests": 1265,
+  "failures": 2,
+  "error_reports": 35,
+  "skipped": 47,
+  "new_failure_labels": [
+    "test_grandchildren_ignoring_term_are_killed_after_primary_exit (test_nvarc_combined.CombinedProcessTests.test_grandchildren_ignoring_term_are_killed_after_primary_exit)"
+  ],
+  "resolved_failure_labels": [],
+  "first_aggregate_tests": 1252,
+  "first_aggregate_failure_labels_equal_baseline": true,
+  "all_e13_focused_tests": 149,
+  "e13_focused_pass": true,
+  "e13_focused_optional_sdk_skips": 2,
+  "genuine_sdk_transport_tests": 20,
+  "genuine_sdk_transport_pass": true,
+  "unexpected_historical_process_failure": {
+    "label": "test_grandchildren_ignoring_term_are_killed_after_primary_exit (test_nvarc_combined.CombinedProcessTests.test_grandchildren_ignoring_term_are_killed_after_primary_exit)",
+    "source_unchanged": true,
+    "first_aggregate_passed": true,
+    "isolated_rerun_passed": true,
+    "first_focused_attempt_import_error": "missing src on PYTHONPATH; original receipt preserved",
+    "corrected_focused_log": "aggregate-process-failure-focused-002.log",
+    "cause_proven": false,
+    "source_changed_to_hide_failure": false
+  },
+  "all_tests_green": false
+}

@@ -1,0 +1,26 @@
+{
+  "SaveKernel_sends": 0,
+  "blocker": "Explicit permission to upload the bounded repository-derived package to the existing private Kaggle notebook is pending; the publication command was blocked before provider execution.",
+  "claim_exists": false,
+  "current_free_quota_guaranteed": false,
+  "format": "irisx/e13-run001-prepublication-status-v1",
+  "gpu_run_started": false,
+  "notebook_version_requested": 12,
+  "observed_utc": "2026-10-08T02:12:16Z",
+  "official_submission_authorized": false,
+  "package_manifest_sha256": "1ccd7fae5aefe6dd9064d524b130457ca43ee887ad01b00bb0a8a10b3b42a3bb",
+  "plan_sha256": "cfb9ff4b79c30d67c415fc940d86711254a2b66f104bd65eb7c0fd3224716bbc",
+  "provider_accepted": false,
+  "provider_precheck_files": [],
+  "publication_reserved": 0,
+  "publication_state": "prepared-not-sent",
+  "receipt_exists": false,
+  "resume_requirements": [
+    "Explicit package-upload authorization",
+    "Fresh actual positive free quota, no reservation and paid scaling off",
+    "Fresh exact package/wire binding and review if prior quota-bound package expires",
+    "One guarded SaveKernel only; active monitoring through terminal after acceptance"
+  ],
+  "run_id": "stage4-e13-search-budget-20261008-001",
+  "source_commit": "c269fecccd656fa7f11c05095f4fd894217f8f36"
+}
