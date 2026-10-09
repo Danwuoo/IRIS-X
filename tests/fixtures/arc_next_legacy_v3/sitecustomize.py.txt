@@ -1,0 +1,37 @@
+
+import os as _guard_os
+import socket as _guard_socket
+import sys as _guard_sys
+# -I ignores PYTHONDONTWRITEBYTECODE; protect hash-closed writable mounts too.
+_guard_sys.dont_write_bytecode = True
+# -I only protects this interpreter. Plain sys.executable subprocesses inherit
+# os.environ, so remove host PYTHONPATH/PYTHONHOME/sitecustomize and pip overrides.
+for _guard_key in list(_guard_os.environ):
+    if _guard_key.startswith(("PYTHON", "PIP_")):
+        _guard_os.environ.pop(_guard_key)
+_guard_os.environ.update({"PYTHONHASHSEED": "0", "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1", "PIP_CONFIG_FILE": _guard_os.devnull,
+    "PIP_NO_INDEX": "1", "PIP_NO_CACHE_DIR": "1", "PIP_DISABLE_PIP_VERSION_CHECK": "1"})
+if not getattr(_guard_socket, "_irisx_offline_guard", False):
+    def _irisx_deny(*args, **kwargs):
+        raise RuntimeError("IRISX offline guard: network sockets and DNS are disabled")
+    def _irisx_audit(event, args):
+        if event == "socket.__new__" and args[1] in (_guard_socket.AF_INET, _guard_socket.AF_INET6):
+            _irisx_deny()
+        if event in ("socket.getaddrinfo", "socket.gethostbyname", "socket.gethostbyaddr", "socket.getnameinfo"):
+            _irisx_deny()
+        if event in ("socket.connect", "socket.sendto", "socket.bind"):
+            if args[0].family in (_guard_socket.AF_INET, _guard_socket.AF_INET6):
+                _irisx_deny()
+    _guard_sys.addaudithook(_irisx_audit)
+    _guard_socket.getaddrinfo = _irisx_deny
+    _guard_socket.gethostbyname = _irisx_deny
+    _guard_socket.gethostbyname_ex = _irisx_deny
+    _guard_socket.gethostbyaddr = _irisx_deny
+    _guard_socket.getnameinfo = _irisx_deny
+    _guard_socket.create_connection = _irisx_deny
+    _guard_socket._irisx_offline_guard = True
+_guard_os.environ["HF_HUB_OFFLINE"] = "1"
+_guard_os.environ["TRANSFORMERS_OFFLINE"] = "1"
+_guard_os.environ["HF_DATASETS_OFFLINE"] = "1"
+_guard_os.environ["WANDB_MODE"] = "offline"

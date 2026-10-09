@@ -112,17 +112,25 @@
       "source_kind": "exact-runtime6-snapshot"
     },
     {
-      "after_git_blob": "f00e354c0397305b59c55858b6cac3364e502f20",
+      "after_git_blob": "e4018cc1bcc55a0925e7211959e954df8818c6af",
       "before_git_blob": "31a9ca2fb1fe54fdb67e684374ce2b347bc09ed8",
       "changed_from_main": true,
       "destination": "tools/arc_next_offline_environment.py",
-      "imported_bytes": 43432,
-      "imported_sha256": "1b971462d76a7cf6993cc60f4289d540fd9f6284871332074549bbb16b0c1399",
+      "imported_bytes": 44063,
+      "imported_sha256": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0",
+      "main_only_repair": {
+        "attributed_to_4c7ad516_repair": false,
+        "prior_imported_git_blob": "f00e354c0397305b59c55858b6cac3364e502f20",
+        "prior_imported_sha256": "1b971462d76a7cf6993cc60f4289d540fd9f6284871332074549bbb16b0c1399",
+        "published_runtime_package_changed": false,
+        "review_finding": "P2: current installer identities reject trusted pre-hook v3 environments",
+        "reviewed_candidate_commit": "55a01cea4cbc342a69ce1ba1412b6ecb20cfefc2"
+      },
       "repair_commit": null,
       "runtime6_member": "runtime/tools/arc_next_offline_environment.py",
       "runtime6_member_bytes": 43432,
       "runtime6_member_sha256": "1b971462d76a7cf6993cc60f4289d540fd9f6284871332074549bbb16b0c1399",
-      "source_kind": "exact-runtime6-snapshot"
+      "source_kind": "runtime6-snapshot-plus-main-only-legacy-v3-migration-repair"
     },
     {
       "after_git_blob": "56688c0c2b52e593d6852c4a3e0c86d1c408777b",

@@ -9,6 +9,19 @@ The missing frozen commit, nine lost commits, and original Decisions 0069/0070
 are not reconstructed. Existing research, original decisions, source locks and
 readiness evidence remain unchanged.
 
+Independent review of candidate `55a01cea4cbc342a69ce1ba1412b6ecb20cfefc2`
+identified a legacy migration regression: current installer guard, launcher and
+`-B` command identities had replaced the trusted pre-hook v3 expectations.
+The main-only follow-up freezes the exact guard/launcher digests and `-I -S`
+flags from main `077bb468`, and binds the migration hook to that verified legacy
+guard. Migration still changes only the hook and two receipts; rehashed tampering
+is rejected. Fixed historical fixtures are independent of current constants.
+New installations and portable workflow admission retain current identities and
+`-B`; legacy migration does not admit that environment to the portable workflow.
+The source manifest attributes this follow-up separately from `4c7ad516` and
+preserves the original runtime6 member hash. The prepared Dataset package,
+original `4c7ad516` repair and all publication identities remain unchanged.
+
 The worker failure was a `TypeError` while writing the model-loading receipt:
 Transformers 5.8.1 reports missing/unexpected/mismatched keys as sets. The receipt
 was written before LoRA construction. The repair normalizes only those known

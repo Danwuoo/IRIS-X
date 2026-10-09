@@ -279,8 +279,15 @@ _guard_os.environ["WANDB_MODE"] = "offline"
 # stdlib sitecustomize must not shadow the task-owned guard for ordinary children.
 NETWORK_GUARD_HOOK_RELATIVE = "lib/python3.12/site-packages/000_irisx_offline_guard.pth"
 
+# Frozen pre-hook v3 identities from main 077bb4680706b95f196621dab4360ffe03504354.
+# Migration must not redefine historical installation bytes when new installs
+# change their guard ordering or interpreter flags.
+_LEGACY_V3_GUARD_SHA256 = "7669d1387b8429bff42428e14c0210960a465c7b7b634b661b1fb62c4cc44f82"
+_LEGACY_V3_LAUNCHER_SHA256 = "12dca3a583c059a95db714e53f0d60952bc8e5b35d734cd21182e8487a83931c"
+_LEGACY_V3_PYTHON_FLAGS = ("-I", "-S")
 
-def _network_guard_hook(environment_dir: str | Path) -> str:
+
+def _network_guard_hook(environment_dir: str | Path, *, legacy_v3: bool = False) -> str:
     """Render an exact-path, digest-bound bootstrap with durable function globals.
 
     site.addpackage executes .pth statements inside a function: bare exec there
@@ -290,7 +297,8 @@ def _network_guard_hook(environment_dir: str | Path) -> str:
     .pth errors and continues without the guard.
     """
     path = str(Path(environment_dir).absolute() / "lib/python3.12/site-packages/sitecustomize.py")
-    digest = hashlib.sha256(NETWORK_GUARD.encode()).hexdigest()
+    digest = (_LEGACY_V3_GUARD_SHA256 if legacy_v3 else
+              hashlib.sha256(NETWORK_GUARD.encode()).hexdigest())
     bootstrap = (
         "import os, hashlib\n"
         "try:\n"
@@ -721,7 +729,8 @@ def migrate_offline_guard(source_lock_path: str | Path, wheelhouse_root: str | P
     _require(not hook.exists() and not hook.is_symlink(), "Migration requires an exact pre-hook environment")
     _require(not (destination / "evidence/installation-failed.json").exists(),
              "Failed installations cannot be migrated")
-    _require(snapshots["guard"] == NETWORK_GUARD.encode() and snapshots["launcher"] == _LAUNCHER.encode(),
+    _require(hashlib.sha256(snapshots["guard"]).hexdigest() == _LEGACY_V3_GUARD_SHA256 and
+             hashlib.sha256(snapshots["launcher"]).hexdigest() == _LEGACY_V3_LAUNCHER_SHA256,
              "Legacy guard or launcher differs from trusted v3 bytes")
     _require(_sha(paths["python"]) == _sha(Path(sys.executable).resolve()),
              "Legacy interpreter differs from this CPython executable")
@@ -754,7 +763,7 @@ def migrate_offline_guard(source_lock_path: str | Path, wheelhouse_root: str | P
         "python_executable": str(paths["python"]), "python_executable_sha256": _sha(paths["python"]),
         "python_launcher_path": str(paths["launcher"]), "python_launcher_sha256": _sha(paths["launcher"]),
         "venv_config_sha256": _sha(paths["config"]),
-        "python_command": [str(paths["python"]), "-I", "-B", "-S", str(paths["launcher"])],
+        "python_command": [str(paths["python"]), *_LEGACY_V3_PYTHON_FLAGS, str(paths["launcher"])],
         "network_guard_path": str(paths["guard"]), "network_guard_sha256": _sha(paths["guard"]),
         "network_guard": "Python socket/DNS audit only; external InternetOFF boundary still required",
         "optional_backend_modules_absent": list(OPTIONAL_MODULES),
@@ -786,7 +795,7 @@ print(json.dumps({"versions": {name: observed.get(name) for name in wanted}, "pr
              _sha(root / "wheel-lock.json") == checked["wheel_lock_sha256"] and
              _sha(root / "requirements.lock") == checked["requirements_sha256"],
              "Mounted locks changed during migration validation")
-    hook_body = _network_guard_hook(destination).encode()
+    hook_body = _network_guard_hook(destination, legacy_v3=True).encode()
     result = dict(legacy,
         network_guard_startup="exact-path-pth-v1",
         network_guard_startup_hook_path=str(hook),

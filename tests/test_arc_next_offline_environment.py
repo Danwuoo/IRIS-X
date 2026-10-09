@@ -343,6 +343,7 @@ class OfflineSubprocessTests(OfflineEnvironmentTests):
                              "PIP_INDEX_URL": "https://example.invalid", "PIP_FIND_LINKS": "https://example.invalid"}):
             result = offline.install_offline(self.fixture.source, self.fixture.root, destination, enabled=True)
         self.assertEqual(result["status"], "installed-offline")
+        self.assertEqual(result["python_command"][1:-1], ["-I", "-B", "-S"])
         self.assertEqual(sha(self.fixture.root / "wheel-lock.json"), prepared_hash)
         self.assertEqual(result["prepared_wheel_lock_sha256"], prepared_hash)
         self.assertEqual(result, json.loads((destination / "installation-receipt.json").read_text()))
@@ -514,9 +515,26 @@ class LegacyGuardMigrationTests(unittest.TestCase):
         cls.fixture = Wheelhouse(cls.base)
         cls.root = cls.base / "legacy-env"
         receipt = offline.install_offline(cls.fixture.source, cls.fixture.root, cls.root, enabled=True)
+        # Historical bytes are independent of the current installer/constants.
+        # Exact literals extracted from main 077bb468's trusted pre-hook v3 code.
+        frozen = Path(__file__).parent / "fixtures/arc_next_legacy_v3"
+        cls.legacy_guard = (frozen / "sitecustomize.py.txt").read_bytes()
+        cls.legacy_launcher = (frozen / "offline-run.py.txt").read_bytes()
+        if hashlib.sha256(cls.legacy_guard).hexdigest() != "7669d1387b8429bff42428e14c0210960a465c7b7b634b661b1fb62c4cc44f82":
+            raise AssertionError("Frozen v3 guard fixture changed")
+        if hashlib.sha256(cls.legacy_launcher).hexdigest() != "12dca3a583c059a95db714e53f0d60952bc8e5b35d734cd21182e8487a83931c":
+            raise AssertionError("Frozen v3 launcher fixture changed")
+        cls.guard = cls.root / "lib/python3.12/site-packages/sitecustomize.py"
+        cls.launcher = cls.root / "offline-run.py"
+        cls.guard.write_bytes(cls.legacy_guard)
+        cls.launcher.write_bytes(cls.legacy_launcher)
+        receipt["network_guard_sha256"] = sha(cls.guard)
+        receipt["python_launcher_sha256"] = sha(cls.launcher)
+        receipt["python_command"] = [receipt["python_executable"], "-I", "-S", str(cls.launcher)]
         for field in ("network_guard_startup", "network_guard_startup_hook_path", "network_guard_startup_hook_sha256"):
             receipt.pop(field)
-        # Exact pre-hook v3 format, reconstructed from a tiny genuine installation.
+        # Dynamic paths/interpreter/wheel evidence comes from a tiny installation;
+        # guard, launcher and command flags are the fixed historical identities.
         cls.legacy_receipt = (json.dumps(receipt, indent=2, sort_keys=True) + "\n").encode()
         cls.legacy_lock = (json.dumps(receipt, sort_keys=True) + "\n").encode()
         cls.receipt_path = cls.root / "installation-receipt.json"
@@ -553,7 +571,7 @@ class LegacyGuardMigrationTests(unittest.TestCase):
         after = {str(p.relative_to(self.root)): sha(p) for p in self.root.rglob("*") if p.is_file() and not p.is_symlink()}
         changed = {name for name in set(before) | set(after) if before.get(name) != after.get(name)}
         self.assertEqual(changed, {offline.NETWORK_GUARD_HOOK_RELATIVE, "installation-receipt.json", "evidence/environment-lock.json"})
-        self.assertEqual(self.hook.read_text(), offline._network_guard_hook(self.root))
+        self.assertEqual(self.hook.read_text(), offline._network_guard_hook(self.root, legacy_v3=True))
         self.assertEqual(result["network_guard_startup_hook_sha256"], sha(self.hook))
         saved = result["network_guard_migration"]
         self.assertEqual(saved["legacy_installation_receipt_utf8"].encode(), self.legacy_receipt)
@@ -563,6 +581,42 @@ class LegacyGuardMigrationTests(unittest.TestCase):
         self.assertEqual(self.receipt_path.read_bytes(), self.lock_path.read_bytes())
         with self.assertRaisesRegex(offline.OfflineEnvironmentError, "pre-hook"):
             self.migrate()
+
+    def test_frozen_legacy_fixture_differs_from_new_install_identity(self):
+        self.assertEqual(self.guard.read_bytes(), self.legacy_guard)
+        self.assertEqual(self.launcher.read_bytes(), self.legacy_launcher)
+        self.assertNotEqual(self.legacy_guard, offline.NETWORK_GUARD.encode())
+        self.assertNotEqual(self.legacy_launcher, offline._LAUNCHER.encode())
+        self.assertEqual(json.loads(self.legacy_receipt)["python_command"][1:-1], ["-I", "-S"])
+
+    def test_changed_guard_or_launcher_identity_refused_even_with_rehashed_receipts(self):
+        for path, body, field in ((self.guard, self.legacy_guard, "network_guard_sha256"),
+                                  (self.launcher, self.legacy_launcher, "python_launcher_sha256")):
+            with self.subTest(field=field):
+                try:
+                    path.write_bytes(body + b"\n# changed\n")
+                    receipt = json.loads(self.legacy_receipt)
+                    receipt[field] = sha(path)
+                    write_json(self.receipt_path, receipt)
+                    write_json(self.lock_path, receipt)
+                    before = (self.receipt_path.read_bytes(), self.lock_path.read_bytes())
+                    with self.assertRaisesRegex(offline.OfflineEnvironmentError, "trusted v3 bytes"):
+                        self.migrate()
+                    self.assertFalse(self.hook.exists())
+                    self.assertEqual((self.receipt_path.read_bytes(), self.lock_path.read_bytes()), before)
+                finally:
+                    path.write_bytes(body)
+
+    def test_new_command_flags_refused_as_legacy_even_with_rehashed_receipts(self):
+        receipt = json.loads(self.legacy_receipt)
+        receipt["python_command"].insert(2, "-B")
+        write_json(self.receipt_path, receipt)
+        write_json(self.lock_path, receipt)
+        before = (self.receipt_path.read_bytes(), self.lock_path.read_bytes())
+        with self.assertRaisesRegex(offline.OfflineEnvironmentError, "trusted v3 installation layout"):
+            self.migrate()
+        self.assertFalse(self.hook.exists())
+        self.assertEqual((self.receipt_path.read_bytes(), self.lock_path.read_bytes()), before)
 
     def test_wrong_digest_and_receipt_pair_refused_without_mutation(self):
         with self.assertRaisesRegex(offline.OfflineEnvironmentError, "expected digest"):
