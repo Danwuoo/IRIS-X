@@ -1,0 +1,84 @@
+{
+  "status": "PASS",
+  "runner_sha256": "d2ee8fee3246b8b36f08842e30ce6c8ecc6efea14404d827833c40193d558571",
+  "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+  "token_audit_sha256": "90dc7ea352d6d903722f4d645ec87b9c5129d3d6ca425b6a1122e9f5c84c103f",
+  "tasks": 40,
+  "policies": 14,
+  "initial_prompts_replayed": 560,
+  "ranges": {
+    "direct_grid": [
+      160,
+      4532
+    ],
+    "detailed_contract": [
+      649,
+      5021
+    ],
+    "host_toolbox": [
+      590,
+      4962
+    ],
+    "host_python": [
+      590,
+      4962
+    ],
+    "typed_ir": [
+      450,
+      4822
+    ],
+    "proposal_pool": [
+      450,
+      4822
+    ],
+    "generic_static": [
+      590,
+      4962
+    ],
+    "precise_static": [
+      590,
+      4962
+    ],
+    "raw_grid": [
+      590,
+      4962
+    ],
+    "raw_plus_objects": [
+      1349,
+      7009
+    ],
+    "redacted_demo": [
+      590,
+      4962
+    ],
+    "true_demo": [
+      590,
+      4962
+    ],
+    "independent_roots": [
+      590,
+      4962
+    ],
+    "best_first_memory": [
+      590,
+      4962
+    ]
+  },
+  "context_exclusions": [
+    {
+      "task": "33067df9",
+      "policy": "raw_plus_objects",
+      "tokens": 6981
+    },
+    {
+      "task": "a096bf4d",
+      "policy": "raw_plus_objects",
+      "tokens": 7009
+    }
+  ],
+  "all_visible_input_challenge_hashes_verified": true,
+  "actual_query_gold_read": false,
+  "weights_loaded": false,
+  "GPU_used": false,
+  "future_repair_prompts": "Not claimed covered; runtime exact-counting and fixed-denominator overflow policy apply."
+}

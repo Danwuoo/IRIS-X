@@ -1,0 +1,477 @@
+{
+  "format": "irisx/next-ten-final-independent-review-v1",
+  "reviewed_at_utc": "2026-10-09T18:43:25.111761+00:00",
+  "status": "APPROVED_FOR_AUTHORIZED_PRIVATE_INACTIVE_KAGGLE_PUBLICATION_AND_ADD_ONLY_GIT_MAIN_INTEGRATION",
+  "open_blockers": [],
+  "scope": {
+    "exact_notebook_count": 10,
+    "source_lock": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/source-lock.json",
+      "bytes": 1300,
+      "sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d"
+    },
+    "runner": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/arc_suite.py",
+      "bytes": 68405,
+      "sha256": "d2ee8fee3246b8b36f08842e30ce6c8ecc6efea14404d827833c40193d558571"
+    },
+    "frozen_design": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/DESIGN-FROZEN.json",
+      "bytes": 15981,
+      "sha256": "4a9ade5aec744a2b82f357112c59b2f68bcade25decc3cd794d984837c8dcac9"
+    },
+    "five_existing_datasets_unchanged": true,
+    "new_model_assets_claimed": false,
+    "GPU_model_training_execution_authorized_by_this_review": false,
+    "publication_or_Git_write_executed_by_reviewer": false,
+    "provider_readback_required": true,
+    "unrelated_existing_main_blobs_must_be_preserved": true
+  },
+  "approved_notebooks": [
+    {
+      "run_id": "N5",
+      "filename": "IRIS-X-N5-language-replay-20261009.ipynb",
+      "sha256": "469c6921a89c73d3e160dd428377cf18cc38a21787dcace12966ba4ec812fb6f",
+      "bytes": 264927,
+      "reference": "danielwuu/iris-x-n5-language-replay",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 0,
+      "max_generated_tokens": 0,
+      "max_prompt_tokens": 0,
+      "prerequisites": []
+    },
+    {
+      "run_id": "N6",
+      "filename": "IRIS-X-N6-toolbox-contract-20261009.ipynb",
+      "sha256": "b442d823de238ef9bee7ed1087b3351db3efca1d6d4b1be022db64bf58d26af9",
+      "bytes": 265184,
+      "reference": "danielwuu/iris-x-n6-toolbox-contract",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": []
+    },
+    {
+      "run_id": "N7",
+      "filename": "IRIS-X-N7-typed-program-ir-20261009.ipynb",
+      "sha256": "f203a7608560807477d227c631874c523804fc96e5b1d87466a1e176d266068d",
+      "bytes": 265016,
+      "reference": "danielwuu/iris-x-n7-typed-program-ir",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": []
+    },
+    {
+      "run_id": "N8",
+      "filename": "IRIS-X-N8-static-feedback-20261009.ipynb",
+      "sha256": "f66f2c06e7992e97d5a440ec16f31c8cfa8a502ea9755ea815e92f857c6061ff",
+      "bytes": 265074,
+      "reference": "danielwuu/iris-x-n8-static-feedback",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": []
+    },
+    {
+      "run_id": "N9",
+      "filename": "IRIS-X-N9-object-perception-20261009.ipynb",
+      "sha256": "6c48d16e9218f194aae7bee17fecec9f929e8110715841df643bf4b7db2c8f66",
+      "bytes": 265058,
+      "reference": "danielwuu/iris-x-n9-object-perception",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": [
+        "N6"
+      ]
+    },
+    {
+      "run_id": "N10",
+      "filename": "IRIS-X-N10-demo-feedback-20261009.ipynb",
+      "sha256": "caeff30cdb8be71489e9fb297b8b8b6ce3c892a39061552860307f1251545203",
+      "bytes": 265113,
+      "reference": "danielwuu/iris-x-n10-demo-feedback",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": [
+        "N6"
+      ]
+    },
+    {
+      "run_id": "N11",
+      "filename": "IRIS-X-N11-candidate-memory-20261009.ipynb",
+      "sha256": "19f66a8266c2511f55cd85eccb2e57b91f2c2ac8562f4db89e2b2cfcfae4d324",
+      "bytes": 265079,
+      "reference": "danielwuu/iris-x-n11-candidate-memory",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": [
+        "N6"
+      ]
+    },
+    {
+      "run_id": "N12",
+      "filename": "IRIS-X-N12-neural-cpu-search-20261009.ipynb",
+      "sha256": "8adaa4d029fdecc1519728e37cd3ea95101577e6f352d7df0aa4848f3d8c690f",
+      "bytes": 265061,
+      "reference": "danielwuu/iris-x-n12-neural-cpu-search",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 32,
+      "max_generated_tokens": 65536,
+      "max_prompt_tokens": 196608,
+      "prerequisites": [
+        "N7"
+      ]
+    },
+    {
+      "run_id": "N13",
+      "filename": "IRIS-X-N13-program-curriculum-20261009.ipynb",
+      "sha256": "9d2806123ed794892e329570f13db7b15708fdf1265d7d2b138de9a8c45ef66b",
+      "bytes": 265187,
+      "reference": "danielwuu/iris-x-n13-program-curriculum",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 0,
+      "max_generated_tokens": 0,
+      "max_prompt_tokens": 0,
+      "prerequisites": []
+    },
+    {
+      "run_id": "N14",
+      "filename": "IRIS-X-N14-agent-consolidation-20261009.ipynb",
+      "sha256": "492df1753fbc5fefb69c2228b5cc5c83bc8911ea2870513d25586c39bb6cc027",
+      "bytes": 265366,
+      "reference": "danielwuu/iris-x-n14-agent-consolidation",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 256,
+      "max_generated_tokens": 524288,
+      "max_prompt_tokens": 1572864,
+      "prerequisites": [
+        "N6",
+        "N7",
+        "N9",
+        "N10",
+        "N11"
+      ]
+    }
+  ],
+  "approved_source_files": {
+    "arc_suite.py": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/arc_suite.py",
+      "bytes": 68405,
+      "sha256": "d2ee8fee3246b8b36f08842e30ce6c8ecc6efea14404d827833c40193d558571"
+    },
+    "arc_suite_policy.py": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/arc_suite_policy.py",
+      "bytes": 11330,
+      "sha256": "78e1f445acf6763b0f8b28c5434d13414e658c8c8a0ec8b0ad61514843271b75"
+    },
+    "arc_bounded_v1.py": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/arc_bounded_v1.py",
+      "bytes": 36302,
+      "sha256": "410713680242c0af12f4216181cd0a6318f46788e98e0577b4bfb67b9d2fc911"
+    },
+    "arc_bounded_v2.py": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/arc_bounded_v2.py",
+      "bytes": 24707,
+      "sha256": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7"
+    },
+    "arc_n4_program.py": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/arc_n4_program.py",
+      "bytes": 25278,
+      "sha256": "fbcf0c933561067b6c9b4fc1e4c44048f02bbd8348ba312d06da37b3f22ebba7"
+    },
+    "arc_program_v2.py": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/arc_program_v2.py",
+      "bytes": 27156,
+      "sha256": "52bc22ffdf32198ceee209b68f68840869086af7d4372e54ec7d7b0297fe760d"
+    },
+    "arc_typed_ir.py": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/arc_typed_ir.py",
+      "bytes": 13566,
+      "sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9"
+    },
+    "arc_curriculum.py": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/arc_curriculum.py",
+      "bytes": 24322,
+      "sha256": "158263e2e417e02b80a0726c9a436bcd842500b64407d3bc5afa0f595c43238c"
+    },
+    "DESIGN-FROZEN.json": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/DESIGN-FROZEN.json",
+      "bytes": 15981,
+      "sha256": "4a9ade5aec744a2b82f357112c59b2f68bcade25decc3cd794d984837c8dcac9"
+    },
+    "n4-replay-payload.json": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/n4-replay-payload.json",
+      "bytes": 492524,
+      "sha256": "9c508d211ba5cd6d8ab59b2fbeb91456e180467624e77556515869abf7fc042e"
+    },
+    "solver-manifest-reference.json": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/solver-manifest-reference.json",
+      "bytes": 178403,
+      "sha256": "d4f6fbb693d35313f2b9be4eac50e5ac3c8340c61e6b4e77ba71de7a44ea54f8"
+    },
+    "visible-token-audit.json": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/visible-token-audit.json",
+      "bytes": 280906,
+      "sha256": "90dc7ea352d6d903722f4d645ec87b9c5129d3d6ca425b6a1122e9f5c84c103f"
+    },
+    "SECURITY-RELEASE.json": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/SECURITY-RELEASE.json",
+      "bytes": 782,
+      "sha256": "22c4fbef103a7ed77681d1df4aa4821108898e4c32043c5749c786a780866a88"
+    }
+  },
+  "test_evidence": {
+    "builder_final_full_suite": {
+      "tests": 57,
+      "passed": true,
+      "log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/evidence/final-release-focused-tests.txt",
+        "bytes": 6236,
+        "sha256": "ab17d4e96b9c043d155d4b42454af1f646a2a4cd56ad3d7a79552c3c55d8882d"
+      }
+    },
+    "independent_full_pre_final_accounting_delta": {
+      "tests": 55,
+      "passed": true,
+      "log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/next-phase-review/SUITE-FINAL-CPU-TESTS.log",
+        "bytes": 6635,
+        "sha256": "3cd4603c89cf310cd0581c61fef34b98c699f0637d3bc3b4277f0a8257e469ff"
+      },
+      "scope": "Pre-final source lock760422bc. Exact subsequent deltas independently compared: N5 CPU reservations/unknown gas, replay root accounting, fail-closed invalid-prerequisite receipt. All affected paths tested separately on final bytes.",
+      "nonblocking_log_note": "One interpreter-exit ResourceWarning from intentional lifetime-cached temporary prerequisite extraction; test assertions passed and directory cleanup occurred."
+    },
+    "independent_final_affected_accounting_tests": {
+      "tests": 4,
+      "passed": true,
+      "log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/next-phase-review/FINAL-ACCOUNTING-DELTA-TESTS.log",
+        "bytes": 608,
+        "sha256": "0cddaf2845ee561f6a75ae8485ae29df57dbfbd560e69b7093799c5bf709585d"
+      }
+    },
+    "independent_final_notebook_gate_delta_tests": {
+      "tests": 4,
+      "passed": true,
+      "log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/next-phase-review/FINAL-GATE-DELTA-TESTS.log",
+        "bytes": 612,
+        "sha256": "b7a357417edee9cd841411dafa7954c87e88f75c3b494eb3e64dd77abb338bc5"
+      }
+    },
+    "independent_final_frozen_contract_and_gate_tests": {
+      "test_groups": 8,
+      "passed": true,
+      "log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/next-phase-review/contract-tests-final.txt",
+        "bytes": 106,
+        "sha256": "143fe1955e115f45bc75623de5194ebc42b1d5cd0727081b8cd4b5d75bad4b17"
+      },
+      "coverage": "Expected ledgers, protected split, paired seeds, fourteen rehashed field tamper cases, query-label field rejection, missing gates, archive traversal/inventory and inert launch."
+    },
+    "independent_final_policy_tests": {
+      "test_groups": 11,
+      "passed": true,
+      "log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/next-phase-review/policy-tests-final.txt",
+        "bytes": 110,
+        "sha256": "4c3b3b2f85f7f81206f2731efca1a5c61f58b2f6c54d820b4003b988757b84ec"
+      }
+    },
+    "independent_exact_notebooks": {
+      "path": "/workspace/scratch/3c2b2502fb1e/next-phase-review/TEN-NOTEBOOKS-INDEPENDENT-CHECK.json",
+      "bytes": 4217,
+      "sha256": "78522e1c5a0f57c03aae64640ed3a96e4c7c42345bdf326671d28b40c0e402d7"
+    },
+    "independent_exact_tokenizer_replay": {
+      "path": "/workspace/scratch/3c2b2502fb1e/next-phase-review/SUITE-TOKEN-AUDIT-INDEPENDENT.json",
+      "bytes": 1586,
+      "sha256": "bd21b7347086b8d75c16c6a3baebecb97593efd2a3f6b97eabaa3faa5aa2d6cb"
+    },
+    "independent_security": {
+      "report": {
+        "path": "/workspace/scratch/3c2b2502fb1e/next-phase-review/security/SECURITY-REVIEW-FINAL.md",
+        "bytes": 10539,
+        "sha256": "9a3b065d8b3768e081bd90866a888a92442185f95d7c09c9b430f4ee022391de"
+      },
+      "structured_release": {
+        "path": "/workspace/scratch/3c2b2502fb1e/next-phase-review/security/SECURITY-RELEASE-INTEGRATION.json",
+        "bytes": 1670,
+        "sha256": "25986e1f8713d781bc7a2533331ad934f5bf6740b9118cb6533c87917486ab0e"
+      },
+      "execution_layer_cases": 186,
+      "typed_IR_curriculum_cases": 261,
+      "final_execution_routes": 9,
+      "actual_route_verifier_calls": 13,
+      "feedback_isolation_checks": 33,
+      "compressed_loader_adversarial_checks": 18,
+      "scope": "Bounded language and trusted verified application loading; not unrestricted Python or a formal host-security proof."
+    }
+  },
+  "actual_CPU_only_results": {
+    "N5": {
+      "archive": {
+        "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/evidence/N5-final-release-cpu-evidence.zip",
+        "bytes": 443526,
+        "sha256": "359c337cca4ecb2d42931d383a19f504277a17d960e156c4d7d13fb467560b88"
+      },
+      "verified_inventory_files": 494,
+      "comparisons_completed": 122,
+      "model_calls": 0,
+      "old_AST_admitted": 0,
+      "v2_AST_admitted": 29,
+      "v2_demo_executed": 23,
+      "v2_all_demo_fit": 0,
+      "query_candidates": 0,
+      "charged_v2_steps": 1529608,
+      "interpretation": "Counterfactual language replay of the exact old proposals; original N4 scores unchanged. Syntax compatibility alone did not produce a fitting solution."
+    },
+    "N13": {
+      "archive": {
+        "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/evidence/final-release-cpu/iris-x-n13-20261009-evidence.zip",
+        "bytes": 266454,
+        "sha256": "10bce3502e496fb52ace7b152b785e18841705d0e1064a524738dfc07d6f4a54"
+      },
+      "verified_inventory_files": 15,
+      "episodes": 512,
+      "authored_families": 8,
+      "split_counts": {
+        "train": 384,
+        "validation": 128
+      },
+      "verifier_calls": 1024,
+      "unknown_calls": 0,
+      "charged_steps": 3832550,
+      "model_calls": 0,
+      "training_performed": false,
+      "payload_sha256": "6c52d04171d84d57dcaa7e77d46e38b0c8b6e57c7c1e29582eec48411aa95fb4",
+      "F_P_R_raw_source_targets_align": true,
+      "interpretation": "Verified synthetic curriculum/data readiness only; no SFT, generalization or ARC quality result."
+    }
+  },
+  "scientific_controls": {
+    "engineering_tasks": 8,
+    "consolidation_tasks": 32,
+    "consolidation_ids": "original tuning_ids[8:40], previously N3-exposed and disjoint from the8 design tasks",
+    "confirmation_ids_reserved": 136,
+    "historical_exposure_caveat": "No unseen-data or universal historical non-exposure claim. This suite does not execute or tune on the136 reserved confirmation IDs.",
+    "same_base_only": true,
+    "adapter_loaded": false,
+    "paired_seed_namespace": 1015,
+    "all_gates_pass_total_call_ceiling": 672,
+    "all_gates_pass_total_generated_token_ceiling": 1376256,
+    "all_gates_pass_total_prompt_token_ceiling": 4128768,
+    "selection": "Fixed candidate vote/first-call/digest without query labels; experiment-level N14 policy selection uses prior tuning scores under the exact five-policy allowlist.",
+    "gates": "Prior source/model/task contract, closed final inventory, expected ledger, zero missing/unknown and clean stop checked before installation/model load. Declared context exclusions remain in denominators.",
+    "gold_boundary": "Solver data admits demonstration pairs and query input only; query truth remains post-stop evaluator-only. Reviewer did not read actual evaluator answers.",
+    "N12": "Shared model pool physical spend once; full pool charged to each standalone counterfactual. Uniform candidate base and smoothed likelihood ratios make empty-proposal ranking exactly uniform. Finite1277-candidate grammar, not a full PCFG or ARC-complete language.",
+    "N13": "F has the same raw-source target format as P/R, with program supplied rather than inferred; G/P/R have separate objectives and provenance. No training efficacy inferred.",
+    "known_initial_exclusions": [
+      {
+        "task": "33067df9",
+        "policy": "raw_plus_objects",
+        "tokens": 6981
+      },
+      {
+        "task": "a096bf4d",
+        "policy": "raw_plus_objects",
+        "tokens": 7009
+      }
+    ]
+  },
+  "corrected_review_findings": [
+    "Captured component bytes now checked against the pin before trusted import; cached pyc ignored.",
+    "Full expected contract recomputed, so rehashed budget/policy/task changes are rejected.",
+    "Post-score reports and summaries are bound by final inventory; normal prior ZIP import verifies safe closed inventory.",
+    "Known model response with missing verification remains charged and classified verification-incomplete.",
+    "N12 search persists reservations and each result; interrupted CPU work is charged conservatively and partial prefixes retained.",
+    "N5 CPU reservations and unknown CPU gas are correctly distinguished from model usage.",
+    "N13 returned failed calls are charged before validation, unknown calls are ledgered, relevant sources/runtime provenance retained, and F/P format alignment corrected.",
+    "Memory is readable and task-local, with per-condition diversity labelled as lossy feedback signatures rather than semantic equivalence.",
+    "Source-directory symlink containment guarded before notebook writes.",
+    "Malformed prior evidence produces fail-closed BLOCKED receipt before any install or model load; invalid-prerequisite receipts cannot satisfy N14 source requirements.",
+    "CPU replay is no longer labelled newly generated independent model roots."
+  ],
+  "limitations": [
+    "No GPU experiment, new model inference, training, competition submission or four-L4 deployment was run during development/review.",
+    "N5 language compatibility rose to29/61 admitted and23/61 executed, but zero candidates fit all demonstrations; this is not evidence of task-solving improvement.",
+    "All eight design and32 consolidation tasks are already exposed tuning data; multiple engineering choices are not independent validation.",
+    "N9 excludes33067df9 at6981 initial tokens (four slots); an N14 object-policy run excludesa096bf4d at7009 (four slots). All other audited initial policies fit6144; future repair overflow remains possible.",
+    "Same ceilings do not equal realized compute. Fixed denominators, actual known usage, unknown reservations and conservative gas must be retained in analysis.",
+    "Watchdog limits do not cap complete workflow duration or VM billing.",
+    "Hashes establish integrity, not authentication against an owner who fabricates a complete artifact.",
+    "Existing main full-suite failures are pre-existing baseline context, not a claim of repository-wide green CI."
+  ],
+  "next_useful_manual_run": "N6 host-toolbox contrast; N5 replay and N13 curriculum already have real CPU validation receipts. Then N7/N8 and prerequisite-gated later comparisons; do not bypass admission gates or automatically execute all ten.",
+  "release_change_policy": "Source or notebook byte changes require affected review and new hash binding. Add-only documentation, publication receipts and this review may be packaged without changing approved execution bytes; final publisher verifies assigned versions/settings and Git expected main SHA."
+}

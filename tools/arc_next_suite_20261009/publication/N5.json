@@ -1,0 +1,64 @@
+{
+  "run_id": "N5",
+  "owner": "danielwuu",
+  "title": "IRIS-X N5 Language Replay",
+  "slug": "iris-x-n5-language-replay",
+  "reference": "danielwuu/iris-x-n5-language-replay",
+  "notebook": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/notebooks/IRIS-X-N5-language-replay-20261009.ipynb",
+  "filename": "IRIS-X-N5-language-replay-20261009.ipynb",
+  "sha256": "469c6921a89c73d3e160dd428377cf18cc38a21787dcace12966ba4ec812fb6f",
+  "bytes": 264927,
+  "private": true,
+  "mode": "QUICK_SAVE",
+  "kernel_execution_type": 3,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "manual_start": false,
+  "gpu_execution_authorized": false,
+  "training_authorized": false,
+  "competition_submission_authorized": false,
+  "language": "python",
+  "notebook_type": "notebook",
+  "dataset_sources": [
+    "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+    "danielwuu/iris-arc-next-cpython312-offline/2",
+    "danielwuu/iris-arc-granite42-8b-offline/2",
+    "danielwuu/iris-arc-next-runtime/8",
+    "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+  ],
+  "dataset_pins": {
+    "adapter": {
+      "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+      "private": true,
+      "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+    },
+    "interpreter": {
+      "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+      "private": true,
+      "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+    },
+    "model": {
+      "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+      "private": true,
+      "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+    },
+    "runtime": {
+      "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+      "private": true,
+      "reference": "danielwuu/iris-arc-next-runtime/8"
+    },
+    "wheels": {
+      "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+      "private": true,
+      "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+    }
+  },
+  "runtime_dataset_upload_required": false,
+  "max_generate_calls": 0,
+  "max_generated_tokens": 0,
+  "max_prompt_tokens": 0,
+  "prerequisites": [],
+  "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+  "new_notebook_do_not_overwrite_previous": true
+}

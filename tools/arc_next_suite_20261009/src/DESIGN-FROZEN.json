@@ -1,0 +1,266 @@
+{
+  "format": "irisx/nextphase-ten-design-v1",
+  "status": "frozen_before_suite_implementation",
+  "date_utc": "2026-10-09",
+  "evidence_basis": {
+    "n4_archive_sha256": "1c5cfd789bbd6e8e10d804ebf47cea002d2617b44428e69b383122c026d05fa9",
+    "n4": "93 actual calls, A1/8 B0/8 C0/8; all61 program sources pass raw format,45 parse,0AST-admit; unnecessary toolbox reimplementation uses while/list methods;21 repairs received uninformative errors;3C context exclusions",
+    "provisional_v2_replay": "Without new generations or gold, minimal bounded language extension admits29/61 and executes23/61 visible demos,0all-demo-fit. Security approval pending. This distinguishes language admission from semantic reasoning.",
+    "n3": "Same32 exposed tasks: base0/32, raw-grid-SFT run0031/32;55 valid uncapped wrong outputs,4adapter runaway cap hits. More generic grid SFT is not justified by NLL alone.",
+    "research": "Reuse named-project and primary-source research dated2026-10-09. AVO lineage; Duck exact representations; Jev typed decisions; Prime bounded task state; NeMo explicit rollout/profile ledger; HySynth smoothed priors; independent-root selection; program/repair objectives remain separate from grid SFT."
+  },
+  "immutable_inputs": "Reuse exact five private runtime8/model2/wheels1/CPython2/adapter1 Dataset pins; adapter verified but never loaded. No new model assets claimed. Qwen3.5-9B and Seed-Coder8B remain future gated candidates after Granite.",
+  "exposure": {
+    "engineering8": [
+      "68bc2e87",
+      "fafffa47",
+      "33067df9",
+      "996ec1f3",
+      "66e6c45b",
+      "c444b776",
+      "7ec998c9",
+      "b25e450b"
+    ],
+    "consolidation32": "Frozen original tuning_ids[8:40], already exposed by N3, never relabelled heldout",
+    "confirmation_count": 136,
+    "confirmation_ids_sha256": "1c9d0d71f0229a862b9f3f65d994cae3f44757165b4b88d78f7e46ec31a2bef6",
+    "confirmation_used": false,
+    "selection_bias": "N5-N12 target known exposed engineering failures. N14 is consolidation on exposed tasks, not independent confirmation or official ARC score. No query labels enter proposal, repair, parent choice, program search or selector."
+  },
+  "common_budget": {
+    "seed_namespace": 1015,
+    "slots_per_task_arm": 4,
+    "max_new_tokens_per_call": 2048,
+    "max_prompt_tokens_per_call": 6144,
+    "max_context_tokens": 8192,
+    "max_program_steps_per_verification": 200000,
+    "program_worker_wall_seconds": 3,
+    "program_worker_cpu_seconds": 2,
+    "program_worker_memory_mib": 256,
+    "generation_cooperative_seconds": 120,
+    "standard_controller_seconds": 9600,
+    "consolidation_controller_seconds": 32400,
+    "exact_actual_usage_required": true,
+    "interpretation": "Matched ceilings are not matched realized compute. Report actual prompt/output tokens, known calls/reservations, program steps, process wall, exclusions. Time limits do not stop VM billing. No actual GPU or training execution authorized by this delivery."
+  },
+  "safety": {
+    "program_execution": "Immutable runtime8 or separately reviewed bounded-v2 AST data interpreter, fresh OS-limited CPU child per candidate, bounded JSON IPC; NEVER Python exec/eval of generated source",
+    "bounded_v2_changes": [
+      "metered while",
+      "exact-list append/pop/extend dispatch only",
+      "eager bounded generator expressions",
+      "list(xs)",
+      "is/is-not identity comparisons",
+      "lone underscore ordinary variable"
+    ],
+    "still_forbidden": [
+      "arbitrary attributes",
+      "imports",
+      "strings",
+      "dict/set",
+      "augmented assignment",
+      "nested definitions",
+      "host APIs",
+      "unbounded containers",
+      "invalid lexical break/continue"
+    ],
+    "feedback": "Static source locations and visible-demo results only. Query results/errors never appear in model feedback. No model-authored tool calls or paths.",
+    "stop_and_seal": "Confirmed owned-worker stop and closed inventory required before evaluator labels; retain fixed missing/excluded/unknown denominators and immutable output identities.",
+    "defaults": "All ten notebooks MANUAL_START=False, private QUICK_SAVE, GPU/TPU/Internet disabled. Default execution performs no installation, writes, model load, dataset production or calls."
+  },
+  "gate_contract": {
+    "integrity": "Prior evidence artifact must have matching suite/source/model/task hashes, stopped processes, closed immutable evidence and complete declared denominators. This is integrity validation, not a digital signature. Complete means closed expected ledgers including explicit exclusions, zero missing/unknown, clean stopped processes; context exclusions remain in fixed denominators.",
+    "admission": "N6 or N7 chosen program arm must have at least8/32 AST admitted and at least4/32 completed demo executions, no unknown calls. Does not require query success; it only admits semantic experiments.",
+    "semantic": "N10 and N11 additionally need at least4/32 completed demo executions from same interface, so feedback has semantic content.",
+    "consolidation": "Requires completed chosen upstream report. Choose among preregistered policies by engineering8 top2, then top1, then fewer generated tokens, then fixed policy ID; require at least1 solved task or explicit no-promotion diagnostic. Selection declared before N14 generation.",
+    "no_bypass": "No unchecked override. Missing/malformed/failed prerequisite returns BLOCKED before environment install/model load; no calls, training or bill stop.",
+    "consolidation_eligible_policies": {
+      "N6": "host_toolbox",
+      "N7": "typed_ir",
+      "N9": "raw_plus_objects",
+      "N10": "true_demo",
+      "N11": "best_first_memory"
+    },
+    "consolidation_source_requirements": "Require every listed source report or valid prerequisite-BLOCKED receipt. Select best among tested qualifying policies only; N12 excluded because its search tool budget is not inherited."
+  },
+  "runs": [
+    {
+      "id": "N5",
+      "slug": "iris-x-n5-language-replay",
+      "kind": "cpu_replay",
+      "question": "How much N4 failure is language admission rather than semantics?",
+      "arms": [
+        "immutable_n4",
+        "bounded_v2"
+      ],
+      "tasks": 8,
+      "replay_sources": 61,
+      "max_model_calls": 0,
+      "max_verifications": 122,
+      "max_interpreter_steps": 24400000,
+      "wall_seconds": 600,
+      "hypothesis": "Safe explicit language support increases admitted/executed saved programs; semantic success is reported separately.",
+      "gate": "independent security approval and full truth-free N4 replay bindings",
+      "go_no_go": "Any safety failure blocks suite; no semantic improvement is claimed from admission alone."
+    },
+    {
+      "id": "N6",
+      "slug": "iris-x-n6-toolbox-contract",
+      "kind": "model",
+      "question": "Does explicit host-owned toolbox usage avoid wasteful primitive reimplementation?",
+      "arms": [
+        "detailed_contract",
+        "host_toolbox"
+      ],
+      "tasks": 8,
+      "max_model_calls": 64,
+      "hypothesis": "A concise host-owned callable API with return-shape examples and instructions not to redefine primitives reduces wasteful helper reimplementation. Both arms use the same bounded-v2 language/executor; the detailed control updates N4 instructions to advertise the v2 language rather than claiming immutable N4 prompting.",
+      "gate": "security review; no prior model run needed",
+      "go_no_go": "Host arm>=8AST and>=4demo-executed of32; compare query scores separately; reject if only format or cap improvement without semantic evidence."
+    },
+    {
+      "id": "N7",
+      "slug": "iris-x-n7-typed-program-ir",
+      "kind": "model",
+      "question": "Can typed composition plans trade expressivity for reliable executable proposals?",
+      "arms": [
+        "host_python",
+        "typed_ir"
+      ],
+      "tasks": 8,
+      "max_model_calls": 64,
+      "hypothesis": "Strict JSON IR compiles through trusted templates into the same bounded interpreter and reduces code-format burden; declare finite grammar ceiling.",
+      "gate": "security review and deterministic grammar witness tests; no hidden answers",
+      "go_no_go": "IR must meet admission gate and show either useful fit/coverage or lower cost; high valid-plan rate alone is insufficient."
+    },
+    {
+      "id": "N8",
+      "slug": "iris-x-n8-static-feedback",
+      "kind": "model",
+      "question": "Do actionable syntax diagnostics repair source-interface failures?",
+      "arms": [
+        "generic_static",
+        "precise_static"
+      ],
+      "tasks": 8,
+      "max_model_calls": 64,
+      "hypothesis": "Paired identical initial prompts/seeds; only failed static admission receives generic versus exact node/line/call guidance. Successful static admission resets to fresh root. Demo/query feedback is withheld in both arms.",
+      "gate": "security approval; intentionally allowed before semantic admission",
+      "go_no_go": "Increase failed-to-AST transitions and completed demo execution; disclose B0/C0 response mismatch and actual token deltas."
+    },
+    {
+      "id": "N9",
+      "slug": "iris-x-n9-object-perception",
+      "kind": "model",
+      "question": "Does a deterministic object view make safe program proposals more useful?",
+      "arms": [
+        "raw_grid",
+        "raw_plus_objects"
+      ],
+      "tasks": 8,
+      "max_model_calls": 64,
+      "hypothesis": "Same host-python interface/weights/search; add exact grid shapes,color counts,run lengths and same-color4/8-connected bounding boxes computed from visible inputs and demonstrations.",
+      "gate": "N6 host_toolbox admission receipt",
+      "go_no_go": "Keep only if fixed top2 improves without denominator filtering; exact prompt overflow stays excluded. Views have no inferred target or guessed background."
+    },
+    {
+      "id": "N10",
+      "slug": "iris-x-n10-demo-feedback",
+      "kind": "model",
+      "question": "Does grounded demonstration feedback improve semantic repair?",
+      "arms": [
+        "redacted_demo",
+        "true_demo"
+      ],
+      "tasks": 8,
+      "max_model_calls": 64,
+      "hypothesis": "Paired root/seed, same syntax diagnostics and parent source; reveal bounded mismatch evidence versus only no-information repair instruction. Four slots and equal caps, actual tokens reported. This is information-value under matched allocation, not exact realized-compute matching.",
+      "gate": "N6 host_toolbox semantic admission receipt",
+      "go_no_go": "Report failed-parent-to-demo-fit and final-minus-first selected query exact; no fit-only superiority claim.",
+      "causal_limit": "Feedback-information and trajectory contrast, not equal-token or single-step causal effect. Preserve identical first-root prompt/seed/response diagnostics."
+    },
+    {
+      "id": "N11",
+      "slug": "iris-x-n11-candidate-memory",
+      "kind": "model",
+      "question": "Does bounded best-first repair and duplicate-aware memory outperform fresh breadth?",
+      "arms": [
+        "independent_roots",
+        "best_first_memory"
+      ],
+      "tasks": 8,
+      "max_model_calls": 64,
+      "hypothesis": "Same four calls; retain maximum4 candidates, choose best parent using visible fit/execution only, keep deterministic ties and source/behavior novelty summaries. This is a controller package contrast.",
+      "gate": "N6 host_toolbox semantic admission receipt",
+      "go_no_go": "Require selected top2 gain or lower cost at same score, disclose exact diversity and repair costs; no cross-task memory."
+    },
+    {
+      "id": "N12",
+      "slug": "iris-x-n12-neural-cpu-search",
+      "kind": "synthesis",
+      "question": "Does a smoothed proposal-derived prior improve fixed-grammar CPU synthesis?",
+      "arms": [
+        "uniform",
+        "smoothed",
+        "hard_pruned"
+      ],
+      "tasks": 8,
+      "max_model_calls": 32,
+      "shared_model_pool": "4 typed-IR proposals per task, generated once; identical pool consumed by all three CPU search arms and cost shown once/shared plus per-arm accounting",
+      "max_expansions_per_task_arm": 64,
+      "max_verifications": 1536,
+      "max_interpreter_steps": 307200000,
+      "cpu_wall_per_task_arm_seconds": 30,
+      "hypothesis": "Smoothed positive-support prior changes search order, uniform is control, zero-support hard pruning is negative control. Same finite candidate language, expansion and wall ceilings.",
+      "gate": "N7 typed_ir admission receipt; known-witness grammar coverage proof",
+      "go_no_go": "Report language coverage separately from search efficiency; no claim if all arms have zero fitting candidates.",
+      "cpu_deadline_scope": "Includes all child startup and verification. Results completed after deadline are ineligible; actual attempted gas charged. Full shared model pool cost charged to every counterfactual standalone arm; physical spend counted once."
+    },
+    {
+      "id": "N13",
+      "slug": "iris-x-n13-program-curriculum",
+      "kind": "cpu_curriculum",
+      "question": "Can we prepare executor-verified program and repair targets without evaluation-derived generators?",
+      "arms": [
+        "format_F",
+        "grid_G",
+        "program_P",
+        "repair_R"
+      ],
+      "tasks": 0,
+      "max_model_calls": 0,
+      "synthetic_episodes": 512,
+      "families": 8,
+      "training_performed": false,
+      "max_verifications": 1024,
+      "wall_seconds": 1200,
+      "hypothesis": "Separate four objectives; fixed authored transform families, family-level split before augmentation, independent query generation, failing mutation and valid repair evidence, exact grammar/witness hashes.",
+      "gate": "security approval and grammar witness coverage; no ARC source inputs needed",
+      "go_no_go": "Every exported witness/repair must execute and match synthetic target. Fail closed on family/split overlaps. Produces private offline training payload; does not claim training or quality gains."
+    },
+    {
+      "id": "N14",
+      "slug": "iris-x-n14-agent-consolidation",
+      "kind": "model_consolidation",
+      "question": "Does one preregistered selected agent policy beat direct-grid breadth across the32 N3-exposed tasks disjoint from the8 design tasks?",
+      "arms": [
+        "direct_grid",
+        "selected_agent"
+      ],
+      "tasks": 32,
+      "max_model_calls": 256,
+      "hypothesis": "Fixed four candidates per task/arm, one base checkpoint, same frozen task order/seeds; preset selection rule uses prior8-task engineering reports and freezes chosen policy before any generation.",
+      "gate": "completed qualifying upstream report with>=1top2 task; no winner means BLOCKED, no automatic expensive fallback",
+      "go_no_go": "Directional selected top2 improvement, report paired task bootstrap and actual costs. Still exposed engineering consolidation;136confirmation untouched, no official score or deployment claim."
+    }
+  ],
+  "publication": "Exactly10 new private inactive notebooks; no paid GPU, training, submission or live scheduling. Embed bounded code/data to reuse existing pinned Datasets unless independently approved payload requires a new private Dataset.",
+  "training_roadmap": "N13 delivers verified F/G/P/R data only. Future program-SFT and repair-SFT require frozen matched training recipes/base/adapter lineage and separate manual execution, not ten inference experiments claiming objective benefit. Four-L4 offline deployment remains a subsequent measured stage; this suite’s GPU studies target proven G4 hardware.",
+  "design_review": {
+    "approved_proposed_sha256": "8726bc30dac24845ed65e841a819f8cdb8dcc1a0cb14df4d1bfa53a1167a6f4a",
+    "reviewer": "independent",
+    "approval_utc": "2026-10-09T17:49:00Z",
+    "implementation_review_pending": true
+  },
+  "cpu_readiness": "N5/N13 use stdlib-only isolated CPU workers without GPU gate, CUDA/model imports, model load or full weights scan; manual false remains inert."
+}

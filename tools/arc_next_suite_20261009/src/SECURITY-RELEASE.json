@@ -1,0 +1,19 @@
+{
+  "format": "irisx/bounded-v2-independent-security-release-v1",
+  "status": "approved",
+  "scope": "bounded-v2 interpreter and CPU verifier only; suite integration reviewed separately",
+  "files": {
+    "arc_bounded_v2.py": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7",
+    "arc_program_v2.py": "52bc22ffdf32198ceee209b68f68840869086af7d4372e54ec7d7b0297fe760d"
+  },
+  "report": "SECURITY-REVIEW-INTERPRETER-FINAL.md",
+  "report_sha256": "a52ad31138916d5d211055548e7d1b19128872eb36123bb87969d1549631ec19",
+  "independent_extension_cases": 114,
+  "inherited_functional_cases": 37,
+  "inherited_protocol_cases": 21,
+  "additional_lifecycle_protocol_cases": 14,
+  "failures": 0,
+  "cpu_only": true,
+  "gold_read": false,
+  "candidate_python_execution": false
+}

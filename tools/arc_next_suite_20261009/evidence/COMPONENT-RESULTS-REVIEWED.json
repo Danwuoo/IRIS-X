@@ -1,0 +1,44 @@
+{
+  "grammar_sha256": "633a5a9e17493a1ac6fcd38e2d02dd028fe13c37afb9a99ffd3f2eef72d0718f",
+  "known_witnesses": {
+    "actual_fresh_calls": 171,
+    "atomic_parameterizations": 137,
+    "cache_safe_verifier": true,
+    "composition_classes": 34,
+    "program_steps": 268687
+  },
+  "no_gpu_training_or_upload": true,
+  "reviewed_curriculum": {
+    "accounting": {
+      "attempted_calls": 1024,
+      "fresh_verifier_calls": 1024,
+      "generator_wall_seconds": 123.06074183499732,
+      "ledger_file": "verification-ledger.jsonl",
+      "ledger_sha256": "57ad505ca93dd1316aee81083c25113200a4114adad92451cb4d764545a7a89e",
+      "max_verifications": 1024,
+      "program_steps": 3832550,
+      "returned_calls": 1024,
+      "unknown_usage_calls": 0,
+      "verifier_wall_seconds": 122.39535530698049,
+      "wall_limit_seconds": 1200
+    },
+    "episodes": 512,
+    "path": "evidence/curriculum-512-reviewed",
+    "payload_sha256": "6c52d04171d84d57dcaa7e77d46e38b0c8b6e57c7c1e29582eec48411aa95fb4",
+    "prior_records_match_except_requested_F_correction": true
+  },
+  "source_hashes": {
+    "arc_curriculum.py": "158263e2e417e02b80a0726c9a436bcd842500b64407d3bc5afa0f595c43238c",
+    "arc_ir_coverage.py": "8e7756922546e56076e1db10ab6c5b2d205844c17453bc32bff26819e9118307",
+    "arc_typed_ir.py": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9"
+  },
+  "status": "passed",
+  "superseded_evidence": [
+    "evidence/curriculum-512",
+    "evidence/curriculum-512-frozen",
+    "evidence/known-witness-coverage.json"
+  ],
+  "unit_test_log": "evidence/unittest-reviewed.log",
+  "unit_test_seconds": 6.87,
+  "unit_tests": 31
+}

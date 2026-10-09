@@ -1,0 +1,63 @@
+{
+  "format": "irisx/nextphase-exposure-ledger-v1",
+  "engineering8": [
+    "68bc2e87",
+    "fafffa47",
+    "33067df9",
+    "996ec1f3",
+    "66e6c45b",
+    "c444b776",
+    "7ec998c9",
+    "b25e450b"
+  ],
+  "engineering8_history": [
+    "N1",
+    "N4",
+    "N5CPU replay"
+  ],
+  "consolidation32": [
+    "31adaf00",
+    "195ba7dc",
+    "91413438",
+    "6cbe9eb8",
+    "ea786f4a",
+    "3d6c6e23",
+    "c87289bb",
+    "90f3ed37",
+    "1caeab9d",
+    "12422b43",
+    "a61ba2ce",
+    "782b5218",
+    "94f9d214",
+    "bd5af378",
+    "ad3b40cf",
+    "a096bf4d",
+    "b1948b0a",
+    "6e02f1e3",
+    "e0fb7511",
+    "5587a8d0",
+    "a87f7484",
+    "a78176bb",
+    "f83cb3f6",
+    "6d75e8bb",
+    "6773b310",
+    "a1570a43",
+    "44f52bb0",
+    "e872b94a",
+    "1b2d62fb",
+    "917bccba",
+    "d9f24cd1",
+    "58743b76"
+  ],
+  "consolidation32_history": [
+    "N3"
+  ],
+  "blocks_disjoint": true,
+  "confirmation_count": 136,
+  "confirmation_ids_sha256": "1c9d0d71f0229a862b9f3f65d994cae3f44757165b4b88d78f7e46ec31a2bef6",
+  "confirmation_used": false,
+  "task_selection_by_query_answer": false,
+  "all_blocks_exposed_tuning": true,
+  "new_holdout_claim": false,
+  "synthetic_curriculum_uses_ARC_tasks_or_gold": false
+}

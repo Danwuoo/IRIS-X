@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+validation-*/
+components/
+library-helpers/
+n4-result/
+repo-overlay/
+*.zip
+# Full synthetic exports are reproducible local artifacts, not required source.
+tests/evidence/curriculum-512-reviewed/

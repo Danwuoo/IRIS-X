@@ -1,0 +1,18 @@
+{
+  "format": "irisx/nextphase-source-lock-v1",
+  "files": {
+    "arc_suite.py": "d2ee8fee3246b8b36f08842e30ce6c8ecc6efea14404d827833c40193d558571",
+    "arc_suite_policy.py": "78e1f445acf6763b0f8b28c5434d13414e658c8c8a0ec8b0ad61514843271b75",
+    "arc_bounded_v1.py": "410713680242c0af12f4216181cd0a6318f46788e98e0577b4bfb67b9d2fc911",
+    "arc_bounded_v2.py": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7",
+    "arc_n4_program.py": "fbcf0c933561067b6c9b4fc1e4c44048f02bbd8348ba312d06da37b3f22ebba7",
+    "arc_program_v2.py": "52bc22ffdf32198ceee209b68f68840869086af7d4372e54ec7d7b0297fe760d",
+    "arc_typed_ir.py": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9",
+    "arc_curriculum.py": "158263e2e417e02b80a0726c9a436bcd842500b64407d3bc5afa0f595c43238c",
+    "DESIGN-FROZEN.json": "4a9ade5aec744a2b82f357112c59b2f68bcade25decc3cd794d984837c8dcac9",
+    "n4-replay-payload.json": "9c508d211ba5cd6d8ab59b2fbeb91456e180467624e77556515869abf7fc042e",
+    "solver-manifest-reference.json": "d4f6fbb693d35313f2b9be4eac50e5ac3c8340c61e6b4e77ba71de7a44ea54f8",
+    "visible-token-audit.json": "90dc7ea352d6d903722f4d645ec87b9c5129d3d6ca425b6a1122e9f5c84c103f",
+    "SECURITY-RELEASE.json": "22c4fbef103a7ed77681d1df4aa4821108898e4c32043c5749c786a780866a88"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "format": "irisx/independent-execution-integration-security-release-v1",
+  "status": "approved",
+  "scope": "bounded execution, strict compiler/synthetic witnesses, candidate routes, query feedback isolation and compressed notebook bootstrap; excludes global experiment accounting, prerequisites/evaluator, model runs and publication",
+  "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+  "files": {
+    "arc_suite.py": "d2ee8fee3246b8b36f08842e30ce6c8ecc6efea14404d827833c40193d558571",
+    "arc_suite_policy.py": "78e1f445acf6763b0f8b28c5434d13414e658c8c8a0ec8b0ad61514843271b75",
+    "arc_typed_ir.py": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9",
+    "arc_curriculum.py": "158263e2e417e02b80a0726c9a436bcd842500b64407d3bc5afa0f595c43238c",
+    "arc_program_v2.py": "52bc22ffdf32198ceee209b68f68840869086af7d4372e54ec7d7b0297fe760d",
+    "arc_bounded_v2.py": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7"
+  },
+  "report": "SECURITY-REVIEW-FINAL.md",
+  "report_sha256": "9a3b065d8b3768e081bd90866a888a92442185f95d7c09c9b430f4ee022391de",
+  "tests": {
+    "execution_layer": 186,
+    "compiler_curriculum": 261,
+    "candidate_routes": 9,
+    "query_feedback_noninterference": 33,
+    "notebook_loader": 18,
+    "failures": 0
+  },
+  "cpu_only": true,
+  "candidate_python_execution": false,
+  "gold_read": false,
+  "model_runs": 0,
+  "publication_authorized": false,
+  "previous_source_lock_sha256": "f6392aa8c51cc20e9a21c675b58bf70d37520751b99e9a2544050fa42f870430",
+  "targeted_revalidation": "final-localized-revalidation.json",
+  "full507_rerun_after_localized_delta": false
+}

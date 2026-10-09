@@ -1,0 +1,3136 @@
+{
+  "format": "irisx/n4-result-analysis-v1",
+  "archive_sha256": "1c5cfd789bbd6e8e10d804ebf47cea002d2617b44428e69b383122c026d05fa9",
+  "archive_members": 613,
+  "core_sha256": "0c269be2b2b6f03f5e2906e23b783ac53a9344bd39272d245cefd262c0d52995",
+  "source_checks": {
+    "arc_n4_pilot.py": {
+      "sha256": "ff7e91db42f8ff98887858849a497af815835f4b667cee74c767516e56dfde06",
+      "matches_core": true,
+      "matches_approved_build": true
+    },
+    "arc_n4_program.py": {
+      "sha256": "fbcf0c933561067b6c9b4fc1e4c44048f02bbd8348ba312d06da37b3f22ebba7",
+      "matches_core": true,
+      "matches_approved_build": true
+    },
+    "N4-DESIGN-FROZEN.json": {
+      "sha256": "b8c10fac57a3c9e5c9a44a04d29d5a9567f8909cc88d7d79f9359462b84ed4eb",
+      "matches_core": true,
+      "matches_approved_build": true
+    },
+    "visible-demo-token-audit.json": {
+      "sha256": "f116345a059aa0cb2abadbd1bf2e1c8faa65c32b076fd4c6bea2d028fa5f0931",
+      "matches_core": true,
+      "matches_approved_build": true
+    }
+  },
+  "sealed_files_verified": 610,
+  "cpu_gold_replay_exact_match": true,
+  "summary_status": "partial-or-failed",
+  "fixed_planned_slots": 96,
+  "completed_model_calls": 93,
+  "missing_slots": 0,
+  "unknown_usage_slots": 0,
+  "excluded_slots": 3,
+  "processes_ok": true,
+  "controller": {
+    "cancellation": null,
+    "confirmed_stopped": true,
+    "process": "controller",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds_including_load": 1901.2676449769997
+  },
+  "blocks": [
+    {
+      "cancellation": null,
+      "confirmed_stopped": true,
+      "process": "base",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_seconds_including_load": 1685.599081725
+    }
+  ],
+  "groups": {
+    "A": {
+      "call_reservations": 32,
+      "cap_hits": 0,
+      "categories": {
+        "completed": 31,
+        "grid-json-invalid": 1
+      },
+      "completed_slots": 32,
+      "conditional_stage_rates": {
+        "format_admitted": {
+          "assessed_slot_denominator": 32,
+          "passed": 31
+        }
+      },
+      "context_excluded_slots": 0,
+      "eligible_slots": 31,
+      "failed_parent_to_demo_fit": 0,
+      "final_minus_first_top1": 0,
+      "first_top1_exact": 1,
+      "generation_seconds": 137.3798211939984,
+      "known_generate_calls": 32,
+      "known_generated_tokens": 7390,
+      "known_prompt_tokens": 52184,
+      "late_slots": 0,
+      "missing_slots": 0,
+      "oracle_any_eligible_exact": 1,
+      "program_steps": 0,
+      "repair_attempts": 0,
+      "slot_denominator": 32,
+      "stages": {
+        "all_demonstrations_exact": {
+          "applicable": false,
+          "assessed": 0,
+          "fixed_denominator": 32,
+          "passed": 0
+        },
+        "ast_admitted": {
+          "applicable": false,
+          "assessed": 0,
+          "fixed_denominator": 32,
+          "passed": 0
+        },
+        "demo_execution_success": {
+          "applicable": false,
+          "assessed": 0,
+          "fixed_denominator": 32,
+          "passed": 0
+        },
+        "format_admitted": {
+          "applicable": true,
+          "assessed": 32,
+          "fixed_denominator": 32,
+          "passed": 31
+        },
+        "python_parse_admitted": {
+          "applicable": false,
+          "assessed": 0,
+          "fixed_denominator": 32,
+          "passed": 0
+        },
+        "query_execution_success": {
+          "applicable": false,
+          "assessed": 0,
+          "fixed_denominator": 32,
+          "passed": 0
+        }
+      },
+      "task_denominator": 8,
+      "top1_exact": 1,
+      "top2_exact": 1,
+      "unknown_usage_slots": 0,
+      "verification_incomplete_slots": 0,
+      "verification_seconds": 0.0
+    },
+    "B": {
+      "call_reservations": 32,
+      "cap_hits": 17,
+      "categories": {
+        "allowed_ast": 22,
+        "python_parse": 10
+      },
+      "completed_slots": 32,
+      "conditional_stage_rates": {
+        "all_demonstrations_exact": {
+          "assessed_slot_denominator": 32,
+          "passed": 0
+        },
+        "ast_admitted": {
+          "assessed_slot_denominator": 32,
+          "passed": 0
+        },
+        "demo_execution_success": {
+          "assessed_slot_denominator": 32,
+          "passed": 0
+        },
+        "format_admitted": {
+          "assessed_slot_denominator": 32,
+          "passed": 32
+        },
+        "python_parse_admitted": {
+          "assessed_slot_denominator": 32,
+          "passed": 22
+        },
+        "query_execution_success": {
+          "assessed_slot_denominator": 32,
+          "passed": 0
+        }
+      },
+      "context_excluded_slots": 0,
+      "eligible_slots": 0,
+      "failed_parent_to_demo_fit": 0,
+      "final_minus_first_top1": 0,
+      "first_top1_exact": 0,
+      "generation_seconds": 860.2341546909988,
+      "known_generate_calls": 32,
+      "known_generated_tokens": 46816,
+      "known_prompt_tokens": 65944,
+      "late_slots": 0,
+      "missing_slots": 0,
+      "oracle_any_eligible_exact": 0,
+      "program_steps": 0,
+      "repair_attempts": 0,
+      "slot_denominator": 32,
+      "stages": {
+        "all_demonstrations_exact": {
+          "applicable": true,
+          "assessed": 32,
+          "fixed_denominator": 32,
+          "passed": 0
+        },
+        "ast_admitted": {
+          "applicable": true,
+          "assessed": 32,
+          "fixed_denominator": 32,
+          "passed": 0
+        },
+        "demo_execution_success": {
+          "applicable": true,
+          "assessed": 32,
+          "fixed_denominator": 32,
+          "passed": 0
+        },
+        "format_admitted": {
+          "applicable": true,
+          "assessed": 32,
+          "fixed_denominator": 32,
+          "passed": 32
+        },
+        "python_parse_admitted": {
+          "applicable": true,
+          "assessed": 32,
+          "fixed_denominator": 32,
+          "passed": 22
+        },
+        "query_execution_success": {
+          "applicable": true,
+          "assessed": 32,
+          "fixed_denominator": 32,
+          "passed": 0
+        }
+      },
+      "task_denominator": 8,
+      "top1_exact": 0,
+      "top2_exact": 0,
+      "unknown_usage_slots": 0,
+      "verification_incomplete_slots": 0,
+      "verification_seconds": 5.252925151999989
+    },
+    "C": {
+      "call_reservations": 29,
+      "cap_hits": 9,
+      "categories": {
+        "allowed_ast": 23,
+        "context-excluded": 3,
+        "python_parse": 6
+      },
+      "completed_slots": 29,
+      "conditional_stage_rates": {
+        "all_demonstrations_exact": {
+          "assessed_slot_denominator": 29,
+          "passed": 0
+        },
+        "ast_admitted": {
+          "assessed_slot_denominator": 29,
+          "passed": 0
+        },
+        "demo_execution_success": {
+          "assessed_slot_denominator": 29,
+          "passed": 0
+        },
+        "format_admitted": {
+          "assessed_slot_denominator": 29,
+          "passed": 29
+        },
+        "python_parse_admitted": {
+          "assessed_slot_denominator": 29,
+          "passed": 23
+        },
+        "query_execution_success": {
+          "assessed_slot_denominator": 29,
+          "passed": 0
+        }
+      },
+      "context_excluded_slots": 3,
+      "eligible_slots": 0,
+      "failed_parent_to_demo_fit": 0,
+      "final_minus_first_top1": 0,
+      "first_top1_exact": 0,
+      "generation_seconds": 636.7879553669986,
+      "known_generate_calls": 29,
+      "known_generated_tokens": 34267,
+      "known_prompt_tokens": 76890,
+      "late_slots": 0,
+      "missing_slots": 0,
+      "oracle_any_eligible_exact": 0,
+      "program_steps": 0,
+      "repair_attempts": 21,
+      "slot_denominator": 32,
+      "stages": {
+        "all_demonstrations_exact": {
+          "applicable": true,
+          "assessed": 29,
+          "fixed_denominator": 32,
+          "passed": 0
+        },
+        "ast_admitted": {
+          "applicable": true,
+          "assessed": 29,
+          "fixed_denominator": 32,
+          "passed": 0
+        },
+        "demo_execution_success": {
+          "applicable": true,
+          "assessed": 29,
+          "fixed_denominator": 32,
+          "passed": 0
+        },
+        "format_admitted": {
+          "applicable": true,
+          "assessed": 29,
+          "fixed_denominator": 32,
+          "passed": 29
+        },
+        "python_parse_admitted": {
+          "applicable": true,
+          "assessed": 29,
+          "fixed_denominator": 32,
+          "passed": 23
+        },
+        "query_execution_success": {
+          "applicable": true,
+          "assessed": 29,
+          "fixed_denominator": 32,
+          "passed": 0
+        }
+      },
+      "task_denominator": 8,
+      "top1_exact": 0,
+      "top2_exact": 0,
+      "unknown_usage_slots": 0,
+      "verification_incomplete_slots": 0,
+      "verification_seconds": 4.760623265999584
+    }
+  },
+  "total_prompt_tokens": 195018,
+  "total_generated_tokens": 88473,
+  "total_generation_seconds": 1634.4019312519958,
+  "total_verifier_seconds": 10.013548417999573,
+  "B0_C0_reproducibility": [
+    {
+      "both_requests_present": true,
+      "both_responses_present": true,
+      "generation_options_equal": true,
+      "prompt_ids_equal": true,
+      "response_hashes": [
+        "1a7ddf43a4d36a559cf10e44bcc7ee92a3f341e8785e6f528781037099edabce",
+        "1a7ddf43a4d36a559cf10e44bcc7ee92a3f341e8785e6f528781037099edabce"
+      ],
+      "response_text_equal": true,
+      "seeds_equal": true,
+      "task_id": "68bc2e87"
+    },
+    {
+      "both_requests_present": true,
+      "both_responses_present": true,
+      "generation_options_equal": true,
+      "prompt_ids_equal": true,
+      "response_hashes": [
+        "e7cd24ded88d6141d659f44b1b5a6fa0ed9a5e84f5c9eb1248b1eeb069f7f6d5",
+        "e7cd24ded88d6141d659f44b1b5a6fa0ed9a5e84f5c9eb1248b1eeb069f7f6d5"
+      ],
+      "response_text_equal": true,
+      "seeds_equal": true,
+      "task_id": "fafffa47"
+    },
+    {
+      "both_requests_present": true,
+      "both_responses_present": true,
+      "generation_options_equal": true,
+      "prompt_ids_equal": true,
+      "response_hashes": [
+        "8697f5679a73c1d3c6b6d93226296d0d1fae5730e8b0437f7f6472a629197cc8",
+        "8697f5679a73c1d3c6b6d93226296d0d1fae5730e8b0437f7f6472a629197cc8"
+      ],
+      "response_text_equal": true,
+      "seeds_equal": true,
+      "task_id": "33067df9"
+    },
+    {
+      "both_requests_present": true,
+      "both_responses_present": true,
+      "generation_options_equal": true,
+      "prompt_ids_equal": true,
+      "response_hashes": [
+        "b1b66c47333ac7e4fb6ce76d2c0580cb4b44568cf797418a382d89bc6cbc6b66",
+        "b1b66c47333ac7e4fb6ce76d2c0580cb4b44568cf797418a382d89bc6cbc6b66"
+      ],
+      "response_text_equal": true,
+      "seeds_equal": true,
+      "task_id": "996ec1f3"
+    },
+    {
+      "both_requests_present": true,
+      "both_responses_present": true,
+      "generation_options_equal": true,
+      "prompt_ids_equal": true,
+      "response_hashes": [
+        "771f295d776bd5fa99f5a8dc75ea37218c44964029fdd01c65de34da726b2da7",
+        "771f295d776bd5fa99f5a8dc75ea37218c44964029fdd01c65de34da726b2da7"
+      ],
+      "response_text_equal": true,
+      "seeds_equal": true,
+      "task_id": "66e6c45b"
+    },
+    {
+      "both_requests_present": true,
+      "both_responses_present": true,
+      "generation_options_equal": true,
+      "prompt_ids_equal": true,
+      "response_hashes": [
+        "e2d7448d100009fac2fec43cdd37ea73f50908b1d808561290dc2829e96d4fdc",
+        "e2d7448d100009fac2fec43cdd37ea73f50908b1d808561290dc2829e96d4fdc"
+      ],
+      "response_text_equal": true,
+      "seeds_equal": true,
+      "task_id": "c444b776"
+    },
+    {
+      "both_requests_present": true,
+      "both_responses_present": true,
+      "generation_options_equal": true,
+      "prompt_ids_equal": true,
+      "response_hashes": [
+        "314ce7c7be3ab9c383b474d451d8a953a3e9ee11b0c5436bfb74830bd1fdb692",
+        "314ce7c7be3ab9c383b474d451d8a953a3e9ee11b0c5436bfb74830bd1fdb692"
+      ],
+      "response_text_equal": true,
+      "seeds_equal": true,
+      "task_id": "7ec998c9"
+    },
+    {
+      "both_requests_present": true,
+      "both_responses_present": true,
+      "generation_options_equal": true,
+      "prompt_ids_equal": true,
+      "response_hashes": [
+        "1c6f1ebc87ae07de073ca615df2e2418ef42d499547adcf0cd724f958c9bac30",
+        "1c6f1ebc87ae07de073ca615df2e2418ef42d499547adcf0cd724f958c9bac30"
+      ],
+      "response_text_equal": true,
+      "seeds_equal": true,
+      "task_id": "b25e450b"
+    }
+  ],
+  "all_three_complete_task_count": 7,
+  "task_outcomes": [
+    {
+      "B_minus_A_top1": 0,
+      "C_minus_B_top1": 0,
+      "all_three_complete": true,
+      "arms": {
+        "A": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 2,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "B": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "C": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        }
+      },
+      "task_id": "68bc2e87"
+    },
+    {
+      "B_minus_A_top1": 0,
+      "C_minus_B_top1": 0,
+      "all_three_complete": true,
+      "arms": {
+        "A": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 2,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "B": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "C": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        }
+      },
+      "task_id": "fafffa47"
+    },
+    {
+      "B_minus_A_top1": 0,
+      "C_minus_B_top1": 0,
+      "all_three_complete": false,
+      "arms": {
+        "A": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 2,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "B": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "C": {
+          "all_four_slots_completed": false,
+          "completed_slots": 1,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        }
+      },
+      "task_id": "33067df9"
+    },
+    {
+      "B_minus_A_top1": 0,
+      "C_minus_B_top1": 0,
+      "all_three_complete": true,
+      "arms": {
+        "A": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 2,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "B": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "C": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        }
+      },
+      "task_id": "996ec1f3"
+    },
+    {
+      "B_minus_A_top1": -1,
+      "C_minus_B_top1": 0,
+      "all_three_complete": true,
+      "arms": {
+        "A": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": true,
+          "oracle_any_eligible_exact": true,
+          "selected_count": 2,
+          "top1_exact": true,
+          "top2_exact": true
+        },
+        "B": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "C": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        }
+      },
+      "task_id": "66e6c45b"
+    },
+    {
+      "B_minus_A_top1": 0,
+      "C_minus_B_top1": 0,
+      "all_three_complete": true,
+      "arms": {
+        "A": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 1,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "B": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "C": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        }
+      },
+      "task_id": "c444b776"
+    },
+    {
+      "B_minus_A_top1": 0,
+      "C_minus_B_top1": 0,
+      "all_three_complete": true,
+      "arms": {
+        "A": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 2,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "B": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "C": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        }
+      },
+      "task_id": "7ec998c9"
+    },
+    {
+      "B_minus_A_top1": 0,
+      "C_minus_B_top1": 0,
+      "all_three_complete": true,
+      "arms": {
+        "A": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 2,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "B": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        },
+        "C": {
+          "all_four_slots_completed": true,
+          "completed_slots": 4,
+          "final_minus_first_top1": 0,
+          "first_top1_exact": false,
+          "oracle_any_eligible_exact": false,
+          "selected_count": 0,
+          "top1_exact": false,
+          "top2_exact": false
+        }
+      },
+      "task_id": "b25e450b"
+    }
+  ],
+  "context_exclusions": [
+    {
+      "record_id": "1703e7728080d76b8d0965e60e260fe101c940f926484c9217237d1969a2bb3d",
+      "task_id": "33067df9",
+      "arm": "C",
+      "call_index": 1,
+      "seed": 1221339194,
+      "status": "context-excluded",
+      "category": null,
+      "prompt_tokens": 7042,
+      "generated_tokens": null,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "3f48edf2d743374960547845be273ff1c69f9ceeae3369a04c993b78b2ff4861"
+    },
+    {
+      "record_id": "26145a27114e47f51c302f4ab98c73c7b4149dd9bdd41a94f810e42b91ce4f31",
+      "task_id": "33067df9",
+      "arm": "C",
+      "call_index": 2,
+      "seed": 1221339195,
+      "status": "context-excluded",
+      "category": null,
+      "prompt_tokens": null,
+      "generated_tokens": null,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "57f7af268302462e4ac1b72bb3c528ee145130464c5627613bd5bb8285b5cd41",
+      "task_id": "33067df9",
+      "arm": "C",
+      "call_index": 3,
+      "seed": 1221339196,
+      "status": "context-excluded",
+      "category": null,
+      "prompt_tokens": null,
+      "generated_tokens": null,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    }
+  ],
+  "program_failure_mechanisms": {
+    "B": {
+      "error_categories": {
+        "allowed_ast": 22,
+        "python_parse": 10
+      },
+      "feedback_errors": {
+        "unsupported syntax": 22,
+        "invalid Python syntax": 10
+      },
+      "unsupported_node_types": {
+        "Attribute": 22,
+        "While": 20,
+        "Dict": 4,
+        "Is": 3,
+        "GeneratorExp": 3,
+        "Lambda": 1,
+        "keyword": 1,
+        "IsNot": 1,
+        "Pow": 1
+      },
+      "attribute_names": {
+        "append": 22,
+        "pop": 19,
+        "items": 3,
+        "sort": 1,
+        "extend": 1,
+        "add": 2,
+        "remove": 1,
+        "discard": 1
+      },
+      "defined_primitives": {
+        "components": 20,
+        "copy_grid": 13,
+        "crop": 1
+      },
+      "private_identifier_responses": 20,
+      "parse_failures_at_cap": 9,
+      "parse_failures_uncapped": 1,
+      "parsed_at_cap": 8,
+      "parsed_uncapped": 14,
+      "source_only_transform": 0
+    },
+    "C": {
+      "error_categories": {
+        "allowed_ast": 23,
+        "python_parse": 6
+      },
+      "feedback_errors": {
+        "unsupported syntax": 23,
+        "invalid Python syntax": 6
+      },
+      "unsupported_node_types": {
+        "Attribute": 23,
+        "While": 23,
+        "Is": 5,
+        "IsNot": 3
+      },
+      "attribute_names": {
+        "append": 23,
+        "pop": 21,
+        "add": 1
+      },
+      "defined_primitives": {
+        "components": 23,
+        "copy_grid": 13
+      },
+      "private_identifier_responses": 23,
+      "parse_failures_at_cap": 5,
+      "parse_failures_uncapped": 1,
+      "parsed_at_cap": 4,
+      "parsed_uncapped": 19,
+      "source_only_transform": 0
+    }
+  },
+  "repair_transitions": [
+    {
+      "task_id": "7ec998c9",
+      "call_index": 1,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "7ec998c9",
+      "call_index": 2,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "7ec998c9",
+      "call_index": 3,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "c444b776",
+      "call_index": 1,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "c444b776",
+      "call_index": 2,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "c444b776",
+      "call_index": 3,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "fafffa47",
+      "call_index": 1,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "fafffa47",
+      "call_index": 2,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "fafffa47",
+      "call_index": 3,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "996ec1f3",
+      "call_index": 1,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "996ec1f3",
+      "call_index": 2,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "996ec1f3",
+      "call_index": 3,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "66e6c45b",
+      "call_index": 1,
+      "parent_category": "python_parse",
+      "new_category": "allowed_ast",
+      "parent_parse": false,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "66e6c45b",
+      "call_index": 2,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "66e6c45b",
+      "call_index": 3,
+      "parent_category": "allowed_ast",
+      "new_category": "allowed_ast",
+      "parent_parse": true,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "b25e450b",
+      "call_index": 1,
+      "parent_category": "python_parse",
+      "new_category": "allowed_ast",
+      "parent_parse": false,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "b25e450b",
+      "call_index": 2,
+      "parent_category": "allowed_ast",
+      "new_category": "python_parse",
+      "parent_parse": true,
+      "new_parse": false,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "b25e450b",
+      "call_index": 3,
+      "parent_category": "python_parse",
+      "new_category": "python_parse",
+      "parent_parse": false,
+      "new_parse": false,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "68bc2e87",
+      "call_index": 1,
+      "parent_category": "python_parse",
+      "new_category": "allowed_ast",
+      "parent_parse": false,
+      "new_parse": true,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "68bc2e87",
+      "call_index": 2,
+      "parent_category": "allowed_ast",
+      "new_category": "python_parse",
+      "parent_parse": true,
+      "new_parse": false,
+      "new_ast_admitted": false
+    },
+    {
+      "task_id": "68bc2e87",
+      "call_index": 3,
+      "parent_category": "python_parse",
+      "new_category": "allowed_ast",
+      "parent_parse": false,
+      "new_parse": true,
+      "new_ast_admitted": false
+    }
+  ],
+  "slot_diagnostics": [
+    {
+      "record_id": "c3d283e782fb92835ed63744b113a6a450ef20bf0f2b054a94b2ee1dacac9b0f",
+      "task_id": "7ec998c9",
+      "arm": "C",
+      "call_index": 0,
+      "seed": 2141159675,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 955,
+      "generated_tokens": 671,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "16350e1bc5a41ff7dff7ca1338f819364ea775f31bc179ddb57a0164a532635a",
+      "task_id": "7ec998c9",
+      "arm": "C",
+      "call_index": 1,
+      "seed": 2141159676,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1702,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": "c3d283e782fb92835ed63744b113a6a450ef20bf0f2b054a94b2ee1dacac9b0f",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "8e9118f93d3c53f778b165495d179826bdf5265be1f9086a8004d257f886ce34",
+      "task_id": "7ec998c9",
+      "arm": "C",
+      "call_index": 2,
+      "seed": 2141159677,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 3080,
+      "generated_tokens": 871,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "16350e1bc5a41ff7dff7ca1338f819364ea775f31bc179ddb57a0164a532635a",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "7ad121fae50470922aca4e5272f7975c19cb97c33b1f2555cb7f1f735f0b412f",
+      "task_id": "7ec998c9",
+      "arm": "C",
+      "call_index": 3,
+      "seed": 2141159678,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1902,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": "8e9118f93d3c53f778b165495d179826bdf5265be1f9086a8004d257f886ce34",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "45d80d9958c0332a99cf22e14e4c6813979a946fc5318486fc1eea74eae374ff",
+      "task_id": "7ec998c9",
+      "arm": "A",
+      "call_index": 0,
+      "seed": 2141159675,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 525,
+      "generated_tokens": 100,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "e7cd0e3253d57070c6d22e6b2e8d51f147dbd79afa5c0daa22856fcb206ca161",
+      "task_id": "7ec998c9",
+      "arm": "A",
+      "call_index": 1,
+      "seed": 2141159676,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 525,
+      "generated_tokens": 100,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "18d956f0a23d003b6fd60b44ad03eb51facc7b9a01502cadf07fae1807af571b",
+      "task_id": "7ec998c9",
+      "arm": "A",
+      "call_index": 2,
+      "seed": 2141159677,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 525,
+      "generated_tokens": 100,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "a0a1fc972e204b276c9fa47602d4e6a55dbb2e05a9fef7c15f7ada818982e7e9",
+      "task_id": "7ec998c9",
+      "arm": "A",
+      "call_index": 3,
+      "seed": 2141159678,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 525,
+      "generated_tokens": 100,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "6a5e5cab21c4cb772966751773c11f27a38bb1614f26661331887f7f797b2921",
+      "task_id": "7ec998c9",
+      "arm": "B",
+      "call_index": 0,
+      "seed": 2141159675,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 955,
+      "generated_tokens": 671,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "c507ac638bf8e9d044bb0c124705c0701999f69af922c28f8e88e2b67a620cdf",
+      "task_id": "7ec998c9",
+      "arm": "B",
+      "call_index": 1,
+      "seed": 2141159676,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 955,
+      "generated_tokens": 207,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute"
+      ],
+      "attribute_names": [
+        "append"
+      ],
+      "declared_functions": [
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "copy_grid"
+      ],
+      "private_identifier": false
+    },
+    {
+      "record_id": "1f15e37b9a9ece2314519e45c1ab778ca84e19bf17710d0026efec4e8cd5e471",
+      "task_id": "7ec998c9",
+      "arm": "B",
+      "call_index": 2,
+      "seed": 2141159677,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 955,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "Dict",
+        "Is",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "items",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "13a80124f4c8e1afba3a8cdcc565dcb173ee33ae35777bfb3dd58f0639c50baf",
+      "task_id": "7ec998c9",
+      "arm": "B",
+      "call_index": 3,
+      "seed": 2141159678,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 955,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "parse_error": "expected an indented block after function definition on line 44",
+      "parse_error_line": 78
+    },
+    {
+      "record_id": "6374e51af9c96f65ab1b7adde1ed8dbec06221b901c0c098e1e4851f4f7b0f73",
+      "task_id": "c444b776",
+      "arm": "B",
+      "call_index": 0,
+      "seed": 974719796,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1899,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "Is",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "c580e986a5a2ced58fa75cfdb9ce78566b392a5ac94dbdd067e62aa571017fa0",
+      "task_id": "c444b776",
+      "arm": "B",
+      "call_index": 1,
+      "seed": 974719797,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1899,
+      "generated_tokens": 1361,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "GeneratorExp",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop",
+        "sort"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "455de3c3a21295e82b392f508d2d02779155ad16796c0cdeeb5095bd9d66b734",
+      "task_id": "c444b776",
+      "arm": "B",
+      "call_index": 2,
+      "seed": 974719798,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1899,
+      "generated_tokens": 1367,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "Is",
+        "While"
+      ],
+      "attribute_names": [
+        "append"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "4f76f0d37751faf98dc7bbd0eaefa4a6adfb47defa99ab9e0397e264abd56478",
+      "task_id": "c444b776",
+      "arm": "B",
+      "call_index": 3,
+      "seed": 974719799,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1899,
+      "generated_tokens": 480,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "4a326d63bb0c40f39224efb154bc00a92d7a3393e89d74c16a54b3a24c213c37",
+      "task_id": "c444b776",
+      "arm": "A",
+      "call_index": 0,
+      "seed": 974719796,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 1469,
+      "generated_tokens": 724,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "385470fc29a390c06ed2ba88d1ec61892a46f33f5bd749f694fed6cf7cd8fb92",
+      "task_id": "c444b776",
+      "arm": "A",
+      "call_index": 1,
+      "seed": 974719797,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 1469,
+      "generated_tokens": 724,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "8abdb2a25e1bd0623713fcd94577eeaddbb1e8befd628f9b8dd27a01b5d4b016",
+      "task_id": "c444b776",
+      "arm": "A",
+      "call_index": 2,
+      "seed": 974719798,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 1469,
+      "generated_tokens": 724,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "fc91ac67cfe059128da9c5e9ef7e26a32520dfb320f3527e33a65d217fd88d9f",
+      "task_id": "c444b776",
+      "arm": "A",
+      "call_index": 3,
+      "seed": 974719799,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 1469,
+      "generated_tokens": 724,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "fa6833b38897cf5d85e7dacafea93b8204883e75162758aaed868d0416aa9ad6",
+      "task_id": "c444b776",
+      "arm": "C",
+      "call_index": 0,
+      "seed": 974719796,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1899,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "Is",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "937bec33e61b4bef410ed15132710e7fee65e0e392a236ff747bf8d55778611f",
+      "task_id": "c444b776",
+      "arm": "C",
+      "call_index": 1,
+      "seed": 974719797,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 4024,
+      "generated_tokens": 859,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "fa6833b38897cf5d85e7dacafea93b8204883e75162758aaed868d0416aa9ad6",
+      "unsupported_node_types": [
+        "Attribute",
+        "Is",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "f12e9727889a54fa84ad0a5c91a510778e502bb96d9e834688a9a91225361fdd",
+      "task_id": "c444b776",
+      "arm": "C",
+      "call_index": 2,
+      "seed": 974719798,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 2834,
+      "generated_tokens": 1042,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "937bec33e61b4bef410ed15132710e7fee65e0e392a236ff747bf8d55778611f",
+      "unsupported_node_types": [
+        "Attribute",
+        "Is",
+        "IsNot",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "2392e05d68bd3b3b0e97fe1eb027cf88325c1b2cbbf2dddfdb42622814ae58e3",
+      "task_id": "c444b776",
+      "arm": "C",
+      "call_index": 3,
+      "seed": 974719799,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 3017,
+      "generated_tokens": 1183,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "f12e9727889a54fa84ad0a5c91a510778e502bb96d9e834688a9a91225361fdd",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "3f410a76017b4baa5a2c4be761996ab6804b4cb80895d538963e09e8387c69f6",
+      "task_id": "fafffa47",
+      "arm": "A",
+      "call_index": 0,
+      "seed": 266473521,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 339,
+      "generated_tokens": 38,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "67098135f5d44f32bb895ec091eccc6f53f9823d52f30acb6dc3b7a22eac771f",
+      "task_id": "fafffa47",
+      "arm": "A",
+      "call_index": 1,
+      "seed": 266473522,
+      "status": "completed",
+      "category": "grid-json-invalid",
+      "prompt_tokens": 339,
+      "generated_tokens": 39,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "811d6004e1c189fc251dab592e31de714432b8957b488d3b2bb0e1847b7d8507",
+      "task_id": "fafffa47",
+      "arm": "A",
+      "call_index": 2,
+      "seed": 266473523,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 339,
+      "generated_tokens": 38,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "23e1cf3f5fea981c6e8c0cac36d911ff9d854a9a6407eed0c4a59fd6cc37747b",
+      "task_id": "fafffa47",
+      "arm": "A",
+      "call_index": 3,
+      "seed": 266473524,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 339,
+      "generated_tokens": 38,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "dc270a07c9c5a7954f54929824cbb81d15585817d67b6489aaa7dda1b1e8a84a",
+      "task_id": "fafffa47",
+      "arm": "C",
+      "call_index": 0,
+      "seed": 266473521,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 769,
+      "generated_tokens": 613,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "61c6570f65d8f75fab91139ca8e7ac486ac60a9a0159b9a61973dca4cb09939e",
+      "task_id": "fafffa47",
+      "arm": "C",
+      "call_index": 1,
+      "seed": 266473522,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1458,
+      "generated_tokens": 457,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "dc270a07c9c5a7954f54929824cbb81d15585817d67b6489aaa7dda1b1e8a84a",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "e34ca443e9949a2a1bebc146c01a7fce0a74c48b56d65ae22659b5eef110cf8e",
+      "task_id": "fafffa47",
+      "arm": "C",
+      "call_index": 2,
+      "seed": 266473523,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1302,
+      "generated_tokens": 543,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "61c6570f65d8f75fab91139ca8e7ac486ac60a9a0159b9a61973dca4cb09939e",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "7c96d1b25c17a7c51e83ec31a934358abeb641b1739bfedce4c9bfa9b6286133",
+      "task_id": "fafffa47",
+      "arm": "C",
+      "call_index": 3,
+      "seed": 266473524,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1388,
+      "generated_tokens": 554,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "e34ca443e9949a2a1bebc146c01a7fce0a74c48b56d65ae22659b5eef110cf8e",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "48618b6d322d78c17287906a9b6c43a52924d7676e04b8bad8ff1cc217f7e2ac",
+      "task_id": "fafffa47",
+      "arm": "B",
+      "call_index": 0,
+      "seed": 266473521,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 769,
+      "generated_tokens": 613,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "45492cbb44d083599fb97ea59788a59d0ce9644277f7ae1c32d0fafafa394a9b",
+      "task_id": "fafffa47",
+      "arm": "B",
+      "call_index": 1,
+      "seed": 266473522,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 769,
+      "generated_tokens": 413,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "93346c9f0d4bef4496465e361268661601585d32746f5c25ae2a49d0101b3c9d",
+      "task_id": "fafffa47",
+      "arm": "B",
+      "call_index": 2,
+      "seed": 266473523,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 769,
+      "generated_tokens": 1014,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "e606db6f94fb312f4fd9ebf3e7723517c347ee9f991b12d931edd2402b60275f",
+      "task_id": "fafffa47",
+      "arm": "B",
+      "call_index": 3,
+      "seed": 266473524,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 769,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "extend",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "95f43e376bfc076286840a94187df49ab9beae53b6e2551d0df469ff6d6db461",
+      "task_id": "996ec1f3",
+      "arm": "A",
+      "call_index": 0,
+      "seed": 170233459,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 2273,
+      "generated_tokens": 20,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "02dab2a1ac7afa42c37a25161ff5202bbb79732fc7fe38fd0076d6b64f7763ba",
+      "task_id": "996ec1f3",
+      "arm": "A",
+      "call_index": 1,
+      "seed": 170233460,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 2273,
+      "generated_tokens": 20,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "89ccd8e05c61e9c8ff623743ac316b08094308371d431a493a8560ab8277171e",
+      "task_id": "996ec1f3",
+      "arm": "A",
+      "call_index": 2,
+      "seed": 170233461,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 2273,
+      "generated_tokens": 20,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "1227da5085773d20376d2909ee2d35eb9129ef63d2154752465873307edb1588",
+      "task_id": "996ec1f3",
+      "arm": "A",
+      "call_index": 3,
+      "seed": 170233462,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 2273,
+      "generated_tokens": 20,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "82a49d32b3a80c5db7cadb592c83af57094290c3bda4aef899becc3ef3ea0a89",
+      "task_id": "996ec1f3",
+      "arm": "C",
+      "call_index": 0,
+      "seed": 170233459,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 2703,
+      "generated_tokens": 1319,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "70167989e70e2e70b49f1861cf0e1a74b83cfef025cb1a85fcd15cce15313153",
+      "task_id": "996ec1f3",
+      "arm": "C",
+      "call_index": 1,
+      "seed": 170233460,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 4098,
+      "generated_tokens": 773,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "82a49d32b3a80c5db7cadb592c83af57094290c3bda4aef899becc3ef3ea0a89",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "652a9adf99fc64d13cf07bacce595cabc14503913d80f64e3be800ef4002902c",
+      "task_id": "996ec1f3",
+      "arm": "C",
+      "call_index": 2,
+      "seed": 170233461,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 3552,
+      "generated_tokens": 740,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "70167989e70e2e70b49f1861cf0e1a74b83cfef025cb1a85fcd15cce15313153",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "531429b167d9e42251134c774aa1890e3924b89c3338c1d7880f23ef583df806",
+      "task_id": "996ec1f3",
+      "arm": "C",
+      "call_index": 3,
+      "seed": 170233462,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 3519,
+      "generated_tokens": 731,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "652a9adf99fc64d13cf07bacce595cabc14503913d80f64e3be800ef4002902c",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "c274d32a8b40294a8455e75bc089395638694b1025224aa73fac10e91e577cde",
+      "task_id": "996ec1f3",
+      "arm": "B",
+      "call_index": 0,
+      "seed": 170233459,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 2703,
+      "generated_tokens": 1319,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "a07eb737fab52aba1af808b7e3b12ad3a17947e261251409b8204f8b33d083b1",
+      "task_id": "996ec1f3",
+      "arm": "B",
+      "call_index": 1,
+      "seed": 170233460,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 2703,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "parse_error": "expected an indented block after function definition on line 99",
+      "parse_error_line": 139
+    },
+    {
+      "record_id": "4ed6c3036fe5a855e6e3e7c3fc4b43d9094e259763d054d205ec0c0550f45237",
+      "task_id": "996ec1f3",
+      "arm": "B",
+      "call_index": 2,
+      "seed": 170233461,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 2703,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "parse_error": "expected an indented block after function definition on line 56",
+      "parse_error_line": 93
+    },
+    {
+      "record_id": "30610a20e166d2cbcde9fb380aa78161921ffd5e20f2e6bbd20146b38954b21b",
+      "task_id": "996ec1f3",
+      "arm": "B",
+      "call_index": 3,
+      "seed": 170233462,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 2703,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "parse_error": "expected an indented block after function definition on line 42",
+      "parse_error_line": 80
+    },
+    {
+      "record_id": "13151a5a70943741034e7c94e1685bff586ca689062124aaab5bb8ab3493a169",
+      "task_id": "66e6c45b",
+      "arm": "B",
+      "call_index": 0,
+      "seed": 1626218470,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 589,
+      "generated_tokens": 618,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "parse_error": "invalid syntax",
+      "parse_error_line": 65
+    },
+    {
+      "record_id": "54985eab3f55914b6ed9f111e2b32ff8f925d53ed45fa9cddef3769e442cb1ce",
+      "task_id": "66e6c45b",
+      "arm": "B",
+      "call_index": 1,
+      "seed": 1626218471,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 589,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "parse_error": "expected an indented block after 'if' statement on line 65",
+      "parse_error_line": 100
+    },
+    {
+      "record_id": "a9ea0ed3397d1607123cf7604f4979f6c03c2ea95324b9b08654a33fdff7d859",
+      "task_id": "66e6c45b",
+      "arm": "B",
+      "call_index": 2,
+      "seed": 1626218472,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 589,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "GeneratorExp",
+        "Lambda",
+        "While",
+        "keyword"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "crop",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid",
+        "crop"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "c8b49f63ddf6092146a96c72e84085b291cbc0e8089414be20300c24822f7a43",
+      "task_id": "66e6c45b",
+      "arm": "B",
+      "call_index": 3,
+      "seed": 1626218473,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 589,
+      "generated_tokens": 813,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "GeneratorExp",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "fe57b6ac34ec32114346c3b9e06de2671f08ca7f4ebe4ef2379ca066b6508d5e",
+      "task_id": "66e6c45b",
+      "arm": "C",
+      "call_index": 0,
+      "seed": 1626218470,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 589,
+      "generated_tokens": 618,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "parse_error": "invalid syntax",
+      "parse_error_line": 65
+    },
+    {
+      "record_id": "e817598c744f8464c72bcb8f9f55946d611bcf918dabc215758f46195ea0f508",
+      "task_id": "66e6c45b",
+      "arm": "C",
+      "call_index": 1,
+      "seed": 1626218471,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1284,
+      "generated_tokens": 617,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "fe57b6ac34ec32114346c3b9e06de2671f08ca7f4ebe4ef2379ca066b6508d5e",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "a74a2e0a85cc76ea121d32ec59dc1a978f8334eef89f20544c1d18bed21e2209",
+      "task_id": "66e6c45b",
+      "arm": "C",
+      "call_index": 2,
+      "seed": 1626218472,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1282,
+      "generated_tokens": 886,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "e817598c744f8464c72bcb8f9f55946d611bcf918dabc215758f46195ea0f508",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "6057184ca9be5176242025c04e3237754311e7ae9ebea2d0ef6f3e98c5c636f7",
+      "task_id": "66e6c45b",
+      "arm": "C",
+      "call_index": 3,
+      "seed": 1626218473,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1551,
+      "generated_tokens": 810,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "a74a2e0a85cc76ea121d32ec59dc1a978f8334eef89f20544c1d18bed21e2209",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "e4a797bb00b1baef9fe6ccf9119f83406a91374b2e476642b7a9555082c4d053",
+      "task_id": "66e6c45b",
+      "arm": "A",
+      "call_index": 0,
+      "seed": 1626218470,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 159,
+      "generated_tokens": 34,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "2e37ced04da8fc90a0a5ec976924878dd44e3aa4e8bca7c245451218d6dd4d69",
+      "task_id": "66e6c45b",
+      "arm": "A",
+      "call_index": 1,
+      "seed": 1626218471,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 159,
+      "generated_tokens": 34,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "93f81a2e6ef04dd99b3a087a908ff32ae0779e49e18e22f702b6757c5d6e44e4",
+      "task_id": "66e6c45b",
+      "arm": "A",
+      "call_index": 2,
+      "seed": 1626218472,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 159,
+      "generated_tokens": 34,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "9b75805a7b79d9f6190d0347f0daaf46f6c738a1ef2ed5ee87493f3eef5bee44",
+      "task_id": "66e6c45b",
+      "arm": "A",
+      "call_index": 3,
+      "seed": 1626218473,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 159,
+      "generated_tokens": 34,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "7de4839f27604eda82ff41de24a23c2d97093a2e20abceef0071d8b6b5d5aa49",
+      "task_id": "b25e450b",
+      "arm": "C",
+      "call_index": 0,
+      "seed": 62668576,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 1381,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "parse_error": "expected an indented block after function definition on line 53",
+      "parse_error_line": 87
+    },
+    {
+      "record_id": "1aaa9b3c8de186f12dbe8d7ca152e9db7d1d245d575e7d232fd5fee1680f0756",
+      "task_id": "b25e450b",
+      "arm": "C",
+      "call_index": 1,
+      "seed": 62668577,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 3507,
+      "generated_tokens": 797,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "7de4839f27604eda82ff41de24a23c2d97093a2e20abceef0071d8b6b5d5aa49",
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "add",
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "5dcf60f60cf38fc4730fe7b08756ea3ed5fa33f5f02d553c19e7cc395ec2b9d5",
+      "task_id": "b25e450b",
+      "arm": "C",
+      "call_index": 2,
+      "seed": 62668578,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 2254,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": "1aaa9b3c8de186f12dbe8d7ca152e9db7d1d245d575e7d232fd5fee1680f0756",
+      "parse_error": "expected an indented block after function definition on line 40",
+      "parse_error_line": 86
+    },
+    {
+      "record_id": "2869e8b6219c6a3f4f2709a310d6e509cd7c8f307ca962b5efe9dc8722faab94",
+      "task_id": "b25e450b",
+      "arm": "C",
+      "call_index": 3,
+      "seed": 62668579,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 3507,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": "5dcf60f60cf38fc4730fe7b08756ea3ed5fa33f5f02d553c19e7cc395ec2b9d5",
+      "parse_error": "expected an indented block after function definition on line 40",
+      "parse_error_line": 82
+    },
+    {
+      "record_id": "bf68352655f591d299d55dabc209c7134021ae8b99d70e9a8bf9f4f34d60c67d",
+      "task_id": "b25e450b",
+      "arm": "B",
+      "call_index": 0,
+      "seed": 62668576,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 1381,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "parse_error": "expected an indented block after function definition on line 53",
+      "parse_error_line": 87
+    },
+    {
+      "record_id": "7dc527bd455217fac50fd21412c128c8512d90fff2aed84d26c8f1fccb1955d3",
+      "task_id": "b25e450b",
+      "arm": "B",
+      "call_index": 1,
+      "seed": 62668577,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1381,
+      "generated_tokens": 1019,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "Dict",
+        "IsNot",
+        "While"
+      ],
+      "attribute_names": [
+        "add",
+        "append",
+        "items",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "4e93dcfea5e9a31b4cb71edd6cb02033a00a80d2e8de44b6af23de44645c8a2d",
+      "task_id": "b25e450b",
+      "arm": "B",
+      "call_index": 2,
+      "seed": 62668578,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 1381,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "Dict",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "items",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "748142f47aea6aad6b9a2f564744bdd33edca8090ad170563f82e38abf51cc24",
+      "task_id": "b25e450b",
+      "arm": "B",
+      "call_index": 3,
+      "seed": 62668579,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 1381,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "parse_error": "expected an indented block after function definition on line 53",
+      "parse_error_line": 112
+    },
+    {
+      "record_id": "9c43886d07c5357f516d98268b8647b6eb0ca7a9c9d3273d22c4e9f50e498203",
+      "task_id": "b25e450b",
+      "arm": "A",
+      "call_index": 0,
+      "seed": 62668576,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 951,
+      "generated_tokens": 290,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "0aa921d40c6f340bf152d3f46518e5af492d49eb166c5f41aadc52c857a705d4",
+      "task_id": "b25e450b",
+      "arm": "A",
+      "call_index": 1,
+      "seed": 62668577,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 951,
+      "generated_tokens": 290,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "b11030705ad8857baabee134fb7549b8fbbbbd2d7f7d3f8a6a8499cfb4ca5525",
+      "task_id": "b25e450b",
+      "arm": "A",
+      "call_index": 2,
+      "seed": 62668578,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 951,
+      "generated_tokens": 290,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "1db632aae85aef1e47be8a1abdfdafa8b4e9e69c377de8eb7fd5c282481f6977",
+      "task_id": "b25e450b",
+      "arm": "A",
+      "call_index": 3,
+      "seed": 62668579,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 951,
+      "generated_tokens": 290,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "1550cc4b0f6890b6ae45450d03404f72bfd421224d3b3b16d83fc0c1073a5fe0",
+      "task_id": "68bc2e87",
+      "arm": "B",
+      "call_index": 0,
+      "seed": 1776234912,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 3273,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "parse_error": "expected an indented block after 'for' statement on line 76",
+      "parse_error_line": 94
+    },
+    {
+      "record_id": "68ce24c9a966d5304435731fff4b3423873f9e7946ae0acca5b061fafb67a553",
+      "task_id": "68bc2e87",
+      "arm": "B",
+      "call_index": 1,
+      "seed": 1776234913,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 3273,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "parse_error": "expected an indented block after 'if' statement on line 22",
+      "parse_error_line": 92
+    },
+    {
+      "record_id": "40e9769cc4beb6cf00bd56026aa50bc87c9b722aa26225477ca0d5e8d27883cc",
+      "task_id": "68bc2e87",
+      "arm": "B",
+      "call_index": 2,
+      "seed": 1776234914,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 3273,
+      "generated_tokens": 806,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "Dict",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop",
+        "remove"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "18aed873b5c66f6075b105ccb7cbfc30c12e01ad5072e0ea3b951c5c54d0fcc8",
+      "task_id": "68bc2e87",
+      "arm": "B",
+      "call_index": 3,
+      "seed": 1776234915,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 3273,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "eac8d75cc64d20007b37117e9eb43ff5f7aa45f599505ab5fa57b3a769d918ab",
+      "task_id": "68bc2e87",
+      "arm": "C",
+      "call_index": 0,
+      "seed": 1776234912,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 3273,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "parse_error": "expected an indented block after 'for' statement on line 76",
+      "parse_error_line": 94
+    },
+    {
+      "record_id": "4f6b6d4496107926ce2b288ab5c1d2730bec848e9c0c79f3f798d07dc5407dea",
+      "task_id": "68bc2e87",
+      "arm": "C",
+      "call_index": 1,
+      "seed": 1776234913,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 5399,
+      "generated_tokens": 996,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "eac8d75cc64d20007b37117e9eb43ff5f7aa45f599505ab5fa57b3a769d918ab",
+      "unsupported_node_types": [
+        "Attribute",
+        "Is",
+        "IsNot",
+        "While"
+      ],
+      "attribute_names": [
+        "append"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "a403d983f0d3d8dbde3adae6c0827bbd990c36f5bdb3ccaeb792874c73304469",
+      "task_id": "68bc2e87",
+      "arm": "C",
+      "call_index": 2,
+      "seed": 1776234914,
+      "status": "completed",
+      "category": "python_parse",
+      "prompt_tokens": 4345,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": "4f6b6d4496107926ce2b288ab5c1d2730bec848e9c0c79f3f798d07dc5407dea",
+      "parse_error": "expected ':'",
+      "parse_error_line": 187
+    },
+    {
+      "record_id": "66292ad57cda205d9bb6e73180bb65aac445a34f7387b82e08e9ad402e46008c",
+      "task_id": "68bc2e87",
+      "arm": "C",
+      "call_index": 3,
+      "seed": 1776234915,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 5399,
+      "generated_tokens": 755,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "a403d983f0d3d8dbde3adae6c0827bbd990c36f5bdb3ccaeb792874c73304469",
+      "unsupported_node_types": [
+        "Attribute",
+        "Is",
+        "IsNot",
+        "While"
+      ],
+      "attribute_names": [
+        "append"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "a1134df4f64cddce2e22a78dc57bd09a45e20def16fd864df7697568a1301e87",
+      "task_id": "68bc2e87",
+      "arm": "A",
+      "call_index": 0,
+      "seed": 1776234912,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 2843,
+      "generated_tokens": 12,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "db12508c7f94024bf6004f6340afe4be8d4bd227652325203769f4c58ad78580",
+      "task_id": "68bc2e87",
+      "arm": "A",
+      "call_index": 1,
+      "seed": 1776234913,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 2843,
+      "generated_tokens": 13,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "c89d737e676001384195350f03e4f17bf6cce9396c68bebcf3881b4e9d08f70a",
+      "task_id": "68bc2e87",
+      "arm": "A",
+      "call_index": 2,
+      "seed": 1776234914,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 2843,
+      "generated_tokens": 12,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "32f8a4d2f503def5fbbee189e43e02b9eeeea106507642940ae579530998b6fa",
+      "task_id": "68bc2e87",
+      "arm": "A",
+      "call_index": 3,
+      "seed": 1776234915,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 2843,
+      "generated_tokens": 12,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "84e48781113dd831f8beb097bb1d7917680e5277c91b030e4a676f03e10ef724",
+      "task_id": "33067df9",
+      "arm": "B",
+      "call_index": 0,
+      "seed": 1221339193,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 4917,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "9e077223b477caff9f0db5537ea23ebdbdf94fdc23e6edc05979c5e28e0ada4c",
+      "task_id": "33067df9",
+      "arm": "B",
+      "call_index": 1,
+      "seed": 1221339194,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 4917,
+      "generated_tokens": 485,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "0c07a8843d3af4884adc6adbdd70a5e9c65ceb29e4eb339228b06313ac757708",
+      "task_id": "33067df9",
+      "arm": "B",
+      "call_index": 2,
+      "seed": 1221339195,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 4917,
+      "generated_tokens": 814,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute"
+      ],
+      "attribute_names": [
+        "add",
+        "append",
+        "discard"
+      ],
+      "declared_functions": [
+        "helper_expand",
+        "helper_expand_and_fill",
+        "helper_fill_region",
+        "transform"
+      ],
+      "primitive_redefinitions": [],
+      "private_identifier": false
+    },
+    {
+      "record_id": "1aac57bc762727c65008657d9239858e20fe7ec51450655128241815d61d36ef",
+      "task_id": "33067df9",
+      "arm": "B",
+      "call_index": 3,
+      "seed": 1221339196,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 4917,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "Pow",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "c52c20e6bc5eedb7cab4fb57af2da6997b0d599d283dcac390ba1bbf1ccd2cf4",
+      "task_id": "33067df9",
+      "arm": "A",
+      "call_index": 0,
+      "seed": 1221339193,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 4487,
+      "generated_tokens": 1044,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "954e7a5817e7cf4ab0e4c734bcd1ff317f03a933c61d947dc817211320763269",
+      "task_id": "33067df9",
+      "arm": "A",
+      "call_index": 1,
+      "seed": 1221339194,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 4487,
+      "generated_tokens": 724,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "1b10f5c7da47aafa87ee5a2ae7b1ad0349dd16ffb1bc27d6208d37d2f7d5393b",
+      "task_id": "33067df9",
+      "arm": "A",
+      "call_index": 2,
+      "seed": 1221339195,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 4487,
+      "generated_tokens": 382,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "5bffe53b64295ef864005986520f161b9a39638c3d290226e4ba761fa86172fb",
+      "task_id": "33067df9",
+      "arm": "A",
+      "call_index": 3,
+      "seed": 1221339196,
+      "status": "completed",
+      "category": null,
+      "prompt_tokens": 4487,
+      "generated_tokens": 366,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "3f48edf2d743374960547845be273ff1c69f9ceeae3369a04c993b78b2ff4861",
+      "task_id": "33067df9",
+      "arm": "C",
+      "call_index": 0,
+      "seed": 1221339193,
+      "status": "completed",
+      "category": "allowed_ast",
+      "prompt_tokens": 4917,
+      "generated_tokens": 2048,
+      "hit_token_cap": true,
+      "repair_parent_record_id": null,
+      "unsupported_node_types": [
+        "Attribute",
+        "While"
+      ],
+      "attribute_names": [
+        "append",
+        "pop"
+      ],
+      "declared_functions": [
+        "components",
+        "copy_grid",
+        "transform"
+      ],
+      "primitive_redefinitions": [
+        "components",
+        "copy_grid"
+      ],
+      "private_identifier": true
+    },
+    {
+      "record_id": "1703e7728080d76b8d0965e60e260fe101c940f926484c9217237d1969a2bb3d",
+      "task_id": "33067df9",
+      "arm": "C",
+      "call_index": 1,
+      "seed": 1221339194,
+      "status": "context-excluded",
+      "category": null,
+      "prompt_tokens": 7042,
+      "generated_tokens": null,
+      "hit_token_cap": false,
+      "repair_parent_record_id": "3f48edf2d743374960547845be273ff1c69f9ceeae3369a04c993b78b2ff4861"
+    },
+    {
+      "record_id": "26145a27114e47f51c302f4ab98c73c7b4149dd9bdd41a94f810e42b91ce4f31",
+      "task_id": "33067df9",
+      "arm": "C",
+      "call_index": 2,
+      "seed": 1221339195,
+      "status": "context-excluded",
+      "category": null,
+      "prompt_tokens": null,
+      "generated_tokens": null,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    },
+    {
+      "record_id": "57f7af268302462e4ac1b72bb3c528ee145130464c5627613bd5bb8285b5cd41",
+      "task_id": "33067df9",
+      "arm": "C",
+      "call_index": 3,
+      "seed": 1221339196,
+      "status": "context-excluded",
+      "category": null,
+      "prompt_tokens": null,
+      "generated_tokens": null,
+      "hit_token_cap": false,
+      "repair_parent_record_id": null
+    }
+  ],
+  "protected_confirmation_count": 136,
+  "protected_confirmation_sha256": "1c9d0d71f0229a862b9f3f65d994cae3f44757165b4b88d78f7e46ec31a2bef6",
+  "confirmation_used": false,
+  "interpretation": [
+    "Raw-source envelope problem improved:61/61 generated programresponses admitted by format.",
+    "DSL execution was never exercised by a generated candidate:0/61 AST admissions and0 interpreter steps.",
+    "45/61 programresponses parsed; all45 contain Attribute and43 contain While.",
+    "Both program arms remain at an admission bottleneck; semantic/demo-feedback repair efficacy is unmeasured.",
+    "C made21 repair calls on syntax errors, not demonstration mismatches. No executable or query improvement resulted.",
+    "Actual model inference was performed by the user run captured in the attachment; this analysis runs only CPU checks and evaluator replay.",
+    "This fixed8 exposed-task engineering run does not establish agent superiority or generalization.",
+    "Keep query gold evaluator-only; do not use task exact outcomes to choose future prompt variants or task subsets."
+  ]
+}

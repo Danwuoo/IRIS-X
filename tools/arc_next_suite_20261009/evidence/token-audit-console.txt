@@ -1,0 +1,118 @@
+{
+  "direct_grid": {
+    "engineering8_min": 160,
+    "engineering8_max": 4488,
+    "engineering8_excluded": [],
+    "consolidation32_min": 214,
+    "consolidation32_max": 4532,
+    "consolidation32_excluded": []
+  },
+  "detailed_contract": {
+    "engineering8_min": 649,
+    "engineering8_max": 4977,
+    "engineering8_excluded": [],
+    "consolidation32_min": 703,
+    "consolidation32_max": 5021,
+    "consolidation32_excluded": []
+  },
+  "host_toolbox": {
+    "engineering8_min": 590,
+    "engineering8_max": 4918,
+    "engineering8_excluded": [],
+    "consolidation32_min": 644,
+    "consolidation32_max": 4962,
+    "consolidation32_excluded": []
+  },
+  "host_python": {
+    "engineering8_min": 590,
+    "engineering8_max": 4918,
+    "engineering8_excluded": [],
+    "consolidation32_min": 644,
+    "consolidation32_max": 4962,
+    "consolidation32_excluded": []
+  },
+  "typed_ir": {
+    "engineering8_min": 450,
+    "engineering8_max": 4778,
+    "engineering8_excluded": [],
+    "consolidation32_min": 504,
+    "consolidation32_max": 4822,
+    "consolidation32_excluded": []
+  },
+  "proposal_pool": {
+    "engineering8_min": 450,
+    "engineering8_max": 4778,
+    "engineering8_excluded": [],
+    "consolidation32_min": 504,
+    "consolidation32_max": 4822,
+    "consolidation32_excluded": []
+  },
+  "generic_static": {
+    "engineering8_min": 590,
+    "engineering8_max": 4918,
+    "engineering8_excluded": [],
+    "consolidation32_min": 644,
+    "consolidation32_max": 4962,
+    "consolidation32_excluded": []
+  },
+  "precise_static": {
+    "engineering8_min": 590,
+    "engineering8_max": 4918,
+    "engineering8_excluded": [],
+    "consolidation32_min": 644,
+    "consolidation32_max": 4962,
+    "consolidation32_excluded": []
+  },
+  "raw_grid": {
+    "engineering8_min": 590,
+    "engineering8_max": 4918,
+    "engineering8_excluded": [],
+    "consolidation32_min": 644,
+    "consolidation32_max": 4962,
+    "consolidation32_excluded": []
+  },
+  "raw_plus_objects": {
+    "engineering8_min": 1349,
+    "engineering8_max": 6981,
+    "engineering8_excluded": [
+      "33067df9"
+    ],
+    "consolidation32_min": 1787,
+    "consolidation32_max": 7009,
+    "consolidation32_excluded": [
+      "a096bf4d"
+    ]
+  },
+  "redacted_demo": {
+    "engineering8_min": 590,
+    "engineering8_max": 4918,
+    "engineering8_excluded": [],
+    "consolidation32_min": 644,
+    "consolidation32_max": 4962,
+    "consolidation32_excluded": []
+  },
+  "true_demo": {
+    "engineering8_min": 590,
+    "engineering8_max": 4918,
+    "engineering8_excluded": [],
+    "consolidation32_min": 644,
+    "consolidation32_max": 4962,
+    "consolidation32_excluded": []
+  },
+  "independent_roots": {
+    "engineering8_min": 590,
+    "engineering8_max": 4918,
+    "engineering8_excluded": [],
+    "consolidation32_min": 644,
+    "consolidation32_max": 4962,
+    "consolidation32_excluded": []
+  },
+  "best_first_memory": {
+    "engineering8_min": 590,
+    "engineering8_max": 4918,
+    "engineering8_excluded": [],
+    "consolidation32_min": 644,
+    "consolidation32_max": 4962,
+    "consolidation32_excluded": []
+  }
+}

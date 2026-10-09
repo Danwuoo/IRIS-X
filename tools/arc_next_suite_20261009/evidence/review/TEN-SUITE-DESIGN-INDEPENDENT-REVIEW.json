@@ -1,0 +1,51 @@
+{
+  "format": "irisx/next-ten-independent-design-review-v1",
+  "status": "APPROVED_FOR_IMPLEMENTATION_SUBJECT_TO_FINAL_CODE_AND_ARTIFACT_REVIEW",
+  "date_utc": "2026-10-09T17:49:59.092728+00:00",
+  "reviewed_proposed_design_sha256": "8726bc30dac24845ed65e841a819f8cdb8dcc1a0cb14df4d1bfa53a1167a6f4a",
+  "reviewed_design_path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/design/DESIGN-PROPOSED.json",
+  "notebook_count": 10,
+  "total_maximum_model_calls_all_gates_pass": 672,
+  "total_maximum_generated_tokens_all_gates_pass": 1376256,
+  "total_maximum_prompt_tokens_all_gates_pass": 4128768,
+  "GPU_execution_or_training_authorized_by_this_review": false,
+  "design_strengths": [
+    "Fixed N4 language replay isolates interpreter change without new inference.",
+    "Six small engineering comparisons have explicit distinct mechanisms and capped calls.",
+    "N12 compares uniform, smoothed and hard-pruned priors using one physically shared proposal pool with separate standalone cost accounting.",
+    "N13 produces provenance-bound synthetic data only; no training benefit is claimed.",
+    "N14 excludes the8 design tasks and uses exactly the32 previously exposed N3 tasks, leaving136confirmation untouched.",
+    "Admission and evidence gates run before environment installation/model loading.",
+    "N14 policy allowlist and complete source-report or blocked-receipt requirement prevent subjective winner picking."
+  ],
+  "changes_required_and_addressed": [
+    "Correct N14 tuning[0:32] to tuning[8:40] and its exposure description.",
+    "Specify policy allowlist and complete gate ledger including exclusions.",
+    "N12 CPU deadline includes child startup/verification; late candidates excluded; full proposal cost charged to each standalone comparison.",
+    "N10 described as information/trajectory contrast, not equal-token single-step causality.",
+    "Separate N13 curriculum/data validation from actual objective-training efficacy."
+  ],
+  "final_review_requirements": [
+    "Frozen exact interpreter and verifier security approval, including IR/compiler and synthesis routes.",
+    "CPU-only N5/N13 path works without GPU/model/CUDA or unnecessary weight scan.",
+    "Data-family identities and heldout family split are actually enforced before generation/augmentation.",
+    "All actual new planning/repair/search calls and CPU work counted; no retries or silent denominator replacement.",
+    "Every gated notebook checks actual source-bound evidence; missing input gives an inert BLOCKED result, not an unchecked override.",
+    "Native tokenizer audits on full visible prompts, plus runtime exact prompt IDs and overflow accounting.",
+    "Independent tests for truth isolation, deadlines, partial usage, process stop, seal, selection, notebook inertness, and exact hash closure.",
+    "Final Git integration remains add-only for unrelated existing code; old baseline failures are not misreported as new regressions or full green."
+  ],
+  "interpretation_limits": [
+    "Eight design tasks and32 consolidation tasks are previously exposed public/tuning data.",
+    "The512 synthetic episodes do not create512 independent rule families; only8 authored families are proposed.",
+    "Budget ceilings do not equal realized costs, and watchdog values do not cap total billing.",
+    "Helper shadowing was already allowed; reimplementation caused unsupported syntax and cost rather than redefinition itself being the rejection.",
+    "Tuning evaluator scores can select the later experiment-level policy; the per-task candidate selector remains query-label-free."
+  ],
+  "frozen_design": {
+    "path": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/src/DESIGN-FROZEN.json",
+    "sha256": "4a9ade5aec744a2b82f357112c59b2f68bcade25decc3cd794d984837c8dcac9",
+    "bytes": 15981,
+    "delta_from_reviewed_proposal": "Only status, approval metadata and explicit CPU-only readiness sentence; independently compared."
+  }
+}

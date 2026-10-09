@@ -1,0 +1,575 @@
+{
+  "format": "irisx/kaggle-ten-notebook-publication-receipt-v1",
+  "authenticated_account": "danielwuu",
+  "approved_manifest_sha256": "0df9ff45e9186bffd6c65b4e1e5148cf83979a04fc0b9065499d43eaec1f29d7",
+  "independent_review_sha256": "d2b9c47310ed80dc01158180a988b70d560a608445cc650bf8f69a029569ce51",
+  "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+  "requested_count": 10,
+  "verified_count": 10,
+  "dataset_mutations_performed": false,
+  "notebooks": [
+    {
+      "run_id": "N5",
+      "title": "IRIS-X N5 Language Replay",
+      "reference": "danielwuu/iris-x-n5-language-replay",
+      "url": "https://www.kaggle.com/code/danielwuu/iris-x-n5-language-replay",
+      "kernel_id": 137914442,
+      "version": 1,
+      "approved_notebook_filename": "IRIS-X-N5-language-replay-20261009.ipynb",
+      "approved_notebook_sha256": "469c6921a89c73d3e160dd428377cf18cc38a21787dcace12966ba4ec812fb6f",
+      "normalized_wire_sha256": "89eb43bf36138a794622de22d26befc6f66ec3bb7e3f2118de168ffb896b4109",
+      "provider_source_sha256": "32275449d7d87936bc46d19373a7f05c16fc4af28241dde9ebb32a3b62430948",
+      "canonical_notebook_exact_match": true,
+      "saved_source_verified": true,
+      "saved_settings_verified": true,
+      "saved_at_utc": "2026-10-09T18:49:48.469105+00:00",
+      "publication_mode_requested": "QUICK_SAVE",
+      "kernel_execution_type_requested": 3,
+      "private": true,
+      "manual_start": false,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "machine_shape": "None",
+      "save_calls_performed": 1,
+      "execution_requested": false,
+      "provider_status_after_save": {
+        "status": "COMPLETE",
+        "failureMessage": null
+      },
+      "provider_status_history": [
+        "RUNNING",
+        "COMPLETE"
+      ],
+      "provider_render_processing_observed": true,
+      "provider_logs_show_nbconvert_render_only": true,
+      "dataset_versions_submitted": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_identities_returned": [
+        "danielwuu/iris-arc-granite42-8b-offline",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+        "danielwuu/iris-arc-next-cpython312-offline",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels",
+        "danielwuu/iris-arc-next-runtime"
+      ],
+      "embedded_dataset_pin_contract_exact_match": true,
+      "backend_dataset_versions_independently_returned": false,
+      "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+      "prerequisites": [],
+      "provider_status_history_note": "Initial RUNNING status was observed before read-only resume; provider logs showed nbconvert rendering only."
+    },
+    {
+      "run_id": "N6",
+      "title": "IRIS-X N6 Toolbox Contract",
+      "reference": "danielwuu/iris-x-n6-toolbox-contract",
+      "url": "https://www.kaggle.com/code/danielwuu/iris-x-n6-toolbox-contract",
+      "kernel_id": 137914719,
+      "version": 1,
+      "approved_notebook_filename": "IRIS-X-N6-toolbox-contract-20261009.ipynb",
+      "approved_notebook_sha256": "b442d823de238ef9bee7ed1087b3351db3efca1d6d4b1be022db64bf58d26af9",
+      "normalized_wire_sha256": "3a196021136ed4ed3dddb8b1be640e15b0fcc1ba89f227c0cf4a3122e764ed6e",
+      "provider_source_sha256": "a98a33a6822a2a836c32b373c26712f5fc6703fdaddebdf201384f8be0fe3ca7",
+      "canonical_notebook_exact_match": true,
+      "saved_source_verified": true,
+      "saved_settings_verified": true,
+      "saved_at_utc": "2026-10-09T18:50:35.390046+00:00",
+      "publication_mode_requested": "QUICK_SAVE",
+      "kernel_execution_type_requested": 3,
+      "private": true,
+      "manual_start": false,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "machine_shape": "None",
+      "save_calls_performed": 1,
+      "execution_requested": false,
+      "provider_status_after_save": {
+        "status": "COMPLETE",
+        "failureMessage": null
+      },
+      "provider_status_history": [
+        "RUNNING",
+        "COMPLETE"
+      ],
+      "provider_render_processing_observed": true,
+      "provider_logs_show_nbconvert_render_only": true,
+      "dataset_versions_submitted": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_identities_returned": [
+        "danielwuu/iris-arc-granite42-8b-offline",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+        "danielwuu/iris-arc-next-cpython312-offline",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels",
+        "danielwuu/iris-arc-next-runtime"
+      ],
+      "embedded_dataset_pin_contract_exact_match": true,
+      "backend_dataset_versions_independently_returned": false,
+      "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+      "prerequisites": []
+    },
+    {
+      "run_id": "N7",
+      "title": "IRIS-X N7 Typed Program Ir",
+      "reference": "danielwuu/iris-x-n7-typed-program-ir",
+      "url": "https://www.kaggle.com/code/danielwuu/iris-x-n7-typed-program-ir",
+      "kernel_id": 137914783,
+      "version": 1,
+      "approved_notebook_filename": "IRIS-X-N7-typed-program-ir-20261009.ipynb",
+      "approved_notebook_sha256": "f203a7608560807477d227c631874c523804fc96e5b1d87466a1e176d266068d",
+      "normalized_wire_sha256": "b376317001b736672e0bc0743d087636b58d5309ab3deef2596f778d50be8f1e",
+      "provider_source_sha256": "088efcd9305196baa3eeb8a48c4d416faa9afdc2d8ae717e01202185cc415b8f",
+      "canonical_notebook_exact_match": true,
+      "saved_source_verified": true,
+      "saved_settings_verified": true,
+      "saved_at_utc": "2026-10-09T18:51:20.237317+00:00",
+      "publication_mode_requested": "QUICK_SAVE",
+      "kernel_execution_type_requested": 3,
+      "private": true,
+      "manual_start": false,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "machine_shape": "None",
+      "save_calls_performed": 1,
+      "execution_requested": false,
+      "provider_status_after_save": {
+        "status": "COMPLETE",
+        "failureMessage": null
+      },
+      "provider_status_history": [
+        "RUNNING",
+        "COMPLETE"
+      ],
+      "provider_render_processing_observed": true,
+      "provider_logs_show_nbconvert_render_only": true,
+      "dataset_versions_submitted": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_identities_returned": [
+        "danielwuu/iris-arc-granite42-8b-offline",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+        "danielwuu/iris-arc-next-cpython312-offline",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels",
+        "danielwuu/iris-arc-next-runtime"
+      ],
+      "embedded_dataset_pin_contract_exact_match": true,
+      "backend_dataset_versions_independently_returned": false,
+      "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+      "prerequisites": []
+    },
+    {
+      "run_id": "N8",
+      "title": "IRIS-X N8 Static Feedback",
+      "reference": "danielwuu/iris-x-n8-static-feedback",
+      "url": "https://www.kaggle.com/code/danielwuu/iris-x-n8-static-feedback",
+      "kernel_id": 137914851,
+      "version": 1,
+      "approved_notebook_filename": "IRIS-X-N8-static-feedback-20261009.ipynb",
+      "approved_notebook_sha256": "f66f2c06e7992e97d5a440ec16f31c8cfa8a502ea9755ea815e92f857c6061ff",
+      "normalized_wire_sha256": "04b6a939a7d50675db110a64101f10195e0696aacbdd7ae302ed9a2632bcc830",
+      "provider_source_sha256": "e0101642046d70c0199a9653267aaa1c3f4cde9f0f9a829d7289091057407d88",
+      "canonical_notebook_exact_match": true,
+      "saved_source_verified": true,
+      "saved_settings_verified": true,
+      "saved_at_utc": "2026-10-09T18:51:42.645448+00:00",
+      "publication_mode_requested": "QUICK_SAVE",
+      "kernel_execution_type_requested": 3,
+      "private": true,
+      "manual_start": false,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "machine_shape": "None",
+      "save_calls_performed": 1,
+      "execution_requested": false,
+      "provider_status_after_save": {
+        "status": "COMPLETE",
+        "failureMessage": null
+      },
+      "provider_status_history": [
+        "COMPLETE"
+      ],
+      "provider_render_processing_observed": false,
+      "provider_logs_show_nbconvert_render_only": null,
+      "dataset_versions_submitted": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_identities_returned": [
+        "danielwuu/iris-arc-granite42-8b-offline",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+        "danielwuu/iris-arc-next-cpython312-offline",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels",
+        "danielwuu/iris-arc-next-runtime"
+      ],
+      "embedded_dataset_pin_contract_exact_match": true,
+      "backend_dataset_versions_independently_returned": false,
+      "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+      "prerequisites": []
+    },
+    {
+      "run_id": "N9",
+      "title": "IRIS-X N9 Object Perception",
+      "reference": "danielwuu/iris-x-n9-object-perception",
+      "url": "https://www.kaggle.com/code/danielwuu/iris-x-n9-object-perception",
+      "kernel_id": 137914884,
+      "version": 1,
+      "approved_notebook_filename": "IRIS-X-N9-object-perception-20261009.ipynb",
+      "approved_notebook_sha256": "6c48d16e9218f194aae7bee17fecec9f929e8110715841df643bf4b7db2c8f66",
+      "normalized_wire_sha256": "ca4745a176e05d84a0dce0cc1dc04a811f898f8c7866d0be5a07d0b607f79c33",
+      "provider_source_sha256": "ee81874f6089c8eb3e4df116cecbcb6265f2c22df261595fae0ed00c633cceaf",
+      "canonical_notebook_exact_match": true,
+      "saved_source_verified": true,
+      "saved_settings_verified": true,
+      "saved_at_utc": "2026-10-09T18:52:28.061593+00:00",
+      "publication_mode_requested": "QUICK_SAVE",
+      "kernel_execution_type_requested": 3,
+      "private": true,
+      "manual_start": false,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "machine_shape": "None",
+      "save_calls_performed": 1,
+      "execution_requested": false,
+      "provider_status_after_save": {
+        "status": "COMPLETE",
+        "failureMessage": null
+      },
+      "provider_status_history": [
+        "RUNNING",
+        "COMPLETE"
+      ],
+      "provider_render_processing_observed": true,
+      "provider_logs_show_nbconvert_render_only": true,
+      "dataset_versions_submitted": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_identities_returned": [
+        "danielwuu/iris-arc-granite42-8b-offline",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+        "danielwuu/iris-arc-next-cpython312-offline",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels",
+        "danielwuu/iris-arc-next-runtime"
+      ],
+      "embedded_dataset_pin_contract_exact_match": true,
+      "backend_dataset_versions_independently_returned": false,
+      "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+      "prerequisites": [
+        "N6"
+      ]
+    },
+    {
+      "run_id": "N10",
+      "title": "IRIS-X N10 Demo Feedback",
+      "reference": "danielwuu/iris-x-n10-demo-feedback",
+      "url": "https://www.kaggle.com/code/danielwuu/iris-x-n10-demo-feedback",
+      "kernel_id": 137914952,
+      "version": 1,
+      "approved_notebook_filename": "IRIS-X-N10-demo-feedback-20261009.ipynb",
+      "approved_notebook_sha256": "caeff30cdb8be71489e9fb297b8b8b6ce3c892a39061552860307f1251545203",
+      "normalized_wire_sha256": "3bc3fe7084b207eb4062e9440ccc48e8efa6fb2becb2e447931505cfde981d01",
+      "provider_source_sha256": "3eb427a7f5d123d30df625f5853826bcabee9102902d64c46f502e491d715cfa",
+      "canonical_notebook_exact_match": true,
+      "saved_source_verified": true,
+      "saved_settings_verified": true,
+      "saved_at_utc": "2026-10-09T18:53:16.239916+00:00",
+      "publication_mode_requested": "QUICK_SAVE",
+      "kernel_execution_type_requested": 3,
+      "private": true,
+      "manual_start": false,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "machine_shape": "None",
+      "save_calls_performed": 1,
+      "execution_requested": false,
+      "provider_status_after_save": {
+        "status": "COMPLETE",
+        "failureMessage": null
+      },
+      "provider_status_history": [
+        "RUNNING",
+        "COMPLETE"
+      ],
+      "provider_render_processing_observed": true,
+      "provider_logs_show_nbconvert_render_only": true,
+      "dataset_versions_submitted": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_identities_returned": [
+        "danielwuu/iris-arc-granite42-8b-offline",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+        "danielwuu/iris-arc-next-cpython312-offline",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels",
+        "danielwuu/iris-arc-next-runtime"
+      ],
+      "embedded_dataset_pin_contract_exact_match": true,
+      "backend_dataset_versions_independently_returned": false,
+      "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+      "prerequisites": [
+        "N6"
+      ]
+    },
+    {
+      "run_id": "N11",
+      "title": "IRIS-X N11 Candidate Memory",
+      "reference": "danielwuu/iris-x-n11-candidate-memory",
+      "url": "https://www.kaggle.com/code/danielwuu/iris-x-n11-candidate-memory",
+      "kernel_id": 137915031,
+      "version": 1,
+      "approved_notebook_filename": "IRIS-X-N11-candidate-memory-20261009.ipynb",
+      "approved_notebook_sha256": "19f66a8266c2511f55cd85eccb2e57b91f2c2ac8562f4db89e2b2cfcfae4d324",
+      "normalized_wire_sha256": "7474c361ce5a42bd56bf7030e0d051a6c7a90cb3ad282f5c4fee73eb6ac38de8",
+      "provider_source_sha256": "e23fcd3af8c9b41c7a3f3ae6d6dca1629f2a8887fcdc3df26065828a10b571b1",
+      "canonical_notebook_exact_match": true,
+      "saved_source_verified": true,
+      "saved_settings_verified": true,
+      "saved_at_utc": "2026-10-09T18:54:06.762462+00:00",
+      "publication_mode_requested": "QUICK_SAVE",
+      "kernel_execution_type_requested": 3,
+      "private": true,
+      "manual_start": false,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "machine_shape": "None",
+      "save_calls_performed": 1,
+      "execution_requested": false,
+      "provider_status_after_save": {
+        "status": "COMPLETE",
+        "failureMessage": null
+      },
+      "provider_status_history": [
+        "RUNNING",
+        "COMPLETE"
+      ],
+      "provider_render_processing_observed": true,
+      "provider_logs_show_nbconvert_render_only": true,
+      "dataset_versions_submitted": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_identities_returned": [
+        "danielwuu/iris-arc-granite42-8b-offline",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+        "danielwuu/iris-arc-next-cpython312-offline",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels",
+        "danielwuu/iris-arc-next-runtime"
+      ],
+      "embedded_dataset_pin_contract_exact_match": true,
+      "backend_dataset_versions_independently_returned": false,
+      "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+      "prerequisites": [
+        "N6"
+      ]
+    },
+    {
+      "run_id": "N12",
+      "title": "IRIS-X N12 Neural Cpu Search",
+      "reference": "danielwuu/iris-x-n12-neural-cpu-search",
+      "url": "https://www.kaggle.com/code/danielwuu/iris-x-n12-neural-cpu-search",
+      "kernel_id": 137915103,
+      "version": 1,
+      "approved_notebook_filename": "IRIS-X-N12-neural-cpu-search-20261009.ipynb",
+      "approved_notebook_sha256": "8adaa4d029fdecc1519728e37cd3ea95101577e6f352d7df0aa4848f3d8c690f",
+      "normalized_wire_sha256": "49453eafb3b3bb607b0282ec0f46028928ff8f3234ab729405dd40816437526e",
+      "provider_source_sha256": "48858da626231739aa2e98224f9829a205e9fce6cb26283968b51926dff296a9",
+      "canonical_notebook_exact_match": true,
+      "saved_source_verified": true,
+      "saved_settings_verified": true,
+      "saved_at_utc": "2026-10-09T18:54:51.873034+00:00",
+      "publication_mode_requested": "QUICK_SAVE",
+      "kernel_execution_type_requested": 3,
+      "private": true,
+      "manual_start": false,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "machine_shape": "None",
+      "save_calls_performed": 1,
+      "execution_requested": false,
+      "provider_status_after_save": {
+        "status": "COMPLETE",
+        "failureMessage": null
+      },
+      "provider_status_history": [
+        "RUNNING",
+        "COMPLETE"
+      ],
+      "provider_render_processing_observed": true,
+      "provider_logs_show_nbconvert_render_only": true,
+      "dataset_versions_submitted": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_identities_returned": [
+        "danielwuu/iris-arc-granite42-8b-offline",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+        "danielwuu/iris-arc-next-cpython312-offline",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels",
+        "danielwuu/iris-arc-next-runtime"
+      ],
+      "embedded_dataset_pin_contract_exact_match": true,
+      "backend_dataset_versions_independently_returned": false,
+      "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+      "prerequisites": [
+        "N7"
+      ]
+    },
+    {
+      "run_id": "N13",
+      "title": "IRIS-X N13 Program Curriculum",
+      "reference": "danielwuu/iris-x-n13-program-curriculum",
+      "url": "https://www.kaggle.com/code/danielwuu/iris-x-n13-program-curriculum",
+      "kernel_id": 137915159,
+      "version": 1,
+      "approved_notebook_filename": "IRIS-X-N13-program-curriculum-20261009.ipynb",
+      "approved_notebook_sha256": "9d2806123ed794892e329570f13db7b15708fdf1265d7d2b138de9a8c45ef66b",
+      "normalized_wire_sha256": "748066c9b968d13bc296e380fba960732603aa0a85b1cacee434c14a80070e8c",
+      "provider_source_sha256": "bb0db7af20f5269e90af8453f31952054d9322f26aa17781743c982b94653dee",
+      "canonical_notebook_exact_match": true,
+      "saved_source_verified": true,
+      "saved_settings_verified": true,
+      "saved_at_utc": "2026-10-09T18:55:43.581676+00:00",
+      "publication_mode_requested": "QUICK_SAVE",
+      "kernel_execution_type_requested": 3,
+      "private": true,
+      "manual_start": false,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "machine_shape": "None",
+      "save_calls_performed": 1,
+      "execution_requested": false,
+      "provider_status_after_save": {
+        "status": "COMPLETE",
+        "failureMessage": null
+      },
+      "provider_status_history": [
+        "RUNNING",
+        "COMPLETE"
+      ],
+      "provider_render_processing_observed": true,
+      "provider_logs_show_nbconvert_render_only": true,
+      "dataset_versions_submitted": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_identities_returned": [
+        "danielwuu/iris-arc-granite42-8b-offline",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+        "danielwuu/iris-arc-next-cpython312-offline",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels",
+        "danielwuu/iris-arc-next-runtime"
+      ],
+      "embedded_dataset_pin_contract_exact_match": true,
+      "backend_dataset_versions_independently_returned": false,
+      "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+      "prerequisites": []
+    },
+    {
+      "run_id": "N14",
+      "title": "IRIS-X N14 Agent Consolidation",
+      "reference": "danielwuu/iris-x-n14-agent-consolidation",
+      "url": "https://www.kaggle.com/code/danielwuu/iris-x-n14-agent-consolidation",
+      "kernel_id": 137916650,
+      "version": 1,
+      "approved_notebook_filename": "IRIS-X-N14-agent-consolidation-20261009.ipynb",
+      "approved_notebook_sha256": "492df1753fbc5fefb69c2228b5cc5c83bc8911ea2870513d25586c39bb6cc027",
+      "normalized_wire_sha256": "286a9192ed647556043946db43ff7476b6218c42d038f5289fae195fa33aeebc",
+      "provider_source_sha256": "44216829010d10d0525c181591ed683f64e5a31a1ca8efafb59de180fddb7741",
+      "canonical_notebook_exact_match": true,
+      "saved_source_verified": true,
+      "saved_settings_verified": true,
+      "saved_at_utc": "2026-10-09T19:10:44.128551+00:00",
+      "publication_mode_requested": "QUICK_SAVE",
+      "kernel_execution_type_requested": 3,
+      "private": true,
+      "manual_start": false,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "machine_shape": "None",
+      "save_call_intents_recorded": 2,
+      "successful_save_responses_recorded": 1,
+      "initial_save_outcome_unknown": true,
+      "one_same_payload_recovery_retry_performed": true,
+      "recovery_note": "Original process disappeared after pre-call intent; direct read and two fresh authenticated owned-list checks found no target. One same-slug, same-frozen-payload recovery retry returned the provider version shown. No new slug was used.",
+      "execution_requested": false,
+      "provider_status_after_save": {
+        "status": "COMPLETE",
+        "failureMessage": null
+      },
+      "provider_status_history": [
+        "RUNNING",
+        "COMPLETE"
+      ],
+      "provider_render_processing_observed": true,
+      "provider_logs_show_nbconvert_render_only": true,
+      "dataset_versions_submitted": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_identities_returned": [
+        "danielwuu/iris-arc-granite42-8b-offline",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+        "danielwuu/iris-arc-next-cpython312-offline",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels",
+        "danielwuu/iris-arc-next-runtime"
+      ],
+      "embedded_dataset_pin_contract_exact_match": true,
+      "backend_dataset_versions_independently_returned": false,
+      "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+      "prerequisites": [
+        "N6",
+        "N7",
+        "N9",
+        "N10",
+        "N11"
+      ]
+    }
+  ],
+  "verification_note": "Kaggle pull returns dataset identities without backend version suffixes. Explicit version refs were submitted; saved notebook metadata preserves exact pins and fail-closed manifest SHA256 checks. Backend attachment version numbers are not independently returned.",
+  "status": "ALL_TEN_PRIVATE_INACTIVE_QUICKSAVES_VERIFIED",
+  "pending_run_ids": [],
+  "completed_at_utc": "2026-10-09T19:10:44.129867+00:00",
+  "recovery_note": "N14 required one same-payload retry after an interrupted request with unknown initial outcome; actual provider version and uncertainty are retained in its receipt."
+}

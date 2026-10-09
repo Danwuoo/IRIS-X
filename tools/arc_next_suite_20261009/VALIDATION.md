@@ -1,0 +1,34 @@
+# Validation scope and exact release
+
+## Frozen production identity
+
+- Source lock: `5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d`
+- Runner: `d2ee8fee3246b8b36f08842e30ce6c8ecc6efea14404d827833c40193d558571`
+- Bounded interpreter: `9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7`
+- Program verifier: `52bc22ffdf32198ceee209b68f68840869086af7d4372e54ec7d7b0297fe760d`
+- Typed compiler: `8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9`
+- Curriculum: `158263e2e417e02b80a0726c9a436bcd842500b64407d3bc5afa0f595c43238c`
+
+## Passed
+
+1. **57 focused tests** against an immutable copy of the final release. This includes all ten inert notebooks; active source-directory symlink rejection; missing and malformed prerequisite BLOCKED paths; every model-run schedule; typed compilation; actual isolated verification; fixed task/call/seed contracts; rehashed-contract tampering; post-score inventory and prior-ZIP validation; no-gold-before-seal; true/redacted feedback; durable interrupted CPU-search accounting; known-model-response versus incomplete-verification accounting; and N5 CPU reservations/unknown-work charging.
+2. **Exact CPU tokenizer audit:** all560 initial prompts across40 exposed tasks and14 policies, using pinned Transformers5.8.1/tokenizers0.22.2/Jinja3.1.6 and the exact Granite vocabulary/template. No weights/GPU loaded. Object-view exclusions are explicit:33067df9 at6981 tokens and a096bf4d at7009. All other initial policy prompts fit6144.
+3. **N5 actual replay:**122 isolated verifier invocations over61 unchanged N4 sources in each language. Both have61 CPU reservations and zero unknown CPU work. Old language:45 parsed,0 admitted,0 demonstration execution. Bounded-v2:45 parsed,29 admitted,23 demonstration executions,0 all-demo fits,0 selected query exact. Charged v2 gas1,529,608. Solver processes stopped and evidence sealed before evaluator gold was read. No gold was exported.
+4. **N13 actual full suite launch:**512 episodes;1,024 attempted and known verifier calls;zero raised/unknown usage;3,832,550 steps;CPU-only;no model/training calls. Final payload SHA256 `6c52d04171d84d57dcaa7e77d46e38b0c8b6e57c7c1e29582eec48411aa95fb4`. The full run emitted live progress, run/source identities, family/objective provenance, a per-call ledger, completed marker and closed final archive.
+5. **Typed language coverage:**171 independent-reference witnesses cover all137 atomic parameterizations and34 two-operation classes. The finite search inventory is1,277 programs. This is authored witness coverage, not an ARC language-completeness claim.
+6. **Independent review:** separately scoped design, interpreter/IPC/resource, compiler/curriculum, source-cache/entrypoint, candidate routing, query-field noninterference, final contract/tokenizer/notebook and artifact reviews. Exact receipts are retained under evidence/review and docs/security.
+
+The focused harness uses synthetic model responses to test scheduling and accounting. Its program-verifier subprocesses are real. The N5 replay uses actual saved model programs. N13 uses explicitly authored generators and independent formula targets. None of these establishes live GPU program generation, trained-model quality or Kaggle execution reliability.
+
+## Not run here
+
+- No real N6–N12/N14 model generation, CUDA model load, paid GPU, training, TTT/RL, new adapter, new model download or four-L4 deployment benchmark
+- No competition submission or official score
+- No confirmation-set evaluation
+- No automatic shutdown of billing
+
+The repository's historical aggregate baseline is separate and already had failures/errors before this additive suite. The main integrator rechecks that baseline and verifies existing tracked blobs are unchanged; this focused pass is not a claim that the entire historical repository is green.
+
+## Reproduction
+
+From this directory, run `python3 -m unittest discover -s tests -p 'test_*.py' -v`. Tests use only CPU and standard-library workers. When the optional full synthetic export is absent, the full-export test regenerates it safely in a temporary directory, taking a few minutes. The persisted tokenizer audit can be independently regenerated with the exact tokenizer assets/package versions described above. Run the notebook with its manual switch off first; no files or model resources should be touched.

@@ -1,0 +1,27 @@
+{
+  "status": "APPROVED_PATH_ONLY_ADD_ONLY_PACKAGING_CORRECTION",
+  "checked_utc": "2026-10-09T18:53:01.333574+00:00",
+  "reason": "Existing repository_check.py executable layout requires src/irisx/, tests/, or tools/; validator remains unchanged.",
+  "target_prefix": "tools/arc_next_suite_20261009",
+  "manifest_sha256": "467636ca3f0f4f16fd3ce915ef9e1235a02ea6862041b18b6227795e9caf122a",
+  "file_count": 71,
+  "total_bytes": 4411138,
+  "prior_approval_sha256": "d2b9c47310ed80dc01158180a988b70d560a608445cc650bf8f69a029569ce51",
+  "unchanged_execution_source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+  "all_ten_notebooks_unchanged": true,
+  "all_tests_unchanged": true,
+  "changed_existing_files": [
+    "build_repo_overlay.py",
+    "README.md"
+  ],
+  "added_files": [
+    "README.zh-TW.md"
+  ],
+  "quickstart_review": "Read in full; CPU/GPU separation, five pins, manual switch, prior ZIP transfer, strict prerequisite/selection gates, known context exclusions, exposure limits, actual CPU results and billing caveats align with approved implementation.",
+  "condition": "Add-only integration, expected remote main and existing baseline preservation still required; this does not authorize model/GPU execution.",
+  "final_staging": {
+    "path": "/workspace/scratch/3c2b2502fb1e/arc-main-integration/repo/tools/arc_next_suite_20261009",
+    "manifest_sha256": "467636ca3f0f4f16fd3ce915ef9e1235a02ea6862041b18b6227795e9caf122a",
+    "all71_staged_files_match": true
+  }
+}

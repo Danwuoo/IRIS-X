@@ -1,0 +1,48 @@
+{
+  "format": "irisx/nextphase-private-curriculum-payload-v1",
+  "training_performed": false,
+  "dataset_uploaded": false,
+  "upload_required_for_notebooks": false,
+  "episode_count": 512,
+  "objectives": [
+    "F",
+    "G",
+    "P",
+    "R"
+  ],
+  "family_split": {
+    "clockwise_quarter_turn": "train",
+    "largest_object_box": "validation",
+    "mirror_columns": "train",
+    "nearest_neighbor_double": "train",
+    "remove_background_border": "train",
+    "repeat_columns": "train",
+    "replace_marker": "train",
+    "transpose_then_replace": "validation"
+  },
+  "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+  "files": {
+    "episodes.jsonl": {
+      "sha256": "6c52d04171d84d57dcaa7e77d46e38b0c8b6e57c7c1e29582eec48411aa95fb4",
+      "bytes": 2786723
+    },
+    "manifest.json": {
+      "sha256": "11a1d2b856f91b7c5871d83d289caeca299aeccdb08c0a06037659878011c6b7",
+      "bytes": 11890
+    },
+    "verification-ledger.jsonl": {
+      "sha256": "f2f13ec3b410a81431eb9232e8be7306d2f14d3fa213c7c5c843cec3dd181d4e",
+      "bytes": 417468
+    }
+  },
+  "provenance": {
+    "ARC_inputs": false,
+    "evaluation_gold": false,
+    "external_upload": false,
+    "imported_generators": false,
+    "model_calls": 0,
+    "reference_outputs": "independent explicit authored family formulas",
+    "training_performed": false
+  },
+  "intended_use": "Future separately specified offline training experiments; not evidence of training gains"
+}
