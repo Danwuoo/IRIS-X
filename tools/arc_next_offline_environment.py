@@ -21,6 +21,7 @@ import re
 import stat
 import subprocess
 import sys
+import sysconfig
 import tempfile
 from typing import Any
 import venv
@@ -99,7 +100,13 @@ def _write(path: Path, value: Any) -> None:
         stream.write("\n")
 
 
-def _runtime() -> dict[str, str]:
+def inspect_runtime() -> dict[str, Any]:
+    """Observe the host without third-party imports, installs or GPU calls.
+
+    This is diagnostic evidence, never permission to consume a different ABI.
+    Record every predicate separately so a notebook mismatch is actionable even
+    when its workflow stops before it can write a successful stage receipt.
+    """
     libc, version = platform.libc_ver()
     if libc != "glibc":
         try:
@@ -107,13 +114,56 @@ def _runtime() -> dict[str, str]:
             libc, version = value.split(" ", 1)
         except (AttributeError, ValueError, OSError):
             pass
-    _require(platform.python_implementation() == "CPython" and
-             sys.version_info[:2] == (3, 12) and platform.system() == "Linux" and
-             platform.machine() == "x86_64", "CPython 3.12 Linux x86_64 runtime required")
-    _require(libc == "glibc" and re.fullmatch(r"\d+\.\d+(?:\.\d+)*", version) is not None
-             and tuple(map(int, version.split("."))) >= (2, 28), "glibc >= 2.28 required")
-    return {"python": platform.python_version(), "glibc": version,
-            "platform": platform.platform(), "implementation": "CPython"}
+    observed = {
+        "implementation": platform.python_implementation(),
+        "python": platform.python_version(),
+        "python_major_minor": ".".join(map(str, sys.version_info[:2])),
+        "python_executable": sys.executable,
+        "python_full_version": sys.version,
+        "python_soabi": sysconfig.get_config_var("SOABI"),
+        "system": platform.system(), "machine": platform.machine(),
+        "libc": libc, "glibc": version,
+    }
+    checks = {key: observed[key] == TARGET[key] for key in (
+        "implementation", "python_major_minor", "system", "machine")}
+    checks["glibc_minimum"] = (
+        libc == "glibc" and re.fullmatch(r"\d+\.\d+(?:\.\d+)*", version) is not None
+        and tuple(map(int, version.split("."))) >= (2, 28))
+    return {"format": "irisx/arc-next-host-runtime-observation-v1",
+            "expected": {key: TARGET[key] for key in checks},
+            "observed": observed, "checks": checks,
+            "mismatches": [key for key, passed in checks.items() if not passed],
+            "compatible": all(checks.values()),
+            "network_calls": 0, "install_calls": 0, "gpu_calls": 0}
+
+
+class RuntimeCompatibilityError(OfflineEnvironmentError):
+    """The observed interpreter cannot consume the exact mounted wheel ABI."""
+    def __init__(self, diagnostic: dict[str, Any]):
+        self.diagnostic = diagnostic
+        observed = diagnostic["observed"]
+        differences = []
+        for key in diagnostic["mismatches"]:
+            actual = (observed["libc"] + " " + observed["glibc"]
+                      if key == "glibc_minimum" else observed[key])
+            differences.append(key + ": observed " + repr(actual) +
+                               ", required " + repr(diagnostic["expected"][key]))
+        super().__init__(
+            "Offline wheel ABI mismatch (" + "; ".join(differences) + "). "
+            "Interpreter: " + observed["python_executable"] + ". "
+            "The locked wheels require CPython 3.12, Linux x86_64, glibc >= 2.28; "
+            "no installation or training started. Select a verified compatible "
+            "interpreter or prepare a separately verified matching wheelhouse; "
+            "do not bypass this gate or install cp312 wheels into another Python ABI.")
+
+
+def _runtime() -> dict[str, str]:
+    diagnostic = inspect_runtime()
+    if not diagnostic["compatible"]:
+        raise RuntimeCompatibilityError(diagnostic)
+    observed = diagnostic["observed"]
+    return {"python": observed["python"], "glibc": observed["glibc"],
+            "platform": platform.platform(), "implementation": observed["implementation"]}
 
 
 def _portable_filename(filename: str) -> tuple[str, str]:
@@ -187,11 +237,11 @@ def _wheel_identity(path: Path) -> tuple[str, str]:
 # remains a fallback. Also inline before site.main in launcher/pip. AF_UNIX remains available
 # for local multiprocessing IPC. Native networking is outside Python's audit API.
 NETWORK_GUARD = r'''
+import sys as _guard_sys
+# Set before any other import: the portable stdlib is hash-closed too.
+_guard_sys.dont_write_bytecode = True
 import os as _guard_os
 import socket as _guard_socket
-import sys as _guard_sys
-# -I ignores PYTHONDONTWRITEBYTECODE; protect hash-closed writable mounts too.
-_guard_sys.dont_write_bytecode = True
 # -I only protects this interpreter. Plain sys.executable subprocesses inherit
 # os.environ, so remove host PYTHONPATH/PYTHONHOME/sitecustomize and pip overrides.
 for _guard_key in list(_guard_os.environ):
@@ -301,7 +351,7 @@ def _verify_guard_startup(python: Path) -> None:
         "    print('plain-and-spawn-guard-verified')\n"
     )
     try:
-        completed = subprocess.run([str(python), "-c", code], env=_offline_env(),
+        completed = subprocess.run([str(python), "-B", "-c", code], env=_offline_env(),
                                    capture_output=True, text=True, check=True, timeout=60)
         _require("plain-and-spawn-guard-verified" in completed.stdout, "Missing startup guard proof")
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
@@ -378,13 +428,14 @@ def _offline_env() -> dict[str, str]:
     env.update({"PIP_CONFIG_FILE": os.devnull, "PIP_NO_INDEX": "1",
                 "PIP_DISABLE_PIP_VERSION_CHECK": "1", "PIP_NO_CACHE_DIR": "1",
                 "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1",
-                "HF_DATASETS_OFFLINE": "1", "WANDB_MODE": "offline"})
+                "HF_DATASETS_OFFLINE": "1", "WANDB_MODE": "offline",
+                "PYTHONDONTWRITEBYTECODE": "1"})
     return env
 
 
 def _run(python: str | Path, code: str, args: list[str] | None = None,
          *, timeout: int = 1800) -> subprocess.CompletedProcess[str]:
-    command = [str(python), "-I", "-S", "-c", NETWORK_GUARD +
+    command = [str(python), "-I", "-B", "-S", "-c", NETWORK_GUARD +
                "\nimport site\nsite.main()\n" + code, *(args or [])]
     try:
         return subprocess.run(command, env=_offline_env(), capture_output=True,
@@ -593,7 +644,7 @@ print(json.dumps({"versions": {name: importlib.metadata.version(name) for name i
             "python_launcher_path": str(launcher),
             "python_launcher_sha256": _sha(launcher),
             "venv_config_sha256": _sha(destination / "pyvenv.cfg"),
-            "python_command": [str(python), "-I", "-S", str(launcher)],
+            "python_command": [str(python), "-I", "-B", "-S", str(launcher)],
             "network_guard_path": str(guard_path),
             "network_guard_sha256": _sha(guard_path),
             "network_guard": "Python socket/DNS audit only; external InternetOFF boundary still required",
@@ -703,7 +754,7 @@ def migrate_offline_guard(source_lock_path: str | Path, wheelhouse_root: str | P
         "python_executable": str(paths["python"]), "python_executable_sha256": _sha(paths["python"]),
         "python_launcher_path": str(paths["launcher"]), "python_launcher_sha256": _sha(paths["launcher"]),
         "venv_config_sha256": _sha(paths["config"]),
-        "python_command": [str(paths["python"]), "-I", "-S", str(paths["launcher"])],
+        "python_command": [str(paths["python"]), "-I", "-B", "-S", str(paths["launcher"])],
         "network_guard_path": str(paths["guard"]), "network_guard_sha256": _sha(paths["guard"]),
         "network_guard": "Python socket/DNS audit only; external InternetOFF boundary still required",
         "optional_backend_modules_absent": list(OPTIONAL_MODULES),

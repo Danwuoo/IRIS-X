@@ -443,6 +443,21 @@ class ModelSession:
     environment: dict[str, Any]
 
 
+def _loading_info_receipt(loading: dict[str, Any]) -> dict[str, Any]:
+    """Bind HF's set-valued loading diagnostics as deterministic JSON arrays.
+
+    Transformers 5.8.1 returns sets even for an exact load. Keep the loader's
+    original diagnostics for validation and normalize only its known key fields;
+    canonical JSON must still reject unsupported values elsewhere.
+    """
+    receipt = dict(loading)
+    for name in ("missing_keys", "unexpected_keys", "mismatched_keys"):
+        value = receipt.get(name)
+        if isinstance(value, (set, frozenset)):
+            receipt[name] = sorted(value)
+    return receipt
+
+
 def load_candidate(model_path: str | Path, model_key: str = "granite-4.2-8b", *,
                    manifest_path: str | Path | None = None, environment_lock_path: str | Path,
                    device: str = "cuda:0", adapter_path: str | Path | None = None,
@@ -499,7 +514,7 @@ def load_candidate(model_path: str | Path, model_key: str = "granite-4.2-8b", *,
             all(list(loaded_state[name].shape) == source_tensors[name]["shape"] for name in expected_names),
             "every native model tensor must have exact source-key/shape coverage")
     identity["full_loaded_source_tensor_coverage"] = True
-    identity["loading_info"] = loading
+    identity["loading_info"] = _loading_info_receipt(loading)
     identity["loaded_parameter_count"] = sum(p.numel() for p in model.parameters())
     expected_count = sum(source_tensors[name]["elements"] for name in expected_names)
     require(identity["loaded_parameter_count"] == expected_count, "loaded native parameter count mismatch")

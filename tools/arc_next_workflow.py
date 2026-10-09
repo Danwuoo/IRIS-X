@@ -53,7 +53,7 @@ class ArchitectureConfig:
     max_context_tokens: int = 8192
     max_wall_seconds_per_arm: float = 120.0
     maximum_wall_seconds: float = 1800.0
-    approved_max_cost_usd: float | None = None
+    approved_max_cost_usd: float | None = None  # Deprecated compatibility field; never enforced.
     estimated_hourly_cost_usd: float | None = None
 
 
@@ -73,13 +73,6 @@ def validate_config(config):
         value = getattr(config, key)
         if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
             raise ValueError('Finite positive wall budgets required')
-    if config.enabled:
-        for key in ('approved_max_cost_usd', 'estimated_hourly_cost_usd'):
-            value = getattr(config, key)
-            if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
-                raise ValueError('Owner must enter a positive budget and current all-in hourly estimate')
-        if config.maximum_wall_seconds / 3600 * config.estimated_hourly_cost_usd > config.approved_max_cost_usd:
-            raise ValueError('Configured runtime estimate exceeds owner budget')
     return config
 
 
@@ -189,7 +182,7 @@ def _run_architecture(config, *, loader=None):
         'wall_seconds':time.monotonic()-started,'model_id':model_id,
         'challenges_sha256':file_sha(config.challenges_path),
         'correctness_scored':False,'lodo_status':'not_run','official_score':None,
-        'paid_vm_shutdown_performed':False,
+        'paid_vm_shutdown_performed':False,'program_cost_cap_enforced':False,
         'cost_warning':'The program stop does not stop GCP billing. Stop the VM manually.',
         'files':{p.name:file_sha(p) for p in sorted(output.glob('*.json'))}}
     write_json(output/'receipt.json',receipt)

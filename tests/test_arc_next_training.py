@@ -304,17 +304,24 @@ class BudgetAndGuardTests(unittest.TestCase):
             with self.subTest(kwargs=kwargs), self.assertRaises(models.ContractError):
                 training.validate_budget(training.RunBudget(**kwargs))
 
-    def test_paid_manual_run_requires_explicit_sufficient_cost_cap(self):
+    def test_manual_preflight_reports_optional_estimate_without_program_cost_cap(self):
         config = training.CalibrationConfig(enabled=True, model_path="/models", training_tasks_path="/data",
                                             training_manifest_path="/manifest", output_dir="/never-written-output",
                                             environment_lock_path="/lock")
-        with self.assertRaisesRegex(models.ContractError, "cost cap"):
-            training.preflight(config)
-        with self.assertRaisesRegex(models.ContractError, "cost cap"):
-            training.preflight(replace(config, approved_max_cost_usd=1, estimated_hourly_cost_usd=10))
-        passed = training.preflight(replace(config, approved_max_cost_usd=5, estimated_hourly_cost_usd=10))
-        self.assertEqual(passed["maximum_calibration_compute_estimate_usd"], 5)
-        self.assertIn("VM can keep billing", passed["billing_caveat"])
+        for ceiling in (None, 1, 5):
+            with self.subTest(deprecated_ceiling=ceiling):
+                passed = training.preflight(replace(config, approved_max_cost_usd=ceiling,
+                                                     estimated_hourly_cost_usd=10))
+                self.assertFalse(passed["program_cost_cap_enforced"])
+                self.assertEqual(passed["maximum_calibration_compute_estimate_usd"], 5)
+                self.assertIn("VM can keep billing", passed["billing_caveat"])
+                for key in ("gpu_runtime_verified", "provisions_or_starts_compute",
+                            "network_access", "automatic_uploads"):
+                    self.assertFalse(passed[key])
+        self.assertIsNone(training.preflight(config)["maximum_calibration_compute_estimate_usd"])
+        for estimate in (True, 0, float("inf"), float("nan")):
+            with self.subTest(estimate=estimate), self.assertRaises(models.ContractError):
+                training.preflight(replace(config, estimated_hourly_cost_usd=estimate))
 
     def test_literal_updates_loss_and_accounting(self):
         backend, events = FakeBackend(), []

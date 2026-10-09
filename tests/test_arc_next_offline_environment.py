@@ -145,16 +145,27 @@ class OfflineEnvironmentTests(unittest.TestCase):
             with mock.patch.object(offline.subprocess, "run", side_effect=AssertionError("Resolution must not start")):
                 with self.subTest(host="wrong architecture"), \
                      mock.patch.object(offline.platform, "machine", return_value="aarch64"):
-                    with self.assertRaisesRegex(offline.OfflineEnvironmentError, r"^CPython 3\.12 Linux x86_64 runtime required$"):
+                    with self.assertRaises(offline.RuntimeCompatibilityError) as caught:
                         self.validate()
+                    self.assert_runtime_rejection(caught.exception, "machine")
                 with self.subTest(host="old glibc"), \
                      mock.patch.object(offline.platform, "libc_ver", return_value=("glibc", "2.27")):
-                    with self.assertRaisesRegex(offline.OfflineEnvironmentError, r"^glibc >= 2\.28 required$"):
+                    with self.assertRaises(offline.RuntimeCompatibilityError) as caught:
                         self.validate()
+                    self.assert_runtime_rejection(caught.exception, "glibc_minimum")
                 with self.subTest(host="wrong Python"), \
                      mock.patch.object(offline.sys, "version_info", (3, 11)):
-                    with self.assertRaisesRegex(offline.OfflineEnvironmentError, r"^CPython 3\.12 Linux x86_64 runtime required$"):
+                    with self.assertRaises(offline.RuntimeCompatibilityError) as caught:
                         self.validate()
+                    self.assert_runtime_rejection(caught.exception, "python_major_minor")
+
+    def assert_runtime_rejection(self, error, mismatch):
+        diagnostic = error.diagnostic
+        self.assertFalse(diagnostic["compatible"])
+        self.assertEqual(diagnostic["mismatches"], [mismatch])
+        self.assertIn("no installation or training started", str(error))
+        for key in ("network_calls", "install_calls", "gpu_calls"):
+            self.assertEqual(diagnostic[key], 0)
 
     def test_unpinned_and_embedded_pip_options_rejected(self):
         for line in ["tiny-leaf>=1", "--index-url https://example.invalid", "-r elsewhere.txt",

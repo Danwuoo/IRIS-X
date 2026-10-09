@@ -19,6 +19,7 @@ import resource
 import signal
 import shutil
 import time
+import traceback
 from typing import Any, Callable
 
 from tools.arc_next_models import (ContractError, canonical, digest, file_sha256, get_spec,
@@ -54,7 +55,7 @@ class CalibrationConfig:
     enable_pilot: bool = False
     allow_experimental_qwen: bool = False
     budget: RunBudget = field(default_factory=RunBudget)
-    approved_max_cost_usd: float | None = None
+    approved_max_cost_usd: float | None = None  # Deprecated compatibility field; never enforced.
     estimated_hourly_cost_usd: float | None = None
     seed: int = 0
     learning_rate: float = 0.0002
@@ -105,15 +106,13 @@ def preflight(config: CalibrationConfig, *, verify_material: bool = False) -> di
     if config.enabled:
         require(all((config.model_path, config.training_tasks_path, config.training_manifest_path,
                      config.output_dir, config.environment_lock_path)), "explicit local input/output/lock paths required")
-        require(_positive_number(config.approved_max_cost_usd) and cost is not None and
-                cost <= config.approved_max_cost_usd, "explicit sufficient owner-approved calibration cost cap required")
         output = Path(config.output_dir).resolve()
         require(not output.exists(), "new immutable output directory required; never resume or overwrite a prior run")
         require(not output.is_relative_to(Path(config.model_path).resolve()), "output cannot be inside base material")
     result = {"format": "irisx/arc-next-calibration-preflight-v1", "enabled": config.enabled,
               "model_id": spec.repository + "@" + spec.revision, "selected_model_count": 1,
               "profile": config.profile, "budget": asdict(config.budget),
-              "approved_max_cost_usd": config.approved_max_cost_usd,
+              "program_cost_cap_enforced": False,
               "estimated_hourly_cost_usd": config.estimated_hourly_cost_usd,
               "maximum_calibration_compute_estimate_usd": cost,
               "billing_caveat": "watchdog bounds this process only; an existing VM can keep billing until its owner stops it",
@@ -575,14 +574,31 @@ def _resource_observation(torch: Any) -> dict[str, Any]:
             "cuda_peak_reserved_bytes": torch.cuda.max_memory_reserved()}
 
 
+def _isolate_worker_process_group() -> None:
+    """Keep dispatched workers discoverable after a supervisor crash.
+
+    A private process group still supports the existing watchdog's TERM/KILL.
+    Staying in the verified dispatcher session closes the detached-orphan race;
+    legacy direct launches retain their original separate-session behavior.
+    """
+    dispatch_session = os.environ.get('IRISX_OFFLINE_DISPATCH_SESSION')
+    if dispatch_session is not None:
+        require(dispatch_session.isdecimal() and int(dispatch_session) > 0 and
+                hasattr(os, 'getsid') and os.getsid(0) == int(dispatch_session),
+                'Invalid inherited offline dispatcher session')
+        os.setpgid(0, 0)
+    elif hasattr(os, 'setsid'):
+        os.setsid()
+
+
 def _worker_entry(config_data: dict[str, Any]) -> None:
-    if hasattr(os, "setsid"):
-        os.setsid()  # This worker owns its process group; the parent cleans descendants too.
+    _isolate_worker_process_group()
     config_data["budget"] = RunBudget(**config_data["budget"])
     config_data["train_augmentations"] = tuple(config_data["train_augmentations"])
     config = CalibrationConfig(**config_data)
     root, start = Path(config.output_dir), time.monotonic()
-    write_json(root / "worker-ownership.json", {"pid": os.getpid(), "process_group": os.getpgrp()})
+    write_json(root / "worker-ownership.json", {"pid": os.getpid(), "process_group": os.getpgrp(),
+                                                "session": os.getsid(0) if hasattr(os, "getsid") else None})
     result = {"format": "irisx/arc-next-calibration-result-v1", "status": "failed",
               "gpu_runtime_verified": False, "arc_accuracy_measured": False,
               "official_test_answers_loaded": False, "trajectory_sft_enabled": False}
@@ -652,7 +668,8 @@ def _worker_entry(config_data: dict[str, Any]) -> None:
                       resources=_resource_observation(torch),
                       acceptance_scope="bounded LoRA/backend calibration only; no ARC score or method promotion")
     except BaseException as error:
-        result["error"] = {"type": type(error).__name__, "message": str(error)[:2000]}
+        result["error"] = {"type": type(error).__name__, "message": str(error)[:2000],
+                           "traceback": traceback.format_exc()}
         event({"event": "failed", "error": result["error"]})
     finally:
         result["elapsed_seconds"] = time.monotonic() - start
@@ -733,7 +750,8 @@ def run_calibration(config: CalibrationConfig | None = None) -> dict[str, Any]:
                     "abnormal worker cannot claim success")
     except BaseException as error:
         result = {"status": "cancelled" if isinstance(error, KeyboardInterrupt) else "supervisor-failed",
-                  "error": {"type": type(error).__name__, "message": str(error)[:1000]},
+                  "error": {"type": type(error).__name__, "message": str(error)[:1000],
+                            "traceback": traceback.format_exc()},
                   "gpu_runtime_verified": False, "complete_artifact": False}
         write_json(root / "watchdog-result.json", result)
         raise
