@@ -1,0 +1,8 @@
+test_actual_N14_still_needs_three_future_results (test_prerequisite_inputs.ActualOwnerEvidenceTests.test_actual_N14_still_needs_three_future_results) ... ok
+test_actual_extracted_all_four_admission_gates (test_prerequisite_inputs.ActualOwnerEvidenceTests.test_actual_extracted_all_four_admission_gates) ... ok
+test_actual_notebook_decoding_nested_inputs_to_cpu_backend_boundary (test_prerequisite_inputs.ActualOwnerEvidenceTests.test_actual_notebook_decoding_nested_inputs_to_cpu_backend_boundary) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 2.008s
+
+OK

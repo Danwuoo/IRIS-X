@@ -1,5 +1,17 @@
 # IRIS-X N5–N14：結果與手動執行指南
 
+## 最新補正：略過無關 competition／Git metadata
+
+N9 v3 的 depth-limit BLOCKED 是搜尋範圍過廣造成，沒有執行模型。`evidence-inputs-fix2-20261010` 會在進入目錄前排除 Kaggle competitions 掛載及 .git/.hg/.svn metadata；搜尋上限不變，一般 Dataset／repository 工作目錄的完整 evidence 仍會驗證，有多份不同結果仍會停止。原先零 calls 的 BLOCKED 結果保留，重新手動啟動會使用新的 attempt 目錄。N9–N14 共用修正，N13 維持不掃描。
+
+## 前次修正：自動尋找前置證據
+
+N9–N14 的 notebook 輸入處理已改成獨立 hash-bound helper；13 份科學 source 與 source-lock 完全不變，N5–N8 notebook 也不變。N9–N11 掛載完整 N6，N12 掛載完整 N7；PRIOR_RESULTS 保持 None 即可。支援 Kaggle 上傳後自動解壓、多層資料夾與原始 ZIP，不用手打 ZIP 路徑。
+
+先驗證完整 inventory、seal、run/source identity 與結束狀態。同一份 ZIP／解壓副本會去重；不同有效結果並存時會停止，必須用 PRIOR_RESULTS 明確選擇。缺少或錯誤輸入會在安裝／模型前產生零 calls 的 BLOCKED 收據。只有已完整驗證的零 calls terminal BLOCKED 可重新啟動，且會寫入新 attempt 目錄並保留所有舊結果；complete、partial 或已嘗試模型的 run 不會自動重跑。
+
+N13 維持 CPU-only、不掃描前置／模型資料。N14 仍須等待真實 N9、N10、N11 結果與 qualifying policy，沒有放寬 gate。
+
 ## 2026-10-10 啟動修正
 
 第一輪 N6 啟動在模型準備前遇到的 `Source N1 manifest identity differs` 是本套件的封裝錯誤：原版內嵌了衍生的 N1 return-dict-fix1 manifest，卻要求它與 runtime8 內的原始 manifest 完全相同。原先 57 個測試沿用同一份衍生 fixture，沒有跨過真實 mount 的啟動邊界，所以漏掉這個問題。
@@ -10,11 +22,11 @@
 
 Kaggle 仍是原來十個 notebook 連結的經審查新版本，預設停用；舊版本保留。精確修正與實測範圍見 `docs/RUNTIME8-MANIFEST-HOTFIX-20261010.md`。
 
-## 先看結論
+## 原始開發交付結論（歷史）
 
 十份 notebook 已完成程式與獨立驗證，預設 `MANUAL_START=False`。這次完成的是可手動啟動的分階段實驗，以及 N5、N13 的真實 CPU 實測；尚未跑新的 GPU 推論、SFT、TTT、RL 或競賽 submission。
 
-**建議先跑 N6 與 N7，檢查程式是否真正能進入 demo 執行，再決定後面的 agent 實驗。** N8 可獨立檢查語法修復；N9–N12、N14 會強制檢查前置結果，沒有通過就輸出 BLOCKED。
+上述是原始開發交付時的建議。現在 N5–N8 已有使用者回傳的完成結果，前置 Dataset 已包含完整 N6/N7，**不需要重跑 N6/N7**。可從修正版 N9–N12 繼續。 N8 可獨立檢查語法修復；N9–N12、N14 會強制檢查前置結果，沒有通過就輸出 BLOCKED。
 
 ### N4 告訴我們什麼
 
@@ -70,24 +82,24 @@ N14 只可從 host_toolbox、typed_ir、raw_plus_objects、true_demo、best_firs
 | `INTERPRETER_ROOT` | `danielwuu/iris-arc-next-cpython312-offline/2` |
 | `ADAPTER_ROOT` | `danielwuu/iris-arc-granite42-run003-adapter-20261009/1` |
 
-GPU runs 會驗證五份 pins；adapter 只驗證，不載入。本次沒有建立新的 Kaggle Dataset。Notebook 已內嵌經 hash 驗證的 source 與必要小型資料。各 Dataset manifest SHA 在 notebook `PINS` 與 publication manifest 內。
+GPU runs 會驗證五份 pins；adapter 只驗證，不載入。輸入修正版另附一份 private N6/N7 前置證據 Dataset，五份原 solver assets 不變。Notebook 已內嵌經 hash 驗證的 source 與必要小型資料。各 Dataset manifest SHA 在 notebook `PINS` 與 publication manifest 內。
 
 ### 手動步驟
 
 1. 打開要跑的單一 notebook，先保留 `MANUAL_START=False`。Internet 保持關閉，Dataset 版本不變。
 2. 所有 `*_ROOT=None` 時，会依序檢查 `/kaggle/input/datasets/danielwuu/<slug>` 與 `/kaggle/input/<slug>`；必須剛好找到一個。若 mount 在其他位置，改填實際 root 路徑，不要修改 manifest/hash 來繞過驗證。
-3. 有 prior gate 的 run，先將前一輪完整 evidence ZIP 或完整解壓資料夾放到執行環境，再填 `PRIOR_RESULTS`。不要只複製 report.json，也不要刪掉 seal／final-inventory 等檔案。
+3. 有 prior gate 的 run，先將前一輪完整 evidence ZIP 或完整解壓資料夾放到執行環境，`PRIOR_RESULTS` 保持 None 以自動尋找；只有需要明確 override 才填完整路徑。不要只複製 report.json，也不要刪掉 seal／final-inventory 等檔案。
 4. **確定要啟動這一輪運算時**才改成 `MANUAL_START=True`。CPU run 選 CPU；GPU run 使用上述已驗證硬體。此交付未替你啟動這些 GPU sessions。
 5. 觀察 `IRIS-SUITE` heartbeat 與逐筆進度。結尾有 `EXPERIMENT-FINISHED` 仍須看 `summary.status` 是否為 `complete`；`partial-or-failed` 不是成功。未達 gate 會看到 `EXPERIMENT-BLOCKED`。
 6. 保存顯示的 `archive` 路徑與 evidence ZIP，再自行停止 VM／session。程式不會替你停止 VM 計費。
 
-例：跑 N9、N10 或 N11 時，設定：
+通常不需修改 PRIOR_RESULTS。只有要明確指定某份完整證據時，才使用以下 override：
 
 ```python
 PRIOR_RESULTS = {'N6': '/實際掛載位置/iris-x-n6-runtime8-manifest-fix1-20261010-evidence.zip'}
 ```
 
-跑 N12 用 `N7` key。跑 N14 要提供全部五個 key：`N6`、`N7`、`N9`、`N10`、`N11`。路徑是示意，必須換成該環境實際可讀檔案；可以保留 ZIP，程式支援安全匯入，不需手動移除 metadata。若 Kaggle 使用新增 private Dataset 承接前次 outputs，先自行上傳完整、未改寫的 evidence ZIP，再在下一份 notebook 掛載；本次沒有自動發佈或假設這份傳遞 Dataset 已存在。
+跑 N12 用 `N7` key。跑 N14 要提供全部五個 key：`N6`、`N7`、`N9`、`N10`、`N11`。路徑是示意，必須換成該環境實際可讀檔案；可以保留 ZIP，程式支援安全匯入，不需手動移除 metadata。N6/N7 已準備成獨立 private 前置證據 Dataset，修正版會附加給需要的 notebook。之後 N9–N11 的新結果仍需完整掛載；Kaggle 自動解壓後可直接辨認，不要只複製 report。
 
 ## 預算、輸出與封存
 

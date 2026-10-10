@@ -1,0 +1,52 @@
+{
+  "status": "APPROVED_EXACT_PRIVATE_DATASET_PAYLOAD",
+  "checked_utc": "2026-10-10T07:22:14.290209+00:00",
+  "scope": {
+    "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+    "private": true,
+    "create_or_upload_performed_by_reviewer": false,
+    "payload_root": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/prerequisite-dataset/payload",
+    "dataset_manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+    "file_count": 871,
+    "bytes": 7028736,
+    "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50"
+  },
+  "run_evidence": {
+    "N6": {
+      "files": 435,
+      "exact_byte_copy_of_independently_verified_user_evidence": true,
+      "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+      "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+      "strict_gate_contract": "PASS"
+    },
+    "N7": {
+      "files": 435,
+      "exact_byte_copy_of_independently_verified_user_evidence": true,
+      "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+      "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+      "strict_gate_contract": "PASS"
+    }
+  },
+  "checks": {
+    "closed_inventory_and_all_file_hashes": "PASS",
+    "original_user_archive_correspondence": "PASS",
+    "unchanged_scientific_verifier": "PASS",
+    "no_symlinks_or_unexpected_files": "PASS",
+    "no_evaluator_gold_file_or_known_gold_blob": "PASS",
+    "no_model_weights_wheels_or_credential_files": "PASS",
+    "no_common_secret_token_or_private_key_patterns": "PASS"
+  },
+  "release_conditions": [
+    "Provider creation must be private; no new public copyright license grant.",
+    "Provider assigned version/reference must be read back and bound, not assumed.",
+    "After upload, verify the complete downloaded/extracted inventory and hashes before notebook publication.",
+    "This approves evidence packaging only, not new model/GPU execution or a change to scientific gates."
+  ],
+  "transport": {
+    "upload_inventory_sha256": "71fe0a867d01d6c9ed6a2a351ff93f9f5a48998e013a8a3587d6503293f54545",
+    "dataset_metadata_sha256": "235940ee87ddf236b23f194a17bbebbee5afcff3c3d5192cde43a4e651add5b8",
+    "upload_files": 872,
+    "license": "other; private project use; no new license grant",
+    "inventory_file_excluded_from_upload": true
+  }
+}

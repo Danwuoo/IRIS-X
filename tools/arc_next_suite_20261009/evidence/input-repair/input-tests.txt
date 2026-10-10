@@ -1,0 +1,27 @@
+test_actual_N14_still_needs_three_future_results (test_prerequisite_inputs.ActualOwnerEvidenceTests.test_actual_N14_still_needs_three_future_results) ... ok
+test_actual_extracted_all_four_admission_gates (test_prerequisite_inputs.ActualOwnerEvidenceTests.test_actual_extracted_all_four_admission_gates) ... ok
+test_actual_notebook_decoding_nested_inputs_to_cpu_backend_boundary (test_prerequisite_inputs.ActualOwnerEvidenceTests.test_actual_notebook_decoding_nested_inputs_to_cpu_backend_boundary) ... ok
+test_N13_does_not_scan_priors_or_model_assets (test_prerequisite_inputs.InputTests.test_N13_does_not_scan_priors_or_model_assets) ... ok
+test_N14_missing_source_BLOCKED_does_not_waive_results (test_prerequisite_inputs.InputTests.test_N14_missing_source_BLOCKED_does_not_waive_results) ... ok
+test_auto_evidence_pin_enforced_after_ambiguity (test_prerequisite_inputs.InputTests.test_auto_evidence_pin_enforced_after_ambiguity) ... ok
+test_blocked_counter_bool_wrong_source_extra_data_reject_retry (test_prerequisite_inputs.InputTests.test_blocked_counter_bool_wrong_source_extra_data_reject_retry) ... ok
+test_complete_partial_or_ambiguous_attempt_never_retried (test_prerequisite_inputs.InputTests.test_complete_partial_or_ambiguous_attempt_never_retried) ... ok
+test_missing_assets_is_retryable_zero_call_block (test_prerequisite_inputs.InputTests.test_missing_assets_is_retryable_zero_call_block) ... ok
+test_missing_blocks_before_asset_scan_install_or_model (test_prerequisite_inputs.InputTests.test_missing_blocks_before_asset_scan_install_or_model) ... ok
+test_model_asset_trees_are_not_scanned (test_prerequisite_inputs.InputTests.test_model_asset_trees_are_not_scanned) ... ok
+test_nonstopped_and_search_incomplete_rejected (test_prerequisite_inputs.InputTests.test_nonstopped_and_search_incomplete_rejected) ... ok
+test_repeated_blocks_preserve_every_attempt_and_archive (test_prerequisite_inputs.InputTests.test_repeated_blocks_preserve_every_attempt_and_archive) ... ok
+test_scan_limits_fail_closed (test_prerequisite_inputs.InputTests.test_scan_limits_fail_closed) ... ok
+test_symlink_root_parent_and_member_rejected (test_prerequisite_inputs.InputTests.test_symlink_root_parent_and_member_rejected) ... ok
+test_tamper_partial_old_lock_and_unexpected_file_rejected (test_prerequisite_inputs.InputTests.test_tamper_partial_old_lock_and_unexpected_file_rejected) ... ok
+test_traversal_duplicate_and_oversize_zip_rejected (test_prerequisite_inputs.InputTests.test_traversal_duplicate_and_oversize_zip_rejected) ... /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/zipfile/__init__.py:1625: UserWarning: Duplicate name: 'final-inventory.json'
+  return self._open_to_write(zinfo, force_zip64=force_zip64)
+ok
+test_two_valid_identities_block_no_latest_choice (test_prerequisite_inputs.InputTests.test_two_valid_identities_block_no_latest_choice) ... ok
+test_wrong_run_ignored_and_missing_report_only_diagnosed (test_prerequisite_inputs.InputTests.test_wrong_run_ignored_and_missing_report_only_diagnosed) ... ok
+test_zip_and_multilevel_autoextraction_deduplicate (test_prerequisite_inputs.InputTests.test_zip_and_multilevel_autoextraction_deduplicate) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 15.619s
+
+OK

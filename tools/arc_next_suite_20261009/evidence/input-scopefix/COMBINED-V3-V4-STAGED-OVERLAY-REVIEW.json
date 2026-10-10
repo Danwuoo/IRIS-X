@@ -1,0 +1,46 @@
+{
+  "status": "PASS_COMBINED_V3_V4_STAGED_BYTES",
+  "checked_utc": "2026-10-10T08:22:59.221530+00:00",
+  "base_commit": "0cc39a0f8863c45f76108b0cfe4922b156f30ffb",
+  "base_tree": "537591d241b01bff23f416c9cadfdb992f650e78",
+  "overlay_manifest_sha256": "e9ab66842ac23afd6e673b2c6b0d93c75494dbe3d4161a960e411e66404ba64a",
+  "reviewed_overlay_files": 49,
+  "modified_baseline_files": 17,
+  "unchanged_baseline_blobs": 1222,
+  "added_files_including_receipts": 35,
+  "additional_receipts": [
+    {
+      "path": "tools/arc_next_suite_20261009/evidence/input-repair/INPUT-REPAIR-STAGED-OVERLAY-REVIEW.json",
+      "sha256": "52da150844ea4e2c708b065424eba92bf2a5d4c5ce3db9ff017eff7615f7da54",
+      "bytes": 1347
+    },
+    {
+      "path": "tools/arc_next_suite_20261009/evidence/input-repair/MAIN-INTEGRATION-VALIDATION.json",
+      "sha256": "3de262b95933ccd9255ebdb498ef98840601eaacc7a0bed6cc3f9db9b932ba84",
+      "bytes": 15556
+    },
+    {
+      "path": "tools/arc_next_suite_20261009/evidence/input-scopefix/MAIN-INTEGRATION-VALIDATION.json",
+      "sha256": "0d84cdf7a3b8a2222bdf0f463b9ddaed8ba070f5e3b1fbf23a204e813369c36f",
+      "bytes": 15902
+    }
+  ],
+  "all_source_overlay_index_and_worktree_bytes_match": true,
+  "six_v4_notebooks_match_final_approval": true,
+  "scientific_sources_and_N5_N8_unchanged": true,
+  "v3_and_v4_receipt_histories_preserved": true,
+  "final_publication_manifest_sha256": "186586022d6f762120ef24bdf678d178040243295ea23bf5d5d26e6305dc2bda",
+  "integration_tests": {
+    "focused_passed": 97,
+    "focused_skips": 0,
+    "aggregate_tests": 1583,
+    "aggregate_failures": 1,
+    "aggregate_errors": 35,
+    "aggregate_skips": 74,
+    "new_aggregate_failure_labels": [],
+    "logs_hash_verified": true,
+    "tests_rerun_by_this_reviewer": false
+  },
+  "review_scope": "Read-only byte-for-byte staged technical review; publication authorization remains with the parent and sole Git publisher. No external calls or Git writes performed by this reviewer.",
+  "postreview_change_policy": "Only append this review and truthful publication/CI receipts; changes to executable, notebook, manifest, or existing reviewed bytes require re-review."
+}

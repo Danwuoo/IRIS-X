@@ -1,0 +1,43 @@
+{
+  "format": "irisx/private-prerequisite-dataset-v1",
+  "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+  "private": true,
+  "purpose": "Exact user-returned complete N6/N7 evidence for manually started N9-N14 prerequisite validation. Private project use; no new license grant.",
+  "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+  "query_gold_included": false,
+  "credentials_included": false,
+  "model_weights_included": false,
+  "sources": {
+    "N6": {
+      "path": "N6",
+      "original_archive_sha256": "6e6fbee608928a43ec7cd7d39739999d0271330f84f2155cf6e1f1570baf9677",
+      "original_archive_bytes": 902324,
+      "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+      "files": 435,
+      "receipt": {
+        "run_id": "N6",
+        "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+        "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+        "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+        "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+      }
+    },
+    "N7": {
+      "path": "N7",
+      "original_archive_sha256": "f3587f092c1597e00bbf54237060610bfd45f7ec3196aede03cf04444b36dd21",
+      "original_archive_bytes": 773557,
+      "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+      "files": 435,
+      "receipt": {
+        "run_id": "N7",
+        "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+        "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+        "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+        "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+      }
+    }
+  },
+  "manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+  "file_count": 871,
+  "payload_bytes": 7028736
+}

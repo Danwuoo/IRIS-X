@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+  "original_N9_archive_sha256": "cd1b4cc6b0defec1111945b33c3046221ebdced241a9a3e019a496f29a9f6444",
+  "blocked_sha256": "57d5f677c92c4bdd8e7584a98dd326c64f51dc70bf62d042a634b5c61ed6599e",
+  "final_inventory_sha256": "85023f6cd5e96ad548cf31c5a856e82900716ba1b9ba330667da4a77395f008a",
+  "new_output_root": "BASE/attempts/attempt-0002/runs",
+  "preserved_original_files": 3,
+  "method": "Copied actual returned N9 BLOCKED directory and original ZIP into temporary BASE, allocated next attempt, compared every original file hash. No model/backend execution."
+}

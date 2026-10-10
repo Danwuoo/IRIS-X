@@ -2,6 +2,20 @@
 
 This is an offline, manually started experimental suite, not ten completed GPU runs. All ten notebooks are private inactive QUICK_SAVE artifacts with GPU, TPU and Internet off and MANUAL_START=False. No GPU generation, training, payment, or competition submission was performed during development.
 
+## 2026-10-10 discovery scope correction
+
+Notebook helper revision `evidence-inputs-fix2-20261010` fixes the owner-observed N9 v3 zero-call depth block: prerequisite discovery no longer descends into Kaggle competition namespaces or VCS metadata. Ordinary Dataset/repository working-tree evidence remains searchable, and conflicting valid evidence still blocks. All existing search caps, integrity checks and the scientific source lock are unchanged. A verified zero-call BLOCKED attempt safely advances to a new namespace without deleting old results. N9–N14 share the correction; N13 still does no input scan. See `docs/NOTEBOOK-INPUT-SCOPEFIX-20261010.md`.
+
+## 2026-10-10 notebook input repair
+
+N9–N14 use the separately hash-bound `notebook_support/arc_evidence_inputs.py` helper, revision `evidence-inputs-fix1-20261010`. The entire scientific source payload and source lock `29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50` remain byte-identical. N5–N8 notebooks remain unchanged.
+
+N9–N12 and N14 attach the private reviewed N6/N7 prerequisite Dataset. Keep `PRIOR_RESULTS` values at `None`: the helper discovers complete evidence ZIPs or Kaggle-auto-extracted folders beneath bounded `/kaggle/input` paths, including multiple wrapper levels. It skips the five large pinned asset trees, verifies the scientific contract, complete inventory/seal/status and exact known N6/N7 inventory pins, and deduplicates a ZIP with its identical extracted copy. Different valid identities fail closed; `PRIOR_RESULTS` remains an intentional override, fully verified and labeled as such. Report-only, corrupt, incompatible, partial and missing-source BLOCKED evidence cannot satisfy gates.
+
+Only a verified terminal zero-call BLOCKED attempt permits a retry. The next manual start selects a fresh `attempts/attempt-0002/runs/…` namespace and retains every prior directory/archive. Complete, partial, attempted or uncertain runs are never automatically resumed/repeated. Discovery and retry receipts live outside immutable scientific evidence. Missing prerequisites or asset mounts produce a useful zero-call BLOCKED receipt before installation/model work.
+
+N13 remains CPU-only and performs no prerequisite/model scan. N14 still needs real N9/N10/N11 results and a qualifying policy; this repair does not make its future gate pass. Dataset wrapper metadata/version is publication provenance; runtime checks attest the selected evidence inventory, not a provider-selected version that has not been observed. See `docs/PREREQUISITE-DATASET-PIN.json` and `docs/NOTEBOOK-INPUT-REPAIR-20261010.md`.
+
 ## 2026-10-10 runtime8 manifest repair
 
 The first owner launch of N6 revealed a packaging bug before model preparation: this suite embedded a derived N1 `return-dict-fix1` manifest, while the pinned runtime8 Dataset contains its canonical N1 manifest. The original 57 tests used the same derived reference as their fixture and exercised records below the mounted-asset boundary; passing them did not validate the real launch boundary.
@@ -68,7 +82,7 @@ All512 episodes were checked by1,024 fresh actual CPU verifier calls with zero u
 
 ## Run and inspect
 
-Open the individual notebook, leave Internet off, retain pinned Dataset versions, set actual paths if needed and supply prerequisite ZIP/directory paths through PRIOR_RESULTS. Only set MANUAL_START=True when intentionally starting that specific run. Missing/failed prerequisites produce an immutable BLOCKED receipt before installation/model load. Download the evidence ZIP shown after EXPERIMENT-FINISHED or EXPERIMENT-BLOCKED.
+Open the individual notebook, leave Internet off and retain pinned Dataset versions. N9–N14 automatically discover complete prior evidence in mounted inputs; leave PRIOR_RESULTS values at None unless intentionally selecting a fully verified override. Only set MANUAL_START=True when intentionally starting that specific run. Missing/failed prerequisites produce an immutable BLOCKED receipt before installation/model load. Download the evidence ZIP shown after EXPERIMENT-FINISHED or EXPERIMENT-BLOCKED.
 
 GPU studies target the proven G4 profile: one96GB-class RTX PRO6000 Blackwell,48CPUs,host RAM≥170GiB, the pinned CPython3.12/cu128 stack. They have not been run on GPUs in this delivery. CPU-only receipts record host Python separately.
 
@@ -79,7 +93,7 @@ Generation's120-second limit is cooperative. Controller ceilings are9600 seconds
 From this directory:
 
 - python3 -m unittest discover -s tests -p 'test_*.py' -v
-- python3 build_source_lock.py (only after reviewed source edits)
+- python3 build_source_lock.py (only after reviewed scientific source edits; not needed for notebook-only input changes)
 - PYTHONPATH=<pinned CPU tokenizer package directory> python3 audit_tokens.py <verified tokenizer assets>
 - python3 build_source_lock.py && python3 build_notebooks.py
 

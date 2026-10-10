@@ -1,0 +1,32 @@
+{
+  "status": "APPROVED_EXACT_STAGED_INPUT_REPAIR_OVERLAY",
+  "checked_utc": "2026-10-10T07:34:43.973671+00:00",
+  "base_main": "0cc39a0f8863c45f76108b0cfe4922b156f30ffb",
+  "overlay_manifest_sha256": "b761d48c69b74ee61d59822f2b76dcda6f876a7acf8963543e645033f0a46779",
+  "final_release_sha256": "db33298595dbbb0605e0677172a9b3a00a8a18257377fea37686935db6571ffb",
+  "scoped_files": 35,
+  "modified_baseline_files": 17,
+  "added_overlay_files": 18,
+  "all_other_baseline_blobs_byte_identical": 1222,
+  "separately_validated_additive_receipts": {
+    "tools/arc_next_suite_20261009/publication/prerequisite-dataset-publication-receipt.json": "b78246d71ab0da68b4c316e2c1aa4226ab6a5d56972217ee32925f9f632f6349"
+  },
+  "source_and_locked_science_changed": false,
+  "unchanged_notebooks": [
+    "N5",
+    "N6",
+    "N7",
+    "N8"
+  ],
+  "checks": [
+    "All35stagedfiles exactbyteequal to frozenbuilderoverlay",
+    "All6notebooks exactapprovedhashes",
+    "Everyoriginalbaselineblob outside17scopedmodifications retained",
+    "Allchanges contained in tools/arc_next_suite_20261009",
+    "No gitremote calls or mutations byreviewer"
+  ],
+  "conditions": [
+    "Only validated publication/integration receipts may be appended; source/notebook/helper/pin changes require re-review.",
+    "Retain existing expected-main non-force publication guard."
+  ]
+}

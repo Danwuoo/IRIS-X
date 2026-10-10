@@ -122,3 +122,7 @@ manifest={'format':'irisx/exact-ten-publication-v1','count':10,'source_lock_sha2
           'publication_status':'requires_separate_independent_release','suite_revision':arc_suite.SUITE_REVISION,'notebooks':notebooks}
 (ROOT/'publication-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print(json.dumps({'notebooks':len(notebooks),'compressed_source_bytes':len(packed),'uncompressed_source_bytes':len(raw),'total_notebook_bytes':sum(x['bytes'] for x in notebooks)},indent=2))
+
+# Notebook-only input handling remains separately pinned from scientific sources.
+import runpy
+runpy.run_path(str(ROOT/'build_input_repair.py'),run_name='__main__')

@@ -1,0 +1,222 @@
+{
+  "status": "APPROVED_SIX_NOTEBOOK_INPUT_REPAIR",
+  "checked_utc": "2026-10-10T07:31:33.778255+00:00",
+  "scope": {
+    "publication_manifest": {
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/publication-manifest.json",
+      "sha256": "985389a7cdb917c22092aa0d93d661adda58b0d6cc0c89fbf855e081e5da5350"
+    },
+    "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+    "scientific_runner_sha256": "f1f8dfde826fa6c0dbf4ef4e88b1ae60df8964215af8ff02d197b7c49a1e2570",
+    "helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+    "entrypoint_sha256": "c131efdfbbd5ab7857246be6fc397a1f60262b78a5ea842b12db9e36ef4e5398",
+    "builder_sha256": "ced129ca181b1f07bf343ed2b830b8ea29c2ab2e4078669778c83a32f2e9e9b1",
+    "updated_runs": [
+      "N9",
+      "N10",
+      "N11",
+      "N12",
+      "N13",
+      "N14"
+    ],
+    "unchanged_runs": [
+      "N5",
+      "N6",
+      "N7",
+      "N8"
+    ]
+  },
+  "approved_notebooks": [
+    {
+      "run_id": "N9",
+      "sha256": "9caafbca723df73bd20d91b83a6be50e5658015e4b7f76eaa8eb240599d179fd",
+      "bytes": 294995,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N9-object-perception-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n9-object-perception",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "competition_sources": [
+        "arc-prize-2026-arc-agi-3"
+      ]
+    },
+    {
+      "run_id": "N10",
+      "sha256": "270d204e1cbe8c80a8f64908736b616824d4215c177f28c12990ab352180cdbf",
+      "bytes": 295050,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N10-demo-feedback-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n10-demo-feedback",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "competition_sources": []
+    },
+    {
+      "run_id": "N11",
+      "sha256": "a38907de6bae5abd4c4aa00514fa6b4f1e49af6d56ed77085ebacd79704e8027",
+      "bytes": 295016,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N11-candidate-memory-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n11-candidate-memory",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "competition_sources": []
+    },
+    {
+      "run_id": "N12",
+      "sha256": "9b10a501ae908564cccb145d489836e9c8bf90aff07b814c24066e246fb1b887",
+      "bytes": 294998,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N12-neural-cpu-search-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n12-neural-cpu-search",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "competition_sources": []
+    },
+    {
+      "run_id": "N13",
+      "sha256": "89d955a4a50212474355eb4bb70f2b7adb4b90816c815efeaeee5d19d864e0f9",
+      "bytes": 291201,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N13-program-curriculum-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n13-program-curriculum",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "competition_sources": []
+    },
+    {
+      "run_id": "N14",
+      "sha256": "009cc1d5b47a18b9e9b5f8d5a57a9374d464db7e0f13d9a739a5443c91d2d74f",
+      "bytes": 295303,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N14-agent-consolidation-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n14-agent-consolidation",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "competition_sources": []
+    }
+  ],
+  "untouched_notebooks": [
+    {
+      "run_id": "N5",
+      "sha256": "bb458852520552c290e057ce2ca74cda234477051db7cfc8caed5edd5c3d8e58"
+    },
+    {
+      "run_id": "N6",
+      "sha256": "72114ab5b4c3b61f295f932c804ad784b8e70e9ebaf976f3542bd4e09fc7e49d"
+    },
+    {
+      "run_id": "N7",
+      "sha256": "290710af40373765e42d2fa3f592e006da96318405227e32ea57a0bb09293aa5"
+    },
+    {
+      "run_id": "N8",
+      "sha256": "af2aa1c940b9fa3ebaa60e35f4d2ae312e325806c26881b273161008dbb39300"
+    }
+  ],
+  "scientific_invariants": {
+    "all14_source_data_and_lock_files_byte_identical": true,
+    "all10_embedded_scientific_payloads_exact_original_v2": true,
+    "tasks_prompts_seed_budget_gate_model_backend_unchanged": true,
+    "five_original_dataset_pins_unchanged": true,
+    "protected136_not_used": true,
+    "evidence_input_dataset_is_separate_from_solver_pins": true
+  },
+  "independent_validation": {
+    "builder_full_focused_suite": {
+      "count": 88,
+      "status": "PASS",
+      "log_independently_inspected": true
+    },
+    "source_and_notebook_tests": {
+      "count": 35,
+      "status": "PASS",
+      "skips": 0,
+      "scope": "21prerequisite tests,4notebook tests,10actualruntime/fixture tests; exact owner N6/N7 and mounted runtime8"
+    },
+    "actual_provider_readback_files": 871,
+    "provider_dataset_id": 12482851,
+    "provider_dataset_reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+    "provider_private": true,
+    "provider_version": 1,
+    "actual_provider_layout_auto_discovery": "PASS",
+    "N9_N10_N11_N12_exact_gate_and_evidence_pin": "PASS",
+    "N13_no_scan_no_model_assets": "PASS",
+    "N14_missing_N9_N10_N11_still_blocked": "PASS",
+    "original_N9_blocked_safe_retry_and_preservation": "PASS",
+    "different_valid_identity_ambiguity": "FAIL_CLOSED",
+    "invalid_or_model_started_attempt_retry": "REFUSED",
+    "helper_import_captured_verified_source_bytes": "PASS",
+    "inert_all10_notebooks": "PASS"
+  },
+  "evidence": {
+    "PREREQUISITE-DATASET-REVIEW.json": {
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/independent-review/PREREQUISITE-DATASET-REVIEW.json",
+      "sha256": "4aed8d1932350ce28403efa7bbd9d9eaae9ccf462386a2e6abd381aa71056061"
+    },
+    "ACTUAL-DATASET-READBACK-DISCOVERY-REVIEW.json": {
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/independent-review/ACTUAL-DATASET-READBACK-DISCOVERY-REVIEW.json",
+      "sha256": "9ed12b16d923351d98d39ea7d99a194b321d6d650d6e7ec721b312cd19965fd8"
+    },
+    "RETRY-AND-PIN-BOUNDARY-CHECK.json": {
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/independent-review/RETRY-AND-PIN-BOUNDARY-CHECK.json",
+      "sha256": "48f3abfd3588427f968c82e6ede9ba978cdc9769fbd7fe1f50c48fcc6d7c221f"
+    },
+    "draft-boundary-check.json": {
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/independent-review/draft-boundary-check.json",
+      "sha256": "cc81e0a21ea2426f179a093f81b6429049b48499d75ca66a2ac7b0fdd7e3d243"
+    },
+    "INPUT-NOTEBOOK-RUNTIME-TESTS-FINAL.txt": {
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/independent-review/INPUT-NOTEBOOK-RUNTIME-TESTS-FINAL.txt",
+      "sha256": "3f3fc15f8b298b980e7e649e4185cc6548ff82f8a2f74031974ab47c57f26c01"
+    },
+    "builder-full88-tests": {
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/full-focused-tests-final.txt",
+      "sha256": "a7feaee2ef14e5f654e52c670d6d86a4f2bf6437dbb6620521c94e85e9f6e344"
+    }
+  },
+  "publication_conditions": [
+    "Publish only approved_notebooks N9–N14 to their existing verified private notebook IDs as inactive QUICK_SAVE; no run/submission.",
+    "Preserve current N9-only competition association as metadata; do not read/use competition content or change agreements.",
+    "Provider source readback must match exact approved notebook after only source-list/string normalization; preserve all safety flags and original five assets, add only reviewed prerequisite dataset where specified.",
+    "Provider dataset name-only readback is not independent attestation of mounted backend version; exact version is bound in submitted refs and runtime evidence hash pins.",
+    "Any executable, scientific payload, helper, pin or notebook change invalidates this approval; docs/receipts only may be added without changing approved bytes."
+  ],
+  "limitations": [
+    "CPU-only boundary/inert/adversarial tests; no fresh GPU generation or full model run performed for this I/O-only repair.",
+    "Private prerequisite evidence contains N6/N7 only. N14 still needs future complete N9/N10/N11 results and a qualifying policy; it is not immediately unlocked.",
+    "Integrity checks authenticate bytes and compatible contracts, not an external digital signature.",
+    "Whole-wrapper dataset manifest is publication/readback provenance; runtime directly verifies selected evidence inventories and contracts."
+  ],
+  "open_blockers": [],
+  "reviewer_GPU_model_training_publication_calls": 0
+}

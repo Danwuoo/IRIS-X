@@ -1,0 +1,207 @@
+{
+  "status": "APPROVED_SIX_NOTEBOOK_DISCOVERY_SCOPE_FIX2",
+  "checked_utc": "2026-10-10T08:06:36.997583+00:00",
+  "scope": {
+    "publication_manifest": {
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/publication-manifest.json",
+      "sha256": "186586022d6f762120ef24bdf678d178040243295ea23bf5d5d26e6305dc2bda"
+    },
+    "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+    "scientific_runner_sha256": "f1f8dfde826fa6c0dbf4ef4e88b1ae60df8964215af8ff02d197b7c49a1e2570",
+    "helper_sha256": "06326cb8d4d3c303d348aef8d8c7898b64724053fccfce19d960cdde21e75943",
+    "entrypoint_sha256": "c131efdfbbd5ab7857246be6fc397a1f60262b78a5ea842b12db9e36ef4e5398",
+    "builder_sha256": "80c69b4290d98a9bd7246ea98e683039505cb87c94a48b35a9a70c3e6c3d3a81",
+    "updated_runs": [
+      "N9",
+      "N10",
+      "N11",
+      "N12",
+      "N13",
+      "N14"
+    ],
+    "unchanged_runs": [
+      "N5",
+      "N6",
+      "N7",
+      "N8"
+    ],
+    "new_dataset_upload_required": false,
+    "Git_write_or_push_approved_by_this_review": false
+  },
+  "approved_notebooks": [
+    {
+      "run_id": "N9",
+      "sha256": "2e6b3de0d509c6832e8c9cc4e2393be55893d1852a0fc835dccd3fc9d8fb78a0",
+      "bytes": 296125,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N9-object-perception-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n9-object-perception",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "competition_sources": [
+        "arc-prize-2026-arc-agi-3"
+      ]
+    },
+    {
+      "run_id": "N10",
+      "sha256": "d1a156ae2144ff644196b58baee1b004d3c0af7bebd0a06cd567e749515d0ba7",
+      "bytes": 296180,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N10-demo-feedback-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n10-demo-feedback",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "competition_sources": []
+    },
+    {
+      "run_id": "N11",
+      "sha256": "cccb4a562224ad25fc70fa43c1534e4f107f95148c86a7f88dfe31f396215695",
+      "bytes": 296146,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N11-candidate-memory-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n11-candidate-memory",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "competition_sources": []
+    },
+    {
+      "run_id": "N12",
+      "sha256": "d047566d73d159272bfc342ceaddaaa5b009f8e475931440608ff13614ead155",
+      "bytes": 296128,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N12-neural-cpu-search-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n12-neural-cpu-search",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "competition_sources": []
+    },
+    {
+      "run_id": "N13",
+      "sha256": "89fb4a9de71bf0adba359f99da510c2f1ce4835a2cd7c20b0fb253386d404c0c",
+      "bytes": 292331,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N13-program-curriculum-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n13-program-curriculum",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "competition_sources": []
+    },
+    {
+      "run_id": "N14",
+      "sha256": "7665c7bbda4e053e8524d9521bd1543cb34b8eaf295b076b34cb815084bf495e",
+      "bytes": 296433,
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N14-agent-consolidation-20261009.ipynb",
+      "reference": "danielwuu/iris-x-n14-agent-consolidation",
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "competition_sources": []
+    }
+  ],
+  "untouched_notebooks": [
+    {
+      "run_id": "N5",
+      "sha256": "bb458852520552c290e057ce2ca74cda234477051db7cfc8caed5edd5c3d8e58"
+    },
+    {
+      "run_id": "N6",
+      "sha256": "72114ab5b4c3b61f295f932c804ad784b8e70e9ebaf976f3542bd4e09fc7e49d"
+    },
+    {
+      "run_id": "N7",
+      "sha256": "290710af40373765e42d2fa3f592e006da96318405227e32ea57a0bb09293aa5"
+    },
+    {
+      "run_id": "N8",
+      "sha256": "af2aa1c940b9fa3ebaa60e35f4d2ae312e325806c26881b273161008dbb39300"
+    }
+  ],
+  "scientific_invariants": {
+    "all14_scientific_source_data_lock_files_byte_identical": true,
+    "all10_scientific_embedded_payloads_unchanged": true,
+    "entrypoint_source_loader_unchanged": true,
+    "all_existing_dataset_sources_versions_and_pins_unchanged": true,
+    "tasks_prompts_seed_budget_gate_backend_unchanged": true,
+    "136confirmation_not_used": true,
+    "only_changed_helper_function": "scan_candidates"
+  },
+  "independent_validation": {
+    "tests_independently_rerun": 44,
+    "all_passed": true,
+    "skips": 0,
+    "builder_full_suite_tests": 97,
+    "builder_full_suite_pass_log_inspected": true,
+    "actual_provider_N6_N7_bytes_and_canonical_runtime8_used": true,
+    "original_v3_depth_failure_reproduced": true,
+    "competition_and_VCS_scandir_prohibited_in_fixture": true,
+    "repo_working_tree_valid_shadow_still_ambiguous": true,
+    "nested_dataset_competitions_basename_kept": true,
+    "explicit_competition_descendant_roots_excluded": true,
+    "ordinary_input_depth_limit_unchanged_fail_closed": true,
+    "closed_evidence_full_integrity_not_pruned": true,
+    "reproduced_v3_zero_call_BLOCKED_retry_preserves_bytes": true,
+    "all6_generated_notebook_entrypoints_pass": true,
+    "N13_no_input_scan_or_model_assets": true,
+    "N14_original_future_results_gate_preserved": true
+  },
+  "evidence": {
+    "independent_boundary_check": {
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/independent-review/SCOPE-BOUNDARY-INDEPENDENT-CHECK.json",
+      "sha256": "ef0b0a457ff22bb2cda35267ef7ac814b5baf6be87d5d285b808c5a3fd3ed1ce"
+    },
+    "independent44_test_log": {
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/independent-review/FINAL-INDEPENDENT-TESTS.txt",
+      "sha256": "5136bcc4c6cfc5f06869b950edb9830e23f30ffd4360bedb514c6142c5959577"
+    },
+    "full97_test_log": {
+      "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/scopefix-full-tests.txt",
+      "sha256": "1413f23d7e3f0a2b4fb1e23f268b53a0390d4d6468472e8da8465336bb6c54f1"
+    }
+  },
+  "limitations": [
+    "The observed competition directory topology was reconstructed with empty synthetic directories; no real competition contents were opened.",
+    "The new user-reported N9 failure archive was not supplied to this reviewer; zero-call retry was verified on independently reproduced v3 failure evidence, not claimed as a new user archive audit.",
+    "Tests use actual prior evidence and runtime8; the final model backend boundary is mocked. No GPU/model/training or new scientific experiment was run.",
+    "Ordinary eligible Dataset trees remain bounded; malformed/deep/ambiguous ordinary evidence still fails closed rather than being silently ignored.",
+    "N14 still requires future complete N9/N10/N11 evidence and a qualifying policy.",
+    "Whole-wrapper Dataset manifest/version is provenance; runtime enforces selected-evidence inventory pins and the scientific contract."
+  ],
+  "publication_conditions": [
+    "Publish only these exact six successor notebooks to their verified existing N9–N14 private IDs as inactive QUICK_SAVE; retain datasets and N9-only competition association unchanged.",
+    "Fresh preflight must match exact prior v3 source/ID/settings, then normalized saved-source/settings/readback must verify v4; no model execution or submission.",
+    "No Dataset upload/version change is required or approved by this scope-only repair.",
+    "Any helper, notebook, source, pin or executable change requires re-review; additive truthful receipts/docs may follow.",
+    "Git writes/push remain stopped pending separate owner authorization; this technical approval cannot override that stop."
+  ],
+  "open_blockers": [],
+  "reviewer_external_API_model_GPU_Git_mutations": 0
+}

@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "old_helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+  "new_helper_sha256": "06326cb8d4d3c303d348aef8d8c7898b64724053fccfce19d960cdde21e75943",
+  "scientific_source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+  "checks": {
+    "v3_observed_shape_depth_failure_reproduced": "PASS",
+    "v4_actual_provider_evidence_and_no_competition_or_VCS_scandir": "PASS",
+    "explicit_descendant_competition_search_root_skipped": "PASS",
+    "repo_working_tree_competing_valid_evidence_still_ambiguous": "PASS",
+    "nested_dataset_folder_named_competitions_not_excluded": "PASS",
+    "all6_original_gate_decisions_preserved": "PASS",
+    "v3_scope_block_safe_v4_retry_preserves_every_old_byte": "PASS",
+    "ordinary_dataset_depth_limit_still_fail_closed": "PASS",
+    "no_new_model_or_GPU_or_real_competition_reads": "PASS"
+  },
+  "synthetic_reproduction_of_reported_layout": {
+    "reason": "prior-discovery-limit",
+    "limit": "depth",
+    "path_suffix": "/arc-prize-2026-arc-agi-3/.git/deep/should/not/be/scanned/at"
+  },
+  "excluded_fixture_paths": [
+    "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/independent-review/tmpijc2k9m8/kaggle/input/arc-prize-2026-arc-agi-3",
+    "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/independent-review/tmpijc2k9m8/kaggle/input/competitions"
+  ],
+  "scope": "Actual provider N6/N7 bytes with fabricated empty competition/VCS directory topology; no real competition files read; model backend mocked only after full real prerequisite checks."
+}

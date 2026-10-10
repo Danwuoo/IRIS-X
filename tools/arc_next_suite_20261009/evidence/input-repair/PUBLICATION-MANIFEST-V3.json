@@ -1,0 +1,986 @@
+{
+  "format": "irisx/exact-ten-publication-v1",
+  "count": 10,
+  "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+  "design_sha256": "4a9ade5aec744a2b82f357112c59b2f68bcade25decc3cd794d984837c8dcac9",
+  "total_model_call_ceiling": 672,
+  "gpu_execution_performed": false,
+  "training_performed": false,
+  "publication_status": "requires_separate_independent_release",
+  "suite_revision": "runtime8-manifest-fix1-20261010",
+  "notebooks": [
+    {
+      "run_id": "N5",
+      "owner": "danielwuu",
+      "title": "IRIS-X N5 Language Replay",
+      "slug": "iris-x-n5-language-replay",
+      "reference": "danielwuu/iris-x-n5-language-replay",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N5-language-replay-20261009.ipynb",
+      "filename": "IRIS-X-N5-language-replay-20261009.ipynb",
+      "sha256": "bb458852520552c290e057ce2ca74cda234477051db7cfc8caed5edd5c3d8e58",
+      "bytes": 265833,
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "gpu_execution_authorized": false,
+      "training_authorized": false,
+      "competition_submission_authorized": false,
+      "language": "python",
+      "notebook_type": "notebook",
+      "competition_sources": [],
+      "competition_metadata_preserved_only": true,
+      "competition_data_used": false,
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_pins": {
+        "adapter": {
+          "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+        },
+        "interpreter": {
+          "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+        },
+        "model": {
+          "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+        },
+        "runtime": {
+          "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-runtime/8"
+        },
+        "wheels": {
+          "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        }
+      },
+      "runtime_dataset_upload_required": false,
+      "max_generate_calls": 0,
+      "max_generated_tokens": 0,
+      "max_prompt_tokens": 0,
+      "prerequisites": [],
+      "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+      "new_notebook_do_not_overwrite_previous": false,
+      "update_existing_reviewed_notebook": true,
+      "preserve_previous_provider_version": true,
+      "suite_revision": "runtime8-manifest-fix1-20261010"
+    },
+    {
+      "run_id": "N6",
+      "owner": "danielwuu",
+      "title": "IRIS-X N6 Toolbox Contract",
+      "slug": "iris-x-n6-toolbox-contract",
+      "reference": "danielwuu/iris-x-n6-toolbox-contract",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N6-toolbox-contract-20261009.ipynb",
+      "filename": "IRIS-X-N6-toolbox-contract-20261009.ipynb",
+      "sha256": "72114ab5b4c3b61f295f932c804ad784b8e70e9ebaf976f3542bd4e09fc7e49d",
+      "bytes": 266090,
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "gpu_execution_authorized": false,
+      "training_authorized": false,
+      "competition_submission_authorized": false,
+      "language": "python",
+      "notebook_type": "notebook",
+      "competition_sources": [
+        "arc-prize-2026-arc-agi-3"
+      ],
+      "competition_metadata_preserved_only": true,
+      "competition_data_used": false,
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_pins": {
+        "adapter": {
+          "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+        },
+        "interpreter": {
+          "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+        },
+        "model": {
+          "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+        },
+        "runtime": {
+          "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-runtime/8"
+        },
+        "wheels": {
+          "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        }
+      },
+      "runtime_dataset_upload_required": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": [],
+      "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+      "new_notebook_do_not_overwrite_previous": false,
+      "update_existing_reviewed_notebook": true,
+      "preserve_previous_provider_version": true,
+      "suite_revision": "runtime8-manifest-fix1-20261010"
+    },
+    {
+      "run_id": "N7",
+      "owner": "danielwuu",
+      "title": "IRIS-X N7 Typed Program Ir",
+      "slug": "iris-x-n7-typed-program-ir",
+      "reference": "danielwuu/iris-x-n7-typed-program-ir",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N7-typed-program-ir-20261009.ipynb",
+      "filename": "IRIS-X-N7-typed-program-ir-20261009.ipynb",
+      "sha256": "290710af40373765e42d2fa3f592e006da96318405227e32ea57a0bb09293aa5",
+      "bytes": 265922,
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "gpu_execution_authorized": false,
+      "training_authorized": false,
+      "competition_submission_authorized": false,
+      "language": "python",
+      "notebook_type": "notebook",
+      "competition_sources": [],
+      "competition_metadata_preserved_only": true,
+      "competition_data_used": false,
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_pins": {
+        "adapter": {
+          "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+        },
+        "interpreter": {
+          "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+        },
+        "model": {
+          "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+        },
+        "runtime": {
+          "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-runtime/8"
+        },
+        "wheels": {
+          "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        }
+      },
+      "runtime_dataset_upload_required": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": [],
+      "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+      "new_notebook_do_not_overwrite_previous": false,
+      "update_existing_reviewed_notebook": true,
+      "preserve_previous_provider_version": true,
+      "suite_revision": "runtime8-manifest-fix1-20261010"
+    },
+    {
+      "run_id": "N8",
+      "owner": "danielwuu",
+      "title": "IRIS-X N8 Static Feedback",
+      "slug": "iris-x-n8-static-feedback",
+      "reference": "danielwuu/iris-x-n8-static-feedback",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N8-static-feedback-20261009.ipynb",
+      "filename": "IRIS-X-N8-static-feedback-20261009.ipynb",
+      "sha256": "af2aa1c940b9fa3ebaa60e35f4d2ae312e325806c26881b273161008dbb39300",
+      "bytes": 265980,
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "gpu_execution_authorized": false,
+      "training_authorized": false,
+      "competition_submission_authorized": false,
+      "language": "python",
+      "notebook_type": "notebook",
+      "competition_sources": [],
+      "competition_metadata_preserved_only": true,
+      "competition_data_used": false,
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_pins": {
+        "adapter": {
+          "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+        },
+        "interpreter": {
+          "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+        },
+        "model": {
+          "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+        },
+        "runtime": {
+          "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-runtime/8"
+        },
+        "wheels": {
+          "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        }
+      },
+      "runtime_dataset_upload_required": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": [],
+      "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+      "new_notebook_do_not_overwrite_previous": false,
+      "update_existing_reviewed_notebook": true,
+      "preserve_previous_provider_version": true,
+      "suite_revision": "runtime8-manifest-fix1-20261010"
+    },
+    {
+      "run_id": "N9",
+      "owner": "danielwuu",
+      "title": "IRIS-X N9 Object Perception",
+      "slug": "iris-x-n9-object-perception",
+      "reference": "danielwuu/iris-x-n9-object-perception",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N9-object-perception-20261009.ipynb",
+      "filename": "IRIS-X-N9-object-perception-20261009.ipynb",
+      "sha256": "9caafbca723df73bd20d91b83a6be50e5658015e4b7f76eaa8eb240599d179fd",
+      "bytes": 294995,
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "gpu_execution_authorized": false,
+      "training_authorized": false,
+      "competition_submission_authorized": false,
+      "language": "python",
+      "notebook_type": "notebook",
+      "competition_sources": [
+        "arc-prize-2026-arc-agi-3"
+      ],
+      "competition_metadata_preserved_only": true,
+      "competition_data_used": false,
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "dataset_pins": {
+        "adapter": {
+          "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+        },
+        "interpreter": {
+          "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+        },
+        "model": {
+          "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+        },
+        "runtime": {
+          "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-runtime/8"
+        },
+        "wheels": {
+          "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        }
+      },
+      "runtime_dataset_upload_required": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": [
+        "N6"
+      ],
+      "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+      "new_notebook_do_not_overwrite_previous": false,
+      "update_existing_reviewed_notebook": true,
+      "preserve_previous_provider_version": true,
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix1-20261010",
+      "notebook_input_helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+      "prior_dataset_pin": {
+        "format": "irisx/private-prerequisite-dataset-v1",
+        "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+        "private": true,
+        "purpose": "Exact user-returned complete N6/N7 evidence for manually started N9-N14 prerequisite validation. Private project use; no new license grant.",
+        "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+        "query_gold_included": false,
+        "credentials_included": false,
+        "model_weights_included": false,
+        "sources": {
+          "N6": {
+            "path": "N6",
+            "original_archive_sha256": "6e6fbee608928a43ec7cd7d39739999d0271330f84f2155cf6e1f1570baf9677",
+            "original_archive_bytes": 902324,
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+            "files": 435,
+            "receipt": {
+              "run_id": "N6",
+              "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+              "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+              "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+              "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+            }
+          },
+          "N7": {
+            "path": "N7",
+            "original_archive_sha256": "f3587f092c1597e00bbf54237060610bfd45f7ec3196aede03cf04444b36dd21",
+            "original_archive_bytes": 773557,
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+            "files": 435,
+            "receipt": {
+              "run_id": "N7",
+              "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+              "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+              "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+              "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+            }
+          }
+        },
+        "manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+        "file_count": 871,
+        "payload_bytes": 7028736
+      },
+      "prerequisite_dataset_upload_required": true
+    },
+    {
+      "run_id": "N10",
+      "owner": "danielwuu",
+      "title": "IRIS-X N10 Demo Feedback",
+      "slug": "iris-x-n10-demo-feedback",
+      "reference": "danielwuu/iris-x-n10-demo-feedback",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N10-demo-feedback-20261009.ipynb",
+      "filename": "IRIS-X-N10-demo-feedback-20261009.ipynb",
+      "sha256": "270d204e1cbe8c80a8f64908736b616824d4215c177f28c12990ab352180cdbf",
+      "bytes": 295050,
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "gpu_execution_authorized": false,
+      "training_authorized": false,
+      "competition_submission_authorized": false,
+      "language": "python",
+      "notebook_type": "notebook",
+      "competition_sources": [],
+      "competition_metadata_preserved_only": true,
+      "competition_data_used": false,
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "dataset_pins": {
+        "adapter": {
+          "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+        },
+        "interpreter": {
+          "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+        },
+        "model": {
+          "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+        },
+        "runtime": {
+          "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-runtime/8"
+        },
+        "wheels": {
+          "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        }
+      },
+      "runtime_dataset_upload_required": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": [
+        "N6"
+      ],
+      "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+      "new_notebook_do_not_overwrite_previous": false,
+      "update_existing_reviewed_notebook": true,
+      "preserve_previous_provider_version": true,
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix1-20261010",
+      "notebook_input_helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+      "prior_dataset_pin": {
+        "format": "irisx/private-prerequisite-dataset-v1",
+        "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+        "private": true,
+        "purpose": "Exact user-returned complete N6/N7 evidence for manually started N9-N14 prerequisite validation. Private project use; no new license grant.",
+        "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+        "query_gold_included": false,
+        "credentials_included": false,
+        "model_weights_included": false,
+        "sources": {
+          "N6": {
+            "path": "N6",
+            "original_archive_sha256": "6e6fbee608928a43ec7cd7d39739999d0271330f84f2155cf6e1f1570baf9677",
+            "original_archive_bytes": 902324,
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+            "files": 435,
+            "receipt": {
+              "run_id": "N6",
+              "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+              "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+              "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+              "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+            }
+          },
+          "N7": {
+            "path": "N7",
+            "original_archive_sha256": "f3587f092c1597e00bbf54237060610bfd45f7ec3196aede03cf04444b36dd21",
+            "original_archive_bytes": 773557,
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+            "files": 435,
+            "receipt": {
+              "run_id": "N7",
+              "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+              "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+              "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+              "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+            }
+          }
+        },
+        "manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+        "file_count": 871,
+        "payload_bytes": 7028736
+      },
+      "prerequisite_dataset_upload_required": true
+    },
+    {
+      "run_id": "N11",
+      "owner": "danielwuu",
+      "title": "IRIS-X N11 Candidate Memory",
+      "slug": "iris-x-n11-candidate-memory",
+      "reference": "danielwuu/iris-x-n11-candidate-memory",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N11-candidate-memory-20261009.ipynb",
+      "filename": "IRIS-X-N11-candidate-memory-20261009.ipynb",
+      "sha256": "a38907de6bae5abd4c4aa00514fa6b4f1e49af6d56ed77085ebacd79704e8027",
+      "bytes": 295016,
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "gpu_execution_authorized": false,
+      "training_authorized": false,
+      "competition_submission_authorized": false,
+      "language": "python",
+      "notebook_type": "notebook",
+      "competition_sources": [],
+      "competition_metadata_preserved_only": true,
+      "competition_data_used": false,
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "dataset_pins": {
+        "adapter": {
+          "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+        },
+        "interpreter": {
+          "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+        },
+        "model": {
+          "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+        },
+        "runtime": {
+          "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-runtime/8"
+        },
+        "wheels": {
+          "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        }
+      },
+      "runtime_dataset_upload_required": false,
+      "max_generate_calls": 64,
+      "max_generated_tokens": 131072,
+      "max_prompt_tokens": 393216,
+      "prerequisites": [
+        "N6"
+      ],
+      "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+      "new_notebook_do_not_overwrite_previous": false,
+      "update_existing_reviewed_notebook": true,
+      "preserve_previous_provider_version": true,
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix1-20261010",
+      "notebook_input_helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+      "prior_dataset_pin": {
+        "format": "irisx/private-prerequisite-dataset-v1",
+        "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+        "private": true,
+        "purpose": "Exact user-returned complete N6/N7 evidence for manually started N9-N14 prerequisite validation. Private project use; no new license grant.",
+        "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+        "query_gold_included": false,
+        "credentials_included": false,
+        "model_weights_included": false,
+        "sources": {
+          "N6": {
+            "path": "N6",
+            "original_archive_sha256": "6e6fbee608928a43ec7cd7d39739999d0271330f84f2155cf6e1f1570baf9677",
+            "original_archive_bytes": 902324,
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+            "files": 435,
+            "receipt": {
+              "run_id": "N6",
+              "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+              "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+              "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+              "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+            }
+          },
+          "N7": {
+            "path": "N7",
+            "original_archive_sha256": "f3587f092c1597e00bbf54237060610bfd45f7ec3196aede03cf04444b36dd21",
+            "original_archive_bytes": 773557,
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+            "files": 435,
+            "receipt": {
+              "run_id": "N7",
+              "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+              "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+              "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+              "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+            }
+          }
+        },
+        "manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+        "file_count": 871,
+        "payload_bytes": 7028736
+      },
+      "prerequisite_dataset_upload_required": true
+    },
+    {
+      "run_id": "N12",
+      "owner": "danielwuu",
+      "title": "IRIS-X N12 Neural Cpu Search",
+      "slug": "iris-x-n12-neural-cpu-search",
+      "reference": "danielwuu/iris-x-n12-neural-cpu-search",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N12-neural-cpu-search-20261009.ipynb",
+      "filename": "IRIS-X-N12-neural-cpu-search-20261009.ipynb",
+      "sha256": "9b10a501ae908564cccb145d489836e9c8bf90aff07b814c24066e246fb1b887",
+      "bytes": 294998,
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "gpu_execution_authorized": false,
+      "training_authorized": false,
+      "competition_submission_authorized": false,
+      "language": "python",
+      "notebook_type": "notebook",
+      "competition_sources": [],
+      "competition_metadata_preserved_only": true,
+      "competition_data_used": false,
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "dataset_pins": {
+        "adapter": {
+          "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+        },
+        "interpreter": {
+          "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+        },
+        "model": {
+          "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+        },
+        "runtime": {
+          "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-runtime/8"
+        },
+        "wheels": {
+          "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        }
+      },
+      "runtime_dataset_upload_required": false,
+      "max_generate_calls": 32,
+      "max_generated_tokens": 65536,
+      "max_prompt_tokens": 196608,
+      "prerequisites": [
+        "N7"
+      ],
+      "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+      "new_notebook_do_not_overwrite_previous": false,
+      "update_existing_reviewed_notebook": true,
+      "preserve_previous_provider_version": true,
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix1-20261010",
+      "notebook_input_helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+      "prior_dataset_pin": {
+        "format": "irisx/private-prerequisite-dataset-v1",
+        "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+        "private": true,
+        "purpose": "Exact user-returned complete N6/N7 evidence for manually started N9-N14 prerequisite validation. Private project use; no new license grant.",
+        "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+        "query_gold_included": false,
+        "credentials_included": false,
+        "model_weights_included": false,
+        "sources": {
+          "N6": {
+            "path": "N6",
+            "original_archive_sha256": "6e6fbee608928a43ec7cd7d39739999d0271330f84f2155cf6e1f1570baf9677",
+            "original_archive_bytes": 902324,
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+            "files": 435,
+            "receipt": {
+              "run_id": "N6",
+              "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+              "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+              "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+              "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+            }
+          },
+          "N7": {
+            "path": "N7",
+            "original_archive_sha256": "f3587f092c1597e00bbf54237060610bfd45f7ec3196aede03cf04444b36dd21",
+            "original_archive_bytes": 773557,
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+            "files": 435,
+            "receipt": {
+              "run_id": "N7",
+              "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+              "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+              "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+              "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+            }
+          }
+        },
+        "manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+        "file_count": 871,
+        "payload_bytes": 7028736
+      },
+      "prerequisite_dataset_upload_required": true
+    },
+    {
+      "run_id": "N13",
+      "owner": "danielwuu",
+      "title": "IRIS-X N13 Program Curriculum",
+      "slug": "iris-x-n13-program-curriculum",
+      "reference": "danielwuu/iris-x-n13-program-curriculum",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N13-program-curriculum-20261009.ipynb",
+      "filename": "IRIS-X-N13-program-curriculum-20261009.ipynb",
+      "sha256": "89d955a4a50212474355eb4bb70f2b7adb4b90816c815efeaeee5d19d864e0f9",
+      "bytes": 291201,
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "gpu_execution_authorized": false,
+      "training_authorized": false,
+      "competition_submission_authorized": false,
+      "language": "python",
+      "notebook_type": "notebook",
+      "competition_sources": [],
+      "competition_metadata_preserved_only": true,
+      "competition_data_used": false,
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+      ],
+      "dataset_pins": {
+        "adapter": {
+          "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+        },
+        "interpreter": {
+          "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+        },
+        "model": {
+          "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+        },
+        "runtime": {
+          "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-runtime/8"
+        },
+        "wheels": {
+          "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        }
+      },
+      "runtime_dataset_upload_required": false,
+      "max_generate_calls": 0,
+      "max_generated_tokens": 0,
+      "max_prompt_tokens": 0,
+      "prerequisites": [],
+      "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+      "new_notebook_do_not_overwrite_previous": false,
+      "update_existing_reviewed_notebook": true,
+      "preserve_previous_provider_version": true,
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix1-20261010",
+      "notebook_input_helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+      "prior_dataset_pin": null,
+      "prerequisite_dataset_upload_required": false
+    },
+    {
+      "run_id": "N14",
+      "owner": "danielwuu",
+      "title": "IRIS-X N14 Agent Consolidation",
+      "slug": "iris-x-n14-agent-consolidation",
+      "reference": "danielwuu/iris-x-n14-agent-consolidation",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/suite/notebooks/IRIS-X-N14-agent-consolidation-20261009.ipynb",
+      "filename": "IRIS-X-N14-agent-consolidation-20261009.ipynb",
+      "sha256": "009cc1d5b47a18b9e9b5f8d5a57a9374d464db7e0f13d9a739a5443c91d2d74f",
+      "bytes": 295303,
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "gpu_execution_authorized": false,
+      "training_authorized": false,
+      "competition_submission_authorized": false,
+      "language": "python",
+      "notebook_type": "notebook",
+      "competition_sources": [],
+      "competition_metadata_preserved_only": true,
+      "competition_data_used": false,
+      "dataset_sources": [
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
+      ],
+      "dataset_pins": {
+        "adapter": {
+          "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+        },
+        "interpreter": {
+          "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+        },
+        "model": {
+          "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+          "private": true,
+          "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+        },
+        "runtime": {
+          "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-runtime/8"
+        },
+        "wheels": {
+          "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+          "private": true,
+          "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        }
+      },
+      "runtime_dataset_upload_required": false,
+      "max_generate_calls": 256,
+      "max_generated_tokens": 524288,
+      "max_prompt_tokens": 1572864,
+      "prerequisites": [
+        "N6",
+        "N7",
+        "N9",
+        "N10",
+        "N11"
+      ],
+      "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+      "new_notebook_do_not_overwrite_previous": false,
+      "update_existing_reviewed_notebook": true,
+      "preserve_previous_provider_version": true,
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix1-20261010",
+      "notebook_input_helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+      "prior_dataset_pin": {
+        "format": "irisx/private-prerequisite-dataset-v1",
+        "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+        "private": true,
+        "purpose": "Exact user-returned complete N6/N7 evidence for manually started N9-N14 prerequisite validation. Private project use; no new license grant.",
+        "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+        "query_gold_included": false,
+        "credentials_included": false,
+        "model_weights_included": false,
+        "sources": {
+          "N6": {
+            "path": "N6",
+            "original_archive_sha256": "6e6fbee608928a43ec7cd7d39739999d0271330f84f2155cf6e1f1570baf9677",
+            "original_archive_bytes": 902324,
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+            "files": 435,
+            "receipt": {
+              "run_id": "N6",
+              "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+              "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+              "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+              "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+            }
+          },
+          "N7": {
+            "path": "N7",
+            "original_archive_sha256": "f3587f092c1597e00bbf54237060610bfd45f7ec3196aede03cf04444b36dd21",
+            "original_archive_bytes": 773557,
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+            "files": 435,
+            "receipt": {
+              "run_id": "N7",
+              "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+              "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+              "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+              "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+            }
+          }
+        },
+        "manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+        "file_count": 871,
+        "payload_bytes": 7028736
+      },
+      "prerequisite_dataset_upload_required": true
+    }
+  ],
+  "notebook_input_revision": "evidence-inputs-fix1-20261010",
+  "notebook_input_helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+  "updated_runs": [
+    "N9",
+    "N10",
+    "N11",
+    "N12",
+    "N13",
+    "N14"
+  ],
+  "unchanged_runs": [
+    "N5",
+    "N6",
+    "N7",
+    "N8"
+  ]
+}

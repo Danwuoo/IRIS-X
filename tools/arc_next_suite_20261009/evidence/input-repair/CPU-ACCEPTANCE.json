@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "scientific_source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+  "helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+  "focused_tests": {
+    "tests": 88,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "seconds": 141.249,
+    "log": "full-focused-tests-final.txt"
+  },
+  "actual_provider_readback_tests": {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "seconds": 2.034,
+    "log": "provider-readback-tests-final.txt"
+  },
+  "notebook_rebuild_byte_reproducible": true,
+  "scientific_src_changed": false,
+  "N5_N8_notebooks_changed": false,
+  "gpu_execution": false,
+  "model_execution": false,
+  "training": false,
+  "paid_spend": 0,
+  "command": "IRISX_RUNTIME8_TEST_ROOT=<verified canonical runtime8> IRISX_ACTUAL_PRIOR_ROOT=<provider-downloaded N6/N7 payload> python3 -m unittest discover -s tests -p test_*.py -v",
+  "limits": "Generated-notebook actual-input tests stop at a mocked backend boundary; no live model/Kaggle run was started."
+}

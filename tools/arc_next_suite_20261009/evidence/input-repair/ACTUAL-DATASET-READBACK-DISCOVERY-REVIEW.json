@@ -1,0 +1,238 @@
+{
+  "status": "PASS_ACTUAL_PROVIDER_READBACK_AND_AUTO_DISCOVERY",
+  "checked_utc": "2026-10-10T07:30:02.513067+00:00",
+  "receipt_sha256": "b78246d71ab0da68b4c316e2c1aa4226ab6a5d56972217ee32925f9f632f6349",
+  "helper_sha256": "b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002",
+  "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+  "dataset_reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+  "dataset_id": 12482851,
+  "private": true,
+  "version": 1,
+  "exact_readback_files": 871,
+  "actual_provider_prefix": ".",
+  "runs": {
+    "N9": {
+      "gate": {
+        "status": "passed",
+        "receipts": [
+          {
+            "run_id": "N6",
+            "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+            "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+            "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+            "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+          }
+        ]
+      },
+      "missing": [],
+      "selected": {
+        "N6": {
+          "method": "verified-discovery",
+          "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N6",
+          "identical_copies": [
+            "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N6"
+          ],
+          "identity": {
+            "run_id": "N6",
+            "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+            "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+            "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+            "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50",
+            "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d"
+          },
+          "evidence_pin_verified": true
+        }
+      },
+      "scan": {
+        "directories": 3,
+        "entries": 45,
+        "candidates": 2
+      }
+    },
+    "N10": {
+      "gate": {
+        "status": "passed",
+        "receipts": [
+          {
+            "run_id": "N6",
+            "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+            "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+            "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+            "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+          }
+        ]
+      },
+      "missing": [],
+      "selected": {
+        "N6": {
+          "method": "verified-discovery",
+          "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N6",
+          "identical_copies": [
+            "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N6"
+          ],
+          "identity": {
+            "run_id": "N6",
+            "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+            "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+            "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+            "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50",
+            "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d"
+          },
+          "evidence_pin_verified": true
+        }
+      },
+      "scan": {
+        "directories": 3,
+        "entries": 45,
+        "candidates": 2
+      }
+    },
+    "N11": {
+      "gate": {
+        "status": "passed",
+        "receipts": [
+          {
+            "run_id": "N6",
+            "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+            "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+            "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+            "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+          }
+        ]
+      },
+      "missing": [],
+      "selected": {
+        "N6": {
+          "method": "verified-discovery",
+          "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N6",
+          "identical_copies": [
+            "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N6"
+          ],
+          "identity": {
+            "run_id": "N6",
+            "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+            "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+            "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+            "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50",
+            "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d"
+          },
+          "evidence_pin_verified": true
+        }
+      },
+      "scan": {
+        "directories": 3,
+        "entries": 45,
+        "candidates": 2
+      }
+    },
+    "N12": {
+      "gate": {
+        "status": "passed",
+        "receipts": [
+          {
+            "run_id": "N7",
+            "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+            "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+            "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+            "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+          }
+        ]
+      },
+      "missing": [],
+      "selected": {
+        "N7": {
+          "method": "verified-discovery",
+          "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N7",
+          "identical_copies": [
+            "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N7"
+          ],
+          "identity": {
+            "run_id": "N7",
+            "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+            "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+            "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+            "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f",
+            "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4"
+          },
+          "evidence_pin_verified": true
+        }
+      },
+      "scan": {
+        "directories": 3,
+        "entries": 45,
+        "candidates": 2
+      }
+    },
+    "N13": {
+      "gate": {
+        "status": "passed",
+        "receipts": []
+      },
+      "missing": [],
+      "selected": {},
+      "scan": {
+        "directories": 0,
+        "entries": 0,
+        "candidates": 0
+      }
+    },
+    "N14": {
+      "gate": {
+        "status": "blocked",
+        "reason": "missing-consolidation-source",
+        "required": "N9"
+      },
+      "missing": [
+        "N9",
+        "N10",
+        "N11"
+      ],
+      "selected": {
+        "N6": {
+          "method": "verified-discovery",
+          "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N6",
+          "identical_copies": [
+            "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N6"
+          ],
+          "identity": {
+            "run_id": "N6",
+            "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+            "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+            "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+            "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50",
+            "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d"
+          },
+          "evidence_pin_verified": true
+        },
+        "N7": {
+          "method": "verified-discovery",
+          "path": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N7",
+          "identical_copies": [
+            "/workspace/scratch/3c2b2502fb1e/remaining-inputs-repair-20261010/kaggle-publication/dataset-readback/N7"
+          ],
+          "identity": {
+            "run_id": "N7",
+            "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+            "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+            "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+            "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f",
+            "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4"
+          },
+          "evidence_pin_verified": true
+        }
+      },
+      "scan": {
+        "directories": 3,
+        "entries": 45,
+        "candidates": 2
+      }
+    }
+  },
+  "network_or_GPU_calls_by_reviewer": 0
+}

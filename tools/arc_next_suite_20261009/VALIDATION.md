@@ -1,5 +1,19 @@
 # Validation scope and exact release
 
+## Discovery scope correction: evidence-inputs-fix2-20261010
+
+Acceptance passed: **97 CPU tests, zero failures/errors/skips, 141.307s**. Helper SHA256 is `06326cb8d4d3c303d348aef8d8c7898b64724053fccfce19d960cdde21e75943`. The actual returned N6/N7 Dataset and canonical runtime8 were used; all six generated notebooks were checked against a synthetic reproduction of the reported competition/.git directory tree. The competition namespace was not enumerated, ordinary repository evidence still participates in ambiguity checks, and a reproduced zero-call depth BLOCKED receipt safely advances to a fresh attempt without changing old bytes.
+
+All scientific source bytes, source lock, N5–N8 notebooks and Dataset versions remain unchanged. Rebuilding the repaired notebooks is byte-identical. No GPU/model/training run, paid spend or Git action was performed. Exact acceptance and independent review are under `evidence/input-scopefix/`; see `docs/NOTEBOOK-INPUT-SCOPEFIX-20261010.md`.
+
+## Notebook input repair: evidence-inputs-fix1-20261010
+
+All scientific source bytes and source lock `29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50` remain unchanged. The separately hash-bound helper is `b4bfe41fcb03d79086de279580549ccbe6acf2b68bc229c82190184311f77002`.
+
+Acceptance passed: **88 focused CPU tests, zero failures/errors/skips, 141.249s**, with real canonical runtime8 and actual user-returned N6/N7 evidence. This includes 21 new input/retry tests. A further three actual provider-readback tests pass against the new private Dataset's downloaded auto-extracted layout, including all four N9–N12 gates and their generated notebook entrypoints up to a mocked CPU backend boundary. N14 still fails closed for missing N9–N11; N13 does no prior/model scan. Rebuilding the notebook-only repair is byte-reproducible.
+
+No live GPU/model/training run or paid execution was performed. The first four notebooks and all scientific contracts are unchanged. Exact logs and receipt are under `evidence/input-repair/`; see `docs/NOTEBOOK-INPUT-REPAIR-20261010.md` for behavior and remaining runtime limitations.
+
 ## Current repair: runtime8-manifest-fix1-20261010
 
 The 2026-10-09 identity and evidence below are historical. The owner’s first N6 launch exposed a real mounted-manifest integration gap despite the prior57 fixture tests. The repaired runner is `f1f8dfde826fa6c0dbf4ef4e88b1ae60df8964215af8ff02d197b7c49a1e2570`; source lock is `29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50`. The canonical runtime8 manifest bytes are now separately pinned and tested; all scientific inputs and limits remain unchanged.

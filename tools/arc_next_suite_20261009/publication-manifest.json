@@ -297,10 +297,10 @@
       "title": "IRIS-X N9 Object Perception",
       "slug": "iris-x-n9-object-perception",
       "reference": "danielwuu/iris-x-n9-object-perception",
-      "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N9-object-perception-20261009.ipynb",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N9-object-perception-20261009.ipynb",
       "filename": "IRIS-X-N9-object-perception-20261009.ipynb",
-      "sha256": "0bdcc764b3c1481cdefb50126a9e629d079deb70d7b32305c2fb2dcb64ba979f",
-      "bytes": 265964,
+      "sha256": "2e6b3de0d509c6832e8c9cc4e2393be55893d1852a0fc835dccd3fc9d8fb78a0",
+      "bytes": 296125,
       "private": true,
       "mode": "QUICK_SAVE",
       "kernel_execution_type": 3,
@@ -313,7 +313,9 @@
       "competition_submission_authorized": false,
       "language": "python",
       "notebook_type": "notebook",
-      "competition_sources": [],
+      "competition_sources": [
+        "arc-prize-2026-arc-agi-3"
+      ],
       "competition_metadata_preserved_only": true,
       "competition_data_used": false,
       "dataset_sources": [
@@ -321,7 +323,8 @@
         "danielwuu/iris-arc-next-cpython312-offline/2",
         "danielwuu/iris-arc-granite42-8b-offline/2",
         "danielwuu/iris-arc-next-runtime/8",
-        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
       ],
       "dataset_pins": {
         "adapter": {
@@ -361,7 +364,53 @@
       "new_notebook_do_not_overwrite_previous": false,
       "update_existing_reviewed_notebook": true,
       "preserve_previous_provider_version": true,
-      "suite_revision": "runtime8-manifest-fix1-20261010"
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix2-20261010",
+      "notebook_input_helper_sha256": "06326cb8d4d3c303d348aef8d8c7898b64724053fccfce19d960cdde21e75943",
+      "prior_dataset_pin": {
+        "format": "irisx/private-prerequisite-dataset-v1",
+        "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+        "private": true,
+        "purpose": "Exact user-returned complete N6/N7 evidence for manually started N9-N14 prerequisite validation. Private project use; no new license grant.",
+        "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+        "query_gold_included": false,
+        "credentials_included": false,
+        "model_weights_included": false,
+        "sources": {
+          "N6": {
+            "path": "N6",
+            "original_archive_sha256": "6e6fbee608928a43ec7cd7d39739999d0271330f84f2155cf6e1f1570baf9677",
+            "original_archive_bytes": 902324,
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+            "files": 435,
+            "receipt": {
+              "run_id": "N6",
+              "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+              "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+              "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+              "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+            }
+          },
+          "N7": {
+            "path": "N7",
+            "original_archive_sha256": "f3587f092c1597e00bbf54237060610bfd45f7ec3196aede03cf04444b36dd21",
+            "original_archive_bytes": 773557,
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+            "files": 435,
+            "receipt": {
+              "run_id": "N7",
+              "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+              "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+              "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+              "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+            }
+          }
+        },
+        "manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+        "file_count": 871,
+        "payload_bytes": 7028736
+      },
+      "prerequisite_dataset_upload_required": false
     },
     {
       "run_id": "N10",
@@ -369,10 +418,10 @@
       "title": "IRIS-X N10 Demo Feedback",
       "slug": "iris-x-n10-demo-feedback",
       "reference": "danielwuu/iris-x-n10-demo-feedback",
-      "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N10-demo-feedback-20261009.ipynb",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N10-demo-feedback-20261009.ipynb",
       "filename": "IRIS-X-N10-demo-feedback-20261009.ipynb",
-      "sha256": "19bba62304dc0356ca97991ffc0c4d63a39bf8259ed6e77de6df0de72dfa2d34",
-      "bytes": 266019,
+      "sha256": "d1a156ae2144ff644196b58baee1b004d3c0af7bebd0a06cd567e749515d0ba7",
+      "bytes": 296180,
       "private": true,
       "mode": "QUICK_SAVE",
       "kernel_execution_type": 3,
@@ -393,7 +442,8 @@
         "danielwuu/iris-arc-next-cpython312-offline/2",
         "danielwuu/iris-arc-granite42-8b-offline/2",
         "danielwuu/iris-arc-next-runtime/8",
-        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
       ],
       "dataset_pins": {
         "adapter": {
@@ -433,7 +483,53 @@
       "new_notebook_do_not_overwrite_previous": false,
       "update_existing_reviewed_notebook": true,
       "preserve_previous_provider_version": true,
-      "suite_revision": "runtime8-manifest-fix1-20261010"
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix2-20261010",
+      "notebook_input_helper_sha256": "06326cb8d4d3c303d348aef8d8c7898b64724053fccfce19d960cdde21e75943",
+      "prior_dataset_pin": {
+        "format": "irisx/private-prerequisite-dataset-v1",
+        "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+        "private": true,
+        "purpose": "Exact user-returned complete N6/N7 evidence for manually started N9-N14 prerequisite validation. Private project use; no new license grant.",
+        "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+        "query_gold_included": false,
+        "credentials_included": false,
+        "model_weights_included": false,
+        "sources": {
+          "N6": {
+            "path": "N6",
+            "original_archive_sha256": "6e6fbee608928a43ec7cd7d39739999d0271330f84f2155cf6e1f1570baf9677",
+            "original_archive_bytes": 902324,
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+            "files": 435,
+            "receipt": {
+              "run_id": "N6",
+              "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+              "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+              "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+              "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+            }
+          },
+          "N7": {
+            "path": "N7",
+            "original_archive_sha256": "f3587f092c1597e00bbf54237060610bfd45f7ec3196aede03cf04444b36dd21",
+            "original_archive_bytes": 773557,
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+            "files": 435,
+            "receipt": {
+              "run_id": "N7",
+              "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+              "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+              "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+              "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+            }
+          }
+        },
+        "manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+        "file_count": 871,
+        "payload_bytes": 7028736
+      },
+      "prerequisite_dataset_upload_required": false
     },
     {
       "run_id": "N11",
@@ -441,10 +537,10 @@
       "title": "IRIS-X N11 Candidate Memory",
       "slug": "iris-x-n11-candidate-memory",
       "reference": "danielwuu/iris-x-n11-candidate-memory",
-      "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N11-candidate-memory-20261009.ipynb",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N11-candidate-memory-20261009.ipynb",
       "filename": "IRIS-X-N11-candidate-memory-20261009.ipynb",
-      "sha256": "3d7042d8934440f3629e5efbfa93b8606d81eea89686e53356570e035a0bdcce",
-      "bytes": 265985,
+      "sha256": "cccb4a562224ad25fc70fa43c1534e4f107f95148c86a7f88dfe31f396215695",
+      "bytes": 296146,
       "private": true,
       "mode": "QUICK_SAVE",
       "kernel_execution_type": 3,
@@ -465,7 +561,8 @@
         "danielwuu/iris-arc-next-cpython312-offline/2",
         "danielwuu/iris-arc-granite42-8b-offline/2",
         "danielwuu/iris-arc-next-runtime/8",
-        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
       ],
       "dataset_pins": {
         "adapter": {
@@ -505,7 +602,53 @@
       "new_notebook_do_not_overwrite_previous": false,
       "update_existing_reviewed_notebook": true,
       "preserve_previous_provider_version": true,
-      "suite_revision": "runtime8-manifest-fix1-20261010"
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix2-20261010",
+      "notebook_input_helper_sha256": "06326cb8d4d3c303d348aef8d8c7898b64724053fccfce19d960cdde21e75943",
+      "prior_dataset_pin": {
+        "format": "irisx/private-prerequisite-dataset-v1",
+        "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+        "private": true,
+        "purpose": "Exact user-returned complete N6/N7 evidence for manually started N9-N14 prerequisite validation. Private project use; no new license grant.",
+        "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+        "query_gold_included": false,
+        "credentials_included": false,
+        "model_weights_included": false,
+        "sources": {
+          "N6": {
+            "path": "N6",
+            "original_archive_sha256": "6e6fbee608928a43ec7cd7d39739999d0271330f84f2155cf6e1f1570baf9677",
+            "original_archive_bytes": 902324,
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+            "files": 435,
+            "receipt": {
+              "run_id": "N6",
+              "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+              "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+              "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+              "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+            }
+          },
+          "N7": {
+            "path": "N7",
+            "original_archive_sha256": "f3587f092c1597e00bbf54237060610bfd45f7ec3196aede03cf04444b36dd21",
+            "original_archive_bytes": 773557,
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+            "files": 435,
+            "receipt": {
+              "run_id": "N7",
+              "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+              "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+              "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+              "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+            }
+          }
+        },
+        "manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+        "file_count": 871,
+        "payload_bytes": 7028736
+      },
+      "prerequisite_dataset_upload_required": false
     },
     {
       "run_id": "N12",
@@ -513,10 +656,10 @@
       "title": "IRIS-X N12 Neural Cpu Search",
       "slug": "iris-x-n12-neural-cpu-search",
       "reference": "danielwuu/iris-x-n12-neural-cpu-search",
-      "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N12-neural-cpu-search-20261009.ipynb",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N12-neural-cpu-search-20261009.ipynb",
       "filename": "IRIS-X-N12-neural-cpu-search-20261009.ipynb",
-      "sha256": "69f4a1ff3a820e09e4d39e31e5476f869179e7cf027f8eb04e1cd39f2d967aac",
-      "bytes": 265967,
+      "sha256": "d047566d73d159272bfc342ceaddaaa5b009f8e475931440608ff13614ead155",
+      "bytes": 296128,
       "private": true,
       "mode": "QUICK_SAVE",
       "kernel_execution_type": 3,
@@ -537,7 +680,8 @@
         "danielwuu/iris-arc-next-cpython312-offline/2",
         "danielwuu/iris-arc-granite42-8b-offline/2",
         "danielwuu/iris-arc-next-runtime/8",
-        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
       ],
       "dataset_pins": {
         "adapter": {
@@ -577,7 +721,53 @@
       "new_notebook_do_not_overwrite_previous": false,
       "update_existing_reviewed_notebook": true,
       "preserve_previous_provider_version": true,
-      "suite_revision": "runtime8-manifest-fix1-20261010"
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix2-20261010",
+      "notebook_input_helper_sha256": "06326cb8d4d3c303d348aef8d8c7898b64724053fccfce19d960cdde21e75943",
+      "prior_dataset_pin": {
+        "format": "irisx/private-prerequisite-dataset-v1",
+        "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+        "private": true,
+        "purpose": "Exact user-returned complete N6/N7 evidence for manually started N9-N14 prerequisite validation. Private project use; no new license grant.",
+        "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+        "query_gold_included": false,
+        "credentials_included": false,
+        "model_weights_included": false,
+        "sources": {
+          "N6": {
+            "path": "N6",
+            "original_archive_sha256": "6e6fbee608928a43ec7cd7d39739999d0271330f84f2155cf6e1f1570baf9677",
+            "original_archive_bytes": 902324,
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+            "files": 435,
+            "receipt": {
+              "run_id": "N6",
+              "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+              "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+              "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+              "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+            }
+          },
+          "N7": {
+            "path": "N7",
+            "original_archive_sha256": "f3587f092c1597e00bbf54237060610bfd45f7ec3196aede03cf04444b36dd21",
+            "original_archive_bytes": 773557,
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+            "files": 435,
+            "receipt": {
+              "run_id": "N7",
+              "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+              "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+              "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+              "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+            }
+          }
+        },
+        "manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+        "file_count": 871,
+        "payload_bytes": 7028736
+      },
+      "prerequisite_dataset_upload_required": false
     },
     {
       "run_id": "N13",
@@ -585,10 +775,10 @@
       "title": "IRIS-X N13 Program Curriculum",
       "slug": "iris-x-n13-program-curriculum",
       "reference": "danielwuu/iris-x-n13-program-curriculum",
-      "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N13-program-curriculum-20261009.ipynb",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N13-program-curriculum-20261009.ipynb",
       "filename": "IRIS-X-N13-program-curriculum-20261009.ipynb",
-      "sha256": "ee732919b6101b9db07e2ebe23ebb54b0fd1817fb7bbfa00d9493c4256607ddf",
-      "bytes": 266093,
+      "sha256": "89fb4a9de71bf0adba359f99da510c2f1ce4835a2cd7c20b0fb253386d404c0c",
+      "bytes": 292331,
       "private": true,
       "mode": "QUICK_SAVE",
       "kernel_execution_type": 3,
@@ -647,7 +837,11 @@
       "new_notebook_do_not_overwrite_previous": false,
       "update_existing_reviewed_notebook": true,
       "preserve_previous_provider_version": true,
-      "suite_revision": "runtime8-manifest-fix1-20261010"
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix2-20261010",
+      "notebook_input_helper_sha256": "06326cb8d4d3c303d348aef8d8c7898b64724053fccfce19d960cdde21e75943",
+      "prior_dataset_pin": null,
+      "prerequisite_dataset_upload_required": false
     },
     {
       "run_id": "N14",
@@ -655,10 +849,10 @@
       "title": "IRIS-X N14 Agent Consolidation",
       "slug": "iris-x-n14-agent-consolidation",
       "reference": "danielwuu/iris-x-n14-agent-consolidation",
-      "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N14-agent-consolidation-20261009.ipynb",
+      "notebook": "/workspace/scratch/3c2b2502fb1e/remaining-inputs-scopefix-20261010/suite/notebooks/IRIS-X-N14-agent-consolidation-20261009.ipynb",
       "filename": "IRIS-X-N14-agent-consolidation-20261009.ipynb",
-      "sha256": "d8a83c02767abfbf431a8ea8a90d5ce1694972c5d922442ffc3b60b0a80a2e24",
-      "bytes": 266272,
+      "sha256": "7665c7bbda4e053e8524d9521bd1543cb34b8eaf295b076b34cb815084bf495e",
+      "bytes": 296433,
       "private": true,
       "mode": "QUICK_SAVE",
       "kernel_execution_type": 3,
@@ -679,7 +873,8 @@
         "danielwuu/iris-arc-next-cpython312-offline/2",
         "danielwuu/iris-arc-granite42-8b-offline/2",
         "danielwuu/iris-arc-next-runtime/8",
-        "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-prerequisites-20261010/1"
       ],
       "dataset_pins": {
         "adapter": {
@@ -723,7 +918,69 @@
       "new_notebook_do_not_overwrite_previous": false,
       "update_existing_reviewed_notebook": true,
       "preserve_previous_provider_version": true,
-      "suite_revision": "runtime8-manifest-fix1-20261010"
+      "suite_revision": "runtime8-manifest-fix1-20261010",
+      "notebook_input_revision": "evidence-inputs-fix2-20261010",
+      "notebook_input_helper_sha256": "06326cb8d4d3c303d348aef8d8c7898b64724053fccfce19d960cdde21e75943",
+      "prior_dataset_pin": {
+        "format": "irisx/private-prerequisite-dataset-v1",
+        "reference": "danielwuu/iris-arc-next-prerequisites-20261010/1",
+        "private": true,
+        "purpose": "Exact user-returned complete N6/N7 evidence for manually started N9-N14 prerequisite validation. Private project use; no new license grant.",
+        "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+        "query_gold_included": false,
+        "credentials_included": false,
+        "model_weights_included": false,
+        "sources": {
+          "N6": {
+            "path": "N6",
+            "original_archive_sha256": "6e6fbee608928a43ec7cd7d39739999d0271330f84f2155cf6e1f1570baf9677",
+            "original_archive_bytes": 902324,
+            "final_inventory_sha256": "a0ca40bd77a606a333fc1700498cbdaf4ee2c42836b8acf64c938a6e9ca4c05d",
+            "files": 435,
+            "receipt": {
+              "run_id": "N6",
+              "core_sha256": "67bf846ce86ca7f3250f3375f274f3cfe256d62656a076c51077e55caf67cba9",
+              "report_sha256": "ce221ca1e47a45b5f847058cbc672beea7300bd9b240c2332074cfee23d0356c",
+              "seal_sha256": "d9de9569b65927c1bb43b628c9893b562f6255f633e90fc2e597fe8854ec345b",
+              "summary_sha256": "1c5414490f9551996169860c0fcfcd644f9195c3091cea314889f741def36e50"
+            }
+          },
+          "N7": {
+            "path": "N7",
+            "original_archive_sha256": "f3587f092c1597e00bbf54237060610bfd45f7ec3196aede03cf04444b36dd21",
+            "original_archive_bytes": 773557,
+            "final_inventory_sha256": "b5a37f39a6de39d4d3ec45c1602572f88a0942d38f5620802173b1c66fc793c4",
+            "files": 435,
+            "receipt": {
+              "run_id": "N7",
+              "core_sha256": "d688d8ba6af7e421d3b8829c0993ccbf15677ffe52f7cc6586b0ef7a0684f1f6",
+              "report_sha256": "8ea65e189f1fb3285fcf75373b3704602cf5934004c25f4840d5f08fde88089a",
+              "seal_sha256": "686ace6debf2333892c100a64a1167da3df0b80bcf635c0324cbeefaddc6b915",
+              "summary_sha256": "8631bfe12247016266150e2f592d301e37468035e5f3c7ad60821fdf4c35b63f"
+            }
+          }
+        },
+        "manifest_sha256": "74104d7eee062d9b68ed497ac75eb915073951aab8d0bcf211ddd9de42d5be3f",
+        "file_count": 871,
+        "payload_bytes": 7028736
+      },
+      "prerequisite_dataset_upload_required": false
     }
+  ],
+  "notebook_input_revision": "evidence-inputs-fix2-20261010",
+  "notebook_input_helper_sha256": "06326cb8d4d3c303d348aef8d8c7898b64724053fccfce19d960cdde21e75943",
+  "updated_runs": [
+    "N9",
+    "N10",
+    "N11",
+    "N12",
+    "N13",
+    "N14"
+  ],
+  "unchanged_runs": [
+    "N5",
+    "N6",
+    "N7",
+    "N8"
   ]
 }
