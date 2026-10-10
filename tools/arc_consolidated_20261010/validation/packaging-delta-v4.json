@@ -1,0 +1,36 @@
+{
+  "candidate": "/workspace/scratch/3c2b2502fb1e/consolidated-suite-review-20261010/native-release-v4",
+  "changed_files": {
+    "tools/arc_consolidated_20261010/.gitattributes": {
+      "sha256": "93a19d601e05e2ea95e5a420e276925392f095c62e95fd251cb05cf19214547e",
+      "bytes": 132
+    },
+    "tools/arc_consolidated_20261010/__init__.py": {
+      "sha256": "a2788b9c80ba8d44286740428301d44928935f84a6c6e0d3d8ea8422f365fdd0",
+      "bytes": 126
+    },
+    "tools/arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb": {
+      "sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707",
+      "bytes": 213610
+    },
+    "tools/arc_consolidated_20261010/tests/__init__.py": {
+      "sha256": "aee928e1b0f4d72242153bd7244ea4fcabc5650c01a4e5f7791d8f0ba8e6ebb8",
+      "bytes": 78
+    }
+  },
+  "package_source_sha256": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01",
+  "executable_identity_sha256": "97eb6dad929684c4b5f3e512909c19e00e45be0f424b78fdb683e42e2fef1c0c",
+  "notebook_sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707",
+  "crlf_build_controls_provenance_preserved": true,
+  "exactly_one_excess_eof_lf_removed_per_init": true,
+  "default_inert": {
+    "bytecode_setting": true,
+    "error": null,
+    "files": [],
+    "result": null,
+    "tools_loaded": [],
+    "torch_loaded": false
+  },
+  "source_ownership_returned": true,
+  "scoped_attribute_authorization": "Lead conveyed explicit root approval to recognize retained CRLF using -text whitespace=cr-at-eol on only the three named files; root attributes unchanged."
+}

@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "resolved_finding": "BOOTSTRAP-INPUT-OVERLAP",
+  "review_scope": "Narrow pre-write path isolation delta from frozen v2; candidate read-only",
+  "package_source_sha256": "96b56860be587607a8cd86ef73e83d89008b274874e3429989d889de4aab3c69",
+  "executable_identity_sha256": "cefbab2208b8b6dec7d7885ee0763e65e9a355b52219cf1a5d3e74b03eb7f24e",
+  "notebook_sha256": "0e0da400f207995ed884635857ea6caa6cf23c6db3ee7375036ea8e28c652a8f",
+  "tests": {
+    "independently_rerun": 46,
+    "failed": 0,
+    "skipped": 0,
+    "receipt": "focused-tests.txt"
+  },
+  "checks": [
+    "Declared input_root and all five explicit_roots are compared against source cache parent, source identity tree, output and derived sibling environment.",
+    "Equal, ancestor and descendant overlap rejected before filesystem inspection and writes.",
+    "Traversal rejected; relative paths, dot/repeated separators and POSIX double-slash aliases normalized.",
+    "Writable-path symlink checks occur root-first, before following child components.",
+    "Direct runner rejects overlap before loading demos or creating output, including model-disabled CPU mode.",
+    "Safe CPU paths do not inspect declared Dataset roots; inactive actual notebook performs zero writes and no tools/model imports.",
+    "Original v2 source/output overlap reproduction now returns ValueError and zero input writes.",
+    "Deterministic notebook rebuild matches exact released candidate notebook.",
+    "Scientific source, compiler, controls, verifier, ledger, model owner/provider, offline bootstrap, stages, study runner, legacy copies and demos unchanged.",
+    "Runner constants and all functions other than _run AST-identical; _run scientific/dispatch tail AST-identical after guard preflight."
+  ],
+  "limits": [
+    "Lexical guard does not discover input-side symlink or bind-mount aliases without inspecting inputs; post-gate asset/path validation remains required.",
+    "No new v3 FULL scientific run was performed by this reviewer. A v2 FULL result must be described as frozen-v2 execution with a separately verified v3 path-only delta.",
+    "Real runtime8 opaque integrity acceptance from prior review remains applicable to the byte-identical bootstrap verifier. It does not attest all five Datasets.",
+    "Actual model weights, wheels, adapter, CPython/venv preparation, hardware and GPU remain unverified."
+  ],
+  "candidate_edits_performed_by_reviewer": false,
+  "gpu_calls": 0,
+  "install_calls": 0,
+  "gold_reads": 0,
+  "new_proofs": {
+    "focused-tests.txt": "efaf265cf88b142979b6c682e60649b91f3e909c943f768521f54d62d4d7ef7f",
+    "input-overlap.json": "054e52431f0a04aa7dfcad11d42a23ebfabb777eb02d0d0d5e69d85548753a5f",
+    "final-bindings.json": "73fc9294631688b78e45717b2dd77f6e9ff9505cc98b130a2a890277e14fe366"
+  }
+}

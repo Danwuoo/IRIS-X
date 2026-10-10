@@ -1,0 +1,165 @@
+{
+  "format": "irisx/v3-science-invariance-review-v1",
+  "reviewed_v2": "/workspace/scratch/3c2b2502fb1e/consolidated-suite-review-20261010/extracted-v2",
+  "reviewed_v3": "/workspace/scratch/3c2b2502fb1e/consolidated-suite-review-20261010/native-guard-v3",
+  "v2_package_source_sha256": "758c58ac1dced5797b37dae73572386551c5274a6dfa657429102d131a153e87",
+  "v3_package_source_sha256": "96b56860be587607a8cd86ef73e83d89008b274874e3429989d889de4aab3c69",
+  "v3_notebook_sha256": "0e0da400f207995ed884635857ea6caa6cf23c6db3ee7375036ea8e28c652a8f",
+  "source_stable_during_review": true,
+  "scientific_file_comparison": {
+    "arc_object_ir.py": {
+      "v2_sha256": "ba3fa20344d9cb2a3f471d6738e29fcb590bb1ea0a1bfc0b86aa2e1915fbe42a",
+      "v3_sha256": "ba3fa20344d9cb2a3f471d6738e29fcb590bb1ea0a1bfc0b86aa2e1915fbe42a",
+      "equal": true
+    },
+    "verifier.py": {
+      "v2_sha256": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b",
+      "v3_sha256": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b",
+      "equal": true
+    },
+    "controls.py": {
+      "v2_sha256": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a",
+      "v3_sha256": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a",
+      "equal": true
+    },
+    "stages.py": {
+      "v2_sha256": "c5543b64b4a4b8434d30c60e82ffe0746e1718a46d0fc26d3ee6f7f76b9054e4",
+      "v3_sha256": "c5543b64b4a4b8434d30c60e82ffe0746e1718a46d0fc26d3ee6f7f76b9054e4",
+      "equal": true
+    },
+    "study_runner.py": {
+      "v2_sha256": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab",
+      "v3_sha256": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab",
+      "equal": true
+    },
+    "model_provider.py": {
+      "v2_sha256": "22b240bc2bc227e5e35a8f14b4485dddb24856a51d39e48d1f4b58a7c7666452",
+      "v3_sha256": "22b240bc2bc227e5e35a8f14b4485dddb24856a51d39e48d1f4b58a7c7666452",
+      "equal": true
+    },
+    "ledger.py": {
+      "v2_sha256": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055",
+      "v3_sha256": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055",
+      "equal": true
+    },
+    "assets.py": {
+      "v2_sha256": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09",
+      "v3_sha256": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09",
+      "equal": true
+    },
+    "evidence.py": {
+      "v2_sha256": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698",
+      "v3_sha256": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698",
+      "equal": true
+    },
+    "offline_bootstrap.py": {
+      "v2_sha256": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193",
+      "v3_sha256": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193",
+      "equal": true
+    },
+    "remote_model_owner.py": {
+      "v2_sha256": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e",
+      "v3_sha256": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e",
+      "equal": true
+    },
+    "__init__.py": {
+      "v2_sha256": "c5ff0821d5809360bd0503603602c3c240c73728672bcb00e000daa4c282372e",
+      "v3_sha256": "c5ff0821d5809360bd0503603602c3c240c73728672bcb00e000daa4c282372e",
+      "equal": true
+    },
+    "data/engineering-demos.json": {
+      "v2_sha256": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8",
+      "v3_sha256": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8",
+      "equal": true
+    },
+    "data/provenance.json": {
+      "v2_sha256": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3",
+      "v3_sha256": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3",
+      "equal": true
+    },
+    "legacy/arc_typed_ir.py": {
+      "v2_sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9",
+      "v3_sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9",
+      "equal": true
+    },
+    "legacy/arc_bounded_v2.py": {
+      "v2_sha256": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7",
+      "v3_sha256": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7",
+      "equal": true
+    }
+  },
+  "all_scientific_files_byte_identical": true,
+  "changed_existing_tool_files": [
+    "arc_consolidated_20261010/build_notebook.py",
+    "arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb",
+    "arc_consolidated_20261010/runner.py"
+  ],
+  "added_tool_files": [
+    "arc_consolidated_20261010/path_guard.py",
+    "arc_consolidated_20261010/tests/test_path_guard.py"
+  ],
+  "removed_tool_files": [],
+  "runner_unchanged_functions_and_dispatch_class_ast": {
+    "limits_for": true,
+    "_compact_ledger": true,
+    "_physical_complete": true,
+    "_prior_model_stopped": true,
+    "_bootstrap_environment": true,
+    "_unknown": true,
+    "AccountedVerifier": true,
+    "run": true
+  },
+  "runner_literals_equal": {
+    "PROFILES": true,
+    "BASE_SHA256": true,
+    "SMOKE_SHA256": true,
+    "CONTROLS_SHA256": true
+  },
+  "runner_dispatch_and_stage_tail_ast_equal": true,
+  "runner_dispatch_tail_ast_sha256": "289ed4d480d21e58b4110642703c69e74df7229d22fcfc40c22c7aaec17174f7",
+  "budget_profiles": {
+    "SMOKE": {
+      "candidates": 128,
+      "coverage_checks": 1152,
+      "coverage_wall_seconds": 300,
+      "verifier_checks": 1152,
+      "model_calls": 0,
+      "session_seconds": 600
+    },
+    "FULL": {
+      "candidates": 5965,
+      "coverage_checks": 47848,
+      "coverage_wall_seconds": 1800,
+      "verifier_checks": 52536,
+      "model_calls": 80,
+      "session_seconds": 7200
+    }
+  },
+  "builder_manual_config_literal_equal": true,
+  "notebook_manual_config_cell_equal": true,
+  "notebook_embedded_file_count": 25,
+  "notebook_embedded_source_errors": [],
+  "notebook_payload_hash_matches": true,
+  "base_inventory": {
+    "count": 5965,
+    "canonical_sha256": "f205b801bbb177cacd560582ddf994ad27c0f934cacd999b7983709d1c0a071e",
+    "same_ordered_plans_as_v2": true,
+    "same_ordered_ids_as_v2": true
+  },
+  "smoke_inventory": {
+    "count": 128,
+    "canonical_sha256": "1a697fb773219f4f091545528449fb43d53e517c634d59a2835ff2db006acf21",
+    "same_ordered_plans_as_v2": true,
+    "same_ordered_ids_as_v2": true
+  },
+  "required_controls_count": 128,
+  "required_controls_equal_to_v2": true,
+  "required_controls_sha256": "4c1b631ee7090d24caf7b4da976cd6f81c4c273e8b59070802a8cbbacb479608",
+  "v2_full_run_paths_admitted_by_v3_guard": true,
+  "candidate_executions": 0,
+  "model_calls": 0,
+  "query_reads": 0,
+  "query_executions": 0,
+  "source_edits": 0,
+  "bridge_conclusion": "V2 FULL scientific findings may be cited as evidence for the byte-identical scientific components in final V3 only after retaining terminal V2 receipts, this identity bridge, and fresh V3 orchestration regression/smoke evidence. Do not relabel V2 receipts as V3 execution, resume a V2 ledger under V3, or bypass V3 runtime gates. V3 full orchestration/environment/model acceptance is not established by this static bridge."
+}

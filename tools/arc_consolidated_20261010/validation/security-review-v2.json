@@ -1,0 +1,78 @@
+{
+  "review": "independent-v2-ledger-parallel-owner-and-remote-process-review",
+  "snapshot": "/workspace/scratch/3c2b2502fb1e/consolidated-suite-review-20261010/extracted-v2",
+  "zip_sha256": "6d42a1b9d9b9015450647c91e2bf4f0e740afe11a0b8bddc03b74547bcb1cec9",
+  "source_sha256": "758c58ac1dced5797b37dae73572386551c5274a6dfa657429102d131a153e87",
+  "status": "no-new-blocker-in-reviewed-scope",
+  "prior_blocker_B1": "fixed-and-independently-reproduced",
+  "agreed_inventory": {
+    "base_candidates": 5965,
+    "max_common_pool": 5967,
+    "coverage_checks": 47848,
+    "total_cpu_checks": 52536,
+    "model_calls": 80,
+    "positive_controls": 64,
+    "negative_controls": 64,
+    "minimum_demo_witness_tasks": 2
+  },
+  "executed_checks": [
+    {
+      "artifact": "repro_failed_wall_overrun.json",
+      "result": {
+        "first_call_reserved_seconds": 0.02,
+        "first_call_charged_seconds": 0.05015727899444755,
+        "known_measured_total_model_seconds": 0.05015727899444755,
+        "calls_after_failed_deadline": 0,
+        "reservation_overrun": true,
+        "first_row_status": "unknown",
+        "stop_ack": {
+          "model_owner_stopped": true,
+          "model_released": true,
+          "owned_descendants_stopped": true,
+          "owned_descendants": [],
+          "execution_mode": "synthetic-test",
+          "vm_billing_stopped": false
+        }
+      }
+    },
+    {
+      "artifact": "repro_remote_process_controls.json",
+      "result": {
+        "test": "synthetic_remote_timeout_process_tree_and_no_retry",
+        "passed": true,
+        "measured_dispatch_seconds": 0.231155954003043,
+        "physical_attempts": 1,
+        "observed_process_count": 2,
+        "leader_returncode": -15,
+        "forced_stop": true,
+        "owned_io_threads_stopped": true,
+        "live_owned_processes": 0,
+        "interpreter": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+        "gpu_or_model_loaded": false
+      }
+    }
+  ],
+  "reviewed_protections": [
+    "Failed dispatch measured elapsed persists before finish; overrun closes further dispatch including resumed response-before-finish recovery.",
+    "Four-worker coverage window: controller alone compiles, reserves, accesses ledger, and finalizes in input order; worker thread only calls bounded verifier; stops drain existing futures.",
+    "Unconfirmed or malformed CPU worker result retains reservation and forbids subsequent admissions/global seal; pending-set stop proof separates active work from missing evidence.",
+    "Remote child: immutable admission/source/environment binding; captured-byte tools finder; isolated prepared interpreter; bounded framed IPC; sequential nonce/sequence/request hashes; strict token/model/actual-environment response bindings.",
+    "Parent-supervised model deadlines and stop: process birth/session tracking, owned descendant termination, reaped leader and joined I/O threads; retries prohibited after uncertain attempt.",
+    "CPU diagnostics and no-go path remain independent from model asset installation and model startup; generated source remains data."
+  ],
+  "qualifications": [
+    "Synthetic process tests use canonical existing python3.12, because the cloud python3 alias is a symlink rejected by the unchanged path guard.",
+    "Production RemoteModelOwner command comes from the copied offline venv, not the parent sys.executable alias; this source finding is not actual bootstrap acceptance.",
+    "Parent separately owns the 255-test focused acceptance, SMOKE and possible FULL run; no pass is claimed here for those.",
+    "No GPU/model load, offline installation, real model material verification, scoring/gold access, or candidate modifications performed.",
+    "5965 replaces historical 6225 only under parent-confirmed six-fix dead-relation removal; separate v2 source identity is preserved."
+  ],
+  "files": {
+    "ledger.py": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055",
+    "runner.py": "978910e0c5d366e78a7bede4aad00967b547fb473e1b0e51072e6425b0ddb375",
+    "study_runner.py": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab",
+    "model_provider.py": "22b240bc2bc227e5e35a8f14b4485dddb24856a51d39e48d1f4b58a7c7666452",
+    "remote_model_owner.py": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e",
+    "evidence.py": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698"
+  }
+}

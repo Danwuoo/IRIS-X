@@ -1,0 +1,16 @@
+[
+  {
+    "target": "source",
+    "synthetic_test_only": true,
+    "error": "ValueError: source cache parent overlaps declared immutable input input_root",
+    "writes_under_declared_input": 0,
+    "no_real_dataset_touched": true
+  },
+  {
+    "target": "output",
+    "synthetic_test_only": true,
+    "error": "ValueError: output overlaps declared immutable input input_root",
+    "writes_under_declared_input": 0,
+    "no_real_dataset_touched": true
+  }
+]

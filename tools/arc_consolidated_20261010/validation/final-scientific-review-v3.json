@@ -1,0 +1,117 @@
+{
+  "schema": "irisx/independent-final-scientific-release-review-v1",
+  "reviewed_at_utc": "2026-10-10T13:11:31.635764+00:00",
+  "decision": "accept_scientific_counts_and_documentation_with_stated_scope",
+  "blocking_issues": [],
+  "review_scope": "Read-only terminal receipts, full Cartesian coverage, journal and archive integrity, frozen source bridge, and final documentation. No verifier/model reruns or gold/query reads. No source edits.",
+  "reviewed_document_sha256": {
+    "VALIDATION.md": "e596a157cf32278d0f34274119174608765569b8ad607955a683b1ffb99067da",
+    "RUN_GUIDE.zh-TW.md": "3cfd31d5a118839a7fdfd3d450492f6d04c85141939a4ae76ff589633ff0d2ab",
+    "RESEARCH_RATIONALE.zh-TW.md": "5b46ff5c8859682997ffcbc2f9e7d46c709c42a18aed15e3c7340d465c3f10ca",
+    "validation/release-validation.json": "c829ad33b2b06d32cca3dd205c9605421b333d21b759cdcd2defcee19cfe594c"
+  },
+  "independent_recount": {
+    "filename": "FULL-TERMINAL-INDEPENDENT-RECOUNT.json",
+    "sha256": "ccfcdce25f36714f71dd527e251102a4ac0ff5eaa161fd3c47ea74ea5cab9ed8",
+    "validation_errors": []
+  },
+  "release_manifest_reference_checks": {
+    "smoke-v3-audit.json": {
+      "sha256": "db8934922d4d3cca351d2d03994b4b3e99eb4b0ec6b1ede2a11ee19a4d11096f",
+      "matches_manifest": true
+    },
+    "full-v2-audit.json": {
+      "sha256": "759a6643ba9cd595a9faf4d5b6d7235a7a47c0982150f526485987d932d67f1f",
+      "matches_manifest": true
+    },
+    "science-invariance-v3.json": {
+      "sha256": "d6cd061bfe9915352e7dd703c875d2201c3d623329eb3b5c1c80e9d33232bc44",
+      "matches_manifest": true
+    },
+    "v2-v3-smoke-parity.json": {
+      "sha256": "8e9381d6d4fd0e69bfaabc207877a7c9f4013fa50a902d33dd599479126a0149",
+      "matches_manifest": true
+    },
+    "linux-tests-v3.txt": {
+      "sha256": "0bee45cd213544d731fd27157d9c9c017959282021b63e2f3eb76b6b5ed81cbb",
+      "matches_manifest": true
+    }
+  },
+  "terminal_science": {
+    "physical_checks": 47848,
+    "controls": 128,
+    "task_checks": 47720,
+    "inventory": 5965,
+    "tasks": 8,
+    "task_status_counts": {
+      "mismatch": 45813,
+      "out_of_domain": 1904,
+      "fit": 3
+    },
+    "witness_tasks": 2,
+    "unknown": 0,
+    "missing": 0,
+    "new_model_calls": 0,
+    "candidate_domain_reasons": {
+      "new_grid bounds": 38,
+      "program step limit": 1866
+    },
+    "demo_domain_reasons": {
+      "new_grid bounds": 84,
+      "program step limit": 1866
+    },
+    "subsequent_not_evaluated_demos": 362,
+    "ledger_records": 143552,
+    "charged": {
+      "archive_seconds": 13.992671884996525,
+      "coverage_wall_seconds": 1207.3308834869968,
+      "coverage_checks": 47848,
+      "cpu_checks": 47848,
+      "gas": 1515571822,
+      "unknown_verifications": 0,
+      "verifier_seconds": 4318.10289127197
+    },
+    "archive_sha256": "e488501891553ab23c04a3b408030d86488642ee13a87e96623efdee3fb0e8e2"
+  },
+  "witness_interpretation": [
+    "fafffa47: two equal-panel NOR background variants fit all four demonstrations; these are one witnessed task.",
+    "c444b776: first-to-second panel copy with one-row gap fits its sole demonstration.",
+    "Object/anchor additions have no all-demo witness on these eight exposed tasks under current limits.",
+    "The 2/8 result is exposed-engineering demo feasibility, not a query/generalization/competition score."
+  ],
+  "identity_bridge": {
+    "v2_full_source_sha256": "758c58ac1dced5797b37dae73572386551c5274a6dfa657429102d131a153e87",
+    "final_v3_source_sha256": "96b56860be587607a8cd86ef73e83d89008b274874e3429989d889de4aab3c69",
+    "scientific_components_budgets_dispatch_unchanged": true,
+    "fresh_v3_tests": 272,
+    "fresh_v3_smoke_semantic_receipts_identical": 1152,
+    "excluded_parity_fields": [
+      "wall_seconds",
+      "worker_cpu_seconds",
+      "worker_wall_seconds",
+      "wall_reserved_seconds"
+    ],
+    "v2_full_must_retain_v2_attribution": true,
+    "cross_version_resume_allowed": false
+  },
+  "historical_comparison": {
+    "legacy_n12_status_checks": {
+      "checks": 10216,
+      "status_agree": 10216,
+      "mismatch": 10178,
+      "out_of_domain": 38
+    },
+    "legacy_gas_comparison": {
+      "same": 10186,
+      "different": 30
+    },
+    "exact_cost_parity_claim_permitted": false
+  },
+  "documentation_findings": [
+    "No scientific overclaim or count error found in the four hash-bound documents.",
+    "Documentation explicitly distinguishes the v2 FULL evidence from fresh v3 orchestration checks.",
+    "Domain exclusions are retained separately from mismatches; demo-level and candidate-level denominators are distinguished.",
+    "The optional candidate-level clarification is 1,866 step-limit plus 38 grid-bound exclusions; current text is already accurate.",
+    "Model installation, tokenizer/weights, G4/GPU, four-L4 deployment, query scoring, N14 promotion, whole-repository CI and publication remain outside this scientific signoff."
+  ]
+}

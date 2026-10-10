@@ -1,0 +1,240 @@
+{
+  "code_data_tests_notebook": {
+    "tools/__init__.py": {
+      "bytes": 47,
+      "sha256": "f5ed985f7ed9e31ea3be113e86b11a7b44313f467c2e468a034ff789c7b85c76"
+    },
+    "tools/arc_consolidated_20261010/__init__.py": {
+      "bytes": 126,
+      "sha256": "a2788b9c80ba8d44286740428301d44928935f84a6c6e0d3d8ea8422f365fdd0"
+    },
+    "tools/arc_consolidated_20261010/arc_object_ir.py": {
+      "bytes": 27437,
+      "sha256": "ba3fa20344d9cb2a3f471d6738e29fcb590bb1ea0a1bfc0b86aa2e1915fbe42a"
+    },
+    "tools/arc_consolidated_20261010/assets.py": {
+      "bytes": 5246,
+      "sha256": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09"
+    },
+    "tools/arc_consolidated_20261010/build_notebook.py": {
+      "bytes": 21612,
+      "sha256": "2774a6e7082db7ca63c24608cdb780826eda850894af1d3d8cb7666ce8e11039"
+    },
+    "tools/arc_consolidated_20261010/controls.py": {
+      "bytes": 27065,
+      "sha256": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a"
+    },
+    "tools/arc_consolidated_20261010/data/engineering-demos.json": {
+      "bytes": 11236,
+      "sha256": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8"
+    },
+    "tools/arc_consolidated_20261010/data/provenance.json": {
+      "bytes": 852,
+      "sha256": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3"
+    },
+    "tools/arc_consolidated_20261010/evidence.py": {
+      "bytes": 5057,
+      "sha256": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698"
+    },
+    "tools/arc_consolidated_20261010/ledger.py": {
+      "bytes": 28286,
+      "sha256": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_bounded_v2.py": {
+      "bytes": 24707,
+      "sha256": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_bundle.py": {
+      "bytes": 7681,
+      "sha256": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_environment.py": {
+      "bytes": 44063,
+      "sha256": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_interpreter.py": {
+      "bytes": 22257,
+      "sha256": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_runtime.py": {
+      "bytes": 37092,
+      "sha256": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_typed_ir.py": {
+      "bytes": 13566,
+      "sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9"
+    },
+    "tools/arc_consolidated_20261010/model_provider.py": {
+      "bytes": 35043,
+      "sha256": "22b240bc2bc227e5e35a8f14b4485dddb24856a51d39e48d1f4b58a7c7666452"
+    },
+    "tools/arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb": {
+      "bytes": 213610,
+      "sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707"
+    },
+    "tools/arc_consolidated_20261010/offline_bootstrap.py": {
+      "bytes": 33326,
+      "sha256": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193"
+    },
+    "tools/arc_consolidated_20261010/path_guard.py": {
+      "bytes": 3708,
+      "sha256": "29229ab065bc93e917e8376be0003c5728cfcea99b7b67ce6955a3d297f628f3"
+    },
+    "tools/arc_consolidated_20261010/remote_model_owner.py": {
+      "bytes": 47725,
+      "sha256": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e"
+    },
+    "tools/arc_consolidated_20261010/runner.py": {
+      "bytes": 34521,
+      "sha256": "82b67337f14442e2148ff3a637ca7cb854ad147928c26088e8d4dff763c4040a"
+    },
+    "tools/arc_consolidated_20261010/stages.py": {
+      "bytes": 26521,
+      "sha256": "c5543b64b4a4b8434d30c60e82ffe0746e1718a46d0fc26d3ee6f7f76b9054e4"
+    },
+    "tools/arc_consolidated_20261010/study_runner.py": {
+      "bytes": 28473,
+      "sha256": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab"
+    },
+    "tools/arc_consolidated_20261010/tests/__init__.py": {
+      "bytes": 78,
+      "sha256": "aee928e1b0f4d72242153bd7244ea4fcabc5650c01a4e5f7791d8f0ba8e6ebb8"
+    },
+    "tools/arc_consolidated_20261010/tests/support.py": {
+      "bytes": 930,
+      "sha256": "fdddaab32fdfe1d4391e61d9b710a9a73b531fc0c851e621d25e84c031170ba8"
+    },
+    "tools/arc_consolidated_20261010/tests/test_assets.py": {
+      "bytes": 6722,
+      "sha256": "7b394d907fc46370f9f2ca582936acb593402e2b2a61b668ac3bb245001ba069"
+    },
+    "tools/arc_consolidated_20261010/tests/test_bootstrap_integration.py": {
+      "bytes": 22651,
+      "sha256": "3aee55e71c734e75bd76cae7991cd0342ce090dde361b3f1ba8ffcea4526b443"
+    },
+    "tools/arc_consolidated_20261010/tests/test_controls.py": {
+      "bytes": 18258,
+      "sha256": "af62fa83c9dd00c2605b36f36b40dff88adc4b885c899f3c9e51184f3e94d1f9"
+    },
+    "tools/arc_consolidated_20261010/tests/test_ledger.py": {
+      "bytes": 18966,
+      "sha256": "42f1f2c02c954d1270980a4ca48392a4308403f5ab1e7622fb6ad06c45faec52"
+    },
+    "tools/arc_consolidated_20261010/tests/test_model_provider.py": {
+      "bytes": 23797,
+      "sha256": "f251024733e155ed15fdaf7568d03848e701b42a29f73c7798cb7f13cd0cae31"
+    },
+    "tools/arc_consolidated_20261010/tests/test_notebook.py": {
+      "bytes": 15987,
+      "sha256": "c7bb44b61430ea9497a8cb290a6a44a6ac8116a14362a3b0fc1469db71edbd8d"
+    },
+    "tools/arc_consolidated_20261010/tests/test_object_ir.py": {
+      "bytes": 10995,
+      "sha256": "3efe5b113a7206d48849894637ec72fdc9a9b93820a9d1b6a6d95d89ecf4cb71"
+    },
+    "tools/arc_consolidated_20261010/tests/test_offline_bootstrap.py": {
+      "bytes": 28243,
+      "sha256": "6e75320c879954187d356850b3dbd16a69222d555f5144d1426b08586d267da5"
+    },
+    "tools/arc_consolidated_20261010/tests/test_parallel_verifier.py": {
+      "bytes": 13775,
+      "sha256": "3fb8d5d3001bae200103737fbc5e4a94cd28fd188d9e3e9c097e0241b52ea7cb"
+    },
+    "tools/arc_consolidated_20261010/tests/test_path_guard.py": {
+      "bytes": 15281,
+      "sha256": "cccfd9a334427ecbbdd8d3411eea7dfa578b933c437b0c549bf170b3ba397379"
+    },
+    "tools/arc_consolidated_20261010/tests/test_remote_model_owner.py": {
+      "bytes": 13741,
+      "sha256": "19c8017467ed422a4a8e55f924e55572ae610936aab59907d2c7b102562e332b"
+    },
+    "tools/arc_consolidated_20261010/tests/test_runner.py": {
+      "bytes": 22253,
+      "sha256": "f27f661cca64f0312f358510ca6d11ffb84687d59a3f2b09c9e90cd991656844"
+    },
+    "tools/arc_consolidated_20261010/tests/test_stages.py": {
+      "bytes": 13713,
+      "sha256": "3f8f228e8d5ccf6c4bb3977cad80fa6b05c69a9622b9b62e1bfff70ff378bd94"
+    },
+    "tools/arc_consolidated_20261010/tests/test_study_runner.py": {
+      "bytes": 18097,
+      "sha256": "a54200e749d8830dc24e9768aac62379ce69bbf96e8e2389c2fe4972d61c19f3"
+    },
+    "tools/arc_consolidated_20261010/tests/test_verifier.py": {
+      "bytes": 13736,
+      "sha256": "20f82805e18237175e94b70b2181f0bfe8ece89db8e041ce03d8b595d4005605"
+    },
+    "tools/arc_consolidated_20261010/verifier.py": {
+      "bytes": 24512,
+      "sha256": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b"
+    },
+    "tools/arc_next_index_repair.py": {
+      "bytes": 16877,
+      "sha256": "05d2855e6029d873f0e74938e73d11ed7a21b72e0a630619b4415d3ebf3ac030"
+    },
+    "tools/arc_next_models.py": {
+      "bytes": 37320,
+      "sha256": "d8c3bda2ef5c557fa93756805c91ea26c5c0773d8f124914791eef13b2f0740b"
+    }
+  },
+  "created_utc": "2026-10-10T13:18:57.133720+00:00",
+  "executable_identity": {
+    "tools/__init__.py": "f5ed985f7ed9e31ea3be113e86b11a7b44313f467c2e468a034ff789c7b85c76",
+    "tools/arc_consolidated_20261010/__init__.py": "a2788b9c80ba8d44286740428301d44928935f84a6c6e0d3d8ea8422f365fdd0",
+    "tools/arc_consolidated_20261010/arc_object_ir.py": "ba3fa20344d9cb2a3f471d6738e29fcb590bb1ea0a1bfc0b86aa2e1915fbe42a",
+    "tools/arc_consolidated_20261010/assets.py": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09",
+    "tools/arc_consolidated_20261010/controls.py": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a",
+    "tools/arc_consolidated_20261010/data/engineering-demos.json": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8",
+    "tools/arc_consolidated_20261010/data/provenance.json": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3",
+    "tools/arc_consolidated_20261010/evidence.py": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698",
+    "tools/arc_consolidated_20261010/ledger.py": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055",
+    "tools/arc_consolidated_20261010/legacy/arc_bounded_v2.py": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_bundle.py": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_environment.py": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_interpreter.py": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_runtime.py": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8",
+    "tools/arc_consolidated_20261010/legacy/arc_typed_ir.py": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9",
+    "tools/arc_consolidated_20261010/model_provider.py": "22b240bc2bc227e5e35a8f14b4485dddb24856a51d39e48d1f4b58a7c7666452",
+    "tools/arc_consolidated_20261010/offline_bootstrap.py": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193",
+    "tools/arc_consolidated_20261010/path_guard.py": "29229ab065bc93e917e8376be0003c5728cfcea99b7b67ce6955a3d297f628f3",
+    "tools/arc_consolidated_20261010/remote_model_owner.py": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e",
+    "tools/arc_consolidated_20261010/runner.py": "82b67337f14442e2148ff3a637ca7cb854ad147928c26088e8d4dff763c4040a",
+    "tools/arc_consolidated_20261010/stages.py": "c5543b64b4a4b8434d30c60e82ffe0746e1718a46d0fc26d3ee6f7f76b9054e4",
+    "tools/arc_consolidated_20261010/study_runner.py": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab",
+    "tools/arc_consolidated_20261010/verifier.py": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b",
+    "tools/arc_next_index_repair.py": "05d2855e6029d873f0e74938e73d11ed7a21b72e0a630619b4415d3ebf3ac030",
+    "tools/arc_next_models.py": "d8c3bda2ef5c557fa93756805c91ea26c5c0773d8f124914791eef13b2f0740b"
+  },
+  "executable_identity_sha256": "97eb6dad929684c4b5f3e512909c19e00e45be0f424b78fdb683e42e2fef1c0c",
+  "format": "irisx/consolidated-native-packaging-v4-source-lock",
+  "notebook_sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707",
+  "package_source_identity": {
+    "__init__.py": "a2788b9c80ba8d44286740428301d44928935f84a6c6e0d3d8ea8422f365fdd0",
+    "arc_object_ir.py": "ba3fa20344d9cb2a3f471d6738e29fcb590bb1ea0a1bfc0b86aa2e1915fbe42a",
+    "assets.py": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09",
+    "controls.py": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a",
+    "data/engineering-demos.json": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8",
+    "data/provenance.json": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3",
+    "evidence.py": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698",
+    "ledger.py": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055",
+    "legacy/arc_bounded_v2.py": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7",
+    "legacy/arc_next_offline_bundle.py": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc",
+    "legacy/arc_next_offline_environment.py": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0",
+    "legacy/arc_next_offline_interpreter.py": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9",
+    "legacy/arc_next_offline_runtime.py": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8",
+    "legacy/arc_typed_ir.py": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9",
+    "model_provider.py": "22b240bc2bc227e5e35a8f14b4485dddb24856a51d39e48d1f4b58a7c7666452",
+    "offline_bootstrap.py": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193",
+    "path_guard.py": "29229ab065bc93e917e8376be0003c5728cfcea99b7b67ce6955a3d297f628f3",
+    "remote_model_owner.py": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e",
+    "runner.py": "82b67337f14442e2148ff3a637ca7cb854ad147928c26088e8d4dff763c4040a",
+    "stages.py": "c5543b64b4a4b8434d30c60e82ffe0746e1718a46d0fc26d3ee6f7f76b9054e4",
+    "study_runner.py": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab",
+    "verifier.py": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b"
+  },
+  "package_source_identity_sha256": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01",
+  "packaging_revision": "v4; two nonsemantic EOF removals; scoped CRLF-preservation attributes",
+  "predecessor_manifest_sha256": "fa1c1195190c1ebc2ce6dc1389829066d5fb46fcf1909fa63644a539d608332f",
+  "runtime_source_sha256": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01",
+  "scoped_gitattributes_sha256": "93a19d601e05e2ea95e5a420e276925392f095c62e95fd251cb05cf19214547e"
+}

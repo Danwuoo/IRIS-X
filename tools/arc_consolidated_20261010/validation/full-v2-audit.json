@@ -1,0 +1,482 @@
+{
+  "archive_bytes": 94667097,
+  "archive_sha256": "e488501891553ab23c04a3b408030d86488642ee13a87e96623efdee3fb0e8e2",
+  "candidate_count": 5965,
+  "charged": {
+    "archive_seconds": 13.992671884996525,
+    "coverage_checks": 47848,
+    "coverage_wall_seconds": 1207.3308834869968,
+    "cpu_checks": 47848,
+    "gas": 1515571822,
+    "load_seconds": 0,
+    "model_checks": 0,
+    "model_seconds": 0,
+    "output_tokens": 0,
+    "physical_calls": 0,
+    "prompt_tokens": 0,
+    "search_checks": 0,
+    "unknown_model_calls": 0,
+    "unknown_verifications": 0,
+    "verifier_seconds": 4318.10289127197
+  },
+  "checks_per_second": 39.63122343214319,
+  "controls": {
+    "all_expected": true,
+    "count": 128
+  },
+  "coverage_complete": true,
+  "cpu_phase_seconds": 1207.3308834869968,
+  "demo_domain_reasons": {
+    "new_grid bounds": 84,
+    "program step limit": 1866,
+    "shared candidate gas exhausted": 362
+  },
+  "demo_status_counts": {
+    "match": 11,
+    "mismatch": 105047,
+    "not_evaluated": 362,
+    "out_of_domain": 1950
+  },
+  "finished_count": 47850,
+  "gate": {
+    "diagnostic_archive_required": true,
+    "gate": "research_testability_only",
+    "generalization_claim": false,
+    "n14_promotion": false,
+    "passed": true,
+    "profile": "FULL",
+    "reasons": []
+  },
+  "gold_read": false,
+  "journal_event_counts": {
+    "finish": 47850,
+    "header": 1,
+    "reserve": 47850,
+    "response": 47848,
+    "session_end": 1,
+    "session_start": 1,
+    "state": 1
+  },
+  "journal_final_sha256": "00c6fe8b59bcd48da32555eb5db8aabd37b452d026f7de94e6048adfeb0cd1f4",
+  "journal_records": 143552,
+  "limitations": [
+    "Exposed engineering demonstrations only; no query or held-out score.",
+    "No witness is bounded by this finite inventory and gas/runtime domain.",
+    "Synthetic controls do not establish GPU, weights or tokenizer acceptance."
+  ],
+  "model_calls": 0,
+  "new_verifier_calls": 0,
+  "ordering_diagnostics": {
+    "arms": {
+      "hard_pruned": {
+        "inconclusive_tasks": 0,
+        "missing_tasks": [],
+        "success_at_expansions": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "success_rate": 0.0,
+        "successful_tasks": 0,
+        "task_denominator": 8
+      },
+      "smoothed": {
+        "inconclusive_tasks": 0,
+        "missing_tasks": [],
+        "success_at_expansions": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "success_rate": 0.0,
+        "successful_tasks": 0,
+        "task_denominator": 8
+      },
+      "uniform": {
+        "inconclusive_tasks": 0,
+        "missing_tasks": [],
+        "success_at_expansions": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "success_rate": 0.0,
+        "successful_tasks": 0,
+        "task_denominator": 8
+      }
+    },
+    "physical_verifier_calls": 0,
+    "reexecution_required": true,
+    "scope": "cached_ordering_diagnostic_only"
+  },
+  "processes": {
+    "model_owner_stopped": true,
+    "verifier_descendants_stopped": true
+  },
+  "profile": "FULL",
+  "read_only": true,
+  "reservation_overrun": false,
+  "reserved_count": 47850,
+  "response_files_verified": 47848,
+  "result_sha256": "53d17dcf50aa3bc4bd14402ac92bed69fac1179d7fb9827047f322800b26b7cc",
+  "schema": "independent-consolidated-cpu-audit-v1",
+  "source_sha256": "758c58ac1dced5797b37dae73572386551c5274a6dfa657429102d131a153e87",
+  "status": "complete",
+  "status_counts": {
+    "fit": 3,
+    "mismatch": 45813,
+    "out_of_domain": 1904
+  },
+  "task_count": 8,
+  "tasks": [
+    {
+      "complete": true,
+      "demo_count": 3,
+      "executed": 5965,
+      "missing": 0,
+      "planned": 5965,
+      "status_counts": {
+        "mismatch": 4691,
+        "out_of_domain": 1274
+      },
+      "task_id": "68bc2e87",
+      "unknown": 0,
+      "witness_count": 0
+    },
+    {
+      "complete": true,
+      "demo_count": 4,
+      "executed": 5965,
+      "missing": 0,
+      "planned": 5965,
+      "status_counts": {
+        "fit": 2,
+        "mismatch": 5963
+      },
+      "task_id": "fafffa47",
+      "unknown": 0,
+      "witness_count": 2
+    },
+    {
+      "complete": true,
+      "demo_count": 3,
+      "executed": 5965,
+      "missing": 0,
+      "planned": 5965,
+      "status_counts": {
+        "mismatch": 5965
+      },
+      "task_id": "33067df9",
+      "unknown": 0,
+      "witness_count": 0
+    },
+    {
+      "complete": true,
+      "demo_count": 2,
+      "executed": 5965,
+      "missing": 0,
+      "planned": 5965,
+      "status_counts": {
+        "mismatch": 5343,
+        "out_of_domain": 622
+      },
+      "task_id": "996ec1f3",
+      "unknown": 0,
+      "witness_count": 0
+    },
+    {
+      "complete": true,
+      "demo_count": 1,
+      "executed": 5965,
+      "missing": 0,
+      "planned": 5965,
+      "status_counts": {
+        "mismatch": 5965
+      },
+      "task_id": "66e6c45b",
+      "unknown": 0,
+      "witness_count": 0
+    },
+    {
+      "complete": true,
+      "demo_count": 1,
+      "executed": 5965,
+      "missing": 0,
+      "planned": 5965,
+      "status_counts": {
+        "fit": 1,
+        "mismatch": 5956,
+        "out_of_domain": 8
+      },
+      "task_id": "c444b776",
+      "unknown": 0,
+      "witness_count": 1
+    },
+    {
+      "complete": true,
+      "demo_count": 2,
+      "executed": 5965,
+      "missing": 0,
+      "planned": 5965,
+      "status_counts": {
+        "mismatch": 5965
+      },
+      "task_id": "7ec998c9",
+      "unknown": 0,
+      "witness_count": 0
+    },
+    {
+      "complete": true,
+      "demo_count": 2,
+      "executed": 5965,
+      "missing": 0,
+      "planned": 5965,
+      "status_counts": {
+        "mismatch": 5965
+      },
+      "task_id": "b25e450b",
+      "unknown": 0,
+      "witness_count": 0
+    }
+  ],
+  "witnesses": [
+    {
+      "candidate_id": "69a1e4a67a756fa6f2c22dd318b0956073135cb6871c36cc0fbd42aafd200bc3",
+      "demo_count": 4,
+      "gas": 6108,
+      "plan": {
+        "steps": [
+          {
+            "axis": "rows",
+            "background": 0,
+            "foreground": 2,
+            "gap": 0,
+            "op": "equal_panels_boolean",
+            "truth_table": 1
+          }
+        ]
+      },
+      "source_sha256": "a8ca93bdc9ba3e45979402e69383bcfb46f880f20aa764f893a13a4779163cb7",
+      "task_id": "fafffa47"
+    },
+    {
+      "candidate_id": "6f7bfe66021bfd34849c11b0d08d14ad9c55c2aa9e1a00ff4e771493295c4d2f",
+      "demo_count": 4,
+      "gas": 9300,
+      "plan": {
+        "steps": [
+          {
+            "axis": "rows",
+            "background": "most_frequent",
+            "foreground": 2,
+            "gap": 0,
+            "op": "equal_panels_boolean",
+            "truth_table": 1
+          }
+        ]
+      },
+      "source_sha256": "e9c5e423eadadb3a1a68562d11e5fcd452a83c75ffc0da23c6afac176028c3cf",
+      "task_id": "fafffa47"
+    },
+    {
+      "candidate_id": "61ad43b0f39efb0abbb6c2ac81329e769cf5055f55bc3691a836b5908a5e93d9",
+      "demo_count": 1,
+      "gas": 7629,
+      "plan": {
+        "steps": [
+          {
+            "axis": "rows",
+            "direction": "first_to_second",
+            "gap": 1,
+            "op": "equal_panels_copy"
+          }
+        ]
+      },
+      "source_sha256": "48ccda37aa07e337f9a9b40afddce29e66444bcc27de8f294107761edf2e89fc",
+      "task_id": "c444b776"
+    }
+  ]
+}

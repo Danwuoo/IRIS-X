@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "checked_utc": "2026-10-10T13:17:07.910731+00:00",
+  "base_commit": "e946fb89a1deb155bb52f5c5b34e703491272853",
+  "scoped_attribute_sha256": "93a19d601e05e2ea95e5a420e276925392f095c62e95fd251cb05cf19214547e",
+  "diff_cached_check_exit": 0,
+  "root_attributes_unchanged": true,
+  "all_existing_blobs_unchanged": 1275,
+  "checked_files": [
+    {
+      "path": "tools/arc_consolidated_20261010/build_notebook.py",
+      "sha256": "2774a6e7082db7ca63c24608cdb780826eda850894af1d3d8cb7666ce8e11039",
+      "index_bytes_equal": true
+    },
+    {
+      "path": "tools/arc_consolidated_20261010/controls.py",
+      "sha256": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a",
+      "index_bytes_equal": true
+    },
+    {
+      "path": "tools/arc_consolidated_20261010/data/provenance.json",
+      "sha256": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3",
+      "index_bytes_equal": true
+    },
+    {
+      "path": "tools/arc_consolidated_20261010/__init__.py",
+      "sha256": "a2788b9c80ba8d44286740428301d44928935f84a6c6e0d3d8ea8422f365fdd0",
+      "index_bytes_equal": true
+    },
+    {
+      "path": "tools/arc_consolidated_20261010/tests/__init__.py",
+      "sha256": "aee928e1b0f4d72242153bd7244ea4fcabc5650c01a4e5f7791d8f0ba8e6ebb8",
+      "index_bytes_equal": true
+    },
+    {
+      "path": "tools/arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb",
+      "sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707",
+      "index_bytes_equal": true
+    },
+    {
+      "path": "tools/arc_consolidated_20261010/.gitattributes",
+      "sha256": "93a19d601e05e2ea95e5a420e276925392f095c62e95fd251cb05cf19214547e",
+      "index_bytes_equal": true
+    }
+  ]
+}

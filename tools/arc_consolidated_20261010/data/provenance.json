@@ -1,0 +1,22 @@
+{
+  "source_commit": "e946fb89a1deb155bb52f5c5b34e703491272853",
+  "source_path": "tools/arc_next_suite_20261009/src/solver-challenges-reference.json",
+  "source_sha256": "6d09aba661c7e4c243d1db1d1297c4e7b1c919943720340898b537cfa916d2ca",
+  "demos_sha256": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8",
+  "task_ids": [
+    "68bc2e87",
+    "fafffa47",
+    "33067df9",
+    "996ec1f3",
+    "66e6c45b",
+    "c444b776",
+    "7ec998c9",
+    "b25e450b"
+  ],
+  "selection": "Original engineering8, exposed; not holdout",
+  "projection": "train -> demos only; no test, query, gold or solutions in runtime payload",
+  "legacy_pins": {
+    "arc_bounded_v2": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7",
+    "arc_typed_ir": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "review": "v4-kaggle-terminal-persisted-evidence-independent-audit",
+  "status": "passed-offline-readback-audit",
+  "reference": "danielwuu/iris-x-consolidated-offline-20261010",
+  "kernel_id": 138033807,
+  "version": 1,
+  "url": "https://www.kaggle.com/code/danielwuu/iris-x-consolidated-offline-20261010",
+  "publication_manifest_sha256": "4245d1cf84c8586d8b1025bbb0a3120356b61936f7df83dd589d9483d7dba67e",
+  "release_review_sha256": "88958058abf7ba08a016da9a76fc8cbbe9172a525ac4390b47e97c739d1fe3f5",
+  "approved_notebook_sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707",
+  "normalized_wire_sha256": "3e5afe9119499d926240703b8502a3c91d8b3db214297b8deb76fd5d15cf5063",
+  "provider_source_sha256": "1881e61fb736bcfe3c2da389dcb4d035d5f1076787ae41f59516653e1299ead2",
+  "canonical_source_equal_after_only_cell_source_list_join": true,
+  "private_inactive_settings_verified": true,
+  "five_versioned_dataset_requests_and_returned_identities_consistent": true,
+  "durable_single_dispatch_claim_and_verified_journal_consistent": true,
+  "one_dispatch_zero_retry_record_consistent_with_reviewed_transport": true,
+  "provider_terminal_status": "COMPLETE",
+  "nbconvert_render_confirmed": true,
+  "recognized_execution_markers_found": false,
+  "output_listing_response": {},
+  "observed_provider_last_run_time": "2026-10-07T13:23:02.327Z",
+  "evidence": {
+    "consolidated-publication-receipt.json": {
+      "sha256": "fcbe05d3092ee0d8f7248b826ebcc01c8b780660383cf8efdcb28af7cc416666",
+      "bytes": 3314
+    },
+    "consolidated-journal.json": {
+      "sha256": "84240038470207f8f0d92239518c3f892b537ae374e454bd91bbc8ab0a1f5321",
+      "bytes": 1253
+    },
+    "consolidated-dispatch-claim.json": {
+      "sha256": "a12e2a99123dba98ea2b70662e0e59d0c85e4939116a5a7063f1c56fdf6c70ea",
+      "bytes": 738
+    },
+    "new-identity-preflight.json": {
+      "sha256": "50990c41781d0162bcb1c24253a4fe2a8bfa99729545bd513d0d9afd6a22ab06",
+      "bytes": 231
+    },
+    "save-response.json": {
+      "sha256": "8e2e0374710bd17546da3995d194ebffaae2f02c9fe36a472b54c78f2f9f8213",
+      "bytes": 202
+    },
+    "saved-source.ipynb": {
+      "sha256": "1881e61fb736bcfe3c2da389dcb4d035d5f1076787ae41f59516653e1299ead2",
+      "bytes": 211603
+    },
+    "saved-metadata.json": {
+      "sha256": "3ac957977fed29ac5e58a289dbec8f0ea7fbe1f4f585e88328ad01e1f8fe5d03",
+      "bytes": 847
+    },
+    "normalized-wire.ipynb": {
+      "sha256": "3e5afe9119499d926240703b8502a3c91d8b3db214297b8deb76fd5d15cf5063",
+      "bytes": 211736
+    },
+    "provider-render-log.txt": {
+      "sha256": "9550ffcacf3cada11abfd093f887e2896cf9a7b7e6296a8835f4a24c0b8252f5",
+      "bytes": 800
+    },
+    "provider-files.json": {
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "bytes": 3
+    },
+    "KAGGLE-CONSOLIDATED-SAVE-INDEX.md": {
+      "sha256": "eae12a3bad4a001e4d823133ab47f366bac74f114db472040814fdfaa5bc7e40",
+      "bytes": 2342
+    },
+    "publish_reviewed_consolidated.py": {
+      "sha256": "c86eeda724554390913ab5d20cae3de54cff0f9c1cdac3b57a606b607d211663",
+      "bytes": 18808
+    }
+  },
+  "limitations": [
+    "Offline audit of saved provider responses and reviewed transport, not a new live query or independent network trace.",
+    "Provider returns bare Dataset identities; mounted versions/bytes, installation, tokenizer/model and GPU execution remain unverified.",
+    "Rendering log and empty serialized file response support the QUICK_SAVE account but are not exhaustive execution attestation.",
+    "Provider metadata lastRunTime precedes the local save timestamps; it is recorded verbatim and not used as creation or execution chronology proof.",
+    "No external actions, candidate changes, model/GPU or query/gold inspection occurred during this audit."
+  ],
+  "observed_at_utc": "2026-10-10T13:24:53.255003+00:00"
+}

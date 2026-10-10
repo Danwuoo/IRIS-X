@@ -1,0 +1,163 @@
+{
+  "schema": "irisx/v4-packaging-scientific-bridge-review-v1",
+  "reviewed_at_utc": "2026-10-10T13:17:56.018857+00:00",
+  "decision": "static_packaging_bridge_accepted_pending_fresh_v4_regression_and_smoke",
+  "source_stable_during_review": true,
+  "v2_source_sha256": "758c58ac1dced5797b37dae73572386551c5274a6dfa657429102d131a153e87",
+  "v3_source_sha256": "96b56860be587607a8cd86ef73e83d89008b274874e3429989d889de4aab3c69",
+  "v4_source_sha256": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01",
+  "v4_notebook_sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707",
+  "v4_executable_overlay_sha256": "97eb6dad929684c4b5f3e512909c19e00e45be0f424b78fdb683e42e2fef1c0c",
+  "changed_existing_execution_files": [
+    "__init__.py",
+    "notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb",
+    "tests/__init__.py"
+  ],
+  "added_execution_files": [
+    ".gitattributes"
+  ],
+  "removed_execution_files": [],
+  "init_packaging_deltas": {
+    "__init__.py": {
+      "old_sha256": "c5ff0821d5809360bd0503603602c3c240c73728672bcb00e000daa4c282372e",
+      "new_sha256": "a2788b9c80ba8d44286740428301d44928935f84a6c6e0d3d8ea8422f365fdd0",
+      "only_one_final_newline_removed": true,
+      "ast_identical": true
+    },
+    "tests/__init__.py": {
+      "old_sha256": "291ce36509c4e78911417cb0809ab947a7844f17ef309d583a11131fdef346d9",
+      "new_sha256": "aee928e1b0f4d72242153bd7244ea4fcabc5650c01a4e5f7791d8f0ba8e6ebb8",
+      "only_one_final_newline_removed": true,
+      "ast_identical": true
+    }
+  },
+  "scientific_file_comparison": {
+    "arc_object_ir.py": {
+      "sha256": "ba3fa20344d9cb2a3f471d6738e29fcb590bb1ea0a1bfc0b86aa2e1915fbe42a",
+      "exact_v2_and_v3_bytes": true
+    },
+    "verifier.py": {
+      "sha256": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b",
+      "exact_v2_and_v3_bytes": true
+    },
+    "controls.py": {
+      "sha256": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a",
+      "exact_v2_and_v3_bytes": true
+    },
+    "stages.py": {
+      "sha256": "c5543b64b4a4b8434d30c60e82ffe0746e1718a46d0fc26d3ee6f7f76b9054e4",
+      "exact_v2_and_v3_bytes": true
+    },
+    "study_runner.py": {
+      "sha256": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab",
+      "exact_v2_and_v3_bytes": true
+    },
+    "model_provider.py": {
+      "sha256": "22b240bc2bc227e5e35a8f14b4485dddb24856a51d39e48d1f4b58a7c7666452",
+      "exact_v2_and_v3_bytes": true
+    },
+    "ledger.py": {
+      "sha256": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055",
+      "exact_v2_and_v3_bytes": true
+    },
+    "assets.py": {
+      "sha256": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09",
+      "exact_v2_and_v3_bytes": true
+    },
+    "evidence.py": {
+      "sha256": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698",
+      "exact_v2_and_v3_bytes": true
+    },
+    "offline_bootstrap.py": {
+      "sha256": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193",
+      "exact_v2_and_v3_bytes": true
+    },
+    "remote_model_owner.py": {
+      "sha256": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e",
+      "exact_v2_and_v3_bytes": true
+    },
+    "data/engineering-demos.json": {
+      "sha256": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8",
+      "exact_v2_and_v3_bytes": true
+    },
+    "data/provenance.json": {
+      "sha256": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3",
+      "exact_v2_and_v3_bytes": true
+    },
+    "legacy/arc_typed_ir.py": {
+      "sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9",
+      "exact_v2_and_v3_bytes": true
+    },
+    "legacy/arc_bounded_v2.py": {
+      "sha256": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7",
+      "exact_v2_and_v3_bytes": true
+    }
+  },
+  "all_scientific_bytes_exact_v2_and_v3": true,
+  "runner_exact_v3_bytes": true,
+  "path_guard_exact_v3_bytes": true,
+  "builder_exact_v3_bytes": true,
+  "budget_and_dispatch_bridge": {
+    "v4_runner_identical_v3": true,
+    "v3_v2_profile_literals_and_dispatch_ast_identical": true,
+    "v3_review_sha256": "d6cd061bfe9915352e7dd703c875d2201c3d623329eb3b5c1c80e9d33232bc44"
+  },
+  "gitattributes_exact_three_scoped_rules": true,
+  "preserved_crlf_files": {
+    "build_notebook.py": {
+      "sha256": "2774a6e7082db7ca63c24608cdb780826eda850894af1d3d8cb7666ce8e11039",
+      "crlf_lines": 332,
+      "bare_lf_lines": 0,
+      "unchanged_from_v3": true
+    },
+    "controls.py": {
+      "sha256": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a",
+      "crlf_lines": 474,
+      "bare_lf_lines": 0,
+      "unchanged_from_v3": true
+    },
+    "data/provenance.json": {
+      "sha256": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3",
+      "crlf_lines": 22,
+      "bare_lf_lines": 0,
+      "unchanged_from_v3": true
+    }
+  },
+  "notebook": {
+    "embedded_files": 25,
+    "closed_source_inventory_exact": true,
+    "embedded_file_hashes_and_source_errors": [],
+    "payload_digest_and_size_correct": true,
+    "all_nonpayload_cells_unchanged": true
+  },
+  "inventory_proofs": {
+    "base-inventory.json": {
+      "count": 5965,
+      "canonical_sha256": "f205b801bbb177cacd560582ddf994ad27c0f934cacd999b7983709d1c0a071e",
+      "ordered_plans_equal_frozen_v2": true,
+      "ordered_ids_equal_frozen_v2": true
+    },
+    "smoke-inventory.json": {
+      "count": 128,
+      "canonical_sha256": "1a697fb773219f4f091545528449fb43d53e517c634d59a2835ff2db006acf21",
+      "ordered_plans_equal_frozen_v2": true,
+      "ordered_ids_equal_frozen_v2": true
+    }
+  },
+  "required_controls": {
+    "count": 128,
+    "canonical_sha256": "4c1b631ee7090d24caf7b4da976cd6f81c4c273e8b59070802a8cbbacb479608",
+    "ordered_controls_exact_frozen_v2": true
+  },
+  "review_limitations": [
+    "Documentation copied from v3 is intentionally excluded; final v4 documents require rebinding by owner.",
+    "Fresh v4 regression and SMOKE receipts are pending and are not asserted by this static review.",
+    "FULL remains immutable v2 evidence; this does not constitute a v3/v4 FULL run.",
+    "No cross-version ledger resume, model/GPU validation, query scoring, N14 promotion or publication acceptance is implied."
+  ],
+  "candidate_executions": 0,
+  "model_calls": 0,
+  "query_gold_reads": 0,
+  "candidate_source_edits": 0,
+  "validation_errors": []
+}

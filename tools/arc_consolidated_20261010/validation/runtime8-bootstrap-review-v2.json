@@ -1,0 +1,46 @@
+{
+  "status": "qualified-pass-with-one-nondefault-configuration-finding",
+  "reviewed_snapshot_executable_sha256": "f839a3ad81ab65f7a4f441b2cec00784521b7483ff716778d1b425dd1ca4899f",
+  "file_hashes": {
+    "tools/arc_consolidated_20261010/offline_bootstrap.py": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193",
+    "tools/arc_consolidated_20261010/assets.py": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09",
+    "tools/arc_consolidated_20261010/build_notebook.py": "ea764ab639790fa6fa2ef60e78e14c4d9cab3d49fae3b957c1e85f0816ad00bc",
+    "tools/arc_consolidated_20261010/runner.py": "978910e0c5d366e78a7bede4aad00967b547fb473e1b0e51072e6425b0ddb375",
+    "tools/arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb": "d189bd47d07242b8c41859dc3ef33e921536f568ae83e1edab740a84d25fb95a"
+  },
+  "snapshot_manifest_files_verified_after_review": 59,
+  "candidate_files_edited": false,
+  "runtime8_boundary": "passed-real-opaque-full-inventory",
+  "finding": {
+    "id": "BOOTSTRAP-INPUT-OVERLAP",
+    "severity": "medium-nondefault-configuration",
+    "default_paths_affected": false,
+    "locations": [
+      "build_notebook.py:192-241",
+      "runner.py:435-460"
+    ],
+    "description": "Source/output directories are checked against each other, but not against declared immutable input_root or explicit_roots before writes. CPU-only synthetic reproduction writes 24 source files or one fixture output under declared input_root. Late environment/mount separation cannot undo those writes.",
+    "recommendation": "Add a pure pre-write overlap check against declared input paths in notebook and direct runner. Check source, output and sibling environment destinations without opening/scanning assets. Preserve current source/output and symlink guards."
+  },
+  "verified": [
+    "All five Dataset references and manifest SHA pins match frozen suite.",
+    "Both exact Kaggle mount layouts supported; multiple matches fail closed.",
+    "Pure planning, disabled bootstrap and failed/SMOKE gate do not access filesystem or helper backend.",
+    "Production runner dispatches bootstrap only after FULL testability gate, explicit model enablement and prior stop confirmation.",
+    "Four frozen bootstrap helpers have exact expected bytes.",
+    "Actual canonical runtime8 and environment source-lock hash match pins.",
+    "Material child exports only aggregate runtime integrity information. No scientific runtime parser is called.",
+    "CPython asset/archive validation, then exact-interpreter installer and cached-environment revalidation are wired; not actually executed here.",
+    "Notebook embedded inventory matches candidate sources and deterministic builder; actual defaults are inert."
+  ],
+  "unverified": [
+    "Actual model weights and material acceptance",
+    "Actual wheelhouse full closure and offline pip resolution",
+    "Actual CPython extraction and venv installation/cached venv acceptance",
+    "Actual adapter Dataset subtree",
+    "Actual five-Dataset combined startup",
+    "Tokenizer/model load, hardware admission, GPU inference",
+    "Complete installed package file-byte integrity beyond the existing pinned wheel, version and environment-receipt checks"
+  ],
+  "scope": "Independent read-only review of supplied candidate plus checks written outside snapshot. No install, weights, GPU, publication or candidate edits."
+}

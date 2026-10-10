@@ -1,0 +1,65 @@
+{
+  "schema": "irisx/v4-final-scientific-release-review-v1",
+  "reviewed_at_utc": "2026-10-10T13:20:16.533008+00:00",
+  "decision": "accepted_scientific_documentation_and_v4_orchestration_bridge",
+  "blocking_issues": [],
+  "scope": "Final metadata and existing receipt review only; no new verifier/model/VM calls or source edits. Git index outcomes are read from the integrator receipt and bound to current files, not independently rerun.",
+  "document_sha256": {
+    "VALIDATION.md": "3c06483a971cc935f1262bc16ef23a7524974dda232e008e6ba7dc5d86c7f732",
+    "README.md": "c8176b4773e99c064265e7b14325bc3836540a5fb16dc0a65f58a332239d6aa5",
+    "RUN_GUIDE.zh-TW.md": "3cfd31d5a118839a7fdfd3d450492f6d04c85141939a4ae76ff589633ff0d2ab",
+    "RESEARCH_RATIONALE.zh-TW.md": "5b46ff5c8859682997ffcbc2f9e7d46c709c42a18aed15e3c7340d465c3f10ca",
+    "validation/release-validation.json": "c67783d74750af79f551a6a7f9a401fe9ee4a02f1489861d067026e76c378556"
+  },
+  "current_source_sha256": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01",
+  "current_notebook_sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707",
+  "referenced_receipts_hash_verified": {
+    "smoke-v4-audit.json": "fed9562ad0140ef1cee6d7d1a13093fd49b96bbca7ea84028a9cfc2792b2794e",
+    "full-v2-audit.json": "759a6643ba9cd595a9faf4d5b6d7235a7a47c0982150f526485987d932d67f1f",
+    "science-invariance-v4.json": "94ed7eccbad6541b42dc129b50f6ca9782bd4e4839d0c9b86a95ff50a716c018",
+    "v2-v4-smoke-parity.json": "2cf0d63f70622dffda9b786d6a33ffc5012a0957decb914d34dc803b92f7df12",
+    "linux-tests-v4.txt": "1efdfe743c67f40497038ae80d282079cbf528f6c0aa5e775a7d07d872df7290",
+    "git-format-acceptance-v4.json": "4bfb9b590cefbc33ce5dea405f45467c9eff4acd16acbfc9222bca283405b07f"
+  },
+  "checks": {
+    "fresh_linux_tests": 272,
+    "linux_seconds": 42.425,
+    "fresh_smoke_receipts": 1152,
+    "independently_recompared_v2_v4_semantic_receipts": 1152,
+    "ignored_parity_fields": [
+      "wall_reserved_seconds",
+      "wall_seconds",
+      "worker_cpu_seconds",
+      "worker_wall_seconds"
+    ],
+    "positive_and_negative_controls_expected": 128,
+    "smoke_model_calls": 0,
+    "smoke_unknown": 0,
+    "smoke_gate_closed": true,
+    "source_and_notebook_match_static_bridge": true,
+    "unchanged_v2_full_diagnostic_and_accounting": true,
+    "unchanged_research_and_run_guides": true,
+    "git_index_receipt_checked_file_hashes_match": true
+  },
+  "full_science": {
+    "attribution": "immutable v2 FULL; not v4 FULL",
+    "checks": 47848,
+    "task_checks": 47720,
+    "task_status_counts": {
+      "mismatch": 45813,
+      "out_of_domain": 1904,
+      "fit": 3
+    },
+    "witness_tasks": 2,
+    "task_denominator": 8,
+    "candidate_domain_reasons": {
+      "new_grid bounds": 38,
+      "program step limit": 1866
+    },
+    "model_calls": 0
+  },
+  "conclusion": "Fresh v4 regression and exact smoke semantic parity complete the orchestration bridge to unchanged scientific components. Existing v2 FULL findings can accompany final v4, retaining v2 attribution, exposed-demo and resource-domain caveats. No generalization, query score, model/GPU acceptance, N14 promotion or whole-repository CI claim is licensed.",
+  "nonblocking_label_note": "The unchanged embedded guide retains its additive v3 implementation wording and IR remains v2; README and VALIDATION explicitly identify Git packaging revision v4 and bind the actual v4 notebook/source hashes. This does not relabel execution evidence.",
+  "independent_full_recount_sha256": "ccfcdce25f36714f71dd527e251102a4ac0ff5eaa161fd3c47ea74ea5cab9ed8",
+  "static_v4_bridge_sha256": "94ed7eccbad6541b42dc129b50f6ca9782bd4e4839d0c9b86a95ff50a716c018"
+}

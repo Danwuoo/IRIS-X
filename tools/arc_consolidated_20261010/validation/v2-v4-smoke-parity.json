@@ -1,0 +1,33 @@
+{
+  "v2_source": "758c58ac1dced5797b37dae73572386551c5274a6dfa657429102d131a153e87",
+  "v4_source": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01",
+  "all_1152_semantic_receipts_identical": true,
+  "ignored_fields": [
+    "wall_seconds",
+    "worker_cpu_seconds",
+    "worker_wall_seconds",
+    "wall_reserved_seconds"
+  ],
+  "gas": 29424802,
+  "v2_gas": 29424802,
+  "v4_coverage_seconds": 31.211343540999223,
+  "v4_total_seconds": 31.99473295599455,
+  "v4_status": "complete",
+  "v4_gate": {
+    "diagnostic_archive_required": true,
+    "gate": "research_testability_only",
+    "generalization_claim": false,
+    "n14_promotion": false,
+    "passed": false,
+    "profile": "SMOKE",
+    "reasons": [
+      "FULL profile required; SMOKE never enables models",
+      "frozen base inventory binding missing or different",
+      "frozen base inventory count missing or different",
+      "at least two exposed tasks must have base-inventory demo fit"
+    ]
+  },
+  "v4_workers": 4,
+  "v4_unknown": 0,
+  "no_model_calls": true
+}

@@ -1,0 +1,3 @@
+build_notebook.py -text whitespace=cr-at-eol
+controls.py -text whitespace=cr-at-eol
+data/provenance.json -text whitespace=cr-at-eol

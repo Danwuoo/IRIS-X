@@ -1,0 +1,31 @@
+{
+  "review": "v4-staged-worktree-index-byte-comparison",
+  "status": "passed",
+  "base_commit": "e946fb89a1deb155bb52f5c5b34e703491272853",
+  "observed_head": "e946fb89a1deb155bb52f5c5b34e703491272853",
+  "staging_manifest_sha256": "626fa8ae59fb3d18cd25b72ae118d0879f7b2f8584a23b32b7667f87cd619f18",
+  "release_manifest_sha256": "a0c6a1334592a6e7bed209c96d0ba556b71b0b0c2e22a910515f81a09c33ba7a",
+  "release_review_sha256": "88958058abf7ba08a016da9a76fc8cbbe9172a525ac4390b47e97c739d1fe3f5",
+  "staged_additions": 79,
+  "manifest_content_files": 77,
+  "self_referential_release_metadata_files": 2,
+  "worktree_and_index_match_all_reviewed_bytes": true,
+  "all_staged_bytes_equal_native_release_v4": true,
+  "package_only_additions": true,
+  "baseline_blobs_preserved_in_index": 1275,
+  "baseline_worktree_raw_git_hashes_preserved": 1275,
+  "root_gitattributes_unchanged": true,
+  "helper_compatibility_exact": true,
+  "all_25_embedded_hashes_match_index": true,
+  "source_sha256": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01",
+  "notebook_sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707",
+  "executable_overlay_sha256": "97eb6dad929684c4b5f3e512909c19e00e45be0f424b78fdb683e42e2fef1c0c",
+  "diff_cached_check_exit": 0,
+  "unstaged_or_untracked_changes": false,
+  "limitations": [
+    "Read-only staged-byte audit at recorded HEAD; no commit, push, external provider or CI action performed.",
+    "Baseline worktree files were hashed opaquely without semantic content inspection.",
+    "Subsequent index/worktree changes invalidate this snapshot receipt."
+  ],
+  "observed_at_utc": "2026-10-10T13:23:37.029802+00:00"
+}

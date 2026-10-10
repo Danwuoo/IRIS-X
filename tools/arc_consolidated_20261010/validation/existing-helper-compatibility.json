@@ -1,0 +1,23 @@
+[
+  {
+    "path": "tools/__init__.py",
+    "sha256": "f5ed985f7ed9e31ea3be113e86b11a7b44313f467c2e468a034ff789c7b85c76",
+    "bytes": 47,
+    "existing_repository_bytes_unchanged": true,
+    "must_not_copy_or_overwrite_on_integration": true
+  },
+  {
+    "path": "tools/arc_next_models.py",
+    "sha256": "d8c3bda2ef5c557fa93756805c91ea26c5c0773d8f124914791eef13b2f0740b",
+    "bytes": 37320,
+    "existing_repository_bytes_unchanged": true,
+    "must_not_copy_or_overwrite_on_integration": true
+  },
+  {
+    "path": "tools/arc_next_index_repair.py",
+    "sha256": "05d2855e6029d873f0e74938e73d11ed7a21b72e0a630619b4415d3ebf3ac030",
+    "bytes": 16877,
+    "existing_repository_bytes_unchanged": true,
+    "must_not_copy_or_overwrite_on_integration": true
+  }
+]

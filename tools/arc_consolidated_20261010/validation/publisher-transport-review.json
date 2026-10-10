@@ -1,0 +1,101 @@
+{
+  "review": "consolidated-one-create-transport-independent-re-review",
+  "status": "passed-transport-review-publication-held-by-parent",
+  "script": "kaggle-publication/publish_reviewed_consolidated.py",
+  "script_sha256": "c86eeda724554390913ab5d20cae3de54cff0f9c1cdac3b57a606b607d211663",
+  "superseded_script_sha256": "7f0a2be8e3b61a1c9183c8052d62b44445b3b9634699557a8f71f291670ab762",
+  "publication_manifest_sha256": "bd43267f8916b8e320fddd0ac101a805627ad35fa2e9d2cf04396eaf99ab119a",
+  "approved_notebook_sha256": "0e0da400f207995ed884635857ea6caa6cf23c6db3ee7375036ea8e28c652a8f",
+  "expected_reference": "danielwuu/iris-x-consolidated-offline-20261010",
+  "open_transport_blockers": [],
+  "resolved_findings": {
+    "PUB-1": {
+      "status": "fixed",
+      "lines": [
+        56,
+        59,
+        217,
+        218,
+        269,
+        272,
+        276,
+        278
+      ],
+      "evidence": [
+        "concurrent main invocations yield one inert save",
+        "separate OS-process lock rejects main admission",
+        "eight O_EXCL contenders have one winner",
+        "uncertain journal cannot replay",
+        "orphan durable claim cannot replay"
+      ]
+    },
+    "PUB-2": {
+      "status": "fixed",
+      "lines": [
+        27,
+        28,
+        29,
+        78,
+        80
+      ],
+      "evidence": [
+        "mandatory assertions replaced with explicit require",
+        "wrong digest rejected when entire reviewed module is compiled at optimize=2"
+      ]
+    },
+    "PUB-3": {
+      "status": "fixed",
+      "lines": [
+        31,
+        35,
+        38,
+        40,
+        41,
+        42,
+        45,
+        50,
+        52,
+        53,
+        216,
+        219,
+        220
+      ],
+      "evidence": [
+        "Retry total/connect/read/redirect/status/other are zero",
+        "exact official HTTPS SaveKernel endpoint and POST method only",
+        "one adapter dispatch maximum",
+        "session max_redirects=0 rejects redirects before replay",
+        "inert HTTP 200/307/308 each produces exactly one adapter send; second dispatch rejected"
+      ]
+    }
+  },
+  "preserved_contract": [
+    "Has exactly one explicit save_kernel call and no create-session/run/delete/update-dataset API calls.",
+    "Checks manifest/release SHA values and one approved notebook row with the exact new reference.",
+    "Checks exact notebook byte length/hash, normalized source equality, package and overlay identities, empty outputs and false/default switches.",
+    "Checks five versioned dataset references and manifest hashes against frozen N13 pin baseline.",
+    "Outbound request fixes new reference, no numeric ID, private true, QUICK_SAVE enum 3, GPU/TPU/Internet false and empty competition/kernel/model sources.",
+    "Sequential normal-interpreter rerun with uncertain journal does not resend; accepted state only resumes readback; verified state checks receipt hash.",
+    "Durably records save intent before dispatch and checks accepted new ID against prior IDs and N5-N14 IDs, new version 1, exact reference and URL.",
+    "Readback checks version, ID, reference, title, privacy, accelerator/network flags, machine shape, source, and bare dataset identities.",
+    "Dataset-version limitation is explicit: exact versions submitted, backend-mounted versions unverified."
+  ],
+  "limits": [
+    "The installed SaveKernel API exposes no create-only conditional field. A complete listing absence check followed by save is not an atomic provider create-only transaction; the single-publisher/external-no-concurrent-change operational premise must remain explicit.",
+    "File listing is fetched and archived, not checked against an execution-output allowlist. The receipt field provider_file_listing_verified must not be interpreted as independently proving no execution.",
+    "Render logs are checked for known execution markers; positive nbconvert marker is required only if RUNNING/QUEUED was observed. This supports the requested QUICK_SAVE receipt but is not exhaustive execution attestation.",
+    "The future final release approval file was not available and was not approved here. Parent FULL scientific result/documentation hold remains active.",
+    "No external network/authentication/publication, model/GPU/gold action, or candidate modification occurred.",
+    "At-most-once dispatch is conservative: a claimed but unsent attempt is not retried automatically. It is not an exactly-once completion guarantee.",
+    "No provider readback or actual publication was performed during this review. Release approval and science/documentation completion remain the parent responsibility."
+  ],
+  "dependency_sha256": {
+    "kagglesdk/kaggle_http_client.py": "80e93a26faa3e861bf5a3f41177d730ef3d0795769f152bce62f3d8098c7347a",
+    "requests/sessions.py": "96fbb30bbbf06a59a5268d13b57885149756aa3f31695b5c15e41dd7bb2f67a6"
+  },
+  "independent_evidence": {
+    "path": "acceptance_fixed_transport.json",
+    "sha256": "4ee5c499e6cfef04d15a96bd1027023b94f481378e3cddf01fcc257f9831e941"
+  },
+  "external_calls": 0
+}
