@@ -1,0 +1,33 @@
+{
+  "format": "irisx/runtime8-repair-cpu-acceptance-v1",
+  "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+  "model_calls": 0,
+  "training_performed": false,
+  "runs": {
+    "N5": {
+      "status": "complete",
+      "summary_sha256": "ced6a224eb0fd7ba152d0ff5ace14be76e4fd1c9d8c2cfc6318b66a916911737",
+      "archive_sha256": "655b18328eb7e383d10a9872dbbcb4916cb1b83c16e0cda057961fcf440206c3",
+      "archive_bytes": 649294,
+      "new_output_identity": "iris-x-n5-runtime8-manifest-fix1-20261010",
+      "cpu_verifications": 122,
+      "ast_admitted_v2": 29,
+      "demo_executed_v2": 23,
+      "all_demo_fit_v2": 0,
+      "charged_steps_v2": 1529608,
+      "complete_real_runtime_launch": true
+    },
+    "N13": {
+      "status": "complete",
+      "summary_sha256": "75769d4d05e5041887abd30ee6f5bdceb6fedb8f36bc64c00e692b4d70887007",
+      "archive_sha256": "a6019e2f05c11967c1b63f78f59f8a7a13edc997c22599dc44ca6d52c29ba19e",
+      "archive_bytes": 266131,
+      "new_output_identity": "iris-x-n13-runtime8-manifest-fix1-20261010",
+      "episodes": 512,
+      "cpu_verifications": 1024,
+      "unknown_verifications": 0,
+      "payload_sha256": "6c52d04171d84d57dcaa7e77d46e38b0c8b6e57c7c1e29582eec48411aa95fb4",
+      "runtime_access_required": false
+    }
+  }
+}

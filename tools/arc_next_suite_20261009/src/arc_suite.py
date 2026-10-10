@@ -30,6 +30,8 @@ TRAIN_INSTRUCTION = ('Infer the grid transformation from the demonstrations. Ret
 EXPECTED_PINS = {'adapter': {'manifest_sha256': '7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0', 'private': True, 'reference': 'danielwuu/iris-arc-granite42-run003-adapter-20261009/1'}, 'interpreter': {'manifest_sha256': '20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e', 'private': True, 'reference': 'danielwuu/iris-arc-next-cpython312-offline/2'}, 'model': {'manifest_sha256': 'cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99', 'private': True, 'reference': 'danielwuu/iris-arc-granite42-8b-offline/2'}, 'runtime': {'manifest_sha256': 'c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67', 'private': True, 'reference': 'danielwuu/iris-arc-next-runtime/8'}, 'wheels': {'manifest_sha256': '2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052', 'private': True, 'reference': 'danielwuu/iris-arc-next-cu128-cp312-wheels/1'}}
 SAMPLING = {'do_sample': True, 'temperature': .7, 'top_p': .95, 'enable_thinking': False}
 
+SUITE_REVISION='runtime8-manifest-fix1-20261010'
+
 MAX_NEW=2048
 MAX_PROMPT=6144
 MAX_CONTEXT=8192
@@ -110,6 +112,35 @@ def _runtime_tools(runtime, *, verify_all=False):
         from tools.arc_next_offline_bundle import verify_runtime
         verify_runtime(runtime, RUNTIME_MANIFEST_SHA)
     return code
+
+
+def experiment_identity(run_id):
+    # New bytes must not reuse a failed or historical output/source identity.
+    spec_for(run_id)
+    return 'iris-x-'+run_id.lower()+'-'+SUITE_REVISION
+
+
+def load_runtime_inputs(runtime):
+    """Verify the actual pinned Dataset boundary before any install/model work.
+
+    The embedded reference must be the complete runtime8 N1 manifest, not a
+    downstream run's derived manifest. Keep both asset and structural identity
+    checks; no field projection or historical-receipt migration is permitted.
+    """
+    root=Path(runtime).resolve()
+    _runtime_tools(root,verify_all=True)
+    from tools.arc_n1 import verify_manifest as verify_n1,verify_challenges
+    original=read(root/'n1/manifest.json');verify_n1(original)
+    expected=read(ROOT/'solver-manifest-reference.json')
+    if original!=expected:
+        raise ValueError('Source N1 manifest identity differs: expected '+
+                         str(expected.get('core',{}).get('experiment_id'))+' ['+digest(expected)+
+                         '], mounted '+str(original.get('core',{}).get('experiment_id'))+
+                         ' ['+digest(original)+']; use the reviewed runtime8-manifest revision; do not edit pins')
+    challenges=read(root/'n1/development-challenges.json')
+    verify_challenges(original,challenges)
+    return original,challenges
+
 
 def _validate_config(cfg):
     keys = {'runtime_root', 'model_root', 'wheels_root', 'interpreter_root', 'adapter_root',
@@ -290,7 +321,7 @@ def make_manifest(run_id,original,challenges,*,selected_policy=None,gate_receipt
     if run_id=='N14' and selected_policy not in ELIGIBLE_POLICIES.values():raise ValueError('N14 selected policy invalid')
     record_arms=['proposal_pool'] if run_id=='N12' else spec['arms']
     policies={a:(selected_policy if a=='selected_agent' else a) for a in record_arms}
-    core={'format':'irisx/nextphase-core-v1','run_id':run_id,'experiment_id':'iris-x-'+run_id.lower()+'-20261009',
+    core={'format':'irisx/nextphase-core-v1','run_id':run_id,'experiment_id':experiment_identity(run_id),'suite_revision':SUITE_REVISION,
           'spec':spec,'tasks':tasks,'record_arms':record_arms,'score_arms':spec['arms'],'policies':policies,
           'slots_per_condition':4,'source_lock':lock,'source_lock_sha256':file_sha(ROOT/'source-lock.json'),
           'design_sha256':file_sha(ROOT/'DESIGN-FROZEN.json'),'pins':EXPECTED_PINS,
@@ -804,10 +835,10 @@ def launch(cfg,run_id,*,enabled=False,prior_paths=None):
     try:gate=resolve_gate(run_id,prior_paths)
     except Exception as exc:
         gate={'status':'blocked','reason':'invalid-prerequisite','error':{'type':type(exc).__name__,'message':str(exc)[:2000]}}
-    output=base/('iris-x-'+run_id.lower()+'-20261009')
+    output=base/experiment_identity(run_id)
     output.mkdir(parents=True,exist_ok=False)
     if gate['status']=='blocked':
-        receipt={**gate,'run_id':run_id,'source_lock_sha256':file_sha(ROOT/'source-lock.json'),'generate_calls':0,'training_calls':0}
+        receipt={**gate,'run_id':run_id,'suite_revision':SUITE_REVISION,'source_lock_sha256':file_sha(ROOT/'source-lock.json'),'generate_calls':0,'training_calls':0}
         write(output/'blocked.json',receipt);archive=finalize(output)
         progress('EXPERIMENT-BLOCKED',**receipt,archive=archive);return {**receipt,'archive':archive,'output':str(output)}
     write(output/'gate.json',gate)
@@ -816,7 +847,7 @@ def launch(cfg,run_id,*,enabled=False,prior_paths=None):
         source_dir=output/'source';source_dir.mkdir()
         for name in relevant:
             with (source_dir/name).open('xb') as stream:stream.write((ROOT/name).read_bytes())
-        write(output/'run-identity.json',{'format':'irisx/nextphase-cpu-run-identity-v1','run_id':run_id,
+        write(output/'run-identity.json',{'format':'irisx/nextphase-cpu-run-identity-v1','run_id':run_id,'suite_revision':SUITE_REVISION,
             'source_lock_sha256':file_sha(ROOT/'source-lock.json'),'design_sha256':file_sha(ROOT/'DESIGN-FROZEN.json'),
             'seed':1015,'host_python_version':sys.version,'source_copy_scope':'CPU curriculum-relevant sources; complete lock binds the published notebook payload',
             'arc_tasks_used_for_generation':False,'gpu_used':False,'training_performed':False})
@@ -839,11 +870,7 @@ def launch(cfg,run_id,*,enabled=False,prior_paths=None):
     # The project evaluator stays in the immutable runtime Dataset. Solver input
     # is challenge-only; no query truth is copied into this output or subprocess.
     root=Path(cfg['runtime_root']).resolve()
-    _runtime_tools(root,verify_all=True)
-    from tools.arc_n1 import verify_manifest as verify_n1,verify_challenges
-    original=read(root/'n1/manifest.json');verify_n1(original)
-    if original!=read(ROOT/'solver-manifest-reference.json'):raise ValueError('Source N1 manifest identity differs')
-    all_challenges=read(root/'n1/development-challenges.json');verify_challenges(original,all_challenges)
+    original,all_challenges=load_runtime_inputs(root)
     tasks=list(original['core']['tuning_ids'][8:40]) if run_id=='N14' else list(ENGINEERING_TASKS)
     challenges={t:all_challenges[t] for t in tasks}
     manifest=make_manifest(run_id,original,challenges,selected_policy=gate.get('selected_policy'),gate_receipts=gate.get('receipts'))

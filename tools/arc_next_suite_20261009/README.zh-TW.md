@@ -1,5 +1,15 @@
 # IRIS-X N5–N14：結果與手動執行指南
 
+## 2026-10-10 啟動修正
+
+第一輪 N6 啟動在模型準備前遇到的 `Source N1 manifest identity differs` 是本套件的封裝錯誤：原版內嵌了衍生的 N1 return-dict-fix1 manifest，卻要求它與 runtime8 內的原始 manifest 完全相同。原先 57 個測試沿用同一份衍生 fixture，沒有跨過真實 mount 的啟動邊界，所以漏掉這個問題。
+
+修正版 `runtime8-manifest-fix1-20261010` 使用實際 runtime8 的精確 manifest，保留全部 Dataset inventory／SHA、N1 結構、完整 manifest equality 與 challenge 驗證。沒有關閉安全檢查，也不改動題目、prompts、seeds、模型 pins 或 budgets。
+
+十份 notebook 都會使用新的 source／output／archive 目錄；N5–N12、N14 經過修正的 runtime 邊界，N13 維持不讀 runtime 的 CPU 路徑。請在修正版完成 N6／N7，再將同一修正版的完整 evidence 傳給下游。舊版結果與 BLOCKED 收據保留為歷史，不會自動變成新版 gate 證據，也不覆寫失敗的舊 N6 目錄。
+
+Kaggle 仍是原來十個 notebook 連結的經審查新版本，預設停用；舊版本保留。精確修正與實測範圍見 `docs/RUNTIME8-MANIFEST-HOTFIX-20261010.md`。
+
 ## 先看結論
 
 十份 notebook 已完成程式與獨立驗證，預設 `MANUAL_START=False`。這次完成的是可手動啟動的分階段實驗，以及 N5、N13 的真實 CPU 實測；尚未跑新的 GPU 推論、SFT、TTT、RL 或競賽 submission。
@@ -18,7 +28,7 @@
 
 - **N5**：對完全相同的 61 份 source，舊語言與 bounded-v2 各驗證一次，共 122 次隔離 CPU 呼叫。V2 有 29/61 通過 AST、23/61 完成 demo 執行，但 **0 份通過所有 demos、0 正確 query**。放寬受限語法解決了一部分介面問題，尚未解決規則推理。
 - **N13**：512 個 synthetic episodes，1,024 次隔離 CPU 驗證，沒有未知 usage，累計 3,832,550 interpreter steps。資料包含 F 格式複製、G grid、P program、R repair 四種目標。**只完成資料製作與驗證，沒有訓練，也不能據此宣稱 SFT 提升。**
-- 57 項 focused tests 通過，另有獨立的安全、契約、notebook、tokenizer 與記帳檢查。既有整個 repository 的歷史測試問題另列於整合紀錄，不能把本次 focused pass 說成全 repo 全綠。
+- 原版 57 項測試曾通過；修正版 67 項測試在實際 runtime8 mount 下通過，0 skips，另有獨立的安全、契約、notebook、tokenizer 與記帳檢查。既有整個 repository 的歷史測試問題另列於整合紀錄，不能把本次 focused pass 說成全 repo 全綠。
 
 ## 十份實驗與執行順序
 
@@ -74,7 +84,7 @@ GPU runs 會驗證五份 pins；adapter 只驗證，不載入。本次沒有建�
 例：跑 N9、N10 或 N11 時，設定：
 
 ```python
-PRIOR_RESULTS = {'N6': '/實際掛載位置/iris-x-n6-20261009-evidence.zip'}
+PRIOR_RESULTS = {'N6': '/實際掛載位置/iris-x-n6-runtime8-manifest-fix1-20261010-evidence.zip'}
 ```
 
 跑 N12 用 `N7` key。跑 N14 要提供全部五個 key：`N6`、`N7`、`N9`、`N10`、`N11`。路徑是示意，必須換成該環境實際可讀檔案；可以保留 ZIP，程式支援安全匯入，不需手動移除 metadata。若 Kaggle 使用新增 private Dataset 承接前次 outputs，先自行上傳完整、未改寫的 evidence ZIP，再在下一份 notebook 掛載；本次沒有自動發佈或假設這份傳遞 Dataset 已存在。
@@ -90,8 +100,8 @@ Controller：一般 9,600 秒；N14 32,400 秒；N5 CPU 600 秒；N13 CPU 1,200 
 Kaggle 預設輸出：
 
 ```text
-/kaggle/working/iris-nextphase-n6/runs/iris-x-n6-20261009/
-/kaggle/working/iris-nextphase-n6/runs/iris-x-n6-20261009-evidence.zip
+/kaggle/working/iris-nextphase-n6-runtime8-manifest-fix1-20261010/runs/iris-x-n6-runtime8-manifest-fix1-20261010/
+/kaggle/working/iris-nextphase-n6-runtime8-manifest-fix1-20261010/runs/iris-x-n6-runtime8-manifest-fix1-20261010-evidence.zip
 ```
 
 其他 run 把 n6 換成其編號。非 Kaggle 時，預設 BASE 在目前工作目錄。程式禁止覆寫既有 run identity；不要藉由刪掉未完成結果來挑選好看的重跑。
@@ -124,6 +134,6 @@ Repository 目錄：`tools/arc_next_suite_20261009/`。
 python3 -m unittest discover -s tools/arc_next_suite_20261009/tests -p 'test_*.py' -v
 ```
 
-本次固定 source-lock SHA256：`5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d`。
+原版 source-lock SHA256 為 `5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d`；修正版精確 hash 見本目錄 `publication-manifest.json` 與修正驗證報告。
 
 技術封裝只包含程式、notebooks、文件、必要 challenge／truth-free replay 與驗證收據；不含 query gold、credentials 或 weights。出版與 Git 的最後回讀狀態，以附帶的最終 receipts／索引為準。

@@ -4,10 +4,10 @@
   "title": "IRIS-X N12 Neural Cpu Search",
   "slug": "iris-x-n12-neural-cpu-search",
   "reference": "danielwuu/iris-x-n12-neural-cpu-search",
-  "notebook": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/notebooks/IRIS-X-N12-neural-cpu-search-20261009.ipynb",
+  "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N12-neural-cpu-search-20261009.ipynb",
   "filename": "IRIS-X-N12-neural-cpu-search-20261009.ipynb",
-  "sha256": "8adaa4d029fdecc1519728e37cd3ea95101577e6f352d7df0aa4848f3d8c690f",
-  "bytes": 265061,
+  "sha256": "69f4a1ff3a820e09e4d39e31e5476f869179e7cf027f8eb04e1cd39f2d967aac",
+  "bytes": 265967,
   "private": true,
   "mode": "QUICK_SAVE",
   "kernel_execution_type": 3,
@@ -20,6 +20,9 @@
   "competition_submission_authorized": false,
   "language": "python",
   "notebook_type": "notebook",
+  "competition_sources": [],
+  "competition_metadata_preserved_only": true,
+  "competition_data_used": false,
   "dataset_sources": [
     "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
     "danielwuu/iris-arc-next-cpython312-offline/2",
@@ -61,6 +64,9 @@
   "prerequisites": [
     "N7"
   ],
-  "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
-  "new_notebook_do_not_overwrite_previous": true
+  "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+  "new_notebook_do_not_overwrite_previous": false,
+  "update_existing_reviewed_notebook": true,
+  "preserve_previous_provider_version": true,
+  "suite_revision": "runtime8-manifest-fix1-20261010"
 }

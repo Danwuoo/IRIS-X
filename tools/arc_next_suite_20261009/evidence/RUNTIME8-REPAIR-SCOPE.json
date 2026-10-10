@@ -1,0 +1,28 @@
+{
+  "format": "irisx/runtime8-repair-scope-v1",
+  "old_source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
+  "new_source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+  "changed_locked_members": [
+    "arc_suite.py",
+    "solver-manifest-reference.json"
+  ],
+  "unchanged_locked_members": [
+    "arc_suite_policy.py",
+    "arc_bounded_v1.py",
+    "arc_bounded_v2.py",
+    "arc_n4_program.py",
+    "arc_program_v2.py",
+    "arc_typed_ir.py",
+    "arc_curriculum.py",
+    "DESIGN-FROZEN.json",
+    "n4-replay-payload.json",
+    "visible-token-audit.json",
+    "SECURITY-RELEASE.json"
+  ],
+  "policy_interpreter_compiler_curriculum_design_token_audit_unchanged": true,
+  "notes": [
+    "Only runtime-input boundary refactoring/diagnostics and explicit revision identity changed in controller.",
+    "Tasks,prompts,tokenizer contract,seeds,budgets,admission thresholds and interpreter/compiler/feedback behavior remain unchanged.",
+    "Old gate evidence must not pass the new source-lock identity; preserved old evidence is historical only."
+  ]
+}

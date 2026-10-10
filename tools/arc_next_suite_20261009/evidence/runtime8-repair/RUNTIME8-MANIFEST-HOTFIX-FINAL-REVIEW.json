@@ -1,0 +1,331 @@
+{
+  "status": "APPROVED_EXACT_RUNTIME8_MANIFEST_HOTFIX_FOR_AUTHORIZED_PRIVATE_INACTIVE_PUBLICATION_AND_GIT_INTEGRATION",
+  "reviewed_at_utc": "2026-10-10T04:45:40.402263+00:00",
+  "open_blockers": [],
+  "scope": {
+    "runner": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/src/arc_suite.py",
+      "bytes": 69538,
+      "sha256": "f1f8dfde826fa6c0dbf4ef4e88b1ae60df8964215af8ff02d197b7c49a1e2570"
+    },
+    "source_lock": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/src/source-lock.json",
+      "bytes": 1300,
+      "sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50"
+    },
+    "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+    "publication_manifest": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/publication-manifest.json",
+      "bytes": 30595,
+      "sha256": "185bfaf2335cb8fccb28c961ed9966cc6fce7799bd0e1193707a8ec5d583e0c0"
+    },
+    "revision": "runtime8-manifest-fix1-20261010",
+    "notebook_count": 10,
+    "no_GPU_model_training_or_competition_execution": true,
+    "provider_previous_versions_must_be_retained": true,
+    "existing_N6_only_ARC3_metadata_preserved": true,
+    "competition_data_read_or_used": false,
+    "old_failed_source_and_outputs_preserved": true
+  },
+  "approved_notebooks": [
+    {
+      "run_id": "N5",
+      "filename": "IRIS-X-N5-language-replay-20261009.ipynb",
+      "sha256": "bb458852520552c290e057ce2ca74cda234477051db7cfc8caed5edd5c3d8e58",
+      "bytes": 265833,
+      "reference": "danielwuu/iris-x-n5-language-replay",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 0,
+      "competition_sources": []
+    },
+    {
+      "run_id": "N6",
+      "filename": "IRIS-X-N6-toolbox-contract-20261009.ipynb",
+      "sha256": "72114ab5b4c3b61f295f932c804ad784b8e70e9ebaf976f3542bd4e09fc7e49d",
+      "bytes": 266090,
+      "reference": "danielwuu/iris-x-n6-toolbox-contract",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "competition_sources": [
+        "arc-prize-2026-arc-agi-3"
+      ]
+    },
+    {
+      "run_id": "N7",
+      "filename": "IRIS-X-N7-typed-program-ir-20261009.ipynb",
+      "sha256": "290710af40373765e42d2fa3f592e006da96318405227e32ea57a0bb09293aa5",
+      "bytes": 265922,
+      "reference": "danielwuu/iris-x-n7-typed-program-ir",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "competition_sources": []
+    },
+    {
+      "run_id": "N8",
+      "filename": "IRIS-X-N8-static-feedback-20261009.ipynb",
+      "sha256": "af2aa1c940b9fa3ebaa60e35f4d2ae312e325806c26881b273161008dbb39300",
+      "bytes": 265980,
+      "reference": "danielwuu/iris-x-n8-static-feedback",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "competition_sources": []
+    },
+    {
+      "run_id": "N9",
+      "filename": "IRIS-X-N9-object-perception-20261009.ipynb",
+      "sha256": "0bdcc764b3c1481cdefb50126a9e629d079deb70d7b32305c2fb2dcb64ba979f",
+      "bytes": 265964,
+      "reference": "danielwuu/iris-x-n9-object-perception",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "competition_sources": []
+    },
+    {
+      "run_id": "N10",
+      "filename": "IRIS-X-N10-demo-feedback-20261009.ipynb",
+      "sha256": "19bba62304dc0356ca97991ffc0c4d63a39bf8259ed6e77de6df0de72dfa2d34",
+      "bytes": 266019,
+      "reference": "danielwuu/iris-x-n10-demo-feedback",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "competition_sources": []
+    },
+    {
+      "run_id": "N11",
+      "filename": "IRIS-X-N11-candidate-memory-20261009.ipynb",
+      "sha256": "3d7042d8934440f3629e5efbfa93b8606d81eea89686e53356570e035a0bdcce",
+      "bytes": 265985,
+      "reference": "danielwuu/iris-x-n11-candidate-memory",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 64,
+      "competition_sources": []
+    },
+    {
+      "run_id": "N12",
+      "filename": "IRIS-X-N12-neural-cpu-search-20261009.ipynb",
+      "sha256": "69f4a1ff3a820e09e4d39e31e5476f869179e7cf027f8eb04e1cd39f2d967aac",
+      "bytes": 265967,
+      "reference": "danielwuu/iris-x-n12-neural-cpu-search",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 32,
+      "competition_sources": []
+    },
+    {
+      "run_id": "N13",
+      "filename": "IRIS-X-N13-program-curriculum-20261009.ipynb",
+      "sha256": "ee732919b6101b9db07e2ebe23ebb54b0fd1817fb7bbfa00d9493c4256607ddf",
+      "bytes": 266093,
+      "reference": "danielwuu/iris-x-n13-program-curriculum",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 0,
+      "competition_sources": []
+    },
+    {
+      "run_id": "N14",
+      "filename": "IRIS-X-N14-agent-consolidation-20261009.ipynb",
+      "sha256": "d8a83c02767abfbf431a8ea8a90d5ce1694972c5d922442ffc3b60b0a80a2e24",
+      "bytes": 266272,
+      "reference": "danielwuu/iris-x-n14-agent-consolidation",
+      "private": true,
+      "mode": "QUICK_SAVE",
+      "kernel_execution_type": 3,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "max_generate_calls": 256,
+      "competition_sources": []
+    }
+  ],
+  "canonical_provenance": {
+    "status": "CANONICAL_BINDING_AND_NARROW_LINEAGE_DIFF_VERIFIED",
+    "checked_utc": "2026-10-10T04:37:38.128876+00:00",
+    "runtime_reference": "danielwuu/iris-arc-next-runtime/8",
+    "bundle_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+    "canonical_manifest": {
+      "sha256": "ce7eddc85aac290eff1b67754fe3d689f02897be7f490f5dee019d4da78a631a",
+      "bytes": 178386,
+      "experiment_id": "granite-run003-n1-20261009",
+      "core_sha256": "68629f0561b5fd65841b79649ddadd261c9047b4be55aa428e24ae5363dd64dc"
+    },
+    "incorrect_embedded_derived_manifest": {
+      "sha256": "d4f6fbb693d35313f2b9be4eac50e5ac3c8340c61e6b4e77ba71de7a44ea54f8",
+      "experiment_id": "granite-run003-n1-20261009-return-dict-fix1",
+      "core_sha256": "3ef7436b28186d7a2ba559f38f0d7efa1902bc91b70b53543c4f57ab92822933"
+    },
+    "only_core_fields_different": [
+      "experiment_id",
+      "implementation_sha256"
+    ],
+    "only_top_level_fields_different": [
+      "core",
+      "core_sha256",
+      "records",
+      "source_implementation"
+    ],
+    "only_implementation_files_different": [
+      "tools/arc_n1.py",
+      "tools/arc_next_workflow.py"
+    ],
+    "only_record_fields_different": [
+      "contract_sha256",
+      "record_id"
+    ],
+    "records_paired": 256,
+    "all_other_top_level_and_core_fields_identical": true,
+    "task_order_seeds_sampling_limits_and_model_adapter_data_bindings_unchanged": true,
+    "confirmation_ids_count": 136,
+    "query_answers_inspected": false,
+    "full_runtime_mount_validation": "Publisher retrieving closed runtime ZIP; not yet claimed by this receipt."
+  },
+  "original_defect_reproduction": {
+    "old_published_N6_launch_failure_reproduced": true,
+    "exact_exception": "Source N1 manifest identity differs",
+    "real_closed_runtime_verification_used": true,
+    "real_N1_verifier_used": true,
+    "runtime_manifest_pin": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+    "torch_imported": false,
+    "gpu_or_model_execution": false,
+    "query_answer_values_read": false,
+    "old_output_directory_created_before_failure": true
+  },
+  "fix": "Exact canonical runtime8 manifest replaces derived return-dict-fix1 reference. Complete equality, full mounted bundle inventory and native N1/challenge verifiers remain. One runtime-input helper is extracted for direct integration testing; all runs get explicit fresh revision/output identity.",
+  "unchanged_scientific_contract": [
+    "64 tuning challenge hashes and task order",
+    "136 reserved confirmation IDs",
+    "sampling and actual seed mapping",
+    "model/adapter/solution data bindings",
+    "all five offline Dataset pins",
+    "all prompt/policy/interpreter/compiler/curriculum source bytes",
+    "model call/token/context/gas/time limits",
+    "candidate selection and prior admission criteria"
+  ],
+  "old_evidence_policy": "Historical N5/N13 CPU evidence remains historical; it is not migrated into the repaired source identity or accepted as current prerequisite evidence. Real repaired N5/N13 launches now have separately sealed CPU receipts.",
+  "validation": {
+    "builder_full_suite": {
+      "passed": 67,
+      "skipped": 0,
+      "log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/evidence/repaired-suite-tests-final.txt",
+        "bytes": 7854,
+        "sha256": "353dadeaa859c2c3f20d6b3e56e81c5d939aedf88478d257f977b9a8865b4ccb"
+      },
+      "first_combined_run": {
+        "failed_log": {
+          "path": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/evidence/repaired-suite-tests.txt",
+          "bytes": 8824,
+          "sha256": "65922b302da07071f31a9c0b71e44460b46f86d90d831e7b317dfc1b89998eaa"
+        },
+        "one_error": "N13 test fixture encountered intentionally rejected stale ordinary-imported typed IR module. Test moved to fresh isolated subprocess; production stale-module guard unchanged."
+      }
+    },
+    "independent_actual_runtime_boundary": {
+      "groups_passed": 7,
+      "log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/independent-review/actual-runtime-boundary-tests.log",
+        "bytes": 1135,
+        "sha256": "77a2ba6cfe115e1777d152a54d177f4d3c74b306a6ac98a4af4d573df02a3390"
+      },
+      "description": "Actual closed runtime verification and native N1/challenge validators; tampered mount and derived reference rejected; nine runtime-dependent launch routes tested, N13 runtime-independent path tested. Only gate admission/downstream work is stubbed to bound this CPU-only route test."
+    },
+    "independent_all_ten_notebooks": {
+      "path": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/independent-review/REPAIRED-NOTEBOOKS-CHECK.json",
+      "bytes": 3548,
+      "sha256": "8eff0d8ce116b91d709e2560711f261fbd4a1245bf20a666f20e4d820dd724ed"
+    },
+    "embedded_N6_real_boundary_and_restart_coexistence": "Actual embedded payload boots beside preserved old source/failed-output directories and reaches actual verified runtime admission; stops before installers/models.",
+    "prior_security_evidence": "Execution interpreter/compiler/policy source files are byte-identical to approved previous release; no new language capabilities introduced. Full historical security suite not claimed rerun.",
+    "token_audit": "Previous actual560 tokenizer audit retained because tokenizer, policy, challenge and token-budget bytes are unchanged; current real challenge verification confirms exact hash identity."
+  },
+  "actual_repaired_CPU_results": {
+    "N5": {
+      "archive": {
+        "path": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/evidence/repaired-cpu/iris-x-n5-runtime8-manifest-fix1-20261010-evidence.zip",
+        "bytes": 649294,
+        "sha256": "655b18328eb7e383d10a9872dbbcb4916cb1b83c16e0cda057961fcf440206c3"
+      },
+      "completed_CPU_comparisons": 122,
+      "old_AST_admitted": 0,
+      "v2_AST_admitted": 29,
+      "v2_demo_executed": 23,
+      "all_demo_fit": 0,
+      "new_model_calls": 0
+    },
+    "N13": {
+      "archive": {
+        "path": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/evidence/repaired-cpu/iris-x-n13-runtime8-manifest-fix1-20261010-evidence.zip",
+        "bytes": 266131,
+        "sha256": "a6019e2f05c11967c1b63f78f59f8a7a13edc997c22599dc44ca6d52c29ba19e"
+      },
+      "episodes": 512,
+      "verifier_calls": 1024,
+      "steps": 3832550,
+      "unknown_calls": 0,
+      "model_calls": 0,
+      "payload_bytes_identical_to_prior_version": true,
+      "training_performed": false
+    }
+  },
+  "coverage_gap_explanation": "Previous57 focused tests built synthetic manifests from the same incorrect embedded reference and invoked lower-level run_records; the560-token audit checked visible prompt bytes, not the actual mounted runtime manifest. Hash consistency within that synthetic fixture did not establish cross-asset compatibility. This release adds independently captured canonical fixtures and real mounted-dataset launch-boundary tests.",
+  "limitations": [
+    "No repaired GPU model/environment execution has been performed; approval targets the reproduced launch defect and unchanged scientific controls.",
+    "N5 improved syntax admission still yields no demo-fitting program; this repair is not model accuracy evidence.",
+    "All eight engineering tasks and32 consolidation tasks are exposed tuning data;136 reserved confirmation IDs remain unused.",
+    "Prior receipts under the previous source lock are deliberately incompatible with new gates; do not change hashes or edit manifests to reuse them.",
+    "Provider saves/readback and expected-main Git checks remain with designated publishers."
+  ]
+}

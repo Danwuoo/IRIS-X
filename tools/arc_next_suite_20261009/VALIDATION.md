@@ -1,6 +1,14 @@
 # Validation scope and exact release
 
-## Frozen production identity
+## Current repair: runtime8-manifest-fix1-20261010
+
+The 2026-10-09 identity and evidence below are historical. The owner’s first N6 launch exposed a real mounted-manifest integration gap despite the prior57 fixture tests. The repaired runner is `f1f8dfde826fa6c0dbf4ef4e88b1ae60df8964215af8ff02d197b7c49a1e2570`; source lock is `29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50`. The canonical runtime8 manifest bytes are now separately pinned and tested; all scientific inputs and limits remain unchanged.
+
+**Repair acceptance passed:**67 focused tests,0 failures/errors/skips,124.322s, including the real mounted-runtime regressions. Full repaired N5 and N13 CPU launches both completed; no model/training calls.
+
+See [repair report](docs/RUNTIME8-MANIFEST-HOTFIX-20261010.md) and `evidence/runtime8-repair/` for the exact final tests, independent release, original-failure reproduction, and repaired full N5/N13 CPU launch receipts. Old evidence is not auto-migrated into current gates. For real mounted-asset regressions, run the focused suite with `IRISX_RUNTIME8_TEST_ROOT` set to the verified full runtime8 directory; without it, the mounted checks explicitly skip and do not satisfy repair release acceptance.
+
+## Historical 2026-10-09 frozen production identity
 
 - Source lock: `5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d`
 - Runner: `d2ee8fee3246b8b36f08842e30ce6c8ecc6efea14404d827833c40193d558571`

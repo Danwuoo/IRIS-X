@@ -1,0 +1,17 @@
+{
+  "status": "APPROVED_SCOPED_HOTFIX_OVERLAY_SOURCE_BYTES",
+  "checked_utc": "2026-10-10T04:48:59.346760+00:00",
+  "overlay_sha256": "9b6ade34e446baf5ea1f365a66f7fd984eef103ae94fcd50a6a15dd955d51af9",
+  "files": 46,
+  "modified": 28,
+  "added": 18,
+  "only_target_prefix": "tools/arc_next_suite_20261009",
+  "approved_review_sha256": "5182646edfc39f5c7cbcd4384bb86239fa84a670b331dc006819447b58442c64",
+  "approved_source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+  "approved_publication_manifest_sha256": "185bfaf2335cb8fccb28c961ed9966cc6fce7799bd0e1193707a8ec5d583e0c0",
+  "scope": "Source/notebook/reference/lineage regression fixtures plus documentation and validation receipts; excludes full runtime, evaluator gold, credentials and CPU ZIPs.",
+  "final_staged_copy_verified": true,
+  "provider_receipts": "Publisher may append separately verified v2 receipts; retain v1 history.",
+  "production_changes_after_final_review": false,
+  "staged_root": "/workspace/scratch/3c2b2502fb1e/n6-git-integration-20261010/repo"
+}

@@ -14,6 +14,8 @@ for spec in design['runs']:
  prereqs={'N9':['N6'],'N10':['N6'],'N11':['N6'],'N12':['N7'],'N14':['N6','N7','N9','N10','N11']}.get(run,[])
  intro=f'''# IRIS-X {run} · {spec['question']}
 
+修正版 {arc_suite.SUITE_REVISION}：修正 runtime8 原始 N1 manifest 與衍生 FIX1 reference 混用。使用新 output/source 目錄；舊版 evidence 不會自動升級成新 gate 收據。實驗 tasks、prompts、seeds 與 budgets 不變。
+
 這是十份分階段實驗之一。預設停用，儲存為 private inactive QUICK_SAVE。沒有啟動 GPU、訓練、付費執行或競賽 submission。
 
 ## 要檢驗的假說
@@ -46,7 +48,7 @@ MANUAL_START = False
 RUN_ID = {run!r}
 RUNTIME_ROOT = MODEL_ROOT = WHEELS_ROOT = INTERPRETER_ROOT = ADAPTER_ROOT = None
 PRIOR_RESULTS = {repr({r:None for r in prereqs})}
-BASE = (Path('/kaggle/working') if Path('/kaggle/working').is_dir() else Path.cwd()) / {'iris-nextphase-'+run.lower()!r}
+BASE = (Path('/kaggle/working') if Path('/kaggle/working').is_dir() else Path.cwd()) / {'iris-nextphase-'+run.lower()+'-'+arc_suite.SUITE_REVISION!r}
 '''
  data='PINS = '+repr(pins)+'\nFILE_HASHES = '+repr(hashes)+'\nPACKED_SOURCE_SHA256 = '+repr(hashlib.sha256(packed).hexdigest())+'\nUNPACKED_SOURCE_BYTES = '+str(len(raw))+'\nPACKED_SOURCE_BASE64 = '+repr(payload)+'\n'
  execute='''import base64, hashlib, importlib.util, importlib.machinery, json, zlib
@@ -101,7 +103,7 @@ else:
   if kind=='code':result.update(execution_count=None,outputs=[])
   return result
  nb={'nbformat':4,'nbformat_minor':5,'metadata':{'kernelspec':{'display_name':'Python3','language':'python','name':'python3'},'language_info':{'name':'python'},
-     'irisx_run_id':run,'irisx_execution_mode':'QUICK_SAVE','irisx_agent_execution_authorized':False,'irisx_gpu_validation_performed':False,
+     'irisx_run_id':run,'irisx_suite_revision':arc_suite.SUITE_REVISION,'irisx_execution_mode':'QUICK_SAVE','irisx_agent_execution_authorized':False,'irisx_gpu_validation_performed':False,
      'irisx_manual_start':False,'irisx_source_lock_sha256':hashes['source-lock.json'],'irisx_offline_dataset_pins':pins,
      'irisx_max_generate_calls':spec['max_model_calls'],'irisx_prior_runs':prereqs},'cells':[cell('markdown',intro,0),cell('code',config,1),cell('code',data,2),cell('code',execute,3)]}
  path=ROOT/'notebooks'/filename;path.write_text(json.dumps(nb,ensure_ascii=False,indent=1)+'\n')
@@ -110,12 +112,13 @@ else:
       'notebook':str(path.resolve()),'filename':filename,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'bytes':path.stat().st_size,
       'private':True,'mode':'QUICK_SAVE','kernel_execution_type':3,'enable_gpu':False,'enable_tpu':False,'enable_internet':False,'manual_start':False,
       'gpu_execution_authorized':False,'training_authorized':False,'competition_submission_authorized':False,'language':'python','notebook_type':'notebook',
+      'competition_sources':['arc-prize-2026-arc-agi-3'] if run=='N6' else [],'competition_metadata_preserved_only':True,'competition_data_used':False,
       'dataset_sources':[v['reference'] for v in pins.values()],'dataset_pins':pins,'runtime_dataset_upload_required':False,
       'max_generate_calls':spec['max_model_calls'],'max_generated_tokens':spec['max_model_calls']*2048,'max_prompt_tokens':spec['max_model_calls']*6144,
-      'prerequisites':prereqs,'source_lock_sha256':hashes['source-lock.json'],'new_notebook_do_not_overwrite_previous':True}
+      'prerequisites':prereqs,'source_lock_sha256':hashes['source-lock.json'],'new_notebook_do_not_overwrite_previous':False,'update_existing_reviewed_notebook':True,'preserve_previous_provider_version':True,'suite_revision':arc_suite.SUITE_REVISION}
  (ROOT/'publication'/(run+'.json')).write_text(json.dumps(publication,indent=2)+'\n');notebooks.append(publication)
 manifest={'format':'irisx/exact-ten-publication-v1','count':10,'source_lock_sha256':hashes['source-lock.json'],'design_sha256':hashes['DESIGN-FROZEN.json'],
           'total_model_call_ceiling':sum(x['max_generate_calls'] for x in notebooks),'gpu_execution_performed':False,'training_performed':False,
-          'publication_status':'requires_separate_independent_release','notebooks':notebooks}
+          'publication_status':'requires_separate_independent_release','suite_revision':arc_suite.SUITE_REVISION,'notebooks':notebooks}
 (ROOT/'publication-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print(json.dumps({'notebooks':len(notebooks),'compressed_source_bytes':len(packed),'uncompressed_source_bytes':len(raw),'total_notebook_bytes':sum(x['bytes'] for x in notebooks)},indent=2))

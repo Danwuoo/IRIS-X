@@ -1,0 +1,76 @@
+{
+  "format": "irisx/runtime8-manifest-hotfix-root-cause-v1",
+  "status": "confirmed",
+  "canonical_dataset": "danielwuu/iris-arc-next-runtime/8",
+  "runtime_bundle_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+  "canonical_manifest_sha256": "ce7eddc85aac290eff1b67754fe3d689f02897be7f490f5dee019d4da78a631a",
+  "canonical_manifest_bytes": 178386,
+  "historical_derived_reference_sha256": "d4f6fbb693d35313f2b9be4eac50e5ac3c8340c61e6b4e77ba71de7a44ea54f8",
+  "historical_derived_reference_bytes": 178403,
+  "core_differences": {
+    "experiment_id": {
+      "canonical": "granite-run003-n1-20261009",
+      "historical_fix1": "granite-run003-n1-20261009-return-dict-fix1"
+    },
+    "implementation_sha256": {
+      "canonical": "73d51e0b28c5f0b5de967e5c348365e3093543fb9b1de06d10282df08e7c83b2",
+      "historical_fix1": "34da0ce1d2de0c5abe38f5c28011923a04fbe677f2b4b981857ee00e8dd71c17"
+    }
+  },
+  "implementation_differences": {
+    "tools/arc_n1.py": {
+      "canonical": "22af738c8a63d3078fa704fa0140ce278192a6032b77ce5030cdc09bfcf3f0d5",
+      "historical_fix1": "293d1a642edd05a9c49f808da83456128dfa6de4a9b90b7a98cba02b77ed3517"
+    },
+    "tools/arc_next_workflow.py": {
+      "canonical": "581880ec37c5484437dce451b5d48849a48aba32ffd9aff3c50df708b62e547d",
+      "historical_fix1": "ca8c88668519e58bea5980552264cb85bbfea06d03d7f927fc4b41dd549e9c8a"
+    }
+  },
+  "top_level_changed_fields": [
+    "core",
+    "core_sha256",
+    "records",
+    "source_implementation"
+  ],
+  "record_count": 256,
+  "record_changed_fields": [
+    "contract_sha256",
+    "record_id"
+  ],
+  "scientific_core_fields_unchanged": [
+    "adapter_binding_sha256",
+    "arms",
+    "base_manifest_sha256",
+    "challenge_sha256",
+    "confirmation_ids",
+    "decode_seeds",
+    "development_ids",
+    "development_is",
+    "eligibility",
+    "exposure",
+    "family_claim",
+    "format",
+    "historical_exposure_audit",
+    "inventory_sha256",
+    "limits",
+    "new_training",
+    "original_test_fields_retained",
+    "sampling",
+    "shard_size",
+    "shard_watchdog_seconds",
+    "solutions_sha256",
+    "source_commit",
+    "source_files",
+    "stages",
+    "training_ids",
+    "tuning_ids",
+    "weights"
+  ],
+  "challenge_hashes_unchanged": 64,
+  "confirmation_count": 136,
+  "cause": "The published suite compared the original runtime8 N1 manifest with a derived return-dict-fix1 manifest embedded from prior development evidence.",
+  "test_gap": "The 57 tests copied the same derived reference, patched reads and exercised run_records below the real mounted-runtime boundary.",
+  "check_weakened": false,
+  "revision": "runtime8-manifest-fix1-20261010"
+}

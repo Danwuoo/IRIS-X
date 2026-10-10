@@ -1,0 +1,140 @@
+{
+  "status": "PASS_OFFLINE_ALL_TEN_V2_PUBLICATION_EVIDENCE_AUDIT",
+  "checked_utc": "2026-10-10T04:58:28.999051+00:00",
+  "aggregate_receipt_sha256": "3ca1a42f0476b4aa70048624c45dc5e8c5c25d351256acb92da5d042d92cdfb8",
+  "approved_review_sha256": "5182646edfc39f5c7cbcd4384bb86239fa84a670b331dc006819447b58442c64",
+  "approved_manifest_sha256": "185bfaf2335cb8fccb28c961ed9966cc6fce7799bd0e1193707a8ec5d583e0c0",
+  "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+  "notebooks": [
+    {
+      "run_id": "N5",
+      "kernel_id": 137914442,
+      "version": 2,
+      "reference": "danielwuu/iris-x-n5-language-replay",
+      "approved_notebook_sha256": "bb458852520552c290e057ce2ca74cda234477051db7cfc8caed5edd5c3d8e58",
+      "saved_source_sha256": "4464644fb77a2efe55bf753105b67e572ca8e6d8833c1183eafde7cb69dcd166",
+      "receipt_sha256": "7894b2952247aff22b48d5ef1430d136e3393f375e2eebea2fc623f6cda6bc5d",
+      "exact_normalized_notebook": true,
+      "private_inactive_flags_pass": true,
+      "competition_metadata_preserved": []
+    },
+    {
+      "run_id": "N6",
+      "kernel_id": 137914719,
+      "version": 2,
+      "reference": "danielwuu/iris-x-n6-toolbox-contract",
+      "approved_notebook_sha256": "72114ab5b4c3b61f295f932c804ad784b8e70e9ebaf976f3542bd4e09fc7e49d",
+      "saved_source_sha256": "4af1713d6633e3eaddb95a460de465050104bd4cfb2ced36a56756546ebe264b",
+      "receipt_sha256": "a3a2c5166250266f6d7cde532a61fe531988f1bd61961a52e89fdd386b86dab9",
+      "exact_normalized_notebook": true,
+      "private_inactive_flags_pass": true,
+      "competition_metadata_preserved": [
+        "arc-prize-2026-arc-agi-3"
+      ]
+    },
+    {
+      "run_id": "N7",
+      "kernel_id": 137914783,
+      "version": 2,
+      "reference": "danielwuu/iris-x-n7-typed-program-ir",
+      "approved_notebook_sha256": "290710af40373765e42d2fa3f592e006da96318405227e32ea57a0bb09293aa5",
+      "saved_source_sha256": "2675257c200e77810f3abd253d06d9e5d16a60ee34391c198c98a2de6ee0c36c",
+      "receipt_sha256": "4d362f7436d8c284e554b5fcbf04328c2665d27a2700295ea9dd2e09dd456c56",
+      "exact_normalized_notebook": true,
+      "private_inactive_flags_pass": true,
+      "competition_metadata_preserved": []
+    },
+    {
+      "run_id": "N8",
+      "kernel_id": 137914851,
+      "version": 2,
+      "reference": "danielwuu/iris-x-n8-static-feedback",
+      "approved_notebook_sha256": "af2aa1c940b9fa3ebaa60e35f4d2ae312e325806c26881b273161008dbb39300",
+      "saved_source_sha256": "f7f45f3af738127055c75e78e257d63eee8e0f38a7079f1a2fbe69f695bdeafe",
+      "receipt_sha256": "246b4f60c0bf2d9ac867bcc9b530f4f659c656daaf8b26e853fd85f5a6a610a9",
+      "exact_normalized_notebook": true,
+      "private_inactive_flags_pass": true,
+      "competition_metadata_preserved": []
+    },
+    {
+      "run_id": "N9",
+      "kernel_id": 137914884,
+      "version": 2,
+      "reference": "danielwuu/iris-x-n9-object-perception",
+      "approved_notebook_sha256": "0bdcc764b3c1481cdefb50126a9e629d079deb70d7b32305c2fb2dcb64ba979f",
+      "saved_source_sha256": "4896d459d3de24d962c50279481e12b264c89475f9fca6ce107896045ff678d2",
+      "receipt_sha256": "82751903f4bc2eea33aea92165a621421cc7ee3f94277e4732ebbb510402409b",
+      "exact_normalized_notebook": true,
+      "private_inactive_flags_pass": true,
+      "competition_metadata_preserved": []
+    },
+    {
+      "run_id": "N10",
+      "kernel_id": 137914952,
+      "version": 2,
+      "reference": "danielwuu/iris-x-n10-demo-feedback",
+      "approved_notebook_sha256": "19bba62304dc0356ca97991ffc0c4d63a39bf8259ed6e77de6df0de72dfa2d34",
+      "saved_source_sha256": "9f2ae4d86d0f628eae19da77d2ee555f588cf1cab8ada009a048fa2a7825a0fd",
+      "receipt_sha256": "886d56c6726e2b3b362669443f1fdf71029e5fcd421525226acd51846fe5778b",
+      "exact_normalized_notebook": true,
+      "private_inactive_flags_pass": true,
+      "competition_metadata_preserved": []
+    },
+    {
+      "run_id": "N11",
+      "kernel_id": 137915031,
+      "version": 2,
+      "reference": "danielwuu/iris-x-n11-candidate-memory",
+      "approved_notebook_sha256": "3d7042d8934440f3629e5efbfa93b8606d81eea89686e53356570e035a0bdcce",
+      "saved_source_sha256": "46f4df066e952ec3e07b599cb6e6359f5992d99f243d719ef294299d482ff888",
+      "receipt_sha256": "ef59b900dc9bb7714b00cf383a5be078acb30ede3c03d7e59f34171b138a103c",
+      "exact_normalized_notebook": true,
+      "private_inactive_flags_pass": true,
+      "competition_metadata_preserved": []
+    },
+    {
+      "run_id": "N12",
+      "kernel_id": 137915103,
+      "version": 2,
+      "reference": "danielwuu/iris-x-n12-neural-cpu-search",
+      "approved_notebook_sha256": "69f4a1ff3a820e09e4d39e31e5476f869179e7cf027f8eb04e1cd39f2d967aac",
+      "saved_source_sha256": "ab0649d917e1c32560f9b0f0ce4cb1910a5a6c0554252bcc6c9c286638ca0185",
+      "receipt_sha256": "2717c22067bbbd4b767c5b6dfe76c26fa8ac83f978d5308bad2f31ad319cc1d0",
+      "exact_normalized_notebook": true,
+      "private_inactive_flags_pass": true,
+      "competition_metadata_preserved": []
+    },
+    {
+      "run_id": "N13",
+      "kernel_id": 137915159,
+      "version": 2,
+      "reference": "danielwuu/iris-x-n13-program-curriculum",
+      "approved_notebook_sha256": "ee732919b6101b9db07e2ebe23ebb54b0fd1817fb7bbfa00d9493c4256607ddf",
+      "saved_source_sha256": "afba8bb150711c7e00bc37f6a9f0e84fbe1cb67a9b6c13a13a5b8bf92e2d0d99",
+      "receipt_sha256": "b71d507de8cd8a0907ee9443dff1e1bfd67a25a3de5b477d81b1e6541d861103",
+      "exact_normalized_notebook": true,
+      "private_inactive_flags_pass": true,
+      "competition_metadata_preserved": []
+    },
+    {
+      "run_id": "N14",
+      "kernel_id": 137916650,
+      "version": 2,
+      "reference": "danielwuu/iris-x-n14-agent-consolidation",
+      "approved_notebook_sha256": "d8a83c02767abfbf431a8ea8a90d5ce1694972c5d922442ffc3b60b0a80a2e24",
+      "saved_source_sha256": "1c3a507186ab6ded64055e3f2a9f3cf293efebd8bdef870ac3a61714558100b0",
+      "receipt_sha256": "068fc07f2dee4d6f2975f6ac5927f97d723b7c6984d3b6f1743b8c37bccb5a44",
+      "exact_normalized_notebook": true,
+      "private_inactive_flags_pass": true,
+      "competition_metadata_preserved": []
+    }
+  ],
+  "same_original_ids": true,
+  "all_versions": 2,
+  "all_original_v1_source_snapshots_match": true,
+  "single_save_each_and_journals_verified": true,
+  "normalization_allowed": "Only nbformat cell.source list versus equivalent joined string. Every other notebook field compared exactly.",
+  "no_external_calls_or_mutations_by_auditor": true,
+  "dataset_readback_limit": "Provider metadata independently returns dataset identities without version numbers. Submitted versions and embedded hash pins are verified; actual future mounted bytes remain fail-closed runtime checks, not provider attestation.",
+  "execution_claim_limit": "Evidence shows QUICK_SAVE requested, manual false, GPU/TPU/Internet false, completed provider rendering and no notebook-execution markers. This audit did not execute a notebook or independently query Kaggle."
+}

@@ -2,6 +2,16 @@
 
 This is an offline, manually started experimental suite, not ten completed GPU runs. All ten notebooks are private inactive QUICK_SAVE artifacts with GPU, TPU and Internet off and MANUAL_START=False. No GPU generation, training, payment, or competition submission was performed during development.
 
+## 2026-10-10 runtime8 manifest repair
+
+The first owner launch of N6 revealed a packaging bug before model preparation: this suite embedded a derived N1 `return-dict-fix1` manifest, while the pinned runtime8 Dataset contains its canonical N1 manifest. The original 57 tests used the same derived reference as their fixture and exercised records below the mounted-asset boundary; passing them did not validate the real launch boundary.
+
+Revision `runtime8-manifest-fix1-20261010` binds the exact captured canonical runtime8 manifest. Full runtime inventory/hash verification, real N1 verification, complete manifest equality and challenge verification remain mandatory. No hash gate is disabled and no task, prompt, seed, model pin or budget is changed. The previous reference and test evidence are retained as history.
+
+All ten notebooks have a new default source/output namespace; nine use the repaired runtime boundary, while N13 still bypasses runtime/model access. Use only prior evidence from this revision. Old successful, partial and BLOCKED receipts are not automatically migrated, and old output directories are never overwritten. Existing Kaggle notebook versions remain preserved; only independently reviewed successor versions are published, still inactive.
+
+Mounted-runtime acceptance is separate from ordinary fixture tests: set `IRISX_RUNTIME8_TEST_ROOT` to the verified full runtime8 mount when running the new `test_runtime8_manifest.py` tests. Missing mount is an explicit skip and does not satisfy release acceptance. See `docs/RUNTIME8-MANIFEST-HOTFIX-20261010.md` for exact observed differences and the final regression receipt.
+
 ## What changed after the actual N4 result
 
 The sealed N4 artifact contains 93 actual model calls: A32, B32, C29, with three C context exclusions. Direct-grid A solved1/8 exposed engineering tasks; program B/C solved0/8. All61 generated programs had the requested raw-source format;45 parsed, but none entered the original interpreter. Most reimplemented supplied toolbox functions using unsupported while/list methods. Generic syntax feedback did not produce executable repair candidates. This was not a valid test of the benefit of demonstration verification, because the programs never reached demonstrations.

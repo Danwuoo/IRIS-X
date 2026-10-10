@@ -4,10 +4,10 @@
   "title": "IRIS-X N7 Typed Program Ir",
   "slug": "iris-x-n7-typed-program-ir",
   "reference": "danielwuu/iris-x-n7-typed-program-ir",
-  "notebook": "/workspace/scratch/3c2b2502fb1e/n5-nextphase/notebooks/IRIS-X-N7-typed-program-ir-20261009.ipynb",
+  "notebook": "/workspace/scratch/3c2b2502fb1e/n6-runtime-hotfix-20261010/suite/notebooks/IRIS-X-N7-typed-program-ir-20261009.ipynb",
   "filename": "IRIS-X-N7-typed-program-ir-20261009.ipynb",
-  "sha256": "f203a7608560807477d227c631874c523804fc96e5b1d87466a1e176d266068d",
-  "bytes": 265016,
+  "sha256": "290710af40373765e42d2fa3f592e006da96318405227e32ea57a0bb09293aa5",
+  "bytes": 265922,
   "private": true,
   "mode": "QUICK_SAVE",
   "kernel_execution_type": 3,
@@ -20,6 +20,9 @@
   "competition_submission_authorized": false,
   "language": "python",
   "notebook_type": "notebook",
+  "competition_sources": [],
+  "competition_metadata_preserved_only": true,
+  "competition_data_used": false,
   "dataset_sources": [
     "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
     "danielwuu/iris-arc-next-cpython312-offline/2",
@@ -59,6 +62,9 @@
   "max_generated_tokens": 131072,
   "max_prompt_tokens": 393216,
   "prerequisites": [],
-  "source_lock_sha256": "5483b47b573960c4dba64e2af95efdb1a92e19c2f9bdf652a8b45d9db45e290d",
-  "new_notebook_do_not_overwrite_previous": true
+  "source_lock_sha256": "29172a035efc7704cd3f60e663a714a7570c18f636fdca32304be94d02689d50",
+  "new_notebook_do_not_overwrite_previous": false,
+  "update_existing_reviewed_notebook": true,
+  "preserve_previous_provider_version": true,
+  "suite_revision": "runtime8-manifest-fix1-20261010"
 }
