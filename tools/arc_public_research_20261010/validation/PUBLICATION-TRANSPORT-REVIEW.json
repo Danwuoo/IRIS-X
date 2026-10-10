@@ -1,0 +1,154 @@
+{
+  "approved_datasets": [
+    {
+      "files": 3,
+      "is_private": true,
+      "opaque_bytes_only": true,
+      "reference": "danielwuu/iris-x-public120-code-20261010/1",
+      "role": "code",
+      "root_manifest_sha256": "91a0b5b548de8345b4fdb51b89e5d6cea52a81ad5a5f340c00ff4e3c89b64507",
+      "transport_archive_sha256": "5d9bee83f9c539e7ffaa48b30096bd681b14249aebfe593bf7759ce711fbfa78",
+      "upload_inventory_sha256": "5de38d0cb5c51d265e0c388dafcb20dcd78c8b8e19389595bdf238d62f0e8b77"
+    },
+    {
+      "files": 130,
+      "is_private": true,
+      "opaque_bytes_only": true,
+      "reference": "danielwuu/iris-x-public120-data-20261010/1",
+      "role": "data",
+      "root_manifest_sha256": "c55073f8e9f44682dd7d7f31ee7f04f39754a9922ec246073555026452f047e3",
+      "transport_archive_sha256": "cf9eed598d1ab0b48f63110253d0299a1a2bdbd3fcf20c74d8a45e28e03561ab",
+      "upload_inventory_sha256": "90544cd6151bc0fd3cab12f178f65233017c4c7eb33c9c97d4dfa2d766fa35e0"
+    }
+  ],
+  "approved_notebooks": [
+    {
+      "expected_version": 1,
+      "gpu_enabled": false,
+      "internet_enabled": false,
+      "is_private": true,
+      "reference": "danielwuu/iris-x-public120-research-20261010",
+      "role": "inactive",
+      "sha256": "aad1901048a99e895e42ba50262a07752ae28deddce91937cdf7bb10d1f767c7"
+    },
+    {
+      "expected_version": 2,
+      "gpu_enabled": true,
+      "internet_enabled": false,
+      "is_private": true,
+      "reference": "danielwuu/iris-x-public120-research-20261010",
+      "role": "run001",
+      "sha256": "acb65cd7224afd092401fd83247b7d6956c9918636f2e2e9fab7f1ac7c2d1235"
+    }
+  ],
+  "contract_path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/release-final/publication-manifest.json",
+  "contract_sha256": "c9e278cac2ca15850b94fac526cb7010245b01983adcc8dbeb98fb8e0e3a153c",
+  "credentials_read_by_auditor": false,
+  "format": "irisx/public120-independent-publication-transport-review-v1",
+  "gpu_runs_made_by_auditor": 0,
+  "limitations": [
+    "No provider execution occurred in this audit. Publication and actual successful GPU completion must be established from later real receipts and fresh readback.",
+    "SDK has no convert_to_csv field. Required byte-preservation outcome is enforced by full exact provider readback before notebook save, not by an unsupported wire conversion toggle.",
+    "SaveKernel source metadata returns Dataset identities rather than mounted version attestations. Exact seven version pins are verified in the submitted wire, new Dataset v1 assets in full byte readback, and runtime immutable artifact checks are separate.",
+    "Session timeout is bound in active request wire; installed source metadata does not expose its readback field. No proof of actual provider timer behavior is claimed.",
+    "Owned-list absence is a preflight observation, not an atomic provider create-only constraint. This script is the sole approved publisher and detected collisions always stop.",
+    "Overlap exclusion covers this workflow and the known previous configured-G4 notebook only. It does not assert account-global absence of unrelated jobs or cancel any other job.",
+    "Existing quota endpoint mapping to configured G4 is unresolved; no hardware, budget, quota or resource substitutions are authorized by this review.",
+    "Operational monitor, 176 admitted physical calls, zero unknown/generation-framework errors, prediction seal, scorer, owned-process stop and closed archive verification are pending a separate monitor audit and actual run. This receipt is not operational completion or scientific-result analysis."
+  ],
+  "provider_calls_made_by_auditor": 0,
+  "provider_mutations_made_by_auditor": 0,
+  "reviewed_at_utc": "2026-10-10T17:33:04.961647+00:00",
+  "reviewer": "independent publication/RUN transport auditor",
+  "scientific_results_read": false,
+  "scope": "Offline review and inert tests of exact two-new-private-Dataset creation, complete pinned byte readback, new private inactive notebook v1 QUICK_SAVE, and same new ID configuration-only v2 SAVE_AND_RUN_ALL transport. Root approval remains required before any real mutation.",
+  "sdk_sources": [
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/.kaggle-cli-env/lib/python3.12/site-packages/kagglesdk/kaggle_http_client.py",
+      "sha256": "80e93a26faa3e861bf5a3f41177d730ef3d0795769f152bce62f3d8098c7347a"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/.kaggle-cli-env/lib/python3.12/site-packages/kagglesdk/kaggle_client.py",
+      "sha256": "4c831465e19649912d329a0aafe05d73cb429757399c8e714a1e06cfe819bfa7"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/.kaggle-cli-env/lib/python3.12/site-packages/kagglesdk/datasets/services/dataset_api_service.py",
+      "sha256": "b65d95985ad5d802e302db5c31cb4052191b17428595996649945009f5ecd6ee"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/.kaggle-cli-env/lib/python3.12/site-packages/kagglesdk/blobs/services/blob_api_service.py",
+      "sha256": "fd3f980110ecf77d87ed89a7b7b4b47b1b74a72b091f603a6f852c2f727fb433"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/.kaggle-cli-env/lib/python3.12/site-packages/kagglesdk/kernels/services/kernels_api_service.py",
+      "sha256": "3c4fa4f570648333d71d170c6b357d6a7baae3df86d38583d86fa6fa20c79b02"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/.kaggle-cli-env/lib/python3.12/site-packages/kagglesdk/datasets/types/dataset_api_service.py",
+      "sha256": "0ecb08b2f5b9257c4e5e09213b23990cb810079200840d553719ade3ea0eb675"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/.kaggle-cli-env/lib/python3.12/site-packages/kagglesdk/kernels/types/kernels_api_service.py",
+      "sha256": "a7dd65206e7fc27950385e7b163cda48a40766eb8ff7f89d7a334b9bfb151b5c"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/.kaggle-cli-env/lib/python3.12/site-packages/kaggle/api/kaggle_api_extended.py",
+      "sha256": "210e589ab1f7359ffb560aacfe1c003ac1bc844c366f4ff709bf3d13de4d5458"
+    }
+  ],
+  "source_release_approval": {
+    "path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/independent-review/FINAL-RELEASE-APPROVAL.json",
+    "sha256": "720c9ee42c88e036abe95dcc8c43bb0d8b687050387a741805b93c4705a914a1",
+    "status": "APPROVED_CODE_DATA_NOTEBOOK_RELEASE_CONTRACT"
+  },
+  "status": "PASS",
+  "test_execution": {
+    "network_guard": "socket.connect, socket.connect_ex and socket.create_connection forbidden; HTTP adapter and provider interfaces injected inertly",
+    "python_optimization": "-O",
+    "result": "PASS",
+    "test_artifacts": [
+      {
+        "path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/audit-publication-transport/test_transport_inert.py",
+        "sha256": "6ac358d533bd16f746449db9e771b0fce3d625915b75c029bdfbeaba313aeb58"
+      },
+      {
+        "path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/audit-publication-transport/test_workflow_inert.py",
+        "sha256": "e0afe8df33dbf276b4f53c30c8404236f9e78d167a4edc8d4be26482305598e1"
+      },
+      {
+        "path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/audit-publication-transport/transport-inert-final.log",
+        "sha256": "af3deb42061ae1f9c3084466a3041564267f75df35e56aa233ccd31e24173b60"
+      },
+      {
+        "path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/audit-publication-transport/workflow-inert-final.log",
+        "sha256": "d68c079c5d2c30072d05d5bd4ad415d160df676b7d38d84eea2776d14662c458"
+      },
+      {
+        "path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/audit-publication-transport/frozen-artifacts-audit.json",
+        "sha256": "3ff32f7658c47bdb1264a1b4834657af557dfd651f3278efc2b985b991d20512"
+      }
+    ],
+    "tests": 30
+  },
+  "transport_path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/publication-transport/public120_transport.py",
+  "transport_sha256": "b35c5e2ce63a38563d157c22cf6a1321d944b0dbe16a1170da09dabfafc272a4",
+  "verified_properties": [
+    "Manifest SHA c9e278ca and both exact notebook bytes are bound by separate release approval; inactive/active delta is exactly the MANUAL_START, ENABLE_MODEL and OUTPUT_ROOT values.",
+    "Two new Dataset v1 identities only, private; code license other with no new grant, data license apache-2.0; no existing Dataset version/update mutation is used.",
+    "Frozen deterministic wrapper archive bytes consumed directly after exact hash, byte count, ZIP-member count and complete payload inventory verification.",
+    "Full code source.zip inner inventory independently matches the root source manifest; full data upload inventory independently matches all 130 files.",
+    "Durable exclusive per-target claims precede upload/save dispatch; upload-init, PUT and Dataset create intents are durably recorded; rejected/unknown requests cannot silently retry.",
+    "Official SDK write calls have exact POST endpoint and body guards, one-send counter, redirects disabled, finite timeouts and HTTP adapter retries zero.",
+    "Inert redirects, authentication errors, rate limits, conflicts, server errors and timeout/connection ambiguity do not resend; malicious second SDK send and wire drift fail closed.",
+    "Owned listing collision/incomplete-list checks occur before Dataset upload or inactive notebook save; no denied-resource read bypass is used.",
+    "Dataset version 1 readback verifies privacy/license/current version before and after download, complete ZIP byte inventory, safe archive paths and fresh extracted tree equality.",
+    "Only original source.zip, exact extracted-root, or exact extracted-source-directory layouts are accepted for code; only the exact original file layout is accepted for data.",
+    "Readback rejects extras, changed bytes, duplicate members, traversal, symlinks, wrong license/privacy/version and version drift.",
+    "Accepted-but-unreturned create/save outcomes can be reconciled with exact read-only readback while retained claims prevent duplicate writes.",
+    "Inactive wire uses private QUICK_SAVE, no GPU/TPU/Internet; active wire uses the same verified new numeric ID, SAVE_AND_RUN_ALL, NvidiaRtxPro6000, exact pinned image, seven versioned inputs and 7200-second provider timeout.",
+    "Active dispatch requires fresh new v1 source/settings verification and COMPLETE, absence of its one-shot active claim, and fresh known previous configured G4 notebook v4 source/identity/status verification as COMPLETE.",
+    "Prior notebook v4 source is pinned at SHA 598f07473c3dcb37b6f172f56e52d5f60ad431e3d5822ab2af6c7ad681f69c8b; no prior notebook mutation or cancellation is performed.",
+    "ARC3 association is only SaveKernel metadata; reviewed transport performs no ARC3 task-data read and does not provision or purchase hardware.",
+    "No tokens or signed upload destinations are persisted in journals; Dataset create request token is explicitly redacted."
+  ]
+}

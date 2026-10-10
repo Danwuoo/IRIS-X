@@ -1,0 +1,1100 @@
+{
+  "admitted_tasks": 88,
+  "excluded_tasks": 32,
+  "format": "irisx/public120-native-prompt-audit-v1",
+  "max_prompt_tokens": 15943,
+  "min_prompt_tokens": 2333,
+  "model_manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+  "physical_model_calls": 0,
+  "planned_calls": 240,
+  "public_answers_read": false,
+  "rows": [
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "653744f1d94bc4d9902b894dadaa0cd7ac0df4bf649a34b9a69343f89de578f9",
+      "planned_calls": 2,
+      "prompt_tokens": 8931,
+      "task_id": "0934a4d8",
+      "token_ids_sha256": "ca5e04fa818570cc7bec6bd3202aa6375a6e56299549ca166b50ad77303559e9"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "ba74f24156d981830b3f3deee3e52dd02c7c68b11dd1ad5c6c918e4b1ccc4230",
+      "planned_calls": 2,
+      "prompt_tokens": 3635,
+      "task_id": "135a2760",
+      "token_ids_sha256": "1a4527a1df33129801c1eb592617ee3a5f17832c15207fec230ea303b19d16ed"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "40894b63396afdad6a4c44b649035f20960e51af170d1fd73a0edf511560e448",
+      "planned_calls": 2,
+      "prompt_tokens": 2987,
+      "task_id": "136b0064",
+      "token_ids_sha256": "018f83dd3abf8a1f3a988e732c1fd0f0405e5b0df31184537c63d732a218839f"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "aeb75f7d866371a78632eb92dd2ee1ae053c48204c72d32544416b7492989790",
+      "planned_calls": 2,
+      "prompt_tokens": 5255,
+      "task_id": "13e47133",
+      "token_ids_sha256": "cb403800af8a27453037122db6644db13915afb3094b4c06e8dfb002f4fcaf27"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "b8c14571b28a320083782de07753d65bd991c085b9254f62f1942256fb9ca7b0",
+      "planned_calls": 2,
+      "prompt_tokens": 6030,
+      "task_id": "142ca369",
+      "token_ids_sha256": "be6ef9534c21479c50b454a56aeb1bd97dc8d323f7d5c8309225d269b1fab008"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "525961412ca47e4b2b36de473f7cb51eab9b5a551a4ad00854acb166b270ed92",
+      "planned_calls": 2,
+      "prompt_tokens": 8727,
+      "task_id": "16b78196",
+      "token_ids_sha256": "f3bd5d44665f821f8018ba55203059591d5eed7997b32edb1ed9e30dbf1c585c"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "3252a351c1da0ad0327f43ae44775d30bb361a16ec019dc9287c7358ba277537",
+      "planned_calls": 2,
+      "prompt_tokens": 3108,
+      "task_id": "16de56c4",
+      "token_ids_sha256": "5dc543db30696113910fba382b7952e3ba584200b109e223a2f132d4ee93a0a0"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "e2d6b324c872bc05679adea19750ac3f69d29cf0e46679af996d23c959669c7a",
+      "planned_calls": 2,
+      "prompt_tokens": 3611,
+      "task_id": "1818057f",
+      "token_ids_sha256": "d94de2db1f47d72e4d82f811241738129e31c4fcbef42eee3762b2d743b0891e"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "22e9471ad648af0b3c48d26d07af2cbd4ef90876e5fe90f9fd66981c376f613c",
+      "planned_calls": 2,
+      "prompt_tokens": 8135,
+      "task_id": "195c6913",
+      "token_ids_sha256": "31492c810b73034771ec15540c8b7af1b65ab522b43a3d9002dc20b440ad5060"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "9aa70789b971fe20a81c8bcfeb873c36397691a85adf9d7113aa5b15b78ce8d0",
+      "planned_calls": 2,
+      "prompt_tokens": 3724,
+      "task_id": "1ae2feb7",
+      "token_ids_sha256": "00d8aaa5ef28fd32c6fcaa675becae4c38437c65c4346157381e21877521cde4"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "63418955895c7442246dc859ddc6720ff511aa59d46774885890abdbbf6288df",
+      "planned_calls": 2,
+      "prompt_tokens": 2440,
+      "task_id": "20270e3b",
+      "token_ids_sha256": "8120c6d027110a4aed7a44d608261c884a7e29ae6d0b58c386d0b4366fe97341"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "fbb49cd5212df4e43ffa4ff18320b1c20ae7bc68715ffa929b794fc19d239810",
+      "planned_calls": 2,
+      "prompt_tokens": 7012,
+      "task_id": "20a9e565",
+      "token_ids_sha256": "07856f2c15ec2af77dcd1fa64743cf79f59f08d7772e517fcd794718e0770cab"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "80c716520a0875e47b779003f1b0b7eac90c548acdd13f481508e946ae5a4929",
+      "planned_calls": 2,
+      "prompt_tokens": 3615,
+      "task_id": "21897d95",
+      "token_ids_sha256": "137fabab9f816c9f135ffff46272fe5d24779c267eca3851ff3388b190cabd27"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "eba34ec3c91f59f9facc7ae04d68dc47a616b62d6a407ed5771bec2d068450e2",
+      "planned_calls": 2,
+      "prompt_tokens": 6631,
+      "task_id": "221dfab4",
+      "token_ids_sha256": "789c13240876c9427f00b3e707e822ee378ed4aa20e8d13593d6230f0474ff9d"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "f2c31b487e90b0e16a3c355b967a0fdf0f186a0eb8b2b7b0e3b92055f093efce",
+      "planned_calls": 2,
+      "prompt_tokens": 3558,
+      "task_id": "247ef758",
+      "token_ids_sha256": "e941128c93df9e8d642d424acec15cb53dda4cb968f53acc452e1c4c3df34d5b"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "f3401a8a8e1c2a45bf0996c3209e02924c34e05fb2749eb16995c503e5aad63d",
+      "planned_calls": 2,
+      "prompt_tokens": 6639,
+      "task_id": "269e22fb",
+      "token_ids_sha256": "a3f670fd5f5e0761f2fc41f6a00970775a752e7741d5708d3489ba6d2a11d3ad"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "461a64613f157d4bcedca67e87478f13ab89d1917c863cac20038ea7a79ce277",
+      "planned_calls": 2,
+      "prompt_tokens": 3524,
+      "task_id": "271d71e2",
+      "token_ids_sha256": "3fdb61ea1e476b21963574137e81556005ea25b7ddd88c6f3d6ac26c3ec9de2b"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "431f2e98ceff40ecaa9bf04055c8cee0da95187a80a0c07d9a022942a94046fb",
+      "planned_calls": 2,
+      "prompt_tokens": 2736,
+      "task_id": "28a6681f",
+      "token_ids_sha256": "fe56cfcca897fc7c55a36abfabdd1833f9f37c06bdf1c6c3591fb6b9e55edeb3"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "539dd2f3c8496683186ac26cc4953112346ce607b0cbd89fce2860224e5af32e",
+      "planned_calls": 2,
+      "prompt_tokens": 3456,
+      "task_id": "291dc1e1",
+      "token_ids_sha256": "03db43a706fcbde9633e0963a39f5f56be11ed21730c52654890df7964cd39da"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "65a6352d0b729857fb73c2fac734207214861d20978b31257aae57935943d61b",
+      "planned_calls": 2,
+      "prompt_tokens": 3220,
+      "task_id": "2b83f449",
+      "token_ids_sha256": "2483b1fdb59e2bd03ecd744c29fa6aef0e61aa618defb263daf59e64d56c40ff"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "ed9ddc41031f1a3660a8537600d3e1f8de7f3290ec0a5b0fb5385103dba8b6fa",
+      "planned_calls": 2,
+      "prompt_tokens": 6143,
+      "task_id": "2ba387bc",
+      "token_ids_sha256": "0b49250ff05b19db5658782e3e43b1d55a704d3267339817e66f7b40bda8dd1f"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "d50d2886ae69897fe7b1af4c795077a80a103336003eea9a07c8cc5f873d16c1",
+      "planned_calls": 2,
+      "prompt_tokens": 6888,
+      "task_id": "2c181942",
+      "token_ids_sha256": "8ed93fe3d4ced12ebf37d8918603535f18213d61f8e0a469359f176ba8ed7970"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "985cfe5a8fd214fd061ceaf1fd98c1c6fb5af42a42105a3ebcb6eaa06c6c3599",
+      "planned_calls": 2,
+      "prompt_tokens": 5407,
+      "task_id": "2d0172a1",
+      "token_ids_sha256": "b3d0bd30acb731b78ac7b84ecdf5301b2772f1795898f3a70b54ff59536d999a"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "03f19930710263e507f61edcc8e4cd682efc5203ab941db1edde1d0c156ae93d",
+      "planned_calls": 2,
+      "prompt_tokens": 3308,
+      "task_id": "31f7f899",
+      "token_ids_sha256": "72cbef7ec10c238c3c0259cafae36827618bdfa492ada3862a4cc51350738426"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "b54433f461196bebc9b5cdbb73c933bfed7a186a2828cb4ea999dce47150b408",
+      "planned_calls": 2,
+      "prompt_tokens": 4328,
+      "task_id": "332f06d7",
+      "token_ids_sha256": "3ad906f9328bc8adc83f36a4a3e46d70c30cf6f3e1d432cea6c1f9dcba50c20d"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "8eb5894260bedb3705ab7faf52dc690171293b5341d83d89e445b6928da4642f",
+      "planned_calls": 2,
+      "prompt_tokens": 5332,
+      "task_id": "35ab12c3",
+      "token_ids_sha256": "4f24bd11181676340db0c7e633083bb1388db599d32f0f0a9d67ab099a361d9e"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "98b083105b7a7072889d28ef8df580bfa0c04271855ccbf610eb91fb49527efc",
+      "planned_calls": 2,
+      "prompt_tokens": 5343,
+      "task_id": "36a08778",
+      "token_ids_sha256": "2db9a5e22fc372c8c7f1e2f875d52fb841c7ed95b316349171c642fe14bf00eb"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "11414da47f2124a937c90b865f5a62977c2a355798178b807ae14e4844ee029e",
+      "planned_calls": 2,
+      "prompt_tokens": 3731,
+      "task_id": "38007db0",
+      "token_ids_sha256": "b8cc2fe8d40dabaa44b9f3e8112d166304f7a0e2198df4b85e3d463b93eff1a3"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "7b54208750c7eafa8aa31882c147b25f3adbd55355cc6695818bfb01399f8ccb",
+      "planned_calls": 2,
+      "prompt_tokens": 3890,
+      "task_id": "3a25b0d8",
+      "token_ids_sha256": "15dbdf037e771c61893e3fda4046002495fa7ba94bd1ee334415ed694a8e1667"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "9097dceabf7a5cd83decb8b9138a8660b9b63b69f35113a3add0070bece618ef",
+      "planned_calls": 2,
+      "prompt_tokens": 3087,
+      "task_id": "3dc255db",
+      "token_ids_sha256": "0354cd0fb39ba5a02f6130898aabefab834c87db19dbeb494ab6598e9f34594e"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "d4b56b38b1d3c73747636c2e0c510bfa91d46dbb29996e78c969080f44c6c1aa",
+      "planned_calls": 2,
+      "prompt_tokens": 7093,
+      "task_id": "3e6067c3",
+      "token_ids_sha256": "67c51b363a4ec932c20741cd17618d582630c281d9e50671ec47a07969aa3ee1"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "4212f9b00a6f420b59b24b465cd239d9385c3522ebfec03db2f13f5f43a2dcfb",
+      "planned_calls": 2,
+      "prompt_tokens": 4606,
+      "task_id": "409aa875",
+      "token_ids_sha256": "6fd0d11241b01463a09dba5839c56af019347713ada06ba924cb282153f6f5c7"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "7997dcf6fb5bb0b27637135eb2bb6ddde222c3ca3b54e7ac85e4a361f0b2cfcf",
+      "planned_calls": 2,
+      "prompt_tokens": 2888,
+      "task_id": "446ef5d2",
+      "token_ids_sha256": "d2fbea870077d15588de815233104781ea8287a97c68c868921c829f19bf9110"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "b734c719d33581f3a092403c5a934d04820b038f9d9122d9815c4bee9db604d3",
+      "planned_calls": 2,
+      "prompt_tokens": 4736,
+      "task_id": "45a5af55",
+      "token_ids_sha256": "8fc82177af0e3473965a58e606ab9d9f9e6953faf875c7fce68ede631e84bbe0"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "aa314924103267091ad0c1b3bfb834b4092b2a0eca65cd714b115fd973ccf705",
+      "planned_calls": 2,
+      "prompt_tokens": 5425,
+      "task_id": "4a21e3da",
+      "token_ids_sha256": "681d5603d132dbb8b77efd58b67685097a1036a2de79349bb54662234bd9af42"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "e91fe4d931877c0df1e51dea991a4d98346faa62dddd6942309b883a0a44d32d",
+      "planned_calls": 2,
+      "prompt_tokens": 2810,
+      "task_id": "4c3d4a41",
+      "token_ids_sha256": "2fae37181be1ab9ed3c543c68f7dc4e4f64b3edb16a67fc52fbd80ff17e8fb1b"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "020636c4b3b818ded8eb5ad6fc21bf398c4d6cc6e2cf79dfa48fc6eb5159a54b",
+      "planned_calls": 2,
+      "prompt_tokens": 7180,
+      "task_id": "4c416de3",
+      "token_ids_sha256": "8dfb6e1c94294ecd4a12a22e26267676f95f8447006ae80b7a70f4d33559d0f5"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "f4c54e776e91977fd627b0dd0a1ecd2f16d8bad937d62a275351d5f1ab2b9680",
+      "planned_calls": 2,
+      "prompt_tokens": 5211,
+      "task_id": "4c7dc4dd",
+      "token_ids_sha256": "7362807e0ae69a8a2ce7875e1c9431b200f400df6a6dd30f8272b76e1398cc4d"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "49fa17f0dd75119e6221d4e57deb952afd4f4dd035e74238370f989d39b12841",
+      "planned_calls": 2,
+      "prompt_tokens": 4219,
+      "task_id": "4e34c42c",
+      "token_ids_sha256": "7a1d519ed55bf08531f35d9abb02994af70bb5fcc84928e9d6f46f1cfdcae618"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "b3d3b957bb711afdf5dfaa4b74cc4c58bd366c3f8aa1da014f5cc03657834781",
+      "planned_calls": 2,
+      "prompt_tokens": 4067,
+      "task_id": "53fb4810",
+      "token_ids_sha256": "db29c07f594929122c5a934c3af7f1dcaab3b1024915731fa29ada2ca24cf85e"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "237511d9a1d3dd25fca7f00c33f4f40be63831fc8498be19c009ddca3cbdde54",
+      "planned_calls": 2,
+      "prompt_tokens": 3631,
+      "task_id": "5545f144",
+      "token_ids_sha256": "0187d28745c74fc19a5bb89d6a84390a1fb29d65e48e24af9a3a3859464e6c4e"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "697726df631edb1465e06def708fec3f8f49bd315d9c5316f9c9e042f1a0ab17",
+      "planned_calls": 2,
+      "prompt_tokens": 3919,
+      "task_id": "581f7754",
+      "token_ids_sha256": "cf0443732579d5e3ecaf75a6ff199fa7c17365274683873d4b2554ec1ad1d869"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "f580bc6fed360c1379591f6bd76e70b3c6ccf7d3090ab957dcfeb7b43923c3f4",
+      "planned_calls": 2,
+      "prompt_tokens": 4630,
+      "task_id": "58490d8a",
+      "token_ids_sha256": "03c6ff6a1b782159af6a346ccd37e40e451cbf23ddd684049d33dacb18a56b35"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "96c2c14684d9a7ac6cba368ba173c7e5fa4853b6a9fd018c597c3064ca8ae421",
+      "planned_calls": 2,
+      "prompt_tokens": 4725,
+      "task_id": "58f5dbd5",
+      "token_ids_sha256": "5c89444383f63985b90cd411f086b54436a4df7b2c16dc87e9498193f1f78ff4"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "8eedc7cfb471d5dd753976273642402964da2506c7f5f5094113922c69cd0713",
+      "planned_calls": 2,
+      "prompt_tokens": 8671,
+      "task_id": "5961cc34",
+      "token_ids_sha256": "0a53b9709dcd2aef84e13e95cb2a59dcf382914816624095b5efe5dccf7317a5"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "54e7b9be4fb2de5eeddd6199bc4b05b6134b9815fc5568860f1d845093ee00c6",
+      "planned_calls": 2,
+      "prompt_tokens": 3347,
+      "task_id": "5dbc8537",
+      "token_ids_sha256": "566f0c3640c14061e738503a7c922329080ea1f692f24b4e921a39f8f6ff92f7"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "926ffede72e4a3a2b23d4bfb2629320e675f2e4c891bc40288b563a366371a14",
+      "planned_calls": 2,
+      "prompt_tokens": 7254,
+      "task_id": "62593bfd",
+      "token_ids_sha256": "b00b497cb7d6e3a8624987d750924bd82f8c8d026bbfa0d3e8dd9693c5f15044"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "d21940cf3c43dfe2572cbbc5ced45626feaa154723ed94355c2a111d11e787f0",
+      "planned_calls": 2,
+      "prompt_tokens": 6811,
+      "task_id": "64efde09",
+      "token_ids_sha256": "0ce31863e88861b937f77b579fa5f925465fd542c74adb760e87fb4c34debbfe"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "cf33fd2b4f48af1219e6044745a9a2d871e0bc0baf696d259e30ccba5293db08",
+      "planned_calls": 2,
+      "prompt_tokens": 4026,
+      "task_id": "65b59efc",
+      "token_ids_sha256": "1dc076ad86393f14c570e1e502c4c1946ea574d9553346c12a7ef63ae392b358"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "b259e5a291aed6d71a55f21d92c61f4bfb6368f1a9e8897f090d749c70c435b2",
+      "planned_calls": 2,
+      "prompt_tokens": 5708,
+      "task_id": "67e490f4",
+      "token_ids_sha256": "8e7510dcc61067d0bf3b350989fa8ea4bfe31b27ccb2b80df5e06ab73717320e"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "89ec9eff451b0803da742e0511a89aac1ce04b1345334885ff8b7d883a365dc3",
+      "planned_calls": 2,
+      "prompt_tokens": 4000,
+      "task_id": "6e453dd6",
+      "token_ids_sha256": "d4e1a669f84b61ea5264ea10ef4f5850fe702be8489aced21b11875780bb053c"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "ca7cacfb36510c4d74b768a8237bead52aaeaaea61f04f0f61fc06360b5537cc",
+      "planned_calls": 2,
+      "prompt_tokens": 5585,
+      "task_id": "6e4f6532",
+      "token_ids_sha256": "c91d2708ce53ba88e66b926fdecbabc09ce78ee4aea8439168cfe5b2879ada0c"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "cc84332f1cebbf7d7625135f783e9226955106a955d3c9f4207c1b070e7f4510",
+      "planned_calls": 2,
+      "prompt_tokens": 4673,
+      "task_id": "6ffbe589",
+      "token_ids_sha256": "c719f0f6c33d80aeccee3bd0d526b8427ce9086d4bb986e25484bf80e033e3f5"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "1af7ab879f58e064cfe3227b727e0ad12456dec4200a24d539fe7dcba7c81596",
+      "planned_calls": 2,
+      "prompt_tokens": 4876,
+      "task_id": "71e489b6",
+      "token_ids_sha256": "aa34dd9056fbab360daf64a80786d63bd7687bbb169a349d7c083fae067ca330"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "f883532d2f37bbb000fcb977d2256aaced446a4957f34d8954268772f09bed37",
+      "planned_calls": 2,
+      "prompt_tokens": 4344,
+      "task_id": "7491f3cf",
+      "token_ids_sha256": "e031cf7a2ba7fc662ee902d2d0cff4d1cf3cd90b66e0c75ea8fa1c7a77fce5aa"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "2a2267ff8e25450c216a50b010178f16610481af3b5105e3cd138d8508f1aec6",
+      "planned_calls": 2,
+      "prompt_tokens": 3576,
+      "task_id": "7666fa5d",
+      "token_ids_sha256": "a59dadb81f80750c39fe2de7b491e75092a6398103923c8925d0d8d8f778a409"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "ca5917364351773230c3d074f49899616c94d5181b34b7801b486ae1aa323ee5",
+      "planned_calls": 2,
+      "prompt_tokens": 2687,
+      "task_id": "78332cb0",
+      "token_ids_sha256": "9c567b1b668fa3d617636fef79013de7e8d19ba6170d043cad5070bd778ecd8c"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "be491b46691f4442299875c152fe7ee63a2820129ecdd1a99d207ec91fc73c86",
+      "planned_calls": 2,
+      "prompt_tokens": 5332,
+      "task_id": "7b0280bc",
+      "token_ids_sha256": "855d3ac139deb1489228b0e1975df5d258c4e8e1f60b6da4758ce5e83c88ca52"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "f2a4ad65edbf1a959e77a9beb82e7d4cd7ab748b5ea31c6ab1ff2238d3be6b78",
+      "planned_calls": 2,
+      "prompt_tokens": 4241,
+      "task_id": "7b3084d4",
+      "token_ids_sha256": "71a34f7894431738b46d53ba538e1b681d9617db5832e221a187b7bbcfd50a0b"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "6bc000711fe772c2ddb68df9d80e154fd0b00f7db09545c4474c559e50b0c133",
+      "planned_calls": 2,
+      "prompt_tokens": 2645,
+      "task_id": "7b5033c1",
+      "token_ids_sha256": "306117db9bde9e52ec9fd589c9211d7f827e4a1432a9a2d8ec9722a12b3a10e2"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "fcc1f0a367348cd319b00caf2d830a721cf4674cbc0b426c6eb53dea9e32c80f",
+      "planned_calls": 2,
+      "prompt_tokens": 6136,
+      "task_id": "7b80bb43",
+      "token_ids_sha256": "8c7c691eeebeb225911123fc84e748bcc3a3426f9c9732ffe72f8c55a53bfc16"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "e3c0c8715c580dbb335d1a1c5a9b21516a5c8b50c2b2693b476303d4d821b17e",
+      "planned_calls": 2,
+      "prompt_tokens": 10176,
+      "task_id": "7c66cb00",
+      "token_ids_sha256": "69f1dcf0f34586329d7a63345145273e2adc85fb554d3100c5b2817a33ab7099"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "7c71936b3caf1cde3c067070d51b953e479579663ee98f06ad919e83c4817147",
+      "planned_calls": 2,
+      "prompt_tokens": 4120,
+      "task_id": "7ed72f31",
+      "token_ids_sha256": "ab7a6c0cab3c251263b773a606d6c9ec749c0dbf21ee29c9f3941f8f7ce05ea0"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "8588a2fc7cdc09d0603d5498c91082f8a33def1d4b1bcfc63d4c0fcfa7e11bc0",
+      "planned_calls": 2,
+      "prompt_tokens": 4559,
+      "task_id": "800d221b",
+      "token_ids_sha256": "1df650dd7b4ee70a802108f0d1f4fc63b634ee57b23ff17879aa17e44b21aff1"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "9a27ef8686215fe117c09f2ce5fe66ee515888cb494b7f9b2676f580f72cc9b6",
+      "planned_calls": 2,
+      "prompt_tokens": 5528,
+      "task_id": "80a900e0",
+      "token_ids_sha256": "641bf994471bdb728d91d7ff6ee589f800bb44a385f734eaf8fa8686191c6ed4"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "71dbf16e7f7eb16f4f5061176407f2141c1d79ef481164bc6dfd837f67a6f42c",
+      "planned_calls": 2,
+      "prompt_tokens": 4583,
+      "task_id": "8698868d",
+      "token_ids_sha256": "f7d54d9e77bb322205528af48e45b95ce1a35e13c393d9dad0a6cf7fbddb3c8f"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "2bd814b3c10bbe8f737f3ce4bf741c8db9f6a4823e89c63cdbe8553d8bee8c20",
+      "planned_calls": 2,
+      "prompt_tokens": 4205,
+      "task_id": "88bcf3b4",
+      "token_ids_sha256": "13e37642594bc6efce2810feaf8e2ce9276a2ebdf72bdb85fcdb8b25e318f235"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "2e1841679ee1e18c82ce69402f842565b2a641a8ce7af69b7d65b63de8d86a7e",
+      "planned_calls": 2,
+      "prompt_tokens": 6335,
+      "task_id": "88e364bc",
+      "token_ids_sha256": "06eb5435c1fd4b1d85ff021bb72d419436e826ba5df8f0f242835c52e9243953"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "024298c134dd8c7f9ac623fb7b1145636de9c6a100f3b0bac3bbe4d6d22446e6",
+      "planned_calls": 2,
+      "prompt_tokens": 4975,
+      "task_id": "89565ca0",
+      "token_ids_sha256": "d992cb32096dcd124dd9c95af0d264a41653b6eef8bcd7b0029f96fbc74d00cf"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "abade06401b2683c0e0794c4050c8f856b2ff4319532bb70acb01bd3192355c6",
+      "planned_calls": 2,
+      "prompt_tokens": 4675,
+      "task_id": "898e7135",
+      "token_ids_sha256": "e1913e05fd57c2198a4d40a02faf2574d04b1a408cfd8ab74d88300bfedaa1ae"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "18f207b115f173f64b4f33a531c72c681ded47d8c33320e38db8f893ea985ca2",
+      "planned_calls": 2,
+      "prompt_tokens": 5768,
+      "task_id": "8b7bacbf",
+      "token_ids_sha256": "02cd06f064d9206e222880aaf3144c7679400b82322a756effa88e629b9df928"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "3121e7e420e4a6aebc9c556b853ca817031086b9ad6ef575e907b449340f4a0b",
+      "planned_calls": 2,
+      "prompt_tokens": 6553,
+      "task_id": "8b9c3697",
+      "token_ids_sha256": "06e22f515b04683ba4e6c4a50b22718f476a15ac3a66f18e5184e9abb4a23346"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "9499c9a8ac31c0f66ecf2d1eb62715cba96aa9868f59f08bcf536347c77845b7",
+      "planned_calls": 2,
+      "prompt_tokens": 5402,
+      "task_id": "8e5c0c38",
+      "token_ids_sha256": "52ad2bf702a5cc185aa901f96d550fa435c5a199f4c31d2642dea8b22aaae3c2"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "395b9c7f5fda4302554e7aa83f1e3b980028ff4963388d143b30766a0627ac57",
+      "planned_calls": 2,
+      "prompt_tokens": 7607,
+      "task_id": "8f215267",
+      "token_ids_sha256": "2848518b7e607f9325760d278d77de31eb1a30897fc62ad8618bf4196d6a2222"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "0e00e78419ae51e563e7cb6635216d7906215e0ac34a14f38c15a149c5ccdf69",
+      "planned_calls": 2,
+      "prompt_tokens": 4562,
+      "task_id": "8f3a5a89",
+      "token_ids_sha256": "e1185207cfd5c917a50edd0b400eede5f6cc5a112e1814c4fd53318d0d59d477"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "5eca72468f0f5d46462db26a5954562a176f937e23b811c57ccdb5fa2eec07af",
+      "planned_calls": 2,
+      "prompt_tokens": 4239,
+      "task_id": "9385bd28",
+      "token_ids_sha256": "109ae201088800c696b83c49c449044b369379fa6594ad1ae1e935b58252ff60"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "11dea60210b68a3bd1c31070f26e9cc185f0d920d411291c6b2e753de9cf7086",
+      "planned_calls": 2,
+      "prompt_tokens": 3136,
+      "task_id": "97d7923e",
+      "token_ids_sha256": "e6cc9774a21f408d849f88417274422354e67650987e94f1143556c4cc880cb0"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "ba657c3fef766a85a4117a4549cc61fb944cd6f63be120ac5c70abdfe0c2c2fb",
+      "planned_calls": 2,
+      "prompt_tokens": 15943,
+      "task_id": "981571dc",
+      "token_ids_sha256": "3663609fed27f8fba80e1c0424dd083c7f6f133a44f95c755037acd1caa4aeeb"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "4e9042710d161d95f6f5acb062b9a76f2d4dd385f84eccf3b2bcac3ce852bb11",
+      "planned_calls": 2,
+      "prompt_tokens": 12335,
+      "task_id": "9aaea919",
+      "token_ids_sha256": "7583480baa69e05a3a00d75872b5ad63fd5bb563a8235f2d6ec92919ee750b99"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "89d1f3cc10295e638be10b3c97bed3d1d47055a8c79c6beec2e1a9652786e122",
+      "planned_calls": 2,
+      "prompt_tokens": 4776,
+      "task_id": "9bbf930d",
+      "token_ids_sha256": "c421902146140dbfa0ca9f287e977a9030d1915d64a95043160e38450e9aa2b4"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "886f77e81b19324209b8b3326d4a8933d5b82b4ff868dc0c5fb96121b481f97c",
+      "planned_calls": 2,
+      "prompt_tokens": 5791,
+      "task_id": "a251c730",
+      "token_ids_sha256": "8c2b7391406df59b53343c62a8e94a394aa530bb3bd3ca875e9bc1b97f8c1815"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "8108310447596cfba24c9ae829ed92605c657a7f280e506b87927330e21d2ae6",
+      "planned_calls": 2,
+      "prompt_tokens": 6936,
+      "task_id": "a25697e4",
+      "token_ids_sha256": "aa3406751bf8b21cdbe37d6a7281e2cbc88f1e6a0caa5e40a484f2769022f612"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "e73ab403abaaabb29e62de7d7603bad202b87bf992c67d92dd54fe3bc3cb949c",
+      "planned_calls": 2,
+      "prompt_tokens": 8017,
+      "task_id": "a32d8b75",
+      "token_ids_sha256": "37d53790e553e98604215e1a447ada1135d96520df0ca7ca9dd9059fdbec7e45"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "38a31380bdb5bbadc14b10944afcb6d4ccb52e9089747cd3330b639ebc8acefa",
+      "planned_calls": 2,
+      "prompt_tokens": 7343,
+      "task_id": "a395ee82",
+      "token_ids_sha256": "f8b36efe682f7414ee3ab24af17b4907c89dc97cdb09e1f23c8816db5a64e6d4"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "42833fa11b7f138e9984af4150d60c579e0873d78bf6eebd615b9c5c5f6b6675",
+      "planned_calls": 2,
+      "prompt_tokens": 7080,
+      "task_id": "a47bf94d",
+      "token_ids_sha256": "f35f7f9aee537de3fff98556194b3cec783c6deb2c4bf0e78d239dedef327253"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "6eaccc117bd06dc3af4d418dcba86f6d3870c259b86039f66566dc3ad03239eb",
+      "planned_calls": 2,
+      "prompt_tokens": 5636,
+      "task_id": "a6f40cea",
+      "token_ids_sha256": "dd01065bd0bc2814b05d38f9cf84af735545cd401390044bc5efa1c73ff8d0ce"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "efcf01fa0d113d7b13e250a1ca484c39ece9b6b29ba2d0fbbddd36dfe4eb3b5c",
+      "planned_calls": 2,
+      "prompt_tokens": 7613,
+      "task_id": "aa4ec2a5",
+      "token_ids_sha256": "ffa1883a922af7e215deb19c78bc0aeb3d3bc02cc0e96f95924e9474c2848362"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "2c93c51064885ed3b7f77c9a537ba5478745aabf2b31744d5620e59aac1c5e97",
+      "planned_calls": 2,
+      "prompt_tokens": 4398,
+      "task_id": "abc82100",
+      "token_ids_sha256": "8358629c232a5451c48b5b88d6420b63bc7e8ff2139e78505fce9bfaa29a2fdb"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "4f5f2868e3f20b961c651ce617b38d0517c4864e7e1eb39df09bf98fc9408234",
+      "planned_calls": 2,
+      "prompt_tokens": 2659,
+      "task_id": "b0039139",
+      "token_ids_sha256": "12f7d3875acebda9e885e2f95d6853563e8fdcdf4d9307afeae2a61f870a5acd"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "44578ce0d18038fba90a1a6714e3f6a609a8841f7fd790e328f20b676b60a6c4",
+      "planned_calls": 2,
+      "prompt_tokens": 7360,
+      "task_id": "b10624e5",
+      "token_ids_sha256": "082071486a5fa3c05ebdae74ddb709ad61587022ddf7e9ccd161a8e19eb22733"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "0a277c8b52aeb4a13cdbc5a2fd49987b49a35734f9e75082903cf20efcecc7c4",
+      "planned_calls": 2,
+      "prompt_tokens": 7345,
+      "task_id": "b5ca7ac4",
+      "token_ids_sha256": "9b8cf94c639840255cc036619337f1367a0ee671d73cf3f563ed3433525a9de6"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "91a52c6941fe1dd1e1f48762f8f04051b8ef8feddbd5c7ef9476c763b0f1c28c",
+      "planned_calls": 2,
+      "prompt_tokens": 4433,
+      "task_id": "b6f77b65",
+      "token_ids_sha256": "39a06741c574cd078f173fdfb22d55a5e6865bff284044dd88597bad2955d3fe"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "962b7924c9c61fa1f081e2927439eb70d3b89e81b9e73874e09dee136b5183bb",
+      "planned_calls": 2,
+      "prompt_tokens": 11628,
+      "task_id": "b99e7126",
+      "token_ids_sha256": "52e10ecfc85c552d4db4ded18fffd6910205fb40e967de9045f6a47fcb3c2a95"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "b2764e73287c432ade90481a815bb3a81e8f8f54dd596790db116de335f94af7",
+      "planned_calls": 2,
+      "prompt_tokens": 4069,
+      "task_id": "b9e38dc0",
+      "token_ids_sha256": "c170a324980b3a4ebaeb6f8743070d8163b140e05cdda040ffd1cd0850d80ade"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "f95395b4f3571bda6b282581dd81e4e6dd583866a017a85593832970111f4fb8",
+      "planned_calls": 2,
+      "prompt_tokens": 3240,
+      "task_id": "bf45cf4b",
+      "token_ids_sha256": "55398f26e32fbe3914874bcad58134b0e0b7d44c6546d044824a817744d3982b"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "dba031f6b671e97069186feced70e7e8e86eb5b9a556320107d651ccb6d3f878",
+      "planned_calls": 2,
+      "prompt_tokens": 7885,
+      "task_id": "c4d067a0",
+      "token_ids_sha256": "0399319e20ed5d00a47242c50df90737da6a5e7a20187f78a25e0fa293914a40"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "38d59a116e66490e4a2a8434b21e3e671b349dea8e17dc9f16477a7c09a4392e",
+      "planned_calls": 2,
+      "prompt_tokens": 4122,
+      "task_id": "c7f57c3e",
+      "token_ids_sha256": "648b1c4cc66c4867fe89d532abb08a5a75cc535f66846795b8ddd26c4ea4a8c4"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "6fee017e696300a22fc39b6b3e8430e02ec8ca4ba07d773cb99f11b04d7e4e75",
+      "planned_calls": 2,
+      "prompt_tokens": 6182,
+      "task_id": "cb2d8a2c",
+      "token_ids_sha256": "87215699dcca7b6f790a43821ac95cedd7cb1694ad46c78c3d2600d5d3adf1dc"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "b296c6d4c089d79d157757a9c0b7129b777992bc8bae88a5fc724eb313225221",
+      "planned_calls": 2,
+      "prompt_tokens": 5401,
+      "task_id": "cbebaa4b",
+      "token_ids_sha256": "3bc028fdf85d05f60e489cb11749512999435f55f66d4012dc7b9e74325b9446"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "61520fb553a626c2dfce07b2ddd547a0afa05d97ed51a8cca6f1354d78e04dd0",
+      "planned_calls": 2,
+      "prompt_tokens": 2735,
+      "task_id": "d35bdbdc",
+      "token_ids_sha256": "b26bcae2e684bd492d77e9bac7a6d07425cd2a0d7310983f3285eb7aa7e9fa97"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "9a463bf2013cb20d7e5c3857c5e0b942e54bd6135cd20cafb53fbaab0700115d",
+      "planned_calls": 2,
+      "prompt_tokens": 4608,
+      "task_id": "d59b0160",
+      "token_ids_sha256": "24859dc5406281be0aa280eaee7b8f48c9b61c5e5201b28cb3040faa97d0a798"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "d049d80304ff20b89c02800d39e6612c8484dde088c4fa3a708218715fa8b7f9",
+      "planned_calls": 2,
+      "prompt_tokens": 14753,
+      "task_id": "d8e07eb2",
+      "token_ids_sha256": "24a92b6b45562b606a706f9c4838ca24a5f1a50642f1dfea36305533d8f8048f"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "2548b8641ca430f166d42d324071cf7b668948c5afcf39a01cec6c51d7ada0f9",
+      "planned_calls": 2,
+      "prompt_tokens": 5070,
+      "task_id": "da515329",
+      "token_ids_sha256": "d1be0189d371b13a89c5ca51e8c983d4038ae978e3205e9743d772b23db45b9b"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "f1af4d8fb25de46f3498d188d96cae28a72f55f98d9034cdc0c71fededc9cc10",
+      "planned_calls": 2,
+      "prompt_tokens": 5300,
+      "task_id": "db0c5428",
+      "token_ids_sha256": "ec72d2206a84983f0d8ded454285ebc5d08e4e44a53ba6a1a4350383259c0965"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "e6487302ae012219df1361e991a8b1ab44a27abe8aea7de62b6d30ae46cb0dae",
+      "planned_calls": 2,
+      "prompt_tokens": 4339,
+      "task_id": "db695cfb",
+      "token_ids_sha256": "6ba385d0e4dd10098c64d7516e94b115aba2146e8851a096a4165b4606e945a1"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "f959ba6be68a6980dec2c64226763da1a26b5d402258d0c4fb1725f4ef8ba015",
+      "planned_calls": 2,
+      "prompt_tokens": 2751,
+      "task_id": "dbff022c",
+      "token_ids_sha256": "e3027f2643e70a978330f86c2d5204445db0d67bc44781c6ea07d7c364ed8edd"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "7d7b7b9c8ffc628746ce857ace107911b3724a04399806304779bb76df84211d",
+      "planned_calls": 2,
+      "prompt_tokens": 2990,
+      "task_id": "dd6b8c4b",
+      "token_ids_sha256": "5ad6ed0a53a0bbb34b26f768d4a557ac3bf356c3a86abb13f03b182a92c6d057"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "64f9182661e280d70d9ad61772226aadbf19ded2dacc6462ad8bb80960dd2ecd",
+      "planned_calls": 2,
+      "prompt_tokens": 4726,
+      "task_id": "de809cff",
+      "token_ids_sha256": "151bd9269c48ef87d178b9c267dca6d21b37d81e353c6da74591d20abe65ebce"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "ea7dfbf4d189005c938211d87fe4f2c1429784e3072bf268920c3e3320f18720",
+      "planned_calls": 2,
+      "prompt_tokens": 5543,
+      "task_id": "dfadab01",
+      "token_ids_sha256": "a4624530cfbf7a7726bb2f9645b511c9cf9a54f230328d8178bec2a9f3a5cb0e"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "5b9fd35a5604b0798346d21d8f1c236cb1e5b2e0408abfddeb50a9c9159db9b8",
+      "planned_calls": 2,
+      "prompt_tokens": 6281,
+      "task_id": "e12f9a14",
+      "token_ids_sha256": "abb9648ce7c3d3dd9afb6a40b26a67bb75355e939a8dcfc785789bd3eebd0749"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "a8549bd4befccdfb46519c1eff34106749ea9213f934d9ac72452461e38622fc",
+      "planned_calls": 2,
+      "prompt_tokens": 8728,
+      "task_id": "e3721c99",
+      "token_ids_sha256": "301cdd3ca3b19ddd9b5d7c3f800cdb0d70abe021e6ceb780f9c0d3788116c31d"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "4a4cb06bc4fc86b9280cc7d73431186adc3705936f084800a24fb47f3a976754",
+      "planned_calls": 2,
+      "prompt_tokens": 4607,
+      "task_id": "e376de54",
+      "token_ids_sha256": "6b536f04ea4849a5c31d0bba4a88f7e088cc5d34a8176f21707c6c4a9e464e65"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "8bbf39d1f746819a0e290dc594134240d5bbc04f48fcb254d8a241a2d338209b",
+      "planned_calls": 2,
+      "prompt_tokens": 2333,
+      "task_id": "e8686506",
+      "token_ids_sha256": "eb6b8a9358743bfaf4bad9782944a449d8ca02c9573a6c4afaed42413d77b3cf"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": false,
+      "pair_prompt_sha256": "6c815fa9c03e0b1b1ab1b68ee2d5b86a15a74aaed4656a2916e6ffd0121b0706",
+      "planned_calls": 2,
+      "prompt_tokens": 7872,
+      "task_id": "e87109e9",
+      "token_ids_sha256": "98fda598b770d76aa02dce8f77155b63d739710c24cac4db8ff1ab7ab6975289"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "79bd9692b84dfda5b2ef2f9130de8e2c5fe94588ed0b3a29e21aa0d29f22b5e7",
+      "planned_calls": 2,
+      "prompt_tokens": 4680,
+      "task_id": "edb79dae",
+      "token_ids_sha256": "275071b6ab21446b3e862e41321ae4c9d6232db60adbb2b99e27e1fbc4ba1f1c"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "9104adbcb1ea619b666df6ce8fa119a47a2ea0db57cedfdfdde5e07bf84bcdea",
+      "planned_calls": 2,
+      "prompt_tokens": 3287,
+      "task_id": "eee78d87",
+      "token_ids_sha256": "269a8b2aff30164cdd3242e4b350294b7b745471def5088b2c0da89b3484de3c"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "db60829b5974eca8b2795eecc154439bc9dc7927427f689fb91db0f259057c10",
+      "planned_calls": 2,
+      "prompt_tokens": 3455,
+      "task_id": "f560132c",
+      "token_ids_sha256": "66b723422cf6898819ea9a3bbe42403fd9edd5cd0368dde6d9dae0809414ad7b"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "aa1a5199130a19b8c87ea8f56bf0cf78eb8002c88b8b6e547c6293a2ed0d32a5",
+      "planned_calls": 2,
+      "prompt_tokens": 3473,
+      "task_id": "f931b4a8",
+      "token_ids_sha256": "64afbcfd0d94762af8cb7a965f789e841840ed555f9264d959cb1d9fb098f182"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "2528abf05a1b51e092bc920bf0db3aaa125b07036c53afd33b9dbd7738e76e44",
+      "planned_calls": 2,
+      "prompt_tokens": 3849,
+      "task_id": "faa9f03d",
+      "token_ids_sha256": "0068812df13c6a157c90f4831e8eb598f94a47a1af2b1832590f67d4d5409dbf"
+    },
+    {
+      "evidence_mode": "actual-native-tokenizer-only",
+      "pair_admitted": true,
+      "pair_prompt_sha256": "c6615ed684d017db4bd03196b5d3e190075d586d80ca8e02d66d24bce8bbd422",
+      "planned_calls": 2,
+      "prompt_tokens": 5020,
+      "task_id": "fc7cae8d",
+      "token_ids_sha256": "993f8c23889989c53955c7109e24b3654db4419026cc4b1edf43d61fc855caa3"
+    }
+  ],
+  "solver_manifest_sha256": "549019b4b5cb47176f3abd3fcd9ca516e91b7d6e581dfc414a5a6452ff7b1f7f",
+  "source": {
+    "model_provider.py": "cf6f463a6c75eecb9171d5661c06981dccd12daa7b8098334554c31cfd876ed3"
+  },
+  "tasks": 120,
+  "tokenization_wall_seconds": 0.8351146959994367,
+  "weights_loaded": false
+}

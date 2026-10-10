@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "scope": "Opaque evaluator bytes only; metadata and stripped solver schemas inspected; no evaluator JSON task parsed, no scores computed or gold printed",
+  "source_commit": "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+  "task_count": 120,
+  "test_count": 167,
+  "exact_commit_tree_blob_chain_verified": true,
+  "all_120_blob_hashes_verified": true,
+  "solver_test_output_keys": 0,
+  "solver_manifest_sha256": "549019b4b5cb47176f3abd3fcd9ca516e91b7d6e581dfc414a5a6452ff7b1f7f",
+  "evaluator_manifest_sha256": "c7e8ad35770a66a71a22cccbbd0455c1c3bcc1a505dfb2e4c29819eec6209e33",
+  "license_sha256": "8360699be7ffadd4b460e4287c1f7d0ada282518ee8e375fff603b1b3ecbb43f",
+  "data_material_manifest_sha256": "c55073f8e9f44682dd7d7f31ee7f04f39754a9922ec246073555026452f047e3"
+}

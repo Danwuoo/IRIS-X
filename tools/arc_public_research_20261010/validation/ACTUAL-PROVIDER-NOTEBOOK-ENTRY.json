@@ -1,0 +1,31 @@
+{
+  "actual_model_calls": 0,
+  "archive": {
+    "archive": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/provider-notebook-qa-001/run/archives/evidence-07a4d604450b4ac5beb3f9640f3cf280.zip",
+    "directory_fsync_supported": true,
+    "files": 29,
+    "seconds": 0.012184318999970856,
+    "sha256": "459afdcf1c4e62dcaedafe5fbfd395469a36a7d56db3bcb3a024db69aca53004",
+    "streaming_buffer_bytes": 1048576
+  },
+  "cpu_checks": 24,
+  "entry_provenance": {
+    "code_manifest_sha256": "91a0b5b548de8345b4fdb51b89e5d6cea52a81ad5a5f340c00ff4e3c89b64507",
+    "code_reference": "danielwuu/iris-x-public120-code-20261010/1",
+    "data_material_manifest_sha256": "c55073f8e9f44682dd7d7f31ee7f04f39754a9922ec246073555026452f047e3",
+    "data_reference": "danielwuu/iris-x-public120-data-20261010/1",
+    "evaluator_manifest_sha256": "c7e8ad35770a66a71a22cccbbd0455c1c3bcc1a505dfb2e4c29819eec6209e33",
+    "format": "irisx/public120-notebook-source-admission-v1",
+    "solver_manifest_sha256": "549019b4b5cb47176f3abd3fcd9ca516e91b7d6e581dfc414a5a6452ff7b1f7f",
+    "source_archive_bytes_verified": false,
+    "source_archive_sha256": "abf53a6c2bc6730842969d75363f316aed400cd0007c1f4413d2ed7325026013",
+    "source_identity_sha256": "94956754f30a376ce6b059c8642528887a72b02a625e000503e49412c59f4ec1",
+    "source_transport_mode": "verified-extracted-source-directory"
+  },
+  "mode": "actual-provider-readback",
+  "notebook_sha256": "aad1901048a99e895e42ba50262a07752ae28deddce91937cdf7bb10d1f767c7",
+  "public_gold_evaluation_started": false,
+  "qualification": "Final exact notebook manual path, transport and bounded entry only; not a full public score.",
+  "source_sha256": "94956754f30a376ce6b059c8642528887a72b02a625e000503e49412c59f4ec1",
+  "status": "PASS-EXPECTED-PARTIAL-CPU-ENTRY"
+}

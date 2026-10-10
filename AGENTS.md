@@ -1,5 +1,21 @@
 # IRIS-X Repository Governance
 
+## Active sealed public research evaluation (2026-10-10)
+
+Decision 0069 governs the current owner-authorized native-thread implementation,
+CPU testing and private Git/Kaggle publication. The new PUBLIC120 profile may
+score sealed research predictions with the unchanged project public scorer only
+after model stop and proof-bound prediction sealing. Public test answers remain
+evaluator-only; no hidden or competition data is admitted. Keep existing
+consolidated source, scientific gates and evidence unchanged. Code and public
+data are independently versioned; notebook saves are private, default-inert and
+GPU/TPU/Internet off in the inactive save. The later owner addendum to Decision
+0069 authorizes one active existing-resource G4 workflow, GPU on and the already
+approved ARC3 metadata association, with error repair/retry and monitoring until
+operational success. Keep the 7200-second program bound and do not provision,
+change billing/access, read ARC3 task data or submit to competition. After success
+stop without scientific result analysis. Prior scope-denied reads remain denied.
+
 ## Active offline next-line materials (2026-10-08)
 
 Decision 0067 extends the owner request to a fully network-free runtime with

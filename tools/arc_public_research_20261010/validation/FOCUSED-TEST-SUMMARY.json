@@ -1,0 +1,12 @@
+{
+  "actual_transformers_cpu_logits": "NOT_RUN_HTTP403_CPU_TORCH",
+  "errors": 0,
+  "failures": 0,
+  "gpu_execution": "PENDING_AUTHORIZED_EXISTING_RESOURCE_RUN",
+  "native_tokenizer_separate_audit": "PASS",
+  "passed": 160,
+  "scientific_results_analysis_performed": false,
+  "skipped": 2,
+  "source_identity": "94956754f30a376ce6b059c8642528887a72b02a625e000503e49412c59f4ec1",
+  "tests_run": 162
+}

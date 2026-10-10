@@ -1,0 +1,147 @@
+{
+  "format": "irisx/public120-main-integration-validation-v1",
+  "checked_at_utc": "2026-10-10T17:35:50.561590+00:00",
+  "base_commit": "f25a7cd4765de9fe815273bcd6060804324c183b",
+  "source_identity_sha256": "94956754f30a376ce6b059c8642528887a72b02a625e000503e49412c59f4ec1",
+  "notebooks": {
+    "inactive": {
+      "name": "iris-x-public120-research-20261010.ipynb",
+      "sha256": "aad1901048a99e895e42ba50262a07752ae28deddce91937cdf7bb10d1f767c7",
+      "bytes": 19096
+    },
+    "run001": {
+      "name": "iris-x-public120-research-20261010-run001.ipynb",
+      "sha256": "acb65cd7224afd092401fd83247b7d6956c9918636f2e2e9fab7f1ac7c2d1235",
+      "bytes": 19094
+    }
+  },
+  "focused_tests": {
+    "count": 162,
+    "seconds": 72.605,
+    "failures": 0,
+    "errors": 0,
+    "skips": 2,
+    "skip_reason": "Explicit pinned native tokenizer materials not configured for these two optional tests.",
+    "log": {
+      "file": "final-focused-tests.log",
+      "bytes": 23343,
+      "sha256": "831a4a9ff420a5cb4353717e6bd8789bcf8dad2e60d87638c556fdfd88b9c447"
+    }
+  },
+  "portable_exact_inactive_notebook_cases": [
+    {
+      "mode": "archive",
+      "status": "PASS-EXPECTED-PARTIAL-CPU-ENTRY",
+      "cpu_checks": 24,
+      "public_gold_evaluation_started": false,
+      "model_calls": 0,
+      "acceptance": {
+        "file": "final-portable-qa/archive/ACCEPTANCE.json",
+        "bytes": 1759,
+        "sha256": "b871c6675279304e09ae2472eebbc706bf73fd787ba2f5b7e28ad0e853ca3ec3"
+      },
+      "console": {
+        "file": "final-portable-archive.log",
+        "bytes": 1161,
+        "sha256": "0055877eb30e0cddcee5f059cbeac0cf37becb64ddaf28184ce77b1d9991a50d"
+      },
+      "archive_sha256": "8a7abd119de45687e278e3ae5ba5ed53fa40049b37b2340f290b0b3309b6bae6",
+      "archive_bytes": 65513
+    },
+    {
+      "mode": "extracted-root",
+      "status": "PASS-EXPECTED-PARTIAL-CPU-ENTRY",
+      "cpu_checks": 24,
+      "public_gold_evaluation_started": false,
+      "model_calls": 0,
+      "acceptance": {
+        "file": "final-portable-qa/extracted-root/ACCEPTANCE.json",
+        "bytes": 1789,
+        "sha256": "7095c26806d05d294b8b11acf00f234ea8213ca9e87ec4a61e0196e67ca308a0"
+      },
+      "console": {
+        "file": "final-portable-extracted-root.log",
+        "bytes": 1212,
+        "sha256": "2cedf9d9872312a5a2bd9dcb631027624b61d335909422dc44bc35f264aa75a5"
+      },
+      "archive_sha256": "260c4136ac5aa81d8e3da9b6664d4bcb6905d5897f4708feef8b63b95f27f9e6",
+      "archive_bytes": 65289
+    },
+    {
+      "mode": "extracted-source",
+      "status": "PASS-EXPECTED-PARTIAL-CPU-ENTRY",
+      "cpu_checks": 20,
+      "public_gold_evaluation_started": false,
+      "model_calls": 0,
+      "acceptance": {
+        "file": "final-portable-qa/extracted-source/ACCEPTANCE.json",
+        "bytes": 1798,
+        "sha256": "bac1512bb922ec0746e794647b5077a263895de6f4b0a2a63944276a9c304ea5"
+      },
+      "console": {
+        "file": "final-portable-extracted-source.log",
+        "bytes": 1227,
+        "sha256": "9c36a83198a221e03d89b78041739da18e910c1b3c9c81f3d57c9920000a27ea"
+      },
+      "archive_sha256": "08808173163e8c2dd9d4e6dee24e855532f54d76e2edc11d7271270a336aa3b9",
+      "archive_bytes": 58146
+    }
+  ],
+  "portable_qualification": "Short-budget real CPU entry checks intentionally stop during controls; no public prediction, scoring, model call or heavy model import. Not full PUBLIC120 acceptance.",
+  "activated_notebook_inspection": {
+    "only_three_config_fields_changed": [
+      "MANUAL_START",
+      "ENABLE_MODEL",
+      "OUTPUT_ROOT"
+    ],
+    "runtime_and_execution_code_equal_to_inactive": true,
+    "activated_notebook_executed_here": false
+  },
+  "aggregate": {
+    "tests": 1583,
+    "seconds": 169.236,
+    "failures": 1,
+    "errors": 35,
+    "skips": 74,
+    "repository_invariants": "PASS",
+    "exact_baseline_36_failure_error_labels": true,
+    "new_labels": [],
+    "log_sha256": "23092e05a539d0a91cbc434814b08def0277ab81def4b413bfb37e45b1e4b444",
+    "baseline_log_sha256": "a66d8131b6c76b2671f7fecf1cac4baee3c070259d8991d58cebf3eb8f4aee56"
+  },
+  "git_integrity": {
+    "root_baseline_files": 1385,
+    "authorized_existing_doc_changes": [
+      "AGENTS.md",
+      "docs/decisions/README.md"
+    ],
+    "other1383baseline_blobs_and_modes_unchanged": true,
+    "existing_scorer_closure_unchanged": true,
+    "all30tested_files_unchanged_after_metadata_stage": true,
+    "raw_index_bytes_match": true,
+    "cached_diff_whitespace": "PASS"
+  },
+  "scientific_metrics_inspected": false,
+  "raw_public_answers_challenges_weight_or_archive_payload_added_to_git": false,
+  "commands": {
+    "focused": "PYTHONHASHSEED=0 PYTHONPATH=src:. TMPDIR=<outside-source workspace directory> <regular Python3.12> -m unittest discover -s tools/arc_public_research_20261010/tests -v",
+    "aggregate": "PYTHONHASHSEED=0 TMPDIR=$REPOSITORY/.irisx/tmp PYTHONPATH=$REPOSITORY/src:$REPOSITORY <regular Python3.12> tools/repository_check.py --all"
+  },
+  "bindings": {
+    "tested_files": {
+      "file": "final-tested-files.json",
+      "bytes": 5974,
+      "sha256": "3565339bcafccf97c3d8bd2cad01e9ea6d4ba666ceaeb76da850e55629fd9dbf"
+    },
+    "full_aggregate_receipt": {
+      "file": "integration-validation-receipt.json",
+      "bytes": 7075,
+      "sha256": "2ac75f73f3244a94b4b01603feb9c76bc8f5449ed50a38dc416b3e8f7bac1221"
+    },
+    "final_notebook_short_harness": {
+      "file": "execute_final_short.py",
+      "bytes": 2776,
+      "sha256": "55e0e2a48c4439d73ddd145e2064ff1d7340dfe0f7bd29eedde0513e010629fd"
+    }
+  }
+}

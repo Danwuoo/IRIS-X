@@ -1,0 +1,60 @@
+{
+  "contract_sha256": "c9e278cac2ca15850b94fac526cb7010245b01983adcc8dbeb98fb8e0e3a153c",
+  "format": "irisx/public120-independent-operational-monitor-review-v1",
+  "gpu_runs_made_by_auditor": 0,
+  "limitations": [
+    "This is an offline code/test approval, not actual GPU completion. Runtime provider and operational receipts remain pending.",
+    "Source/status APIs are latest-only observations bracketed at v2; artifact download requests explicitly pin numeric v2.",
+    "Read-only downloads can leave preserved partial files after interruption. A partial requires safe local reconciliation before retry; no run is resent by this monitor.",
+    "Provider metadata does not attest the7200-second timer or actual mounted Dataset version numbers. Exact request pins plus application immutable source/data checks supply those boundaries.",
+    "No account-global absence-of-jobs assertion and no VM billing-stop assertion are made.",
+    "No scientific score, pass@k, policy comparison or model quality analysis is performed or authorized by this approval."
+  ],
+  "monitor_path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/publication-transport/public120_monitor.py",
+  "monitor_sha256": "3219da1ae7959d7d18720ef6f737a9b733fcca889c43068564a664238c209031",
+  "provider_calls_made_by_auditor": 0,
+  "provider_mutations_made_by_auditor": 0,
+  "release_condition": "Root final dispatch approval remains required; after OPERATIONAL_SUCCESS_VERIFIED, stop without scientific-result analysis.",
+  "reviewed_at_utc": "2026-10-10T17:43:55.513340+00:00",
+  "scientific_results_inspected": false,
+  "source_release_sha256": "720c9ee42c88e036abe95dcc8c43bb0d8b687050387a741805b93c4705a914a1",
+  "status": "PASS",
+  "test_execution": {
+    "artifacts": [
+      {
+        "path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/audit-publication-transport/test_monitor_inert.py",
+        "sha256": "6f4d069a8194b712d2b53f7c13f0b8ae3abbfd7cd4790eff22ea909989f0bd68"
+      },
+      {
+        "path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/audit-publication-transport/monitor-inert-final.log",
+        "sha256": "0987bfc0c044b6c49078a46d17dac00efb3e879264e9a86abae845aa374e7070"
+      }
+    ],
+    "network_guard": "Sockets forbidden; API interfaces are inert fixtures.",
+    "python_optimization": "-O",
+    "result": "PASS",
+    "tests": 13
+  },
+  "transport_path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/publication-transport/public120_transport.py",
+  "transport_review_path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/audit-publication-transport/transport-review.json",
+  "transport_review_sha256": "9d9ba343e3be0a3b6cfd885e7657abccfc37b246609afbfda9a857090bd2ebd2",
+  "transport_sha256": "1e75b5b350af623ad930b89dcc4ebb2e4b07d3d9e19ea035df7e49523aa49a3b",
+  "verified_properties": [
+    "Read-only monitor uses exact active new notebook ID, latest-source/status brackets checked at expected v2, and numeric version_number=2 for artifact downloads.",
+    "Before collection and after complete verification, source/settings remain the exact active artifact and provider status must be COMPLETE.",
+    "Final success requires actual enabled PUBLIC120 public-development model phase, complete source identity, one model load, exactly176 attempted/charged/model-journal reservations, zero unknown calls and zero generation/framework failures.",
+    "Actual native prompt audit must remain exactly120 task pairs,88 admitted,32 excluded and176 maximum calls; any drift fails closed.",
+    "Exactly240 unique call rows form120 paired raw/strict task groups; exclusions are paired, exactly64 excluded rows have no response, and176 dispatched rows have responses.",
+    "All88 strict completions require actual bounded token IDs with a unique final native EOS, matching token count, terminal evidence, constraint completion receipt and parser-plan digest.",
+    "Raw ineligible or bounded-length output is allowed; no task-solving or score-improvement threshold is imposed.",
+    "Ranking must complete15360 planned/known/dispatched checks; scorer status must be SCORED; prediction seal must bind source identity and research_gpu owner proof.",
+    "Owned model/verifier stop evidence, no resume, within-deadline status, complete accounting and no failed/unresolved/overrun operation are required.",
+    "Archive is bounded, streamed for SHA/CRC checks, and must have exact global-seal file inventory with no extra/duplicate/path traversal/directory/symlink members.",
+    "Loose summary and prediction seal must match archived bytes; every prediction-pool member and model response must match sealed digest; owner request/start proofs must be sealed in the exact run namespace.",
+    "Final ledger canonical hash chain, source binding, non-overlapping sessions, immutable responses, reserve/finish accounting,176 model operations, exact archived prefix, exact three-record post-seal tail and closed terminal session are independently checked.",
+    "Only operational fields are parsed for success; other archive members are streamed only for integrity. Poisoned scientific fields in inert tests are untouched.",
+    "Disabled/partial/missing model phase, admission drift, generation errors, EOS/completion mismatches, unclosed processes, scoring blockage, changed loose bytes and tampered ledger/archive fail closed.",
+    "Numeric-v2 download and cached-byte bindings were verified inertly; path escapes, changed cache and stream-size overrun fail closed.",
+    "Hash-only real CPU archive integrity check passed for15996 members; model-disabled CPU run is not accepted as GPU success."
+  ]
+}

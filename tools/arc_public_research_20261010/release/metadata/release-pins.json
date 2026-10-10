@@ -1,0 +1,15 @@
+{
+  "code": {
+    "archive_sha256": "abf53a6c2bc6730842969d75363f316aed400cd0007c1f4413d2ed7325026013",
+    "manifest_sha256": "91a0b5b548de8345b4fdb51b89e5d6cea52a81ad5a5f340c00ff4e3c89b64507",
+    "reference": "danielwuu/iris-x-public120-code-20261010/1"
+  },
+  "data": {
+    "manifest_sha256": "c55073f8e9f44682dd7d7f31ee7f04f39754a9922ec246073555026452f047e3",
+    "reference": "danielwuu/iris-x-public120-data-20261010/1",
+    "role_manifests": {
+      "evaluator": "c7e8ad35770a66a71a22cccbbd0455c1c3bcc1a505dfb2e4c29819eec6209e33",
+      "solver": "549019b4b5cb47176f3abd3fcd9ca516e91b7d6e581dfc414a5a6452ff7b1f7f"
+    }
+  }
+}

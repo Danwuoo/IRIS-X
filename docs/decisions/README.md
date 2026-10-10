@@ -215,3 +215,7 @@ no current authority unless a new decision explicitly re-adopts them.
   records one small paired 120/240-second search diagnostic sharing one native
   TTT128 state per task, with unchanged non-time caps, free-only resources,
   independent review, terminal monitoring and audited preservation.
+
+- [`0069-evaluate-sealed-public-research-predictions.md`](0069-evaluate-sealed-public-research-predictions.md)
+  permits only sealed, isolated public-development scoring and reviewed private
+  research publication under the 2026-10-10 owner request.

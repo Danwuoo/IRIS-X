@@ -1,0 +1,30 @@
+{
+  "actual_gpu_hardware_observation": "NOT RUN: all hardware tests are isolated serialization/transport fixtures",
+  "actual_transformers_cpu_logits": "NOT RUN: CPU torch unavailable; no download retry",
+  "format": "irisx/public120-generation-hardware-fix-qa-v1",
+  "full_generation_tests": {
+    "passed": 35,
+    "seconds": 20.95,
+    "skipped": 2,
+    "tests": 37
+  },
+  "legacy_sources_changed": false,
+  "model_calls": 0,
+  "native_5965_gate": {
+    "receipt": "native-tokenizer-hardware-fix-receipt.json",
+    "sha256": "8a9946b200e17f734a803cdd61762e91bb53829ca1ee397a00a9014d9462868b",
+    "status": "PASS"
+  },
+  "optimized_owner_backend_tests": {
+    "passed": 21,
+    "seconds": 1.79,
+    "tests": 21
+  },
+  "source_sha256": {
+    "finite_trie.py": "ac44259f4f6e5e875b8a71b006304e642c2b2f89c1d56397c15c610e0ae98460",
+    "model_provider.py": "cf6f463a6c75eecb9171d5661c06981dccd12daa7b8098334554c31cfd876ed3",
+    "remote_model_owner.py": "66850148d6e59af8984fd2ca6cd0085599d19ca398cdd0925fe84054ada2c987",
+    "tests/test_generation_owner.py": "a11ddf9a68a422e9cc2b8e6d662ec54e4538efd1f7d9f744fff8a7dd316a6e91"
+  },
+  "weight_loads": 0
+}

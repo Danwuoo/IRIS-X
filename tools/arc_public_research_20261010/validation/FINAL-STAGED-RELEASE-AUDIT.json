@@ -1,0 +1,149 @@
+{
+  "format": "irisx/public120-independent-final-staged-delta-review-v1",
+  "status": "APPROVED_FINAL_STAGED_RELEASE_AND_SANITIZED_PROVIDER_ADDITIONS",
+  "base_commit": "f25a7cd4765de9fe815273bcd6060804324c183b",
+  "reviewed_tree": "f3a896e4c0d34f46cc84020b2c71198b8e2762f8",
+  "staged_snapshot": {
+    "path": "/workspace/scratch/3c2b2502fb1e/public-scorer-git-20261010/final-provider-staged-files.json",
+    "sha256": "ba2b2b3be220a70ae3170d8535eed798e87ec0ac21f2e527e22445306a458a51"
+  },
+  "prior_approved_tree": "ddcb65182448d0271e0df99b6c7f4d9c60fbfe9f",
+  "prior51_paths_unchanged": true,
+  "changed_paths": 62,
+  "additions": 60,
+  "modifications": 2,
+  "all_indexed_worktree_blobs_verified": 1445,
+  "raw_worktree_index_and_snapshot_match": true,
+  "provider_additions": [
+    {
+      "path": "tools/arc_public_research_20261010/publication/KAGGLE-RUN-INDEX.md",
+      "operation": "A",
+      "bytes": 707,
+      "sha256": "2b92e3d8f0cfd60a03066fded79ebb275bf9a84000b887a43462b3d21a7451d1",
+      "git_blob_sha": "7fbaa39ae9c1ca5fd56b81c80f540d98e347678d",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/arc_public_research_20261010/publication/KAGGLE-SAVE-INDEX-INACTIVE-V1-CHECKPOINT.md",
+      "operation": "A",
+      "bytes": 588,
+      "sha256": "a95912b9a36678ebf22d33414e3d6573684bb469bbf379b4e00465649232a81a",
+      "git_blob_sha": "92d4640e29077c7cf9159251611af5eb21c38f37",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/arc_public_research_20261010/publication/KAGGLE-SAVE-INDEX.md",
+      "operation": "A",
+      "bytes": 790,
+      "sha256": "d4252a3b02e8fb171b9be71f16c1e568c4eebfab97500d3ca65452086c122881",
+      "git_blob_sha": "c95618240d43ffe63ec2dc7f7ff97a7e4be49e83",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/arc_public_research_20261010/publication/PUBLIC120-PUBLICATION-CHECKPOINT.json",
+      "operation": "A",
+      "bytes": 5008,
+      "sha256": "9aaa671eda9ac08e0b54370d90e9be46cca18f8eb9d997ec36980a848305afad",
+      "git_blob_sha": "42ce299e90e63a003ac5ec43fb399b3008b52181",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/arc_public_research_20261010/publication/PUBLIC120-PUBLICATION-RUN-ADMISSION.json",
+      "operation": "A",
+      "bytes": 6811,
+      "sha256": "ed79a3f596344bc13e4e759f9a6db83f085d0b2419b63f3174922ba8f1f6bf22",
+      "git_blob_sha": "98f1caee5373c96bf521e26368c310c81a742d8f",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/arc_public_research_20261010/validation/ACTUAL-PROVIDER-NOTEBOOK-ENTRY.json",
+      "operation": "A",
+      "bytes": 1796,
+      "sha256": "8ffd177d1c1d96d0762d3831d005fd61fbe80bff08171d9b19f9d952c88858ea",
+      "git_blob_sha": "a18e05b06c0a49782b0c2028be90d5fd714da3a5",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/arc_public_research_20261010/validation/GPU-OPERATIONAL-MONITOR-REVIEW.json",
+      "operation": "A",
+      "bytes": 5666,
+      "sha256": "b9ccc890e63da4ade06110eb196065afb694a2baf7e6278670efe2f06ad1324d",
+      "git_blob_sha": "4402573280b5b7d595dec8226e9e7cfa965fd1af",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/arc_public_research_20261010/validation/PUBLICATION-TRANSPORT-FINAL-REVIEW.json",
+      "operation": "A",
+      "bytes": 11779,
+      "sha256": "9d9ba343e3be0a3b6cfd885e7657abccfc37b246609afbfda9a857090bd2ebd2",
+      "git_blob_sha": "2ed6cba7cb284304bd2c2d8f5975d5371f76c945",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/arc_public_research_20261010/validation/PUBLISHED-RECEIPTS-REVIEW.json",
+      "operation": "A",
+      "bytes": 2638,
+      "sha256": "3e19f989331a6bbfa08eadf790c8d333ee04e35c92fe0a34a5451b8b262e0308",
+      "git_blob_sha": "7d858dd494e55f80d798e2f8ef263dcb32d44458",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/arc_public_research_20261010/validation/RUN-ADMISSION-READBACK-REVIEW.json",
+      "operation": "A",
+      "bytes": 3185,
+      "sha256": "bf255d30f3fca19498622a8f474f131289fe3368994176eb937a23d3d5e1047a",
+      "git_blob_sha": "a05bbeb272b26174c41bc6e32425452c55272b8f",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/arc_public_research_20261010/validation/STAGED-RELEASE-AUDIT.json",
+      "operation": "A",
+      "bytes": 19132,
+      "sha256": "77c211a190b6aab82b843dc3499b2eae795a377ba9e97cd6c51f20eb13ff8837",
+      "git_blob_sha": "6557b211931e8f343d422a79d77c2c4c4f46572a",
+      "mode": "100644"
+    }
+  ],
+  "source_identity_sha256": "94956754f30a376ce6b059c8642528887a72b02a625e000503e49412c59f4ec1",
+  "frozen_release_approval_sha256": "720c9ee42c88e036abe95dcc8c43bb0d8b687050387a741805b93c4705a914a1",
+  "publication_manifest_sha256": "c9e278cac2ca15850b94fac526cb7010245b01983adcc8dbeb98fb8e0e3a153c",
+  "provider_scope": {
+    "datasets": [
+      {
+        "reference": "danielwuu/iris-x-public120-code-20261010/1",
+        "dataset_id": 12494749,
+        "version": 1,
+        "private": true
+      },
+      {
+        "reference": "danielwuu/iris-x-public120-data-20261010/1",
+        "dataset_id": 12494817,
+        "version": 1,
+        "private": true
+      }
+    ],
+    "notebook_id": 138062239,
+    "inactive_version": 1,
+    "active_version": 2,
+    "active_status_at_bound_admission": "RUNNING",
+    "active_dispatch_count": 1,
+    "operational_success_verified": false,
+    "separate_provider_auditor_receipt_sha256": "bf255d30f3fca19498622a8f474f131289fe3368994176eb937a23d3d5e1047a",
+    "basis": "Claims attributed to the separate provider auditor and exact sanitized receipt bytes; no duplicate provider calls or transport execution performed."
+  },
+  "privacy_review": "Only bounded JSON/Markdown IDs, versions, hashes, settings, audit summaries and local evidence references added. No task grids, archives, weights, tokens, signed URLs, credentials, executed notebook outputs or scientific results added.",
+  "native_provider_notebook_entry": {
+    "cpu_checks": 24,
+    "model_calls": 0,
+    "public_evaluation": false,
+    "qualification": "Short exact-notebook entry through actual provider extracted layout, not full GPU success."
+  },
+  "scientific_metrics_inspected": false,
+  "scientific_interpretation_performed": false,
+  "budget_prose_correction": "Preserved immutable approval plus staged addendum:128 +15360 +240 +1336 =17064 CPU checks; no executable change.",
+  "remaining_work": "The active v2 run is admitted/running only. Operational completion remains pending under the separately reviewed monitor; after success stop without scientific analysis.",
+  "permitted_final_append": {
+    "path": "tools/arc_public_research_20261010/validation/FINAL-STAGED-RELEASE-AUDIT.json",
+    "requirement": "Only an exact-byte copy of this receipt may be appended after this tree review. Its externally reported SHA256 and resulting tree must be checked before commit; any other mutation invalidates this binding."
+  }
+}

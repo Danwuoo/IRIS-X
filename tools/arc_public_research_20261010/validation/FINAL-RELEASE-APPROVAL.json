@@ -1,0 +1,120 @@
+{
+  "status": "APPROVED_CODE_DATA_NOTEBOOK_RELEASE_CONTRACT",
+  "scope": {
+    "publication_manifest": {
+      "path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/release-final/publication-manifest.json",
+      "sha256": "c9e278cac2ca15850b94fac526cb7010245b01983adcc8dbeb98fb8e0e3a153c"
+    },
+    "source_identity_sha256": "94956754f30a376ce6b059c8642528887a72b02a625e000503e49412c59f4ec1",
+    "technical_review": "Frozen source, scientific protocol, data role/privacy, exact Dataset inventories and exact private inactive-v1/config-only-active-v2 notebook bytes. Provider wire actions require separate transport approval.",
+    "authorized_run_contract": "Existing configured G4/ARC3 metadata; 7200 seconds; one private run001; operational monitoring only and stop after success."
+  },
+  "approved_notebooks": [
+    {
+      "reference": "danielwuu/iris-x-public120-research-20261010",
+      "role": "inactive",
+      "sha256": "aad1901048a99e895e42ba50262a07752ae28deddce91937cdf7bb10d1f767c7",
+      "is_private": true,
+      "gpu_enabled": false,
+      "internet_enabled": false,
+      "expected_version": 1
+    },
+    {
+      "reference": "danielwuu/iris-x-public120-research-20261010",
+      "role": "run001",
+      "sha256": "acb65cd7224afd092401fd83247b7d6956c9918636f2e2e9fab7f1ac7c2d1235",
+      "is_private": true,
+      "gpu_enabled": true,
+      "internet_enabled": false,
+      "expected_version": 2
+    }
+  ],
+  "approved_datasets": [
+    {
+      "reference": "danielwuu/iris-x-public120-code-20261010/1",
+      "role": "code",
+      "upload_inventory_sha256": "5de38d0cb5c51d265e0c388dafcb20dcd78c8b8e19389595bdf238d62f0e8b77",
+      "root_manifest_sha256": "91a0b5b548de8345b4fdb51b89e5d6cea52a81ad5a5f340c00ff4e3c89b64507",
+      "transport_archive_sha256": "5d9bee83f9c539e7ffaa48b30096bd681b14249aebfe593bf7759ce711fbfa78",
+      "files": 3,
+      "is_private": true,
+      "opaque_bytes_only": true
+    },
+    {
+      "reference": "danielwuu/iris-x-public120-data-20261010/1",
+      "role": "data",
+      "upload_inventory_sha256": "90544cd6151bc0fd3cab12f178f65233017c4c7eb33c9c97d4dfa2d766fa35e0",
+      "root_manifest_sha256": "c55073f8e9f44682dd7d7f31ee7f04f39754a9922ec246073555026452f047e3",
+      "transport_archive_sha256": "cf9eed598d1ab0b48f63110253d0299a1a2bdbd3fcf20c74d8a45e28e03561ab",
+      "files": 130,
+      "is_private": true,
+      "opaque_bytes_only": true
+    }
+  ],
+  "historical_scorer_unchanged": true,
+  "active_notebook_only_config_delta": true,
+  "deterministic_inactive_builder_reproduced": true,
+  "data_privacy": "Both Datasets private; original public answers confined to evaluator role; no hidden/competition source admitted",
+  "read_scientific_metrics": false,
+  "runtime_verification": "Native tokenizer CPU verified; actual Transformers CPU logits and real model/GPU execution NOT RUN before first owner-authorized execution",
+  "provider_wire_review": "Separate transport reviewer required; conversion disabling must be proved by byte-identical readback if no wire option exists",
+  "cpu_completion_receipt": {
+    "path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/independent-review/CPU-OPERATIONAL-COMPLETION.json",
+    "sha256": "609b12ce35d1ff1b4de53093b8b6fbaac890f745e3c11da8241527e24d2665db",
+    "run_id": "b904719d26584d2188e41538fa683556",
+    "archive_sha256": "55b85365fdafb3b44ff2963091f255e1d9a1e55f65da6cce07064119ac5c9348",
+    "run_source_identity_sha256": "fcc2d32ef2064de765c8be4d10c3077068c80b163c3388d48881d045a88fd07a",
+    "release_source_identity_sha256": "94956754f30a376ce6b059c8642528887a72b02a625e000503e49412c59f4ec1",
+    "qualification": "The complete CPU operational test ran frozen candidate001. Forty-nine source files are identical to final release; only reviewed transport loader and entry-provenance runner metadata changed. No claim that the complete CPU run executed final transport code."
+  },
+  "format": "irisx/public120-independent-release-review-v1",
+  "reviewed_at_utc": "2026-10-10T17:32:00Z",
+  "release_delta_review": "Final 51-file source closure verified. Scientific generation, abstract ranker, finite support, tokenizer trie, owner, VM and scorer files byte-identical to candidate001. Runner changes only strict entry-provenance receipt/schema/ledger binding; source-loader changes only closed archive/extracted transport admission. Notebook builder canonicalizes pin literal ordering outside runtime closure.",
+  "tests": {
+    "independent_frozen_suite": {
+      "total": 156,
+      "passed": 154,
+      "skipped": 2
+    },
+    "independent_candidate002_delta_suite": {
+      "total": 39,
+      "passed": 39
+    },
+    "independent_final_notebook_regressions": {
+      "total": 19,
+      "passed": 19
+    },
+    "independent_exact_final_notebook_smoke": {
+      "modes": 5,
+      "passed": 5,
+      "runner_stubbed_before_work": true
+    },
+    "integrator_final_exact_suite": {
+      "total": 162,
+      "passed": 160,
+      "skipped": 2,
+      "receipt_path": "/workspace/scratch/3c2b2502fb1e/public-scorer-git-20261010/final-source-preliminary-integration-validation.json",
+      "receipt_sha256": "a591f656b9e5ceb3ea820bde0a1f50db5e8b2c42e38e1951f0363d9637bc5cba",
+      "log_path": "/workspace/scratch/3c2b2502fb1e/public-scorer-git-20261010/final-focused-tests.log",
+      "log_sha256": "831a4a9ff420a5cb4353717e6bd8789bcf8dad2e60d87638c556fdfd88b9c447"
+    }
+  },
+  "scientific_contract": {
+    "dataset": "PUBLIC120 public-development; exact pinned 120 tasks/167 queries; public-data exposure disclosed",
+    "scorer": "Original solver-neutral exact-grid pass@1/pass@2 with full167 denominator and missing predictions retained; task macro separate",
+    "model_arms": "Raw/strict share the same finite5965 support, prompt, task seeds and sampling settings; strict prefix/EOS has no fallback; max240 physical calls",
+    "cpu_arms": "Uniform and positive demo-only shape ranking over the same support;64 fresh VM checks per task per arm; no gold/outcome features, witness insertion, VM result cache or full support VM enumeration",
+    "limits": "15360 rank checks +128 controls +at most1336 query checks =17064; at most4 workers;200000 gas/256MiB/2CPU seconds/3wall seconds per bounded child;7200whole-session seconds",
+    "barrier": "Prediction/query proof sealing and model/VM process closure precede fresh CPU scoring; overrun/pending/deadline admission gates fail closed",
+    "isolation": "Trusted fixed-code/dataflow and owned-process proofs, not hostile same-UID filesystem secrecy"
+  },
+  "operational_cpu_integrity": "All15995 archived evidence members rehashed, source/frozen package bound, prediction seal and four full denominators checked; final0pending/nooverrun;15360+128CPU checks;0model calls; scorer exit0/SCORED. No metrics or fit counts interpreted.",
+  "remaining_verification_limits": [
+    "Actual Transformers CPU logits test was not run because CPU Torch was unavailable.",
+    "No actual model/GPU execution had been verified before the first owner-authorized real run.",
+    "This technical approval does not establish provider upload/readback/private-version correctness; the separate transport review and readbacks remain mandatory.",
+    "No scientific result interpretation, method comparison or post-score hypothesis tuning was performed."
+  ],
+  "inventory_hash_serialization": "json.dumps(rows, sort_keys=True, indent=2, ensure_ascii=False) plus newline, preserving the manifest list order",
+  "byte_preservation_requirement": "Both private Dataset versions must read back with exactly one advertised closed path/hash/size inventory. If the provider exposes no convert-to-CSV wire field, conversion-disabled intent is established only by byte-identical readback, never a false wire claim."
+}

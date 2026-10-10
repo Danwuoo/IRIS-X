@@ -1,0 +1,44 @@
+{
+  "all_inventory_walk_count": 5965,
+  "constraint_sha256": "ff21dbf59f89bb254ac2ee496b1b180607e1b27cf6a84973e0452fe863ac2b9c",
+  "evidence_mode": "native-tokenizer-cpu-only",
+  "file_hashes": {
+    "chat_template.jinja": "f0ba43f79b3cabca5e5a7584c77aec92f49feae45cdf7779c87d9fc54cd90258",
+    "config.json": "85611f4e34633d4e148e6a5f64bc2d3a23ebbc2b014bc87fbda764eecf261cd9",
+    "generation_config.json": "1b9baf0a7959d31d7fb58ff6b506c27d09a73d395cadccc7e6dd1d4b7e43fd9d",
+    "merges.txt": "b6fe424e334903f7fb84d3a106d9730455f4744b9fe3c21ee136d97a00e72502",
+    "special_tokens_map.json": "e9435fefd6d838fd9fcbbc44b97a8e3ff322be7f6dfb7e4fd2468586574bb52b",
+    "tokenizer.json": "883975314d58743726347caaf2c32ac89afd5ad57222cffbc4f052f2ab27b2d7",
+    "tokenizer_config.json": "2007f26df166ed10a2d6fa881c1c8f3cdd151e451469f59b274897f14449835f",
+    "vocab.json": "a1be0c1e0a89b5bacda6af6f8b63df09668cb8d1f656229ee9123140c9507810"
+  },
+  "gpu_runtime_verified": false,
+  "metrics": {
+    "canonical_bytes": 851931,
+    "max_content_tokens": 57,
+    "nodes": 33911,
+    "plans": 5965,
+    "python_allocation_delta_bytes": null,
+    "rss_baseline_bytes": 197603328,
+    "rss_delta_bytes": 34365440,
+    "rss_peak_observed_bytes": 231968768,
+    "setup_seconds": 10.042347829999926
+  },
+  "model_loaded": false,
+  "native_policy": {
+    "effective_generation_config_sha256": "9044a97670e615dc57b45202dcb2f0dc74cc78ad5d0f2e6c27c89e1452a0e458",
+    "model_eos_ids": [
+      100257
+    ],
+    "native_eos_ids": [
+      100257
+    ],
+    "pad_token_id": 100257,
+    "tokenizer_eos_difference": "none",
+    "tokenizer_eos_ids": [
+      100257
+    ]
+  },
+  "tokenizer_sha256": "44d8f93037dbba12d1ce438781e56d05cf2ca9345ece222c4efbc1ef0e13dc34",
+  "weights_inspected": false
+}

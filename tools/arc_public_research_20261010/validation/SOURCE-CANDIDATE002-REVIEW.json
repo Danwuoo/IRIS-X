@@ -1,0 +1,28 @@
+{
+  "status": "EXACT_CANDIDATE002_SOURCE_AND_NOTEBOOK_REVIEW_PASS",
+  "scope": "Code/data contract and default-inert private notebook only; external Dataset/SaveKernel outbound wire and publication receipt remain a separate review",
+  "checks": {
+    "code_manifest_sha256": "91a0b5b548de8345b4fdb51b89e5d6cea52a81ad5a5f340c00ff4e3c89b64507",
+    "source_archive_sha256": "abf53a6c2bc6730842969d75363f316aed400cd0007c1f4413d2ed7325026013",
+    "notebook_sha256": "f8ad469e6f7100c21582fcacd2ae021e7df45cdaa8e9bb9c00c0e4fe5a102243",
+    "source_identity_sha256": "94956754f30a376ce6b059c8642528887a72b02a625e000503e49412c59f4ec1",
+    "source_file_count": 51,
+    "science_source_byte_identical_to_cpu_run_candidate001": true,
+    "candidate001_delta": [
+      "tools/arc_public_research_20261010/runner.py",
+      "tools/arc_public_research_20261010/source_loader.py"
+    ],
+    "historical_scorer_pins_unchanged": true,
+    "inline_loader_matches_packed_source": true,
+    "notebook_default_inert_verified": true,
+    "notebook_manual_three_transport_API_smoke_passed": true,
+    "entry_provenance_durable_and_ledger_bound": true,
+    "focused_delta_tests": 39,
+    "focused_delta_tests_result": "PASS",
+    "native_gpu_execution": "NOT RUN",
+    "actual_transformers_cpu_logits": "NOT RUN; CPU Torch unavailable",
+    "rebuild_note": "Saved sorted pins.json changes only PUBLIC_PINS literal dictionary insertion order when rebuilt; exact frozen notebook bytes remain independently verified."
+  },
+  "publication_outbound_wire_reviewed": false,
+  "authorized_run_scope": "Previously owner-authorized CPU-only public research may score only after sealed predictions and process/resource gates; this review grants no GPU or official execution"
+}

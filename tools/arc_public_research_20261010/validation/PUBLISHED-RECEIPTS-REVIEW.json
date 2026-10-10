@@ -1,0 +1,59 @@
+{
+  "limitations": [
+    "Provider privacy/license/status observations come from receipts produced by the reviewed transport; this auditor independently verifies their bindings and saved full bytes without additional provider calls."
+  ],
+  "manifest_sha256": "c9e278cac2ca15850b94fac526cb7010245b01983adcc8dbeb98fb8e0e3a153c",
+  "pending": [
+    "Full exact Dataset and notebook receipts not yet saved are pending; this is not a GPU completion receipt."
+  ],
+  "provider_calls_by_auditor": 0,
+  "results": [
+    {
+      "convert_to_csv_enforcement": "Full exact byte readback; unsupported wire toggle not claimed",
+      "dataset_id": 12494749,
+      "files": 53,
+      "full_zip_and_extracted_bytes_verified": true,
+      "layout_variant": "extracted-directory",
+      "license_name": "other",
+      "private": true,
+      "provider_readback_archive_sha256": "39dc919a9bff8a01b57db043f8f6c5928650730f6b83037b5bbc97f8236e0bda",
+      "receipt_sha256": "e4a9cad26cf4c8f4d7e1e3e677f14985c3ae4579aff70b759cb088cee37bc4f4",
+      "reference": "danielwuu/iris-x-public120-code-20261010/1",
+      "role": "code",
+      "single_creation_claim_retained": true,
+      "version": 1
+    },
+    {
+      "convert_to_csv_enforcement": "Full exact byte readback; unsupported wire toggle not claimed",
+      "dataset_id": 12494817,
+      "files": 130,
+      "full_zip_and_extracted_bytes_verified": true,
+      "layout_variant": "original-upload",
+      "license_name": "apache-2.0",
+      "private": true,
+      "provider_readback_archive_sha256": "da3db42ab6599eb10f36553b4a5d92e517444dbfb970b772c8cc5e014dd6208b",
+      "receipt_sha256": "9502e2467c13b94efd0ba905711e9d8b7b268e0c2ea8a3fb01f12f4b246f668a",
+      "reference": "danielwuu/iris-x-public120-data-20261010/1",
+      "role": "data",
+      "single_creation_claim_retained": true,
+      "version": 1
+    },
+    {
+      "exact_seven_dataset_version_pins_submitted": true,
+      "kernel_id": 138062239,
+      "operational_success_verified": false,
+      "private": true,
+      "provider_status_at_readback": "COMPLETE",
+      "receipt_sha256": "aba42c45f07005d667fc051377132c49886b25e1768eb86241e2fa96f133955c",
+      "reference": "danielwuu/iris-x-public120-research-20261010",
+      "role": "inactive",
+      "source_content_verified": true,
+      "version": 1,
+      "wire_sha256": "2b52bee46306d9a6b09f5961b88879dfe5e95b1b79cb013bd1562147a601332e"
+    }
+  ],
+  "scientific_metrics_inspected": false,
+  "source_release_sha256": "720c9ee42c88e036abe95dcc8c43bb0d8b687050387a741805b93c4705a914a1",
+  "status": "PASS_AVAILABLE_PUBLISHED_RECEIPTS",
+  "utc": "2026-10-10T17:42:50.534086+00:00"
+}

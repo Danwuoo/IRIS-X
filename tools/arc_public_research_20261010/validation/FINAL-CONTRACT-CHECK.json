@@ -1,0 +1,60 @@
+{
+  "status": "PASS_CONTRACT_INTEGRITY",
+  "scope": {
+    "publication_manifest": {
+      "path": "/workspace/scratch/3c2b2502fb1e/consolidated-next-20261010/release-final/publication-manifest.json",
+      "sha256": "c9e278cac2ca15850b94fac526cb7010245b01983adcc8dbeb98fb8e0e3a153c"
+    },
+    "source_identity_sha256": "94956754f30a376ce6b059c8642528887a72b02a625e000503e49412c59f4ec1"
+  },
+  "approved_notebooks": [
+    {
+      "reference": "danielwuu/iris-x-public120-research-20261010",
+      "role": "inactive",
+      "sha256": "aad1901048a99e895e42ba50262a07752ae28deddce91937cdf7bb10d1f767c7",
+      "is_private": true,
+      "gpu_enabled": false,
+      "internet_enabled": false,
+      "expected_version": 1
+    },
+    {
+      "reference": "danielwuu/iris-x-public120-research-20261010",
+      "role": "run001",
+      "sha256": "acb65cd7224afd092401fd83247b7d6956c9918636f2e2e9fab7f1ac7c2d1235",
+      "is_private": true,
+      "gpu_enabled": true,
+      "internet_enabled": false,
+      "expected_version": 2
+    }
+  ],
+  "approved_datasets": [
+    {
+      "reference": "danielwuu/iris-x-public120-code-20261010/1",
+      "role": "code",
+      "upload_inventory_sha256": "5de38d0cb5c51d265e0c388dafcb20dcd78c8b8e19389595bdf238d62f0e8b77",
+      "root_manifest_sha256": "91a0b5b548de8345b4fdb51b89e5d6cea52a81ad5a5f340c00ff4e3c89b64507",
+      "transport_archive_sha256": "5d9bee83f9c539e7ffaa48b30096bd681b14249aebfe593bf7759ce711fbfa78",
+      "files": 3,
+      "is_private": true,
+      "opaque_bytes_only": true
+    },
+    {
+      "reference": "danielwuu/iris-x-public120-data-20261010/1",
+      "role": "data",
+      "upload_inventory_sha256": "90544cd6151bc0fd3cab12f178f65233017c4c7eb33c9c97d4dfa2d766fa35e0",
+      "root_manifest_sha256": "c55073f8e9f44682dd7d7f31ee7f04f39754a9922ec246073555026452f047e3",
+      "transport_archive_sha256": "cf9eed598d1ab0b48f63110253d0299a1a2bdbd3fcf20c74d8a45e28e03561ab",
+      "files": 130,
+      "is_private": true,
+      "opaque_bytes_only": true
+    }
+  ],
+  "historical_scorer_unchanged": true,
+  "active_notebook_only_config_delta": true,
+  "deterministic_inactive_builder_reproduced": true,
+  "data_privacy": "Both Datasets private; original public answers confined to evaluator role; no hidden/competition source admitted",
+  "read_scientific_metrics": false,
+  "runtime_verification": "Native tokenizer CPU verified; actual Transformers CPU logits and real model/GPU execution NOT RUN before first owner-authorized execution",
+  "provider_wire_review": "Separate transport reviewer required; conversion disabling must be proved by byte-identical readback if no wire option exists",
+  "cpu_completion_receipt": "See separate CPU-OPERATIONAL-COMPLETION.json; contract checker does not inspect run results"
+}
