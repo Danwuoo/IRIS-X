@@ -1,0 +1,128 @@
+{
+  "format": "irisx/consolidated-independent-code-review-v1",
+  "reviewed_at": "2026-10-10T14:55:58.057396+00:00",
+  "status": "pass",
+  "source_identity_sha256": "635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c",
+  "executable_overlay_sha256": "34e019bd3987b975976d4213085e0bbbae4c052bd35addd1c2d279c9afb74791",
+  "notebook_sha256": "eac5ca3e70443e30a6049645256296d06bb9f5d377053dad701fc1aa2b525b36",
+  "notebook_bytes": 216543,
+  "reviewer_scope": "Read-only independent review of immutable v4 source against frozen repaired candidate; output-only synthetic notebook tests; no source changes or model/GPU execution.",
+  "native_token_contract": {
+    "change": "G4Backend.encode explicitly requests return_dict=False, return_tensors=None, truncation=False, padding=False",
+    "all_other_model_provider_ast_unchanged": true,
+    "strict_native_id_validation_unchanged": true,
+    "no_mapping_flattening_or_integer_coercion": true,
+    "native_chat_prompt_thinking_settings_unchanged": true
+  },
+  "byte_preserved_files": {
+    "tools/arc_consolidated_20261010/arc_object_ir.py": "ba3fa20344d9cb2a3f471d6738e29fcb590bb1ea0a1bfc0b86aa2e1915fbe42a",
+    "tools/arc_consolidated_20261010/controls.py": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a",
+    "tools/arc_consolidated_20261010/ledger.py": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055",
+    "tools/arc_consolidated_20261010/runner.py": "82b67337f14442e2148ff3a637ca7cb854ad147928c26088e8d4dff763c4040a",
+    "tools/arc_consolidated_20261010/stages.py": "c5543b64b4a4b8434d30c60e82ffe0746e1718a46d0fc26d3ee6f7f76b9054e4",
+    "tools/arc_consolidated_20261010/study_runner.py": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab",
+    "tools/arc_consolidated_20261010/verifier.py": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b",
+    "tools/arc_consolidated_20261010/evidence.py": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698",
+    "tools/arc_consolidated_20261010/assets.py": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09",
+    "tools/arc_consolidated_20261010/offline_bootstrap.py": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193",
+    "tools/arc_consolidated_20261010/path_guard.py": "29229ab065bc93e917e8376be0003c5728cfcea99b7b67ce6955a3d297f628f3",
+    "tools/arc_consolidated_20261010/remote_model_owner.py": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e",
+    "tools/arc_consolidated_20261010/data/provenance.json": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3",
+    "tools/arc_consolidated_20261010/data/engineering-demos.json": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_interpreter.py": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_runtime.py": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8",
+    "tools/arc_consolidated_20261010/legacy/arc_typed_ir.py": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_environment.py": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0",
+    "tools/arc_consolidated_20261010/legacy/arc_bounded_v2.py": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_bundle.py": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc",
+    "tools/__init__.py": "f5ed985f7ed9e31ea3be113e86b11a7b44313f467c2e468a034ff789c7b85c76",
+    "tools/arc_next_models.py": "d8c3bda2ef5c557fa93756805c91ea26c5c0773d8f124914791eef13b2f0740b",
+    "tools/arc_next_index_repair.py": "05d2855e6029d873f0e74938e73d11ed7a21b72e0a630619b4415d3ebf3ac030"
+  },
+  "bounded_display": {
+    "max_summary_bytes_including_newline": 8192,
+    "adversarial_unicode_summary_bytes": 4468,
+    "actual_notebook_same_fixture_baseline_stdout_bytes": 1170830,
+    "actual_notebook_same_fixture_repaired_stdout_bytes": 1349,
+    "fixture_coverage_rows": 5000,
+    "all_result_rows_retained": true,
+    "all_full_file_rows_retained": true,
+    "coverage_sentinel_in_stdout": false,
+    "nested_model_failure_visible": true,
+    "torch_transformers_tokenizers_imported": false,
+    "tests_cover": [
+      "inactive",
+      "FULL_success",
+      "nested_model_failure_with_gate_passed_and_zero_calls",
+      "archive_withheld_and_stop_unconfirmed",
+      "completed_resume_noop",
+      "malformed_scalars_and_extreme_unicode",
+      "unserializable_huge_coverage_and_model_rows",
+      "default_inert_and_fresh_source_root_guidance"
+    ]
+  },
+  "tests": {
+    "first_attempt": {
+      "command": "PYTHONHASHSEED=0 PYTHONDONTWRITEBYTECODE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_DATASETS_OFFLINE=1 CUDA_VISIBLE_DEVICES= python -B; unittest discovery of package tests with scratch redirected outside source",
+      "tests": 287,
+      "passed": 274,
+      "failures": 0,
+      "errors": 13,
+      "skips": 0,
+      "seconds": 40.827,
+      "diagnosis": "The default python executable is a symlink; all 13 errors are the unchanged symlink/junction admission guard in bootstrap/remote-owner tests. No candidate defect was identified."
+    },
+    "corrected_affected_modules": {
+      "interpreter": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+      "modules": [
+        "test_bootstrap_integration",
+        "test_remote_model_owner"
+      ],
+      "tests": 28,
+      "passed": 28,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 2.349,
+      "change": "Resolved interpreter path only; no source/test modification."
+    },
+    "aggregate_claim": "Separate lead full-suite invocation is all-green: 287 tests/0 failure/error/skip, exact regular interpreter. Independent reviewer first-attempt symlink errors and corrected 28-test rerun remain preserved above."
+  },
+  "limitations": [
+    "Actual pinned Granite tokenization, full native model load, GPU generation and four-L4 execution remain unverified.",
+    "G4-only hardware admission is deliberate and unchanged; reported provider machineShape is metadata only.",
+    "No owner evidence archive was supplied; actual-run facts are reported log observations, not independently replayed archive acceptance.",
+    "Final provider wire acceptance and publication receipt/readback are separate reviews."
+  ],
+  "blocking_findings": [],
+  "lead_acceptance_evidence_independently_read": {
+    "aggregate": {
+      "path": "validation/linux-tests.txt",
+      "sha256": "74f48e125a797032369fcb46e9aba0df93b5808b499f5c0d60b3b7f507d0d3c4",
+      "tests": 287,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 43.14,
+      "checked": "All 287 named test lines and terminal OK read independently."
+    },
+    "cpu_smoke": {
+      "audit_path": "validation/smoke-independent-audit.json",
+      "audit_sha256": "58be1df3667534ecb0b913764c4ee51a682d1355b63aa16bf8a9ca453496977c",
+      "execution_path": "validation/notebook-smoke-execution.json",
+      "execution_sha256": "340c9b7b78138edc3d0200305a8311b8df63aac608e98740d6f3dedda221b2f5",
+      "status": "complete",
+      "source_sha256": "635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c",
+      "cpu_checks": 1152,
+      "response_files_verified": 1152,
+      "model_calls": 0,
+      "controls_all_expected": true,
+      "coverage_complete": true,
+      "cpu_phase_seconds": 32.13661081000464,
+      "archive_sha256": "b01822fe218de83c44c36de86cecda991387eb2fdcf2245540899d81aa7d37ca",
+      "gold_read": false,
+      "interpretation": "CPU-only SMOKE; gate stays false by design; not model/GPU or held-out acceptance."
+    }
+  },
+  "publication_contract_sha256": "6c8795746d97c2955f5b46034565104407bf94b741b7817564b898cd4415dd0b"
+}

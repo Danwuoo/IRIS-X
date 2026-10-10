@@ -1,4 +1,14 @@
-# Final Linux validation and scientific lineage
+# Linux validation and scientific lineage
+
+## Current 2026-10-10 tokenizer/output repair
+
+Base main is `4dac3596ed776c482decaa50cd46d23fe50af73f`. The current source is
+`635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c`; notebook SHA is
+`eac5ca3e70443e30a6049645256296d06bb9f5d377053dad701fc1aa2b525b36`.
+
+287 Linux tests pass (43.140 seconds; zero failures/errors/skips). Actual frozen-notebook SMOKE completes 1,152 checks, 128 expected controls, zero unknowns/model calls/imports, in 32.928 seconds total with 1,661 stdout bytes. All 1,152 response hashes and archive CRC verify; v4/repair semantic receipts match after excluding four timing fields. The original compiler/inventory/controls/budgets/dispatch and immutable v2 FULL attribution remain unchanged.
+
+See `REPAIR-20261010.zh-TW.md` and `validation/release-validation.json` for failure diagnosis, exact contracts, safe fresh-output rerun and verification limits. The following v4/v2 sections are historical; they do not describe a new repaired-source FULL/GPU run.
 
 Development base: `e946fb89a1deb155bb52f5c5b34e703491272853`.
 This is an additive package. Old N5–N14 programs, source lock and N14 gate are unchanged.

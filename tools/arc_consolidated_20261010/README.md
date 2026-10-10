@@ -1,6 +1,12 @@
 # Consolidated offline ARC research
 
-IR v2, native path guard and Git packaging revision v4.
+IR v2, native path guard, with the 2026-10-10 tokenizer/output repair.
+
+Current repair: **287 Linux tests and 1,152 actual-notebook CPU SMOKE checks pass**.
+See [repair diagnosis and safe rerun instructions](REPAIR-20261010.zh-TW.md).
+The G4 tokenizer return type and oversized stdout defects are corrected; actual
+Granite tokenizer/weights/GPU execution remains unverified. Historical v4 and v2
+scientific receipts retain their original identities.
 
 This additive successor combines independent controls, exposed-demo coverage,
 ordering diagnostics, and gated model studies in one notebook. It accepts only

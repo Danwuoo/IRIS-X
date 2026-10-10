@@ -1,0 +1,121 @@
+{
+  "status": "passed",
+  "scope": "controlled-official-method-contract-reproduction-only",
+  "not_executed": [
+    "actual Granite tokenizer",
+    "transformers wheel import",
+    "model loading",
+    "GPU",
+    "generations"
+  ],
+  "source_url": "https://raw.githubusercontent.com/huggingface/transformers/v5.8.1/src/transformers/tokenization_utils_base.py",
+  "upstream_version": "5.8.1",
+  "source_digest_scope": "Official web source line excerpts. Newline-normalized text; excerpt hashes are not wheel or complete upstream-file hashes.",
+  "excerpt_sha256": {
+    "batch_encoding": "659133e64bdc7929a1d3d8f6df62cc75166fdd57c1ceab87187ebde3fc3a21ce",
+    "apply_chat_template": "9f9638fb84b53a065092192454da390ebdedd690a139bb3548056405309209e3"
+  },
+  "release_model_provider_sha256": "22b240bc2bc227e5e35a8f14b4485dddb24856a51d39e48d1f4b58a7c7666452",
+  "old_return_type": "BatchEncoding",
+  "old_error": "empty or invalid native token IDs",
+  "fixed_output_ids_are_same_object": true,
+  "native_ids_preserved": [
+    0,
+    17,
+    100255,
+    100256,
+    100257,
+    100351
+  ],
+  "accepted": {
+    "list": 6,
+    "tuple": 6,
+    "exact-prompt-ceiling": 6144
+  },
+  "malformed_rejections": {
+    "empty-list": {
+      "type": "ModelContractError",
+      "message": "empty or invalid native token IDs"
+    },
+    "empty-tuple": {
+      "type": "ModelContractError",
+      "message": "empty or invalid native token IDs"
+    },
+    "none": {
+      "type": "ModelContractError",
+      "message": "empty or invalid native token IDs"
+    },
+    "string": {
+      "type": "ModelContractError",
+      "message": "empty or invalid native token IDs"
+    },
+    "bytes": {
+      "type": "ModelContractError",
+      "message": "empty or invalid native token IDs"
+    },
+    "mapping": {
+      "type": "ModelContractError",
+      "message": "empty or invalid native token IDs"
+    },
+    "batch-encoding": {
+      "type": "ModelContractError",
+      "message": "empty or invalid native token IDs"
+    },
+    "single-nested-batch": {
+      "type": "ModelContractError",
+      "message": "invalid native token IDs"
+    },
+    "multiple-batches": {
+      "type": "ModelContractError",
+      "message": "invalid native token IDs"
+    },
+    "boolean": {
+      "type": "ModelContractError",
+      "message": "invalid native token IDs"
+    },
+    "float": {
+      "type": "ModelContractError",
+      "message": "invalid native token IDs"
+    },
+    "nan": {
+      "type": "ModelContractError",
+      "message": "invalid native token IDs"
+    },
+    "string-id": {
+      "type": "ModelContractError",
+      "message": "invalid native token IDs"
+    },
+    "negative": {
+      "type": "ModelContractError",
+      "message": "invalid native token IDs"
+    },
+    "one-past-native-vocab": {
+      "type": "ModelContractError",
+      "message": "invalid native token IDs"
+    },
+    "numpy-int": {
+      "type": "ModelContractError",
+      "message": "invalid native token IDs"
+    },
+    "numpy-array": {
+      "type": "ModelContractError",
+      "message": "empty or invalid native token IDs"
+    },
+    "int-subclass": {
+      "type": "ModelContractError",
+      "message": "invalid native token IDs"
+    },
+    "list-subclass": {
+      "type": "ModelContractError",
+      "message": "empty or invalid native token IDs"
+    }
+  },
+  "overflow": {
+    "type": "TokenAdmissionError",
+    "observed": 6145,
+    "limit": 6144
+  },
+  "model_loads": 0,
+  "generations": 0,
+  "source_unchanged": true
+}

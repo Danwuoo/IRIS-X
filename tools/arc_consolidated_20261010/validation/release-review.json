@@ -1,62 +1,69 @@
 {
   "acceptance": {
-    "actual_gpu_weights_tokenizer_installation": "unverified",
-    "final_v4_smoke": "1152 complete; 128 controls expected; zero unknown/model calls; exact v2 semantic parity",
-    "git_format": "actual index matches pinned bytes, diff --check passes, 1275 existing blobs unchanged",
-    "linux_tests": "272 passed; zero failures/errors/skips",
-    "provider_readback": "required after single approved save; pending at freeze",
-    "source_bridge": "Scientific bytes/budgets/dispatch identical; all1152 smoke semantic receipts identical",
-    "v2_full": "47848 complete; 2/8 exposed-task witness; v2-attributed scientific evidence only",
-    "whole_repository_ci": "separate exact-commit integrator verification required"
+    "actual_gpu_weights_tokenizer_installation": "unverified in this repair; owner log initialization evidence explicitly qualified",
+    "actual_notebook_smoke": "1152 complete; 128 expected controls; zero unknown/model calls or heavy imports; stdout1661 bytes",
+    "bounded_display": "Independent actual-cell5000-row reproduction1349 stdout bytes; full5000 rows retained; adversarialUnicode4468 bytes",
+    "linux_tests": "287 passed; zero failures/errors/skips, regular Python3.12",
+    "provider_readback": "requires one same-ID approved update then exactsource/settings readback; pending at freeze",
+    "semantic_bridge": "All1152 v4/repair semantic receipts match, excluding four timing fields; frozen scientific/budget/dispatch/gate code unchanged",
+    "tokenizer_contract": "Exact5.8.1 method controlled reproduction, native IDs and strict6144 ceiling retained; actual tokenizer/wheel unverified",
+    "whole_repository_ci": "exact-commit integrator checks pending; historical baseline failures retained"
   },
   "approved_notebooks": [
     {
-      "bytes": 213610,
+      "bytes": 216543,
+      "existing_id": 138033807,
+      "expected_successor_version": 3,
       "inactive": true,
       "path": "tools/arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb",
+      "predecessor_version": 2,
       "private": true,
       "quick_save_only": true,
       "reference": "danielwuu/iris-x-consolidated-offline-20261010",
-      "sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707",
-      "source_sha256": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01"
+      "sha256": "eac5ca3e70443e30a6049645256296d06bb9f5d377053dad701fc1aa2b525b36",
+      "source_sha256": "635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c"
     }
   ],
-  "date_utc": "2026-10-10T13:21:01.375009+00:00",
+  "authorization_evidence": {
+    "destination": "same private Kaggle notebook and existing Git main; no agent runtime execution",
+    "repair_and_push": "User: notebook failed\uff0c\u8acb astra ultra \u9032\u884c\u4fee\u5fa9\u8207 push"
+  },
+  "date_utc": "2026-10-10T14:57:42.323126+00:00",
   "independent_evidence": {
+    "code_science_review": {
+      "path": "validation/repair-code-science-review.json",
+      "sha256": "2ae4eaabb594652f526428391598a3a9dc8010d085e0eab3038c6183b7ae2da4"
+    },
     "publication_contract_review": {
       "path": "validation/publication-contract-review.json",
-      "sha256": "bad4fb96fd0e25d9d0efb2bad2ffcc9ba6b2d5097b083677386fefbe7408180f"
+      "sha256": "73c0c443181de957fad7dfca60e1faea1cf7bc4d5d4f92f030b646e3b2bc652c"
     },
-    "publisher_script_sha256": "c86eeda724554390913ab5d20cae3de54cff0f9c1cdac3b57a606b607d211663",
-    "publisher_transport_review": {
-      "path": "validation/publisher-transport-review.json",
-      "sha256": "4bfbc4597812642cafb82058a4705cf55e8e57476aae10b6742a55d52ae4c614"
+    "publisher_script_sha256": "4039957759e99aba2d3baefac7ba0085ac40631de88a1968139b6b5aef1f5462",
+    "publisher_transport_tests": {
+      "path": "validation/repair-publisher-transport-tests.json",
+      "sha256": "47e1e7c7d541498f6d3bebd29f686e860be7822bf918f459d689fe99e572fc72"
     },
-    "release_validation_sha256": "c67783d74750af79f551a6a7f9a401fe9ee4a02f1489861d067026e76c378556",
-    "scientific_review": {
-      "path": "validation/final-scientific-review.json",
-      "sha256": "88d6517e508ea096277700f9730e2a4b9f817864d2b1f49d9616b10d4020a459"
-    }
+    "release_validation_sha256": "fa548772671b1ce603cfb8309fc4fbca2ab31fa0f344d8590e86473bdede27b7"
   },
   "open_blockers": [],
-  "packaging_revision": "v4; supersedes unpublished v3 dispatch approval",
+  "packaging_revision": "2026-10-10 tokenizer/output repair, successor to native v4; Kaggle expected v3",
   "schema": "irisx/consolidated-final-release-review-v1",
   "scope": {
     "git": {
-      "add_only_root": "tools/arc_consolidated_20261010",
-      "base_commit": "e946fb89a1deb155bb52f5c5b34e703491272853",
+      "allowed_update_root": "tools/arc_consolidated_20261010",
+      "base_commit": "4dac3596ed776c482decaa50cd46d23fe50af73f",
       "branch": "main",
-      "existing_files_must_remain_unchanged": true,
       "file_manifest": {
         "path": "tools/arc_consolidated_20261010/validation/release-file-manifest.json",
-        "sha256": "a0c6a1334592a6e7bed209c96d0ba556b71b0b0c2e22a910515f81a09c33ba7a"
+        "sha256": "e51ec3cc363f75e4e72b31d111af00cd9fb8308adabfe75f39947e6d59ceb14a"
       },
+      "outside_scope_files_must_remain_unchanged": true,
       "repository": "Danwuoo/IRIS-X"
     },
     "new_gpu_paid_execution_or_formal_submission_authorized": false,
     "publication_manifest": {
       "path": "tools/arc_consolidated_20261010/validation/publication-manifest.json",
-      "sha256": "4245d1cf84c8586d8b1025bbb0a3120356b61936f7df83dd589d9483d7dba67e"
+      "sha256": "6c8795746d97c2955f5b46034565104407bf94b741b7817564b898cd4415dd0b"
     }
   },
   "status": "approved_cpu_validated_inactive_publication"

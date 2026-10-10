@@ -1,0 +1,63 @@
+{
+  "acceptance": {
+    "actual_gpu_weights_tokenizer_installation": "unverified",
+    "final_v4_smoke": "1152 complete; 128 controls expected; zero unknown/model calls; exact v2 semantic parity",
+    "git_format": "actual index matches pinned bytes, diff --check passes, 1275 existing blobs unchanged",
+    "linux_tests": "272 passed; zero failures/errors/skips",
+    "provider_readback": "required after single approved save; pending at freeze",
+    "source_bridge": "Scientific bytes/budgets/dispatch identical; all1152 smoke semantic receipts identical",
+    "v2_full": "47848 complete; 2/8 exposed-task witness; v2-attributed scientific evidence only",
+    "whole_repository_ci": "separate exact-commit integrator verification required"
+  },
+  "approved_notebooks": [
+    {
+      "bytes": 213610,
+      "inactive": true,
+      "path": "tools/arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb",
+      "private": true,
+      "quick_save_only": true,
+      "reference": "danielwuu/iris-x-consolidated-offline-20261010",
+      "sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707",
+      "source_sha256": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01"
+    }
+  ],
+  "date_utc": "2026-10-10T13:21:01.375009+00:00",
+  "independent_evidence": {
+    "publication_contract_review": {
+      "path": "validation/publication-contract-review.json",
+      "sha256": "bad4fb96fd0e25d9d0efb2bad2ffcc9ba6b2d5097b083677386fefbe7408180f"
+    },
+    "publisher_script_sha256": "c86eeda724554390913ab5d20cae3de54cff0f9c1cdac3b57a606b607d211663",
+    "publisher_transport_review": {
+      "path": "validation/publisher-transport-review.json",
+      "sha256": "4bfbc4597812642cafb82058a4705cf55e8e57476aae10b6742a55d52ae4c614"
+    },
+    "release_validation_sha256": "c67783d74750af79f551a6a7f9a401fe9ee4a02f1489861d067026e76c378556",
+    "scientific_review": {
+      "path": "validation/final-scientific-review.json",
+      "sha256": "88d6517e508ea096277700f9730e2a4b9f817864d2b1f49d9616b10d4020a459"
+    }
+  },
+  "open_blockers": [],
+  "packaging_revision": "v4; supersedes unpublished v3 dispatch approval",
+  "schema": "irisx/consolidated-final-release-review-v1",
+  "scope": {
+    "git": {
+      "add_only_root": "tools/arc_consolidated_20261010",
+      "base_commit": "e946fb89a1deb155bb52f5c5b34e703491272853",
+      "branch": "main",
+      "existing_files_must_remain_unchanged": true,
+      "file_manifest": {
+        "path": "tools/arc_consolidated_20261010/validation/release-file-manifest.json",
+        "sha256": "a0c6a1334592a6e7bed209c96d0ba556b71b0b0c2e22a910515f81a09c33ba7a"
+      },
+      "repository": "Danwuoo/IRIS-X"
+    },
+    "new_gpu_paid_execution_or_formal_submission_authorized": false,
+    "publication_manifest": {
+      "path": "tools/arc_consolidated_20261010/validation/publication-manifest.json",
+      "sha256": "4245d1cf84c8586d8b1025bbb0a3120356b61936f7df83dd589d9483d7dba67e"
+    }
+  },
+  "status": "approved_cpu_validated_inactive_publication"
+}

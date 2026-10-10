@@ -1,0 +1,380 @@
+{
+  "schema": "irisx/consolidated-repair-final-staged-byte-review-v1",
+  "reviewed_at_utc": "2026-10-10T15:09:56.244983+00:00",
+  "status": "PASS",
+  "open_blockers": [],
+  "scope": "Offline raw Git index/worktree/frozen-release/source-science and final-document review. No source edits or external calls. Provider terminal review is separately authored; only its exact append is checked here.",
+  "base_commit": "4dac3596ed776c482decaa50cd46d23fe50af73f",
+  "frozen_bindings": {
+    "release_file_manifest_sha256": "e51ec3cc363f75e4e72b31d111af00cd9fb8308adabfe75f39947e6d59ceb14a",
+    "release_review_sha256": "4c5730c345ae9b8a0496997a7ccb0164419bef01db75aa30d1036e0b749a18d4",
+    "publication_manifest_sha256": "6c8795746d97c2955f5b46034565104407bf94b741b7817564b898cd4415dd0b",
+    "package_source_sha256": "635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c",
+    "notebook_sha256": "eac5ca3e70443e30a6049645256296d06bb9f5d377053dad701fc1aa2b525b36"
+  },
+  "frozen_release": {
+    "manifest_files": 101,
+    "self_metadata_files": 2,
+    "total": 103,
+    "raw_index_and_worktree_bytes_match_all_hashes_and_lengths": true
+  },
+  "git_scope": {
+    "baseline_files": 1360,
+    "index_files": 1384,
+    "unchanged_baseline_blobs_and_modes": 1347,
+    "modified": 13,
+    "added": 24,
+    "deleted": 0,
+    "staged_changed_paths": 37,
+    "all_changes_inside": "tools/arc_consolidated_20261010",
+    "git_diff_cached_check": "PASS",
+    "no_unstaged_tracked_changes": true,
+    "index_snapshot_sha256": "f6f601c424ae95cbb35c8793701bf7eb029a89404bdb772c93100b4f7ffaa9b4",
+    "staged_binary_diff_sha256": "88af1e47b4982bf9ab75ebcc1d47f123eccafb4b218068deedf711fc03f9c11e",
+    "index_fingerprint_definition": "SHA256 ASCII JSON mapping path to mode and blob OID, sorted keys, compact separators.",
+    "prior_36_path_snapshot_sha256": "89efba027e6c4ac30a1e21d01df1cefd9ebe52a33f928f46fc4dd86046308ad4",
+    "sole_late_append": {
+      "path": "tools/arc_consolidated_20261010/validation/repair-terminal-publication-audit.json",
+      "sha256": "637f6962e06206e18f2430f41d22913a7f6e7bd947feef5fb44a1ebf0be8a20d",
+      "other_prior_index_entries_unchanged": true
+    }
+  },
+  "separate_integration_publication_additions": {
+    "tools/arc_consolidated_20261010/publication/KAGGLE-CONSOLIDATED-REPAIR-SAVE-INDEX.md": {
+      "bytes": 2867,
+      "sha256": "202b7d6e9fc77dab5e0517c4cc4475d0039b62ed97a6d760edb7eebdc50b70e4",
+      "mode": "100644",
+      "blob": "82e7b66ab921b0e934d295fa2ce0c08844fc00e1"
+    },
+    "tools/arc_consolidated_20261010/publication/consolidated-repair-publication-receipt.json": {
+      "bytes": 4372,
+      "sha256": "c409cbee5da4eb937457b6975e44241501e781c5dc64f4d77faba6a11bbabd08",
+      "mode": "100644",
+      "blob": "e3b9c09f59c5a6f63da06ff1648d02d31f3a52eb"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-final-transport-review.json": {
+      "bytes": 3893,
+      "sha256": "d0460b7e12c5b2b940d9134b9fc35e1405cbc7b06ea45d73dedf46955348ea2c",
+      "mode": "100644",
+      "blob": "47718b79105ed5f14080250677d80cfa61263c31"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-main-integration-smoke-audit.json": {
+      "bytes": 9178,
+      "sha256": "7f34086d05c7291fbcf80e35a908c584e113eac5e7b99ac62a798fc62e23d0c0",
+      "mode": "100644",
+      "blob": "6081bf40380174905b37da4981fe094ab391ef25"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-main-integration-validation.json": {
+      "bytes": 3119,
+      "sha256": "ba0e9a31cd9957b17968ed193e88e791a7149fc7f102e68362c0e8ead32f038f",
+      "mode": "100644",
+      "blob": "6048a35c79bfe67c909db17c8cafe1f52409293b"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-terminal-publication-audit.json": {
+      "bytes": 7694,
+      "sha256": "637f6962e06206e18f2430f41d22913a7f6e7bd947feef5fb44a1ebf0be8a20d",
+      "mode": "100644",
+      "blob": "1b57c7eb5a27f4a8af40c9d7134ce664e6a70542"
+    }
+  },
+  "all_staged_changes": {
+    "tools/arc_consolidated_20261010/README.md": {
+      "bytes": 10765,
+      "sha256": "0e63e193b905e03712a17f6f81aa042f3c95c7bb897e5e4acf92cd7cd0ebcd08",
+      "mode": "100644",
+      "blob": "21d65dcd1571752867f0ac4a33798af9ef90dd4a"
+    },
+    "tools/arc_consolidated_20261010/RUN_GUIDE.zh-TW.md": {
+      "bytes": 3797,
+      "sha256": "0f13c0f354e8a79095b9e55e3e18aeda8c66688785b0ccd0c0f2a48b4c9e72c4",
+      "mode": "100644",
+      "blob": "997c629f06c964b756fbab2a4c94fad119571a9e"
+    },
+    "tools/arc_consolidated_20261010/VALIDATION.md": {
+      "bytes": 7876,
+      "sha256": "0f957efabd7c9e2561c5c84c3bc79852c557d80309e2dd66f65f23cb861b01aa",
+      "mode": "100644",
+      "blob": "042d848018461b15ae44b6f64eeb1cbaa3434525"
+    },
+    "tools/arc_consolidated_20261010/build_notebook.py": {
+      "bytes": 22292,
+      "sha256": "32164b28e443fa0941610991807c42c99a73c753eb0ac7874b64f81b7712730b",
+      "mode": "100644",
+      "blob": "c50edaa3d6e4fe750b49e8765dc24201ab8e009c"
+    },
+    "tools/arc_consolidated_20261010/model_provider.py": {
+      "bytes": 35128,
+      "sha256": "776bce3b8231907f7c30ffcf210494205c1413d057da8974447ca2d946a463e3",
+      "mode": "100644",
+      "blob": "041a217180e58a2b933f4fb8dfb091560b07beb6"
+    },
+    "tools/arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb": {
+      "bytes": 216543,
+      "sha256": "eac5ca3e70443e30a6049645256296d06bb9f5d377053dad701fc1aa2b525b36",
+      "mode": "100644",
+      "blob": "34fddeac6a4db238dc7e11d72bfdacac8dd08fc4"
+    },
+    "tools/arc_consolidated_20261010/tests/test_model_provider.py": {
+      "bytes": 27393,
+      "sha256": "3e210e42346b144f3c5f55281725683831679eff2c5a1452be6e93f5961c0710",
+      "mode": "100644",
+      "blob": "7d34e26f3961800f71db30d35bd8f3c38b43133c"
+    },
+    "tools/arc_consolidated_20261010/tests/test_notebook.py": {
+      "bytes": 19956,
+      "sha256": "989662a7c29f3ff8f197784d6fd4b2b60583c93ad0838c3751035a1178a28d38",
+      "mode": "100644",
+      "blob": "b055414e1539313c3b00906df852969fae461667"
+    },
+    "tools/arc_consolidated_20261010/validation/publication-contract-review.json": {
+      "bytes": 3182,
+      "sha256": "73c0c443181de957fad7dfca60e1faea1cf7bc4d5d4f92f030b646e3b2bc652c",
+      "mode": "100644",
+      "blob": "4d2bb3b0f1a59b6fb5c0964794ee68d567bcc5d7"
+    },
+    "tools/arc_consolidated_20261010/validation/publication-manifest.json": {
+      "bytes": 4061,
+      "sha256": "6c8795746d97c2955f5b46034565104407bf94b741b7817564b898cd4415dd0b",
+      "mode": "100644",
+      "blob": "554cfd44351043aa116096b2fe797debe24fc702"
+    },
+    "tools/arc_consolidated_20261010/validation/release-file-manifest.json": {
+      "bytes": 19014,
+      "sha256": "e51ec3cc363f75e4e72b31d111af00cd9fb8308adabfe75f39947e6d59ceb14a",
+      "mode": "100644",
+      "blob": "45e83b4244938eb4261c4e64f1e575e833e8cce8"
+    },
+    "tools/arc_consolidated_20261010/validation/release-review.json": {
+      "bytes": 3730,
+      "sha256": "4c5730c345ae9b8a0496997a7ccb0164419bef01db75aa30d1036e0b749a18d4",
+      "mode": "100644",
+      "blob": "f28016af36eafae831be7f5d97c7fdbf5b0539d2"
+    },
+    "tools/arc_consolidated_20261010/validation/release-validation.json": {
+      "bytes": 2895,
+      "sha256": "fa548772671b1ce603cfb8309fc4fbca2ab31fa0f344d8590e86473bdede27b7",
+      "mode": "100644",
+      "blob": "a6f95923bd063b2e54797a481485051e9655f8b5"
+    },
+    "tools/arc_consolidated_20261010/REPAIR-20261010.zh-TW.md": {
+      "bytes": 3787,
+      "sha256": "1e6cf2ef6421279f2d86ee7bef8005787f6a2fdaf66d2792f873c225cd9b06d3",
+      "mode": "100644",
+      "blob": "8204d48e0aa8ba697cecd3ad9ab7abd7e928774e"
+    },
+    "tools/arc_consolidated_20261010/publication/KAGGLE-CONSOLIDATED-REPAIR-SAVE-INDEX.md": {
+      "bytes": 2867,
+      "sha256": "202b7d6e9fc77dab5e0517c4cc4475d0039b62ed97a6d760edb7eebdc50b70e4",
+      "mode": "100644",
+      "blob": "82e7b66ab921b0e934d295fa2ce0c08844fc00e1"
+    },
+    "tools/arc_consolidated_20261010/publication/consolidated-repair-publication-receipt.json": {
+      "bytes": 4372,
+      "sha256": "c409cbee5da4eb937457b6975e44241501e781c5dc64f4d77faba6a11bbabd08",
+      "mode": "100644",
+      "blob": "e3b9c09f59c5a6f63da06ff1648d02d31f3a52eb"
+    },
+    "tools/arc_consolidated_20261010/terminal_summary.py": {
+      "bytes": 4675,
+      "sha256": "da30baf3a0663e535355fe6c797e8b13f8fdc0199bb561ff3a75bfbb044e2b6c",
+      "mode": "100644",
+      "blob": "2d126e4ed704777f54dbbc733e2c2f3bf5e53e1a"
+    },
+    "tools/arc_consolidated_20261010/tests/test_terminal_summary.py": {
+      "bytes": 7120,
+      "sha256": "524609b39fb86366880603c18eace51bae96320bf89aeddcf1ff3521d18add7e",
+      "mode": "100644",
+      "blob": "9b781ac97d1e0eda21e0f7801743b8d643f2a275"
+    },
+    "tools/arc_consolidated_20261010/validation/history-v4-publication-contract-review.json": {
+      "bytes": 2645,
+      "sha256": "bad4fb96fd0e25d9d0efb2bad2ffcc9ba6b2d5097b083677386fefbe7408180f",
+      "mode": "100644",
+      "blob": "2404f2bb36f9cc1e0a949d0b669e9a122f3ee8f4"
+    },
+    "tools/arc_consolidated_20261010/validation/history-v4-publication-manifest.json": {
+      "bytes": 2948,
+      "sha256": "4245d1cf84c8586d8b1025bbb0a3120356b61936f7df83dd589d9483d7dba67e",
+      "mode": "100644",
+      "blob": "625a5d123a6325d6b22caa99e25e8f09cfc4770f"
+    },
+    "tools/arc_consolidated_20261010/validation/history-v4-release-file-manifest.json": {
+      "bytes": 14289,
+      "sha256": "a0c6a1334592a6e7bed209c96d0ba556b71b0b0c2e22a910515f81a09c33ba7a",
+      "mode": "100644",
+      "blob": "1f6562d88c6256910b0b009a41765ba9e607eb94"
+    },
+    "tools/arc_consolidated_20261010/validation/history-v4-release-review.json": {
+      "bytes": 3038,
+      "sha256": "88958058abf7ba08a016da9a76fc8cbbe9172a525ac4390b47e97c739d1fe3f5",
+      "mode": "100644",
+      "blob": "6fe19da5cc7a61638801029c301612f3bd0709dd"
+    },
+    "tools/arc_consolidated_20261010/validation/history-v4-release-validation.json": {
+      "bytes": 4765,
+      "sha256": "c67783d74750af79f551a6a7f9a401fe9ee4a02f1489861d067026e76c378556",
+      "mode": "100644",
+      "blob": "ff1340867cb78f22d9ccdbd619b842ddb9755222"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-code-science-review.json": {
+      "bytes": 7951,
+      "sha256": "2ae4eaabb594652f526428391598a3a9dc8010d085e0eab3038c6183b7ae2da4",
+      "mode": "100644",
+      "blob": "7a0ca63995c4c632481cad646b775b53a92fe07f"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-final-transport-review.json": {
+      "bytes": 3893,
+      "sha256": "d0460b7e12c5b2b940d9134b9fc35e1405cbc7b06ea45d73dedf46955348ea2c",
+      "mode": "100644",
+      "blob": "47718b79105ed5f14080250677d80cfa61263c31"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-linux-tests.txt": {
+      "bytes": 55481,
+      "sha256": "74f48e125a797032369fcb46e9aba0df93b5808b499f5c0d60b3b7f507d0d3c4",
+      "mode": "100644",
+      "blob": "82e7985a6a303379b29d5fcb9325cd68ee9ee070"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-main-integration-smoke-audit.json": {
+      "bytes": 9178,
+      "sha256": "7f34086d05c7291fbcf80e35a908c584e113eac5e7b99ac62a798fc62e23d0c0",
+      "mode": "100644",
+      "blob": "6081bf40380174905b37da4981fe094ab391ef25"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-main-integration-validation.json": {
+      "bytes": 3119,
+      "sha256": "ba0e9a31cd9957b17968ed193e88e791a7149fc7f102e68362c0e8ead32f038f",
+      "mode": "100644",
+      "blob": "6048a35c79bfe67c909db17c8cafe1f52409293b"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-notebook-smoke-console.txt": {
+      "bytes": 1661,
+      "sha256": "90fc28dc62af1985be68e9c44f3c0f2e8b78abd35e0bf349e82186b77683f898",
+      "mode": "100644",
+      "blob": "5f85a43bbeefd2364d1173b9fc2147793638c1ad"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-notebook-smoke-execution.json": {
+      "bytes": 394,
+      "sha256": "340c9b7b78138edc3d0200305a8311b8df63aac608e98740d6f3dedda221b2f5",
+      "mode": "100644",
+      "blob": "3051b6b862ac664a0dacd52b80756591693db837"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-owner-failure-observations.json": {
+      "bytes": 4828,
+      "sha256": "44346397fc28b53b3ab0d7da4ee10e1af8792fafe9bf05320a579f71dab1a196",
+      "mode": "100644",
+      "blob": "55f490071800448c8fb9ae19f93bdf75a16fc1fd"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-publisher-transport-tests.json": {
+      "bytes": 2477,
+      "sha256": "47e1e7c7d541498f6d3bebd29f686e860be7822bf918f459d689fe99e572fc72",
+      "mode": "100644",
+      "blob": "309e8b03a421429106d01fc579b2c7028ecea8a0"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-runtime-manifest.json": {
+      "bytes": 8277,
+      "sha256": "41db42871a2979ca1baad833ee1c4e26b16e0b850f91a630cf87bdcb75572a5c",
+      "mode": "100644",
+      "blob": "8e7bfc84bc1d2346f625ab271f22c074fe5b5511"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-smoke-audit.json": {
+      "bytes": 9178,
+      "sha256": "58be1df3667534ecb0b913764c4ee51a682d1355b63aa16bf8a9ca453496977c",
+      "mode": "100644",
+      "blob": "83153beea3b01661b8d87e869b55d77a97374421"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-terminal-publication-audit.json": {
+      "bytes": 7694,
+      "sha256": "637f6962e06206e18f2430f41d22913a7f6e7bd947feef5fb44a1ebf0be8a20d",
+      "mode": "100644",
+      "blob": "1b57c7eb5a27f4a8af40c9d7134ce664e6a70542"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-token-contract-reproduction.json": {
+      "bytes": 3482,
+      "sha256": "586a7e686adae26f292345292d88ab5c3f904739cd88715d24d53793d1c0fe7a",
+      "mode": "100644",
+      "blob": "ec5094a2a3ebfdb4528545a7539fc25be1ed59ce"
+    },
+    "tools/arc_consolidated_20261010/validation/v4-repair-smoke-parity.json": {
+      "bytes": 494,
+      "sha256": "f126d37994ef30ae03a60cd18738cd1126c72edfdf529626df9ff72c63119d04",
+      "mode": "100644",
+      "blob": "aee7310f5a2b767eb5d37f61d779e54d6e8a47a8"
+    }
+  },
+  "preservation": {
+    "seven_tested_runtime_test_notebook_files_match_frozen_manifest": true,
+    "all_executable_runtime_hashes_match": true,
+    "all_unmodified_baseline_blobs_and_modes_preserved": true,
+    "prior_five_metadata_files_retained_byte_exact_under_history_v4": true,
+    "historical_publication_files_preserved": true,
+    "scientific_controls_data_grammar_inventory_budgets_gates_ledger_dispatch_sealing_resume_and_G4_helpers_unchanged": true
+  },
+  "integration_evidence": {
+    "focused": {
+      "tests": 287,
+      "seconds": 43.206,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "actual_notebook_smoke": {
+      "status": "complete",
+      "checks": 1152,
+      "response_files_verified": 1152,
+      "model_calls": 0,
+      "heavy_imports": [],
+      "console_bytes": 1640,
+      "audit_sha256": "7f34086d05c7291fbcf80e35a908c584e113eac5e7b99ac62a798fc62e23d0c0"
+    },
+    "aggregate": {
+      "tests": 1583,
+      "seconds": 124.902,
+      "failures": 1,
+      "errors": 35,
+      "skips": 74,
+      "same_36_error_failure_labels_as_fresh_untouched_base": true,
+      "new_labels": [],
+      "interpretation": "Historical aggregate remains red; this is exact label parity, not a green aggregate claim."
+    },
+    "raw_log_hashes_verified": {
+      "focused-tests.log": {
+        "bytes": 55481,
+        "sha256": "90b1bae8df8a3e41117c8e5912cbfbefc09f39c5120d4ee4553b771d3d3d2848"
+      },
+      "integration-validation.log": {
+        "bytes": 353562,
+        "sha256": "026f1c04f072a9bc294179bd1eb10e0b468a111853375f371ec63399a0e22784"
+      },
+      "baseline-validation.log": {
+        "bytes": 353563,
+        "sha256": "47f2595c8305facad7bd9aab8b8403de7465154a9446b324616aa50dd36f49bf"
+      }
+    }
+  },
+  "final_document_review": {
+    "status": "PASS",
+    "documents": [
+      "README.md",
+      "RUN_GUIDE.zh-TW.md",
+      "VALIDATION.md",
+      "REPAIR-20261010.zh-TW.md",
+      "validation/release-validation.json",
+      "validation/v4-repair-smoke-parity.json"
+    ],
+    "verified": [
+      "287-pass/1152-check repaired-source CPU claims are correctly scoped.",
+      "FULL47848 retains historical v2 attribution; no repaired-source FULL/GPU claim.",
+      "Owner log truncation and missing independently verified owner evidence archive disclosed.",
+      "Controlled official-method reproduction explicitly does not constitute actual Granite tokenizer or wheel acceptance.",
+      "Fresh kernel/runtime,new output root,RESUME=False preserve old ledgers.",
+      "8KiB terminal bound retains full evidence; VM-billing warning retained.",
+      "1152 semantic receipt parity excludes only four named timing fields.",
+      "No model/GPU/training/heldout scoring/N14 promotion asserted."
+    ]
+  },
+  "limitations": [
+    "Actual pinned Granite tokenization,model loading,G4 generation,and four-L4 execution remain unverified.",
+    "Provider terminal receipt/readback claims are owned by the separate provider review.",
+    "This audit binds the 37-path pre-receipt snapshot. Appending this exact receipt and final non-self-referential manifest must preserve every reviewed blob and mode."
+  ]
+}

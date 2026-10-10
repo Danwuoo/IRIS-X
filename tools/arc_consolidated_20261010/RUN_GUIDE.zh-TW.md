@@ -1,5 +1,7 @@
 # 單一 Notebook 操作指南
 
+目前修復版請先看 [修復與重新執行指南](REPAIR-20261010.zh-TW.md)：新 kernel/session、新 `OUTPUT_ROOT=irisx-consolidated-20261010-repair001`、`RESUME=False`，保留舊結果。終端顯示有大小上限的摘要，完整資料仍保存於輸出檔案。
+
 ## 這份 Notebook 會做什麼
 
 同一份 Notebook 依序完成：獨立正負控制、固定示範題的表示能力檢查、候選排序診斷，以及通過可測性門檻後的選配模型實驗。各階段會保存 checkpoint、實際用量與失敗原因，最後封存 evidence ZIP。
@@ -32,4 +34,4 @@
 
 八個題目是已暴露的工程示範題，全部保留在分母。Demo-fit 只證明固定表示與資源上限內存在吻合示範的程式。它不是 query/held-out 分數，不改變原 N14 晉級門檻，也不能代表 ARC-AGI-2 泛化。
 
-Linux CPU、隔離控制、ledger 與 mock 流程的驗證狀態見 `VALIDATION.md`。實際權重、tokenizer、四個其餘掛載、離線安裝、G4 GPU 與四張 L4 提交流程仍未經實機驗證。
+Linux CPU、隔離控制、ledger 與受控接口驗證見 `VALIDATION.md` 及本輪修復紀錄。使用者 log 已記錄 offline preparation/tokenizer 初始化到達，但此輪未獨立執行完整 Granite tokenizer、權重載入或 GPU；G4 與四張 L4 流程仍未完成實機驗收。

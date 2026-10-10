@@ -1,6 +1,6 @@
 {
-  "add_only_root": "tools/arc_consolidated_20261010",
-  "base_commit": "e946fb89a1deb155bb52f5c5b34e703491272853",
+  "allowed_update_root": "tools/arc_consolidated_20261010",
+  "base_commit": "4dac3596ed776c482decaa50cd46d23fe50af73f",
   "datasets": {
     "adapter": {
       "manifest": "adapter-manifest.json",
@@ -35,32 +35,42 @@
   },
   "kaggle": {
     "agent_execution_authorized": false,
+    "competition_sources": [
+      "arc-prize-2026-arc-agi-3"
+    ],
+    "docker_image": "gcr.io/kaggle-private-byod/python@sha256:2757e0c7d1e0a9cb43da657b97e223c321a98f5014bdf64f44f2f6b083ad2b2f",
     "enable_gpu": false,
     "enable_internet": false,
     "enable_tpu": false,
+    "expected_successor_version": 3,
     "formal_submission_authorized": false,
     "is_private": true,
+    "observed_predecessor_source_sha256": "582f1b4e209c8e30f637760f94e334147592426184166c0413cb1d7d6b4ea4cf",
+    "observed_predecessor_version": 2,
     "reference": "danielwuu/iris-x-consolidated-offline-20261010",
     "save_strategy": "QUICK_SAVE",
     "save_strategy_enum": 3,
-    "title": "IRIS-X Consolidated Offline 20261010"
+    "title": "IRIS-X Consolidated Offline 20261010",
+    "update_existing_id": 138033807
   },
   "limitations": [
-    "Actual model/wheels/interpreter/adapter mounts and installation are unverified.",
-    "GPU, tokenizer, weights, G4 and four-L4 execution unverified.",
-    "Demo coverage is not a held-out score or N14 promotion."
+    "Owner-supplied prefix-truncated log reports completed CPU coverage and offline preparation, then a token-return-contract failure before weights/model generation. No owner evidence archive was supplied for independent verification.",
+    "Repair acceptance covers controlled official-method CPU contract reproduction, package regressions and CPU notebook SMOKE. Actual pinned Granite tokenization, weights and G4/four-L4 execution remain unverified.",
+    "Demo coverage is not a held-out score or N14 promotion. Existing competition association is preserved as metadata only; no competition data is accessed.",
+    "The repaired source needs a fresh runtime and fresh output identity with RESUME=False. Old source-bound ledgers are preserved and cannot be resumed under changed source."
   ],
   "notebook": {
-    "bytes": 213610,
+    "bytes": 216543,
     "enable_model": false,
     "manual_start": false,
+    "output_root": "irisx-consolidated-20261010-repair001",
     "path": "tools/arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb",
     "profile": "SMOKE",
     "resume": false,
-    "sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707"
+    "sha256": "eac5ca3e70443e30a6049645256296d06bb9f5d377053dad701fc1aa2b525b36"
   },
-  "package_source_sha256": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01",
-  "portable_executable_overlay_sha256": "97eb6dad929684c4b5f3e512909c19e00e45be0f424b78fdb683e42e2fef1c0c",
-  "publication_receipts": "To be appended by the separately authorized publishers after final release review.",
+  "package_source_sha256": "635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c",
+  "portable_executable_overlay_sha256": "34e019bd3987b975976d4213085e0bbbae4c052bd35addd1c2d279c9afb74791",
+  "publication_receipts": "Append the independently verified same-notebook successor receipt after the reviewed inactive QUICK_SAVE; retain predecessor evidence.",
   "schema": "irisx/consolidated-inactive-publication-v1"
 }

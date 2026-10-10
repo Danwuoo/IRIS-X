@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "scope": "exact per-receipt semantic parity, excluding only four measured timing fields",
+  "v4_result_sha256": "f4cde1ad78e313928433ce1cfbba79b406250c582c4daf251cf76c171a7b6ab1",
+  "repair_result_sha256": "f1e13920c04f810c892e5a435c1901d24fc2b5022fb60c1e5b9c3141dc0a3621",
+  "compared_receipts": 1152,
+  "ignored_fields": [
+    "wall_reserved_seconds",
+    "wall_seconds",
+    "worker_cpu_seconds",
+    "worker_wall_seconds"
+  ],
+  "scientific_receipt_mismatches": 0
+}

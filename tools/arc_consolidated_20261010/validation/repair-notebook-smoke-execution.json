@@ -1,0 +1,9 @@
+{
+  "wall_seconds": 32.92789348200313,
+  "notebook_path": "/workspace/scratch/3c2b2502fb1e/consolidated-repair-20261010/candidate/tools/arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb",
+  "source_sha256": "635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c",
+  "status": "complete",
+  "cpu_checks": 1152,
+  "model_calls": 0,
+  "heavy_imports": []
+}

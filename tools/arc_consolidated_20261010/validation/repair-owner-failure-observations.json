@@ -1,0 +1,140 @@
+{
+  "format": "irisx-owner-failure-log-observations-v1",
+  "input": {
+    "filename": "iris-x-consolidated-offline-20261010.log",
+    "sha256": "c61aba12dda48fceeb995c534280d5e7dc031754542826310d0712d5cdc5f66b",
+    "bytes": 1138662,
+    "lines": 40089,
+    "library_file_id": "libfile_4045fb117cf48191ba03ee2f4bb5a44a",
+    "prefix_truncated": true
+  },
+  "observations": {
+    "model_contract_failure": {
+      "matches": 1,
+      "first": {
+        "line": 38327,
+        "text": "1521.0s 38327 \"message\": \"remote ModelContractError: empty or invalid native token IDs\","
+      },
+      "last": {
+        "line": 38327,
+        "text": "1521.0s 38327 \"message\": \"remote ModelContractError: empty or invalid native token IDs\","
+      }
+    },
+    "coverage_checks": {
+      "matches": 4,
+      "first": {
+        "line": 38006,
+        "text": "1521.0s 38006 \"coverage_checks\": 47848,"
+      },
+      "last": {
+        "line": 38168,
+        "text": "1521.0s 38168 \"coverage_checks\": 47848,"
+      }
+    },
+    "coverage_seconds": {
+      "matches": 2,
+      "first": {
+        "line": 38007,
+        "text": "1521.0s 38007 \"coverage_wall_seconds\": 1295.302162162,"
+      },
+      "last": {
+        "line": 38147,
+        "text": "1521.0s 38147 \"coverage_wall_seconds\": 1295.302162162,"
+      }
+    },
+    "zero_model_calls": {
+      "matches": 27,
+      "first": {
+        "line": 38014,
+        "text": "1521.0s 38014 \"physical_calls\": 0,"
+      },
+      "last": {
+        "line": 38699,
+        "text": "1521.0s 38699 \"physical_calls\": 0,"
+      }
+    },
+    "weights_not_loaded": {
+      "matches": 1,
+      "first": {
+        "line": 39674,
+        "text": "1521.0s 39674 \"status\": \"material-verified-not-loaded\""
+      },
+      "last": {
+        "line": 39674,
+        "text": "1521.0s 39674 \"status\": \"material-verified-not-loaded\""
+      }
+    },
+    "source_binding": {
+      "matches": 1,
+      "first": {
+        "line": 39974,
+        "text": "1521.0s 39974 \"source_sha256\": \"5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01\","
+      },
+      "last": {
+        "line": 39974,
+        "text": "1521.0s 39974 \"source_sha256\": \"5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01\","
+      }
+    },
+    "iopub_timeout": {
+      "matches": 2,
+      "first": {
+        "line": 40071,
+        "text": "1525.6s 40071 \"Timeout waiting for IOPub output\", self.iopub_timeout, cell"
+      },
+      "last": {
+        "line": 40074,
+        "text": "1525.6s 40074 The message was: Timeout waiting for IOPub output."
+      }
+    },
+    "large_notebook": {
+      "matches": 1,
+      "first": {
+        "line": 40087,
+        "text": "1532.6s 40087 [NbConvertApp] Writing 426612314 bytes to __notebook__.ipynb"
+      },
+      "last": {
+        "line": 40087,
+        "text": "1532.6s 40087 [NbConvertApp] Writing 426612314 bytes to __notebook__.ipynb"
+      }
+    },
+    "large_html": {
+      "matches": 1,
+      "first": {
+        "line": 40089,
+        "text": "1540.0s 40089 [NbConvertApp] Writing 365121260 bytes to __results__.html"
+      },
+      "last": {
+        "line": 40089,
+        "text": "1540.0s 40089 [NbConvertApp] Writing 365121260 bytes to __results__.html"
+      }
+    },
+    "full_result_print": {
+      "matches": 1,
+      "first": {
+        "line": 40079,
+        "text": "1525.6s 40079 ['        print(_json.dumps(RESULT, sort_keys=True, ensure_ascii=False, indent=2))', \"        print('保存上列 report/archive。程序返回不代表 VM 已停止計費。')\", '    finally:', '        _sys.path[:] = _old_path', '        _sys.dont_write_bytecode = _old_bytecode_setting']"
+      },
+      "last": {
+        "line": 40079,
+        "text": "1525.6s 40079 ['        print(_json.dumps(RESULT, sort_keys=True, ensure_ascii=False, indent=2))', \"        print('保存上列 report/archive。程序返回不代表 VM 已停止計費。')\", '    finally:', '        _sys.path[:] = _old_path', '        _sys.dont_write_bytecode = _old_bytecode_setting']"
+      }
+    },
+    "partial_status": {
+      "matches": 2,
+      "first": {
+        "line": 39975,
+        "text": "1521.0s 39975 \"status\": \"partial-inconclusive\","
+      },
+      "last": {
+        "line": 40001,
+        "text": "1521.0s 40001 \"status\": \"partial-inconclusive\""
+      }
+    }
+  },
+  "limitations": [
+    "The supplied text begins inside a nested result; it is not a complete execution log.",
+    "Reported counts, stop proofs and material bindings are log observations, not an independent replay of the owner archive.",
+    "No model generation occurred according to the retained ledger; weights and G4 hardware acceptance were not reached.",
+    "No statement about VM billing shutdown, current session state, heldout correctness or model quality follows."
+  ]
+}

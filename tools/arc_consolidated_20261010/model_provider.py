@@ -625,7 +625,8 @@ class G4Backend:
 
     def encode(self, messages: list[dict]) -> list[int]:
         return self.tokenizer.apply_chat_template(
-            messages, tokenize=True, add_generation_prompt=True, enable_thinking=False)
+            messages, tokenize=True, add_generation_prompt=True, enable_thinking=False,
+            return_dict=False, return_tensors=None, truncation=False, padding=False)
 
     def ensure_model_loaded(self):
         if self.session is None:

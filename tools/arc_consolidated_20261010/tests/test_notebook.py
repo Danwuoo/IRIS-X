@@ -4,6 +4,7 @@ No runtime8 acceptance, model/backend, training or GPU execution occurs here.
 """
 from __future__ import annotations
 
+import ast
 import copy
 import json
 from pathlib import Path
@@ -25,6 +26,26 @@ def run(output_root, **kwargs):
     result = {'synthetic_test_only': True, 'arguments': kwargs,
               'source_origin': __file__, 'archive': 'MOCK-NO-REAL-ARCHIVE'}
     (path / 'mock-runner.json').write_text(json.dumps(result), encoding='utf-8')
+    return result
+'''
+
+HUGE_MOCK_RUNNER = '''"""Oversized display fixture only; no actual verifier/model."""
+def run(output_root, **kwargs):
+    import json
+    from pathlib import Path
+    path = Path(output_root)
+    path.mkdir(parents=True, exist_ok=True)
+    result = {'status': 'partial-inconclusive', 'output_root': str(path),
+              'session_id': 'synthetic-display-only', 'archive': None,
+              'report': {'profile': 'FULL', 'gate': {'passed': True},
+                  'coverage': {'complete': True, 'tasks': [
+                      {'sentinel': 'HUGE-COVERAGE-DO-NOT-PRINT' + 'x' * 300}] * 5000},
+                  'model': {'status': 'partial', 'error': {
+                      'type': 'ModelContractError',
+                      'message': 'empty or invalid native token IDs' + 'z' * 1000000}},
+                  'final_accounting': {'charged': {
+                      'cpu_checks': 47848, 'coverage_checks': 47848, 'physical_calls': 0}}}}
+    (path / 'mock-full-result.json').write_text(json.dumps(result), encoding='utf-8')
     return result
 '''
 
@@ -56,7 +77,8 @@ try:
                     exec(spec.get('after_payload', ''), namespace)
 except Exception as exc:
     error = type(exc).__name__ + ': ' + str(exc)
-state = {'error': error, 'result': namespace.get('RESULT'),
+state = {'error': error, 'result': None if spec.get('omit_result') else namespace.get('RESULT'),
+         'result_present': 'RESULT' in namespace,
          'files': sorted(str(p.relative_to(Path.cwd())) for p in Path.cwd().rglob('*')),
          'tools_loaded': sorted(x for x in sys.modules if x == 'tools' or x.startswith('tools.')),
          'torch_loaded': 'torch' in sys.modules,
@@ -72,10 +94,11 @@ class NotebookTests(unittest.TestCase):
         cls.mock_files = {**cls.files, b.PREFIX + "runner.py": MOCK_RUNNER}
         cls.notebook = b.make_notebook(cls.mock_files)
 
-    def execute(self, root, *, notebook=None, overrides=None, prelude="", after_payload="", repeat=1):
+    def execute(self, root, *, notebook=None, overrides=None, prelude="", after_payload="", repeat=1,
+                omit_result=False):
         spec = {"notebook": self.notebook if notebook is None else notebook,
                 "overrides": overrides or {}, "prelude": prelude,
-                "after_payload": after_payload, "repeat": repeat}
+                "after_payload": after_payload, "repeat": repeat, "omit_result": omit_result}
         completed = subprocess.run([sys.executable, "-B", "-X", "utf8", "-c", SUBPROCESS],
                                    input=json.dumps(spec), text=True, encoding="utf-8",
                                    cwd=root, capture_output=True, timeout=30)
@@ -83,7 +106,9 @@ class NotebookTests(unittest.TestCase):
         states = [line[len("TEST_STATE="):] for line in completed.stdout.splitlines()
                   if line.startswith("TEST_STATE=")]
         self.assertEqual(len(states), 1, completed.stdout + completed.stderr)
-        return json.loads(states[0])
+        state = json.loads(states[0])
+        state["notebook_stdout"] = completed.stdout.split("TEST_STATE=", 1)[0]
+        return state
 
     def test_default_all_cells_inert_no_writes_or_backend_imports(self):
         with TemporaryDirectory() as root:
@@ -93,6 +118,49 @@ class NotebookTests(unittest.TestCase):
             self.assertEqual(state["tools_loaded"], [])
             self.assertFalse(state["torch_loaded"])
             self.assertIsNone(state["result"])
+
+    def test_oversized_mock_result_uses_bounded_display_and_keeps_full_disk_evidence(self):
+        notebook = b.make_notebook({**self.files, b.PREFIX + "runner.py": HUGE_MOCK_RUNNER})
+        with TemporaryDirectory() as root:
+            state = self.execute(root, notebook=notebook, overrides={"MANUAL_START": True},
+                                 omit_result=True)
+            self.assertIsNone(state["error"])
+            self.assertTrue(state["result_present"])
+            stdout = state["notebook_stdout"]
+            self.assertLess(len(stdout.encode("utf-8")), 9000)
+            self.assertNotIn("HUGE-COVERAGE-DO-NOT-PRINT", stdout)
+            self.assertIn('"model_calls_charged": 0', stdout)
+            self.assertIn('"gate_passed": true', stdout)
+            self.assertIn("ModelContractError", stdout)
+            self.assertIn("[truncated]", stdout)
+            full = json.loads((Path(root) / "irisx-consolidated-20261010-repair001"
+                               / "mock-full-result.json").read_bytes())
+            self.assertEqual(len(full["report"]["coverage"]["tasks"]), 5000)
+            self.assertIn("HUGE-COVERAGE-DO-NOT-PRINT", full["report"]["coverage"]["tasks"][0]["sentinel"])
+            self.assertGreater(len(full["report"]["model"]["error"]["message"]), 1000000)
+            self.assertFalse(state["torch_loaded"])
+
+    def test_notebook_has_no_unbounded_result_display_or_last_cell_expression(self):
+        tree = ast.parse(b.BOOTSTRAP)
+        references = [node for node in ast.walk(tree)
+                      if isinstance(node, ast.Name) and node.id == "RESULT"]
+        self.assertEqual(len(references), 2)  # Assignment and bounded render only.
+        self.assertEqual(sum(isinstance(node.ctx, ast.Load) for node in references), 1)
+        calls = [node for node in ast.walk(tree) if isinstance(node, ast.Call)
+                 and any(isinstance(arg, ast.Name) and arg.id == "RESULT" for arg in node.args)]
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(ast.unparse(calls[0].func), "_terminal.render")
+        self.assertIsInstance(tree.body[-1], ast.If)
+
+    def test_repaired_defaults_use_new_root_without_resume_or_activation(self):
+        namespace = {}
+        exec(b.CONFIG, namespace)
+        self.assertEqual(namespace["OUTPUT_ROOT"], "irisx-consolidated-20261010-repair001")
+        for switch in ("MANUAL_START", "ENABLE_MODEL", "RESUME"):
+            self.assertIs(namespace[switch], False)
+        self.assertEqual(namespace["PROFILE"], "SMOKE")
+        self.assertIn("fresh kernel/runtime", b.GUIDE)
+        self.assertIn("cannot resume or migrate its ledger", b.GUIDE)
 
     def test_active_mock_installs_exact_bytes_and_passes_bounded_config(self):
         with TemporaryDirectory() as root:
@@ -219,7 +287,7 @@ __import__('os').scandir = _guarded_scandir
             state = self.execute(root, overrides={"MANUAL_START": True})
             self.assertIn("Existing source differs", state["error"])
             self.assertEqual(target.read_text(encoding="utf-8"), "owner change\n")
-            self.assertFalse((Path(root) / "irisx-consolidated-20261010-run001").exists())
+            self.assertFalse((Path(root) / "irisx-consolidated-20261010-repair001").exists())
 
     def test_extra_file_in_closed_source_tree_refused(self):
         with TemporaryDirectory() as root:

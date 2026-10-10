@@ -64,7 +64,7 @@ def collect_sources(package_root=ROOT, *, require_runner=True):
 
 GUIDE = """# IRIS-X consolidated offline ARC research
 
-This additive v3 notebook is a demos-only representation and agent-testability study. Defaults are **MANUAL_START=False**, **ENABLE_MODEL=False**, **PROFILE='SMOKE'**, and **RESUME=False**. Running all cells with these defaults performs no source writes, Dataset scan, installation, tokenizer/model load, torch import, training, or GPU work.
+This repaired notebook is a demos-only representation and agent-testability study. Defaults are **MANUAL_START=False**, **ENABLE_MODEL=False**, **PROFILE='SMOKE'**, and **RESUME=False**. Running all cells with these defaults performs no source writes, Dataset scan, installation, tokenizer/model load, torch import, training, or GPU work.
 
 The eight fixed exposed engineering tasks contain only task_id and demos/input/output, with no test, query, gold or solutions fields and no query evaluator. The scientific/model path never semantically reads queries, gold or solutions. An isolated integrity child streams all runtime bytes, including evaluator members, solely for hashes and returns aggregate proof. Evaluator paths, per-file gold hashes and evaluator content never go to the model. Demo-fit measures expressibility on exposed demonstrations; it is not generalization or N14 promotion. Historical N5-N14 scientific code and the N14 gate remain unchanged.
 
@@ -75,13 +75,13 @@ The eight fixed exposed engineering tasks contain only task_id and demos/input/o
 3. Optional model work requires PROFILE='FULL', ENABLE_MODEL=True, and a completed base-inventory gate: all controls meet expectations, the physical ledger is complete, and at least two engineering tasks have a base demo-fit. Only then does automatic offline bootstrap inspect the five pinned Dataset roles (runtime/8, Granite/2, wheels/1, CPython312/2, adapter/1) under MODEL_CONFIG['input_root']. Optional explicit_roots overrides only Dataset roots. There are no manual model/environment path or hash fields. Bootstrap verifies actual mounted bytes, prepares the pinned CP312 environment offline, then creates one persistent model-owner process. A matching fixture cannot attest a real mount. Before this gate there is no model asset scan, import, installation, or load.
 4. Model studies use eight tasks and one seed block, with at most **80 physical calls**: 16 shared roots, 32 true/redacted feedback calls, and 32 frozen-parent memory-off/on calls. Shared physical cost is charged once, with separate arm attribution; memory pairs change only memory content. Calls allow at most **6,144 prompt + 2,048 output = 8,192 context tokens**, with a cooperative **120-second call limit**. This implementation is not GPU-accepted and performs no training.
 5. At most two legal root proposals per task enter the common pool after full compiler validation: pool cap **5,967**. Duplicate, out-of-domain and overflow outcomes have receipts. Three ranking arms use the same pool/hash, three seeded tie orders, eight tasks and 64 expansions: **4,608 fresh search checks**, without new model calls. With up to 80 response-verifier checks, FULL reserves at most **52,536 physical verifier checks** and **10,507,200,000 gas**. Keep all eight tasks in reports, including infeasible or unfinished tasks. Cached ordering diagnostics are separate from fresh search.
-6. Resume only the same output root and source/task/model/prompt/sampling/budget/config bindings with RESUME=True. Reservations are fsynced before dispatch. Missing responses remain unknown, consume their full reservation, and are never automatically resent; retained responses may receive newly charged CPU verification. Each session gets a fresh deadline while durable consumed wall persists. Stage snapshots isolate failures; global sealing requires owned-child stop evidence. Preserve the report, journal, receipts and archive even for no-go or partial outcomes.
+6. Resume only the same output root and source/task/model/prompt/sampling/budget/config bindings with RESUME=True. After installing repaired source, start a fresh kernel/runtime and choose a new OUTPUT_ROOT with RESUME=False; preserve the failed run root unchanged. A changed source identity cannot resume or migrate its ledger. Reservations are fsynced before dispatch. Missing responses remain unknown, consume their full reservation, and are never automatically resent; retained responses may receive newly charged CPU verification. Each session gets a fresh deadline while durable consumed wall persists. Stage snapshots isolate failures; global sealing requires owned-child stop evidence. Preserve the report, journal, receipts and archive even for no-go or partial outcomes.
 
 SESSION_SECONDS=None uses a 600-second SMOKE or 7,200-second FULL session allowance, separate from the 300/1,800-second CPU phase. The entire workflow has a **14,400-second wall ceiling**, including source setup, offline installation, model loading, generation, verification, export and sealing. Deadlines are admission/cooperative limits; cleanup can overrun. **Program return and archive completion do not stop VM billing.** Stop the owner-managed VM separately.
 
 The required 64 semantic negative controls use legal wrong programs with the original positive demo targets unchanged. Separate target-mutant detector controls are outside the required 128 controls. IR v2 excludes the dead same_normalized_mask relation. Anchor and focus selectors see the full original partition before the anchor is removed from focus.
 
-Current scope is development and CPU/mock verification only. G4 GPU inference, real five-Dataset startup acceptance, four-L4 submission, training, paid provisioning, Git push and Kaggle publication have not been authorized or performed by this notebook preparation. See VALIDATION.md for version-specific evidence and remaining acceptance.
+This repair is checked with CPU contract/summary tests only; exact pinned Granite tokenizer, weights and GPU execution remain unverified. Git push and a private inactive notebook save are authorized separately; this repair performs no agent GPU or paid execution. The terminal prints a bounded summary (at most 8 KiB of summary JSON), while detailed results stay in the on-disk stage, journal, response and archive files. Start the repaired source in a fresh kernel/runtime with OUTPUT_ROOT='irisx-consolidated-20261010-repair001' and RESUME=False; choose another fresh root if that repair root already exists. See VALIDATION.md for version-specific evidence and remaining acceptance.
 """
 
 
@@ -90,7 +90,7 @@ MANUAL_START = False
 ENABLE_MODEL = False
 PROFILE = 'SMOKE'
 RESUME = False
-OUTPUT_ROOT = 'irisx-consolidated-20261010-run001'
+OUTPUT_ROOT = 'irisx-consolidated-20261010-repair001'
 SOURCE_PARENT = '.irisx-consolidated-source'
 SESSION_SECONDS = None  # SMOKE 600 / FULL 7200; persistent total wall stays bounded.
 MODEL_CONFIG = {'input_root': '/kaggle/input', 'explicit_roots': {}}
@@ -258,8 +258,9 @@ else:
                              profile=PROFILE, model_config=dict(MODEL_CONFIG),
                              resume=RESUME, session_seconds=SESSION_SECONDS,
                              bootstrap_seconds=_install_seconds)
-        print(_json.dumps(RESULT, sort_keys=True, ensure_ascii=False, indent=2))
-        print('保存上列 report/archive。程序返回不代表 VM 已停止計費。')
+        _terminal = _importlib.import_module('tools.arc_consolidated_20261010.terminal_summary')
+        print(_terminal.render(RESULT))
+        print('完整結果保留於上列 output_root/report_path/archive_path；顯示文字可能截短。程序返回不代表 VM 已停止計費。')
     finally:
         _sys.path[:] = _old_path
         _sys.dont_write_bytecode = _old_bytecode_setting

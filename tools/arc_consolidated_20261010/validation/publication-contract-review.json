@@ -1,55 +1,68 @@
 {
-  "review": "v4-inactive-publication-contract-rebind",
-  "status": "passed-contract-review-awaiting-parent-release",
-  "manifest_sha256": "4245d1cf84c8586d8b1025bbb0a3120356b61936f7df83dd589d9483d7dba67e",
-  "notebook_sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707",
-  "notebook_bytes": 213610,
-  "package_source_sha256": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01",
-  "executable_overlay_sha256": "97eb6dad929684c4b5f3e512909c19e00e45be0f424b78fdb683e42e2fef1c0c",
-  "publisher_script_sha256": "c86eeda724554390913ab5d20cae3de54cff0f9c1cdac3b57a606b607d211663",
-  "embedded_closed_source_files": 25,
-  "all_embedded_bytes_match_candidate": true,
-  "notebook_byte_rebuild_equal": true,
-  "five_dataset_pins_equal_prior_approved_pins_and_runtime": true,
-  "helper_bytes_equal_existing_repo": true,
-  "default_configuration": {
-    "MANUAL_START": false,
-    "ENABLE_MODEL": false,
-    "PROFILE": "SMOKE",
-    "RESUME": false,
-    "OUTPUT_ROOT": "irisx-consolidated-20261010-run001",
-    "SOURCE_PARENT": ".irisx-consolidated-source",
-    "SESSION_SECONDS": null,
-    "MODEL_CONFIG": {
-      "input_root": "/kaggle/input",
-      "explicit_roots": {}
-    }
+  "format": "irisx/consolidated-independent-publication-contract-review-v1",
+  "reviewed_at": "2026-10-10T14:55:58.057396+00:00",
+  "status": "pass-local-contract",
+  "contract_sha256": "6c8795746d97c2955f5b46034565104407bf94b741b7817564b898cd4415dd0b",
+  "source_identity_sha256": "635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c",
+  "notebook_sha256": "eac5ca3e70443e30a6049645256296d06bb9f5d377053dad701fc1aa2b525b36",
+  "predecessor_snapshot": {
+    "source_sha256": "582f1b4e209c8e30f637760f94e334147592426184166c0413cb1d7d6b4ea4cf",
+    "metadata_sha256": "45c52827dbe60df3eb3b08f43d6999995a5ae509915623d8cc38f87ce3730ae3",
+    "id": 138033807,
+    "version": 2
   },
-  "publication": {
-    "agent_execution_authorized": false,
-    "enable_gpu": false,
-    "enable_internet": false,
-    "enable_tpu": false,
-    "formal_submission_authorized": false,
-    "is_private": true,
-    "reference": "danielwuu/iris-x-consolidated-offline-20261010",
+  "approved_local_contract": {
+    "same_id": true,
+    "expected_successor_version": 3,
     "save_strategy": "QUICK_SAVE",
-    "save_strategy_enum": 3,
-    "title": "IRIS-X Consolidated Offline 20261010"
+    "private": true,
+    "manual_start": false,
+    "enable_model": false,
+    "profile": "SMOKE",
+    "resume": false,
+    "output_root": "irisx-consolidated-20261010-repair001",
+    "gpu_tpu_internet_off": true,
+    "five_dataset_pins_match_unchanged_runtime_source": true,
+    "bare_predecessor_dataset_names_match_five_roles": true,
+    "exact_docker_image_preserved": true,
+    "existing_opaque_competition_association_preserved": true,
+    "historical_repository_helpers_preserved": true,
+    "source_notebook_hashes_and_default_config_verified": true
   },
-  "runtime_overlay_delta_from_v3": [
-    "tools/arc_consolidated_20261010/__init__.py"
+  "restrictions": [
+    "No agent execution, GPU run, paid provisioning or formal submission.",
+    "Preserve failed old root; changed source cannot resume or migrate its bound ledger.",
+    "Provider bare Dataset names do not attest pinned versions or mounted bytes.",
+    "This accepts the local publication contract only, with aggregate/CPU SMOKE evidence now verified; final exact wire remains independently reviewed separately. It is not a save receipt or permission to retry an uncertain publication."
   ],
-  "both_initializer_ast_unchanged": true,
-  "both_initializers_only_one_eof_lf_removed": true,
-  "scoped_gitattributes_exact_three_rules": true,
-  "three_crlf_files_unchanged": true,
-  "transport_prior_independent_acceptance_reused_on_identical_bytes": true,
-  "new_blockers": [],
-  "supersedes_contract_manifest_sha256": "bd43267f8916b8e320fddd0ac101a805627ad35fa2e9d2cf04396eaf99ab119a",
-  "limits": [
-    "Old v3 manifest/notebook approvals do not authorize dispatch of these v4 bytes; parent final release approval must bind the exact v4 manifest and notebook hashes.",
-    "Provider publication and readback remain separate; no external calls, source extraction, asset installation, model loading, GPU work or query/gold inspection occurred.",
-    "This is a narrow read-only byte/contract rebind. It does not rerun scientific tests or establish actual model/wheel/interpreter/adapter mounts, GPU acceptance, or held-out performance."
-  ]
+  "blocking_findings": [],
+  "required_cpu_acceptance": {
+    "aggregate": {
+      "path": "validation/linux-tests.txt",
+      "sha256": "74f48e125a797032369fcb46e9aba0df93b5808b499f5c0d60b3b7f507d0d3c4",
+      "tests": 287,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 43.14,
+      "checked": "All 287 named test lines and terminal OK read independently."
+    },
+    "cpu_smoke": {
+      "audit_path": "validation/smoke-independent-audit.json",
+      "audit_sha256": "58be1df3667534ecb0b913764c4ee51a682d1355b63aa16bf8a9ca453496977c",
+      "execution_path": "validation/notebook-smoke-execution.json",
+      "execution_sha256": "340c9b7b78138edc3d0200305a8311b8df63aac608e98740d6f3dedda221b2f5",
+      "status": "complete",
+      "source_sha256": "635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c",
+      "cpu_checks": 1152,
+      "response_files_verified": 1152,
+      "model_calls": 0,
+      "controls_all_expected": true,
+      "coverage_complete": true,
+      "cpu_phase_seconds": 32.13661081000464,
+      "archive_sha256": "b01822fe218de83c44c36de86cecda991387eb2fdcf2245540899d81aa7d37ca",
+      "gold_read": false,
+      "interpretation": "CPU-only SMOKE; gate stays false by design; not model/GPU or held-out acceptance."
+    }
+  }
 }

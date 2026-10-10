@@ -1,0 +1,34 @@
+SOURCE-VERIFIED 635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c
+SOURCE-INSTALL-WALL-SECONDS 0.008800760995654855
+{
+  "archive_path": "/workspace/scratch/3c2b2502fb1e/consolidated-repair-20261010/validation/smoke-run/archives/evidence-fff3431c889c47bfaeeca74e3560b331.zip",
+  "archive_sha256": "b01822fe218de83c44c36de86cecda991387eb2fdcf2245540899d81aa7d37ca",
+  "billing": "Program return and archive completion do not stop VM billing. Stop the owner-managed VM separately.",
+  "controls_all_expected": true,
+  "coverage_checks_charged": 1152,
+  "coverage_complete": true,
+  "cpu_checks_charged": 1152,
+  "details": "Full details remain in output-root stage, journal, response and archive files. Display text may be truncated.",
+  "format": "irisx/consolidated-terminal-summary-v1",
+  "gate_passed": false,
+  "global_seal": null,
+  "model_calls_charged": 0,
+  "model_error": {
+    "message": null,
+    "type": null
+  },
+  "model_owner_stopped": true,
+  "model_status": "not_enabled",
+  "output_root": "/workspace/scratch/3c2b2502fb1e/consolidated-repair-20261010/validation/smoke-run",
+  "profile": "SMOKE",
+  "report_path": "/workspace/scratch/3c2b2502fb1e/consolidated-repair-20261010/validation/smoke-run/stages/summary-fff3431c889c47bfaeeca74e3560b331.json",
+  "resumed_noop": false,
+  "source_sha256": "635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c",
+  "status": "complete",
+  "verifier_descendants_stopped": true,
+  "workflow_error": {
+    "message": null,
+    "type": null
+  }
+}
+完整結果保留於上列 output_root/report_path/archive_path；顯示文字可能截短。程序返回不代表 VM 已停止計費。

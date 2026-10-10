@@ -91,6 +91,18 @@ class SyntheticBackend:
         return {"model_released": True, "descendants_stopped": True, "owned_descendants": []}
 
 
+class DictDefaultTokenizerFixture:
+    """Synthetic API-shape regression, not an actual tokenizer acceptance."""
+    def __init__(self, ids):
+        self.ids, self.calls = ids, []
+
+    def apply_chat_template(self, messages, **kwargs):
+        self.calls.append((messages, kwargs))
+        if kwargs.get("return_dict", True):
+            return {"input_ids": self.ids, "attention_mask": [1] * len(self.ids)}
+        return self.ids
+
+
 class ModelProviderTests(unittest.TestCase):
     def owner(self, backend=None, **kwargs):
         return mp.SingleModelOwner(lambda: backend or SyntheticBackend(), enabled=True,
@@ -360,6 +372,62 @@ class ModelProviderTests(unittest.TestCase):
             backend.encode = lambda messages, ids=ids: ids
             with self.assertRaises(mp.ModelContractError):
                 self.owner(backend).prepare(mp.materialize_request(study, study.calls[0]))
+
+    def test_g4_encode_explicit_flat_native_ids_without_tokenizer_or_weights_load(self):
+        # Bypass all material/loading setup: this tests only encode's API call.
+        native = object.__new__(mp.G4Backend)
+        native.tokenizer = DictDefaultTokenizerFixture([0, 17, 100351])
+        messages = [{"role": "user", "content": "synthetic only"}]
+        self.assertIsInstance(native.tokenizer.apply_chat_template(messages), dict)
+        self.assertIs(native.encode(messages), native.tokenizer.ids)
+        self.assertEqual(native.tokenizer.calls[-1], (messages, {
+            "tokenize": True, "add_generation_prompt": True, "enable_thinking": False,
+            "return_dict": False, "return_tensors": None, "truncation": False, "padding": False}))
+        backend, study = SyntheticBackend(), plan()
+        backend.encode = native.encode
+        owner = self.owner(backend)
+        prepared = owner.prepare(mp.materialize_request(study, study.calls[0]))
+        self.assertEqual(prepared.input_token_ids, (0, 17, 100351))
+        self.assertEqual(owner.accounting()["physical_calls_attempted"], 0)
+        self.assertEqual(owner.accounting()["load_count"], 0)
+        self.assertFalse(backend.model_loaded)
+
+    def test_native_id_contract_stays_strict_without_mapping_flatten_or_coercion(self):
+        class IntSubclass(int):
+            pass
+        study = plan()
+        for ids in ({"input_ids": [1]}, [[1, 2]], [True], [1.0], ["1"],
+                    [-1], [100352], [IntSubclass(1)], [], (), None):
+            with self.subTest(ids=ids):
+                backend = SyntheticBackend()
+                native = object.__new__(mp.G4Backend)
+                native.tokenizer = Mock()
+                native.tokenizer.apply_chat_template.return_value = ids
+                backend.encode = native.encode
+                owner = self.owner(backend)
+                with self.assertRaises(mp.ModelContractError):
+                    owner.prepare(mp.materialize_request(study, study.calls[0]))
+                self.assertEqual(owner.accounting()["physical_calls_attempted"], 0)
+                self.assertEqual(owner.accounting()["load_count"], 0)
+
+    def test_native_encoding_never_truncates_over_budget_prompt(self):
+        study = plan()
+        for count in (6144, 6145):
+            native = object.__new__(mp.G4Backend)
+            native.tokenizer = DictDefaultTokenizerFixture([42] * count)
+            backend = SyntheticBackend()
+            backend.encode = native.encode
+            owner = self.owner(backend)
+            request = mp.materialize_request(study, study.calls[0])
+            if count == 6144:
+                self.assertEqual(owner.prepare(request).prompt_tokens, count)
+            else:
+                with self.assertRaises(mp.TokenAdmissionError) as caught:
+                    owner.prepare(request)
+                self.assertEqual((caught.exception.observed, caught.exception.limit), (6145, 6144))
+            self.assertEqual(len(native.tokenizer.ids), count)
+            self.assertEqual(owner.accounting()["load_count"], 0)
+            self.assertEqual(owner.accounting()["physical_calls_attempted"], 0)
 
     def test_stop_acknowledgement_requires_model_and_descendant_release(self):
         backend, study = SyntheticBackend(), plan()

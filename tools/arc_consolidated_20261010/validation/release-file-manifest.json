@@ -1,6 +1,7 @@
 {
-  "base_commit": "e946fb89a1deb155bb52f5c5b34e703491272853",
-  "count": 77,
+  "allowed_update_root": "tools/arc_consolidated_20261010",
+  "base_commit": "4dac3596ed776c482decaa50cd46d23fe50af73f",
+  "count": 101,
   "excluded_self_referential_metadata": [
     "tools/arc_consolidated_20261010/validation/release-file-manifest.json",
     "tools/arc_consolidated_20261010/validation/release-review.json"
@@ -11,20 +12,24 @@
       "sha256": "93a19d601e05e2ea95e5a420e276925392f095c62e95fd251cb05cf19214547e"
     },
     "tools/arc_consolidated_20261010/README.md": {
-      "bytes": 10371,
-      "sha256": "c8176b4773e99c064265e7b14325bc3836540a5fb16dc0a65f58a332239d6aa5"
+      "bytes": 10765,
+      "sha256": "0e63e193b905e03712a17f6f81aa042f3c95c7bb897e5e4acf92cd7cd0ebcd08"
+    },
+    "tools/arc_consolidated_20261010/REPAIR-20261010.zh-TW.md": {
+      "bytes": 3787,
+      "sha256": "1e6cf2ef6421279f2d86ee7bef8005787f6a2fdaf66d2792f873c225cd9b06d3"
     },
     "tools/arc_consolidated_20261010/RESEARCH_RATIONALE.zh-TW.md": {
       "bytes": 3356,
       "sha256": "5b46ff5c8859682997ffcbc2f9e7d46c709c42a18aed15e3c7340d465c3f10ca"
     },
     "tools/arc_consolidated_20261010/RUN_GUIDE.zh-TW.md": {
-      "bytes": 3432,
-      "sha256": "3cfd31d5a118839a7fdfd3d450492f6d04c85141939a4ae76ff589633ff0d2ab"
+      "bytes": 3797,
+      "sha256": "0f13c0f354e8a79095b9e55e3e18aeda8c66688785b0ccd0c0f2a48b4c9e72c4"
     },
     "tools/arc_consolidated_20261010/VALIDATION.md": {
-      "bytes": 6881,
-      "sha256": "3c06483a971cc935f1262bc16ef23a7524974dda232e008e6ba7dc5d86c7f732"
+      "bytes": 7876,
+      "sha256": "0f957efabd7c9e2561c5c84c3bc79852c557d80309e2dd66f65f23cb861b01aa"
     },
     "tools/arc_consolidated_20261010/__init__.py": {
       "bytes": 126,
@@ -39,8 +44,8 @@
       "sha256": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09"
     },
     "tools/arc_consolidated_20261010/build_notebook.py": {
-      "bytes": 21612,
-      "sha256": "2774a6e7082db7ca63c24608cdb780826eda850894af1d3d8cb7666ce8e11039"
+      "bytes": 22292,
+      "sha256": "32164b28e443fa0941610991807c42c99a73c753eb0ac7874b64f81b7712730b"
     },
     "tools/arc_consolidated_20261010/controls.py": {
       "bytes": 27065,
@@ -87,12 +92,12 @@
       "sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9"
     },
     "tools/arc_consolidated_20261010/model_provider.py": {
-      "bytes": 35043,
-      "sha256": "22b240bc2bc227e5e35a8f14b4485dddb24856a51d39e48d1f4b58a7c7666452"
+      "bytes": 35128,
+      "sha256": "776bce3b8231907f7c30ffcf210494205c1413d057da8974447ca2d946a463e3"
     },
     "tools/arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb": {
-      "bytes": 213610,
-      "sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707"
+      "bytes": 216543,
+      "sha256": "eac5ca3e70443e30a6049645256296d06bb9f5d377053dad701fc1aa2b525b36"
     },
     "tools/arc_consolidated_20261010/offline_bootstrap.py": {
       "bytes": 33326,
@@ -101,6 +106,14 @@
     "tools/arc_consolidated_20261010/path_guard.py": {
       "bytes": 3708,
       "sha256": "29229ab065bc93e917e8376be0003c5728cfcea99b7b67ce6955a3d297f628f3"
+    },
+    "tools/arc_consolidated_20261010/publication/KAGGLE-CONSOLIDATED-SAVE-INDEX.md": {
+      "bytes": 2342,
+      "sha256": "eae12a3bad4a001e4d823133ab47f366bac74f114db472040814fdfaa5bc7e40"
+    },
+    "tools/arc_consolidated_20261010/publication/consolidated-publication-receipt.json": {
+      "bytes": 3314,
+      "sha256": "fcbe05d3092ee0d8f7248b826ebcc01c8b780660383cf8efdcb28af7cc416666"
     },
     "tools/arc_consolidated_20261010/remote_model_owner.py": {
       "bytes": 47725,
@@ -117,6 +130,10 @@
     "tools/arc_consolidated_20261010/study_runner.py": {
       "bytes": 28473,
       "sha256": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab"
+    },
+    "tools/arc_consolidated_20261010/terminal_summary.py": {
+      "bytes": 4675,
+      "sha256": "da30baf3a0663e535355fe6c797e8b13f8fdc0199bb561ff3a75bfbb044e2b6c"
     },
     "tools/arc_consolidated_20261010/tests/__init__.py": {
       "bytes": 78,
@@ -143,12 +160,12 @@
       "sha256": "42f1f2c02c954d1270980a4ca48392a4308403f5ab1e7622fb6ad06c45faec52"
     },
     "tools/arc_consolidated_20261010/tests/test_model_provider.py": {
-      "bytes": 23797,
-      "sha256": "f251024733e155ed15fdaf7568d03848e701b42a29f73c7798cb7f13cd0cae31"
+      "bytes": 27393,
+      "sha256": "3e210e42346b144f3c5f55281725683831679eff2c5a1452be6e93f5961c0710"
     },
     "tools/arc_consolidated_20261010/tests/test_notebook.py": {
-      "bytes": 15987,
-      "sha256": "c7bb44b61430ea9497a8cb290a6a44a6ac8116a14362a3b0fc1469db71edbd8d"
+      "bytes": 19956,
+      "sha256": "989662a7c29f3ff8f197784d6fd4b2b60583c93ad0838c3751035a1178a28d38"
     },
     "tools/arc_consolidated_20261010/tests/test_object_ir.py": {
       "bytes": 10995,
@@ -181,6 +198,10 @@
     "tools/arc_consolidated_20261010/tests/test_study_runner.py": {
       "bytes": 18097,
       "sha256": "a54200e749d8830dc24e9768aac62379ce69bbf96e8e2389c2fe4972d61c19f3"
+    },
+    "tools/arc_consolidated_20261010/tests/test_terminal_summary.py": {
+      "bytes": 7120,
+      "sha256": "524609b39fb86366880603c18eace51bae96320bf89aeddcf1ff3521d18add7e"
     },
     "tools/arc_consolidated_20261010/tests/test_verifier.py": {
       "bytes": 13736,
@@ -238,6 +259,26 @@
       "bytes": 6352,
       "sha256": "e596a157cf32278d0f34274119174608765569b8ad607955a683b1ffb99067da"
     },
+    "tools/arc_consolidated_20261010/validation/history-v4-publication-contract-review.json": {
+      "bytes": 2645,
+      "sha256": "bad4fb96fd0e25d9d0efb2bad2ffcc9ba6b2d5097b083677386fefbe7408180f"
+    },
+    "tools/arc_consolidated_20261010/validation/history-v4-publication-manifest.json": {
+      "bytes": 2948,
+      "sha256": "4245d1cf84c8586d8b1025bbb0a3120356b61936f7df83dd589d9483d7dba67e"
+    },
+    "tools/arc_consolidated_20261010/validation/history-v4-release-file-manifest.json": {
+      "bytes": 14289,
+      "sha256": "a0c6a1334592a6e7bed209c96d0ba556b71b0b0c2e22a910515f81a09c33ba7a"
+    },
+    "tools/arc_consolidated_20261010/validation/history-v4-release-review.json": {
+      "bytes": 3038,
+      "sha256": "88958058abf7ba08a016da9a76fc8cbbe9172a525ac4390b47e97c739d1fe3f5"
+    },
+    "tools/arc_consolidated_20261010/validation/history-v4-release-validation.json": {
+      "bytes": 4765,
+      "sha256": "c67783d74750af79f551a6a7f9a401fe9ee4a02f1489861d067026e76c378556"
+    },
     "tools/arc_consolidated_20261010/validation/linux-tests-v3.txt": {
       "bytes": 52246,
       "sha256": "0bee45cd213544d731fd27157d9c9c017959282021b63e2f3eb76b6b5ed81cbb"
@@ -245,6 +286,14 @@
     "tools/arc_consolidated_20261010/validation/linux-tests-v4.txt": {
       "bytes": 52246,
       "sha256": "1efdfe743c67f40497038ae80d282079cbf528f6c0aa5e775a7d07d872df7290"
+    },
+    "tools/arc_consolidated_20261010/validation/main-integration-smoke-audit.json": {
+      "bytes": 9179,
+      "sha256": "08007ee557d2e44bf603952cdd607ce2112b95bdfb1f3cfba3b94a9ea85feeb1"
+    },
+    "tools/arc_consolidated_20261010/validation/main-integration-validation.json": {
+      "bytes": 17948,
+      "sha256": "21959623c00f5a8242c81303251cf691515072c8f99c6c6bcd14cc57ccfbe929"
     },
     "tools/arc_consolidated_20261010/validation/packaging-delta-v4.json": {
       "bytes": 1618,
@@ -255,20 +304,56 @@
       "sha256": "9aa4727f458f1baf73a2d9a7669bd4fa857683ce59bee0c9c6bc7600cece2080"
     },
     "tools/arc_consolidated_20261010/validation/publication-contract-review.json": {
-      "bytes": 2645,
-      "sha256": "bad4fb96fd0e25d9d0efb2bad2ffcc9ba6b2d5097b083677386fefbe7408180f"
+      "bytes": 3182,
+      "sha256": "73c0c443181de957fad7dfca60e1faea1cf7bc4d5d4f92f030b646e3b2bc652c"
     },
     "tools/arc_consolidated_20261010/validation/publication-manifest.json": {
-      "bytes": 2948,
-      "sha256": "4245d1cf84c8586d8b1025bbb0a3120356b61936f7df83dd589d9483d7dba67e"
+      "bytes": 4061,
+      "sha256": "6c8795746d97c2955f5b46034565104407bf94b741b7817564b898cd4415dd0b"
     },
     "tools/arc_consolidated_20261010/validation/publisher-transport-review.json": {
       "bytes": 5047,
       "sha256": "4bfbc4597812642cafb82058a4705cf55e8e57476aae10b6742a55d52ae4c614"
     },
     "tools/arc_consolidated_20261010/validation/release-validation.json": {
-      "bytes": 4765,
-      "sha256": "c67783d74750af79f551a6a7f9a401fe9ee4a02f1489861d067026e76c378556"
+      "bytes": 2895,
+      "sha256": "fa548772671b1ce603cfb8309fc4fbca2ab31fa0f344d8590e86473bdede27b7"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-code-science-review.json": {
+      "bytes": 7951,
+      "sha256": "2ae4eaabb594652f526428391598a3a9dc8010d085e0eab3038c6183b7ae2da4"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-linux-tests.txt": {
+      "bytes": 55481,
+      "sha256": "74f48e125a797032369fcb46e9aba0df93b5808b499f5c0d60b3b7f507d0d3c4"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-notebook-smoke-console.txt": {
+      "bytes": 1661,
+      "sha256": "90fc28dc62af1985be68e9c44f3c0f2e8b78abd35e0bf349e82186b77683f898"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-notebook-smoke-execution.json": {
+      "bytes": 394,
+      "sha256": "340c9b7b78138edc3d0200305a8311b8df63aac608e98740d6f3dedda221b2f5"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-owner-failure-observations.json": {
+      "bytes": 4828,
+      "sha256": "44346397fc28b53b3ab0d7da4ee10e1af8792fafe9bf05320a579f71dab1a196"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-publisher-transport-tests.json": {
+      "bytes": 2477,
+      "sha256": "47e1e7c7d541498f6d3bebd29f686e860be7822bf918f459d689fe99e572fc72"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-runtime-manifest.json": {
+      "bytes": 8277,
+      "sha256": "41db42871a2979ca1baad833ee1c4e26b16e0b850f91a630cf87bdcb75572a5c"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-smoke-audit.json": {
+      "bytes": 9178,
+      "sha256": "58be1df3667534ecb0b913764c4ee51a682d1355b63aa16bf8a9ca453496977c"
+    },
+    "tools/arc_consolidated_20261010/validation/repair-token-contract-reproduction.json": {
+      "bytes": 3482,
+      "sha256": "586a7e686adae26f292345292d88ab5c3f904739cd88715d24d53793d1c0fe7a"
     },
     "tools/arc_consolidated_20261010/validation/runtime8-bootstrap-review-v2.json": {
       "bytes": 3411,
@@ -302,6 +387,14 @@
       "bytes": 13725,
       "sha256": "5f9e16a98bcba990cc68420d4fcb03b442282ea0b7e17c203560a47974283b22"
     },
+    "tools/arc_consolidated_20261010/validation/staged-byte-review.json": {
+      "bytes": 1668,
+      "sha256": "ce3105e417bc82641a3cd50bcb504624845472b3d6969ebb52933a7655e77a75"
+    },
+    "tools/arc_consolidated_20261010/validation/terminal-publication-audit.json": {
+      "bytes": 3878,
+      "sha256": "fbb4f50eeddb60e338c18f262ed9602a24758d20f9346e0df59c603150a057eb"
+    },
     "tools/arc_consolidated_20261010/validation/v2-v3-smoke-parity.json": {
       "bytes": 1040,
       "sha256": "8e9381d6d4fd0e69bfaabc207877a7c9f4013fa50a902d33dd599479126a0149"
@@ -310,11 +403,15 @@
       "bytes": 1042,
       "sha256": "2cf0d63f70622dffda9b786d6a33ffc5012a0957decb914d34dc803b92f7df12"
     },
+    "tools/arc_consolidated_20261010/validation/v4-repair-smoke-parity.json": {
+      "bytes": 494,
+      "sha256": "f126d37994ef30ae03a60cd18738cd1126c72edfdf529626df9ff72c63119d04"
+    },
     "tools/arc_consolidated_20261010/verifier.py": {
       "bytes": 24512,
       "sha256": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b"
     }
   },
-  "root": "tools/arc_consolidated_20261010",
-  "schema": "irisx/add-only-source-release-manifest-v1"
+  "outside_scope_files_must_remain_unchanged": true,
+  "schema": "irisx/consolidated-release-files-v2"
 }

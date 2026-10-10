@@ -1,0 +1,66 @@
+{
+  "add_only_root": "tools/arc_consolidated_20261010",
+  "base_commit": "e946fb89a1deb155bb52f5c5b34e703491272853",
+  "datasets": {
+    "adapter": {
+      "manifest": "adapter-manifest.json",
+      "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+      "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+    },
+    "interpreter": {
+      "manifest": "interpreter-manifest.json",
+      "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+      "reference": "danielwuu/iris-arc-next-cpython312-offline/2"
+    },
+    "model": {
+      "manifest": "irisx-model-material.json",
+      "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+      "reference": "danielwuu/iris-arc-granite42-8b-offline/2"
+    },
+    "runtime": {
+      "manifest": "bundle-manifest.json",
+      "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+      "reference": "danielwuu/iris-arc-next-runtime/8"
+    },
+    "wheels": {
+      "manifest": "wheel-lock.json",
+      "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+      "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1"
+    }
+  },
+  "existing_repository_helpers_do_not_overwrite": {
+    "tools/__init__.py": "f5ed985f7ed9e31ea3be113e86b11a7b44313f467c2e468a034ff789c7b85c76",
+    "tools/arc_next_index_repair.py": "05d2855e6029d873f0e74938e73d11ed7a21b72e0a630619b4415d3ebf3ac030",
+    "tools/arc_next_models.py": "d8c3bda2ef5c557fa93756805c91ea26c5c0773d8f124914791eef13b2f0740b"
+  },
+  "kaggle": {
+    "agent_execution_authorized": false,
+    "enable_gpu": false,
+    "enable_internet": false,
+    "enable_tpu": false,
+    "formal_submission_authorized": false,
+    "is_private": true,
+    "reference": "danielwuu/iris-x-consolidated-offline-20261010",
+    "save_strategy": "QUICK_SAVE",
+    "save_strategy_enum": 3,
+    "title": "IRIS-X Consolidated Offline 20261010"
+  },
+  "limitations": [
+    "Actual model/wheels/interpreter/adapter mounts and installation are unverified.",
+    "GPU, tokenizer, weights, G4 and four-L4 execution unverified.",
+    "Demo coverage is not a held-out score or N14 promotion."
+  ],
+  "notebook": {
+    "bytes": 213610,
+    "enable_model": false,
+    "manual_start": false,
+    "path": "tools/arc_consolidated_20261010/notebooks/IRIS-X-Consolidated-Offline-20261010.ipynb",
+    "profile": "SMOKE",
+    "resume": false,
+    "sha256": "635b085a43cb56fbe7ff42dc8590218557e6ac988ccae69ee10bfd4b2a5e5707"
+  },
+  "package_source_sha256": "5958e67ddedfe10e4a19e33bde9d4ab98d70ae33569b225f0b94fe3953280f01",
+  "portable_executable_overlay_sha256": "97eb6dad929684c4b5f3e512909c19e00e45be0f424b78fdb683e42e2fef1c0c",
+  "publication_receipts": "To be appended by the separately authorized publishers after final release review.",
+  "schema": "irisx/consolidated-inactive-publication-v1"
+}

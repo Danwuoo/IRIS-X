@@ -1,0 +1,83 @@
+{
+  "schema": "irisx/consolidated-repair-main-integration-validation-v1",
+  "checked_at_utc": "2026-10-10T15:01:17.274832+00:00",
+  "base_commit": "4dac3596ed776c482decaa50cd46d23fe50af73f",
+  "source_sha256": "635a43b546bae298754f136897f539ac002d0e8d40a8f36065295f609858551c",
+  "notebook_sha256": "eac5ca3e70443e30a6049645256296d06bb9f5d377053dad701fc1aa2b525b36",
+  "focused": {
+    "tests": 287,
+    "seconds": 43.206,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": {
+      "file": "focused-tests.log",
+      "bytes": 55481,
+      "sha256": "90b1bae8df8a3e41117c8e5912cbfbefc09f39c5120d4ee4553b771d3d3d2848"
+    }
+  },
+  "aggregate": {
+    "tests": 1583,
+    "summary": [
+      "Ran 1583 tests in 124.902s",
+      "FAILED (failures=1, errors=35, skipped=74)"
+    ],
+    "failures": 1,
+    "errors": 35,
+    "skipped": 74,
+    "exact_baseline_failure_labels": true,
+    "new_labels": [],
+    "log": {
+      "file": "integration-validation.log",
+      "bytes": 353562,
+      "sha256": "026f1c04f072a9bc294179bd1eb10e0b468a111853375f371ec63399a0e22784"
+    },
+    "baseline_log": {
+      "file": "baseline-validation.log",
+      "bytes": 353563,
+      "sha256": "47f2595c8305facad7bd9aab8b8403de7465154a9446b324616aa50dd36f49bf"
+    }
+  },
+  "actual_notebook_smoke": {
+    "status": "complete",
+    "wall_seconds": 31.94130106200464,
+    "cpu_checks": 1152,
+    "model_calls": 0,
+    "heavy_imports": [],
+    "console_bytes": 1640,
+    "console": {
+      "file": "notebook-smoke-console.txt",
+      "bytes": 1640,
+      "sha256": "9f3c3e2c7e7b866ebbffcf7da554d3a558dd110130a980fa9adaf20f82e5094a"
+    },
+    "response_files_verified": 1152,
+    "controls": {
+      "all_expected": true,
+      "count": 128
+    },
+    "archive_sha256": "a8c597e4ca63a70264acdba3fa22b869728866755c13adc16f068c0532a90750",
+    "archive_bytes": 2234527,
+    "raw_archive_in_git": false,
+    "audit": {
+      "file": "integration-smoke-audit.json",
+      "bytes": 9178,
+      "sha256": "7f34086d05c7291fbcf80e35a908c584e113eac5e7b99ac62a798fc62e23d0c0"
+    }
+  },
+  "git_format_check": "PASS",
+  "tested_seven_runtime_files_unchanged_after_final_metadata": true,
+  "commands": {
+    "focused": "PYTHONHASHSEED=0 PYTHONDONTWRITEBYTECODE=1 TMPDIR=<workspace outside repository> HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_DATASETS_OFFLINE=1 CUDA_VISIBLE_DEVICES= <regular Python3.12> -m unittest discover -s tools/arc_consolidated_20261010/tests -t . -p test_*.py -v",
+    "aggregate": "PYTHONHASHSEED=0 TMPDIR=$REPOSITORY/.irisx/tmp PYTHONPATH=$REPOSITORY/src:$REPOSITORY <regular Python3.12> tools/repository_check.py --all"
+  },
+  "limitations": [
+    "CPU engineering acceptance, not actual pinned tokenizer/model/GPU acceptance.",
+    "Historical aggregate remains red with the same36 failure/error labels.",
+    "FULL evidence remains attributed to immutable scientificv2; no FULL rerun or relabel."
+  ],
+  "scientific_guards_budgets_controls_dispatch_unchanged": true,
+  "runtime_change_scope": [
+    "Explicit tokenizer return shape arguments.",
+    "Bounded notebook terminal display and new output identity."
+  ]
+}
