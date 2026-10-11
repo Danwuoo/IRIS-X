@@ -1,0 +1,61 @@
+{
+  "format": "irisx/learning-launcher-repair-validation-v1",
+  "status": "PASS",
+  "base_commit": "789fad6dbeeced1da2d7e11dc1e094744449ac0a",
+  "source_freeze_sha256": "ffbc64e727911afa0c828a4a27ad8fdf85ba779e28fc371b2677c4b34837a273",
+  "publication_manifest_sha256": "76ecf9b170c34cd12ad77e8de8de3020dce3b8ceee1006f7e5eed8528b539354",
+  "full_package_tests": {
+    "tests": 145,
+    "passed": 145,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 211.441,
+    "log_sha256": "9cf6b8472df44825b976fc0f355553cdbea127c85e6f41c0cf19af90227750ad",
+    "actual_neural_cpu": true,
+    "gpu_used": false
+  },
+  "strongened_old_epoch_wrapped_test": {
+    "tests": 1,
+    "passed": 1,
+    "seconds": 38.325,
+    "log_sha256": "50c994478058ab6d0c05acdca5e85256e908be5a33c9316b4542050b8c1730e2",
+    "synthetic_only": true,
+    "actual_optimizer_steps": 2,
+    "tasks": 2,
+    "start_age_seconds": 2400,
+    "unchanged_maximum_seconds": 7200,
+    "original_deadline_verified": true,
+    "trusted_offline_launcher_executed": true,
+    "owned_processes_closed": true,
+    "sealed_and_scored": true,
+    "detailed_receipt_sha256": "bf121447cdba1d1f40d692c5091703165da18ebb144950ea1e38b3235d5b3f13"
+  },
+  "portable_notebook": {
+    "layouts": [
+      "archive",
+      "extracted-root",
+      "extracted-source"
+    ],
+    "all_passed": true,
+    "receipt_sha256": "e658b17e0446116984d1dd51aeddfa0ddb96f66670f24152c8d46aa5e285ff87",
+    "model_calls": 0,
+    "public_gold_read": false
+  },
+  "scope": {
+    "runtime_files": 97,
+    "changed_runtime_files": 1,
+    "unchanged_runtime_files": 96,
+    "changed_existing_test_files": 1,
+    "production_8b_gpu_verified": false,
+    "public_scientific_scores_analyzed": false
+  },
+  "original_epoch": 1791697978,
+  "original_deadline_epoch": 1791741178,
+  "remaining_deadline_preserved": true,
+  "limitations": [
+    "Earlier preliminary full suite skipped the hardcoded sibling tokenizer fixture; the final suite restored that already verified fixture and passed all145 tests.",
+    "Earlier first reviewer test invocation lacked src on PYTHONPATH; corrected invocation passed.",
+    "CPU synthetic neural success is not production8B/G4 success or a PUBLIC120 accuracy claim."
+  ]
+}

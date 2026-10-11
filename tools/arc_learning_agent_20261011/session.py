@@ -12,7 +12,7 @@ import time
 import uuid
 import zipfile
 
-from tools.arc_learning_agent_20261011.budget import SessionClock, atomic_json, canonical, digest
+from tools.arc_learning_agent_20261011.budget import SessionClock, atomic_json, canonical, digest, BudgetExceeded
 from tools.arc_learning_agent_20261011.evaluation import (
     process_identity, session_members, source_identity, seal_predictions, evaluate_sealed)
 from tools.arc_public_research_20261010 import public_data
@@ -83,6 +83,8 @@ def run_session(output_root, *, solver_root, evaluator_root, solver_manifest_sha
     Full model lifecycle is in one owned subprocess. The coordinator never opens
     public answer files, and evaluates only a gracefully stopped, sealed owner.
     """
+    # Attempt-local setup accounting never moves the persisted session deadline.
+    invocation_started = time.monotonic()
     if type(enable_model) is not bool: raise ValueError('exact model Boolean required')
     if not sys.platform.startswith('linux'): raise ValueError('Linux isolation is required')
     config = {} if config is None else dict(config)
@@ -147,9 +149,11 @@ def run_session(output_root, *, solver_root, evaluator_root, solver_manifest_sha
                 'controls': {'total': 128, 'expected': 128}, 'tasks': 120, 'tests': 167,
                 'solver_manifest_sha256': solver_manifest_sha256,
                 'evaluator_manifest_sha256': evaluator_manifest_sha256}
-        start = time.monotonic()
+        bootstrap_remaining = min(1800 - (time.monotonic() - invocation_started), clock.remaining(reserve=3600))
+        if bootstrap_remaining <= 0:
+            raise BudgetExceeded('bootstrap budget exhausted')
         prepared = prepare_model_environment(plan, enable_model=True, gate_receipt=gate,
-            deadline_seconds=max(0.001, min(1800 - (time.time() - clock.record['started_epoch']), clock.remaining(reserve=3600))))
+            deadline_seconds=bootstrap_remaining)
         atomic_json(root / 'bootstrap-receipt.json', prepared, exclusive=True)
         interpreter = prepared['python_command']
         if not isinstance(interpreter, list) or not interpreter:
@@ -157,17 +161,22 @@ def run_session(output_root, *, solver_root, evaluator_root, solver_manifest_sha
         model_config.update(enabled=True, model_path=prepared['model_path'],
                             model_manifest_path=prepared['manifest_path'],
                             environment_lock_path=prepared['environment_lock_path'])
+    # A verified offline command already contains its flags and launcher script.
+    # Tiny overrides keep isolation flags before any dispatcher or script.
+    python_command = list(interpreter) if isinstance(interpreter, list) else [interpreter]
+    if prepared is None:
+        python_command[1:1] = [flag for flag in ('-I', '-B') if flag not in python_command[1:]]
     worker_root = root / 'worker'; worker_root.mkdir()
     request = {'format': 'irisx/learning-owner-request-v1', 'run_id': run_id,
                'output_root': str(worker_root), 'source_identity': source,
                'solver_root': str(Path(solver_root).absolute()), 'solver_manifest_sha256': solver_manifest_sha256,
                'training_root': str(Path(training_root).absolute()), 'model_config': model_config,
-               'config': config, 'clock': clock.record, 'parent_bootstrap_seconds': time.time() - clock.record['started_epoch'], 'controls': {'checks': 128, 'gas': controls['gas']}}
+               'config': config, 'clock': clock.record, 'parent_bootstrap_seconds': time.monotonic() - invocation_started, 'controls': {'checks': 128, 'gas': controls['gas']}}
     atomic_json(worker_root / 'request.json', request, exclusive=True)
     request_sha = hashlib.sha256((worker_root / 'request.json').read_bytes()).hexdigest()
     worker_identity = None; child = None; forced = False
     with (worker_root / 'stdout.txt').open('xb') as out, (worker_root / 'stderr.txt').open('xb') as err:
-        guard = OwnedProcessGuard.spawn([*(interpreter if isinstance(interpreter, list) else [interpreter]), '-I', '-B', str(Path(__file__).with_name('worker.py')),
+        guard = OwnedProcessGuard.spawn([*python_command, str(Path(__file__).with_name('worker.py')),
                                   str(worker_root / 'request.json'), request_sha], evidence_dir=worker_root / 'process-guard', cwd=worker_root,
             stdout=out, stderr=err, start_new_session=True, close_fds=True,
             env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'HF_HUB_OFFLINE': '1',

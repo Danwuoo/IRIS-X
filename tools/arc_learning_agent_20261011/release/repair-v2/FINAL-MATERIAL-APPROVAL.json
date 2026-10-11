@@ -1,0 +1,116 @@
+{
+  "absolute_deadline": 1791741178,
+  "approved_notebooks": [
+    {
+      "role": "inactive",
+      "sha256": "c070257096fde207088dc0523924511e5c89c5a2cf6e77acc79d25089c132d2b"
+    },
+    {
+      "role": "run002",
+      "sha256": "6622f588a4ad04ae3bdb4d1c7e11985bcf8421bfa85b694d0132b503813de6dd"
+    }
+  ],
+  "audit_script_sha256": "2c5f3cc768819ff0a1364edacbf93802401771c83c5de8b1367f239ad5df4bee",
+  "blocking_findings": [],
+  "changed_baseline_paths": [
+    "tools/arc_learning_agent_20261011/session.py",
+    "tools/arc_learning_agent_20261011/tests/test_session.py"
+  ],
+  "code_manifest_sha256": "920c52989fe69c4b595eca0ffa1e735e4f716c234d4a534da8a6cea089c7ee28",
+  "compact_validation_summary": {
+    "counts_verified": true,
+    "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/release/VALIDATION-SUMMARY.json",
+    "sha256": "b318d1ea7047da1db5a4aab54afc345fc6a03aee627aa2d21b5a8443bee47ce5"
+  },
+  "dataset_transport_archive_sha256": "21df65d6438def253d0c0cf0ed8c86d89489bdd7f817d02155af00e3686775ca",
+  "format": "irisx/learning-v2-repair-independent-material-approval-v1",
+  "governance": {
+    "0070-final-proposed.md": "871d959f71f86bfa8a8710008b865a0a596666748a37c8ae149dd6e5a05efa1c",
+    "AGENTS-final-proposed.md": "c9ed69407f63398d8c3d1b83dcd7ba2429d9878790a935f9d7ab35cc86b9d8ae"
+  },
+  "gpu_executions": 0,
+  "guard_loader_preloader_unchanged": true,
+  "nonclaims": [
+    "No new provider action was executed by this reviewer.",
+    "No actual 8B/G4 training, VRAM, throughput, score or successful run is established by CPU validation.",
+    "No official competition submission, expanded resources, or result analysis is approved.",
+    "Root aggregate/CI status is separate from the complete 145-test learning suite."
+  ],
+  "original_epoch": 1791697978,
+  "other_seven_dataset_pins_unchanged": true,
+  "provider_calls": 0,
+  "provider_timeout_policy_verified": true,
+  "qualification": "Source/material approval only; publishing, GPU execution, full8B runtime and scientific success are not established by this audit.",
+  "required_before_provider_activation": [
+    "Separate exact-wire transport approval",
+    "Verified code Dataset v2 and inactive notebook readbacks",
+    "Verified expected-parent private Git main commit",
+    "Numeric v2 failed-owner closure remains bound",
+    "Positive provider timeout derived from original deadline; no fresh epoch",
+    "Only the one approved replacement; stop after exact source/settings/version and RUNNING verification"
+  ],
+  "retained_initial_harness_error": {
+    "cause": "Initial reviewer invocation omitted PYTHONPATH=src:.; import-only failure corrected in separately retained subsequent runs.",
+    "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/independent-review/launcher-boundary.log",
+    "sha256": "6a808b580a329535d64958579f61a26c54c8c5ba2a1abe42a410f23e6bfd8d9a"
+  },
+  "review_scope": "Exact two-file repair, fixed-deadline materials, unchanged scientific safeguards, and narrow governance drafts. Provider transport separately reviewed.",
+  "reviewed_source_files": {
+    "tools/arc_learning_agent_20261011/session.py": "b75ee4a2eb4231392bcd60f31f0212402feea56ac54c6602522a99f1f4d96b99",
+    "tools/arc_learning_agent_20261011/tests/test_session.py": "3fd552a5e61b7be4bb077b212a8470636405f0f96ba05965add3f95d0e16fc70"
+  },
+  "runtime_files": 97,
+  "scientific_result_reads": 0,
+  "scope": {
+    "publication_manifest": {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/release/publication-manifest.json",
+      "sha256": "76ecf9b170c34cd12ad77e8de8de3020dce3b8ceee1006f7e5eed8528b539354"
+    }
+  },
+  "source_archive_sha256": "07da1b7d9ae9a9eb83a069bb3fef4be81b040ab2d72692fd19ceb4577170abda",
+  "source_edits": 0,
+  "source_freeze_sha256": "ffbc64e727911afa0c828a4a27ad8fdf85ba779e28fc371b2677c4b34837a273",
+  "status": "APPROVED",
+  "tests": {
+    "final_learning_suite": {
+      "errors": 0,
+      "failures": 0,
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-git-20261011/focused-final.log",
+      "performed_by": "independent integration worker; log verified here",
+      "seconds": 211.441,
+      "sha256": "9cf6b8472df44825b976fc0f355553cdbea127c85e6f41c0cf19af90227750ad",
+      "skips": 0,
+      "tests": 145
+    },
+    "final_old_epoch_real_neural_test": {
+      "passed": true,
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/cpu-test-tmp/old-epoch-wrapped-test.log",
+      "performed_by": "source writer; log verified here",
+      "sha256": "50c994478058ab6d0c05acdca5e85256e908be5a33c9316b4542050b8c1730e2",
+      "synthetic_cpu_only": true,
+      "tests": 1
+    },
+    "reviewer_extra_adversarial_cases": {
+      "cases": 7,
+      "passed": true,
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/independent-review/adversarial-boundaries.log",
+      "sha256": "1c2c31f7a8a735775411894fc61e9ef3d2a28950662c17707b36fa46547f5312"
+    },
+    "reviewer_frozen_subprocess_budget_tests": {
+      "passed": true,
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/independent-review/final-frozen-launcher-budget.log",
+      "sha256": "e7ee4e654c00558d006cf901fdaac347eecf180e498246ace00038e91eaeb5f0",
+      "tests": 10
+    },
+    "three_portable_closed_layouts": {
+      "model_calls": 0,
+      "passed": true,
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/validation/portable/PORTABLE-ACCEPTANCE.json",
+      "public_gold_opened": false,
+      "sha256": "e658b17e0446116984d1dd51aeddfa0ddb96f66670f24152c8d46aa5e285ff87"
+    }
+  },
+  "tracked_baseline_files": 1526,
+  "unchanged_runtime_files": 96,
+  "verdict": "APPROVED"
+}

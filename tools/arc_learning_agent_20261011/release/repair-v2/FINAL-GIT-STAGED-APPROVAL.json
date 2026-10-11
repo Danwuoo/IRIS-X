@@ -1,0 +1,282 @@
+{
+  "added_paths": [
+    "tools/arc_learning_agent_20261011/notebooks/iris-x-learning-agent-20261011-repair-run002.ipynb",
+    "tools/arc_learning_agent_20261011/notebooks/iris-x-learning-agent-20261011-repair.ipynb",
+    "tools/arc_learning_agent_20261011/release/repair-v2/BUILD-RECEIPT.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/FINAL-MATERIAL-APPROVAL.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/FINAL-TRANSPORT-REVIEW.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/KAGGLE-REPAIR-SAVE-INDEX.md",
+    "tools/arc_learning_agent_20261011/release/repair-v2/MAIN-INTEGRATION-VALIDATION.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/PERSISTED-PROVIDER-AUDIT.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/PROVIDER-MOUNT-ACCEPTANCE.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/REPAIR-GUIDE.zh-TW.md",
+    "tools/arc_learning_agent_20261011/release/repair-v2/REPAIR-PUBLICATION-CHECKPOINT.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/SOURCE-FREEZE.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/VALIDATION-SUMMARY.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/code-manifest.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/pins.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/publication-manifest.json"
+  ],
+  "allowed_final_append": {
+    "content": "Only the exact bytes of this approval; SHA256 and resulting21-path tree supplied separately.",
+    "mode": "100644",
+    "other_changes_allowed": false,
+    "path": "tools/arc_learning_agent_20261011/release/repair-v2/FINAL-GIT-STAGED-APPROVAL.json"
+  },
+  "audit_script_sha256": "8315599ae6c95ea7a114fbef2e03b24293b55d0fbb2633f231795410a36632f2",
+  "base_commit": "789fad6dbeeced1da2d7e11dc1e094744449ac0a",
+  "baseline_files": 1526,
+  "blockers": [],
+  "changed_paths": [
+    "AGENTS.md",
+    "docs/decisions/0070-publish-and-run-bounded-learning-agent.md",
+    "tools/arc_learning_agent_20261011/notebooks/iris-x-learning-agent-20261011-repair-run002.ipynb",
+    "tools/arc_learning_agent_20261011/notebooks/iris-x-learning-agent-20261011-repair.ipynb",
+    "tools/arc_learning_agent_20261011/release/repair-v2/BUILD-RECEIPT.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/FINAL-MATERIAL-APPROVAL.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/FINAL-TRANSPORT-REVIEW.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/KAGGLE-REPAIR-SAVE-INDEX.md",
+    "tools/arc_learning_agent_20261011/release/repair-v2/MAIN-INTEGRATION-VALIDATION.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/PERSISTED-PROVIDER-AUDIT.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/PROVIDER-MOUNT-ACCEPTANCE.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/REPAIR-GUIDE.zh-TW.md",
+    "tools/arc_learning_agent_20261011/release/repair-v2/REPAIR-PUBLICATION-CHECKPOINT.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/SOURCE-FREEZE.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/VALIDATION-SUMMARY.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/code-manifest.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/pins.json",
+    "tools/arc_learning_agent_20261011/release/repair-v2/publication-manifest.json",
+    "tools/arc_learning_agent_20261011/session.py",
+    "tools/arc_learning_agent_20261011/tests/test_session.py"
+  ],
+  "commit_conditions": [
+    "Commit parent must be the exact reviewed baseline789fad6dbeeced1da2d7e11dc1e094744449ac0a.",
+    "No force push or replacement of historical run/source/evidence.",
+    "After the allowed approval append, verify the separately supplied exact21-path tree before committing.",
+    "Verify remote main and report CI separately; existing historical aggregate failures remain disclosed.",
+    "This Git review grants no additional GPU run, provider write, resource expansion or scientific analysis."
+  ],
+  "exact_allowed_modified_baseline_paths": {
+    "AGENTS.md": "c9ed69407f63398d8c3d1b83dcd7ba2429d9878790a935f9d7ab35cc86b9d8ae",
+    "docs/decisions/0070-publish-and-run-bounded-learning-agent.md": "871d959f71f86bfa8a8710008b865a0a596666748a37c8ae149dd6e5a05efa1c",
+    "tools/arc_learning_agent_20261011/session.py": "b75ee4a2eb4231392bcd60f31f0212402feea56ac54c6602522a99f1f4d96b99",
+    "tools/arc_learning_agent_20261011/tests/test_session.py": "3fd552a5e61b7be4bb077b212a8470636405f0f96ba05965add3f95d0e16fc70"
+  },
+  "fixed_execution_bounds": {
+    "absolute_deadline": 1791741178,
+    "original_epoch": 1791697978,
+    "other_seven_pins_unchanged": true,
+    "outer_guards_unchanged": true
+  },
+  "format": "irisx/learning-v2-repair-final-git-staged-approval-v1",
+  "git_or_provider_writes": 0,
+  "index_tree_reconstructed_without_git_writes": true,
+  "no_archives_weights_or_credentials_staged": true,
+  "no_raw_task_or_process_payloads_detected": true,
+  "persisted_provider_audit_sha256": "c048e94520dd6619a4520e43d412a598ab059b6fd76c14fce2b9e50851d6d55c",
+  "provider_evidence_scope": {
+    "code_dataset_id": 12504696,
+    "gpu_run_admission_established": false,
+    "inactive_notebook_id": 138123872,
+    "inactive_source_sha256": "c070257096fde207088dc0523924511e5c89c5a2cf6e77acc79d25089c132d2b",
+    "inactive_version": 3,
+    "model_calls": 0,
+    "numeric_code_version": 2,
+    "operational_or_scientific_success_claimed": false
+  },
+  "publication_manifest_sha256": "76ecf9b170c34cd12ad77e8de8de3020dce3b8ceee1006f7e5eed8528b539354",
+  "repository": "Danwuoo/IRIS-X",
+  "review_scope": "Exact frozen 20-path staged repair plus one byte-exact append of this approval. No other source, index or history changes.",
+  "reviewed_files": [
+    {
+      "bytes": 73137,
+      "git_blob_sha": "6456afb74a7ea7039abab91d22d5676d754ebb73",
+      "mode": "100644",
+      "operation": "M",
+      "path": "AGENTS.md",
+      "sha256": "c9ed69407f63398d8c3d1b83dcd7ba2429d9878790a935f9d7ab35cc86b9d8ae"
+    },
+    {
+      "bytes": 12081,
+      "git_blob_sha": "fb473ef3069e12e34ac2d82adfd1b369e490cc55",
+      "mode": "100644",
+      "operation": "M",
+      "path": "docs/decisions/0070-publish-and-run-bounded-learning-agent.md",
+      "sha256": "871d959f71f86bfa8a8710008b865a0a596666748a37c8ae149dd6e5a05efa1c"
+    },
+    {
+      "bytes": 53981,
+      "git_blob_sha": "1ec22026925d459150cf28897b4523a129a173cf",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/notebooks/iris-x-learning-agent-20261011-repair-run002.ipynb",
+      "sha256": "6622f588a4ad04ae3bdb4d1c7e11985bcf8421bfa85b694d0132b503813de6dd"
+    },
+    {
+      "bytes": 53969,
+      "git_blob_sha": "0b81eecf5c1490586aa467ef44d91e5cd97a7207",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/notebooks/iris-x-learning-agent-20261011-repair.ipynb",
+      "sha256": "c070257096fde207088dc0523924511e5c89c5a2cf6e77acc79d25089c132d2b"
+    },
+    {
+      "bytes": 747,
+      "git_blob_sha": "aeb9f934e6969f3debe34433c99b6148788033c8",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/BUILD-RECEIPT.json",
+      "sha256": "32166def5baf43a5a70b83f2729ba529115a451cae6edfa91b53b33c61fdbabd"
+    },
+    {
+      "bytes": 5742,
+      "git_blob_sha": "82a76672df8b31515f9ed15eb63709d336cd9844",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/FINAL-MATERIAL-APPROVAL.json",
+      "sha256": "b9080af45c8b9714b3383e0fd1712bf9685c48c8cb6a7841d83ecf7d86c67283"
+    },
+    {
+      "bytes": 6046,
+      "git_blob_sha": "982b521d5b27b4e04131f606646051ccdb0988cf",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/FINAL-TRANSPORT-REVIEW.json",
+      "sha256": "f2cf411de6dd5a7ee795c979eb4d1dc7d8474cb4a0027415a116e896db188759"
+    },
+    {
+      "bytes": 894,
+      "git_blob_sha": "435c7341bcb7a22e1899d7af00fb2a85773af2d0",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/KAGGLE-REPAIR-SAVE-INDEX.md",
+      "sha256": "1d2eebba03cfab933ceea0a3cc8e9a2d23e457868e6170e17c45c6a392e34e49"
+    },
+    {
+      "bytes": 2301,
+      "git_blob_sha": "c5936cf79e65582b47a62b93b114a54fc85a50e7",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/MAIN-INTEGRATION-VALIDATION.json",
+      "sha256": "f1347a932e8a62cef5c635aa59f5f3acb86a888bc04f3d3bb012b1929e36630a"
+    },
+    {
+      "bytes": 2448,
+      "git_blob_sha": "68810015eebcb173082a46f88cce6790d7086bd0",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/PERSISTED-PROVIDER-AUDIT.json",
+      "sha256": "c048e94520dd6619a4520e43d412a598ab059b6fd76c14fce2b9e50851d6d55c"
+    },
+    {
+      "bytes": 788,
+      "git_blob_sha": "33d2d57fb364e8c5fa0fc5c29bfc6af0bc188ba4",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/PROVIDER-MOUNT-ACCEPTANCE.json",
+      "sha256": "6581c472412575fc5942e4f0d3f6b314794c7884c3f33ab48b0449fd0feb2ad6"
+    },
+    {
+      "bytes": 2919,
+      "git_blob_sha": "5a5df63884b7ea7561db60475b5f1ba064a2125c",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/REPAIR-GUIDE.zh-TW.md",
+      "sha256": "c8f568721f1642eaab628fda530f22f5bab670b3d8cc98aee7d73fd0709f62c6"
+    },
+    {
+      "bytes": 5312,
+      "git_blob_sha": "aba19269243d1c702ced237270676ac1b75a93ef",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/REPAIR-PUBLICATION-CHECKPOINT.json",
+      "sha256": "ec2bcfb9ad2d8cbfb6aed22f8f8693d40765c21cface1da7ba1134a817adfd61"
+    },
+    {
+      "bytes": 16999,
+      "git_blob_sha": "a9b7742da3a4899bad2a0d0d875360162a4029c7",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/SOURCE-FREEZE.json",
+      "sha256": "ffbc64e727911afa0c828a4a27ad8fdf85ba779e28fc371b2677c4b34837a273"
+    },
+    {
+      "bytes": 2235,
+      "git_blob_sha": "021b62c6bfbf6a01897ea9ff8adafdadbd415fbb",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/VALIDATION-SUMMARY.json",
+      "sha256": "b318d1ea7047da1db5a4aab54afc345fc6a03aee627aa2d21b5a8443bee47ce5"
+    },
+    {
+      "bytes": 27807,
+      "git_blob_sha": "24b36b5856133e9c007be000b6abdc14aa2fae8e",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/code-manifest.json",
+      "sha256": "920c52989fe69c4b595eca0ffa1e735e4f716c234d4a534da8a6cea089c7ee28"
+    },
+    {
+      "bytes": 816,
+      "git_blob_sha": "4ba025eb696f09f32da133a60a71017118b4c1c8",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/pins.json",
+      "sha256": "f376a4858526000b84bd4d6c1f87199375e1662135d5bf346763bdf9eb5430a6"
+    },
+    {
+      "bytes": 62350,
+      "git_blob_sha": "352461ed38116b5b5e4b9f38be9e31cce09df49f",
+      "mode": "100644",
+      "operation": "A",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v2/publication-manifest.json",
+      "sha256": "76ecf9b170c34cd12ad77e8de8de3020dce3b8ceee1006f7e5eed8528b539354"
+    },
+    {
+      "bytes": 15828,
+      "git_blob_sha": "0f74af4db990f6ce4bce8fd7dd737cb667ab7bb1",
+      "mode": "100644",
+      "operation": "M",
+      "path": "tools/arc_learning_agent_20261011/session.py",
+      "sha256": "b75ee4a2eb4231392bcd60f31f0212402feea56ac54c6602522a99f1f4d96b99"
+    },
+    {
+      "bytes": 19880,
+      "git_blob_sha": "91692b5757c18613697f3460ab996d1f35ba2749",
+      "mode": "100644",
+      "operation": "M",
+      "path": "tools/arc_learning_agent_20261011/tests/test_session.py",
+      "sha256": "3fd552a5e61b7be4bb077b212a8470636405f0f96ba05965add3f95d0e16fc70"
+    }
+  ],
+  "reviewed_index_tree": "84eb727409c1fa5d7afe3aad928cb2fdec94296e",
+  "sanitized_json_files_inspected": 12,
+  "snapshot_path": "learning-agent-repair-git-20261011/final-review-staged-files.json",
+  "snapshot_sha256": "f03a944be74eb962c97819c8a7df58dba35e4cd36d6efcf23c9a1995956bd7fd",
+  "status": "APPROVED",
+  "target_branch": "main",
+  "test_evidence": {
+    "learning_suite": {
+      "errors": 0,
+      "failures": 0,
+      "log_sha256": "9cf6b8472df44825b976fc0f355553cdbea127c85e6f41c0cf19af90227750ad",
+      "skips": 0,
+      "tests": 145
+    },
+    "root_aggregate": {
+      "added_labels": [],
+      "baseline_log_sha256": "f049a1eeb3516402e202abefc367437eaa53b9486dd1fcd8ad791f3569a3051c",
+      "blanket_pass_claimed": false,
+      "errors": 35,
+      "failures": 1,
+      "independently_compared_failure_error_labels": 36,
+      "log_sha256": "189639292ca5c0392f2a0f97502ef7e82e675007844335214e818206a6883282",
+      "removed_labels": [],
+      "skips": 74,
+      "tests": 1583
+    }
+  },
+  "unchanged_baseline_blobs_modes": 1522,
+  "validated_source_material_approval_sha256": "b9080af45c8b9714b3383e0fd1712bf9685c48c8cb6a7841d83ecf7d86c67283",
+  "verdict": "APPROVED"
+}

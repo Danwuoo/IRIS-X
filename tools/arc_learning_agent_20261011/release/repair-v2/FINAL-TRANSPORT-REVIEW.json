@@ -1,0 +1,105 @@
+{
+  "blockers": [],
+  "exact_scope": {
+    "dataset_expected_version": 2,
+    "dataset_id": 12504696,
+    "dataset_previous_version": 1,
+    "dataset_reference": "danielwuu/iris-x-learning-agent-code-20261011",
+    "delete_old_versions": false,
+    "dispatch_freshness_maximum_seconds": 30,
+    "git_branch": "main",
+    "git_repository": "Danwuoo/IRIS-X",
+    "inactive_required_status": "COMPLETE",
+    "inactive_version": 3,
+    "kernel_id": 138123872,
+    "notebook_reference": "danielwuu/iris-x-learning-agent-20261011",
+    "original_deadline_epoch": 1791741178,
+    "original_deadline_utc": "2026-10-11T17:52:58Z",
+    "original_predispatch_epoch": 1791697978,
+    "predecessor_required_status": "ERROR",
+    "predecessor_saved_source_sha256": "9490eb3363d089e7873b6549a88e148935588cb2c981f2792086ea8fca78f2a9",
+    "predecessor_version": 2,
+    "provider_timeout_formula": "min(42300, floor(1791741178 - dispatch_now) - 900)",
+    "provider_timeout_minimum_seconds": 60,
+    "replacement_version": 4,
+    "stop_after": "First exact source/settings/ID/version bracket with status RUNNING"
+  },
+  "findings": [
+    {
+      "check": "Exact fixed artifacts and approval, same-ID successor versions, eight versioned Dataset inputs, private/offline existing BYOD/G4 configuration.",
+      "status": "PASS"
+    },
+    {
+      "check": "Old v2 ERROR evidence and both recorded owned trees closed independently rehashed; predecessor status/source/version rechecked before new saves.",
+      "status": "PASS"
+    },
+    {
+      "check": "Original epoch/deadline embedded unchanged. Remaining-time provider timeout reserves 900 seconds; insufficient or stale dispatch blocks before mutation.",
+      "status": "PASS"
+    },
+    {
+      "check": "Durable exclusive claims and intent-before-send, one-shot RPC/PUT, no automatic mutation retries. Unknown writes reconcile exact expected versions; mismatches block.",
+      "status": "PASS"
+    },
+    {
+      "check": "Code Dataset download requests numeric version 2 and validates complete approved inventory, every file size/hash, privacy/license/ID and version bracket.",
+      "status": "PASS"
+    },
+    {
+      "check": "Git receipt and independent transport/release approvals hash-bound; synthetic upload token and signed-URL markers never persisted by upload journal.",
+      "status": "PASS"
+    },
+    {
+      "check": "verify-run002 performs exactly source/settings/status/source bracket once, no output retrieval or terminal watcher. RUNNING establishes start only.",
+      "status": "PASS"
+    }
+  ],
+  "format": "irisx/repair-independent-transport-review-v1",
+  "limitations": [
+    "Provider metadata returns Dataset identities without selected versions; receipt explicitly does not claim independently verified mounted versions. Numeric code v2 readback and fail-closed runtime pins remain separate evidence.",
+    "Latest-only metadata/status is bracketed with exact ID/version/source, not a provider version-pinned status endpoint.",
+    "Runtime absolute deadline and reduced provider execution timeout do not guarantee arbitrary queue/network or VM billing shutdown.",
+    "No provider mutation, run, real GPU validation, terminal operational success or scientific-result analysis performed by this review."
+  ],
+  "publication_manifest_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/release/publication-manifest.json",
+  "publication_manifest_sha256": "76ecf9b170c34cd12ad77e8de8de3020dce3b8ceee1006f7e5eed8528b539354",
+  "release_approval_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/independent-review/FINAL-MATERIAL-APPROVAL.json",
+  "release_approval_sha256": "b9080af45c8b9714b3383e0fd1712bf9685c48c8cb6a7841d83ecf7d86c67283",
+  "required_operator_behavior": [
+    "Use sole publisher with unchanged reviewed script/manifest/approval; do not reset consumed claims or resend an uncertain write.",
+    "Honor existing API/access denials; retain the exact interrupted optional v2 read without retry or route expansion.",
+    "Stop checking once exact version 4 is verified RUNNING. QUEUED is a pending snapshot; ERROR or deadline exhaustion must be reported, not retried as a new run."
+  ],
+  "reviewed_helper_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/publication/learning_transport.py",
+  "reviewed_helper_sha256": "1e3222733044f00ac2e7703feb299a41931ee8b6d25744ceaa2c50d2e57b7ab2",
+  "script_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/publication/repair_transport.py",
+  "script_sha256": "cb1b7871c53a274015587b242039b41a8e16bf3cd7f5b774e2f04895f86b9a9d",
+  "status": "PASS",
+  "tests": {
+    "actual_final_release_approval_load_contract_passed": true,
+    "artifacts": {
+      "repair-transport-tests-optimized.log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/independent-review/repair-transport-tests-optimized.log",
+        "sha256": "389c751b953e35e7412d2c612d4167f07a7300d38bf6dd89232fb4fbe0942924"
+      },
+      "repair-transport-tests.log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/independent-review/repair-transport-tests.log",
+        "sha256": "33dfc48906c5ee17e4823f77edec706cededc99b7906d96afa489c4cbaf432ad"
+      },
+      "test_repair_transport_independent.py": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/independent-review/test_repair_transport_independent.py",
+        "sha256": "cf1f3a43dc2902c1a6b9185edfa14cf62ee2eb3a2b4d59365eec36f50ebc4c96"
+      },
+      "transport-failure-evidence-audit.json": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair-20261011/independent-review/transport-failure-evidence-audit.json",
+        "sha256": "a72af0815bbc13b9f8ebf1057c91ec8c49689d91ddf243d18d56b7a990522cea"
+      }
+    },
+    "independent_tests": 30,
+    "network_socket_connect_blocked": true,
+    "normal_pass": 30,
+    "optimized_pass": 30,
+    "provider_calls": 0
+  },
+  "utc": "2026-10-11T07:10:29.125272+00:00"
+}

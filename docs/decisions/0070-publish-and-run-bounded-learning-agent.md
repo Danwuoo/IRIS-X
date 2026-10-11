@@ -137,3 +137,60 @@ and report terminal CI separately from focused package tests and historical
 baseline failures. For the session, monitor to a terminal outcome and retain
 sanitized operational evidence. A terminal outcome does not authorize another
 session, a new experiment or a resource expansion.
+
+## Owner-authorized v2 launcher repair and replacement (2026-10-11)
+
+This addendum records the later repair scope without changing the approval-time
+record above. The owner reported that learning-agent notebook version 2 failed
+and requested repair (Sentinel_efdfcc9d0ea8819180ef7dc8a5193298). After the failure
+was localized to the offline launcher, the owner answered 「確認」 in
+Sentinel_db5b32a1fff08191b8f4e17892351d97 to this question:
+
+> 修復只涉及啟動參數，會更新程式 Dataset 與 notebook，其他模型、資料和實驗設定不變。
+> 測試與推送完成後，要我直接重新啟動，仍沿用本輪原截止時間（台灣時間明天 01:52），確認 RUNNING 後就停止監看嗎？
+
+The narrow repair may update the session launch-command construction and its
+regression tests. The guarded offline-run.py prefix already consumes Python
+isolation flags; do not append interpreter flags where the launcher requires a
+script path. Keep the direct-interpreter path isolated and bytecode-disabled.
+The accompanying bootstrap-stage correction measures monotonic elapsed time
+from the current replacement attempt, bounded by the existing 1,800-second
+bootstrap allowance and the original global remaining time and closure reserve.
+It must never restart or extend the global session clock. No scientific
+algorithm, model, training data, evaluation contract, resource limit or process
+ownership safeguard is relaxed.
+
+Publish the reviewed repair and compact validation/deployment records to the
+same private IRIS-X main. Update the existing private code Dataset to a reviewed
+successor version and the same notebook to a new private inactive version before
+one repaired replacement activation. The planned code Dataset version 2 and
+inactive notebook version 3 are intentions until exact provider readback
+receipts establish them. Preserve all original version-1/version-2 source,
+publication and failure evidence; do not overwrite historical notebook files or
+approval receipts. All seven non-code notebook Dataset pins, including the training Dataset,
+remain unchanged. Preserve the ARC3 metadata association without reading ARC3
+solver data or making a competition submission.
+
+The replacement retains PREDISPATCH_EPOCH 1791697978 and the absolute deadline
+1791741178 (2026-10-11 17:52:58 UTC, 2026-10-12 01:52:58 Asia/Taipei).
+Time consumed by the failed attempt, diagnosis, repair, publication and queueing
+remains consumed. Admit no replacement after that deadline or while the earlier
+owned execution is active or unresolved. Use a fresh repair output identity,
+verify closure of the failed execution, and apply the remaining-time provider
+limit and fixed-deadline outer watchdog. No new 12-hour allocation, new resource,
+new credentials, billing change or access bypass is authorized.
+
+Before activation, require the exact reviewed source/notebook bindings, passing
+repair regressions, private code-Dataset and inactive-notebook readbacks, and a
+verified expected-parent Git main commit. Report CI separately from focused
+repair tests and retained historical baseline failures. Keep raw training and
+public-answer payloads, weights, archives, credentials and detailed private
+process/runtime receipts outside the repair Git overlay; use compact sanitized
+provenance instead.
+
+The owner's latest stopping condition supersedes the earlier terminal-monitoring
+instruction for this repaired replacement: verify the new provider version,
+submitted source/settings and actual RUNNING state, then stop monitoring.
+RUNNING is admission evidence only, not successful training, scoring, archive
+completion or scientific improvement. Do not start another run, collect results
+or perform further scientific analysis under this stopping instruction.

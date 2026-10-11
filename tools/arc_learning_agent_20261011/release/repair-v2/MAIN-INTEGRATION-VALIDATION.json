@@ -1,0 +1,57 @@
+{
+  "format": "irisx/learning-v2-repair-main-integration-validation-v1",
+  "base_commit": "789fad6dbeeced1da2d7e11dc1e094744449ac0a",
+  "runtime_session_sha256": "b75ee4a2eb4231392bcd60f31f0212402feea56ac54c6602522a99f1f4d96b99",
+  "final_test_sha256": "3fd552a5e61b7be4bb077b212a8470636405f0f96ba05965add3f95d0e16fc70",
+  "package_suite": {
+    "tests": 145,
+    "passed": 145,
+    "skips": 0,
+    "errors": 0,
+    "failures": 0,
+    "seconds": 211.441,
+    "log_sha256": "9cf6b8472df44825b976fc0f355553cdbea127c85e6f41c0cf19af90227750ad",
+    "actual_neural_cpu_enabled": true,
+    "cuda_visible_devices_empty": true
+  },
+  "preliminary_suite": {
+    "tests": 145,
+    "errors": 0,
+    "failures": 0,
+    "skips": 1,
+    "seconds": 204.175,
+    "log_sha256": "7f5292dcfe7a84fc64dba705c9bb7ef722aa22b3dcf0f377b3d932368d7a4a74",
+    "qualification": "Before the final test-only strengthening and exact sibling tokenizer fixture restoration; retained as preliminary, not substituted for final acceptance."
+  },
+  "aggregate": {
+    "tests": 1583,
+    "seconds": 240.076,
+    "failures": 1,
+    "errors": 35,
+    "skips": 74,
+    "log_sha256": "189639292ca5c0392f2a0f97502ef7e82e675007844335214e818206a6883282",
+    "baseline_reference": "prior accepted integration confirmation for main789fad6d; unchanged root test corpus",
+    "baseline_log_sha256": "f049a1eeb3516402e202abefc367437eaa53b9486dd1fcd8ad791f3569a3051c",
+    "exact_36_failure_error_labels": true,
+    "added_labels": [],
+    "removed_labels": [],
+    "validator_self_tests_passed": 3,
+    "repository_invariants_passed": true,
+    "diff_whitespace_clean": true
+  },
+  "scope": {
+    "runtime_changed_files": 1,
+    "existing_test_changed_files": 1,
+    "other_baseline_paths_allowed_to_change": [
+      "AGENTS.md",
+      "docs/decisions/0070-publish-and-run-bounded-learning-agent.md"
+    ],
+    "unrelated_baseline_blobs_modes_preserved": 1522,
+    "no_gpu_or_provider_execution_by_integrator": true
+  },
+  "limitations": [
+    "Focused and synthetic CPU validation do not establish production8B/G4 performance or operational success.",
+    "Root aggregate retains historical failures; this receipt does not claim blanket repository test success.",
+    "Exact remote publication and CI are established separately after commit."
+  ]
+}

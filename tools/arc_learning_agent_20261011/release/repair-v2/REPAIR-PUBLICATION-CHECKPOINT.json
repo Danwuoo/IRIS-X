@@ -1,0 +1,110 @@
+{
+  "actual_provider_mount_acceptance": {
+    "cpu_controls": 128,
+    "model_calls": 0,
+    "sha256": "6581c472412575fc5942e4f0d3f6b314794c7884c3f33ab48b0449fd0feb2ad6",
+    "status": "PASS"
+  },
+  "code_dataset": {
+    "archive_sha256": "6a8a2939fd9504130622a75908f4408c7160bc0c55013f48963d485ac85078b8",
+    "dataset_id": 12504696,
+    "exact_byte_roundtrip_verified": true,
+    "file_count": 99,
+    "layout": "extracted-directory",
+    "license_name": "Other (specified in description)",
+    "manifest_sha256": "76ecf9b170c34cd12ad77e8de8de3020dce3b8ceee1006f7e5eed8528b539354",
+    "old_versions_deleted": false,
+    "private": true,
+    "reference": "danielwuu/iris-x-learning-agent-code-20261011/2",
+    "root_manifest_sha256": "920c52989fe69c4b595eca0ffa1e735e4f716c234d4a534da8a6cea089c7ee28",
+    "status": "VERIFIED_CODE_V2",
+    "total_bytes": 2126074,
+    "utc": "2026-10-11T07:14:13.776371+00:00",
+    "version": 2
+  },
+  "deadline_utc": "2026-10-11T17:52:58+00:00",
+  "enable_model": false,
+  "evidence_sha256": {
+    "dataset-code-v2-journal.json": "3dec12cb5d497317980d98469b280122322d8a8415b9678e0e8acc04393c72e8",
+    "dataset-code-v2-receipt.json": "bbaba720bec3e6627fe3106bc24c9d511e31fa8177a20c765ac50ac54fae3613",
+    "dataset-code-v2-response.json": "4cba5b72756e5def6704119b92c7e3db27d12a29e02a12a0b9c4c07885518cab",
+    "notebook-inactive-journal.json": "d60728fd62307828e805d8ccf2050bb4c801343332be9fea7b87e2ff8f9f78ca",
+    "notebook-inactive-receipt.json": "1277f1d8b51ff5b678284336f0d7680e6284b0240b7bbb470aa6ee30cd651f8b",
+    "notebook-inactive-save-response.json": "b20a75e962545db723e52904e1f2af992e4997783748f277b23a7443b306e63f",
+    "notebook-inactive-wire.json": "7f09a077c87332eba77b4c5d6599722f006261b832689ea3418ec73348749667",
+    "predecessor-inactive-metadata.json": "56616ac222d16aa986650f9624f2fa8f75440027b237aedb0d9ad41dd9651758",
+    "predecessor-inactive-status.json": "a982a3eef97d64c5eba6db15720ab10a8dac9f27700fcbaeffaee6434ccf8351"
+  },
+  "execution_type": "QUICK_SAVE",
+  "manual_start": false,
+  "next_stage": "Await verified repair Git main, then one separately journaled active v4.",
+  "notebook": {
+    "competition_sources": [
+      "arc-prize-2026-arc-agi-3"
+    ],
+    "dataset_identities_returned": [
+      "danielwuu/iris-arc-granite42-8b-offline",
+      "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+      "danielwuu/iris-arc-next-cpython312-offline",
+      "danielwuu/iris-arc-next-cu128-cp312-wheels",
+      "danielwuu/iris-arc-next-runtime",
+      "danielwuu/iris-x-learning-agent-code-20261011",
+      "danielwuu/iris-x-learning-training-20261011",
+      "danielwuu/iris-x-public120-data-20261010"
+    ],
+    "dataset_sources_submitted": [
+      "danielwuu/iris-x-learning-agent-code-20261011/2",
+      "danielwuu/iris-x-public120-data-20261010/1",
+      "danielwuu/iris-x-learning-training-20261011/1",
+      "danielwuu/iris-arc-next-runtime/8",
+      "danielwuu/iris-arc-granite42-8b-offline/2",
+      "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+      "danielwuu/iris-arc-next-cpython312-offline/2",
+      "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+    ],
+    "gpu": false,
+    "internet": false,
+    "kernel_id": 138123872,
+    "manifest_sha256": "76ecf9b170c34cd12ad77e8de8de3020dce3b8ceee1006f7e5eed8528b539354",
+    "metadata_status_mapping": "Latest-only metadata/status bracketed by exact source/ID/version before and after.",
+    "mounted_dataset_versions_independently_verified": false,
+    "normalized_source_exact": true,
+    "operational_success_claimed": false,
+    "original_deadline_epoch": 1791741178,
+    "original_predispatch_epoch": 1791697978,
+    "private": true,
+    "provider_timeout_seconds_submitted": null,
+    "reference": "danielwuu/iris-x-learning-agent-20261011",
+    "saved_source": {
+      "bytes": 51035,
+      "sha256": "0042397aa56f6486cd8ccad9c0cbab1213c5d44914f28fcc831608d953f56d1d"
+    },
+    "status": "COMPLETE",
+    "submitted_source_sha256": "c070257096fde207088dc0523924511e5c89c5a2cf6e77acc79d25089c132d2b",
+    "tpu": false,
+    "url": "https://www.kaggle.com/code/danielwuu/iris-x-learning-agent-20261011",
+    "utc": "2026-10-11T07:15:06.523468+00:00",
+    "version": 3
+  },
+  "original_deadline_epoch": 1791741178,
+  "original_predispatch_epoch": 1791697978,
+  "owner_stop_condition": "Stop checks after exact successor source/settings and actual provider RUNNING.",
+  "publication_manifest_sha256": "76ecf9b170c34cd12ad77e8de8de3020dce3b8ceee1006f7e5eed8528b539354",
+  "readback_notes": [
+    "Initial numeric code-v2 archive read returned404; the same read later succeeded. No mutation retry.",
+    "Dataset archive and extracted99-file inventory match the reviewed payload exactly.",
+    "Notebook source comparison permits only cell.source list/string normalization.",
+    "Notebook metadata returns Dataset identities; mounted Dataset versions are not independently attested.",
+    "Inactive COMPLETE is saved-version rendering and is not training or operational success."
+  ],
+  "replacement_gpu_run_admitted": false,
+  "schema": "irisx/learning-repair-inactive-checkpoint-v1",
+  "status": "CODE_V2_AND_INACTIVE_V3_VERIFIED",
+  "writes": {
+    "active_save": 0,
+    "blob_put": 1,
+    "dataset_version": 1,
+    "inactive_save": 1,
+    "upload_init": 1
+  }
+}

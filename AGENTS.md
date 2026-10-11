@@ -1,5 +1,20 @@
 # IRIS-X Repository Governance
 
+## Active learning-agent v2 repair and bounded replacement (2026-10-11)
+
+The repair addendum to Decision 0070 authorizes the reviewed session-launcher
+repair, regression tests, same private Git/Kaggle publication and one replacement
+activation. Preserve the failed v2 evidence and all scientific/data/process
+safeguards. The replacement retains epoch 1791697978 and deadline 1791741178;
+its bootstrap stage uses current-attempt monotonic elapsed capped at 1,800 seconds
+and the original global remaining time/reserve, never a new session clock.
+Update only the reviewed code Dataset/notebook identities; other seven Dataset
+pins and the existing resource stay fixed. After tests, exact provider readbacks
+and verified main, confirm the replacement's exact version/source/settings and
+actual RUNNING state, then stop monitoring as the owner requested. Do not claim
+operational success or initiate another run. Keep repair Git evidence compact
+and sanitized; no raw datasets, weights, credentials or detailed process dumps.
+
 ## Active owner-authorized learning-agent publication and session (2026-10-11)
 
 Decision 0070 permits the reviewed tools/arc_learning_agent_20261011 release,
