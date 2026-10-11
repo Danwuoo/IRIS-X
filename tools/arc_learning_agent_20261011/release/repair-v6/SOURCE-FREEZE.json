@@ -1,0 +1,425 @@
+{
+  "format": "irisx/learning-production-export-repair-freeze-v1",
+  "base_commit": "fe1b20b9983f527cf181fb18678ac29afc856b20",
+  "runtime_closure": {
+    "research/arc-next-line/training-source-inventory.json": {
+      "bytes": 145339,
+      "sha256": "53fc35f54fa1b8a29403c5ede3e3880e8588c40c75a4a5783692a9a13a3e95cb"
+    },
+    "src/irisx/__init__.py": {
+      "bytes": 754,
+      "sha256": "3ca8d59be8dae69d75bd92b279cdab54a5c411162d78544578f924264905702e"
+    },
+    "src/irisx/admission.py": {
+      "bytes": 22507,
+      "sha256": "0520aa0b966ea7b2bd7f88330f6c3e0e407e428cf144458a1fda89317c38bb63"
+    },
+    "src/irisx/arc_agi2.py": {
+      "bytes": 47703,
+      "sha256": "0af942df40b76f208546a88864e84ddf521168bdb8f1fa4ce24232c36f3034a1"
+    },
+    "src/irisx/arc_nvarc_data.py": {
+      "bytes": 25190,
+      "sha256": "898b71e225eda31fe7e6d3117e59eb418210c619edd96d9b9f4559021fc6cc0b"
+    },
+    "src/irisx/arc_nvarc_qwen35_adapter.py": {
+      "bytes": 3076,
+      "sha256": "72dea8ab078d099c03337225655315bb897c4dbe09ed0da296fb25aef61d3591"
+    },
+    "src/irisx/arc_nvarc_qwen3_adapter.py": {
+      "bytes": 1111,
+      "sha256": "e697f66cc699265555e302aac65cd5fe6686f54f291a47c894f2ccb7b9bd87a6"
+    },
+    "src/irisx/arc_nvarc_representation.py": {
+      "bytes": 25541,
+      "sha256": "d353556ae8ff76459cf96f64e1ece95c51281b4075511fe1be124c4a50313071"
+    },
+    "src/irisx/arc_nvarc_source_bundle.py": {
+      "bytes": 3362,
+      "sha256": "aaa44735072b488f5a347c7b5e16aaa6c42a8b5b8af8f1686c557a9fa74f84a8"
+    },
+    "src/irisx/arc_nvarc_source_recipe.py": {
+      "bytes": 10842,
+      "sha256": "103e461d7f2f6c378a73270c6e628d9c22b9785918856684f67f41382aa28966"
+    },
+    "src/irisx/arc_nvarc_training.py": {
+      "bytes": 31350,
+      "sha256": "8d8e1fba44032434cc51b27c66be5cf5d2a774d16145d74ceb3d290956c6e965"
+    },
+    "src/irisx/arc_nvarc_upstream.py": {
+      "bytes": 8817,
+      "sha256": "082e6a58d9a46e4de4a60db3b6e6c98d91507e7217e22d08d2bc0bf484731222"
+    },
+    "src/irisx/artifacts.py": {
+      "bytes": 2569,
+      "sha256": "28a7a48cbabd0f8556a1f976aebeaec3cc0824a380ab8bb4c12ba5cdfc762c95"
+    },
+    "src/irisx/bindings.py": {
+      "bytes": 7374,
+      "sha256": "cc0bb9698ab8803c3c951cd88d7c233661dd2a38c6f1066f7d86ac8be98f7601"
+    },
+    "src/irisx/canonical.py": {
+      "bytes": 2162,
+      "sha256": "d2bacf5548440c865a64cb7cdfbbefcb995ec47e4e53ddfa4457964a83740a6a"
+    },
+    "src/irisx/contracts.py": {
+      "bytes": 23999,
+      "sha256": "afb58a3fefe0c5482616d4cd219779c5bc9dacb30be44ea153ab85496b9af6b1"
+    },
+    "src/irisx/engine.py": {
+      "bytes": 11974,
+      "sha256": "bd08a6d9740d7696c6663410a450323c0c00cc5320bce184339ea4a98717d283"
+    },
+    "src/irisx/errors.py": {
+      "bytes": 229,
+      "sha256": "45c10f3c10c958cb3cca97a26a3a0f79925ed5818ce591327d9ef1a851a6ffa4"
+    },
+    "tools/__init__.py": {
+      "bytes": 47,
+      "sha256": "f5ed985f7ed9e31ea3be113e86b11a7b44313f467c2e468a034ff789c7b85c76"
+    },
+    "tools/arc_consolidated_20261010/__init__.py": {
+      "bytes": 126,
+      "sha256": "a2788b9c80ba8d44286740428301d44928935f84a6c6e0d3d8ea8422f365fdd0"
+    },
+    "tools/arc_consolidated_20261010/arc_object_ir.py": {
+      "bytes": 27437,
+      "sha256": "ba3fa20344d9cb2a3f471d6738e29fcb590bb1ea0a1bfc0b86aa2e1915fbe42a"
+    },
+    "tools/arc_consolidated_20261010/assets.py": {
+      "bytes": 5246,
+      "sha256": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09"
+    },
+    "tools/arc_consolidated_20261010/controls.py": {
+      "bytes": 27065,
+      "sha256": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a"
+    },
+    "tools/arc_consolidated_20261010/data/engineering-demos.json": {
+      "bytes": 11236,
+      "sha256": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8"
+    },
+    "tools/arc_consolidated_20261010/data/provenance.json": {
+      "bytes": 852,
+      "sha256": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3"
+    },
+    "tools/arc_consolidated_20261010/evidence.py": {
+      "bytes": 5057,
+      "sha256": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698"
+    },
+    "tools/arc_consolidated_20261010/ledger.py": {
+      "bytes": 28286,
+      "sha256": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_bounded_v2.py": {
+      "bytes": 24707,
+      "sha256": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_bundle.py": {
+      "bytes": 7681,
+      "sha256": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_environment.py": {
+      "bytes": 44063,
+      "sha256": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_interpreter.py": {
+      "bytes": 22257,
+      "sha256": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_runtime.py": {
+      "bytes": 37092,
+      "sha256": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_typed_ir.py": {
+      "bytes": 13566,
+      "sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9"
+    },
+    "tools/arc_consolidated_20261010/model_provider.py": {
+      "bytes": 35128,
+      "sha256": "776bce3b8231907f7c30ffcf210494205c1413d057da8974447ca2d946a463e3"
+    },
+    "tools/arc_consolidated_20261010/offline_bootstrap.py": {
+      "bytes": 33326,
+      "sha256": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193"
+    },
+    "tools/arc_consolidated_20261010/path_guard.py": {
+      "bytes": 3708,
+      "sha256": "29229ab065bc93e917e8376be0003c5728cfcea99b7b67ce6955a3d297f628f3"
+    },
+    "tools/arc_consolidated_20261010/remote_model_owner.py": {
+      "bytes": 47725,
+      "sha256": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e"
+    },
+    "tools/arc_consolidated_20261010/runner.py": {
+      "bytes": 34521,
+      "sha256": "82b67337f14442e2148ff3a637ca7cb854ad147928c26088e8d4dff763c4040a"
+    },
+    "tools/arc_consolidated_20261010/stages.py": {
+      "bytes": 26521,
+      "sha256": "c5543b64b4a4b8434d30c60e82ffe0746e1718a46d0fc26d3ee6f7f76b9054e4"
+    },
+    "tools/arc_consolidated_20261010/study_runner.py": {
+      "bytes": 28473,
+      "sha256": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab"
+    },
+    "tools/arc_consolidated_20261010/terminal_summary.py": {
+      "bytes": 4675,
+      "sha256": "da30baf3a0663e535355fe6c797e8b13f8fdc0199bb561ff3a75bfbb044e2b6c"
+    },
+    "tools/arc_consolidated_20261010/verifier.py": {
+      "bytes": 24512,
+      "sha256": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b"
+    },
+    "tools/arc_kaggle_submission.py": {
+      "bytes": 12447,
+      "sha256": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf"
+    },
+    "tools/arc_learning_agent_20261011/__init__.py": {
+      "bytes": 67,
+      "sha256": "52f5b4a81a42c3081ae8e4246b1c3fdd60ab3ecf55c391941f711ece844941c3"
+    },
+    "tools/arc_learning_agent_20261011/archived_recovery.py": {
+      "bytes": 34181,
+      "sha256": "612e4c6dfbfd13aed27098695de4714cef24d6bf94c0b1a6a8a37aeadd3a97d4"
+    },
+    "tools/arc_learning_agent_20261011/budget.py": {
+      "bytes": 11151,
+      "sha256": "46176c589f199b7debc727d7f70aae00547cf85be6443650af98f78bbd881e53"
+    },
+    "tools/arc_learning_agent_20261011/controller.py": {
+      "bytes": 35208,
+      "sha256": "7ab420cb0466ebea6d020a0a7180a1ff2f304e7f7e2ef955225af3796ddd9602"
+    },
+    "tools/arc_learning_agent_20261011/data.py": {
+      "bytes": 36441,
+      "sha256": "7867eaaac7d1f6be346421385ba5ae9680b7d185c82371285cf7b005dfe3ee82"
+    },
+    "tools/arc_learning_agent_20261011/deployment/validate_learning_outputs.py": {
+      "bytes": 51869,
+      "sha256": "5ac987aea7d0c2362ced7828d08fb297c360b700fa2e755e07c311a988f3a38c"
+    },
+    "tools/arc_learning_agent_20261011/evaluation.py": {
+      "bytes": 14978,
+      "sha256": "f1334bbad984b0f82d2e2756edcf925678668f71a3369d965f07b78aebd24553"
+    },
+    "tools/arc_learning_agent_20261011/export.py": {
+      "bytes": 10740,
+      "sha256": "1a850a65d7da1dec59e63968686f95cef268a05e5806c0e1ebb80eb68efeeb65"
+    },
+    "tools/arc_learning_agent_20261011/grid_codec.py": {
+      "bytes": 6638,
+      "sha256": "0a16b345ba259c0132481b005a1b2998fedaa3b7bb930d4ac5372c01b9909300"
+    },
+    "tools/arc_learning_agent_20261011/metering.py": {
+      "bytes": 7474,
+      "sha256": "686753025b497d06fc5816bfa09f5eb3c15909882f04d71b970d6d3df5348fcc"
+    },
+    "tools/arc_learning_agent_20261011/native_model.py": {
+      "bytes": 37662,
+      "sha256": "bf15d86110c7be156750af5e0e5fcd7a5a2f16192bc70d2c51789f4d369ed5c5"
+    },
+    "tools/arc_learning_agent_20261011/prepare_training_assets.py": {
+      "bytes": 2664,
+      "sha256": "c4ddcb514cffcc52025d8046597a71577f13b6546ff2f3cca7ab07bc6f0c8d08"
+    },
+    "tools/arc_learning_agent_20261011/process_guard.py": {
+      "bytes": 20139,
+      "sha256": "8bc66ac80499203bca9f583f0d5ea5ecc5d8a131a2aa267f661060fc69e0580c"
+    },
+    "tools/arc_learning_agent_20261011/program_tools.py": {
+      "bytes": 11922,
+      "sha256": "507271ae62b4d2f08377136b031b46796432c47f09fb203e1cc2ec4da0353cfe"
+    },
+    "tools/arc_learning_agent_20261011/result_projection.py": {
+      "bytes": 12373,
+      "sha256": "84ef1ee28bc9ea72e283a34f158a6fbe9f66680016c8e6f2f62faa50118c1d7a"
+    },
+    "tools/arc_learning_agent_20261011/session.py": {
+      "bytes": 15828,
+      "sha256": "b75ee4a2eb4231392bcd60f31f0212402feea56ac54c6602522a99f1f4d96b99"
+    },
+    "tools/arc_learning_agent_20261011/source_loader.py": {
+      "bytes": 10980,
+      "sha256": "9a871c22935d0d158ee31b683632e717358bd69f7d37258ad4dd09811c845887"
+    },
+    "tools/arc_learning_agent_20261011/source_pack.py": {
+      "bytes": 5372,
+      "sha256": "070e3de51303c8940506cbe036f2c293664117391b17347a2591df9d985e6ca6"
+    },
+    "tools/arc_learning_agent_20261011/training.py": {
+      "bytes": 48719,
+      "sha256": "bbbd375623e8650aa30b903e778a39f8237de46ee06cdaf7886985a312135e7f"
+    },
+    "tools/arc_learning_agent_20261011/worker.py": {
+      "bytes": 21900,
+      "sha256": "df44e0bed33a6331eabd3ae51a1cee46c3a68125376f51221fc709917d1c72d5"
+    },
+    "tools/arc_next_agent.py": {
+      "bytes": 34755,
+      "sha256": "98c8970f4001cc5e9f57912f8caf74b3a892174cdee574dba2c54b229beb6159"
+    },
+    "tools/arc_next_index_repair.py": {
+      "bytes": 16877,
+      "sha256": "05d2855e6029d873f0e74938e73d11ed7a21b72e0a630619b4415d3ebf3ac030"
+    },
+    "tools/arc_next_materials.py": {
+      "bytes": 11828,
+      "sha256": "582c82603f271757c56eda846cb4e724d3b90485906e7a48d9bb3ee34af4320c"
+    },
+    "tools/arc_next_models.py": {
+      "bytes": 37320,
+      "sha256": "d8c3bda2ef5c557fa93756805c91ea26c5c0773d8f124914791eef13b2f0740b"
+    },
+    "tools/arc_next_offline_bundle.py": {
+      "bytes": 7681,
+      "sha256": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc"
+    },
+    "tools/arc_next_offline_environment.py": {
+      "bytes": 44063,
+      "sha256": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0"
+    },
+    "tools/arc_next_offline_interpreter.py": {
+      "bytes": 22257,
+      "sha256": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9"
+    },
+    "tools/arc_next_offline_runtime.py": {
+      "bytes": 37092,
+      "sha256": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8"
+    },
+    "tools/arc_next_report.py": {
+      "bytes": 9911,
+      "sha256": "e37f85557da05a70dc921ed0835a68f10e2f8b6219c69c3e8f234fd669f910b9"
+    },
+    "tools/arc_next_suite_20261009/src/arc_bounded_v1.py": {
+      "bytes": 36302,
+      "sha256": "410713680242c0af12f4216181cd0a6318f46788e98e0577b4bfb67b9d2fc911"
+    },
+    "tools/arc_next_suite_20261009/src/arc_bounded_v2.py": {
+      "bytes": 24707,
+      "sha256": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7"
+    },
+    "tools/arc_next_suite_20261009/src/arc_curriculum.py": {
+      "bytes": 24322,
+      "sha256": "158263e2e417e02b80a0726c9a436bcd842500b64407d3bc5afa0f595c43238c"
+    },
+    "tools/arc_next_suite_20261009/src/arc_n4_program.py": {
+      "bytes": 25278,
+      "sha256": "fbcf0c933561067b6c9b4fc1e4c44048f02bbd8348ba312d06da37b3f22ebba7"
+    },
+    "tools/arc_next_suite_20261009/src/arc_program_v2.py": {
+      "bytes": 27156,
+      "sha256": "52bc22ffdf32198ceee209b68f68840869086af7d4372e54ec7d7b0297fe760d"
+    },
+    "tools/arc_next_suite_20261009/src/arc_suite.py": {
+      "bytes": 69538,
+      "sha256": "f1f8dfde826fa6c0dbf4ef4e88b1ae60df8964215af8ff02d197b7c49a1e2570"
+    },
+    "tools/arc_next_suite_20261009/src/arc_suite_policy.py": {
+      "bytes": 11330,
+      "sha256": "78e1f445acf6763b0f8b28c5434d13414e658c8c8a0ec8b0ad61514843271b75"
+    },
+    "tools/arc_next_suite_20261009/src/arc_typed_ir.py": {
+      "bytes": 13566,
+      "sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9"
+    },
+    "tools/arc_next_training.py": {
+      "bytes": 45924,
+      "sha256": "e35a48495feb0621a346d13fa6851497fbf17de1fc178cef56e50b58e3bb36e8"
+    },
+    "tools/arc_next_workflow.py": {
+      "bytes": 15087,
+      "sha256": "581880ec37c5484437dce451b5d48849a48aba32ffd9aff3c50df708b62e547d"
+    },
+    "tools/arc_offline_evaluation.py": {
+      "bytes": 18435,
+      "sha256": "3df3fd40c0a4db82dc6ad5c568102e45ad10efad8529412eae0623bd9f4ba016"
+    },
+    "tools/arc_public_research_20261010/__init__.py": {
+      "bytes": 68,
+      "sha256": "866c656646d636d7cecc201ccfce94d78b226056c769d34354d527ecb62f3514"
+    },
+    "tools/arc_public_research_20261010/finite_trie.py": {
+      "bytes": 16897,
+      "sha256": "ac44259f4f6e5e875b8a71b006304e642c2b2f89c1d56397c15c610e0ae98460"
+    },
+    "tools/arc_public_research_20261010/model_provider.py": {
+      "bytes": 33236,
+      "sha256": "cf6f463a6c75eecb9171d5661c06981dccd12daa7b8098334554c31cfd876ed3"
+    },
+    "tools/arc_public_research_20261010/offline_bootstrap.py": {
+      "bytes": 33957,
+      "sha256": "ae665e0c4c791a799654edb0107acaa8b21ce7014e61deb2d6b105edf28a9980"
+    },
+    "tools/arc_public_research_20261010/prepare_public_assets.py": {
+      "bytes": 7660,
+      "sha256": "9f1c1fc94f9668907c27562120e59a25e9efce21db0d6130cdd799053244cdf4"
+    },
+    "tools/arc_public_research_20261010/public_data.py": {
+      "bytes": 10680,
+      "sha256": "275b22a232c42e242d673898ac5674b435c27893b50751b7a8af2180ee551412"
+    },
+    "tools/arc_public_research_20261010/public_evaluator.py": {
+      "bytes": 22217,
+      "sha256": "e21f385bb0069831efe48c025eb711559552fc77eb142adb956e623522282e8e"
+    },
+    "tools/arc_public_research_20261010/query_executor.py": {
+      "bytes": 18478,
+      "sha256": "e6dcba0133cbd6b1f196d184d0422028796c59a622f1d8ff2fda8717974ce144"
+    },
+    "tools/arc_public_research_20261010/ranking.py": {
+      "bytes": 22448,
+      "sha256": "7b26722ed04e5182258d0694bceb366fb11bee4ea821f80c2e589d0134d405f6"
+    },
+    "tools/arc_public_research_20261010/remote_model_owner.py": {
+      "bytes": 51684,
+      "sha256": "66850148d6e59af8984fd2ca6cd0085599d19ca398cdd0925fe84054ada2c987"
+    },
+    "tools/arc_public_research_20261010/runner.py": {
+      "bytes": 51796,
+      "sha256": "2aa22ce9f3fb529cd57aafc9f9aef3980c9830d8ffc1a5bc5ea7a3f2d024197e"
+    },
+    "tools/arc_public_research_20261010/source_loader.py": {
+      "bytes": 9427,
+      "sha256": "30b84a426c689ec995d6268688a30476d92c12cb2ba84f93fe81ec3f8675347f"
+    },
+    "tools/arc_public_research_20261010/source_pack.py": {
+      "bytes": 5008,
+      "sha256": "1e51eafc2a882d108e7b3d774085992a64af161ab4729ead3209121eb5b61eeb"
+    },
+    "tools/nvarc_e11_dfs_contract.py": {
+      "bytes": 1919,
+      "sha256": "35d81364d8815bce6c822e86b07196fd65a0797dcf73ee527af061d10f746663"
+    },
+    "tools/nvarc_native_multitask.py": {
+      "bytes": 31939,
+      "sha256": "274cc5391ee45ee098cba4f002e31425d5bed88993c2b9319b0320c17a08fbdb"
+    },
+    "tools/nvarc_native_solve_runtime.py": {
+      "bytes": 28780,
+      "sha256": "56380d7c5fbb9219acfc846af275d6a334ed9460b6b6448e6feacf78be77b1c1"
+    },
+    "tools/nvarc_native_submission.py": {
+      "bytes": 48158,
+      "sha256": "6ad00435738f514bf5c92055640aa1fb3293a04c41fa006a4bbebf145e627e24"
+    }
+  },
+  "runtime_changed_paths": [
+    "tools/arc_learning_agent_20261011/export.py"
+  ],
+  "runtime_added_paths": [],
+  "runtime_unchanged_count": 99,
+  "modified_source_files": {
+    "tools/arc_learning_agent_20261011/export.py": {
+      "bytes": 10740,
+      "sha256": "1a850a65d7da1dec59e63968686f95cef268a05e5806c0e1ebb80eb68efeeb65"
+    },
+    "tools/arc_learning_agent_20261011/tests/test_export.py": {
+      "bytes": 21225,
+      "sha256": "21997c245e2d8bdcd690a21975a0181cb3dc6c45865e9e5cd136763ac730c500"
+    }
+  },
+  "source_identity_sha256": "142fade7b3440e8fcb3f29504fa066281729e641e426204bbfe2f441ae1212de",
+  "notebook_sha256": "e79c9d7d24ff1b1f6f54ba42fc1e816f39b9c94ee16d686e6420fbde456ca4f1",
+  "historical_publication_manifest_sha256": "4bc32d95d7be93957be6fa35357bff3325c73b8aaf00772b30bb347956655055",
+  "failure_evidence_sha256": "cd3281d404d95ec486cf4f7b3e73d769829f9a7972c74de02ce23e1bd52703c4"
+}

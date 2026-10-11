@@ -1,0 +1,37 @@
+{
+  "bootstrap": {
+    "bytes": 3319,
+    "sha256": "3ea7e816fd46d07eb6b7694cb360e57c1bb7467e2678b2bc095617f4ae08c095"
+  },
+  "environment_lock": {
+    "bytes": 4425,
+    "sha256": "7d0d1247d54cc4a0c7521c7f750f9c23a2650e5cc44b32c422877cae78f789ca"
+  },
+  "format": "irisx/independent-original-v6-environment-contract-v1",
+  "installation_receipt_byte_equality": "not independently observed; frozen install_offline source writes identical lock and installation receipts",
+  "installation_receipt_downloaded": false,
+  "live_exporter_called": false,
+  "numeric6_downloads_independently_verified": [
+    {
+      "bytes": 3319,
+      "http_status": 200,
+      "numeric_version": 6,
+      "provider_path": "irisx-learning-agent-20261011-projection-gpu001/bootstrap-receipt.json",
+      "sha256": "3ea7e816fd46d07eb6b7694cb360e57c1bb7467e2678b2bc095617f4ae08c095"
+    },
+    {
+      "bytes": 4425,
+      "http_status": 200,
+      "numeric_version": 6,
+      "provider_path": "irisx-learning-agent-20261011-projection-gpu001/environment/environment-cp312-cu128/evidence/environment-lock.json",
+      "sha256": "7d0d1247d54cc4a0c7521c7f750f9c23a2650e5cc44b32c422877cae78f789ca"
+    }
+  ],
+  "original_numeric_version": 6,
+  "original_paths_used_without_rewriting": true,
+  "original_provider_after_status": "ERROR",
+  "original_provider_before_status": "ERROR",
+  "public_answers_or_weights_read": false,
+  "retrieval_receipt_sha256": "5a06e0955bf3d33cf4ffd257c0c82c006eabd046f12a3dbcfe69763f2553cceb",
+  "status": "ORIGINAL_BOOTSTRAP_AND_LOCK_MATCH_FORWARD_PREDICATES"
+}

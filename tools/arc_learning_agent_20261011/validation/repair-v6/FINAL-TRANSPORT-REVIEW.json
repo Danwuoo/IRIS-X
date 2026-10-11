@@ -1,0 +1,123 @@
+{
+  "approved_notebook_sha256": "e79c9d7d24ff1b1f6f54ba42fc1e816f39b9c94ee16d686e6420fbde456ca4f1",
+  "code_root_manifest_sha256": "d6784cce76cc830488b3b2d29559309cd0b070df48639a34d5069d7b260ddf3c",
+  "execution_authorization_hold": {
+    "actions": [
+      "update-code Dataset danielwuu/iris-x-learning-agent-code-20261011 to version4",
+      "save-inactive notebook danielwuu/iris-x-learning-agent-20261011 as version7"
+    ],
+    "requirement": "Root must receive explicit exact private destination/payload consent before either provider mutation. This technical PASS alone does not authorize sending.",
+    "status": "OWNER_CONSENT_PENDING_AT_REVIEW_TIME"
+  },
+  "findings": [
+    {
+      "check": "Explicit inactive-only manifest and action surface. Active roles rejected before IO; no RUN, monitoring, result-retrieval or cancellation branch.",
+      "status": "PASS"
+    },
+    {
+      "check": "Exact existing IDs and expected Dataset v3→v4 / notebook v6 ERROR→v7 transitions. Separate v6 activation manifest, finalized source and raw saved source hashes are required.",
+      "status": "PASS"
+    },
+    {
+      "check": "Durable exclusive claims and intent-before-send; single RPC/PUT, no mutation retries. Unknown responses reconcile exact expected version/source; claims remain consumed on failure.",
+      "status": "PASS"
+    },
+    {
+      "check": "Numeric Dataset version4 archive retrieval, bounded IO/ZIP validation, complete file inventory/hash matching, before/after metadata ID/version/privacy/license checks.",
+      "status": "PASS"
+    },
+    {
+      "check": "Private inactive notebook source/QUICK_SAVE wire, exact eight pins and prior Docker/ARC3 metadata, normalization-only saved-source verification and status/source bracket.",
+      "status": "PASS"
+    },
+    {
+      "check": "Closed inner/outer payload inventories independently rehashed:100 runtime files,99 unchanged,export.py only,zero added or removed paths. No raw answer/task/result,weight or credential-file additions; changed-source credential-marker scan passed.",
+      "status": "PASS"
+    },
+    {
+      "check": "Final technical material approval and all exact artifact/test hashes are linked; no publication was performed by this reviewer.",
+      "status": "PASS"
+    }
+  ],
+  "format": "irisx/repair3-inactive-independent-transport-review-v1",
+  "limitations": [
+    "Provider notebook metadata attests Dataset identities rather than independently selected mounted versions; numeric code readback is separate evidence.",
+    "Latest-only status is source/ID/version bracketed, not a provider version-pinned status endpoint.",
+    "Export/recovery correctness and real-installer integration are separate source/E2E reviews, not established by these transport tests."
+  ],
+  "operational_success_claimed": false,
+  "provider_calls_by_reviewer": 0,
+  "provider_writes_by_reviewer": 0,
+  "publication_manifest_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair3-20261011/release/publication-manifest.json",
+  "publication_manifest_sha256": "b37cd2fc0c5d868e9a2e647447569ed31013ec7fa8fadfa7cefb7536b8265de4",
+  "release_approval_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair3-20261011/independent-review/FORWARD-MATERIAL-REVIEW.json",
+  "release_approval_sha256": "341e9f9decd2007ee5d2fa4b756f66856fd0aad038e8caf4f30e8e273f772813",
+  "required_operator_behavior": [
+    "Keep provider writes held until the separate explicit owner consent is recorded by root.",
+    "After consent, only sole publisher may use these exact reviewed hashes and authoritative new state root.",
+    "Do not delete/reset consumed claims or resend uncertain writes; reconcile read-only and stop on mismatch.",
+    "Honor the separate denied/cancelled download boundary; this review grants no download retry authority.",
+    "Require exact code readback and inactive v7 COMPLETE/source/settings before reporting publication complete. No active run or subsequent monitoring follows."
+  ],
+  "review_kind": "Technical transport/material linkage only; not provider execution consent",
+  "reviewed_helper_sha256": "1e3222733044f00ac2e7703feb299a41931ee8b6d25744ceaa2c50d2e57b7ab2",
+  "scope": {
+    "arc3_metadata_only_preserved": true,
+    "dataset_id": 12504696,
+    "dataset_predecessor_version": 3,
+    "dataset_reference": "danielwuu/iris-x-learning-agent-code-20261011",
+    "dataset_successor_version": 4,
+    "delete_old_versions": false,
+    "enable_model": false,
+    "execution_type": "QUICK_SAVE",
+    "gpu": false,
+    "inactive_successor_version": 7,
+    "internet": false,
+    "kernel_id": 138123872,
+    "machine_shape": null,
+    "manual_start": false,
+    "notebook_predecessor_version": 6,
+    "notebook_reference": "danielwuu/iris-x-learning-agent-20261011",
+    "other_seven_dataset_pins_unchanged": true,
+    "predecessor_activation_manifest_sha256": "f184a33a2c3b8b32a967a5ac1b3735164814caba5eda7098ec030b9bda28b298",
+    "predecessor_finalized_source_sha256": "40289dbb834cc43f26fc497397d2a4650ebf38d575bef0aefcc668ca15088f04",
+    "predecessor_required_status": "ERROR",
+    "predecessor_saved_source_sha256": "77577fe5ed3414dbb9e3a50e339f27b4f327d178dc9a4265ab7fc5a060f0b4a3",
+    "predispatch_epoch": null,
+    "private": true,
+    "provider_timeout": null,
+    "run_authorized": false,
+    "tpu": false
+  },
+  "script_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair3-20261011/publication/repair3_transport.py",
+  "script_sha256": "9a94e4a6b03600711814fbaf99abadc4a9c4d15368859c38f76a5394455aa8e3",
+  "source_archive_sha256": "894430037e6e2f41cff726f4ebcb4bcebde9e1df67198109e89c4cc34ddb3c6c",
+  "status": "PASS",
+  "technical_blockers": [],
+  "tests": {
+    "actual_final_approval_load_contract_passed": true,
+    "artifacts": {
+      "PAYLOAD-CLOSURE-AUDIT.json": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair3-20261011/independent-transport-review/PAYLOAD-CLOSURE-AUDIT.json",
+        "sha256": "282e1ef9263a15783bbb99864c11d24c443e2e5a5769819cbd323f31aa06cbbe"
+      },
+      "exact-tests-optimized.log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair3-20261011/independent-transport-review/exact-tests-optimized.log",
+        "sha256": "91c6c13b84b626333c47bef37a3c969a15120713aa2fe9a6061aa6fb2aa90bd2"
+      },
+      "exact-tests.log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair3-20261011/independent-transport-review/exact-tests.log",
+        "sha256": "e600c72e1a1a05152c00a803163237b8d20b844acc48ba93ae3f131fe652b641"
+      },
+      "test_repair3_transport.py": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair3-20261011/independent-transport-review/test_repair3_transport.py",
+        "sha256": "32765aca2a5cfbf8f81bc201f05fcf60431b9ea4ffbfb2e98acb413e455abe20"
+      }
+    },
+    "independent_cases": 30,
+    "normal_pass": 30,
+    "optimized_pass": 30,
+    "sockets_and_auth_blocked": true
+  },
+  "utc": "2026-10-11T14:34:51.442157+00:00"
+}

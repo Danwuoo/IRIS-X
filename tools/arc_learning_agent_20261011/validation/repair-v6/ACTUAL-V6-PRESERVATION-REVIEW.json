@@ -1,0 +1,30 @@
+{
+  "actual_independent_proof_replay_matches_embedded_check": true,
+  "archive": {
+    "bytes": 7947399,
+    "expanded_bytes": 47461649,
+    "members": 55,
+    "sha256": "a30e8d3182443a7541e210a20287f8e00b0bc4e16cac79467db1c314ce096033"
+  },
+  "evaluator_answers_or_weights_read": false,
+  "every_original_output_member_matches_numeric6_download_bytes": true,
+  "format": "irisx/independent-actual-v6-preservation-review-v1",
+  "installation_payloads_in_archive": false,
+  "inventory_sha256": "0f8763251f8e5941121875093e23e37d4f5b97454237ca6bc21eacb595f26070",
+  "live_export_receipt_synthesized": false,
+  "new_inference": false,
+  "new_scoring": false,
+  "new_training": false,
+  "only_original_environment_lock_retained_as_proof": true,
+  "original_output_members": 36,
+  "original_provider_status": "ERROR",
+  "original_source_files": 100,
+  "preservation_check_sha256": "3da5220ba46f3726898ac2a9321cd48a43fcdec319acca4b87fd94d563ad7076",
+  "provider_completion_claimed": false,
+  "public_answer_payloads_in_archive": false,
+  "raw_solver_inputs_in_archive": false,
+  "runtime_module_imports": false,
+  "scientific_metrics_read": false,
+  "solver_manifest_hash_and_120_167_inputs_recomputed": true,
+  "status": "APPROVED"
+}

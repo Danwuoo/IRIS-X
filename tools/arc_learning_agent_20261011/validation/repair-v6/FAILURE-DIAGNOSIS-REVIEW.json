@@ -1,0 +1,123 @@
+{
+  "baseline_commit": "fe1b20b9983f527cf181fb18678ac29afc856b20",
+  "call_path": [
+    "session.run_session:242",
+    "export.export_evidence:33"
+  ],
+  "confirmed_contract_conflict": {
+    "export_checks_symlink_before_environment_exclusion": true,
+    "installed_environment_required_symlink": "environment/environment-cp312-cu128/evidence/wheels",
+    "legacy_install_line": 639,
+    "legacy_runtime_verification_lines": [
+      133,
+      134,
+      135
+    ]
+  },
+  "coverage_gap": [
+    "Genuine tiny CPU session selects config.tiny_cpu and therefore skips production prepare_model_environment and never creates an installed environment subtree.",
+    "The wrapped tiny session places a standalone offline-run.py outside its output, not a production installed venv.",
+    "Oversized projection integration manually builds synthetic owner/request and no environment tree before export.",
+    "Archived recovery test only proves historical projection/seal/evaluator, not live production environment export."
+  ],
+  "downstream_archive_schema_compatible_with_proof_only_members": true,
+  "exception": "ValueError: output symlink forbidden",
+  "failure_stage": "export",
+  "format": "irisx/independent-v6-export-failure-audit-v1",
+  "full_path_reproduction": "full-path-reproduction.json",
+  "gpu_calls": 0,
+  "independently_rehashed_downloads": [
+    {
+      "bytes": 1362,
+      "numeric_version": 6,
+      "provider_path": "irisx-learning-agent-20261011-projection-gpu001-launcher/stderr.txt",
+      "sha256": "a00b001924f80e274766090da5533f3316f35b1d25548f6a5f93ffcac678451f"
+    },
+    {
+      "bytes": 30968,
+      "numeric_version": 6,
+      "provider_path": "irisx-learning-agent-20261011-projection-gpu001-launcher/launcher-closure.json",
+      "sha256": "355186d1539fb2a7e7f4ef3223a121a10f6c7b7a1e84cd94fa339f221c695866"
+    },
+    {
+      "bytes": 213,
+      "numeric_version": 6,
+      "provider_path": "irisx-learning-agent-20261011-projection-gpu001/worker/stderr.txt",
+      "sha256": "07fe0b71d9c9abd3ea08cc6ab5b29223637abab7e26626c8cbcbd725e58fc70f"
+    },
+    {
+      "bytes": 23645,
+      "numeric_version": 6,
+      "provider_path": "irisx-learning-agent-20261011-projection-gpu001/owner-closure.json",
+      "sha256": "d650a207575943e9ef3d2aba1e55440e4097f6a9a6d29cb186546addf86c9ce6"
+    },
+    {
+      "bytes": 1105,
+      "numeric_version": 6,
+      "provider_path": "irisx-learning-agent-20261011-projection-gpu001/summary.json",
+      "sha256": "5ee3e188cc4c0df0fb65b9b63ebddcefcf68ce17c688930a3257bffcdb4e66f6"
+    },
+    {
+      "bytes": 175,
+      "numeric_version": 6,
+      "provider_path": "irisx-learning-agent-20261011-projection-gpu001/worker/active-stage.json",
+      "sha256": "ec5644d01771d6430a3e6f2287161a0d8f7d46d94f00aaca95b438d3813308ea"
+    }
+  ],
+  "minimal_reproducer": "reproduce_export_contract.py",
+  "minimal_reproducer_receipt": "export-contract-receipt.json",
+  "model_weights_read": false,
+  "network_calls": 0,
+  "observed_pre_export_labels": {
+    "model_stopped": true,
+    "owner_graceful": true,
+    "owner_returncode": 0,
+    "remaining_owner_members": 0,
+    "score_status": "SCORED",
+    "solver_status": "complete",
+    "summary_status": "COMPLETE"
+  },
+  "offending_symlink_path": "not logged; exact first member not asserted",
+  "operational_success": false,
+  "proof_file_scope_approval": "Parent explicitly approved only bounded exact environment-lock.json and installation-receipt proof bytes under original relative names, hash-bound to bootstrap receipt.",
+  "provider_status": "ERROR",
+  "provider_version": 6,
+  "public_answers_read": false,
+  "repair_acceptance": [
+    "Exclude only the fixed top-level environment directory without walking its descendants.",
+    "Reject symlink or non-directory at the environment boundary itself and reject symlinks anywhere in exported evidence.",
+    "Retain top-level bootstrap receipt and its exact environment plan / lock SHA binding in archive.",
+    "Continue preserving every result, prediction, task detail, counter, checkpoint/adapter separation, unknown/failure state, and all caps.",
+    "Production-shaped CPU integration must combine large projection, real owned process closure, sealer, fresh synthetic evaluator, installed environment evidence/wheels link and export.",
+    "Verify archive member hashes and that exactly the two parent-approved environment proof files appear; no installed payload or external wheel-target member may appear."
+  ],
+  "report": "REPORT.md",
+  "scientific_metrics_read": false,
+  "source_files": {
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_environment.py": {
+      "bytes": 44063,
+      "sha256": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0"
+    },
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_runtime.py": {
+      "bytes": 37092,
+      "sha256": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8"
+    },
+    "tools/arc_learning_agent_20261011/export.py": {
+      "bytes": 3593,
+      "sha256": "c43eed717d61011bcc8deb00f56f59b1e3ffd165123a33edf390a24a47fd2e8a"
+    },
+    "tools/arc_learning_agent_20261011/tests/test_result_projection.py": {
+      "bytes": 23802,
+      "sha256": "d27d425d43e9505fc199938cc28e98cf674eaa3a82bab9fb14b2bef53b22d8f8"
+    },
+    "tools/arc_learning_agent_20261011/tests/test_session.py": {
+      "bytes": 19880,
+      "sha256": "3fd552a5e61b7be4bb077b212a8470636405f0f96ba05965add3f95d0e16fc70"
+    },
+    "tools/arc_public_research_20261010/offline_bootstrap.py": {
+      "bytes": 33957,
+      "sha256": "ae665e0c4c791a799654edb0107acaa8b21ce7014e61deb2d6b105edf28a9980"
+    }
+  },
+  "source_mutations": false
+}

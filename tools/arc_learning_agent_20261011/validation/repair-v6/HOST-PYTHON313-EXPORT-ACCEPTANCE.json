@@ -1,0 +1,12 @@
+{
+  "format": "irisx/learning-export-host-python-acceptance-v1",
+  "status": "PASS",
+  "python": "Python 3.13.5",
+  "tests": 20,
+  "errors": 0,
+  "failures": 0,
+  "skips": 0,
+  "log_sha256": "579e5956d05787d385f30b3c2231c40949507ffa25826be063a778715e49a5ad",
+  "export_sha256": "1a850a65d7da1dec59e63968686f95cef268a05e5806c0e1ebb80eb68efeeb65",
+  "scope": "Filesystem/ZIP exporter boundary on Python3.13 host family observed in v6; exact installer+owned-worker full fixture separately passed on pinned CPython3.12. No model/GPU work."
+}

@@ -1,0 +1,39 @@
+{
+  "adversarial_tests": {
+    "count": 9,
+    "driver_sha256": "063938079f4ff28b7d9a2563e5046eb74c044aa5aa03c25f267f309375e35eb1",
+    "errors": 0,
+    "failures": 0,
+    "log_sha256": "2c25950b083ea39b318d1397de10f8cf691d840d48eae04e806180aca22a23f6",
+    "skips": 0
+  },
+  "approved_environment_archive_members": [
+    "environment/environment-cp312-cu128/evidence/environment-lock.json",
+    "environment/environment-cp312-cu128/installation-receipt.json"
+  ],
+  "baseline_runtime_change_scope": "export.py only; parent/writer independently checked exact source manifest",
+  "checks": [
+    "Exact lock SHA and byte-identical installation receipt bind to bootstrap receipt.",
+    "Fixed absolute paths and exact isolated launcher command verified.",
+    "Only fixed top-level environment subtree pruned; included evidence links and special files remain rejected.",
+    "No-follow descriptor traversal checks file and directory identity changes.",
+    "Nine independent adversarial tests pass, including source directory/root races, in-place file modification, duplicate-key/FIFO/symlink proofs, and orphan bootstrap.",
+    "Proof-only archive successfully parsed and verified by unchanged historical Evidence reader."
+  ],
+  "focused_test_sha256": "21997c245e2d8bdcd690a21975a0181cb3dc6c45865e9e5cd136763ac730c500",
+  "format": "irisx/independent-export-repair-review-v1",
+  "global_or_task_model_changes": false,
+  "new_proof_limit_bytes": 1048576,
+  "process_sealer_evaluator_changes": false,
+  "qualification": "Read-only review and synthetic CPU tests. No production GPU rerun or scientific-score interpretation; v6 provider ERROR preserved.",
+  "runtime_source_sha256": "1a850a65d7da1dec59e63968686f95cef268a05e5806c0e1ebb80eb68efeeb65",
+  "status": "PASS",
+  "unchanged_limits": {
+    "archive_disk_reserve_bytes": 268435456,
+    "evaluator_address_space_bytes": 536870912,
+    "evaluator_cpu_seconds": 45,
+    "evidence_archive_uncompressed_bytes": 536870912,
+    "full_owner_bytes": 67108864,
+    "worker_projection_bytes": 16777216
+  }
+}

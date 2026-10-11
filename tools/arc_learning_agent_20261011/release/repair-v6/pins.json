@@ -1,0 +1,19 @@
+{
+  "code": {
+    "reference": "danielwuu/iris-x-learning-agent-code-20261011/4",
+    "manifest_sha256": "d6784cce76cc830488b3b2d29559309cd0b070df48639a34d5069d7b260ddf3c",
+    "archive_sha256": "894430037e6e2f41cff726f4ebcb4bcebde9e1df67198109e89c4cc34ddb3c6c"
+  },
+  "data": {
+    "reference": "danielwuu/iris-x-public120-data-20261010/1",
+    "manifest_sha256": "c55073f8e9f44682dd7d7f31ee7f04f39754a9922ec246073555026452f047e3",
+    "role_manifests": {
+      "evaluator": "c7e8ad35770a66a71a22cccbbd0455c1c3bcc1a505dfb2e4c29819eec6209e33",
+      "solver": "549019b4b5cb47176f3abd3fcd9ca516e91b7d6e581dfc414a5a6452ff7b1f7f"
+    }
+  },
+  "training": {
+    "reference": "danielwuu/iris-x-learning-training-20261011/1",
+    "manifest_sha256": "a4b9da04d8690c57a3d0855553989fa055c5b9283ffc1784fe99413c8d1cb9d5"
+  }
+}

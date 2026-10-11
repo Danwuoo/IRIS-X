@@ -257,3 +257,55 @@ status without embedding their payloads. Require final scoped byte review,
 focused CPU and repository-baseline validation, expected-parent main update,
 remote verification and exact-commit CI reporting. Recovered evidence and any
 later publication state must remain distinguishable from original run evidence.
+
+## Learning-agent v6 exporter repair and scored-output preservation (2026-10-11)
+
+The owner reported another failure: "又報錯了". This addendum records the narrow
+local repair and CPU validation scope. Private remote publication remains gated
+by the owner's exact destination/payload confirmation and final reviewed bytes;
+this document does not authorize a new GPU run or model execution.
+
+The exact numeric-v6 evidence records provider ERROR after the owned solver and
+public scorer had already completed. The failure is the exporter rejecting an
+output symlink while traversing an installed environment that its archive policy
+intended to exclude. The traceback did not identify the first rejected link; the
+pinned installer and production-shaped CPU reproduction establish the boundary
+conflict. Preserve the original provider state, source, prediction seal, scorer
+products, process proofs and the epoch/deadline recorded for v6. Do not relabel
+this run or earlier versions as a successful end-to-end session.
+
+The forward change is confined to the exporter and its boundary tests. Prune the
+installed environment before recursively entering its payload. Retain only the
+fixed, bounded environment proof files linked to the bootstrap receipt and exact
+installation lock. Continue rejecting links outside the excluded payload, unsafe
+paths, nonregular files, missing or inconsistent proofs, changed bytes and
+unverified closure. Do not weaken source, process, result-size, storage, deadline,
+model, training, candidate-ordering or evaluator contracts. The runtime closure
+contains 100 files: only export.py changes among the inherited runtime files.
+
+Separately authorized CPU preservation may validate and package the exact already
+sealed/scored numeric-v6 products under a fresh recovery identity. It must verify
+the downloaded inventory, source/request/owner/ledger/score bindings and unchanged
+prediction bytes/order, retaining all 120 tasks and 167 tests. It must not rerun
+the model, training, candidate selection, scorer or result interpretation. Missing
+inputs must stop preservation; do not fabricate historical live-process proofs,
+empty placeholders or a nonexistent original archive. Label a new archive as
+downloaded post-run preservation, distinct from an archive produced by the failed
+original run. Keep original evidence unmodified.
+
+After exact owner confirmation, the intended private release is the reviewed
+repair to Danwuoo/IRIS-X main, code Dataset iris-x-learning-agent-code-20261011
+version 4, and the same learning-agent notebook as inactive version 7. Actual
+versions and settings require provider readback. Preserve prior versions, the
+other seven Dataset pins and the metadata-only ARC3 association. This scope has
+no RUN branch, new resource, billing/access change or credential transfer. Any
+future GPU execution requires separate explicit owner authority and review.
+
+Git receives only the reviewed source/tests, inactive notebook, release metadata
+and compact validation/provenance records. Exclude raw task grids, predictions,
+scorer products, ledgers, detailed process/runtime dumps, weights, archives and
+credentials. Production-shaped tests must connect the pinned offline installer
+with owned launch, closure, prediction seal, the unchanged evaluator and export.
+Report focused CPU validation separately from historical aggregate/CI failures.
+Require final exact-byte review, expected-parent non-forced main publication,
+remote commit/tree verification and terminal exact-commit CI reporting.

@@ -1,0 +1,58 @@
+{
+  "format": "irisx/learning-v6-final-staged-independent-review-v1",
+  "status": "APPROVED_WITH_DISCLOSED_VALIDATION_LIMITATIONS",
+  "base_commit": "fe1b20b9983f527cf181fb18678ac29afc856b20",
+  "reviewed_tree": "c917371868a7d5d813e4d297aea97589a6d1906d",
+  "snapshot_sha256": "85952ef2a83dfa96e665d83ac46ee2ac5fe721f98f1e61d74b0aa949cc9956d5",
+  "reviewed_paths": 25,
+  "index_worktree_raw_files_equal": 1591,
+  "unrelated_baseline_blobs_modes_preserved": 1566,
+  "prior_24_paths_unchanged": true,
+  "sole_final_addition": "tools/arc_learning_agent_20261011/validation/repair-v6/INTEGRATION-VALIDATION.json",
+  "integration_receipt_sha256": "7d5c18ff3d3175733b6e39102d75415a0613c52f5538d1a6552a2fd630a19c62",
+  "prior_provider_delta_review_sha256": "9e6cc9257f78592638a42bb5c320777d243a96201d344dea26b53ea58c5d0c53",
+  "runtime_source_sha256": "1a850a65d7da1dec59e63968686f95cef268a05e5806c0e1ebb80eb68efeeb65",
+  "focused_full_suite": {
+    "tests": 189,
+    "passed": 189,
+    "skips": 0,
+    "log_sha256": "5e0796191b4223a22d4b3c0303e0c90989f42997eb0436ded9c6e819a5f44d37"
+  },
+  "aggregate": {
+    "tests": 1583,
+    "failures": 2,
+    "errors": 35,
+    "skips": 74,
+    "baseline_labels": 36,
+    "current_labels": 37,
+    "exact_baseline_label_equality": false,
+    "log_sha256": "95094404c6d313bdc0cb901a5eb15237c368362797eeb6ef28eaaf695478a1c9"
+  },
+  "historical_process_replays": {
+    "first_three_cases_passed": 18,
+    "retirement_baseline_passed": 3,
+    "retirement_current_passed": 2,
+    "retirement_current_failed": 1,
+    "earlier_baseline_same_failure_observed": 2,
+    "root_cause_proven": false
+  },
+  "historical_process_source_hashes": {
+    "tests/test_nvarc_combined.py": "b3b66508b3ca648bbea7e0b198aeb393b8f9b59b440b842a4f8605f235f7f509",
+    "tests/nvarc_combined_fixture_child.py": "52e1d40535bf30ea98aa049202f5698bc96aa174f7ac2bc694c101c78f233104",
+    "src/irisx/arc_nvarc_combined.py": "e372161c8c944d4404f25e9575a2be66e9c3a8e8dedcde969d48e2d96c752a8f",
+    "src/irisx/arc_nvarc_combined_worker.py": "7cc00745bf4274db8664065a80559b7245035a073c99b001fade7f4875dd2867"
+  },
+  "private_code_v4_inactive_notebook_v7_persisted_evidence_reviewed": true,
+  "original_v6_error_preserved": true,
+  "new_gpu_run": false,
+  "source_changes_by_reviewer": 0,
+  "provider_calls_by_reviewer": 0,
+  "qualifications": [
+    "Repository aggregate is FAIL, not baseline-equivalent; all failure logs and partial reproduction outcomes are retained.",
+    "The unchanged retirement case demonstrably failed before this exporter repair, but its root cause is unproven.",
+    "Initial focused control rows were deleted by test cleanup; the exact first cause is unknown.",
+    "Approval covers the narrowly reviewed exporter/material/private-publication delta, not a green aggregate, new model run, or GPU success.",
+    "Exact remote commit and terminal CI must be verified separately."
+  ],
+  "review_script_sha256": "5a3802dd31a7ee46a2031c6e0afa9e9e5379248922b9876ade066c3b1c3ba50e"
+}

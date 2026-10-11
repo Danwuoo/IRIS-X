@@ -1,5 +1,18 @@
 # IRIS-X Repository Governance
 
+## Active learning-agent v6 exporter repair (2026-10-11)
+
+The latest Decision 0070 addendum scopes the exporter-only repair, CPU validation
+and preservation of already sealed/scored v6 outputs. Preserve provider ERROR and
+the recorded v6 epoch/deadline. Prune excluded installation payload before
+traversal while retaining fixed, bounded, bootstrap-bound proof files; all other
+link, path, byte-integrity and process/evaluator safeguards remain enforced.
+CPU preservation cannot generate predictions, rerun scoring or alter existing
+products. Private code-v4/inactive-notebook-v7 publication requires the owner's
+exact sharing confirmation and final byte review. No new GPU RUN is authorized
+by this addendum. Keep raw data/results, detailed runtime evidence, weights,
+archives and credentials outside Git; preserve every earlier version.
+
 ## Active learning-agent v4 result repair and archived CPU recovery (2026-10-11)
 
 The latest Decision 0070 addendum authorizes the reviewed result-aggregation

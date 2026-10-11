@@ -1,0 +1,64 @@
+{
+  "all_upload_source_hashes_verified": true,
+  "approved_notebooks": [
+    {
+      "reference": "danielwuu/iris-x-learning-agent-20261011",
+      "role": "inactive",
+      "sha256": "e79c9d7d24ff1b1f6f54ba42fc1e816f39b9c94ee16d686e6420fbde456ca4f1"
+    }
+  ],
+  "arc3_metadata_only_preserved": true,
+  "authority_note": "Technical review only; private publication still requires separately recorded owner sharing approval. No RUN authorization.",
+  "changed_runtime_sources": [
+    "tools/arc_learning_agent_20261011/export.py"
+  ],
+  "docker_image_preserved": true,
+  "external_actions_performed": false,
+  "format": "irisx/independent-forward-material-review-v1",
+  "full189_suite": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "log_sha256": "c7d4ce2e87ade771aeeb27d81532ff0cd510997215179b349d5717de6cd8a929",
+    "seconds": 360.787,
+    "skips": 0,
+    "tests": 189
+  },
+  "inactive_notebook_execution": {
+    "enable_model": false,
+    "files_created": 0,
+    "manual_start": false,
+    "neural_modules_imported": false,
+    "notebook_sha256": "e79c9d7d24ff1b1f6f54ba42fc1e816f39b9c94ee16d686e6420fbde456ca4f1",
+    "predispatch_epoch": null,
+    "status": "PASS",
+    "stdout": "Learning-agent disabled. Review the run guide before enabling a new session.\n"
+  },
+  "independent_adversarial_tests": 9,
+  "manifest_sha256": "b37cd2fc0c5d868e9a2e647447569ed31013ec7fa8fadfa7cefb7536b8265de4",
+  "no_new_epoch_or_run": true,
+  "notebook_default_inert": true,
+  "notebook_sha256": "e79c9d7d24ff1b1f6f54ba42fc1e816f39b9c94ee16d686e6420fbde456ca4f1",
+  "owner_v6_error_preserved": true,
+  "private_only": true,
+  "publication_authorized": false,
+  "qualifications": [
+    "Forward materials reviewed independently of original-output recovery; no actual-recovery success claim.",
+    "The prior provider v6 ERROR and original scoring artifacts remain unchanged.",
+    "No new GPU activation, publication, or external access is authorized by this technical review."
+  ],
+  "scope": {
+    "publication_manifest": {
+      "sha256": "b37cd2fc0c5d868e9a2e647447569ed31013ec7fa8fadfa7cefb7536b8265de4"
+    },
+    "purpose": "Technical approval of exact private inactive materials only; execution and owner publication/sharing authorization are separate."
+  },
+  "seven_noncode_dataset_pins_unchanged": true,
+  "source_archive_sha256": "894430037e6e2f41cff726f4ebcb4bcebde9e1df67198109e89c4cc34ddb3c6c",
+  "source_files": 100,
+  "source_freeze_sha256": "44f44f4f69be92791f434db5c3893e8128297fbb3c9ac8d6c9567c83c67b5817",
+  "source_identity_sha256": "142fade7b3440e8fcb3f29504fa066281729e641e426204bbfe2f441ae1212de",
+  "status": "APPROVED",
+  "technical_approval_only": true,
+  "unchanged_runtime_sources": 99
+}
