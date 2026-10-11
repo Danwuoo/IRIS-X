@@ -1,5 +1,24 @@
 # IRIS-X Repository Governance
 
+## Active owner-authorized learning-agent publication and session (2026-10-11)
+
+Decision 0070 permits the reviewed tools/arc_learning_agent_20261011 release,
+required private code/training Datasets and private Git/Kaggle publication, plus
+one session on the owner's existing GCP/BYOD NvidiaRtxPro6000 resource. The total
+43,200-second limit includes setup, learning, task adaptation, inference, public
+scoring and closure. Require a finite real pre-dispatch epoch in the sole active
+wire, including queue/startup time; no runtime-only fallback is permitted.
+Preserve frozen source/scorer bytes and all earlier run
+evidence. The package's original development-only authority statements remain
+historical; this narrow current authorization supersedes them without altering
+their byte bindings. Public answers remain evaluator-only after stopped solver
+ownership and prediction sealing; training lineage and demo-only TTT gates stay
+unchanged. Preserve the existing ARC3 metadata association only, never ARC3 task
+data or competition submission. No new resources, billing/access changes,
+credentials or quota/security bypass. Require exact artifact review, safe
+uncertain-write reconciliation, remote verification and honest terminal status.
+No additional session or research cycle follows from this authorization.
+
 ## Active sealed public research evaluation (2026-10-10)
 
 Decision 0069 governs the current owner-authorized native-thread implementation,

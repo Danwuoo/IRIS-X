@@ -1,0 +1,26 @@
+{
+  "accepted_records": 0,
+  "archive_sha256": "84e33a1a042fe3fa699423f4b63f1b8091d90c9fd3db4f19efc2e4c8c9715f3b",
+  "fallback": "Continue the independently pinned clean800 official training corpus without this optional source.",
+  "format": "irisx/optional-corpus-disposition-v1",
+  "include_in_runtime_dataset": false,
+  "include_in_training": false,
+  "include_quarantined_archive_in_deliverables": false,
+  "legal_conclusion": "None; this records missing verifiable license/provenance evidence, not a legal judgment.",
+  "official_training_manifest_sha256": "a2b7b5f5935676cb4b1da135565f10437f57b24a72208784b1653a7e82a7c498",
+  "pre_download_assessment_snapshot_sha256": "deeadeea4d0d0074f58a151facaa323e56df9837c4e40f7770c8f6c2f9d8485d",
+  "provider_writes": 0,
+  "quarantine_inspection_sha256": "d4e52c58d548f58e5452dae037394d1f1288d67099e1e65874959db6efc9da84",
+  "reasons": [
+    "Dataset license is recorded as Unknown; no additional embedded licensing evidence found.",
+    "A complete immediate/transitive ancestry mapping to the exact800 training tasks was not established. Directory/filename labels alone were not accepted."
+  ],
+  "reference": "sorokin/nvarc-synthetic-puzzles/1",
+  "status": "EXCLUDED_FROM_TRAINING_AND_PUBLICATION",
+  "training_executions": 0,
+  "utc": "2026-10-11T03:37:47.203778+00:00",
+  "zip_member_counts": {
+    "nvarc_full": 55886,
+    "nvarc_training": 47337
+  }
+}

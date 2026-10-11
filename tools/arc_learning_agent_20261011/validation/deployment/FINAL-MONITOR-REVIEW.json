@@ -1,0 +1,66 @@
+{
+  "format": "irisx/independent-learning-monitor-review-v1",
+  "status": "PASS",
+  "created_utc": "2026-10-11T05:06:24.553762+00:00",
+  "publication_manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+  "release_approval_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/independent-release-review/FINAL-RELEASE-APPROVAL.json",
+  "release_approval_sha256": "cff62fc2dc5edb9f8fa49a7d7529c645bab331d6c15044c1742d6feb8f837b85",
+  "transport_review_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/independent-transport-review/FINAL-TRANSPORT-REVIEW.json",
+  "transport_review_sha256": "aa6b36e66b1807cef0375cc9e2f3801464bddb561b08c54eafbce951e24fc072",
+  "transport_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/publication/learning_transport.py",
+  "transport_sha256": "1e3222733044f00ac2e7703feb299a41931ee8b6d25744ceaa2c50d2e57b7ab2",
+  "monitor_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/publication/learning_collect.py",
+  "monitor_sha256": "965dc75d49243566c3ed4b3d21e7a1f405724625f96f0fd5bfc3be5f8ee49dd2",
+  "validator_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/validate_learning_outputs.py",
+  "validator_sha256": "5ac987aea7d0c2362ced7828d08fb297c360b700fa2e755e07c311a988f3a38c",
+  "preloader_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/preloader.py",
+  "preloader_sha256": "b1b6af95fafc93701f09319798369479e98d6004ec69f46d93278032150cdeb5",
+  "notebook_template_sha256": {
+    "inactive": "47455fa3e5f5aa6224a36c9cbaf7f624ca119167e8d4b1e5e56a76ccdb8515d1",
+    "run001": "31406fd7c97107d13e656e429cdf97338ce795dba08dd62efe56f771d5b662ff"
+  },
+  "review_scope": "Read-only terminal monitor/retriever, offline operational validator, and whole-notebook pre-loader execution deadline. No provider writes or GPU session performed by this reviewer.",
+  "independent_test_passes": {
+    "frozen_budget_process_notebook": 19,
+    "whole_bootstrap_watchdog": 8,
+    "monitor_lifecycle_mocks": 10,
+    "validator_regressions": 31
+  },
+  "test_logs": [
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/publication/operational-focused-tests.log",
+      "sha256": "bdf556ff96e35749e890aa6d67a771b7601fbfdf8475e0cd9c1ddc3eda340834"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/operational-review/preloader-tests.log",
+      "sha256": "4d1ebc3688b6f36b5e5a6460f5e3bb2fe357d98d3e43444fcf18be0422bf33bc"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/operational-review/collect-watch-tests.log",
+      "sha256": "d43293ddf677495bd21def790548e54160e37a51b6410bc02324e3d93ef57d2a"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/operational-review/validator-independent-run.log",
+      "sha256": "cf95cdb8e9a143b59c902014efb28005ae3ccf75da0dddececf158dd063f6b90"
+    }
+  ],
+  "findings": [
+    "Earliest-active owned child includes source loader, install, all learning stages and export. Original epoch+43200 is immutable;30-second cleanup reserve and provider42300-second runtime timeout are layered safeguards.",
+    "Adversarial tests prove bounded cleanup of blocked TERM-ignoring child and detached descendant, unrelated sibling survival, expired no-launch and parent-death cleanup.",
+    "Only transient read-only recovery is retried with per-stage backoff and Retry-After. Access denial/integrity failure pauses; partial downloads are quarantined. No automatic new run or deadline reset.",
+    "Latest-only metadata/status is bracketed by exact active source. Artifact bytes use explicit numeric output version2.",
+    "Operational success requires production Granite8B/G4 hardware receipt, positive finite global optimizer updates and changed adapters, physical generation, no unknown ledger,120task attempts/167denominator, approved public-data/scorer/source pins and all8stages.",
+    "Closed nonforced inner/outer owned trees, fixed deadline and outer post-export completion must validate. All ZIP member hashes/CRC and downloaded adapter hashes validate; checkpoint presence plus sealed hash manifest is labeled separately.",
+    "Provider COMPLETE alone, PARTIAL_SCORED, preflight and synthetic fixtures do not qualify. Accuracy metrics are neither interpreted nor emitted."
+  ],
+  "remaining_prerequisites": [
+    "Actual private Dataset readback and portable acceptance for observed provider layout.",
+    "Verified authorized Git publication and exact inactive notebook source readback.",
+    "Single hash-bound active finalization/dispatch followed by terminal monitoring."
+  ],
+  "limitations": [
+    "No supported Kaggle reference/version-to-session-ID cancellation mapping is available; no guessed ID or browser login was used.",
+    "Execution cap does not guarantee arbitrary provider queue delays, VM allocation release, billing shutdown or network availability.",
+    "All current validation is offline CPU/fixture testing. No actual production runtime success is asserted."
+  ]
+}

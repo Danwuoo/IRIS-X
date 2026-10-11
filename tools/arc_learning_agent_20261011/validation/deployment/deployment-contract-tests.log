@@ -1,0 +1,13 @@
+test_activation_only_three_config_fields (__main__.DeploymentContractTests.test_activation_only_three_config_fields) ... ok
+test_all_template_hashes_and_default_inert (__main__.DeploymentContractTests.test_all_template_hashes_and_default_inert) ... ok
+test_budget_exact (__main__.DeploymentContractTests.test_budget_exact) ... ok
+test_embedded_bindings (__main__.DeploymentContractTests.test_embedded_bindings) ... ok
+test_input_overlap_blocks_before_writes (__main__.DeploymentContractTests.test_input_overlap_blocks_before_writes) ... ok
+test_outer_environment_overlap_blocks_before_writes (__main__.DeploymentContractTests.test_outer_environment_overlap_blocks_before_writes) ... ok
+test_runtime97_unchanged (__main__.DeploymentContractTests.test_runtime97_unchanged) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.029s
+
+OK
+Learning-agent disabled. Review the run guide before enabling a new session.

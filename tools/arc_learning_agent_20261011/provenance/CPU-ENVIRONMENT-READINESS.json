@@ -1,0 +1,20 @@
+{
+  "free_bytes": 16927858688,
+  "gpu_operations": 0,
+  "limitation": "Package/tokenizer readiness only; lead owns actual tiny forward/backward/adapter-reset training integration tests.",
+  "model_weights_loaded": false,
+  "native_tokenizer_local_load": true,
+  "python": "/workspace/scratch/3c2b2502fb1e/.public120-training-cpu-env/bin/python",
+  "status": "CPU_IMPORT_GRADIENT_TOKENIZER_SMOKE_PASS",
+  "tiny_gradient_correct": true,
+  "tiny_gradient_device": "cpu",
+  "tokenizer_class": "GPT2Tokenizer",
+  "versions": {
+    "accelerate": "1.10.1",
+    "peft": "0.21.0",
+    "tokenizers": "0.22.2",
+    "torch": "2.8.0+cu128",
+    "transformers": "5.8.1"
+  },
+  "wheel_lock_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052"
+}

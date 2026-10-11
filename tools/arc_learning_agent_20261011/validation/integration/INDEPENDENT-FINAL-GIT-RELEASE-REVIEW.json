@@ -1,0 +1,74 @@
+{
+  "format": "irisx/independent-final-git-release-review-v1",
+  "status": "PASS",
+  "created_utc": "2026-10-11T05:18:59.212633+00:00",
+  "base_commit": "aec565393fa154ccb9857cb18bc3d6c79b1e7ce8",
+  "reviewed_tree_before_receipt_append": "74c28a20aa96cf5f5bc12c6c4c49d5520d3f0355",
+  "reviewed_changed_paths": 81,
+  "snapshot_sha256": "d57d7607d8a37d8d0419332f83cf3d2062820ae87038d683a823526714148297",
+  "prior76_tree": "fc558933649ffb6e7fb4856fce75c0c16ed8b843",
+  "prior76_bytes_unchanged": true,
+  "sole_delta_files": [
+    {
+      "path": "tools/arc_learning_agent_20261011/publication/KAGGLE-SAVE-INDEX.md",
+      "sha256": "dffe7eb90dddfb824d8df0e552786e251e2a19ae63120128f36642388be1befa"
+    },
+    {
+      "path": "tools/arc_learning_agent_20261011/publication/LEARNING-PUBLICATION-CHECKPOINT.json",
+      "sha256": "9d9aa7b0ffcad39019b1a8e3d8d8d59abed7ed81b758a8465d6ac80cbd090184"
+    },
+    {
+      "path": "tools/arc_learning_agent_20261011/validation/deployment/ACTUAL-PROVIDER-MOUNT-ACCEPTANCE.json",
+      "sha256": "5d0bea95bc805d586ab2629caea24348578830365e8d794e3b8c1383dc2e3c37"
+    },
+    {
+      "path": "tools/arc_learning_agent_20261011/validation/deployment/PROVIDER-READBACK-AUDIT.json",
+      "sha256": "ab3c7bb852e4c42dad173269bc84295e8f31c44a3e978e16dc1186ba729cc11a"
+    },
+    {
+      "path": "tools/arc_learning_agent_20261011/validation/integration/INDEPENDENT-PRE-PROVIDER-STAGED-REVIEW.json",
+      "sha256": "fd5b1b30dbc77501f3a51a3447e566cab9947bd244bb7fcbfa9a8ec9ae0c6f87"
+    }
+  ],
+  "unaffected_baseline_blobs_modes_preserved": 1444,
+  "frozen_package_files_unchanged": 37,
+  "runtime_files_unchanged": 97,
+  "source_freeze_sha256": "29d2f2989f43151115ae5a7db0befa2e529f19e88220f46a37e051fc892cd74b",
+  "publication_manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+  "provider_evidence": {
+    "private_datasets": [
+      {
+        "id": 12504696,
+        "version": 1,
+        "files": 99,
+        "layout": "extracted-directory"
+      },
+      {
+        "id": 12504720,
+        "version": 1,
+        "files": 1004,
+        "layout": "original-upload"
+      }
+    ],
+    "private_inactive_notebook_id": 138123872,
+    "inactive_version": 1,
+    "inactive_source_normalization_only": true,
+    "mounted_versions_not_attested_by_notebook_metadata": true,
+    "actual_downloaded_layout_cpu_preflight": true,
+    "model_calls": 0,
+    "public_gold_read": false,
+    "initial_external_harness_path_error_preserved": true
+  },
+  "active_gpu_admission": "PENDING verified Git publication and final one-shot original-epoch preflight",
+  "qualifications": [
+    "Provider facts are validated from persisted receipts and independent readback audit, not newly queried by this reviewer.",
+    "136 focused CPU tests pass; full aggregate retains baseline1 failure,35 errors,74 skips. Original additional timing failure and paired reruns remain disclosed.",
+    "No production GPU/model success,accuracy score,queue SLA,VM release or billing-stop claim."
+  ],
+  "sole_permitted_append": {
+    "path": "tools/arc_learning_agent_20261011/validation/integration/INDEPENDENT-FINAL-GIT-RELEASE-REVIEW.json",
+    "rule": "Append the exact bytes of this receipt only; independently verify the resulting tree before commit."
+  },
+  "provider_writes_by_reviewer": 0,
+  "source_writes_by_reviewer": 0
+}

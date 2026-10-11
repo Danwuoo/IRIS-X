@@ -1,0 +1,69 @@
+{
+  "format": "irisx/learning-portable-acceptance-v1",
+  "notebook_sha256": "c1d12bc2ac148e1697166709ca4462d9213858fa3d6367e10315f32f2a40c700",
+  "modes": [
+    {
+      "mode": "archive",
+      "returncode": 0,
+      "stdout_sha256": "a18791a381789611942b6da13240171d92739c0352954018a622e7a3fd681652",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "acceptance": {
+        "summary": {
+          "controls_passed": true,
+          "gpu_runtime_verified": false,
+          "model_calls": 0,
+          "run_id": "learning-27587913d1bc47d5810e900cd3fa49d4",
+          "scoring_started": false,
+          "source_identity_sha256": "ad0c72761572402f2c6f1327a210a2af06b94d4b0f9666564757eb637f599393",
+          "status": "PREFLIGHT_ONLY",
+          "training_steps": 0
+        },
+        "transport": "verified-archive",
+        "neural_modules": false
+      }
+    },
+    {
+      "mode": "extracted-root",
+      "returncode": 0,
+      "stdout_sha256": "a53fb108cf5a6a7e9643e3cf6c7ec568ddf7c61463c43029088ac521c8f11962",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "acceptance": {
+        "summary": {
+          "controls_passed": true,
+          "gpu_runtime_verified": false,
+          "model_calls": 0,
+          "run_id": "learning-863dbc8843e747b79d92264272a3acf0",
+          "scoring_started": false,
+          "source_identity_sha256": "ad0c72761572402f2c6f1327a210a2af06b94d4b0f9666564757eb637f599393",
+          "status": "PREFLIGHT_ONLY",
+          "training_steps": 0
+        },
+        "transport": "verified-extracted-source-root",
+        "neural_modules": false
+      }
+    },
+    {
+      "mode": "extracted-source",
+      "returncode": 0,
+      "stdout_sha256": "9021bf5e339bc2b06780c59fdca65f8512c882291992a777e90f4363cef1dee1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "acceptance": {
+        "summary": {
+          "controls_passed": true,
+          "gpu_runtime_verified": false,
+          "model_calls": 0,
+          "run_id": "learning-0a77454477ca4773a26505bd3ea1b209",
+          "scoring_started": false,
+          "source_identity_sha256": "ad0c72761572402f2c6f1327a210a2af06b94d4b0f9666564757eb637f599393",
+          "status": "PREFLIGHT_ONLY",
+          "training_steps": 0
+        },
+        "transport": "verified-extracted-source-directory",
+        "neural_modules": false
+      }
+    }
+  ],
+  "passed": true,
+  "model_calls": 0,
+  "public_gold_opened": false
+}

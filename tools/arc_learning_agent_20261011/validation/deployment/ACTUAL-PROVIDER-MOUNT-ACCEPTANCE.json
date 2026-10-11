@@ -1,0 +1,43 @@
+{
+  "format": "irisx/actual-provider-learning-mount-acceptance-v1",
+  "notebook_sha256": "47455fa3e5f5aa6224a36c9cbaf7f624ca119167e8d4b1e5e56a76ccdb8515d1",
+  "manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+  "provider_receipts": {
+    "code": {
+      "sha256": "35eb39584648163af55782e33dab3872ecaff9cdc2ca7d50c94012432f2a9f19",
+      "dataset_id": 12504696,
+      "version": 1,
+      "layout": "extracted-directory"
+    },
+    "training": {
+      "sha256": "c36cefbe6d6b039971d536e1e530e2f7b16cb01f170e1d4f92f1b212b933e47e",
+      "dataset_id": 12504720,
+      "version": 1,
+      "layout": "original-upload"
+    }
+  },
+  "returncode": 0,
+  "passed": true,
+  "model_calls": 0,
+  "public_gold_read": false,
+  "acceptance": {
+    "status": "PREFLIGHT_ONLY",
+    "run_id": "learning-6e65401bd98e4b6ca819aa21b86b318d",
+    "controls": 128,
+    "model_calls": 0,
+    "training_steps": 0,
+    "gold_read": false,
+    "source_identity_sha256": "ad0c72761572402f2c6f1327a210a2af06b94d4b0f9666564757eb637f599393",
+    "outer_closure_sha256": "7b260a3cd57e8a1257c0ac7cf66534b6b0b5d5a8a54e41b4f1547eb382392b89"
+  },
+  "successful_invocation_receipt_sha256": "3e34fd5dddd6d6d26f8acb4ed019159c932ac601b0171934b151778fe63c060b",
+  "harness_sha256": "95ce80538c479b96f18cc07eb163e79cf80993e1ed723efc537d300f6e99db6d",
+  "previous_harness_invocation": {
+    "receipt_sha256": "7e1b80c9fde0d0817bc634cfc8cc77695cf12a93b9625fa41343421f7a76a343",
+    "notebook_status": "PREFLIGHT_ONLY",
+    "notebook_controls_passed": 128,
+    "harness_failure": "Post-run assertion used output/controls.json instead of output/preflight/controls.json",
+    "correction": "External acceptance harness path only; notebook/runtime/payload bytes unchanged",
+    "preserved": true
+  }
+}

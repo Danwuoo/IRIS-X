@@ -1,0 +1,69 @@
+{
+  "format": "irisx/learning-portable-acceptance-v1",
+  "notebook_sha256": "47455fa3e5f5aa6224a36c9cbaf7f624ca119167e8d4b1e5e56a76ccdb8515d1",
+  "modes": [
+    {
+      "mode": "archive",
+      "returncode": 0,
+      "stdout_sha256": "42530e8eb33b0006ea167642552298bc57d5dc8a37d18a80518d57204b79a348",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "acceptance": {
+        "summary": {
+          "controls_passed": true,
+          "gpu_runtime_verified": false,
+          "model_calls": 0,
+          "run_id": "learning-aef88b5b9cab4d93a02849839bb13bb2",
+          "scoring_started": false,
+          "source_identity_sha256": "ad0c72761572402f2c6f1327a210a2af06b94d4b0f9666564757eb637f599393",
+          "status": "PREFLIGHT_ONLY",
+          "training_steps": 0
+        },
+        "notebook_owner_closed": true,
+        "neural_modules": false
+      }
+    },
+    {
+      "mode": "extracted-root",
+      "returncode": 0,
+      "stdout_sha256": "834e2065ec07c086510c534d04c49fefdd20e438b46e5b8f6024795147864416",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "acceptance": {
+        "summary": {
+          "controls_passed": true,
+          "gpu_runtime_verified": false,
+          "model_calls": 0,
+          "run_id": "learning-40616401a38f46c9816948365a5cb007",
+          "scoring_started": false,
+          "source_identity_sha256": "ad0c72761572402f2c6f1327a210a2af06b94d4b0f9666564757eb637f599393",
+          "status": "PREFLIGHT_ONLY",
+          "training_steps": 0
+        },
+        "notebook_owner_closed": true,
+        "neural_modules": false
+      }
+    },
+    {
+      "mode": "extracted-source",
+      "returncode": 0,
+      "stdout_sha256": "13018621fbfacdaf8ed543d396550721db317e18196609de7cb511163db74b38",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "acceptance": {
+        "summary": {
+          "controls_passed": true,
+          "gpu_runtime_verified": false,
+          "model_calls": 0,
+          "run_id": "learning-09908aef82c94789a2164e4ffd16db53",
+          "scoring_started": false,
+          "source_identity_sha256": "ad0c72761572402f2c6f1327a210a2af06b94d4b0f9666564757eb637f599393",
+          "status": "PREFLIGHT_ONLY",
+          "training_steps": 0
+        },
+        "notebook_owner_closed": true,
+        "neural_modules": false
+      }
+    }
+  ],
+  "passed": true,
+  "model_calls": 0,
+  "public_gold_opened": false
+}

@@ -1,0 +1,58 @@
+{
+  "format": "irisx/read-only-learning-packaging-review-v1",
+  "checked_at_utc": "2026-10-11T04:02:52.065071+00:00",
+  "status": "PASS",
+  "base_commit": "aec565393fa154ccb9857cb18bc3d6c79b1e7ce8",
+  "baseline_files": 1446,
+  "baseline_missing": [],
+  "baseline_changed": [],
+  "baseline_mode_differences": [],
+  "root_attributes_unchanged": true,
+  "source_freeze_sha256": "29d2f2989f43151115ae5a7db0befa2e529f19e88220f46a37e051fc892cd74b",
+  "package_file_count": 37,
+  "package_bytes_exact": true,
+  "runtime_closure_count": 97,
+  "runtime_closure_bytes_exact": true,
+  "source_archive_97_entries_exact": true,
+  "source_archive_sha256": "53368a9344ffb589dd3bf5fe8f5a39f5c9ca5d1b0095c5c4a3c4cd2ada718b8e",
+  "notebook_sha256": "c1d12bc2ac148e1697166709ca4462d9213858fa3d6367e10315f32f2a40c700",
+  "notebook_output_free": true,
+  "git_clean_filter_would_change_paths": [],
+  "whitespace_findings": [],
+  "excluded_bytecode_files": 34,
+  "superseded_prototype_present_but_excluded": true,
+  "superseded_prototype_file_count": 3,
+  "release_requires_manifest_allowlist_not_worktree_recursive_copy": true,
+  "baseline_git_index_unchanged": true,
+  "source_worktree_not_staged_or_modified": true,
+  "git_object_writes": 0,
+  "git_ref_writes": 0,
+  "external_calls": 0,
+  "publication_authorized": false,
+  "review_limitation": "Packaging/baseline integrity only; source scientific and test acceptance belongs to the independent source reviewers.",
+  "whitespace_check": {
+    "files_checked": 37,
+    "all_diagnostics_empty": true,
+    "no_index_difference_exit": 1,
+    "positive_control_whitespace_error_exit": 3,
+    "compatibility": "PASS"
+  },
+  "evidence": [
+    {
+      "file": "ATTRIBUTES-AND-BYTE-CHECK.json",
+      "sha256": "0e488fb65ea415a115919b184cd99f66c509bfdea360293d6f214e03a8d6fd61"
+    },
+    {
+      "file": "WHITESPACE-CHECK.json",
+      "sha256": "05047ce86699839e4a0264cd60ef905a25b22b50aecf1340c7c962d5f1fdf615"
+    },
+    {
+      "file": "WHITESPACE-EXIT-CONTROL.json",
+      "sha256": "270604c2e7dee1971631d990fe6f296e739da39c14fca84b2840fd1014b82e49"
+    },
+    {
+      "file": "FROZEN-PACKAGE-BYTE-INVENTORY.json",
+      "sha256": "be47611672a91b2d4e38089215b36811b5713956ec4655c80a50bab959b04168"
+    }
+  ]
+}

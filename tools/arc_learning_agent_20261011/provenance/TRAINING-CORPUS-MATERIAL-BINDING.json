@@ -1,0 +1,18 @@
+{
+  "format": "irisx/training-corpus-material-binding-v1",
+  "purpose": "Hash/size bindings only; original task-containing corpus manifests remain outside Git",
+  "files": [
+    {
+      "bytes": 2824905,
+      "sha256": "ca23b9cb38b8b89bf86cd3cedba9f409886ec9dde3260430aa9f0993cf1e9079",
+      "historical_name": "manifest.json"
+    },
+    {
+      "bytes": 2781827,
+      "sha256": "a2b7b5f5935676cb4b1da135565f10437f57b24a72208784b1653a7e82a7c498",
+      "historical_name": "official-manifest.json"
+    }
+  ],
+  "runtime_source_unchanged": true,
+  "task_payloads_in_this_receipt": false
+}

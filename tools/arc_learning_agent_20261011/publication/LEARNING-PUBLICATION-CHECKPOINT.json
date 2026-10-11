@@ -1,0 +1,133 @@
+{
+  "account": "danielwuu",
+  "active_run": {
+    "absolute_session_seconds": 43200,
+    "provider_timeout_seconds": 42300,
+    "required_before_dispatch": [
+      "actual provider-layout CPU acceptance",
+      "verified Git main publication",
+      "fresh unchanged inactive-v1 and prior-G4 COMPLETE preflight",
+      "single numeric epoch-only finalized source and durable dispatch intent"
+    ],
+    "status": "NOT_DISPATCHED",
+    "target_version": 2,
+    "template_sha256": "31406fd7c97107d13e656e429cdf97338ce795dba08dd62efe56f771d5b662ff"
+  },
+  "datasets": [
+    {
+      "archive_sha256": "19d112c9ea85b76622a7e983d906d3f1038be74b257bee0bcf94a62e08543dae",
+      "convert_to_csv_wire_field_supported": false,
+      "create_calls": 1,
+      "dataset_id": 12504696,
+      "exact_byte_roundtrip_verified": true,
+      "file_count": 99,
+      "inventory_sha256": "686be42d1ede5f8a4e445eaaafc1cdb42ee4881cc51bf1e7a6a52eaf162b3ca5",
+      "layout": "extracted-directory",
+      "license_name": "Other (specified in description)",
+      "manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+      "private": true,
+      "receipt_sha256": "35eb39584648163af55782e33dab3872ecaff9cdc2ca7d50c94012432f2a9f19",
+      "reference": "danielwuu/iris-x-learning-agent-code-20261011",
+      "role": "code",
+      "root_manifest_sha256": "7ab8a14641f2712e45e32cca11c94a70bca5583033ae7ae6d8ef2ff03501bc02",
+      "status": "VERIFIED_EXACT_DATASET_V1",
+      "total_bytes": 2122269,
+      "upload_init_calls": 1,
+      "upload_put_calls": 1,
+      "url": "https://www.kaggle.com/datasets/danielwuu/iris-x-learning-agent-code-20261011",
+      "utc": "2026-10-11T05:07:11.227084+00:00",
+      "version": 1
+    },
+    {
+      "archive_sha256": "7b69b6f54be83cd76970de9bd18db1695cf1ec10d2fa1cbe4e1cdfab0cf5fd85",
+      "convert_to_csv_wire_field_supported": false,
+      "create_calls": 1,
+      "dataset_id": 12504720,
+      "exact_byte_roundtrip_verified": true,
+      "file_count": 1004,
+      "inventory_sha256": "965bad11ade5eab53cf9641c7820048ffb5e528f99927e1c67a6b0364ba38d00",
+      "layout": "original-upload",
+      "license_name": "Apache 2.0",
+      "manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+      "private": true,
+      "receipt_sha256": "c36cefbe6d6b039971d536e1e530e2f7b16cb01f170e1d4f92f1b212b933e47e",
+      "reference": "danielwuu/iris-x-learning-training-20261011",
+      "role": "training",
+      "root_manifest_sha256": "a4b9da04d8690c57a3d0855553989fa055c5b9283ffc1784fe99413c8d1cb9d5",
+      "status": "VERIFIED_EXACT_DATASET_V1",
+      "total_bytes": 5141713,
+      "upload_init_calls": 1,
+      "upload_put_calls": 1,
+      "url": "https://www.kaggle.com/datasets/danielwuu/iris-x-learning-training-20261011",
+      "utc": "2026-10-11T05:12:46.590035+00:00",
+      "version": 1
+    }
+  ],
+  "format": "irisx/learning-inactive-publication-checkpoint-v1",
+  "limitations": [
+    "Kaggle notebook metadata returns Dataset identities, not mounted version numbers; exact versions are submitted and content pins remain fail-closed in the notebook.",
+    "Dataset payloads were downloaded through numeric version1 and fully compared against the reviewed closed inventories. The SDK has no convert_to_csv wire field; complete exact-byte readback enforces preservation.",
+    "The inactive provider COMPLETE status is a save/render checkpoint, not operational GPU success.",
+    "Training full-archive read returned404 twice after accepted creation, then the same read-only route succeeded. Both Dataset creations and the inactive save occurred exactly once.",
+    "Absolute runtime watchdog and provider timeout bound execution; provider queuing, VM shutdown and billing state are not independently attested."
+  ],
+  "monitor_review_sha256": "69db1f53b38e119a4b2b958268491946b27e77bceb97b4e5cfba8b4d73f4b8c0",
+  "notebook": {
+    "competition_sources": [
+      "arc-prize-2026-arc-agi-3"
+    ],
+    "dataset_identities_returned": [
+      "danielwuu/iris-arc-granite42-8b-offline",
+      "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+      "danielwuu/iris-arc-next-cpython312-offline",
+      "danielwuu/iris-arc-next-cu128-cp312-wheels",
+      "danielwuu/iris-arc-next-runtime",
+      "danielwuu/iris-x-learning-agent-code-20261011",
+      "danielwuu/iris-x-learning-training-20261011",
+      "danielwuu/iris-x-public120-data-20261010"
+    ],
+    "dataset_sources_submitted": [
+      "danielwuu/iris-x-learning-agent-code-20261011/1",
+      "danielwuu/iris-x-public120-data-20261010/1",
+      "danielwuu/iris-x-learning-training-20261011/1",
+      "danielwuu/iris-arc-next-runtime/8",
+      "danielwuu/iris-arc-granite42-8b-offline/2",
+      "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+      "danielwuu/iris-arc-next-cpython312-offline/2",
+      "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+    ],
+    "enable_model": false,
+    "execution_type": "QUICK_SAVE",
+    "gpu": false,
+    "internet": false,
+    "kernel_id": 138123872,
+    "manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+    "manual_start": false,
+    "metadata_status_mapping": "Latest-only metadata/status bracketed by exact source/ID/version before and after; numeric version pins required for later outputs.",
+    "mounted_dataset_versions_independently_verified": false,
+    "normalized_source_exact": true,
+    "operational_success_claimed": false,
+    "private": true,
+    "receipt_sha256": "44b99c4bb2486a670d7bb9b0af42dd0a8ccdff03b2b4bc7479cc34a25fe8119c",
+    "reference": "danielwuu/iris-x-learning-agent-20261011",
+    "save_calls": 1,
+    "saved_source": {
+      "bytes": 50183,
+      "sha256": "3172d0813822c3ff587b1bd4a7702b0f74dc47c401ff35e785007ba741797486"
+    },
+    "session_timeout_seconds_submitted": null,
+    "source_artifact_sha256": "47455fa3e5f5aa6224a36c9cbaf7f624ca119167e8d4b1e5e56a76ccdb8515d1",
+    "status": "COMPLETE",
+    "submitted_source_sha256": "47455fa3e5f5aa6224a36c9cbaf7f624ca119167e8d4b1e5e56a76ccdb8515d1",
+    "tpu": false,
+    "url": "https://www.kaggle.com/code/danielwuu/iris-x-learning-agent-20261011",
+    "utc": "2026-10-11T05:14:18.957993+00:00",
+    "version": 1
+  },
+  "publication_manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+  "release_approval_sha256": "cff62fc2dc5edb9f8fa49a7d7529c645bab331d6c15044c1742d6feb8f837b85",
+  "status": "TWO_DATASETS_AND_INACTIVE_V1_VERIFIED",
+  "transport_review_sha256": "aa6b36e66b1807cef0375cc9e2f3801464bddb561b08c54eafbce951e24fc072",
+  "transport_sha256": "1e3222733044f00ac2e7703feb299a41931ee8b6d25744ceaa2c50d2e57b7ab2",
+  "utc": "2026-10-11T05:15:34.357976+00:00"
+}

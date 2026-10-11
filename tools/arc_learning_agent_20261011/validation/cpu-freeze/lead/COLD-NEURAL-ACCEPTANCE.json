@@ -1,0 +1,322 @@
+{
+  "status": "COMPLETE",
+  "score_status": "SCORED",
+  "training_steps": 3,
+  "dev_selection": {
+    "comparison_complete": true,
+    "complete_matched_tasks": [
+      "a"
+    ],
+    "mean_nll": {
+      "0": 4.857431411743164,
+      "1": 4.85741392771403
+    },
+    "metric": "same held-out training-demo completion NLL",
+    "predeclared_options": [
+      0,
+      1
+    ],
+    "predeclared_tasks": [
+      "a"
+    ],
+    "public_answers_used": false,
+    "rows": [
+      {
+        "adaptation": null,
+        "held_out_demo_index": 2,
+        "score": {
+          "adapter_fingerprint": "efaecda491cb9869b7d9120d57bcdc2508e4ed354a3f6ffdc8d3ffb6eba7bb5c",
+          "adapter_fingerprint_cache_hit": false,
+          "adapter_fingerprint_tensor_elements": 512,
+          "adapter_state_sha256": "3b1604636005a7bf1c2b82fc9792aa283f7fe08eff51f2171adfd93e892b100a",
+          "completion_sha256": "6f4b6612125fb3a0daecd2799dfd6c9c299424fd920f9b308110a2c1fbd8f443",
+          "completion_token_ids": [
+            50,
+            49,
+            128
+          ],
+          "completion_tokens": 3,
+          "dispatched": true,
+          "elapsed_seconds": 0.007551082002464682,
+          "fingerprint_cache_hits": 0,
+          "fingerprint_rehashes": 2,
+          "forward_calls": 1,
+          "forward_input_tokens": 461,
+          "full_vocabulary_rows": 130,
+          "input_tokens": 461,
+          "mean_nll": 4.857431411743164,
+          "model_forward_started": true,
+          "model_identity_sha256": "a452b578fc5c3bcb33835307fa4ef6ce55dd1612c6cc2153ea1db3f8c2ee32d9",
+          "native_eos_ids": [
+            128
+          ],
+          "native_policy_sha256": "e654a363fcdf4e156e60ce9769537ebe707a9d567aa5cbf3b68015dad7d2511c",
+          "nll_sum": 14.572294235229492,
+          "output_tokens": 0,
+          "physical_event_id": "likelihood-2",
+          "prompt_sha256": "89fa372edae65402591faf66b8b17b54088afbf260a51817487a4703ca005209",
+          "prompt_tokens": 459,
+          "scoring_policy": "full-native-head-shifted-completion-including-EOS",
+          "tiny_cpu": true,
+          "token_count": 3,
+          "tokenizer_sha256": "4bfed68e3c9f2a692bbcb1e8a6bdd4771afe02a439ce3cf1f62a928ab7c565a8",
+          "valid": true
+        },
+        "steps": 0,
+        "target_used_for_adaptation": false,
+        "task_id": "a"
+      },
+      {
+        "adaptation": {
+          "adapter_after_sha256": "645ac79214454ff548c805ee002e6bed8ffe554074e49169866e5ef643c6f876",
+          "adapter_before_sha256": "3b1604636005a7bf1c2b82fc9792aa283f7fe08eff51f2171adfd93e892b100a",
+          "admission": {
+            "records_sha256": "d79bd7407cf82e3704c6300ceb2828574b586dc3f90a6d0a665bfc129bab2cfe",
+            "scope": "active-task-demonstrations-only"
+          },
+          "admitted_steps": 1,
+          "attempted_microbatches": 1,
+          "checkpoints": [],
+          "cumulative_processed_by_kind": {
+            "grid": {
+              "input_tokens": 430,
+              "microbatches": 1,
+              "supervised_tokens": 6,
+              "unique_family_count": 1,
+              "unique_record_count": 1
+            }
+          },
+          "cumulative_unique_family_count": 1,
+          "cumulative_unique_record_count": 1,
+          "cursor": {
+            "cursor": 1,
+            "epoch": 0,
+            "order": [
+              7,
+              14,
+              5,
+              11,
+              0,
+              9,
+              2,
+              12,
+              3,
+              10,
+              1,
+              4,
+              15,
+              13,
+              6,
+              8
+            ]
+          },
+          "elapsed_seconds": 0.02174165699761943,
+          "exclusions": {},
+          "full_native_vocabulary": 130,
+          "input_tokens": 430,
+          "input_tokens_per_second": 19777.701398153884,
+          "losses": [
+            4.823493480682373
+          ],
+          "optimizer_serial": 3,
+          "optimizer_state_consistent": true,
+          "optimizer_state_sha256": "079b62c87671c5dc943dbb47052847e3ae0156c0ad664960d3a15f31d325b0e3",
+          "optimizer_steps": 1,
+          "physical_event_id": "training-3",
+          "processed_by_kind": {
+            "grid": {
+              "input_tokens": 430,
+              "microbatches": 1,
+              "supervised_tokens": 6,
+              "unique_family_count": 1,
+              "unique_record_count": 1
+            }
+          },
+          "requested_steps": 1,
+          "rng_sha256": "2ce51db1c299da5efb0371642afd4b65a0d616d8f353a55773f826d1035604d3",
+          "sampling": {
+            "effective_cycle": null,
+            "engineering_hypothesis": true,
+            "missing_kinds_removed": [],
+            "policy": "uniform-row-epochs",
+            "requested_cycle": null
+          },
+          "status": "complete",
+          "steps": 1,
+          "supervised_tokens": 6,
+          "task_id": "dev:a",
+          "tiny_cpu": true,
+          "total_steps": 1,
+          "unique_family_count": 1,
+          "unique_record_count": 1,
+          "unique_record_ids": [
+            "3c93f0c8f0e77eb3738c00b06067b1323f21ccbea11310afc3abc8e229c97431"
+          ],
+          "updates": [
+            {
+              "adam_step": 1,
+              "adapter_after_sha256": "645ac79214454ff548c805ee002e6bed8ffe554074e49169866e5ef643c6f876",
+              "adapter_before_sha256": "3b1604636005a7bf1c2b82fc9792aa283f7fe08eff51f2171adfd93e892b100a",
+              "changed_adapter_tensors": 14,
+              "elapsed_seconds": 0.014074136000999715,
+              "finite_gradients": true,
+              "gradient_norm": 0.0589369535446167,
+              "input_tokens": 430,
+              "loss": 4.823493480682373,
+              "record_id": "3c93f0c8f0e77eb3738c00b06067b1323f21ccbea11310afc3abc8e229c97431",
+              "supervised_tokens": 6
+            }
+          ],
+          "usage_known": true,
+          "validation_claim": "training loss only; no fresh-fold generalization evidence"
+        },
+        "held_out_demo_index": 2,
+        "score": {
+          "adapter_fingerprint": "dcb7cc52ff42d15bee0590f351d7b368c8d4ebcc5c261f68d7ee68211c629d68",
+          "adapter_fingerprint_cache_hit": false,
+          "adapter_fingerprint_tensor_elements": 512,
+          "adapter_state_sha256": "645ac79214454ff548c805ee002e6bed8ffe554074e49169866e5ef643c6f876",
+          "completion_sha256": "6f4b6612125fb3a0daecd2799dfd6c9c299424fd920f9b308110a2c1fbd8f443",
+          "completion_token_ids": [
+            50,
+            49,
+            128
+          ],
+          "completion_tokens": 3,
+          "dispatched": true,
+          "elapsed_seconds": 0.013749653000559192,
+          "fingerprint_cache_hits": 0,
+          "fingerprint_rehashes": 3,
+          "forward_calls": 1,
+          "forward_input_tokens": 461,
+          "full_vocabulary_rows": 130,
+          "input_tokens": 461,
+          "mean_nll": 4.85741392771403,
+          "model_forward_started": true,
+          "model_identity_sha256": "a452b578fc5c3bcb33835307fa4ef6ce55dd1612c6cc2153ea1db3f8c2ee32d9",
+          "native_eos_ids": [
+            128
+          ],
+          "native_policy_sha256": "e654a363fcdf4e156e60ce9769537ebe707a9d567aa5cbf3b68015dad7d2511c",
+          "nll_sum": 14.57224178314209,
+          "output_tokens": 0,
+          "physical_event_id": "likelihood-3",
+          "prompt_sha256": "89fa372edae65402591faf66b8b17b54088afbf260a51817487a4703ca005209",
+          "prompt_tokens": 459,
+          "scoring_policy": "full-native-head-shifted-completion-including-EOS",
+          "tiny_cpu": true,
+          "token_count": 3,
+          "tokenizer_sha256": "4bfed68e3c9f2a692bbcb1e8a6bdd4771afe02a439ce3cf1f62a928ab7c565a8",
+          "valid": true
+        },
+        "steps": 1,
+        "target_used_for_adaptation": false,
+        "task_id": "a"
+      }
+    ],
+    "selected_ttt_steps": 1,
+    "status": "selected"
+  },
+  "source_identity_sha256": "ad0c72761572402f2c6f1327a210a2af06b94d4b0f9666564757eb637f599393",
+  "actual_neural": true,
+  "synthetic_only": true,
+  "gpu_used": false,
+  "summary": {
+    "status": "COMPLETE",
+    "run_id": "learning-7fd17d7dcca7483bbb561358fe92557f",
+    "solver_status": "complete",
+    "prediction_seal": {
+      "path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/integration/cold-neural-final/output/predictions/prediction-seal.json",
+      "sha256": "97ef4d6317fea316fcd96583e9d2f20b1462916786247fdc36be9869cbcc20cd"
+    },
+    "score_status": "SCORED",
+    "physical_usage": {
+      "caps": {
+        "cpu_checks": 12000,
+        "gas": 2400000000,
+        "generation_calls": 1600,
+        "input_tokens": 50000000,
+        "output_tokens": 3200000,
+        "scoring_forwards": 12000,
+        "training_steps": 8192
+      },
+      "charged": {
+        "cpu_checks": 128,
+        "gas": 614562,
+        "generation_calls": 10,
+        "input_tokens": 46171,
+        "output_tokens": 92,
+        "scoring_forwards": 87,
+        "training_steps": 3
+      },
+      "events": 231,
+      "last_sha256": "90d4f90034c7dc4a38d02a3a9b82b368a47e28915d384500f2274327ab1ab6e6",
+      "pending": {}
+    },
+    "training_steps": 3,
+    "model_stopped": true,
+    "clock": {
+      "format": "irisx/learning-clock-v1",
+      "session_id": "learning-7fd17d7dcca7483bbb561358fe92557f",
+      "started_epoch": 1791690755.0671005,
+      "deadline_epoch": 1791697955.0671005,
+      "maximum_seconds": 7200,
+      "origin": "first-active-cell"
+    },
+    "remaining_seconds": 7163.32839512825,
+    "competition_gpu_equivalent": false,
+    "export": {
+      "format": "irisx/learning-export-closure-v1",
+      "run_id": "learning-7fd17d7dcca7483bbb561358fe92557f",
+      "archive": {
+        "path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/integration/cold-neural-final/output/archives/evidence-learning-7fd17d7dcca7483bbb561358fe92557f.zip",
+        "bytes": 174478,
+        "sha256": "9238950074634084948578f64ac6b12e7c4252d20485202622509dbe0ccb6775"
+      },
+      "inventory_sha256": "84a5e244e0c508727afe59def0d2af41aeb6ced9d7125fd314a6525a931af9ca",
+      "separate_artifacts": {
+        "worker/checkpoints/global-sft/checkpoint-history.json": {
+          "bytes": 238,
+          "sha256": "55391da9ace8a63fc3132082e34a94904508dba9ec654e863f232932e4bdd446"
+        },
+        "worker/checkpoints/global-sft/checkpoint-owner.json": {
+          "bytes": 182,
+          "sha256": "073db025f18b564f2d71088dd0eea5d969b121fb17355fb68cb2d105ddce655c"
+        },
+        "worker/checkpoints/global-sft/latest.json": {
+          "bytes": 124,
+          "sha256": "eaf4940170226b2ea9a2229fc40adf9573bbb587d1688e992deb32f4a3b59766"
+        },
+        "worker/checkpoints/global-sft/step-00000001-73cbb76f/manifest.json": {
+          "bytes": 543,
+          "sha256": "f1dccfcad181f9339ab29b25becb8ddf7abe4704f0bae308079ce88648cbf57b"
+        },
+        "worker/checkpoints/global-sft/step-00000001-73cbb76f/state.pt": {
+          "bytes": 38650,
+          "sha256": "438b1f8daeee2cbc839e7717f8632e6fe728c0585f3bfc71bbb24de1e8a0b4c9"
+        },
+        "worker/trained-global-adapter/README.md": {
+          "bytes": 5158,
+          "sha256": "5549483c481a898f04ed82d4c8b891bd91bd3672cd420f729775fc47c5763ea7"
+        },
+        "worker/trained-global-adapter/adapter-binding.json": {
+          "bytes": 2953,
+          "sha256": "9630adbbec6bdab5a4d5ed6eed9329ae5893ecee53c8c50e11a3f2ab89f6ec7a"
+        },
+        "worker/trained-global-adapter/adapter_config.json": {
+          "bytes": 1312,
+          "sha256": "9fc1d57a2fad01593d7c7a563cb496c420c9f328ac34e89dcd3bbb7628b6225f"
+        },
+        "worker/trained-global-adapter/adapter_model.safetensors": {
+          "bytes": 3776,
+          "sha256": "e39921776775e84995660e130164a04dbf549dad100f83be0f422f00e2cee9df"
+        },
+        "worker/trained-global-adapter/tiny-byte-tokenizer.json": {
+          "bytes": 534,
+          "sha256": "3ef6384c4c40996ddc625a97b863571d49423a794ed5d583b71c77fc8880ec9d"
+        }
+      },
+      "generation_may_resume": false
+    }
+  }
+}

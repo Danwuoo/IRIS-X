@@ -1,0 +1,100 @@
+{
+  "format": "irisx/independent-transport-review-v1",
+  "status": "PASS",
+  "transport_logic_status": "PASS",
+  "script_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/publication/learning_transport.py",
+  "script_sha256": "1e3222733044f00ac2e7703feb299a41931ee8b6d25744ceaa2c50d2e57b7ab2",
+  "publication_manifest_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/publication-manifest.json",
+  "publication_manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+  "release_approval_sha256": "cff62fc2dc5edb9f8fa49a7d7529c645bab331d6c15044c1742d6feb8f837b85",
+  "provider_writes_authorized_by_this_receipt": false,
+  "final_gate": "Transport gate satisfied for these exact bytes. Any script, manifest or release-approval change invalidates this receipt. Active run remains conditional on separately bound operational monitor/output-validator PASS.",
+  "test_runs": [
+    {
+      "errors": 0,
+      "failures": 0,
+      "manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+      "manifest_unchanged": true,
+      "network_calls": 0,
+      "optimized": true,
+      "script_sha256": "1e3222733044f00ac2e7703feb299a41931ee8b6d25744ceaa2c50d2e57b7ab2",
+      "script_unchanged": true,
+      "tests_run": 18
+    },
+    {
+      "errors": 0,
+      "failures": 0,
+      "manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+      "manifest_unchanged": true,
+      "network_calls": 0,
+      "optimized": false,
+      "script_sha256": "1e3222733044f00ac2e7703feb299a41931ee8b6d25744ceaa2c50d2e57b7ab2",
+      "script_unchanged": true,
+      "tests_run": 18
+    }
+  ],
+  "test_artifacts": {
+    "test_transport_inert.py": "0a6688a8d8e562cb27c18d078554a42118b387696de51dade5ea5e29b3a444b2",
+    "final-optimized-tests.log": "bc2ae064e54818ab9d63d61731676e082194282506db359705f35f691eee42dc",
+    "final-normal-tests.log": "5778d28a4c47d82d9ccb7a9490271a7df24f1ae36a6bd6b471f48efdbd6eedbf",
+    "FINAL-LINKAGE-VALIDATION.json": "c715f6d198c294965e27401c4dd49c4e398117975c050cc34cc9f974d4830ba0",
+    "PROVISIONAL-TRANSPORT-REVIEW.json": "8093e56e7b98ac3f3498b34220eff61696effa550ae01e75aba97751865de300"
+  },
+  "approved_notebook_templates": [
+    {
+      "role": "inactive",
+      "sha256": "47455fa3e5f5aa6224a36c9cbaf7f624ca119167e8d4b1e5e56a76ccdb8515d1",
+      "reference": "danielwuu/iris-x-learning-agent-20261011",
+      "version": 1
+    },
+    {
+      "role": "run001",
+      "sha256": "31406fd7c97107d13e656e429cdf97338ce795dba08dd62efe56f771d5b662ff",
+      "reference": "danielwuu/iris-x-learning-agent-20261011",
+      "version": 2
+    }
+  ],
+  "dataset_inventory_bindings": [
+    {
+      "role": "code",
+      "reference": "danielwuu/iris-x-learning-agent-code-20261011",
+      "version": 1,
+      "upload_inventory_sha256": "5af5a48f6da83274ce388d3a534d9ada0a016847185d006fb12b3f6525fd92bc",
+      "transport_archive_sha256": "ecb5c52c33fadcfd163762fab9c030cfe993e315b39c5c9b3dc18e3a3bd703ca",
+      "upload_files": 3
+    },
+    {
+      "role": "training",
+      "reference": "danielwuu/iris-x-learning-training-20261011",
+      "version": 1,
+      "upload_inventory_sha256": "f9ca4a5f425effb33ff79bcd403601e8622e72e752339335cf0ce4b6f809f5e8",
+      "transport_archive_sha256": "c55206372faf308da19c26bfe7cbba486a9d16238bdf94c6a1098adac2e94582",
+      "upload_files": 1004
+    }
+  ],
+  "verified_controls": [
+    "Fixed authoritative journal root, concurrent lock and durable exclusive per-stage claims",
+    "Upload-init, PUT, Dataset create and notebook save have intent persisted before one request; uncertain create cannot be resent",
+    "SDK mutation adapter retries disabled; mutation redirects rejected; explicit official binary read redirect uses separate authentication-free GET",
+    "Bounded response size, read/connect timeout and wall deadline; exact closed ZIP inventory plus unsafe path/duplicate/member bounds",
+    "Private new Dataset v1 and inactive QUICK_SAVE v1 followed by same owned notebook SAVE_AND_RUN_ALL v2",
+    "Exact notebook SDK wire fields, approved ARC3 metadata association only, unchanged pinned input identities",
+    "Active PREDISPATCH_EPOCH patch changes exactly one AST constant; finalized source hash and original 43200-second deadline durable before single dispatch",
+    "Source/status/source fallback bracket with exact notebook ID, version and normalized source; old protected notebook ID excluded",
+    "Provider backup timeout 42300 seconds with program/original deadline43200; execution monitoring and watchdog separately reviewed",
+    "Exact license display-label mapping; journal/claim/manifest/reference/version binding before reconciliation",
+    "Python -O -B and ordinary Python -B both pass18 inert tests with socket/DNS connections denied; zero attempted network calls"
+  ],
+  "limitations": [
+    "No provider API call, provider write, actual G4 run or runtime attestation was performed by this review",
+    "Metadata/status SDK fallback is latest-only, not a numeric pinned status; exact numeric output-version download plus separate operational validator is mandatory",
+    "This review does not prove mounted Dataset versions; runtime pinned bytes and exact Dataset v1 readback supply separate evidence",
+    "Monitor, preloader watchdog and final result validator remain under independent operational review",
+    "Final parser/artifact validation also passed against the real finalized APPROVED release receipt with all three input hashes checked before and after. No fixture approval is used by the publication workflow."
+  ],
+  "created_utc": "2026-10-11T05:05:19.058343+00:00",
+  "release_approval_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/independent-release-review/FINAL-RELEASE-APPROVAL.json",
+  "real_final_approval_linkage_verified": true,
+  "transport_delta_since_provisional": false,
+  "approval_scope": "Exact hash-bound transport quality gate for two private new Dataset v1 creations, inactive new notebook QUICK_SAVE v1 and conditional same notebook active v2. User authorization is separately established; active run additionally requires the independent operational monitor/output-validator PASS gate, exact Dataset/inactive readbacks, and one-shot original clock constraints."
+}

@@ -1,0 +1,27 @@
+{
+  "manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+  "source_freeze_sha256": "29d2f2989f43151115ae5a7db0befa2e529f19e88220f46a37e051fc892cd74b",
+  "source_identity_sha256": "ad0c72761572402f2c6f1327a210a2af06b94d4b0f9666564757eb637f599393",
+  "notebooks": [
+    {
+      "role": "inactive",
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/iris-x-learning-agent-20261011.ipynb",
+      "sha256": "47455fa3e5f5aa6224a36c9cbaf7f624ca119167e8d4b1e5e56a76ccdb8515d1",
+      "bytes": 53045
+    },
+    {
+      "role": "run001",
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/iris-x-learning-agent-20261011-run001.ipynb",
+      "sha256": "31406fd7c97107d13e656e429cdf97338ce795dba08dd62efe56f771d5b662ff",
+      "bytes": 53043
+    }
+  ],
+  "dataset_payload_counts": {
+    "code": 3,
+    "training": 1004
+  },
+  "runtime_changes": 0,
+  "notebook_runtime_cells_2_3_unchanged": false,
+  "notebook_change": "reviewed owned pre-loader supervisor only; learning runtime unchanged",
+  "preloader_sha256": "b1b6af95fafc93701f09319798369479e98d6004ec69f46d93278032150cdeb5"
+}

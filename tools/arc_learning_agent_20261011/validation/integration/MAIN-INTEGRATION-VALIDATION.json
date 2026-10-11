@@ -1,0 +1,103 @@
+{
+  "format": "irisx/learning-main-integration-validation-v1",
+  "at_utc": "2026-10-11T05:04:07.346633+00:00",
+  "base_commit": "aec565393fa154ccb9857cb18bc3d6c79b1e7ce8",
+  "source_freeze_sha256": "29d2f2989f43151115ae5a7db0befa2e529f19e88220f46a37e051fc892cd74b",
+  "frozen37_package_and97_runtime_bytes_unchanged": true,
+  "focused_cpu": {
+    "total": 136,
+    "passed": 136,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 133.42,
+    "actual_neural_cpu": true,
+    "gpu_used": false,
+    "log_sha256": "7a7aa04066ab9a627676e307ee021f2fa3d6bd40dc2f7fd93bfe319e82fd216f",
+    "package_frozen_sha256": "29d2f2989f43151115ae5a7db0befa2e529f19e88220f46a37e051fc892cd74b",
+    "package_bytes_unchanged": true
+  },
+  "baseline_aggregate": {
+    "commit": "aec565393fa154ccb9857cb18bc3d6c79b1e7ce8",
+    "tests": 1583,
+    "seconds": 198.027,
+    "failures": 1,
+    "errors": 35,
+    "skips": 74,
+    "log_sha256": "6506709c511eca13052c3a0a46978321108850db5505ba59f45b09bf416d42a6"
+  },
+  "first_integration_aggregate": {
+    "sha256": "ee335595428601ea27ef67a0ea994354ff6ff4395fa3e97432df9aa99c0ca418",
+    "summary": [
+      "Ran 3 tests in 0.000s",
+      "Ran 1583 tests in 204.046s",
+      "FAILED (failures=2, errors=35, skipped=74)"
+    ],
+    "repository_invariants": true,
+    "tests": 1583,
+    "seconds": 204.046,
+    "failures": 2,
+    "errors": 35,
+    "skips": 74,
+    "additional_labels": [
+      "FAIL: test_late_ready_published_during_parent_poll_stall_cannot_pass_readiness (test_nvarc_combined.CombinedProcessTests.test_late_ready_published_during_parent_poll_stall_cannot_pass_readiness)"
+    ]
+  },
+  "quiet_confirmation_aggregate": {
+    "sha256": "f049a1eeb3516402e202abefc367437eaa53b9486dd1fcd8ad791f3569a3051c",
+    "summary": [
+      "Ran 3 tests in 0.000s",
+      "Ran 1583 tests in 224.710s",
+      "FAILED (failures=1, errors=35, skipped=74)"
+    ],
+    "repository_invariants": true,
+    "tests": 1583,
+    "seconds": 224.71,
+    "failures": 1,
+    "errors": 35,
+    "skips": 74,
+    "exact_baseline_36_failure_error_labels": true,
+    "new_labels": []
+  },
+  "timing_qualification": {
+    "test_and_runtime_bytes_unchanged": true,
+    "fixture_readiness_seconds": 0.15,
+    "observed_failed_sibling_wall_seconds": 0.17393588200138765,
+    "paired_pristine_and_integration_tests": "3 alternating passes each; 6/6 total",
+    "paired_receipt_sha256": "ada2f997184ac0beef1ac7a002d6b805b4353bab654b360abe85271b56cf7e81",
+    "source_or_guard_changes": 0,
+    "interpretation": "Transient timing-sensitive failure in an unchanged historical test; retained transparently. Exact contention cause is not conclusively attributed."
+  },
+  "deployment_wrapper": {
+    "inactive_sha256": "47455fa3e5f5aa6224a36c9cbaf7f624ca119167e8d4b1e5e56a76ccdb8515d1",
+    "active_template_sha256": "31406fd7c97107d13e656e429cdf97338ce795dba08dd62efe56f771d5b662ff",
+    "active_template_not_executed": true,
+    "production_wire_must_bind_real_numeric_predispatch_epoch": true,
+    "committed_layout_contract_tests": 7,
+    "passed": 7,
+    "skipped": 0,
+    "log_sha256": "03dbd14835e317569e0fb0a4e08d9d28189a22abd4427b1cd741cca88a1c1520",
+    "independent_current_wrapper_portable_acceptance_sha256": "03e9648b998dd9c91a557c2cbfc99457d59e400af482ac5f20bb4b9921f4cd88"
+  },
+  "historical_preparation_notebook": {
+    "sha256": "c1d12bc2ac148e1697166709ca4462d9213858fa3d6367e10315f32f2a40c700",
+    "integration_portable_layouts": 3,
+    "model_calls": 0,
+    "public_gold_opened": false,
+    "current_publication_notebook": false,
+    "receipt_sha256": "070a3f9baa29109c6729aacb071b3c088cb8a8b8c5ea126adf7dd879d7f2d6b2"
+  },
+  "packaging": {
+    "raw_training_manifest_payloads_excluded": true,
+    "superseded_prototype_excluded": true,
+    "bytecode_archives_weights_credentials_excluded": true,
+    "git_index_matches_raw_files": true,
+    "git_diff_check": "PASS"
+  },
+  "limitations": [
+    "Genuine tiny CPU tests do not establish production8B/GPU fit, throughput, accuracy or session success.",
+    "The first full aggregate had one additional timing-sensitive failure in unchanged historical code; retained and qualified, not hidden.",
+    "Historical baseline missing-fixture/material failures remain; no fixtures or guards were changed to obtain a green result.",
+    "Provider publication/admission and terminal operational results have separate receipts."
+  ]
+}

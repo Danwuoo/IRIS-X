@@ -1,0 +1,137 @@
+{
+  "date_utc": "2026-10-11",
+  "scope": "Read-only research; no model generation, training, GPU launch, publication, or public answer inspection performed by this research worker.",
+  "official_reference": {
+    "repository": "https://github.com/arcprize/ARC-AGI-2.git",
+    "commit": "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+    "file_inventory_digest": "sha256:53266c69b0a987dded86d74f78a3767a5769ff89bb0eeb59970b6eab9a979ab3",
+    "provenance_sha256": "f581e41ccb10f2def2c8ff438619ec51e3fb9c2d42b17900e5e49e30e9cda1e5",
+    "challenges_digest": "sha256:93d3e1b76403937ce5424ae507a37d62a94c0d0e74c8fa01314c0e5572061d98",
+    "tasks": 120,
+    "tests": 167
+  },
+  "source_inventory_verified_by_retained_independent_audit": true,
+  "metrics": {
+    "primary_proposed": "task-macro pass@2 >= 0.50",
+    "macro_definition": "sum over all 120 tasks of (solved test inputs / task test inputs), divided by 120",
+    "macro_numerator_threshold": 60,
+    "test_micro_denominator": 167,
+    "micro_minimum_correct_for_50_percent": 84,
+    "whole_task_definition": "all test inputs in a task have at least one exact output in their first two attempts"
+  },
+  "exposure": {
+    "public_development": true,
+    "project_exposure": "known",
+    "base_pretraining_exposure": "unknown",
+    "fresh_holdout": false
+  },
+  "sources": [
+    {
+      "id": "P1",
+      "url": "https://github.com/1ytic/NVARC/blob/846d0198efa752534594e321fc3289fc0a06c657/nvarc_2025.pdf",
+      "local": "iris-stage4-research/upstream/NVARC/nvarc_2025.pdf",
+      "purpose": "Original team paper, especially sections 2, 3, 4",
+      "sha256": "946ebe535422f820b723ed6ca30ec4d8f0c2b1d0cb83f81d4c2200f775b80ead"
+    },
+    {
+      "id": "P2",
+      "url": "https://github.com/1ytic/NVARC/blob/main/ARChitects/run_sft_4b.sh",
+      "local": "iris-stage4-research/upstream/NVARC/ARChitects/run_sft_4b.sh",
+      "purpose": "SFT overrides",
+      "sha256": "f707a4e613ac37061679d339194418a50af805989ebddb554cc8b64b332ad33c"
+    },
+    {
+      "id": "P3",
+      "url": "https://github.com/1ytic/NVARC/blob/main/ARChitects/sft_mg.yaml",
+      "local": "iris-stage4-research/upstream/NVARC/ARChitects/sft_mg.yaml",
+      "purpose": "Full SFT data split, backend, precision",
+      "sha256": "34abec385e86eb7154961611d55bd480f8afeade267390c6cbe4e7f461d03230"
+    },
+    {
+      "id": "P4",
+      "url": "https://www.kaggle.com/code/sorokin/arc2-qwen3-unsloth-flash-lora-batch4-queue",
+      "local": "iris-stage4-development/handoff-002-restored/.irisx/arc-agi-2/qwen35-nvarc/source/kaggle-qwen/arc2-qwen3-unsloth-flash-lora-batch4-queue.ipynb",
+      "purpose": "Retained original implementation TTT, augmentation, DFS, reranker",
+      "sha256": "506b85db66f9949022e87935ccb06a73fd78cb690883bd600bfb5c7d36c2b3af"
+    },
+    {
+      "id": "P5",
+      "url": "https://github.com/1ytic/NVARC/blob/main/SDG/scripts/build_datasets.py",
+      "local": "iris-stage4-research/upstream/NVARC/SDG/scripts/build_datasets.py",
+      "purpose": "Augmentations, task serialization, source admission caveats",
+      "sha256": "f683f8b5b452cb202e7ad3634686ba1fdb4b22537740e5a1bf0430dc4c485c5b"
+    },
+    {
+      "id": "P6",
+      "url": "https://github.com/1ytic/NVARC/blob/main/SDG/scripts/make_pairs.py",
+      "local": "iris-stage4-development/handoff-002-restored/.irisx/arc-agi-2/qwen35-nvarc/source/NVARC/SDG/scripts/make_pairs.py",
+      "purpose": "Consensus gates; source defaults 8/12/4 not historical universal proof",
+      "sha256": "f189aae6b0b7dd25e3ad7c62872be54784dc980f262867fc3bc1e8003e263012"
+    },
+    {
+      "id": "P7",
+      "url": "https://github.com/arcprize/arc-agi-benchmarking/blob/main/src/arc_agi_benchmarking/scoring/scoring.py",
+      "purpose": "Official organization benchmark uses fractional task macro"
+    },
+    {
+      "id": "P8",
+      "url": "https://github.com/arcprize/ARC-AGI-2/blob/main/readme.md",
+      "purpose": "1000 training,120 evaluation, two trials; whole-task definition"
+    },
+    {
+      "id": "P9",
+      "url": "https://huggingface.co/ibm-granite/granite-4.2-8b",
+      "local": "public120-analysis-recovery-20261011/repo/research/arc-next-line/model-source-lock.json",
+      "purpose": "Full vocabulary Granite architecture and local pinned config",
+      "sha256": "8cf82737a0c6c92d0d26f3a7a268e59c55f4a4de213733777f71324930ece239"
+    },
+    {
+      "id": "P10",
+      "url": "https://docs.cloud.google.com/compute/docs/gpus",
+      "purpose": "G4 RTX PRO6000 and L4 hardware distinction"
+    },
+    {
+      "id": "P11",
+      "url": "https://www.nvidia.com/en-us/data-center/l4/",
+      "purpose": "L4 specifications"
+    },
+    {
+      "id": "P12",
+      "url": "https://github.com/arcprize/ARC-AGI-2/blob/main/LICENSE",
+      "purpose": "Apache-2.0 source license"
+    },
+    {
+      "id": "P13",
+      "url": "https://github.com/michaelhodel/re-arc/blob/main/LICENSE",
+      "purpose": "MIT RE-ARC license"
+    },
+    {
+      "id": "P14",
+      "url": "https://api.github.com/repos/1ytic/NVARC",
+      "purpose": "Live metadata license=null, no blanket license inferred"
+    },
+    {
+      "id": "P15",
+      "url": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/",
+      "purpose": "Corroborates offline reasoning and compact evaluation, not proof of online RL"
+    }
+  ],
+  "local_project_evidence": [
+    "public120-analysis-20261011/audit/audit-summary.json",
+    "public120-analysis-20261011/public-data-v1/VERIFIED-DATASET-V1-RECEIPT.json",
+    "public120-analysis-recovery-20261011/repo/tools/arc_offline_evaluation.py",
+    "public120-analysis-recovery-20261011/repo/research/arc-next-line/model-source-lock.json",
+    "public120-analysis-recovery-20261011/repo/research/stage4-e10/native-notices/PROVENANCE.json",
+    "iris-stage4-development/handoff-002-restored/.irisx/nvarc-original/manifests/sdg-published-yield-summary-20261002-001/report.json",
+    "iris-stage4-development/handoff-002-restored/.irisx/nvarc-original/manifests/sdg-published-groups-20261002-001/result.json"
+  ],
+  "local_project_evidence_sha256": {
+    "public120-analysis-20261011/audit/audit-summary.json": "0ae53b3ec9391451f1545e72eaac257a68091808c7472453d09c588a0b58e2f7",
+    "public120-analysis-20261011/public-data-v1/VERIFIED-DATASET-V1-RECEIPT.json": "88728b87e8b4e4f53ee854dee6eeaaeaa40b2d0673be773b7afa17e9c6f97f58",
+    "public120-analysis-recovery-20261011/repo/tools/arc_offline_evaluation.py": "3df3fd40c0a4db82dc6ad5c568102e45ad10efad8529412eae0623bd9f4ba016",
+    "public120-analysis-recovery-20261011/repo/research/arc-next-line/model-source-lock.json": "8cf82737a0c6c92d0d26f3a7a268e59c55f4a4de213733777f71324930ece239",
+    "public120-analysis-recovery-20261011/repo/research/stage4-e10/native-notices/PROVENANCE.json": "aaa90d26c3d26f40cb4140e8b2d8f875a2265ee653fd707f0efbd4a82bad9c97",
+    "iris-stage4-development/handoff-002-restored/.irisx/nvarc-original/manifests/sdg-published-yield-summary-20261002-001/report.json": "dd6f15eae257476ebeb0b108af54ffe877892609c3570eff4234ce87d32d1ce5",
+    "iris-stage4-development/handoff-002-restored/.irisx/nvarc-original/manifests/sdg-published-groups-20261002-001/result.json": "37ddc4c7ddac498482b6924b031adf714477e2fffcbea9efd5730e9c1df53d1f"
+  }
+}

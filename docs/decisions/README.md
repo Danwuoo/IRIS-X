@@ -219,3 +219,8 @@ no current authority unless a new decision explicitly re-adopts them.
 - [`0069-evaluate-sealed-public-research-predictions.md`](0069-evaluate-sealed-public-research-predictions.md)
   permits only sealed, isolated public-development scoring and reviewed private
   research publication under the 2026-10-10 owner request.
+
+- [`0070-publish-and-run-bounded-learning-agent.md`](0070-publish-and-run-bounded-learning-agent.md)
+  authorizes the exact reviewed private learning-agent release and required
+  Datasets, plus one 43,200-second session on the existing configured resource,
+  with unchanged training/evaluator isolation and verified publication evidence.

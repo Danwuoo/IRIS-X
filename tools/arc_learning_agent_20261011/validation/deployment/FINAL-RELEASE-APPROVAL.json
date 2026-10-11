@@ -1,0 +1,200 @@
+{
+  "format": "irisx/independent-learning-release-approval-v1",
+  "status": "APPROVED",
+  "created_utc": "2026-10-11T05:03:43.641708+00:00",
+  "approval_scope": "Exact release materials, notebook orchestration and governance. Private publication also requires final transport PASS. Active RUN requires separate operational output-validator and monitor approval.",
+  "scope": {
+    "publication_manifest": {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/publication-manifest.json",
+      "sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5"
+    },
+    "source_freeze": {
+      "path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/release-final/SOURCE-FREEZE.json",
+      "sha256": "29d2f2989f43151115ae5a7db0befa2e529f19e88220f46a37e051fc892cd74b"
+    },
+    "base_commit": "aec565393fa154ccb9857cb18bc3d6c79b1e7ce8",
+    "runtime_files": 97,
+    "new_package_files": 37,
+    "runtime_source_changes": 0,
+    "scorer_source_changes": 0,
+    "git_supplement": {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/GIT-ADDITIONS-PRELIMINARY.json",
+      "sha256": "e6bfb2a9efd2c8fd552735c91b5d9cb02948b1b69d3307c82f69f9a169b8b2f8",
+      "files": 30
+    },
+    "git_final_commit_or_later_receipts_not_attested": true
+  },
+  "approved_notebooks": [
+    {
+      "role": "inactive",
+      "reference": "danielwuu/iris-x-learning-agent-20261011",
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/iris-x-learning-agent-20261011.ipynb",
+      "sha256": "47455fa3e5f5aa6224a36c9cbaf7f624ca119167e8d4b1e5e56a76ccdb8515d1",
+      "bytes": 53045,
+      "expected_version": 1,
+      "is_private": true,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false
+    },
+    {
+      "role": "run001",
+      "reference": "danielwuu/iris-x-learning-agent-20261011",
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/iris-x-learning-agent-20261011-run001.ipynb",
+      "sha256": "31406fd7c97107d13e656e429cdf97338ce795dba08dd62efe56f771d5b662ff",
+      "bytes": 53043,
+      "expected_version": 2,
+      "is_private": true,
+      "enable_gpu": true,
+      "enable_tpu": false,
+      "enable_internet": false
+    }
+  ],
+  "approved_datasets": [
+    {
+      "role": "code",
+      "reference": "danielwuu/iris-x-learning-agent-code-20261011",
+      "expected_version": 1,
+      "is_private": true,
+      "new_only": true,
+      "upload_inventory_sha256": "5af5a48f6da83274ce388d3a534d9ada0a016847185d006fb12b3f6525fd92bc",
+      "upload_files": 3,
+      "root_manifest_sha256": "7ab8a14641f2712e45e32cca11c94a70bca5583033ae7ae6d8ef2ff03501bc02",
+      "transport_archive_sha256": "ecb5c52c33fadcfd163762fab9c030cfe993e315b39c5c9b3dc18e3a3bd703ca"
+    },
+    {
+      "role": "training",
+      "reference": "danielwuu/iris-x-learning-training-20261011",
+      "expected_version": 1,
+      "is_private": true,
+      "new_only": true,
+      "upload_inventory_sha256": "f9ca4a5f425effb33ff79bcd403601e8622e72e752339335cf0ce4b6f809f5e8",
+      "upload_files": 1004,
+      "root_manifest_sha256": "a4b9da04d8690c57a3d0855553989fa055c5b9283ffc1784fe99413c8d1cb9d5",
+      "transport_archive_sha256": "c55206372faf308da19c26bfe7cbba486a9d16238bdf94c6a1098adac2e94582"
+    }
+  ],
+  "approved_launcher": {
+    "preloader_sha256": "b1b6af95fafc93701f09319798369479e98d6004ec69f46d93278032150cdeb5",
+    "loader_sha256": "9a871c22935d0d158ee31b683632e717358bd69f7d37258ad4dd09811c845887",
+    "guard_sha256": "8bc66ac80499203bca9f583f0d5ea5ecc5d8a131a2aa267f661060fc69e0580c",
+    "driver_sha256": "09b89f4de5415cc38610a47176fa3285b65acb3712e5c79240aad0134960e081",
+    "closure_format": "irisx/learning-notebook-closure-v1",
+    "deadline_seconds": 43200,
+    "cleanup_reserve_seconds": 30,
+    "provider_execution_timeout_seconds": 42300,
+    "request_and_launcher_files_required": true,
+    "source_identity_scope": "97 unchanged learning/scorer runtime files; notebook orchestration separately bound"
+  },
+  "approved_dynamic_patch": {
+    "required": true,
+    "cell_index": 1,
+    "assignment": "PREDISPATCH_EPOCH",
+    "template_value": null,
+    "allowed_value": "finite numeric Unix epoch sampled once immediately before durable dispatch intent",
+    "maximum_patch_age_seconds": 30,
+    "total_deadline_seconds": 43200,
+    "other_source_changes_allowed": false
+  },
+  "governance": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "a5c664a4446ef275087b0bc8b24764ab883bce34d2d8e446bf2b3c13d05e7c60"
+    },
+    {
+      "path": "docs/decisions/README.md",
+      "sha256": "042b90c7aefaa202ca00d2780444d1c0589e8fc456a2a3a360e76d9c7afb4205"
+    },
+    {
+      "path": "docs/decisions/0070-publish-and-run-bounded-learning-agent.md",
+      "sha256": "04407459f0e316de5b308d14fd01b7f1caf6e9c6f0f1d0cf36c8a0aed4a8c559"
+    }
+  ],
+  "verified_results": {
+    "material_checks": 3187,
+    "original_training_split": {
+      "train": 800,
+      "dev": 200,
+      "protected_overlap": 0,
+      "historical_dev_promoted": 0
+    },
+    "independent_cpu_runtime_tests": 136,
+    "integrated_cpu_runtime_tests": 136,
+    "deployment_contract_tests_rechecked": 7,
+    "independent_watchdog_tests_rechecked": 8,
+    "portable_new_notebook_layouts": 3,
+    "all_80_inherited_runtime_files_match_base": true,
+    "gold_reads_by_reviewer": 0,
+    "provider_writes_by_reviewer": 0
+  },
+  "required_remaining_gates": {
+    "before_any_provider_write": [
+      "Final transport PASS receipt bound to this approval SHA256, exact transport script and publication manifest"
+    ],
+    "before_active_run": [
+      "Independent operational output-validator and monitor PASS receipt bound to this approval, exact manifest and transport/monitor/validator bytes",
+      "Exact complete private Dataset v1 content readbacks and exact inactive private notebook v1 readback",
+      "Final active wire changes only reviewed PREDISPATCH_EPOCH numeric scalar, no older than30 seconds at dispatch; original absolute deadline durably journaled",
+      "No prior accepted or uncertain active launch; no restart or additional session"
+    ],
+    "before_git_completion_claim": [
+      "Final staged/committed inventory limited to reviewed source/governance/sanitized metadata and separately reviewed receipts",
+      "Expected-parent remote commit verification and honest CI qualification"
+    ]
+  },
+  "operational_requirements": [
+    "Provider COMPLETE and exact active version/source",
+    "Production trained_model_research, non-tiny configuration, positive global SFT optimizer updates with finite gradients and changed adapter tensors",
+    "All120 task attempts and167-test denominator; real reconciled generation work",
+    "Model and descendants stopped; source/request/run/seal proof valid; separate scorer SCORED",
+    "COMPLETE required; PARTIAL_SCORED/PREFLIGHT_ONLY/SCORING_BLOCKED are not success",
+    "Verified closed archive, all inventory hashes, separate adapter/checkpoint artifacts and outer launcher closure within original epoch+43200",
+    "No score/accuracy analysis needed for operational verification"
+  ],
+  "qualifications": [
+    "No GPU run,8B throughput,L4 fit,accuracy gain,official competition readiness or public50 is established.",
+    "Fixed-epoch execution watchdog plus provider42300-second backup does not guarantee queue SLA,VM allocation release or billing shutdown.",
+    "Full aggregate is not green: final1583-test confirmation has baseline1 failure+35 errors+74 skips. First integration additionally failed an unchanged timing test; all6 paired isolated reruns passed and original evidence is retained.",
+    "Historical source freeze and notebook are preserved; executable deployment wrapper has separate hashes.",
+    "Two task-bearing corpus manifests were removed from Git supplement and replaced by hash/size-only metadata.",
+    "Creation-time publication_authorized=false fields are preserved historical provenance; current authorization is separately bound."
+  ],
+  "evidence": [
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/independent-release-review/BASELINE-MATERIAL-AUDIT.json",
+      "sha256": "559416070f44c81518a5fde805c6bec7bf1a556dbda5d446bb9bcc74d9b8853a"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/independent-release-review/FINAL-DEPLOYMENT-MATERIAL-AUDIT.json",
+      "sha256": "d05547a48e0b81db1f7bfc271c7a8b79b8b32b552d61038bd9e375e798985d5b"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/independent-release-review/deployment-contract-final-recheck.log",
+      "sha256": "4db856918a1cb05792635f58ad520de73f2185bcd614f718670b87fa20011fb0"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/independent-release-review/watchdog-recheck.log",
+      "sha256": "83033dc511c8f38d48ecb3a246ec9094182c80b6ebafb27a1b06e5b7f2a81900"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/operational-review/WATCHDOG-REVIEW.json",
+      "sha256": "db6420c9a1fd4e0f19def9a21d177b26dfbe363f454c051af28496a2e313e823"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/portable-entry/PORTABLE-ACCEPTANCE.json",
+      "sha256": "03e9648b998dd9c91a557c2cbfc99457d59e400af482ac5f20bb4b9921f4cd88"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-git-20261011/focused-integration-tests-receipt.json",
+      "sha256": "8fd8514018a2af2f44aee3b56b79a1e78b399cc06a84e02111d36aa274828cad"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-git-20261011/integration-validation-receipt.json",
+      "sha256": "9066454106534650d16814f5c4dac4cc64d6ca19b237263e5cdb4e50a2a72f3e"
+    },
+    {
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-deployment-20261011/independent-transport-review/PROVISIONAL-TRANSPORT-REVIEW.json",
+      "sha256": "8093e56e7b98ac3f3498b34220eff61696effa550ae01e75aba97751865de300"
+    }
+  ]
+}

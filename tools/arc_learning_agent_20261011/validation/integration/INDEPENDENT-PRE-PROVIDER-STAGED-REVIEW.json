@@ -1,0 +1,42 @@
+{
+  "format": "irisx/independent-staged-learning-release-review-v1",
+  "status": "PASS",
+  "created_utc": "2026-10-11T05:14:03.594966+00:00",
+  "scope": "Exact pre-provider staged tree only; no commit/push or active-run claim",
+  "base_commit": "aec565393fa154ccb9857cb18bc3d6c79b1e7ce8",
+  "staged_tree": "fc558933649ffb6e7fb4856fce75c0c16ed8b843",
+  "snapshot": {
+    "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-git-20261011/pre-provider-staged-files-v3.json",
+    "sha256": "2d33f48b329853c8c549782c92404f9271c87c5519b14963670fc423cf61723a"
+  },
+  "files": 76,
+  "operations": {
+    "added": 74,
+    "modified": 2
+  },
+  "allowlist_categories": {
+    "frozen_package": 37,
+    "sanitized_supplement": 30,
+    "governance": 3,
+    "integration_and_final_review_validator_records": 6
+  },
+  "staged_blob_and_worktree_hashes_all_match": true,
+  "regular_git_modes_only": true,
+  "source_freeze_sha256": "29d2f2989f43151115ae5a7db0befa2e529f19e88220f46a37e051fc892cd74b",
+  "publication_manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+  "release_approval_sha256": "cff62fc2dc5edb9f8fa49a7d7529c645bab331d6c15044c1742d6feb8f837b85",
+  "unchanged_runtime_files": 97,
+  "unchanged_inherited_runtime_files": 80,
+  "historical_governance_body_preserved": true,
+  "raw_task_payloads_bytecode_archives_weights_excluded": true,
+  "external_monitor_transport_validator_hashes_match_staged_reviews": true,
+  "cpu_qualification": "136 focused tests pass. Aggregate remains baseline1F+35E+74skips across1583 tests; original extra transient timing failure retained with6/6 paired reruns and unchanged source.",
+  "provider_gpu_admission_pending": true,
+  "remaining_requirements": [
+    "Only separately reviewed sanitized Dataset/inactive readback, mounted-byte acceptance and receipt-index additions may extend this snapshot. Recheck exact final tree before commit.",
+    "Verify expected-parent remote main commit and CI separately; no full-green aggregate claim.",
+    "Active GPU dispatch requires authorized exact provider readbacks, verified Git publication and original single-shot epoch gates."
+  ],
+  "source_changes_by_reviewer": 0,
+  "provider_writes_by_reviewer": 0
+}

@@ -1,0 +1,98 @@
+{
+  "format": "irisx/learning-deployment-candidate-v1",
+  "status": "PREPARED_NOT_PUBLISHED",
+  "publication_authorized_this_round": false,
+  "gpu_run_authorized_this_round": false,
+  "notebook": {
+    "file": "iris-x-learning-agent-12h.ipynb",
+    "sha256": "c1d12bc2ac148e1697166709ca4462d9213858fa3d6367e10315f32f2a40c700",
+    "manual_start": false,
+    "enable_model": false,
+    "profile": "LEARNING_AGENT12H"
+  },
+  "datasets": [
+    {
+      "role": "code",
+      "reference": "danielwuu/iris-x-learning-agent-code-20261011/1",
+      "manifest_sha256": "7ab8a14641f2712e45e32cca11c94a70bca5583033ae7ae6d8ef2ff03501bc02",
+      "archive_sha256": "53368a9344ffb589dd3bf5fe8f5a39f5c9ca5d1b0095c5c4a3c4cd2ada718b8e",
+      "status": "prepared-unpublished"
+    },
+    {
+      "role": "data",
+      "reference": "danielwuu/iris-x-public120-data-20261010/1",
+      "manifest_sha256": "c55073f8e9f44682dd7d7f31ee7f04f39754a9922ec246073555026452f047e3",
+      "role_manifests": {
+        "evaluator": "c7e8ad35770a66a71a22cccbbd0455c1c3bcc1a505dfb2e4c29819eec6209e33",
+        "solver": "549019b4b5cb47176f3abd3fcd9ca516e91b7d6e581dfc414a5a6452ff7b1f7f"
+      },
+      "status": "existing-pinned"
+    },
+    {
+      "role": "training",
+      "reference": "danielwuu/iris-x-learning-training-20261011/1",
+      "manifest_sha256": "a4b9da04d8690c57a3d0855553989fa055c5b9283ffc1784fe99413c8d1cb9d5",
+      "status": "prepared-unpublished"
+    },
+    {
+      "role": "runtime",
+      "reference": "danielwuu/iris-arc-next-runtime/8",
+      "manifest_sha256": "c2e7913e8ae208deb26e06f37fcd76c79c1a87b6c49ffb3de7b2ee054fee7e67",
+      "manifest": "bundle-manifest.json",
+      "status": "existing-pinned",
+      "intended_usage": "offline_bootstrap_dependency"
+    },
+    {
+      "role": "model",
+      "reference": "danielwuu/iris-arc-granite42-8b-offline/2",
+      "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+      "manifest": "irisx-model-material.json",
+      "status": "existing-pinned",
+      "intended_usage": "base_model_only_after_new_run_approval"
+    },
+    {
+      "role": "wheels",
+      "reference": "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+      "manifest_sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052",
+      "manifest": "wheel-lock.json",
+      "status": "existing-pinned",
+      "intended_usage": "offline_bootstrap_dependency"
+    },
+    {
+      "role": "interpreter",
+      "reference": "danielwuu/iris-arc-next-cpython312-offline/2",
+      "manifest_sha256": "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e",
+      "manifest": "interpreter-manifest.json",
+      "status": "existing-pinned",
+      "intended_usage": "offline_bootstrap_dependency"
+    },
+    {
+      "role": "adapter",
+      "reference": "danielwuu/iris-arc-granite42-run003-adapter-20261009/1",
+      "manifest_sha256": "7215085857a3caacbe32302a9b6e77b4ad9524fee2a5a621c39dacb02ee2e9d0",
+      "manifest": "adapter-manifest.json",
+      "status": "existing-pinned",
+      "intended_usage": "integrity_only_not_loaded"
+    }
+  ],
+  "future_provider_settings": {
+    "is_private": true,
+    "internet": false,
+    "inactive_save_gpu": false,
+    "active_run_machine_if_later_approved": "NvidiaRtxPro6000",
+    "session_timeout_seconds": 43200,
+    "competition_sources": [
+      "arc-prize-2026-arc-agi-3"
+    ],
+    "competition_association": "metadata mount only; no ARC3 task read by ARC2 pipeline; fresh access/terms checks before any later action"
+  },
+  "deployment_gates": [
+    "Explicit new publication/run authorization",
+    "Fresh owned-identity and existing-version checks",
+    "Two new private code/training datasets, complete hash-exact version readback",
+    "Bind actual published code/training versions and rebuilt notebook if versions differ",
+    "Independent publication contract and inactive readback",
+    "Actual hardware/asset admission before any model load",
+    "Operational and scoring closure separate from accuracy interpretation"
+  ]
+}

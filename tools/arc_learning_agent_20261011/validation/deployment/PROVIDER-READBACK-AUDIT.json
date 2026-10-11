@@ -1,0 +1,73 @@
+{
+  "format": "irisx/independent-provider-readback-audit-v1",
+  "status": "PASS",
+  "publication_manifest_sha256": "141b481e4b6aa6a3bc699e8e922f172f8ff5d96b48046144a817ec96eec13fe5",
+  "transport_sha256": "1e3222733044f00ac2e7703feb299a41931ee8b6d25744ceaa2c50d2e57b7ab2",
+  "datasets": [
+    {
+      "role": "code",
+      "reference": "danielwuu/iris-x-learning-agent-code-20261011",
+      "dataset_id": 12504696,
+      "version": 1,
+      "private": true,
+      "license_name": "Other (specified in description)",
+      "layout": "extracted-directory",
+      "file_count": 99,
+      "total_bytes": 2122269,
+      "provider_archive_sha256": "19d112c9ea85b76622a7e983d906d3f1038be74b257bee0bcf94a62e08543dae",
+      "receipt_sha256": "35eb39584648163af55782e33dab3872ecaff9cdc2ca7d50c94012432f2a9f19",
+      "exact_inventory_verified": true,
+      "journaled_upload_init_calls": 1,
+      "journaled_upload_put_calls": 1,
+      "journaled_create_calls": 1
+    },
+    {
+      "role": "training",
+      "reference": "danielwuu/iris-x-learning-training-20261011",
+      "dataset_id": 12504720,
+      "version": 1,
+      "private": true,
+      "license_name": "Apache 2.0",
+      "layout": "original-upload",
+      "file_count": 1004,
+      "total_bytes": 5141713,
+      "provider_archive_sha256": "7b69b6f54be83cd76970de9bd18db1695cf1ec10d2fa1cbe4e1cdfab0cf5fd85",
+      "receipt_sha256": "c36cefbe6d6b039971d536e1e530e2f7b16cb01f170e1d4f92f1b212b933e47e",
+      "exact_inventory_verified": true,
+      "journaled_upload_init_calls": 1,
+      "journaled_upload_put_calls": 1,
+      "journaled_create_calls": 1
+    }
+  ],
+  "inactive_notebook": {
+    "reference": "danielwuu/iris-x-learning-agent-20261011",
+    "kernel_id": 138123872,
+    "version": 1,
+    "private": true,
+    "save_type": "QUICK_SAVE",
+    "provider_status": "COMPLETE",
+    "gpu": false,
+    "tpu": false,
+    "internet": false,
+    "manual_start": false,
+    "enable_model": false,
+    "submitted_source_sha256": "47455fa3e5f5aa6224a36c9cbaf7f624ca119167e8d4b1e5e56a76ccdb8515d1",
+    "provider_source_sha256": "3172d0813822c3ff587b1bd4a7702b0f74dc47c401ff35e785007ba741797486",
+    "normalized_source_exact": true,
+    "journaled_save_calls": 1,
+    "receipt_sha256": "44b99c4bb2486a670d7bb9b0af42dd0a8ccdff03b2b4bc7479cc34a25fe8119c",
+    "mounted_dataset_versions_attested": false
+  },
+  "checks": 5665,
+  "pending": [],
+  "provider_calls_by_reviewer": 0,
+  "downloads_by_reviewer": 0,
+  "provider_writes_by_reviewer": 0,
+  "scope": "Persisted evidence of private artifact publication only. This audit does not admit an active run or attest model execution, mounted Dataset versions, accuracy or operational success.",
+  "qualifications": [
+    "Provider calls are attested by existing publisher journals, not independently observed live by this offline audit.",
+    "Notebook metadata/status is latest-only and bracketed by source/ID/version snapshots; source text allows only documented list/string normalization.",
+    "Active admission separately requires the final operational monitor/output-validator PASS and original single-session deadline gates."
+  ],
+  "created_utc": "2026-10-11T05:14:49.570939+00:00"
+}

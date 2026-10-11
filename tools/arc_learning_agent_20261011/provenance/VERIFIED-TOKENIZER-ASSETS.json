@@ -1,0 +1,110 @@
+{
+  "file_count": 9,
+  "files": [
+    {
+      "bytes": 7153414,
+      "local_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/tokenizer-assets/tokenizer.json",
+      "request": {
+        "datasetSlug": "iris-arc-granite42-8b-offline",
+        "datasetVersionNumber": 2,
+        "fileName": "tokenizer.json",
+        "ownerSlug": "danielwuu",
+        "raw": true
+      },
+      "sha256": "883975314d58743726347caaf2c32ac89afd5ad57222cffbc4f052f2ab27b2d7"
+    },
+    {
+      "bytes": 17677,
+      "local_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/tokenizer-assets/tokenizer_config.json",
+      "request": {
+        "datasetSlug": "iris-arc-granite42-8b-offline",
+        "datasetVersionNumber": 2,
+        "fileName": "tokenizer_config.json",
+        "ownerSlug": "danielwuu",
+        "raw": true
+      },
+      "sha256": "2007f26df166ed10a2d6fa881c1c8f3cdd151e451469f59b274897f14449835f"
+    },
+    {
+      "bytes": 563,
+      "local_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/tokenizer-assets/special_tokens_map.json",
+      "request": {
+        "datasetSlug": "iris-arc-granite42-8b-offline",
+        "datasetVersionNumber": 2,
+        "fileName": "special_tokens_map.json",
+        "ownerSlug": "danielwuu",
+        "raw": true
+      },
+      "sha256": "e9435fefd6d838fd9fcbbc44b97a8e3ff322be7f6dfb7e4fd2468586574bb52b"
+    },
+    {
+      "bytes": 9013,
+      "local_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/tokenizer-assets/chat_template.jinja",
+      "request": {
+        "datasetSlug": "iris-arc-granite42-8b-offline",
+        "datasetVersionNumber": 2,
+        "fileName": "chat_template.jinja",
+        "ownerSlug": "danielwuu",
+        "raw": true
+      },
+      "sha256": "f0ba43f79b3cabca5e5a7584c77aec92f49feae45cdf7779c87d9fc54cd90258"
+    },
+    {
+      "bytes": 907,
+      "local_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/tokenizer-assets/config.json",
+      "request": {
+        "datasetSlug": "iris-arc-granite42-8b-offline",
+        "datasetVersionNumber": 2,
+        "fileName": "config.json",
+        "ownerSlug": "danielwuu",
+        "raw": true
+      },
+      "sha256": "85611f4e34633d4e148e6a5f64bc2d3a23ebbc2b014bc87fbda764eecf261cd9"
+    },
+    {
+      "bytes": 207,
+      "local_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/tokenizer-assets/generation_config.json",
+      "request": {
+        "datasetSlug": "iris-arc-granite42-8b-offline",
+        "datasetVersionNumber": 2,
+        "fileName": "generation_config.json",
+        "ownerSlug": "danielwuu",
+        "raw": true
+      },
+      "sha256": "1b9baf0a7959d31d7fb58ff6b506c27d09a73d395cadccc7e6dd1d4b7e43fd9d"
+    },
+    {
+      "bytes": 1612694,
+      "local_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/tokenizer-assets/vocab.json",
+      "request": {
+        "datasetSlug": "iris-arc-granite42-8b-offline",
+        "datasetVersionNumber": 2,
+        "fileName": "vocab.json",
+        "ownerSlug": "danielwuu",
+        "raw": true
+      },
+      "sha256": "a1be0c1e0a89b5bacda6af6f8b63df09668cb8d1f656229ee9123140c9507810"
+    },
+    {
+      "bytes": 916646,
+      "local_path": "/workspace/scratch/3c2b2502fb1e/public120-next-20261011/tokenizer-assets/merges.txt",
+      "request": {
+        "datasetSlug": "iris-arc-granite42-8b-offline",
+        "datasetVersionNumber": 2,
+        "fileName": "merges.txt",
+        "ownerSlug": "danielwuu",
+        "raw": true
+      },
+      "sha256": "b6fe424e334903f7fb84d3a106d9730455f4744b9fe3c21ee136d97a00e72502"
+    }
+  ],
+  "manifest_sha256": "cd845822cd2c0ca749dd3e6f580f51e68b91c0e5c5886fe239fc3c14f5bb0b99",
+  "model_weights_or_indexes_downloaded": false,
+  "provider_writes": 0,
+  "reference": "danielwuu/iris-arc-granite42-8b-offline/2",
+  "repository": "ibm-granite/granite-4.2-8b",
+  "revision": "f8de16cdcdbc6c779ca517604e050d82cc119e44",
+  "status": "VERIFIED",
+  "total_bytes": 9714609,
+  "utc": "2026-10-11T02:52:18.396780+00:00"
+}
