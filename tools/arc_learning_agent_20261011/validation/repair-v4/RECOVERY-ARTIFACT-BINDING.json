@@ -1,0 +1,13 @@
+{
+  "bytes": 8197549,
+  "expanded_bytes": 53292828,
+  "format": "irisx/archived-v4-cpu-recovery-package-v1",
+  "inventory_sha256": "4937ee22b70c1d42fb088f1826e5a1f213dedb197e08248f88208f2f1842a0ee",
+  "members": 247,
+  "new_gpu_execution": false,
+  "original_provider_status": "ERROR",
+  "recovery_status": "SCORED",
+  "sha256": "49957de2fba00ff93d73c5b4ff1b0004ae340782a2f0bcf4ac6bdbd8aac21037",
+  "filename": "IRIS-X-learning-v4-CPU-recovery-20261011.zip",
+  "library_file_id": "libfile_70cbbccc1c208191bbff4ab900056880"
+}

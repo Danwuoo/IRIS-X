@@ -1,0 +1,175 @@
+{
+  "added": 19,
+  "all_index_worktree_raw_bytes_match": true,
+  "all_source_governance_material_review_receipt_bytes_match_prior_approvals": true,
+  "all_unrelated_baseline_blobs_modes_preserved": true,
+  "base_commit": "e34f365ee621f7e42766f4021786038c539bd2e9",
+  "base_tree": "45856b7d26533ed7d90a70594c4dd5a059a30f2b",
+  "files": [
+    {
+      "bytes": 74229,
+      "git_blob_sha": "773aca87d2eafef90428a85a6f7f9a06d25252db",
+      "mode": "100644",
+      "path": "AGENTS.md",
+      "sha256": "e59a7a27db6a6eed8fe841af7b1ec9333370ae52bfebf895a412510483a65403"
+    },
+    {
+      "bytes": 16338,
+      "git_blob_sha": "a22bc805e79f81909ffe33377115bb4222fcfac4",
+      "mode": "100644",
+      "path": "docs/decisions/0070-publish-and-run-bounded-learning-agent.md",
+      "sha256": "f8d0ea17be415a5b18221ed98365daf22c366e8c538a26fa7c4dc8e8bca78721"
+    },
+    {
+      "bytes": 34181,
+      "git_blob_sha": "2a41ca4d92c885f706dd0e37acd742e90db6a107",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/archived_recovery.py",
+      "sha256": "612e4c6dfbfd13aed27098695de4714cef24d6bf94c0b1a6a8a37aeadd3a97d4"
+    },
+    {
+      "bytes": 14510,
+      "git_blob_sha": "90ec37139cdfa741ddded9ccb2f97b116d674d03",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/deployment/validate_learning_outputs_projection.py",
+      "sha256": "4ebfc6f106c9d9866dfc61736a7168e385f9f4bafe2201c4beecddc7a65f4cb4"
+    },
+    {
+      "bytes": 51300,
+      "git_blob_sha": "740c9d1f2448573623f6976f464145244a54de9a",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/notebooks/iris-x-learning-agent-20261011-projection-repair.ipynb",
+      "sha256": "559bef4e1ac5c8283e87fc29f1e0d4e557588bdfc68ecff80e413b0427dcdb14"
+    },
+    {
+      "bytes": 876,
+      "git_blob_sha": "f2ff0a025cbda1f09e948e1f5dbbd6bec4966e06",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v4/BUILD-RECEIPT.json",
+      "sha256": "f5bfccaaf8711a4485af9b4982c8aeb50114547a061da5d6dd35892bbe063ba7"
+    },
+    {
+      "bytes": 2629,
+      "git_blob_sha": "df50ce0dd6eaccf242afdc243198da892ddfdc02",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v4/REPAIR-GUIDE.zh-TW.md",
+      "sha256": "f39279ee3c9f17c94f71f4c0aaff657c032f498b9f01610a1a4bed0adf680e16"
+    },
+    {
+      "bytes": 18448,
+      "git_blob_sha": "c9ba61264df9344c08f705123956aebf7c7229ca",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v4/SOURCE-FREEZE.json",
+      "sha256": "a498d4c31db5ccf283cffc9184531e56388312b90ad865461fe4aebb92d56ff8"
+    },
+    {
+      "bytes": 2181,
+      "git_blob_sha": "bc68bb5a44b3261f4ba59670f67f188803b83491",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v4/VALIDATION-SUMMARY.json",
+      "sha256": "ee07333e7f1c44cac90185117a7cc67dfbeb16f878c28bcddba6e6e778b36316"
+    },
+    {
+      "bytes": 28763,
+      "git_blob_sha": "f421717dde65f238ec04e588fef70f9fca34c44e",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v4/code-manifest.json",
+      "sha256": "9c6ab0128c4c5fac4809991871f59b6373bd0c7a613bdcb2c740347096bc2b8b"
+    },
+    {
+      "bytes": 816,
+      "git_blob_sha": "8f808ca46c1fbd03191ae5ee2d9dd7c7c388741d",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v4/pins.json",
+      "sha256": "1fbfd4675ee90a850c87ba1b01097d03470589e04b9830834bf342185cb27e24"
+    },
+    {
+      "bytes": 61508,
+      "git_blob_sha": "dd322dd9482389bfba92f3383a6cb22be277fa7b",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/release/repair-v4/publication-manifest.json",
+      "sha256": "4bc32d95d7be93957be6fa35357bff3325c73b8aaf00772b30bb347956655055"
+    },
+    {
+      "bytes": 12373,
+      "git_blob_sha": "5778c2aba30b08d3113f9980c0ef6dadc0d777cd",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/result_projection.py",
+      "sha256": "84ef1ee28bc9ea72e283a34f158a6fbe9f66680016c8e6f2f62faa50118c1d7a"
+    },
+    {
+      "bytes": 24018,
+      "git_blob_sha": "21e626f3686af9eaca8295221df114922288f088",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/tests/test_archived_recovery.py",
+      "sha256": "ea97d5958403ab2ca7dd7278ce6062c17afbae3845279619c13e435ea1c388bf"
+    },
+    {
+      "bytes": 23802,
+      "git_blob_sha": "9fa80e46c45fa0917c886090f1527d09286d2511",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/tests/test_result_projection.py",
+      "sha256": "d27d425d43e9505fc199938cc28e98cf674eaa3a82bab9fb14b2bef53b22d8f8"
+    },
+    {
+      "bytes": 2831,
+      "git_blob_sha": "69c4bd97f3168234d60760fd95fa6bc5fe75a729",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/validation/repair-v4/ACTUAL-RECOVERY-TERMINAL-REVIEW.json",
+      "sha256": "fe7bc8f5745785ce094440f7ede6694a9b06ed746b7737a7075687423eebf265"
+    },
+    {
+      "bytes": 3378,
+      "git_blob_sha": "4e36aaf2dadf1df4b9aa80235b47bfff8828c1f6",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/validation/repair-v4/ARCHIVED-RECOVERY-INDEPENDENT-REVIEW.json",
+      "sha256": "b2b81a779b3186f428a73b2369cd80abffd8f25ab420872d24fa6bcb8834fc1b"
+    },
+    {
+      "bytes": 6221,
+      "git_blob_sha": "ba5b036a0972d9641f9add11459981bc78a32d9b",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/validation/repair-v4/FINAL-TRANSPORT-REVIEW.json",
+      "sha256": "50ce548e66c30b61b7d342cfd346d3ffac085ed0e8a703c5d81851e59dfe5c55"
+    },
+    {
+      "bytes": 2677,
+      "git_blob_sha": "d5579d0c814de5ec72058f2cd8a05b7a073dd290",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/validation/repair-v4/FORWARD-PROJECTION-INDEPENDENT-REVIEW.json",
+      "sha256": "99a62b3b5802f98ef66277d6babe28948449ff80b3628ab106ddb26ab7b18eea"
+    },
+    {
+      "bytes": 2164,
+      "git_blob_sha": "e1d14aaff3a7d437a81419de905ea7303c6b1c02",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/validation/repair-v4/MATERIALS-INDEPENDENT-APPROVAL.json",
+      "sha256": "1d4b089a8df4940629ee6ca8a43ae751e63d02d1cf821bee4794fe9937237cc5"
+    },
+    {
+      "bytes": 525,
+      "git_blob_sha": "3fce29a022201849967a33926b62990d490b73c4",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/validation/repair-v4/RECOVERY-ARTIFACT-BINDING.json",
+      "sha256": "b96a8016f538d23df3fae4e88d1d8d5273c4333efd337d807a1b9dcb7d73fd3f"
+    },
+    {
+      "bytes": 21900,
+      "git_blob_sha": "74844cf5e8c93f26f6aa220103a5808817cf0de7",
+      "mode": "100644",
+      "path": "tools/arc_learning_agent_20261011/worker.py",
+      "sha256": "df44e0bed33a6331eabd3ae51a1cee46c3a68125376f51221fc709917d1c72d5"
+    }
+  ],
+  "format": "irisx/independent-pre-provider-staged-review-v1",
+  "modified": 3,
+  "no_unstaged_changes": true,
+  "payload_exclusions_verified": true,
+  "remaining_gate": "Only separately reviewed compact aggregate/provider/readback/mount records may append; final tree needs exact delta approval.",
+  "snapshot_sha256": "1afe60cd292ce49eb63130d345cafbd4d77d290e612c160f056dcd411585169a",
+  "source_or_external_writes_by_reviewer": false,
+  "staged_tree": "95780de2b16427aa298e7b148c729912b6d46de4",
+  "status": "APPROVED_PRE_PROVIDER_SNAPSHOT",
+  "unchanged_baseline_files": 1540,
+  "whitespace_check_passed": true
+}

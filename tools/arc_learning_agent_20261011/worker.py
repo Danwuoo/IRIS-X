@@ -15,6 +15,7 @@ if __package__ in (None, ''):
 from tools.arc_learning_agent_20261011.budget import (
     SessionClock, WorkLedger, atomic_json, digest, BudgetExceeded, calibrated_steps)
 from tools.arc_learning_agent_20261011.evaluation import check_source
+from tools.arc_learning_agent_20261011.result_projection import write_owner_result
 from tools.arc_public_research_20261010.public_data import load_solver_tasks, read_regular
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -313,8 +314,7 @@ def run(request):
               'training_steps': trainer.completed_optimizer_steps if trainer is not None else 0,
               'charged_training_microbatches': ledger.used['training_steps'], 'physical_usage': ledger.summary(),
               'pending_work': ledger.pending, 'elapsed_seconds': time.monotonic() - started}
-    atomic_json(root / 'result.json', result, exclusive=True)
-    return result
+    return write_owner_result(result, request=request, challenges=solver['challenges'])
 
 
 if __name__ == '__main__':

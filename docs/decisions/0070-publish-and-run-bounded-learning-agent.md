@@ -194,3 +194,66 @@ submitted source/settings and actual RUNNING state, then stop monitoring.
 RUNNING is admission evidence only, not successful training, scoring, archive
 completion or scientific improvement. Do not start another run, collect results
 or perform further scientific analysis under this stopping instruction.
+
+## Owner-authorized v4 result-boundary repair and archived CPU recovery (2026-10-11)
+
+This later addendum preserves both prior approval snapshots and their exact
+publication/failure evidence. The owner reported 「Notebook failed，請抓取結果修復」
+(Sentinel_ace9216470888191a6509b0c4fef488e). The current scope is diagnosis,
+repair, bounded CPU validation, private publication of the reviewed repaired
+code/notebook, and separately labeled archived-result recovery. It does not
+authorize another GPU activation, new inference, retraining or a new experiment.
+Any such action requires new owner authority.
+
+The retrieved version-4 evidence identifies a post-owner result-boundary failure:
+the worker exited gracefully, but its aggregated result exceeded the existing
+16 MiB loader/inventory/evaluator limit before successful sealing and scoring.
+Preserve the original provider ERROR state, exact source and result identities,
+closure evidence and timestamps. Do not relabel the original run COMPLETE or
+claim that its original export/scoring path succeeded.
+
+The forward repair may project duplicated per-task diagnostic material out of
+the aggregate result while preserving every prediction, attempt/order, task and
+test denominator, physical counter, usage event and uncertainty/failure state.
+Retain complete per-task diagnostics as separately hash-bound artifacts with
+verified sizes and identities. The unchanged bounded consumers must accept the
+new aggregate without increasing their 16 MiB limits, bypassing inventory checks
+or weakening owner-closure, prediction-seal or evaluator gates. A smaller JSON
+file alone is not sufficient evidence that the scientific result is unchanged.
+Require exact projection invariants and regression tests against the archived
+failure and synthetic boundary cases.
+
+The separate archived CPU recovery may consume only the verified original-v4
+closed-owner artifacts. Validate the original source/owner/result bindings, the exact numeric-v4
+downloaded-file inventory, recorded process/ledger bindings and task/attempt
+completeness before reconstructing a bounded aggregate. There is no original
+sealed evidence archive; any recovery archive is a newly labeled output. Prove prediction equivalence, then create a fresh recovery identity,
+seal the unchanged predictions and invoke the unchanged original public scorer.
+Do not resume the model, generate or repair answers, substitute a newer adapter,
+search for better predictions, change the scorer or shrink the 120-task/167-test
+denominators. Public answers remain evaluator-only after the closed-owner proof
+and prediction seal; the projector and solver must not read them.
+
+Label any recovered CPU score and archive as post-run recovery of the original
+predictions. Recovery does not convert the original provider ERROR into success,
+establish a successful end-to-end GPU session, or represent official competition
+GPU inference. Retain the original epoch 1791697978 and deadline 1791741178 as
+historical session facts; never reset them or use this repair to extend model
+execution. No new GPU run is approved in this addendum.
+
+The established private release workflow may publish only the reviewed narrow
+code/test changes, repair notebook and compact source/validation/recovery
+provenance to Danwuoo/IRIS-X main and the existing private Kaggle code Dataset and
+notebook identities. Preserve all earlier Dataset/notebook versions, failed
+artifacts, other seven Dataset pins and the ARC3 metadata-only association.
+Published provider version numbers require exact save/readback evidence rather
+than assumptions. No resources, billing/access settings, credentials or quota
+bypasses may be added or changed.
+
+Keep original result JSON, task grids, predictions, ledgers, full process/runtime
+diagnostics, weights, archives and public answer materials outside the Git
+repair overlay. Compact reviewed records may bind them by hash, size, count and
+status without embedding their payloads. Require final scoped byte review,
+focused CPU and repository-baseline validation, expected-parent main update,
+remote verification and exact-commit CI reporting. Recovered evidence and any
+later publication state must remain distinguishable from original run evidence.

@@ -1,0 +1,52 @@
+{
+  "approved_datasets": [
+    {
+      "expected_version": 3,
+      "id": 12504696,
+      "reference": "danielwuu/iris-x-learning-agent-code-20261011",
+      "role": "code",
+      "root_manifest_sha256": "9c6ab0128c4c5fac4809991871f59b6373bd0c7a613bdcb2c740347096bc2b8b",
+      "source_archive_sha256": "4b34488c32ab799745d02dee6168b26af4fe77e7033b364f82aa5aca8a61cbce",
+      "transport_archive_sha256": "dd08f0c738b9895e0ba1ab8820c45b925c7d7b31c6d36084a75fc72c27a3a443",
+      "upload_inventory_sha256": "b884ed2b44d1dd16f31976d045b6d62c706e6ca517730e549eda55087115ca0e"
+    }
+  ],
+  "approved_notebooks": [
+    {
+      "bytes": 51300,
+      "expected_version": 5,
+      "id": 138123872,
+      "reference": "danielwuu/iris-x-learning-agent-20261011",
+      "role": "inactive",
+      "sha256": "559bef4e1ac5c8283e87fc29f1e0d4e557588bdfc68ecff80e413b0427dcdb14"
+    }
+  ],
+  "checks": {
+    "all_expected_readback_layouts_verified": true,
+    "all_payload_and_source_zip_bytes_verified": true,
+    "inactive_notebook_stdlib_smoke_passed": true,
+    "no_zip_duplicates_links_or_unsafe_paths": true,
+    "notebook_only_six_reviewed_assignment_changes": true,
+    "only_changed_original_path": "tools/arc_learning_agent_20261011/worker.py",
+    "original_scorer_data_limits_and_live_closure_guards_unchanged": true,
+    "remaining_seven_dataset_pins_and_docker_unchanged": true,
+    "source_files": 100,
+    "unchanged_original_files": 96
+  },
+  "format": "irisx/independent-learning-repair-material-review-v1",
+  "limitations": [
+    "This approves local exact materials only; provider publication/readback remains separate.",
+    "No active GPU execution or full active deployment-wrapper validation is represented."
+  ],
+  "scope": {
+    "private_publication_only": true,
+    "publication_manifest": {
+      "bytes": 61508,
+      "sha256": "4bc32d95d7be93957be6fa35357bff3325c73b8aaf00772b30bb347956655055"
+    },
+    "run_authorized": false,
+    "source_freeze_sha256": "a498d4c31db5ccf283cffc9184531e56388312b90ad865461fe4aebb92d56ff8"
+  },
+  "source_identity_sha256": "0d18d294870a21d4d1694ee5ac5effaa1e06b95fbc403be13e33600f28972649",
+  "status": "APPROVED"
+}

@@ -1,0 +1,22 @@
+{
+  "format": "irisx/learning-repair-provider-mount-acceptance-v1",
+  "notebook_sha256": "559bef4e1ac5c8283e87fc29f1e0d4e557588bdfc68ecff80e413b0427dcdb14",
+  "manifest_sha256": "4bc32d95d7be93957be6fa35357bff3325c73b8aaf00772b30bb347956655055",
+  "code_receipt_sha256": "94b1148b0ac20ca2c1dbb79efa7df40a5ca06e34e2730a765a9d64d51a10a0e1",
+  "code_dataset_id": 12504696,
+  "code_version": 3,
+  "layout": "extracted-directory",
+  "returncode": 0,
+  "passed": true,
+  "model_calls": 0,
+  "public_gold_read": false,
+  "acceptance": {
+    "status": "PREFLIGHT_ONLY",
+    "controls": 128,
+    "model_calls": 0,
+    "training_steps": 0,
+    "gold_read": false,
+    "source_identity_sha256": "0d18d294870a21d4d1694ee5ac5effaa1e06b95fbc403be13e33600f28972649",
+    "owned_tree_closed": true
+  }
+}

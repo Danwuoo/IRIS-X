@@ -1,0 +1,52 @@
+{
+  "actual_v4_projection_probe": {
+    "all_policy_pools_byte_identical": true,
+    "maximum_rss_kib": 433068,
+    "no_evaluator_answers_or_scorer_access": true,
+    "projected_bytes": 8080319,
+    "projected_sha256": "680c4cb0257ea199d8e42b93fa0fce79296b37a4538d6899e2272329423300ac",
+    "raw_bytes": 34228110,
+    "raw_sha256": "9073b54f5eb6508cdd419e8d898a63b8c35cdf9fddc945b04845627e449ce0d9",
+    "rlimit_as_bytes": 536870912
+  },
+  "baseline_commit": "e34f365ee621f7e42766f4021786038c539bd2e9",
+  "files": {
+    "tools/arc_learning_agent_20261011/result_projection.py": "84ef1ee28bc9ea72e283a34f158a6fbe9f66680016c8e6f2f62faa50118c1d7a",
+    "tools/arc_learning_agent_20261011/tests/test_result_projection.py": "d27d425d43e9505fc199938cc28e98cf674eaa3a82bab9fb14b2bef53b22d8f8",
+    "tools/arc_learning_agent_20261011/worker.py": "df44e0bed33a6331eabd3ae51a1cee46c3a68125376f51221fc709917d1c72d5"
+  },
+  "independent_tests": {
+    "existing_evaluation_boundary_tests": {
+      "failed": 0,
+      "passed": 10
+    },
+    "existing_session_tests_corrected_disjoint_tmp": {
+      "failed": 0,
+      "passed": 10,
+      "skip_reason": "explicit tiny-neural tests not enabled in independent subset",
+      "skipped": 2
+    },
+    "new_projection_tests": {
+      "failed": 0,
+      "includes": "oversized trusted-launcher owner, live seal, fresh CPU evaluator and export",
+      "passed": 13
+    }
+  },
+  "logs": {
+    "PROJECTION-INDEPENDENT-FROZEN.log": "11538ed9a2d2794fc79e1596942017d8d818208fc3ad2a2cbe7a9bbd71d89c60",
+    "SESSION-INDEPENDENT-EXTERNAL-TMP.log": "20e328877d9ea813561f4243b67c8c4a111863f8286136a4ab5b4e975167c20d"
+  },
+  "remaining_integration_gates": [
+    "final all-source-frozen integrated suite",
+    "updated deployment projection/source-count validation",
+    "separate archived recovery contract/seal/exact-data proof-only review before scoring"
+  ],
+  "retained_initial_configuration_failures": [
+    "PROJECTION-INDEPENDENT-TESTS.log: missing src on PYTHONPATH",
+    "PROJECTION-INDEPENDENT-TESTS-CONFIGURED.log: concurrent in-progress recovery source change detected correctly",
+    "PROJECTION-INDEPENDENT-FROZEN.log:13new+10old-evaluation tests passed; old session tests rejected test TMPDIR nested beneath source root; corrected separately"
+  ],
+  "scope": "forward remove-only-task-evidence projection; no new GPU or publication authority",
+  "source_review": "Only evidence arrays omitted from aggregate; original task detail/full owner bytes bound; physical events, stage receipts, predictions/order, counters and denominator retained. Generic16MiB consumers and live closure unchanged.",
+  "status": "APPROVED_AT_EXACT_SOURCE_HASHES"
+}

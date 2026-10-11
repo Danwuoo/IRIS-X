@@ -1,0 +1,154 @@
+{
+  "actual_provider_mount_cpu_acceptance": {
+    "controls": 128,
+    "gold_read": false,
+    "model_calls": 0,
+    "owned_tree_closed": true,
+    "passed": true,
+    "training_steps": 0
+  },
+  "code_dataset": {
+    "archive_sha256": "e4c77716185ed97fa0fb48656aca989d2a64ef714d612aa9e3ab8430f8989d43",
+    "dataset_id": 12504696,
+    "exact_byte_roundtrip_verified": true,
+    "file_count": 102,
+    "layout": "extracted-directory",
+    "license_name": "Other (specified in description)",
+    "old_versions_deleted": false,
+    "private": true,
+    "reference": "danielwuu/iris-x-learning-agent-code-20261011/3",
+    "root_manifest_sha256": "9c6ab0128c4c5fac4809991871f59b6373bd0c7a613bdcb2c740347096bc2b8b",
+    "total_bytes": 2225544,
+    "url": "https://www.kaggle.com/datasets/danielwuu/iris-x-learning-agent-code-20261011/versions/3",
+    "version": 3
+  },
+  "evidence": {
+    "actual_provider_mount_acceptance": {
+      "bytes": 788,
+      "path": "provider-mount-acceptance/PROVIDER-MOUNT-ACCEPTANCE.json",
+      "sha256": "906aad626482215b195f348b28bcb23839e2622b28733a575de617b84f9e6560"
+    },
+    "code_journal": {
+      "bytes": 330,
+      "path": "publication/state/dataset-code-v3-journal.json",
+      "sha256": "f783958e2b31d1262ac9fe8d6b5b89695043477f52fa3d430682d3926deeef5f"
+    },
+    "code_readback": {
+      "bytes": 816,
+      "path": "publication/state/dataset-code-v3-receipt.json",
+      "sha256": "94b1148b0ac20ca2c1dbb79efa7df40a5ca06e34e2730a765a9d64d51a10a0e1"
+    },
+    "material_approval": {
+      "bytes": 2164,
+      "path": "independent-diagnosis/MATERIALS-INDEPENDENT-APPROVAL.json",
+      "sha256": "1d4b089a8df4940629ee6ca8a43ae751e63d02d1cf821bee4794fe9937237cc5"
+    },
+    "notebook_journal": {
+      "bytes": 792,
+      "path": "publication/state/notebook-inactive-journal.json",
+      "sha256": "b83587af679e02bed39c9cdd5f974830731819a9d671e16a1878936e4168c0da"
+    },
+    "notebook_readback": {
+      "bytes": 2046,
+      "path": "publication/state/notebook-inactive-receipt.json",
+      "sha256": "07213573cc7708e0ba9fc3f02ef872d76186a9c2d184974cec3482fb6e372edd"
+    },
+    "publication_manifest": {
+      "bytes": 61508,
+      "path": "release/publication-manifest.json",
+      "sha256": "4bc32d95d7be93957be6fa35357bff3325c73b8aaf00772b30bb347956655055"
+    },
+    "transport_review": {
+      "bytes": 6221,
+      "path": "independent-transport-review/FINAL-TRANSPORT-REVIEW.json",
+      "sha256": "50ce548e66c30b61b7d342cfd346d3ffac085ed0e8a703c5d81851e59dfe5c55"
+    }
+  },
+  "format": "irisx/learning-result-projection-repair-publication-checkpoint-v1",
+  "notebook": {
+    "active_run_submitted": false,
+    "competition_sources": [
+      "arc-prize-2026-arc-agi-3"
+    ],
+    "dataset_identities_returned": [
+      "danielwuu/iris-arc-granite42-8b-offline",
+      "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+      "danielwuu/iris-arc-next-cpython312-offline",
+      "danielwuu/iris-arc-next-cu128-cp312-wheels",
+      "danielwuu/iris-arc-next-runtime",
+      "danielwuu/iris-x-learning-agent-code-20261011",
+      "danielwuu/iris-x-learning-training-20261011",
+      "danielwuu/iris-x-public120-data-20261010"
+    ],
+    "dataset_sources_submitted": [
+      "danielwuu/iris-x-learning-agent-code-20261011/3",
+      "danielwuu/iris-x-public120-data-20261010/1",
+      "danielwuu/iris-x-learning-training-20261011/1",
+      "danielwuu/iris-arc-next-runtime/8",
+      "danielwuu/iris-arc-granite42-8b-offline/2",
+      "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+      "danielwuu/iris-arc-next-cpython312-offline/2",
+      "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+    ],
+    "docker_image": "gcr.io/kaggle-private-byod/python@sha256:2757e0c7d1e0a9cb43da657b97e223c321a98f5014bdf64f44f2f6b083ad2b2f",
+    "enable_model": false,
+    "execution_type": "QUICK_SAVE",
+    "gpu": false,
+    "internet": false,
+    "kernel_id": 138123872,
+    "manual_start": false,
+    "mounted_dataset_versions_independently_verified": false,
+    "normalized_source_exact": true,
+    "predecessor_saved_source_sha256": "5e048af557b5c8701665dbe95cbee635c925b1c80b62da25487cff64b920903b",
+    "predecessor_status": "ERROR",
+    "predecessor_version": 4,
+    "private": true,
+    "reference": "danielwuu/iris-x-learning-agent-20261011",
+    "save_version_value": 3,
+    "saved_source_bytes": 48606,
+    "saved_source_sha256": "1260863fa392d583af92abd1f037808f28b0d8f8df49cad881d964fcf3800e52",
+    "status": "COMPLETE",
+    "submitted_source_sha256": "559bef4e1ac5c8283e87fc29f1e0d4e557588bdfc68ecff80e413b0427dcdb14",
+    "tpu": false,
+    "url": "https://www.kaggle.com/code/danielwuu/iris-x-learning-agent-20261011",
+    "version": 5
+  },
+  "original_run_preserved": {
+    "deadline_epoch": 1791741178,
+    "predispatch_epoch": 1791697978,
+    "raw_result_sha256": "9073b54f5eb6508cdd419e8d898a63b8c35cdf9fddc945b04845627e449ce0d9",
+    "status": "ERROR",
+    "version": 4
+  },
+  "publication_manifest_sha256": "4bc32d95d7be93957be6fa35357bff3325c73b8aaf00772b30bb347956655055",
+  "scope": {
+    "credentials_uploaded": false,
+    "historical_outputs_overwritten": false,
+    "new_gpu_run_submitted": false,
+    "notebook_id_preserved": true,
+    "other_seven_dataset_references_unchanged": true,
+    "private_code_dataset_id_preserved": true,
+    "raw_recovery_outputs_uploaded": false,
+    "weights_uploaded": false
+  },
+  "status": "VERIFIED_PRIVATE_CODE_V3_AND_INACTIVE_NOTEBOOK_V5",
+  "utc": "2026-10-11T11:30:48.689878+00:00",
+  "verification_notes": [
+    "The exact code Dataset version3 was downloaded through a numeric version endpoint and every approved file matched its size and SHA256.",
+    "Saved notebook source matches the approved artifact after joining notebook cell.source lists to strings; no other source change is allowed.",
+    "QUICK_SAVE and inactive manual/model/GPU/TPU/Internet settings are verified. Provider COMPLETE refers to this save checkpoint and does not establish a new model execution or successful GPU run.",
+    "Notebook metadata returns Dataset identities rather than mounted versions; eight submitted versioned references and embedded pins are verified, while mounted versions are not independently attested.",
+    "The Dataset SDK has no convert_to_csv wire field; preservation is established by complete exact-byte roundtrip, not an unsupported option.",
+    "No scientific scoring results or raw diagnostic bodies are included in this publication checkpoint."
+  ],
+  "write_accounting": {
+    "code_upload_init_calls": 1,
+    "code_upload_put_calls": 1,
+    "code_version_calls": 1,
+    "gpu_run_calls": 0,
+    "inactive_save_calls": 1,
+    "initial_update_command_denied_before_claim": true,
+    "owner_explicit_destination_payload_approval_received": true,
+    "same_update_command_retried_once_after_approval": true
+  }
+}

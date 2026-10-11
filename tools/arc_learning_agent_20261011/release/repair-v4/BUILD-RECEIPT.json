@@ -1,0 +1,18 @@
+{
+  "manifest_sha256": "4bc32d95d7be93957be6fa35357bff3325c73b8aaf00772b30bb347956655055",
+  "source_freeze_sha256": "a498d4c31db5ccf283cffc9184531e56388312b90ad865461fe4aebb92d56ff8",
+  "runtime_changed_paths": [
+    "tools/arc_learning_agent_20261011/worker.py"
+  ],
+  "runtime_added_paths": [
+    "tools/arc_learning_agent_20261011/archived_recovery.py",
+    "tools/arc_learning_agent_20261011/deployment/validate_learning_outputs.py",
+    "tools/arc_learning_agent_20261011/result_projection.py"
+  ],
+  "runtime_count": 100,
+  "notebook_sha256": "559bef4e1ac5c8283e87fc29f1e0d4e557588bdfc68ecff80e413b0427dcdb14",
+  "code_manifest_sha256": "9c6ab0128c4c5fac4809991871f59b6373bd0c7a613bdcb2c740347096bc2b8b",
+  "run_authorized": false,
+  "original_global_deadline_preserved": true,
+  "preloader_sha256": "b1b6af95fafc93701f09319798369479e98d6004ec69f46d93278032150cdeb5"
+}

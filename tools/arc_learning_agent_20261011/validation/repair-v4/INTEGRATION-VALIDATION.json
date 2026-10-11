@@ -1,0 +1,144 @@
+{
+  "format": "irisx/learning-v4-repair-integration-validation-v1",
+  "base_commit": "e34f365ee621f7e42766f4021786038c539bd2e9",
+  "publication_manifest_sha256": "4bc32d95d7be93957be6fa35357bff3325c73b8aaf00772b30bb347956655055",
+  "status": "FOCUSED_PASS_AGGREGATE_BASELINE_FAILURES_RETAINED",
+  "focused": {
+    "tests": 168,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "seconds": 373.123,
+    "log_sha256": "888886a87f236f93cd6af58a7a673949848ff351a8a5c6e742c5f12a0205a1ef",
+    "gpu_execution": false,
+    "native_tokenizer_fixture": true,
+    "tiny_neural_cpu_enabled": true,
+    "qualification": "Full suite used the frozen runtime/notebook and pre-format adapter; only one trailing LF was removed afterward. The final exact adapter test below covers the changed artifact."
+  },
+  "final_adapter": {
+    "sha256": "4ebfc6f106c9d9866dfc61736a7168e385f9f4bafe2201c4beecddc7a65f4cb4",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "seconds": 3.756,
+    "log_sha256": "79dfc8ea08662159d6b93bd7fe015a91d5484d8d1881dd2b97f809c44743c97c"
+  },
+  "retained_nonacceptance_invocations": {
+    "initial_git_whitespace_check": "One surplus EOF blank; source owner removed exactly one LF, refreshed three metadata files, runtime/notebook unchanged. Final cached diff check clean.",
+    "adapter_selection_error": {
+      "cause": "Initial selected-test command named the wrong unittest class; no production test ran. Corrected command passed.",
+      "log_sha256": "69543426f49eea86f7d779b01370c07f2ef3952491be1081af44e76bee6e7d81"
+    },
+    "full_suite_temp_setup": "Outside-source TMPDIR was created after the suite began; initial tempfile users could use system /tmp, still outside the source tree. No guard or source changes were made."
+  },
+  "aggregate": {
+    "baseline": {
+      "tests": 1583,
+      "seconds": 240.076,
+      "failures": 1,
+      "errors": 35,
+      "skips": 74,
+      "exit": 1,
+      "status": "FAIL",
+      "log_sha256": "189639292ca5c0392f2a0f97502ef7e82e675007844335214e818206a6883282",
+      "repository_invariants_pass": true,
+      "validator_self_tests_pass": true,
+      "failure_error_label_count": 36
+    },
+    "first": {
+      "tests": 1583,
+      "seconds": 249.295,
+      "failures": 2,
+      "errors": 35,
+      "skips": 74,
+      "exit": 1,
+      "status": "FAIL",
+      "log_sha256": "79f30ebdbf37ab6b3a6a1a687d348744b4092b0a15a101f19a39e73919ab624e",
+      "repository_invariants_pass": true,
+      "validator_self_tests_pass": true,
+      "failure_error_label_count": 37
+    },
+    "final": {
+      "tests": 1583,
+      "seconds": 280.15,
+      "failures": 1,
+      "errors": 35,
+      "skips": 74,
+      "exit": 1,
+      "status": "FAIL",
+      "log_sha256": "1b70d1f61ae7bc202ff66506662c686c8343031455a5179dcc7826fb46fdd98d",
+      "repository_invariants_pass": true,
+      "validator_self_tests_pass": true,
+      "failure_error_label_count": 36
+    },
+    "final_exact_baseline_labels": true,
+    "final_added_labels": [],
+    "final_removed_labels": [],
+    "first_additional_timing_label": "FAIL: test_retirement_thread_refusal_skips_unbounded_partial_callback_in_parent (test_nvarc_combined.CombinedProcessTests.test_retirement_thread_refusal_skips_unbounded_partial_callback_in_parent)",
+    "same_environment_paired_reproduction": {
+      "test": "test_nvarc_combined.CombinedProcessTests.test_retirement_thread_refusal_skips_unbounded_partial_callback_in_parent",
+      "unchanged_test_and_runtime": true,
+      "records": [
+        {
+          "snapshot": "baseline",
+          "attempt": 1,
+          "exit": 1,
+          "log": "timing-baseline-1.log",
+          "sha256": "ff0b92a209a6b3c751a52999aeb613723d41f4dc74bf534b9b00c2b3001d3c58"
+        },
+        {
+          "snapshot": "baseline",
+          "attempt": 2,
+          "exit": 1,
+          "log": "timing-baseline-2.log",
+          "sha256": "d2d1e1ffd8a2f6dfef2550d7859e4fe225faa739000d92b236bbd0a86b5a7a94"
+        },
+        {
+          "snapshot": "baseline",
+          "attempt": 3,
+          "exit": 0,
+          "log": "timing-baseline-3.log",
+          "sha256": "1cd08f21220cbf12faf6e69553321330c63535e4d77ea5bb63fcefe5da910c41"
+        },
+        {
+          "snapshot": "current",
+          "attempt": 1,
+          "exit": 0,
+          "log": "timing-current-1.log",
+          "sha256": "c4613c1f7311b32baf92658a8703caa2464a2069d1297eadce22e8b03e02d19c"
+        },
+        {
+          "snapshot": "current",
+          "attempt": 2,
+          "exit": 0,
+          "log": "timing-current-2.log",
+          "sha256": "100eb367b04d00cd4501063e6d744f997d3d7417b0090d2816338e2261fda45d"
+        },
+        {
+          "snapshot": "current",
+          "attempt": 3,
+          "exit": 0,
+          "log": "timing-current-3.log",
+          "sha256": "390a7833a80c731298b5076cef3d1ffeba127149f1515ae4c3098719274b646a"
+        }
+      ]
+    },
+    "timing_test_and_runtime_unchanged": true,
+    "no_aggregate_green_claim": true
+  },
+  "packaging": {
+    "staged_baseline_blobs": 1543,
+    "unrelated_baseline_blobs_modes_unchanged": 1540,
+    "approved_existing_modifications": [
+      "AGENTS.md",
+      "docs/decisions/0070-publish-and-run-bounded-learning-agent.md",
+      "tools/arc_learning_agent_20261011/worker.py"
+    ],
+    "diff_cached_check_exit": 0,
+    "raw_index_worktree_equal": true,
+    "raw_tasks_results_weights_archives_credentials_excluded": true
+  },
+  "external_execution": "Private inactive v5 and code Dataset v3 separately verified; no new GPU run.",
+  "ci": "Exact pushed-commit CI must be reported separately; focused tests do not imply CI green."
+}

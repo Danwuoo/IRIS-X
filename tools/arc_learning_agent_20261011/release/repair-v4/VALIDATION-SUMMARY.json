@@ -1,0 +1,54 @@
+{
+  "format": "irisx/learning-v4-repair-validation-v1",
+  "status": "PASS",
+  "base_commit": "e34f365ee621f7e42766f4021786038c539bd2e9",
+  "source_freeze_sha256": "a498d4c31db5ccf283cffc9184531e56388312b90ad865461fe4aebb92d56ff8",
+  "publication_manifest_sha256": "4bc32d95d7be93957be6fa35357bff3325c73b8aaf00772b30bb347956655055",
+  "runtime_source_identity_sha256": "0d18d294870a21d4d1694ee5ac5effaa1e06b95fbc403be13e33600f28972649",
+  "focused": {
+    "tests": 168,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "seconds": 404.131,
+    "log_sha256": "e0369bd97b73d420fbfb7f998d8f248f348d5339ba3ba58dccc012656e40c6a0",
+    "genuine_tiny_neural_cpu": true,
+    "native_tokenizer_100352_vocabulary": true,
+    "gpu_execution": false,
+    "offline": true,
+    "tmpdir_outside_source": true
+  },
+  "actual_archived_v4": {
+    "original_provider_status": "ERROR",
+    "raw_result_bytes": 34228110,
+    "raw_result_sha256": "9073b54f5eb6508cdd419e8d898a63b8c35cdf9fddc945b04845627e449ce0d9",
+    "compact_result_bytes": 8080319,
+    "prediction_seal_sha256": "ff6244305ef15a97bbd3939838db117f680c316dda93ba7dea9187e246f897a2",
+    "contract_sha256": "225d6bf7c6d8262d9d58d32494eeac6aa72a8ebd9e02dfe96cd5d16285a2a252",
+    "proof_only_status": "ARCHIVED_PROOF_VALIDATED",
+    "cpu_recovery_status": "SCORED",
+    "tasks": 120,
+    "tests": 167,
+    "new_gpu_execution": false,
+    "new_predictions": false,
+    "scorer_sha256": "3df3fd40c0a4db82dc6ad5c568102e45ad10efad8529412eae0623bd9f4ba016",
+    "evaluator_limits": {
+      "address_space_bytes": 536870912,
+      "cpu_seconds": 45,
+      "file_bytes": 33554432
+    },
+    "proof_only_peak_rss_kib": 290596,
+    "scorer_peak_rss_kib": 293020,
+    "original_deadline_epoch": 1791741178
+  },
+  "prior_nonacceptance_invocations": {
+    "retained": true,
+    "causes": [
+      "concurrent source edits correctly invalidated immutable-source tests",
+      "TMPDIR under source correctly triggered source/input/output-overlap guard"
+    ],
+    "production_guards_relaxed": false
+  },
+  "repository_aggregate_and_ci": "Reported separately by sole Git integrator; no blanket CI-green claim",
+  "new_gpu_runtime_verified": false
+}

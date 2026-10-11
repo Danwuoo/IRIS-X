@@ -1,0 +1,75 @@
+{
+  "allowed_single_append": {
+    "contents": "Exact bytes of this approval document only; no edits to the approved28 files.",
+    "path": "tools/arc_learning_agent_20261011/validation/repair-v4/FINAL-STAGED-INDEPENDENT-REVIEW.json",
+    "requirement": "Verify resulting final tree and unchanged expected parent before commit; exact-commit remote and CI reporting remains separate."
+  },
+  "blockers": [],
+  "format": "irisx/learning-v4-repair-final-staged-independent-review-v1",
+  "prior_reviews": {
+    "material": "1d4b089a8df4940629ee6ca8a43ae751e63d02d1cf821bee4794fe9937237cc5",
+    "pre_provider": "97bf9a8a9321ba6c57ffcd3e381b480c79f84d4efe5fed784895a0a1ec17e2a5",
+    "provider_delta": "721a49bb245573a808d2bb7400ce2ffaacb97662de70d242e7fb65f2b9e30666"
+  },
+  "publication": {
+    "inactive_notebook_version": 5,
+    "mounted_versions_independently_attested": false,
+    "new_gpu_run": false,
+    "original_v4_provider_status": "ERROR",
+    "persisted102_code_files_verified": true,
+    "private_code_version": 3,
+    "saved_notebook_source_list_to_string_normalization_only": true
+  },
+  "recovery": {
+    "original_deadline_epoch": 1791741178,
+    "original_raw_prediction_pools_unchanged": true,
+    "separate_cpu_status": "SCORED",
+    "tasks": 120,
+    "terminal_review_sha256": "fe7bc8f5745785ce094440f7ede6694a9b06ed746b7737a7075687423eebf265",
+    "tests": 167
+  },
+  "scope": {
+    "approved_pre_receipt_tree": "81b8e96ffd63337309cd3565c84700cbf3cfeaf6",
+    "expected_parent_commit": "e34f365ee621f7e42766f4021786038c539bd2e9",
+    "publication_manifest_sha256": "4bc32d95d7be93957be6fa35357bff3325c73b8aaf00772b30bb347956655055",
+    "run_authorized": false,
+    "staged_snapshot_sha256": "47646ccd242dcc11ec5e22c95a6f709686273dce06fd75944de31de01875fed4"
+  },
+  "source": {
+    "identity_sha256": "0d18d294870a21d4d1694ee5ac5effaa1e06b95fbc403be13e33600f28972649",
+    "only_changed_original_runtime": "tools/arc_learning_agent_20261011/worker.py",
+    "runtime_files": 100,
+    "scientific_controller_scorer_limits_and_live_guards_unchanged": true
+  },
+  "source_or_provider_writes_by_reviewer": false,
+  "staged_changes": {
+    "added": 25,
+    "all1568_index_worktree_bytes_match": true,
+    "all28_paths_reviewed": true,
+    "modified": 3,
+    "no_unstaged_changes": true,
+    "payload_exclusions_verified": true,
+    "unchanged_baseline_blobs_modes": 1540,
+    "whitespace_clean": true
+  },
+  "status": "APPROVED",
+  "validation": {
+    "aggregate_exact36_baseline_failure_error_labels": true,
+    "aggregate_final": {
+      "errors": 35,
+      "failures": 1,
+      "log_sha256": "1b70d1f61ae7bc202ff66506662c686c8343031455a5179dcc7826fb46fdd98d",
+      "skips": 74,
+      "status": "FAIL",
+      "tests": 1583
+    },
+    "aggregate_or_ci_green_claim": false,
+    "final_adapter_test_passed": true,
+    "first_aggregate_and_same_environment_timing_reproduction_retained": true,
+    "focused_errors": 0,
+    "focused_failures": 0,
+    "focused_skips": 0,
+    "focused_tests": 168,
+    "repository_invariants_and_validator_self_tests_passed": true
+  }
+}

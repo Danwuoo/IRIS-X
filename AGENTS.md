@@ -1,5 +1,21 @@
 # IRIS-X Repository Governance
 
+## Active learning-agent v4 result repair and archived CPU recovery (2026-10-11)
+
+The latest Decision 0070 addendum authorizes the reviewed result-aggregation
+repair, bounded CPU validation, private code/notebook publication and separate
+CPU-only recovery of the original closed-owner predictions. Preserve the v4
+provider ERROR and original epoch/deadline; no new GPU run, model inference,
+retraining or experiment is authorized without new owner approval. Keep every
+prediction/order, denominator, physical counter and unknown/failure state while
+moving duplicate diagnostics to verified hash-bound artifacts. Do not increase
+the existing 16 MiB consumer limits or weaken closure/sealing/evaluator gates.
+Archived recovery must prove source/owner/result and prediction equivalence,
+then use the unchanged original public scorer under a fresh recovery identity.
+Public answers remain evaluator-only. Keep raw results, grids, ledgers, detailed
+process/runtime receipts, weights, archives and credentials outside the Git
+repair overlay; preserve prior versions and all non-code Dataset pins.
+
 ## Active learning-agent v2 repair and bounded replacement (2026-10-11)
 
 The repair addendum to Decision 0070 authorizes the reviewed session-launcher

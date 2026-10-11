@@ -1,0 +1,77 @@
+{
+  "all_denominators_and_unique_rows_verified": true,
+  "all_original_predictions_and_pools_byte_identical": true,
+  "competition_gpu_equivalent": false,
+  "contract_sha256": "225d6bf7c6d8262d9d58d32494eeac6aa72a8ebd9e02dfe96cd5d16285a2a252",
+  "cpu_process": {
+    "cpu_only": true,
+    "format": "irisx/archived-cpu-process-receipt-v1",
+    "limits": {
+      "address_space_bytes": 536870912,
+      "cpu_seconds": 45,
+      "output_file_bytes": 33554432
+    },
+    "original_provider_status": "ERROR",
+    "owned_process_stopped": true,
+    "prediction_seal_sha256": "ff6244305ef15a97bbd3939838db117f680c316dda93ba7dea9187e246f897a2",
+    "proof_only": false,
+    "returncode": 0
+  },
+  "evaluation_status": "SCORED",
+  "format": "irisx/independent-archived-cpu-terminal-review-v1",
+  "generation_may_resume": false,
+  "maximum_resident_kib": 293020,
+  "new_gpu_execution": false,
+  "official_score": null,
+  "original": {
+    "deadline_epoch": 1791741178,
+    "numeric_version": 4,
+    "provider_status": "ERROR",
+    "raw_result_sha256": "9073b54f5eb6508cdd419e8d898a63b8c35cdf9fddc945b04845627e449ce0d9",
+    "started_epoch": 1791697978
+  },
+  "original97_and_recovery100_sources_unchanged": true,
+  "original_raw_and_19_historical_inputs_unchanged": true,
+  "output_files": {
+    "evaluator-detail.json": {
+      "bytes": 253275,
+      "sha256": "cba5e31a3474de91e704939471fc4d0aede8fd0faee044c1951975dd32c78d04"
+    },
+    "process-receipt.json": {
+      "bytes": 346,
+      "sha256": "a2e70b989214ee1edfebaae0de2d362cba9b0f439880989741fde97439b564d5"
+    },
+    "public-summary.json": {
+      "bytes": 4358,
+      "sha256": "90b178e4b7b953d248c85af9f1d72481caa26967d13a56b1e953230efff10c74"
+    },
+    "request.json": {
+      "bytes": 310,
+      "sha256": "0b97dd7b2af1f3089bdbed6364a28f166e0c3981ec02dde1a0ebb730eb9b5a41"
+    },
+    "stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "policies": [
+    "global_grid",
+    "task_ttt",
+    "full_agent"
+  ],
+  "post_score_original_projection_independently_rebuilt": true,
+  "proof_before_gold_verified": true,
+  "recovery_module_sha256": "612e4c6dfbfd13aed27098695de4714cef24d6bf94c0b1a6a8a37aeadd3a97d4",
+  "recovery_source_identity_sha256": "0d18d294870a21d4d1694ee5ac5effaa1e06b95fbc403be13e33600f28972649",
+  "scientific_metrics_interpreted": false,
+  "scope": "Exact original-v4 prediction CPU recovery operational completion only",
+  "scorer_sha256": "3df3fd40c0a4db82dc6ad5c568102e45ad10efad8529412eae0623bd9f4ba016",
+  "seal_sha256": "ff6244305ef15a97bbd3939838db117f680c316dda93ba7dea9187e246f897a2",
+  "status": "APPROVED",
+  "tasks": 120,
+  "tests": 167
+}

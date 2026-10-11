@@ -1,0 +1,116 @@
+{
+  "approved_notebook_sha256": "559bef4e1ac5c8283e87fc29f1e0d4e557588bdfc68ecff80e413b0427dcdb14",
+  "blockers": [],
+  "code_root_manifest_sha256": "9c6ab0128c4c5fac4809991871f59b6373bd0c7a613bdcb2c740347096bc2b8b",
+  "findings": [
+    {
+      "check": "Explicit no-run manifest and action surface; direct active roles rejected before IO. No monitor/output retrieval/cancel branch.",
+      "status": "PASS"
+    },
+    {
+      "check": "Exact same Dataset/notebook IDs and expected version transitions; old v4 ERROR/source/settings bracket required before inactive save.",
+      "status": "PASS"
+    },
+    {
+      "check": "Durable claims and intent-before-send, one-shot RPC/PUT, no mutation retries; unknown writes reconcile exact v3/v5 versions and source hashes.",
+      "status": "PASS"
+    },
+    {
+      "check": "Numeric code v3 download, bounded read/ZIP validation, complete file inventory/hash validation, before/after metadata privacy/license/ID/version checks.",
+      "status": "PASS"
+    },
+    {
+      "check": "Exact inactive notebook source and wire settings, source-normalization-only verification and same version/status bracket.",
+      "status": "PASS"
+    },
+    {
+      "check": "New authoritative state root; old release/evidence unmodified. Actual approved source/material receipt hash-linked to manifest and notebook.",
+      "status": "PASS"
+    },
+    {
+      "check": "Closed payload has 100 runtime files: 96 unchanged, worker.py changed, three reviewed Python additions. No raw results/tasks/weights added. Synthetic upload tokens/signed URLs excluded from journals.",
+      "status": "PASS"
+    }
+  ],
+  "fixed_findings": [
+    "Required inactive machine_shape=None before final freeze.",
+    "Required exact repair2 manifest format and run_authorized=False before final freeze."
+  ],
+  "format": "irisx/repair2-inactive-independent-transport-review-v1",
+  "limitations": [
+    "Provider notebook metadata returns Dataset identities, not independently attested mounted versions. Exact numeric code archive readback and fail-closed runtime pins are separate evidence.",
+    "Latest-only status is bracketed with exact source/ID/version; it is not a version-pinned status endpoint.",
+    "Source semantics, recovery correctness and scientific safeguards are covered by the independent material/recovery audit.",
+    "No provider publication, GPU execution, scientific analysis or operational-success determination performed by this review."
+  ],
+  "operational_success_claimed": false,
+  "provider_calls_by_reviewer": 0,
+  "provider_writes_by_reviewer": 0,
+  "publication_manifest_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair2-20261011/release/publication-manifest.json",
+  "publication_manifest_sha256": "4bc32d95d7be93957be6fa35357bff3325c73b8aaf00772b30bb347956655055",
+  "release_approval_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair2-20261011/independent-diagnosis/MATERIALS-INDEPENDENT-APPROVAL.json",
+  "release_approval_sha256": "1d4b089a8df4940629ee6ca8a43ae751e63d02d1cf821bee4794fe9937237cc5",
+  "required_operator_behavior": [
+    "Only sole publisher may execute reviewed code-v3 update and inactive-v5 save.",
+    "Do not delete/reset consumed claims or retry uncertain writes; reconcile read-only and stop on mismatch.",
+    "Stop on an access denial or unapproved redirect without expanding routes or credentials.",
+    "Require exact code readback and inactive notebook COMPLETE/source/settings before claiming publication complete. No active run or monitoring follows."
+  ],
+  "reviewed_helper_sha256": "1e3222733044f00ac2e7703feb299a41931ee8b6d25744ceaa2c50d2e57b7ab2",
+  "scope": {
+    "arc3_metadata_only_preserved": true,
+    "dataset_id": 12504696,
+    "dataset_predecessor_version": 2,
+    "dataset_reference": "danielwuu/iris-x-learning-agent-code-20261011",
+    "dataset_successor_version": 3,
+    "delete_old_versions": false,
+    "enable_model": false,
+    "execution_type": "QUICK_SAVE",
+    "gpu": false,
+    "inactive_successor_version": 5,
+    "internet": false,
+    "kernel_id": 138123872,
+    "machine_shape": null,
+    "manual_start": false,
+    "notebook_predecessor_version": 4,
+    "notebook_reference": "danielwuu/iris-x-learning-agent-20261011",
+    "other_seven_dataset_pins_unchanged": true,
+    "predecessor_required_status": "ERROR",
+    "predecessor_saved_source_sha256": "5e048af557b5c8701665dbe95cbee635c925b1c80b62da25487cff64b920903b",
+    "predispatch_epoch": null,
+    "private": true,
+    "provider_timeout": null,
+    "run_authorized": false,
+    "tpu": false
+  },
+  "script_path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair2-20261011/publication/repair2_transport.py",
+  "script_sha256": "ca8ff7bf3488e437b90189013f66de6c80e72e20f8d650a103c6da58731f29bd",
+  "source_archive_sha256": "4b34488c32ab799745d02dee6168b26af4fe77e7033b364f82aa5aca8a61cbce",
+  "status": "PASS",
+  "tests": {
+    "actual_final_approval_load_contract_passed": true,
+    "artifacts": {
+      "PAYLOAD-CLOSURE-AUDIT.json": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair2-20261011/independent-transport-review/PAYLOAD-CLOSURE-AUDIT.json",
+        "sha256": "48939199ebdf34626925211a7e5012305cee8a0a8cbba117384211ebb5f163f2"
+      },
+      "exact-tests-optimized.log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair2-20261011/independent-transport-review/exact-tests-optimized.log",
+        "sha256": "b84b79febd2de4901e844a89af7c4fe94d40f468156751e99be658b4b7280701"
+      },
+      "exact-tests.log": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair2-20261011/independent-transport-review/exact-tests.log",
+        "sha256": "41acd5444124f2fb04e677c3a47dadd7d6e3b23a4d95616f6b23e72e7076641e"
+      },
+      "test_repair2_transport.py": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-repair2-20261011/independent-transport-review/test_repair2_transport.py",
+        "sha256": "4e09e7e3baca28d5a5524ba69e69749d0f3194ba07a514c5b53a58b63877df84"
+      }
+    },
+    "independent_cases": 27,
+    "normal_pass": 27,
+    "optimized_pass": 27,
+    "sockets_and_auth_blocked": true
+  },
+  "utc": "2026-10-11T11:25:47.015457+00:00"
+}

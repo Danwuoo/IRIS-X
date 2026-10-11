@@ -1,0 +1,67 @@
+{
+  "actual_pre_score": {
+    "actual_proof_only_512MiB_passed": true,
+    "contract_sha256": "225d6bf7c6d8262d9d58d32494eeac6aa72a8ebd9e02dfe96cd5d16285a2a252",
+    "independent_projection_and_pools_exact": true,
+    "seal_sha256": "ff6244305ef15a97bbd3939838db117f680c316dda93ba7dea9187e246f897a2"
+  },
+  "actual_terminal_review": {
+    "evaluation_status": "SCORED",
+    "original_deadline_epoch": 1791741178,
+    "original_provider_status": "ERROR",
+    "sha256": "fe7bc8f5745785ce094440f7ede6694a9b06ed746b7737a7075687423eebf265",
+    "tasks": 120,
+    "tests": 167
+  },
+  "approved_source_files": {
+    "tools/arc_learning_agent_20261011/archived_recovery.py": {
+      "bytes": 34181,
+      "sha256": "612e4c6dfbfd13aed27098695de4714cef24d6bf94c0b1a6a8a37aeadd3a97d4"
+    },
+    "tools/arc_learning_agent_20261011/deployment/validate_learning_outputs_projection.py": {
+      "bytes": 14510,
+      "sha256": "4ebfc6f106c9d9866dfc61736a7168e385f9f4bafe2201c4beecddc7a65f4cb4"
+    },
+    "tools/arc_learning_agent_20261011/tests/test_archived_recovery.py": {
+      "bytes": 24018,
+      "sha256": "ea97d5958403ab2ca7dd7278ce6062c17afbae3845279619c13e435ea1c388bf"
+    }
+  },
+  "format": "irisx/independent-archived-recovery-code-review-v1",
+  "independent_test_runs": [
+    {
+      "log": "ARCHIVED-RECOVERY-INDEPENDENT-FROZEN.log",
+      "note": "Same frozen runtime; earlier test version, followed by final adapter mutation/bounds test below.",
+      "seconds": 74.642,
+      "sha256": "45298ab6fc899ea4cf9d26719234b59ec3ae42006ffd4e8bdc2d0ba434e2f8d1",
+      "status": "PASS",
+      "synthetic_child_peak_rss_kib": 236048,
+      "tests": 10
+    },
+    {
+      "log": "ADAPTER-EOF-FROZEN-INDEPENDENT.log",
+      "note": "Final adapter SHA and final test source; exact source approval, full/task size caps, metadata/content/order/counter/grid tamper rejection.",
+      "seconds": 3.125,
+      "sha256": "15d4a2721fb94ff84e0044444727ac77e9ebad21533e77b41d80fb8a6766d88f",
+      "status": "PASS",
+      "tests": 1
+    }
+  ],
+  "limitations": [
+    "No active production GPU runtime or full forward deployment wrapper execution was performed.",
+    "Current publication remains inactive; an active run requires separate owner authority and reviewed contract.",
+    "No scientific correctness interpretation or official score claim."
+  ],
+  "reviewed_properties": [
+    "Exact numeric-v4 receipts bind original source/request/result/closed owner/ledger facts.",
+    "Original recorded inner rc0 and outer rc1 remain unmodified; no historical local-proc assertion.",
+    "Derived task details are explicitly labeled, pinned to original controller serialization, and original raw SHA remains distinct.",
+    "All predictions/pools/order/accounting preserved; only repeated per-task evidence removed from compact owner.",
+    "Scorer inputs are sealed and validated before answer access, and source/evidence/projection/pools revalidated after scoring.",
+    "Fresh isolated CPU child uses 512MiB address space,45 CPU seconds,32MiB file size limit and neural import prevention.",
+    "Original scorer,generic16MiB data limits and live closure validation remain unchanged."
+  ],
+  "scope": "Exact archived-v4 CPU recovery and narrow forward projection adapter",
+  "source_identity_sha256": "0d18d294870a21d4d1694ee5ac5effaa1e06b95fbc403be13e33600f28972649",
+  "status": "APPROVED"
+}
