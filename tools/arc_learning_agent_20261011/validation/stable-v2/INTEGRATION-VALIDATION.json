@@ -1,0 +1,116 @@
+{
+  "format": "irisx/stable-v2-integration-validation-v1",
+  "status": "FOCUSED_PASS_TARGETED_REPOSITORY_RECHECK_PASS_AGGREGATE_FAILURES_RETAINED",
+  "base_commit": "7185175af42582daa37e3ac48e36eb76d093ac05",
+  "publication_manifest_sha256": "54ad71c046b3d45c30b862f7575f6dd7f2c683810b8aa99475bb8c77ce0c0deb",
+  "runtime_source_identity_sha256": "c3032d5e68a870b2b8fee3d304b80900e74e4f9dd555c1fa6cc6e0255d0f7610",
+  "focused_package": {
+    "status": "PASS",
+    "tests": 287,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "seconds": 593.013,
+    "log_sha256": "27d89fc1a507553179b12a39443736b317f67e2b5a210597ab59db6b63973346",
+    "source_freeze_sha256": "dde2418037385524f3e029fb108bff32e8353cabcf3a13281addd04730c6d055",
+    "runtime_source_identity_sha256": "c3032d5e68a870b2b8fee3d304b80900e74e4f9dd555c1fa6cc6e0255d0f7610",
+    "source_overlay_paths": 24,
+    "runtime_files": 106,
+    "offline": true,
+    "gpu_visible": false,
+    "genuine_tiny_cpu_neural_tests": true,
+    "tokenizer_fixture_env_and_sibling_path": true,
+    "focused_tmpdir_outside_repo": true
+  },
+  "retained_full_aggregate": {
+    "tests": 1583,
+    "seconds": 366.722,
+    "failures": 2,
+    "errors": 35,
+    "skips": 74,
+    "status": "FAIL",
+    "log_sha256": "3256a4f1c7ebe6614a7084ecaee9b2777dbbedeae15ce37c8f55aa5f404c2b90",
+    "label_count": 37,
+    "comparisons": [
+      {
+        "reference": "immediate_parent_aggregate",
+        "reference_log_sha256": "95094404c6d313bdc0cb901a5eb15237c368362797eeb6ef28eaaf695478a1c9",
+        "exact_label_match": false,
+        "added_labels": [
+          "FAIL: test_active_repository_is_valid (test_repository_check.RepositoryCheckTests.test_active_repository_is_valid)"
+        ],
+        "removed_labels": [
+          "FAIL: test_retirement_thread_refusal_skips_unbounded_partial_callback_in_parent (test_nvarc_combined.CombinedProcessTests.test_retirement_thread_refusal_skips_unbounded_partial_callback_in_parent)"
+        ]
+      },
+      {
+        "reference": "prior_stable_36_label_aggregate",
+        "reference_log_sha256": "1b70d1f61ae7bc202ff66506662c686c8343031455a5179dcc7826fb46fdd98d",
+        "exact_label_match": false,
+        "added_labels": [
+          "FAIL: test_active_repository_is_valid (test_repository_check.RepositoryCheckTests.test_active_repository_is_valid)"
+        ],
+        "removed_labels": []
+      }
+    ]
+  },
+  "checkout_setup_correction": {
+    "restoration": {
+      "status": "RESTORED_EXACT_EXISTING_REF",
+      "local_ref_absent_before": true,
+      "ref": "refs/tags/archive/pre-product-transition-2026-09-17",
+      "tag_object": "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d",
+      "peeled_commit": "83207e48cc44ce26d0bcb0c98006facfc4f01844",
+      "tree": "623066ca75243af5e68f53d8674508d4470ce2cd",
+      "source_baseline_and_remote_ref_verified_identical": true,
+      "source_code_or_test_limits_changed": false,
+      "external_mutation": false,
+      "qualification": "The isolated integration checkout initially copied Git objects and main but omitted this existing required tag ref. The initial aggregate failure is retained."
+    },
+    "restoration_receipt_sha256": "44498f8f315f7c47bb46008daeb3c976bb9e61ba2b2976c038ca83cc9bae6a64",
+    "invariants_status": "PASS",
+    "invariants_log_sha256": "7b595bf18ac2640f8aaa5c1062a5918e3454eca3dbdbedf41ffcb0854f642f2c",
+    "targeted_unit_tests": 15,
+    "targeted_unit_failures": 0,
+    "targeted_unit_errors": 0,
+    "targeted_unit_skips": 0,
+    "targeted_unit_seconds": 7.439,
+    "targeted_unit_log_sha256": "64ae56b6a7cd6b8e4a0433beafa32f73845bd5d14c51e5d4447acd814b6973a9",
+    "qualification": "The original full aggregate remains failed. Its one added repository-validation label was caused by the integrator omitting the existing annotated archive ref when creating the isolated checkout. The identical source/remote ref was restored locally and only invariants and their15 unit tests were rerun. No full aggregate rerun or source/test-limit changes; all other36 initial labels match the historical baseline."
+  },
+  "preconditions": {
+    "focused_offline_tiny_cpu_neural_enabled": true,
+    "gpu_visible": false,
+    "both_env_and_sibling_tokenizer_fixture_routes": true,
+    "focused_tmpdir_outside_source": true,
+    "aggregate_real_python312": true,
+    "aggregate_pythonhashseed": "0",
+    "aggregate_pythonpath": "src",
+    "aggregate_tmpdir": "repository .irisx/tmp",
+    "aggregate_free_bytes_at_start": 7641812992,
+    "neural_and_aggregate_and_provider_controls_run_sequentially": true
+  },
+  "packaging": {
+    "baseline_tracked_files": 1592,
+    "unchanged_baseline_blobs_modes": 1581,
+    "existing_source_modifications": 9,
+    "existing_governance_modifications": 2,
+    "runtime_closure_files": 106,
+    "source_overlay_paths": 24,
+    "frozen_runtime_unchanged_after_testing": true,
+    "git_diff_cached_check_exit": 0,
+    "raw_tasks_predictions_weights_archives_credentials_excluded_from_overlay": true
+  },
+  "provider_mount_qualification": {
+    "receipt_sha256": "5dd09198e601227a70b812c5b05465781d0d5a1fde1fa6be70880ed7a286473c",
+    "initial_controls_passed": 125,
+    "total_controls": 128,
+    "fresh_same_bytes_replay_controls_passed": 128,
+    "first_timeout_cause": "unknown",
+    "limits_and_source_unchanged": true,
+    "no_model_training_or_gold": true,
+    "owned_tree_closed": true
+  },
+  "ci": "Exact pushed-commit CI will be monitored to terminal separately; focused success is not an aggregate/CI green claim.",
+  "focused_receipt_sha256": "9102586023ee3fcdce928664031bc09b75d9ff1e400f8e30040480c7d89c4398"
+}

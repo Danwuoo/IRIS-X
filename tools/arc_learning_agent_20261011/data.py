@@ -216,6 +216,29 @@ def _validate_manifest(manifest, protected_ids):
     return ancestors
 
 
+def semantic_sample_id(record):
+    """Identity of the learning example, never its measured execution receipt.
+
+    record_id continues to bind the complete original evidence and is validated
+    unchanged. This deliberately narrow semantic projection is only a sampling
+    key, NOT an admission proof or an exact-restart identity. Identical examples
+    retain their input-order occurrence order; runtime hashes never break ties.
+    """
+    provenance = record.get("provenance", {})
+    source = {key: provenance[key] for key in (
+        "source_task_sha256", "objective", "held_out_demo", "visible_demo_indices",
+        "augmentation", "augmentation_index", "generator_family", "authored_reference",
+        "generalization_claim", "prompt_task") if key in provenance}
+    context = provenance.get("generation_context")
+    if context is not None:
+        source["generation_context"] = {key: context[key] for key in (
+            "visible_indices", "held_out_demo_index") if key in context}
+    return digest({"format": "irisx/semantic-training-sample-v1",
+                   "sample": {key: record[key] for key in (
+                       "split", "task_id", "parent_ids", "family_id", "kind", "messages", "completion")},
+                   "source": source})
+
+
 def _seal_record(record):
     record["record_id"] = digest(record)
     return record

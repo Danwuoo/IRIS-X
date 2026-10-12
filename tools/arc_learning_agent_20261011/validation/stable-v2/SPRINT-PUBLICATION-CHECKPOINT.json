@@ -1,0 +1,140 @@
+{
+  "active_run": {
+    "epoch_finalized": false,
+    "planned_version": 9,
+    "remaining_gates": [
+      "verified final Git main",
+      "final terminal-monitor/validator approval",
+      "fresh unchanged predecessor before one dispatch"
+    ],
+    "role": "sprint001",
+    "submitted": false
+  },
+  "actual_provider_mount_acceptance": {
+    "artifact": "learning-agent-goal-sprint-20261011/validation/ACTUAL-PROVIDER-MOUNT.json",
+    "bytes": 1674,
+    "sha256": "5dd09198e601227a70b812c5b05465781d0d5a1fde1fa6be70880ed7a286473c"
+  },
+  "code_dataset": {
+    "archive_sha256": "138d8a28276d5573e2f39fcac2dabdec89c7a9c062213b73aff751c58ba818a3",
+    "dataset_id": 12504696,
+    "exact_byte_roundtrip_verified": true,
+    "file_count": 108,
+    "layout": "extracted-directory",
+    "license_name": "Other (specified in description)",
+    "manifest_sha256": "54ad71c046b3d45c30b862f7575f6dd7f2c683810b8aa99475bb8c77ce0c0deb",
+    "old_versions_deleted": false,
+    "private": true,
+    "reference": "danielwuu/iris-x-learning-agent-code-20261011/5",
+    "root_manifest_sha256": "f399dc3e461f944fed17182a17d95d1c958b770eb7e4983f8d6ffed337ec7d42",
+    "status": "VERIFIED_CODE_V5",
+    "total_bytes": 2370830,
+    "utc": "2026-10-11T16:26:31.057466+00:00",
+    "version": 5
+  },
+  "core_provider_audit": {
+    "artifact": "learning-agent-goal-sprint-20261011/independent-transport-review/CORE-PROVIDER-READBACK-AUDIT.json",
+    "bytes": 2077,
+    "sha256": "4634aa71a0234c1c119aed548dbd7d2216e1d099c6b6e0114c35c8b8e225c3f7"
+  },
+  "detailed_receipts": {
+    "dataset": {
+      "artifact": "learning-agent-goal-sprint-20261011/publication/state/dataset-code-v5-receipt.json",
+      "bytes": 820,
+      "sha256": "22e32d90e15c918dbc629271172c8354a5fad17308b9085710bdc11f60d2e6ec"
+    },
+    "notebook": {
+      "artifact": "learning-agent-goal-sprint-20261011/publication/state/notebook-inactive-receipt.json",
+      "bytes": 2504,
+      "sha256": "6f67c8c526f21e33eac304ce7ecc1c1268e4b9a3eee0f150ced559ab52ee99d8"
+    }
+  },
+  "format": "irisx/stable-sprint-inactive-publication-checkpoint-v1",
+  "gpu_sessions_started": 0,
+  "material_approval": {
+    "artifact": "learning-agent-v6-next-20261011/independent-review/sprint-release-wire-review-v3/FINAL-APPROVAL.json",
+    "bytes": 22236,
+    "sha256": "45cac1c0cb310687a28d50fdec68ccf7058989d9395c4058b97f7eaf54b5fefb"
+  },
+  "notebook": {
+    "competition_sources": [
+      "arc-prize-2026-arc-agi-3"
+    ],
+    "dataset_identities_returned": [
+      "danielwuu/iris-arc-granite42-8b-offline",
+      "danielwuu/iris-arc-granite42-run003-adapter-20261009",
+      "danielwuu/iris-arc-next-cpython312-offline",
+      "danielwuu/iris-arc-next-cu128-cp312-wheels",
+      "danielwuu/iris-arc-next-runtime",
+      "danielwuu/iris-x-learning-agent-code-20261011",
+      "danielwuu/iris-x-learning-training-20261011",
+      "danielwuu/iris-x-public120-data-20261010"
+    ],
+    "dataset_sources_submitted": [
+      "danielwuu/iris-x-learning-agent-code-20261011/5",
+      "danielwuu/iris-x-public120-data-20261010/1",
+      "danielwuu/iris-x-learning-training-20261011/1",
+      "danielwuu/iris-arc-next-runtime/8",
+      "danielwuu/iris-arc-granite42-8b-offline/2",
+      "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+      "danielwuu/iris-arc-next-cpython312-offline/2",
+      "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+    ],
+    "deadline_epoch": null,
+    "docker_image": "gcr.io/kaggle-private-byod/python@sha256:2757e0c7d1e0a9cb43da657b97e223c321a98f5014bdf64f44f2f6b083ad2b2f",
+    "git_commit": null,
+    "gpu": false,
+    "internet": false,
+    "kernel_id": 138123872,
+    "machine_shape": null,
+    "manifest_sha256": "54ad71c046b3d45c30b862f7575f6dd7f2c683810b8aa99475bb8c77ce0c0deb",
+    "metadata_status_mapping": "Latest-only metadata/status bracketed by exact source/ID/version before and after.",
+    "mounted_dataset_versions_independently_verified": false,
+    "normalized_source_exact": true,
+    "observation_policy": "Observe terminal output closure, report method/scoring outcome; no blind relaunch.",
+    "operational_success_claimed": false,
+    "predispatch_epoch": null,
+    "private": true,
+    "provider_timeout_seconds_submitted": null,
+    "reference": "danielwuu/iris-x-learning-agent-20261011",
+    "role": "inactive",
+    "saved_source": {
+      "bytes": 49666,
+      "sha256": "fa1c39a75e5518f85c6b84c57991385757bf6f4530a61b84504965349d773ced"
+    },
+    "single_dispatch_count": 1,
+    "status": "COMPLETE",
+    "submitted_source_sha256": "a2731a82191ad9c541434c0aaf3ff68830bcf3b3ebb5a14b4ce308ccc3f80e96",
+    "template_source_sha256": "a2731a82191ad9c541434c0aaf3ff68830bcf3b3ebb5a14b4ce308ccc3f80e96",
+    "tpu": false,
+    "url": "https://www.kaggle.com/code/danielwuu/iris-x-learning-agent-20261011",
+    "utc": "2026-10-11T16:28:11.521049+00:00",
+    "version": 8
+  },
+  "provider_calls": {
+    "active_save": 0,
+    "dataset_version": 1,
+    "inactive_save": 1,
+    "upload_init": 1,
+    "upload_put": 1
+  },
+  "publication_manifest": {
+    "artifact": "learning-agent-goal-sprint-20261011/release/publication-manifest.json",
+    "bytes": 68303,
+    "sha256": "54ad71c046b3d45c30b862f7575f6dd7f2c683810b8aa99475bb8c77ce0c0deb"
+  },
+  "qualifications": [
+    "First actual-mount CPU invocation passed125/128 controls with3parent-wall timeouts; cause remains unestablished. The unchanged-source/limits fresh replay passed128/128. Both evidence sets are bound by the qualified acceptance.",
+    "Provider notebook metadata returns Dataset identities, not independently mounted versions. Exact numeric codev5 bytes and submitted eight version pins were verified; actual CPU mount acceptance uses downloaded provider bytes.",
+    "Provider COMPLETE belongs to inactive QUICK_SAVE rendering and does not claim model execution, scoring or operational GPU success.",
+    "Historical Dataset versions1\u20134 remain; no weights, training-data changes, credentials or raw results were uploaded."
+  ],
+  "quota_queries": 0,
+  "status": "VERIFIED_PRIVATE_CODE_V5_AND_INACTIVE_NOTEBOOK_V8",
+  "transport_review": {
+    "artifact": "learning-agent-goal-sprint-20261011/independent-transport-review/FINAL-TRANSPORT-REVIEW.json",
+    "bytes": 4037,
+    "sha256": "063c158bab0a750367297868657d6b2ab0c96bf974f90eebfdca701e51683258"
+  },
+  "utc": "2026-10-11T16:32:37.834165+00:00"
+}

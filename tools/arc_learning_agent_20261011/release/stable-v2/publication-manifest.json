@@ -1,0 +1,1425 @@
+{
+  "format": "irisx/stable-learning-sprint-publication-contract-v1",
+  "base_commit": "7185175af42582daa37e3ac48e36eb76d093ac05",
+  "source_freeze_sha256": "e89d5f3f73745bb4282279c2b14bc3677cace3d53d3b972fa58bcaa386111e9f",
+  "source_identity": {
+    "research/arc-next-line/training-source-inventory.json": "53fc35f54fa1b8a29403c5ede3e3880e8588c40c75a4a5783692a9a13a3e95cb",
+    "src/irisx/__init__.py": "3ca8d59be8dae69d75bd92b279cdab54a5c411162d78544578f924264905702e",
+    "src/irisx/admission.py": "0520aa0b966ea7b2bd7f88330f6c3e0e407e428cf144458a1fda89317c38bb63",
+    "src/irisx/arc_agi2.py": "0af942df40b76f208546a88864e84ddf521168bdb8f1fa4ce24232c36f3034a1",
+    "src/irisx/arc_nvarc_data.py": "898b71e225eda31fe7e6d3117e59eb418210c619edd96d9b9f4559021fc6cc0b",
+    "src/irisx/arc_nvarc_qwen35_adapter.py": "72dea8ab078d099c03337225655315bb897c4dbe09ed0da296fb25aef61d3591",
+    "src/irisx/arc_nvarc_qwen3_adapter.py": "e697f66cc699265555e302aac65cd5fe6686f54f291a47c894f2ccb7b9bd87a6",
+    "src/irisx/arc_nvarc_representation.py": "d353556ae8ff76459cf96f64e1ece95c51281b4075511fe1be124c4a50313071",
+    "src/irisx/arc_nvarc_source_bundle.py": "aaa44735072b488f5a347c7b5e16aaa6c42a8b5b8af8f1686c557a9fa74f84a8",
+    "src/irisx/arc_nvarc_source_recipe.py": "103e461d7f2f6c378a73270c6e628d9c22b9785918856684f67f41382aa28966",
+    "src/irisx/arc_nvarc_training.py": "8d8e1fba44032434cc51b27c66be5cf5d2a774d16145d74ceb3d290956c6e965",
+    "src/irisx/arc_nvarc_upstream.py": "082e6a58d9a46e4de4a60db3b6e6c98d91507e7217e22d08d2bc0bf484731222",
+    "src/irisx/artifacts.py": "28a7a48cbabd0f8556a1f976aebeaec3cc0824a380ab8bb4c12ba5cdfc762c95",
+    "src/irisx/bindings.py": "cc0bb9698ab8803c3c951cd88d7c233661dd2a38c6f1066f7d86ac8be98f7601",
+    "src/irisx/canonical.py": "d2bacf5548440c865a64cb7cdfbbefcb995ec47e4e53ddfa4457964a83740a6a",
+    "src/irisx/contracts.py": "afb58a3fefe0c5482616d4cd219779c5bc9dacb30be44ea153ab85496b9af6b1",
+    "src/irisx/engine.py": "bd08a6d9740d7696c6663410a450323c0c00cc5320bce184339ea4a98717d283",
+    "src/irisx/errors.py": "45c10f3c10c958cb3cca97a26a3a0f79925ed5818ce591327d9ef1a851a6ffa4",
+    "tools/__init__.py": "f5ed985f7ed9e31ea3be113e86b11a7b44313f467c2e468a034ff789c7b85c76",
+    "tools/arc_consolidated_20261010/__init__.py": "a2788b9c80ba8d44286740428301d44928935f84a6c6e0d3d8ea8422f365fdd0",
+    "tools/arc_consolidated_20261010/arc_object_ir.py": "ba3fa20344d9cb2a3f471d6738e29fcb590bb1ea0a1bfc0b86aa2e1915fbe42a",
+    "tools/arc_consolidated_20261010/assets.py": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09",
+    "tools/arc_consolidated_20261010/controls.py": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a",
+    "tools/arc_consolidated_20261010/data/engineering-demos.json": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8",
+    "tools/arc_consolidated_20261010/data/provenance.json": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3",
+    "tools/arc_consolidated_20261010/evidence.py": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698",
+    "tools/arc_consolidated_20261010/ledger.py": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055",
+    "tools/arc_consolidated_20261010/legacy/arc_bounded_v2.py": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_bundle.py": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_environment.py": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_interpreter.py": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9",
+    "tools/arc_consolidated_20261010/legacy/arc_next_offline_runtime.py": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8",
+    "tools/arc_consolidated_20261010/legacy/arc_typed_ir.py": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9",
+    "tools/arc_consolidated_20261010/model_provider.py": "776bce3b8231907f7c30ffcf210494205c1413d057da8974447ca2d946a463e3",
+    "tools/arc_consolidated_20261010/offline_bootstrap.py": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193",
+    "tools/arc_consolidated_20261010/path_guard.py": "29229ab065bc93e917e8376be0003c5728cfcea99b7b67ce6955a3d297f628f3",
+    "tools/arc_consolidated_20261010/remote_model_owner.py": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e",
+    "tools/arc_consolidated_20261010/runner.py": "82b67337f14442e2148ff3a637ca7cb854ad147928c26088e8d4dff763c4040a",
+    "tools/arc_consolidated_20261010/stages.py": "c5543b64b4a4b8434d30c60e82ffe0746e1718a46d0fc26d3ee6f7f76b9054e4",
+    "tools/arc_consolidated_20261010/study_runner.py": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab",
+    "tools/arc_consolidated_20261010/terminal_summary.py": "da30baf3a0663e535355fe6c797e8b13f8fdc0199bb561ff3a75bfbb044e2b6c",
+    "tools/arc_consolidated_20261010/verifier.py": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b",
+    "tools/arc_kaggle_submission.py": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf",
+    "tools/arc_learning_agent_20261011/__init__.py": "52f5b4a81a42c3081ae8e4246b1c3fdd60ab3ecf55c391941f711ece844941c3",
+    "tools/arc_learning_agent_20261011/archived_recovery.py": "612e4c6dfbfd13aed27098695de4714cef24d6bf94c0b1a6a8a37aeadd3a97d4",
+    "tools/arc_learning_agent_20261011/budget.py": "46176c589f199b7debc727d7f70aae00547cf85be6443650af98f78bbd881e53",
+    "tools/arc_learning_agent_20261011/controller.py": "c9853ae2c387ae709670706356a29c27d1d854434330ccd8d65343788cc03e7f",
+    "tools/arc_learning_agent_20261011/data.py": "b7cd38105418ee43ec6cb21f919e0aa304ed39d2550100bf416ceba0390feb29",
+    "tools/arc_learning_agent_20261011/deployment/validate_learning_outputs.py": "5ac987aea7d0c2362ced7828d08fb297c360b700fa2e755e07c311a988f3a38c",
+    "tools/arc_learning_agent_20261011/deployment_profiles.py": "b46ff88873961670e428799989d99cca624bf507468c76350786c99929ff5fb3",
+    "tools/arc_learning_agent_20261011/effectiveness.py": "254b0bf2ee96175b181870bfe14f46ecf3bafd6cc80b739af380644c35510023",
+    "tools/arc_learning_agent_20261011/evaluation.py": "f1334bbad984b0f82d2e2756edcf925678668f71a3369d965f07b78aebd24553",
+    "tools/arc_learning_agent_20261011/export.py": "1a850a65d7da1dec59e63968686f95cef268a05e5806c0e1ebb80eb68efeeb65",
+    "tools/arc_learning_agent_20261011/grid_codec.py": "0a16b345ba259c0132481b005a1b2998fedaa3b7bb930d4ac5372c01b9909300",
+    "tools/arc_learning_agent_20261011/learning_cycle.py": "42fc0e173545fb458f79f80c15034d8c5bb1d90b84a8cd9465d5e3da78fbd67e",
+    "tools/arc_learning_agent_20261011/metering.py": "686753025b497d06fc5816bfa09f5eb3c15909882f04d71b970d6d3df5348fcc",
+    "tools/arc_learning_agent_20261011/native_model.py": "1738099877c056ad9847f6ed309a5e8c265b7ecf454811025a851c10cef02285",
+    "tools/arc_learning_agent_20261011/precision_probe.py": "de7152e2e65e91acb76a849afbcab753de892bc70652e51f5669e415687f6178",
+    "tools/arc_learning_agent_20261011/prepare_training_assets.py": "c4ddcb514cffcc52025d8046597a71577f13b6546ff2f3cca7ab07bc6f0c8d08",
+    "tools/arc_learning_agent_20261011/process_guard.py": "8bc66ac80499203bca9f583f0d5ea5ecc5d8a131a2aa267f661060fc69e0580c",
+    "tools/arc_learning_agent_20261011/program_tools.py": "507271ae62b4d2f08377136b031b46796432c47f09fb203e1cc2ec4da0353cfe",
+    "tools/arc_learning_agent_20261011/result_projection.py": "84ef1ee28bc9ea72e283a34f158a6fbe9f66680016c8e6f2f62faa50118c1d7a",
+    "tools/arc_learning_agent_20261011/session.py": "2c9742280f686ae4cdf73dc364b7a6eb5829f430261ad9dd2b3a6011ccb711bb",
+    "tools/arc_learning_agent_20261011/source_loader.py": "9a871c22935d0d158ee31b683632e717358bd69f7d37258ad4dd09811c845887",
+    "tools/arc_learning_agent_20261011/source_pack.py": "070e3de51303c8940506cbe036f2c293664117391b17347a2591df9d985e6ca6",
+    "tools/arc_learning_agent_20261011/stability.py": "e2bd4cb374506ebffc0ad5fa378d273d6326c3dc561cf0cafe870e52c3857ec1",
+    "tools/arc_learning_agent_20261011/training.py": "23d388a8f1549b18fae5e251d865538c227e4bab2a4441567c95d04717c5f2ff",
+    "tools/arc_learning_agent_20261011/ttt_effectiveness.py": "6cd9f255fb08d2f93aee048a48159059c3bfcb2ed345aa444f76e220d0f8007a",
+    "tools/arc_learning_agent_20261011/worker.py": "187496894cacc74f3ba9c8c45d973971988f6bcff77b54e31b54887e7555a1b1",
+    "tools/arc_next_agent.py": "98c8970f4001cc5e9f57912f8caf74b3a892174cdee574dba2c54b229beb6159",
+    "tools/arc_next_index_repair.py": "05d2855e6029d873f0e74938e73d11ed7a21b72e0a630619b4415d3ebf3ac030",
+    "tools/arc_next_materials.py": "582c82603f271757c56eda846cb4e724d3b90485906e7a48d9bb3ee34af4320c",
+    "tools/arc_next_models.py": "d8c3bda2ef5c557fa93756805c91ea26c5c0773d8f124914791eef13b2f0740b",
+    "tools/arc_next_offline_bundle.py": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc",
+    "tools/arc_next_offline_environment.py": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0",
+    "tools/arc_next_offline_interpreter.py": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9",
+    "tools/arc_next_offline_runtime.py": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8",
+    "tools/arc_next_report.py": "e37f85557da05a70dc921ed0835a68f10e2f8b6219c69c3e8f234fd669f910b9",
+    "tools/arc_next_suite_20261009/src/arc_bounded_v1.py": "410713680242c0af12f4216181cd0a6318f46788e98e0577b4bfb67b9d2fc911",
+    "tools/arc_next_suite_20261009/src/arc_bounded_v2.py": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7",
+    "tools/arc_next_suite_20261009/src/arc_curriculum.py": "158263e2e417e02b80a0726c9a436bcd842500b64407d3bc5afa0f595c43238c",
+    "tools/arc_next_suite_20261009/src/arc_n4_program.py": "fbcf0c933561067b6c9b4fc1e4c44048f02bbd8348ba312d06da37b3f22ebba7",
+    "tools/arc_next_suite_20261009/src/arc_program_v2.py": "52bc22ffdf32198ceee209b68f68840869086af7d4372e54ec7d7b0297fe760d",
+    "tools/arc_next_suite_20261009/src/arc_suite.py": "f1f8dfde826fa6c0dbf4ef4e88b1ae60df8964215af8ff02d197b7c49a1e2570",
+    "tools/arc_next_suite_20261009/src/arc_suite_policy.py": "78e1f445acf6763b0f8b28c5434d13414e658c8c8a0ec8b0ad61514843271b75",
+    "tools/arc_next_suite_20261009/src/arc_typed_ir.py": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9",
+    "tools/arc_next_training.py": "e35a48495feb0621a346d13fa6851497fbf17de1fc178cef56e50b58e3bb36e8",
+    "tools/arc_next_workflow.py": "581880ec37c5484437dce451b5d48849a48aba32ffd9aff3c50df708b62e547d",
+    "tools/arc_offline_evaluation.py": "3df3fd40c0a4db82dc6ad5c568102e45ad10efad8529412eae0623bd9f4ba016",
+    "tools/arc_public_research_20261010/__init__.py": "866c656646d636d7cecc201ccfce94d78b226056c769d34354d527ecb62f3514",
+    "tools/arc_public_research_20261010/finite_trie.py": "ac44259f4f6e5e875b8a71b006304e642c2b2f89c1d56397c15c610e0ae98460",
+    "tools/arc_public_research_20261010/model_provider.py": "cf6f463a6c75eecb9171d5661c06981dccd12daa7b8098334554c31cfd876ed3",
+    "tools/arc_public_research_20261010/offline_bootstrap.py": "ae665e0c4c791a799654edb0107acaa8b21ce7014e61deb2d6b105edf28a9980",
+    "tools/arc_public_research_20261010/prepare_public_assets.py": "9f1c1fc94f9668907c27562120e59a25e9efce21db0d6130cdd799053244cdf4",
+    "tools/arc_public_research_20261010/public_data.py": "275b22a232c42e242d673898ac5674b435c27893b50751b7a8af2180ee551412",
+    "tools/arc_public_research_20261010/public_evaluator.py": "e21f385bb0069831efe48c025eb711559552fc77eb142adb956e623522282e8e",
+    "tools/arc_public_research_20261010/query_executor.py": "e6dcba0133cbd6b1f196d184d0422028796c59a622f1d8ff2fda8717974ce144",
+    "tools/arc_public_research_20261010/ranking.py": "7b26722ed04e5182258d0694bceb366fb11bee4ea821f80c2e589d0134d405f6",
+    "tools/arc_public_research_20261010/remote_model_owner.py": "66850148d6e59af8984fd2ca6cd0085599d19ca398cdd0925fe84054ada2c987",
+    "tools/arc_public_research_20261010/runner.py": "2aa22ce9f3fb529cd57aafc9f9aef3980c9830d8ffc1a5bc5ea7a3f2d024197e",
+    "tools/arc_public_research_20261010/source_loader.py": "30b84a426c689ec995d6268688a30476d92c12cb2ba84f93fe81ec3f8675347f",
+    "tools/arc_public_research_20261010/source_pack.py": "1e51eafc2a882d108e7b3d774085992a64af161ab4729ead3209121eb5b61eeb",
+    "tools/nvarc_e11_dfs_contract.py": "35d81364d8815bce6c822e86b07196fd65a0797dcf73ee527af061d10f746663",
+    "tools/nvarc_native_multitask.py": "274cc5391ee45ee098cba4f002e31425d5bed88993c2b9319b0320c17a08fbdb",
+    "tools/nvarc_native_solve_runtime.py": "56380d7c5fbb9219acfc846af275d6a334ed9460b6b6448e6feacf78be77b1c1",
+    "tools/nvarc_native_submission.py": "6ad00435738f514bf5c92055640aa1fb3293a04c41fa006a4bbebf145e627e24"
+  },
+  "source_identity_sha256": "c3032d5e68a870b2b8fee3d304b80900e74e4f9dd555c1fa6cc6e0255d0f7610",
+  "datasets": [
+    {
+      "role": "code",
+      "reference": "danielwuu/iris-x-learning-agent-code-20261011",
+      "expected_version": 5,
+      "new_only": false,
+      "is_private": true,
+      "title": "IRIS-X Learning Agent Code 20261011",
+      "license_name": "other",
+      "convert_to_csv": false,
+      "description": "Private owner IRIS-X learning-agent source. Existing rights/notices retained; no new license grant. No model weights or public evaluation answers.",
+      "payload_root": "/workspace/scratch/3c2b2502fb1e/learning-agent-goal-sprint-20261011/release/payloads/code",
+      "root_manifest": {
+        "path": "manifest.json",
+        "sha256": "f399dc3e461f944fed17182a17d95d1c958b770eb7e4983f8d6ffed337ec7d42"
+      },
+      "upload_inventory": [
+        {
+          "path": "NOTICE.txt",
+          "bytes": 188,
+          "sha256": "6cc778467742343a9787813caf97c46caf4e6a3993e397216276fdbe57106c7f"
+        },
+        {
+          "path": "manifest.json",
+          "bytes": 30568,
+          "sha256": "f399dc3e461f944fed17182a17d95d1c958b770eb7e4983f8d6ffed337ec7d42"
+        },
+        {
+          "path": "source.zip",
+          "bytes": 665957,
+          "sha256": "4ffd5abbc178b09c400079421d1b25a772cc434ad34c99824665b3b73ec767d4"
+        }
+      ],
+      "upload_inventory_sha256": "7ea6ac65806bf14e86a728eca10b38b0fd5a01dccfa4bdb2752f7e583221c2ee",
+      "expected_readback_layouts": {
+        "original-upload": [
+          {
+            "path": "NOTICE.txt",
+            "bytes": 188,
+            "sha256": "6cc778467742343a9787813caf97c46caf4e6a3993e397216276fdbe57106c7f"
+          },
+          {
+            "path": "manifest.json",
+            "bytes": 30568,
+            "sha256": "f399dc3e461f944fed17182a17d95d1c958b770eb7e4983f8d6ffed337ec7d42"
+          },
+          {
+            "path": "source.zip",
+            "bytes": 665957,
+            "sha256": "4ffd5abbc178b09c400079421d1b25a772cc434ad34c99824665b3b73ec767d4"
+          }
+        ],
+        "extracted-root": [
+          {
+            "path": "NOTICE.txt",
+            "bytes": 188,
+            "sha256": "6cc778467742343a9787813caf97c46caf4e6a3993e397216276fdbe57106c7f"
+          },
+          {
+            "path": "manifest.json",
+            "bytes": 30568,
+            "sha256": "f399dc3e461f944fed17182a17d95d1c958b770eb7e4983f8d6ffed337ec7d42"
+          },
+          {
+            "path": "research/arc-next-line/training-source-inventory.json",
+            "bytes": 145339,
+            "sha256": "53fc35f54fa1b8a29403c5ede3e3880e8588c40c75a4a5783692a9a13a3e95cb"
+          },
+          {
+            "path": "src/irisx/__init__.py",
+            "bytes": 754,
+            "sha256": "3ca8d59be8dae69d75bd92b279cdab54a5c411162d78544578f924264905702e"
+          },
+          {
+            "path": "src/irisx/admission.py",
+            "bytes": 22507,
+            "sha256": "0520aa0b966ea7b2bd7f88330f6c3e0e407e428cf144458a1fda89317c38bb63"
+          },
+          {
+            "path": "src/irisx/arc_agi2.py",
+            "bytes": 47703,
+            "sha256": "0af942df40b76f208546a88864e84ddf521168bdb8f1fa4ce24232c36f3034a1"
+          },
+          {
+            "path": "src/irisx/arc_nvarc_data.py",
+            "bytes": 25190,
+            "sha256": "898b71e225eda31fe7e6d3117e59eb418210c619edd96d9b9f4559021fc6cc0b"
+          },
+          {
+            "path": "src/irisx/arc_nvarc_qwen35_adapter.py",
+            "bytes": 3076,
+            "sha256": "72dea8ab078d099c03337225655315bb897c4dbe09ed0da296fb25aef61d3591"
+          },
+          {
+            "path": "src/irisx/arc_nvarc_qwen3_adapter.py",
+            "bytes": 1111,
+            "sha256": "e697f66cc699265555e302aac65cd5fe6686f54f291a47c894f2ccb7b9bd87a6"
+          },
+          {
+            "path": "src/irisx/arc_nvarc_representation.py",
+            "bytes": 25541,
+            "sha256": "d353556ae8ff76459cf96f64e1ece95c51281b4075511fe1be124c4a50313071"
+          },
+          {
+            "path": "src/irisx/arc_nvarc_source_bundle.py",
+            "bytes": 3362,
+            "sha256": "aaa44735072b488f5a347c7b5e16aaa6c42a8b5b8af8f1686c557a9fa74f84a8"
+          },
+          {
+            "path": "src/irisx/arc_nvarc_source_recipe.py",
+            "bytes": 10842,
+            "sha256": "103e461d7f2f6c378a73270c6e628d9c22b9785918856684f67f41382aa28966"
+          },
+          {
+            "path": "src/irisx/arc_nvarc_training.py",
+            "bytes": 31350,
+            "sha256": "8d8e1fba44032434cc51b27c66be5cf5d2a774d16145d74ceb3d290956c6e965"
+          },
+          {
+            "path": "src/irisx/arc_nvarc_upstream.py",
+            "bytes": 8817,
+            "sha256": "082e6a58d9a46e4de4a60db3b6e6c98d91507e7217e22d08d2bc0bf484731222"
+          },
+          {
+            "path": "src/irisx/artifacts.py",
+            "bytes": 2569,
+            "sha256": "28a7a48cbabd0f8556a1f976aebeaec3cc0824a380ab8bb4c12ba5cdfc762c95"
+          },
+          {
+            "path": "src/irisx/bindings.py",
+            "bytes": 7374,
+            "sha256": "cc0bb9698ab8803c3c951cd88d7c233661dd2a38c6f1066f7d86ac8be98f7601"
+          },
+          {
+            "path": "src/irisx/canonical.py",
+            "bytes": 2162,
+            "sha256": "d2bacf5548440c865a64cb7cdfbbefcb995ec47e4e53ddfa4457964a83740a6a"
+          },
+          {
+            "path": "src/irisx/contracts.py",
+            "bytes": 23999,
+            "sha256": "afb58a3fefe0c5482616d4cd219779c5bc9dacb30be44ea153ab85496b9af6b1"
+          },
+          {
+            "path": "src/irisx/engine.py",
+            "bytes": 11974,
+            "sha256": "bd08a6d9740d7696c6663410a450323c0c00cc5320bce184339ea4a98717d283"
+          },
+          {
+            "path": "src/irisx/errors.py",
+            "bytes": 229,
+            "sha256": "45c10f3c10c958cb3cca97a26a3a0f79925ed5818ce591327d9ef1a851a6ffa4"
+          },
+          {
+            "path": "tools/__init__.py",
+            "bytes": 47,
+            "sha256": "f5ed985f7ed9e31ea3be113e86b11a7b44313f467c2e468a034ff789c7b85c76"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/__init__.py",
+            "bytes": 126,
+            "sha256": "a2788b9c80ba8d44286740428301d44928935f84a6c6e0d3d8ea8422f365fdd0"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/arc_object_ir.py",
+            "bytes": 27437,
+            "sha256": "ba3fa20344d9cb2a3f471d6738e29fcb590bb1ea0a1bfc0b86aa2e1915fbe42a"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/assets.py",
+            "bytes": 5246,
+            "sha256": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/controls.py",
+            "bytes": 27065,
+            "sha256": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/data/engineering-demos.json",
+            "bytes": 11236,
+            "sha256": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/data/provenance.json",
+            "bytes": 852,
+            "sha256": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/evidence.py",
+            "bytes": 5057,
+            "sha256": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/ledger.py",
+            "bytes": 28286,
+            "sha256": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/legacy/arc_bounded_v2.py",
+            "bytes": 24707,
+            "sha256": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/legacy/arc_next_offline_bundle.py",
+            "bytes": 7681,
+            "sha256": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/legacy/arc_next_offline_environment.py",
+            "bytes": 44063,
+            "sha256": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/legacy/arc_next_offline_interpreter.py",
+            "bytes": 22257,
+            "sha256": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/legacy/arc_next_offline_runtime.py",
+            "bytes": 37092,
+            "sha256": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/legacy/arc_typed_ir.py",
+            "bytes": 13566,
+            "sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/model_provider.py",
+            "bytes": 35128,
+            "sha256": "776bce3b8231907f7c30ffcf210494205c1413d057da8974447ca2d946a463e3"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/offline_bootstrap.py",
+            "bytes": 33326,
+            "sha256": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/path_guard.py",
+            "bytes": 3708,
+            "sha256": "29229ab065bc93e917e8376be0003c5728cfcea99b7b67ce6955a3d297f628f3"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/remote_model_owner.py",
+            "bytes": 47725,
+            "sha256": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/runner.py",
+            "bytes": 34521,
+            "sha256": "82b67337f14442e2148ff3a637ca7cb854ad147928c26088e8d4dff763c4040a"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/stages.py",
+            "bytes": 26521,
+            "sha256": "c5543b64b4a4b8434d30c60e82ffe0746e1718a46d0fc26d3ee6f7f76b9054e4"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/study_runner.py",
+            "bytes": 28473,
+            "sha256": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/terminal_summary.py",
+            "bytes": 4675,
+            "sha256": "da30baf3a0663e535355fe6c797e8b13f8fdc0199bb561ff3a75bfbb044e2b6c"
+          },
+          {
+            "path": "tools/arc_consolidated_20261010/verifier.py",
+            "bytes": 24512,
+            "sha256": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b"
+          },
+          {
+            "path": "tools/arc_kaggle_submission.py",
+            "bytes": 12447,
+            "sha256": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/__init__.py",
+            "bytes": 67,
+            "sha256": "52f5b4a81a42c3081ae8e4246b1c3fdd60ab3ecf55c391941f711ece844941c3"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/archived_recovery.py",
+            "bytes": 34181,
+            "sha256": "612e4c6dfbfd13aed27098695de4714cef24d6bf94c0b1a6a8a37aeadd3a97d4"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/budget.py",
+            "bytes": 11151,
+            "sha256": "46176c589f199b7debc727d7f70aae00547cf85be6443650af98f78bbd881e53"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/controller.py",
+            "bytes": 35680,
+            "sha256": "c9853ae2c387ae709670706356a29c27d1d854434330ccd8d65343788cc03e7f"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/data.py",
+            "bytes": 37711,
+            "sha256": "b7cd38105418ee43ec6cb21f919e0aa304ed39d2550100bf416ceba0390feb29"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/deployment/validate_learning_outputs.py",
+            "bytes": 51869,
+            "sha256": "5ac987aea7d0c2362ced7828d08fb297c360b700fa2e755e07c311a988f3a38c"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/deployment_profiles.py",
+            "bytes": 15965,
+            "sha256": "b46ff88873961670e428799989d99cca624bf507468c76350786c99929ff5fb3"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/effectiveness.py",
+            "bytes": 22520,
+            "sha256": "254b0bf2ee96175b181870bfe14f46ecf3bafd6cc80b739af380644c35510023"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/evaluation.py",
+            "bytes": 14978,
+            "sha256": "f1334bbad984b0f82d2e2756edcf925678668f71a3369d965f07b78aebd24553"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/export.py",
+            "bytes": 10740,
+            "sha256": "1a850a65d7da1dec59e63968686f95cef268a05e5806c0e1ebb80eb68efeeb65"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/grid_codec.py",
+            "bytes": 6638,
+            "sha256": "0a16b345ba259c0132481b005a1b2998fedaa3b7bb930d4ac5372c01b9909300"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/learning_cycle.py",
+            "bytes": 9474,
+            "sha256": "42fc0e173545fb458f79f80c15034d8c5bb1d90b84a8cd9465d5e3da78fbd67e"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/metering.py",
+            "bytes": 7474,
+            "sha256": "686753025b497d06fc5816bfa09f5eb3c15909882f04d71b970d6d3df5348fcc"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/native_model.py",
+            "bytes": 39578,
+            "sha256": "1738099877c056ad9847f6ed309a5e8c265b7ecf454811025a851c10cef02285"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/precision_probe.py",
+            "bytes": 32746,
+            "sha256": "de7152e2e65e91acb76a849afbcab753de892bc70652e51f5669e415687f6178"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/prepare_training_assets.py",
+            "bytes": 2664,
+            "sha256": "c4ddcb514cffcc52025d8046597a71577f13b6546ff2f3cca7ab07bc6f0c8d08"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/process_guard.py",
+            "bytes": 20139,
+            "sha256": "8bc66ac80499203bca9f583f0d5ea5ecc5d8a131a2aa267f661060fc69e0580c"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/program_tools.py",
+            "bytes": 11922,
+            "sha256": "507271ae62b4d2f08377136b031b46796432c47f09fb203e1cc2ec4da0353cfe"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/result_projection.py",
+            "bytes": 12373,
+            "sha256": "84ef1ee28bc9ea72e283a34f158a6fbe9f66680016c8e6f2f62faa50118c1d7a"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/session.py",
+            "bytes": 17369,
+            "sha256": "2c9742280f686ae4cdf73dc364b7a6eb5829f430261ad9dd2b3a6011ccb711bb"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/source_loader.py",
+            "bytes": 10980,
+            "sha256": "9a871c22935d0d158ee31b683632e717358bd69f7d37258ad4dd09811c845887"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/source_pack.py",
+            "bytes": 5372,
+            "sha256": "070e3de51303c8940506cbe036f2c293664117391b17347a2591df9d985e6ca6"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/stability.py",
+            "bytes": 3734,
+            "sha256": "e2bd4cb374506ebffc0ad5fa378d273d6326c3dc561cf0cafe870e52c3857ec1"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/training.py",
+            "bytes": 69623,
+            "sha256": "23d388a8f1549b18fae5e251d865538c227e4bab2a4441567c95d04717c5f2ff"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/ttt_effectiveness.py",
+            "bytes": 20324,
+            "sha256": "6cd9f255fb08d2f93aee048a48159059c3bfcb2ed345aa444f76e220d0f8007a"
+          },
+          {
+            "path": "tools/arc_learning_agent_20261011/worker.py",
+            "bytes": 27368,
+            "sha256": "187496894cacc74f3ba9c8c45d973971988f6bcff77b54e31b54887e7555a1b1"
+          },
+          {
+            "path": "tools/arc_next_agent.py",
+            "bytes": 34755,
+            "sha256": "98c8970f4001cc5e9f57912f8caf74b3a892174cdee574dba2c54b229beb6159"
+          },
+          {
+            "path": "tools/arc_next_index_repair.py",
+            "bytes": 16877,
+            "sha256": "05d2855e6029d873f0e74938e73d11ed7a21b72e0a630619b4415d3ebf3ac030"
+          },
+          {
+            "path": "tools/arc_next_materials.py",
+            "bytes": 11828,
+            "sha256": "582c82603f271757c56eda846cb4e724d3b90485906e7a48d9bb3ee34af4320c"
+          },
+          {
+            "path": "tools/arc_next_models.py",
+            "bytes": 37320,
+            "sha256": "d8c3bda2ef5c557fa93756805c91ea26c5c0773d8f124914791eef13b2f0740b"
+          },
+          {
+            "path": "tools/arc_next_offline_bundle.py",
+            "bytes": 7681,
+            "sha256": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc"
+          },
+          {
+            "path": "tools/arc_next_offline_environment.py",
+            "bytes": 44063,
+            "sha256": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0"
+          },
+          {
+            "path": "tools/arc_next_offline_interpreter.py",
+            "bytes": 22257,
+            "sha256": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9"
+          },
+          {
+            "path": "tools/arc_next_offline_runtime.py",
+            "bytes": 37092,
+            "sha256": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8"
+          },
+          {
+            "path": "tools/arc_next_report.py",
+            "bytes": 9911,
+            "sha256": "e37f85557da05a70dc921ed0835a68f10e2f8b6219c69c3e8f234fd669f910b9"
+          },
+          {
+            "path": "tools/arc_next_suite_20261009/src/arc_bounded_v1.py",
+            "bytes": 36302,
+            "sha256": "410713680242c0af12f4216181cd0a6318f46788e98e0577b4bfb67b9d2fc911"
+          },
+          {
+            "path": "tools/arc_next_suite_20261009/src/arc_bounded_v2.py",
+            "bytes": 24707,
+            "sha256": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7"
+          },
+          {
+            "path": "tools/arc_next_suite_20261009/src/arc_curriculum.py",
+            "bytes": 24322,
+            "sha256": "158263e2e417e02b80a0726c9a436bcd842500b64407d3bc5afa0f595c43238c"
+          },
+          {
+            "path": "tools/arc_next_suite_20261009/src/arc_n4_program.py",
+            "bytes": 25278,
+            "sha256": "fbcf0c933561067b6c9b4fc1e4c44048f02bbd8348ba312d06da37b3f22ebba7"
+          },
+          {
+            "path": "tools/arc_next_suite_20261009/src/arc_program_v2.py",
+            "bytes": 27156,
+            "sha256": "52bc22ffdf32198ceee209b68f68840869086af7d4372e54ec7d7b0297fe760d"
+          },
+          {
+            "path": "tools/arc_next_suite_20261009/src/arc_suite.py",
+            "bytes": 69538,
+            "sha256": "f1f8dfde826fa6c0dbf4ef4e88b1ae60df8964215af8ff02d197b7c49a1e2570"
+          },
+          {
+            "path": "tools/arc_next_suite_20261009/src/arc_suite_policy.py",
+            "bytes": 11330,
+            "sha256": "78e1f445acf6763b0f8b28c5434d13414e658c8c8a0ec8b0ad61514843271b75"
+          },
+          {
+            "path": "tools/arc_next_suite_20261009/src/arc_typed_ir.py",
+            "bytes": 13566,
+            "sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9"
+          },
+          {
+            "path": "tools/arc_next_training.py",
+            "bytes": 45924,
+            "sha256": "e35a48495feb0621a346d13fa6851497fbf17de1fc178cef56e50b58e3bb36e8"
+          },
+          {
+            "path": "tools/arc_next_workflow.py",
+            "bytes": 15087,
+            "sha256": "581880ec37c5484437dce451b5d48849a48aba32ffd9aff3c50df708b62e547d"
+          },
+          {
+            "path": "tools/arc_offline_evaluation.py",
+            "bytes": 18435,
+            "sha256": "3df3fd40c0a4db82dc6ad5c568102e45ad10efad8529412eae0623bd9f4ba016"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/__init__.py",
+            "bytes": 68,
+            "sha256": "866c656646d636d7cecc201ccfce94d78b226056c769d34354d527ecb62f3514"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/finite_trie.py",
+            "bytes": 16897,
+            "sha256": "ac44259f4f6e5e875b8a71b006304e642c2b2f89c1d56397c15c610e0ae98460"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/model_provider.py",
+            "bytes": 33236,
+            "sha256": "cf6f463a6c75eecb9171d5661c06981dccd12daa7b8098334554c31cfd876ed3"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/offline_bootstrap.py",
+            "bytes": 33957,
+            "sha256": "ae665e0c4c791a799654edb0107acaa8b21ce7014e61deb2d6b105edf28a9980"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/prepare_public_assets.py",
+            "bytes": 7660,
+            "sha256": "9f1c1fc94f9668907c27562120e59a25e9efce21db0d6130cdd799053244cdf4"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/public_data.py",
+            "bytes": 10680,
+            "sha256": "275b22a232c42e242d673898ac5674b435c27893b50751b7a8af2180ee551412"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/public_evaluator.py",
+            "bytes": 22217,
+            "sha256": "e21f385bb0069831efe48c025eb711559552fc77eb142adb956e623522282e8e"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/query_executor.py",
+            "bytes": 18478,
+            "sha256": "e6dcba0133cbd6b1f196d184d0422028796c59a622f1d8ff2fda8717974ce144"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/ranking.py",
+            "bytes": 22448,
+            "sha256": "7b26722ed04e5182258d0694bceb366fb11bee4ea821f80c2e589d0134d405f6"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/remote_model_owner.py",
+            "bytes": 51684,
+            "sha256": "66850148d6e59af8984fd2ca6cd0085599d19ca398cdd0925fe84054ada2c987"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/runner.py",
+            "bytes": 51796,
+            "sha256": "2aa22ce9f3fb529cd57aafc9f9aef3980c9830d8ffc1a5bc5ea7a3f2d024197e"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/source_loader.py",
+            "bytes": 9427,
+            "sha256": "30b84a426c689ec995d6268688a30476d92c12cb2ba84f93fe81ec3f8675347f"
+          },
+          {
+            "path": "tools/arc_public_research_20261010/source_pack.py",
+            "bytes": 5008,
+            "sha256": "1e51eafc2a882d108e7b3d774085992a64af161ab4729ead3209121eb5b61eeb"
+          },
+          {
+            "path": "tools/nvarc_e11_dfs_contract.py",
+            "bytes": 1919,
+            "sha256": "35d81364d8815bce6c822e86b07196fd65a0797dcf73ee527af061d10f746663"
+          },
+          {
+            "path": "tools/nvarc_native_multitask.py",
+            "bytes": 31939,
+            "sha256": "274cc5391ee45ee098cba4f002e31425d5bed88993c2b9319b0320c17a08fbdb"
+          },
+          {
+            "path": "tools/nvarc_native_solve_runtime.py",
+            "bytes": 28780,
+            "sha256": "56380d7c5fbb9219acfc846af275d6a334ed9460b6b6448e6feacf78be77b1c1"
+          },
+          {
+            "path": "tools/nvarc_native_submission.py",
+            "bytes": 48158,
+            "sha256": "6ad00435738f514bf5c92055640aa1fb3293a04c41fa006a4bbebf145e627e24"
+          }
+        ],
+        "extracted-directory": [
+          {
+            "path": "NOTICE.txt",
+            "bytes": 188,
+            "sha256": "6cc778467742343a9787813caf97c46caf4e6a3993e397216276fdbe57106c7f"
+          },
+          {
+            "path": "manifest.json",
+            "bytes": 30568,
+            "sha256": "f399dc3e461f944fed17182a17d95d1c958b770eb7e4983f8d6ffed337ec7d42"
+          },
+          {
+            "path": "source/research/arc-next-line/training-source-inventory.json",
+            "bytes": 145339,
+            "sha256": "53fc35f54fa1b8a29403c5ede3e3880e8588c40c75a4a5783692a9a13a3e95cb"
+          },
+          {
+            "path": "source/src/irisx/__init__.py",
+            "bytes": 754,
+            "sha256": "3ca8d59be8dae69d75bd92b279cdab54a5c411162d78544578f924264905702e"
+          },
+          {
+            "path": "source/src/irisx/admission.py",
+            "bytes": 22507,
+            "sha256": "0520aa0b966ea7b2bd7f88330f6c3e0e407e428cf144458a1fda89317c38bb63"
+          },
+          {
+            "path": "source/src/irisx/arc_agi2.py",
+            "bytes": 47703,
+            "sha256": "0af942df40b76f208546a88864e84ddf521168bdb8f1fa4ce24232c36f3034a1"
+          },
+          {
+            "path": "source/src/irisx/arc_nvarc_data.py",
+            "bytes": 25190,
+            "sha256": "898b71e225eda31fe7e6d3117e59eb418210c619edd96d9b9f4559021fc6cc0b"
+          },
+          {
+            "path": "source/src/irisx/arc_nvarc_qwen35_adapter.py",
+            "bytes": 3076,
+            "sha256": "72dea8ab078d099c03337225655315bb897c4dbe09ed0da296fb25aef61d3591"
+          },
+          {
+            "path": "source/src/irisx/arc_nvarc_qwen3_adapter.py",
+            "bytes": 1111,
+            "sha256": "e697f66cc699265555e302aac65cd5fe6686f54f291a47c894f2ccb7b9bd87a6"
+          },
+          {
+            "path": "source/src/irisx/arc_nvarc_representation.py",
+            "bytes": 25541,
+            "sha256": "d353556ae8ff76459cf96f64e1ece95c51281b4075511fe1be124c4a50313071"
+          },
+          {
+            "path": "source/src/irisx/arc_nvarc_source_bundle.py",
+            "bytes": 3362,
+            "sha256": "aaa44735072b488f5a347c7b5e16aaa6c42a8b5b8af8f1686c557a9fa74f84a8"
+          },
+          {
+            "path": "source/src/irisx/arc_nvarc_source_recipe.py",
+            "bytes": 10842,
+            "sha256": "103e461d7f2f6c378a73270c6e628d9c22b9785918856684f67f41382aa28966"
+          },
+          {
+            "path": "source/src/irisx/arc_nvarc_training.py",
+            "bytes": 31350,
+            "sha256": "8d8e1fba44032434cc51b27c66be5cf5d2a774d16145d74ceb3d290956c6e965"
+          },
+          {
+            "path": "source/src/irisx/arc_nvarc_upstream.py",
+            "bytes": 8817,
+            "sha256": "082e6a58d9a46e4de4a60db3b6e6c98d91507e7217e22d08d2bc0bf484731222"
+          },
+          {
+            "path": "source/src/irisx/artifacts.py",
+            "bytes": 2569,
+            "sha256": "28a7a48cbabd0f8556a1f976aebeaec3cc0824a380ab8bb4c12ba5cdfc762c95"
+          },
+          {
+            "path": "source/src/irisx/bindings.py",
+            "bytes": 7374,
+            "sha256": "cc0bb9698ab8803c3c951cd88d7c233661dd2a38c6f1066f7d86ac8be98f7601"
+          },
+          {
+            "path": "source/src/irisx/canonical.py",
+            "bytes": 2162,
+            "sha256": "d2bacf5548440c865a64cb7cdfbbefcb995ec47e4e53ddfa4457964a83740a6a"
+          },
+          {
+            "path": "source/src/irisx/contracts.py",
+            "bytes": 23999,
+            "sha256": "afb58a3fefe0c5482616d4cd219779c5bc9dacb30be44ea153ab85496b9af6b1"
+          },
+          {
+            "path": "source/src/irisx/engine.py",
+            "bytes": 11974,
+            "sha256": "bd08a6d9740d7696c6663410a450323c0c00cc5320bce184339ea4a98717d283"
+          },
+          {
+            "path": "source/src/irisx/errors.py",
+            "bytes": 229,
+            "sha256": "45c10f3c10c958cb3cca97a26a3a0f79925ed5818ce591327d9ef1a851a6ffa4"
+          },
+          {
+            "path": "source/tools/__init__.py",
+            "bytes": 47,
+            "sha256": "f5ed985f7ed9e31ea3be113e86b11a7b44313f467c2e468a034ff789c7b85c76"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/__init__.py",
+            "bytes": 126,
+            "sha256": "a2788b9c80ba8d44286740428301d44928935f84a6c6e0d3d8ea8422f365fdd0"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/arc_object_ir.py",
+            "bytes": 27437,
+            "sha256": "ba3fa20344d9cb2a3f471d6738e29fcb590bb1ea0a1bfc0b86aa2e1915fbe42a"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/assets.py",
+            "bytes": 5246,
+            "sha256": "b661f17503953345ed21a53ac8cf7f85851d14fa8650523dcf7765d3fc88bb09"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/controls.py",
+            "bytes": 27065,
+            "sha256": "ac7a923b5281c8d52c6fd44db24a0c51b5df23f1e37032b23e852fe41408a24a"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/data/engineering-demos.json",
+            "bytes": 11236,
+            "sha256": "7028578f35165d30b93df407726b1b86fa66457db5519ae1e8c90cea6fad8dd8"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/data/provenance.json",
+            "bytes": 852,
+            "sha256": "c1badbac7adb359f64805050e07cecdab2d677ce0402a7be5fdc52cde64e73c3"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/evidence.py",
+            "bytes": 5057,
+            "sha256": "8081b0990a4051515ee95204538838d18d0a8ee1445e431b26beead8a63a6698"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/ledger.py",
+            "bytes": 28286,
+            "sha256": "3a1221977e5982cec21a644cbcd97e1f1e3a19af5d8c2b48f07a7a3d79e63055"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/legacy/arc_bounded_v2.py",
+            "bytes": 24707,
+            "sha256": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/legacy/arc_next_offline_bundle.py",
+            "bytes": 7681,
+            "sha256": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/legacy/arc_next_offline_environment.py",
+            "bytes": 44063,
+            "sha256": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/legacy/arc_next_offline_interpreter.py",
+            "bytes": 22257,
+            "sha256": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/legacy/arc_next_offline_runtime.py",
+            "bytes": 37092,
+            "sha256": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/legacy/arc_typed_ir.py",
+            "bytes": 13566,
+            "sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/model_provider.py",
+            "bytes": 35128,
+            "sha256": "776bce3b8231907f7c30ffcf210494205c1413d057da8974447ca2d946a463e3"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/offline_bootstrap.py",
+            "bytes": 33326,
+            "sha256": "5ebaa8354f8d51a6be8e9efe4d063563c1e7244faf746d77c7eb633dfecfe193"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/path_guard.py",
+            "bytes": 3708,
+            "sha256": "29229ab065bc93e917e8376be0003c5728cfcea99b7b67ce6955a3d297f628f3"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/remote_model_owner.py",
+            "bytes": 47725,
+            "sha256": "a46b837212af1c5705329aff708cc044846106649a2f64daf6741115c69d2e5e"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/runner.py",
+            "bytes": 34521,
+            "sha256": "82b67337f14442e2148ff3a637ca7cb854ad147928c26088e8d4dff763c4040a"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/stages.py",
+            "bytes": 26521,
+            "sha256": "c5543b64b4a4b8434d30c60e82ffe0746e1718a46d0fc26d3ee6f7f76b9054e4"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/study_runner.py",
+            "bytes": 28473,
+            "sha256": "4e54770056a2a20cb1ed18050e134ffb33686675914ac0061e261ea9e0f454ab"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/terminal_summary.py",
+            "bytes": 4675,
+            "sha256": "da30baf3a0663e535355fe6c797e8b13f8fdc0199bb561ff3a75bfbb044e2b6c"
+          },
+          {
+            "path": "source/tools/arc_consolidated_20261010/verifier.py",
+            "bytes": 24512,
+            "sha256": "072c4133b63e05c09509fa9f5734a4dae4f7065f8bdb2cc5483b6468e189368b"
+          },
+          {
+            "path": "source/tools/arc_kaggle_submission.py",
+            "bytes": 12447,
+            "sha256": "cdd570c99614d5eb326f9f07d86b36f80e4f5e53ec197370b5a0e03f262366bf"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/__init__.py",
+            "bytes": 67,
+            "sha256": "52f5b4a81a42c3081ae8e4246b1c3fdd60ab3ecf55c391941f711ece844941c3"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/archived_recovery.py",
+            "bytes": 34181,
+            "sha256": "612e4c6dfbfd13aed27098695de4714cef24d6bf94c0b1a6a8a37aeadd3a97d4"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/budget.py",
+            "bytes": 11151,
+            "sha256": "46176c589f199b7debc727d7f70aae00547cf85be6443650af98f78bbd881e53"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/controller.py",
+            "bytes": 35680,
+            "sha256": "c9853ae2c387ae709670706356a29c27d1d854434330ccd8d65343788cc03e7f"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/data.py",
+            "bytes": 37711,
+            "sha256": "b7cd38105418ee43ec6cb21f919e0aa304ed39d2550100bf416ceba0390feb29"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/deployment/validate_learning_outputs.py",
+            "bytes": 51869,
+            "sha256": "5ac987aea7d0c2362ced7828d08fb297c360b700fa2e755e07c311a988f3a38c"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/deployment_profiles.py",
+            "bytes": 15965,
+            "sha256": "b46ff88873961670e428799989d99cca624bf507468c76350786c99929ff5fb3"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/effectiveness.py",
+            "bytes": 22520,
+            "sha256": "254b0bf2ee96175b181870bfe14f46ecf3bafd6cc80b739af380644c35510023"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/evaluation.py",
+            "bytes": 14978,
+            "sha256": "f1334bbad984b0f82d2e2756edcf925678668f71a3369d965f07b78aebd24553"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/export.py",
+            "bytes": 10740,
+            "sha256": "1a850a65d7da1dec59e63968686f95cef268a05e5806c0e1ebb80eb68efeeb65"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/grid_codec.py",
+            "bytes": 6638,
+            "sha256": "0a16b345ba259c0132481b005a1b2998fedaa3b7bb930d4ac5372c01b9909300"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/learning_cycle.py",
+            "bytes": 9474,
+            "sha256": "42fc0e173545fb458f79f80c15034d8c5bb1d90b84a8cd9465d5e3da78fbd67e"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/metering.py",
+            "bytes": 7474,
+            "sha256": "686753025b497d06fc5816bfa09f5eb3c15909882f04d71b970d6d3df5348fcc"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/native_model.py",
+            "bytes": 39578,
+            "sha256": "1738099877c056ad9847f6ed309a5e8c265b7ecf454811025a851c10cef02285"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/precision_probe.py",
+            "bytes": 32746,
+            "sha256": "de7152e2e65e91acb76a849afbcab753de892bc70652e51f5669e415687f6178"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/prepare_training_assets.py",
+            "bytes": 2664,
+            "sha256": "c4ddcb514cffcc52025d8046597a71577f13b6546ff2f3cca7ab07bc6f0c8d08"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/process_guard.py",
+            "bytes": 20139,
+            "sha256": "8bc66ac80499203bca9f583f0d5ea5ecc5d8a131a2aa267f661060fc69e0580c"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/program_tools.py",
+            "bytes": 11922,
+            "sha256": "507271ae62b4d2f08377136b031b46796432c47f09fb203e1cc2ec4da0353cfe"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/result_projection.py",
+            "bytes": 12373,
+            "sha256": "84ef1ee28bc9ea72e283a34f158a6fbe9f66680016c8e6f2f62faa50118c1d7a"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/session.py",
+            "bytes": 17369,
+            "sha256": "2c9742280f686ae4cdf73dc364b7a6eb5829f430261ad9dd2b3a6011ccb711bb"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/source_loader.py",
+            "bytes": 10980,
+            "sha256": "9a871c22935d0d158ee31b683632e717358bd69f7d37258ad4dd09811c845887"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/source_pack.py",
+            "bytes": 5372,
+            "sha256": "070e3de51303c8940506cbe036f2c293664117391b17347a2591df9d985e6ca6"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/stability.py",
+            "bytes": 3734,
+            "sha256": "e2bd4cb374506ebffc0ad5fa378d273d6326c3dc561cf0cafe870e52c3857ec1"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/training.py",
+            "bytes": 69623,
+            "sha256": "23d388a8f1549b18fae5e251d865538c227e4bab2a4441567c95d04717c5f2ff"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/ttt_effectiveness.py",
+            "bytes": 20324,
+            "sha256": "6cd9f255fb08d2f93aee048a48159059c3bfcb2ed345aa444f76e220d0f8007a"
+          },
+          {
+            "path": "source/tools/arc_learning_agent_20261011/worker.py",
+            "bytes": 27368,
+            "sha256": "187496894cacc74f3ba9c8c45d973971988f6bcff77b54e31b54887e7555a1b1"
+          },
+          {
+            "path": "source/tools/arc_next_agent.py",
+            "bytes": 34755,
+            "sha256": "98c8970f4001cc5e9f57912f8caf74b3a892174cdee574dba2c54b229beb6159"
+          },
+          {
+            "path": "source/tools/arc_next_index_repair.py",
+            "bytes": 16877,
+            "sha256": "05d2855e6029d873f0e74938e73d11ed7a21b72e0a630619b4415d3ebf3ac030"
+          },
+          {
+            "path": "source/tools/arc_next_materials.py",
+            "bytes": 11828,
+            "sha256": "582c82603f271757c56eda846cb4e724d3b90485906e7a48d9bb3ee34af4320c"
+          },
+          {
+            "path": "source/tools/arc_next_models.py",
+            "bytes": 37320,
+            "sha256": "d8c3bda2ef5c557fa93756805c91ea26c5c0773d8f124914791eef13b2f0740b"
+          },
+          {
+            "path": "source/tools/arc_next_offline_bundle.py",
+            "bytes": 7681,
+            "sha256": "e8e9994de69449d0602907c87e48a3e7bc5c43ee19b9c211fb06e8845bac15bc"
+          },
+          {
+            "path": "source/tools/arc_next_offline_environment.py",
+            "bytes": 44063,
+            "sha256": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0"
+          },
+          {
+            "path": "source/tools/arc_next_offline_interpreter.py",
+            "bytes": 22257,
+            "sha256": "575e503931e1780af0b703ee4caf6070a30e4f39a780169f2f5e7710f30103c9"
+          },
+          {
+            "path": "source/tools/arc_next_offline_runtime.py",
+            "bytes": 37092,
+            "sha256": "aabdd22379b0f156f0e3bc17cacbef3850d5d5cd72bf4f5359a26a07f8297eb8"
+          },
+          {
+            "path": "source/tools/arc_next_report.py",
+            "bytes": 9911,
+            "sha256": "e37f85557da05a70dc921ed0835a68f10e2f8b6219c69c3e8f234fd669f910b9"
+          },
+          {
+            "path": "source/tools/arc_next_suite_20261009/src/arc_bounded_v1.py",
+            "bytes": 36302,
+            "sha256": "410713680242c0af12f4216181cd0a6318f46788e98e0577b4bfb67b9d2fc911"
+          },
+          {
+            "path": "source/tools/arc_next_suite_20261009/src/arc_bounded_v2.py",
+            "bytes": 24707,
+            "sha256": "9f210e97ddea7f98358ce8d3551310fe1411d57db27c21d7d80f705ce5d41ab7"
+          },
+          {
+            "path": "source/tools/arc_next_suite_20261009/src/arc_curriculum.py",
+            "bytes": 24322,
+            "sha256": "158263e2e417e02b80a0726c9a436bcd842500b64407d3bc5afa0f595c43238c"
+          },
+          {
+            "path": "source/tools/arc_next_suite_20261009/src/arc_n4_program.py",
+            "bytes": 25278,
+            "sha256": "fbcf0c933561067b6c9b4fc1e4c44048f02bbd8348ba312d06da37b3f22ebba7"
+          },
+          {
+            "path": "source/tools/arc_next_suite_20261009/src/arc_program_v2.py",
+            "bytes": 27156,
+            "sha256": "52bc22ffdf32198ceee209b68f68840869086af7d4372e54ec7d7b0297fe760d"
+          },
+          {
+            "path": "source/tools/arc_next_suite_20261009/src/arc_suite.py",
+            "bytes": 69538,
+            "sha256": "f1f8dfde826fa6c0dbf4ef4e88b1ae60df8964215af8ff02d197b7c49a1e2570"
+          },
+          {
+            "path": "source/tools/arc_next_suite_20261009/src/arc_suite_policy.py",
+            "bytes": 11330,
+            "sha256": "78e1f445acf6763b0f8b28c5434d13414e658c8c8a0ec8b0ad61514843271b75"
+          },
+          {
+            "path": "source/tools/arc_next_suite_20261009/src/arc_typed_ir.py",
+            "bytes": 13566,
+            "sha256": "8802c4d8e36f2a43acac1abec5a7c2a5b913461cf9f51f7bc7a3eb274ef72ff9"
+          },
+          {
+            "path": "source/tools/arc_next_training.py",
+            "bytes": 45924,
+            "sha256": "e35a48495feb0621a346d13fa6851497fbf17de1fc178cef56e50b58e3bb36e8"
+          },
+          {
+            "path": "source/tools/arc_next_workflow.py",
+            "bytes": 15087,
+            "sha256": "581880ec37c5484437dce451b5d48849a48aba32ffd9aff3c50df708b62e547d"
+          },
+          {
+            "path": "source/tools/arc_offline_evaluation.py",
+            "bytes": 18435,
+            "sha256": "3df3fd40c0a4db82dc6ad5c568102e45ad10efad8529412eae0623bd9f4ba016"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/__init__.py",
+            "bytes": 68,
+            "sha256": "866c656646d636d7cecc201ccfce94d78b226056c769d34354d527ecb62f3514"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/finite_trie.py",
+            "bytes": 16897,
+            "sha256": "ac44259f4f6e5e875b8a71b006304e642c2b2f89c1d56397c15c610e0ae98460"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/model_provider.py",
+            "bytes": 33236,
+            "sha256": "cf6f463a6c75eecb9171d5661c06981dccd12daa7b8098334554c31cfd876ed3"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/offline_bootstrap.py",
+            "bytes": 33957,
+            "sha256": "ae665e0c4c791a799654edb0107acaa8b21ce7014e61deb2d6b105edf28a9980"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/prepare_public_assets.py",
+            "bytes": 7660,
+            "sha256": "9f1c1fc94f9668907c27562120e59a25e9efce21db0d6130cdd799053244cdf4"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/public_data.py",
+            "bytes": 10680,
+            "sha256": "275b22a232c42e242d673898ac5674b435c27893b50751b7a8af2180ee551412"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/public_evaluator.py",
+            "bytes": 22217,
+            "sha256": "e21f385bb0069831efe48c025eb711559552fc77eb142adb956e623522282e8e"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/query_executor.py",
+            "bytes": 18478,
+            "sha256": "e6dcba0133cbd6b1f196d184d0422028796c59a622f1d8ff2fda8717974ce144"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/ranking.py",
+            "bytes": 22448,
+            "sha256": "7b26722ed04e5182258d0694bceb366fb11bee4ea821f80c2e589d0134d405f6"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/remote_model_owner.py",
+            "bytes": 51684,
+            "sha256": "66850148d6e59af8984fd2ca6cd0085599d19ca398cdd0925fe84054ada2c987"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/runner.py",
+            "bytes": 51796,
+            "sha256": "2aa22ce9f3fb529cd57aafc9f9aef3980c9830d8ffc1a5bc5ea7a3f2d024197e"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/source_loader.py",
+            "bytes": 9427,
+            "sha256": "30b84a426c689ec995d6268688a30476d92c12cb2ba84f93fe81ec3f8675347f"
+          },
+          {
+            "path": "source/tools/arc_public_research_20261010/source_pack.py",
+            "bytes": 5008,
+            "sha256": "1e51eafc2a882d108e7b3d774085992a64af161ab4729ead3209121eb5b61eeb"
+          },
+          {
+            "path": "source/tools/nvarc_e11_dfs_contract.py",
+            "bytes": 1919,
+            "sha256": "35d81364d8815bce6c822e86b07196fd65a0797dcf73ee527af061d10f746663"
+          },
+          {
+            "path": "source/tools/nvarc_native_multitask.py",
+            "bytes": 31939,
+            "sha256": "274cc5391ee45ee098cba4f002e31425d5bed88993c2b9319b0320c17a08fbdb"
+          },
+          {
+            "path": "source/tools/nvarc_native_solve_runtime.py",
+            "bytes": 28780,
+            "sha256": "56380d7c5fbb9219acfc846af275d6a334ed9460b6b6448e6feacf78be77b1c1"
+          },
+          {
+            "path": "source/tools/nvarc_native_submission.py",
+            "bytes": 48158,
+            "sha256": "6ad00435738f514bf5c92055640aa1fb3293a04c41fa006a4bbebf145e627e24"
+          }
+        ]
+      },
+      "transport_archive": {
+        "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-goal-sprint-20261011/release/code-dataset-upload.zip",
+        "bytes": 664124,
+        "sha256": "831956be0dd118aa8651a67864666135745b23a4a05abaeb039a07f316162ecd"
+      },
+      "id": 12504696,
+      "expected_predecessor_version": 4,
+      "delete_old_versions": false,
+      "version_notes": "Stable learning sprint: semantic sample order, token-weighted accumulation, warmup/decay, complete rollback, autoregressive train/dev gates, behavior-selected TTT and frozen-base program branch. Preserves prior versions and original PUBLIC120 products. Existing-resource supervised session only after independent approval."
+    }
+  ],
+  "notebooks": [
+    {
+      "role": "inactive",
+      "reference": "danielwuu/iris-x-learning-agent-20261011",
+      "title": "IRIS-X Learning Agent 20261011",
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-goal-sprint-20261011/release/iris-x-learning-agent-stable-inactive.ipynb",
+      "sha256": "a2731a82191ad9c541434c0aaf3ff68830bcf3b3ebb5a14b4ce308ccc3f80e96",
+      "bytes": 52432,
+      "id": 138123872,
+      "new_only": false,
+      "expected_predecessor_version": 7,
+      "expected_version": 8,
+      "is_private": true,
+      "enable_gpu": false,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": false,
+      "enable_model": false,
+      "profile": "LEARNING_AGENT_STABLE12H",
+      "output_root": "irisx-learning-agent-stable-20261011-preview001",
+      "resume": false,
+      "program_session_seconds": 43200,
+      "provider_session_timeout_seconds": null,
+      "machine_shape": null,
+      "docker_image": "gcr.io/kaggle-private-byod/python@sha256:2757e0c7d1e0a9cb43da657b97e223c321a98f5014bdf64f44f2f6b083ad2b2f",
+      "competition_sources": [
+        "arc-prize-2026-arc-agi-3"
+      ],
+      "dataset_sources": [
+        "danielwuu/iris-x-learning-agent-code-20261011/5",
+        "danielwuu/iris-x-public120-data-20261010/1",
+        "danielwuu/iris-x-learning-training-20261011/1",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+      ],
+      "language": "python",
+      "kernel_type": "notebook",
+      "save_version": "QUICK_SAVE",
+      "save_version_value": 3,
+      "dispatch_epoch_patch": null,
+      "observed_predecessor_source_sha256": "94349e134d6469ffb201e0df5849f897413f6df788605bd4d0e0c3f76fddb6e6",
+      "observed_predecessor_status": "COMPLETE"
+    },
+    {
+      "role": "sprint001",
+      "reference": "danielwuu/iris-x-learning-agent-20261011",
+      "title": "IRIS-X Learning Agent 20261011",
+      "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-goal-sprint-20261011/release/iris-x-learning-agent-stable-sprint001.ipynb",
+      "sha256": "5af7966bd7d414d2d42e59b818c048c9eac389a3208a8b1cc98d5aad60319e12",
+      "bytes": 52428,
+      "id": 138123872,
+      "new_only": false,
+      "expected_predecessor_version": 8,
+      "expected_version": 9,
+      "is_private": true,
+      "enable_gpu": true,
+      "enable_tpu": false,
+      "enable_internet": false,
+      "manual_start": true,
+      "enable_model": true,
+      "profile": "LEARNING_AGENT_STABLE12H",
+      "output_root": "irisx-learning-agent-stable-20261011-sprint001",
+      "resume": false,
+      "program_session_seconds": 43200,
+      "provider_session_timeout_seconds": 42300,
+      "machine_shape": "NvidiaRtxPro6000",
+      "docker_image": "gcr.io/kaggle-private-byod/python@sha256:2757e0c7d1e0a9cb43da657b97e223c321a98f5014bdf64f44f2f6b083ad2b2f",
+      "competition_sources": [
+        "arc-prize-2026-arc-agi-3"
+      ],
+      "dataset_sources": [
+        "danielwuu/iris-x-learning-agent-code-20261011/5",
+        "danielwuu/iris-x-public120-data-20261010/1",
+        "danielwuu/iris-x-learning-training-20261011/1",
+        "danielwuu/iris-arc-next-runtime/8",
+        "danielwuu/iris-arc-granite42-8b-offline/2",
+        "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+        "danielwuu/iris-arc-next-cpython312-offline/2",
+        "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+      ],
+      "language": "python",
+      "kernel_type": "notebook",
+      "save_version": "SAVE_AND_RUN_ALL",
+      "save_version_value": 1,
+      "dispatch_epoch_patch": {
+        "required": true,
+        "assignment": "PREDISPATCH_EPOCH",
+        "cell_index": 1,
+        "maximum_age_seconds": 60
+      },
+      "observed_predecessor_source_sha256": null,
+      "observed_predecessor_status": "COMPLETE",
+      "expected_predecessor_artifact_sha256": "a2731a82191ad9c541434c0aaf3ff68830bcf3b3ebb5a14b4ce308ccc3f80e96",
+      "stop_after": "verified terminal operational classification with closed evidence; analyze scientific results separately"
+    }
+  ],
+  "notebook_launcher": {
+    "preloader_sha256": "a33549cc66fbba2c5af9ea94dd3ec79428ce3a2879e11747957742b1a96ee1aa",
+    "loader_sha256": "9a871c22935d0d158ee31b683632e717358bd69f7d37258ad4dd09811c845887",
+    "guard_sha256": "8bc66ac80499203bca9f583f0d5ea5ecc5d8a131a2aa267f661060fc69e0580c",
+    "driver_sha256": "384ef7fe70871b7efdb2dd39856d3654bbaa4611d0dc2952003d80f6dcdf19fa",
+    "closure_format": "irisx/learning-notebook-closure-v1",
+    "deadline_seconds": 43200,
+    "cleanup_reserve_seconds": 30,
+    "provider_execution_timeout_seconds": 42300,
+    "request_and_launcher_files_required": true,
+    "source_identity_scope": "106 exact files; explicit stable_v2 method profile; legacy default retained"
+  },
+  "run_authorized": true,
+  "activation_markdown_prefix": "",
+  "authorization": {
+    "owner_messages": [
+      "Sentinel_bb0cf1ed20d081918f1bbdd8d2bddf43",
+      "Sentinel_97d99e70f2908191b202f74bcc6ba66e"
+    ],
+    "scope": "Reviewed private code and notebook publication, existing-resource single bounded sessions with terminal monitoring. No quota queries, new resource/account/billing changes or authority bypass. Stop on explicit Kaggle GPU unavailable/zero or target achievement."
+  },
+  "scientific_target": {
+    "benchmark": "project-PUBLIC120-development-exposed",
+    "primary": "micro-pass@2",
+    "policy": "full_agent",
+    "task_denominator": 120,
+    "test_denominator": 167,
+    "required_correct_tests": 151,
+    "minimum_rate": 0.9,
+    "public_answers_in_training_or_solver_selection": false
+  },
+  "operational_contract": {
+    "profile": "stable_v2",
+    "terminal_statuses": [
+      "COMPLETE",
+      "PARTIAL_SCORED",
+      "EFFECTIVENESS_BLOCKED",
+      "SCORING_BLOCKED",
+      "OWNER_FAILED"
+    ],
+    "blocked_is_success": false,
+    "automatic_retry": false,
+    "status_polling_until_terminal": true,
+    "quota_polling": false,
+    "new_resources": false,
+    "required_inner_paths": [
+      "summary.json",
+      "owner-closure.json",
+      "worker/request.json",
+      "worker/result.json",
+      "worker/owner-evidence.json",
+      "worker/physical-work.jsonl",
+      "post-seal-closure.json",
+      "archives/evidence-inventory.json"
+    ],
+    "required_outer_paths": [
+      "request.json",
+      "launcher-closure.json",
+      "stdout.txt",
+      "stderr.txt"
+    ],
+    "separate_weights_download_required": false
+  },
+  "review_requirement": "Explicit APPROVED binds manifest, exact code inventory, inactive and active templates. JIT epoch changes one constant only. Git, readback and native CPU mount acceptance gate dispatch."
+}

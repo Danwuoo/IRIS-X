@@ -1,5 +1,20 @@
 # IRIS-X Repository Governance
 
+## Active stable_v2 goal-directed sprint (2026-10-11)
+
+The latest Decision 0070 addendum scopes the owner's goal-directed sprint toward
+PUBLIC120 micro pass@2 >= 151/167, with fixed train/dev effectiveness gates and
+separately reviewed candidate publication. Track every admitted run to terminal
+status. Each session remains bounded to 43,200 seconds including queue/setup
+through closure. Use the existing resource; do not query remaining quota. Stop
+GPU dispatch when Kaggle reports GPU unavailable or zero remaining hours. Keep
+public answers evaluator-only, preserve original evidence and physical charges,
+and retain all process, source, storage and export gates. New model/FP8 planning
+is not full-model or competition-hardware validation. This current scope
+supersedes earlier inactive-only/stop-after-start limits only for newly reviewed
+sprint artifacts; it does not change those historical records. Keep Git payloads
+compact and preserve unrelated files. Report exact terminal outcomes honestly.
+
 ## Active learning-agent v6 exporter repair (2026-10-11)
 
 The latest Decision 0070 addendum scopes the exporter-only repair, CPU validation

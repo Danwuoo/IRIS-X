@@ -20,7 +20,7 @@ import uuid
 
 from tools.arc_next_models import canonical, digest, lora_target_modules, require
 from tools.arc_next_training import _state_fingerprint
-from .data import build_task_records, validate_records
+from .data import build_task_records, validate_records, semantic_sample_id
 
 DEFAULTS = {"tiny_cpu": False, "model_key": "granite-4.2-8b", "lora_rank": 32, "lora_alpha": 64,
             "learning_rate": 2e-4, "task_learning_rate": 5e-5, "weight_decay": 0.0,
@@ -28,7 +28,9 @@ DEFAULTS = {"tiny_cpu": False, "model_key": "granite-4.2-8b", "lora_rank": 32, "
             "max_sequence_tokens": 8192, "max_input_tokens": 100_000_000,
             "max_supervised_tokens": 50_000_000, "seed": 0, "task_augmentations": 8,
             "gradient_checkpointing": True, "checkpoint_every": 0,
-            "schedule_steps": 0, "warmup_steps": 0, "min_lr_ratio": 0.1, "objective_cycle": None, "checkpoint_keep": 2, "checkpoint_disk_reserve_bytes": 4 * 1024**3}
+            "stability_mode": False, "accumulation_target_tokens": 1024, "accumulation_max_microbatches": 8,
+            "schedule_steps": 0, "warmup_steps": 0, "task_schedule_steps": 16, "task_warmup_steps": 1,
+            "min_lr_ratio": 0.1, "objective_cycle": None, "checkpoint_keep": 2, "checkpoint_disk_reserve_bytes": 4 * 1024**3}
 
 
 def _fingerprint_tree(value, torch):
@@ -55,6 +57,10 @@ class Trainer:
         self._validate_config()
         self.optimizer = self.scheduler = None
         self._snapshots = {}
+        self._training_snapshots = {}
+        self._released_snapshot_handles = {}
+        self._released_training_snapshot_handles = {}
+        self._pending_accumulation = False
         self._global = None
         self._task_id = None
         self._last_task_reset_receipt = None
@@ -134,6 +140,16 @@ class Trainer:
         require(type(c["checkpoint_keep"]) is int and 1 <= c["checkpoint_keep"] <= 10, "checkpoint_keep must be 1..10")
         require(type(c["checkpoint_disk_reserve_bytes"]) is int and c["checkpoint_disk_reserve_bytes"] >= (0 if c["tiny_cpu"] else 4 * 1024**3), "production checkpoint reserve must retain 4GiB")
         require(type(c["checkpoint_every"]) is int and c["checkpoint_every"] >= 0, "invalid checkpoint cadence")
+
+        require(type(c["stability_mode"]) is bool, "explicit stability mode required")
+        for key in ("schedule_steps", "warmup_steps", "task_schedule_steps", "task_warmup_steps"):
+            require(type(c[key]) is int and c[key] >= 0, "invalid " + key)
+        for key in ("accumulation_target_tokens", "accumulation_max_microbatches"):
+            require(type(c[key]) is int and c[key] > 0, "invalid " + key)
+        if c["stability_mode"]:
+            require(0 < c["warmup_steps"] < c["schedule_steps"], "stable training requires bounded warmup and decay")
+            require(0 < c["task_warmup_steps"] < c["task_schedule_steps"], "stable task training requires bounded warmup and decay")
+            require(c["accumulation_max_microbatches"] <= 128, "accumulation microbatch cap exceeds 128")
 
     def _get_rng(self):
         import numpy as np
@@ -221,7 +237,7 @@ class Trainer:
 
     def _source_identity(self):
         files = [Path(__file__), Path(__file__).with_name("data.py"), Path(__file__).with_name("grid_codec.py"),
-                 Path(__file__).with_name("native_model.py"), Path(__file__).parents[1] / "arc_next_training.py",
+                 Path(__file__).with_name("native_model.py"), Path(__file__).with_name("stability.py"), Path(__file__).parents[1] / "arc_next_training.py",
                  Path(__file__).parents[1] / "arc_next_models.py",
                  Path(__file__).parents[2] / "src" / "irisx" / "arc_nvarc_data.py"]
         return {str(p.relative_to(Path(__file__).parents[2])): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
@@ -238,6 +254,7 @@ class Trainer:
         self.optimizer = self.scheduler = None
         self._run_state = None
         self._task_records_digest = None
+        self._pending_accumulation = False
 
     def snapshot(self, label):
         require(type(label) is str and label, "snapshot label required")
@@ -265,6 +282,134 @@ class Trainer:
         return {"restored": True, "adapter_sha256": actual["sha256"], "optimizer_cleared": True,
                 "scheduler_cleared": True, "gradients_cleared": all(p.grad is None for p in self.parameters.values()),
                 "rng_sha256": _fingerprint_tree(self._get_rng(), self.torch)}
+
+    def _complete_training_boundary(self):
+        state = self._run_state
+        return (not self._pending_accumulation and
+                all(p.grad is None for p in self.parameters.values()) and
+                (state is None or (not state.get("failed_update", False) and
+                 state["attempted_steps"] == state.get("microbatches", state["steps"]))))
+
+    def snapshot_training_state(self, label):
+        """Complete logical rollback handle; physical ledgers are never captured.
+
+        Unlike snapshot()/restore() (adapter-only task isolation), this captures
+        Adam, scheduler, RNG, sampler/counters and optional AMP scaler. Call only
+        at cleared-gradient boundaries. Handles may represent base, earlier,
+        best and final simultaneously; each owns independent immutable tensors.
+        """
+        require(type(label) is str and label, "snapshot label required")
+        require(self._complete_training_boundary(), "snapshot requires complete cleared-gradient boundary")
+        def clone(value):
+            if isinstance(value, self.torch.Tensor):
+                return value.detach().cpu().clone()
+            if isinstance(value, dict):
+                return {key: clone(item) for key, item in value.items()}
+            if isinstance(value, list):
+                return [clone(item) for item in value]
+            if isinstance(value, tuple):
+                return tuple(clone(item) for item in value)
+            return deepcopy(value)
+        scaler = getattr(self, "scaler", None)
+        payload = clone({"adapter": self._state(), "optimizer": self.optimizer.state_dict() if self.optimizer else None,
+            "scheduler": self.scheduler.state_dict() if self.scheduler else None,
+            "scaler": scaler.state_dict() if scaler is not None else None,
+            "rng": self._get_rng(), "run_state": self._run_state,
+            "schedule_records": self._schedule_records, "effective_cycle": self._effective_cycle,
+            "optimizer_serial": self._optimizer_serial, "task_id": self._task_id,
+            "task_seed": getattr(self, "_task_seed", None), "task_records_digest": self._task_records_digest,
+            "caller_rng": self._caller_rng, "global_snapshot": self._global,
+            "global_snapshot_value": self._snapshots[self._global["snapshot_id"]] if self._global else None,
+            "last_task_reset_receipt": self._last_task_reset_receipt, "model_training": self.model.training})
+        identity = digest({"model": self._base_identity, "config": self.config, "source": self._source_identity()})
+        handle = {"snapshot_id": uuid.uuid4().hex, "label": label,
+                  "state_sha256": _fingerprint_tree(payload, self.torch), "identity_sha256": identity,
+                  "fingerprint": self.fingerprint(), "complete_training_state": True,
+                  "physical_ledger_included": False}
+        self._training_snapshots[handle["snapshot_id"]] = {"handle": deepcopy(handle), "payload": payload}
+        return deepcopy(handle)
+
+    def restore_training_state(self, snapshot):
+        """Restore logical training state without refunding any physical work."""
+        require(type(snapshot) is dict and snapshot.get("snapshot_id") in self._training_snapshots, "unknown training snapshot")
+        saved = self._training_snapshots[snapshot["snapshot_id"]]
+        require(snapshot == saved["handle"], "training snapshot handle changed")
+        payload = deepcopy(saved["payload"])
+        require(_fingerprint_tree(payload, self.torch) == snapshot["state_sha256"], "training snapshot state changed")
+        require(snapshot["identity_sha256"] == digest({"model": self._base_identity, "config": self.config,
+                "source": self._source_identity()}), "training snapshot identity differs")
+        require(set(payload["adapter"]) == set(self.parameters), "training snapshot adapter names differ")
+        scaler = getattr(self, "scaler", None)
+        require((scaler is None) == (payload["scaler"] is None), "training snapshot scaler differs")
+        self.model.zero_grad(set_to_none=True)
+        with self.torch.no_grad():
+            for name, parameter in self.parameters.items():
+                parameter.copy_(payload["adapter"][name].to(parameter.device))
+        self._task_id = payload["task_id"]
+        self.optimizer = self.scheduler = None
+        if payload["optimizer"] is not None:
+            self._make_optimizer()
+            self.optimizer.load_state_dict(payload["optimizer"])
+            self.scheduler.load_state_dict(payload["scheduler"])
+        if scaler is not None:
+            scaler.load_state_dict(payload["scaler"])
+        self._run_state = payload["run_state"]
+        self._schedule_records, self._effective_cycle = payload["schedule_records"], payload["effective_cycle"]
+        self._optimizer_serial = payload["optimizer_serial"]
+        self._task_seed, self._task_records_digest = payload["task_seed"], payload["task_records_digest"]
+        self._caller_rng, self._global = payload["caller_rng"], payload["global_snapshot"]
+        if self._global is not None:
+            token = self._global["snapshot_id"]
+            self._snapshots[token] = payload["global_snapshot_value"]
+            self._released_snapshot_handles.pop(token, None)
+        self._last_task_reset_receipt = payload["last_task_reset_receipt"]
+        self._pending_accumulation = False
+        self.model.train(payload["model_training"])
+        self._set_rng(payload["rng"])
+        require(self._complete_training_boundary() and self.fingerprint() == snapshot["fingerprint"], "complete training restore failed")
+        require((self.optimizer is None and payload["optimizer"] is None) or
+                _fingerprint_tree(self.optimizer.state_dict(), self.torch) == _fingerprint_tree(payload["optimizer"], self.torch),
+                "restored optimizer differs")
+        require((self.scheduler is None and payload["scheduler"] is None) or
+                _fingerprint_tree(self.scheduler.state_dict(), self.torch) == _fingerprint_tree(payload["scheduler"], self.torch),
+                "restored scheduler differs")
+        require(_fingerprint_tree(self._get_rng(), self.torch) == _fingerprint_tree(payload["rng"], self.torch), "restored RNG differs")
+        if scaler is not None:
+            require(_fingerprint_tree(scaler.state_dict(), self.torch) == _fingerprint_tree(payload["scaler"], self.torch), "restored scaler differs")
+        self._publish_fingerprint()
+        return {"restored": True, "complete_training_state": True, "physical_ledger_untouched": True,
+                "adapter_sha256": self.fingerprint()["sha256"], "state_sha256": snapshot["state_sha256"],
+                "optimizer_state_sha256": _fingerprint_tree(self.optimizer.state_dict(), self.torch) if self.optimizer else None,
+                "scheduler_state_sha256": _fingerprint_tree(self.scheduler.state_dict(), self.torch) if self.scheduler else None,
+                "rng_sha256": _fingerprint_tree(self._get_rng(), self.torch), "gradients_cleared": True}
+
+    def release_training_state(self, snapshot):
+        """Idempotently discard only an owned in-memory complete-state handle."""
+        require(type(snapshot) is dict, "training snapshot handle required")
+        token = snapshot.get("snapshot_id")
+        if token in self._released_training_snapshot_handles:
+            require(snapshot == self._released_training_snapshot_handles[token], "training snapshot handle changed")
+            return {"released": True, "already_released": True, "physical_ledger_untouched": True}
+        require(token in self._training_snapshots, "unknown training snapshot")
+        require(snapshot == self._training_snapshots[token]["handle"], "training snapshot handle changed")
+        self._released_training_snapshot_handles[token] = deepcopy(snapshot)
+        del self._training_snapshots[token]
+        return {"released": True, "already_released": False, "label": snapshot["label"], "physical_ledger_untouched": True}
+
+    def release_snapshot(self, snapshot):
+        """Idempotently release an adapter-only handle; never delete files."""
+        require(type(snapshot) is dict, "snapshot handle required")
+        token = snapshot.get("snapshot_id")
+        if token in self._released_snapshot_handles:
+            require(snapshot == self._released_snapshot_handles[token], "snapshot handle changed")
+            return {"released": True, "already_released": True}
+        require(token in self._snapshots, "unknown snapshot handle")
+        saved = self._snapshots[token]
+        require(snapshot == {"snapshot_id": token, "label": saved["label"], "fingerprint": saved["fingerprint"],
+                             "model_identity_sha256": saved["model_identity_sha256"]}, "snapshot handle changed")
+        self._released_snapshot_handles[token] = deepcopy(snapshot)
+        del self._snapshots[token]
+        return {"released": True, "already_released": False, "label": snapshot["label"]}
 
     def freeze_global(self):
         require(self._task_id is None, "cannot freeze task-adapted global")
@@ -316,12 +461,19 @@ class Trainer:
         self.optimizer = torch.optim.AdamW(list(self.parameters.values()), lr=lr, betas=tuple(c["betas"]),
                                           eps=c["eps"], weight_decay=c["weight_decay"], foreach=False)
         self._optimizer_serial += 1
+        # A short independent task must not inherit a global multi-dozen-update
+        # warmup. All schedule values are optimizer updates, never microbatches.
+        if self._task_id is not None:
+            warmup_steps, schedule_steps = ((c["task_warmup_steps"], c["task_schedule_steps"])
+                                           if c["stability_mode"] else (0, 0))
+        else:
+            warmup_steps, schedule_steps = c["warmup_steps"], c["schedule_steps"]
         def schedule(step):
-            if c["schedule_steps"] == 0 or self._task_id is not None:
+            if schedule_steps == 0:
                 return 1.0
-            if c["warmup_steps"] and step < c["warmup_steps"]:
-                return (step + 1) / c["warmup_steps"]
-            progress = min(1.0, max(0.0, (step - c["warmup_steps"]) / max(1, c["schedule_steps"] - c["warmup_steps"])))
+            if warmup_steps and step < warmup_steps:
+                return (step + 1) / warmup_steps
+            progress = min(1.0, max(0.0, (step - warmup_steps) / max(1, schedule_steps - warmup_steps)))
             return c["min_lr_ratio"] + (1 - c["min_lr_ratio"]) * 0.5 * (1 + math.cos(math.pi * progress))
         self.scheduler = torch.optim.lr_scheduler.LambdaLR(self.optimizer, schedule)
 
@@ -329,6 +481,9 @@ class Trainer:
         seed = self._task_seed if self._task_id is not None else self.config["seed"]
         if self._effective_cycle is None:
             order = list(range(records_count))
+            if self.config["stability_mode"]:
+                require(len(self._schedule_records) == records_count, "semantic sample identities missing")
+                order.sort(key=lambda i: self._schedule_records[i]["semantic_id"])
             random.Random(digest(["training-data-order", seed, epoch])).shuffle(order)
             return order
         require(len(self._schedule_records) == records_count, "schedule record identities missing")
@@ -353,7 +508,7 @@ class Trainer:
                 pass_index, row_index = divmod(visit, len(rows))
                 permutation_key = (kind, family, pass_index)
                 if permutation_key not in permutations:
-                    values = sorted(rows, key=lambda i: self._schedule_records[i]["record_id"])
+                    values = sorted(rows, key=lambda i: self._schedule_records[i]["semantic_id" if self.config["stability_mode"] else "record_id"])
                     random.Random(digest(["objective-family-order-v1", seed, epoch, kind, family, pass_index])).shuffle(values)
                     permutations[permutation_key] = values
                 order.append(permutations[permutation_key][row_index])
@@ -407,8 +562,93 @@ class Trainer:
         receipt["elapsed_seconds"] = time.monotonic() - started
         return receipt
 
+    def _accumulate(self, row):
+        """Backpropagate the real SUM of completion-token causal cross entropy."""
+        torch = self.torch
+        device = next(self.model.parameters()).device
+        self.model.train()
+        ids = torch.tensor([row["input_ids"]], dtype=torch.long, device=device)
+        labels = torch.tensor([row["labels"]], dtype=torch.long, device=device)
+        output = self.model(input_ids=ids, attention_mask=torch.ones_like(ids), use_cache=False)
+        targets = labels[:, 1:].reshape(-1)
+        tokens = int((targets != -100).sum())
+        require(tokens == row["supervised_tokens"] and tokens > 0, "causal completion token count differs")
+        # Only completion positions need fp32 cross entropy; preserve every
+        # native vocabulary column without expanding masked prompt logits.
+        active = targets != -100
+        logits = output.logits[:, :-1, :].reshape(-1, output.logits.shape[-1])[active].float()
+        loss_sum = torch.nn.functional.cross_entropy(logits, targets[active], reduction="sum")
+        require(bool(torch.isfinite(loss_sum)), "nonfinite training loss")
+        loss_sum.backward()
+        require(all(p.grad is not None and bool(torch.isfinite(p.grad).all()) for p in self.parameters.values()),
+                "missing/nonfinite accumulated LoRA gradients")
+        return {"loss_sum": float(loss_sum.detach()), "supervised_tokens": tokens}
+
+    def _commit_accumulation(self, rows):
+        """One Adam/scheduler update on token-weighted accumulated gradients."""
+        torch = self.torch
+        tokens = sum(row["supervised_tokens"] for row in rows)
+        require(tokens > 0 and rows, "empty accumulation update")
+        before = self.fingerprint()
+        for parameter in self.parameters.values():
+            require(parameter.grad is not None, "missing accumulated gradient")
+            parameter.grad.div_(tokens)
+        norm = torch.nn.utils.clip_grad_norm_(list(self.parameters.values()), self.config["max_grad_norm"], error_if_nonfinite=True)
+        learning_rate = self.optimizer.param_groups[0]["lr"]
+        self.optimizer.step()
+        require(all(bool(torch.isfinite(p).all()) for p in self.parameters.values()), "nonfinite adapter state")
+        require(all(bool(torch.isfinite(state[key]).all()) for state in self.optimizer.state.values()
+                    for key in ("exp_avg", "exp_avg_sq")), "nonfinite Adam state")
+        actual_steps = {int(float(self.optimizer.state[p]["step"])) for p in self.parameters.values()}
+        require(len(actual_steps) == 1, "inconsistent Adam step identities")
+        self.scheduler.step()
+        after = self.fingerprint()
+        changed = sum(before["tensors"][name]["sha256"] != entry["sha256"] for name, entry in after["tensors"].items())
+        require(changed > 0, "no actual LoRA tensor update")
+        self._publish_fingerprint(after)
+        self.optimizer.zero_grad(set_to_none=True)
+        return {"loss": math.fsum(row["loss_sum"] for row in rows) / tokens,
+                "loss_sum": math.fsum(row["loss_sum"] for row in rows), "supervised_tokens": tokens,
+                "input_tokens": sum(row["input_tokens"] for row in rows), "microbatches": len(rows),
+                "record_ids": [row["record_id"] for row in rows], "semantic_ids": [row["semantic_id"] for row in rows],
+                "loss_weighting": "completion-token-sum/actual-completion-token-count",
+                "gradient_norm": float(norm), "learning_rate": learning_rate, "finite_gradients": True,
+                "changed_adapter_tensors": changed, "adam_step": next(iter(actual_steps)),
+                "adapter_before_sha256": before["sha256"], "adapter_after_sha256": after["sha256"]}
+
+    def _optimizer_diagnostics(self):
+        """Compact actual Adam state ranges, not intended/configured precision."""
+        torch = self.torch
+        result = {"parameter_dtypes": sorted({str(p.dtype) for p in self.parameters.values()}),
+                  "learning_rates": [group["lr"] for group in self.optimizer.param_groups],
+                  "scheduler_last_epoch": self.scheduler.last_epoch, "moments": {}}
+        for name in ("exp_avg", "exp_avg_sq"):
+            tensors = [state[name].detach() for state in self.optimizer.state.values() if name in state]
+            if not tensors:
+                result["moments"][name] = {"dtypes": [], "min": None, "max": None, "finite": True}
+                continue
+            bounds = torch.stack([torch.stack([value.min(), value.max()]) for value in tensors])
+            minimum, maximum = float(bounds[:, 0].min()), float(bounds[:, 1].max())
+            result["moments"][name] = {"dtypes": sorted({str(value.dtype) for value in tensors}),
+                "min": minimum if math.isfinite(minimum) else None, "max": maximum if math.isfinite(maximum) else None,
+                "finite": math.isfinite(minimum) and math.isfinite(maximum)}
+        return result
+
     def train(self, records, *, max_steps, deadline, checkpoint_dir=None, resume=None):
-        require(type(max_steps) is int and max_steps >= 0, "finite nonnegative optimizer limit required")
+        """Train under a physical microbatch ceiling, including attempted failures."""
+        try:
+            return self._train_impl(records, max_steps=max_steps, deadline=deadline,
+                                    checkpoint_dir=checkpoint_dir, resume=resume)
+        except BaseException:
+            if self._pending_accumulation and self._run_state is not None:
+                self._run_state["failed_update"] = True
+            self.model.zero_grad(set_to_none=True)
+            self._pending_accumulation = False
+            self.model.eval()
+            raise
+
+    def _train_impl(self, records, *, max_steps, deadline, checkpoint_dir=None, resume=None):
+        require(type(max_steps) is int and max_steps >= 0, "finite nonnegative physical microbatch limit required")
         require(type(deadline) in (int, float) and math.isfinite(deadline), "absolute monotonic deadline required")
         started = time.monotonic()
         initial = self.fingerprint()["sha256"]
@@ -420,7 +660,8 @@ class Trainer:
             admission = {"scope": "active-task-demonstrations-only", "records_sha256": digest(records)}
         train_records = [r for r in records if r["split"] == "train"]
         require(train_records, "no admitted train records")
-        self._schedule_records = [{k: r[k] for k in ("kind", "family_id", "record_id")} for r in train_records]
+        self._schedule_records = [{**{k: r[k] for k in ("kind", "family_id", "record_id")},
+                                   "semantic_id": semantic_sample_id(r)} for r in train_records]
         requested = self.config["objective_cycle"] if self._task_id is None else None
         available = {r["kind"] for r in train_records}
         self._effective_cycle = [kind for kind in requested if kind in available] if requested else None
@@ -434,18 +675,39 @@ class Trainer:
                 self._seed(self.config["seed"])
             self._make_optimizer()
             self._run_state = {"identity": identity, "epoch": 0, "cursor": 0, "order": self._order(len(train_records), 0),
-                               "steps": 0, "input_tokens": 0, "supervised_tokens": 0, "attempted_steps": 0,
+                               "steps": 0, "microbatches": 0, "failed_update": False, "input_tokens": 0, "supervised_tokens": 0, "attempted_steps": 0,
                                "attempted_input_tokens": 0, "attempted_supervised_tokens": 0, "excluded": {}, "seen_record_ids": [], "seen_families": [], "processed_by_kind": {}}
         else:
             require(self._run_state["identity"] == identity, "cannot change data/config/source mid-training; start a new state")
         state = self._run_state
-        require(state["attempted_steps"] == state["steps"], "failed training state cannot continue without checkpoint restore")
+        require(self._complete_training_boundary(), "failed training state cannot continue without checkpoint restore")
         attempted_before = state["attempted_steps"]
         adam_before = max((int(float(v.get("step", 0))) for v in self.optimizer.state.values()), default=0)
         steps, input_tokens, supervised_tokens, updates, checkpoints = 0, 0, 0, [], []
         status, error = "complete", None
         processed_by_kind, seen_records, seen_families = {}, set(), set()
-        while steps < max_steps:
+        stable = self.config["stability_mode"]
+        pending = []
+        accumulation_started = None
+        completed_microbatches = 0
+        def commit_pending():
+            nonlocal steps, completed_microbatches, accumulation_started
+            require(time.monotonic() < deadline, "deadline expired before accumulation update")
+            update = self._commit_accumulation(pending)
+            update["elapsed_seconds"] = time.monotonic() - accumulation_started
+            updates.append(update)
+            state["steps"] += 1
+            state["microbatches"] += len(pending)
+            state["input_tokens"] += update["input_tokens"]
+            state["supervised_tokens"] += update["supervised_tokens"]
+            completed_microbatches += len(pending)
+            steps += 1
+            pending.clear()
+            self._pending_accumulation = False
+            accumulation_started = None
+            if checkpoint_dir and self.config["checkpoint_every"] and state["steps"] % self.config["checkpoint_every"] == 0 and time.monotonic() < deadline:
+                checkpoints.append(self.save_checkpoint(checkpoint_dir))
+        while state["attempted_steps"] - attempted_before < max_steps:
             if time.monotonic() >= deadline:
                 status = "deadline"
                 break
@@ -469,7 +731,13 @@ class Trainer:
                     state["excluded"][record["record_id"]] = {"reason": str(exc)}
                     state["cursor"] += 1
                     continue
-                raise
+                if not stable or not pending:
+                    raise
+                status, error = "failed_update", type(exc).__name__ + ": " + str(exc)
+                state["failed_update"] = True
+                self.optimizer.zero_grad(set_to_none=True)
+                self._pending_accumulation = False
+                break
             if row["input_tokens"] > self.config["max_sequence_tokens"]:
                 state["excluded"][record["record_id"]] = {"reason": "whole-row-exceeds-sequence-budget", "input_tokens": row["input_tokens"]}
                 state["cursor"] += 1
@@ -498,20 +766,47 @@ class Trainer:
             if record["family_id"] not in state["seen_families"]:
                 state["seen_families"].append(record["family_id"])
             try:
+                if stable:
+                    if not pending:
+                        self.optimizer.zero_grad(set_to_none=True)
+                        accumulation_started = time.monotonic()
+                    self._pending_accumulation = True
+                    micro = self._accumulate(row)
+                    micro.update(record_id=record["record_id"], semantic_id=semantic_sample_id(record), input_tokens=row["input_tokens"])
+                    pending.append(micro)
+                    state["cursor"] += 1
+                    if (sum(item["supervised_tokens"] for item in pending) >= self.config["accumulation_target_tokens"] or
+                            len(pending) >= self.config["accumulation_max_microbatches"]):
+                        commit_pending()
+                    continue
                 update = self._step(row)
             except Exception as exc:
                 status, error = "failed_update", type(exc).__name__ + ": " + str(exc)
+                state["failed_update"] = True
                 self.optimizer.zero_grad(set_to_none=True)
+                self._pending_accumulation = False
                 break
             update.update(record_id=record["record_id"], input_tokens=row["input_tokens"], supervised_tokens=row["supervised_tokens"])
             updates.append(update)
             state["cursor"] += 1
             state["steps"] += 1
+            state["microbatches"] += 1
+            completed_microbatches += 1
             state["input_tokens"] += row["input_tokens"]
             state["supervised_tokens"] += row["supervised_tokens"]
             steps += 1
             if checkpoint_dir and self.config["checkpoint_every"] and state["steps"] % self.config["checkpoint_every"] == 0 and time.monotonic() < deadline:
                 checkpoints.append(self.save_checkpoint(checkpoint_dir))
+        if pending and status != "failed_update":
+            try:
+                # A physical ceiling/token-budget end flushes its smaller valid
+                # group. An expired deadline never performs a late optimizer step.
+                commit_pending()
+            except Exception as exc:
+                status, error = "failed_update", type(exc).__name__ + ": " + str(exc)
+                state["failed_update"] = True
+                self.optimizer.zero_grad(set_to_none=True)
+                self._pending_accumulation = False
         if checkpoint_dir and status != "failed_update" and time.monotonic() < deadline:
             if not checkpoints or checkpoints[-1]["steps"] != state["steps"]:
                 checkpoints.append(self.save_checkpoint(checkpoint_dir))
@@ -527,8 +822,17 @@ class Trainer:
         observed_updates = max(observed_adam, default=adam_before) - adam_before
         receipt = {"status": status, "steps": steps, "optimizer_steps": observed_updates, "optimizer_state_consistent": len(set(observed_adam)) <= 1, "attempted_microbatches": state["attempted_steps"] - attempted_before, "usage_known": True, "total_steps": state["steps"], "input_tokens": input_tokens,
                    "supervised_tokens": supervised_tokens, "elapsed_seconds": elapsed, "losses": [u["loss"] for u in updates],
+                   "completed_microbatches": completed_microbatches, "total_microbatches": state["microbatches"],
+                   "physical_microbatch_ceiling": max_steps, "stability_mode": stable,
+                   "accumulation": {"target_completion_tokens": self.config["accumulation_target_tokens"] if stable else None,
+                                    "max_microbatches": self.config["accumulation_max_microbatches"] if stable else 1,
+                                    "scheduler_unit": "optimizer_updates", "partial_final_group": "flush-before-deadline"},
+                   "scheduler_state_sha256": _fingerprint_tree(self.scheduler.state_dict(), self.torch),
+                   "optimizer_diagnostics": self._optimizer_diagnostics(),
                    "updates": updates, "admission": admission, "exclusions": deepcopy(state["excluded"]),
-                   "sampling": {"policy": "objective-family-cycle-v1" if self._effective_cycle else "uniform-row-epochs",
+                   "sampling": {"policy": ("semantic-objective-family-cycle-v1" if self._effective_cycle else "semantic-uniform-row-epochs-v1") if stable else ("objective-family-cycle-v1" if self._effective_cycle else "uniform-row-epochs"),
+                                "identity": "semantic_sample_id" if stable else "legacy-input-order/record_id",
+                                "duplicate_semantic_policy": "stable-input-occurrence-order; no runtime-hash tie break",
                                 "requested_cycle": self.config["objective_cycle"] if self._task_id is None else None,
                                 "effective_cycle": self._effective_cycle, "missing_kinds_removed": sorted(set(self.config["objective_cycle"] or []) - available) if self._task_id is None else [],
                                 "engineering_hypothesis": True},
@@ -569,7 +873,7 @@ class Trainer:
 
     def save_checkpoint(self, checkpoint_dir):
         require(self._run_state is not None and self.optimizer is not None, "no complete optimizer state to checkpoint")
-        require(self._run_state["attempted_steps"] == self._run_state["steps"], "failed/incomplete update cannot be checkpointed")
+        require(self._complete_training_boundary(), "failed/incomplete update cannot be checkpointed")
         require(all(p.grad is None for p in self.parameters.values()), "checkpoint only at cleared-gradient update boundary")
         root = Path(checkpoint_dir)
         root.mkdir(parents=True, exist_ok=True)
@@ -708,7 +1012,8 @@ class Trainer:
         state = payload["run_state"]
         require(state["identity"] == identity and all(type(i) is int and 0 <= i < records_count for i in state["order"]) and
                 0 <= state["cursor"] <= len(state["order"]) and state["order"] == self._order(records_count, state["epoch"]), "checkpoint data cursor/order differs")
-        require(state["steps"] == state["attempted_steps"] == manifest["steps"], "checkpoint is not complete update boundary")
+        require(state["steps"] == manifest["steps"] and state["attempted_steps"] == state.get("microbatches", state["steps"]) and
+                not state.get("failed_update", False), "checkpoint is not complete update boundary")
         require(set(payload["adapter"]) == set(self.parameters), "checkpoint adapter names differ")
         require(_state_fingerprint(payload["adapter"], self.torch)["sha256"] == manifest["adapter_sha256"] and
                 _fingerprint_tree(payload["optimizer"], self.torch) == manifest["optimizer_sha256"] and

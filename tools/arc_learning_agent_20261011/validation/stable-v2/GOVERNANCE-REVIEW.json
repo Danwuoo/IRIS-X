@@ -1,0 +1,29 @@
+{
+  "agents_change": "insert only new current-scope paragraph after unchanged title",
+  "agents_sha256": "4ead38d0de0f0c376cf2476bd056b8217b0c58714a3e647fb373dcb4f2de06b8",
+  "authorization_evidence": "Parent supplied exact user messages and intervening clarification in transcript_evidence; no authority inferred from draft itself",
+  "authorization_evidence_messages": [
+    "Sentinel_bb0cf1ed20d081918f1bbdd8d2bddf43",
+    "Sentinel_97d99e70f2908191b202f74bcc6ba66e"
+  ],
+  "baseline_commit": "7185175af42582daa37e3ac48e36eb76d093ac05",
+  "checks": [
+    "151/167 is ceil(0.90*167)",
+    "fixed120-task167-query micro pass@2 denominator",
+    "no remaining-quota query",
+    "terminal monitoring of submitted sprint runs",
+    "stop GPU dispatch on provider unavailable/zero hours",
+    "existing resource only; no provisioning/billing/access/credential expansion",
+    "12h independent per-session bound with fixed in-flight epoch",
+    "public answers evaluator-only after closure/seal",
+    "scientific gates and physical charges retained",
+    "prior84/167 target superseded for separately reviewed sprint only"
+  ],
+  "decision0070_sha256": "a7ca6fbccc9ad06d7a45741f6e25eafadc04045a7d68cd569f338c48b88718ba",
+  "decision_change": "append one sprint addendum",
+  "format": "irisx/independent-governance-addendum-review-v1",
+  "original_governance_bytes_preserved": true,
+  "production_files_changed_by_reviewer": false,
+  "review_delivered_to_integrator": "/root/integrate_arc_suite_main",
+  "status": "PASS"
+}

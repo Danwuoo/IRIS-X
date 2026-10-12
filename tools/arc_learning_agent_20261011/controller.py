@@ -124,7 +124,7 @@ DEFAULTS = {"global_views": 2, "adapted_views": 2, "initial_programs": 1, "repai
             "max_generation_calls": 1600, "max_scoring_forwards": 12000,
             "max_input_tokens": 50000000, "max_output_tokens": 3200000,
             "max_cpu_checks": 12000, "max_program_gas": 2400000000,
-            "program_policy": "auto", "seed": 0}
+            "program_policy": "auto", "program_branch": "trained", "seed": 0}
 HARD_MAX = {"global_views": 2, "adapted_views": 4, "initial_programs": 2, "repair_attempts": 2,
             "score_candidates": 8, "scoring_views": 8, "max_candidates": 32, "max_new_tokens": 2048, "ttt_steps": 8192,
             "max_generation_calls": 1600, "max_scoring_forwards": 12000,
@@ -152,6 +152,8 @@ def _config(config):
         raise ValueError("unknown prompt usage must reserve at least native prompt cap")
     if values["program_policy"] not in {"auto", "always", "never"}:
         raise ValueError("unknown program policy")
+    if values["program_branch"] not in {"trained", "base"}:
+        raise ValueError("unknown program adapter branch")
     return values
 
 
@@ -573,7 +575,12 @@ class _Controller:
                 self.direct("global", self.config["global_views"])
                 self.score("global", "global")
                 policies["global_grid"] = self.select("global_grid", "global", "global")
-                self.programs_phase()
+                if self.config["program_branch"] == "base":
+                    self.decision("program_base_branch", "preserve frozen-base program capability separately from grid adaptation")
+                    with self.model.adapter_branch("base"):
+                        self.programs_phase()
+                else:
+                    self.programs_phase()
                 remaining_input = max(0, self.config["max_input_tokens"] - self.counts["input_tokens"])
                 adaptation_steps = min(self.config["ttt_steps"], remaining_input // 8192)
                 if self.available("adapt") and adaptation_steps > 0:

@@ -21,6 +21,10 @@ from tools.arc_public_research_20261010.public_data import load_solver_tasks, re
 ROOT = Path(__file__).resolve().parents[2]
 
 
+class EffectivenessBlocked(RuntimeError):
+    """Expected scientific admission stop, not successful public inference."""
+
+
 def _snapshot_receipt(snapshot):
     return {k: v for k, v in snapshot.items() if k != 'snapshot_id'}
 
@@ -171,6 +175,7 @@ def _rollouts(tasks, manifest, model, ledger, *, deadline, output, config):
 def run(request):
     check_source(request['source_identity'])
     config = dict(request['config']); root = Path(request['output_root'])
+    stable_profile = config.get('learning_profile') == 'stable_v2'
     clock = SessionClock(request['clock'])
     clock.stage_marker = root / 'active-stage.json'
     started = time.monotonic()
@@ -180,6 +185,7 @@ def run(request):
     solver = load_solver_tasks(request['solver_root'], request['solver_manifest_sha256'])
     protected = sorted(solver['challenges'])
     native = None; trainer = None; results = {}; stages = {}; status = 'complete'
+    public_admitted = not stable_profile
     try:
         from tools.arc_learning_agent_20261011.data import (
             load_official_training, create_split_manifest, build_records, build_authored_curriculum,
@@ -213,6 +219,13 @@ def run(request):
             atomic_json(root / 'training-split.json', manifest, exclusive=True)
             atomic_json(root / 'training-admission.json', admission, exclusive=True)
             stages['data_admission'] = admission
+            if stable_profile:
+                from tools.arc_learning_agent_20261011.effectiveness import build_panel
+                panel_tasks = {key: {'train': item['demonstrations']}
+                               for key, item in manifest['tasks'].items()}
+                panel = build_panel(panel_tasks, manifest, seed=config.get('seed', 0),
+                    dev_tasks=config.get('dev_tasks', 4), protected_ids=protected)
+                atomic_json(root / 'effectiveness-panel.json', panel, exclusive=True)
         from tools.arc_learning_agent_20261011.native_model import NativeModel
         from tools.arc_learning_agent_20261011.training import Trainer
         from tools.arc_learning_agent_20261011.metering import MeteredModel, MeteredTrainer
@@ -229,6 +242,11 @@ def run(request):
                             'learning_rate': 1e-4, 'task_learning_rate': 5e-5,
                             'max_sequence_tokens': 8192, 'checkpoint_every': 128, 'checkpoint_keep': 2,
                             'objective_cycle': ['grid'] * 6 + ['program', 'repair']}
+            if stable_profile:
+                train_config.update(stability_mode=True, learning_rate=5e-5,
+                    warmup_steps=32, schedule_steps=512, min_lr_ratio=0.1,
+                    task_warmup_steps=1, task_schedule_steps=16,
+                    accumulation_target_tokens=1024, accumulation_max_microbatches=8)
             if config.get('tiny_cpu'):
                 train_config.update(tiny_cpu=True, lora_rank=2, lora_alpha=4,
                                     max_sequence_tokens=2048, gradient_checkpointing=False)
@@ -237,7 +255,8 @@ def run(request):
             trainer_raw = Trainer(model, train_config)
             trainer = MeteredTrainer(trainer_raw, ledger, max_sequence_tokens=train_config['max_sequence_tokens'])
             stages['model_load'] = {'identity': native.identity, 'hardware': native.hardware,
-                                    'initial_adapter': trainer.fingerprint()}
+                                    'initial_adapter': trainer.fingerprint(),
+                                    'learning_profile': config.get('learning_profile', 'legacy')}
             initial = trainer.snapshot('pre-calibration')
         with clock.stage('calibrate') as deadline:
             sample = [r for r in records if r['split'] == 'train'][:64]
@@ -249,20 +268,47 @@ def run(request):
         with clock.stage('global_sft') as deadline:
             max_steps = 1 if config.get('tiny_cpu') else calibrated_steps(
                 deadline - time.monotonic(), samples, maximum_steps=config.get('global_steps', 4096))
-            stages['global_sft'] = trainer.train(records, max_steps=max_steps, deadline=deadline,
-                                               checkpoint_dir=root / 'checkpoints/global-sft')
-            if stages['global_sft'].get('steps', 0) <= 0: raise RuntimeError('global SFT made no update')
-            global_sft = trainer.freeze_global()
-            global_snapshots = {'global_sft': global_sft}
+            if stable_profile:
+                if max_steps <= 0:
+                    raise BudgetExceeded('calibration admitted zero global training microbatches')
+                from tools.arc_learning_agent_20261011.learning_cycle import train_with_canaries
+                global_snapshots, stages['global_sft'] = train_with_canaries(model, trainer,
+                    records, panel, manifest, deadline=deadline, output=root / 'stable-learning',
+                    max_microbatches=max_steps,
+                    chunk_microbatches=1 if config.get('tiny_cpu') else 128,
+                    max_new_tokens=config.get('max_new_tokens', 2048))
+                if stages['global_sft']['stop_all_new_neural_work']:
+                    stages['effectiveness_blocked'] = {'reason': stages['global_sft']['status'],
+                        'public_generation_started': False, 'public_answers_read': False,
+                        'failed_boundary_blocks_new_neural_work': True}
+                    raise EffectivenessBlocked('incomplete or failed training/canary boundary')
+                # The best complete logical state has already been restored.
+                global_sft = trainer.freeze_global()
+            else:
+                stages['global_sft'] = trainer.train(records, max_steps=max_steps, deadline=deadline,
+                                                   checkpoint_dir=root / 'checkpoints/global-sft')
+                if stages['global_sft'].get('steps', 0) <= 0: raise RuntimeError('global SFT made no update')
+                global_sft = trainer.freeze_global()
+                global_snapshots = {'global_sft': global_sft}
         with clock.stage('train_only_program_rollouts') as deadline:
             rollout_root = root / 'train-rollouts'; rollout_root.mkdir()
             if config.get('tiny_cpu'):
                 trajectories = []; stages['rollouts'] = {'status': 'tiny-fixture-skipped', 'verified_records': 0}
             else:
-                trajectories, stages['rollouts'] = _rollouts(tasks, manifest, model, ledger,
-                    deadline=deadline, output=rollout_root, config=config)
+                if stable_profile:
+                    with model.adapter_branch('base'):
+                        trajectories, stages['rollouts'] = _rollouts(tasks, manifest, model, ledger,
+                            deadline=deadline, output=rollout_root, config=config)
+                    stages['rollouts']['program_branch'] = 'frozen-base-adapter-disabled'
+                else:
+                    trajectories, stages['rollouts'] = _rollouts(tasks, manifest, model, ledger,
+                        deadline=deadline, output=rollout_root, config=config)
         with clock.stage('verified_trajectory_sft') as deadline:
-            if trajectories:
+            if stable_profile:
+                stages['trajectory_sft'] = {'status': 'collected-only-protected-program-branch',
+                    'verified_records': len(trajectories), 'steps': 0,
+                    'reason': 'No unvalidated post-canary update; base program branch remains protected.'}
+            elif trajectories:
                 trainer.restore(global_sft)
                 # An independently verified repair/program target is never mined from public evaluation.
                 stages['trajectory_sft'] = trainer.train(trajectories,
@@ -272,13 +318,38 @@ def run(request):
             else:
                 stages['trajectory_sft'] = {'status': 'skipped-no-verified-train-trajectories', 'steps': 0}
         with clock.stage('dev_and_freeze') as deadline:
-            stages['global_selection'] = _choose_global(tasks, manifest, model, trainer, global_snapshots,
-                deadline=deadline, output=root, config=config)
-            stages['dev_selection'] = _dev_select(tasks, manifest, model, trainer,
-                deadline=deadline, output=root, config=config)
+            if stable_profile:
+                from tools.arc_learning_agent_20261011.effectiveness import compare_checkpoints
+                stages['global_selection'] = compare_checkpoints(model, trainer, global_snapshots,
+                    panel, deadline=deadline, manifest=manifest, protected_ids=protected,
+                    max_new_tokens=config.get('max_new_tokens', 2048))
+                atomic_json(root / 'global-checkpoint-selection.json', stages['global_selection'], exclusive=True)
+                trainer.freeze_global()
+                passed = stages['global_selection']['eligible_for_public_run']
+                if not passed:
+                    stages['effectiveness_blocked'] = {'reason': 'complete-native-effectiveness-gate-not-met',
+                        'gate_pass': stages['global_selection']['gate_pass'],
+                        'comparison_complete': stages['global_selection']['comparison_complete'],
+                        'tiny_fixture_not_public_admission': bool(config.get('tiny_cpu')),
+                        'public_generation_started': False, 'public_answers_read': False}
+                    raise EffectivenessBlocked('native train/dev efficacy gate did not admit public inference')
+                from tools.arc_learning_agent_20261011.ttt_effectiveness import select_ttt
+                stages['dev_selection'] = select_ttt(panel_tasks, manifest, model, trainer,
+                    deadline=deadline, output=root, config=config, protected_ids=protected)
+                if stages['dev_selection'].get('stop_all_new_neural_work'):
+                    stages['effectiveness_blocked'] = {'reason': 'failed-TTT-optimizer-boundary',
+                        'public_generation_started': False, 'public_answers_read': False}
+                    raise EffectivenessBlocked('failed TTT boundary blocks public inference')
+                public_admitted = True
+            else:
+                stages['global_selection'] = _choose_global(tasks, manifest, model, trainer, global_snapshots,
+                    deadline=deadline, output=root, config=config)
+                stages['dev_selection'] = _dev_select(tasks, manifest, model, trainer,
+                    deadline=deadline, output=root, config=config)
             stages['global_export'] = trainer.export_adapter(root / 'trained-global-adapter')
             frozen_config = {'ttt_steps': stages['dev_selection']['selected_ttt_steps'],
                              'seed': config.get('seed', 0), 'max_new_tokens': config.get('max_new_tokens', 2048)}
+            if stable_profile: frozen_config['program_branch'] = 'base'
             atomic_json(root / 'frozen-public-config.json', frozen_config, exclusive=True)
         from tools.arc_learning_agent_20261011.controller import solve_task
         with clock.stage('public_solve') as deadline:
@@ -298,8 +369,13 @@ def run(request):
                     'physical_usage': ledger.summary(), 'remaining_seconds': clock.remaining()})
                 if result['status'] == 'reset_failed' or ledger.pending:
                     raise RuntimeError('task lifecycle unknown; stop all new work')
+    except EffectivenessBlocked as exc:
+        status = 'partial'; stages['stop_reason'] = str(exc)
     except BudgetExceeded as exc:
         status = 'partial'; stages['stop_reason'] = str(exc)
+        if stable_profile and not public_admitted:
+            stages['effectiveness_blocked'] = {'reason': 'budget-before-effectiveness-admission',
+                'public_generation_started': False, 'public_answers_read': False}
     finally:
         if trainer is not None and trainer._task_id is not None:
             trainer.end_task()

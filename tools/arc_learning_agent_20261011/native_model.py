@@ -10,6 +10,7 @@ import hashlib
 import json
 import math
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 from .grid_codec import decode_grid
@@ -291,6 +292,8 @@ class NativeModel:
         self.tiny_cpu = self.config.get("tiny_cpu", False)
         self.model, self.tokenizer = model, tokenizer
         self.closed = False
+        self._adapter_execution_mode = "trained"
+        self._branch_context_active = False
         self.context_limit = self.config.get("context_limit", 8192)
         self.prompt_cap = self.config.get("prompt_cap", 6144)
         self.output_cap = self.config.get("output_cap", 2048)
@@ -390,6 +393,11 @@ class NativeModel:
         tensor fingerprint. Concurrent mutation during inference is unsupported.
         """
         self._open()
+        if getattr(self, "_adapter_execution_mode", "trained") == "base":
+            # The exact frozen base identity is admitted by the native loader.
+            # Disabled LoRA tensors must not be misreported as active weights.
+            self._last_fingerprint_cache_hit = False
+            return _digest({"identity": self.identity, "execution_mode": "base-adapter-disabled"}), 0
         parameters = [(name, tensor) for name, tensor in sorted(self.model.named_parameters(), key=lambda p: p[0])
                       if tensor.requires_grad or "lora_" in name or "modules_to_save" in name]
         signature = (id(self.model), _digest(self.identity), tuple(
@@ -411,6 +419,34 @@ class NativeModel:
         self.fingerprint_rehashes += 1
         self._last_fingerprint_cache_hit = False
         return result
+
+    @contextmanager
+    def adapter_branch(self, mode):
+        """Temporarily execute the frozen base without changing learned state.
+
+        PEFT's scoped disable operation does not load weights, clear Adam,
+        mutate gradients, or restore another task's adapter. Branch identity is
+        explicit in every model receipt. Nested/concurrent scopes fail closed.
+        """
+        self._open()
+        _require(mode in {"trained", "base"}, "unknown adapter execution branch")
+        _require(not self._branch_context_active, "nested adapter branch forbidden")
+        self._branch_context_active = True
+        previous = self._adapter_execution_mode
+        try:
+            if mode == "base":
+                _require(bool(getattr(self.model, "peft_config", None)) and
+                         callable(getattr(self.model, "disable_adapter", None)),
+                         "base branch requires a verified PEFT disable context")
+                with self.model.disable_adapter():
+                    self._adapter_execution_mode = "base"
+                    yield self
+            else:
+                self._adapter_execution_mode = "trained"
+                yield self
+        finally:
+            self._adapter_execution_mode = previous
+            self._branch_context_active = False
 
     def _prompt(self, messages):
         self._open()
@@ -470,6 +506,7 @@ class NativeModel:
         _require(current_policy == self.native_policy, "native EOS/generation policy changed after admission")
         fingerprint, tensor_count = self.adapter_fingerprint()
         return {"elapsed_seconds": time.monotonic() - start, "valid": False,
+                "adapter_execution_mode": getattr(self, "_adapter_execution_mode", "trained"),
                 "adapter_fingerprint": fingerprint, "adapter_fingerprint_tensor_elements": tensor_count,
                 "adapter_fingerprint_cache_hit": self._last_fingerprint_cache_hit,
                 "fingerprint_cache_hits": self.fingerprint_cache_hits,

@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from tools.arc_learning_agent_20261011.build_notebook import build
+from tools.arc_learning_agent_20261011.build_notebook import build, build_stable
 
 
 def fake_pins():
@@ -29,6 +29,20 @@ class NotebookTests(unittest.TestCase):
 
     def test_only_three_exact_new_asset_roles(self):
         with self.assertRaises(ValueError): build({'code': fake_pins()['code']})
+
+    def test_stable_candidate_inert_and_embeds_actual_deadline_supervisor(self):
+        notebook = build_stable(fake_pins()); scope = {}
+        with patch.object(builtins, 'open', side_effect=AssertionError('unexpected file access')), \
+             patch.object(Path, 'read_bytes', side_effect=AssertionError('unexpected input read')), \
+             patch.object(Path, 'write_bytes', side_effect=AssertionError('unexpected output write')):
+            for cell in notebook['cells']:
+                if cell['cell_type'] == 'code': exec(compile(''.join(cell['source']), '<stable-inert>', 'exec'), scope)
+        self.assertFalse(scope['MANUAL_START']); self.assertFalse(scope['ENABLE_MODEL'])
+        self.assertEqual(scope['PROFILE'], 'LEARNING_AGENT_STABLE12H')
+        self.assertEqual(scope['SESSION_SECONDS'], 43200)
+        self.assertIsNone(scope['PREDISPATCH_EPOCH'])
+        self.assertIn('OwnedProcessGuard.spawn', ''.join(notebook['cells'][2]['source']))
+        self.assertIn('EFFECTIVENESS_BLOCKED', ''.join(notebook['cells'][2]['source']))
 
 
 if __name__ == '__main__': unittest.main()

@@ -1,0 +1,115 @@
+{
+  "format": "irisx/stable-method-compact-validation-v1",
+  "source_identity_sha256": "c3032d5e68a870b2b8fee3d304b80900e74e4f9dd555c1fa6cc6e0255d0f7610",
+  "runtime_files": 106,
+  "overlay_files": 24,
+  "focus": {
+    "tests": 287,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "lead_prior_snapshot": {
+    "tests": 286,
+    "skips": 1,
+    "reason": "Existing hardcoded sibling tokenizer fixture was absent; later exact fixture and affected native test passed."
+  },
+  "affected_final": {
+    "tests": 28,
+    "passed": 28
+  },
+  "bundled_notebook": {
+    "controls": 128,
+    "model_calls": 0,
+    "training_steps": 0,
+    "gold_read": false,
+    "owned_tree_closed": true
+  },
+  "predeclared_panel": {
+    "cases": 6,
+    "native_prompt_token_range": [
+      136,
+      674
+    ],
+    "native_target_plus_eos_range": [
+      4,
+      148
+    ],
+    "all_within_existing_limits": true,
+    "model_loaded": false
+  },
+  "independent_method": {
+    "policy_cases": 31,
+    "neural_cases": 28,
+    "tiny_vocab_rows": 100352,
+    "tiny_control_learning_is_memorization_not_generalization": true
+  },
+  "precision": {
+    "independent_cases": 52,
+    "real_gpu_or_TE_run": false,
+    "whole_model_fp8_admitted": false
+  },
+  "production_topology": {
+    "actual_pinned_interpreter": "3.12.15",
+    "actual_owned_wheels": 52,
+    "raw_owner_bytes": 36565426,
+    "compact_projection_bytes": 8966728,
+    "actual_tiny_training_seal_scorer_export": true,
+    "limits_unchanged": true,
+    "qualification": "One initial pre-model control attempt failed; fresh unchanged retry passed128/128. Cause not established. This production-topology run validates repair3 installer/full-sized-result paths; stable_v2 has separate real blocked-session tests."
+  },
+  "gpu_new_profile_executed": false,
+  "repo_aggregate": "Separate integration receipt; never inferred green from focused tests. Earlier lead invocations omitted documented PYTHONHASHSEED=0 and are retained as failed invocations.",
+  "references": {
+    "focused_integration": {
+      "name": "FOCUSED-VALIDATION.json",
+      "sha256": "9102586023ee3fcdce928664031bc09b75d9ff1e400f8e30040480c7d89c4398",
+      "bytes": 649
+    },
+    "focused_log": {
+      "name": "focused-final.log",
+      "sha256": "27d89fc1a507553179b12a39443736b317f67e2b5a210597ab59db6b63973346",
+      "bytes": 56980
+    },
+    "lead_before_checkpoint_fix": {
+      "name": "full-package-final.log",
+      "sha256": "c063ca7490f3d4dc2bda59d3a6667d9f4fe8814d9cf0dacd08c03b5715152398",
+      "bytes": 56852
+    },
+    "affected_checkpoint_fix": {
+      "name": "checkpoint-fix-final.log",
+      "sha256": "6917a3c3c3f30803f5323e5249a3269b43516a78c8d2e4b7f0a8923a0ce7d5d3",
+      "bytes": 5319
+    },
+    "native_panel": {
+      "name": "ACTUAL-PANEL-TOKEN-ADMISSION.json",
+      "sha256": "e3e0fa57588c58c49d06d7e0b331ea1b6c0585299d93c727ca328c51744afcc3",
+      "bytes": 2916
+    },
+    "bundled_notebook": {
+      "name": "ACCEPTANCE.json",
+      "sha256": "5d63aa286944f1e2e88049b5bea168d4e517d1cc339929a9142720a1091077d5",
+      "bytes": 779
+    },
+    "method_review": {
+      "name": "REVIEW.json",
+      "sha256": "c5f13ffbcd78d5fd607af2495dd5e2e8ca8a20c0de8b27f44a2926ff66d2e01f",
+      "bytes": 4704
+    },
+    "precision_review": {
+      "name": "FINAL-REVIEW.md",
+      "sha256": "157f5bc74a119573e4a10f1072c33dfc0117f5fe7b5e82098aed8c97afb900ad",
+      "bytes": 8031
+    },
+    "production_topology": {
+      "name": "ACCEPTANCE.json",
+      "sha256": "f9c41a19d99782e16fa9a12eda673559e155443c542ce7e4f2eaea1d6262f536",
+      "bytes": 13501
+    },
+    "material_approval": {
+      "name": "FINAL-APPROVAL.json",
+      "sha256": "45cac1c0cb310687a28d50fdec68ccf7058989d9395c4058b97f7eaf54b5fefb",
+      "bytes": 22236
+    }
+  }
+}

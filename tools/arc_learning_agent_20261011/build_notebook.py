@@ -96,3 +96,50 @@ def write_notebook(pins, output):
     raw = (json.dumps(build(pins), ensure_ascii=False, indent=2) + '\n').encode()
     Path(output).write_bytes(raw)
     return {'path': str(output), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def build_stable(pins):
+    """Unpublished default-inert successor with the actual pre-loader supervisor."""
+    notebook = build(pins)
+    notebook['cells'][0]['source'] = '''# IRIS X 效果門檻與穩定訓練研究候選
+
+此候選尚未發布或執行新的 GPU session。code 來源使用本交付包的 local candidate 身分，並非已存在的 Kaggle Dataset；其餘既有資料、模型與離線環境 pins 保留。發布與正式執行需另外核准、完成實際掛載核對。
+
+流程包括穩定語義 sample ID、completion token 加權累積、暖身與衰減、固定 train dev 面板、base early best final 同預算自回歸比較、完整 optimizer scheduler RNG 回復，以及獨立 frozen base 程式分支。TTT 必須改善留出 demo 的實際生成行為，不能只靠 NLL 下降啟用。
+
+只有兩個預先宣告簡單控制都正確，且至少一題留出 dev 正確、所有比較與 native receipt 完整，才允許 public 推論。這個最低門檻不保證 public 50 分。未達門檻時保留 EFFECTIVENESS_BLOCKED、實際運算紀錄與封存，不讀 public 評分答案。
+
+一次最多 43200 秒，包含載入、安裝、訓練、TTT、推論、評分與清理。獨立 pre-loader supervisor 與原有各層資源保護保留。正式執行必須提供單次 pre-dispatch epoch，不能藉重新填時間延長同一 session。此候選預設 MANUAL_START=False、ENABLE_MODEL=False。
+
+完整 8B 模型、替代大模型、4×L4 與 FP8 效果均未在此候選執行。精度 probe 另行明確啟用，不能把微型 Linear probe 當成整個模型 FP8 訓練驗證。
+'''.splitlines(keepends=True)
+    config = ''.join(notebook['cells'][1]['source'])
+    config = config.replace("PROFILE = 'LEARNING_AGENT12H'", "PROFILE = 'LEARNING_AGENT_STABLE12H'")
+    config = config.replace("'irisx-learning-agent-20261011-run001'", "'irisx-stable-learning-candidate001'")
+    config = config.replace("'.irisx-learning-agent-source'", "'.irisx-stable-learning-source'")
+    notebook['cells'][1]['source'] = config.splitlines(keepends=True)
+    loader = (ROOT / 'source_loader.py').read_text()
+    guard = (ROOT / 'process_guard.py').read_text()
+    setup = (ROOT / 'deployment/preloader.py').read_text()
+    setup += '\nLEARNING_PINS = ' + repr(pins) + '\nLOADER_SOURCE = ' + repr(loader)
+    setup += '\nGUARD_SOURCE = ' + repr(guard)
+    setup += '\nLOADER_SHA256 = ' + repr(hashlib.sha256(loader.encode()).hexdigest())
+    setup += '\nGUARD_SHA256 = ' + repr(hashlib.sha256(guard.encode()).hexdigest()) + '\n'
+    notebook['cells'][2]['source'] = setup.splitlines(keepends=True)
+    notebook['cells'][3]['source'] = '''if MANUAL_START:
+    import json as _launch_json
+    _learning_result = launch_reviewed_notebook(pins=LEARNING_PINS,
+        config={'manual_start':MANUAL_START,'enable_model':ENABLE_MODEL,'profile':PROFILE,
+                'session_seconds':SESSION_SECONDS,'predispatch_epoch':PREDISPATCH_EPOCH,
+                'output_root':OUTPUT_ROOT,'source_parent':SOURCE_PARENT,'input_root':INPUT_ROOT,
+                'code_root':CODE_ROOT,'data_root':DATA_ROOT,'training_root':TRAINING_ROOT,
+                'model_config':MODEL_CONFIG,'seed':SEED},
+        loader_source=LOADER_SOURCE,guard_source=GUARD_SOURCE,
+        expected_loader_sha256=LOADER_SHA256,expected_guard_sha256=GUARD_SHA256)
+    print(_launch_json.dumps({'status':_learning_result['status'],'run_id':_learning_result['run_id'],
+        'score_status':_learning_result.get('score_status'),
+        'notebook_owner_closure':_learning_result.get('notebook_owner_closure')},sort_keys=True))
+else:
+    print('Stable learning candidate disabled. No inputs, model or evaluator opened.')
+'''.splitlines(keepends=True)
+    return notebook

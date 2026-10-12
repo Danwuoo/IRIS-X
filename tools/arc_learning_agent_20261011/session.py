@@ -90,14 +90,20 @@ def run_session(output_root, *, solver_root, evaluator_root, solver_manifest_sha
     config = {} if config is None else dict(config)
     allowed = {'session_seconds', 'seed', 'predispatch_clock', 'tiny_cpu', 'validation_mode',
                'python_executable', 'model', 'fixture_tasks', 'max_new_tokens', 'dev_tasks',
-               'rollout_tasks', 'global_steps'}
+               'rollout_tasks', 'global_steps', 'learning_profile'}
     if set(config) - allowed: raise ValueError('unknown session configuration')
+    if config.get('learning_profile', 'legacy') not in ('legacy', 'stable_v2'):
+        raise ValueError('unknown learning profile')
     for name, maximum in (('seed', 2**31-1), ('fixture_tasks', 120), ('max_new_tokens', 2048),
                           ('dev_tasks', 4), ('rollout_tasks', 32), ('global_steps', 4096)):
         if name in config and (type(config[name]) is not int or not 0 <= config[name] <= maximum):
             raise ValueError('invalid bounded configuration: ' + name)
     for name in ('tiny_cpu', 'validation_mode', 'predispatch_clock'):
         if name in config and type(config[name]) is not bool: raise ValueError('exact Boolean ' + name + ' required')
+    if config.get('learning_profile') == 'stable_v2':
+        for name in ('dev_tasks', 'max_new_tokens', 'global_steps'):
+            if name in config and config[name] == 0:
+                raise ValueError('stable profile requires positive ' + name)
     if not config.get('tiny_cpu') and config.get('session_seconds', 43200) != 43200:
         raise ValueError('production stage envelope is frozen at maximum43200 seconds')
     if config.get('tiny_cpu') and config.get('validation_mode') is not True:
@@ -225,6 +231,21 @@ def run_session(output_root, *, solver_root, evaluator_root, solver_manifest_sha
                    'score': None, 'may_resume_generation_after_seal': False}
         atomic_json(root / 'summary.json', receipt, exclusive=True); return receipt
     result = json.loads(result_path.read_bytes())
+    blocked = result.get('stages', {}).get('effectiveness_blocked')
+    if config.get('learning_profile') == 'stable_v2' and blocked:
+        # No public gold is opened for an ineffective or incomplete model.
+        if result['status'] != 'partial' or result['results'] or result.get('pending_work'):
+            raise ValueError('inconsistent effectiveness-blocked owner')
+        summary = {'status': 'EFFECTIVENESS_BLOCKED', 'run_id': run_id,
+                   'solver_status': result['status'], 'score_status': 'NOT_RUN',
+                   'effectiveness_blocked': blocked, 'physical_usage': result['physical_usage'],
+                   'training_steps': result['training_steps'], 'model_stopped': True,
+                   'clock': clock.record, 'remaining_seconds': clock.remaining(),
+                   'competition_gpu_equivalent': False}
+        atomic_json(root / 'summary.json', summary, exclusive=True)
+        from tools.arc_learning_agent_20261011.export import export_evidence
+        exported = export_evidence(root, run_id=run_id, deadline=clock.deadline(maximum=900))
+        return {**summary, 'export': exported}
     seal = seal_predictions(root / 'predictions', solver_root=solver_root,
         solver_manifest_sha256=solver_manifest_sha256, evaluator_manifest_sha256=evaluator_manifest_sha256,
         result_path=result_path, closure=closure,

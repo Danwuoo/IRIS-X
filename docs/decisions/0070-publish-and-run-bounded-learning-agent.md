@@ -309,3 +309,84 @@ with owned launch, closure, prediction seal, the unchanged evaluator and export.
 Report focused CPU validation separately from historical aggregate/CI failures.
 Require final exact-byte review, expected-parent non-forced main publication,
 remote commit/tree verification and terminal exact-commit CI reporting.
+
+## Goal-directed stable_v2 development and monitored sprint (2026-10-11)
+
+The owner's latest direction is to pursue a PUBLIC120 score of at least 90%
+through research, implementation, reviewed publication and submitted runs, and
+to track each submitted run to its terminal state. The owner clarified the
+resource stopping condition: stop GPU dispatch when Kaggle reports that GPU is
+unavailable or that zero hours remain; do not query remaining quota or usage in
+advance. This supersedes the earlier stop-after-RUNNING and inactive-only scope
+only for the separately reviewed sprint artifacts. Preserve all earlier source,
+provider ERROR states, clocks, predictions, scores and repair receipts.
+
+The primary target is micro pass@2 on the fixed PUBLIC120 denominator of 120
+tasks and 167 queries: at least 151 correct queries out of 167. Report pass@1,
+task-macro and all-queries-correct task measures separately without changing the
+primary criterion or denominator. PUBLIC120 is an exposed public development
+benchmark, not official private competition performance or newly held-out
+transfer evidence. A goal is not a promise of achievement. The package's earlier development-only
+scope and 84/167 target remain historical records; this current addendum
+supersedes that target only for the separately reviewed goal sprint.
+
+Freeze the train/dev lineage, panel membership, generation budgets, exact-grid
+criteria and checkpoint-selection policy before each admitted run. Require the
+reviewed authored-control and held-out-dev effectiveness gates before expensive
+public evaluation. Loss, valid syntax, a low-dimensional grid or an improved
+training metric cannot replace the specified generated exact-grid requirement.
+Keep authored learnability controls separate from held-out-dev denominators.
+Public query answers remain evaluator-only after stopped model ownership and
+sealed predictions; never use them to choose checkpoints, candidates, programs,
+training targets, panel membership or a weaker threshold. An effectiveness gate
+stop is a diagnostic outcome, not benchmark success.
+
+The stable_v2 candidate introduces reviewed stable training, checkpoint/resume,
+train/dev effectiveness and task-adaptation selection contracts. Validate the
+complete launcher, installed-environment, training, checkpoint namespace,
+closure, seal, evaluator and export path before admission. Logical rollback may
+restore optimizer/model/RNG/cursor state but must not roll back physical charges,
+elapsed time or recorded failed work. Preserve all process, storage, path,
+source-integrity and evaluator gates; no broad rewrite follows from this scope.
+
+Each session has a hard total bound of 43,200 seconds including queue/startup,
+setup, loading, training, task adaptation, inference, evaluation, export and
+closure, with a finite pre-dispatch epoch, the existing provider timeout and an
+independent owned-process deadline watchdog. Use only the owner's existing
+approved resource and metadata association. No new resource provisioning,
+billing/access changes, credential transfer, quota bypass or competition
+submission is authorized. A failed or uncertain dispatch must be reconciled
+against its exact identity/version before any retry. Do not reset an in-flight
+session's clock. A later separately reviewed session has a new explicit identity
+and its own bounded epoch. Preserve actual elapsed/device-use evidence when
+available; missing observations remain unknown rather than zero.
+
+Monitor every submitted sprint run until its actual terminal status. Provider
+RUNNING, renderer COMPLETE, inactive save completion or an incomplete output
+archive cannot establish successful execution. Require the reviewed method and
+effectiveness outcome, closed owned processes, sealed predictions where
+applicable, unchanged-scoring provenance and a verified archive. Record failures
+and bounded repairs honestly. Stop when the primary target is independently
+verified, Kaggle reports GPU unavailable/zero hours, the owner stops the sprint,
+or a genuine authorization/access/safety blocker prevents an approved next step.
+Do not manufacture progress or weaken a gate to avoid a stopping condition.
+
+Larger-model and precision profiles are research plans until their exact
+revision, license, tokenizer/template, offline dependencies, adapters, tensor
+layout and target backend are admitted and measured. A capability estimate or a
+Linear FP8 microprobe is not full-model FP8 training. BF16 and fallback modes must
+be labeled by their actual execution. Four L4 devices are separate memory
+budgets, not a pooled allocation; success on the existing GCP resource does not
+establish competition 4xL4 compatibility. Unverified new model/precision
+branches require their own reviewed material and resource admission before use.
+
+Publish only the exact reviewed source/tests, notebooks, compact deployment and
+validation records to the existing private Danwuoo/IRIS-X repository and the
+specified private Kaggle assets. Source/data/model payloads remain separately
+pinned; do not add raw tasks, public answers, predictions, weight/checkpoint
+binaries, archives, credentials or detailed runtime dumps to Git. Preserve
+unrelated repository bytes. Require independent final-byte review, non-forced
+expected-parent publication, remote commit/tree verification and terminal CI
+reporting. Focused CPU success, historical aggregate failures and exact-commit
+CI conclusions must remain distinct. Each later candidate requires a fresh
+freeze and review; an earlier repair approval is not its artifact approval.

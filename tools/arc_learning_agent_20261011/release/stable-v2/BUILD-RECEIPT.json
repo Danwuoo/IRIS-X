@@ -1,0 +1,11 @@
+{
+  "manifest_sha256": "54ad71c046b3d45c30b862f7575f6dd7f2c683810b8aa99475bb8c77ce0c0deb",
+  "freeze_sha256": "e89d5f3f73745bb4282279c2b14bc3677cace3d53d3b972fa58bcaa386111e9f",
+  "code_manifest_sha256": "f399dc3e461f944fed17182a17d95d1c958b770eb7e4983f8d6ffed337ec7d42",
+  "source_identity_sha256": "c3032d5e68a870b2b8fee3d304b80900e74e4f9dd555c1fa6cc6e0255d0f7610",
+  "inactive_sha256": "a2731a82191ad9c541434c0aaf3ff68830bcf3b3ebb5a14b4ce308ccc3f80e96",
+  "active_sha256": "5af7966bd7d414d2d42e59b818c048c9eac389a3208a8b1cc98d5aad60319e12",
+  "runtime_files": 106,
+  "overlay_files": 24,
+  "provider_actions": 0
+}

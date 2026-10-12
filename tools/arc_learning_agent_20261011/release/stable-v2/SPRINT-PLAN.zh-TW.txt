@@ -1,0 +1,29 @@
+目標導向衝刺草案：PUBLIC120 準確率、方法修復與模型對照
+狀態：使用者已授權在既有 Kaggle/GCP 設定下，經測試及獨立發布審查後進行衝刺。依最新指示不查剩餘配額；不新增資源、帳號或計費設定。
+
+1. 成功條件與停止條件
+主要追蹤專案 PUBLIC120 固定 120 題／167 個 query 的 micro pass@2；90% 門檻是至少 151/167。pass@1、task-macro、所有 query 都正確的 task 比例並列。這是已暴露的公開開發基準，不能宣稱官方 private 成績或全新 held-out 泛化。
+另外在任何新結果揭露前，核對既有 train/dev 曝光與血緣，固定未進入訓練／選擇的保留集；依照事先公布的規則驗證轉移，不以 PUBLIC120 gold 選候選、挑 checkpoint 或生成訓練 target。
+衝刺會在達到目標，或 Kaggle 明確回報 GPU 不可用／0 小時時停止；若遇授權／不可恢復阻礙則暫停並具體回報。不得查配額或將未知用量推定為零，不更換資源繞過供應商停止條件。
+
+2. 第一個有效性循環
+先完成已組裝候選的 CPU／原離線安裝器／真實大小輸出拓撲驗證。GPU 校準只在本輪精確發布、掛載與原生執行前審查通過後進行。
+同一模型載入中保留真正 frozen base 與早期、最佳、最後 adapter 的相同面板比較，先檢查簡單轉換、輸出尺寸、有效 grid、demo 學習及 program 可執行性。
+穩定訓練採語義固定排程、supervised-token 加權累積、warmup/decay、有限值檢查、定期自回歸 canary、完整邏輯狀態 rollback。物理計算量永不回退。
+只有生成行為通過固定 train/dev 門檻，才進入 public；有資格後一次完成 global、TTT、full-agent 三個 policy 的共用計算，避免三次重載及重複 FULL enumeration。未通過時保留診斷與 checkpoint，停止昂貴 public 展開。
+
+3. 模型與低精度分支
+Granite 4.2 8B 保留為定位方法缺陷的控制。Qwen3.5 9B 作同級模型對照，Qwen3.5 27B 為首要較大能力候選，Qwen3-14B 為較傳統的部署備選；Qwen3-4B-Thinking-2507 用於檢查小模型方法效率。新增模型必須先有 exact revision、license、tokenizer/template、offline dependency 與 adapter reset 契約，不能僅替換 model name。
+每個模型先使用相同任務及明示 token／wall 預算比較 base、SFT、TTT。實際 latency／memory 校準記錄後才配置後續訓練時間；不能把相同 calls 當相同 FLOPs。
+BF16 穩定性先通過，再比較可支援的低精度路徑。現有 FP8 工具僅為能力／容量規畫及可明確啟用的 Linear 前後向 microprobe，尚非完整模型 FP8 訓練。FP8 fallback 必須單列，不能冒稱 FP8 執行。
+4×L4 必須按每卡權重、KV/recurrent state、workspace、reserve 和 TP 通訊核算；4 卡顯存不視為統一池。G4 訓練可行不等於競賽 4×L4 推論已驗證。
+
+4. 累計資源與監看
+每次 session 上限仍 43,200 秒，包含準備、模型載入、訓練、TTT、推論、評分、封存及清理；provider timeout 和獨立 owned-process watchdog 保留。
+在獲准 GPU 執行前，建立不會因重試歸零的 sprint ledger：run ID／版本、硬體與裝置數、開始與終止時間、已知 worker/device duration、失敗／重試及觀測到的提交至終態時間。未知配置／計费時間保留為 unknown，不冒稱實測 GPU 費用；不查剩餘額度。
+依使用者最新要求，提交後持續追蹤至終態。成功判定需要原始 worker 停止、預期方法階段、prediction seal、scorer 及 archive 閉合；只有 provider RUNNING 或 renderer COMPLETE 不算整輪完成。EFFECTIVENESS_BLOCKED 是有證據的保護停止，不能計為解題成功。
+每輪只根據 train/dev 改善及可重現失敗安排下一個高訊號實驗；公開分數用來報告結果，不能成為讀取 query 答案後調整解法的通道。
+
+5. 此次交付的確切範圍
+已實作 stable_v2 訓練／效果門檻、TTT 行為選擇、base program 分支、能力受限的 precision planner/probe，以及真實 production-topology 回歸。完整較大模型 loader／量化訓練替換、累計跨 run budget ledger 與新的持續監看發布契約需要按選定模型與既有已授權資源進一步組裝測試，尚未被宣稱 GPU 實證。
+目前 0/167 的證據不支持承諾一輪到 90 分。目標用於安排衝刺和停止條件；每次改善仍須以固定分母、真實模型輸出與獨立 scorer 驗證。

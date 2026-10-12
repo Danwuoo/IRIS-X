@@ -107,7 +107,7 @@ def launch_reviewed_notebook(*, pins, config, loader_source, guard_source, expec
     _need(type(config) is dict and set(config)==required,'exact launcher config required')
     _need(type(config['manual_start']) is bool and type(config['enable_model']) is bool,'exact switches')
     if not config['manual_start']:return {'status':'DISABLED'}
-    _need(config['profile']=='LEARNING_AGENT12H' and type(config['session_seconds']) is int and config['session_seconds']==MAX_SESSION_SECONDS,'frozen session cap')
+    _need(config['profile'] in ('LEARNING_AGENT12H','LEARNING_AGENT_STABLE12H') and type(config['session_seconds']) is int and config['session_seconds']==MAX_SESSION_SECONDS,'frozen session cap')
     epoch=config['predispatch_epoch']
     if not config['enable_model'] and epoch is None:epoch=time.time()  # explicit CPU preflight only
     _need(type(epoch) in (int,float) and math.isfinite(epoch) and 0<=epoch<=time.time()+2,'active submission requires a finite predispatch epoch')
@@ -142,11 +142,12 @@ def launch_reviewed_notebook(*, pins, config, loader_source, guard_source, expec
     result=run_session(ready['output_root'],solver_root=ready['solver_root'],evaluator_root=ready['evaluator_root'],
         solver_manifest_sha256=ready['solver_manifest_sha256'],evaluator_manifest_sha256=ready['evaluator_manifest_sha256'],
         training_root=ready['training_root'],enable_model=c['enable_model'],bootstrap_config=c['model_config'],
-        started_epoch=request['started_epoch'],config={'session_seconds':c['session_seconds'],'seed':c['seed'],'predispatch_clock':c['predispatch_epoch'] is not None})
+        started_epoch=request['started_epoch'],config={'session_seconds':c['session_seconds'],'seed':c['seed'],'predispatch_clock':c['predispatch_epoch'] is not None,
+            'learning_profile':'stable_v2' if c['profile']=='LEARNING_AGENT_STABLE12H' else 'legacy'})
     target=Path(request['launcher_root'])/'result.json'
     with target.open('x') as f:json.dump(result,f,sort_keys=True,allow_nan=False);f.flush();__import__('os').fsync(f.fileno())
     print(json.dumps({'status':result['status'],'run_id':result['run_id'],'score_status':result.get('score_status')}),flush=True)
-    raise SystemExit(0 if result['status'] in ('COMPLETE','PARTIAL_SCORED','PREFLIGHT_ONLY') else 2)
+    raise SystemExit(0 if result['status'] in ('COMPLETE','PARTIAL_SCORED','PREFLIGHT_ONLY','EFFECTIVENESS_BLOCKED') else 2)
 '''
     driver_path=launcher/'bootstrap.py';_fresh_write(driver_path,driver.encode())
     request={'pins':pins,'config':config,'started_epoch':epoch,'hard_deadline_epoch':hard_epoch,'launcher_root':str(launcher),
