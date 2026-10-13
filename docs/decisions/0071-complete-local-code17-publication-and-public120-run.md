@@ -20,6 +20,12 @@ immutable identity, durable write intent, fresh pre-dispatch epoch, and its own
 closure. Never reset an admitted attempt's clock or blindly resend an uncertain
 write. Check fresh provider state before publishing to avoid duplicate work.
 
+The owner's subsequent clarification retains the 12-hour ceiling for each run
+and requires continuing the repair workflow until success. A reported attempt
+deadline is not a deadline for the whole repair task. Preserve every failed
+attempt's original epoch and terminal record; a reviewed successor starts a
+separate session rather than extending or restarting the consumed one.
+
 Use the existing private notebook `danielwuu/iris-x-learning-agent-20261011`
 (ID 138123872), private code Dataset
 `danielwuu/iris-x-learning-agent-code-20261011` (ID 12504696), existing
@@ -67,3 +73,14 @@ The exact omitted 20,130,674-byte v31 archive (SHA256
 seven previously uncollected selected files, and final source/status bracket
 were recovered as supplemental ignored evidence. Preserve the historical
 partial descriptors and failed physical charge; no new v31 score follows.
+
+The first local publication consumed code Dataset v17, inactive notebook v32
+and active notebook v33. Version 33 reached provider ERROR before model
+admission: its actual child could not resolve `nvidia-smi` in the three frozen
+trusted directories. The exact selected archive, original source/JIT and
+deployment process termination were verified. The session journal was unsealed;
+model closure, physical-cost totals and PUBLIC120 scoring are unknown or absent,
+not successful. Retain the original v33 evidence and clock. Necessary repair
+must use a new reviewed code/notebook/run identity, preserve the trusted-path
+and actual CUDA/driver/hardware checks, and independently regenerate all source,
+environment, release and consumer bindings.
