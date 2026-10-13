@@ -1,0 +1,29 @@
+{
+  "candidate_root": "/workspace/shared/irisx-code18-astra-20261013/repository/.irisx/preparation-successor/actual-final-candidate-001",
+  "credential": {
+    "kind": "task-local",
+    "path": "/workspace/shared/irisx-code18-astra-20261013/provider-session/private-auth/credentials.json"
+  },
+  "evidence_root": "/workspace/shared/irisx-code18-astra-20261013/provider-session/operations/evidence-run006",
+  "format": "irisx/rlvr-task-operator-config-v1",
+  "gpu_stop_path": "/workspace/shared/irisx-code18-astra-20261013/provider-session/operations/SPRINT-GPU-STOP.json",
+  "publication_manifest_sha256": "7ddb20441b0515ab0462d874d573c6080c9bca96ffaead97c97f61be62a9e9fa",
+  "remote_predecessor": {
+    "code_version": 18,
+    "notebook_source_sha256": "778c014ccea8b0f376d06afeeeceb318e50b3bce926ef13a6da068c9b3d5d917",
+    "notebook_version": 35,
+    "provider_status": "CANCEL_ACKNOWLEDGED",
+    "snapshot_sha256": "bbdf82dc43876e5fa14f29cc20e1bc37501fe1d0f6b9df1fee219f7e50b12ee6"
+  },
+  "repository_root": "/workspace/shared/irisx-code18-astra-20261013/repository",
+  "scratch_root": "/workspace/shared/irisx-code18-astra-20261013/provider-session/operations",
+  "state_root": "/workspace/shared/irisx-code18-astra-20261013/provider-session/operations/state-run006",
+  "username": "danielwuu",
+  "versions": {
+    "active": 37,
+    "code": 19,
+    "code_predecessor": 18,
+    "inactive": 36,
+    "inactive_predecessor": 35
+  }
+}

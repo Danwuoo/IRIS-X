@@ -1,0 +1,12 @@
+{
+  "format": "irisx/preparation-successor-proposed-identity-v1",
+  "run_id": "irisx-qwen14b-rlvr-20261013-run006",
+  "status": "PROPOSED_NOT_PROVIDER_RESERVED",
+  "versions": {
+    "active": 37,
+    "code": 19,
+    "code_predecessor": 18,
+    "inactive": 36,
+    "notebook_predecessor": 35
+  }
+}

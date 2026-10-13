@@ -1,0 +1,62 @@
+{
+  "approved_notebooks": [
+    {
+      "bytes": 20627,
+      "expected_version": 36,
+      "path": "iris-x-qwen14b-rlvr-inactive.ipynb",
+      "role": "inactive",
+      "sha256": "26c833868d6f3e8a4afe7ef1b21016c2c4b3afa9d37291916b81dea6388b7c0b"
+    },
+    {
+      "bytes": 20641,
+      "expected_version": 37,
+      "path": "iris-x-qwen14b-rlvr-active-template.ipynb",
+      "role": "rlvr004",
+      "sha256": "d0e4de06b3dadb0c5eccf6b7b07b531986c43af33b0c06add40694fe558024a3"
+    }
+  ],
+  "collector_sha256": "24353929f23042b912e7d98f73b9f2aa9752de68dca66523d7d268a6c9ffeeb1",
+  "environment_sha256": "e1290d696b24992fbcce9a6f49d6486b90acb2689943a1c79a574e2713f78394",
+  "final_assembly_review": {
+    "bytes": 5120,
+    "path": "/workspace/shared/irisx-code18-astra-20261013/repository/.irisx/tmp/review-final-run006/FINAL-CANDIDATE-REVIEW.json",
+    "sha256": "e9b3c2161650dc02af39271bc8ae665af504e43260305b1daa169d8e9a56bf61"
+  },
+  "format": "irisx/run006-material-action-approval-v1",
+  "fresh_epoch_only_at_actual_JIT_dispatch": true,
+  "independent_reviewer": "review_run006_operator_graph",
+  "internal_material_review": {
+    "bytes": 4027,
+    "path": "/workspace/shared/irisx-code18-astra-20261013/repository/.irisx/preparation-successor/actual-final-candidate-001/consumer-release/material_review.json",
+    "sha256": "9351c5fc52615e420c667dd607c6c3a096da850847a573149c59a9dcadc4026e"
+  },
+  "internal_runtime_review": {
+    "bytes": 4539,
+    "path": "/workspace/shared/irisx-code18-astra-20261013/repository/.irisx/preparation-successor/actual-final-candidate-001/code-payload/release/RUNTIME-REVIEW.json",
+    "sha256": "e0d992c2a9f230f6524bec64fe9c2ac5f97a41bc68e2b055e036cf3cae16bcef"
+  },
+  "local_config_sha256": "cddf2f70027309f7635452b53b3223f190bca76fc8026f40c118966b7761db9a",
+  "physical_costs_known": false,
+  "provider_calls_in_review": 0,
+  "pure_wire_review_epoch": 1800000000,
+  "pure_wire_review_epoch_is_not_dispatch_epoch": true,
+  "runtime_or_model_closure_verified": false,
+  "scientific_result_verified": false,
+  "scope": {
+    "active_notebook_version": 37,
+    "existing_resource": "NvidiaRtxPro6000",
+    "inactive_notebook_version": 36,
+    "private_code_version": 19,
+    "publication_manifest": {
+      "bytes": 133483,
+      "path": "/workspace/shared/irisx-code18-astra-20261013/repository/.irisx/preparation-successor/actual-final-candidate-001/publication-manifest.json",
+      "sha256": "7ddb20441b0515ab0462d874d573c6080c9bca96ffaead97c97f61be62a9e9fa"
+    }
+  },
+  "scoring_denominator": 167,
+  "session_seconds": 43200,
+  "source_archive_sha256": "f136fe0ccad312c0a796475de73d115f0e5f4b9273be1e3a07761e2da0b507d7",
+  "source_sha256": "bb997806108e8bc8b0cd392eb6e47d19127a29e16d446d1cf45e271b804f9b8a",
+  "status": "APPROVED",
+  "stored_templates_inert": true
+}

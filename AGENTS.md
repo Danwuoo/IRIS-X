@@ -1,5 +1,22 @@
 # IRIS-X Repository Governance
 
+## Active local run006 recovery and one-shot handoff (2026-10-13)
+
+The owner's new instruction reopens development on a new branch, preserving the
+owner-frozen code18/run005 snapshot below. Decision 0072 authorizes safe rescue
+integration, clearly identified local reconstruction, CPU tests and independent
+subagent review, private Git branch publication, a private code Dataset successor
+and notebook update followed by one accepted RUN. This local chat is the sole
+Kaggle publisher. Use official local authentication, actual provider versions,
+original authentic candidate/state/evidence and fresh immutable pre-dispatch
+clocks. Retain the offline materials/hardware/science/process/scorer gates and
+PUBLIC120's complete 120-task / 167-query denominator. Do not query GPU quota.
+After one necessary post-RUN source/settings/identity/status readback, deliver
+and stop: no watcher, continued polling, automatic retry or score analysis.
+Resume results work only on a new owner message. QUICK_SAVE and accepted RUN
+are not GPU or scientific success. See
+`docs/decisions/0072-recover-local-run006-and-stop-after-submission.md`.
+
 ## Owner-frozen code18/run005 repository snapshot (2026-10-13)
 
 The owner explicitly stopped repairs and requested fixing the current repository

@@ -1,0 +1,242 @@
+{
+  "format": "irisx/run006-local-recovery-integration-v1",
+  "base_commit": "baaf47d4f449c534ddd4646ab9b3175bbaf1ef89",
+  "snapshot_commit": "e951604b829497e81bc6e18b32662ff050bd54db",
+  "archive_sha256": "b7d8311a58a698ae1de31be4171995f9428b4a91e3222e14c54324483ab3b87b",
+  "categories": {
+    "exact_final_original": 32,
+    "frozen_reference_exact": 5,
+    "earlier_version_not_final": 5,
+    "incomplete_literal_fragment_no_complete_final_hash": 5,
+    "complete_literal_patch_final_result_independently_hash_matched": 3,
+    "complete_literal_record_without_pre_loss_digest": 3
+  },
+  "files": [
+    {
+      "recovery_path": "exact-originals/installer_logging_repair/bootstrap.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/installer_logging_repair/bootstrap.py",
+      "bytes": 16574,
+      "recovered_sha256": "20aca4d463da2cec7dd0128dab1582cc009931666139f75f87fbbec9d1ba35b4",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/installer_logging_repair/test_installer_logging.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/installer_logging_repair/test_installer_logging.py",
+      "bytes": 23433,
+      "recovered_sha256": "aac1ea2b123d013c6a90c02d4a2475ec5ee01d45e168e49d0597822b31fbdc7a",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_successor/accept_numeric_mount.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_successor/accept_numeric_mount.py",
+      "bytes": 13104,
+      "recovered_sha256": "08ef9732396e118fb31be1699ebdd58597d4717538f151647ed248d60f774fe6",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_successor/NUMERIC-MOUNT.md",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_successor/NUMERIC-MOUNT.md",
+      "bytes": 2792,
+      "recovered_sha256": "86ba98b54db5d3c41d7276830d0513176a6ed258916a022388cde9f7bf8f56cd",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/reviews/PUBLICATION-PREREQUISITE-CHECKLIST.json",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/recovery_records/reviews/PUBLICATION-PREREQUISITE-CHECKLIST.json",
+      "bytes": 2094,
+      "recovered_sha256": "2605cb46632fc16e8447efe484d3c60ec2e828606bd5f14eed7cd28a3be1d881",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_successor/v35_lineage.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_successor/v35_lineage.py",
+      "bytes": 15400,
+      "recovered_sha256": "f3cc35d60fd5f5aaa173feeb824120ff6ed18fea6a8aaba0f3368a973215e2b8",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/installer_logging_repair/README.md",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/installer_logging_repair/README.md",
+      "bytes": 5082,
+      "recovered_sha256": "34fcb44040f16b2a04f523fff7ac343ba2c810c1e49a2be5e4a1aff9e39c5a40",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_diagnostics_repair/prepare_entry.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_diagnostics_repair/prepare_entry.py",
+      "bytes": 21064,
+      "recovered_sha256": "2e66d6952aac1315cb3ce79e879782497dba2f9a2465b3ce672278dd7696e584",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_diagnostics_repair/test_prepare_diagnostics.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_diagnostics_repair/test_prepare_diagnostics.py",
+      "bytes": 24162,
+      "recovered_sha256": "f2d4e324a1a35021e7e119892a2613855001f8acfa9cf069485f56e2b2997eab",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_diagnostics_repair/build_local_bundle.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_diagnostics_repair/build_local_bundle.py",
+      "bytes": 5607,
+      "recovered_sha256": "5f9f13784ce68c8fe3df8c525953b46f4be212d70f7189b3725dad9389500556",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_diagnostics_repair/test_bundle_integration.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_diagnostics_repair/test_bundle_integration.py",
+      "bytes": 8919,
+      "recovered_sha256": "9a53ab2dbe3b6e05f0bd689c7cd46ec998031b18bba2ab355d876d34ace26577",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_diagnostics_repair/test_collect_diagnostics.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_diagnostics_repair/test_collect_diagnostics.py",
+      "bytes": 5894,
+      "recovered_sha256": "5ed86abe0bfd2e136909a2c2ee12a5232bc2cf295c796a87c68cecefe38eb635",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_diagnostics_repair/README.md",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_diagnostics_repair/README.md",
+      "bytes": 6355,
+      "recovered_sha256": "604f6f6278ab6311aa43db58f80a81fc625d1c1a01810cb7a87dcbf1220a28e4",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_diagnostics_repair/rl_collect.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_diagnostics_repair/rl_collect.py",
+      "bytes": 58170,
+      "recovered_sha256": "a18d06489754eef08490fb3eb070161fd13d3ffeea47af612d9ac5250213abab",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/historical-operator-evidence/MATERIAL-ACTION-APPROVAL.json",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/recovery_records/historical-operator-evidence/MATERIAL-ACTION-APPROVAL.json",
+      "bytes": 2814,
+      "recovered_sha256": "4541639fbf3f1f5030c0e28b78a76f5cc081bf310ab1373c4180d540feca7274",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/historical-operator-evidence/TRANSPORT-ACTION-REVIEW.json",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/recovery_records/historical-operator-evidence/TRANSPORT-ACTION-REVIEW.json",
+      "bytes": 4196,
+      "recovered_sha256": "f252b68e18b110861aae66af3b8d6e6f4a4c8932bf66f773645ab6aac8504803",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/historical-operator-evidence/MONITOR-ACTION-REVIEW.json",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/recovery_records/historical-operator-evidence/MONITOR-ACTION-REVIEW.json",
+      "bytes": 4386,
+      "recovered_sha256": "d111336cfa5706749d043f87d55d01cf4178d3e113db4497db0eadb04ade8de9",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/historical-operator-evidence/RUN006-OPERATOR-CONFIG.json",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/recovery_records/historical-operator-evidence/RUN006-OPERATOR-CONFIG.json",
+      "bytes": 1435,
+      "recovered_sha256": "cddf2f70027309f7635452b53b3223f190bca76fc8026f40c118966b7761db9a",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/historical-operator-evidence/verification-normal.json",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/recovery_records/historical-operator-evidence/verification-normal.json",
+      "bytes": 2295,
+      "recovered_sha256": "e8b5c5e4190037d52b561941bdfca8e982fc63daacdbcc07aea6dc2e02523d8c",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/historical-operator-evidence/verification-optimized.json",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/recovery_records/historical-operator-evidence/verification-optimized.json",
+      "bytes": 2298,
+      "recovered_sha256": "1c14106eca06381085ae79d6760a1a4aa4b5d89a1fecc65e3a20392537e3c817",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_diagnostics_repair/launch_notebook.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_diagnostics_repair/launch_notebook.py",
+      "bytes": 19670,
+      "recovered_sha256": "6c85b8e1b3b3cc9b655816566d8338acb57dd0b9423a4e1fe7dd3a11cd8f2376",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/publication_run006/rl_collect.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/publication_run006/rl_collect.py",
+      "bytes": 58170,
+      "recovered_sha256": "24353929f23042b912e7d98f73b9f2aa9752de68dca66523d7d268a6c9ffeeb1",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/publication_run006/operator_common.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/publication_run006/operator_common.py",
+      "bytes": 31586,
+      "recovered_sha256": "fa414ecbdfdf21cba3385a553f5ff9a3a640e19fd5416a6d1f419c8faa03f125",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/publication_run006/config.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/publication_run006/config.py",
+      "bytes": 13162,
+      "recovered_sha256": "a9f3e03df92b556148fb0847b5ff21d305feaa5abc31bd04c7ba5e98716f6cb3",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_successor/assemble_run006.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_successor/assemble_run006.py",
+      "bytes": 31858,
+      "recovered_sha256": "c4d7a72f9f9c5c4659bfe0e1c349b6ff37527b7de0fb5c15be82563322b76644",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_successor/test_v35_lineage.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_successor/test_v35_lineage.py",
+      "bytes": 22190,
+      "recovered_sha256": "1a8811293b1781bdd71f4bd5b00a77f8606bd40070da036dd869edbea7f3bbd6",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_successor/prepare.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_successor/prepare.py",
+      "bytes": 34561,
+      "recovered_sha256": "3419fa0ab09d3e834f97d57990bb63ee96b4794a6c905d0d315e91f26ff6fb87",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_successor/proposed-identity.json",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_successor/proposed-identity.json",
+      "bytes": 297,
+      "recovered_sha256": "22e0d57d00223980319441ea3d116701e93914e77def23851ac8ec8768f23bd4",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_successor/README.md",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_successor/README.md",
+      "bytes": 9198,
+      "recovered_sha256": "acd378d55cf0f04fb7759bad6a5aed2e30594f0f8da72cfa65154d521088e180",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_successor/test_prepare.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_successor/test_prepare.py",
+      "bytes": 41462,
+      "recovered_sha256": "8317c41265190840d7d41c9888741941e8a27226e07fbdbe8a9dad3ea066d6fc",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_successor/test_accept_numeric_mount.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_successor/test_accept_numeric_mount.py",
+      "bytes": 32379,
+      "recovered_sha256": "61027a3c32f3457439880353629f034ddc1758913b5dacc29c53b56a958a5589",
+      "classification": "exact_final_original"
+    },
+    {
+      "recovery_path": "exact-originals/preparation_successor/test_assemble_run006.py",
+      "repository_path": "tools/arc_qwen_rlvr004_20261013/preparation_successor/test_assemble_run006.py",
+      "bytes": 36631,
+      "recovered_sha256": "c47521b39c0b3143c0506da4c507353f9430d8041a1c8cd25b9b4ab84d3be41e",
+      "classification": "exact_final_original"
+    }
+  ],
+  "historical_reviews_are_current_approval": false,
+  "fragments_installed_as_modules": false
+}

@@ -1,0 +1,47 @@
+{
+  "activation_without_live_receipts_rejected": true,
+  "actual_epoch_sampled": false,
+  "actual_load_contract_pass": true,
+  "actual_validate_entrypoint_pass": true,
+  "allowed_actions_exactly_checked": true,
+  "assembly_inventory_sha256": "90f5fb13f22cf59d7b7638aef2c94a7de81accd1632945870b85a9d37aa122ca",
+  "consumer_files_verified": 24,
+  "credential_reads": 0,
+  "execution_state_created": false,
+  "final_closed_files_verified": 425,
+  "format": "irisx/run006-independent-final-action-graph-verification-v1",
+  "local_config_sha256": "cddf2f70027309f7635452b53b3223f190bca76fc8026f40c118966b7761db9a",
+  "material_action_approval": {
+    "bytes": 2814,
+    "path": "/workspace/shared/irisx-code18-astra-20261013/reviews/operator-run006/final-action-gates-001/MATERIAL-ACTION-APPROVAL.json",
+    "sha256": "4541639fbf3f1f5030c0e28b78a76f5cc081bf310ab1373c4180d540feca7274"
+  },
+  "mode": "optimized",
+  "monitor_action_review": {
+    "bytes": 4386,
+    "path": "/workspace/shared/irisx-code18-astra-20261013/reviews/operator-run006/final-action-gates-001/MONITOR-ACTION-REVIEW.json",
+    "sha256": "d111336cfa5706749d043f87d55d01cf4178d3e113db4497db0eadb04ade8de9"
+  },
+  "monitor_consumer_gate_pass": true,
+  "operator_files": {
+    "config.py": "a9f3e03df92b556148fb0847b5ff21d305feaa5abc31bd04c7ba5e98716f6cb3",
+    "operator_common.py": "fa414ecbdfdf21cba3385a553f5ff9a3a640e19fd5416a6d1f419c8faa03f125",
+    "rl_collect.py": "24353929f23042b912e7d98f73b9f2aa9752de68dca66523d7d268a6c9ffeeb1",
+    "rl_transport.py": "c43c9218f6769ebd6bca9f77aa0e757a6a499440f1091701dfdd86ea8b94c308"
+  },
+  "provider_calls": 0,
+  "provider_constructions": 0,
+  "publication_manifest_sha256": "7ddb20441b0515ab0462d874d573c6080c9bca96ffaead97c97f61be62a9e9fa",
+  "pure_synthetic_epoch": 1800000000,
+  "runtime_or_scoring_success_claimed": false,
+  "stale_manifest_and_material_bindings_rejected": true,
+  "status": "PASS",
+  "stored_templates_inert": true,
+  "transport_action_review": {
+    "bytes": 4196,
+    "path": "/workspace/shared/irisx-code18-astra-20261013/reviews/operator-run006/final-action-gates-001/TRANSPORT-ACTION-REVIEW.json",
+    "sha256": "f252b68e18b110861aae66af3b8d6e6f4a4c8932bf66f773645ab6aac8504803"
+  },
+  "unreviewed_actions_rejected": true,
+  "v31_gold_zip_member_opens": 0
+}

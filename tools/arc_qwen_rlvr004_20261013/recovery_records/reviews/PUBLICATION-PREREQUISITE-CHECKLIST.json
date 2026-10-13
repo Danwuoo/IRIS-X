@@ -1,0 +1,27 @@
+{
+  "actual_numeric19_readback_verified_by_this_reviewer": false,
+  "format": "irisx/run006-publication-prerequisite-checklist-v1",
+  "independent_operator_reviewer_confirmation": {
+    "genuine_persisted_audit_issuance": "Pending genuine code19, inactive36 source/settings and owned mount closure; assigned to independent operator reviewer.",
+    "linkage_tests_normal": 5,
+    "linkage_tests_optimized": 5,
+    "negative_coverage": "Audit hash mismatches and incomplete mount/readback reject.",
+    "received_at_utc": "2026-10-13T09:40:26Z",
+    "scope": "Existing actual monitor gate and temporary explicitly synthetic receipt linkage tests; no production receipt created."
+  },
+  "mount_source_cpu_review_sha256": "e4adb8e59d8af6931e16b14d24959233a35cb0bcf2030ab4270f504b814f0bf3",
+  "production_mount_or_persisted_audit_receipt_issued_by_this_reviewer": false,
+  "provider_action_authorized_by_this_checklist": false,
+  "publication_manifest_sha256": "7ddb20441b0515ab0462d874d573c6080c9bca96ffaead97c97f61be62a9e9fa",
+  "source_or_schema_changes_required": false,
+  "status": "EXISTING_IMPLEMENTATION_READY_AWAITING_GENUINE_RECEIPTS",
+  "steps": [
+    "Sole publisher produces authentic numeric19 exact byte readback receipt and downloaded root.",
+    "Sole publisher obtains numeric36 inactive COMPLETE readback with exact submitted/saved source and reviewed settings.",
+    "Pinned numeric mount wrapper validates the genuine numeric19 receipt and downloaded bytes, then runs unchanged frozen no-model helper with complete unforced owned-process closure.",
+    "Independent operator reviewer checks the genuine code19, inactive36 and owned mount evidence, then persists the audit binding publication manifest and all three exact receipt hashes.",
+    "Existing run_prerequisites and monitor gates admit only the exact receipts and audit.",
+    "Sole publisher consumes the exclusive activation claim, samples one fresh JIT epoch and dispatches active37 within the existing 60-second age limit.",
+    "Sole publisher verifies active37 readback and continues the reviewed monitor."
+  ]
+}
