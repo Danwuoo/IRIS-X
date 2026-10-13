@@ -1,5 +1,21 @@
 # IRIS-X Repository Governance
 
+## Active local code17 publication and execution repair (2026-10-13)
+
+Decision 0071 records the owner's transfer of the sole publisher role to this
+local task and authorizes reviewed private publication, active execution,
+terminal monitoring and necessary distinct repairs until a reproducible run
+with complete valid PUBLIC120 scoring or a real owner-action blocker. Preserve
+code17 and all earlier attempts; use explicit local paths and official local
+authentication, without cloud credential transfer or HOME spoofing. Keep every
+session within 43,200 seconds from its original pre-dispatch epoch, all locked
+materials/hardware/science/process/scorer gates, and the full 167 denominator.
+Do not query remaining GPU quota; stop dispatch on an explicit provider GPU
+unavailable/zero-hours report. Provider COMPLETE alone is insufficient. Freeze
+an immutable Git commit/tag only after true runtime and scorer verification;
+report CI and all limitations separately. See
+`docs/decisions/0071-complete-local-code17-publication-and-public120-run.md`.
+
 ## Active stable_v2 goal-directed sprint (2026-10-11)
 
 The latest Decision 0070 addendum scopes the owner's goal-directed sprint toward

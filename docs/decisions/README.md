@@ -224,3 +224,8 @@ no current authority unless a new decision explicitly re-adopts them.
   authorizes the exact reviewed private learning-agent release and required
   Datasets, plus one 43,200-second session on the existing configured resource,
   with unchanged training/evaluator isolation and verified publication evidence.
+
+- [`0071-complete-local-code17-publication-and-public120-run.md`](0071-complete-local-code17-publication-and-public120-run.md)
+  transfers this round's sole publisher role locally, with reviewed repairs,
+  private execution and terminal monitoring through a complete PUBLIC120 run,
+  preserving each attempt and freezing a verified reproducible Git version.
