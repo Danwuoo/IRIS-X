@@ -1,0 +1,162 @@
+--- run007/owned_runtime/environment_v2.py
++++ run008/owned_runtime/environment_v2.py
+@@ -198,17 +198,26 @@
+          'torch cuDNN runtime differs from exact mapped pinned library')
+ 
+ 
+-def _observe_cudnn(model_config,*,deadline,diagnostic):
++def installed_cudnn_library():
++    """Canonical owned vendor location only; this alone does not authenticate bytes."""
++    distribution=importlib.metadata.distribution(POLICY['distribution'])
++    need(distribution.version==POLICY['distribution_version'],'exact installed cuDNN distribution required')
++    library=_regular(distribution.locate_file(POLICY['library_member']))
++    prefix=Path(sys.prefix).resolve();need(library.is_relative_to(prefix) and 'site-packages' in library.parts,'cuDNN must come from actual owned interpreter prefix')
++    need(not any(c in str(library.parent) for c in (':','\\')) and
++         not any(ord(c)<32 for c in str(library.parent)), 'unambiguous owned cuDNN loader directory')
++    return distribution,library
++
++
++def verify_cudnn_installation(model_config,*,deadline,diagnostic):
++    """Authenticate complete pinned vendor bytes without importing native packages."""
+     _check_time(deadline)
+     lock_path=_regular(model_config['environment_lock_path'])
+     need(file_sha(lock_path)==LOCK_SHA256,'unchanged composite environment lock required')
+     lock=json.loads(lock_path.read_bytes());wheel_row=lock['wheel_files'][POLICY['wheel_name']]
+     need(wheel_row=={'name':POLICY['distribution'],'version':POLICY['distribution_version'],
+          'bytes':POLICY['wheel_bytes'],'sha256':POLICY['wheel_sha256']},'source-owned cuDNN wheel descriptor differs')
+-    distribution=importlib.metadata.distribution(POLICY['distribution'])
+-    need(distribution.version==POLICY['distribution_version'],'exact installed cuDNN distribution required')
+-    library=_regular(distribution.locate_file(POLICY['library_member']))
+-    prefix=Path(sys.prefix).resolve();need(library.is_relative_to(prefix) and 'site-packages' in library.parts,'cuDNN must come from actual owned interpreter prefix')
++    distribution,library=installed_cudnn_library()
+     wheel=_regular(Path(model_config['wheel_root_path'])/'wheels'/POLICY['wheel_name'])
+     observed_wheel=_file_hash(wheel,deadline=deadline,maximum=POLICY['wheel_bytes'])
+     need(observed_wheel==(POLICY['wheel_sha256'],POLICY['wheel_bytes']),'actual exact cuDNN wheel bytes required')
+@@ -224,6 +233,23 @@
+         need(POLICY['library_member'] in library_members and 0<len(library_members)<=32,'complete pinned cuDNN library set required')
+         present={p.name for p in library.parent.iterdir() if p.name.startswith('libcudnn') and '.so' in p.name}
+         need(present=={Path(n).name for n in library_members},'installed cuDNN library inventory differs')
++        # This directory becomes an ELF search root before exec. Do not allow
++        # unrelated shadow libraries or glibc hardware-capability subdirectories.
++        # pip's bytecode cache is not an ELF search directory.
++        direct_members=[n for n in names if n.startswith('nvidia/cudnn/lib/') and n.count('/')==3 and not n.endswith('/')]
++        entries=list(library.parent.iterdir())
++        need({p.name for p in entries if p.name!='__pycache__'}=={Path(n).name for n in direct_members},
++             'owned cuDNN loader directory contains unpinned search entries')
++        cache=library.parent/'__pycache__'
++        need(not cache.is_symlink() and (not cache.exists() or cache.is_dir()), 'ordinary vendor bytecode cache required')
++        for member in direct_members:
++            if member in library_members:continue
++            path=_regular(library.parent/Path(member).name);info=archive.getinfo(member)
++            need(not info.is_dir() and not info.flag_bits&1 and stat.S_IFMT(info.external_attr>>16) in (0,stat.S_IFREG) and
++                 0<=info.file_size<=POLICY['wheel_bytes'], 'regular bounded nonlibrary vendor member required')
++            with archive.open(info) as stream:expected=_stream_hash(stream,deadline=deadline,maximum=info.file_size)
++            need(_file_hash(path,deadline=deadline,maximum=info.file_size)==expected,
++                 'installed nonlibrary vendor member differs from pinned wheel')
+         # Verify the full vendor library set before an explicit ctypes load. Any
+         # transitive backend observed below must belong to this exact byte set.
+         for member in library_members:
+@@ -234,6 +260,13 @@
+             actual=_file_hash(path,deadline=deadline,maximum=info.file_size)
+             need(actual==expected and actual[1]==info.file_size,'installed cuDNN library differs from pinned wheel member')
+             rows.append({'member':member,'path':str(path),'bytes':actual[1],'sha256':actual[0]})
++    _check_time(deadline)
++    return distribution,library,observed_wheel,header,rows
++
++
++def _observe_cudnn(model_config,*,deadline,diagnostic):
++    distribution,library,observed_wheel,header,rows=verify_cudnn_installation(
++        model_config,deadline=deadline,diagnostic=diagnostic)
+     diagnostic['stage']='observe-current-api';import torch
+     observed_torch=torch.backends.cudnn.version()
+     loaded=ctypes.CDLL(str(library),mode=getattr(ctypes,'RTLD_LOCAL',0))
+--- run007/owned_runtime/parent_scoring.py
++++ run008/owned_runtime/parent_scoring.py
+@@ -76,8 +76,10 @@
+     """No inherited evaluator paths, data, credentials, or interpreter injection.
+ 
+     Only explicit device visibility/order may be retained. Production loader
+-    search is constructed from the fixed source-owned standard driver directory
+-    tuple; inherited loader paths are never read or forwarded. Native identities
++    search starts at the canonical owned cuDNN directory, followed by the fixed
++    source-owned driver tuple. The runner authenticates the complete vendor set
++    before exec; the child repeats that check before native imports. Inherited
++    loader paths are never read or forwarded. Native identities
+     and environment still require the pinned production descriptor's admission.
+     """
+     result = {'PATH': os.defpath, 'LANG': 'C.UTF-8', 'PYTHONDONTWRITEBYTECODE': '1',
+@@ -98,8 +100,30 @@
+         result['CUDA_DEVICE_ORDER'] = value
+     if not fixture:
+         result['PATH'] = ':'.join(TRUSTED_DRIVER_EXECUTABLE_DIRECTORIES)
+-        result['LD_LIBRARY_PATH'] = ':'.join(TRUSTED_DRIVER_LIBRARY_DIRECTORIES)
++        result['LD_LIBRARY_PATH'] = _worker_library_path()
+     return result
++
++
++def _worker_library_path():
++    from .environment_v2 import installed_cudnn_library
++    _,library=installed_cudnn_library()
++    return ':'.join((str(library.parent),*TRUSTED_DRIVER_LIBRARY_DIRECTORIES))
++
++
++def verify_child_loader_environment(request, *, deadline):
++    """Recheck the parent-bound startup environment before any native import.
++
++    Updating os.environ after startup cannot retarget glibc's cached search
++    path. Only the parent builds the loader environment, before the owned exec.
++    """
++    from .environment_v2 import verify_cudnn_installation
++    from .release import sha
++    need(request['config']['fixture'] is False, 'production loader verification only')
++    verify_cudnn_installation(request['config']['model'],deadline=deadline,diagnostic={})
++    expected=worker_environment(fixture=False)
++    need(request['worker_environment_sha256']==sha(canonical(expected)) and
++         dict(os.environ)==expected, 'actual child environment differs from authenticated loader policy')
++
+ 
+ 
+ def _trusted_driver_roots():
+@@ -180,7 +204,7 @@
+          os.access(sys.executable,os.X_OK) and sys.flags.isolated and
+          sys.flags.ignore_environment and sys.flags.no_user_site and sys.dont_write_bytecode,
+          'owned isolated interpreter, executable and source cwd required')
+-    need(os.environ.get('LD_LIBRARY_PATH')==':'.join(TRUSTED_DRIVER_LIBRARY_DIRECTORIES),
++    need(os.environ.get('LD_LIBRARY_PATH')==_worker_library_path(),
+          'actual child loader search differs from fixed source policy')
+     receipt['stage']='resolve-nvidia-cli'
+     executable,resolved = _driver_executable(receipt)
+--- run007/owned_runtime/runner.py
++++ run008/owned_runtime/runner.py
+@@ -45,6 +45,10 @@
+     write_json(root/'owner-clock.json',clock.receipt())
+     write_json(root/'release-source-inventory.json',{'files':sources,'source_sha256':source_digest(sources),'source_review_only':True})
+     write_json(root/'checkpoint-storage-plan.json',storage_plan())
++    if not fixture:
++        # Verify before exec: changing LD_LIBRARY_PATH inside the child is too late.
++        from owned_runtime.environment_v2 import verify_cudnn_installation
++        verify_cudnn_installation(config['model'],deadline=clock.deadline(),diagnostic={})
+     worker_env=worker_environment(fixture=fixture)
+     write_json(root/'worker-environment.json',{'format':'owned-rl-child-environment-v1','environment':worker_env,
+         'environment_sha256':sha(canonical(worker_env)),'policy':'closed-source-minimal; no inherited paths or credentials'})
+--- run007/owned_runtime/worker.py
++++ run008/owned_runtime/worker.py
+@@ -46,6 +46,10 @@
+     need(request['format']=='owned-rl-worker-request-v1','owned request schema')
+     verify_inventory(request['sources'])
+     from owned_runtime.clock import OriginalClock
++    clock=OriginalClock.from_receipt(request['clock']);config=request['config'];root=Path(request['output_root'])
++    if not config['fixture']:
++        from owned_runtime.parent_scoring import verify_child_loader_environment
++        verify_child_loader_environment(request,deadline=clock.deadline())
+     from owned_runtime.planning import build_plan
+     from owned_runtime.factory import open_owned_experiment_session
+     from owned_runtime.backend import NativeOwnedAdapter,OwnedDataset,OwnedRewardPanel
+@@ -55,7 +59,6 @@
+     from experiment_flow.flow import run_local_experiment
+     import torch
+     torch.set_num_threads(1);torch.set_num_interop_threads(1);torch.use_deterministic_algorithms(True)
+-    clock=OriginalClock.from_receipt(request['clock']);config=request['config'];root=Path(request['output_root'])
+     from owned_runtime.evidence import register_output
+     register_output(root)
+     plan=build_plan(clock,fixture=config['fixture'])

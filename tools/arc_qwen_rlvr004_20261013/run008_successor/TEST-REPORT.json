@@ -1,0 +1,39 @@
+{
+  "credential_body_reads": 0,
+  "files": {
+    "README.md": {
+      "bytes": 9170,
+      "sha256": "5d3db8b5677b7e1f264aa465431baef69603ea3300cc172dce0578b6b16112e3"
+    },
+    "native_auth.py": {
+      "bytes": 2907,
+      "sha256": "5345d60e9bc604e50391bd3840c077a7a09b59e0dbe907f85676386e25096f97"
+    },
+    "prepare.py": {
+      "bytes": 24512,
+      "sha256": "302c61282ce6abc19254cf22d2f16104f0cbd523af28b8431a52a70a683510c2"
+    },
+    "test_successor.py": {
+      "bytes": 16820,
+      "sha256": "b9abd549ca7e3da0e13c2ca736f0cfcc92a57ce518ab0862471bc4db04b27bf3"
+    }
+  },
+  "format": "irisx/run008-successor-local-tests-v1",
+  "independent_review": "REQUIRED_NOT_SELF_APPROVED",
+  "model_or_GPU_calls": 0,
+  "provider_calls": 0,
+  "provider_resource_access_verified": false,
+  "publication_admitted": false,
+  "scope": "Deterministic local assembly; fresh no-model mount/import; original owned-process failure/deadline/timeout/cleanup; isolated source-only payload; no new admission.",
+  "status": "CPU_TESTS_PASS_PUBLICATION_BLOCKED",
+  "tests": {
+    "normal": {
+      "failed": 0,
+      "passed": 20
+    },
+    "optimized": {
+      "failed": 0,
+      "passed": 20
+    }
+  }
+}

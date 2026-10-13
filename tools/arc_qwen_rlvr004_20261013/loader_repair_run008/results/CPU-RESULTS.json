@@ -1,0 +1,39 @@
+{
+  "format": "irisx/run008-loader-cpu-tests-v1",
+  "full_model_gpu_validated": false,
+  "inherited_cases_each_mode": 21,
+  "new_cases_each_mode": 34,
+  "overlay_manifest_sha256": "1d3aabee0419acd2b42a4343d36028b0ba296f14f30341e5be8e6c83e42600f0",
+  "provider_actions": false,
+  "python": "3.12.14",
+  "real_cudnn_validated": false,
+  "results": [
+    {
+      "log": "new-normal.log",
+      "sha256": "ae71910a2cc432a367f6e3733f17898fbf13646553322ee7978cc89bae4e1510",
+      "status": "PASS",
+      "test_count": 34
+    },
+    {
+      "log": "new-optimized.log",
+      "sha256": "d32843bd28f25b36f210f1c52d73fde1694074cb0ce514f437757627fcea52a2",
+      "status": "PASS",
+      "test_count": 34
+    },
+    {
+      "log": "inherited-normal.log",
+      "sha256": "a57b5cb23f788b6f27fbe667552a267203ea13fe7cc1b272fed953446f6cdeaa",
+      "status": "PASS",
+      "test_count": 21
+    },
+    {
+      "log": "inherited-optimized.log",
+      "sha256": "94d3824e0baa805f7cda3d778a4ca67048b2559b3949872f413245310602f714",
+      "status": "PASS",
+      "test_count": 21
+    }
+  ],
+  "scientific_result": false,
+  "scope": "CPU-only synthetic ELF/source/subprocess and inherited mapping-consumer coverage",
+  "total_executed": 110
+}

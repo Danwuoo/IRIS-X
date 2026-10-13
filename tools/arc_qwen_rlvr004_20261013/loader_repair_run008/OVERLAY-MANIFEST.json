@@ -1,0 +1,30 @@
+{
+  "base_source_sha256": "89d19e7e9859d756f320d28fe55f908aee3c7b568f31ea10ecc82cb1be13b14b",
+  "files": {
+    "owned_runtime/environment_v2.py": {
+      "bytes": 21086,
+      "original_sha256": "3d958c3707d14967977278b81581c57626eedd6ac9614384941cc70c058aa9e6",
+      "path": "overlays/owned_runtime/environment_v2.py",
+      "sha256": "b4a8e23367e34899ca25f4aa6b1bd4b74676a25d13e39c5030b5fb46fe3ef7d2"
+    },
+    "owned_runtime/parent_scoring.py": {
+      "bytes": 24291,
+      "original_sha256": "0ccdeecc8398098c0240d919c8ff9f4f51e5455ee96debd35c8c7c8ce10bb24b",
+      "path": "overlays/owned_runtime/parent_scoring.py",
+      "sha256": "c95e9caf5e4f8230d90661bc8b68159fe29a63b52c1d6cff4f22dab05023a42e"
+    },
+    "owned_runtime/runner.py": {
+      "bytes": 13422,
+      "original_sha256": "5616216b0d8d927982e4a4c6909ffb7646249d9a7474a2f16b6fe0d22054b989",
+      "path": "overlays/owned_runtime/runner.py",
+      "sha256": "b9bfa0483fdcb921707177fd4c02344baa2abcf498412bdca5eccb43e1a44ca4"
+    },
+    "owned_runtime/worker.py": {
+      "bytes": 7930,
+      "original_sha256": "631b62d45439ded96ced4ff9d3d3f2222c38c1156672faac7667edea7ad3e821",
+      "path": "overlays/owned_runtime/worker.py",
+      "sha256": "168557c72a041df61740021c054912bc6c05210aa2f52f5077f37719974ba8d7"
+    }
+  },
+  "format": "irisx/run008-loader-overlay-set-v1"
+}

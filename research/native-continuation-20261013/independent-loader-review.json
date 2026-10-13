@@ -1,0 +1,56 @@
+{
+  "format": "irisx/run008-loader-overlay-review-v1",
+  "status": "PASS",
+  "scope": "LOCAL_SOURCE_REVIEW_ONLY",
+  "review_date_utc": "2026-10-13",
+  "overlay_manifest_sha256": "1d3aabee0419acd2b42a4343d36028b0ba296f14f30341e5be8e6c83e42600f0",
+  "base_source_sha256": "89d19e7e9859d756f320d28fe55f908aee3c7b568f31ea10ecc82cb1be13b14b",
+  "overlay_sha256": {
+    "owned_runtime/environment_v2.py": "b4a8e23367e34899ca25f4aa6b1bd4b74676a25d13e39c5030b5fb46fe3ef7d2",
+    "owned_runtime/parent_scoring.py": "c95e9caf5e4f8230d90661bc8b68159fe29a63b52c1d6cff4f22dab05023a42e",
+    "owned_runtime/runner.py": "b9bfa0483fdcb921707177fd4c02344baa2abcf498412bdca5eccb43e1a44ca4",
+    "owned_runtime/worker.py": "168557c72a041df61740021c054912bc6c05210aa2f52f5077f37719974ba8d7"
+  },
+  "production_GPU_validation_passed": false,
+  "publication_admitted": false,
+  "reviewed_tests_sha256": {
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/tests/elf_fixture.py": "43d7585336e5f97598789c160040d2beca1ff20a9786180fc67a4c811a3e2ce5",
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/tests/run_inherited_mapping.py": "b2acd9b61625bf3db94169c29e5e2b2d009b382f8fc4232560e79df2ee5c4997",
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/tests/test_loader_repair.py": "d81c5ab8ce8480e42fddfb9c13cec7026b171ee0b16c12428f692fc047e8d8a5"
+  },
+  "independent_checks": {
+    "base_and_overlay_exact_pins": "PASS",
+    "new_ELF_and_subprocess_tests": {
+      "normal_passed": 34,
+      "optimized_passed": 34,
+      "skipped": 0
+    },
+    "inherited_mapping_consumer_tests_against_overlay": {
+      "normal_passed": 21,
+      "optimized_passed": 21,
+      "skipped": 0
+    },
+    "actual_overlay_worker_pre_native_failure": {
+      "normal": "PASS",
+      "optimized_worker": "PASS",
+      "no_torch_import": true,
+      "worker_exited": true,
+      "session_empty": true,
+      "inner_closure_absent": true,
+      "safe_closure": false,
+      "scoring_capability_absent": true
+    },
+    "actual_isolated_child_whole_environment_equality": "PASS under Python3.12 -I, LANG=C.UTF-8, normal and optimized; path/env substitutions rejected",
+    "foreign_same_SONAME_and_shadow_library_rejection": "PASS",
+    "post_native_API_ABI_mapping_admission_suffix_byte_identical": true,
+    "supervisor_science_policy_scorer_bytes_changed": false
+  },
+  "limitations": [
+    "Synthetic tiny ELF libraries and explicit metadata substitutions prove loader mechanics only; no real cuDNN wheel/GPU/model validation.",
+    "Worker early-verification failure was exercised through the existing explicit CPU supervisor test entry, using a synthetic invalid model path; no production launch authority was issued.",
+    "The early failure honestly has no inner closure; the real outer supervisor retains nonzero exit and no safe/model/scoring capability.",
+    "Parent and child installed-wheel verification add real wall cost inside the unchanged original deadline.",
+    "Final assembled normalized source pins, material/solver projection, consumer/publication transport and active-wire bytes need separate exact-byte review.",
+    "Historical mixed-backend cause is supported by reproducible mechanisms but not uniquely proven for every actual vendor dependency."
+  ]
+}

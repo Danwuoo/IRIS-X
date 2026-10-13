@@ -1,0 +1,198 @@
+{
+  "format": "irisx/run008-independent-packaging-review-v1",
+  "status": "PASS",
+  "scope": "LOCAL_SOURCE_AND_INERT_ASSEMBLY_REVIEW_ONLY",
+  "review_date_utc": "2026-10-13",
+  "reviewed_delivery_files": {
+    "research/native-continuation-20261013/RUN008-LOCAL-HANDOFF.md": {
+      "bytes": 7499,
+      "sha256": "88d0ea0ffec9ebfda8e8fc80ad54e0b71ea8b7f77835078f8e28044c1aa2e45f"
+    },
+    "research/native-continuation-20261013/independent-loader-review.json": {
+      "bytes": 3258,
+      "sha256": "ffb141edfc37a357b73939000d113d78ff5775922c868d602e9e619fd1ac7bab"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/OVERLAY-MANIFEST.json": {
+      "bytes": 1345,
+      "sha256": "1d3aabee0419acd2b42a4343d36028b0ba296f14f30341e5be8e6c83e42600f0"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/README.md": {
+      "bytes": 8286,
+      "sha256": "0facbac754df56aca00d695be4c8cc5f8d279fa60caef4470ea775fc3dc70bf4"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/SOURCE-DELTA.patch": {
+      "bytes": 10284,
+      "sha256": "4289c262f63a1b3fb179bcb7ddee81784822dba9b2c06ed4d1dfaf7f6fa58b54"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/overlays/owned_runtime/environment_v2.py": {
+      "bytes": 21086,
+      "sha256": "b4a8e23367e34899ca25f4aa6b1bd4b74676a25d13e39c5030b5fb46fe3ef7d2"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/overlays/owned_runtime/parent_scoring.py": {
+      "bytes": 24291,
+      "sha256": "c95e9caf5e4f8230d90661bc8b68159fe29a63b52c1d6cff4f22dab05023a42e"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/overlays/owned_runtime/runner.py": {
+      "bytes": 13422,
+      "sha256": "b9bfa0483fdcb921707177fd4c02344baa2abcf498412bdca5eccb43e1a44ca4"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/overlays/owned_runtime/worker.py": {
+      "bytes": 7930,
+      "sha256": "168557c72a041df61740021c054912bc6c05210aa2f52f5077f37719974ba8d7"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/results/CPU-RESULTS.json": {
+      "bytes": 1221,
+      "sha256": "8abadcda81f74bb9997662c8d648c4db2f2396e39819a64cceafd6ab85f048b1"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/results/TINY-CPU-RESULTS.json": {
+      "bytes": 3978,
+      "sha256": "d30f73c0240b6e15460551ed7eb4b41d7656dd47c3a6ed413eddbd683e26ec01"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/tests/elf_fixture.py": {
+      "bytes": 6466,
+      "sha256": "43d7585336e5f97598789c160040d2beca1ff20a9786180fc67a4c811a3e2ce5"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/tests/run_inherited_mapping.py": {
+      "bytes": 1664,
+      "sha256": "b2acd9b61625bf3db94169c29e5e2b2d009b382f8fc4232560e79df2ee5c4997"
+    },
+    "tools/arc_qwen_rlvr004_20261013/loader_repair_run008/tests/test_loader_repair.py": {
+      "bytes": 15609,
+      "sha256": "d81c5ab8ce8480e42fddfb9c13cec7026b171ee0b16c12428f692fc047e8d8a5"
+    },
+    "tools/arc_qwen_rlvr004_20261013/run008_successor/README.md": {
+      "bytes": 9170,
+      "sha256": "5d3db8b5677b7e1f264aa465431baef69603ea3300cc172dce0578b6b16112e3"
+    },
+    "tools/arc_qwen_rlvr004_20261013/run008_successor/TEST-REPORT.json": {
+      "bytes": 1192,
+      "sha256": "a23f1211d78a1c6b59156f3144d446cec92506775671d49251e02357bbbaf55c"
+    },
+    "tools/arc_qwen_rlvr004_20261013/run008_successor/native_auth.py": {
+      "bytes": 2907,
+      "sha256": "5345d60e9bc604e50391bd3840c077a7a09b59e0dbe907f85676386e25096f97"
+    },
+    "tools/arc_qwen_rlvr004_20261013/run008_successor/prepare.py": {
+      "bytes": 24512,
+      "sha256": "302c61282ce6abc19254cf22d2f16104f0cbd523af28b8431a52a70a683510c2"
+    },
+    "tools/arc_qwen_rlvr004_20261013/run008_successor/test_successor.py": {
+      "bytes": 16820,
+      "sha256": "b9abd549ca7e3da0e13c2ca736f0cfcc92a57ce518ab0862471bc4db04b27bf3"
+    }
+  },
+  "loader_review_sha256": "ffb141edfc37a357b73939000d113d78ff5775922c868d602e9e619fd1ac7bab",
+  "reviewed_proposal": {
+    "source_sha256": "c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b",
+    "source_archive_sha256": "4d8b414bd35ca79a2eaaec7042880966879ed13bdeaf96762eaee7932ee1de4c",
+    "normalized_source_contract_sha256": "af60cb785acd15f50abdd5bfa210525d9f55af47c1b938327f2c50b4846d5523",
+    "loader_overlay_manifest_sha256": "1d3aabee0419acd2b42a4343d36028b0ba296f14f30341e5be8e6c83e42600f0",
+    "loader_overlay_review_sha256": "ffb141edfc37a357b73939000d113d78ff5775922c868d602e9e619fd1ac7bab",
+    "builder_sha256": "302c61282ce6abc19254cf22d2f16104f0cbd523af28b8431a52a70a683510c2"
+  },
+  "assembly_inventory_sha256": "fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd",
+  "notebook_release_sha256": "8417bafdbda829db7367781afd0133f310d58f1e2a6163021f7258bcc8871fb1",
+  "code_upload_proposal_sha256": "86c2161df27f5862d71348863ca15684951fbca70690f02db1cd993c2d187906",
+  "independent_tests": {
+    "packaging_normal": {
+      "passed": 20,
+      "failed": 0
+    },
+    "packaging_optimized": {
+      "passed": 20,
+      "failed": 0
+    },
+    "loader_normal": {
+      "passed": 34,
+      "failed": 0
+    },
+    "loader_optimized": {
+      "passed": 34,
+      "failed": 0
+    },
+    "mapping_consumer_normal": {
+      "passed": 21,
+      "failed": 0
+    },
+    "mapping_consumer_optimized": {
+      "passed": 21,
+      "failed": 0
+    },
+    "controlled_no_PUBLIC_policy_cases_each_mode": 6,
+    "real_pre_native_failure_actual_normal_and_optimized_worker": "PASS; no Torch import, no inner closure or scoring capability; exited empty worker session; unsafe closure retained"
+  },
+  "independent_source_checks": {
+    "closed_runtime_members": 259,
+    "unchanged_runtime_members": 254,
+    "unchanged_run007_baseline_members": 200,
+    "separate_unchanged_consumer_helpers": 21,
+    "runtime_changed_files": [
+      "owned_runtime/environment_v2.py",
+      "owned_runtime/parent_scoring.py",
+      "owned_runtime/release.py",
+      "owned_runtime/runner.py",
+      "owned_runtime/worker.py"
+    ],
+    "policy_model_wheel_material_and_scorer_pins_unchanged": true,
+    "runtime_archive_matches_all_source_bytes": true,
+    "source_only_payload_isolation": "PASS",
+    "inert_notebooks_and_finalizer_rejection": "PASS",
+    "historical_approval_replay_rejected": "PASS",
+    "fresh_epoch_allocated": false,
+    "provider_version_reserved": false
+  },
+  "final_assembled_tiny_integrations": [
+    {
+      "parent_mode": "normal",
+      "child_mode": "normal canonical -I -B",
+      "elapsed_seconds": 96.64362701200025,
+      "status": "owned-mechanics-complete-PUBLIC-sealed",
+      "scope": "tiny CPU random-model and synthetic-scorer fixture only",
+      "source_sha256": "c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b",
+      "safe_closure": true,
+      "worker_exited": true,
+      "worker_session_empty": true,
+      "terminal_export": "complete",
+      "independent_archive_crc_and_member_hashes": "PASS",
+      "inner_closure_sha256": "0fdf1f05aacd01e3ae37a3bc14f9d06a32bd356fd332721478b3db69d6a6f88a",
+      "outer_closure_sha256": "48a3c63dc1eb148a818ed66d51af48f656a3b26e2b52df593eacbb132b977809",
+      "owned_result_sha256": "186b75e5088bdc1b0e39a24aeb707dc93da5d1cefd67b9972d4c6976f794995d",
+      "evidence_archive_sha256": "c7edf8efd05369ea73efcabdf5c6582190adf388327332b300339ba9d3737c75",
+      "terminal_receipt_sha256": "27b43922c8eef4efc105ff913db8c946863d80fee0a7a9334fd426170e58b3ab"
+    },
+    {
+      "parent_mode": "optimized",
+      "child_mode": "normal canonical -I -B",
+      "elapsed_seconds": 98.53383072300039,
+      "status": "owned-mechanics-complete-PUBLIC-sealed",
+      "scope": "tiny CPU random-model and synthetic-scorer fixture only",
+      "source_sha256": "c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b",
+      "safe_closure": true,
+      "worker_exited": true,
+      "worker_session_empty": true,
+      "terminal_export": "complete",
+      "independent_archive_crc_and_member_hashes": "PASS",
+      "inner_closure_sha256": "b6cfe5df84a7c70764f7810ee0fe8cfe838bf6a560de841c7843fc305e33cb79",
+      "outer_closure_sha256": "0c48ead0ef54297b5274fd94741dcc017cd047301aed7aeba92f82602f95939c",
+      "owned_result_sha256": "fcb6a4dcc587d230753a8660f44799c371e1d7fff7e850fa8816c6114b310047",
+      "evidence_archive_sha256": "319be1012e55cf2845ff105aa3df06f891c5f7e239715fee983016adbf9209ff",
+      "terminal_receipt_sha256": "c9bda17d4b8fa06652e0fe4bc40b4660ae64056020f7c62d80a7392b3e1f70da"
+    }
+  ],
+  "publication_admitted": false,
+  "production_GPU_validation_passed": false,
+  "native_authenticated_transport_validated": false,
+  "new_PUBLIC120_scientific_result": null,
+  "review_boundary": [
+    "Only the listed exact source, tests, documentation and compact reports are reviewed; any later edit requires new review for the affected bytes.",
+    "Numeric code-version allocation and final material/solver/consumer/transport/active-wire bindings remain separate blocked work.",
+    "Actual tiny integration ran normal children because the canonical supervisor fixes -I -B; only parent invocation was optimized in the second case.",
+    "ELF tests and independent pre-native rejection separately ran actual optimized children; this does not imply full optimized-child neural integration.",
+    "Missing original fixture-dependent baseline tests remain explicitly failed; full repository CI remains red.",
+    "No credentials, private conversation, personal availability, evaluator answer bodies, raw transfer archives, raw process logs or local provenance paths are included in this reviewed publishable file set."
+  ],
+  "independent_summary": {
+    "path": "research/native-continuation-20261013/independent-implementation-review.md",
+    "sha256": "a572279f6e4c22f609e86c481169a6368727a85152bb34e673e43fdb43512f44"
+  }
+}
