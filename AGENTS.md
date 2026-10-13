@@ -1,5 +1,21 @@
 # IRIS-X Repository Governance
 
+## Owner-frozen code18/run005 repository snapshot (2026-10-13)
+
+The owner explicitly stopped repairs and requested fixing the current repository
+version. Preserve the published runtime commit
+`dbf21033b41aff9327cf4f91159df0133529f176` and its exact code18/run005 source.
+The snapshot tag records an unsuccessful, reproducible source checkpoint:
+notebook v35 was last verified `CANCEL_ACKNOWLEDGED`, GPU/inference/scorer success
+is unverified, PUBLIC120 has no new result, and complete CI remains red.
+The separately reported manual Editor error has no verified version or inner
+root cause. Stop automatic repairs, downloads, publication, runs and monitoring
+under the earlier continuing-repair direction. Resume only on new owner
+instruction, using a new branch/version and preserving this snapshot. The
+freeze documentation does not change runtime bytes, reset consumed clocks or
+turn this snapshot into a successful baseline. See
+`docs/plan/2026-10-13-code18-run005-repository-snapshot.md`.
+
 ## Active local code17 publication and execution repair (2026-10-13)
 
 Decision 0071 records the owner's transfer of the sole publisher role to this
