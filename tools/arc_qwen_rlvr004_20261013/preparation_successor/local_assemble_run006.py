@@ -16,6 +16,7 @@ import types
 HERE = Path(__file__).absolute().parent
 PREPARE_SHA = '201bbaf3ef7ef236342cc1214088e7d3ea29b1c1a94c4b5e56900075253f6fff'
 LINEAGE_HELPER_SHA = 'f3cc35d60fd5f5aaa173feeb824120ff6ed18fea6a8aaba0f3368a973215e2b8'
+RECOVERED_ASSEMBLER_SHA = 'c4d7a72f9f9c5c4659bfe0e1c349b6ff37527b7de0fb5c15be82563322b76644'
 _prep_path = HERE / 'local_prepare.py'
 if any(x.is_symlink() for x in (_prep_path, *_prep_path.parents)):
     raise ValueError('unsafe reviewed preparation dependency')
@@ -139,6 +140,28 @@ def observation_inputs(root, digest):
         need(row['path'] in files and p.desc(files[row['path']]) == {k: row[k] for k in ('bytes', 'sha256')}, 'observation evidence link')
     saved = files[doc['evidence']['saved_source']['path']]
     need(sha(saved) == doc['saved_source_sha256'], 'exact current saved source')
+    for role in ('dataset_before', 'dataset_after'):
+        metadata = obj(files[doc['evidence'][role]['path']])
+        need(metadata.get('id') == 12504696
+             and metadata.get('ref') == 'danielwuu/iris-x-learning-agent-code-20261011'
+             and metadata.get('isPrivate') is True
+             and metadata.get('ownerRef') == 'danielwuu'
+             and metadata.get('currentVersionNumber') == doc['code_version'], 'exact official dataset observation identity')
+    for role in ('notebook_before', 'notebook_after'):
+        metadata = obj(files[doc['evidence'][role]['path']])
+        need(metadata.get('id') == 138123872 and metadata.get('ref') == 'danielwuu/iris-x-learning-agent-20261011'
+             and metadata.get('isPrivate') is True and metadata.get('currentVersionNumber') == doc['notebook_version'],
+             'exact official notebook observation identity')
+        need(metadata.get('kernelType') == 'notebook' and metadata.get('language') == 'python'
+             and metadata.get('enableGpu') is True and metadata.get('enableTpu') is False
+             and metadata.get('enableInternet') is False and metadata.get('machineShape') == 'NvidiaRtxPro6000',
+             'original offline notebook hardware settings')
+    status = obj(files[doc['evidence']['notebook_status']['path']])
+    need(status.get('status') == doc['provider_status']
+         and doc['provider_status'] in ('CANCEL_ACKNOWLEDGED', 'COMPLETE', 'ERROR')
+         and doc.get('gpu_unavailable_stop') is False, 'terminal predecessor with no explicit GPU unavailable report')
+    need(type(doc.get('observed_epoch')) in (int, float) and p.math.isfinite(doc['observed_epoch'])
+         and doc['observed_epoch'] > 0, 'actual finite official observation time')
     if doc['code_version'] == 18 and doc['notebook_version'] == 35:
         need(sha(saved) == V35_SAVED, 'original v35 saved source')
     files['OBSERVATION.json'] = raw
@@ -149,13 +172,15 @@ def stop_attestation(path, digest):
     """Current owner authorization only; no fabricated manual-session closure."""
     raw = pinned(path, digest, 64 * 1024)
     doc = obj(raw)
-    need(doc.get('format') == 'irisx/run006-local-owner-request-v1' and doc.get('owner_id') == 'danielwuu', 'current owner request required')
-    need(doc.get('submit_run_authorized') is True and doc.get('stop_after_submit_readback') is True
-         and doc.get('provider_monitoring_authorized') is False
-         and doc.get('additional_gpu_runs_authorized') is False, 'current single-run handoff scope')
+    need(doc.get('format') == 'irisx/run006-local-owner-direction-v1' and doc.get('owner_id') == 'danielwuu', 'current owner request required')
+    need(doc.get('one_accepted_run_authorized') is True and doc.get('post_run_readback_once') is True
+         and doc.get('continuous_monitoring_authorized') is False
+         and doc.get('watcher_authorized') is False
+         and doc.get('automatic_resubmission_after_delivery_authorized') is False, 'current single-run handoff scope')
     need(type(doc.get('instruction')) is str and len(doc['instruction']) > 40, 'recorded human owner instruction required')
-    need(doc.get('runtime_or_model_closure_verified') is False and doc.get('costs_or_billing_verified') is False,
-         'owner scope is not closure or cost proof')
+    need(doc.get('runtime_or_scientific_success_claim') is False
+         and doc.get('session_limit_seconds') == 43200 and doc.get('public_task_count') == 120
+         and doc.get('public_query_denominator') == 167, 'owner scope cannot claim success or alter physical/scientific bounds')
     return raw
 
 
@@ -236,6 +261,7 @@ def assemble(*, repository_root, base_root, source_proposal_root, observation_ro
         old = p.ordinary(root)
         need(not output.is_relative_to(old) and not old.is_relative_to(output), 'assembly input/output overlap')
     pinned(HERE / 'local_prepare.py', PREPARE_SHA)
+    pinned(HERE / 'assemble_run006.py', RECOVERED_ASSEMBLER_SHA)
     snapshot = p.Snapshot(repo)
     base = authenticated_base(snapshot, p.ordinary(base_root))
     assembler = p.load_module(snapshot.tool('prepare_successor_release.py'), 'exact_frozen_run005_assembly_helpers', repo / p.TOOL_REL / 'prepare_successor_release.py')
@@ -243,6 +269,9 @@ def assemble(*, repository_root, base_root, source_proposal_root, observation_ro
     observation = observation_inputs(observation_root, observation_sha)
     stopped = stop_attestation(stop_attestation_path, stop_attestation_sha)
     owner_scope = obj(stopped)
+    owner_identity = {'owner_id': owner_scope['owner_id'],
+        'request_id': 'local-run006-owner-direction-sha256-' + sha(stopped),
+        'instruction': owner_scope['instruction']}
     versions = source_proposal['identity']['versions']
     live = obj(observation['current-predecessor-v35/OBSERVATION.json'])
     need(versions['code_predecessor'] == live['code_version'] and versions['notebook_predecessor'] == live['notebook_version'],
@@ -310,7 +339,7 @@ def assemble(*, repository_root, base_root, source_proposal_root, observation_ro
     release.update(production_admitted=approved, code_reference=code_reference,
         code_manifest_sha256=sha(payload['manifest.json']), source_sha256=SOURCE_SHA, source_archive_sha256=ARCHIVE_SHA,
         material_review_sha256=sha(material_raw), environment_sha256=ENVIRONMENT_SHA, deployment=deployment_inventory,
-        original_owner_request=copy.deepcopy(owner_scope))
+        original_owner_request=copy.deepcopy(owner_identity))
     release['dataset_references'][0] = code_reference
     release['storage']['environment_root'] = ENVIRONMENT
     release['storage']['observed_assembled_source_copy_bytes'] = sum(map(len, source.values())) + len(source_zip) + sum(map(len, auxiliary.values()))
@@ -376,7 +405,7 @@ def assemble(*, repository_root, base_root, source_proposal_root, observation_ro
     publication = copy.deepcopy(prior)
     publication.update(format=FORMAT, owner_published_stable_commit=p.SNAPSHOT,
         local_reconstruction={'status': 'LOCAL_RECONSTRUCTION_REVIEWED' if approved else 'LOCAL_RECONSTRUCTION_REVIEW_REQUIRED',
-            'recovered_original_assembler_sha256': '4becf9b8987ba7a4393e3d141a184652af54e8fcbfae6d796f42e42d50d807356',
+            'recovered_original_assembler_sha256': RECOVERED_ASSEMBLER_SHA,
             'assembler_source_sha256': sha(read(HERE / 'local_assemble_run006.py')),
             'prepare_source_sha256': PREPARE_SHA, 'versions': versions,
             'stop_after_submit_readback': True, 'provider_monitoring_authorized': False,
@@ -416,7 +445,8 @@ def assemble(*, repository_root, base_root, source_proposal_root, observation_ro
         'original_v31_v33_evidence_preserved': True, 'v35_runtime_closure_verified': False,
         'v35_original_dispatch_chain_verified': lineage_files is not None,
         'successor_epoch': None, 'provider_calls': 0, 'model_or_GPU_calls': 0, 'operational_success': False,
-        'separate_final_operator_wire_monitor_review_and_fresh_provider_bracket_required': True}
+        'separate_final_operator_wire_review_and_fresh_provider_bracket_required': True,
+        'provider_monitoring_authorized': False, 'stop_after_submit_readback': True}
 
 
 def main():

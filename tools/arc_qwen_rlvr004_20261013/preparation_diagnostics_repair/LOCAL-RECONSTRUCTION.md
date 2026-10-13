@@ -27,3 +27,16 @@ integration authenticates a genuine 259-member frozen source reconstruction and
 fails at an empty synthetic Dataset mount, before installation/model/GPU work.
 These tests cannot verify the unidentified manual run005 failure's cause, real
 offline installation, CUDA/model execution, or PUBLIC120 scoring.
+
+On this Windows host, primary WSL runs retained the requested
+`/mnt/c/Users/wurre/Desktop/IRIS-X/.irisx/tmp` fixture root. The Windows filesystem
+does not support the fixture FIFO, POSIX 0600 mode, and some symlink/metadata
+operations: both normal and optimized primary diagnostic runs recorded 65 tests
+with 1 failure and 5 errors. Those original logs remain preserved.
+
+A separate supplemental run uses the same source and WSL Python 3.12 while
+placing only POSIX-sensitive fixtures under the retained WSL repository's new
+ignored `.irisx/run006-local-test-tmp` directory. The integration bundle remains
+under the required ignored local repository root. No recovered source/test bytes
+or security assertions are changed to make the supplemental run pass; its result
+is reported separately from the primary host filesystem limitations.

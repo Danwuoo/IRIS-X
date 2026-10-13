@@ -5,11 +5,11 @@ fragments; these are new local bytes, not recovered final transport bytes.
 Official local SDK calls remain bounded, write-once and review-gated. The current
 owner scope ends after one accepted RUN identity/source/settings/status readback.
 """
-import argparse, contextlib, hashlib, json, os, stat, sys, time, types, zipfile
+import argparse, contextlib, hashlib, json, math, os, stat, sys, time, types, zipfile
 from pathlib import Path
 
 # Acyclic local dependency pin. Compile source before any authentication or RPC.
-COMMON_SOURCE_SHA256='fa414ecbdfdf21cba3385a553f5ff9a3a640e19fd5416a6d1f419c8faa03f125'
+COMMON_SOURCE_SHA256='b8756bf8cbd5c08ffb51f7f8dfdc990a7b42e12a8cded1c4f8e0ad9fa18a43e6'
 _common_path=Path(__file__).absolute().with_name('operator_common.py')
 if any(p.is_symlink() for p in (_common_path,*_common_path.parents)) or not stat.S_ISREG(_common_path.stat().st_mode):
     raise ValueError('unsafe_local_common_source')
@@ -54,6 +54,90 @@ def predecessor_proof(m,root):
     path=SCRIPT.parent.parent/'publication_run005/rl_transport.py'
     historical=load_source_module('run006_frozen_code18_history',path,FROZEN_TRANSPORT_SHA256)
     return historical.predecessor_proof(m,root)
+
+def original_v35_dispatch_proof(m,root):
+    """Replay authentic historical v35 dispatch; never assert runtime closure."""
+    d=m['v35_original_dispatch_chain'];h=m['v35_launch_lineage_verifier']
+    need(type(d)is dict and set(d)=={'path','bytes','sha256'} and type(h)is dict and set(h)=={'path','bytes','sha256'},'v35_lineage_descriptor_schema')
+    relative(d['path']);relative(h['path'])
+    need(Path(d['path']).name=='LAUNCH-LINEAGE.json','v35_lineage_document_name')
+    need(h['sha256']==V35_LINEAGE_HELPER_SHA,'v35_lineage_verifier_review_pin')
+    verified(root/d['path'],d['sha256'],d['bytes'],4*1024**2)
+    verified(root/h['path'],h['sha256'],h['bytes'],1024**2)
+    helper=load_source_module('reviewed_v35_lineage_'+h['sha256'],root/h['path'],h['sha256'],1024**2)
+    proof=helper.verify((root/d['path']).parent,d['sha256'])
+    need(type(proof)is dict and proof['format']=='irisx/run006-original-v35-launch-lineage-v1' and proof['status']=='ORIGINAL_DISPATCH_LINEAGE_VERIFIED_NO_RUNTIME_CLOSURE','v35_lineage_verified_result')
+    need(proof['notebook_version']==35 and proof['code_version']==18 and proof['saved_source_sha256']==V35_SAVED_SOURCE,'v35_original_launch_identity')
+    need(type(proof['original_epoch'])is int and proof['original_epoch']==1791871874 and type(proof['original_deadline'])is int and proof['original_deadline']==1791915074,'v35_original_launch_clock')
+    need(proof['v35_original_dispatch_chain_verified'] is True and m['v35_original_dispatch_chain_verified'] is True,'v35_actual_dispatch_verification_required')
+    need(all(proof[k] is False for k in ('runtime_or_model_closure_verified','physical_costs_known','manual_failure_root_cause_verified','scientific_result_verified')),'v35_launch_not_runtime_closure')
+    need(proof['code18_publication_manifest_sha256']=='76b2e004770e1f41e9c2352fa9817bc185ea5fded75d9fd8ce29d50453e7b7ca' and proof['code18_assembly_inventory_sha256']=='de68ffa281990b844e41ea41d11357b2214a973048cd8e14ae64cab39159a5a0','v35_original_release_identity')
+    need(proof['provider_calls']==0 and proof['model_or_GPU_calls']==0,'v35_local_replay_only')
+    return proof
+
+def strict_object(raw):
+    def pairs(items):
+        result={}
+        for key,value in items:
+            need(key not in result,'duplicate_json_key');result[key]=value
+        return result
+    def finite(token):
+        value=float(token);need(math.isfinite(value),'nonfinite_json');return value
+    result=json.loads(raw,object_pairs_hook=pairs,parse_float=finite,parse_constant=lambda _:need(False,'nonfinite_json'))
+    need(type(result)is dict,'json_object_required');return result
+
+def current_predecessor_proof(m,root):
+    """Bind a new official live readback, preserving the original v35 lineage."""
+    d=m['current_predecessor_observation'];relative(d['path'])
+    need(set(d)=={'path','bytes','sha256'},'current_observation_descriptor')
+    proof=strict_object(verified(root/d['path'],d['sha256'],d['bytes'],4*1024**2));base=(root/d['path']).parent
+    if proof.get('format')=='irisx/run006-local-current-predecessor-observation-v1':
+        closed=proof['closed_files'];evidence=proof['evidence']
+        need(type(closed)is dict and type(evidence)is dict and 0<len(closed)<=12000,'current_closed_inventory')
+        raw={}
+        for name,desc in evidence.items():
+            need(type(desc)is dict and set(desc)=={'path','bytes','sha256'},'current_evidence_descriptor');relative(desc['path'])
+            need(closed.get(desc['path'])=={'bytes':desc['bytes'],'sha256':desc['sha256']},'current_evidence_inventory_link')
+            raw[name]=verified(base/desc['path'],desc['sha256'],desc['bytes'],4*1024**2)
+        need(len({desc['path'] for desc in evidence.values()})==len(evidence),'current_duplicate_evidence_path')
+        actual=set()
+        for path in secure_path(base).rglob('*'):
+            secure_path(path);need(path.is_dir() or stat.S_ISREG(path.stat().st_mode),'current_special_entry')
+            if path.is_file():actual.add(path.relative_to(base).as_posix())
+        need(actual==set(closed)|{Path(d['path']).name},'current_closed_directory')
+        for name,row_ in closed.items():
+            relative(name);verified(base/name,row_['sha256'],row_['bytes'],4*1024**2)
+        need({'saved_source','notebook_before','notebook_after','dataset_before','dataset_after'}<=set(raw),'current_required_raw_readbacks')
+        before=strict_object(raw['notebook_before']);after=strict_object(raw['notebook_after'])
+        dataset_before=strict_object(raw['dataset_before']);dataset_after=strict_object(raw['dataset_after']);saved=raw['saved_source']
+    else:
+        need(proof.get('format')=='irisx/run006-live-predecessor-observation-v1','current_observation_schema')
+        before=strict_object(verified(base/'metadata-before.json',proof['metadata_before_sha256'],cap=4*1024**2))
+        after=strict_object(verified(base/'metadata-after.json',proof['metadata_after_sha256'],cap=4*1024**2))
+        dataset_before=dataset_after=strict_object(verified(base/'dataset.json',proof['dataset_metadata_sha256'],cap=4*1024**2))
+        saved=verified(base/'saved_source.ipynb',proof['saved_source_sha256'],cap=4*1024**2)
+    need(proof['code_version']==CODE_PREDECESSOR and proof['notebook_version']==NOTEBOOK_PREDECESSOR and proof['saved_source_sha256']==OLD_SOURCE,'current_observation_identity')
+    need(proof['provider_status']==REMOTE_PREDECESSOR['provider_status'] and proof['provider_status'] in TERMINAL and proof.get('gpu_unavailable_stop',False) is False,'current_terminal_not_gpu_stop')
+    need(type(proof['observed_epoch'])in (int,float) and math.isfinite(proof['observed_epoch']) and proof['observed_epoch']>0,'current_observation_epoch')
+    need(all(proof[k] is False for k in ('runtime_closure_verified','manual_failure_root_cause_verified','manual_editor_session_mapping_verified','scientific_result_verified','physical_costs_known')),'current_no_invented_runtime_proof')
+    need(sha(saved)==OLD_SOURCE,'current_saved_source')
+    prior_pins=[DREF+'/'+str(CODE_PREDECESSOR),*NON_CODE_PINS]
+    for meta in (before,after):
+        need(meta['id']==138123872 and meta['ref']==REF and meta['currentVersionNumber']==NOTEBOOK_PREDECESSOR and meta['isPrivate'] is True,'current_raw_notebook_identity')
+        need(meta['enableGpu'] is True and meta.get('enableInternet',False) is False and meta.get('enableTpu',False) is False and meta['dockerImage']==DOCKER and meta['machineShape']=='NvidiaRtxPro6000' and meta['modelDataSources'] in MODEL_ALIASES and not meta.get('kernelDataSources'),'current_raw_settings')
+        need(sorted(meta['datasetDataSources'])==sorted('/'.join(x.split('/')[:2]) for x in prior_pins) and meta['competitionDataSources']==['arc-prize-2026-arc-agi-3'],'current_raw_mount_identities')
+    for meta in (dataset_before,dataset_after):
+        need(meta['id']==12504696 and meta['ref']==DREF and meta['currentVersionNumber']==CODE_PREDECESSOR and meta['isPrivate'] is True,'current_raw_dataset_identity')
+    if CODE_PREDECESSOR==18 and NOTEBOOK_PREDECESSOR==35:
+        cfg=config(saved)
+        need(OLD_SOURCE==V35_SAVED_SOURCE and cfg['PREDISPATCH_EPOCH']==1791871874 and cfg['OUTPUT_ROOT']=='/kaggle/working/irisx-qwen14b-rlvr-20261012-run005' and cfg['SOURCE_PARENT']=='/kaggle/working/irisx-qwen14b-rlvr-20261012-source005','current_original_v35_source_clock')
+        need(cfg['SESSION_SECONDS']==43200 and cfg['EXECUTION_CUTOFF_SECONDS']==42000 and cfg['OUTER_CUTOFF_SECONDS']==42180 and cfg['PROVIDER_RUNTIME_SECONDS']==42300,'current_original_v35_limits')
+    a=m['owner_session_stop_attestation'];relative(a['path'])
+    owner=strict_object(verified(root/a['path'],a['sha256'],a['bytes'],65536))
+    need(owner['format']=='irisx/run006-local-owner-direction-v1' and owner['owner_id']=='danielwuu','current_owner_direction_identity')
+    need(owner['one_accepted_run_authorized'] is True and owner['post_run_readback_once'] is True and owner['continuous_monitoring_authorized'] is False and owner['watcher_authorized'] is False and owner['automatic_resubmission_after_delivery_authorized'] is False,'current_owner_one_submit_scope')
+    need(owner['gpu_quota_query_authorized'] is False and owner['new_resource_or_paid_provisioning_authorized'] is False and owner['session_limit_seconds']==43200 and owner['public_task_count']==120 and owner['public_query_denominator']==167 and owner['runtime_or_scientific_success_claim'] is False,'current_owner_resource_science_scope')
+    return proof
 
 def descriptor_at(root,d,cap=128*1024**2):
     relative(d['path']);return verified(root/d['path'],d['sha256'],d['bytes'],cap)
@@ -203,31 +287,36 @@ def bracket(provider,version,expected_sha=None,n=None):
     event(prefix+'-status',{'status':status.status.name,'failure_message':clean_message(status.failure_message)})
     return {'version':version,'status':status.status.name,'source_sha256':sha(raw),'metadata_sha256':b['sha256'],'metadata_before_sha256':a['sha256'],'observed_epoch':time.time(),'gpu_stop':classification=='GPU_UNAVAILABLE_STOP'},raw,after.metadata
 
-def dataset_check(provider,version):
+def dataset_check(provider,version, *, capture_prewrite=False, metadata_only=False):
+    """Preserve old versions including the one falling out of the latest-ten view."""
     d=provider.dataset();need(d.id==12504696 and d.ref==DREF and d.is_private is True and d.current_version_number==version,'dataset_predecessor_identity')
     need(version in (CODE_PREDECESSOR,CODE_VERSION),'dataset_check_exact_successor_versions')
     need(d.title=='IRIS-X Learning Agent Code 20261011' and d.license_name=='Other (specified in description)' and getattr(d,'owner_ref','danielwuu')=='danielwuu','dataset_title_license_owner')
     versions=[v.version_number for v in d.versions]
     need(len(versions)==len(set(versions)) and all(type(v)is int and 1<=v<=version for v in versions),'invalid_dataset_version_history')
     full=set(versions)==set(range(1,version+1))
-    need(full or versions==list(range(version,version-10,-1)),'unexpected_dataset_history_window')
-    baseline=STATE/'historical-code-v7-inventory.json';historical=[]
-    pinned={1:'9a8b5f698c942407b74cc5b16e0ad1d77dd2ac4a6800f991c8bd9f9584353a1b',2:'402aebb539a8163ed516d2e2915c75f5b7a16c56e1d244ac99088f62a2f2e6b9',3:'8c1b22bd9b676ad2a10f31ee820ed4d1732f04dca9d0a81835fdc456c6bd318d',4:'dc87ea2368b0ce1b750b3572327d57adc670474a8c511a485c43704b62c3e01f',5:'54fbc4f2d6543cc82255fdd71113ffce44ca88aab83442f1ac9d80abbe52e255',6:'8db523abc333759e431e396146e991564523aa2d2daac30374a384f86023dcac'}
-    for old in (1,2,3,4,5,6,7):
-        # Numeric7 is sampled before this successor's code write, then strictly rechecked.
-        if old in versions and not (old==7 and version==CODE_PREDECESSOR):continue
+    need(full or versions==list(range(version,max(0,version-10),-1)),'unexpected_dataset_history_window')
+    need(type(capture_prewrite)is bool and type(metadata_only)is bool and not (capture_prewrite and metadata_only),'history_check_mode')
+    if capture_prewrite:need(version==CODE_PREDECESSOR and not code_state('.claim.json').exists(),'history_capture_only_before_claim')
+    pinned={1:'9a8b5f698c942407b74cc5b16e0ad1d77dd2ac4a6800f991c8bd9f9584353a1b',2:'402aebb539a8163ed516d2e2915c75f5b7a16c56e1d244ac99088f62a2f2e6b9',3:'8c1b22bd9b676ad2a10f31ee820ed4d1732f04dca9d0a81835fdc456c6bd318d',4:'dc87ea2368b0ce1b750b3572327d57adc670474a8c511a485c43704b62c3e01f',5:'54fbc4f2d6543cc82255fdd71113ffce44ca88aab83442f1ac9d80abbe52e255',6:'8db523abc333759e431e396146e991564523aa2d2daac30374a384f86023dcac',7:'55ee43dcab68f291aa517ad823c58993c8ec813a520173e09676598ae9dcda79'}
+    historical=[]
+    # The successor latest-ten window begins at predecessor-8. Capture through
+    # predecessor-9 before mutation, including the version that will disappear.
+    for old in (() if metadata_only else range(1,max(7,CODE_PREDECESSOR-9)+1)):
         files=provider.list_files(dataset=True,version=old);need(bool(files),'historical_numeric_inventory_empty')
         digest=sha(canonical(files))
         if old in pinned:need(digest==pinned[old],'historical_numeric_version_inventory_changed')
-        elif baseline.exists():
-            proof=obj(baseline);need(proof['numeric_version']==7 and proof['dataset_id']==12504696 and proof['inventory_sha256']==digest and proof['files_inventory']==files,'numeric7_baseline_changed')
         else:
-            need(version==CODE_PREDECESSOR and not (code_state('.claim.json')).exists(),'numeric7_baseline_must_precede_mutation')
-            write_new(baseline,{'dataset_id':12504696,'numeric_version':7,'captured_while_current_version':CODE_PREDECESSOR,'inventory_sha256':digest,'files_inventory':files,'payload_bytes_rehashed':False})
+            baseline=STATE/f'historical-code-v{old}-inventory.json'
+            if baseline.exists():
+                proof=obj(baseline);need(proof['numeric_version']==old and proof['dataset_id']==12504696 and proof['captured_while_current_version']==CODE_PREDECESSOR and proof['inventory_sha256']==digest and proof['files_inventory']==files and proof['payload_bytes_rehashed'] is False,'historical_baseline_changed')
+            else:
+                need(capture_prewrite and version==CODE_PREDECESSOR and not code_state('.claim.json').exists(),'historical_baseline_missing_prewrite_required')
+                write_new(baseline,{'dataset_id':12504696,'numeric_version':old,'captured_while_current_version':CODE_PREDECESSOR,'inventory_sha256':digest,'files_inventory':files,'payload_bytes_rehashed':False})
         proof={'numeric_version':old,'files':len(files),'bytes_listed':sum(files.values()),'inventory_sha256':digest,'payload_bytes_rehashed':False,'scope':'Official numeric historical file-name/size inventory only; no historical payload byte claim.'}
         historical.append(proof);event('historical-retention',{'dataset_id':12504696,**proof,'files_inventory':files})
     after=provider.dataset();need(after.id==d.id and after.ref==d.ref and after.is_private is True and after.current_version_number==version and [v.version_number for v in after.versions]==versions and after.title==d.title and after.license_name==d.license_name and getattr(after,'owner_ref','danielwuu')==getattr(d,'owner_ref','danielwuu'),'dataset_history_bracket_changed')
-    return {'id':d.id,'ref':d.ref,'version':version,'private':True,'license_name':d.license_name,'title':d.title,'owner_ref':getattr(d,'owner_ref',None),'versions':versions,'history_metadata_scope':'complete' if full else 'exact_latest_ten_plus_numeric_historical_inventory','older_version_metadata_proof':historical}
+    return {'id':d.id,'ref':d.ref,'version':version,'private':True,'license_name':d.license_name,'title':d.title,'owner_ref':getattr(d,'owner_ref',None),'versions':versions,'history_metadata_scope':('complete_metadata_only' if full else 'exact_latest_ten_metadata_only') if metadata_only else ('complete' if full else 'exact_latest_ten_plus_numeric_historical_inventory'),'older_version_metadata_proof':historical,'retention_check_complete':not metadata_only,'prewrite_capture_mode':capture_prewrite}
 
 
 def predecessor(provider,m,role):
@@ -242,7 +331,7 @@ def predecessor(provider,m,role):
     return snapshot
 
 def update_code(provider,m,args):
-    no_gpu_stop();d=m['datasets'][0];dataset_check(provider,CODE_PREDECESSOR);predecessor(provider,m,'inactive')
+    no_gpu_stop();d=m['datasets'][0];dataset_check(provider,CODE_PREDECESSOR,capture_prewrite=True);predecessor(provider,m,'inactive')
     payload=Path(args.manifest).resolve().parent/d['transport_archive']['path'];verified(payload,d['transport_archive']['sha256'],d['transport_archive']['bytes'])
     name=code_claim_name();j={'manifest_sha256':args.manifest_sha,'stage':'claimed','init_calls':0,'put_calls':0,'version_calls':0,'payload_sha256':file_sha(payload),'expected_version':CODE_VERSION,'expected_predecessor_version':CODE_PREDECESSOR}
     c=claim(name,j);j['claim_sha256']=c['sha256'];journal(name,j)
@@ -347,10 +436,13 @@ def kernel_wire(n,raw):
 
 def save(provider,m,args,role):
     no_gpu_stop();n=row(m,role);active=role=='rlvr004'
+    review=json.loads(verified(args.review,args.review_sha))
+    git_commit=review.get('candidate_git_commit');git_verified=review.get('candidate_git_remote_verified') is True
+    need(not git_verified or type(git_commit)is str and re.fullmatch('[a-f0-9]{40}',git_commit) is not None,'review_git_publication_proof')
     code=obj(code_state('-receipt.json'));need(code['dataset_id']==12504696 and code['version']==CODE_VERSION and code['is_private'] is True and code['manifest_sha256']==args.manifest_sha and code['exact_byte_roundtrip'] is True,'verified_code_required');dataset_check(provider,CODE_VERSION)
     gates=run_prerequisites(m,args) if active else {}
     pre=predecessor(provider,m,role);no_gpu_stop();name='notebook-'+role
-    j={'role':role,'reference':REF,'kernel_id':138123872,'expected_version':n['expected_version'],'manifest_sha256':args.manifest_sha,'material_approval_sha256':args.material_sha,'transport_review_sha256':args.review_sha,'save_calls':0,'stage':'claimed','predecessor':pre,'git_publication_completed':False,'git_commit':None,'stop_after_submit_readback':True,'provider_monitoring_authorized':False,**gates}
+    j={'role':role,'reference':REF,'kernel_id':138123872,'expected_version':n['expected_version'],'manifest_sha256':args.manifest_sha,'material_approval_sha256':args.material_sha,'transport_review_sha256':args.review_sha,'save_calls':0,'stage':'claimed','predecessor':pre,'git_publication_completed':git_verified,'git_commit':git_commit if git_verified else None,'stop_after_submit_readback':True,'provider_monitoring_authorized':False,**gates}
     c=claim(name,j);j['claim_sha256']=c['sha256'];journal(name,j)
     raw=verified(Path(args.manifest).resolve().parent/n['path'],n['sha256'],n['bytes'])
     if active:
@@ -374,13 +466,17 @@ def save(provider,m,args,role):
         raise ProviderReportedError(clean_message(r.error))
     need(r.kernel_id==138123872 and r.ref in (REF,'/code/'+REF) and r.version_number==n['expected_version'] and not r.invalid_dataset_sources and not r.invalid_model_sources and not r.invalid_competition_sources and not r.invalid_kernel_sources,'save_response_identity')
     j.update(stage='save_accepted',save_accepted=True,response_version=r.version_number,accepted_epoch=time.time());journal(name,j)
+    if active:
+        # One immediate source/settings/status bracket. QUEUED is delivered as
+        # QUEUED; no polling, output retrieval or RUNNING wait follows.
+        return verify_notebook(provider,m,args,role)
     return {'status':'SAVE_ACCEPTED','version':r.version_number,'role':role}
 
 def verify_notebook(provider,m,args,role):
     name='notebook-'+role;n=row(m,role);j=obj(STATE/(name+'-journal.json'))
     if role=='rlvr004':
         claim('active-readback',{'manifest_sha256':args.manifest_sha,'numeric_notebook_version':ACTIVE_VERSION,'single_post_submit_readback':True})
-    need(j['expected_version']==n['expected_version'] and j['manifest_sha256']==args.manifest_sha and j['save_calls']==1 and j['claim_sha256']==file_sha(STATE/(name+'.claim.json')) and j['git_publication_completed'] is False and j['git_commit'] is None,'launch_journal_binding')
+    need(j['expected_version']==n['expected_version'] and j['manifest_sha256']==args.manifest_sha and j['save_calls']==1 and j['claim_sha256']==file_sha(STATE/(name+'.claim.json')),'launch_journal_binding')
     raw=read(STATE/'active-finalized.ipynb') if role=='rlvr004' else read(Path(args.manifest).resolve().parent/n['path'])
     need(sha(raw)==j['source_sha256'],'submitted_source_binding')
     if role=='rlvr004':
@@ -393,7 +489,7 @@ def verify_notebook(provider,m,args,role):
     source_path=STATE/(name+'-saved.ipynb')
     if source_path.exists():need(read(source_path)==saved,'saved_source_changed_after_receipt')
     else:write_new(source_path,saved)
-    result={'manifest_sha256':args.manifest_sha,'reference':REF,'kernel_id':138123872,'version':n['expected_version'],'status':snap['status'],'role':role,'submitted_source_sha256':sha(raw),'saved_source':descriptor(source_path),'normalized_source_exact':True,'model_sources_returned':meta.model_data_sources,'dataset_sources_returned':meta.dataset_data_sources,'settings':meta.to_dict(),'launch_journal_sha256':file_sha(STATE/(name+'-journal.json')),'finalization_sha256':file_sha(STATE/'finalization.json') if role=='rlvr004' else None,'predecessor':j['predecessor'],'snapshot':snap,'git_publication_completed':j['git_publication_completed'],'git_commit':j['git_commit'],'stop_after_submit_readback':True,'provider_monitoring_authorized':False}
+    result={'manifest_sha256':args.manifest_sha,'reference':REF,'kernel_id':138123872,'version':n['expected_version'],'status':snap['status'],'role':role,'submitted_source_sha256':sha(raw),'saved_source':descriptor(source_path),'normalized_source_exact':True,'provider_acceptance_reconciled':j.get('stage')=='save_intent','single_post_submit_readback':role=='rlvr004','model_sources_returned':meta.model_data_sources,'dataset_sources_returned':meta.dataset_data_sources,'settings':meta.to_dict(),'launch_journal_sha256':file_sha(STATE/(name+'-journal.json')),'finalization_sha256':file_sha(STATE/'finalization.json') if role=='rlvr004' else None,'predecessor':j['predecessor'],'snapshot':snap,'git_publication_completed':j['git_publication_completed'],'git_commit':j['git_commit'],'stop_after_submit_readback':True,'provider_monitoring_authorized':False}
     dest=STATE/(name+'-receipt.json')
     if dest.exists():
         prior=obj(dest);need(prior['saved_source']==result['saved_source'] and prior['launch_journal_sha256']==result['launch_journal_sha256'],'receipt_reconciliation_changed');event(name+'-observation',result)
@@ -412,11 +508,10 @@ def main():
         m=load_contract(a)
         if a.action=='validate':print(json.dumps({'status':'LOCAL_CONTRACT_PASS','provider_calls':0}));return 0
         execution_gate(a)
-        if a.action in ('activate','verify-run'):execution_gate(a)
         if a.action in ('update-code','save-inactive','activate'):no_gpu_stop()
         with lock():
             provider=Provider()
-            if a.action=='readiness':result={'dataset':dataset_check(provider,CODE_PREDECESSOR),'predecessor':predecessor(provider,m,'inactive')}
+            if a.action=='readiness':result={'dataset':dataset_check(provider,CODE_PREDECESSOR,metadata_only=True),'predecessor':predecessor(provider,m,'inactive')}
             elif a.action=='update-code':result=update_code(provider,m,a)
             elif a.action in ('verify-code','verify-code-files'):result=verify_code(provider,m,a,a.action.endswith('files'))
             elif a.action in ('save-inactive','activate'):result=save(provider,m,a,'inactive' if a.action=='save-inactive' else 'rlvr004')

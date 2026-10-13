@@ -1,10 +1,14 @@
-"""Draft numeric37 run006 evidence successor with independent consumer."""
+"""Locally rebound run006 collector, inert until a new owner continuation.
+
+The current publication transport rejects monitoring actions. Keeping selected
+output validation here does not authorize polling, collection or a watcher.
+"""
 import argparse, hashlib, importlib.util, json, math, stat, sys, time, types
 from pathlib import Path
 
 # Upstream-only pins keep collector -> transport -> common acyclic and source-only.
-COMMON_SOURCE_SHA256='fa414ecbdfdf21cba3385a553f5ff9a3a640e19fd5416a6d1f419c8faa03f125'
-TRANSPORT_SOURCE_SHA256='c43c9218f6769ebd6bca9f77aa0e757a6a499440f1091701dfdd86ea8b94c308'
+COMMON_SOURCE_SHA256='b8756bf8cbd5c08ffb51f7f8dfdc990a7b42e12a8cded1c4f8e0ad9fa18a43e6'
+TRANSPORT_SOURCE_SHA256='b746f84bd6e0f4cf971c77650f6bdc1873ef5c3c9efb0f5d07dece15f461ef63'
 _local_sources={}
 for _name,_digest in [('operator_common.py',COMMON_SOURCE_SHA256),('rl_transport.py',TRANSPORT_SOURCE_SHA256)]:
     _path=Path(__file__).absolute().with_name(_name)
@@ -35,7 +39,12 @@ def bindings(args):
     need(l['manifest_sha256']==j['manifest_sha256']==f['manifest_sha256']==args.manifest_sha and j['save_calls']==1 and j['expected_version']==l['version']==transport.ACTIVE_VERSION and j['kernel_id']==l['kernel_id']==138123872,'exact_launch_identity')
     need(l['reference']==j['reference']==REF and l['role']==j['role']=='rlvr004','launch_reference_role')
     need(j['material_approval_sha256']==args.material_sha and j['transport_review_sha256']==args.review_sha and j['monitor_review_sha256']==args.monitor_sha,'launch_review_hashes')
-    need(l['git_publication_completed'] is False and l['git_commit'] is None,'honest_git_provenance')
+    need(type(l['git_publication_completed']) is bool and type(j['git_publication_completed']) is bool and
+         l['git_publication_completed'] == j['git_publication_completed'] and
+         l['git_commit'] == j['git_commit'], 'honest_git_provenance')
+    need((l['git_publication_completed'] and type(l['git_commit']) is str and
+          len(l['git_commit']) == 40 and all(c in '0123456789abcdef' for c in l['git_commit'])) or
+         (not l['git_publication_completed'] and l['git_commit'] is None), 'honest_git_commit')
     raw=verified(STATE/'active-finalized.ipynb',f['finalized_sha256']);n=transport.row(m,'rlvr004')
     template=verified(Path(args.manifest).resolve().parent/n['path'],f['template_sha256'])
     transport.check_finalization(m,args,f)
