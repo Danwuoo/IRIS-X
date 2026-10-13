@@ -14,6 +14,14 @@ After the one necessary post-submit identity/source/settings/status readback,
 deliver and stop monitoring; no watcher, polling or automatic next attempt.
 See `docs/decisions/0073-repair-failed-run006-and-submit-once.md`.
 
+This continuation is now consumed: private code v20, inactive v38 and active
+RUN v39 were accepted. The sole readback at2026-10-14 00:14:18 Taipei reported
+RUNNING with matching source/settings, not GPU or scientific success. Preserve
+run007 epoch1791908053/deadline1791951253 and the failed run006 evidence/charges.
+GPU status/output queries, watchers and automatic next attempts are stopped
+until a new owner message. See
+`docs/plan/2026-10-14-run007-submission-handoff.md`.
+
 ## Active local run006 recovery and one-shot handoff (2026-10-13)
 
 The owner's new instruction reopens development on a new branch, preserving the
