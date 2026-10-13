@@ -1,5 +1,19 @@
 # IRIS-X Repository Governance
 
+## Active failed-run006 repair and one-shot run007 (2026-10-13)
+
+The owner's new failed-notebook instruction authorizes numeric v37 retrieval,
+targeted repair, CPU tests with independent subagent review, private Git branch
+publication and one distinct private Dataset/notebook successor RUN. Decision
+0073 governs this continuation. Preserve v37 ERROR, exact submitted source,
+epoch1791901490/deadline1791944690, physical work and evaluator-only evidence.
+Use genuine live versions and a fresh whole-session clock only for the new run.
+Keep offline materials, existing hardware, all process/science/scorer gates and
+PUBLIC120's full120/167 denominator. The local chat remains sole publisher.
+After the one necessary post-submit identity/source/settings/status readback,
+deliver and stop monitoring; no watcher, polling or automatic next attempt.
+See `docs/decisions/0073-repair-failed-run006-and-submit-once.md`.
+
 ## Active local run006 recovery and one-shot handoff (2026-10-13)
 
 The owner's new instruction reopens development on a new branch, preserving the
