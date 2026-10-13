@@ -93,6 +93,60 @@ class GenuineInputTests(unittest.TestCase):
     def test_recovered_assembler_provenance_is_actual_unchanged_bytes(self):
         self.assertEqual(a.sha(a.read(a.HERE / 'assemble_run006.py')), a.RECOVERED_ASSEMBLER_SHA)
 
+    def test_actual_final_candidate_has_minimal_current_owner_identity(self):
+        candidate = self.local / 'candidate-run006'
+        if not candidate.exists():
+            self.skipTest('retained authentic final candidate is intentionally outside Git')
+        release = a.obj(a.read(candidate / 'notebook-release.json'))
+        owner_raw = a.read(self.local / 'OWNER-REQUEST.json')
+        direction = a.obj(owner_raw)
+        self.assertEqual(release['original_owner_request'], {
+            'owner_id': direction['owner_id'], 'instruction': direction['instruction'],
+            'request_id': 'local-run006-owner-direction-sha256-' + a.sha(owner_raw)})
+        self.assertEqual(set(release['original_owner_request']), {'owner_id', 'request_id', 'instruction'})
+
+    def test_actual_final_candidate_pure_jit_and_wire_preserve_contract(self):
+        candidate = self.local / 'candidate-run006'
+        if not candidate.exists():
+            self.skipTest('retained authentic final candidate is intentionally outside Git')
+        # Deliberate CPU review epoch only. Never write these generated active
+        # documents into publication state, reserve a clock or call a provider.
+        review_epoch = 1
+        manifest_path = candidate / 'publication-manifest.json'
+        manifest = a.obj(a.read(manifest_path))
+        transport_path = a.HERE.parent / 'publication_run006/rl_transport.py'
+        transport = a.p.load_module(a.pinned(transport_path,
+            'b746f84bd6e0f4cf971c77650f6bdc1873ef5c3c9efb0f5d07dece15f461ef63'),
+            'local_recovery_pure_transport_test', transport_path)
+        documents = transport.finalized_documents(manifest, manifest_path, review_epoch)
+        self.assertEqual(documents, transport.finalized_documents(manifest, manifest_path, review_epoch))
+        self.assertEqual(set(documents), {'active-finalized.ipynb', 'original-request.json',
+                                         'operator.json', 'parent-private-scorer.json'})
+        owner = a.obj(documents['original-request.json'])
+        self.assertEqual(owner['original_epoch'], review_epoch)
+        self.assertEqual(owner['request_id'], a.obj(a.read(candidate / 'notebook-release.json'))['original_owner_request']['request_id'])
+        cfg = transport.config(documents['active-finalized.ipynb'])
+        self.assertEqual((cfg['PREDISPATCH_EPOCH'], cfg['SESSION_SECONDS'], cfg['EXECUTION_CUTOFF_SECONDS'],
+                          cfg['OUTER_CUTOFF_SECONDS'], cfg['PROVIDER_RUNTIME_SECONDS']),
+                         (review_epoch, 43200, 42000, 42180, 42300))
+        self.assertEqual((cfg['OUTPUT_ROOT'], cfg['SOURCE_PARENT']), (a.RUN, a.SOURCE))
+        self.assertIs(cfg['MANUAL_START'], True)
+        self.assertIs(cfg['ENABLE_MODEL'], True)
+        active = transport.row(manifest, 'rlvr004')
+        with patch.object(transport, 'PINS', active['dataset_sources']):
+            wire = transport.kernel_wire(active, documents['active-finalized.ipynb'])
+        self.assertEqual(wire['dataset_data_sources'], active['dataset_sources'])
+        self.assertEqual(wire['competition_data_sources'], ['arc-prize-2026-arc-agi-3'])
+        self.assertEqual(wire['machine_shape'], 'NvidiaRtxPro6000')
+        self.assertEqual(wire['session_timeout_seconds'], 42300)
+        self.assertIs(wire['is_private'], True)
+        self.assertIs(wire['enable_gpu'], True)
+        self.assertIs(wire['enable_tpu'], False)
+        self.assertIs(wire['enable_internet'], False)
+        self.assertEqual(transport.clock(review_epoch)['global_deadline_epoch'], review_epoch + 43200)
+        parent = a.obj(documents['parent-private-scorer.json'])
+        self.assertEqual(parent['scorer_pins_sha256'], a.obj(a.read(candidate / 'notebook-release.json'))['scorer_pins_sha256'])
+
     def test_same_packet_cannot_use_an_unpinned_digest(self):
         root = self.local / 'sealed-inputs/observation'
         if not root.exists():
