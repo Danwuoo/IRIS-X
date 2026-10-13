@@ -1,5 +1,30 @@
 # IRIS-X Repository Governance
 
+## Active native research continuation (2026-10-13 UTC)
+
+The owner's new instruction reopens ongoing native-cloud research from verified
+handoff commit `2901a97a1aa934d15e468e3e6d57bd96d95791e9`, after first reading
+and understanding the project's historical research and current experiment.
+Decision0075 governs the new cycle: verify, analyze/plan, delegate development,
+test/review independently, preserve, submit and monitor, retrieve exact results,
+then plan the next round. Historical stop-after-submit and transfer-only limits
+below remain records of consumed tasks, not limits on this new continuation.
+Preserve all prior sources, tags, attempts, clocks and physical charges; use a
+new branch and distinct source/run identities. The current first scientific
+comparison remains SFT256 A, disjoint64-slot reward-learning batches B, and
+wall-matched extra-SFT C, with sealed full-denominator PUBLIC120 evaluation.
+Do not weaken pinned bytes, native numerical gates, process ownership, data
+isolation or the original scorer. The existing GitHub repository is public;
+reviewed source/tests/sanitized research pushes do not change its visibility.
+Never put raw archives, evaluator bodies, private logs or conversation in Git.
+No new charges/resources, legal agreements, official competition submission or
+success tagging without qualifying evidence.
+One publisher must reconcile actual remote identities before any write. Exact
+private-notebook access is currently unresolved; continue local work, but do not
+evade provider denial or launch without source/version/status verification.
+See `docs/plan/2026-10-13-native-research-continuation.md` and
+`research/native-continuation-20261013/` for the pre-implementation synthesis.
+
 ## Active run007 v39 retrieval and development transfer (2026-10-14)
 
 The owner reported run007 failure, requested exact v39 outputs and transfer to

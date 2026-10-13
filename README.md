@@ -6,6 +6,13 @@ Repository 包含 provider-neutral contracts、deterministic offline reference f
 
 ## 目前固定版本
 
+2026-10-13 UTC 已從 run007 移轉 commit `2901a97` 開啟新的 native research
+分支，先完成歷史研究整理，再修復 cuDNN loader 並保留既有受控實驗。
+新的循環包含提交後監看、抓取結果與下一輪；詳見
+[研究與實驗計畫](docs/plan/2026-10-13-native-research-continuation.md)。
+目前 v39 仍是 ERROR，沒有新的 PUBLIC120 分數；原 code18 失敗快照保持不變。
+下列固定版本紀錄是歷史保存，不表示新的分支已完成 GPU 驗證。
+
 2026-10-13 的 **code18／run005 原始碼快照已固定，開發與外部執行停止**。完整來源、狀態與重建邊界見 [快照紀錄](docs/plan/2026-10-13-code18-run005-repository-snapshot.md)。
 
 | 項目 | 固定紀錄 |

@@ -1,0 +1,58 @@
+{
+  "format": "irisx-native-transfer-verification-v1",
+  "verified_utc_date": "2026-10-13",
+  "source_commit": "2901a97a1aa934d15e468e3e6d57bd96d95791e9",
+  "status": "PASS",
+  "scope": "Downloaded originals, full archive integrity and safe isolated restore, independent extracted-file disk readback, focused transfer tests, and genuine relocated CPU reproduction only",
+  "original_download_count": 12,
+  "original_sha256_entries_passed": 11,
+  "archives": [
+    {
+      "name": "IRIS-X-run007-program-transfer-20261014.zip",
+      "bytes": 117108655,
+      "sha256": "92f5b47b0019690859870edfa14843b92a28c10bddd8fa4ed7c5b6fc36be784c",
+      "payload_files": 2677,
+      "payload_bytes": 164801018,
+      "inventory_sha256": "bc709c820c970eadf64ee2e777c08ff3ddf3cec8e9331f200ccce2f3106f7bef"
+    },
+    {
+      "name": "IRIS-X-run007-authentic-inputs-EVALUATOR-ONLY-20261014.zip",
+      "bytes": 77925073,
+      "sha256": "09da465d0f82f3d83802d116f3f41c77a8071a8792c7ce9ea7d45b1c134e7c99",
+      "payload_files": 2039,
+      "payload_bytes": 323155900,
+      "inventory_sha256": "c2a5c9299bcf32a0da3bc1970611e130fd8b5aa6c93b680212b3bc9b321d14f7"
+    },
+    {
+      "name": "IRIS-X-run007-v39-results-EVALUATOR-ONLY-20261014.zip",
+      "bytes": 7474823,
+      "sha256": "6302ef9ecd6c66116676370befe8720a500fb01296f5bd8f5bb83a2d4eb4f0f4",
+      "payload_files": 102,
+      "payload_bytes": 44454976,
+      "inventory_sha256": "836c2a1570e9e0662d80ab8a3ec697b16e143fd9fd265bdd6417623ecb1cb9c9"
+    }
+  ],
+  "normal_tests_passed": 17,
+  "optimized_tests_passed": 17,
+  "source_comparison": {
+    "all_files_byte_identical": true,
+    "bytes": 35787774,
+    "files": 283
+  },
+  "candidate_comparison": {
+    "all_files_byte_identical": true,
+    "bytes": 73403414,
+    "files": 426
+  },
+  "rebuild_report_sha256": "3645c2321618476401242f3f2684c82c08f15978f894fae88b76574a7ab0cf04",
+  "limitations": [
+    "CPU reproduction only; no model/GPU inference or new score",
+    "Existing full-project CI failures are not repaired or retested by this verification",
+    "Original interrupted partial rebuild and subsequent existing-output rejection preserved",
+    "Complete historical Git objects supplied by verified local bundle; lazy fetch disabled",
+    "Evaluator-only archives retained separately; nested evidence hashed without answer semantics"
+  ],
+  "historical_v39_status": "ERROR",
+  "historical_v39_public_score": null,
+  "historical_v39_checkpoint": null
+}
