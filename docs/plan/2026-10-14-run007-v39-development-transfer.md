@@ -12,6 +12,8 @@ successful scientific baseline.
   `08aaf2f26caeff0c9e80bd1caefc4c1f6e01e077`; prior final handoff
   `3f47494bae41aa2457bac95925b1196aa48b8389`.
 - Adopted/fetched main: `baaf47d4f449c534ddd4646ab9b3175bbaf1ef89`.
+  Local `main` remains the frozen `e951604b...`; the bundle also preserves the
+  fetched `refs/remotes/origin/main` separately. Do not move the frozen local ref.
   Keep snapshot `e951604b829497e81bc6e18b32662ff050bd54db`, tag
   `irisx-code18-run005-snapshot-20261013`, runtime
   `dbf21033b41aff9327cf4f91159df0133529f176` immutable and unsuccessful.
@@ -83,10 +85,14 @@ proof preservation/integrity validation, never training/solver/prompt inputs.
 
 ## Validation and limits
 
-The portable wrapper's9 focused tests pass in normal and Python-O under POSIX
-Python3.12, independently repeated. The relocated build and archive readback
-results, with exact tested commit and counts, are in delivered TEST-RESULTS.json
-and REBUILD-REPORT.json; those artifacts determine their claims.
+The portable wrapper's9 and restore helper's8 focused tests pass in normal and
+Python-O under POSIX Python3.12 (17 per mode), independently repeated. The owner
+then explicitly directed stopping further comparisons and producing the packages
+and prompt. The in-progress relocated clean-checkout build was stopped, its
+partial output preserved, and no completed relocated-build or final archive
+readback PASS is claimed. Package hashes/inventories are generated for transfer;
+the destination can perform further checks when requested. TEST-RESULTS.json
+records this limit separately from completed earlier checks.
 
 Historical run007 focused checks passed74 tests per mode (21 CPU ELF loader
 fixtures,15 environment gates,22 transport/collector,16 adapters), plus owned
