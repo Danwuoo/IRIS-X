@@ -1,5 +1,22 @@
 # IRIS-X Repository Governance
 
+## Active run007 v39 retrieval and development transfer (2026-10-14)
+
+The owner reported run007 failure, requested exact v39 outputs and transfer to
+another development environment, and explicitly requested a program package and
+state handoff prompt. Decision0074 supersedes the earlier repair-and-resubmit
+direction for this task: retrieve and verify the consumed v39, preserve original
+source/clock/charges/evaluator evidence, prepare portable CPU reproduction and
+independently reviewed transfer artifacts, and publish compact Git handoff files.
+No new runtime repair, Dataset/notebook mutation, RUN, watcher, quota query or
+automatic next attempt is authorized by this transfer. Actual v39 is ERROR with
+the submitted source: a different system cuDNN graph backend was loaded instead
+of the exact pinned wheel member. Loader-selection cause and a repair remain
+unverified. Preserve epoch1791908053/deadline1791951253 and full PUBLIC120120/167;
+there is no new scientific result or successful baseline. See
+`docs/plan/2026-10-14-run007-v39-development-transfer.md` and the ready-to-paste
+`docs/plan/2026-10-14-run007-transfer-prompt.md`. All evidence remains evaluator-only.
+
 ## Active failed-run006 repair and one-shot run007 (2026-10-13)
 
 The owner's new failed-notebook instruction authorizes numeric v37 retrieval,
