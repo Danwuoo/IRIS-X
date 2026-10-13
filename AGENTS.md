@@ -17,6 +17,14 @@ Resume results work only on a new owner message. QUICK_SAVE and accepted RUN
 are not GPU or scientific success. See
 `docs/decisions/0072-recover-local-run006-and-stop-after-submission.md`.
 
+This round is now submitted and consumed: private code v19, inactive v36 and
+active RUN v37 were accepted. The sole source/settings/status readback at
+2026-10-13 22:24:56 Taipei reported RUNNING with matching source, not verified
+GPU/inference/scorer success. Monitoring and automatic next attempts are stopped;
+no further provider status/output request follows without a new owner message.
+Retain the original run006 epoch1791901490/deadline1791944690. See
+`docs/plan/2026-10-13-run006-local-recovery-handoff.md`.
+
 ## Owner-frozen code18/run005 repository snapshot (2026-10-13)
 
 The owner explicitly stopped repairs and requested fixing the current repository

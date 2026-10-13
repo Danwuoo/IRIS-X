@@ -52,3 +52,10 @@ continued GPU monitoring for this round. Do not create watchers, poll for
 RUNNING, retrieve results, analyze scores or submit a following round until
 the owner supplies outputs or new continuation instructions. No success
 benchmark or public90 score is promised by source recovery or submission.
+
+The authorized publication is consumed: code v19, inactive v36 and RUN v37 were
+accepted with exact readbacks. Its one post-RUN bracket at 2026-10-13 22:24:56
+Taipei reported RUNNING. The immutable run006 epoch/deadline is
+1791901490/1791944690. No further monitoring, retrieval or next submission is
+authorized by this decision. The detailed source, test, receipt and artifact
+handoff is `docs/plan/2026-10-13-run006-local-recovery-handoff.md`.
