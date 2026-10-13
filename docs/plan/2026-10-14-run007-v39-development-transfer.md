@@ -58,8 +58,9 @@ success. Public gold was not opened.
 ## Program, authentic inputs and proof separation
 
 The delivery folder is `C:/Users/wurre/Desktop/IRIS-X-run007-transfer-20261014/`;
-an independently byte-verified backup is stored in the sibling
-`IRIS-X-run007-transfer-backup-20261014/final/`. Follow its README and SHA256SUMS.
+a backup copy is stored in the sibling
+`IRIS-X-run007-transfer-backup-20261014/final/`. Final backup readback was not
+performed after the owner's stop instruction. Follow its README and SHA256SUMS.
 
 - `IRIS-X-run007-program-transfer-20261014.zip`: complete tracked repository
   source, scoped offline Git bundle/history, exact code20 runtime/code ZIPs,
