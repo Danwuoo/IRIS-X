@@ -6,8 +6,8 @@ import tempfile
 import unittest
 import uuid
 
-from . import local_assemble_run007 as a
-from . import local_accept_numeric_mount_run007 as mount
+from tools.arc_qwen_rlvr004_20261013.preparation_successor import local_assemble_run007 as a
+from tools.arc_qwen_rlvr004_20261013.preparation_successor import local_accept_numeric_mount_run007 as mount
 
 REPO = Path(__file__).absolute().parents[3]
 ROOT = REPO / '.irisx/run007-local'
