@@ -1,0 +1,46 @@
+test_complete_224_with_failed_attempt_refreshes_and_freezes_once (test_freeze_bindings.FreezeBindings.test_complete_224_with_failed_attempt_refreshes_and_freezes_once) ... ok
+test_extra_physical_generation_cannot_be_omitted (test_freeze_bindings.FreezeBindings.test_extra_physical_generation_cannot_be_omitted) ... ok
+test_missing_boundary_cannot_omit_a_slot (test_freeze_bindings.FreezeBindings.test_missing_boundary_cannot_omit_a_slot) ... ok
+test_opaque_receipt_tampering_forces_exact_baseline_fallback (test_freeze_bindings.FreezeBindings.test_opaque_receipt_tampering_forces_exact_baseline_fallback) ... ok
+test_pending_unknown_cannot_be_refunded_or_ignored (test_freeze_bindings.FreezeBindings.test_pending_unknown_cannot_be_refunded_or_ignored) ... ok
+test_sidecar_event_cannot_be_duplicated (test_freeze_bindings.FreezeBindings.test_sidecar_event_cannot_be_duplicated) ... ok
+test_sidecar_event_head_must_match_exact_charge (test_freeze_bindings.FreezeBindings.test_sidecar_event_head_must_match_exact_charge) ... ok
+test_wrong_source_uses_no_cheap_subset (test_freeze_bindings.FreezeBindings.test_wrong_source_uses_no_cheap_subset) ... ok
+test_exact_v21_statistics_now_fit_generation_and_whole_main (test_runtime_contract.CostReplay.test_exact_v21_statistics_now_fit_generation_and_whole_main) ... ok
+test_scoring_does_not_acquire_generation_window (test_runtime_contract.CostReplay.test_scoring_does_not_acquire_generation_window) ... ok
+test_short_branch_no_generation_inflation (test_runtime_contract.CostReplay.test_short_branch_no_generation_inflation) ... ok
+test_generation_marker_cannot_spoof_operation_or_event (test_runtime_contract.Windows.test_generation_marker_cannot_spoof_operation_or_event) ... ok
+test_hard_and_work_caps (test_runtime_contract.Windows.test_hard_and_work_caps) ... ok
+test_historical_non_generation_window_unchanged (test_runtime_contract.Windows.test_historical_non_generation_window_unchanged) ... ok
+test_invalid_clocks_reject_before_dispatch (test_runtime_contract.Windows.test_invalid_clocks_reject_before_dispatch) ... ok
+test_legacy_marker_namespaces_and_clocks_preserved (test_runtime_contract.Windows.test_legacy_marker_namespaces_and_clocks_preserved) ... ok
+test_marker_exact_replay (test_runtime_contract.Windows.test_marker_exact_replay) ... ok
+test_marker_hard_deadline_strict (test_runtime_contract.Windows.test_marker_hard_deadline_strict) ... ok
+test_owner_deadline_cannot_expand (test_runtime_contract.Windows.test_owner_deadline_cannot_expand) ... ok
+test_short_branch_inside_global_clips (test_runtime_contract.Windows.test_short_branch_inside_global_clips) ... ok
+test_active_marker_io_failure_records_unknown_and_cleanup (test_runtime_contract.Wrapper.test_active_marker_io_failure_records_unknown_and_cleanup) ... ok
+test_expired_branch_never_reserves_or_calls (test_runtime_contract.Wrapper.test_expired_branch_never_reserves_or_calls) ... ok
+test_failed_truncated_charges_not_refunded (test_runtime_contract.Wrapper.test_failed_truncated_charges_not_refunded) ... ok
+test_hard_boundary_on_evidence_io_is_fatal (test_runtime_contract.Wrapper.test_hard_boundary_on_evidence_io_is_fatal) ... ok
+test_just_before_soft_is_accepted (test_runtime_contract.Wrapper.test_just_before_soft_is_accepted) ... ok
+test_known_nondispatch_reconciles_zero_without_generation (test_runtime_contract.Wrapper.test_known_nondispatch_reconciles_zero_without_generation) ... ok
+test_native_exception_unknown_and_closed_marker (test_runtime_contract.Wrapper.test_native_exception_unknown_and_closed_marker) ... ok
+test_nominal_expands_generation_only (test_runtime_contract.Wrapper.test_nominal_expands_generation_only) ... ok
+test_output_cap_never_expands (test_runtime_contract.Wrapper.test_output_cap_never_expands) ... ok
+test_soft_boundary_invalidates_even_valid_native (test_runtime_contract.Wrapper.test_soft_boundary_invalidates_even_valid_native) ... ok
+test_complete_fixed_main_slot_inventory (test_timing_refresh.TimingReview.test_complete_fixed_main_slot_inventory) ... ok
+test_context_output_and_cache_corruption_reject (test_timing_refresh.TimingReview.test_context_output_and_cache_corruption_reject) ... ok
+test_empirical_envelope_uses_maxima_and_full_cap (test_timing_refresh.TimingReview.test_empirical_envelope_uses_maxima_and_full_cap) ... ok
+test_every_slower_attempt_is_included_even_failed (test_timing_refresh.TimingReview.test_every_slower_attempt_is_included_even_failed) ... ok
+test_missing_calibration_context_or_timing_reject (test_timing_refresh.TimingReview.test_missing_calibration_context_or_timing_reject) ... ok
+test_no_measured_trained_forwards_cannot_satisfy_mode_coverage (test_timing_refresh.TimingReview.test_no_measured_trained_forwards_cannot_satisfy_mode_coverage) ... ok
+test_no_rows_or_no_adjacent_steps_cannot_refresh (test_timing_refresh.TimingReview.test_no_rows_or_no_adjacent_steps_cannot_refresh) ... ok
+test_nonfinite_future_or_unordered_clock_reject (test_timing_refresh.TimingReview.test_nonfinite_future_or_unordered_clock_reject) ... ok
+test_operationally_late_wrapper_cannot_refresh (test_timing_refresh.TimingReview.test_operationally_late_wrapper_cannot_refresh) ... ok
+test_quality_text_and_target_fields_are_never_used (test_timing_refresh.TimingReview.test_quality_text_and_target_fields_are_never_used) ... ok
+test_unrelated_training_reload_gaps_do_not_multiply_per_call_cost (test_timing_refresh.TimingReview.test_unrelated_training_reload_gaps_do_not_multiply_per_call_cost) ... ok
+
+----------------------------------------------------------------------
+Ran 41 tests in 1.605s
+
+OK

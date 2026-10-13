@@ -1,0 +1,100 @@
+{
+  "artifacts": {
+    "archive": {
+      "bytes": 3695871,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/downloads/irisx-qwen14b-transfer-20261012-run002/evidence.zip",
+      "sha256": "222308b47d2a5bdf872d77cbd8969615d38ce61bc3107aff6f6da22bf82ed02c"
+    },
+    "checkpoint": {
+      "bytes": 1230,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/TERMINAL-CHECKPOINT.json",
+      "sha256": "72f7d476bc8c63f4db40ecbb368bb70798dbf2c36ff78e32dba28d9d741941a7"
+    },
+    "cost_linkage": {
+      "bytes": 5696,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/TERMINAL-COST-AND-LINKAGE.json",
+      "sha256": "37b3307ce2c7d6d4daa14e16af9be2e066ec372b2e0685d0dc1e407768c93ee1"
+    },
+    "evidence_index": {
+      "bytes": 3185,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/TERMINAL-EVIDENCE-INDEX.json",
+      "sha256": "4127df5585ac577c9345028ddb77073c4878d7770a64633fdd5503e1326371d4"
+    },
+    "launch_receipt": {
+      "bytes": 3013,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/state/notebook-transfer002-receipt.json",
+      "sha256": "0ee2c26bc1bd441387bf1025762cdfa85f935a2991fcf27295c88a998dac00f4"
+    },
+    "outer_closure": {
+      "bytes": 1674,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/downloads/irisx-qwen14b-transfer-20261012-run002-launcher/launcher-closure.json",
+      "sha256": "b6441fe5447d5f674c29c81eba28acdc6cd695919092ee2a5766b1d0cd69c093"
+    },
+    "retrieval": {
+      "bytes": 8801,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/RETRIEVAL-RECEIPT.json",
+      "sha256": "b7ad6095d082c1159f8f714e8f37ba08c8b64554968f0688a83e60ad6ab9aa8c"
+    },
+    "saved_source": {
+      "bytes": 51973,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/state/notebook-transfer002-saved.ipynb",
+      "sha256": "a7451ae7a341c36483737987d2edfaabd0e2e5cb8890234ec6b56f8565b26f03"
+    },
+    "terminal_audit": {
+      "bytes": 6924,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/independent-operator-review/V23-TERMINAL-AUDIT.json",
+      "sha256": "b12cc4416b7c366a6cfbc0f4d16de511377251145f456fd8065542b1b9ed681e"
+    },
+    "terminal_receipt": {
+      "bytes": 19476,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/downloads/irisx-qwen14b-transfer-20261012-run002/terminal-receipt.json",
+      "sha256": "6d4d9805419ac64c762fc39867b4fc16a220b7ec902df4a56ced0a1f5f4e4fc6"
+    },
+    "validation": {
+      "bytes": 3703,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/TERMINAL-VALIDATION.json",
+      "sha256": "db56c39f9672cedbeaa517f94df7f3e88d8bdb14bfec287e29389cb338eaf614"
+    }
+  },
+  "automatic_retry": false,
+  "checkpoint_archive_bytes_verified": false,
+  "closed_verified": true,
+  "created_utc": "2026-10-12T15:49:26.011905+00:00",
+  "format": "irisx/transfer002-terminal-handoff-v1",
+  "goal_met": false,
+  "inventory_scope": "selected_outputs_only",
+  "numeric_version": 23,
+  "operational_success": false,
+  "pending_work": {},
+  "physical_usage": {
+    "cpu_checks": 0,
+    "gas": 0,
+    "generation_calls": 44,
+    "input_tokens": 534860,
+    "output_tokens": 6580,
+    "scoring_forwards": 348,
+    "training_steps": 68
+  },
+  "provider_status": "COMPLETE",
+  "public_status": "PUBLIC_NOT_RUN",
+  "runtime_child_error": {
+    "message": "bounded checkpoint update required",
+    "type": "ContractError"
+  },
+  "runtime_status": "TRANSFER_PARTIAL",
+  "saved_source_sha256": "a7451ae7a341c36483737987d2edfaabd0e2e5cb8890234ec6b56f8565b26f03",
+  "science_complete": false,
+  "separate_checkpoint": {
+    "archive_bytes_verified": false,
+    "body_consumed_bytes": 0,
+    "bytes": 130269100,
+    "declared_sha256_unverified": "6c55a1611204a30e8f5b65699d2d0d09413dff15bc55f99b2a9d0ce5c328179c",
+    "http_status": 200,
+    "path": "irisx-qwen14b-transfer-20261012-run002/checkpoints.zip",
+    "presence": "HTTP200_CONTENT_LENGTH_VERIFIED",
+    "scope": "numeric output request; Content-Length and successful response only"
+  },
+  "status": "INDEPENDENTLY_VERIFIED_TERMINAL",
+  "watcher_finished": true,
+  "whole_provider_inventory_verified": false
+}

@@ -1,0 +1,146 @@
+{
+  "archive_members_verified": 29,
+  "billing_verified": false,
+  "both_raw_deployment_trees_verified": false,
+  "checkpoint_archive_bytes_verified": false,
+  "code_dataset_id": 12504696,
+  "code_dataset_version": 16,
+  "consumer_admitted": false,
+  "diagnosis": {
+    "failure_stage": "native model-load reservation before successful admission",
+    "final_physical_event_stream_absent": true,
+    "runtime_error": {
+      "message": "[Errno 2] No such file or directory: 'nvidia-smi'",
+      "type": "FileNotFoundError"
+    },
+    "source_linked": true
+  },
+  "diagnostic_archive_integrity_verified": true,
+  "evidence": {
+    "admission_audit": {
+      "bytes": 4178,
+      "path": "predecessor/V31-ADMISSION-AUDIT.json",
+      "sha256": "d65032214fa601b6dfe9b44bd5feca34b43ce72ecbb81a3db25ce85abc1d4163"
+    },
+    "archive_failure_audit": {
+      "bytes": 3217,
+      "path": "predecessor/V31-ARCHIVE-FAILURE-INTEGRITY.json",
+      "sha256": "b5d4804757c411834603a4a347efe532986e341ef0b03fb4ad09f86685f3ec9f"
+    },
+    "code_receipt": {
+      "bytes": 4979,
+      "path": "predecessor/dataset-code-v16-receipt.json",
+      "sha256": "02af9cad1ff2a3ab8e2e23710f9124456e8fe930b9f1fefc29b5d0541a874f8d"
+    },
+    "collection_blocker": {
+      "bytes": 12777,
+      "path": "predecessor/V31-COLLECTION-BLOCKER.json",
+      "sha256": "afe5b82e1474af6a3e5bdaf775398a73a5b7d9c5750c6f977c8eb65aa6877005"
+    },
+    "evidence_archive": {
+      "bytes": 20130674,
+      "path": "predecessor/irisx-qwen14b-rlvr-20261012-run003.evidence.zip",
+      "sha256": "4f24e0e44455d0862d72803c1a852294e26d52ca0335a1fe2393406e235b4b65"
+    },
+    "interruption_reconciliation": {
+      "bytes": 6124,
+      "path": "predecessor/COLLECTION-INTERRUPTION-RECONCILIATION.json",
+      "sha256": "929cb4b835b99dafa110f29b62bfa81cbcdd9f77d011999a2e5d8c3f52108d68"
+    },
+    "launch_receipt": {
+      "bytes": 3005,
+      "path": "predecessor/notebook-rlvr003-receipt.json",
+      "sha256": "e7b62639b0517d5b4d43e78321f6ac89258aa1cf98891a16735c42432093eada"
+    },
+    "owned_result": {
+      "bytes": 1193,
+      "path": "predecessor/owned-result.json",
+      "sha256": "12d58cd4849124c57ac2c885f21ff52fd0bce83f9b53f83546b8a000a6120b48"
+    },
+    "partial_packet_audit": {
+      "bytes": 13573,
+      "path": "predecessor/V31-PARTIAL-TERMINAL-PACKET-AUDIT.json",
+      "sha256": "57ba4e1bb8d5b1c5a0a74256a84b413635382e56a1e0014d1f8652ca64c73744"
+    },
+    "partial_terminal_handoff": {
+      "bytes": 1789,
+      "path": "predecessor/V31-PARTIAL-TERMINAL-HANDOFF.json",
+      "sha256": "ec0b24748a905788feafb9f0d9f7c0b09df33ea6a1819b98bb018416253b35f7"
+    },
+    "runtime_outer_closure": {
+      "bytes": 53081,
+      "path": "predecessor/outer-closure.json",
+      "sha256": "e28eb8769ad24519417864919c0f99f559611266b92deece49a32f62c5863240"
+    },
+    "saved_source": {
+      "bytes": 21096,
+      "path": "predecessor/notebook-rlvr003-saved.ipynb",
+      "sha256": "ac73ca9b9f5549f6a4c5d2a876205d3dfebdbf9bba195c6a5d51f710d1eda404"
+    },
+    "terminal_receipt": {
+      "bytes": 5877,
+      "path": "predecessor/irisx-qwen14b-rlvr-20261012-run003.evidence.zip.terminal.json",
+      "sha256": "c4c0ad14857839cde3ffceedef3b03c15e15dc0e6395c1cde1d5156ec3177c5c"
+    }
+  },
+  "final_provider_bracket_verified": false,
+  "format": "irisx/rlvr004-predecessor-evidence-v1",
+  "goal_met": false,
+  "notebook_id": 138123872,
+  "numeric_notebook_version": 31,
+  "operational_success": false,
+  "original_descriptor_sha256": "ea0675c7d56126e141ab021c9f533d21f5b44ca526089e90db6c1144cc8ed940",
+  "owned_closure_verified": false,
+  "physical_costs_known": false,
+  "provider_status": "ERROR",
+  "public_score": null,
+  "qualification": "A closed9-record journal chain retains two recovered events and one failed native-load reservation. Missing final event-stream projection leaves runtime model closure false. Seven selected files and the final provider bracket were not collected after interruption and pre-command execution failures; absence is not asserted. No model/science/physical-cost total/billing admission is established. Signed proxy paths are excluded from this bundle.",
+  "recorded_journal": {
+    "closed": true,
+    "cost_charges": [
+      {
+        "charged_cost": {
+          "native_model_loads": 1
+        },
+        "op_id": "a52228c629fd40ce9418853fa440fcf9",
+        "status": "failed"
+      }
+    ],
+    "cryptographically_authenticated": false,
+    "event_count": 2,
+    "head_sha256": "1ddbe164937c1fc98da56d56ef7ff748ac69b98a90b367f6b0dc39425619b90a",
+    "journal_id": "0dae874a1e794d138a9736911c1ab606",
+    "record_count": 9,
+    "settled": true,
+    "unknown_operation_ids": []
+  },
+  "runtime_model_closure_verified": false,
+  "runtime_safe_closure": false,
+  "runtime_status": "stopped-incomplete",
+  "saved_source_sha256": "ac73ca9b9f5549f6a4c5d2a876205d3dfebdbf9bba195c6a5d51f710d1eda404",
+  "selected_files_verified": 26,
+  "separate_checkpoint_presence": "UNKNOWN",
+  "terminal_status": "diagnostic",
+  "terminal_validated": false,
+  "terminal_validation_status": "PARTIAL_INTEGRITY_VERIFIED_COLLECTION_BLOCKED",
+  "uncollected_paths_claimed_absent": false,
+  "uncollected_required_paths": [
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/closure.json",
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/owned-tree/closure.json",
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/owned-tree/launch.json",
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/owned-tree/supervisor-result.json",
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/owned-tree/worker-launch.json"
+  ],
+  "uncollected_required_proofs": 5,
+  "uncollected_selected_files": 7,
+  "uncollected_selected_paths": [
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/closure.json",
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/owned-tree/closure.json",
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/owned-tree/launch.json",
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/owned-tree/supervisor-result.json",
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/owned-tree/worker-launch.json",
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/stderr.txt",
+    "irisx-qwen14b-rlvr-20261012-run003-launcher/installed-parent/stdout.txt"
+  ],
+  "whole_provider_inventory_verified": false
+}

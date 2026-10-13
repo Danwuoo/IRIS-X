@@ -1,0 +1,59 @@
+{
+  "checks": {
+    "12000_inputs_plus_manifest_rejected": {
+      "passed": true
+    },
+    "384MiB_actual_export": {
+      "crc_all_members_verified": true,
+      "elapsed_seconds": 3.91692286199941,
+      "expanded_bytes_including_manifest": 402739302,
+      "old256MiB_policy_rejects_same_members": true,
+      "passed": true,
+      "regular_members": 768,
+      "repeat_identity_refused_without_overwrite": true,
+      "result": {
+        "bytes": 1533889,
+        "files": 769,
+        "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/author-evidence/archive-capacity-1791816565552330262/expanded384mib/evidence.zip",
+        "sha256": "bf4a2c01829a2d4f96aa2472c9cbaef51a52c1c78610c230dbccadd6cb0f3f56"
+      },
+      "sha256_all_members_verified": true
+    },
+    "512MiB_plus_manifest_rejected": {
+      "passed": true
+    },
+    "528MiB_rejected": {
+      "partial_archive_created": false,
+      "passed": true,
+      "source_members_preserved": 1056
+    },
+    "existing_zip_collision": {
+      "existing_bytes_preserved": true,
+      "passed": true
+    },
+    "expired_export": {
+      "closed_zip_handle": true,
+      "original_input_preserved": true,
+      "partial_evidence_preserved_not_reported_success": true,
+      "passed": true,
+      "retry_same_identity_refused": true
+    },
+    "member_caps_unchanged": {
+      "diagnostic": 67108864,
+      "ordinary": 16777216,
+      "passed": true
+    },
+    "unsafe_entries_and_unclosed_owner_rejected": {
+      "passed": true
+    }
+  },
+  "diagnostic_member_bytes": 67108864,
+  "fixture_root": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/author-evidence/archive-capacity-1791816565552330262",
+  "free_bytes_after": 26780123136,
+  "free_bytes_before": 26831933440,
+  "generation_hard_seconds": 180,
+  "ordinary_member_bytes": 16777216,
+  "retained_disk_reserve_at_least4GiB": true,
+  "synthetic_only": true,
+  "total_capacity_bytes": 536870912
+}

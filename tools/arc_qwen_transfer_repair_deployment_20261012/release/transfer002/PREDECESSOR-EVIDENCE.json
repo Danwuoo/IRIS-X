@@ -1,0 +1,44 @@
+{
+  "format": "irisx/transfer002-predecessor-evidence-v1",
+  "numeric_notebook_version": 21,
+  "code_dataset_version": 11,
+  "notebook_id": 138123872,
+  "code_dataset_id": 12504696,
+  "provider_status": "COMPLETE",
+  "runtime_status": "TRANSFER_NOT_ADMITTED",
+  "public_status": "PUBLIC_NOT_RUN",
+  "saved_source_sha256": "787e38324f55cc3dcadf99c803aaf0f932003cd19e97065d9efbba31a91689c0",
+  "within_absolute_deadline": true,
+  "whole_provider_inventory_verified": false,
+  "checkpoint_provider_presence": "UNKNOWN",
+  "public_score": null,
+  "goal_met": false,
+  "evidence": {
+    "terminal_checkpoint": {
+      "path": "predecessor/TERMINAL-CHECKPOINT.json",
+      "bytes": 1421,
+      "sha256": "9368248a69ab715b7b681cff4cfa59e20bed6819736416da7997f28ec333d2bb"
+    },
+    "terminal_validation": {
+      "path": "predecessor/TERMINAL-VALIDATION.json",
+      "bytes": 3277,
+      "sha256": "8b3221b0708523d5e76d0990f5fcac4cf18da50045c02804ae3738593d1953e5"
+    },
+    "independent_terminal_audit": {
+      "path": "predecessor/V21-TERMINAL-AUDIT.json",
+      "bytes": 7793,
+      "sha256": "97e18bc0eb14068586591a2723b7f99c4d79ba5ed2a30d0a8a45d4718a6d9c20"
+    },
+    "retrieval_receipt": {
+      "path": "predecessor/RETRIEVAL-RECEIPT.json",
+      "bytes": 7773,
+      "sha256": "e196742f244578eb3eaa4c1f4857134f2bafd21147716e8a88aa7f48a94cbbb3"
+    },
+    "saved_notebook": {
+      "path": "predecessor/notebook-transfer001-saved.ipynb",
+      "bytes": 51404,
+      "sha256": "787e38324f55cc3dcadf99c803aaf0f932003cd19e97065d9efbba31a91689c0"
+    }
+  },
+  "qualification": "Selected numeric21 retrieval and sealed archive integrity verified; no provider VM teardown or billable GPU-duration claim."
+}

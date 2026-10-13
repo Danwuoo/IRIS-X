@@ -1,0 +1,255 @@
+{
+  "format": "irisx/transfer-checkpoint-repair-validator-validation-v1",
+  "status": "PASSED",
+  "validator_frozen": true,
+  "api_signature": "(download_root, *, manifest, finalization, launch_journal, launch_receipt, retrieval_receipt, finalized_notebook, allow_synthetic=False)",
+  "collector_api_unchanged": true,
+  "validator_artifacts": {
+    "path": "validation/VALIDATION-ARTIFACTS.json",
+    "bytes": 1199,
+    "sha256": "8eb4ae78c8bd6cd37aaf0ec3d47f5fa4eca4f285f6bbb9e4bafa4e2ab99752f5"
+  },
+  "validator_files": [
+    {
+      "path": "validation/validate_transfer_outputs.py",
+      "bytes": 137458,
+      "sha256": "b44f31830ccbd6105633f558a675b40e9abdd7a298d247d54afc47ef9fc596fe"
+    },
+    {
+      "path": "validation/budget_checks.py",
+      "bytes": 29577,
+      "sha256": "7d02896f6553fa83c64e1dc3f999dc2f4a700f8a56e392c34b36711e2f697672"
+    },
+    {
+      "path": "validation/generation_checks.py",
+      "bytes": 4482,
+      "sha256": "4ef2c33434e9064c93b6da75329067aff60ae3222417a2d608cede7f3e0cbb11"
+    },
+    {
+      "path": "validation/selector_replay.py",
+      "bytes": 10981,
+      "sha256": "824a76b0aac83d8112520d2e69740bfd619ee53b3521bf3e122f5f946c9f7b9c"
+    },
+    {
+      "path": "validation/frozen-panel-plan.json",
+      "bytes": 41307,
+      "sha256": "8138168e1c8206977efaab20243ac66e04fe5d0cf5d375252b7cca68feefa17a"
+    }
+  ],
+  "supersedes_main_validator_sha256": "416d7f93e1b123efd9aaef7948c7350dab524cfb33afa14ea8077e1cd076c98b",
+  "original_five_files_unchanged": true,
+  "publication": {
+    "manifest": {
+      "path": "release-candidate-001/publication-manifest.json",
+      "bytes": 123835,
+      "sha256": "1db39d38fca5bb58c7f73035a2b555566f2a44c23c496488a0f55ba1f5da0331"
+    },
+    "contract_format": "irisx/qwen14b-transfer-checkpoint-repair-publication-contract-v1",
+    "code_version": 13,
+    "inactive_notebook_version": 24,
+    "active_notebook_version": 25,
+    "active_role": "transfer003",
+    "source_identity_sha256": "d485de95b68e0147e0d122143d25e983b7c60800259fdf8e44315b4537818b86",
+    "runtime_source_approval": {
+      "path": "release-candidate-001/RUNTIME-SOURCE-APPROVAL.json",
+      "bytes": 38217,
+      "sha256": "7053c1897ee799645a474e3be54677dfb3bc38d33e31dc0f8eecd8fb0ea513fa"
+    },
+    "checkpoint_policy": {
+      "path": "release-candidate-001/CHECKPOINT-POLICY.json",
+      "bytes": 2296,
+      "sha256": "cda0a2a4d98d7a371aa7e14998e2b1170400198b6d16d6d4183c06253b2e019e"
+    },
+    "clocks": [
+      42000,
+      42180,
+      42300,
+      43200
+    ],
+    "outer_config_fields": 15
+  },
+  "tests": {
+    "normal": {
+      "tests": 270,
+      "skipped": 0,
+      "result": "OK",
+      "receipt": {
+        "path": "validation/receipts/final-normal.txt",
+        "bytes": 32741,
+        "sha256": "d4ffc411964033186aac6439409354b6830b27d1be102b27e595b88137b9e94d"
+      }
+    },
+    "optimized": {
+      "tests": 270,
+      "skipped": 0,
+      "result": "OK",
+      "receipt": {
+        "path": "validation/receipts/final-optimized.txt",
+        "bytes": 32741,
+        "sha256": "7d5f52f371a5c533dabe8d45951609ee52673405bca3e7faa479474eec689372"
+      }
+    },
+    "portable_source_only": {
+      "tests": 53,
+      "skipped": 15,
+      "result": "OK_WITH_EXPLICIT_FIXTURE_SKIPS",
+      "receipt": {
+        "path": "validation/receipts/portable-source-only.txt",
+        "bytes": 7585,
+        "sha256": "6cc520877ec8fdfe3967964650247b9c4d2ce7aaab36cf3de15e111bf81893bf"
+      }
+    },
+    "portable_source_only_optimized": {
+      "tests": 53,
+      "skipped": 15,
+      "result": "OK_WITH_EXPLICIT_FIXTURE_SKIPS",
+      "receipt": {
+        "path": "validation/receipts/portable-source-only-optimized.txt",
+        "bytes": 7585,
+        "sha256": "936a58894aff128f8158236332fa696b3458c6417093f734e09659c186348c5b"
+      }
+    },
+    "portable_exact_release_without_snapshot": {
+      "tests": 53,
+      "skipped": 15,
+      "result": "OK_WITH_EXPLICIT_FIXTURE_SKIPS",
+      "receipt": {
+        "path": "validation/receipts/portable-exact-release-no-snapshot.txt",
+        "bytes": 7615,
+        "sha256": "727685e4762cc6b716b5917f91d27dfd4489655ea78939b3b9b288e7e31f91bb"
+      }
+    },
+    "portable_exact_release_without_snapshot_optimized": {
+      "tests": 53,
+      "skipped": 15,
+      "result": "OK_WITH_EXPLICIT_FIXTURE_SKIPS",
+      "receipt": {
+        "path": "validation/receipts/portable-exact-release-no-snapshot-optimized.txt",
+        "bytes": 7615,
+        "sha256": "5648f6ab2ff898d8cd59b9809db532deae33ff8fca6887e4770280af3fdd905e"
+      }
+    }
+  },
+  "actual_final_source_native_checkpoint_metadata": {
+    "path": "validation/receipts/native-final002-checkpoint-validation.json",
+    "bytes": 3544,
+    "sha256": "4daf3c3e7bec93efaeef2cfba78ef284be7699d4fa124e2cfe57476ae4dc5f33"
+  },
+  "actual_owned_tiny_main": {
+    "terminal": {
+      "path": "evidence/owned-final-fixture-main/terminal-receipt.json",
+      "bytes": 10878,
+      "sha256": "0a20c14b98a87f065aba7769f4fe6b6bb9e24e2a5f1adcb3c4bef3a6db4157ea"
+    },
+    "archive": {
+      "path": "evidence/owned-final-fixture-main/evidence.zip",
+      "bytes": 2148117,
+      "sha256": "8a180aa6b5c97986bee5e4164c84c3343ea9482b89de36502330528eef9badc1"
+    },
+    "checkpoints": {
+      "path": "evidence/owned-final-fixture-main/checkpoints.zip",
+      "bytes": 1397831,
+      "sha256": "b79524fe52ba317ac46156a6b0033084650e8ad4a5dda3703b2ccaf8f32d57b5"
+    },
+    "fixture_updates": [
+      0,
+      1,
+      2
+    ],
+    "admitted_records": 768,
+    "content_with_checkpoint_bytes": {
+      "path": "validation/receipts/actual-final-tiny-content-with-checkpoint-bytes.json",
+      "bytes": 2961,
+      "sha256": "5206eda50e358fcdcb463957f4ba9910f26237c8ec260a1c2d4fc6d47315763a"
+    },
+    "exact_manifest_synthetic_active25_envelope": {
+      "path": "validation/receipts/exact-final-synthetic-complete-envelope.json",
+      "bytes": 4044,
+      "sha256": "99e6f176ed0d61583b0d29fd157e9025b93b6963729907b02f6bb3b9adc123bc"
+    }
+  },
+  "actual_owned_before_load_failure": {
+    "terminal": {
+      "path": "evidence/owned-final-fixture-before-load/terminal-receipt.json",
+      "bytes": 2316,
+      "sha256": "44726fba17a7a29bb774c50f13d11abaafdbc11911db7ad5e071a2206d3288f4"
+    },
+    "archive": {
+      "path": "evidence/owned-final-fixture-before-load/evidence.zip",
+      "bytes": 222052,
+      "sha256": "b5a09ca8a5c99faef0aa95cb87ef1a9a7d1c9eb5a50ae6984f6e8cd26ea8616b"
+    },
+    "exact_manifest_synthetic_active25_envelope": {
+      "path": "validation/receipts/exact-final-synthetic-failure-envelope.json",
+      "bytes": 2839,
+      "sha256": "02b0b482642791df97971952b914ca44d58c0ee26485536748fd4d7390e81add"
+    },
+    "model_loaded": false,
+    "training_or_checkpoint_phase_verified": false
+  },
+  "checks": [
+    "Strict source-bound global0/64/256,task0/8/16,explicit fixture0/1/2 schedules",
+    "Actual final-source native six checkpoint projections and synthetic config/source/record/scope/counter mutations",
+    "Exact trainer source closure,config,ordered record identity and admitted768-record runtime binding",
+    "Global compact full-state/resume/inference manifest wrappers and fresh reload identities",
+    "Required representative task checkpoint source/record/reload/report projection",
+    "Fully rehashed negative compact checkpoint metadata fixtures still rejected",
+    "15 submitted notebook config fields including all3cutoffs with type-sensitive equality",
+    "Exact final manifest/checkpoint policy/source ZIP and new independent review format",
+    "Synthetic complete,partial,failure outer-envelope controls; exact-source full content main and before-load failure",
+    "Header-only checkpoint stays unverified; actual ZIP verification is separately reported",
+    "All historical archive/model/phase/scorer/budget/timing checks retained",
+    "Original v23/pre-cap-source evidence never relabeled or promoted"
+  ],
+  "limitations": [
+    "CPU random tiny controls and synthetic envelopes do not establish14B GPU fit,throughput,accuracy or provider execution.",
+    "Final main intentionally skipped optional TTT/PUBLIC; representative task metadata runtime export is covered by source review and separate controls,not actual final owned-main TTT execution.",
+    "Partial terminal outer envelopes and checkpoint prefix controls are authored tests; no new partial model run was performed.",
+    "Validator never parses target escrows/public gold or loads tensor payloads. Compact metadata cannot independently attest tensor numerical contents.",
+    "Header200/Content-Length is not checkpoint ZIP/hash verification; selected facts are not a whole-provider inventory."
+  ],
+  "known_blockers": [],
+  "no_provider_gpu_network_or_evaluator_gold_calls": true,
+  "test_harness_files": [
+    {
+      "path": "validation-tests/successor_fixture_helpers.py",
+      "bytes": 15275,
+      "sha256": "7bf0333f43b5546640eb84fe69b88c0d5f77889e23425e42d974812c6a2b98ba"
+    },
+    {
+      "path": "validation-tests/test_budget_successor.py",
+      "bytes": 15946,
+      "sha256": "1c8e8310005f8bfcd464d323c266b321b362809a5cc4cacfcc8cfa35c4760071"
+    },
+    {
+      "path": "validation-tests/test_checkpoint_binding.py",
+      "bytes": 12412,
+      "sha256": "281134cddb7688cee9992d312b08c7d0017f1cb350bc21abfd575345a48d8ca0"
+    },
+    {
+      "path": "validation-tests/test_collector_successor.py",
+      "bytes": 9042,
+      "sha256": "714586fca2c07994596ac7115cef5de161a8791570e9d938535c4b9d9818db73"
+    },
+    {
+      "path": "validation-tests/test_inherited_interfaces.py",
+      "bytes": 1386,
+      "sha256": "8751e546f894cc5ac58260dc32783931b9fe2045835fe706a5e01f94ee2b4b2e"
+    },
+    {
+      "path": "validation-tests/test_outer_config.py",
+      "bytes": 5740,
+      "sha256": "3b0e9704a05607d033c892ce7cc84f3aa8f81a8d3cde31b53b325702af42988e"
+    },
+    {
+      "path": "validation-tests/test_owned_checkpoint_content.py",
+      "bytes": 11941,
+      "sha256": "a871a4d8c12987624d9aff984176d5a0a9a535de24fcebe8c3b9fbdb21dca565"
+    }
+  ],
+  "readme": {
+    "path": "validation/README.md",
+    "bytes": 6891,
+    "sha256": "4fa2da52337d898dd57035bb46472836e23752cb4d90d2f9c7ac46f348bb360b"
+  }
+}

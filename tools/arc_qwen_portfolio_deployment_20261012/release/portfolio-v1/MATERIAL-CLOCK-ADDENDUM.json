@@ -1,0 +1,30 @@
+{
+  "format": "irisx/qwen-portfolio-material-clock-addendum-v1",
+  "status": "LOCAL_MANUAL_CANDIDATE_ONLY",
+  "historical_material_contract": {
+    "path": "materials/qwen14b/material-contract.json",
+    "sha256": "8d26b2f04a91147bbb5e11231f614552d36e2862af9b8d2d2b05b273805b69b0"
+  },
+  "sole_superseded_field": "probe_bounds.maximum_probe_seconds",
+  "historical_value_seconds": 10800,
+  "effective_value_seconds": 43200,
+  "unchanged_global_field": "probe_bounds.maximum_global_seconds",
+  "unchanged_global_seconds": 43200,
+  "all_other_material_clauses_unchanged": true,
+  "historical_contract_bytes_preserved": true,
+  "effective_protocol": {
+    "path": "tools/arc_qwen_portfolio_20261012/protocol.py",
+    "sha256": "3aee4e3797235487fdba3becbab8640403f01873fcae2bb8e44d4b88dba761ed"
+  },
+  "source_freeze": {
+    "path": "SOURCE-FREEZE.json",
+    "bytes": 53936,
+    "sha256": "6b407f9c8a7c952b7b97dd9f43e73b90059f3e4f73c72630c5bd6158cd1b7582"
+  },
+  "source_identity_sha256": "d8d272e284991d3dde4aed2ea087f79f53e1df0eae9ffa187455e19722388a30",
+  "clock_origin": "manual first active launch; captured once by reviewed preloader; no prior run epoch reused",
+  "scope": "setup, hash admission, model load, training, evaluation and closure share this one hard clock",
+  "automatic_dispatch_authorized": false,
+  "published": false,
+  "gpu_validated": false
+}

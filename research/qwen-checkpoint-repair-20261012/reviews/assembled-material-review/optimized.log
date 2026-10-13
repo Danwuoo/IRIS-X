@@ -1,0 +1,18 @@
+test_active_none_epoch_denies_before_io (__main__.FinalMaterial.test_active_none_epoch_denies_before_io) ... ok
+test_clock_future_and_zero_denial_without_fs (__main__.FinalMaterial.test_clock_future_and_zero_denial_without_fs) ... ok
+test_clocks_pins_and_inactive_wire (__main__.FinalMaterial.test_clocks_pins_and_inactive_wire) ... ok
+test_evaluator_never_in_child_request_comprehension (__main__.FinalMaterial.test_evaluator_never_in_child_request_comprehension) ... ok
+test_exact_activation_delta (__main__.FinalMaterial.test_exact_activation_delta) ... ok
+test_exact_checkpoint_policy_source_and_schedules (__main__.FinalMaterial.test_exact_checkpoint_policy_source_and_schedules) ... ok
+test_exact_narrow_runtime_delta (__main__.FinalMaterial.test_exact_narrow_runtime_delta) ... ok
+test_explicit_final_capacity_and_fixed_identity (__main__.FinalMaterial.test_explicit_final_capacity_and_fixed_identity) ... ok
+test_frozen_science_protocol_unchanged (__main__.FinalMaterial.test_frozen_science_protocol_unchanged) ... ok
+test_inert_notebook_performs_no_io (__main__.FinalMaterial.test_inert_notebook_performs_no_io) ... ok
+test_notebook_artifact_binding (__main__.FinalMaterial.test_notebook_artifact_binding) ... ok
+test_payload200_closed_and174_preserved (__main__.FinalMaterial.test_payload200_closed_and174_preserved) ... ok
+test_review_descriptor_resolves_and_exact_final_approval (__main__.FinalMaterial.test_review_descriptor_resolves_and_exact_final_approval) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.239s
+
+OK

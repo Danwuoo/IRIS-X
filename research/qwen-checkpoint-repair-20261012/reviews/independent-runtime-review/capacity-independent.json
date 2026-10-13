@@ -1,0 +1,54 @@
+{
+  "format": "irisx/independent-production-checkpoint-capacity-v1",
+  "status": "passed",
+  "shape_only": true,
+  "pretrained_weights_loaded": false,
+  "adapter_bytes": 128450560,
+  "largest_tensor_bytes": 557056,
+  "checkpoints": [
+    {
+      "label": "base",
+      "tensor_upper_bytes": 128516096,
+      "shards_upper": 6,
+      "serialized_upper_bytes": 168361984,
+      "file_count_upper": 10,
+      "tensor_count_upper": 1124
+    },
+    {
+      "label": "sft64",
+      "tensor_upper_bytes": 385417216,
+      "shards_upper": 14,
+      "serialized_upper_bytes": 433651712,
+      "file_count_upper": 18,
+      "tensor_count_upper": 2244
+    },
+    {
+      "label": "sft256",
+      "tensor_upper_bytes": 385417216,
+      "shards_upper": 14,
+      "serialized_upper_bytes": 433651712,
+      "file_count_upper": 18,
+      "tensor_count_upper": 2244
+    },
+    {
+      "label": "representative_ttt16",
+      "tensor_upper_bytes": 513867776,
+      "shards_upper": 18,
+      "serialized_upper_bytes": 566296576,
+      "file_count_upper": 22,
+      "tensor_count_upper": 2804
+    }
+  ],
+  "store_upper_bytes": 1627127872,
+  "store_limit_bytes": 2147483648,
+  "store_headroom_bytes": 520355776,
+  "inventory_sha256": "71be71b8cfe4957190aeb7d8774e0080c5a3dca194a94f3d3db2c3965d91575e",
+  "assumptions": [
+    "Original rank8 FP32 LoRA over280 projections",
+    "Two FP32 Adam moments and scalar steps",
+    "Representative TTT includes selected-global adapter snapshot",
+    "Conservative64KiB allowance per checkpoint for RNG/scalar tensors",
+    "No deduplication credit; source hard JSON/shard bounds retained"
+  ],
+  "limits": "Analytical capacity proof, not measured production disk use, BF16 GPU fit, or model correctness."
+}

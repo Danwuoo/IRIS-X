@@ -1,0 +1,22 @@
+{
+  "artifact": {
+    "bytes": 1533889,
+    "files": 769,
+    "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/author-evidence/archive-capacity-1791816565552330262/expanded384mib/evidence.zip",
+    "sha256": "bf4a2c01829a2d4f96aa2472c9cbaef51a52c1c78610c230dbccadd6cb0f3f56"
+  },
+  "both_actual_consumer_paths_crc_and_sha_verified": true,
+  "collector_and_validator_compressed_cap": 570425344,
+  "collector_expanded_cap": 536870912,
+  "expanded_bytes_including_manifest": 402739302,
+  "format": "irisx/independent-transfer-capacity-consumer-review-v1",
+  "large_diagnostic_member_cap": 67108864,
+  "members": 769,
+  "network_provider_gpu_model_calls": 0,
+  "ordinary_cap_count": 12000,
+  "ordinary_member_cap": 16777216,
+  "passed": true,
+  "qualification": "Real expanded 384 MiB schema fixture; not actual neural predictions or a worst-case performance guarantee.",
+  "source_exporter_expanded_cap": 536870912,
+  "validator_expanded_cap": 536870912
+}

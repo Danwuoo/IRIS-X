@@ -1,0 +1,158 @@
+{
+  "authority_state": {
+    "consumer_entry_root_pin_pending": true,
+    "dispatch_authorized": false,
+    "escrow_bodies_parsed": false,
+    "final_monitor_review_pending": true,
+    "final_operator_review_pending": true,
+    "model_calls": 0,
+    "production_entry_admission_approved": false,
+    "provider_calls": 0,
+    "public_gold_read": false,
+    "scorer_calls": 0
+  },
+  "consumer_content_review": {
+    "bytes": 8475,
+    "path": "portfolio63-rl-release-20261012/independent-operator-review/CONSUMER-CONTENT-REVIEW-R2.json",
+    "sha256": "c7c01c58c741fb8ab2481c59303690f0c94425f9475ba88af454d85ae5baea3f"
+  },
+  "consumer_helper_inventory": {
+    "bytes": 2001,
+    "path": "portfolio63-rl-bootstrap-repair-20261013/release-candidate-001/terminal-consumer/CONSUMER-INVENTORY.json",
+    "sha256": "d88b66c3b45435c2b328c2cc36c9c605c889ba76e48a36c22729db0ec2fda710"
+  },
+  "dataset_escrow_sha256": {
+    "dev": "ba14ceb14b2acd18dfe209227ed0473ab909bf55b7ff68bb327d933a999f332d",
+    "holdout": "397a6b32967cfad4fe300c362d7134194ccca760231bc98649844bddeac6b344"
+  },
+  "dataset_file_sha256": "355f999d39eab25145b242e32deb51a1e092f48c2c2711a70ef784142658202f",
+  "deployment_candidate": {
+    "bytes": 1354,
+    "path": "portfolio63-rl-data-release-20261013/DEPLOYMENT-REVIEW-CANDIDATE.json",
+    "sha256": "237151238958844e8aa9c95188108800d43448ce7096f4cd876487a7dd8de84f"
+  },
+  "deployment_inventory": {
+    "launch_notebook.py": {
+      "bytes": 12911,
+      "sha256": "ac1f83437f7f04af8512b148c7ca836c4382163b838f00623befdf5428fe904b"
+    },
+    "notebook_builder.py": {
+      "bytes": 6303,
+      "sha256": "1c9b3bbafa2056327bc2d31e6d98d3b6c5dcb4d3cdd894273ecb65e09a31fced"
+    },
+    "parent_entry.py": {
+      "bytes": 1778,
+      "sha256": "91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3"
+    },
+    "prepare_entry.py": {
+      "bytes": 10143,
+      "sha256": "847bf2d5142b5a852ac68d0f43e456140e9f254487d09b9b2fa56b985ae13768"
+    },
+    "source_loader.py": {
+      "bytes": 10125,
+      "sha256": "e929be599fb875a806e149f7d8ce7c88e2652b3c20195c363c4e1497fafd7b3e"
+    }
+  },
+  "environment_sha256": "9bce41eae4f6a4a97c40cfb6fb0989ab14b42bd853a159de8d40f4164942d1d1",
+  "external_boundary_inventory": {
+    "assembly/accept_downloaded_mount.py": {
+      "bytes": 3767,
+      "sha256": "21cee49fda0000a1d36c96f57b702ce95f07ef368fc906bb0daecbc73c31f31e"
+    },
+    "assembly/finalize.py": {
+      "bytes": 4327,
+      "sha256": "1560eea0d0c55ea1d4d8e5dae8d76d450a497d344a6a1771560739ce784e7824"
+    },
+    "assembly/verify_parent_wrappers.py": {
+      "bytes": 24468,
+      "sha256": "13086b5ccdc987e414c934c7881c329260d17621ce54f0c87a43aab68f800060"
+    },
+    "deployment/launch_notebook.py": {
+      "bytes": 12911,
+      "sha256": "ac1f83437f7f04af8512b148c7ca836c4382163b838f00623befdf5428fe904b"
+    },
+    "deployment/notebook_builder.py": {
+      "bytes": 6303,
+      "sha256": "1c9b3bbafa2056327bc2d31e6d98d3b6c5dcb4d3cdd894273ecb65e09a31fced"
+    },
+    "deployment/parent_entry.py": {
+      "bytes": 1778,
+      "sha256": "91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3"
+    },
+    "deployment/prepare_entry.py": {
+      "bytes": 10143,
+      "sha256": "847bf2d5142b5a852ac68d0f43e456140e9f254487d09b9b2fa56b985ae13768"
+    },
+    "deployment/source_loader.py": {
+      "bytes": 10125,
+      "sha256": "e929be599fb875a806e149f7d8ce7c88e2652b3c20195c363c4e1497fafd7b3e"
+    }
+  },
+  "external_wrapper_review": {
+    "bytes": 3601,
+    "path": "portfolio63-rl-data-release-20261013/independent-operator-review/EXTERNAL-WRAPPER-REVIEW.json",
+    "sha256": "27e2648b079d1759384da50c06046bd12e3f17eb94ea2914b9fc473895353f0f"
+  },
+  "format": "owned-rl-reviewed-material-v1",
+  "material_input_audit": {
+    "bytes": 2449,
+    "path": "portfolio63-rl-data-release-20261013/independent-material-review/MATERIAL-INPUT-REVIEW.json",
+    "sha256": "4f546f544d0ad3a40f2d9648b70bb1067d262f977ad31c508f70350156c59c08"
+  },
+  "phase_policy_sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda",
+  "prior_aggregate_material": {
+    "bytes": 8280,
+    "path": "portfolio63-rl-bootstrap-repair-20261013/independent-material-review/MATERIAL-REVIEW.json",
+    "sha256": "6f9e0c8185e4627f5efbe4420cf7190ff81b8fee954514b8677cc1a97703ad66"
+  },
+  "qualifications": [
+    "Exact v29 evidence confirms the pre-session exclusion-config KeyError. Its frozen wrapper separately failed on diagnostic schema nesting and its unchanged consumer rejected null unsealed journal linkage. Historical failures remain immutable and unadmitted.",
+    "The backend repair internally binds only source-owned exclusion path/hash for the exact closed worker config, and verifies the dataset before reward-panel use. All200 baseline source files remain unchanged.",
+    "The separate data reviewer executed actual clean1000 builds and48 checks each mode, obtaining792 optimizer records and fixed32 training/16 dev/32 holdout/32 reward cases. Only two declared escrow output paths are normalized. No escrow target bodies were parsed by this aggregate review.",
+    "Final bundled-tokenizer execution is the author actual final-source optimized replay; the independent data reviewer verified all792/32 IDs, ordering, target hashes, length semantics and source guard closure without duplicating tokenization. No live session, sampler, model, GPU, reward or accuracy claim follows.",
+    "The external wrapper corrects only the exact exporter schema and retains separate process termination versus model-session closure. Unsealed-session diagnostics can be transport/source verified only under a separate operator gate, with normal21 consumer helpers unchanged and all admission/science/goal claims false, costs unknown.",
+    "Full historical neural tiny and two-batch proofs retain their original source identities and limits. This data/tokenizer repair is not a new full neural run.",
+    "Selected-arm original167-denominator PUBLIC eligibility and paired A/B/C comparison remain independent. Final collector/operator/entry pins and actual provider readback/admission must be separately reviewed.",
+    "Runtime, archive, source reviews and prior evidence remain immutable. This aggregate authorizes no provider action or model dispatch."
+  ],
+  "runtime_review": {
+    "bytes": 8233,
+    "path": "portfolio63-rl-data-independent-review-20261013/FINAL-INDEPENDENT-DATA-REVIEW.json",
+    "sha256": "e4d6ad831990c7ee78ed18ed9c927eede176afc1268fb90821ed87daf45ea510"
+  },
+  "runtime_review_sha256": "e4d6ad831990c7ee78ed18ed9c927eede176afc1268fb90821ed87daf45ea510",
+  "scope": "Exact final runtime data contract, three path-only environment values, independently rebuilt clean1000 dataset material and corrected external terminal authorization schema. Final operator/release/entry admission remains downstream.",
+  "source_archive": {
+    "bytes": 15745483,
+    "path": "portfolio63-rl-data-repair-20261013/RELEASE-SOURCE.zip",
+    "sha256": "52de966a26632cb8e5a7ad5d9100ac115d1db759418b9a4a05702ba35e1d4fa5"
+  },
+  "source_archive_sha256": "52de966a26632cb8e5a7ad5d9100ac115d1db759418b9a4a05702ba35e1d4fa5",
+  "source_inventory": {
+    "bytes": 33156,
+    "path": "portfolio63-rl-data-repair-20261013/RELEASE-SOURCE-INVENTORY.json",
+    "sha256": "c7f24f152ed0ca1aea415d9f48772869bc73aa00b1148424b8b1acbba6c16566"
+  },
+  "source_policy": {
+    "bytes": 8663,
+    "path": "portfolio63-rl-data-repair-20261013/design/MEASURED-POLICY.json",
+    "sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda"
+  },
+  "source_sha256": "441a57b9da6c8ce1a64913987abe7407e8729280925a2cff661b5d3ef05b0142",
+  "status": "APPROVED",
+  "verification": {
+    "bound_review_descriptors_rehashed": 1025,
+    "changed_runtime_paths": [
+      "owned_runtime/backend.py",
+      "owned_runtime/release.py"
+    ],
+    "consumer_helpers_unchanged": 21,
+    "external_files": 8,
+    "independent_data_tests_each_mode": 48,
+    "independent_wrapper_tests_each_mode": 10,
+    "runtime_source_members": 259,
+    "source_archive_all_members_hashed": true,
+    "unchanged_baseline_members": 200,
+    "unchanged_runtime_members": 257
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "format": "irisx/checkpoint-native-validator-handoff-v1",
+  "status": "passed",
+  "source_identity_sha256": "d485de95b68e0147e0d122143d25e983b7c60800259fdf8e44315b4537818b86",
+  "receipt": {
+    "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/receipt.json",
+    "sha256": "45fa048259d72d357f43722844d0c713cb89780a51af156336923c6de776ade9"
+  },
+  "actual_global_updates": 256,
+  "actual_task_updates": 16,
+  "actual_physical_updates": 272,
+  "exact_token_nll_parity": true,
+  "six_checkpoint_descriptors": [
+    {
+      "branch_id": "global_grid",
+      "update": 0,
+      "schedule": {
+        "allowed_updates": [
+          0,
+          64,
+          256
+        ],
+        "branch_id": "global_grid",
+        "fixture_only": false,
+        "format": "irisx/transfer-checkpoint-schedule-v1",
+        "protocol_sha256": "93411b88ba0f241ea9e45ee97018783bc77ed928eab5c6cb172afdf1641d85a1",
+        "schedule_id": "transfer-global-64-256-v1",
+        "scope": "global",
+        "source_sha256": {
+          "checkpoint_policy.py": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063",
+          "protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23"
+        }
+      },
+      "records_path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/global-records.json",
+      "records_sha256": "c69b0af0d859f496d8b74b40de9f8b600f30498a093f06e7cc06bae5014b7426",
+      "record_ids": [
+        "6a8b58903a1fa4ce0cee4fb30af5c2085736520652f325da656dfd9a2d088c04",
+        "f137f36babafaa1de1b2c0d57368b5c9717037b0e2b077e4874610d6c5b31670"
+      ],
+      "files": {
+        "manifest.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/global_grid/update-00000000/manifest.json",
+          "sha256": "7d9026853cceb91a56a4d7a9f91302cebe175b40ca671630e0a69b6536344d7a"
+        },
+        "resume/state.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/global_grid/update-00000000/resume/state.json",
+          "sha256": "93fa5ca70ce6e89a6303597db99bf0d8af93ce4b3f8656ba3e10fa3565a4067f"
+        },
+        "inference/adapter_model.safetensors.index.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/global_grid/update-00000000/inference/adapter_model.safetensors.index.json",
+          "sha256": "e98d089330622cebfebc3e7951d5defb089f10a12654668b253e6ccfdd34aab1"
+        }
+      }
+    },
+    {
+      "branch_id": "global_grid",
+      "update": 64,
+      "schedule": {
+        "allowed_updates": [
+          0,
+          64,
+          256
+        ],
+        "branch_id": "global_grid",
+        "fixture_only": false,
+        "format": "irisx/transfer-checkpoint-schedule-v1",
+        "protocol_sha256": "93411b88ba0f241ea9e45ee97018783bc77ed928eab5c6cb172afdf1641d85a1",
+        "schedule_id": "transfer-global-64-256-v1",
+        "scope": "global",
+        "source_sha256": {
+          "checkpoint_policy.py": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063",
+          "protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23"
+        }
+      },
+      "records_path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/global-records.json",
+      "records_sha256": "c69b0af0d859f496d8b74b40de9f8b600f30498a093f06e7cc06bae5014b7426",
+      "record_ids": [
+        "6a8b58903a1fa4ce0cee4fb30af5c2085736520652f325da656dfd9a2d088c04",
+        "f137f36babafaa1de1b2c0d57368b5c9717037b0e2b077e4874610d6c5b31670"
+      ],
+      "files": {
+        "manifest.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/global_grid/update-00000064/manifest.json",
+          "sha256": "b1fb1b10814f8306db86f6f642272aaa6e6b526a13fcd6cf04cce898b9bc3d4e"
+        },
+        "resume/state.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/global_grid/update-00000064/resume/state.json",
+          "sha256": "0da97994739be180b3f20875858820b1f59d62b363aefbff65c7430cfed72b88"
+        },
+        "inference/adapter_model.safetensors.index.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/global_grid/update-00000064/inference/adapter_model.safetensors.index.json",
+          "sha256": "078e2f130a1783f6adbf6715f5288e4c0504d8a637700dab6578adc09f2a53a8"
+        }
+      }
+    },
+    {
+      "branch_id": "global_grid",
+      "update": 256,
+      "schedule": {
+        "allowed_updates": [
+          0,
+          64,
+          256
+        ],
+        "branch_id": "global_grid",
+        "fixture_only": false,
+        "format": "irisx/transfer-checkpoint-schedule-v1",
+        "protocol_sha256": "93411b88ba0f241ea9e45ee97018783bc77ed928eab5c6cb172afdf1641d85a1",
+        "schedule_id": "transfer-global-64-256-v1",
+        "scope": "global",
+        "source_sha256": {
+          "checkpoint_policy.py": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063",
+          "protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23"
+        }
+      },
+      "records_path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/global-records.json",
+      "records_sha256": "c69b0af0d859f496d8b74b40de9f8b600f30498a093f06e7cc06bae5014b7426",
+      "record_ids": [
+        "6a8b58903a1fa4ce0cee4fb30af5c2085736520652f325da656dfd9a2d088c04",
+        "f137f36babafaa1de1b2c0d57368b5c9717037b0e2b077e4874610d6c5b31670"
+      ],
+      "files": {
+        "manifest.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/global_grid/update-00000256/manifest.json",
+          "sha256": "813cf46fc7a3f120b5977b0175be849e8184042e557025098afc5f572859692b"
+        },
+        "resume/state.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/global_grid/update-00000256/resume/state.json",
+          "sha256": "b2ed5fe0e8472e75c434b5dd18dade0749428c6b5672d872d62d3c192521f1d1"
+        },
+        "inference/adapter_model.safetensors.index.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/global_grid/update-00000256/inference/adapter_model.safetensors.index.json",
+          "sha256": "79515426ac58164fa24d98ea494d151418e5d881ddfe72dcb98efa952a812b45"
+        }
+      }
+    },
+    {
+      "branch_id": "representative_ttt",
+      "update": 0,
+      "schedule": {
+        "allowed_updates": [
+          0,
+          8,
+          16
+        ],
+        "branch_id": "representative_ttt",
+        "fixture_only": false,
+        "format": "irisx/transfer-checkpoint-schedule-v1",
+        "protocol_sha256": "93411b88ba0f241ea9e45ee97018783bc77ed928eab5c6cb172afdf1641d85a1",
+        "schedule_id": "transfer-ttt-0-8-16-v1",
+        "scope": "task",
+        "source_sha256": {
+          "checkpoint_policy.py": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063",
+          "protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23"
+        }
+      },
+      "records_path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/task-records.json",
+      "records_sha256": "e3083f3999416f27de10231aa9a2c786ae62a980f668759c8d8cb26d5b30637d",
+      "record_ids": [
+        "0072ca1b21b8a3fcd1aeac37655b624bcd37733cd541cb1de37c48570fc57c9c",
+        "68d96f9466872455f30171c15b79ed973042a4f868dd5b30870cfec66056353a"
+      ],
+      "files": {
+        "manifest.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/representative_ttt/update-00000000/manifest.json",
+          "sha256": "581d6ac6473b43c818534f592d1d6f8ea56be239a3c2d0335af60d4afb60dec4"
+        },
+        "resume/state.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/representative_ttt/update-00000000/resume/state.json",
+          "sha256": "bf5c6b7a03d5046d014308e935b9109dd001d18769e5897e9b47b510c5bf011e"
+        },
+        "inference/adapter_model.safetensors.index.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/representative_ttt/update-00000000/inference/adapter_model.safetensors.index.json",
+          "sha256": "84548d8e4d1b044207677b318a575204230d896a17dffd820da5c4770d53cd5c"
+        }
+      }
+    },
+    {
+      "branch_id": "representative_ttt",
+      "update": 8,
+      "schedule": {
+        "allowed_updates": [
+          0,
+          8,
+          16
+        ],
+        "branch_id": "representative_ttt",
+        "fixture_only": false,
+        "format": "irisx/transfer-checkpoint-schedule-v1",
+        "protocol_sha256": "93411b88ba0f241ea9e45ee97018783bc77ed928eab5c6cb172afdf1641d85a1",
+        "schedule_id": "transfer-ttt-0-8-16-v1",
+        "scope": "task",
+        "source_sha256": {
+          "checkpoint_policy.py": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063",
+          "protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23"
+        }
+      },
+      "records_path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/task-records.json",
+      "records_sha256": "e3083f3999416f27de10231aa9a2c786ae62a980f668759c8d8cb26d5b30637d",
+      "record_ids": [
+        "0072ca1b21b8a3fcd1aeac37655b624bcd37733cd541cb1de37c48570fc57c9c",
+        "68d96f9466872455f30171c15b79ed973042a4f868dd5b30870cfec66056353a"
+      ],
+      "files": {
+        "manifest.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/representative_ttt/update-00000008/manifest.json",
+          "sha256": "89f10412a2b6fc7a5e2c365c95aa8ea720abd813ef43c2467fb89a2edb44c73a"
+        },
+        "resume/state.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/representative_ttt/update-00000008/resume/state.json",
+          "sha256": "b13fa1991410af9f2ab3b39c95d1a82e683c1ba39926acf0942534d27971cbbc"
+        },
+        "inference/adapter_model.safetensors.index.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/representative_ttt/update-00000008/inference/adapter_model.safetensors.index.json",
+          "sha256": "fb206466c07b08caee92bb4a35480db3e9a682454b491c7f8e505f2cfc7f7e3a"
+        }
+      }
+    },
+    {
+      "branch_id": "representative_ttt",
+      "update": 16,
+      "schedule": {
+        "allowed_updates": [
+          0,
+          8,
+          16
+        ],
+        "branch_id": "representative_ttt",
+        "fixture_only": false,
+        "format": "irisx/transfer-checkpoint-schedule-v1",
+        "protocol_sha256": "93411b88ba0f241ea9e45ee97018783bc77ed928eab5c6cb172afdf1641d85a1",
+        "schedule_id": "transfer-ttt-0-8-16-v1",
+        "scope": "task",
+        "source_sha256": {
+          "checkpoint_policy.py": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063",
+          "protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23"
+        }
+      },
+      "records_path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/task-records.json",
+      "records_sha256": "e3083f3999416f27de10231aa9a2c786ae62a980f668759c8d8cb26d5b30637d",
+      "record_ids": [
+        "0072ca1b21b8a3fcd1aeac37655b624bcd37733cd541cb1de37c48570fc57c9c",
+        "68d96f9466872455f30171c15b79ed973042a4f868dd5b30870cfec66056353a"
+      ],
+      "files": {
+        "manifest.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/representative_ttt/update-00000016/manifest.json",
+          "sha256": "56027d2fe36bcdbd91017371393d10be31bcfe31b2f0fb8e7def4cab9b5cea4b"
+        },
+        "resume/state.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/representative_ttt/update-00000016/resume/state.json",
+          "sha256": "3a596d1e115830914c1b3bc67eba161e3cb4d595af60f8b31799d1318badec20"
+        },
+        "inference/adapter_model.safetensors.index.json": {
+          "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/native-production-schedule-final002/checkpoints/representative_ttt/update-00000016/inference/adapter_model.safetensors.index.json",
+          "sha256": "eca91d7d675a32a9f60c6e94dba86050ad8ba5173318aee05b79f6cc3a976ae0"
+        }
+      }
+    }
+  ],
+  "no_pretrained_or_gpu_claim": true,
+  "no_scientific_effectiveness_claim": true
+}

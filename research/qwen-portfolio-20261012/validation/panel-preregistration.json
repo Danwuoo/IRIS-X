@@ -1,0 +1,407 @@
+{
+  "canary_case_ids": [
+    "canary:mask-main-diagonal:00",
+    "canary:mask-main-diagonal:01",
+    "canary:crop-inner:00",
+    "canary:crop-inner:01",
+    "canary:append-zero-row:00",
+    "canary:append-zero-row:01",
+    "canary:checkerboard-mask:00",
+    "canary:checkerboard-mask:01"
+  ],
+  "denominators": {
+    "canary": 8,
+    "heldout_family": 6,
+    "real_arc_holdout": 24,
+    "same_family_query": 12,
+    "seen_regression": 13
+  },
+  "excluded_exposed_ids": [
+    "53b68214",
+    "b1948b0a",
+    "cce03e0d",
+    "e9c9d9a1"
+  ],
+  "format": "irisx/qwen14b-portfolio-panels-v1",
+  "freshness": "authored from fixed hashes without selecting on v18 outputs; no pretraining-cleanliness claim",
+  "heldout_case_ids": [
+    "heldout-family:pad-zero-border:00",
+    "heldout-family:pad-zero-border:01",
+    "heldout-family:tile-2x2:00",
+    "heldout-family:tile-2x2:01",
+    "heldout-family:shift-right-zero:00",
+    "heldout-family:shift-right-zero:01"
+  ],
+  "historical_split_preserved": true,
+  "independence_limit": "declared transforms/parents plus known D4/color/demo-order variants; not semantic proof",
+  "inventory_sha256": "53fc35f54fa1b8a29403c5ede3e3880e8588c40c75a4a5783692a9a13a3e95cb",
+  "preregistration_sha256": "0fa8e1d5a3794217710b043687bbcec7934dc56971633bc3549608514041e1c3",
+  "real_arc_family_independence_claimed": false,
+  "real_evaluation_ids": [
+    "93b581b8",
+    "5587a8d0",
+    "42f14c03",
+    "94414823",
+    "9edfc990",
+    "e0fb7511",
+    "e619ca6e",
+    "31adaf00",
+    "045e512c",
+    "d017b73f",
+    "8d510a79",
+    "90347967",
+    "cad67732",
+    "e6721834",
+    "b25e450b",
+    "91413438",
+    "d23f8c26",
+    "770cc55f",
+    "22425bda",
+    "48d8fb45",
+    "49d1d64f",
+    "36d67576",
+    "0a1d4ef5",
+    "575b1a71"
+  ],
+  "real_training_ids": [
+    "15663ba9",
+    "d94c3b52",
+    "810b9b61",
+    "2ccd9fef",
+    "5d588b4d",
+    "5833af48",
+    "ac6f9922",
+    "0ca9ddb6",
+    "4c5c2cf0",
+    "feca6190",
+    "dc2aa30b",
+    "54d9e175",
+    "12eac192",
+    "58c02a16",
+    "98cf29f8",
+    "cfb2ce5a",
+    "72ca375d",
+    "3979b1a8",
+    "b8cdaf2b",
+    "c64f1187",
+    "af726779",
+    "9def23fe",
+    "cd3c21df",
+    "f0afb749",
+    "662c240a",
+    "a8610ef7",
+    "bc4146bd",
+    "963e52fc",
+    "8e1813be",
+    "9841fdad",
+    "f28a3cbb",
+    "1b59e163"
+  ],
+  "same_family_case_ids": [
+    "same-family:identity:00",
+    "same-family:identity:01",
+    "same-family:reverse-columns:00",
+    "same-family:reverse-columns:01",
+    "same-family:transpose:00",
+    "same-family:transpose:01",
+    "same-family:reverse-rows:00",
+    "same-family:reverse-rows:01",
+    "same-family:recolor-one-two:00",
+    "same-family:recolor-one-two:01",
+    "same-family:repeat-columns:00",
+    "same-family:repeat-columns:01"
+  ],
+  "seed": "irisx-qwen-portfolio-20261012-panels-v1",
+  "selection_policy": "fixed SHA256 rank; no substitutions, outcome filters or target-length filters",
+  "source_commit": "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+  "source_entries": {
+    "045e512c": {
+      "bytes": 11041,
+      "git_blob_sha1": "532f6868463b82dc5669f111ef3c1786125bb504",
+      "path": "data/training/045e512c.json"
+    },
+    "0a1d4ef5": {
+      "bytes": 11293,
+      "git_blob_sha1": "b755874b43dca512a0efb70111b7effdf30b79f3",
+      "path": "data/training/0a1d4ef5.json"
+    },
+    "0ca9ddb6": {
+      "bytes": 2209,
+      "git_blob_sha1": "1999dfa85727462f01dbd3a6b12fe4a226401027",
+      "path": "data/training/0ca9ddb6.json"
+    },
+    "12eac192": {
+      "bytes": 1720,
+      "git_blob_sha1": "ecaaee7ec939cea6345f5aeef51fa6d30fb296f8",
+      "path": "data/training/12eac192.json"
+    },
+    "15663ba9": {
+      "bytes": 5215,
+      "git_blob_sha1": "1529c7d0a08ed925a19cc336935ccd1cd8a82cdf",
+      "path": "data/training/15663ba9.json"
+    },
+    "1b59e163": {
+      "bytes": 6144,
+      "git_blob_sha1": "3769febc157a3540e39030ca8aff422c8e6468bc",
+      "path": "data/training/1b59e163.json"
+    },
+    "22425bda": {
+      "bytes": 2753,
+      "git_blob_sha1": "153d736e1564e22c872a5e3de9e84036204b30b0",
+      "path": "data/training/22425bda.json"
+    },
+    "2ccd9fef": {
+      "bytes": 4487,
+      "git_blob_sha1": "636a9a4da9c0afeedb44435a5f3fc5c6d857082f",
+      "path": "data/training/2ccd9fef.json"
+    },
+    "31adaf00": {
+      "bytes": 2681,
+      "git_blob_sha1": "df27cd424919aa7b8f04292195b594fec9c506df",
+      "path": "data/training/31adaf00.json"
+    },
+    "36d67576": {
+      "bytes": 4635,
+      "git_blob_sha1": "081632c0c44ac91c98d2e25f1948be60d145f47d",
+      "path": "data/training/36d67576.json"
+    },
+    "3979b1a8": {
+      "bytes": 1311,
+      "git_blob_sha1": "c78eb46e2b5a6120966bf72be5b088ec1556788e",
+      "path": "data/training/3979b1a8.json"
+    },
+    "42f14c03": {
+      "bytes": 3626,
+      "git_blob_sha1": "a1b346a831e89239c5637ebe12ccc862455688b5",
+      "path": "data/training/42f14c03.json"
+    },
+    "48d8fb45": {
+      "bytes": 1533,
+      "git_blob_sha1": "c72a1aa2c9134f4b87b0652161766a880534c916",
+      "path": "data/training/48d8fb45.json"
+    },
+    "49d1d64f": {
+      "bytes": 495,
+      "git_blob_sha1": "d4a8c8d338a2394cbb481ce5b80d0c2d435deb9f",
+      "path": "data/training/49d1d64f.json"
+    },
+    "4c5c2cf0": {
+      "bytes": 4907,
+      "git_blob_sha1": "56d1a99a93a69dd75caf29d05eff5471ccf66147",
+      "path": "data/training/4c5c2cf0.json"
+    },
+    "54d9e175": {
+      "bytes": 1756,
+      "git_blob_sha1": "e0f29ea392dd6aa4d19b35a1ed78e6081cb019b2",
+      "path": "data/training/54d9e175.json"
+    },
+    "5587a8d0": {
+      "bytes": 1535,
+      "git_blob_sha1": "9181b1fd2a1a05207b6acd8177e3ca3497593828",
+      "path": "data/training/5587a8d0.json"
+    },
+    "575b1a71": {
+      "bytes": 2681,
+      "git_blob_sha1": "1e169cc240d3731e60fba79ad6ea6e2c6e6edb26",
+      "path": "data/training/575b1a71.json"
+    },
+    "5833af48": {
+      "bytes": 6136,
+      "git_blob_sha1": "09784f89e95ded2092f9a2b42a02c0601785700d",
+      "path": "data/training/5833af48.json"
+    },
+    "58c02a16": {
+      "bytes": 3189,
+      "git_blob_sha1": "babaff499f059b01e5d58ceceeaf1478a4cffbc1",
+      "path": "data/training/58c02a16.json"
+    },
+    "5d588b4d": {
+      "bytes": 3297,
+      "git_blob_sha1": "12164eeaf7f4a521cef62570387029a4692fc7c8",
+      "path": "data/training/5d588b4d.json"
+    },
+    "662c240a": {
+      "bytes": 806,
+      "git_blob_sha1": "6388cd445110fe905feb78e8b63f31d0ecd0a53a",
+      "path": "data/training/662c240a.json"
+    },
+    "72ca375d": {
+      "bytes": 1515,
+      "git_blob_sha1": "55dcc8a8a06149cce0589e6f7af30c4a3932777f",
+      "path": "data/training/72ca375d.json"
+    },
+    "770cc55f": {
+      "bytes": 2176,
+      "git_blob_sha1": "9e3148f4cc421d2a4d963090c88fd360a3b04c72",
+      "path": "data/training/770cc55f.json"
+    },
+    "810b9b61": {
+      "bytes": 4375,
+      "git_blob_sha1": "eed77d22a9d783b0396516a04b049bb754e5390f",
+      "path": "data/training/810b9b61.json"
+    },
+    "8d510a79": {
+      "bytes": 2016,
+      "git_blob_sha1": "8f0bd86a46024517ec33c704553c0ffb15d438bf",
+      "path": "data/training/8d510a79.json"
+    },
+    "8e1813be": {
+      "bytes": 3298,
+      "git_blob_sha1": "a02b2d72a719e068db5d4b9c11141d250c35d48e",
+      "path": "data/training/8e1813be.json"
+    },
+    "90347967": {
+      "bytes": 1637,
+      "git_blob_sha1": "8e0492ed2280e4376653f57c6550655cf1e641aa",
+      "path": "data/training/90347967.json"
+    },
+    "91413438": {
+      "bytes": 4106,
+      "git_blob_sha1": "cbd8f4bb1494ff44843b7c27aecfcc84c9567e5c",
+      "path": "data/training/91413438.json"
+    },
+    "93b581b8": {
+      "bytes": 1081,
+      "git_blob_sha1": "e0833ca95cca13b586b1671f2cecdd4e5c6a5e6e",
+      "path": "data/training/93b581b8.json"
+    },
+    "94414823": {
+      "bytes": 2681,
+      "git_blob_sha1": "d06084e53375bc9ab81b0e1ee615a38a84ff97fe",
+      "path": "data/training/94414823.json"
+    },
+    "963e52fc": {
+      "bytes": 1551,
+      "git_blob_sha1": "e841558842bfb541fbfb9f3b85036901d4508ed8",
+      "path": "data/training/963e52fc.json"
+    },
+    "9841fdad": {
+      "bytes": 5668,
+      "git_blob_sha1": "6cd5bd39d3fe25e186b396a4e98deebdb1171dbc",
+      "path": "data/training/9841fdad.json"
+    },
+    "98cf29f8": {
+      "bytes": 6115,
+      "git_blob_sha1": "8bce036599c84c174db86508c0306c6aff19b81d",
+      "path": "data/training/98cf29f8.json"
+    },
+    "9def23fe": {
+      "bytes": 9835,
+      "git_blob_sha1": "87430b7077265f3bc063995c1fb20ab479a08afb",
+      "path": "data/training/9def23fe.json"
+    },
+    "9edfc990": {
+      "bytes": 5797,
+      "git_blob_sha1": "4e7578c94aad3d8655877ca2909fb546a7897038",
+      "path": "data/training/9edfc990.json"
+    },
+    "a8610ef7": {
+      "bytes": 1346,
+      "git_blob_sha1": "c20eec97b983570df67ecae5e0c002a44d1d11f1",
+      "path": "data/training/a8610ef7.json"
+    },
+    "ac6f9922": {
+      "bytes": 3664,
+      "git_blob_sha1": "acd9636269883768994a4949cd6b191a905b2ac1",
+      "path": "data/training/ac6f9922.json"
+    },
+    "af726779": {
+      "bytes": 8399,
+      "git_blob_sha1": "f45b703e8eb345e99986434a1875006aff217999",
+      "path": "data/training/af726779.json"
+    },
+    "b25e450b": {
+      "bytes": 3569,
+      "git_blob_sha1": "45f738d0d7194ac93ee704676181275414d4947d",
+      "path": "data/training/b25e450b.json"
+    },
+    "b8cdaf2b": {
+      "bytes": 1396,
+      "git_blob_sha1": "79dc422cca3d4a4896a3ffa48531837bc6b15d99",
+      "path": "data/training/b8cdaf2b.json"
+    },
+    "bc4146bd": {
+      "bytes": 1666,
+      "git_blob_sha1": "e34ddf136ac9ccdf539e8d9cb1b85605a6aa5aec",
+      "path": "data/training/bc4146bd.json"
+    },
+    "c64f1187": {
+      "bytes": 4301,
+      "git_blob_sha1": "ccc40556cd57d0f23b9fc4864f0ee27af0e2405e",
+      "path": "data/training/c64f1187.json"
+    },
+    "cad67732": {
+      "bytes": 3670,
+      "git_blob_sha1": "832913760ccfbfe41c52613099b56cbf78152ca5",
+      "path": "data/training/cad67732.json"
+    },
+    "cd3c21df": {
+      "bytes": 2110,
+      "git_blob_sha1": "015694056a3bc4d7556c614018b745ee680e2ec3",
+      "path": "data/training/cd3c21df.json"
+    },
+    "cfb2ce5a": {
+      "bytes": 2681,
+      "git_blob_sha1": "13e551dd8a2f49bc1456f8433d07a7cde890f9a2",
+      "path": "data/training/cfb2ce5a.json"
+    },
+    "d017b73f": {
+      "bytes": 1043,
+      "git_blob_sha1": "bf5efab424b2f1573570b793cbe1b0ddd9299a55",
+      "path": "data/training/d017b73f.json"
+    },
+    "d23f8c26": {
+      "bytes": 849,
+      "git_blob_sha1": "dec3e733b48a9650c98b433d06e4c4433cc88d5a",
+      "path": "data/training/d23f8c26.json"
+    },
+    "d94c3b52": {
+      "bytes": 10593,
+      "git_blob_sha1": "2b09135a670acdfc0f17bb8659ce7268b722138e",
+      "path": "data/training/d94c3b52.json"
+    },
+    "dc2aa30b": {
+      "bytes": 3201,
+      "git_blob_sha1": "dc3f4f4d55e6ea84cfdcc4d53b973f209143f2d0",
+      "path": "data/training/dc2aa30b.json"
+    },
+    "e0fb7511": {
+      "bytes": 4385,
+      "git_blob_sha1": "b46da0e5af11c5a29b07b89d81efa5b81b3cc1a3",
+      "path": "data/training/e0fb7511.json"
+    },
+    "e619ca6e": {
+      "bytes": 18485,
+      "git_blob_sha1": "1e4f666bfa50f008df88f0282dba2ea791eec532",
+      "path": "data/training/e619ca6e.json"
+    },
+    "e6721834": {
+      "bytes": 5668,
+      "git_blob_sha1": "6aa39d8e43237155ce0d8fb33298ab4f66ac8306",
+      "path": "data/training/e6721834.json"
+    },
+    "f0afb749": {
+      "bytes": 1327,
+      "git_blob_sha1": "66c97499fe5f0b7163e6e3618a22386d6cb416e1",
+      "path": "data/training/f0afb749.json"
+    },
+    "f28a3cbb": {
+      "bytes": 1662,
+      "git_blob_sha1": "3310ace367974b9d34ba9392cff065f818107968",
+      "path": "data/training/f28a3cbb.json"
+    },
+    "feca6190": {
+      "bytes": 3413,
+      "git_blob_sha1": "a3b7b85a11ceff610a50a5ed9e824ad0e2b88d70",
+      "path": "data/training/feca6190.json"
+    }
+  },
+  "source_repository": "arcprize/ARC-AGI-2",
+  "source_url": "https://github.com/arcprize/ARC-AGI-2/tree/f3283f727488ad98fe575ea6a5ac981e4a188e49/data/training",
+  "split_before_task_read": true,
+  "stage_two": {
+    "enabled_by_default": false,
+    "parents": 32,
+    "program_targets": "candidate-derived persisted all-demo-fit proofs only; no gold programs"
+  }
+}

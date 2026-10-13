@@ -1,0 +1,94 @@
+{
+  "request": {
+    "framework": "MODEL_FRAMEWORK_TRANSFORMERS",
+    "instanceSlug": "14b",
+    "modelSlug": "qwen-3",
+    "ownerSlug": "qwen-lm",
+    "pageSize": 1000,
+    "versionNumber": 1
+  },
+  "response": {
+    "files": [
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "README.md",
+        "size": 16554
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "config.json",
+        "size": 728
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "generation_config.json",
+        "size": 239
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "merges.txt",
+        "size": 1671853
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "model-00001-of-00008.safetensors",
+        "size": 3841788544
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "model-00002-of-00008.safetensors",
+        "size": 3963750816
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "model-00003-of-00008.safetensors",
+        "size": 3963750880
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "model-00004-of-00008.safetensors",
+        "size": 3963750880
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "model-00005-of-00008.safetensors",
+        "size": 3963750880
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "model-00006-of-00008.safetensors",
+        "size": 3963750880
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "model-00007-of-00008.safetensors",
+        "size": 3963750880
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "model-00008-of-00008.safetensors",
+        "size": 1912371880
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "model.safetensors.index.json",
+        "size": 36514
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "tokenizer.json",
+        "size": 11422654
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "tokenizer_config.json",
+        "size": 9675
+      },
+      {
+        "creationDate": "2025-04-28T20:32:39.335Z",
+        "name": "vocab.json",
+        "size": 2776833
+      }
+    ]
+  }
+}

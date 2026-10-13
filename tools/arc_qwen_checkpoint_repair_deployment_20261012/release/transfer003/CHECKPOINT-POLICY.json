@@ -1,0 +1,61 @@
+{
+  "format": "irisx/transfer003-source-bound-checkpoint-policy-v1",
+  "contracts": {
+    "fixture": {
+      "allowed_updates": [
+        0,
+        1,
+        2
+      ],
+      "branch_id": "global_grid",
+      "fixture_only": true,
+      "format": "irisx/transfer-checkpoint-schedule-v1",
+      "protocol_sha256": "93411b88ba0f241ea9e45ee97018783bc77ed928eab5c6cb172afdf1641d85a1",
+      "schedule_id": "transfer-fixture-1-2-v1",
+      "scope": "global",
+      "source_sha256": {
+        "checkpoint_policy.py": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063",
+        "protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23"
+      }
+    },
+    "global": {
+      "allowed_updates": [
+        0,
+        64,
+        256
+      ],
+      "branch_id": "global_grid",
+      "fixture_only": false,
+      "format": "irisx/transfer-checkpoint-schedule-v1",
+      "protocol_sha256": "93411b88ba0f241ea9e45ee97018783bc77ed928eab5c6cb172afdf1641d85a1",
+      "schedule_id": "transfer-global-64-256-v1",
+      "scope": "global",
+      "source_sha256": {
+        "checkpoint_policy.py": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063",
+        "protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23"
+      }
+    },
+    "ttt": {
+      "allowed_updates": [
+        0,
+        8,
+        16
+      ],
+      "branch_id": "representative_ttt",
+      "fixture_only": false,
+      "format": "irisx/transfer-checkpoint-schedule-v1",
+      "protocol_sha256": "93411b88ba0f241ea9e45ee97018783bc77ed928eab5c6cb172afdf1641d85a1",
+      "schedule_id": "transfer-ttt-0-8-16-v1",
+      "scope": "task",
+      "source_sha256": {
+        "checkpoint_policy.py": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063",
+        "protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23"
+      }
+    }
+  },
+  "source_sha256": {
+    "tools/arc_qwen_transfer_20261012/checkpoint_policy.py": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063",
+    "tools/arc_qwen_transfer_20261012/protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23",
+    "tools/arc_qwen_portfolio_20261012/checkpoints.py": "4327288b5c352e03e328733a1ed6e3fceacacd2d124e6b84be4e794c05875512"
+  }
+}

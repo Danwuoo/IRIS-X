@@ -1,0 +1,68 @@
+{
+  "actual_native_main_evidence_sha256": "9767add2b294d5371f523d12790fbaf3f1d1241fcfd29a71f898fa4dd62281c0",
+  "actual_native_source_copy": "native-test-source-20261012-1241",
+  "actual_native_ttt_result_sha256": "e9cb30a2528855c326d84249248c7cbb3e0b613fb64284a597036b599d64fb4f",
+  "approved": true,
+  "created_utc": "2026-10-12T12:59:18.866223+00:00",
+  "evidence_sha256": {
+    "REVIEW.md": "ab6300090e52a7a9661358c2136b1b4c771cfb206502e2609f14ce3f4140e172",
+    "actual-receipts-review.json": "3aafca6f9db5cdbe0b9db8c9c61ae39aed5534d8cc31a2cd081b85df895e7a8b",
+    "final-stdlib-normal.txt": "8f70f97eb551d2db5547ff21e652905c8ec0da6ffb3c75be9025ef0ddeeaafc9",
+    "final-stdlib-optimized.txt": "aee62630ddca02ce4d7c8c878a1b1f6f2b446868f034a31a7de7a293f9a5911a",
+    "native-learning-receipt.json": "95681ff4af810fb55811e04671488c974f802b3af06d90342db2c02f3e91aa16",
+    "native-state-receipt.json": "e41bc065146bc8eca8821c436f9dd5e9201ce61d9f8e4719646ba81fbb7a608b",
+    "panel-metadata-review.json": "17fe132adbcafdefa533fd73a327204eaa6f1ab800527acb4df2debca704d586",
+    "prompt-audit-linkage-review.json": "9bbf738b44002c535145fbec59e9ec6e41c059571d325b4db268968351ec0e46",
+    "public-score-bridge-author-receipt.json": "52dcb891a71048ef56af031c939b858b1c0be1448461afa7287fab63affdfa0d",
+    "transfer-runtime-integration.json": "d329b5593d559b7fd9292e0b94dc35d68f92c10d286326fb8bdd23f1e6b403bf"
+  },
+  "focused_independent_tests": {
+    "normal": 36,
+    "optimized": 36
+  },
+  "format": "irisx/independent-transfer-runtime-review-v1",
+  "known_blockers": [],
+  "native_learning_signal": {
+    "after_mean_nll": 11.888037204742432,
+    "before_mean_nll": 11.968251705169678,
+    "denominator": 2,
+    "exact_after": 0,
+    "exact_before": 0,
+    "fixed_steps": 8,
+    "qualification": "Gradient/learning-signal validation only, not a solved benchmark; fixed CPU-only LR0.002"
+  },
+  "original175_byte_identical": true,
+  "original_source_zip_sha256": "1a2688871eab0221924db7c74d6042e122b3047f37ab6db28daf1c9e9fc364d7",
+  "production_gpu_fit_measured": false,
+  "public_goal_met": false,
+  "remaining_execution_requirements": [
+    "Exact reviewed source/assets/runtime and current deployment/operator approval",
+    "Actual production 128/512/2048/4096 native GPU calibration with full-state restoration and cache/memory admission",
+    "Measured complete fixed-panel time/physical-cost admission",
+    "Existing authorized provider and unchanged original predispatch epoch limits",
+    "Actual owner closure, sealed full120/167 scoring and successful archival for any reported terminal result"
+  ],
+  "runtime_members": 17,
+  "runtime_source_identity": {
+    "tools/arc_qwen_transfer_20261012/README.md": "64f88650c8eccf7bfbcf5be61eb3ddd8af75c614dbb444cbe573dc5faacb649f",
+    "tools/arc_qwen_transfer_20261012/__init__.py": "948807ee52aab706cb38382428e63dfe26c8bc9a390be9a741f605d572f1674a",
+    "tools/arc_qwen_transfer_20261012/arc_adaptation.py": "1ad429dabf649e405dc0386906030a9c441f3fa696070daec579fbf2e53ff013",
+    "tools/arc_qwen_transfer_20261012/backend.py": "2b48ba095f9c1cb70ef36c0f88c772c71142054dbe8982b9772883048fd52a32",
+    "tools/arc_qwen_transfer_20261012/child.py": "90c3c10114aed53f272a3a2e2230e41e24b74c0b0df09a9f27da01585029686a",
+    "tools/arc_qwen_transfer_20261012/data.py": "1872ecafc28c88dba5490299a1abcd6fb5f62cab06ef5c05797f256565da5b12",
+    "tools/arc_qwen_transfer_20261012/decoder.py": "e72ef0005f770254fafd7a5cf9c6bc216b518a60f2b642214c87bab78df288c9",
+    "tools/arc_qwen_transfer_20261012/demo_selector.py": "ead0dd170c592a8bfebbc8d0cfc1e092a009538dca01f3684519246739055781",
+    "tools/arc_qwen_transfer_20261012/experiment.py": "57534f89995bc3948a2f165e0e1e8a8498521b33baf731ccd703ce1373d4b3f7",
+    "tools/arc_qwen_transfer_20261012/model_profile.py": "3a945678316b42b929415612b099500e33f3d815d574e62b80dfbaf75a4fac06",
+    "tools/arc_qwen_transfer_20261012/prompt_budget.py": "532370dfe156488289ff5d3a9a5a8861937c26593a54da13a4c1c22548fc717b",
+    "tools/arc_qwen_transfer_20261012/protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23",
+    "tools/arc_qwen_transfer_20261012/public_evaluation.py": "5cfe3ba398e6a08a1c3dc8ecc838a54a8dc945aace1f808e56ed333962121edd",
+    "tools/arc_qwen_transfer_20261012/runner.py": "bc44f821b7765a7730ddcd9bf372c3a332f3680a15e4f918c1bbec66ba5b3cc2",
+    "tools/arc_qwen_transfer_20261012/science_profiles.py": "c7d88508ceea9af582a6f61e878eeab8adc3532420c3dd12c09f880c72b2dfbe",
+    "tools/arc_qwen_transfer_20261012/standalone-provenance.json": "b251dd8f7581dbd51290c65e44bf6e14454032db564db95a6278d5bfca46e689",
+    "tools/arc_qwen_transfer_20261012/transfer_selector.py": "824a76b0aac83d8112520d2e69740bfd619ee53b3521bf3e122f5f946c9f7b9c"
+  },
+  "runtime_source_identity_sha256": "358b762a6e31952ca217451d8de2f3b8ee7cae486eceea20946fbb61d050e5b2",
+  "scope": "Independent source/CPU correctness review; deployment/operator review remains separate",
+  "status": "APPROVED_FOR_EXACT_SOURCE_ASSEMBLY"
+}

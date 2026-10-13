@@ -1,0 +1,115 @@
+{
+  "format": "irisx/transfer-assembled-material-review-v1",
+  "status": "APPROVED",
+  "reviewed_at_utc": "2026-10-12T14:58:31.174143+00:00",
+  "approved_notebooks": [
+    {
+      "role": "inactive",
+      "bytes": 52819,
+      "sha256": "a79062848491a9d41b9c9d8a2a7eef4a0bfc8827c441beb7fda9388ea2de8eeb"
+    },
+    {
+      "role": "transfer002",
+      "bytes": 52817,
+      "sha256": "2f696510c3f423f35898f5ece80c0e34d580cfcd660fc7061169bd19ac6d83c0"
+    }
+  ],
+  "scope": {
+    "publication_manifest": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/release-candidate-002/publication-manifest.json",
+      "bytes": 123016,
+      "sha256": "86cc3dc848120035cb92b24d7919e6f33d508c51bb4d87d034f2a252fede560c"
+    },
+    "source_freeze": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/release-candidate-002/SOURCE-FREEZE.json",
+      "bytes": 64186,
+      "sha256": "2d96293ef1a03151358dc0d1618e6a347152df9bd28fb88d44e2abeb229fd5ce"
+    },
+    "runtime_independent_approval": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/release-candidate-002/RUNTIME-SOURCE-APPROVAL.json",
+      "bytes": 11061,
+      "sha256": "6780690a4a7499378a9bdf8b7c0bc6a5bf7b70d8a8226a26d7bca7010c61c1ea"
+    },
+    "material_addendum": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/release-candidate-002/MATERIAL-ADDENDUM.json",
+      "bytes": 4968,
+      "sha256": "7b338fc810ee565b2a7085b0f6bf8e937b1282e8f5267e3f911c03a547a9167a"
+    },
+    "generation_call_policy": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/release-candidate-002/GENERATION-CALL-POLICY.json",
+      "bytes": 1400,
+      "sha256": "dcc3ebbe4a32f654a1a8a5c18e52c5ff5af781573e013873f699101f5acd82bb"
+    },
+    "assembly_validation": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/assembly/FINAL-ASSEMBLY-VALIDATION.json",
+      "bytes": 5941,
+      "sha256": "45e2de9c5420ccdf135601627b926bd8b55a40378a3b91efb9e352873b8b81e6"
+    }
+  },
+  "independent_tests": {
+    "normal": 11,
+    "optimized": 11,
+    "source": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/assembled-material-review/test_final_material.py",
+      "bytes": 6814,
+      "sha256": "52dd778f2fc3478f15c294253faffff95c1e8bbcf9dfb0692e6148523d275f34"
+    },
+    "normal_log": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/assembled-material-review/tests-normal.log",
+      "bytes": 1337,
+      "sha256": "0b97a6fadb7ead46456a78b5228a2d1f562c7da0ec3e8ecaa9fd4689e8f0fa12"
+    },
+    "optimized_log": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/assembled-material-review/tests-optimized.log",
+      "bytes": 1337,
+      "sha256": "b2b9b90a5622a7f4c90044881015d9ed23d9d52e565b66376f1af92fc41a26dd"
+    }
+  },
+  "reviewed_properties": {
+    "source_members": 199,
+    "original175_byte_identical": true,
+    "prior197_delta": {
+      "modified": 5,
+      "added": 2,
+      "removed": 0
+    },
+    "runtime_approval_emitted_descriptor_matches": true,
+    "inactive_actual_notebook_no_filesystem_or_network": true,
+    "active_template_only_two_flag_changes": true,
+    "single_exact_epoch_patch_required": true,
+    "unchanged_model_and_eight_inputs_except_code_version": true,
+    "evaluator_roots_stripped_from_model_child": true,
+    "execution_cutoff_seconds": 42000,
+    "outer_cutoff_seconds": 42180,
+    "provider_runtime_seconds": 42300,
+    "global_seconds": 43200,
+    "generation_hard_seconds": 180,
+    "generation_normal_work_seconds": 175,
+    "other_call_semantics": "likelihood120/115; calibration/training historical120hard and branch-bound work unchanged",
+    "expanded_evidence_cap_bytes": 536870912,
+    "compressed_evidence_cap_bytes": 570425344,
+    "member_and_count_caps_unchanged": true,
+    "public_goal_requires_eligible_sealed_original167_scorer": true
+  },
+  "qualifications": [
+    "Genuine tiny owned224-main execution uses exact pre-cap source e02c3485 and qualified128/512 calibration, so PUBLIC timing refresh correctly falls back and no PUBLIC result is claimed.",
+    "Final source177c9a differs from genuine tiny source by runner archive-cap constant only; actual384MiB export and boundary tests plus both consumer paths are independently bound in runtime approval6780690a. No neural evidence was relabeled.",
+    "v21 measured full14B4096 cache/reset/memory; the new180second generation window and empirical PUBLIC throughput remain unmeasured on GPU. No accuracy,FP8 or4L4 claim.",
+    "Finite timing extrapolation uses all main calls without quality filtering; original forecast/fallback remains. A future long-output tail is not mathematically bounded by observed timing maxima; hard resource watchdogs enforce actual deadlines.",
+    "Candidate001 and002 actual bytes are identical; prior7a30 verbal approval hash was a stale pre-build observation, not a file/descriptor mismatch. Candidate002 was reproduced after final approval notice.",
+    "No provider writes, Git writes, model calls or public-target reads performed by this material review."
+  ],
+  "technical_execution_scope": {
+    "code_version": 12,
+    "inactive_version": 22,
+    "active_version": 23,
+    "activation_requires_independent_operator_monitor_review": true,
+    "actual_downloaded_mount_and_fresh_predecessor_required": true,
+    "new_provider_run_claimed": false,
+    "code_dataset_id": 12504696,
+    "code_dataset_version": 12,
+    "notebook_id": 138123872,
+    "new_resource_or_quota_query_authority": false,
+    "user_authorization_is_separate_from_this_technical_approval": true
+  }
+}

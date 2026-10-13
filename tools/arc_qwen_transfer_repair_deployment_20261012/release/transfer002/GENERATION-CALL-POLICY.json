@@ -1,0 +1,29 @@
+{
+  "format": "irisx/transfer002-source-bound-generation-policy-v1",
+  "source_member": "tools/arc_qwen_transfer_20261012/call_policy.py",
+  "source_sha256": "245db2cb146cfac84bd86aa854e1e42b5083ccf1a7b0741c82f43c5e71dc2824",
+  "runtime_policy": {
+    "format": "irisx/transfer-generation-call-policy-v1",
+    "generation_hard_seconds": 180.0,
+    "generation_normal_soft_seconds": 175.0,
+    "non_generation_hard_seconds": 120.0,
+    "non_generation_normal_soft_seconds": 115.0,
+    "cleanup_seconds": 5.0,
+    "short_remaining_cleanup_fraction": 0.1,
+    "deadline_policy": "min-owner-branch-deadline-and-call-hard-cap"
+  },
+  "runtime_policy_sha256": "a7883fea3e7b819cf2e79d796fe534cc0e6362aeacb0b0a53dcc0e0639afc474",
+  "generation_hard_seconds": 180,
+  "generation_work_seconds": 175,
+  "likelihood_hard_seconds": 120,
+  "likelihood_work_seconds": 115,
+  "calibration_and_training": "unchanged historical120s hard cap and branch-bound work deadline; no new115s soft limit",
+  "execution_cutoff_seconds": 42000,
+  "outer_cutoff_seconds": 42180,
+  "provider_runtime_seconds": 42300,
+  "global_seconds": 43200,
+  "timing_refresh_source_member": "tools/arc_qwen_transfer_20261012/timing_refresh.py",
+  "timing_refresh_source_sha256": "9b4fd5742b0b723d7bc6fe3a50f957203536c151dcec94e9b0d89e6db2b4302a",
+  "scientific_model_material_panels_scoring_unchanged": true,
+  "forecast_is_guarantee": false
+}

@@ -1,0 +1,141 @@
+{
+  "format": "independent-rlvr-provisional-defaults-v1",
+  "status": "proposed-for-lead-freeze-after-v25",
+  "production_admitted": false,
+  "evidence": {
+    "v23_archive_sha256": "222308b47d2a5bdf872d77cbd8969615d38ce61bc3107aff6f6da22bf82ed02c",
+    "v23_science_sha256": "c0e9d5ba89fb0955adbbbb5223c2f072b8c81bdb04a508473235b60bc651bdce",
+    "metadata_entries_sha256": {
+      "experiment/dev/base/000-0.timing.json": "354b22999fd77e79f0dc1245e5053b33819857a37428acd59ad19aa99b1d5fef",
+      "experiment/dev/base/000-1.timing.json": "da9ea0dfac37c3f6b228bf3c9c5f7c8b7c39d4d51a1842c30273593ce442f841",
+      "experiment/dev/base/001-0.timing.json": "0ae89cdb7ef0d03972052140394a101e3a1fa5649c8997a88babb551cb1c128d",
+      "experiment/dev/base/001-1.timing.json": "f8cc11da9281efc9e57dd8a5440bbf422583c681105851cc40d5be95e657ad05",
+      "experiment/dev/base/002-0.timing.json": "b18a944565d1a0fe58bc7c9b1783132508dd84efca8807332fcad4685a21d1b6",
+      "experiment/dev/base/002-1.timing.json": "233b2e5a42864125a8f23f690688ff407ff840af3f583fb650bd6161a0e32519",
+      "experiment/dev/base/003-0.timing.json": "2c275fec73e716c2befc91c87221ffe61c8f856442020e07a4c876cc16078d4e",
+      "experiment/dev/base/003-1.timing.json": "a83741d0f61541fa75df587a4d543617e64b52f9c2d8c2cf0f1627214f5c7628",
+      "experiment/dev/base/004-0.timing.json": "61ee37150faaa8230bf4b7800b88c591d50da65a19c7aa9eb47cc32d2a186923",
+      "experiment/dev/base/004-1.timing.json": "a3f1722ea84e25c4634f24d5bb4f93fa292ff311ead9a00390bd2dc43cb8c005",
+      "experiment/dev/base/005-0.timing.json": "7170098b1d679925637c15e0606e5a1ce5c49d4b54662e68989c8e2c6973cff7",
+      "experiment/dev/base/005-1.timing.json": "6ac0cfeade606a46da56ed1412fdc9192999c14b29bae4928945af0674f5913d",
+      "experiment/dev/base/006-0.timing.json": "f8f19db38671164f9a98cd44afd1e5eed734424fc22007168686bbb7e24ad821",
+      "experiment/dev/base/006-1.timing.json": "f443308a0a7a155f38d4e67bd4dabf1b78638412600b3d44e7b5975fa0fb6e2c",
+      "experiment/dev/base/007-0.timing.json": "f7fb71240846b180e5d0743a69357b8df05cb62fc19ee4fe77fa97c33e779a44",
+      "experiment/dev/base/007-1.timing.json": "0c5967c724c66c57f655020d22d3fc652ab246fc4cccb325afabf5c57f217d4a",
+      "experiment/dev/base/008-0.timing.json": "fed8e430d777284fe5f0d3f04311dc4b9e24a2b770e03632817e3db9278a4aa9",
+      "experiment/dev/base/008-1.timing.json": "ce79c425b685bef647ae3d22df811010d2fb2c1dfd5f43ab59df5520b32d7cb0",
+      "experiment/dev/base/009-0.timing.json": "7c5fac340e964ca9bbc9ab49a3cb4f6d69673eb15fd22b766d45e0c5762e20b9",
+      "experiment/dev/base/009-1.timing.json": "9d76863814023666bbbcfd454cc042cb4ea253f7d9e1c5ebd0ae88e68e18ea70",
+      "experiment/dev/base/010-0.timing.json": "7323b6032c2416a3271f6ce69c1d1cf9b331b36d2fa3f40adbf05b92a9ee90d4",
+      "experiment/dev/base/010-1.timing.json": "4310c9983763693aab94f1133588dc0ff8f6f081ce01af92c3b7d567fd24e2d0",
+      "experiment/dev/base/011-0.timing.json": "06db49668e0c96effc0cc07ef1ce33e96d86dd17f27fca696e18730bae50bee5",
+      "experiment/dev/base/011-1.timing.json": "ae7352e00a0ea4772377559267a8bec00dbaeb2078671bc380a2650b2e2eb2d5",
+      "experiment/dev/base/012-0.timing.json": "3b48b7e3a23816f930c390d6a397b3f1c3a481a61c8a340ef83e77b96d910c2d",
+      "experiment/dev/base/012-1.timing.json": "cbbec19385b873e9cb76c8e0ff2b4f5c2c8ee32f23d465b7983540429b4c91c5",
+      "experiment/dev/base/013-0.timing.json": "61a164c433aa5b36a52b7c3fa4fd0e86555846d0b9d1c0f9572c30ac9f18b515",
+      "experiment/dev/base/013-1.timing.json": "09dfc981d819f39ed4b9519c28ebd23f831c17c985c0b2f69058705ff346def7",
+      "experiment/dev/base/014-0.timing.json": "a45a13c66d97f1c11448a9383c4b6b9a7d81bf5341ab5274080e4509dab0c932",
+      "experiment/dev/base/014-1.timing.json": "743f6f3de69b2dae3b672d56ca9f4ffaeb02bdedf0ed9113e958127dfd7340d7",
+      "experiment/dev/base/015-0.timing.json": "867a4b3a30e866fc26d5713bf46fb42caa6cefc606c641a700c588d2a29bd099",
+      "experiment/dev/base/015-1.timing.json": "81c3f93e48775f3c3c694f41fa4b066133f6926735c10409769d852452d15807",
+      "model-admission.json": "f17ecebbb7c0b14dac1b75232c9c2b1834030efb003709e6d0955619a3928a75",
+      "calibration/length-4096.json": "efadc5be995769d5652d5ed9412d345e08276a8202c4b8f4bfbde57ac2e2fead"
+    }
+  },
+  "observed_v23": {
+    "base_dev_generations": 32,
+    "base_dev_evidence_wall_seconds": {
+      "min": 0.7380794690002404,
+      "mean": 6.399643852187523,
+      "p95_nearest_rank": 16.821899842999755,
+      "max": 27.2418438589998,
+      "sum": 204.78860327000075
+    },
+    "base_dev_output_tokens": 6556,
+    "base_dev_max_output_tokens": 930,
+    "sft64_seconds": 81.25931497900001,
+    "backend_load_seconds": 214.02303792599992,
+    "calibration4096_update_seconds": 2.6560538440003256,
+    "old_full_output_cap_generation_forecast_seconds": 76.41845855013092,
+    "device_total_memory_bytes": 101973819392,
+    "calibration4096_peak_allocated_bytes": 40208633856,
+    "calibration4096_peak_reserved_bytes": 43599790080,
+    "trained_dev_holdout_public_generation_timing_measured": false
+  },
+  "numeric_gate": {
+    "applies": "each unchanged-policy replay and per-parent aggregate; nonforced generated tokens; all-token metrics additionally retained",
+    "maximum_p95_absolute_logprob_gap": 0.05,
+    "maximum_absolute_logprob_gap": 0.2,
+    "minimum_strict_DDIS_coverage": 1.0,
+    "DDIS_open_ratio_interval": [
+      0.8,
+      1.28
+    ],
+    "max_gap_implied_ratio_interval": [
+      0.8187307530779818,
+      1.2214027581601699
+    ],
+    "zero_nonforced_tokens": "report-not-applicable; never numerical evidence of a policy-gradient contribution",
+    "nonfinite_or_provenance_failure": "no-update-with-cost-retained",
+    "measured_in": "first fixed sweep inside the same next session, before optimizer commit; no separate GPU session"
+  },
+  "resource_gate": {
+    "maximum_replay_plus_backward_seconds": 30.0,
+    "non_generation_hard_seconds": 120.0,
+    "generation_soft_seconds": 175.0,
+    "generation_hard_seconds": 180.0,
+    "maximum_peak_allocated_bytes": 77309411328,
+    "maximum_peak_reserved_bytes": 85899345920,
+    "measurement_scope": "whole replay/backward and optimizer work through commit decision, not forward-only; record actual device memory"
+  },
+  "phase_constants": {
+    "global_seconds": 43200,
+    "inner_seconds": 42000,
+    "outer_seconds": 42180,
+    "provider_seconds": 42300,
+    "common_setup_calibration_anchor_forecast_seconds": 1800,
+    "B_max_seconds": 7200,
+    "C_max_seconds": 7200,
+    "max_sweeps": 4,
+    "G": 8,
+    "planned_parents": 32,
+    "optional_TTT_updates": 0,
+    "evaluation_generation_forecast_seconds": 45,
+    "ABC_generation_count": 288,
+    "ABC_reserve_seconds": 12960,
+    "selected_PUBLIC_generation_count": 334,
+    "selected_PUBLIC_reserve_seconds": 15030,
+    "future_reload_persistence_slots": 8,
+    "reload_persistence_seconds_per_slot": 300,
+    "future_reload_persistence_reserve_seconds": 2400,
+    "cleanup_reserve_seconds": 600,
+    "protected_total_seconds": 30990,
+    "arm_finalization_forecast_seconds": 300,
+    "control_step_forecast_seconds": 4
+  },
+  "time_match": {
+    "tolerance_formula": "min(120, max(5, 0.05 * measured_B_seconds))",
+    "clock": "synchronized model-phase wall intervals including all setup, rewards, replay, checkpoint, failed/rollback and Python/hash overhead",
+    "idle_padding": false,
+    "C_finalization": "reserve within C matching target before another step; do not count twice as an extra common slot",
+    "unmatched": "report explicitly; cannot claim matched compute"
+  },
+  "admission": {
+    "formula": "next_B + max(0, B_so_far + next_B - C_so_far) + tolerance(B_so_far + next_B) + protected_remaining <= remaining_to_original_inner_deadline",
+    "max_B_after_1800s_setup_and_no_C_seconds": 4545,
+    "example_arithmetic": "1800 + 4545 + (4545+120) + 30990 = 42000",
+    "caps_are_not_promises": true,
+    "full_G8_audit_guaranteed": false,
+    "full_cap_diagnostic": "622 * 76.41845855013092 = 47532.28121818144s before reload/training; cap-based full-length completion cannot fit12h",
+    "incomplete_audit": "distinct from no-mixed-signal; preserve real counts, costs and last declared committed state; complete A/C/B paired predictions when safely reserved"
+  },
+  "interpretation": "RL1e-6 and control2e-4 with fresh constant schedules are intervention packages, not an objective-only causal comparison; reused holdout is not pristine confirmation; original sealed scorer alone establishes PUBLIC90.",
+  "limitations": [
+    "45s per eval generation is a provisional aggregate allowance about1.65x v23 observed base maximum, not a new per-call hard cap or a measured trained/PUBLIC bound.",
+    "300s reload/persistence is provisional: v23 load was214.023s, but trained SFT64 persistence/reload failed and its duration is not established.",
+    "4s control step rounds up1.5x the v23 maximum2.656s calibration update; it is not measured new-runtime throughput.",
+    "1800s common setup/anchor forecast is a reserve, not a claim that this new runtime was measured.",
+    "v25 cost-only observations may revise these forecasts before launch; numeric/reward/selection thresholds cannot be outcome-tuned.",
+    "72/80GiB memory and30s replay/backward are conservative engineering admission limits, not an assertion that full14B RL will fit."
+  ]
+}

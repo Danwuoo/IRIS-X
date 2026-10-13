@@ -1,0 +1,12 @@
+--- freeze001/tools/arc_qwen_portfolio_20261012/checkpoints.py
++++ freeze002/tools/arc_qwen_portfolio_20261012/checkpoints.py
+@@ -148,6 +148,9 @@
+ 
+ def _check_update(update, binding, trainer=None):
+     schedule = binding.get('checkpoint_schedule')
++    require(schedule is not None or binding.get('model', {}).get('native_identity', {}).get('profile_id') !=
++            'qwen3-14b-native-bf16-r8-c4096-transfer-v1',
++            'stored TransferTrainer identity requires an explicit checkpoint schedule')
+     if schedule is not None:
+         require(type(update) is int, 'integer transfer checkpoint update required')
+         from tools.arc_qwen_transfer_20261012.checkpoint_policy import validate_contract

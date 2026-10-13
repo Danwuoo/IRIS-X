@@ -1,0 +1,67 @@
+{
+  "checkpoint_archive_bytes_verified": false,
+  "code_dataset_id": 12504696,
+  "code_dataset_version": 13,
+  "evidence": {
+    "collected_checkpoint": {
+      "bytes": 7298,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/publication/run-evidence/COLLECTED-TERMINAL-CHECKPOINT.json",
+      "sha256": "c016ae0b5529a348b90e6a6627c880582ea1e91ab0d6d0908212284a3581ad37"
+    },
+    "launch_receipt": {
+      "bytes": 3015,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/publication/state/notebook-transfer003-receipt.json",
+      "sha256": "2c127554a50df4257df542036f271a37a3d8968636336a38302d9e016e48221c"
+    },
+    "offline_score_audit": {
+      "bytes": 4620,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/independent-operator-review/V25-OFFLINE-SCORE-RESULT-AUDIT.json",
+      "sha256": "957cdf03a387f9ce98b6029494e3ead618e6674f4f13d44ad12564d6e2e67c9f"
+    },
+    "offline_validator_review": {
+      "bytes": 6575,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/independent-operator-review/V25-OFFLINE-VALIDATOR-REVIEW.json",
+      "sha256": "768c17ef3b7b88d4222ad4f13ca61254cc0e14ef5f986f674c10a0f04e90cef0"
+    },
+    "retrieval_receipt": {
+      "bytes": 8805,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/publication/run-evidence/retrieval-1791833802866451426.json",
+      "sha256": "c2897627ef5383fefd806dc7da74307735c1aaf7c137e498290313abebdb9ac9"
+    },
+    "saved_source": {
+      "bytes": 52190,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/publication/state/notebook-transfer003-saved.ipynb",
+      "sha256": "3cceac4b15823a786fc5c10ff70203c47b19fcda65bbe357e292a8bf5761df74"
+    },
+    "terminal_integrity_audit": {
+      "bytes": 6468,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/independent-operator-review/V25-TERMINAL-INTEGRITY-AUDIT.json",
+      "sha256": "054ba8dbf3348d87488202001e2478ca8edec345f8801cb24b5a71ad32bf752d"
+    },
+    "terminal_receipt": {
+      "bytes": 24673,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/publication/run-evidence/downloads/irisx-qwen14b-transfer-20261012-run003/terminal-receipt.json",
+      "sha256": "04432a87329cc21888fbc851ccaa82d805a8fff3b7b4ba258adbaadae25685e5"
+    }
+  },
+  "format": "irisx/rlvr001-predecessor-evidence-v1",
+  "goal_met": false,
+  "notebook_id": 138123872,
+  "numeric_notebook_version": 25,
+  "original_operational_success": false,
+  "original_public_status": "SCORING_BLOCKED",
+  "original_terminal_validation_status": "BLOCKED_MISSING_CALIBRATION_EVENT_BINDINGS_DERIVATION",
+  "provider_status": "COMPLETE",
+  "qualification": "Original blocked receipts are immutable; separate independently reviewed local validator and original CPU scorer recover content/metric without model rerun. Historical operational failure is not a veto on a distinct reviewed successor.",
+  "runtime_status": "TRANSFER_COMPLETE",
+  "saved_source_sha256": "3cceac4b15823a786fc5c10ff70203c47b19fcda65bbe357e292a8bf5761df74",
+  "separate_offline_public_score": {
+    "denominator": 167,
+    "measurement": "project-public-development-offline-recovery",
+    "metric": "micro-pass@2",
+    "numerator": 0,
+    "official_score": null
+  },
+  "separate_offline_validation_valid": true,
+  "whole_provider_inventory_verified": false
+}

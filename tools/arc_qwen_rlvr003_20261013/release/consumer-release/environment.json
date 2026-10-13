@@ -1,0 +1,65 @@
+{
+  "actual_environment": {
+    "cuda_version": "12.8",
+    "device_count": 1,
+    "devices": [
+      {
+        "capability": [
+          12,
+          0
+        ],
+        "index": 0,
+        "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+        "total_memory_bytes": 101973819392
+      }
+    ],
+    "peft_version": "0.21.0",
+    "python_version": "3.12.15",
+    "tokenizers_version": "0.22.2",
+    "torch_version": "2.8.0+cu128",
+    "transformers_version": "5.8.1"
+  },
+  "cudnn_policy": {
+    "distribution": "nvidia-cudnn-cu12",
+    "distribution_version": "9.10.2.21",
+    "library_api": "size_t cudnnGetVersion(void)",
+    "library_member": "nvidia/cudnn/lib/libcudnn.so.9",
+    "mode": "pinned-wheel-mapped-library-current-observation-v1",
+    "prior_runtime_integer_observed": false,
+    "wheel_bytes": 706758467,
+    "wheel_name": "nvidia_cudnn_cu12-9.10.2.21-py3-none-manylinux_2_27_x86_64.whl",
+    "wheel_sha256": "949452be657fa16687d0930933f032835951ef0892b37d2d53824d1a84dc97a8"
+  },
+  "format": "owned-rl-reviewed-environment-v2",
+  "model_config": {
+    "context_limit": 4096,
+    "contract_path": "/kaggle/working/irisx-qwen14b-rlvr-20261012-source003/runtime/baseline/materials/qwen14b/material-contract.json",
+    "enabled": true,
+    "environment_lock_path": "/kaggle/working/irisx-qwen14b-rlvr-20261012-source003/runtime/baseline/materials/qwen14b/environment-lock.json",
+    "material_addendum_sha256": "ec8354dda582077a67a4df48fbd46dbca0edd1b85fd3461626e040eda5596804",
+    "model_key": "qwen3-14b",
+    "model_path": "/kaggle/input/models/qwen-lm/qwen-3/transformers/14b/1",
+    "output_cap": 1024,
+    "precision": "bf16-base-fp32-lora",
+    "profile_id": "qwen3-14b-native-bf16-r8-c4096-transfer-v1",
+    "prompt_cap": 3072,
+    "reviewed_deployment_id": "qwen3-14b-kaggle-v1-hf40c069-bf16-r8-c4096-transfer-20261012",
+    "seed": 1917,
+    "tensor_parallel_size": 1,
+    "tokenizer_path": "/kaggle/working/irisx-qwen14b-rlvr-20261012-source003/runtime/baseline/materials/qwen14b/hf-overlay",
+    "wheel_root_path": "/kaggle/input/datasets/danielwuu/iris-arc-next-cu128-cp312-wheels"
+  },
+  "native_identity_projection": {
+    "all_eight_weight_sha256_verified": true,
+    "base_precision": "bfloat16",
+    "full_vocabulary_rows": 151936,
+    "material_addendum_sha256": "ec8354dda582077a67a4df48fbd46dbca0edd1b85fd3461626e040eda5596804",
+    "model_id": "Qwen/Qwen3-14B",
+    "model_key": "qwen3-14b",
+    "pretrained_weights_loaded": true,
+    "probe_pretrained_admitted": true,
+    "profile_id": "qwen3-14b-native-bf16-r8-c4096-transfer-v1",
+    "random_test_weights": false,
+    "revision": "40c069824f4251a91eefaf281ebe4c544efd3e18"
+  }
+}

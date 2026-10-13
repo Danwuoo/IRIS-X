@@ -1,0 +1,8 @@
+{
+  "environment_sha256": "39d56dd0b5167ba43d9958ace70a8c2b031f29d421d051cfb75cbcff985f4c71",
+  "format": "owned-rl-independent-release-v1",
+  "material_review_sha256": "b2c1acac384377a1f8023145b65f3078c746a248de2077bc9887a0a9b1bf75a8",
+  "owner_protocol_sha256": "518669bb00a3caa8ee09837bf41552dce261aec1ab75467ae8509c2b8250257f",
+  "phase_policy_sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda",
+  "source_sha256": "22a736bd06f10a5708a0b0c69ac3b89128394e3775c0780d19d1b999b8cc1ba1"
+}

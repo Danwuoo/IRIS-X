@@ -1,0 +1,33 @@
+{
+  "status": "passed",
+  "changed_files": [
+    {
+      "path": "tools/arc_qwen_portfolio_20261012/checkpoints.py",
+      "before_sha256": "becb2c2655b1418a4b9999250fc0f998ebb68ddcbe8fbdff53d55312e380774d",
+      "after_sha256": "33811b8dd2f16357ebab1c7e3c18c3f0a9b95fe88d9bec7ea9bf9dacffd7b8e8"
+    },
+    {
+      "path": "tools/arc_qwen_transfer_20261012/backend.py",
+      "before_sha256": "e2e4a5d77f1d62ffd589da3b9b7019c1ce43b646d4d37312f5b970e7cc7a29ad",
+      "after_sha256": "36284ff46102c7fe1665fb06bcefb3c75906fd3888fa83da90bccf96ec682063"
+    },
+    {
+      "path": "tools/arc_qwen_transfer_20261012/checkpoint_policy.py",
+      "before_sha256": null,
+      "after_sha256": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063"
+    },
+    {
+      "path": "tools/arc_qwen_transfer_20261012/experiment.py",
+      "before_sha256": "56f0dda41e6fde69996a43b6fd1ede93a639b87eb2133a2a7efe75adbfc99c03",
+      "after_sha256": "c476c520ca438eef12079d6601409e9e28e72aadf1f3f21e973cc533a2dfc897"
+    },
+    {
+      "path": "tools/arc_qwen_transfer_20261012/public_evaluation.py",
+      "before_sha256": "5cfe3ba398e6a08a1c3dc8ecc838a54a8dc945aace1f808e56ed333962121edd",
+      "after_sha256": "ed3304fbf89fa0e1ddfc6ec8cb826ca47910c471617dbc993173e0b17d724d5d"
+    }
+  ],
+  "unchanged_files": 195,
+  "old_file_count": 199,
+  "new_file_count": 200
+}

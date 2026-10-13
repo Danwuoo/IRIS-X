@@ -1,0 +1,129 @@
+{
+  "artifacts": {
+    "admission_audit": {
+      "bytes": 5878,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/independent-operator-review/V23-ADMISSION-AUDIT.json",
+      "sha256": "2e4a6389624f88ee5c062c48776680a7cbb227d530302f88a9b0106602613cf7"
+    },
+    "admission_checkpoint": {
+      "bytes": 5664,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/RUN-ADMISSION-CHECKPOINT.json",
+      "sha256": "adad4c2aa0d079366a270ea371a0b722fbe00674c362f4f4bbd2d92dea30cbde"
+    },
+    "evidence_archive": {
+      "bytes": 3695871,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/downloads/irisx-qwen14b-transfer-20261012-run002/evidence.zip",
+      "sha256": "222308b47d2a5bdf872d77cbd8969615d38ce61bc3107aff6f6da22bf82ed02c"
+    },
+    "outer_closure": {
+      "bytes": 1674,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/downloads/irisx-qwen14b-transfer-20261012-run002-launcher/launcher-closure.json",
+      "sha256": "b6441fe5447d5f674c29c81eba28acdc6cd695919092ee2a5766b1d0cd69c093"
+    },
+    "raw_validation": {
+      "bytes": 3458,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/TERMINAL-VALIDATOR-RAW.json",
+      "sha256": "0f7832d641cae212c9d22de7dcd2cc2045171e0b9f3eceef490904f91d73e200"
+    },
+    "retrieval": {
+      "bytes": 8801,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/RETRIEVAL-RECEIPT.json",
+      "sha256": "b7ad6095d082c1159f8f714e8f37ba08c8b64554968f0688a83e60ad6ab9aa8c"
+    },
+    "terminal_checkpoint": {
+      "bytes": 1230,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/TERMINAL-CHECKPOINT.json",
+      "sha256": "72f7d476bc8c63f4db40ecbb368bb70798dbf2c36ff78e32dba28d9d741941a7"
+    },
+    "terminal_receipt": {
+      "bytes": 19476,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/downloads/irisx-qwen14b-transfer-20261012-run002/terminal-receipt.json",
+      "sha256": "6d4d9805419ac64c762fc39867b4fc16a220b7ec902df4a56ced0a1f5f4e4fc6"
+    },
+    "validation": {
+      "bytes": 3703,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/run-evidence/TERMINAL-VALIDATION.json",
+      "sha256": "db56c39f9672cedbeaa517f94df7f3e88d8bdb14bfec287e29389cb338eaf614"
+    },
+    "watcher_log": {
+      "bytes": 10317,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-transfer-repair-20261012/publication/WATCH-V23-001.log",
+      "sha256": "96c49f3dccc156d4a7c867afe8d8a0e00d52e059cc93256ea31fd08c4f6bc630"
+    }
+  },
+  "automatic_retry": false,
+  "closures": {
+    "inner_closed": true,
+    "inner_forced": false,
+    "outer_closed": true,
+    "outer_forced": false,
+    "pending_work": {}
+  },
+  "collection": {
+    "checkpoint_archive_bytes_verified": false,
+    "inventory_scope": "selected_outputs_only",
+    "sealed_archive_expanded_bytes": 30080751,
+    "sealed_archive_members": 165,
+    "selected_downloaded_bytes": 3776146,
+    "selected_files": 14,
+    "separate_checkpoint_metadata": {
+      "archive_bytes_verified": false,
+      "body_consumed_bytes": 0,
+      "bytes": 130269100,
+      "declared_sha256_unverified": "6c55a1611204a30e8f5b65699d2d0d09413dff15bc55f99b2a9d0ce5c328179c",
+      "http_status": 200,
+      "path": "irisx-qwen14b-transfer-20261012-run002/checkpoints.zip",
+      "presence": "HTTP200_CONTENT_LENGTH_VERIFIED",
+      "scope": "numeric output request; Content-Length and successful response only"
+    },
+    "whole_provider_inventory_verified": false
+  },
+  "created_utc": "2026-10-12T15:46:34.504500+00:00",
+  "format": "irisx/transfer002-terminal-cost-and-linkage-v1",
+  "goal_met": false,
+  "ledger_rows": 795,
+  "numeric_version": 23,
+  "operational_success": false,
+  "original_clocks": {
+    "execution_deadline_epoch": 1791860330,
+    "global_deadline_epoch": 1791861530,
+    "outer_deadline_epoch": 1791860510,
+    "predispatch_epoch": 1791818330,
+    "provider_timeout_seconds": 42300
+  },
+  "pending_work": {},
+  "physical_usage": {
+    "cpu_checks": 0,
+    "gas": 0,
+    "generation_calls": 44,
+    "input_tokens": 534860,
+    "output_tokens": 6580,
+    "scoring_forwards": 348,
+    "training_steps": 68
+  },
+  "provider_envelope_verified": true,
+  "provider_status": "COMPLETE",
+  "provider_vm_or_billing_state_verified": false,
+  "public_status": "PUBLIC_NOT_RUN",
+  "runtime_child_error": {
+    "message": "bounded checkpoint update required",
+    "type": "ContractError"
+  },
+  "runtime_status": "TRANSFER_PARTIAL",
+  "science_complete": false,
+  "status": "TERMINAL_EVIDENCE_VERIFIED_PENDING_INDEPENDENT_AUDIT",
+  "timing": {
+    "actual_dispatch_epoch": 1791818330.6652186,
+    "actual_dispatch_to_outer_closure_seconds": 915.2834775447845,
+    "first_provider_terminal_epoch": 1791819699.0952094,
+    "inner_runner_owner_elapsed_seconds": 795.8739287630001,
+    "observed_dispatch_to_final_collection_bracket_seconds": 1520.2588438987732,
+    "observed_dispatch_to_first_provider_terminal_seconds": 1368.4299907684326,
+    "outer_completed_epoch": 1791819245.9486961,
+    "predispatch_epoch_to_outer_closure_seconds": 915.9486961364746,
+    "qualification": "These are distinct worker, owner, and observed wall intervals. GPU allocation/billing duration is unknown; no quota API was queried.",
+    "scientific_child_elapsed_seconds": 794.9772183780001
+  },
+  "valid": true,
+  "watcher_finished": true
+}

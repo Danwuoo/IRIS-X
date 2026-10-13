@@ -1,0 +1,80 @@
+{
+  "baseline_file_count": 197,
+  "changed_files": [
+    {
+      "after_bytes": 8446,
+      "after_sha256": "e2e4a5d77f1d62ffd589da3b9b7019c1ce43b646d4d37312f5b970e7cc7a29ad",
+      "before_bytes": 7636,
+      "before_sha256": "2b48ba095f9c1cb70ef36c0f88c772c71142054dbe8982b9772883048fd52a32",
+      "path": "tools/arc_qwen_transfer_20261012/backend.py"
+    },
+    {
+      "after_bytes": 4407,
+      "after_sha256": "245db2cb146cfac84bd86aa854e1e42b5083ccf1a7b0741c82f43c5e71dc2824",
+      "before_bytes": 0,
+      "before_sha256": null,
+      "path": "tools/arc_qwen_transfer_20261012/call_policy.py"
+    },
+    {
+      "after_bytes": 38900,
+      "after_sha256": "fc70b5bd8aa7da44dde213ef47043542370a350f01fa9c10cc8bf83c693f5033",
+      "before_bytes": 38121,
+      "before_sha256": "e72ef0005f770254fafd7a5cf9c6bc216b518a60f2b642214c87bab78df288c9",
+      "path": "tools/arc_qwen_transfer_20261012/decoder.py"
+    },
+    {
+      "after_bytes": 32793,
+      "after_sha256": "56f0dda41e6fde69996a43b6fd1ede93a639b87eb2133a2a7efe75adbfc99c03",
+      "before_bytes": 30807,
+      "before_sha256": "57534f89995bc3948a2f165e0e1e8a8498521b33baf731ccd703ce1373d4b3f7",
+      "path": "tools/arc_qwen_transfer_20261012/experiment.py"
+    },
+    {
+      "after_bytes": 18228,
+      "after_sha256": "335d8ab622de7f8b928fd0905783c48414e77286e8bf619a3a743c4c704eeb5a",
+      "before_bytes": 17972,
+      "before_sha256": "bc44f821b7765a7730ddcd9bf372c3a332f3680a15e4f918c1bbec66ba5b3cc2",
+      "path": "tools/arc_qwen_transfer_20261012/runner.py"
+    },
+    {
+      "after_bytes": 6047,
+      "after_sha256": "9c71153c6b820b16efcdeeb2f036a4031e59fc7cdefd56c6e81ab2c3d5b7b848",
+      "before_bytes": 5074,
+      "before_sha256": "c7d88508ceea9af582a6f61e878eeab8adc3532420c3dd12c09f880c72b2dfbe",
+      "path": "tools/arc_qwen_transfer_20261012/science_profiles.py"
+    },
+    {
+      "after_bytes": 23329,
+      "after_sha256": "9b4fd5742b0b723d7bc6fe3a50f957203536c151dcec94e9b0d89e6db2b4302a",
+      "before_bytes": 0,
+      "before_sha256": null,
+      "path": "tools/arc_qwen_transfer_20261012/timing_refresh.py"
+    }
+  ],
+  "format": "irisx/transfer-generation-budget-exact-diff-v1",
+  "patch_sha256": "2858c8834c6590cb7bc14441ba0bd220074acb41d17d1d69c3f6f32d0bc4b7d3",
+  "runtime_source_identity": {
+    "tools/arc_qwen_transfer_20261012/README.md": "64f88650c8eccf7bfbcf5be61eb3ddd8af75c614dbb444cbe573dc5faacb649f",
+    "tools/arc_qwen_transfer_20261012/__init__.py": "948807ee52aab706cb38382428e63dfe26c8bc9a390be9a741f605d572f1674a",
+    "tools/arc_qwen_transfer_20261012/arc_adaptation.py": "1ad429dabf649e405dc0386906030a9c441f3fa696070daec579fbf2e53ff013",
+    "tools/arc_qwen_transfer_20261012/backend.py": "e2e4a5d77f1d62ffd589da3b9b7019c1ce43b646d4d37312f5b970e7cc7a29ad",
+    "tools/arc_qwen_transfer_20261012/call_policy.py": "245db2cb146cfac84bd86aa854e1e42b5083ccf1a7b0741c82f43c5e71dc2824",
+    "tools/arc_qwen_transfer_20261012/child.py": "90c3c10114aed53f272a3a2e2230e41e24b74c0b0df09a9f27da01585029686a",
+    "tools/arc_qwen_transfer_20261012/data.py": "1872ecafc28c88dba5490299a1abcd6fb5f62cab06ef5c05797f256565da5b12",
+    "tools/arc_qwen_transfer_20261012/decoder.py": "fc70b5bd8aa7da44dde213ef47043542370a350f01fa9c10cc8bf83c693f5033",
+    "tools/arc_qwen_transfer_20261012/demo_selector.py": "ead0dd170c592a8bfebbc8d0cfc1e092a009538dca01f3684519246739055781",
+    "tools/arc_qwen_transfer_20261012/experiment.py": "56f0dda41e6fde69996a43b6fd1ede93a639b87eb2133a2a7efe75adbfc99c03",
+    "tools/arc_qwen_transfer_20261012/model_profile.py": "3a945678316b42b929415612b099500e33f3d815d574e62b80dfbaf75a4fac06",
+    "tools/arc_qwen_transfer_20261012/prompt_budget.py": "532370dfe156488289ff5d3a9a5a8861937c26593a54da13a4c1c22548fc717b",
+    "tools/arc_qwen_transfer_20261012/protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23",
+    "tools/arc_qwen_transfer_20261012/public_evaluation.py": "5cfe3ba398e6a08a1c3dc8ecc838a54a8dc945aace1f808e56ed333962121edd",
+    "tools/arc_qwen_transfer_20261012/runner.py": "335d8ab622de7f8b928fd0905783c48414e77286e8bf619a3a743c4c704eeb5a",
+    "tools/arc_qwen_transfer_20261012/science_profiles.py": "9c71153c6b820b16efcdeeb2f036a4031e59fc7cdefd56c6e81ab2c3d5b7b848",
+    "tools/arc_qwen_transfer_20261012/standalone-provenance.json": "b251dd8f7581dbd51290c65e44bf6e14454032db564db95a6278d5bfca46e689",
+    "tools/arc_qwen_transfer_20261012/timing_refresh.py": "9b4fd5742b0b723d7bc6fe3a50f957203536c151dcec94e9b0d89e6db2b4302a",
+    "tools/arc_qwen_transfer_20261012/transfer_selector.py": "824a76b0aac83d8112520d2e69740bfd619ee53b3521bf3e122f5f946c9f7b9c"
+  },
+  "runtime_source_identity_sha256": "deb131d9f026736bcdde961ee55a88ba8c3560d9dfa0684c23fed8870ca939e3",
+  "successor_file_count": 199,
+  "unchanged_baseline_files": 192
+}

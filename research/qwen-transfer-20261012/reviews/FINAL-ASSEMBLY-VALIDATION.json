@@ -1,0 +1,72 @@
+{
+  "actual_notebook_loader_driver_tests": 26,
+  "all_candidate_files_identical": true,
+  "builder_integrity_tests": 6,
+  "candidate_files": {
+    "ASSEMBLY-INVENTORY.json": "e5151b5dd99d309bfaf14a9f133d989859098fed8bbbbd88c47cf4d76cc5b04a",
+    "MATERIAL-ADDENDUM.json": "7b338fc810ee565b2a7085b0f6bf8e937b1282e8f5267e3f911c03a547a9167a",
+    "PANEL-FREEZE-RECEIPT.json": "7b6eca7fef046bcc48f2cb26cd1fade054c4ef8b9b985cb8ffc513d4c148349e",
+    "RUNTIME-SOURCE-APPROVAL.json": "1cf834da704f592e7fb74f3df98b486d055540f89cbe4ade02399b6955e753b9",
+    "SOURCE-FREEZE.json": "c6f64e966a2ee719d71ff8d6f2777fb275ffb1728ed5c1db9178f63a33a78dd5",
+    "accept-downloaded-mount.py": "09414159d14464f98d4ac6bafb05bcb0f438afd19c5d38e19ec360bc8d6855e0",
+    "code-dataset-upload.zip": "3d94ec761e7a42a57bfe762cf3319449ac34394da5a52d7230591b2121503834",
+    "code-payload/NOTICE.txt": "6cc778467742343a9787813caf97c46caf4e6a3993e397216276fdbe57106c7f",
+    "code-payload/manifest.json": "5dadf51ab13f123f49abd0abd45d9930f4cb4b2823b387e9c57278c8307ec30d",
+    "code-payload/source.zip": "c2225582ecc95027b56f407a527d1d882d455e4a13512a8d73cdeaffc7d787b3",
+    "expected-inner-source-identity.json": "3e4b101f064b9f3f6d25c57fb66e396471fd3d20f3cfb45900cffb1915b84784",
+    "expected-launcher/bootstrap.py": "7009bc4e71f08e2e20747264c115a3cda00cc76ee4817f8e8068c1573c21190d",
+    "expected-launcher/owned_process_guard.py": "8bc66ac80499203bca9f583f0d5ea5ecc5d8a131a2aa267f661060fc69e0580c",
+    "frozen-panel-plan.json": "8138168e1c8206977efaab20243ac66e04fe5d0cf5d375252b7cca68feefa17a",
+    "iris-x-qwen14b-transfer-active-template.ipynb": "be6ebcf8f3b07f6c0d076847be83f1332085dfc08459da32d7041f2f8be0f950",
+    "iris-x-qwen14b-transfer-inactive.ipynb": "f4935ffd674bcc190591b5e8ab113f12528768f7901f78021916e981146ef27c",
+    "pins.json": "78604b7e484c3704995fdcb993b615147206e2ef6d7542f0c5a74fc4c5797481",
+    "provider-layout-contracts.json": "f9d7bfe096b9a79faab381c30cb8583cb1ff11fe4a25ee4705f54c3ac1cd02b1",
+    "publication-manifest.json": "689e587ce8d7c0c7c606176dac5c010e7a9a1fb817d65ace1c59773f55f96d9a"
+  },
+  "candidate_path": "release-candidate-001",
+  "downloaded_provider_code_acceptance": "PENDING_PUBLICATION_AND_ACTUAL_DOWNLOAD",
+  "expanded_source_bytes": 14854799,
+  "format": "irisx/transfer-final-assembly-validation-v1",
+  "model_calls": 0,
+  "neural_tests_by_assembler": 0,
+  "normal_tests_passed": 34,
+  "operator_review_required": true,
+  "optimized_tests_passed": 34,
+  "original_175_members_unchanged": true,
+  "owned_zero_model_mount_fixture_tests": 2,
+  "production_4096_gpu_validation": false,
+  "provider_calls": 0,
+  "publication_manifest_sha256": "689e587ce8d7c0c7c606176dac5c010e7a9a1fb817d65ace1c59773f55f96d9a",
+  "qualification": "All code payload bytes and actual emitted notebook/driver/loader tested. Public/training metadata in loader fixtures is synthetic and contains no tasks or answers. Owned guard test is synthetic local code, not provider download acceptance.",
+  "reproduction_path": "reproduce-candidate-001",
+  "source_freeze_sha256": "c6f64e966a2ee719d71ff8d6f2777fb275ffb1728ed5c1db9178f63a33a78dd5",
+  "source_members": 197,
+  "source_zip_sha256": "c2225582ecc95027b56f407a527d1d882d455e4a13512a8d73cdeaffc7d787b3",
+  "status": "PASS",
+  "test_logs": {
+    "final-builder-normal.txt": {
+      "bytes": 868,
+      "sha256": "d747084b47c923ff0a9116f5c716053700d833b3735de350b809562316c6e543"
+    },
+    "final-builder-optimized.txt": {
+      "bytes": 868,
+      "sha256": "75e1f2b6c24e3e327dc555f48781cdf3237591f86f16b81b25058dd478ac9414"
+    },
+    "final-candidate-normal.txt": {
+      "bytes": 3734,
+      "sha256": "8196893424add9f57e13d6e071a8d25371f7dab8e52e4d25eaec0d9ce2d27984"
+    },
+    "final-candidate-optimized.txt": {
+      "bytes": 3734,
+      "sha256": "feb4a4ca3edeecedae8a19b8782028697b85c8515213e05530003b2761df3142"
+    },
+    "final-downloaded_mount-normal.txt": {
+      "bytes": 412,
+      "sha256": "d7fb25de31baf5514d88143db4cad667c963fbdebcb1670493d44d3ee28bf44f"
+    },
+    "final-downloaded_mount-optimized.txt": {
+      "bytes": 412,
+      "sha256": "bc6a92a59783d4e1a3d035fded9b0a1bb6dbba495a2bb849eb0ed88e7d655084"
+    }
+  }
+}

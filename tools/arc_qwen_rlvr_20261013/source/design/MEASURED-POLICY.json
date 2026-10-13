@@ -1,0 +1,196 @@
+{
+  "alternatives": {
+    "full256_cap7200": "Not admitted at default evidence forecast",
+    "full256_cap9600_PUBLIC11105": "More slack, but reserve does not cover all334 views at historical max; not recommended",
+    "full256_cap9600_PUBLIC15030": "Fits only narrowly at forecast; lower answer protection; requires separate new policy approval",
+    "full256_cap9600_PUBLIC18000": "Exceeds42,000s even at forecast; reject"
+  },
+  "anchor": {
+    "chosen_from": "Previous run preregistered dev-only checkpoint selection, per scientific lead; no current-run outcome choice",
+    "cosine_schedule_updates": 256,
+    "historical_tensor_equivalence_claim": false,
+    "label": "A",
+    "learning_rate": 0.0002,
+    "min_lr_ratio": 0.1,
+    "new_experiment_not_relabel_of_A64": true,
+    "same_session_retrain": true,
+    "updates": 256,
+    "warmup_updates": 4
+  },
+  "clock_seconds": {
+    "absolute": 43200,
+    "inner": 42000,
+    "outer": 42180,
+    "provider": 42300
+  },
+  "control": {
+    "hard_phase_seconds": 7200,
+    "label": "C",
+    "learning_rate": 0.0002,
+    "matched_quantity": "whole synchronized extra model-phase wall; setup, sampling, rewards, replay, hashing, Python, failed/rollback, save/reload and verification included",
+    "max_updates": 8192,
+    "optimizer": "fresh AdamW constant schedule",
+    "padding": false,
+    "restore": "A",
+    "tolerance": "min(120,max(5,0.05*actual_B_seconds))",
+    "unmatched": "Report explicitly; never label matched"
+  },
+  "cost_model": {
+    "B_durability": "Charge actual save+reload+verification after EVERY entered batch, including zero-signal and partial failure; reserve300s before each batch; each last persisted B is final; if no batch entered, persist verified B copy once",
+    "C_forecast_authority": "Source-bound observed completed persistence receipts only, record inputs and hash; late-step targeting only, no global reserve or harddeadline expansion; unexpected overrun unmatched/failed",
+    "C_late_finalization_forecast": "1.25*max(all verified completed A and B save+reload+verification wall durations); include A SFT optimizer state; fallback300s only before observations; retain300s ex-ante global reservation",
+    "batch_bookkeeping_seconds": 30,
+    "common_reload_per_slot_seconds": 300,
+    "common_reload_slots": 8,
+    "control_step_forecast_seconds": 4,
+    "double_counting": "B/C entry/finalization are in their whole-arm clocks;2400s is only separate common/evaluation/PUBLIC restore/persistence work; each actual interval has one accounting owner",
+    "forecast_update_granularity": "completed-fixed64-slot-batches-only",
+    "full_sweep_bookkeeping_seconds": 120,
+    "replay_forecast_basis": "Inferred engineering allowance from v25 calibration4096 train-step2.657935s and per-update maxima1.958799s; RL logprob replay/backward is unmeasured",
+    "replay_forecast_per_trajectory_seconds": 4,
+    "rollout_factor": 1.25,
+    "rollout_increase_rule": "max(initial_surrogate,1.25*max(cumulative prefix means at completed fixed64-slot batch boundaries)); costs only; incomplete batch stops B and cannot admit a successor; never reward conditioned",
+    "rollout_initial_surrogate": "1.25 * v25 PUBLIC mean native generation wall; empirical cross-workload surrogate"
+  },
+  "dispatch_authorized": false,
+  "evaluation": {
+    "TTT_updates": 0,
+    "arms": [
+      "A",
+      "B",
+      "C"
+    ],
+    "dev_parents": 16,
+    "greedy": true,
+    "holdout": "reuse existing held32 only as experiment-held-out, not pristine project confirmation",
+    "holdout_parents": 32,
+    "maximum_answers": 2,
+    "output_cap": 1024,
+    "paired_view_count": 288,
+    "primary_phase_order": [
+      "common A",
+      "B fixed-batch prefix",
+      "C matched continuation",
+      "A/B/C dev",
+      "freeze selected arm",
+      "selected-arm PUBLIC",
+      "A/B/C held32",
+      "model closure",
+      "held scoring and original PUBLIC scorer"
+    ],
+    "primary_scoring": "unchanged original scorer; micro pass@2>=151/167; missing/invalid answers wrong",
+    "public_arm_mixing": false,
+    "selected_PUBLIC_queries": 167,
+    "selected_PUBLIC_views": 334,
+    "selection": "actual sealed dev predictions; exact count; fixed tie order A,B,C; freeze before any current-run held target access",
+    "transforms": [
+      0,
+      1
+    ]
+  },
+  "evidence_sha256": "ae7dbc7584fe9f54db0444f54c72fed8ac2b56031d74f1e0d18f46bb38c8b1f2",
+  "fallback": {
+    "after_dev_selection": "Never change selected arm, fill missing slots with another arm, or select on PUBLIC outcomes",
+    "after_no_RL_update": "B is actual verified A; no invented effect; run C and same paired eval when safe",
+    "before_valid_dev_selection": "Only if predeclared and safe, freeze A as predetermined fallback before PUBLIC; comparison is incomplete and fallback is a different result class",
+    "partial_PUBLIC": "Freeze completed selected-arm predictions and explicit missing statuses at deadline; same167 query denominator; original scorer only",
+    "unknown_device_state": "Stop model work; no claim of safe evaluation or complete answers"
+  },
+  "format": "proposed-rlvr-single-session-policy-v2",
+  "future_new_holdout_option": "Separate new protocol: prefreeze32 genuinely unused parent families with leakage/ancestor exclusions and provenance, before model work; do not pick using outcomes or silently replace current held32",
+  "gates": {
+    "DDIS_open_ratio_interval": [
+      0.8,
+      1.28
+    ],
+    "cleanup_seconds_per_guard": 5,
+    "generation_hard_seconds": 180,
+    "generation_soft_seconds": 175,
+    "maximum_absolute_logprob_gap": 0.2,
+    "maximum_p95_absolute_logprob_gap": 0.05,
+    "maximum_peak_allocated_bytes": 77309411328,
+    "maximum_peak_reserved_bytes": 85899345920,
+    "maximum_replay_plus_backward_per_trajectory_seconds": 30,
+    "minimum_strict_DDIS_coverage": 1.0,
+    "non_generation_hard_seconds": 120,
+    "non_generation_soft_seconds": 115,
+    "per_call_and_cumulative_distinct": true,
+    "per_token_nonfinite_or_provenance_failure": "no-update; retained actual costs",
+    "proposed_cumulative_replay_backward_commit_batch_seconds": 600,
+    "proposed_full_sweep_cumulative_seconds": 2400,
+    "zero_nonforced_tokens": "not applicable; no policy-gradient contribution"
+  },
+  "hard_completion_guarantee": false,
+  "identity": {
+    "model": "Qwen14B",
+    "precision": "BF16 base / FP32 LoRA",
+    "rank": 8,
+    "single_gpu": true
+  },
+  "predecessor": {
+    "directory": "portfolio63-rl-next-plan-20261012",
+    "scientific_allocations_and_gates_changed": false,
+    "seal_sha256": "7cbdda40bd1e9e54156923196cc2bf665174bdf75c6d9658c2261c89bfd5ced2"
+  },
+  "production_admitted": false,
+  "reserves_seconds": {
+    "B_entry": 300,
+    "B_finalization": 300,
+    "C_finalization_within_C": 300,
+    "closure": 600,
+    "common_setup_calibration_anchor": 1800,
+    "future_common_reload_persistence": 2400,
+    "paired_ABC": 4200,
+    "paired_dev_component": 1440,
+    "paired_holdout_component": 2760,
+    "selected_PUBLIC": 18000
+  },
+  "rl": {
+    "algorithm": "original-token masked sampling/replay; group-centered exact0/1 reward; detached clipped DDIS",
+    "batch_slots": 64,
+    "continue_next_disjoint_batch_after_zero_signal": true,
+    "fixed_policy_within_batch": true,
+    "hard_phase_seconds": 7200,
+    "last_committed_B_preserved": true,
+    "learning_rate": 1e-06,
+    "max_batches": 4,
+    "max_updates": 4,
+    "optimizer": "fresh AdamW, constant schedule",
+    "planned_B_ceiling_seconds": 7080,
+    "resampling": false,
+    "reward_dependent_replacement": false,
+    "rollback_current_batch_only": true,
+    "seed_rule": "new fixed-batch experiment identity + original panel hash + batch index + parent + sample; freeze before dispatch",
+    "stop_on_incomplete_or_numeric_failure": true,
+    "temperature": 1.0,
+    "top_p": 1.0
+  },
+  "status": "DESIGN_ONLY_REQUIRES_INTEGRATION_AND_INDEPENDENT_REVIEW",
+  "training_panel": {
+    "attempts": 256,
+    "exposure": "training signal only; all32 parents exposed; historical SFT256 was256/792 eligible augmented records,8updates per parent and9/32 exact reward records exposed; remeasure actual new anchor receipts",
+    "fixed_batches_parent_positions": [
+      [
+        0,
+        8
+      ],
+      [
+        8,
+        16
+      ],
+      [
+        16,
+        24
+      ],
+      [
+        24,
+        32
+      ]
+    ],
+    "group_size": 8,
+    "parents": 32,
+    "record": "identity transform, last original demonstration LOO",
+    "source": "Scientific lead message 2026-10-12; existing frozen panel descriptor hash is in COST-EVIDENCE.json",
+    "unchanged_previous_frozen_order": true
+  }
+}

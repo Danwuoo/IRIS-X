@@ -1,0 +1,20 @@
+{
+  "format": "irisx/independent-checkpoint-failure-verification-v1",
+  "evidence_zip_sha256": "222308b47d2a5bdf872d77cbd8969615d38ce61bc3107aff6f6da22bf82ed02c",
+  "error": {
+    "message": "bounded checkpoint update required",
+    "type": "ContractError"
+  },
+  "status": "TRANSFER_PARTIAL",
+  "main_complete": false,
+  "actual_optimizer_updates": 64,
+  "training_status": "complete",
+  "training_seconds": 81.25931497900001,
+  "public_gold_opened": false,
+  "read_members": [
+    "experiment/full-report.json",
+    "experiment/train-64.json",
+    "child-summary.json",
+    "summary.json"
+  ]
+}

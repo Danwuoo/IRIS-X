@@ -1,0 +1,134 @@
+{
+  "files": {
+    "README.md": {
+      "bytes": 6938,
+      "sha256": "1a3d9c4a69ae7d11e1c4c5f6e54c7878f262f17a09eaa5494de6165189180bf1"
+    },
+    "SOURCES.md": {
+      "bytes": 3727,
+      "sha256": "48d9b1054fcaa4eca22ba495aa05ba24e72307d83f43547f055402f1768be764"
+    },
+    "build_contract.py": {
+      "bytes": 13674,
+      "sha256": "ea7b5c23a94fd914985ce7b77d79bae5e744c462b5614eb8f088c9fb71c14e09"
+    },
+    "derive_meta.py": {
+      "bytes": 2648,
+      "sha256": "d691396a24b7547c5df88236064c395933f391b38087b0392d01fcd63db4e18b"
+    },
+    "environment-lock.json": {
+      "bytes": 16639,
+      "sha256": "da56c7221914a54e87d344956ddb87d8df16a58a09dd21b1051b37598948bfd0"
+    },
+    "expected-tensor-inventory.json": {
+      "bytes": 90012,
+      "sha256": "71be71b8cfe4957190aeb7d8774e0080c5a3dca194a94f3d3db2c3965d91575e"
+    },
+    "hardware-contract.json": {
+      "bytes": 1800,
+      "sha256": "d377d42980938f6c87967e87bef5d9da9ba9467dc12fdb41c241dd49b4fe9362"
+    },
+    "hf-overlay/LICENSE": {
+      "bytes": 11343,
+      "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+    },
+    "hf-overlay/config.json": {
+      "bytes": 728,
+      "sha256": "e73c3664ca09b10a673fef0c22e8a6b456201d49bd4713c9691f775720e8857a"
+    },
+    "hf-overlay/generation_config.json": {
+      "bytes": 239,
+      "sha256": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2"
+    },
+    "hf-overlay/tokenizer.json": {
+      "bytes": 11422654,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    },
+    "hf-overlay/tokenizer_config.json": {
+      "bytes": 9732,
+      "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+    },
+    "material-contract.json": {
+      "bytes": 13526,
+      "sha256": "8d26b2f04a91147bbb5e11231f614552d36e2862af9b8d2d2b05b273805b69b0"
+    },
+    "provenance/existing-environment-verification.json": {
+      "bytes": 11154,
+      "sha256": "ad7f1e13b090989e7e10f844bcc5325439ccadfa58e3581f8dbd0a3af9dd21be"
+    },
+    "provenance/hf-license-receipt.json": {
+      "bytes": 1201,
+      "sha256": "f4138383ea7ffc79228538290206117ba5e4a9461a9d5ebc0e6d98773057e0ce"
+    },
+    "provenance/hf-official-metadata.json": {
+      "bytes": 4963,
+      "sha256": "b77bc22e993e877d4116a13c1b39c0768d4dd436a7e6bf3866fbcc113bdeb01d"
+    },
+    "provenance/meta-derivation-receipt.json": {
+      "bytes": 944,
+      "sha256": "362b9c2242ef2b0a594903da2469a1ce82a2e596d56d842213cce17c60abeddf"
+    },
+    "provenance/prepared-wheel-lock.json": {
+      "bytes": 14045,
+      "sha256": "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052"
+    },
+    "provenance/provider-file-list-v1.json": {
+      "bytes": 2439,
+      "sha256": "229d58e234ad96d7df8b7f23f95c405d489972b61acdcd24018cc2502a1e472a"
+    },
+    "provenance/provider-index-receipt.json": {
+      "bytes": 1610,
+      "sha256": "ab7698fa1540a1aa95b16d68f8d1702b1fc06d7a7325f53eeb245c86d9c58de0"
+    },
+    "provenance/provider-model.safetensors.index.json": {
+      "bytes": 36514,
+      "sha256": "62d7ad35757bae5e7baa452cb1483178b7daa50e869e923226b8da10871f7ebc"
+    },
+    "provenance/provider-mount-contract.json": {
+      "bytes": 1883,
+      "sha256": "fb2a8701d986381d23e0b75669a10c71318b13a5b5d54f37ce5c874e0894c031"
+    },
+    "provenance/provider-small-file-receipt.json": {
+      "bytes": 6960,
+      "sha256": "94b1a3fb4bbfdeabb725008e7e51f5467f77b1d126698e8b55ae76cd104f05f3"
+    },
+    "provenance/requirements.lock": {
+      "bytes": 5147,
+      "sha256": "5fdbd59850d97d8307e8afd1e922b65405e823a0a36aab8f0e3f9c0add7db6f1"
+    },
+    "provenance/v9-bootstrap-receipt.json": {
+      "bytes": 3315,
+      "sha256": "117c8fe8c38766c39f6ac3ce3fe46d363dc3e89e6d2c242a8e85b4c17b45789e"
+    },
+    "provenance/v9-environment-lock.json": {
+      "bytes": 4417,
+      "sha256": "288089373598bb4bbfc94da77be31f6925666fcac39920e95c7530775ceb25b6"
+    },
+    "provenance/v9-hardware-evidence.json": {
+      "bytes": 1117,
+      "sha256": "5e425c8c7520bcd31a285c2077dae9149f4fffdec5f137832ba58d5a2e822b07"
+    },
+    "provenance/verified-owned-wheels.json": {
+      "bytes": 15556,
+      "sha256": "bd13a9f290aa9d5fb57e8807d4f9e49ada6c6e65c3872de7ce0cddbbdea78e01"
+    },
+    "tests/TEST-RESULTS.txt": {
+      "bytes": 2881,
+      "sha256": "f9345637998e4ab52e2e5b70eb122206ebaa68354c7c4e6a7e464536832ea1fa"
+    },
+    "tests/material_validation.py": {
+      "bytes": 5741,
+      "sha256": "0843ae1acfdf216815bbe5d324cd4911e6f7098bd12c1a043a9e958427048127"
+    },
+    "tests/test_material_contract.py": {
+      "bytes": 9512,
+      "sha256": "b5950beeb46cbbe1799fe81610005eee96effe7619f4d60f279a383935e0dd46"
+    },
+    "verify_existing_environment.py": {
+      "bytes": 1805,
+      "sha256": "f2a1ca7f3de02311726cac7e8cf0334756b6cbdbac10305ed9dd85685ea52bcf"
+    }
+  },
+  "format": "irisx/qwen14b-probe-material-package-v1",
+  "scope": "Preparation artifacts only, not independent runtime admission"
+}

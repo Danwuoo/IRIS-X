@@ -1,0 +1,22 @@
+{"checkpoint": 0, "status": "passed", "mean_nll": 11.968251705169678}
+{"checkpoint": 1, "status": "passed", "mean_nll": 11.968253135681152}
+{"checkpoint": 2, "status": "passed", "mean_nll": 11.968006134033203}
+{
+  "fixture_schedule_only": true,
+  "source_root": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/final-source-freeze-002",
+  "status": "passed",
+  "actual_update_schedule": [
+    0,
+    1,
+    2
+  ],
+  "tiny_cpu_only": true,
+  "pretrained_or_gpu_claim": false,
+  "training_data": "two authored one-pixel constant-output examples; unused independent split manifest only",
+  "started_monotonic": 18815.230590117,
+  "selected_global_reset_verified": true,
+  "nll_before": 11.968251705169678,
+  "nll_after": 11.968006134033203,
+  "elapsed_seconds": 71.37949757100068,
+  "nll_declined": true
+}

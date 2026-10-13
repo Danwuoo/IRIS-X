@@ -1,0 +1,27 @@
+{
+  "review_manifest_sha256": "3b1a9d9fd6b2d09f409bccd4e5757b856524951c5d6429e482cb0ea4fa56b508",
+  "copies": [
+    {
+      "source_relative_to_worktree": "../data-adaptation/arc_adaptation.py",
+      "source_sha256": "1ad429dabf649e405dc0386906030a9c441f3fa696070daec579fbf2e53ff013",
+      "destination": "arc_adaptation.py",
+      "destination_sha256": "1ad429dabf649e405dc0386906030a9c441f3fa696070daec579fbf2e53ff013",
+      "change": "byte-for-byte"
+    },
+    {
+      "source_relative_to_worktree": "../selection/demo_selector.py",
+      "source_sha256": "ead0dd170c592a8bfebbc8d0cfc1e092a009538dca01f3684519246739055781",
+      "destination": "demo_selector.py",
+      "destination_sha256": "ead0dd170c592a8bfebbc8d0cfc1e092a009538dca01f3684519246739055781",
+      "change": "byte-for-byte"
+    },
+    {
+      "source_relative_to_worktree": "../selection/prompt_budget.py",
+      "source_sha256": "1f82218e070701b76e72be977664081a030e3647367254c4e2ca848440e83e59",
+      "destination": "prompt_budget.py",
+      "destination_sha256": "532370dfe156488289ff5d3a9a5a8861937c26593a54da13a4c1c22548fc717b",
+      "change": "package-relative import only"
+    }
+  ],
+  "selector_successor_delta": "transfer_selector.py allows exactly global_sft ttt0 reference whose checkpoint must match frozen_global_checkpoint_sha256, all later candidates task_ttt; retains every closed-fold, data and ranking guard"
+}

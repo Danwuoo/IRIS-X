@@ -1,0 +1,49 @@
+test_admission_generation175_score115 (test_budget_successor.GenerationBudget.test_admission_generation175_score115) ... ok
+test_api_frozen (test_budget_successor.GenerationBudget.test_api_frozen) ... ok
+test_bad_window (test_budget_successor.GenerationBudget.test_bad_window) ... ok
+test_exact_normal_window (test_budget_successor.GenerationBudget.test_exact_normal_window) ... ok
+test_forecast_is_not_timeout (test_budget_successor.GenerationBudget.test_forecast_is_not_timeout) ... ok
+test_historical_bytes_preserved (test_budget_successor.GenerationBudget.test_historical_bytes_preserved) ... skipped 'historical sibling fixture not included in portable subset'
+test_old120_call_policy_rejected (test_budget_successor.GenerationBudget.test_old120_call_policy_rejected) ... ok
+test_owner_deadline (test_budget_successor.GenerationBudget.test_owner_deadline) ... ok
+test_short_remaining_cleanup (test_budget_successor.GenerationBudget.test_short_remaining_cleanup) ... ok
+test_source_no_relabel (test_budget_successor.GenerationBudget.test_source_no_relabel) ... skipped 'historical sibling source not included in portable subset'
+test_successor_source (test_budget_successor.GenerationBudget.test_successor_source) ... skipped 'exact runtime source not included beside portable validator subset'
+test_all_invalid_outcomes_are_still_timed (test_budget_successor.RefreshEvidence.test_all_invalid_outcomes_are_still_timed) ... ok
+test_bad_opaque_receipt (test_budget_successor.RefreshEvidence.test_bad_opaque_receipt) ... ok
+test_call_policy_receipt_missing (test_budget_successor.RefreshEvidence.test_call_policy_receipt_missing) ... ok
+test_delete_rehash_receipt_binding (test_budget_successor.RefreshEvidence.test_delete_rehash_receipt_binding) ... ok
+test_exact_generation_calls_and_active_marker (test_budget_successor.RefreshEvidence.test_exact_generation_calls_and_active_marker) ... ok
+test_fallback_cannot_cheapen_forecast (test_budget_successor.RefreshEvidence.test_fallback_cannot_cheapen_forecast) ... ok
+test_fallback_retains_exact_baseline (test_budget_successor.RefreshEvidence.test_fallback_retains_exact_baseline) ... ok
+test_freeze_before_main_is_rejected (test_budget_successor.RefreshEvidence.test_freeze_before_main_is_rejected) ... ok
+test_full_cap_no_early_eos_discount (test_budget_successor.RefreshEvidence.test_full_cap_no_early_eos_discount) ... ok
+test_generation_active_marker_budget_tamper (test_budget_successor.RefreshEvidence.test_generation_active_marker_budget_tamper) ... ok
+test_ledger_prefix_hash_tamper (test_budget_successor.RefreshEvidence.test_ledger_prefix_hash_tamper) ... ok
+test_missing_boundary (test_budget_successor.RefreshEvidence.test_missing_boundary) ... ok
+test_missing_sidecar (test_budget_successor.RefreshEvidence.test_missing_sidecar) ... ok
+test_outcome_field_in_timing (test_budget_successor.RefreshEvidence.test_outcome_field_in_timing) ... ok
+test_positive_all224_timing_only (test_budget_successor.RefreshEvidence.test_positive_all224_timing_only) ... ok
+test_public_admission_requires_exact_refresh_ref (test_budget_successor.RefreshEvidence.test_public_admission_requires_exact_refresh_ref) ... ok
+test_refresh_cannot_lower_arbitrary_rate (test_budget_successor.RefreshEvidence.test_refresh_cannot_lower_arbitrary_rate) ... ok
+test_sidecar_clock_tamper (test_budget_successor.RefreshEvidence.test_sidecar_clock_tamper) ... ok
+test_wrapper_late_receipt_rejected (test_budget_successor.RefreshEvidence.test_wrapper_late_receipt_rejected) ... ok
+test_container_size_over544_rejected (test_collector_successor.ArchiveCapacity.test_container_size_over544_rejected) ... ok
+test_declared_expanded_total_over512_rejected_before_read (test_collector_successor.ArchiveCapacity.test_declared_expanded_total_over512_rejected_before_read) ... ok
+test_real384mib_export_integrity (test_collector_successor.ArchiveCapacity.test_real384mib_export_integrity) ... skipped 'author capacity export not yet available'
+setUpClass (test_collector_successor.ExactReleasedEnvelope) ... skipped 'final source closure not included beside portable validator subset'
+test_header_cannot_promote_archive_hash (test_collector_successor.HeaderOnlyCheckpoint.test_header_cannot_promote_archive_hash) ... ok
+test_header_same_size_is_not_bytes_verified (test_collector_successor.HeaderOnlyCheckpoint.test_header_same_size_is_not_bytes_verified) ... ok
+test_metadata_claimed_body_verification_rejected (test_collector_successor.HeaderOnlyCheckpoint.test_metadata_claimed_body_verification_rejected) ... ok
+test_partial_body_consumed_rejected (test_collector_successor.HeaderOnlyCheckpoint.test_partial_body_consumed_rejected) ... ok
+test_unknown_cannot_substitute_declared_archive (test_collector_successor.HeaderOnlyCheckpoint.test_unknown_cannot_substitute_declared_archive) ... ok
+test_wrong_declared_hash_rejected (test_collector_successor.HeaderOnlyCheckpoint.test_wrong_declared_hash_rejected) ... ok
+test_wrong_size_rejected (test_collector_successor.HeaderOnlyCheckpoint.test_wrong_size_rejected) ... ok
+test_wrong_version_rejected (test_collector_successor.HeaderOnlyCheckpoint.test_wrong_version_rejected) ... ok
+unittest.case.FunctionTestCase (omitted) ... skipped '67 historical sibling interface tests require the preserved historical package'
+setUpClass (test_owned_successor_content.OwnedSuccessor) ... skipped 'actual successor tiny owner has not reached terminal yet'
+
+----------------------------------------------------------------------
+Ran 42 tests in 0.310s
+
+OK (skipped=7)

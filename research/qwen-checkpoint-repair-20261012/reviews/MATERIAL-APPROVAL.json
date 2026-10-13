@@ -1,0 +1,140 @@
+{
+  "format": "irisx/transfer-assembled-material-review-v1",
+  "status": "APPROVED",
+  "reviewed_at_utc": "2026-10-12T16:19:09.428953+00:00",
+  "approved_notebooks": [
+    {
+      "role": "inactive",
+      "bytes": 53036,
+      "sha256": "1b4cc39fd55ba35c7187e4ffd27bcca52b468528ec58baa8df81c07e617b24e8"
+    },
+    {
+      "role": "transfer003",
+      "bytes": 53034,
+      "sha256": "7c80db4d1df22289c38d537a628fcd9727c8b0c23c5a5741887e514d72839710"
+    }
+  ],
+  "scope": {
+    "publication_manifest": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/release-candidate-001/publication-manifest.json",
+      "bytes": 123835,
+      "sha256": "1db39d38fca5bb58c7f73035a2b555566f2a44c23c496488a0f55ba1f5da0331"
+    },
+    "source_freeze": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/release-candidate-001/SOURCE-FREEZE.json",
+      "bytes": 66204,
+      "sha256": "219da5c41360e6b20c9cd622d323e921a6cc6a8538d74e6031757e0f9d711f61"
+    },
+    "runtime_independent_approval": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/release-candidate-001/RUNTIME-SOURCE-APPROVAL.json",
+      "bytes": 38217,
+      "sha256": "7053c1897ee799645a474e3be54677dfb3bc38d33e31dc0f8eecd8fb0ea513fa"
+    },
+    "material_addendum": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/release-candidate-001/MATERIAL-ADDENDUM.json",
+      "bytes": 4968,
+      "sha256": "7b338fc810ee565b2a7085b0f6bf8e937b1282e8f5267e3f911c03a547a9167a"
+    },
+    "generation_call_policy": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/release-candidate-001/GENERATION-CALL-POLICY.json",
+      "bytes": 1400,
+      "sha256": "dcc3ebbe4a32f654a1a8a5c18e52c5ff5af781573e013873f699101f5acd82bb"
+    },
+    "checkpoint_policy": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/release-candidate-001/CHECKPOINT-POLICY.json",
+      "bytes": 2296,
+      "sha256": "cda0a2a4d98d7a371aa7e14998e2b1170400198b6d16d6d4183c06253b2e019e"
+    },
+    "assembly_validation": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/assembly/FINAL-ASSEMBLY-VALIDATION.json",
+      "bytes": 5057,
+      "sha256": "e339c8fe8173c43efd7859e6855253579a990f906d9e9875883ecd3ca9ea03c1"
+    }
+  },
+  "independent_tests": {
+    "normal": 13,
+    "optimized": 13,
+    "source": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/assembled-material-review/test_final_material.py",
+      "bytes": 8268,
+      "sha256": "ebce18718fc28a8dbab8cfa46267a55ed914d1782d521ae650d89a9334a99fa5"
+    },
+    "normal_log": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/assembled-material-review/normal.log",
+      "bytes": 1579,
+      "sha256": "44d9e9d75260f980aeed8ca0e6eed50f454da4dfe86494f810288a468a5fb2ca"
+    },
+    "optimized_log": {
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/assembled-material-review/optimized.log",
+      "bytes": 1579,
+      "sha256": "b90e2224e3e6620a01b1da1dbc8dcfe2f7dc76840a779e57c8eab399d709f479"
+    }
+  },
+  "reviewed_properties": {
+    "source_members": 200,
+    "original175_byte_identical": false,
+    "original175_preserved": 174,
+    "original175_changed": [
+      "tools/arc_qwen_portfolio_20261012/checkpoints.py"
+    ],
+    "prior199_delta": {
+      "modified": 4,
+      "added": 1,
+      "removed": 0
+    },
+    "runtime_approval_emitted_descriptor_matches": true,
+    "inactive_actual_notebook_no_filesystem_or_network": true,
+    "active_template_only_two_flag_changes": true,
+    "single_exact_epoch_patch_required": true,
+    "unchanged_model_and_eight_inputs_except_code_version": true,
+    "evaluator_roots_stripped_from_model_child": true,
+    "execution_cutoff_seconds": 42000,
+    "outer_cutoff_seconds": 42180,
+    "provider_runtime_seconds": 42300,
+    "global_seconds": 43200,
+    "generation_hard_seconds": 180,
+    "generation_normal_work_seconds": 175,
+    "other_call_semantics": "likelihood120/115; calibration/training historical120hard and branch-bound work unchanged",
+    "global_checkpoints": [
+      0,
+      64,
+      256
+    ],
+    "task_checkpoints": [
+      0,
+      8,
+      16
+    ],
+    "tiny_fixture_checkpoints": [
+      0,
+      1,
+      2
+    ],
+    "fixture_contract_forbidden_in_production": true,
+    "expanded_evidence_cap_bytes": 536870912,
+    "compressed_evidence_cap_bytes": 570425344,
+    "member_and_count_caps_unchanged": true,
+    "public_goal_requires_eligible_sealed_original167_scorer": true
+  },
+  "qualifications": [
+    "Runtime approval7053c189 retains its exact native source001272-update, final00218-update and negative-only bridge evidence without relabeling; a later author exact final002272-update replay is supplemental, not retroactively substituted.",
+    "The original portfolio175 members preserve174 bytes and intentionally change the shared checkpoint implementation; its legacy0/8/16 default remains tested.",
+    "All science protocol/data/call-policy/clock/budget changes from code12 are absent. This repair fixes explicit global0/64/256 persistence versus the inherited16-update guard, plus source-bound save/load/inference metadata.",
+    "CPU tiny neural and synthetic orchestration results establish code/state correctness only, not full14B GPU efficacy, ARC accuracy, FP8 or4L4 capability.",
+    "The owned final-source tiny main envelope and terminal validator acceptance remain separately gated by the final independent monitor approval; this material receipt does not assert them complete.",
+    "No provider writes, Git writes, model calls or public-target reads performed by this material review."
+  ],
+  "technical_execution_scope": {
+    "code_version": 13,
+    "inactive_version": 24,
+    "active_version": 25,
+    "activation_requires_independent_operator_monitor_review": true,
+    "actual_downloaded_mount_and_fresh_predecessor_required": true,
+    "new_provider_run_claimed": false,
+    "code_dataset_id": 12504696,
+    "code_dataset_version": 13,
+    "notebook_id": 138123872,
+    "new_resource_or_quota_query_authority": false,
+    "user_authorization_is_separate_from_this_technical_approval": true
+  }
+}

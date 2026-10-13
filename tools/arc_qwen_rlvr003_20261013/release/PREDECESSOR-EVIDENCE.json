@@ -1,0 +1,126 @@
+{
+  "archive_members_verified": 22,
+  "billing_verified": false,
+  "checkpoint_archive_bytes_verified": false,
+  "code_dataset_id": 12504696,
+  "code_dataset_version": 15,
+  "consumer_admitted": false,
+  "diagnosis": {
+    "consumer_rejection": "owner request byte binding differs",
+    "failure_stage": "real-data construction before authenticated model session",
+    "frozen_wrapper_error": {
+      "message": "original_clock",
+      "type": "KeyError"
+    },
+    "runtime_error": {
+      "message": "'public_exclusions_sha256'",
+      "type": "KeyError"
+    },
+    "source_linked": true
+  },
+  "diagnostic_archive_integrity_verified": true,
+  "evidence": {
+    "admission_audit": {
+      "bytes": 3969,
+      "path": "predecessor/V29-ADMISSION-AUDIT.json",
+      "sha256": "8833435789204e28030aacecf984c7f644f169e39b24d0935fa61a5d9df7acae"
+    },
+    "code_receipt": {
+      "bytes": 4425,
+      "path": "predecessor/dataset-code-v15-receipt.json",
+      "sha256": "72aaf258732ab5182c7202eebe177a5c3f1fc5c3fd6da120b34e2e973c17a3ce"
+    },
+    "evidence_archive": {
+      "bytes": 15900753,
+      "path": "predecessor/irisx-qwen14b-rlvr-20261012-run002.evidence.zip",
+      "sha256": "e951de57c352f4fb582a0dc53e0f820cafffd7b98d862bea8726d51311205181"
+    },
+    "failed_terminal_audit": {
+      "bytes": 11976,
+      "path": "predecessor/V29-FAILED-TERMINAL-AUDIT.json",
+      "sha256": "a643c622e47376fe64ec2d41318258bc59039bfaa2a86120ad243d188be27c2e"
+    },
+    "frozen_wrapper_replay": {
+      "bytes": 1640,
+      "path": "predecessor/V29-FROZEN-TERMINAL-BLOCKER-REPLAY-FINAL.json",
+      "sha256": "8cd8bffe5aae1bac4cc883eca13982017c84f42012f073e9ab05a7efda8dcf7e"
+    },
+    "launch_receipt": {
+      "bytes": 3010,
+      "path": "predecessor/notebook-rlvr002-receipt.json",
+      "sha256": "5640a7e06076c1fdb31fa7ed54b92ef7e50c49d05e0922084277da8e5dae46e4"
+    },
+    "owned_result": {
+      "bytes": 1193,
+      "path": "predecessor/owned-result.json",
+      "sha256": "4cbb9e91b71ce1bf4539ec0adb5eae7b10da428e698dade03d7d3996dcf4c337"
+    },
+    "retrieval_receipt": {
+      "bytes": 12894,
+      "path": "predecessor/retrieval-1791853000626474890.json",
+      "sha256": "ee3f98ba4e0a51fc46a01841b4d694a65bbef914926e3d00192909a492dc81fd"
+    },
+    "runtime_outer_closure": {
+      "bytes": 2740,
+      "path": "predecessor/outer-closure.json",
+      "sha256": "be3cdaee0ae823393e83d418abdefafac573fb4b185d2bbf31a6d9bd35ce3161"
+    },
+    "saved_source": {
+      "bytes": 21096,
+      "path": "predecessor/notebook-rlvr002-saved.ipynb",
+      "sha256": "5ca3ce3f2774f1a962767e49ff1cbabb64656157bc0ea977e30e65923dbfed6c"
+    },
+    "separate_consumer_replay": {
+      "bytes": 2125,
+      "path": "predecessor/V29-SEPARATE-CONSUMER-DIAGNOSTIC-REPLAY.json",
+      "sha256": "934feee0a0cb81d161b9b0cf3ef17211de4c2975b06b7be5b54f927754c6b5b0"
+    },
+    "terminal_blocker": {
+      "bytes": 181,
+      "path": "predecessor/WATCH-BLOCKER.json",
+      "sha256": "54c71468676241178b21d0ce737e47ec8bbe2c74d1ce61251d6be4eae6a6f43f"
+    },
+    "terminal_checkpoint": {
+      "bytes": 6040,
+      "path": "predecessor/V29-TERMINAL-COST-CHECKPOINT.json",
+      "sha256": "b51a417864afa52dc4e4b169b653ed66d5d2592f90d8c6dc7801d0ad276aed58"
+    },
+    "terminal_index": {
+      "bytes": 3147,
+      "path": "predecessor/V29-TERMINAL-EVIDENCE-INDEX.json",
+      "sha256": "5a3056419f05c78afca43b91731f2fd88c4f78d79dcf6f2fcec9f2ac5ee1ef17"
+    },
+    "terminal_receipt": {
+      "bytes": 5011,
+      "path": "predecessor/irisx-qwen14b-rlvr-20261012-run002.evidence.zip.terminal.json",
+      "sha256": "a58bee305850fb069c8608dd984778b320570d6fdde7f0aa261108c03695d3aa"
+    }
+  },
+  "external_stage_process_closure_verified": true,
+  "format": "irisx/rlvr003-predecessor-evidence-v1",
+  "goal_met": false,
+  "notebook_id": 138123872,
+  "numeric_notebook_version": 29,
+  "operational_success": false,
+  "original_descriptor_sha256": "3f978c6e858b0bd531f6410a0e827a255ca432329894b1cf1f17afc868f2a899",
+  "owned_closure_verified": false,
+  "physical_costs_known": false,
+  "physical_journal_exists_in_sealed_archive": false,
+  "provider_status": "ERROR",
+  "public_score": null,
+  "qualification": "Both deployment process stages terminated cleanly with return1. The runtime model/session journal did not seal, so model closure and physical cost remain unverified. Source-linked data-loader failure, frozen wrapper schema blocker, and separate consumer rejection remain distinct. Historical diagnostic integrity does not admit production or authorize another dispatch.",
+  "required_files_missing": 0,
+  "runtime_model_closure_verified": false,
+  "runtime_safe_closure": false,
+  "runtime_status": "stopped-incomplete",
+  "runtime_worker_exited": true,
+  "runtime_worker_returncode": 1,
+  "runtime_worker_session_empty": true,
+  "saved_source_sha256": "5ca3ce3f2774f1a962767e49ff1cbabb64656157bc0ea977e30e65923dbfed6c",
+  "selected_files_verified": 33,
+  "separate_checkpoint_presence": "UNKNOWN",
+  "terminal_status": "diagnostic",
+  "terminal_validated": false,
+  "terminal_validation_status": "BLOCKED_FROZEN_WRAPPER_AND_UNSEALED_SESSION",
+  "whole_provider_inventory_verified": false
+}

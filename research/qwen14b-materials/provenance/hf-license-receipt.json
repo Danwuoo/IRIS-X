@@ -1,0 +1,29 @@
+{
+  "format": "irisx/model-next-separate-hf-license-v1",
+  "provider_snapshot_changed": false,
+  "status": "complete",
+  "files": [
+    {
+      "path": "license-provenance/qwen35-27b/LICENSE",
+      "repository": "Qwen/Qwen3.5-27B",
+      "revision": "fc05daec18b0a78c049392ed2e771dde82bdf654",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-27B/resolve/fc05daec18b0a78c049392ed2e771dde82bdf654/LICENSE",
+      "bytes": 11343,
+      "git_blob_sha1": "1d5180a42f1c3383ba7c7bd0a50f0837ef0168df",
+      "sha256": "50cbab8a892c5f2993b8c7351a99182507472def3b1374558308605d99b86b32",
+      "provider_file_claim": false
+    },
+    {
+      "path": "license-provenance/qwen3-14b/LICENSE",
+      "repository": "Qwen/Qwen3-14B",
+      "revision": "40c069824f4251a91eefaf281ebe4c544efd3e18",
+      "url": "https://huggingface.co/Qwen/Qwen3-14B/resolve/40c069824f4251a91eefaf281ebe4c544efd3e18/LICENSE",
+      "bytes": 11343,
+      "git_blob_sha1": "6634c8cc3133b3848ec74b9f275acaaa1ea618ab",
+      "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+      "provider_file_claim": false
+    }
+  ],
+  "total_new_license_bytes": 22686,
+  "total_hf_small_assets_with_licenses": 24292865
+}

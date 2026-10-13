@@ -1,0 +1,24 @@
+{
+  "clock_offsets": {
+    "absolute": 43200,
+    "inner": 42000,
+    "outer": 42180,
+    "provider": 42300
+  },
+  "existing_resource_only": true,
+  "format": "owned-rl-reviewed-owner-protocol-v1",
+  "no_new_auth_grants_resources_quota": true,
+  "original_owner_request": {
+    "instruction": "我接下來是真的要離開了，要讓 astra ultra 不管怎樣就是要繼續迭代開發",
+    "owner_id": "danielwuu",
+    "request_id": "Sentinel_8879bbcf6048819182b1d5cd03126215"
+  },
+  "owner_identity_namespace": "verified existing Kaggle account owner; not a ChatGPT authentication subject",
+  "public_goal_denominator": 167,
+  "public_goal_numerator": 151,
+  "publisher_authority": "separate authenticated approval required; no descriptor or source flag grants it",
+  "related_provenance_request_id": "Sentinel_66fb71fe5a14819198775e39f56c2393",
+  "release_role": "rlvr001",
+  "role": "rl-abc",
+  "scope": "production-rl-abc"
+}

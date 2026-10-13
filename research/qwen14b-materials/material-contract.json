@@ -1,0 +1,262 @@
+{
+  "architecture": "Qwen3ForCausalLM",
+  "contract_id": "qwen3-14b-kaggle-v1-hf40c069-bf16-r8-c2048-first-probe-20261012",
+  "environment": {
+    "bytes": 16639,
+    "path": "environment-lock.json",
+    "sha256": "da56c7221914a54e87d344956ddb87d8df16a58a09dd21b1051b37598948bfd0"
+  },
+  "expected_dtype": "BF16",
+  "expected_parameter_elements": 14768307200,
+  "expected_tensor_count": 443,
+  "expected_tensor_inventory": {
+    "bytes": 90012,
+    "path": "expected-tensor-inventory.json",
+    "sha256": "71be71b8cfe4957190aeb7d8774e0080c5a3dca194a94f3d3db2c3965d91575e"
+  },
+  "format": "irisx/qwen14b-explicit-composite-contract-v1",
+  "full_vocabulary_rows": 151936,
+  "hardware": {
+    "bytes": 1800,
+    "path": "hardware-contract.json",
+    "sha256": "d377d42980938f6c87967e87bef5d9da9ba9467dc12fdb41c241dd49b4fe9362"
+  },
+  "hf_revision": "40c069824f4251a91eefaf281ebe4c544efd3e18",
+  "material_identity": "Explicit composite: byte-verified official Kaggle numeric-v1 weights and index plus exact pinned Hugging Face config/tokenizer/generation/license overlay. No whole-provider-snapshot equality claim.",
+  "model_id": "Qwen/Qwen3-14B",
+  "model_key": "qwen3-14b",
+  "native_eos_ids": [
+    151645,
+    151643
+  ],
+  "overlay_files": {
+    "LICENSE": {
+      "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+      "size_bytes": 11343,
+      "source_git_blob_sha1": "6634c8cc3133b3848ec74b9f275acaaa1ea618ab",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-14B/resolve/40c069824f4251a91eefaf281ebe4c544efd3e18/LICENSE"
+    },
+    "config.json": {
+      "sha256": "e73c3664ca09b10a673fef0c22e8a6b456201d49bd4713c9691f775720e8857a",
+      "size_bytes": 728,
+      "source_git_blob_sha1": "37e7491082573462e8545299cdf6938e8b684e31",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-14B/resolve/40c069824f4251a91eefaf281ebe4c544efd3e18/config.json"
+    },
+    "generation_config.json": {
+      "sha256": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2",
+      "size_bytes": 239,
+      "source_git_blob_sha1": "20a8a9156fc8c3f25295ca067f61fdf120d517c5",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-14B/resolve/40c069824f4251a91eefaf281ebe4c544efd3e18/generation_config.json"
+    },
+    "tokenizer.json": {
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+      "size_bytes": 11422654,
+      "source_git_blob_sha1": "cd71f61a15a522601badb3dc960d800d9cb3766c",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-14B/resolve/40c069824f4251a91eefaf281ebe4c544efd3e18/tokenizer.json"
+    },
+    "tokenizer_config.json": {
+      "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+      "size_bytes": 9732,
+      "source_git_blob_sha1": "417d038a63fa3de29cfde265caedae14d1a58d92",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-14B/resolve/40c069824f4251a91eefaf281ebe4c544efd3e18/tokenizer_config.json"
+    }
+  },
+  "overlay_relative_path": "hf-overlay",
+  "probe_bounds": {
+    "all_time_charged_from_predispatch": true,
+    "attention_backend": "sdpa",
+    "batch_size": 1,
+    "context_limit": 2048,
+    "four_l4_tp_admitted": false,
+    "fp8_admitted": false,
+    "full_public167_coverage_admitted": false,
+    "lora_alpha": 16,
+    "lora_dropout": 0.0,
+    "lora_rank": 8,
+    "maximum_capability_subprocess_seconds": 1800,
+    "maximum_global_seconds": 43200,
+    "maximum_probe_seconds": 10800,
+    "output_cap": 256,
+    "precision": "bf16-base-fp32-lora",
+    "pretrained_loading_default": false,
+    "production_admitted": false,
+    "prompt_cap": 1792,
+    "public_solving_admitted": false,
+    "tensor_parallel_size": 1
+  },
+  "profile_id": "qwen3-14b-native-bf16-r8-c2048-probe-v1",
+  "provider_files": {
+    "README.md": {
+      "content_identity_verified": false,
+      "never_read_by_native_loader": true,
+      "reason": "Closed numeric-v1 provider inventory permits this exact ordinary file name and byte length only; unused bytes have no influence on config, tokenizer, generation or tensor loading.",
+      "role": "allowed-unused-provider-text",
+      "size_bytes": 16554
+    },
+    "config.json": {
+      "role": "provider-config-verified-but-loader-uses-identical-overlay-config",
+      "runtime_full_sha256_required": true,
+      "sha256": "e73c3664ca09b10a673fef0c22e8a6b456201d49bd4713c9691f775720e8857a",
+      "size_bytes": 728
+    },
+    "generation_config.json": {
+      "role": "verified-unused-provider-small-file",
+      "runtime_full_sha256_required": true,
+      "sha256": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2",
+      "size_bytes": 239
+    },
+    "merges.txt": {
+      "content_identity_verified": false,
+      "never_read_by_native_loader": true,
+      "reason": "Closed numeric-v1 provider inventory permits this exact ordinary file name and byte length only; unused bytes have no influence on config, tokenizer, generation or tensor loading.",
+      "role": "allowed-unused-provider-text",
+      "size_bytes": 1671853
+    },
+    "model-00001-of-00008.safetensors": {
+      "role": "base-weight",
+      "runtime_full_sha256_required": true,
+      "sha256": "e942bdbdf08857d16a8fef7d1dae9fceabeb4e84def6043485fe2f6f085dab0e",
+      "size_bytes": 3841788544
+    },
+    "model-00002-of-00008.safetensors": {
+      "role": "base-weight",
+      "runtime_full_sha256_required": true,
+      "sha256": "f7c9c6eee628f5ad831d2d1d292e120505e5fcadeb38f88b4d3c4cb86306ccf9",
+      "size_bytes": 3963750816
+    },
+    "model-00003-of-00008.safetensors": {
+      "role": "base-weight",
+      "runtime_full_sha256_required": true,
+      "sha256": "dfb8c5df9404b41ad6ae74e8b6b367135f017b4467b884cf71b17c71954f18a9",
+      "size_bytes": 3963750880
+    },
+    "model-00004-of-00008.safetensors": {
+      "role": "base-weight",
+      "runtime_full_sha256_required": true,
+      "sha256": "eab286fec759e3e59ab228621aefa0fef14ed56039e06f959e67257d5af7604d",
+      "size_bytes": 3963750880
+    },
+    "model-00005-of-00008.safetensors": {
+      "role": "base-weight",
+      "runtime_full_sha256_required": true,
+      "sha256": "97f0dc2992e59da95c466eff6f4fd0c8335843bbc36ed5c913a6f5150748c0e6",
+      "size_bytes": 3963750880
+    },
+    "model-00006-of-00008.safetensors": {
+      "role": "base-weight",
+      "runtime_full_sha256_required": true,
+      "sha256": "9e8e76a013cd5e253865b792991e0b410f869b136b3c500079b531b09198e99e",
+      "size_bytes": 3963750880
+    },
+    "model-00007-of-00008.safetensors": {
+      "role": "base-weight",
+      "runtime_full_sha256_required": true,
+      "sha256": "0aee70ee6e91dc00d818804fb47f124d13ee4ad5b4a64553e09dbf9391cd5750",
+      "size_bytes": 3963750880
+    },
+    "model-00008-of-00008.safetensors": {
+      "role": "base-weight",
+      "runtime_full_sha256_required": true,
+      "sha256": "0d6b92296e326d39bbbaeb32c3ec454ac606da843d4c8ffa8edf010b62b8c9e0",
+      "size_bytes": 1912371880
+    },
+    "model.safetensors.index.json": {
+      "role": "weight-index",
+      "runtime_full_sha256_required": true,
+      "sha256": "62d7ad35757bae5e7baa452cb1483178b7daa50e869e923226b8da10871f7ebc",
+      "size_bytes": 36514
+    },
+    "tokenizer.json": {
+      "role": "verified-unused-provider-small-file",
+      "runtime_full_sha256_required": true,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+      "size_bytes": 11422654
+    },
+    "tokenizer_config.json": {
+      "role": "verified-unused-provider-small-file",
+      "runtime_full_sha256_required": true,
+      "sha256": "5a7303fcb1a27ede63134a2cbd61d5282c247ca6d769ce4746d4ffa124aedd63",
+      "size_bytes": 9675
+    },
+    "vocab.json": {
+      "content_identity_verified": false,
+      "never_read_by_native_loader": true,
+      "reason": "Closed numeric-v1 provider inventory permits this exact ordinary file name and byte length only; unused bytes have no influence on config, tokenizer, generation or tensor loading.",
+      "role": "allowed-unused-provider-text",
+      "size_bytes": 2776833
+    }
+  },
+  "provider_index": {
+    "bytes": 36514,
+    "path": "provenance/provider-model.safetensors.index.json",
+    "sha256": "62d7ad35757bae5e7baa452cb1483178b7daa50e869e923226b8da10871f7ebc"
+  },
+  "provider_reference": "qwen-lm/qwen-3/transformers/14b/1",
+  "provider_snapshot_identical_to_hf": false,
+  "provider_tokenizer_config_mismatch": {
+    "hf": {
+      "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+      "size_bytes": 9732,
+      "source_git_blob_sha1": "417d038a63fa3de29cfde265caedae14d1a58d92",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-14B/resolve/40c069824f4251a91eefaf281ebe4c544efd3e18/tokenizer_config.json"
+    },
+    "policy": "Provider tokenizer_config is inventoried and checked but never used; native tokenizer loads only from separately authenticated exact HF overlay.",
+    "provider": {
+      "sha256": "5a7303fcb1a27ede63134a2cbd61d5282c247ca6d769ce4746d4ffa124aedd63",
+      "size_bytes": 9675
+    }
+  },
+  "provider_total_bytes": 29552600690,
+  "provider_version_id": 363149,
+  "runtime_root_policy": {
+    "actual_mount_path_observed": false,
+    "allowed_unused_provider_files": [
+      "README.md",
+      "merges.txt",
+      "vocab.json",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "generation_config.json"
+    ],
+    "disallow_nested_files_or_directories": true,
+    "disallow_symlink_in_any_path_component": true,
+    "disallow_weight_copy_or_symlink_overlay": true,
+    "discovery": "Find exactly one bounded regular root under /kaggle/input with exact config/index bytes and closed16-file inventory, then stream-check all8weightSHA256 before any model load. Provider assigns mountSlug; do not guess path. Reject zero or multiple matches.",
+    "loader_config": "Qwen3Config.from_dict(exact authenticated overlay config.json); provider config byte-equality independently verified",
+    "loader_generation_config": "GenerationConfig.from_dict(exact authenticated overlay generation_config.json); pass explicitly to from_pretrained",
+    "loader_tokenizer_root": "authenticated hf-overlay root",
+    "loader_weight_root": "authenticated provider root",
+    "local_files_only": true,
+    "max_directory_depth": 8,
+    "max_discovery_entries": 8192,
+    "overlay_inventory_closed": true,
+    "provider_base": "/kaggle/input",
+    "provider_inventory_closed": true,
+    "require_disjoint_roots": true,
+    "require_readonly_filesystem": true,
+    "trust_remote_code": false,
+    "use_safetensors": true,
+    "weights_must_remain_on_provider_mount": true
+  },
+  "runtime_verification_requirements": [
+    "Independently reviewed runtime source must pin this contract SHA256 as an immutable constant; caller-provided contract, manifest, or success receipt cannot activate loading. This preparation is not independent review or execution approval.",
+    "Bind all referenced descriptors by exact bytes and parse bounded duplicate-key rejecting JSON. Validate path components before resolving, reject symlinks and nonregular files including unused members, require two disjoint roots and exact closed inventories.",
+    "Authenticate the entire8shard SHA256 stream on the readonly mount before safetensors header parsing or from_pretrained. Check deadline between chunks. No metadata-only claim or self-signed replacement hashes.",
+    "Check index metadata.total_size and exact443tensor-to-shard mappings against expected inventory; parse each bounded safetensors header with no duplicate keys, only BF16, positive dimensions, no overlapping/gapped/out-of-range payload spans and complete file coverage.",
+    "Rebuild expected native state shapes on meta device from exact config in pinned environment and compare all names/shapes to pinned inventory and actual headers. All8shards and every tensor must load. No ignored/unexpected/missing source keys.",
+    "Check exact isolated Python3.12.15 executable and full52version/wheel-byte closure plus module origins before native model imports. No newly installed/downloaded/optional/remote code.",
+    "Check actual single GPU name, bytes, capability[12,0], BF16, driver580.178.04 and Torch CUDA12.8. Require actual freeVRAM at least analytic requirement plus4GiB reserve; estimates remain unmeasured.",
+    "Use explicit native Qwen3ForCausalLM class, overlay-created config and generation config; tokenize only overlay. Never call from_pretrained with an implicitly mixed provider token/config root or use provider remote code.",
+    "Require complete loading info, exact loaded parameter names/shapes/BF16/full151936head rows and all tensors on CUDA0. Freeze base, FP32r8alpha16LoRA only.",
+    "Record observed memory peaks/timing and finite backward/optimizer/reset/cache results separately; failures are explicit no-go, never fabricated successful GPU measurements. No silent precision/model fallback.",
+    "All discovery, environment setup, hashing, loading, controls, training, evaluation and teardown seconds are charged to3hprobe inside12hglobal elapsed clock; owned supervisor kills expired work and records closure."
+  ],
+  "status": "prepared-for-independent-review-not-self-authorizing",
+  "template_sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+  "tokenizer_eos_id": 151645,
+  "tokenizer_length": 151669,
+  "unused_source_tensor_keys": [],
+  "vocabulary_sha256": "c96fa22dee2dd9c98c4f0c73ea423e21907bc96abda81fa5c6b2e24a670c66bf",
+  "weight_payload_bytes": 29536614400,
+  "weight_shard_bytes": 29536665640
+}

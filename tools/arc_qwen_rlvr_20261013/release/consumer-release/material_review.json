@@ -1,0 +1,157 @@
+{
+  "authority_state": {
+    "consumer_entry_root_pin_pending": true,
+    "dispatch_authorized": false,
+    "escrow_bodies_parsed": false,
+    "final_monitor_review_pending": true,
+    "final_operator_review_pending": true,
+    "model_calls": 0,
+    "production_entry_admission_approved": false,
+    "provider_calls": 0,
+    "public_gold_read": false,
+    "scorer_calls": 0
+  },
+  "consumer_content_review": {
+    "bytes": 8475,
+    "path": "portfolio63-rl-release-20261012/independent-operator-review/CONSUMER-CONTENT-REVIEW-R2.json",
+    "sha256": "c7c01c58c741fb8ab2481c59303690f0c94425f9475ba88af454d85ae5baea3f"
+  },
+  "consumer_helper_inventory": {
+    "bytes": 2001,
+    "path": "portfolio63-rl-release-20261012/release-candidate-001/terminal-consumer/CONSUMER-INVENTORY.json",
+    "sha256": "d88b66c3b45435c2b328c2cc36c9c605c889ba76e48a36c22729db0ec2fda710"
+  },
+  "dataset_escrow_sha256": {
+    "dev": "ba14ceb14b2acd18dfe209227ed0473ab909bf55b7ff68bb327d933a999f332d",
+    "holdout": "397a6b32967cfad4fe300c362d7134194ccca760231bc98649844bddeac6b344"
+  },
+  "dataset_file_sha256": "dd01d0c7458b3b67c1713c1faa411db5107cc0f3ab1dd5311a21971484d904d4",
+  "deployment_candidate": {
+    "bytes": 1354,
+    "path": "portfolio63-rl-bootstrap-repair-20261013/DEPLOYMENT-REVIEW-CANDIDATE.json",
+    "sha256": "895ea6dbfd7319d74a6e2ac5f1e79c296b2eeeb3b0c0767b8547c95dea9a0128"
+  },
+  "deployment_inventory": {
+    "launch_notebook.py": {
+      "bytes": 12911,
+      "sha256": "1aedf17daa5b27ac4db046af69e3fd3bf1f4dbec3af57bb826feae718c797578"
+    },
+    "notebook_builder.py": {
+      "bytes": 6303,
+      "sha256": "6837f149bbf99db85a6a55138d41957df3e902a4694f80c05e91a1b4568822a4"
+    },
+    "parent_entry.py": {
+      "bytes": 1778,
+      "sha256": "91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3"
+    },
+    "prepare_entry.py": {
+      "bytes": 10143,
+      "sha256": "847bf2d5142b5a852ac68d0f43e456140e9f254487d09b9b2fa56b985ae13768"
+    },
+    "source_loader.py": {
+      "bytes": 10125,
+      "sha256": "08ab6ab1fc06c7eea74c0cf830072c04ead1ec2a73cde8d8bd743bba7a11bb48"
+    }
+  },
+  "environment_sha256": "aed4f107edda4dff13439c6df00eb429c892a4564c8e163be8a60eaf04f30182",
+  "external_boundary_inventory": {
+    "assembly/accept_downloaded_mount.py": {
+      "bytes": 3767,
+      "sha256": "d954e61d1b0214315cd0a65fc792594a2df7f36c37decfa331e8741df61b5e43"
+    },
+    "assembly/finalize.py": {
+      "bytes": 4327,
+      "sha256": "f529a559a1e93e321b778e2448fb5f5b06ed012b204503d2524a1475a295e018"
+    },
+    "assembly/verify_parent_wrappers.py": {
+      "bytes": 19181,
+      "sha256": "6775e544917a91bf930c7b4bd9015b56f336fe237f25e9eac29c9302170dd79c"
+    },
+    "deployment/launch_notebook.py": {
+      "bytes": 12911,
+      "sha256": "1aedf17daa5b27ac4db046af69e3fd3bf1f4dbec3af57bb826feae718c797578"
+    },
+    "deployment/notebook_builder.py": {
+      "bytes": 6303,
+      "sha256": "6837f149bbf99db85a6a55138d41957df3e902a4694f80c05e91a1b4568822a4"
+    },
+    "deployment/parent_entry.py": {
+      "bytes": 1778,
+      "sha256": "91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3"
+    },
+    "deployment/prepare_entry.py": {
+      "bytes": 10143,
+      "sha256": "847bf2d5142b5a852ac68d0f43e456140e9f254487d09b9b2fa56b985ae13768"
+    },
+    "deployment/source_loader.py": {
+      "bytes": 10125,
+      "sha256": "08ab6ab1fc06c7eea74c0cf830072c04ead1ec2a73cde8d8bd743bba7a11bb48"
+    }
+  },
+  "format": "owned-rl-reviewed-material-v1",
+  "material_input_audit": {
+    "bytes": 2702,
+    "path": "portfolio63-rl-bootstrap-repair-20261013/independent-material-review/MATERIAL-PATH-INPUT-REVIEW.json",
+    "sha256": "56bf35461180f05f8ab2fe575bb0d119bdb73dda5f69eb41fce8332aedbc6f08"
+  },
+  "material_input_auditor": {
+    "bytes": 4763,
+    "path": "portfolio63-rl-bootstrap-repair-20261013/independent-material-review/review_path_inputs.py",
+    "sha256": "60e3d6e80de21820599ef0e45e3e0afbd39fdaa0a69ef0275314066fd6efb35c"
+  },
+  "phase_policy_sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda",
+  "prior_aggregate_material": {
+    "bytes": 11187,
+    "path": "portfolio63-rl-release-20261012/independent-material-review/MATERIAL-REVIEW.json",
+    "sha256": "ac9213e64a0f209aaeccec560e8e2a40f9eac74605ef7632103eb52df809fe89"
+  },
+  "qualifications": [
+    "The original v27 source-linked traceback identified the inherited-library-path guard. Actual inherited path components and the rejected conjunct remain unknown; v27 owned closure, costs and scientific results remain unverified.",
+    "The runtime repair constructs only the original approved five child library directories. It does not broaden accepted ambient paths or establish actual CUDA/driver/native-model compatibility. Its only other runtime change is the environment/normalized-source pin literals.",
+    "Environment changes are exactly three source-directory references. The solver dataset changes only two escrow-reference strings; reverse raw-byte equality and unchanged escrow hashes were checked without target parsing. Historical environment limitations, including unobserved prior cuDNN integer, remain explicit.",
+    "The separate independent bootstrap review covers actual bounded no-model children, cleanup faults and the clean-stdlib preparation prefix. It does not execute installation, GPU/model work or the full installed NumericGate. The complete installed capability and numeric checks remain source-identical and mandatory before model admission.",
+    "Exceptions before an owned guard returns retain unknown dispatch and closure state. Startup diagnostic JSON is non-authoritative and cannot replace raw owned proofs or promote scientific/operational success.",
+    "The unchanged21 consumer helpers retain original167-denominator PUBLIC eligibility and distinct paired-comparison axes. Final source/release/collector/operator/entry literal binding remains downstream and is not asserted by this material receipt.",
+    "Full genuine owned tiny evidence remains tied to historicalfb0a92; the separateb818 two-batch proof and final2490998d pin delta retain their distinct scope. This narrow repair is not relabelled as a new full neural run.",
+    "Original source, packages, reviews, failure evidence and historical runtime outcomes remain immutable. No provider publication, quota read, Git action or new resource is performed by this aggregate review."
+  ],
+  "runtime_review": {
+    "bytes": 11351,
+    "path": "portfolio63-rl-bootstrap-repair-20261013/independent-bootstrap-review/INDEPENDENT-BOOTSTRAP-REVIEW.json",
+    "sha256": "6c31d0d32f0fefb30e5fe8f5a76d146db58006f6e2f2f0180b565f3b465a93a6"
+  },
+  "runtime_review_sha256": "6c31d0d32f0fefb30e5fe8f5a76d146db58006f6e2f2f0180b565f3b465a93a6",
+  "scope": "Exact immutable source, path-only material inputs, external deployment and unchanged terminal consumer content. Final assembled publication, operator and entry admission require separate downstream reviews.",
+  "source_archive": {
+    "bytes": 15744610,
+    "path": "portfolio63-rl-environment-repair-20261013/RELEASE-SOURCE.zip",
+    "sha256": "c0677f002c3475578aa3da969edda4154c57dcf7064f12cad035007b79195bf8"
+  },
+  "source_archive_sha256": "c0677f002c3475578aa3da969edda4154c57dcf7064f12cad035007b79195bf8",
+  "source_inventory": {
+    "bytes": 31929,
+    "path": "portfolio63-rl-environment-repair-20261013/RELEASE-SOURCE-INVENTORY.json",
+    "sha256": "5cc69fd3e51f1ae45fd95ceb33409f9fca110ea55ce2ceead54ba7c12ad40c4d"
+  },
+  "source_policy": {
+    "bytes": 8663,
+    "path": "portfolio63-rl-environment-repair-20261013/design/MEASURED-POLICY.json",
+    "sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda"
+  },
+  "source_sha256": "fdc5c0e34724da8c0fac9d7604758a93f50e2b3b86b99f81f02c82baa534f0b2",
+  "status": "APPROVED",
+  "verification": {
+    "bound_review_artifacts_rehashed": 25,
+    "changed_runtime_paths": [
+      "owned_runtime/parent_scoring.py",
+      "owned_runtime/release.py"
+    ],
+    "consumer_helpers_unchanged": 21,
+    "external_files": 8,
+    "independent_bootstrap_tests_normal": 29,
+    "independent_bootstrap_tests_optimized": 29,
+    "runtime_source_members": 259,
+    "source_archive_all_members_hashed": true,
+    "unchanged_runtime_members": 257
+  }
+}

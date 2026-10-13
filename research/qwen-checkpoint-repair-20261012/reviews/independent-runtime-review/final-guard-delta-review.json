@@ -1,0 +1,34 @@
+{
+  "format": "irisx/independent-negative-only-checkpoint-guard-bridge-v1",
+  "status": "passed",
+  "source001_native_evidence_preserved": true,
+  "old_source_identity_sha256": "949bc2535b19f6e7f0bc8794e80a3ffdc3f1306cadad7f00dc0023252f71738f",
+  "final_source_identity_sha256": "d485de95b68e0147e0d122143d25e983b7c60800259fdf8e44315b4537818b86",
+  "changed_file": "tools/arc_qwen_portfolio_20261012/checkpoints.py",
+  "before_sha256": "33811b8dd2f16357ebab1c7e3c18c3f0a9b95fe88d9bec7ea9bf9dacffd7b8e8",
+  "after_sha256": "4327288b5c352e03e328733a1ed6e3fceacacd2d124e6b84be4e794c05875512",
+  "exact_diff": "--- source001/tools/arc_qwen_portfolio_20261012/checkpoints.py\n+++ source002/tools/arc_qwen_portfolio_20261012/checkpoints.py\n@@ -148,6 +148,9 @@\n \n def _check_update(update, binding, trainer=None):\n     schedule = binding.get('checkpoint_schedule')\n+    require(schedule is not None or binding.get('model', {}).get('native_identity', {}).get('profile_id') !=\n+            'qwen3-14b-native-bf16-r8-c4096-transfer-v1',\n+            'stored TransferTrainer identity requires an explicit checkpoint schedule')\n     if schedule is not None:\n         require(type(update) is int, 'integer transfer checkpoint update required')\n         from tools.arc_qwen_transfer_20261012.checkpoint_policy import validate_contract\n",
+  "valid_real_checkpoints": [
+    {
+      "update": 0,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/independent-runtime-review/native-replay/checkpoints/global_grid/update-00000000",
+      "manifest_sha256": "63850af474ea0e73a3a2e49004843586dc160e765adf20f682c4901a36b72b26",
+      "final_inspector_accepted": true
+    },
+    {
+      "update": 64,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/independent-runtime-review/native-replay/checkpoints/global_grid/update-00000064",
+      "manifest_sha256": "69ee532bc9b4d4aaa11f81e508533d6f34861f6334b768c48a7cea3a10b45af3",
+      "final_inspector_accepted": true
+    },
+    {
+      "update": 256,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/independent-runtime-review/native-replay/checkpoints/global_grid/update-00000256",
+      "manifest_sha256": "383ed11288ceef37d298b02de8b8e0c6e7f45d05466eb9938861d5cabd21dab0",
+      "final_inspector_accepted": true
+    }
+  ],
+  "removed_schedule_rejected": "stored TransferTrainer identity requires an explicit checkpoint schedule",
+  "reasoning": "For every valid transfer artifact schedule is non-null, so the inserted require short-circuits true without changing execution. It adds only rejection for a schedule-less stored transfer profile. All other source bytes are identical.",
+  "qualification": "Actual272-update neural evidence remains source001 evidence. Final source002 is separately exercised by native fixture0/1/2 plus task0/8/16 and metadata64/256 orchestration; this report does not relabel source001 checkpoints."
+}

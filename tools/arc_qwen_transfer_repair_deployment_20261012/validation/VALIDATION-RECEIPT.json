@@ -1,0 +1,116 @@
+{
+  "actual384mib_archive_crc_sha_replayed": true,
+  "evidence_archive_cap_bytes": 570425344,
+  "evidence_expanded_cap_bytes": 536870912,
+  "exact_release_manifest": {
+    "bytes": 123016,
+    "path": "release-candidate-002/publication-manifest.json",
+    "sha256": "86cc3dc848120035cb92b24d7919e6f33d508c51bb4d87d034f2a252fede560c"
+  },
+  "final_runtime_source_identity_sha256": "177c9a02047156f8881838c256515e4e1fcf430b2860f8960f48cd363a86c2f5",
+  "format": "irisx/transfer-generation-repair-validation-receipt-v1",
+  "genuine_tiny_archive_sha256": "63f5a4bedb746901cc3fe8ced80728555f65f4f18e744f0dbdd619a2881d30bc",
+  "genuine_tiny_generation_receipts": 230,
+  "genuine_tiny_main_timing_slots": 224,
+  "genuine_tiny_public_refresh": "CALIBRATION_FALLBACK",
+  "genuine_tiny_source_identity_sha256": "e02c3485ac271fa738d0bc8728ad4e7f07be3f43e698d5387c6bfbea1a07e245",
+  "historical_baseline_tests": 108,
+  "historical_v21_rejected_as_successor": true,
+  "model_or_provider_calls_by_validator": 0,
+  "normal_tests": 128,
+  "optimized_tests": 128,
+  "passed": true,
+  "production_api_rejects_synthetic": true,
+  "public_gold_parsed": false,
+  "qualifications": [
+    "Final512MiB source differs from genuine tiny256MiB source by one separately tested archive-capacity constant; no model execution is relabeled.",
+    "Final exact released manifest/source/notebook API fixture is an entirely authored synthetic before-load failure, not production execution.",
+    "Genuine tiny128/512 calibration cannot support production4096 refreshed timing; original calibration forecast is retained.",
+    "Header-only checkpoint size/presence never establishes bytes or SHA verification.",
+    "Portable source-only runs explicitly skip unavailable historical/runtime/owner fixtures; full128-test results require retained local fixtures."
+  ],
+  "receipts": [
+    {
+      "bytes": 15313,
+      "path": "validation/receipts/successor-tests-final-normal.txt",
+      "sha256": "bab44ea2dca5d65261a4d759d1c6056b12be1de6b5a37dc88722b8248cf3b62f"
+    },
+    {
+      "bytes": 15313,
+      "path": "validation/receipts/successor-tests-final-optimized.txt",
+      "sha256": "d0052bcc9b591831be1f41198f1fbe78386b4f0b4b12693d56fd4ce6b467fae3"
+    },
+    {
+      "bytes": 5524,
+      "path": "validation/receipts/portable-source-only-tests.txt",
+      "sha256": "8ce943774ba188a28d41cdcdc5a25e133ed837bdc731022060983b8bb69ed732"
+    },
+    {
+      "bytes": 417,
+      "path": "validation/receipts/historical-baseline-tests.txt",
+      "sha256": "42dace949ed2e7999ec078771f306112aa12a16bbbbf2983b365cfa2a27f4c6e"
+    },
+    {
+      "bytes": 526,
+      "path": "validation/receipts/historical-v21-rejection.json",
+      "sha256": "c9b15e3b9aa44b9f98fec96e354699c554c1f1118ca2f780c440d29d6ae6e4a0"
+    },
+    {
+      "bytes": 2953,
+      "path": "validation/receipts/owned-tiny-content-validation.json",
+      "sha256": "ba7a24883685fafe97abc473e129164c4583bc61f12b3867a313075a6571f322"
+    },
+    {
+      "bytes": 2862,
+      "path": "validation/receipts/owned-tiny-with-checkpoint-bytes-validation.json",
+      "sha256": "c7496b4b90d8df660dbc9fc7a28f44746e364a27d04853cb5a0c16b4587272e5"
+    },
+    {
+      "bytes": 2632,
+      "path": "validation/receipts/synthetic-exact-final-envelope-validation.json",
+      "sha256": "3303bf5234913c2a938e102959a9476f4fe3068a6b3bfd8ea42afae7bac208b4"
+    },
+    {
+      "bytes": 172,
+      "path": "validation/receipts/production-api-synthetic-rejection.json",
+      "sha256": "03b2692acfd219a0c0a946302d5e40a4ab1e1b5ac13da4ccb20112e1b8439b19"
+    },
+    {
+      "bytes": 472,
+      "path": "validation/receipts/exact-final-launch-policy-subcheck.json",
+      "sha256": "6999f8fe2e9dee1a8c1e710096d4bd8c350dd8149621f6afb0d005811d496022"
+    }
+  ],
+  "tests": [
+    {
+      "bytes": 14631,
+      "path": "validation/tests/successor_fixture_helpers.py",
+      "sha256": "b7fbed78e5c602fa42269274cb06e1f6c14a5d9ae3babdd6c9243b5f2757db56"
+    },
+    {
+      "bytes": 15933,
+      "path": "validation/tests/test_budget_successor.py",
+      "sha256": "21ba25bebfc03f633eacd6d0d4b2665623bdaff997b1924a7c64e3257d884ed3"
+    },
+    {
+      "bytes": 8756,
+      "path": "validation/tests/test_collector_successor.py",
+      "sha256": "5e1c4e8ca306d1b155af0d41aca8da82b5ae7a8f786b7ac81f2d0c40f4248c6b"
+    },
+    {
+      "bytes": 1373,
+      "path": "validation/tests/test_inherited_interfaces.py",
+      "sha256": "c901fd62122ebdccf564a57f80a20e0c038c9996b2b02eba7f33b7a96783f6f2"
+    },
+    {
+      "bytes": 4346,
+      "path": "validation/tests/test_owned_successor_content.py",
+      "sha256": "f089d2acc87dbd4ac302ddcea9e6c069d93936bf73c75d7aedcea27573a97b96"
+    }
+  ],
+  "validator_artifacts": {
+    "bytes": 1142,
+    "path": "validation/VALIDATION-ARTIFACTS.json",
+    "sha256": "042f6827178d53179b8ca04c3570da440c65d44829ebcb6dc9bdef660cec345e"
+  }
+}

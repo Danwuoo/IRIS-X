@@ -1,0 +1,16 @@
+[
+  {
+    "author_path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/author-tests/test_native_schedule.py",
+    "author_sha256": "6c809f6b61c1428cbd7d40d0a1d41ebfa97dabfda5b6e8d8f20e3170a5936bd5",
+    "replay_path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/independent-runtime-review/replay_native_schedule.py",
+    "replay_sha256": "9df34248657c429e47800e057879f73264fb0316a82efc74d903977eba1e27dc",
+    "changes": "Only ROOT/SOURCE/import/tokenizer and output paths redirected; test logic unchanged."
+  },
+  {
+    "author_path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/author-tests/test_metadata_e2e.py",
+    "author_sha256": "7c349dde73acc0bf968773d4a4dea166698913c7be6d17a9fa1616ab7c5abf72",
+    "replay_path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/independent-runtime-review/replay_metadata_e2e.py",
+    "replay_sha256": "472cb918b83375ea0ec57b92df7dfa2c3de54743a13b68aebdc021a8996c1d68",
+    "changes": "Only ROOT/SOURCE/import/tokenizer and output paths redirected; test logic unchanged."
+  }
+]

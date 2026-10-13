@@ -1,0 +1,170 @@
+{
+  "authority_state": {
+    "consumer_entry_root_pin_pending": true,
+    "dispatch_authorized": false,
+    "escrow_bodies_parsed": false,
+    "final_monitor_review_pending": true,
+    "final_operator_review_pending": true,
+    "model_calls": 0,
+    "production_entry_admission_approved": false,
+    "provider_calls": 0,
+    "public_gold_read": false,
+    "scorer_calls": 0
+  },
+  "consumer_content_review": {
+    "bytes": 8475,
+    "path": "portfolio63-rl-release-20261012/independent-operator-review/CONSUMER-CONTENT-REVIEW-R2.json",
+    "sha256": "c7c01c58c741fb8ab2481c59303690f0c94425f9475ba88af454d85ae5baea3f"
+  },
+  "consumer_helper_inventory": {
+    "bytes": 2001,
+    "path": "portfolio63-rl-data-release-20261013/release-candidate-001/terminal-consumer/CONSUMER-INVENTORY.json",
+    "sha256": "d88b66c3b45435c2b328c2cc36c9c605c889ba76e48a36c22729db0ec2fda710"
+  },
+  "dataset_escrow_sha256": {
+    "dev": "ba14ceb14b2acd18dfe209227ed0473ab909bf55b7ff68bb327d933a999f332d",
+    "holdout": "397a6b32967cfad4fe300c362d7134194ccca760231bc98649844bddeac6b344"
+  },
+  "dataset_file_sha256": "324140600ec7e833bb78e054b00a226a4f6d6732ca5fe1fb2ec6b001c987ef12",
+  "deployment_candidate": {
+    "bytes": 1354,
+    "path": "portfolio63-rl-driver-release-20261013/DEPLOYMENT-REVIEW-CANDIDATE.json",
+    "sha256": "d35f43f82c26296b8afec1490c285f2417162ae9f1b9b3d063cef1e62a78541f"
+  },
+  "deployment_inventory": {
+    "launch_notebook.py": {
+      "bytes": 12911,
+      "sha256": "5191ea897cf9c346264d28c864d7e709c8ec1411adb3d1895ba7c305b1e0abab"
+    },
+    "notebook_builder.py": {
+      "bytes": 6303,
+      "sha256": "b3b4db0c9d7bcca30662b1d6f6656f3fa770d831f48c97f1330de8e7a0922752"
+    },
+    "parent_entry.py": {
+      "bytes": 1778,
+      "sha256": "91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3"
+    },
+    "prepare_entry.py": {
+      "bytes": 10143,
+      "sha256": "847bf2d5142b5a852ac68d0f43e456140e9f254487d09b9b2fa56b985ae13768"
+    },
+    "source_loader.py": {
+      "bytes": 10125,
+      "sha256": "fe76c07f12aaa0790159e00d2149003a0a6e37e253baccafed5dc83e342b0f59"
+    }
+  },
+  "environment_sha256": "39d56dd0b5167ba43d9958ace70a8c2b031f29d421d051cfb75cbcff985f4c71",
+  "external_boundary_inventory": {
+    "assembly/accept_downloaded_mount.py": {
+      "bytes": 3767,
+      "sha256": "646b547a3efc848d5ecb0fd0140792fde0de6dbaf69c4407ab9582d4f7433621"
+    },
+    "assembly/finalize.py": {
+      "bytes": 4327,
+      "sha256": "a51505236d649c5fbf4cf7d892c97148ffbccae80ba3621265df581052c0d93b"
+    },
+    "assembly/verify_parent_wrappers.py": {
+      "bytes": 24468,
+      "sha256": "c97adede45574f79d22428afc23d2184dfd6d9c1a87ddfb288830374dddefc6c"
+    },
+    "deployment/launch_notebook.py": {
+      "bytes": 12911,
+      "sha256": "5191ea897cf9c346264d28c864d7e709c8ec1411adb3d1895ba7c305b1e0abab"
+    },
+    "deployment/notebook_builder.py": {
+      "bytes": 6303,
+      "sha256": "b3b4db0c9d7bcca30662b1d6f6656f3fa770d831f48c97f1330de8e7a0922752"
+    },
+    "deployment/parent_entry.py": {
+      "bytes": 1778,
+      "sha256": "91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3"
+    },
+    "deployment/prepare_entry.py": {
+      "bytes": 10143,
+      "sha256": "847bf2d5142b5a852ac68d0f43e456140e9f254487d09b9b2fa56b985ae13768"
+    },
+    "deployment/source_loader.py": {
+      "bytes": 10125,
+      "sha256": "fe76c07f12aaa0790159e00d2149003a0a6e37e253baccafed5dc83e342b0f59"
+    }
+  },
+  "external_path_review": {
+    "bytes": 3136,
+    "path": "portfolio63-rl-driver-release-20261013/independent-operator-review/EXTERNAL-PATH-DELTA-REVIEW.json",
+    "sha256": "0dc99cd86c1b513bc75f3ffc9d926a37669e6c1b2067488b57cf0e73925545fc"
+  },
+  "format": "owned-rl-reviewed-material-v1",
+  "material_input_audit": {
+    "bytes": 1431,
+    "path": "portfolio63-rl-driver-release-20261013/independent-material-review/MATERIAL-INPUT-REVIEW.json",
+    "sha256": "87c5e7c0f2c7864b2f02a5d6e815467cd074b23ed3041e1936c52a911ce6297a"
+  },
+  "phase_policy_sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda",
+  "prior_aggregate_material": {
+    "bytes": 8164,
+    "path": "portfolio63-rl-data-release-20261013/independent-material-review/MATERIAL-REVIEW.json",
+    "sha256": "436631517b5a2325afbdaba0d81cd24fd3b48b1bfd69ae44f0b30472724fcb21"
+  },
+  "prior_external_wrapper_review": {
+    "bytes": 3601,
+    "path": "portfolio63-rl-data-release-20261013/independent-operator-review/EXTERNAL-WRAPPER-REVIEW.json",
+    "sha256": "27e2648b079d1759384da50c06046bd12e3f17eb94ea2914b9fc473895353f0f"
+  },
+  "qualifications": [
+    "Future Kaggle host executable path, utility capability, driver libraries, CUDA visibility and startup remain unobserved until actual child preflight. Official sources justify fixed standard locations; they do not establish future host availability.",
+    "Actual reviewer CPU host has no nvidia-smi in any allowed location and correctly fails at resolve-nvidia-cli before library/model work.",
+    "Offline inspection cannot independently recompute original author/provider journal HMAC without parent secret; it verifies public chains and exact byte projections plus retained authenticated live-supervisor results. Reviewer-owned journal mutation tests do verify HMAC directly.",
+    "No source-level or CPU result establishes GPU fit, throughput, RL scientific success, new pretrained model load, new public score or deployment/dispatch authority.",
+    "Provider/collector/operator review and final deployment material are separate. This seal covers the exact runtime source, canonical archive and stated path-only environment/data candidates.",
+    "The prior v31 packet remains partial:26 selected files,seven uncollected outputs includingfive raw required proofs,and no final provider bracket. Its archived failed native-load charge is retained. No successor material review repairs or promotes that prior admission.",
+    "Actual before_load,after_load and clean tiny-random CPU runs retain source5fd31494. Final22a736bd changes only the production CUDA probe15 to60-second cap plus derived self-pin from that predecessor; original inner deadline still bounds it. Fixture branch identity and final39-check suite justify reuse without relabelling prior neural execution.",
+    "The original wrong-timestamp d570 archive and canonical15-second889a archive remain superseded. Only final778ac547 archive with source22a736bd and canonical2026-10-12 timestamps is admitted by this material review.",
+    "A genuine CPU-host observation found no nvidia-smi in allowed paths and failed before library/model work. Synthetic positive CLI/CUDA tests are not actual NVIDIA or GPU proof. Future-host executable/native-library/CUDA/model checks remain mandatory.",
+    "The independent reviewer reproduced and verified a cleanup-error ledger-loss correction. Dispatched failed work must retain its original exception and full reservation; incomplete source, process or model closure stays diagnostic.",
+    "All200 baseline files,RL math,policy,data and21 normal consumer helpers are unchanged. Exactly two solver output paths move to run004; prior clean1000/tokenizer evidence keeps its source and execution qualifications.",
+    "All eight external helper differences are only role/code/run/source/environment literals. The exact prior nested terminal authorization/raw process-tree predicate remains unchanged; process termination cannot substitute for model-session closure.",
+    "Selected-arm complete original167-denominator PUBLIC eligibility is independent from paired A/B/C evidence. Final collector/operator/entry pins, actual provider readback and admission need separate review. This material receipt authorizes no external retry, recipient, model execution or Git write."
+  ],
+  "runtime_review": {
+    "bytes": 12615,
+    "path": "portfolio63-rl-driver-independent-review-20261013/FINAL-INDEPENDENT-RUNTIME-REVIEW.json",
+    "sha256": "22cb37d03b93b0511804cf98036abd0d3d904d636c86efe8fd48b7f1bd59dd63"
+  },
+  "runtime_review_sha256": "22cb37d03b93b0511804cf98036abd0d3d904d636c86efe8fd48b7f1bd59dd63",
+  "scope": "Exact bounded driver-preflight and failed-admission journal/cleanup repair, unchanged data/science, path-only environment and external deployment identities. Final publication/operator/consumer pins are downstream.",
+  "source_archive": {
+    "bytes": 15754814,
+    "path": "portfolio63-rl-driver-repair-20261013/RELEASE-SOURCE-FINAL.zip",
+    "sha256": "778ac5474a176358e0789cd3b82db5d91278864724507dc56d6c33bf6cdefb9e"
+  },
+  "source_archive_sha256": "778ac5474a176358e0789cd3b82db5d91278864724507dc56d6c33bf6cdefb9e",
+  "source_inventory": {
+    "bytes": 33647,
+    "path": "portfolio63-rl-driver-repair-20261013/RELEASE-SOURCE-INVENTORY-FINAL.json",
+    "sha256": "07182a30230da14fa7cce0628ccd2e39a6146719151490acf5e1abaf76e61860"
+  },
+  "source_policy": {
+    "bytes": 8663,
+    "path": "portfolio63-rl-driver-repair-20261013/design/MEASURED-POLICY.json",
+    "sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda"
+  },
+  "source_sha256": "22a736bd06f10a5708a0b0c69ac3b89128394e3775c0780d19d1b999b8cc1ba1",
+  "status": "APPROVED",
+  "verification": {
+    "bound_reference_descriptors_rehashed": 23,
+    "canonical_source_zip_timestamp_verified": true,
+    "changed_runtime_paths": [
+      "owned_runtime/factory.py",
+      "owned_runtime/parent_scoring.py",
+      "owned_runtime/release.py",
+      "owned_runtime/worker.py"
+    ],
+    "external_files_identity_only": 8,
+    "independent_runtime_checks_each_mode": 39,
+    "normal_consumer_helpers_unchanged": 21,
+    "runtime_source_members": 259,
+    "source_archive_all_members_hashed": true,
+    "unchanged_baseline_members": 200,
+    "unchanged_runtime_members": 255
+  }
+}

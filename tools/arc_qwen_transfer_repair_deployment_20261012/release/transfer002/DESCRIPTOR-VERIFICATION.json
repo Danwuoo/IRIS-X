@@ -1,0 +1,10 @@
+{
+  "format": "irisx/transfer-release-descriptor-verification-v1",
+  "status": "PASS",
+  "verified_descriptors": 637,
+  "relative_root_payload_and_archive_contexts_verified": true,
+  "model_calls": 0,
+  "provider_calls": 0,
+  "source_archive_members": 199,
+  "runtime_approval_emitted_name_matches": true
+}

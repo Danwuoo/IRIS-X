@@ -1,0 +1,116 @@
+{
+  "all_other_material_clauses_unchanged": true,
+  "base_contract_sha256": "8d26b2f04a91147bbb5e11231f614552d36e2862af9b8d2d2b05b273805b69b0",
+  "base_deployment_id": "qwen3-14b-kaggle-v1-hf40c069-bf16-r8-c2048-first-probe-20261012",
+  "base_hardware_descriptor_sha256": "d377d42980938f6c87967e87bef5d9da9ba9467dc12fdb41c241dd49b4fe9362",
+  "calibration": {
+    "atol": 0.01,
+    "behavioral_cache_mismatch": "full-prefix-only-if-separately-budgeted",
+    "cache_requires_exact_behavioral_choices": true,
+    "complete_training_state_restore_required": true,
+    "exact4096_required_before_science": true,
+    "finite_backward_and_optimizer_required": true,
+    "full_head_rows": 151936,
+    "invalid_late_nonfinite_or_reference_repeat_failure": "fatal",
+    "length_ladder": [
+      128,
+      512,
+      2048,
+      4096
+    ],
+    "maximum_calibration_seconds": 1800,
+    "rtol": 0.01,
+    "states": [
+      "base",
+      "updated",
+      "restored"
+    ],
+    "strict_allclose_is_separate_diagnostic": true,
+    "updates_per_rung": 1
+  },
+  "clock_policy": "At most43200s including queue, setup, all loads/reloads, calibration, learning, inference, scoring and closure; no reset. Individual load and calibration phases remain bounded1800s. No execution authority is created.",
+  "deployment_id": "qwen3-14b-kaggle-v1-hf40c069-bf16-r8-c4096-transfer-20261012",
+  "environment_lock_sha256": "da56c7221914a54e87d344956ddb87d8df16a58a09dd21b1051b37598948bfd0",
+  "format": "irisx/qwen14b-c4096-material-addendum-v1",
+  "hf_config_sha256": "e73c3664ca09b10a673fef0c22e8a6b456201d49bd4713c9691f775720e8857a",
+  "loss_policy": "completion-only causal loss; entire151936 vocabulary; no row or head truncation",
+  "memory_estimate": {
+    "activation_allowance_bytes": 13421772800,
+    "adapter_parameter_elements": 32112640,
+    "adapter_training_bytes": 513802240,
+    "allocator_workspace_reserve_bytes": 8589934592,
+    "base_weights_bytes": 29536614400,
+    "convolution_bytes": 0,
+    "estimated_required_bytes": 60201170944,
+    "free_memory_reserve_bytes": 4294967296,
+    "full_logits_loss_bytes": 7467958272,
+    "kv_bytes": 671088640,
+    "measured": false,
+    "recurrent_bytes": 0
+  },
+  "metering": {
+    "failed_or_unknown_work_remains_charged": true,
+    "generation_input_reservation": "sum(3072+i for i in range(requested_output_tokens)); settle actual physical forward tokens",
+    "scoring_input_reservation": 4096,
+    "training_sequence_reservation": 4096
+  },
+  "not_execution_authorization": true,
+  "overrides": {
+    "hardware.cache_tolerance_scope": {
+      "after": "Fixed .01/.01 full151936-logit allclose remains recorded diagnostic. Cached admission requires finite complete heads, native cache/mask/position invariants, bitwise repeat-full reference, exact unconstrained argmax and grid-DFA greedy choices across multi-step base/updated/restored controls at every128/512/2048/4096 rung. Top8 logits/ranks and margins remain recorded; no numerical-tolerance widening. Choice mismatch denies cached mode; invalid, late, nonfinite, nondeterministic-reference or reset failure denies all science.",
+      "before": "Predeclared bounded BF16 allclose ceilings; must actually pass on full vocabulary at the native probe sequence lengths both before and after optimizer update; no automatic widening."
+    },
+    "hardware.memory_estimate.sequence_length": {
+      "after": 4096,
+      "before": 2048
+    },
+    "probe_bounds.context_limit": {
+      "after": 4096,
+      "before": 2048
+    },
+    "probe_bounds.maximum_probe_seconds": {
+      "after": 43200,
+      "before": 10800
+    },
+    "probe_bounds.output_cap": {
+      "after": 1024,
+      "before": 256
+    },
+    "probe_bounds.prompt_cap": {
+      "after": 3072,
+      "before": 1792
+    },
+    "profile_id": {
+      "after": "qwen3-14b-native-bf16-r8-c4096-transfer-v1",
+      "before": "qwen3-14b-native-bf16-r8-c2048-probe-v1"
+    }
+  },
+  "session_clock_changes_authorized_by_this_addendum": true,
+  "status": "prepared-for-independent-review-not-self-authorizing",
+  "successor_profile": {
+    "attention_backend": "sdpa",
+    "batch_size": 1,
+    "context_limit": 4096,
+    "four_l4_tp_admitted": false,
+    "fp8_admitted": false,
+    "full_public167_coverage_admitted": false,
+    "full_vocabulary_rows": 151936,
+    "g4_fit_measured": false,
+    "lora_alpha": 16,
+    "lora_dropout": 0.0,
+    "lora_rank": 8,
+    "max_position_embeddings_unchanged": 40960,
+    "model_id": "Qwen/Qwen3-14B",
+    "model_key": "qwen3-14b",
+    "output_cap": 1024,
+    "precision": "bf16-base-fp32-lora",
+    "pretrained_loading_default": false,
+    "production_admitted": false,
+    "profile_id": "qwen3-14b-native-bf16-r8-c4096-transfer-v1",
+    "prompt_cap": 3072,
+    "public_solving_admitted": false,
+    "revision": "40c069824f4251a91eefaf281ebe4c544efd3e18",
+    "tensor_parallel_size": 1
+  },
+  "tensor_inventory_sha256": "71be71b8cfe4957190aeb7d8774e0080c5a3dca194a94f3d3db2c3965d91575e"
+}

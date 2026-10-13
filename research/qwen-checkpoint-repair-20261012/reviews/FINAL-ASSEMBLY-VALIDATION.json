@@ -1,0 +1,121 @@
+{
+  "format": "irisx/checkpoint-repair-final-assembly-validation-v1",
+  "status": "PASS",
+  "candidate": "release-candidate-001",
+  "publication_manifest": {
+    "path": "publication-manifest.json",
+    "bytes": 123835,
+    "sha256": "1db39d38fca5bb58c7f73035a2b555566f2a44c23c496488a0f55ba1f5da0331"
+  },
+  "source_freeze": {
+    "path": "SOURCE-FREEZE.json",
+    "bytes": 66204,
+    "sha256": "219da5c41360e6b20c9cd622d323e921a6cc6a8538d74e6031757e0f9d711f61"
+  },
+  "source_archive": {
+    "path": "code-payload/source.zip",
+    "bytes": 3142776,
+    "sha256": "99014aba72618c01675ce464c0a3c595ab624568a6c3be11b6a0f28298c85113"
+  },
+  "runtime_source_approval": {
+    "path": "RUNTIME-SOURCE-APPROVAL.json",
+    "bytes": 38217,
+    "sha256": "7053c1897ee799645a474e3be54677dfb3bc38d33e31dc0f8eecd8fb0ea513fa"
+  },
+  "source_identity_sha256": "a97f9eb49f090f9550ac72613c4c53ed35d50c1aaca57ff980cb12dee2ef3762",
+  "inner_source_identity_sha256": "d485de95b68e0147e0d122143d25e983b7c60800259fdf8e44315b4537818b86",
+  "final_source_members": 200,
+  "expanded_source_bytes": 14894945,
+  "prior_changed": {
+    "tools/arc_qwen_portfolio_20261012/checkpoints.py": {
+      "before_sha256": "becb2c2655b1418a4b9999250fc0f998ebb68ddcbe8fbdff53d55312e380774d",
+      "after_sha256": "4327288b5c352e03e328733a1ed6e3fceacacd2d124e6b84be4e794c05875512"
+    },
+    "tools/arc_qwen_transfer_20261012/backend.py": {
+      "before_sha256": "e2e4a5d77f1d62ffd589da3b9b7019c1ce43b646d4d37312f5b970e7cc7a29ad",
+      "after_sha256": "36284ff46102c7fe1665fb06bcefb3c75906fd3888fa83da90bccf96ec682063"
+    },
+    "tools/arc_qwen_transfer_20261012/experiment.py": {
+      "before_sha256": "56f0dda41e6fde69996a43b6fd1ede93a639b87eb2133a2a7efe75adbfc99c03",
+      "after_sha256": "c476c520ca438eef12079d6601409e9e28e72aadf1f3f21e973cc533a2dfc897"
+    },
+    "tools/arc_qwen_transfer_20261012/public_evaluation.py": {
+      "before_sha256": "5cfe3ba398e6a08a1c3dc8ecc838a54a8dc945aace1f808e56ed333962121edd",
+      "after_sha256": "ed3304fbf89fa0e1ddfc6ec8cb826ca47910c471617dbc993173e0b17d724d5d"
+    }
+  },
+  "prior_added": {
+    "tools/arc_qwen_transfer_20261012/checkpoint_policy.py": "9aa8df5ac0c074299313b366fbd06cd3ae92da2c5a27162a7339577cf4a65063"
+  },
+  "baseline_changed": {
+    "tools/arc_qwen_portfolio_20261012/checkpoints.py": {
+      "before_sha256": "becb2c2655b1418a4b9999250fc0f998ebb68ddcbe8fbdff53d55312e380774d",
+      "after_sha256": "4327288b5c352e03e328733a1ed6e3fceacacd2d124e6b84be4e794c05875512"
+    }
+  },
+  "normal_tests": 45,
+  "optimized_tests": 45,
+  "normal_log": {
+    "path": "final-normal-tests.txt",
+    "bytes": 6903,
+    "sha256": "6e6f0f636c8cf82e86b7820a1d13353f0609c4b0021966f80e51b2089f1bf690"
+  },
+  "optimized_log": {
+    "path": "final-optimized-tests.txt",
+    "bytes": 6903,
+    "sha256": "62b68fde023937f74d8a8b83a7b26c9ad388f29baebdc71fc45b994b862accde"
+  },
+  "exact_config_receipt": {
+    "path": "exact-config-final-001/receipt.json",
+    "bytes": 1491,
+    "sha256": "cc9eaffc2dd6f3116ab0f101850c3d0a66ff3319eb1e5a180192579bc673ab4f"
+  },
+  "descriptor_verification": {
+    "format": "irisx/transfer-release-descriptor-verification-v1",
+    "status": "PASS",
+    "verified_descriptors": 689,
+    "relative_root_payload_and_archive_contexts_verified": true,
+    "model_calls": 0,
+    "provider_calls": 0,
+    "source_archive_members": 200,
+    "runtime_approval_emitted_name_matches": true
+  },
+  "independent_rebuild": {
+    "candidate": "repro-release-001",
+    "files": 40,
+    "byte_identical": true,
+    "separate_process": true
+  },
+  "notebook_role_difference": "only MANUAL_START and ENABLE_MODEL Booleans; epoch remains None",
+  "epoch_patch_difference": "exactly one PREDISPATCH_EPOCH assignment in cell1",
+  "authority_allowlist": [
+    "https://storage.googleapis.com:443",
+    "https://www.googleapis.com:443"
+  ],
+  "predecessor_readiness": {
+    "path": "PREDECESSOR-EVIDENCE.json",
+    "bytes": 3826,
+    "sha256": "51146f175ca28f7e4faa6dd694534bfd166a7f459a7f75891043a32ec9079598",
+    "notebook_version": 23,
+    "notebook_source_sha256": "a7451ae7a341c36483737987d2edfaabd0e2e5cb8890234ec6b56f8565b26f03",
+    "provider_status": "COMPLETE",
+    "runtime_status": "TRANSFER_PARTIAL"
+  },
+  "generation_policy_unchanged": true,
+  "checkpoint_policy": {
+    "path": "CHECKPOINT-POLICY.json",
+    "bytes": 2296,
+    "sha256": "cda0a2a4d98d7a371aa7e14998e2b1170400198b6d16d6d4183c06253b2e019e"
+  },
+  "models_executed_by_assembly": 0,
+  "provider_calls": 0,
+  "git_actions": 0,
+  "library_actions": 0,
+  "actual_numeric13_mount_acceptance": "PENDING_OPERATOR_READBACK",
+  "limitations": [
+    "Local synthetic metadata/owned loader tests do not prove provider readback or neural quality.",
+    "Runtime approval expressly separates source001 native272 evidence and source002 negative-only guard bridge.",
+    "Separate five-file offline validator is bound by final operator review, not included in provider source payload.",
+    "Provider publication and dispatch remain gated by separate operator review."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "code": {
+    "reference": "danielwuu/iris-x-learning-agent-code-20261011/13",
+    "manifest_sha256": "2b8af01732952809a8cc6341c62a975edce9525ac069a9093b201b8862060b23",
+    "archive_sha256": "99014aba72618c01675ce464c0a3c595ab624568a6c3be11b6a0f28298c85113"
+  },
+  "data": {
+    "manifest_sha256": "c55073f8e9f44682dd7d7f31ee7f04f39754a9922ec246073555026452f047e3",
+    "reference": "danielwuu/iris-x-public120-data-20261010/1",
+    "role_manifests": {
+      "evaluator": "c7e8ad35770a66a71a22cccbbd0455c1c3bcc1a505dfb2e4c29819eec6209e33",
+      "solver": "549019b4b5cb47176f3abd3fcd9ca516e91b7d6e581dfc414a5a6452ff7b1f7f"
+    }
+  },
+  "training": {
+    "manifest_sha256": "a4b9da04d8690c57a3d0855553989fa055c5b9283ffc1784fe99413c8d1cb9d5",
+    "reference": "danielwuu/iris-x-learning-training-20261011/1"
+  },
+  "release": {
+    "runtime_reviewed": true,
+    "runtime_review_sha256": "7053c1897ee799645a474e3be54677dfb3bc38d33e31dc0f8eecd8fb0ea513fa",
+    "source_identity_sha256": "a97f9eb49f090f9550ac72613c4c53ed35d50c1aaca57ff980cb12dee2ef3762",
+    "predispatch_epoch_required": true
+  }
+}

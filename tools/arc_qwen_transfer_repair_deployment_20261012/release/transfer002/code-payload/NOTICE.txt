@@ -1,0 +1,1 @@
+Private IRIS-X research source. Existing rights and notices are retained. No new license grant is made. Source-only prepared candidate; no GPU run or publication authorization is implied.

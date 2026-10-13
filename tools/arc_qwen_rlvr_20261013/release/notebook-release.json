@@ -1,0 +1,81 @@
+{
+  "admission_scope": "independently reviewed immutable materials; run still requires separate authenticated publisher approval",
+  "code_manifest_sha256": "b6ddcc29368752b7e513e49b79ab1f79262e8d88caefe8bb37139c4370de243d",
+  "code_reference": "danielwuu/iris-x-learning-agent-code-20261011/15",
+  "data_mount_layout": "datasets-owner-slug",
+  "dataset_references": [
+    "danielwuu/iris-x-learning-agent-code-20261011/15",
+    "danielwuu/iris-x-public120-data-20261010/1",
+    "danielwuu/iris-x-learning-training-20261011/1",
+    "danielwuu/iris-arc-next-runtime/8",
+    "danielwuu/iris-arc-granite42-8b-offline/2",
+    "danielwuu/iris-arc-next-cu128-cp312-wheels/1",
+    "danielwuu/iris-arc-next-cpython312-offline/2",
+    "danielwuu/iris-arc-granite42-run003-adapter-20261009/1"
+  ],
+  "deployment": {
+    "launch_notebook.py": {
+      "bytes": 12911,
+      "sha256": "1aedf17daa5b27ac4db046af69e3fd3bf1f4dbec3af57bb826feae718c797578"
+    },
+    "notebook_builder.py": {
+      "bytes": 6303,
+      "sha256": "6837f149bbf99db85a6a55138d41957df3e902a4694f80c05e91a1b4568822a4"
+    },
+    "parent_entry.py": {
+      "bytes": 1778,
+      "sha256": "91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3"
+    },
+    "prepare_entry.py": {
+      "bytes": 10143,
+      "sha256": "847bf2d5142b5a852ac68d0f43e456140e9f254487d09b9b2fa56b985ae13768"
+    },
+    "source_loader.py": {
+      "bytes": 10125,
+      "sha256": "08ab6ab1fc06c7eea74c0cf830072c04ead1ec2a73cde8d8bd743bba7a11bb48"
+    }
+  },
+  "environment_sha256": "aed4f107edda4dff13439c6df00eb429c892a4564c8e163be8a60eaf04f30182",
+  "format": "irisx/rlvr-notebook-release-v1",
+  "material_pins": {
+    "data": {
+      "manifest_sha256": "c55073f8e9f44682dd7d7f31ee7f04f39754a9922ec246073555026452f047e3",
+      "reference": "danielwuu/iris-x-public120-data-20261010/1",
+      "role_manifests": {
+        "evaluator": "c7e8ad35770a66a71a22cccbbd0455c1c3bcc1a505dfb2e4c29819eec6209e33",
+        "solver": "549019b4b5cb47176f3abd3fcd9ca516e91b7d6e581dfc414a5a6452ff7b1f7f"
+      }
+    },
+    "training": {
+      "manifest_sha256": "a4b9da04d8690c57a3d0855553989fa055c5b9283ffc1784fe99413c8d1cb9d5",
+      "reference": "danielwuu/iris-x-learning-training-20261011/1"
+    }
+  },
+  "material_review_sha256": "6f9e0c8185e4627f5efbe4420cf7190ff81b8fee954514b8677cc1a97703ad66",
+  "original_owner_request": {
+    "instruction": "我接下來是真的要離開了，要讓 astra ultra 不管怎樣就是要繼續迭代開發",
+    "owner_id": "danielwuu",
+    "request_id": "Sentinel_8879bbcf6048819182b1d5cd03126215"
+  },
+  "phase_policy_sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda",
+  "production_admitted": true,
+  "release_role": "rlvr002",
+  "scorer_pins_sha256": "58216d4cf1ced5740b7f66b7be845d38ce327f5fb84048876aa54d3ca29f9f72",
+  "source_archive_sha256": "c0677f002c3475578aa3da969edda4154c57dcf7064f12cad035007b79195bf8",
+  "source_sha256": "fdc5c0e34724da8c0fac9d7604758a93f50e2b3b86b99f81f02c82baa534f0b2",
+  "storage": {
+    "both_parent_log_pairs_cap_bytes": 16777216,
+    "checkpoint_archive_bytes": 4294967296,
+    "co_resident_peak_plus_reserve_bytes": 23773315072,
+    "environment_root": "/tmp/irisx-qwen14b-rlvr-20261012-environment002",
+    "environment_saved": false,
+    "evidence_archive_bytes": 5385486336,
+    "evidence_expanded_bytes": 5368709120,
+    "observed_assembled_source_copy_bytes": 31508252,
+    "parent_metadata_and_proof_reservation_bytes": 67108864,
+    "provider_saved_output_limit_bytes": 20000000000,
+    "saved_auxiliary_allowance_bytes": 134217728,
+    "saved_limit_headroom_bytes": 521652224,
+    "saved_working_upper_bytes": 19478347776
+  }
+}

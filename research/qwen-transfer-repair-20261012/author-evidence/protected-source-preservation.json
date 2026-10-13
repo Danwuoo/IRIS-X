@@ -1,0 +1,14 @@
+{
+  "baseline_sha256": "c2225582ecc95027b56f407a527d1d882d455e4a13512a8d73cdeaffc7d787b3",
+  "changed_and_added_modules_parse": 7,
+  "format": "irisx/transfer-protected-source-preservation-v1",
+  "protected_sha256": {
+    "tools/arc_qwen_transfer_20261012/arc_adaptation.py": "1ad429dabf649e405dc0386906030a9c441f3fa696070daec579fbf2e53ff013",
+    "tools/arc_qwen_transfer_20261012/data.py": "1872ecafc28c88dba5490299a1abcd6fb5f62cab06ef5c05797f256565da5b12",
+    "tools/arc_qwen_transfer_20261012/model_profile.py": "3a945678316b42b929415612b099500e33f3d815d574e62b80dfbaf75a4fac06",
+    "tools/arc_qwen_transfer_20261012/protocol.py": "c4b93fc37c56a6572f8e29feb98fbb4df035b4970be23357d05922e6d6f25f23",
+    "tools/arc_qwen_transfer_20261012/public_evaluation.py": "5cfe3ba398e6a08a1c3dc8ecc838a54a8dc945aace1f808e56ed333962121edd",
+    "tools/arc_qwen_transfer_20261012/transfer_selector.py": "824a76b0aac83d8112520d2e69740bfd619ee53b3521bf3e122f5f946c9f7b9c"
+  },
+  "snapshot_matches_worktree": true
+}

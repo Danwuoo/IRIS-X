@@ -1,0 +1,91 @@
+{
+  "checkpoint_bytes_retained_tiny": {
+    "bytes": 2454,
+    "path": "validation-tests/retained-tiny-with-checkpoint-bytes-validation.json",
+    "sha256": "a222de8a932ae0e7b9b19089dde772273b5b11857cc0fe561d9e75727409cf03"
+  },
+  "final_release_manifest": {
+    "bytes": 121180,
+    "path": "release-candidate-001/publication-manifest.json",
+    "sha256": "689e587ce8d7c0c7c606176dac5c010e7a9a1fb817d65ace1c59773f55f96d9a"
+  },
+  "final_release_synthetic_envelope_replay": {
+    "goal_met": false,
+    "operational_success": false,
+    "provider_envelope_verified": true,
+    "provider_status": "COMPLETE",
+    "science_complete": false,
+    "status": "TRANSFER_COMPLETE",
+    "synthetic": true,
+    "valid": true
+  },
+  "format": "irisx/true-arc-transfer-validator-receipt-v1",
+  "independent_operator_review": "pending replacement review",
+  "phase_omission_correction": {
+    "actual_before_load_closed_failure_subcheck": "PASS",
+    "complete_archive_delete_and_rehash_cases": 21,
+    "main_admission_missing_after_transition": "REJECT",
+    "phase_boundary_tests": 12,
+    "public_or_ttt_performed_work_missing_admission": "REJECT",
+    "source_derived_experiment_directory_requires_prior_main_admission": true
+  },
+  "qualification": [
+    "Retained owned tiny main binds its exact earlier source copy and shortened128/512 calibration; no production4096 GPU claim.",
+    "Targeted actual tiny TTT covers one case and48 updates; no full16-case TTT completion claim.",
+    "Retained public167/167 is explicit synthetic data/test-authored native receipts with actual original CPU scorer.",
+    "Missing checkpoint archive payload bytes are explicitly unverified; no default large downloads.",
+    "No provider calls, neural execution, runtime import, real public gold access, or original historical material edits performed by validator."
+  ],
+  "retained_tiny_content": {
+    "bytes": 2545,
+    "path": "validation-tests/retained-tiny-validation.json",
+    "sha256": "ceef9f252c655b8697aaac4179b64369ecdf5ff5c4f469a4028c6579ae040be4"
+  },
+  "superseded_receipt": {
+    "bytes": 2650,
+    "path": "validation/revisions/VALIDATION-RECEIPT-5e0f13a0-superseded.json",
+    "sha256": "f8326fd7b8e1f31e7d560c1f398aa2ccbd0c9942a01c98257eb35aedb43bdf6e"
+  },
+  "tests": {
+    "normal": {
+      "count": 108,
+      "log": {
+        "bytes": 11806,
+        "path": "validation-tests/results-normal.txt",
+        "sha256": "b59c011f575110d05fcedca06388890f95f2de56fd45cec9d5bf4e805eb24768"
+      },
+      "status": "PASS"
+    },
+    "optimized": {
+      "count": 108,
+      "log": {
+        "bytes": 11806,
+        "path": "validation-tests/results-optimized.txt",
+        "sha256": "22621da6352d238a8713a965ea9f7cba718987f378f15d608ca691d8d24904a0"
+      },
+      "status": "PASS"
+    }
+  },
+  "validator_files": [
+    {
+      "bytes": 108236,
+      "path": "validation/validate_transfer_outputs.py",
+      "sha256": "7b88b2fb219eb2f95eff6440d36afce290dc3fb9d1a565cce952386e06eac56e"
+    },
+    {
+      "bytes": 4482,
+      "path": "validation/generation_checks.py",
+      "sha256": "4ef2c33434e9064c93b6da75329067aff60ae3222417a2d608cede7f3e0cbb11"
+    },
+    {
+      "bytes": 10981,
+      "path": "validation/selector_replay.py",
+      "sha256": "824a76b0aac83d8112520d2e69740bfd619ee53b3521bf3e122f5f946c9f7b9c"
+    },
+    {
+      "bytes": 41307,
+      "path": "validation/frozen-panel-plan.json",
+      "sha256": "8138168e1c8206977efaab20243ac66e04fe5d0cf5d375252b7cca68feefa17a"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "status": "passed",
+  "explicit_test_backend": true,
+  "native_training_claim": false,
+  "scientific_effectiveness_claim": false,
+  "production_checkpoint_labels": [
+    "base",
+    "sft64",
+    "sft256"
+  ],
+  "global_reload_order": [
+    64,
+    256,
+    64,
+    0,
+    64
+  ],
+  "global_save_updates": [
+    0,
+    64,
+    256
+  ],
+  "dev_count": 16,
+  "holdout_count": 32,
+  "public_input_slots": 167,
+  "public_calls": 334,
+  "ttt_parents": 16,
+  "ttt_labels": [
+    0,
+    8,
+    16
+  ],
+  "main_selected": "sft64",
+  "public_selected": "base",
+  "holdout_or_public_gold_opened": false,
+  "experiment_report_path": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/independent-runtime-review/metadata-e2e-final/experiment/full-report.json",
+  "test_seams": [
+    "model/backend",
+    "checkpoint payload serialization",
+    "native admission",
+    "calibration handoff",
+    "generation",
+    "prompt packing",
+    "timing estimator",
+    "synthetic PUBLIC input source"
+  ]
+}

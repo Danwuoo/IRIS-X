@@ -1,0 +1,24 @@
+{
+  "dev_parents": 16,
+  "exclusion_manifest": {
+    "bytes": 13396,
+    "path": "panel-freeze/public120-exclusions.json",
+    "sha256": "ef1d0f2812f42b221a24b6938ed1ee2b64b6165a3d071a5d2d55bb951976be9e"
+  },
+  "format": "irisx/true-arc-panel-freeze-receipt-v1",
+  "holdout_parents": 32,
+  "known_variant_content_checks": "pending actual pinned training source; collisions fail this frozen panel with no substitution",
+  "panel": {
+    "bytes": 41307,
+    "path": "panel-freeze/frozen-panel-plan.json",
+    "sha256": "8138168e1c8206977efaab20243ac66e04fe5d0cf5d375252b7cca68feefa17a"
+  },
+  "public_solver_tasks": 120,
+  "public_targets_read": 0,
+  "public_test_inputs": 167,
+  "source_tasks_opened": 0,
+  "status": "METADATA_ONLY_FROZEN",
+  "train_parents": 32,
+  "ttt_dev_parents": 8,
+  "ttt_holdout_parents": 8
+}

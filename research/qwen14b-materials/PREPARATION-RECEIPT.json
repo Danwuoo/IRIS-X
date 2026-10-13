@@ -1,0 +1,27 @@
+{
+  "cpu_test_python": "3.12.15",
+  "cpu_tests_passed": 33,
+  "format": "irisx/qwen14b-probe-material-preparation-v1",
+  "full_owned_wheel_hashes_reverified": 52,
+  "gpu_calls": 0,
+  "hash_manifest_sha256": "76441e65d4d8dc20f44a1cd8ea6bedfaab669779bde65ad49478958bb880591d",
+  "independent_review_performed_by_preparer": false,
+  "material_contract_sha256": "8d26b2f04a91147bbb5e11231f614552d36e2862af9b8d2d2b05b273805b69b0",
+  "material_oracle_scope": "Standalone tests only; actual loader implementation is separately owned and requires separate adversarial tests.",
+  "meta_tensor_count": 443,
+  "model_loads": 0,
+  "model_weight_downloads": 0,
+  "model_weight_hashes_verified": false,
+  "model_weights_locally_present": false,
+  "open_runtime_requirements": [
+    "Independent review of the same final contract and runtime source",
+    "Provider-assigned readonly model mount identity and all eight full weight hashes and headers",
+    "Actual single-GPU properties, free VRAM and native BF16 capability / short LoRA measurements",
+    "Bounded process, clock, closure and dataflow verification by their owners"
+  ],
+  "package_installs": 0,
+  "parameter_elements": 14768307200,
+  "provider_calls": 0,
+  "publication_actions": 0,
+  "status": "PREPARED_CPU_VERIFIED_PENDING_INDEPENDENT_RUNTIME_REVIEW"
+}

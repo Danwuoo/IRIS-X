@@ -1,0 +1,57 @@
+test_approval_requires_exact_complete_runtime_source_and_explicit_true (test_builder.BuilderPolicies.test_approval_requires_exact_complete_runtime_source_and_explicit_true) ... ok
+test_closed_baseline_and_staged_runtime_collection (test_builder.BuilderPolicies.test_closed_baseline_and_staged_runtime_collection) ... ok
+test_new_candidate_destination_cannot_reuse_or_overlap (test_builder.BuilderPolicies.test_new_candidate_destination_cannot_reuse_or_overlap) ... ok
+test_single_link_regular_and_no_symlink (test_builder.BuilderPolicies.test_single_link_regular_and_no_symlink) ... ok
+test_unsafe_names_denied (test_builder.BuilderPolicies.test_unsafe_names_denied) ... ok
+test_zip_reproducible_exact_and_relative (test_builder.BuilderPolicies.test_zip_reproducible_exact_and_relative) ... ok
+test_exact_driver_and_new_runtime_config_without_model_import (test_candidate.ActualBootstrapTests.test_exact_driver_and_new_runtime_config_without_model_import) ... ok
+test_archive (test_candidate.ActualMountTests.test_archive) ... ok
+test_extracted_directory (test_candidate.ActualMountTests.test_extracted_directory) ... ok
+test_extracted_root (test_candidate.ActualMountTests.test_extracted_root) ... ok
+test_missing_member_rejected (test_candidate.ActualMountTests.test_missing_member_rejected) ... ok
+test_mutated_member_rejected (test_candidate.ActualMountTests.test_mutated_member_rejected) ... ok
+test_symlink_member_rejected (test_candidate.ActualMountTests.test_symlink_member_rejected) ... ok
+test_unknown_extra_member_rejected (test_candidate.ActualMountTests.test_unknown_extra_member_rejected) ... ok
+test_wrong_pin_rejected (test_candidate.ActualMountTests.test_wrong_pin_rejected) ... ok
+test_active_template_has_one_epoch_placeholder_and_no_fallback (test_candidate.ActualNotebookTests.test_active_template_has_one_epoch_placeholder_and_no_fallback) ... ok
+test_actual_default_notebook_is_inert (test_candidate.ActualNotebookTests.test_actual_default_notebook_is_inert) ... ok
+test_actual_embedded_sources_match_closed_payload (test_candidate.ActualNotebookTests.test_actual_embedded_sources_match_closed_payload) ... ok
+test_all_four_collisions_preserve_existing_bytes (test_candidate.ActualNotebookTests.test_all_four_collisions_preserve_existing_bytes) ... ok
+test_explicit_epoch_is_not_refreshed (test_candidate.ActualNotebookTests.test_explicit_epoch_is_not_refreshed) ... ok
+test_failure_keeps_original_clock_and_rejects_retry (test_candidate.ActualNotebookTests.test_failure_keeps_original_clock_and_rejects_retry) ... ok
+test_invalid_expired_future_epochs_fail_before_write (test_candidate.ActualNotebookTests.test_invalid_expired_future_epochs_fail_before_write) ... ok
+test_late_start_preserves_original_cutoffs_and_exact_reserve (test_candidate.ActualNotebookTests.test_late_start_preserves_original_cutoffs_and_exact_reserve) ... ok
+test_missing_epoch_denied_without_writes (test_candidate.ActualNotebookTests.test_missing_epoch_denied_without_writes) ... ok
+test_missing_result_cannot_claim_success (test_candidate.ActualNotebookTests.test_missing_result_cannot_claim_success) ... ok
+test_outer_work_overrun_forces_close_and_records_distinct_deadlines (test_candidate.ActualNotebookTests.test_outer_work_overrun_forces_close_and_records_distinct_deadlines) ... ok
+test_rerun_rejects_original_launcher_without_clock_overwrite (test_candidate.ActualNotebookTests.test_rerun_rejects_original_launcher_without_clock_overwrite) ... ok
+test_source_review_only_pin_denies_even_finite_epoch (test_candidate.ActualNotebookTests.test_source_review_only_pin_denies_even_finite_epoch) ... ok
+test_switches_caps_overlap_and_link_fail_closed (test_candidate.ActualNotebookTests.test_switches_caps_overlap_and_link_fail_closed) ... ok
+test_actual_driver_hash_gate_entrypoint_and_terminal_exits (test_candidate.ExactArtifactTests.test_actual_driver_hash_gate_entrypoint_and_terminal_exits) ... {"operational_success": false, "public_evaluation": null, "public_evaluation_status": null, "science_complete": false, "status": "DISABLED"}
+{"status": "TRANSFER_COMPLETE", "public_score": null}
+{"status": "TRANSFER_PARTIAL", "public_score": null}
+{"status": "TRANSFER_NOT_ADMITTED", "public_score": null}
+{"status": "TRANSFER_FAILED", "public_score": null}
+{"status": "PORTFOLIO_COMPLETE", "public_score": null}
+ok
+test_exact_provider_contract_and_unique_roots (test_candidate.ExactArtifactTests.test_exact_provider_contract_and_unique_roots) ... ok
+test_explicit_baseline_delta_and_payload_closed (test_candidate.ExactArtifactTests.test_explicit_baseline_delta_and_payload_closed) ... ok
+test_preview_envelope_is_blocked_before_writes (test_downloaded_mount.DownloadedMountFixture.test_preview_envelope_is_blocked_before_writes) ... ok
+test_synthetic_candidate_actual_embedded_loader_owned_and_zero_model (test_downloaded_mount.DownloadedMountFixture.test_synthetic_candidate_actual_embedded_loader_owned_and_zero_model) ... ok
+test_actual_build_emits_renamed_approval_descriptor (test_repair_contract.RepairContract.test_actual_build_emits_renamed_approval_descriptor) ... ok
+test_all_final_descriptors_resolve_and_hash (test_repair_contract.RepairContract.test_all_final_descriptors_resolve_and_hash) ... ok
+test_exact_emitted_run_cell_builds_full_outer_schema (test_repair_contract.RepairContract.test_exact_emitted_run_cell_builds_full_outer_schema) ... ok
+test_exact_material_model_and_runtime_pins_except_code_review_identity (test_repair_contract.RepairContract.test_exact_material_model_and_runtime_pins_except_code_review_identity) ... ok
+test_exact_roles_differ_only_two_switches_epoch_patch_only_one_assignment (test_repair_contract.RepairContract.test_exact_roles_differ_only_two_switches_epoch_patch_only_one_assignment) ... ok
+test_exact_version_roles_and_unchanged_material_pins (test_repair_contract.RepairContract.test_exact_version_roles_and_unchanged_material_pins) ... ok
+test_inherited_tiny_is_qualified_and_caps_preserved (test_repair_contract.RepairContract.test_inherited_tiny_is_qualified_and_caps_preserved) ... ok
+test_misnamed_approval_descriptor_fails (test_repair_contract.RepairContract.test_misnamed_approval_descriptor_fails) ... ok
+test_policy_is_bound_to_exact_source_and_budget (test_repair_contract.RepairContract.test_policy_is_bound_to_exact_source_and_budget) ... ok
+test_predecessor_partial_and_checkpoint_header_scope_retained (test_repair_contract.RepairContract.test_predecessor_partial_and_checkpoint_header_scope_retained) ... ok
+test_source_bound_checkpoint_policy_and_shared_baseline_delta (test_repair_contract.RepairContract.test_source_bound_checkpoint_policy_and_shared_baseline_delta) ... ok
+
+----------------------------------------------------------------------
+Ran 45 tests in 4.716s
+
+OK
+{"operational_success": false, "public_evaluation": null, "public_evaluation_status": null, "science_complete": false, "status": "SYNTHETIC_CONFIG_ONLY"}

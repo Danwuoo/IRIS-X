@@ -1,0 +1,26 @@
+{
+  "elapsed_seconds": 1.21253486200294,
+  "executable_sha256": "0f6e9c5804211e0bbff2d403f0e84d5dd5a30ea214f250cd1657bbba27a62498",
+  "expected_inventory_sha256": "71be71b8cfe4957190aeb7d8774e0080c5a3dca194a94f3d3db2c3965d91575e",
+  "format": "irisx/qwen3-meta-derivation-receipt-v1",
+  "full_vocabulary_rows": 151936,
+  "gpu_calls": 0,
+  "meta_tensor_count": 443,
+  "model_forward_calls": 0,
+  "pretrained_weights_loaded": false,
+  "python": "3.12.15",
+  "template_sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+  "tokenizer_eos_id": 151645,
+  "tokenizer_length": 151669,
+  "total_elements": 14768307200,
+  "versions": {
+    "accelerate": "1.10.1",
+    "huggingface-hub": "1.32.0",
+    "peft": "0.21.0",
+    "safetensors": "0.8.0",
+    "tokenizers": "0.22.2",
+    "torch": "2.8.0+cu128",
+    "transformers": "5.8.1"
+  },
+  "vocabulary_sha256": "c96fa22dee2dd9c98c4f0c73ea423e21907bc96abda81fa5c6b2e24a670c66bf"
+}

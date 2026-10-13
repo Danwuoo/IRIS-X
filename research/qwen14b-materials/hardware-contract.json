@@ -1,0 +1,50 @@
+{
+  "admission_phase": "first-bounded-probe",
+  "bf16_supported_required": true,
+  "cache_atol": 0.01,
+  "cache_rtol": 0.01,
+  "cache_tolerance_scope": "Predeclared bounded BF16 allclose ceilings; must actually pass on full vocabulary at the native probe sequence lengths both before and after optimizer update; no automatic widening.",
+  "driver_version": "580.178.04",
+  "format": "irisx/qwen14b-first-probe-hardware-v1",
+  "four_l4_tp_admitted": false,
+  "fp8_admitted": false,
+  "free_memory_reserve_bytes": 4294967296,
+  "g4_fit_measured": false,
+  "gpu_count": 1,
+  "hardware": {
+    "capability": [
+      12,
+      0
+    ],
+    "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "total_memory_bytes": 101973819392
+  },
+  "historical_observation": {
+    "bytes": 1117,
+    "path": "provenance/v9-hardware-evidence.json",
+    "sha256": "5e425c8c7520bcd31a285c2077dae9149f4fffdec5f137832ba58d5a2e822b07"
+  },
+  "historical_observed_cpu_count": 48,
+  "historical_observed_host_memory_bytes": 189924257792,
+  "machine_type_verified": false,
+  "memory_estimate": {
+    "activation_allowance_bytes": 6710886400,
+    "adapter_parameter_elements": 32112640,
+    "adapter_training_bytes": 513802240,
+    "allocator_workspace_reserve_bytes": 8589934592,
+    "base_weights_bytes": 29536614400,
+    "convolution_bytes": 0,
+    "estimated_required_bytes": 49420761088,
+    "full_logits_loss_bytes": 3733979136,
+    "kv_bytes": 335544320,
+    "measured": false,
+    "memory_fit_guaranteed": false,
+    "recurrent_bytes": 0,
+    "scope": "Analytic engineering allowance derived from exact config and meta shapes, not GPU calibration."
+  },
+  "peak_allocated_bytes": null,
+  "peak_reserved_bytes": null,
+  "target_machine_type": "g4-standard-48",
+  "tokens_per_second": null,
+  "torch_cuda": "12.8"
+}

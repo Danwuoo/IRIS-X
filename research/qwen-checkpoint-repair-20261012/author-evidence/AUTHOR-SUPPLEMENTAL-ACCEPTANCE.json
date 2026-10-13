@@ -1,0 +1,79 @@
+{
+  "format": "irisx/transfer-checkpoint-author-supplemental-acceptance-v1",
+  "status": "passed",
+  "source_identity_sha256": "d485de95b68e0147e0d122143d25e983b7c60800259fdf8e44315b4537818b86",
+  "source_freeze": "final-source-freeze-002",
+  "source_receipt_sha256": "04df597883ef454fe2b71a26289fe2ec703c1b407cfca2224ccfedc0cce79fa2",
+  "native_production_schedule": {
+    "receipt_sha256": "45fa048259d72d357f43722844d0c713cb89780a51af156336923c6de776ade9",
+    "compact_handoff": "evidence/native-final002-validator-handoff.json",
+    "global_updates": [
+      0,
+      64,
+      256
+    ],
+    "task_updates": [
+      0,
+      8,
+      16
+    ],
+    "actual_physical_updates": 272,
+    "exact_state_token_nll_reload_parity": true,
+    "selected_global_reset_verified": true,
+    "tiny_random_model_only": true,
+    "no_pretrained_or_arc_effectiveness_claim": true
+  },
+  "metadata_e2e": {
+    "receipt_sha256": "ed6a825f717b637ffb170e1db5bb1579af49e61932aebf6a04ab09fcdb52ff77",
+    "explicit_test_backend": true,
+    "production_labels": [
+      0,
+      64,
+      256
+    ],
+    "all16_ttt_parents": true,
+    "synthetic_public167slots": true
+  },
+  "owned_envelope_controls": {
+    "main": {
+      "runtime_root": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/owned-final-fixture-main",
+      "terminal_receipt_sha256": "0a20c14b98a87f065aba7769f4fe6b6bb9e24e2a5f1adcb3c4bef3a6db4157ea",
+      "status": "TRANSFER_COMPLETE",
+      "source_identity_sha256": "d485de95b68e0147e0d122143d25e983b7c60800259fdf8e44315b4537818b86",
+      "closed": true,
+      "archive_sha256": "8a180aa6b5c97986bee5e4164c84c3343ea9482b89de36502330528eef9badc1",
+      "archive_bytes": 2148117,
+      "archive_files": 845,
+      "elapsed_seconds": 467.4381137780001,
+      "explicit_tiny_fixture": true,
+      "production_effectiveness_claim": false
+    },
+    "before-load": {
+      "runtime_root": "/workspace/scratch/3c2b2502fb1e/portfolio63-checkpoint-repair-20261012/evidence/owned-final-fixture-before-load",
+      "terminal_receipt_sha256": "44726fba17a7a29bb774c50f13d11abaafdbc11911db7ad5e071a2206d3288f4",
+      "status": "TRANSFER_FAILED",
+      "source_identity_sha256": "d485de95b68e0147e0d122143d25e983b7c60800259fdf8e44315b4537818b86",
+      "closed": true,
+      "archive_sha256": "b5a09ca8a5c99faef0aa95cb87ef1a9a7d1c9eb5a50ae6984f6e8cd26ea8616b",
+      "archive_bytes": 222052,
+      "archive_files": 17,
+      "elapsed_seconds": 1.307346622001205,
+      "explicit_tiny_fixture": true,
+      "production_effectiveness_claim": false
+    }
+  },
+  "fixture_global_record_count": 768,
+  "capacity": {
+    "receipt_sha256": "47ce45cd4997a1d07eb95a881abeaf74da15a270078b10a02972b7da799b5368",
+    "store_upper_bytes": 1627127872,
+    "store_headroom_bytes": 520355776
+  },
+  "contract_tests": {
+    "normal_pass": 8,
+    "optimized_pass": 8
+  },
+  "inherited_suite": "16/17 identical on old and repaired sources; one stale reason-string expectation, documented",
+  "no_provider_git_upload_network_actions": true,
+  "no_real_holdout_or_public_gold_read": true,
+  "no_further_tests_or_source_edits_planned": true
+}

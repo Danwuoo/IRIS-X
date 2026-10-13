@@ -1,0 +1,9 @@
+{
+  "collector_entry_sha256": "051e86df5e45712040dfe0127c095141259953090e75fd964a4ef0c2e2385dec",
+  "format": "owned-rl-batched-consumer-operator-v1",
+  "helper_inventory_sha256": "d88b66c3b45435c2b328c2cc36c9c605c889ba76e48a36c22729db0ec2fda710",
+  "policy_sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda",
+  "release_sha256": "cbd2fd5dee0a328da2a43212273fe6432779ee25cefdc06043638ac72039429d",
+  "source_archive_sha256": "c0677f002c3475578aa3da969edda4154c57dcf7064f12cad035007b79195bf8",
+  "source_sha256": "fdc5c0e34724da8c0fac9d7604758a93f50e2b3b86b99f81f02c82baa534f0b2"
+}

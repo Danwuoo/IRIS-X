@@ -1,0 +1,33 @@
+{
+  "format": "irisx/transfer-generation-repair-validator-artifacts-v1",
+  "historical_bytes_preserved": true,
+  "supersedes_main_validator_sha256": "7b88b2fb219eb2f95eff6440d36afce290dc3fb9d1a565cce952386e06eac56e",
+  "synthetic_fixtures_accepted_by_production_api": false,
+  "validator_files": [
+    {
+      "bytes": 117356,
+      "path": "validation/validate_transfer_outputs.py",
+      "sha256": "416d7f93e1b123efd9aaef7948c7350dab524cfb33afa14ea8077e1cd076c98b"
+    },
+    {
+      "bytes": 29577,
+      "path": "validation/budget_checks.py",
+      "sha256": "7d02896f6553fa83c64e1dc3f999dc2f4a700f8a56e392c34b36711e2f697672"
+    },
+    {
+      "bytes": 4482,
+      "path": "validation/generation_checks.py",
+      "sha256": "4ef2c33434e9064c93b6da75329067aff60ae3222417a2d608cede7f3e0cbb11"
+    },
+    {
+      "bytes": 10981,
+      "path": "validation/selector_replay.py",
+      "sha256": "824a76b0aac83d8112520d2e69740bfd619ee53b3521bf3e122f5f946c9f7b9c"
+    },
+    {
+      "bytes": 41307,
+      "path": "validation/frozen-panel-plan.json",
+      "sha256": "8138168e1c8206977efaab20243ac66e04fe5d0cf5d375252b7cca68feefa17a"
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+{
+  "authority_state": {
+    "consumer_entry_root_pin_pending": true,
+    "dispatch_authorized": false,
+    "escrow_bodies_parsed": false,
+    "final_monitor_review_pending": true,
+    "final_operator_review_pending": true,
+    "model_calls": 0,
+    "production_entry_admission_approved": false,
+    "provider_calls": 0,
+    "public_gold_read": false,
+    "scorer_calls": 0
+  },
+  "consumer_content_review": {
+    "bytes": 8475,
+    "path": "portfolio63-rl-release-20261012/independent-operator-review/CONSUMER-CONTENT-REVIEW-R2.json",
+    "sha256": "c7c01c58c741fb8ab2481c59303690f0c94425f9475ba88af454d85ae5baea3f"
+  },
+  "consumer_helper_inventory": {
+    "bytes": 2001,
+    "path": "portfolio63-rl-batched-20261012/terminal_validation/CONSUMER-INVENTORY.json",
+    "sha256": "d88b66c3b45435c2b328c2cc36c9c605c889ba76e48a36c22729db0ec2fda710"
+  },
+  "dataset_escrow_sha256": {
+    "dev": "ba14ceb14b2acd18dfe209227ed0473ab909bf55b7ff68bb327d933a999f332d",
+    "holdout": "397a6b32967cfad4fe300c362d7134194ccca760231bc98649844bddeac6b344"
+  },
+  "dataset_file_sha256": "58de1acd85562044dec7c1488c3493ed088bdabaa7fdc27f45b1d7e6b210ad19",
+  "deployment_candidate": {
+    "bytes": 1352,
+    "path": "portfolio63-rl-release-20261012/DEPLOYMENT-REVIEW-CANDIDATE.json",
+    "sha256": "c42e30ddbd9c9f5b8c58ba2ccb0c1254696ee6f77968e1ecb4fc7f8eb9c25967"
+  },
+  "deployment_inventory": {
+    "launch_notebook.py": {
+      "bytes": 6578,
+      "sha256": "48a75384144ddddf91398b1f0aa22af1f1f31516f730a77feac299c43f0019e9"
+    },
+    "notebook_builder.py": {
+      "bytes": 6303,
+      "sha256": "c6b1778c5d055b8c55c2732b06f73c28e54344987fcee9b90a122a97e8204eea"
+    },
+    "parent_entry.py": {
+      "bytes": 1778,
+      "sha256": "91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3"
+    },
+    "prepare_entry.py": {
+      "bytes": 9020,
+      "sha256": "baeb402216a0cbbee7d0e3943131e1180ed5a2258b157612eb6945c6a93db51a"
+    },
+    "source_loader.py": {
+      "bytes": 10125,
+      "sha256": "b8469e3c80e5bb99bfe8e0103fbcbf1a97966fc50b72417e498ee24654afd253"
+    }
+  },
+  "environment_sha256": "ba0fb9a565b4aa8d30b03bc5c42ad2fd40cd3b9d1f7731f288b1e1c5e50e81cf",
+  "external_boundary_inventory": {
+    "assembly/accept_downloaded_mount.py": {
+      "bytes": 3767,
+      "sha256": "384f1adbebea57eb38c206c3d273572e3f78a73f64127d990f5280c016908084"
+    },
+    "assembly/finalize.py": {
+      "bytes": 4327,
+      "sha256": "43d748efd567c82fe01fb82a8f7502697775de9edf4670819effc9ee799c4446"
+    },
+    "assembly/verify_parent_wrappers.py": {
+      "bytes": 19181,
+      "sha256": "0e5224d6687db2fe676d01f206d127d6c25df0f4e12b104662ab26d51c05f00c"
+    },
+    "deployment/launch_notebook.py": {
+      "bytes": 6578,
+      "sha256": "48a75384144ddddf91398b1f0aa22af1f1f31516f730a77feac299c43f0019e9"
+    },
+    "deployment/notebook_builder.py": {
+      "bytes": 6303,
+      "sha256": "c6b1778c5d055b8c55c2732b06f73c28e54344987fcee9b90a122a97e8204eea"
+    },
+    "deployment/parent_entry.py": {
+      "bytes": 1778,
+      "sha256": "91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3"
+    },
+    "deployment/prepare_entry.py": {
+      "bytes": 9020,
+      "sha256": "baeb402216a0cbbee7d0e3943131e1180ed5a2258b157612eb6945c6a93db51a"
+    },
+    "deployment/source_loader.py": {
+      "bytes": 10125,
+      "sha256": "b8469e3c80e5bb99bfe8e0103fbcbf1a97966fc50b72417e498ee24654afd253"
+    }
+  },
+  "format": "owned-rl-reviewed-material-v1",
+  "independent_tests": {
+    "logs": [
+      {
+        "bytes": 2709,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/final-operator-normal.log",
+        "sha256": "e1e1e4ac52ee0d77e16f024e8e89e87579ed6007e0d4392aa2b4f1ed823c723f"
+      },
+      {
+        "bytes": 2709,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/final-operator-optimized.log",
+        "sha256": "d3ed9fd98caf6f7f2b17f103b216184fd4dcdec02518ee4382f77262b4b61a69"
+      },
+      {
+        "bytes": 1739,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/final-consumer-content-normal.log",
+        "sha256": "c44440ff5eed8c7411c43f13043f1612390251e273854c6b6f0f6b70746b7181"
+      },
+      {
+        "bytes": 1739,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/final-consumer-content-optimized.log",
+        "sha256": "f4126a7ef8e3becdbbcc10c27bfb407d44284046d217ac23f45959ed631bc547"
+      },
+      {
+        "bytes": 508,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/final-collector-entry-normal.log",
+        "sha256": "2b12580258a4298c6fb8c9239c38aff0a8bdf572df65f1f22976f6963769f6f0"
+      },
+      {
+        "bytes": 508,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/final-collector-entry-optimized.log",
+        "sha256": "34dca8aa1e80ccbce7119c9ebbe705ce8a082ed2d77e263232e26730743d9fdd"
+      },
+      {
+        "bytes": 2331,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/final-wrappers-normal.log",
+        "sha256": "9f148263b510198b07ed5b2ab5942a40986a62ad46b0640eb3af19fb7032d647"
+      },
+      {
+        "bytes": 2331,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/final-wrappers-optimized.log",
+        "sha256": "60399a842a61f51fdc8a3f8db0429e0da39002b061592c0371b14f50c415e9ce"
+      },
+      {
+        "bytes": 1243,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/final-public-cutoff-normal.log",
+        "sha256": "1a8499cd770ca2846bf37ea2531e3faada9980099dcf886590c40e67ebff231d"
+      },
+      {
+        "bytes": 1243,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/final-public-cutoff-optimized.log",
+        "sha256": "1a8499cd770ca2846bf37ea2531e3faada9980099dcf886590c40e67ebff231d"
+      }
+    ],
+    "normal": 66,
+    "optimized": 66,
+    "scope": {
+      "collector_entry": 3,
+      "consumer_content": 12,
+      "operator": 22,
+      "public_cutoff": 10,
+      "raw_wrappers": 19
+    },
+    "sources": [
+      {
+        "bytes": 12153,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/test_rl_operator.py",
+        "sha256": "bcb48b121f06c1cacf9b3c1a8a36a234e464f1cbb822a1d553e566821a63d673"
+      },
+      {
+        "bytes": 9984,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/test_rl_consumer.py",
+        "sha256": "4f9f185f771315357132c9f3e0923b6284890977206557c86d550fd9e403e77f"
+      },
+      {
+        "bytes": 5026,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/test_rl_collector_entry.py",
+        "sha256": "270ce4cd115211a1a1b282c4d07713ab607673cbd3547eec4ff80d883bcf3005"
+      },
+      {
+        "bytes": 6180,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/test_rl_wrappers.py",
+        "sha256": "6aa77a04109a5416be7d9a9b1c4a1290f4b41f3f9611f2badbefa84d4ee5e37d"
+      },
+      {
+        "bytes": 3317,
+        "path": "portfolio63-rl-release-20261012/independent-operator-review/test_public_cutoff.py",
+        "sha256": "6111d24fe7729a35dea3451d480b8761c7ba0f025cb0f5835aae3515758a4288"
+      }
+    ]
+  },
+  "material_input_audit": {
+    "bytes": 3905,
+    "path": "portfolio63-rl-release-20261012/independent-operator-review/MATERIAL-INPUT-AUDIT-R2.json",
+    "sha256": "06e6bfa7a4c23ec67b2161ff7d9c98abe93aff079c52d79db92633e6fe779330"
+  },
+  "material_input_auditor": {
+    "bytes": 8193,
+    "path": "portfolio63-rl-release-20261012/independent-operator-review/audit_material_inputs_r2.py",
+    "sha256": "eaecfcc476f386703ee37c91eac3996273dff0c813d78bd33ab61abd0e63f9f6"
+  },
+  "phase_policy_sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda",
+  "qualifications": [
+    "The independent runtime scope is the exact linked local source, mathematical, state, and pin-delta review. The complete genuine owned tiny execution belongs to fb0a92; the distinct b818 fixture-only successor has a genuine narrow two-batch proof. The final 2490998d source is an independently verified three-pin/prose delta, not a relabelled full owned run.",
+    "The dataset derives from authenticated v25 target-free solver bytes with only two exact escrow-path substitutions. Dev and holdout escrow bodies were byte-hashed without parsing. No PUBLIC target material was copied into this release review.",
+    "The environment is an exact projection of authenticated v25 package and GPU metadata. Its historical integer cuDNN runtime version was unobserved; production must provide the source-bound current cuDNN observation. This review did not execute the 14B model or GPU.",
+    "Raw wrapper predicates were independently tested on retained actual no-model process proofs. High-level JIT, interpreter, and runtime integration documents are explicitly synthetic test bindings. These are not positive provider admission evidence.",
+    "The frozen deployment permits clean full or partial-comparison PUBLIC-sealed mechanics without promoting comparison completeness. Invalid raw wrapper closure must reject every externally dependent admission and goal alias. A valid wrapper with provider ERROR remains eligible for independently verified scientific evidence while operational success is false.",
+    "The consumer content and pending entry template are reviewed separately from the future exact collector, external operator, and entry root pin. Final publication and monitoring must authenticate those acyclic bindings before any dispatch.",
+    "Compact checkpoint mode proves only bounded HTTP header presence and declared size unless bodies are independently received and checked. It does not promote unobserved tensor hashes, physical billing, HMAC authenticity without an authenticated key, or remote operating-system attestation.",
+    "Original material, source, failure logs, runtime evidence, and historical reviews are preserved. The initial reviewer tokenizer-environment failure is retained alongside the successful exact tests in the existing CPU environment."
+  ],
+  "runtime_candidate_seal": {
+    "bytes": 4981,
+    "path": "portfolio63-rl-batched-review-20261012/REVIEW-SEAL.json",
+    "sha256": "6119dbd75c946e8b5c49cfb70da70ff9d684995c3499acebe49798b6c479dc44"
+  },
+  "runtime_final_delta_seal": {
+    "bytes": 969,
+    "path": "portfolio63-rl-final-review-20261012/FINAL-DELTA-SEAL.json",
+    "sha256": "2b93a43360d721f809028c2bb45a5d452f4428443cb94e919590f3a3bff957c0"
+  },
+  "runtime_review": {
+    "bytes": 1122,
+    "path": "portfolio63-rl-final-review-20261012/FINAL-DELTA-RESULT.json",
+    "sha256": "796d6972957eedb84e37ce2ea1123db3ccfd0515b438f4e7d31cf3f9caf063e9"
+  },
+  "runtime_review_sha256": "796d6972957eedb84e37ce2ea1123db3ccfd0515b438f4e7d31cf3f9caf063e9",
+  "scope": "Immutable source, provenance, external deployment, and terminal consumer content only. Provider publication and active entry admission require separate final operator reviews.",
+  "source_archive_sha256": "0a25bf13be5b3ee5e9517220ac24a1bc744275b5994cfd599b066bf74fcddaf6",
+  "source_sha256": "2490998d5479c0da6f4f8e186d026dcbb0c4118fd3bb47f2e7e21b7b9e74e5cb",
+  "status": "APPROVED"
+}

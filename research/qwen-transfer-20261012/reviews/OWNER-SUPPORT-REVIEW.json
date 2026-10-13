@@ -1,0 +1,59 @@
+{
+  "format": "irisx/transfer-owner-support-independent-review-v1",
+  "limits": [
+    "Final repository manifest and validator source append not yet reviewed.",
+    "Owner README requires final post-hook tree/parent and exact single push URL clarification before whole-package approval.",
+    "This is packaging support, not scientific efficacy or external publication approval."
+  ],
+  "reviewed_at_utc": "2026-10-12T13:18:05.416476+00:00",
+  "scope": {
+    "repository/tools/arc_qwen_transfer_deployment_20261012/reproduce_release.py": {
+      "bytes": 4361,
+      "path": "portfolio63-next-20261012/owner-handoff/complete-source/repository/tools/arc_qwen_transfer_deployment_20261012/reproduce_release.py",
+      "sha256": "183251d79857a33bc8252928ceea2f72c8e944cb5353806d35085d0862a238a7"
+    },
+    "repository/tools/arc_qwen_transfer_deployment_20261012/runtime-path-map.json": {
+      "bytes": 53030,
+      "path": "portfolio63-next-20261012/owner-handoff/complete-source/repository/tools/arc_qwen_transfer_deployment_20261012/runtime-path-map.json",
+      "sha256": "370b278549fdfe0438155d85d8c8a32b9edaa3145dc088e1d1455e3f2d57896e"
+    },
+    "repository/tools/arc_qwen_transfer_deployment_20261012/runtime_assembly.py": {
+      "bytes": 17958,
+      "path": "portfolio63-next-20261012/owner-handoff/complete-source/repository/tools/arc_qwen_transfer_deployment_20261012/runtime_assembly.py",
+      "sha256": "42bfb2b2011a049dd18d0cfe0dd3e3ed8a63870518040116f8fbd3d5a72d6100"
+    },
+    "verify-owner-checkout.py": {
+      "bytes": 4897,
+      "path": "portfolio63-next-20261012/owner-handoff/complete-source/verify-owner-checkout.py",
+      "sha256": "3280e32fa3fff8e3909b2ae5b3d15bdd26cd8bbd44fb957cfa9a4f1489a3cff7"
+    }
+  },
+  "status": "APPROVED_SUPPORT_ONLY",
+  "tests": {
+    "normal": 8,
+    "normal_log": {
+      "bytes": 786,
+      "path": "portfolio63-next-20261012/owner-handoff-independent/tests-normal.log",
+      "sha256": "647f0b64cb077336f716ee71490c0e0caa43bb68eccf7350308f33a869b68032"
+    },
+    "optimized": 8,
+    "optimized_log": {
+      "bytes": 786,
+      "path": "portfolio63-next-20261012/owner-handoff-independent/tests-optimized.log",
+      "sha256": "491080338ca5f63b438e01801c87ee174ccba52b9529620314ee3484a59834f7"
+    },
+    "test_source": {
+      "bytes": 3330,
+      "path": "portfolio63-next-20261012/owner-handoff-independent/test_owner_support.py",
+      "sha256": "39829b54aedfa3fdd060f2cea462858a7f0607e56b02b0826a8d63bed013c04c"
+    }
+  },
+  "verified": {
+    "actual197_runtime_and19_release_reproduction": true,
+    "all_original_release_bytes_equal": true,
+    "fixed_source_and_path_map_pins": true,
+    "new_output_only_existing_userdata_preserved": true,
+    "no_model_provider_or_git_calls": true,
+    "symlink_path_and_overlapping_root_rejection": true
+  }
+}

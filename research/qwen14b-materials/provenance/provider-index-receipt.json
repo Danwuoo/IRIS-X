@@ -1,0 +1,38 @@
+{
+  "after": {
+    "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-qwen-probe-20261012/materials/provider/qwen3-14b-index-after.json",
+    "sha256": "2d980769328565256e021e12ea96159adcc3ab91d4f00b6ecb3fb2179f0e1606"
+  },
+  "before": {
+    "path": "/workspace/scratch/3c2b2502fb1e/learning-agent-qwen-probe-20261012/materials/provider/qwen3-14b-index-before.json",
+    "sha256": "bc0358482da389082bfdb1a65ec7bd479242d1ae6a816411ba5f6869e07e9c68"
+  },
+  "bytes": 36514,
+  "expected_hf_git_blob_sha1": "b4d92f9fec7ec78a89aaf1cf9d740ffc69cb9aac",
+  "file": "model.safetensors.index.json",
+  "git_blob_sha1": "b4d92f9fec7ec78a89aaf1cf9d740ffc69cb9aac",
+  "hf_revision": "40c069824f4251a91eefaf281ebe4c544efd3e18",
+  "http_status": 200,
+  "index_shards": [
+    "model-00001-of-00008.safetensors",
+    "model-00002-of-00008.safetensors",
+    "model-00003-of-00008.safetensors",
+    "model-00004-of-00008.safetensors",
+    "model-00005-of-00008.safetensors",
+    "model-00006-of-00008.safetensors",
+    "model-00007-of-00008.safetensors",
+    "model-00008-of-00008.safetensors"
+  ],
+  "index_weight_tensor_count": 443,
+  "license_metadata": "Apache 2.0 (retained prior official model metadata; no new terms accepted)",
+  "numeric_version": 1,
+  "provider_version_id": 363149,
+  "provider_writes": 0,
+  "quota_queries": 0,
+  "reference": "qwen-lm/qwen-3/transformers/14b/1",
+  "sha256": "62d7ad35757bae5e7baa452cb1483178b7daa50e869e923226b8da10871f7ebc",
+  "status": "EXACT_NUMERIC_INDEX_VERIFIED",
+  "utc": "2026-10-12T00:32:29.861158+00:00",
+  "weight_hashes_verified": false,
+  "weights_downloaded": false
+}

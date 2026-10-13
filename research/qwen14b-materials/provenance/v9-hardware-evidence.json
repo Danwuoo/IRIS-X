@@ -1,0 +1,30 @@
+{
+  "archive_path": "learning-agent-goal-sprint-20261011/run-evidence/downloads/irisx-learning-agent-stable-20261011-sprint001/archives/evidence-learning-503f58c3d3074eef8fcb47ad2bf1e366.zip",
+  "archive_sha256": "34fbe3e6631fbf5c8d3bc24d1b5b63e5e93214424a09e03cc66784509204f633",
+  "format": "irisx/archived-hardware-extract-v1",
+  "hardware": {
+    "bf16_supported": true,
+    "compute_capability": [
+      12,
+      0
+    ],
+    "cpu_count": 48,
+    "driver_version": "580.178.04",
+    "gpu_count": 1,
+    "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "gpu_total_memory_bytes": 101973819392,
+    "gpu_uuid": "GPU-c57c6b59-45b9-ec83-86dc-d8f8e0c694dc",
+    "host_memory_bytes": 189924257792,
+    "machine_type_verified": false,
+    "target_machine_type": "g4-standard-48",
+    "torch_cuda": "12.8"
+  },
+  "json_path": [
+    "stages",
+    "model_load",
+    "hardware"
+  ],
+  "member": "worker/result.json",
+  "member_sha256": "76805532eda1ab6e108a10e6767e7f81b9a12b0b4f56083c09ca97b205c16274",
+  "scope": "Observed v9 prior Granite run; not Qwen measurement; machine type explicitly unverified."
+}

@@ -1,0 +1,100 @@
+{
+  "approved_notebooks": [
+    {
+      "bytes": 52226,
+      "role": "inactive",
+      "sha256": "f4935ffd674bcc190591b5e8ab113f12528768f7901f78021916e981146ef27c"
+    },
+    {
+      "bytes": 52224,
+      "role": "transfer001",
+      "sha256": "be6ebcf8f3b07f6c0d076847be83f1332085dfc08459da32d7041f2f8be0f950"
+    }
+  ],
+  "format": "irisx/transfer-assembled-material-review-v1",
+  "independent_tests": {
+    "normal": 8,
+    "normal_log": {
+      "bytes": 966,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-next-20261012/assembled-material-review/tests-normal.log",
+      "sha256": "54d2ea9bb3815480b307c23f74635f35f3c2d0b45bf351fc48051238b574621a"
+    },
+    "optimized": 8,
+    "optimized_log": {
+      "bytes": 966,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-next-20261012/assembled-material-review/tests-optimized.log",
+      "sha256": "f605032a421e580320e46ff8b6d73ce49157201db72913682a816d6523977156"
+    },
+    "source": {
+      "bytes": 4606,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-next-20261012/assembled-material-review/test_final_material.py",
+      "sha256": "5bcdb06bf6b4bfc656777f6eefecf069473436ad7947540682c698212cba6605"
+    }
+  },
+  "qualifications": [
+    "Source/runtime scientific audit1cf834da is independently reused; retained owned neural main andTTT tests use explicit tinyCPU and128/512rungs.",
+    "Full14B/4096GPU memory,cache,throughput,accuracy and fourL4/FP8 are unmeasured; production must pass frozen admission.",
+    "Initial independent inert harness looked up lowercase result instead of actual uppercase RESULT and failed after successful inert execution; one harness-only correction retained in tests-initial.log, no candidate change.",
+    "No provider calls, external writes, GPU dispatch or new public-target reads were made in this material review."
+  ],
+  "reviewed_at_utc": "2026-10-12T13:05:06.964706+00:00",
+  "reviewed_properties": {
+    "active_template_only_two_flag_changes": true,
+    "actual_14b_gpu4096_admission_required": true,
+    "closed_source_zip_crc_and_every_original_byte_verified": true,
+    "eight_inputs_and_model_version_fixed": true,
+    "evaluation_roots_stripped_from_model_child_request": true,
+    "exact_epoch_patch_not_yet_applied": true,
+    "execution_cutoff_seconds": 42000,
+    "global_maximum_seconds": 43200,
+    "inactive_actual_notebook_no_filesystem_or_network": true,
+    "loader_reads_no_public_evaluator_content": true,
+    "missing_nan_boolean_future_expired_epochs_rejected_before_filesystem": true,
+    "new_source_members": 22,
+    "original175_byte_identical": true,
+    "outer_cleanup_reserve_seconds": 120,
+    "outer_owned_cutoff_seconds": 42180,
+    "provider_timeout_seconds": 42300,
+    "public_goal_requires_real_eligible_sealed167_scorer": true,
+    "total_source_members": 197
+  },
+  "scope": {
+    "assembly_validation": {
+      "bytes": 4193,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-next-20261012/assembly/FINAL-ASSEMBLY-VALIDATION.json",
+      "sha256": "2bd5b10a064d14ca29805569ee9363fdd98183ab46788ac129e95e68587402a8"
+    },
+    "material_addendum": {
+      "bytes": 4968,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-next-20261012/release-candidate-001/MATERIAL-ADDENDUM.json",
+      "sha256": "7b338fc810ee565b2a7085b0f6bf8e937b1282e8f5267e3f911c03a547a9167a"
+    },
+    "publication_manifest": {
+      "bytes": 121180,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-next-20261012/release-candidate-001/publication-manifest.json",
+      "sha256": "689e587ce8d7c0c7c606176dac5c010e7a9a1fb817d65ace1c59773f55f96d9a"
+    },
+    "runtime_independent_approval": {
+      "bytes": 5017,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-next-20261012/runtime-review/independent-runtime-approval.json",
+      "sha256": "1cf834da704f592e7fb74f3df98b486d055540f89cbe4ade02399b6955e753b9"
+    },
+    "source_freeze": {
+      "bytes": 61827,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-next-20261012/release-candidate-001/SOURCE-FREEZE.json",
+      "sha256": "c6f64e966a2ee719d71ff8d6f2777fb275ffb1728ed5c1db9178f63a33a78dd5"
+    }
+  },
+  "status": "APPROVED",
+  "technical_execution_scope": {
+    "activation_requires_independent_operator_monitor_review": true,
+    "active_version": 21,
+    "actual_provider_roundtrip_and_mount_required": true,
+    "code_dataset_id": 12504696,
+    "code_dataset_version": 11,
+    "inactive_version": 20,
+    "new_resource_or_quota_query_authority": false,
+    "notebook_id": 138123872,
+    "user_authorization_is_separate_from_this_technical_approval": true
+  }
+}

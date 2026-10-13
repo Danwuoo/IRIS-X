@@ -1,0 +1,119 @@
+{
+  "anchor": {
+    "base_lr": 0.0002,
+    "cosine_schedule_updates": 256,
+    "historical_v25_tensor_equivalence_claim": false,
+    "min_lr_ratio": 0.1,
+    "name": "A",
+    "optimizer_updates": 64,
+    "persistence": "actual adapter/state save and reload verification",
+    "record_preparation": "authenticated transfer prepare_record and whole-demo packing",
+    "same_source_session": true,
+    "sampler": "historical equal-family parent grid sampler; exact record order and committed exposure receipts required",
+    "warmup_updates": 4
+  },
+  "clock_seconds": {
+    "absolute": 43200,
+    "execution": 42000,
+    "outer": 42180,
+    "provider": 42300
+  },
+  "control": {
+    "continuation_optimizer": "fresh AdamW constant lr",
+    "learning_rate": 0.0002,
+    "matched_quantity": "whole synchronized extra model-phase wall including all failures, save, reload, reward and verification",
+    "maximum_phase_seconds": 7200,
+    "name": "C",
+    "not_claimed": [
+      "CUDA kernel seconds",
+      "provider billed seconds"
+    ],
+    "padding": "forbidden",
+    "restore": "A",
+    "tolerance_seconds": "min(120,max(5,0.05*B_seconds))",
+    "unmatched_result": "explicit qualification, never force matched label"
+  },
+  "created_utc": "2026-10-12T17:21:00Z",
+  "evaluation": {
+    "dev_parents": 16,
+    "holdout_parents": 32,
+    "holdout_qualification": "reused experiment-held-out, not pristine project confirmation",
+    "maximum_answers": 2,
+    "paired_methods": [
+      "A",
+      "B",
+      "C"
+    ],
+    "primary_ttt_updates": 0,
+    "public": "one dev-selected frozen arm; no public-target method choice",
+    "query_transforms": [
+      0,
+      1
+    ],
+    "selection": "sealed dev exact counts then fixed A/B/C order, before any current-run holdout target access",
+    "selection_input": "actual sealed per-case predictions, no caller-supplied counts"
+  },
+  "fallback": {
+    "clean_zero_signal": "B remains actual A; preserve audit cost, run C and paired predictions when safe",
+    "fatal_unknown_device_state": "stop model work; retain partial evidence and closure failure truthfully",
+    "numerical_or_time_nonadmission": "preserve last committed B and incomplete audit, actual A/B/C predictions when safe"
+  },
+  "format": "irisx/rlvr-session-lead-decisions-v1",
+  "gpu_dispatch_authorized_by_this_document": false,
+  "mainline_in_flight": {
+    "code_dataset_version": 13,
+    "epoch": 1791822878,
+    "notebook_version": 25,
+    "outcome": "UNOBSERVED",
+    "role": "transfer003",
+    "source_identity": "d485de95b68e0147e0d122143d25e983b7c60800259fdf8e44315b4537818b86"
+  },
+  "production_admitted": false,
+  "provisional_not_yet_release_bound": {
+    "defaults": {
+      "bytes": 9362,
+      "path": "portfolio63-rl-session-20261012/independent-protocol-review/PROVISIONAL-DEFAULTS.json",
+      "sha256": "ade18b1b05ce9f90d590d94332b406a516b3c89b1cfc02f72a84a483ee6c1d2b"
+    },
+    "protocol_review": {
+      "bytes": 1484,
+      "path": "portfolio63-rl-session-20261012/independent-protocol-review/REVIEW-SEAL.json",
+      "sha256": "de34f70dd879d73be77693b05b5ddcedd0a59ba32b96ac1f8c6629e5fec5939c"
+    }
+  },
+  "remaining": [
+    "v25 real timing and result analysis",
+    "independent final native core review",
+    "actual end-to-end tiny flow and adversarial integration review",
+    "source-bound conditional production numeric/memory admission",
+    "runtime/validator/operator assembly and reviewed publication before any next GPU run"
+  ],
+  "rl": {
+    "algorithm": "group-centered exact binary reward, original-token masked sampling/replay, detached clipped DDIS ratio",
+    "constant_groups": "reported but no policy-gradient update",
+    "continuation_optimizer": "fresh AdamW constant lr",
+    "incomplete_slots": "retained, no replacement, never label zero signal",
+    "learning_rate": 1e-06,
+    "maximum_optimizer_updates": 4,
+    "maximum_phase_seconds": 7200,
+    "maximum_sweeps": 4,
+    "name": "B",
+    "restore": "A",
+    "reward_parents": 32,
+    "reward_record": "identity-transform LOO withholding final original demonstration",
+    "rollout_temperature": 1.0,
+    "samples_per_parent": 8,
+    "seeds": "frozen panel/sweep/parent/sample, independent of SFT exposure description",
+    "sweep_unit": "complete fixed-policy 256-slot sweep then at most one update",
+    "target_scope": "training demos only",
+    "top_p": 1.0
+  },
+  "scientific_goal": {
+    "authority": "original sealed scorer only",
+    "benchmark": "PUBLIC120",
+    "denominator": 167,
+    "metric": "micro pass@2",
+    "required_hits": 151
+  },
+  "status": "DESIGN_ONLY_PENDING_V25_AND_INTEGRATION"
+}

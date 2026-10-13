@@ -1,0 +1,35 @@
+{
+  "format": "irisx/transfer-checkpoint-repair-validator-artifacts-v1",
+  "status": "SEALED",
+  "historical_bytes_preserved": true,
+  "supersedes_main_validator_sha256": "416d7f93e1b123efd9aaef7948c7350dab524cfb33afa14ea8077e1cd076c98b",
+  "synthetic_fixtures_accepted_by_production_api": false,
+  "collector_api_unchanged": true,
+  "validator_files": [
+    {
+      "path": "validation/validate_transfer_outputs.py",
+      "bytes": 137458,
+      "sha256": "b44f31830ccbd6105633f558a675b40e9abdd7a298d247d54afc47ef9fc596fe"
+    },
+    {
+      "path": "validation/budget_checks.py",
+      "bytes": 29577,
+      "sha256": "7d02896f6553fa83c64e1dc3f999dc2f4a700f8a56e392c34b36711e2f697672"
+    },
+    {
+      "path": "validation/generation_checks.py",
+      "bytes": 4482,
+      "sha256": "4ef2c33434e9064c93b6da75329067aff60ae3222417a2d608cede7f3e0cbb11"
+    },
+    {
+      "path": "validation/selector_replay.py",
+      "bytes": 10981,
+      "sha256": "824a76b0aac83d8112520d2e69740bfd619ee53b3521bf3e122f5f946c9f7b9c"
+    },
+    {
+      "path": "validation/frozen-panel-plan.json",
+      "bytes": 41307,
+      "sha256": "8138168e1c8206977efaab20243ac66e04fe5d0cf5d375252b7cca68feefa17a"
+    }
+  ]
+}

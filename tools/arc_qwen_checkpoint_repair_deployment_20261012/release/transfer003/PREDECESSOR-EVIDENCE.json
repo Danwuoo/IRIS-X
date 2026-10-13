@@ -1,0 +1,97 @@
+{
+  "format": "irisx/transfer003-predecessor-evidence-v1",
+  "numeric_notebook_version": 23,
+  "code_dataset_version": 12,
+  "notebook_id": 138123872,
+  "code_dataset_id": 12504696,
+  "provider_status": "COMPLETE",
+  "runtime_status": "TRANSFER_PARTIAL",
+  "public_status": "PUBLIC_NOT_RUN",
+  "saved_source_sha256": "a7451ae7a341c36483737987d2edfaabd0e2e5cb8890234ec6b56f8565b26f03",
+  "within_absolute_deadline": true,
+  "whole_provider_inventory_verified": false,
+  "checkpoint_provider_presence": "HTTP200_CONTENT_LENGTH_VERIFIED",
+  "checkpoint_archive_bytes_verified": false,
+  "checkpoint_metadata_only": {
+    "archive_bytes_verified": false,
+    "body_consumed_bytes": 0,
+    "bytes": 130269100,
+    "declared_sha256_unverified": "6c55a1611204a30e8f5b65699d2d0d09413dff15bc55f99b2a9d0ce5c328179c",
+    "http_status": 200,
+    "path": "irisx-qwen14b-transfer-20261012-run002/checkpoints.zip",
+    "presence": "HTTP200_CONTENT_LENGTH_VERIFIED",
+    "scope": "numeric output request; Content-Length and successful response only"
+  },
+  "public_score": null,
+  "goal_met": false,
+  "operational_success": false,
+  "science_complete": false,
+  "evidence": {
+    "archive": {
+      "path": "predecessor/evidence.zip",
+      "bytes": 3695871,
+      "sha256": "222308b47d2a5bdf872d77cbd8969615d38ce61bc3107aff6f6da22bf82ed02c"
+    },
+    "checkpoint": {
+      "path": "predecessor/TERMINAL-CHECKPOINT.json",
+      "bytes": 1230,
+      "sha256": "72f7d476bc8c63f4db40ecbb368bb70798dbf2c36ff78e32dba28d9d741941a7"
+    },
+    "cost_linkage": {
+      "path": "predecessor/TERMINAL-COST-AND-LINKAGE.json",
+      "bytes": 5696,
+      "sha256": "37b3307ce2c7d6d4daa14e16af9be2e066ec372b2e0685d0dc1e407768c93ee1"
+    },
+    "evidence_index": {
+      "path": "predecessor/TERMINAL-EVIDENCE-INDEX.json",
+      "bytes": 3185,
+      "sha256": "4127df5585ac577c9345028ddb77073c4878d7770a64633fdd5503e1326371d4"
+    },
+    "launch_receipt": {
+      "path": "predecessor/notebook-transfer002-receipt.json",
+      "bytes": 3013,
+      "sha256": "0ee2c26bc1bd441387bf1025762cdfa85f935a2991fcf27295c88a998dac00f4"
+    },
+    "outer_closure": {
+      "path": "predecessor/launcher-closure.json",
+      "bytes": 1674,
+      "sha256": "b6441fe5447d5f674c29c81eba28acdc6cd695919092ee2a5766b1d0cd69c093"
+    },
+    "retrieval": {
+      "path": "predecessor/RETRIEVAL-RECEIPT.json",
+      "bytes": 8801,
+      "sha256": "b7ad6095d082c1159f8f714e8f37ba08c8b64554968f0688a83e60ad6ab9aa8c"
+    },
+    "saved_source": {
+      "path": "predecessor/notebook-transfer002-saved.ipynb",
+      "bytes": 51973,
+      "sha256": "a7451ae7a341c36483737987d2edfaabd0e2e5cb8890234ec6b56f8565b26f03"
+    },
+    "terminal_audit": {
+      "path": "predecessor/V23-TERMINAL-AUDIT.json",
+      "bytes": 6924,
+      "sha256": "b12cc4416b7c366a6cfbc0f4d16de511377251145f456fd8065542b1b9ed681e"
+    },
+    "terminal_receipt": {
+      "path": "predecessor/terminal-receipt.json",
+      "bytes": 19476,
+      "sha256": "6d4d9805419ac64c762fc39867b4fc16a220b7ec902df4a56ced0a1f5f4e4fc6"
+    },
+    "validation": {
+      "path": "predecessor/TERMINAL-VALIDATION.json",
+      "bytes": 3703,
+      "sha256": "db56c39f9672cedbeaa517f94df7f3e88d8bdb14bfec287e29389cb338eaf614"
+    },
+    "handoff": {
+      "path": "predecessor/V23-TERMINAL-HANDOFF.json",
+      "bytes": 4609,
+      "sha256": "f257da8868e1818cd76ec4702ae7da55c46796ff69bf7792e1663352a6f8fefb"
+    }
+  },
+  "sealed_predecessor_descriptors": {
+    "path": "PREDECESSOR-DESCRIPTORS.json",
+    "bytes": 4424,
+    "sha256": "ef9e66cc2473306c6a54e2dc930dfdd9a9096433b7fb8810287501a6067d5b6b"
+  },
+  "qualification": "Selected numeric23 retrieval and sealed archive integrity verified; separate checkpoint header-only presence. No checkpoint body, whole provider inventory, VM teardown or billable GPU-duration claim."
+}

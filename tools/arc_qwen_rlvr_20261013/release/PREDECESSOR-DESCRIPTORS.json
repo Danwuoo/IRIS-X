@@ -1,0 +1,113 @@
+{
+  "billing_verified": false,
+  "checkpoint_archive_bytes_verified": false,
+  "code_dataset_id": 12504696,
+  "code_dataset_version": 14,
+  "consumer_admitted": false,
+  "diagnosis": {
+    "complete_log_coverage_verified": false,
+    "exact_rejected_conjunct_known": false,
+    "exception_type": "ValueError",
+    "failure_stage": "pre-owned child-environment construction",
+    "inherited_values_known": false,
+    "message": "unsupported loader path; only source-bounded standard CUDA/NVIDIA library directories are allowed",
+    "separate_server_session_id_verified": false,
+    "source_guard": "worker_environment(fixture=False): LD_LIBRARY_PATH",
+    "status": "SOURCE_LINKED_TRACEBACK"
+  },
+  "evidence": {
+    "admission_audit": {
+      "bytes": 3896,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/independent-operator-review/V27-ADMISSION-AUDIT.json",
+      "sha256": "0e1c0ad811a0a6ebc59f15d682288893205c08eb43e897f09b7c1a4bd1699f8f"
+    },
+    "code_receipt": {
+      "bytes": 3860,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/publication/state/dataset-code-v14-receipt.json",
+      "sha256": "a40d90cf4ed19e8eba78d6ec58aad4288784655e2dd216987231766938c493e8"
+    },
+    "diagnostic_log_addendum": {
+      "bytes": 4324,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/independent-operator-review/V27-DIAGNOSTIC-LOG-ADDENDUM.json",
+      "sha256": "0f906b4b4a62bd994cadc8f2069952fc48ee4f094e3a546ace3f05e3c5632e74"
+    },
+    "incomplete_terminal_audit": {
+      "bytes": 3555,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/independent-operator-review/V27-INCOMPLETE-TERMINAL-AUDIT.json",
+      "sha256": "ecf1dbcd6f80ddc59119c4c0e794958ec1b36f82b3b31e9ba82b4857f915d81b"
+    },
+    "launch_receipt": {
+      "bytes": 3001,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/publication/state/notebook-rlvr001-receipt.json",
+      "sha256": "0cbaf2037cc7a586fe6fe584f81a399958cce252be045143c343d7a17ce94b3a"
+    },
+    "log_prefix_review": {
+      "bytes": 4131,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/independent-operator-review/V27-LOG-PREFIXED-REVIEW.json",
+      "sha256": "a6af86470c30fa6f0d46e5314b31a211f557c94a3a5f22327bc86b46c01c3e14"
+    },
+    "log_receipt": {
+      "bytes": 2613,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/publication/v27-session-log-prefixed/RECEIPT.json",
+      "sha256": "756bca728983a881efae202e6af3fa167312f7ad7fa20326971482a7cf0d0db5"
+    },
+    "original_bare_label_blocker": {
+      "bytes": 229,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/publication/v27-session-log/BLOCKER.json",
+      "sha256": "f265525044cb5ecd43c756a9f77df9a44f904fef57806bc197276cf898af8661"
+    },
+    "retrieval_receipt": {
+      "bytes": 4938,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/publication/run-evidence/retrieval-1791850004506395046.json",
+      "sha256": "eaddaa5f5f2d1319c79592e6ecccb0a16b76caf54c2a8cc9b19e228b40a8e53a"
+    },
+    "sanitized_traceback": {
+      "bytes": 4919,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/publication/v27-session-log-prefixed/sanitized-excerpt.txt",
+      "sha256": "f34790d8739e4b4e09365c64517ac1686dcd3b6b7b25f868637c8847b4f30e50"
+    },
+    "saved_source": {
+      "bytes": 21094,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/publication/state/notebook-rlvr001-saved.ipynb",
+      "sha256": "542a8af9351b1742f5321f3d446add974c4fa41be21bb8bc3d9174e14cc38390"
+    },
+    "terminal_blocker": {
+      "bytes": 2021,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/publication/run-evidence/TERMINAL-BLOCKER.json",
+      "sha256": "30ebcc01b150b2d2f485fa0e874f4ff8f55d41106d6d964f6e5e4202b3c5b4b2"
+    },
+    "terminal_checkpoint": {
+      "bytes": 8468,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/publication/run-evidence/V27-TERMINAL-COST-CHECKPOINT.json",
+      "sha256": "f9df4562b61e6cef169006c5e41c16be86a41e535c379a4bb45914e80662ec81"
+    },
+    "terminal_index": {
+      "bytes": 4817,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/publication/run-evidence/V27-TERMINAL-EVIDENCE-INDEX.json",
+      "sha256": "6217cf3415d50799f5b3a1e360ef5e10115f3184b845041e28e03aa571d9b71d"
+    },
+    "terminal_packet_audit": {
+      "bytes": 2375,
+      "path": "/workspace/scratch/3c2b2502fb1e/portfolio63-rl-release-20261012/independent-operator-review/V27-TERMINAL-PACKET-AUDIT.json",
+      "sha256": "ee57f0faa32ae3a47c56da0370ab0355461bf553c4cf185d0b8c53d046c1df43"
+    }
+  },
+  "format": "irisx/rlvr002-predecessor-evidence-v1",
+  "goal_met": false,
+  "notebook_id": 138123872,
+  "numeric_notebook_version": 27,
+  "operational_success": false,
+  "owned_closure_verified": false,
+  "physical_costs_known": false,
+  "provider_status": "ERROR",
+  "public_score": null,
+  "qualification": "The provider ERROR and exact source-bracketed v27 log identify a pre-owned guard rejection. Missing owned closures, runtime terminal, evidence archive and physical ledger remain unverified; absence is not zero work or VM teardown proof. Historical diagnostics do not authorize another dispatch.",
+  "required_files_missing": 22,
+  "runtime_status": null,
+  "saved_source_sha256": "542a8af9351b1742f5321f3d446add974c4fa41be21bb8bc3d9174e14cc38390",
+  "selected_files_verified": 4,
+  "separate_checkpoint_presence": "UNKNOWN",
+  "terminal_validated": false,
+  "terminal_validation_status": "INCOMPLETE_DIAGNOSTIC_EVIDENCE",
+  "whole_provider_inventory_verified": false
+}

@@ -1,0 +1,41 @@
+{
+  "status": "SUPPORTED_SDK_WIRE_SYNTAX_VERIFIED_LOCALLY",
+  "reference": "qwen-lm/qwen-3/transformers/14b/1",
+  "cli_metadata_field": "model_sources",
+  "sdk_request_field": "ApiSaveKernelRequest.model_data_sources",
+  "serialized_wire": {
+    "modelDataSources": [
+      "qwen-lm/qwen-3/transformers/14b/1"
+    ]
+  },
+  "response_metadata_field": "ApiKernelMetadata.model_data_sources / modelDataSources",
+  "response_type": "list[str]",
+  "returned_reference_version_retention_observed": false,
+  "actual_mounted_path_observed": false,
+  "mount_resolution": {
+    "official_kagglehub": "/kaggle/input/{provider_returned_mountSlug}",
+    "exact_mount_slug_not_guaranteed_by_save_schema": true,
+    "actual_saved_source_and_runtime_mount_validation_required": true,
+    "no_dynamic_attach_call_performed": true
+  },
+  "official_source_links": [
+    "https://github.com/Kaggle/kaggle-api/blob/main/kaggle/api/kaggle_api_extended.py",
+    "https://github.com/Kaggle/kagglehub/blob/main/src/kagglehub/kaggle_cache_resolver.py"
+  ],
+  "local_sdk_evidence": {
+    "cli": {
+      "path": "/workspace/scratch/3c2b2502fb1e/.kaggle-cli-env/lib/python3.12/site-packages/kaggle/api/kaggle_api_extended.py",
+      "bytes": 443895,
+      "sha256": "210e589ab1f7359ffb560aacfe1c003ac1bc844c366f4ff709bf3d13de4d5458"
+    },
+    "schema": {
+      "path": "/workspace/scratch/3c2b2502fb1e/.kaggle-cli-env/lib/python3.12/site-packages/kagglesdk/kernels/types/kernels_api_service.py",
+      "bytes": 90836,
+      "sha256": "a7dd65206e7fc27950385e7b163cda48a40766eb8ff7f89d7a334b9bfb151b5c"
+    }
+  },
+  "existing_transport_delta_needed": "Historical check_kernel forbids all modelDataSources; any new model-source request/readback contract needs independent review rather than weakening the old helper.",
+  "provider_mutations": 0,
+  "quota_queries": 0,
+  "utc": "2026-10-12T00:33:27.172289+00:00"
+}

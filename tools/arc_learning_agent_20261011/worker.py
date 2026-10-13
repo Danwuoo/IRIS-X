@@ -173,6 +173,8 @@ def _rollouts(tasks, manifest, model, ledger, *, deadline, output, config):
 
 
 def run(request):
+    from tools.arc_learning_agent_20261011.qwen14b_backend import require_public_worker_admission
+    require_public_worker_admission(request['model_config'])
     check_source(request['source_identity'])
     config = dict(request['config']); root = Path(request['output_root'])
     stable_profile = config.get('learning_profile') == 'stable_v2'

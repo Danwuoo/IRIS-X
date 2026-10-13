@@ -1,0 +1,25 @@
+test_branch_schedule_matrix (test_contract_review.CheckpointContract.test_branch_schedule_matrix) ... ok
+test_closed_global_values_do_not_depend_on_tiny_dimensions (test_contract_review.CheckpointContract.test_closed_global_values_do_not_depend_on_tiny_dimensions) ... ok
+test_every_transfer_checkpoint_call_has_explicit_schedule (test_contract_review.CheckpointContract.test_every_transfer_checkpoint_call_has_explicit_schedule) ... ok
+test_fixture_requires_tiny_and_cannot_expand (test_contract_review.CheckpointContract.test_fixture_requires_tiny_and_cannot_expand) ... ok
+test_inspect_rejects_bad_update_and_contract (test_contract_review.CheckpointContract.test_inspect_rejects_bad_update_and_contract) ... ok
+test_legacy_bounds_preserved (test_contract_review.CheckpointContract.test_legacy_bounds_preserved) ... ok
+test_protocol_science_and_call_budgets_byte_identical (test_contract_review.CheckpointContract.test_protocol_science_and_call_budgets_byte_identical) ... ok
+test_run_schedule_explicit_fixture_only (test_contract_review.CheckpointContract.test_run_schedule_explicit_fixture_only) ... ok
+test_source_bound_metadata_mutations_reject (test_contract_review.CheckpointContract.test_source_bound_metadata_mutations_reject) ... ok
+test_stored_transfer_identity_cannot_fall_back_to_legacy (test_contract_review.CheckpointContract.test_stored_transfer_identity_cannot_fall_back_to_legacy) ... ok
+test_ttt_scope_and_values (test_contract_review.CheckpointContract.test_ttt_scope_and_values) ... ok
+test_unchanged_hard_byte_limits (test_contract_review.CheckpointContract.test_unchanged_hard_byte_limits) ... ok
+test_bad_update (test_public_checkpoint_contract.PublicBoundary.test_bad_update) ... ok
+test_fixture_schedule (test_public_checkpoint_contract.PublicBoundary.test_fixture_schedule) ... ok
+test_nominal_production_schedule_metadata (test_public_checkpoint_contract.PublicBoundary.test_nominal_production_schedule_metadata) ... ok
+test_nonproduction_config (test_public_checkpoint_contract.PublicBoundary.test_nonproduction_config) ... ok
+test_omitted_schedule (test_public_checkpoint_contract.PublicBoundary.test_omitted_schedule) ... ok
+test_self_consistent_wrong_source_contract (test_public_checkpoint_contract.PublicBoundary.test_self_consistent_wrong_source_contract) ... ok
+test_ttt_schedule (test_public_checkpoint_contract.PublicBoundary.test_ttt_schedule) ... ok
+test_wrong_bound_branch (test_public_checkpoint_contract.PublicBoundary.test_wrong_bound_branch) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.028s
+
+OK

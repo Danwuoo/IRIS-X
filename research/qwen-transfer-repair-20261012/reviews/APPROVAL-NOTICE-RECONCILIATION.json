@@ -1,0 +1,53 @@
+{
+  "format": "irisx/transfer002-approval-notice-reconciliation-v1",
+  "status": "RECONCILED",
+  "selected_candidate": "release-candidate-002",
+  "superseded_candidate": "release-candidate-001",
+  "prebuild_observed_approval_sha256": "7a30dfe978c28264959a9e64cc614500ef4fc80774ede43a9c99e10138a5247a",
+  "sealed_approval_sha256": "6780690a4a7499378a9bdf8b7c0bc6a5bf7b70d8a8226a26d7bca7010c61c1ea",
+  "explanation": "Initial parent announcement reused an approval hash read before reviewer final notice. Actual candidate001 build read final678 approval and correctly bound its emitted descriptor. Candidate002 is the fresh exact build after explicit seal notice. Candidate001 was not changed and is retained superseded; no descriptor/file mismatch existed.",
+  "candidate001_actual": {
+    "RUNTIME-SOURCE-APPROVAL.json": {
+      "path": "RUNTIME-SOURCE-APPROVAL.json",
+      "bytes": 11061,
+      "sha256": "6780690a4a7499378a9bdf8b7c0bc6a5bf7b70d8a8226a26d7bca7010c61c1ea"
+    },
+    "publication-manifest.json": {
+      "path": "publication-manifest.json",
+      "bytes": 123016,
+      "sha256": "86cc3dc848120035cb92b24d7919e6f33d508c51bb4d87d034f2a252fede560c"
+    },
+    "SOURCE-FREEZE.json": {
+      "path": "SOURCE-FREEZE.json",
+      "bytes": 64186,
+      "sha256": "2d96293ef1a03151358dc0d1618e6a347152df9bd28fb88d44e2abeb229fd5ce"
+    },
+    "ASSEMBLY-INVENTORY.json": {
+      "path": "ASSEMBLY-INVENTORY.json",
+      "bytes": 5652,
+      "sha256": "338d4f92c7382f3c784e42d636e6d8d5cc37406615bb552ea359c612936fabe6"
+    }
+  },
+  "candidate001_descriptor": {
+    "path": "RUNTIME-SOURCE-APPROVAL.json",
+    "bytes": 11061,
+    "sha256": "6780690a4a7499378a9bdf8b7c0bc6a5bf7b70d8a8226a26d7bca7010c61c1ea"
+  },
+  "candidate002_descriptor": {
+    "path": "RUNTIME-SOURCE-APPROVAL.json",
+    "bytes": 11061,
+    "sha256": "6780690a4a7499378a9bdf8b7c0bc6a5bf7b70d8a8226a26d7bca7010c61c1ea"
+  },
+  "fresh_builds_identical": true,
+  "identical_files": 31,
+  "descriptor_check": {
+    "format": "irisx/transfer-release-descriptor-verification-v1",
+    "status": "PASS",
+    "verified_descriptors": 667,
+    "relative_root_payload_and_archive_contexts_verified": true,
+    "model_calls": 0,
+    "provider_calls": 0,
+    "source_archive_members": 199,
+    "runtime_approval_emitted_name_matches": true
+  }
+}
