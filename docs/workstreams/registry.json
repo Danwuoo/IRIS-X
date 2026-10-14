@@ -1,0 +1,20 @@
+{
+  "format": "irisx/workstream-navigation-v1",
+  "workstreams": [
+    {
+      "id": "core",
+      "role": "shared",
+      "status_path": "docs/workstreams/core/STATUS.md"
+    },
+    {
+      "id": "arc-agi-2",
+      "role": "domain",
+      "status_path": "docs/workstreams/arc-agi-2/STATUS.md"
+    },
+    {
+      "id": "line-b",
+      "role": "unassigned",
+      "status_path": "docs/workstreams/line-b/STATUS.md"
+    }
+  ]
+}

@@ -1,74 +1,75 @@
 # Development Operating Model
 
-Status: current under
-[`Decision 0010`](../decisions/0010-adopt-lightweight-risk-based-development.md).
-The product direction remains defined by the
-[`Product Scope`](../product/product-scope.md); safety boundaries remain in the
-[`Data and Execution Policy`](data-and-execution-policy.md).
+Product engineering is the default IRIS-X track. Decision 0010's lightweight,
+risk-based model remains the basis: [accepted decision](../decisions/0010-adopt-lightweight-risk-based-development.md).
+Product direction remains in the [Product Scope](../product/product-scope.md);
+[data and execution policy](data-and-execution-policy.md) remains applicable.
 
 ## Default loop
 
-Product engineering is the default IRIS-X track. Work follows
-**Build–Measure–Select**:
+Use **Build–Measure–Select**: state one outcome and its check, build the smallest
+reversible increment, measure it, then keep, revise or reject it. An Engineering Trial
+records a baseline, intervention, workload, measures, costs, stop condition
+and selection when empirical product evidence is needed. Preserve P1 contracts.
 
-1. state one outcome and the check that will prove it;
-2. build the smallest reversible end-to-end increment;
-3. measure it with the narrowest reliable test or workload;
-4. keep, revise, or reject it from the evidence.
+## Parallel development
 
-An **Engineering Trial** is used when the question requires empirical product
-evidence. It identifies the goal, baseline, intervention, workload, measures,
-costs, stop conditions, result, and selection. The active trial's README is its
-current status source; detailed procedures and decision records are supporting
-references rather than parallel status pages.
+Start from the [workstream guide](../workstreams/README.md). Each stream has one
+current STATUS and separate branches/worktrees, environments, agent sessions and
+ignored output roots. The registry is an index only. Historical trial READMEs
+remain terminal evidence for their own identities, not competing current project
+status pages.
+
+The owner's 2026-10-14 instruction keeps restructuring on independent branches:
+no main merge or push, no auto-merge, and no automatic merge between the stacked
+PRs. PR #5 remains Draft. Use foundation -> PR 2 -> PR 3 -> PR 4 as the dependency
+chain, with each Draft PR targeting its predecessor branch rather than main.
+Main remains a reference, not a successful-model or green baseline. Run008 is
+referenced through immutable Git URLs and is not merged into this work.
+Avoid simultaneous edits to shared CLI, contracts, build, management schemas or CI.
 
 ## Routine work
 
-Local, offline, reversible work inside the current product and trial boundaries
-does not require a new decision record or separate owner authorization. This
-includes ordinary implementation, tests, documentation, refactoring, fixture
-work, and validation improvements.
-
-Routine work should leave only the evidence its risk warrants: focused tests
-during development and the repository-wide check before handoff. P1 contracts
-and historical evidence are preserved, but they do not need to be restated in
-every current document.
+Local, offline, reversible implementation, tests, documentation, refactoring and
+fixture work within accepted product boundaries do not need a new decision or
+repeated approval. Keep evidence proportional to risk. Navigation work must not
+require rebuilding ARC, downloading archives or restoring cloud credentials.
 
 ## Gated work
 
-An owner-authorized scope is required at the point where work would:
+An owner-authorized scope is required for product-goal, public-contract,
+acceptance-threshold or promotion changes; external/provider/paid/sensitive-data
+work; explicitly gated model workloads; frozen artifact identity changes; and
+irreversible deletion or migration. A PR instruction does not reopen Kaggle
+execution. Record a durable decision only when it must govern later work.
 
-- change the product goal, public contract, acceptance threshold, or promotion
-  claim;
-- use an external provider, paid resource, credentials, or sensitive data;
-- execute a real model workload covered by an explicit run gate;
-- change a frozen artifact identity; or
-- perform an irreversible deletion or migration.
+Independent development is not independent access to shared external resources.
+Any future authorized ARC publication still needs one publisher and its exact
+readback, source, process, data and clock gates. Uncertain remote writes must be
+reconciled read-only, not repeated blindly. Preserve earlier attempts and charges.
 
-Record a decision only when the answer will govern later work. A one-time
-execution approval can remain an explicit owner instruction plus its generated
-evidence; it does not need to create a new policy layer unless it changes a
-durable boundary.
+## Validation and handoff
 
-## Current status and validation
+Use [test dependency classes](../../tests/README.md). Report command, environment,
+commit, tested scope, failures and missing inputs separately. Keep the complete
+handoff entry `python tools/repository_check.py --all`; navigation or focused CPU
+passes must not be called full CI, real-model or GPU success. Preserve the
+existing suite while its dependency split is implemented in a later PR.
 
-For closed Trial 001, use
-[`trials/first-real-domain/README.md`](../../trials/first-real-domain/README.md)
-for the terminal state and retained boundaries. The Kaggle handoff guide is
-historical lineage, and Decisions 0004–0013 are consulted only when their
-rationale or frozen identities are needed.
+## Unified document and development management
 
-The default handoff check is:
-
-```powershell
-python tools\repository_check.py --all
-```
-
-Focused commands remain available for faster iteration.
+The [PR 2–4 plan](../plan/2026-10-14-workstream-pr2-pr4-local-development.md)
+defines a repository-native document catalog, task records, generated board,
+scoped validation entry and separate developer/independent reports. Implement
+these incrementally with the code, not as a parallel cloud service or manual
+tracker. Routine work needs one task record and a useful handoff, not a new ADR
+for every edit. The detailed plan distinguishes planned interfaces from commands
+that have actually been implemented. No independent verification follows merely
+from a developer or subagent claiming that tests passed.
 
 ## Research track
 
-Research is conditional. It opens only when repeated engineering evidence
-exposes a concrete unresolved question and the owner authorizes that question.
-It should return a usable rule, method, or negative result to product
-engineering rather than becoming a permanent parallel program.
+Research is conditional: a concrete authorized question arising from product
+engineering, not an obligatory prerequisite for unrelated domain work. Return a
+usable method, rule or negative result to product engineering. The second line
+need not wait for ARC-AGI-2 to achieve its scientific target.
