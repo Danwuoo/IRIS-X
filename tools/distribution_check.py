@@ -177,6 +177,10 @@ def check(output: Path, root: Path = ROOT) -> dict:
             ]
             for args in commands:
                 run([python, "-I", "-B", "-m", "irisx", *args], external)
+            if (root / "src/irisx/domains/arc_agi_2/cli.py").is_file():
+                run([python, "-I", "-B", "-m", "irisx", "arc-agi-2", "--help"], external)
+                run([python, "-I", "-B", "-m", "irisx", "arc-agi-2", "source", "validate", str(external / "missing-arc-source")], external, expected=2)
+                report["arc_parser_facade"] = "passed (help and missing-path error only)"
             if (root / "src/irisx/domains/line_b/flow.py").is_file():
                 run([python, "-I", "-B", "-m", "irisx.domains.line_b.flow", "--output", str(external / "line-b")], external)
                 result = json.loads((external / "line-b/handoff.json").read_text(encoding="utf-8"))

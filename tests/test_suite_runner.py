@@ -248,7 +248,7 @@ class SuiteRunnerTests(unittest.TestCase):
         self.assertEqual(report["unexpected_skips"], 1, report)
 
     def test_protected_classes_are_blocked_before_import(self) -> None:
-        for dependency_class in ("historical", "operational", "native"):
+        for dependency_class in ("historical", "operational", "native", "training"):
             with self.subTest(dependency_class=dependency_class):
                 self.data["entries"][2]["dependency_class"] = dependency_class
                 report = self.run_suite("operational")

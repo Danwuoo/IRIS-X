@@ -869,7 +869,10 @@ def run_all_checks(root: Path) -> int:
     external_checks = (
         (
             "unit tests",
-            [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+            # Retain full discovery, counts, IDs and nonzero failures. The current
+            # owner forbids even tiny parameter updates; governed cases become
+            # explicit BLOCKED errors rather than omitted tests or green skips.
+            [sys.executable, str(root / "tools/no_training.py"), "--aggregate"],
         ),
         ("diff whitespace", ["git", "diff", "--check"]),
     )

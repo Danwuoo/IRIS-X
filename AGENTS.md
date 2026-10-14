@@ -15,8 +15,9 @@ navigation index, not an execution configuration or an authorization token.
 
 These routes apply to the existing flat source and tool paths too. A guide under
 `docs/` is not an automatically inherited code-directory instruction. Read any
-narrower AGENTS at the actual path being edited. Physical package separation is
-not implemented by this documentation change.
+narrower AGENTS at the actual path being edited. Mutable domain entries now live
+under `src/irisx/domains/`; frozen ARC modules retain their original flat paths.
+Read the ARC migration map before moving any additional helper.
 
 ## Working rules
 

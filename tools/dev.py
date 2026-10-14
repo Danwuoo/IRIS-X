@@ -55,6 +55,9 @@ def main(argv=None):
             if (ROOT / "tests/inventory.json").is_file():
                 from suite_runner import validate_inventory
                 errors.extend(validate_inventory(ROOT))
+            if (ROOT / "docs/workstreams/dependencies.json").is_file():
+                from dependency_check import check_dependencies
+                errors.extend(check_dependencies(ROOT))
             if errors:
                 print("\n".join(errors), file=sys.stderr)
                 return 1

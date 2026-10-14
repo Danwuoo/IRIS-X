@@ -720,6 +720,66 @@
         "WSF-03"
       ],
       "supersedes": []
+    },
+    {
+      "id": "arc-source-governance",
+      "path": "src/irisx/domains/arc_agi_2/AGENTS.md",
+      "kind": "guide",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-source-guide",
+      "path": "src/irisx/domains/arc_agi_2/README.md",
+      "kind": "guide",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "domain-dependencies",
+      "path": "docs/workstreams/dependencies.json",
+      "kind": "reference",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf04-migration",
+      "path": "docs/verification/WSF-04/MIGRATION.md",
+      "kind": "evidence",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf04-migration-map",
+      "path": "docs/verification/WSF-04/MIGRATION.json",
+      "kind": "evidence",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-04"
+      ],
+      "supersedes": []
     }
   ],
   "legacy_indexes": [

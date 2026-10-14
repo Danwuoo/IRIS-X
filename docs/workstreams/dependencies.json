@@ -1,0 +1,14 @@
+{
+  "format": "irisx.dependencies.v1",
+  "core_modules": [
+    "irisx", "irisx.__main__", "irisx.admission", "irisx.artifacts",
+    "irisx.bindings", "irisx.bundle", "irisx.canonical", "irisx.contracts",
+    "irisx.engine", "irisx.errors", "irisx.fixture", "irisx.package", "irisx.transport"
+  ],
+  "router": {"irisx.cli": ["irisx.domains.arc_agi_2.cli"]},
+  "facade_legacy": {
+    "irisx.domains.arc_agi_2.cli": [
+      "irisx.arc_agi2", "irisx.arc_package", "irisx.arc_trial_002", "irisx.kaggle"
+    ]
+  }
+}
