@@ -3,7 +3,7 @@
   "id": "WSF-04",
   "title": "Incremental mutable ARC boundary and complete management onboarding",
   "workstream": "core",
-  "state": "in_progress",
+  "state": "review_ready",
   "depends_on": [
     "WSF-03"
   ],
@@ -39,7 +39,7 @@
   "base_branch": "refactor/workstream-pr3-validation",
   "head_branch": "refactor/workstream-pr4-arc-boundary",
   "base_commit": "756cd560f8d61256ed35e12c3c3637ec456c6141",
-  "implementation_commit": null,
+  "implementation_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
   "acceptance": [
     "A4-1",
     "A4-2",
@@ -50,8 +50,14 @@
     "A4-7"
   ],
   "blockers": [],
-  "handoff_ref": null,
-  "verification_refs": [],
+  "handoff_ref": "wsf04-handoff",
+  "verification_refs": [
+    "wsf04-self-tests",
+    "wsf04-legacy-audit",
+    "wsf04-onboarding",
+    "wsf04-migration",
+    "wsf04-migration-map"
+  ],
   "review_refs": [],
   "concurrency_group": null
 }

@@ -5,7 +5,7 @@
   "base_branch": "refactor/workstream-pr3-validation",
   "head_branch": "refactor/workstream-pr4-arc-boundary",
   "base_commit": "756cd560f8d61256ed35e12c3c3637ec456c6141",
-  "target_code_commit": null,
+  "target_code_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
   "foundation_commit": "08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059",
   "fixed_run008_commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
   "review_kind": "developer and implementing subagent self-review",
@@ -40,7 +40,7 @@
         "Installed non-editable wheel root/ARC help"
       ],
       "rollback": "Revert only the new unmerged PR4 boundary commit on its own branch; do not reset a published branch or alter historical objects.",
-      "verification_status": "pending developer checks and independent review",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
       "permitted_change": "parser/dispatch extraction only"
     },
     {
@@ -76,7 +76,7 @@
         "Dependency direction negative tests for reverse/cross-domain/dynamic imports"
       ],
       "rollback": "Revert only own PR4 dispatch commit and retain unchanged legacy modules; no provider retry follows.",
-      "verification_status": "pending developer checks and independent review",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
       "permitted_change": "parser/dispatch extraction only"
     },
     {
@@ -100,7 +100,7 @@
         "Self-contained arc-unit tests; authentic exact bundle reconstruction remains blocked"
       ],
       "rollback": "No move planned. Keep original path/bytes; remove only new facade routing if reverting.",
-      "verification_status": "pending developer checks and independent review",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
       "permitted_change": "none; original paths and blobs retained"
     },
     {
@@ -129,7 +129,7 @@
         "Self-contained arc-unit tests; authentic exact bundle reconstruction remains blocked"
       ],
       "rollback": "No move planned. Keep original path/bytes; remove only new facade routing if reverting.",
-      "verification_status": "pending developer checks and independent review",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
       "permitted_change": "none; original paths and blobs retained"
     },
     {
@@ -154,7 +154,7 @@
         "Self-contained arc-unit tests; authentic exact bundle reconstruction remains blocked"
       ],
       "rollback": "No move planned. Keep original path/bytes; remove only new facade routing if reverting.",
-      "verification_status": "pending developer checks and independent review",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
       "permitted_change": "none; original paths and blobs retained"
     },
     {
@@ -180,7 +180,7 @@
         "Self-contained arc-unit tests; authentic exact bundle reconstruction remains blocked"
       ],
       "rollback": "No move planned. Keep original path/bytes; remove only new facade routing if reverting.",
-      "verification_status": "pending developer checks and independent review",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
       "permitted_change": "none; original paths and blobs retained"
     },
     {
@@ -200,7 +200,7 @@
         "All src/irisx/arc*.py and kaggle*.py byte inventory equality; no helper migration in PR4"
       ],
       "rollback": "No mutation planned.",
-      "verification_status": "pending developer checks and independent review",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
       "permitted_change": "none; original paths and blobs retained"
     },
     {
@@ -226,7 +226,7 @@
         "No extra evaluator/resources/tests/cache bytes"
       ],
       "rollback": "Revert new facade only; preserve PR2 build backend.",
-      "verification_status": "pending developer checks and independent review",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
       "permitted_change": "none; original paths and blobs retained"
     }
   ],
