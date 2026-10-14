@@ -1,49 +1,70 @@
-# ARC2 offline continuation: paused development checkpoint
+# ARC2 offline continuation
+
+A standard-library-only companion to the existing SFT256 / fixed-batch RL /
+whole-wall-matched extra-SFT experiment. It prepares an inert source-bound plan
+and summarizes explicitly supplied terminal-consumer JSON. It is not a trainer,
+collector, scorer, authentication checker, or execution/admission API.
 
 Source baseline: `cc14bd1a79aac1fe6135017c9e09d4834300675d` on
-`feat/run008-native-research-20261013`. Work belongs only to
-`feat/arc2-sft-rl-continuation-20261014`; the engineering/management branch and
-main are separate. All pre-existing tracked source bytes remain unchanged.
+`feat/run008-native-research-20261013`. Development belongs only to
+`feat/arc2-sft-rl-continuation-20261014`; main and the engineering branch are
+separate. Original source files and pins remain unchanged.
 
-## Status: incomplete, not accepted for operational use
+## Interfaces
 
-Development was paused on 2026-10-14 for a research-first review of methods,
-agent architectures and RL alternatives. These new modules are preserved as
-unfinished work, not a finished handoff or an execution-ready release.
+- `prepare.prepare_plan(repository_root: Path) -> dict` checks five pinned public
+  sources as bytes/data and returns an inert plan and original-artifact checklist.
+  It never imports frozen runtime code, samples a clock or reads private inputs.
+- `analysis.analyze_report(report: dict) -> dict` aggregates the existing batched
+  consumer format. Untrusted declarations remain separate from derived counts.
+- `io.read_json(path, expected_sha256)` reads one explicit, bounded, strict JSON
+  object. Optional collector checkpoint/retrieval links match bytes and hashes;
+  their recorded paths are never followed.
+- `cli.py prepare` and `cli.py analyze` exclusively write a new local JSON file.
+  No watcher, retry, provider call, task creation or automatic next run exists.
 
-- `prepare.py` reads five pinned public source files as bytes/data and constructs
-  an inert description of the existing SFT256 / fixed-batch RL / whole-wall
-  matched extra-SFT experiment. It performs no model, provider or Git operation.
-- `analysis.py` interprets existing compact consumer reports as untrusted JSON.
-  It never authenticates collection, reads evaluator targets, creates a score,
-  establishes method efficacy or authorizes another run. Conditional hitset
-  differences do not prove a common full case universe. The compact report also
-  does not prove the 120-task PUBLIC universe merely by declaring 167 queries.
-- `io.py` and `cli.py` are incomplete integration scaffolding. Do not use their
-  output as a release or admission artifact.
+File operations require POSIX descriptor-relative no-follow APIs. Unsupported
+platforms fail closed, without an unsafe path-based fallback. No third-party
+package is required. The separately scoped agent-factory-3 bridge has its own
+source, dependency and review boundary; it is not imported here.
 
-Independent checkpoint review found a parent-directory race in `write_new_json`:
-replacing an ancestor between its path check and publication can redirect output
-and leak a temporary file. Descriptor-relative no-follow publication and an
-adversarial regression test are pending. Input path race coverage and full
-integration review are also pending. A huge-integer analysis overflow was fixed
-by the analysis author and covered by a focused test, but independent final
-retest is pending. Preparation's portable-platform test handling and explicit
-JSON float-overflow rejection remain follow-ups; preparation currently requires
-POSIX descriptor-relative no-follow file operations.
+## Interpretation and safety
 
-Focused author checks at this pause: preparation 28 normal / 28 optimized;
-analysis 38 normal / 38 optimized; I/O 17 normal / 17 optimized (independently
-rerun). These synthetic tests do not establish real GPU, scoring, secure output
-publication or full integration success. Do not treat them as a release pass.
-A public-source baseline full suite had 1583 tests, 6 failures, 41 errors and
-74 skips in this fresh environment. Repository layout separately reports the
-same seven README findings. These unrelated failures are not repaired here;
-no final matched full-suite comparison has yet run.
+Missing scoring remains `null`, not zero. PUBLIC keeps167 queries and expects120
+tasks; compact reports cannot establish the task inventory. Dev count/tie
+consistency cannot prove selection chronology or the whole shared case universe.
+Pairwise counts stay conditional. B/C matching uses whole synchronized extra
+model-phase wall, including failed work, rollback and persistence.
 
-No Kaggle access, authentication, dataset/notebook mutation, training launch,
-new clock, paid resource or competition submission is performed or authorized
-by these tools. Publication/execution remains a separate local-executor role.
-Never import these modules into the frozen producer or change a frozen pin to
-make an observed failure pass. Resume implementation only after the research
-priority and scope are reconciled.
+`analysis_authenticated`, `method_efficacy_established` and `dispatch_authorized`
+are always false. A caller-provided hash establishes no external authenticity.
+`OFFLINE_OUTPUT_WRITTEN` / exit0 means only that a file was written; inspect
+`analysis_structurally_consistent`, issue codes and nullable fields.
+
+No-follow directory descriptors prevent ancestor replacement from redirecting
+reads/writes. Private staging and exclusive publication refuse overwrite;
+cleanup is descriptor-relative. A failure after the exclusive link may leave a
+complete output in the original directory: inspect before retrying. The tool
+will not unlink a published name or foreign staging entries merely because a
+later check failed. Same-UID hostile mutation, SIGKILL/power loss and namespace
+changes after the final observation cannot be absolutely excluded by userspace
+checks. If staging creation succeeds but its inode cannot be established, an empty
+private directory may also remain; deleting an unbound name would be unsafe.
+Do not equate a rejection with proof that no output exists.
+
+## Handoff and checks
+
+See [local executor handoff](../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md)
+and [independent review](../../research/arc2-sft-rl-continuation-20261014/offline-continuation-review.md).
+Run focused tests from the repository root:
+
+```sh
+python3 -B -m unittest discover -s tools/arc2_sft_rl_continuation_20261014/tests -v
+python3 -B -O -m unittest discover -s tools/arc2_sft_rl_continuation_20261014/tests -v
+```
+
+The original `0451441` checkpoint was incomplete and contained a reproduced
+output-parent race. Final review supersedes that paused-work note only for this
+offline companion. No GPU execution, full consumer success-path replay, new ARC
+score or Kaggle publication is established. Repository CI and missing historical
+fixtures are reported separately, not waived by focused tests.

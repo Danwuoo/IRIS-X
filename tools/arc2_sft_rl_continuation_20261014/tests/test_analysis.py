@@ -1,5 +1,6 @@
 """Synthetic full-shape JSON contracts, never actual experiment results."""
 from copy import deepcopy
+import ast
 import importlib.util
 import json
 from pathlib import Path
@@ -29,7 +30,7 @@ def report():
     paired = {arm: {"gained_case_ids": sorted(set(held[arm]["exact_case_ids"]) - base),
                     "lost_case_ids": sorted(base - set(held[arm]["exact_case_ids"]))} for arm in ("B", "C")}
     return {
-        "format": "irisx/owned-rl-offline-validation-v1",
+        "format": "irisx/owned-rl-batched-offline-validation-v1",
         "status": "REVIEWED_PRODUCTION_CONTENT_COMPLETE", "provider_status": "COMPLETE",
         "evidence_valid": True, "diagnostic_evidence_valid": True,
         "authenticated_collection_verified": True, "external_owner_envelope_verified": True,
@@ -305,10 +306,189 @@ class AnalysisTests(unittest.TestCase):
         self.assertIsNone(result["public"]["micro_pass_at_2"])
         self.assertFalse(result["method_efficacy_established"])
 
+    def test_explicit_unknown_provider_is_flagged_but_omission_is_unknown(self):
+        for value in ("RUNNING", "CANCELLED", "CANCELED", "private-status", [], 0, None):
+            r = report(); r["provider_status"] = value
+            result = self.issue(r, "PROVIDER_STATUS_UNRECOGNIZED")
+            self.assertIsNone(result["declared_provider_status"])
+        r = report(); del r["provider_status"]
+        result = analyze_report(r)
+        self.assertTrue(result["structurally_consistent"])
+        self.assertIsNone(result["declared_provider_status"])
+        self.assertEqual(result["public"]["micro_pass_at_2"]["numerator"], 20)
+
     def test_boolean_axes_strict(self):
         r = report(); r["production_admitted"] = 1
         result = self.issue(r, "DECLARED_AXIS_TYPE_INVALID")
         self.assertIsNone(result["declared_axes"]["production_admitted"])
+
+    def test_fixture_schema_matches_pinned_consumer_without_importing_it(self):
+        source = Path(__file__).resolve().parents[3] / "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/validate_owned_outputs.py"
+        tree = ast.parse(source.read_text(encoding="utf-8"))
+        schema = next(ast.literal_eval(node.value) for node in tree.body
+                      if isinstance(node, ast.Assign) and any(isinstance(name, ast.Name) and
+                         name.id == "VALIDATOR_SCHEMA" for name in node.targets))
+        self.assertEqual(report()["format"], schema)
+        self.assertEqual(MODULE.CONSUMER_FORMAT, schema)
+        common = source.parents[3] / "publication_run008/operator_common.py"
+        tree = ast.parse(common.read_text(encoding="utf-8"))
+        statuses = next(ast.literal_eval(node.value) for node in tree.body
+                        if isinstance(node, ast.Assign) and any(isinstance(name, ast.Name) and
+                           name.id == "TERMINAL" for name in node.targets))
+        self.assertEqual(MODULE.PROVIDER_TERMINAL_STATUSES, statuses)
+        r = report(); r["provider_status"] = "CANCEL_ACKNOWLEDGED"
+        result = analyze_report(r)
+        self.assertEqual(result["declared_provider_status"], "CANCEL_ACKNOWLEDGED")
+        self.assertEqual(result["public"]["micro_pass_at_2"]["numerator"], 20)
+
+    def test_obsolete_or_absent_format_cannot_be_interpreted_as_modern_scores(self):
+        for value in (None, "irisx/owned-rl-offline-validation-v1", "wrong", [], 1):
+            with self.subTest(value=value):
+                r = report(); r["format"] = value
+                result = analyze_report(r)
+                self.assertFalse(result["structurally_consistent"])
+                self.assertFalse(result["report_contract_compatible"])
+                self.assertIsNone(result["public"]["micro_pass_at_2"])
+                self.assertIsNone(result["comparison"]["holdout"])
+
+    def test_formatless_actual_collector_diagnostics_remain_compatible_unknowns(self):
+        for status in MODULE.COLLECTOR_DIAGNOSTIC_STATUSES:
+            r = {"status": status, "provider_status": "ERROR", "public_score": None,
+                 "operational_success": False, "goal_met": False}
+            result = analyze_report(r)
+            self.assertTrue(result["structurally_consistent"])
+            self.assertTrue(result["report_contract_compatible"])
+            self.assertIsNone(result["public"]["micro_pass_at_2"])
+
+    def test_failed_or_unknown_consumer_status_cannot_retain_scores(self):
+        for status in ("STOPPED_INCOMPLETE", "EVIDENCE_REJECTED", "UNSEALED_SESSION_DIAGNOSTICS",
+                       "TERMINAL_EVIDENCE_VERIFIED", "unknown", None, []):
+            with self.subTest(status=status):
+                r = report(); r["status"] = status
+                result = self.issue(r, "TERMINAL_STATUS_WITH_SCORED_CONTENT")
+                self.assertFalse(result["structurally_consistent"])
+                self.assertIsNone(result["comparison"]["holdout"])
+                self.assertIsNone(result["comparison"]["paired_deltas"])
+                self.assertIsNone(result["public"]["micro_pass_at_2"])
+                self.assertEqual(result["audit"]["counts"]["reward_eligible_attempts"], 256)
+
+    def test_dev_tie_rule_does_not_verify_selection_provenance(self):
+        result = analyze_report(report())
+        self.assertTrue(result["comparison"]["dev_selection_consistent"])
+        self.assertFalse(result["comparison"]["selection_provenance_verified"])
+        self.assertIn("SELECTION_PROVENANCE_NOT_PRESENT_IN_COMPACT_REPORT", result["issues"])
+
+    def test_scoring_status_requires_true_content_declaration_not_authentication(self):
+        for value in (None, False, 1, "true", []):
+            r = report(); r["evidence_valid"] = value
+            result = self.issue(r, "SCORING_STATUS_WITHOUT_VALID_CONTENT_DECLARATION")
+            self.assertIsNone(result["comparison"]["dev"])
+            self.assertIsNone(result["public"]["micro_pass_at_2"])
+            self.assertEqual(result["audit"]["counts"]["reward_eligible_attempts"], 256)
+        r = report()
+        for key in ("authenticated_collection_verified", "external_owner_envelope_verified", "production_admitted"):
+            del r[key]
+        result = analyze_report(r)
+        self.assertEqual(result["public"]["micro_pass_at_2"]["numerator"], 20)
+        self.assertFalse(result["analysis_authenticated"])
+
+    def test_invalid_selection_suppresses_dependent_public_metric(self):
+        r = report(); r["evaluation"]["selected_arm"] = r["public"]["selected_arm"] = "A"
+        result = self.issue(r, "DEV_SELECTION_OR_TIE_RULE_INCONSISTENT")
+        self.assertIsNone(result["public"]["micro_pass_at_2"])
+        self.assertIsNone(result["public"]["derived_threshold_reached"])
+
+    def test_missing_public_arm_and_coverage_suppress_metric(self):
+        for key in ("selected_arm", "coverage"):
+            r = report(); del r["public"][key]
+            result = self.issue(r, "PUBLIC_METRIC_DEPENDENCIES_INVALID")
+            self.assertIsNone(result["public"]["micro_pass_at_2"])
+
+    def test_unscored_public_is_null_not_zero(self):
+        r = report(); r["public_benchmark_evidence_eligible"] = False
+        for key in ("micro_pass_at_2", "scorer_rows_complete", "metric_threshold_reached"):
+            r["public"].pop(key)
+        r["public"]["status"] = "PREDICTIONS_SEALED_NOT_SCORED"
+        result = analyze_report(r)
+        self.assertTrue(result["structurally_consistent"])
+        self.assertIsNone(result["public"]["micro_pass_at_2"])
+        r = report(); r["public"]["micro_pass_at_2"].update(numerator=0, value=0)
+        result = analyze_report(r)
+        self.assertTrue(result["structurally_consistent"])
+        self.assertEqual(result["public"]["micro_pass_at_2"]["value"], 0)
+
+    def test_synthetic_reduced_denominators_are_not_production_shape(self):
+        r = report(); r["status"] = "FIXTURE_OWNED_CONTENT_COMPLETE"
+        r["evaluation"]["dev_scores"]["A"]["denominator"] = 4
+        r["public"]["micro_pass_at_2"]["denominator"] = 2
+        result = self.issue(r, "DEV_SCORE_COUNTS_INVALID")
+        self.assertIsNone(result["public"]["micro_pass_at_2"])
+
+    def test_malformed_sections_do_not_silently_become_absent(self):
+        for field in ("evaluation", "audit", "metering", "public", "checkpoints", "phase_status"):
+            for value in ([], "private invalid content", True, 0, float("nan")):
+                with self.subTest(field=field, kind=type(value)):
+                    r = report(); r[field] = value
+                    result = self.issue(r, field.upper() + "_SECTION_INVALID")
+                    self.assertFalse(result["structurally_consistent"])
+                    self.assertNotIn("private invalid content", json.dumps(result, allow_nan=False))
+
+    def test_fatal_native_state_requires_real_boolean(self):
+        for value in (None, 0, 1, "false", [], {}):
+            r = constant_report(0); r["audit"]["full_panel_summary"]["fatal_native_state"] = value
+            result = self.issue(r, "AUDIT_FATAL_NATIVE_STATE_TYPE_INVALID")
+            self.assertEqual(result["audit"]["signal_classification"], "unknown")
+
+    def test_nan_infinity_huge_integers_and_bool_in_all_derived_numeric_inputs(self):
+        paths = (("metering", "time_matching", "B_seconds"),
+                 ("metering", "time_matching", "C_seconds"),
+                 ("metering", "time_matching", "epsilon_seconds"),
+                 ("public", "micro_pass_at_2", "value"),
+                 ("public", "micro_pass_at_2", "numerator"),
+                 ("public", "micro_pass_at_2", "denominator"),
+                 ("audit", "full_panel_summary", "eligible_mean_reward"),
+                 ("audit", "full_panel_summary", "reward_eligible_attempts"))
+        for path in paths:
+            for value in (float("nan"), float("inf"), -float("inf"), 10 ** 1000, True):
+                with self.subTest(path=path, kind=type(value)):
+                    r = report(); target = r
+                    for key in path[:-1]: target = target[key]
+                    target[path[-1]] = value
+                    result = analyze_report(r)
+                    self.assertFalse(result["structurally_consistent"])
+                    json.dumps(result, allow_nan=False)
+
+    def test_bounded_hitsets_groups_and_pairs(self):
+        r = report(); r["evaluation"]["paired_vs_A"]["B"]["gained_case_ids"] = ["x"] * 33
+        self.issue(r, "PAIRED_VS_A_COUNTS_INCONSISTENT")
+        r = report(); r["audit"]["full_panel_summary"]["groups"] *= 2
+        self.issue(r, "AUDIT_GROUP_INVENTORY_INVALID")
+        r = report(); r["evaluation"]["dev_scores"]["A"]["exact_case_ids"][0] = "dev:" + "x" * 513
+        self.issue(r, "DEV_HITSET_INVALID")
+
+    def test_full_shape_malformed_field_corpus_never_raises_or_leaks_nonfinite(self):
+        original = report()
+        paths = []
+        def collect(value, path=()):
+            if type(value) is dict:
+                for key, child in value.items():
+                    paths.append(path + (key,))
+                    collect(child, path + (key,))
+            elif type(value) is list and value:
+                paths.append(path + (0,))
+                collect(value[0], path + (0,))
+        collect(original)
+        values = (None, [], {}, "private-invalid-content", True, -1, float("nan"), float("inf"), 10 ** 1000)
+        for path in paths:
+            for value in values:
+                r = deepcopy(original); target = r
+                for key in path[:-1]: target = target[key]
+                target[path[-1]] = value
+                result = analyze_report(r)
+                serialized = json.dumps(result, allow_nan=False)
+                self.assertNotIn("private-invalid-content", serialized)
+                self.assertFalse(result["analysis_authenticated"])
+                self.assertFalse(result["dispatch_authorized"])
 
 
 if __name__ == "__main__":

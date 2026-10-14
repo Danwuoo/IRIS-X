@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 from pathlib import Path, PurePosixPath
 import stat
@@ -30,6 +31,8 @@ SOURCE_PATHS = (
 MAX_INVENTORY_BYTES = 16 * 1024
 MAX_SOURCE_BYTES = 64 * 1024
 MAX_TOTAL_SOURCE_BYTES = 128 * 1024
+MAX_JSON_DEPTH = 64
+MAX_JSON_NODES = 8192
 
 
 class PreparationError(ValueError):
@@ -60,6 +63,14 @@ def _identity(info: os.stat_result) -> tuple[int, ...]:
             info.st_mtime_ns, info.st_ctime_ns)
 
 
+def _descriptor_reads_supported() -> bool:
+    return (os.name == "posix"
+            and all(hasattr(os, name) for name in ("O_NOFOLLOW", "O_DIRECTORY", "O_NONBLOCK"))
+            and os.open in os.supports_dir_fd
+            and os.stat in os.supports_dir_fd
+            and os.stat in os.supports_follow_symlinks)
+
+
 class _SourceRoot:
     """Descriptor-relative no-follow reads, including every root ancestor.
 
@@ -71,11 +82,8 @@ class _SourceRoot:
     def __init__(self, root: Path):
         _need(isinstance(root, Path), "repository_root must be a pathlib.Path")
         _need(".." not in root.parts, "repository root may not contain traversal")
-        _need(
-            hasattr(os, "O_NOFOLLOW") and hasattr(os, "O_DIRECTORY")
-            and os.open in os.supports_dir_fd,
-            "no-follow descriptor reads unavailable on this platform",
-        )
+        _need(_descriptor_reads_supported(), "no-follow descriptor reads unavailable on this platform")
+        _need("\x00" not in str(root), "invalid repository root")
         root = root.absolute()
         self.fd = -1
         flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0)
@@ -136,6 +144,9 @@ class _SourceRoot:
 
 
 def _strict_json(raw: bytes) -> dict:
+    _need(type(raw) is bytes and 0 < len(raw) <= MAX_SOURCE_BYTES,
+          "invalid bounded JSON document")
+
     def pairs(rows: list[tuple[str, object]]) -> dict:
         result = {}
         for key, value in rows:
@@ -146,18 +157,44 @@ def _strict_json(raw: bytes) -> dict:
     def invalid_constant(value: str) -> None:
         raise PreparationError("non-finite JSON value")
 
+    def number(value: str) -> float:
+        result = float(value)
+        _need(math.isfinite(result), "non-finite JSON value")
+        return result
+
+    def integer(value: str) -> int:
+        _need(len(value) <= 1024, "JSON integer digit limit")
+        return int(value)
+
     try:
         value = json.loads(raw.decode("utf-8"), object_pairs_hook=pairs,
+                           parse_float=number, parse_int=integer,
                            parse_constant=invalid_constant)
-    except (UnicodeError, json.JSONDecodeError, RecursionError) as exc:
+    except PreparationError:
+        raise
+    except (UnicodeError, ValueError, RecursionError, OverflowError) as exc:
         raise PreparationError("invalid bounded JSON document") from exc
     _need(type(value) is dict, "JSON document must be an object")
+    stack, visited = [(value, 0)], 0
+    while stack:
+        item, depth = stack.pop()
+        visited += 1
+        _need(depth <= MAX_JSON_DEPTH and visited <= MAX_JSON_NODES,
+              "JSON structure limit")
+        if type(item) in (dict, list):
+            children = item.values() if type(item) is dict else item
+            _need(len(stack) + len(item) + visited <= MAX_JSON_NODES,
+                  "JSON structure limit")
+            stack.extend((child, depth + 1) for child in children)
     return value
 
 
 def _canonical(value: object) -> bytes:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"),
-                      ensure_ascii=True, allow_nan=False).encode("ascii")
+    try:
+        return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                          ensure_ascii=True, allow_nan=False).encode("ascii")
+    except (TypeError, ValueError, RecursionError, OverflowError) as exc:
+        raise PreparationError("invalid scientific policy value") from exc
 
 
 def _equal(actual: object, expected: object, label: str) -> None:
@@ -166,6 +203,7 @@ def _equal(actual: object, expected: object, label: str) -> None:
 
 def _validate_policy(policy: dict) -> None:
     """Explicit science checks supplement byte pins; repinning is not admission."""
+    _need(type(policy) is dict, "scientific policy must be an object")
     expected = {
         "format": "proposed-rlvr-single-session-policy-v2",
         "dispatch_authorized": False,

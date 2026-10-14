@@ -10,6 +10,7 @@ import math
 
 
 FORMAT = "irisx/arc2-continuation-analysis-v1"
+CONSUMER_FORMAT = "irisx/owned-rl-batched-offline-validation-v1"
 ARMS = ("A", "B", "C")
 AXES = (
     "evidence_valid", "diagnostic_evidence_valid", "authenticated_collection_verified",
@@ -25,6 +26,15 @@ STATUSES = frozenset((
     "INNER_CONTENT_VALIDATED", "TERMINAL_EVIDENCE_VERIFIED", "GPU_UNAVAILABLE_STOP",
 ))
 PUBLIC_STATUSES = frozenset(("SEALED_SCORER_ROWS_REPLAYED", "PREDICTIONS_SEALED_NOT_SCORED"))
+SCORING_STATUSES = frozenset((
+    "REVIEWED_PRODUCTION_CONTENT_COMPLETE", "OWNED_CONTENT_COMPLETE_UNADMITTED",
+    "FIXTURE_OWNED_CONTENT_COMPLETE", "FIXTURE_CONTENT_COMPLETE_STRUCTURE_BRIDGE_UNAVAILABLE",
+    "FIXTURE_MECHANICS_COMPLETE", "INNER_CONTENT_VALIDATED",
+))
+COLLECTOR_DIAGNOSTIC_STATUSES = frozenset((
+    "UNSEALED_SESSION_DIAGNOSTICS", "INCOMPLETE_DIAGNOSTIC_EVIDENCE", "GPU_UNAVAILABLE_STOP",
+))
+PROVIDER_TERMINAL_STATUSES = frozenset(("COMPLETE", "ERROR", "CANCEL_ACKNOWLEDGED"))
 
 
 def _integer(value, low=0, high=256):
@@ -46,6 +56,13 @@ def _boolean(value):
 
 def _object(value):
     return value if type(value) is dict else {}
+
+
+def _section(report, key, issues):
+    value = report.get(key)
+    if value is not None and type(value) is not dict:
+        issues.add(key.upper() + "_SECTION_INVALID", invalid=True)
+    return _object(value)
 
 
 class _Issues:
@@ -109,8 +126,8 @@ def _paired(hitsets):
     return result
 
 
-def _comparison(report, issues):
-    evaluation = _object(report.get("evaluation"))
+def _comparison(report, issues, *, scoring_allowed=True):
+    evaluation = _section(report, "evaluation", issues)
     dev, dev_hits = _scores(evaluation.get("dev_scores"), "dev", 16, issues)
     held, hits = _scores(evaluation.get("holdout_scores"), "holdout", 32, issues)
     selected = evaluation.get("selected_arm")
@@ -136,7 +153,8 @@ def _comparison(report, issues):
                 for field, wanted in (("gained_case_ids", hits[arm] - hits["A"]),
                                       ("lost_case_ids", hits["A"] - hits[arm])):
                     ids = row.get(field) if type(row) is dict else None
-                    if type(ids) is not list or any(type(x) is not str for x in ids) or \
+                    if type(ids) is not list or len(ids) > 32 or \
+                            any(type(x) is not str or len(x) > 512 for x in ids) or \
                             len(ids) != len(set(ids)) or set(ids) != wanted:
                         issues.add("PAIRED_VS_A_COUNTS_INCONSISTENT", invalid=True)
                         paired = None
@@ -144,6 +162,8 @@ def _comparison(report, issues):
     elif declared_pairs is not None:
         issues.add("PAIRED_COUNTS_WITHOUT_VALID_HELD_SCORES", invalid=True)
     complete = _boolean(evaluation.get("comparison_complete"))
+    if evaluation and type(evaluation.get("comparison_complete")) is not bool:
+        issues.add("COMPARISON_COMPLETENESS_TYPE_INVALID", invalid=True)
     top_complete = _boolean(report.get("comparison_complete"))
     if complete is not None and top_complete is not None and complete != top_complete:
         issues.add("COMPARISON_COMPLETENESS_DECLARATIONS_DIFFER", invalid=True)
@@ -152,8 +172,15 @@ def _comparison(report, issues):
     if (complete is False or top_complete is False) and held is not None:
         issues.add("INCOMPLETE_COMPARISON_HAS_HELD_SCORES", invalid=True)
         paired = None
+    if not scoring_allowed:
+        if dev is not None or held is not None:
+            issues.add("TERMINAL_STATUS_WITH_SCORED_CONTENT", invalid=True)
+        dev, held, dev_hits, paired, expected, selection_consistent = (None,) * 6
+    if dev is not None:
+        issues.add("SELECTION_PROVENANCE_NOT_PRESENT_IN_COMPACT_REPORT")
     return {"selected_arm": selected, "derived_dev_selected_arm": expected,
             "dev_selection_consistent": selection_consistent,
+            "selection_provenance_verified": False,
             "declared_complete": complete, "dev": dev, "holdout": held,
             "dev_paired_deltas": _paired(dev_hits),
             "paired_deltas": paired, "case_universe_verified": False,
@@ -162,7 +189,7 @@ def _comparison(report, issues):
 
 
 def _audit(report, issues):
-    audit = _object(report.get("audit"))
+    audit = _section(report, "audit", issues)
     summary = audit.get("full_panel_summary")
     result = {"coverage_complete": None, "counts": None, "committed_updates": None,
               "group_counts": None, "signal_classification": "unknown"}
@@ -193,7 +220,10 @@ def _audit(report, issues):
         issues.add("AUDIT_COMPLETENESS_INCONSISTENT", invalid=True)
         return result
     result["coverage_complete"] = complete
-    if summary.get("fatal_native_state") not in (None, False):
+    if type(summary.get("fatal_native_state")) is not bool:
+        issues.add("AUDIT_FATAL_NATIVE_STATE_TYPE_INVALID", invalid=True)
+        return result
+    if summary["fatal_native_state"]:
         issues.add("AUDIT_FATAL_NATIVE_STATE_DECLARED", invalid=True)
         return result
     groups = summary.get("groups")
@@ -260,7 +290,7 @@ def _audit(report, issues):
 
 
 def _time_matching(report, issues):
-    value = _object(report.get("metering")).get("time_matching")
+    value = _section(report, "metering", issues).get("time_matching")
     result = {"B_seconds": None, "C_seconds": None, "epsilon_seconds": None,
               "declared_matched": None, "derived_matched": None}
     if value is None:
@@ -287,16 +317,23 @@ def _time_matching(report, issues):
     return result
 
 
-def _public(report, selected, issues):
-    public = _object(report.get("public"))
+def _public(report, comparison, issues, *, scoring_allowed=True):
+    public = _section(report, "public", issues)
+    selected = comparison["selected_arm"]
     status = public.get("status")
     result = {"status": status if type(status) is str and status in PUBLIC_STATUSES else None,
               "expected_tasks": 120, "expected_queries": 167, "expected_views": 334,
               "reported_task_count": None, "task_count_verified": False,
               "coverage": None, "micro_pass_at_2": None, "derived_threshold_reached": None}
-    if public.get("selected_arm") is not None and public.get("selected_arm") != selected:
+    selection_valid = type(public.get("selected_arm")) is str and \
+        public["selected_arm"] in ARMS and public["selected_arm"] == selected and \
+        comparison["dev_selection_consistent"] is True
+    if public and not selection_valid:
         issues.add("PUBLIC_SELECTED_ARM_INCONSISTENT", invalid=True)
+    if public and (type(status) is not str or status not in PUBLIC_STATUSES):
+        issues.add("PUBLIC_STATUS_UNRECOGNIZED", invalid=True)
     coverage = public.get("coverage")
+    coverage_valid = False
     if coverage is not None:
         keys = ("planned_queries", "observed_queries", "planned_views", "observed_views", "actual_generation_calls")
         if type(coverage) is not dict or any(not _integer(coverage.get(k), 0, 334) for k in keys) or \
@@ -306,11 +343,15 @@ def _public(report, selected, issues):
                 type(coverage.get("deadline_exceeded")) is not bool or coverage.get("query_targets_used") is not False:
             issues.add("PUBLIC_COVERAGE_INVALID", invalid=True)
         else:
-            result["coverage"] = {k: coverage[k] for k in keys}
-            result["coverage"].update(complete_prediction_coverage=coverage["complete_prediction_coverage"],
-                                      deadline_exceeded=coverage["deadline_exceeded"])
             if coverage["complete_prediction_coverage"] and coverage["actual_generation_calls"] != 334:
                 issues.add("PUBLIC_COMPLETE_COVERAGE_CALL_COUNT_INCONSISTENT", invalid=True)
+            else:
+                coverage_valid = True
+                result["coverage"] = {k: coverage[k] for k in keys}
+                result["coverage"].update(complete_prediction_coverage=coverage["complete_prediction_coverage"],
+                                          deadline_exceeded=coverage["deadline_exceeded"])
+    elif public:
+        issues.add("PUBLIC_COVERAGE_UNAVAILABLE", invalid=True)
     # The consumer's compact public object intentionally omits a task list/count.
     # A 167-query denominator cannot prove that those queries belong to 120 tasks.
     if public:
@@ -318,7 +359,8 @@ def _public(report, selected, issues):
     metric = public.get("micro_pass_at_2")
     if metric is None:
         issues.add("PUBLIC_SCORE_UNAVAILABLE")
-        if public.get("scorer_rows_complete") is True or report.get("public_benchmark_evidence_eligible") is True:
+        if status == "SEALED_SCORER_ROWS_REPLAYED" or public.get("scorer_rows_complete") is True or \
+                report.get("public_benchmark_evidence_eligible") is True:
             issues.add("PUBLIC_SCORE_CLAIM_WITHOUT_METRIC", invalid=True)
         return result
     if type(metric) is not dict or not _integer(metric.get("numerator"), 0, 167) or \
@@ -329,6 +371,11 @@ def _public(report, selected, issues):
         return result
     if status != "SEALED_SCORER_ROWS_REPLAYED" or public.get("scorer_rows_complete") is not True:
         issues.add("PUBLIC_METRIC_WITHOUT_REPLAY_DECLARATION", invalid=True)
+        return result
+    if not scoring_allowed:
+        issues.add("TERMINAL_STATUS_WITH_SCORED_CONTENT", invalid=True)
+    if not (scoring_allowed and selection_valid and coverage_valid):
+        issues.add("PUBLIC_METRIC_DEPENDENCIES_INVALID", invalid=True)
         return result
     result["micro_pass_at_2"] = {k: metric[k] for k in ("numerator", "denominator", "value", "unit")}
     threshold = metric["numerator"] >= 151
@@ -341,9 +388,9 @@ def _public(report, selected, issues):
 
 
 def _checkpoint_consistency(report, audit, comparison, issues):
-    checkpoints = _object(report.get("checkpoints"))
-    b = _object(checkpoints.get("B"))
-    counts = _object(b.get("counts"))
+    checkpoints = _section(report, "checkpoints", issues)
+    b = _section(checkpoints, "B", issues)
+    counts = _section(b, "counts", issues)
     if "rl_updates" not in counts:
         return
     n = counts["rl_updates"]
@@ -353,7 +400,7 @@ def _checkpoint_consistency(report, audit, comparison, issues):
     if audit["committed_updates"] is not None and n != audit["committed_updates"]:
         issues.add("CHECKPOINT_AUDIT_UPDATE_COUNTS_DIFFER", invalid=True)
     if n == 0:
-        a = _object(checkpoints.get("A"))
+        a = _section(checkpoints, "A", issues)
         ah, bh = a.get("adapter_sha256"), b.get("adapter_sha256")
         if type(ah) is not str or len(ah) != 64 or any(c not in "0123456789abcdef" for c in ah) or bh != ah:
             issues.add("NO_UPDATE_B_ADAPTER_DIFFERS_FROM_A", invalid=True)
@@ -381,31 +428,50 @@ def analyze_report(report: dict) -> dict:
     status = report.get("status")
     status = status if type(status) is str and status in STATUSES else None
     if status is None:
-        issues.add("REPORT_STATUS_UNRECOGNIZED")
+        issues.add("REPORT_STATUS_UNRECOGNIZED", invalid=True)
+    reported_format = report.get("format")
+    compatible = reported_format == CONSUMER_FORMAT or \
+        (reported_format is None and status in COLLECTOR_DIAGNOSTIC_STATUSES)
+    if not compatible:
+        issues.add("REPORT_FORMAT_UNSUPPORTED" if reported_format is not None else "REPORT_FORMAT_UNAVAILABLE",
+                   invalid=True)
     declared = {key: _boolean(report.get(key)) for key in AXES}
     for key in AXES:
         if key in report and type(report[key]) is not bool:
             issues.add("DECLARED_AXIS_TYPE_INVALID", invalid=True)
     provider = report.get("provider_status")
-    provider = provider if type(provider) is str and provider in ("COMPLETE", "ERROR", "CANCELLED", "CANCELED") else None
-    comparison = _comparison(report, issues)
-    audit = _audit(report, issues)
-    timing = _time_matching(report, issues)
-    public = _public(report, comparison["selected_arm"], issues)
-    _checkpoint_consistency(report, audit, comparison, issues)
+    provider = provider if type(provider) is str and provider in PROVIDER_TERMINAL_STATUSES else None
+    if "provider_status" in report and provider is None:
+        issues.add("PROVIDER_STATUS_UNRECOGNIZED", invalid=True)
+    data = report if compatible else {}
+    scoring_allowed = status in SCORING_STATUSES
+    if scoring_allowed and declared["evidence_valid"] is not True:
+        issues.add("SCORING_STATUS_WITHOUT_VALID_CONTENT_DECLARATION", invalid=True)
+        scoring_allowed = False
+    comparison = _comparison(data, issues, scoring_allowed=scoring_allowed)
+    audit = _audit(data, issues)
+    timing = _time_matching(data, issues)
+    public = _public(data, comparison, issues, scoring_allowed=scoring_allowed)
+    _checkpoint_consistency(data, audit, comparison, issues)
+    phase_status = _section(data, "phase_status", issues)
+    if "owner_process_closed" in phase_status and type(phase_status["owner_process_closed"]) is not bool:
+        issues.add("OWNER_PROCESS_CLOSED_TYPE_INVALID", invalid=True)
     if declared["comparison_eligible"] is True and \
             (declared["comparison_complete"] is not True or timing["derived_matched"] is not True):
         issues.add("COMPARISON_ELIGIBILITY_DECLARATION_INCONSISTENT", invalid=True)
     return {"format": FORMAT, "analysis_authenticated": False, "dispatch_authorized": False,
             "method_efficacy_established": False, "input_status": status,
+            "input_format": CONSUMER_FORMAT if reported_format == CONSUMER_FORMAT else None,
+            "report_contract_compatible": compatible,
             "structurally_consistent": not issues.invalid,
             "issues": sorted(issues.codes), "declared_axes": declared,
             "declared_provider_status": provider,
-            "declared_owner_process_closed": _boolean(_object(report.get("phase_status")).get("owner_process_closed")),
+            "declared_owner_process_closed": _boolean(phase_status.get("owner_process_closed")),
             "audit": audit, "comparison": comparison, "time_matching": timing, "public": public,
             "qualifications": [
                 "All declarations and arithmetic are conditional on unauthenticated supplied JSON; this is not a replacement terminal consumer.",
                 "Hitsets do not establish the full same-case universe. Set differences are conditional counts, not qualified paired-effect evidence.",
+                "Dev counts and the fixed A/B/C tie rule do not verify the selection seal, source/dataset identity, chronology, or absence of prior held-target access.",
                 "The compact report does not expose the full 120-task PUBLIC universe; 167 queries alone do not establish task coverage.",
                 "Held32 is reused experiment-held-out evidence; different B/C learning rates define an intervention-package comparison.",
                 "Whole synchronized extra-phase wall includes failed work and persistence; it is neither kernel time nor billed time.",

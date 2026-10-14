@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import signal
 import sys
 
 if __package__ in (None, ""):
@@ -17,8 +18,23 @@ else:
     from .analysis import analyze_report
 
 
-def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
+class _Parser(argparse.ArgumentParser):
+    def error(self, _message):
+        # argparse's default error includes unrecognized arguments. They may
+        # contain private file names or values, so use one fixed diagnostic.
+        raise InputError("arguments_invalid")
+
+
+class _Interrupted(BaseException):
+    pass
+
+
+def _terminate(_signum, _frame):
+    raise _Interrupted()
+
+
+def _parser():
+    parser = _Parser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     prep = sub.add_parser("prepare", help="Create a source-bound offline plan; no launch or training")
     prep.add_argument("--repository-root", type=Path, default=Path(__file__).absolute().parents[2])
@@ -28,8 +44,19 @@ def main(argv=None):
         analysis.add_argument("--" + name, type=Path, required=name == "report")
         analysis.add_argument("--" + name + "-sha256", required=name == "report")
     analysis.add_argument("--output", type=Path, required=True)
-    args = parser.parse_args(argv)
+    return parser
+
+
+def main(argv=None):
+    previous_handler = None
+    handler_installed = False
     try:
+        args = _parser().parse_args(argv)
+        # CLI-only cooperative termination lets descriptor-owned staging clean
+        # up. SIGKILL/power loss cannot run Python cleanup; see the handoff.
+        if hasattr(signal, "SIGTERM"):
+            previous_handler = signal.signal(signal.SIGTERM, _terminate)
+            handler_installed = True
         if args.command == "prepare":
             result = prepare_plan(args.repository_root)
         else:
@@ -46,18 +73,28 @@ def main(argv=None):
             result = analyze_report(documents["report"])
             result["input_binding"] = binding
         descriptor = write_new_json(args.output, result)
-        print(json.dumps({"status": "OFFLINE_OUTPUT_WRITTEN", "output": descriptor,
-                          "dispatch_authorized": False}, sort_keys=True))
+        notice = {"status": "OFFLINE_OUTPUT_WRITTEN", "output": descriptor,
+                  "dispatch_authorized": False}
+        if args.command == "analyze":
+            notice["analysis_structurally_consistent"] = result["structurally_consistent"]
+        print(json.dumps(notice, sort_keys=True))
         return 0
     except InputError as exc:
         print(json.dumps({"status": "INPUT_REJECTED", "code": str(exc), "dispatch_authorized": False}), file=sys.stderr)
         return 2
-    except (OSError, ValueError, TypeError, KeyError, RecursionError):
+    except (KeyboardInterrupt, _Interrupted):
+        print(json.dumps({"status": "INTERRUPTED", "code": "interrupted",
+                          "dispatch_authorized": False}), file=sys.stderr)
+        return 130
+    except (OSError, ValueError, TypeError, KeyError, RecursionError, OverflowError):
         # Private source paths, JSON values, raw provider errors and credentials
         # must never be copied into a portable analysis error or stdout.
         print(json.dumps({"status": "INPUT_REJECTED", "code": "local_input_or_output_error",
                           "dispatch_authorized": False}), file=sys.stderr)
         return 2
+    finally:
+        if handler_installed:
+            signal.signal(signal.SIGTERM, previous_handler)
 
 
 if __name__ == "__main__":

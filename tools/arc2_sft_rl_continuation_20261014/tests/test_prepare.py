@@ -27,6 +27,7 @@ prepare = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(prepare)
 
 
+@unittest.skipUnless(prepare._descriptor_reads_supported(), "POSIX no-follow descriptor reads required")
 class PreparationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -343,7 +344,8 @@ class PreparationTests(unittest.TestCase):
             prepare.prepare_plan(str(self.root))
 
     def test_strict_json_rejects_duplicates_nonfinite_and_nonobjects(self):
-        for raw in (b'{"a":1,"a":2}', b'{"x":NaN}', b'{"x":Infinity}', b'[]', b'null', b'\xff'):
+        for raw in (b'{"a":1,"a":2}', b'{"x":NaN}', b'{"x":Infinity}',
+                    b'{"x":1e999}', b'{"x":-1e999}', b'[]', b'null', b'\xff'):
             with self.subTest(raw=raw):
                 with self.assertRaises(prepare.PreparationError):
                     prepare._strict_json(raw)
@@ -372,7 +374,7 @@ class PreparationTests(unittest.TestCase):
                 imports.add(node.module)
             elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
                 calls.add(node.func.id)
-        self.assertEqual(imports, {"__future__", "hashlib", "json", "os", "pathlib", "stat"})
+        self.assertEqual(imports, {"__future__", "hashlib", "json", "math", "os", "pathlib", "stat"})
         self.assertTrue(calls.isdisjoint({"exec", "eval", "compile", "__import__"}))
 
     def test_python_sources_are_never_interpreted(self):
@@ -384,6 +386,42 @@ class PreparationTests(unittest.TestCase):
         self.plan()
         after = {name for name in sys.modules if name.split(".")[0] in disallowed}
         self.assertEqual(before, after)
+
+
+class PortableFailureTests(unittest.TestCase):
+    def test_windows_fails_closed_before_any_open(self):
+        root = Path.cwd()
+        with patch.object(prepare.os, "name", "nt"), \
+             patch.object(prepare.os, "open", side_effect=AssertionError("must not open")):
+            with self.assertRaisesRegex(prepare.PreparationError, "unavailable on this platform"):
+                prepare.prepare_plan(root)
+
+    def test_missing_descriptor_support_fails_closed(self):
+        with patch.object(prepare.os, "supports_dir_fd", set()):
+            with self.assertRaisesRegex(prepare.PreparationError, "unavailable on this platform"):
+                prepare.prepare_plan(Path.cwd())
+
+    def test_json_overflow_depth_size_encoding_and_number_limits(self):
+        values = (b'{"x":1e999}', b'{"x":-1e999}', b'{"x":-Infinity}',
+                  b'{"x":' + b'9' * 5000 + b'}', b'{"x":' + b'[' * 1500 + b']' * 1500 + b'}',
+                  b' ' * (prepare.MAX_SOURCE_BYTES + 1), b'', '{"x":0}', b'\xff')
+        for raw in values:
+            with self.subTest(kind=type(raw), length=len(raw)):
+                with self.assertRaises(prepare.PreparationError):
+                    prepare._strict_json(raw)
+
+    def test_finite_json_numbers_remain_valid(self):
+        self.assertEqual(prepare._strict_json(b'{"x":1e300,"y":1e-300}'),
+                         {"x": 1e300, "y": 1e-300})
+
+    def test_malformed_semantic_policy_raises_defined_error(self):
+        for value in (None, [], True, "policy"):
+            with self.subTest(kind=type(value)):
+                with self.assertRaises(prepare.PreparationError):
+                    prepare._validate_policy(value)
+        for value in (float("nan"), float("inf"), {"invalid": object()}):
+            with self.assertRaises(prepare.PreparationError):
+                prepare._canonical(value)
 
 
 if __name__ == "__main__":
