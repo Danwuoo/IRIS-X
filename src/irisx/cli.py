@@ -7,34 +7,10 @@ from pathlib import Path
 import sys
 
 from .admission import admission_summary, validate_admission_file
-from .arc_agi2 import materialize_source, prepare_trial as prepare_arc_trial, validate_source, validate_trial_bundle
-from .arc_package import build_arc_package, verify_arc_package
-from .arc_trial_002 import (
-    build_outbound_package as build_trial_002_outbound,
-    import_quarantine as import_trial_002_quarantine,
-    prepare_trial as prepare_trial_002,
-    score_quarantined as score_trial_002_quarantined,
-    stage_kaggle_kernel as stage_trial_002_kernel,
-    technical_preflight as trial_002_preflight,
-    validate_trial as validate_trial_002,
-    verify_outbound_package as verify_trial_002_outbound,
-    verify_result_package as verify_trial_002_result,
-)
 from .artifacts import write_artifact
 from .canonical import digest_value, write_json
 from .errors import IrisxError, ValidationError
 from .fixture import prepare_fixture, run_trial, validate_specification, validate_trial
-from .kaggle import (
-    build_outbound_package,
-    evaluate_imported_run,
-    import_quarantine,
-    materialize_model,
-    preflight as kaggle_preflight,
-    validate_model_source,
-    verify_benchmark_result_package,
-    verify_outbound_package,
-    verify_result_package,
-)
 from .package import build_package, verify_package
 
 
@@ -197,6 +173,31 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def execute(args: argparse.Namespace) -> str:
+    if args.command == "arc-agi-2":
+        from .arc_agi2 import materialize_source, prepare_trial as prepare_arc_trial, validate_source, validate_trial_bundle
+        from .arc_package import build_arc_package, verify_arc_package
+        from .arc_trial_002 import (
+            build_outbound_package as build_trial_002_outbound,
+            import_quarantine as import_trial_002_quarantine,
+            prepare_trial as prepare_trial_002,
+            score_quarantined as score_trial_002_quarantined,
+            stage_kaggle_kernel as stage_trial_002_kernel,
+            technical_preflight as trial_002_preflight,
+            validate_trial as validate_trial_002,
+            verify_outbound_package as verify_trial_002_outbound,
+            verify_result_package as verify_trial_002_result,
+        )
+        from .kaggle import (
+            build_outbound_package,
+            evaluate_imported_run,
+            import_quarantine,
+            materialize_model,
+            preflight as kaggle_preflight,
+            validate_model_source,
+            verify_benchmark_result_package,
+            verify_outbound_package,
+            verify_result_package,
+        )
     if args.command == "fixture" and args.fixture_command == "prepare":
         prepare_fixture(args.output)
         return f"prepared deterministic fixture: {args.output}"

@@ -68,11 +68,14 @@ and [Codex kickoff](../plan/2026-10-14-workstream-codex-kickoff.md) specify the
 remaining implementation: packaging/CLI plus management foundations; test/CI
 separation and the synthetic second line; then incremental ARC isolation.
 
-One document catalog and one set of task records will drive a generated board.
+The [document catalog](../management/documents.json) and [task records](../management/tasks/)
+drive the [generated board](../management/BOARD.md). Use `python tools/dev.py status`,
+`check` and `render --check`; explicit `render` refreshes the board.
 The workstream registry remains navigation-only. STATUS retains scope and domain
 evidence, not a duplicate task ledger. Developer handoffs remain review_ready
 until an independently sourced, commit-bound review supports verification.
-The management tooling is planned work, not implemented by this documentation.
+The management guide describes the implemented offline entry points. Suite selection
+and domain boundaries are delivered in the following stacked increments.
 
 Unchanged historical rules remain in the pinned
 [pre-foundation root](https://github.com/Danwuoo/IRIS-X/blob/baaf47d4f449c534ddd4646ab9b3175bbaf1ef89/AGENTS.md).

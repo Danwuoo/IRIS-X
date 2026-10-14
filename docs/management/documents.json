@@ -1,0 +1,659 @@
+{
+  "format": "irisx.documents.v1",
+  "baseline_commit": "08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059",
+  "managed_scopes": [
+    "docs/management/**",
+    "docs/verification/**",
+    "docs/workstreams/**"
+  ],
+  "documents": [
+    {
+      "id": "project-readme",
+      "path": "README.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "root-governance",
+      "path": "AGENTS.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "owner",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "product-thesis",
+      "path": "PRODUCT_THESIS.md",
+      "kind": "reference",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "owner",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "product-scope",
+      "path": "docs/product/product-scope.md",
+      "kind": "reference",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "owner",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "documentation-entry",
+      "path": "docs/README.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "repository-layout",
+      "path": "docs/repository-layout.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "development-entry",
+      "path": "docs/development/README.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "development-operating-model",
+      "path": "docs/development/operating-model.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "data-execution-policy",
+      "path": "docs/development/data-and-execution-policy.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "owner",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "lightweight-development-decision",
+      "path": "docs/decisions/0010-adopt-lightweight-risk-based-development.md",
+      "kind": "decision",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "owner",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "test-guidance",
+      "path": "tests/README.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "workstream-guide",
+      "path": "docs/workstreams/README.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "workstream-registry",
+      "path": "docs/workstreams/registry.json",
+      "kind": "reference",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "core-status",
+      "path": "docs/workstreams/core/STATUS.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-status",
+      "path": "docs/workstreams/arc-agi-2/STATUS.md",
+      "kind": "guide",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "arc-maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-research-entry",
+      "path": "docs/workstreams/arc-agi-2/RESEARCH.md",
+      "kind": "reference",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "line-b-status",
+      "path": "docs/workstreams/line-b/STATUS.md",
+      "kind": "guide",
+      "workstream": "line-b",
+      "status": "active",
+      "owner_role": "line-b-maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "workstream-pr2-pr4-plan",
+      "path": "docs/plan/2026-10-14-workstream-pr2-pr4-local-development.md",
+      "kind": "plan",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "owner",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "workstream-codex-kickoff",
+      "path": "docs/plan/2026-10-14-workstream-codex-kickoff.md",
+      "kind": "prompt",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "owner",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "management-guide",
+      "path": "docs/management/README.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "document-catalog",
+      "path": "docs/management/documents.json",
+      "kind": "reference",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "task-board",
+      "path": "docs/management/BOARD.md",
+      "kind": "guide",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "generated",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "task-record-template",
+      "path": "docs/management/templates/task-record.md",
+      "kind": "reference",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "developer-handoff-template",
+      "path": "docs/management/templates/developer-handoff.md",
+      "kind": "reference",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "independent-review-template",
+      "path": "docs/management/templates/independent-review.md",
+      "kind": "reference",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-r1-historical-experiments",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/native-continuation-20261013/historical-experiments.md",
+      "kind": "reference",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-r2-architecture-memo",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/arc-next-line/architecture-memo.zh-TW.md",
+      "kind": "reference",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-r3-qwen-portfolio",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/qwen-portfolio-20261012/PLAN.md",
+      "kind": "plan",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-r4-primary-method-assessment",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/native-continuation-20261013/primary-method-assessment.md",
+      "kind": "reference",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-r5-native-research-continuation",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/plan/2026-10-13-native-research-continuation.md",
+      "kind": "plan",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-uncapped-result",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/arc-next-line/uncapped-result/README.md",
+      "kind": "evidence",
+      "workstream": "arc-agi-2",
+      "status": "historical",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-base-ttt-paired-result",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/trials/arc-agi-2-qwen35-nvarc/public-eval-notebooks-001-diagnosis.md",
+      "kind": "evidence",
+      "workstream": "arc-agi-2",
+      "status": "historical",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-prompt-pilot-result",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/trials/arc-agi-2-prompt-pilot/README.md",
+      "kind": "evidence",
+      "workstream": "arc-agi-2",
+      "status": "historical",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-budget-ablation-result",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/trials/arc-agi-2-budget-ablation/README.md",
+      "kind": "evidence",
+      "workstream": "arc-agi-2",
+      "status": "historical",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-compact-abc-result",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/trials/arc-agi-2-qwen35-nvarc/compact-abc-005-editor-diagnosis.md",
+      "kind": "evidence",
+      "workstream": "arc-agi-2",
+      "status": "historical",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-e12-result",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/development/stage4-e12-run003-terminal.md",
+      "kind": "evidence",
+      "workstream": "arc-agi-2",
+      "status": "historical",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-e13-result",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/development/stage4-e13-search-budget.md",
+      "kind": "evidence",
+      "workstream": "arc-agi-2",
+      "status": "historical",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-portfolio-panel-plan",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/qwen-portfolio-20261012/panel-plan.md",
+      "kind": "plan",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-current-measured-policy",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/tools/arc_qwen_rlvr004_20261013/source/design/MEASURED-POLICY.json",
+      "kind": "plan",
+      "workstream": "arc-agi-2",
+      "status": "active",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-current-cost-evidence",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/tools/arc_qwen_rlvr004_20261013/source/design/COST-EVIDENCE.json",
+      "kind": "evidence",
+      "workstream": "arc-agi-2",
+      "status": "historical",
+      "owner_role": "arc-researcher",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "arc-run008-engineering-handoff",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/native-continuation-20261013/RUN008-LOCAL-HANDOFF.md",
+      "kind": "evidence",
+      "workstream": "arc-agi-2",
+      "status": "historical",
+      "owner_role": "arc-maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "product-entry",
+      "path": "docs/product/README.md",
+      "kind": "reference",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "product-contracts",
+      "path": "docs/product/contracts.md",
+      "kind": "reference",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "product-domain-package",
+      "path": "docs/product/domain-package.md",
+      "kind": "reference",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "maintainer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    }
+  ],
+  "legacy_indexes": [
+    {
+      "id": "legacy-development-index",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/README.md",
+      "scope": [
+        "docs/decisions/**",
+        "docs/plan/**",
+        "docs/development/**"
+      ]
+    },
+    {
+      "id": "legacy-trial-index",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/trials/README.md",
+      "scope": [
+        "trials/**"
+      ]
+    },
+    {
+      "id": "legacy-research-index",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/native-continuation-20261013/historical-experiments.md",
+      "scope": [
+        "research/**"
+      ]
+    },
+    {
+      "id": "legacy-archive-index",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/archive/README.md",
+      "scope": [
+        "archive/**"
+      ]
+    }
+  ]
+}
