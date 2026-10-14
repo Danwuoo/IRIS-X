@@ -1,0 +1,354 @@
+{
+  "format": "irisx.onboarding-report.v1",
+  "status": "passed",
+  "scope": "synthetic engineering-only non-deployable; developer self-check",
+  "independent_review": "pending",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source",
+      "exit_code": 0,
+      "log": "command-01.log"
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source",
+      "exit_code": 0,
+      "log": "command-02.log"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\empty-hooks",
+        "clone",
+        "--quiet",
+        "--shared",
+        "--no-checkout",
+        "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source",
+        "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source",
+      "exit_code": 0,
+      "log": "command-03.log"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\empty-hooks",
+        "switch",
+        "--detach",
+        "15c1209c88ee54738595b92cf9d35c2f0d4a3177"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-04.log"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\empty-hooks",
+        "switch",
+        "-c",
+        "codex/onboarding-line-b-1791976755164839100"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-05.log"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-06.log"
+    },
+    {
+      "argv": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "render"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-07.log"
+    },
+    {
+      "argv": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "context",
+        "--task",
+        "ONBOARD-LB-01"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-08.log"
+    },
+    {
+      "argv": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "check"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-09.log"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\empty-hooks",
+        "add",
+        "--",
+        "docs/management",
+        "docs/plan/synthetic-line-b-onboarding.md",
+        "docs/development/synthetic-line-b-onboarding.md"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-10.log"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\empty-hooks",
+        "-c",
+        "user.name=IRIS-X synthetic onboarding",
+        "-c",
+        "user.email=synthetic-onboarding@invalid.example",
+        "commit",
+        "-m",
+        "test: register synthetic onboarding metadata"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-11.log"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-12.log"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--exit-code",
+        "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+        "cfbc843444d492cb09819988a623d4cbd002b6b2",
+        "--",
+        "src",
+        "tools",
+        "tests",
+        ".github",
+        "pyproject.toml"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-13.log"
+    },
+    {
+      "argv": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "verify",
+        "--require-committed",
+        "--suite",
+        "line-b",
+        "--output",
+        "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout\\.irisx\\line-b\\onboarding-suite"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-14.log"
+    },
+    {
+      "argv": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "render"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-15.log"
+    },
+    {
+      "argv": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "render",
+        "--check"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-16.log"
+    },
+    {
+      "argv": [
+        "git",
+        "cat-file",
+        "-e",
+        "cc14bd1a79aac1fe6135017c9e09d4834300675d:research/native-continuation-20261013/primary-method-assessment.md"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-17.log"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "cc14bd1a79aac1fe6135017c9e09d4834300675d:research/native-continuation-20261013/primary-method-assessment.md"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-18.log"
+    },
+    {
+      "argv": [
+        "git",
+        "cat-file",
+        "-e",
+        "cc14bd1a79aac1fe6135017c9e09d4834300675d:docs/plan/2026-10-13-native-research-continuation.md"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-19.log"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "cc14bd1a79aac1fe6135017c9e09d4834300675d:docs/plan/2026-10-13-native-research-continuation.md"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-20.log"
+    },
+    {
+      "argv": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "context",
+        "--task",
+        "WSF-04"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-21.log"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--",
+        "src",
+        "tools",
+        "tests",
+        ".github",
+        "pyproject.toml"
+      ],
+      "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+      "exit_code": 0,
+      "log": "command-22.log"
+    }
+  ],
+  "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+  "initial_checkout_clean": true,
+  "exercise_commit": "cfbc843444d492cb09819988a623d4cbd002b6b2",
+  "navigation_chain": [
+    {
+      "role": "entry",
+      "path": "docs/README.md"
+    },
+    {
+      "role": "board",
+      "path": "docs/management/BOARD.md"
+    },
+    {
+      "role": "task",
+      "path": "docs/management/tasks/ONBOARD-LB-01.json"
+    },
+    {
+      "role": "plan",
+      "path": "docs/plan/synthetic-line-b-onboarding.md"
+    },
+    {
+      "role": "code",
+      "path": "src/irisx/domains/line_b/flow.py"
+    },
+    {
+      "role": "handoff",
+      "path": "docs/verification/ONBOARD-LB-01/HANDOFF.md"
+    }
+  ],
+  "research_sources": [
+    {
+      "id": "arc-r4-primary-method-assessment",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/native-continuation-20261013/primary-method-assessment.md",
+      "commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+      "path": "research/native-continuation-20261013/primary-method-assessment.md",
+      "remote_availability": "unverified",
+      "research_content_review": "pending human review",
+      "git_blob": "60b92ee928d5c099bc528dd4411704adfe9066a0",
+      "local_git_object": "present"
+    },
+    {
+      "id": "arc-r5-native-research-continuation",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/plan/2026-10-13-native-research-continuation.md",
+      "commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+      "path": "docs/plan/2026-10-13-native-research-continuation.md",
+      "remote_availability": "unverified",
+      "research_content_review": "pending human review",
+      "git_blob": "42da3379ca9e634f223f36844cdee3e77a2a1786",
+      "local_git_object": "present"
+    }
+  ],
+  "task_id": "ONBOARD-LB-01",
+  "task_state": "review_ready",
+  "program_and_original_tasks_unchanged": true,
+  "returned_to_task": "WSF-04",
+  "line_b_suite": {
+    "status": "passed",
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "blocked": 0,
+    "target_commit": "cfbc843444d492cb09819988a623d4cbd002b6b2"
+  },
+  "checkout": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+  "sandbox_head_branch": "codex/onboarding-line-b-1791976755164839100",
+  "raw_report": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\report.json",
+  "raw_report_sha256": "60b9a8246e7cdb0480c4b7c2befe2ee4a1987455b6e9a771be8e435d37f392ab"
+}

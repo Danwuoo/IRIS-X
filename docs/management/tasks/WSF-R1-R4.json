@@ -3,7 +3,7 @@
   "id": "WSF-R1-R4",
   "title": "Correct effective review, suite source identity, snapshot loading and authoritative gate",
   "workstream": "core",
-  "state": "in_progress",
+  "state": "review_ready",
   "depends_on": [
     "WSF-04"
   ],
@@ -38,7 +38,7 @@
   "base_branch": "refactor/workstream-pr4-arc-boundary",
   "head_branch": "fix/workstream-review-r1-r4-20261014",
   "base_commit": "c514e9d5b3c438b70c90824ec1fd2796aa840740",
-  "implementation_commit": null,
+  "implementation_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
   "acceptance": [
     "WSF-R1",
     "WSF-R2",
@@ -46,8 +46,12 @@
     "WSF-R4"
   ],
   "blockers": [],
-  "handoff_ref": null,
-  "verification_refs": [],
+  "handoff_ref": "wsf-r1-r4-handoff",
+  "verification_refs": [
+    "wsf-r1-r4-handoff",
+    "wsf-r1-r4-self-tests",
+    "wsf-r1-r4-onboarding"
+  ],
   "review_refs": [],
   "concurrency_group": null
 }

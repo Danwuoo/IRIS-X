@@ -879,6 +879,42 @@
         "WSF-R1-R4"
       ],
       "supersedes": []
+    },
+    {
+      "id": "wsf-r1-r4-handoff",
+      "path": "docs/verification/WSF-R1-R4/HANDOFF.md",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R1-R4"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf-r1-r4-self-tests",
+      "path": "docs/verification/WSF-R1-R4/self-tests.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R1-R4"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf-r1-r4-onboarding",
+      "path": "docs/verification/WSF-R1-R4/onboarding.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R1-R4"
+      ],
+      "supersedes": []
     }
   ],
   "legacy_indexes": [
