@@ -9,7 +9,8 @@
 2. [方法總覽與實驗觸發條件](method-landscape.zh-TW.md)、[Agent 架構與來源](agent-architectures.zh-TW.md)、[RL 方法與數學](rl-methods.zh-TW.md)、[研究來源審查](research-source-review.md)
 3. [Stage 0 使用說明](../../tools/arc2_sft_rl_continuation_20261014/README.md)、[本地使用與安全限制](OFFLINE-LOCAL-HANDOFF.md)、[Stage 0 獨立審查](offline-continuation-review.md)
 4. [Agent Factory 3 整合設計](../arc2-agent-factory3-20261014/integration.zh-TW.md)、[API／CPU proof 使用說明](../../tools/arc2_agent_factory3_bridge_20261014/README.md)、[元件驗證紀錄](../arc2-agent-factory3-20261014/validation.md)、[元件獨立審查](../arc2-agent-factory3-20261014/independent-review.md)
-5. [舊計畫相容入口](NEXT-STAGE-PLAN.zh-TW.md)、[前次導覽與計畫審查](documentation-update-review.md)
+5. [Stage 1 training audit／逐軌跡 loss 使用介面](../../tools/arc2_abc_continuation_20261014/README.md)
+6. [舊計畫相容入口](NEXT-STAGE-PLAN.zh-TW.md)、[前次導覽與計畫審查](documentation-update-review.md)
 
 方法文件保存科學理由，交接文件保存操作方法，審查文件保存當時證據；進度變更只更新
 管理頁，不另新增同功能狀態文件。凍結的 run008 來源、原 scorer 與歷史證據不由導覽改寫。

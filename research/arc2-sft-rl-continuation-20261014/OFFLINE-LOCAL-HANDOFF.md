@@ -20,6 +20,11 @@ CPU 元件、保存的 log-probability 與宣告性 metadata 不能代替真實�
 
 ## 取得與核對
 
+Stage 0 的 prepare／analyze 用法保留在下文。Stage 1 對原始 training audit 的 opt-in
+CLI、context schema、逐軌跡介面與16MiB輸入限制統一見
+[Stage 1 使用說明](../../tools/arc2_abc_continuation_20261014/README.md)，不在本頁複製另一套命令。
+新CLI的exit0只表示報告已寫出；報告可能明列unknown／incomplete／rejected，不能據此啟動更新。
+
 使用此分支中經遠端核對的 commit，保存完整 SHA；不要以日後移動的分支名稱
 替代執行來源身分。一般公開 Git checkout 即包含必要來源，無須取得 Drive
 封包或帳號設定。保留 run008、main 與工程重整線，不混入它們的新變更。

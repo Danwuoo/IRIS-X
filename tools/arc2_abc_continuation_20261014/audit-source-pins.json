@@ -1,0 +1,27 @@
+{
+  "files": {
+    "tools/arc2_agent_factory3_bridge_20261014/bridge.py": "68e09ed7c01bc51a32a7ddf31eaceb16d928dc3f20069d3f53967a9d70ab74a3",
+    "tools/arc2_agent_factory3_bridge_20261014/provenance.py": "434241a97958a39f904ccad9857e30e4dc3267ae87625aac3be548a75db1103e",
+    "tools/arc2_agent_factory3_bridge_20261014/vendor/LICENSE": "61900d0f9ecd85c532cacd77f9cc98fa68b55a4ab81f0d6435f178c0151d460d",
+    "tools/arc2_agent_factory3_bridge_20261014/vendor/losses/ddis_loss.py": "541ebd935dcbe27789e80aeb6ddfb8ce44390f71b796d026c428d9c13859c090",
+    "tools/arc2_agent_factory3_bridge_20261014/vendor/losses/metric_state.py": "1cac291fadcf4a291568c2b0245fdd1df71bbaea628da44df4f006df0d4005f1",
+    "tools/arc2_agent_factory3_bridge_20261014/vendor/types.py": "bc6d7328b831d11699378261fae7556ad3516ea1b23c82bf843053a43f33c6c6",
+    "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/audit_checks.py": "778ae86de3dce6cd1d3f62b1b1cd374c926b7a581a71df1bcd272bde060c1ffa",
+    "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/grid_checks.py": "4ef2c33434e9064c93b6da75329067aff60ae3222417a2d608cede7f3e0cbb11",
+    "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/safe_io.py": "d4c1a0ebadc5614308ecb307ecdfa1e75fe4824d7d615ddc6bd2028c8965726e",
+    "tools/arc_qwen_rlvr004_20261013/source/design/MEASURED-POLICY.json": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda",
+    "tools/arc_qwen_rlvr004_20261013/source/experiment_flow/audit.py": "043c2208e58b5cc2bc3c4942f0fcec1503f95e62b277e810867cf15580eb8062",
+    "tools/arc_qwen_rlvr004_20261013/source/experiment_flow/flow.py": "73c6f9ca37a29242971294fa21144da474318f3a2616102dcbcf88bc09c5a20d",
+    "tools/arc_qwen_rlvr004_20261013/source/owned_runtime/evidence.py": "a5ed6928c0fee0610052dc634d4a8022780b413ac54900ed6d3d6f9efb68178c",
+    "tools/arc_qwen_rlvr004_20261013/source/owned_runtime/factory.py": "3b3604364f2cd20c96617e43d17087aeb47039ee48be322f81b76ca4a3ae8f8a",
+    "tools/arc_qwen_rlvr004_20261013/source/owned_runtime/ledger.py": "860b0171b659a46af7687c613fe663709a5319cab4f17aa645ea148a2a0b623e",
+    "tools/arc_qwen_rlvr004_20261013/source/reviewed/rl_math.py": "3de11b818eccb6a6bd8896245005a010abc3d930f04982490cfba79e0306b65a",
+    "tools/arc_qwen_rlvr004_20261013/source/rl_session/actor.py": "1aff23388143552ff528118b1380251f01803c7c40cbcc1e63866aa6f71142f0",
+    "tools/arc_qwen_rlvr004_20261013/source/rl_session/data.py": "66164e06dda8629d35f7a9fff1eda5506bba32d8734f542accdda3b5a98651e4",
+    "tools/arc_qwen_rlvr004_20261013/source/rl_session/plan.py": "73fb2f1197270c821a9bb8f39653db5529609145ccb84a8173d4bd476f43ff02",
+    "tools/arc_qwen_rlvr004_20261013/source/rl_session/runtime.py": "7e1ef8158f5ba2a12f9283b04adf4a01d0eea65ea5e50be5478d43412ab368d1"
+  },
+  "format": "irisx/abc-audit-source-pins-v1",
+  "frozen_baseline_commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+  "upstream_commit": "a1836decb836cd52cf2b27f5022f6838cee75df3"
+}
