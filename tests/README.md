@@ -1,61 +1,65 @@
 # Tests
 
-Start at the [workstream guide](../docs/workstreams/README.md). The existing suite
-still covers P1 contracts/reference evaluation/selection/package/CLI, historical
-P2 admission, retained ARC trials and transport, evaluator isolation, checkpoint
-and result bindings, and the P0 archive catalog. Existing tests are not deleted,
-relocated or exempted by this foundation. Archived tests stay in the cold tag.
+Start with the [workstream guide](../docs/workstreams/README.md).
+Use the [management guide](../docs/management/README.md), generated board and
+[static inventory](inventory.json). `python tools/dev.py check` checks metadata
+and exhaustive test-file coverage without importing tests. `verify --suite NAME`
+selects static entries first and executes each selected file in a fresh process.
+Reports live in new ignored `.irisx/core/verification/<suite>/<attempt>/` roots.
+No metadata field can supply a shell command.
 
-## Dependency classes, not a claim of a completed suite split
+| Suite | Scope / prerequisites |
+| --- | --- |
+| management / navigation / integrity | Repository structure, catalog, research pins, runner/gate negatives; stdlib + available local Git objects |
+| core / distribution | Shared contracts/reference flow/CLI, formal wheel safety; no ARC operational inputs |
+| arc-unit | Explicit self-contained CPU smoke surface,124 tests in initial local run; `packaging` test-only dependency |
+| line-b | Independent synthetic label engineering loop; no ARC implementation or inputs |
+| arc-unit-audit | Remaining public ARC CPU modules, including tool-local suites and unresolved imports/platform failures; visible audit, never relabeled private merely because it fails |
+| arc-reconstruction / operational | Authentic historical/private inputs; blocked before import under this task |
+| arc-native | Optional native model/training dependencies; blocked before import because training is outside this task |
 
-| Class | Examples / scope | Required context |
-| --- | --- | --- |
-| Navigation | `test_workstream_navigation.py` | Python stdlib and current documentation; no installation, archive, model or login |
-| Shared product | contracts, engine, reference flow, package and CLI checks | Product installation and their declared local fixtures; not GPU evidence |
-| ARC CPU | loader, assembly and mocked transport checks | Exact tested source, supported environment and declared SDK/native test dependencies where applicable |
-| Historical reconstruction | old source/candidate/inventory checks | Genuine pinned Git objects and original authenticated inputs; missing data is not a pass |
-| Private operational integration | run008 admission and active-wire regression fixtures | Authentic private readbacks/owner bindings/drafts or separately reviewed new synthetic fixtures; public checkout alone is insufficient |
-
-This table is a dependency guide, not an exhaustive machine-readable test
-inventory. Some run-specific tests live under `tools/` and are not covered by
-`unittest discover -s tests`; read the pinned run guide before running them.
-The run008 implementation is on a separate branch, not added to main by this PR.
-No new suite selector, nested package support or domain test split is claimed.
-
-## Standalone foundation checks
-
-```sh
-python -B tests/test_workstream_navigation.py
-python -O -B tests/test_workstream_navigation.py
-```
-
-The `workstream-navigation` workflow runs these independently from the original
-`offline-validation` workflow. These checks validate the navigation schema,
-local status paths, required status sections and pinned cross-branch references.
-They do not validate truth of external status, remote availability, product
-behavior, historical reconstruction, provider admission or GPU/scientific results.
-
-## Complete validation remains available
-
-From a properly prepared checkout:
+Every Python file under tests/ and every tools/**/test_*.py is indexed. Additional
+tool-local helper/fixture modules are explicit helper entries, not zero-test passes.
+Special `*_strict.py`, `load_tests` wrappers and four import-side-effect scripts
+retain named classification reasons. Public audit modules remain executable and
+visible in CI alongside the original legacy aggregate. No tests were deleted or
+renamed to obtain a green public smoke gate. The small arc-unit surface is not
+acceptance of all ARC source or research.
 
 ```sh
-python -m pip install --no-build-isolation -e .
-python -m unittest discover -s tests -v
+python tools/dev.py verify --suite core
+python tools/dev.py verify --suite arc-unit
+python tools/dev.py verify --suite line-b
+python tools/dev.py verify --suite arc-unit-audit
+python tools/distribution_check.py --output .irisx/core/distribution/new-attempt
 python tools/repository_check.py --all
 ```
 
-The last command includes validator self-tests, repository invariants, the tests
-under `tests/` and diff checks; it does not discover every tool-local suite.
-The existing full CI workflow is retained. Restoring README's historical index
-may allow previously masked tests to run; it does not prove they pass.
+`verify` refuses empty selections,missing coverage,collection errors,zero-test
+modules and unexpected skips. The only public skip allowances are exact test
+ID + Windows platform + WinError1314 reason for two actual symlink negatives.
+Mocked link guards still run;all skipped cases remain counted. Cancelled,timeout,
+blocked and missing reports cannot pass the fixed workstream-gate.
 
-For historical Stage 4 aggregates, follow the original setup: fresh interpreter,
-`PYTHONHASHSEED=0`, recorded offline flags, a workspace-backed TMPDIR with the
-ignored `.irisx` parent and sufficient space (the guidance specifies >5 GiB).
-Keep the inherited environment rather than `env -i`. Do not manufacture original
-Git objects, approval, observations or missing fixtures. New synthetic fixtures
-must be separately named/reviewed and must never masquerade as original evidence.
+Public and formal distribution CI matrices use Linux/Windows and Python3.11/3.14
+with fail-fast false. All PRs run all public suites;there is no path filter.
+ARC public audit and retained offline-validation remain separate red-capable
+jobs without continue-on-error. The gate validates every expected matrix report
+and actual tested commit;it is narrower than the full aggregate. Branch protection
+is unchanged and no required-check registration is claimed.
+
+Test-only pins are separate from dependency-free product metadata. Public pins
+use existing packaging26.3. Audit pins list small numpy/Jinja2/IPython dependencies;
+no ML stack,provider SDK,model or authentic inputs are installed by these jobs.
+NumPy2.4.3 metadata lists Python3.11â€“3.14 ([primary package metadata](https://pypi.org/pypi/numpy/2.4.3/json));
+pins do not prove cross-platform execution. Locally,the stage environment inherits
+only the available Python3.14 packages,not a downloaded ML environment.
+
+Full aggregates require a fresh interpreter,hashseed0,offline flags,an existing
+ignored .irisx parent and workspace-backed TMPDIR with >5GiB free. Preserve raw
+exit codes and test IDs. Missing historical inputs remain blockers;new synthetic
+fixtures never impersonate authentic owner/readback evidence. Repeated preparation
+attempts have separate receipts. A focused pass is not full CI,GPU or efficacy.
 
 ## Retained failure records
 

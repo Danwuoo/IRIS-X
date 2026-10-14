@@ -70,14 +70,14 @@ Structural validation does not attest that a human review's conclusions are
 correct or that a remote URL is available; the independent conversation checks
 those sources separately.
 
-PR 3 adds controlled suite selection through `python tools/dev.py verify
---suite ...`; its inventory and named reports do not replace the full historical
+Controlled suite selection uses `python tools/dev.py verify --suite ...`;
+its static inventory and named reports do not replace the full historical
 `python tools/repository_check.py --all` entry or make existing failures pass.
 Use [test guidance](../../tests/README.md) for the implemented suites.
 
 ## Research and historical material
 
-The [ARC research entry](../workstreams/arc-agi-2/RESEARCH.md), R1–R5 and key
+The [ARC research entry](../workstreams/arc-agi-2/RESEARCH.md), R1â€“R5 and key
 results are individually cataloged. Their lifecycle status describes document
 use, not scientific validity. Distinct architecture and training A/B/C
 comparisons, denominators, results, limitations and unanswered hypotheses retain

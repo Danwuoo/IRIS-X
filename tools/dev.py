@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import sys
+import time
 
 from workstream_management import MARKER, _records, render_board, safe_path, validate
 
@@ -18,8 +19,18 @@ def main(argv=None):
     render.add_argument("--check", action="store_true")
     context = commands.add_parser("context")
     context.add_argument("--task", required=True)
+    verify = commands.add_parser("verify")
+    verify.add_argument("--suite", required=True)
+    verify.add_argument("--output", type=Path)
     args = parser.parse_args(argv)
     try:
+        if args.command == "verify":
+            from suite_runner import run_suite
+            output = args.output or ROOT / f".irisx/core/verification/{args.suite}/{time.time_ns()}"
+            report = run_suite(ROOT, args.suite, output.absolute())
+            print(f"{args.suite}: {report['status']}; tests={report['tests']} failures={report['failures']} errors={report['errors']} skips={report['skips']} blocked={report['blocked']}")
+            print(output / "report.json")
+            return report["exit_code"]
         if args.command == "status":
             print(render_board(ROOT), end="")
         elif args.command == "context":
@@ -41,6 +52,9 @@ def main(argv=None):
             board.write_text(render_board(ROOT), encoding="utf-8", newline="\n")
         else:
             errors = validate(ROOT)
+            if (ROOT / "tests/inventory.json").is_file():
+                from suite_runner import validate_inventory
+                errors.extend(validate_inventory(ROOT))
             if errors:
                 print("\n".join(errors), file=sys.stderr)
                 return 1

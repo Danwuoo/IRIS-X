@@ -658,6 +658,68 @@
         "WSF-02"
       ],
       "supersedes": []
+    },
+    {
+      "id": "line-b-code-governance",
+      "path": "src/irisx/domains/line_b/AGENTS.md",
+      "kind": "guide",
+      "workstream": "line-b",
+      "status": "active",
+      "owner_role": "line-b-maintainer",
+      "related_tasks": [
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "line-b-engineering-guide",
+      "path": "src/irisx/domains/line_b/README.md",
+      "kind": "guide",
+      "workstream": "line-b",
+      "status": "active",
+      "owner_role": "line-b-maintainer",
+      "related_tasks": [
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "WSF-03-handoff",
+      "path": "docs/verification/WSF-03/HANDOFF.md",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-03"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "WSF-03-self-tests",
+      "path": "docs/verification/WSF-03/self-tests.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-03"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "WSF-03-legacy-audit",
+      "path": "docs/verification/WSF-03/legacy-audit.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-03"
+      ],
+      "supersedes": []
     }
   ],
   "legacy_indexes": [
