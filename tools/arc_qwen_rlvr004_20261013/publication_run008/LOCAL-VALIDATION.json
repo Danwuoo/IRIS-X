@@ -1,0 +1,78 @@
+{
+  "GPU_calls": 0,
+  "automatic_relaunch": false,
+  "coverage": [
+    "strict wrapper and existing venv boundary",
+    "source-only installed SDK imports",
+    "proactive official OAuth expiry renewal",
+    "durable uncertain refresh and resource counter retention",
+    "staged actual JIT wire admission and stale clock rejection",
+    "one durable mutation claim and interrupted read reconciliation",
+    "exact numeric output selection",
+    "origin/service allowlist and no implicit mutation retries",
+    "total wall timeout and client cleanup",
+    "download cap and incomplete destination rejection",
+    "shared publisher lock exception release",
+    "explicit GPU-unavailable latch; plain ERROR not inferred",
+    "continuous indexing-pending backoff without elapsed-time cutoff"
+  ],
+  "credential_body_reads_by_adapter": 0,
+  "credential_copies": 0,
+  "date_utc": "2026-10-14",
+  "format": "irisx/run008-native-transport-local-validation-v1",
+  "grant_changes": 0,
+  "model_calls": 0,
+  "normal_tests": 30,
+  "optimized_tests": 30,
+  "original_history_changed": false,
+  "provider_calls": 0,
+  "provider_execution_admitted_by_this_report": false,
+  "real_launcher_help_collect": "PASS_NO_PROVIDER",
+  "real_launcher_help_publish": "PASS_NO_PROVIDER",
+  "release_draft_preview_contract": "PASS_NO_PROVIDER",
+  "scientific_result_verified": false,
+  "scorer_calls": 0,
+  "sdk_installed_source_closure_members": 170,
+  "sdk_installed_source_closure_result": "PASS",
+  "source_files": {
+    "config.py": {
+      "bytes": 8905,
+      "sha256": "a4492c5a7b4d6cb42b2ee212f35b788fc70730fbd2fc13bf8b5cac03b48091fc"
+    },
+    "launch.py": {
+      "bytes": 2360,
+      "sha256": "1b78a2a5f2f869ad026c0f6ca3420857a4eaf559b7e2b6da128eb63d0a1898a1"
+    },
+    "native_auth.py": {
+      "bytes": 9716,
+      "sha256": "b9b5aec37385f7a5de37ae92bbf0bfb3b7b664f0bc31c3fcc044532cb46a19de"
+    },
+    "operator_common.py": {
+      "bytes": 27952,
+      "sha256": "f9b2acad7816b4af97baa877821ce4c9e3d16831fa340caf02d3e8c00b3f2805"
+    },
+    "rl_collect.py": {
+      "bytes": 58716,
+      "sha256": "71603a1eb47b1b7656f2ca6a8f2b2eb6faa99469a27aef63d4f0446828ef3a78"
+    },
+    "rl_transport.py": {
+      "bytes": 59269,
+      "sha256": "a4da4850d7a2e44af2d85d4be65e55913a746ddeb66a26238500457911261bac"
+    },
+    "sdk-lock.json": {
+      "bytes": 19816,
+      "sha256": "3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d"
+    },
+    "tests/test_native_auth.py": {
+      "bytes": 6909,
+      "sha256": "cfba5d7a95d5695efcfa965023e8294168dd99e0408a876c11c06bbb8bfb58b1"
+    },
+    "tests/test_native_transport.py": {
+      "bytes": 28116,
+      "sha256": "60f5b74c56e2cbd08bc819c1dc5f8e0e5edba036bfe92fe93d1b72ba9c853fc5"
+    }
+  },
+  "status": "LOCAL_CPU_TESTS_PASSED_REQUIRES_INDEPENDENT_REVIEW",
+  "test_environment": "Existing official Kaggle venv with -I -B and -I -O -B",
+  "test_result": "PASS"
+}

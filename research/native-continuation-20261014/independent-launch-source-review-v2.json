@@ -1,0 +1,230 @@
+{
+  "actual_installed_sdk_source_members": 170,
+  "actual_isolated_launcher_publish_and_collect_help": "PASS; no Provider constructed",
+  "checks": {
+    "21_original_consumer_helpers_unchanged": true,
+    "dev_selection_freeze_and_answer_isolation_retained": true,
+    "exact_259_runtime_members_unchanged_from_reviewed_loader_proposal": true,
+    "full_PUBLIC120_120_tasks_167_queries_retained": true,
+    "incomplete_numeric_output_indexing_continues_without_arbitrary_cutoff": true,
+    "native_auth_preexpiry_refresh_and_durable_uncertain_refresh_stop": true,
+    "no_credentials_or_private_transcript_paths_in_reviewed_delivery_files": true,
+    "one_claimed_active_send_and_uncertain_read_only_reconciliation": true,
+    "one_immutable_43200_second_clock_and_60_second_dispatch_age": true,
+    "original_material_policy_model_wheel_scorer_pins_retained": true,
+    "single_initial_read_intent_preserved_on_reconciliation": true,
+    "source_only_sdk_loader_rejects_foreign_bytecode_and_unpinned_imports": true,
+    "staged_collector_accepts_dispatch_distinct_from_predispatch": true,
+    "two_path_solver_projection_and_reverse_equality": true
+  },
+  "closed_draft_members_verified": 423,
+  "current_receipts": {
+    "material": "independent-material-review-v2.json",
+    "runtime": "independent-runtime-review-v2.json",
+    "solver_namespace": "independent-solver-namespace-review.json"
+  },
+  "final_candidate_local_check": {
+    "assembly_inventory_sha256": "bb096f6d53967523961f894c954daa1b4b1f956d54af3586d89bf544aea90cf2",
+    "closed_members": 423,
+    "four_JIT_documents_reconstructed_in_memory_only": "PASS with fixed old synthetic epoch; no provider run epoch allocated",
+    "local_payload_no_model_mount_normal_and_optimized_helper_parent": "PASS",
+    "outside_in_collector_operator_entry_release_chain": "PASS",
+    "provider_provenance": false,
+    "publication_manifest_sha256": "beda6a5647df0431ac2ac8da26db170d84776be8f59181b5fee537e87423a857"
+  },
+  "format": "irisx/run008-independent-launch-source-review-v1",
+  "independent_log_digests": {
+    "admission-normal.log": {
+      "passed": true,
+      "sha256": "d0b1cd19d36fa93955fe784c04d24b35803bbb511d7c720c1eb76215633b798f"
+    },
+    "admission-optimized.log": {
+      "passed": true,
+      "sha256": "2dface590b6a6177f4d610c3ad246945f6a61ff5078b9679cca6218df64bb4c7"
+    },
+    "public-final-active_verifier-normal.log": {
+      "passed": true,
+      "sha256": "a5f798768f534646ba5b079434a92c58bd72ce6066c5a05d632d476c8597c874"
+    },
+    "public-final-active_verifier-optimized.log": {
+      "passed": true,
+      "sha256": "197d4665f2ccef4cc35658a8fbeda6d1326ee9f5df8ab4f34c225a42a8bef0cb"
+    },
+    "public-final-collector_transition-normal.log": {
+      "passed": true,
+      "sha256": "6229cb5c01db23d777729e1e55fc8643352e33ff588883130e31c9590ab5463b"
+    },
+    "public-final-collector_transition-optimized.log": {
+      "passed": true,
+      "sha256": "6e1728f937d42b6dcd3762a60dcd38e4ed608d15b29a58029350435f422840c9"
+    },
+    "public-final-independent_transport-normal.log": {
+      "passed": true,
+      "sha256": "868f9610b73ce8765743d6eea7778a5cd8996b145fb97f81aaf625ba5ab72a89"
+    },
+    "public-final-independent_transport-optimized.log": {
+      "passed": true,
+      "sha256": "da2135ad02e36e6e8d7d613527c0d9bd7f734fa4e93abcb1faa4a3fcf741268f"
+    },
+    "publication-guard-final-normal.log": {
+      "passed": true,
+      "sha256": "b42b23aa586f4b6470cd5c230b639588fe5a61b2ca3ae6de6d8bb8550526ac19"
+    },
+    "publication-guard-final-optimized.log": {
+      "passed": true,
+      "sha256": "4f0591ac1a46242882dbedf7f90b0f3cf6b54c65ab6799eb17934be42a75a191"
+    }
+  },
+  "independent_tests_each_mode": {
+    "additional_transport_cache_timeout": 8,
+    "finite_actual_wire_verifier": 8,
+    "native_publication_and_auth": 30,
+    "numeric_admission": 21,
+    "staged_launch_receipt_to_collector": 2
+  },
+  "independent_tests_saved_publicly": true,
+  "limitations": [
+    "This exact public file set is reviewed; later edits need affected-byte re-review.",
+    "Private execution/action review follows actual verified Git publication and final candidate/config binding.",
+    "Actual numeric code readback, owned no-model acceptance and inactive readback remain required before active preparation.",
+    "Finite wire verifier has no static production pins yet and has not admitted a real active wire.",
+    "No authentication request, provider request, model training, GPU execution, evaluator-answer semantic read or scorer execution was performed by this reviewer.",
+    "CPU results cannot establish cuDNN/full14B GPU/numerical/scientific results.",
+    "Inherited complete repository CI is not established; seven historical README invariant failures remain reported separately.",
+    "Earlier incomplete independent harness attempts are retained locally; missing generic-interpreter requests and fixture request fields were corrected before the recorded native runs.",
+    "Final candidate local mount helper ran normal/optimized parents; its preserved canonical inner import child remains normal. Numeric provider download is a separate pending proof."
+  ],
+  "new_PUBLIC120_result": null,
+  "production_GPU_validation_passed": false,
+  "provider_execution_admitted": false,
+  "resolved_review_findings": [
+    "Immutable original bracket and owner scope adapted explicitly; no evidence rewrite.",
+    "Corrected official SDK late-expiry predicate through nonsecret expiration-only guard.",
+    "Authenticated SDK Python sources execute through source-only loader and actual -I -B launcher.",
+    "Active preparation and exact finite review are separate from one dispatch; stale bytes cannot be resampled.",
+    "Single initial read intent survives read-only uncertain-write/readback reconciliation.",
+    "Missing output indexing remains pending and never authorizes another RUN.",
+    "Rejected the official SDK access_token.txt fallback by metadata only; prior unexecuted receipts/candidate retained privately and superseded."
+  ],
+  "review_date_utc": "2026-10-14",
+  "reviewed_admission_proposal_sha256": "bf951dd9b5d0c88e6f863101e7c6a0be268e2cb589955a6586d86978e93af8db",
+  "reviewed_files": {
+    "docs/plan/2026-10-14-run008-native-publication.md": {
+      "bytes": 5398,
+      "sha256": "840e3276b59b8ad65f139994d0a74362759dea8af3426a2e1648ce194587a535"
+    },
+    "research/native-continuation-20261014/independent-material-review-v2.json": {
+      "bytes": 4084,
+      "sha256": "75e287393e1df7e7c60ed5c17c7bc7e70a5138128486fa0df43cf494cb59e277"
+    },
+    "research/native-continuation-20261014/independent-runtime-review-v2.json": {
+      "bytes": 4134,
+      "sha256": "9be0c63e1b443bf4edd9b2559656d955868cc501359879ab4d44171facc0e2e1"
+    },
+    "research/native-continuation-20261014/independent-solver-namespace-review.json": {
+      "bytes": 1021,
+      "sha256": "7f3678973c57275567cd8d11927d7163de3018bd1b1d585cefb926c268d5327e"
+    },
+    "research/native-continuation-20261014/predecessor-summary.json": {
+      "bytes": 650,
+      "sha256": "31ba60812069b8e9d91af4b445e5409d2d86637a01416a9d05f76a3d42ec5af2"
+    },
+    "research/native-continuation-20261014/resumption-baseline-tests.json": {
+      "bytes": 1680,
+      "sha256": "5fce28ce41e67102a4a379101e4627b5066afd2b014a9508c1e6f37b5f206d45"
+    },
+    "research/native-continuation-20261014/tests/README.md": {
+      "bytes": 1645,
+      "sha256": "4ed75a904029e87259e822c7d47dde66638082a6ac36f5253c4f0c2d219344f9"
+    },
+    "research/native-continuation-20261014/tests/test_active_verifier.py": {
+      "bytes": 7209,
+      "sha256": "e3ec3b3bc529e6a0df671db4bc3788a0faf66d68b4b5660ff05e65ce0a3b38df"
+    },
+    "research/native-continuation-20261014/tests/test_collector_transition.py": {
+      "bytes": 3912,
+      "sha256": "192aca8b093ce1b266280f339926cc8854e9411d6bd8e77ecc73166b81a6d789"
+    },
+    "research/native-continuation-20261014/tests/test_independent_transport.py": {
+      "bytes": 5370,
+      "sha256": "1f3437d10940e77505fa90577e477721a5944767e5b601d58d6f81fdedd5380d"
+    },
+    "research/native-continuation-20261014/verify_active_wire.py": {
+      "bytes": 13658,
+      "sha256": "955f6adec5f9608d96754e18ecc9958d1b9edd0998e226621dba18f14af75e00"
+    },
+    "tools/arc_qwen_rlvr004_20261013/admission_run008/README.md": {
+      "bytes": 6377,
+      "sha256": "be0eee3fd9d15b1e3f1f38503e21ae2ff31dadc9c1c12d3c5326ed80bbe29fa5"
+    },
+    "tools/arc_qwen_rlvr004_20261013/admission_run008/TEST-REPORT.json": {
+      "bytes": 1806,
+      "sha256": "1528d4297ec6b5085b8047df750de29c4c38233af4325fbef4e762292a9c3c7f"
+    },
+    "tools/arc_qwen_rlvr004_20261013/admission_run008/accept_numeric_mount.py": {
+      "bytes": 13931,
+      "sha256": "d84e2aa27edc5cef4fe557a9c327a5b4bffebbadf638d80948927677f1bd70b9"
+    },
+    "tools/arc_qwen_rlvr004_20261013/admission_run008/assemble.py": {
+      "bytes": 28507,
+      "sha256": "ba1b94cfcf4ff55d52a85e9508490039accb66f67f8d323085fd7df64b9d489e"
+    },
+    "tools/arc_qwen_rlvr004_20261013/admission_run008/seal_inputs.py": {
+      "bytes": 2894,
+      "sha256": "4f8507e8c1b549a5bc558fbfea652850a349de02025b792cfc2bf42d7f4ef7a0"
+    },
+    "tools/arc_qwen_rlvr004_20261013/admission_run008/test_admission.py": {
+      "bytes": 15384,
+      "sha256": "f0d106b8e7e7257ef9e9c91190347367858cae23cf1d17d9af1c876462555e40"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/LOCAL-VALIDATION.json": {
+      "bytes": 2910,
+      "sha256": "dfda8e27c068352530af0d493fbd543f2255c29822638132bca78b3d99040535"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/README.md": {
+      "bytes": 10414,
+      "sha256": "f81aff3ab3c48ca121b69062e4064dab6f1ad4684a5a440983d0248f4acdff5a"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/config.py": {
+      "bytes": 8905,
+      "sha256": "a4492c5a7b4d6cb42b2ee212f35b788fc70730fbd2fc13bf8b5cac03b48091fc"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/launch.py": {
+      "bytes": 2360,
+      "sha256": "1b78a2a5f2f869ad026c0f6ca3420857a4eaf559b7e2b6da128eb63d0a1898a1"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/native_auth.py": {
+      "bytes": 9716,
+      "sha256": "b9b5aec37385f7a5de37ae92bbf0bfb3b7b664f0bc31c3fcc044532cb46a19de"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/operator_common.py": {
+      "bytes": 27952,
+      "sha256": "f9b2acad7816b4af97baa877821ce4c9e3d16831fa340caf02d3e8c00b3f2805"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/rl_collect.py": {
+      "bytes": 58716,
+      "sha256": "71603a1eb47b1b7656f2ca6a8f2b2eb6faa99469a27aef63d4f0446828ef3a78"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/rl_transport.py": {
+      "bytes": 59269,
+      "sha256": "a4da4850d7a2e44af2d85d4be65e55913a746ddeb66a26238500457911261bac"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/sdk-lock.json": {
+      "bytes": 19816,
+      "sha256": "3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/tests/test_native_auth.py": {
+      "bytes": 6909,
+      "sha256": "cfba5d7a95d5695efcfa965023e8294168dd99e0408a876c11c06bbb8bfb58b1"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/tests/test_native_transport.py": {
+      "bytes": 28116,
+      "sha256": "60f5b74c56e2cbd08bc819c1dc5f8e0e5edba036bfe92fe93d1b72ba9c853fc5"
+    }
+  },
+  "scope": "EXACT_SANITIZED_SOURCE_AND_LOCAL_CPU_ADMISSION_ONLY",
+  "source_archive_sha256": "4d8b414bd35ca79a2eaaec7042880966879ed13bdeaf96762eaee7932ee1de4c",
+  "source_sha256": "c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b",
+  "status": "PASS",
+  "supersedes_unpublished_review_sha256": "4e169234628aa465383e48890145657f5160f99ccf985f265aa30a2432c0c015"
+}

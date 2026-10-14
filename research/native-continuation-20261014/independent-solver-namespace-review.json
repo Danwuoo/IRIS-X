@@ -1,0 +1,27 @@
+{
+  "dataset_escrow_sha256": {
+    "dev": "ba14ceb14b2acd18dfe209227ed0473ab909bf55b7ff68bb327d933a999f332d",
+    "holdout": "397a6b32967cfad4fe300c362d7134194ccca760231bc98649844bddeac6b344"
+  },
+  "escrow_bodies_read": false,
+  "evaluator_answer_semantic_reads": false,
+  "format": "irisx/run008-solver-namespace-review-v1",
+  "model_or_GPU_calls": 0,
+  "original_solver": {
+    "bytes": 3919460,
+    "sha256": "ef7b1e96ffe5457d6a398417beb96f55e289c6dcaab514bdee53e0a80572bbdf"
+  },
+  "path_substitutions": 2,
+  "projected_solver": {
+    "bytes": 3919460,
+    "sha256": "3921eb51e5250b3e53fdddfb538fd3233a09b7e77d3fbd91799be2ae7ce1d212"
+  },
+  "provider_calls": 0,
+  "publication_or_run_admitted_by_this_receipt": false,
+  "reverse_byte_equality": true,
+  "review_date_utc": "2026-10-14",
+  "reviewed_closed_proposal_members": 310,
+  "scope": "INDEPENDENT_TARGET_FREE_SOLVER_NAMESPACE_ONLY",
+  "source_proposal_inventory_sha256": "fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd",
+  "status": "PASS"
+}

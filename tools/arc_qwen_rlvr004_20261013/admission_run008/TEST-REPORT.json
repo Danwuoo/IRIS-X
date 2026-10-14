@@ -1,0 +1,52 @@
+{
+  "date_utc": "2026-10-14",
+  "evaluator_bodies_semantically_parsed": false,
+  "files": {
+    "README.md": {
+      "bytes": 6377,
+      "sha256": "be0eee3fd9d15b1e3f1f38503e21ae2ff31dadc9c1c12d3c5326ed80bbe29fa5"
+    },
+    "accept_numeric_mount.py": {
+      "bytes": 13931,
+      "sha256": "d84e2aa27edc5cef4fe557a9c327a5b4bffebbadf638d80948927677f1bd70b9"
+    },
+    "assemble.py": {
+      "bytes": 28507,
+      "sha256": "ba1b94cfcf4ff55d52a85e9508490039accb66f67f8d323085fd7df64b9d489e"
+    },
+    "seal_inputs.py": {
+      "bytes": 2894,
+      "sha256": "4f8507e8c1b549a5bc558fbfea652850a349de02025b792cfc2bf42d7f4ef7a0"
+    },
+    "test_admission.py": {
+      "bytes": 15384,
+      "sha256": "f0d106b8e7e7257ef9e9c91190347367858cae23cf1d17d9af1c876462555e40"
+    }
+  },
+  "format": "irisx/run008-admission-author-cpu-tests-v1",
+  "independent_approval_issued_by_author": false,
+  "initial_author_harness_attempt": {
+    "cause": "Tests initially expected preserved launch failure paths to return instead of raise; assertions corrected to inspect actual persisted closure or prove no dispatch. Production code unchanged by this correction.",
+    "errors": 3,
+    "tests": 20
+  },
+  "model_or_GPU_calls": 0,
+  "normal": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": 20.192,
+    "tests": 21
+  },
+  "optimized_parent": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": 19.33,
+    "tests": 21
+  },
+  "production_GPU_validation_passed": false,
+  "provider_calls": 0,
+  "scope": "Offline admission assembly and CPU no-model/process mechanics only; independent launch review still required.",
+  "source_archive_sha256": "4d8b414bd35ca79a2eaaec7042880966879ed13bdeaf96762eaee7932ee1de4c",
+  "source_sha256": "c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b",
+  "status": "PASS"
+}

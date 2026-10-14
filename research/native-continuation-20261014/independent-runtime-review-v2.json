@@ -1,0 +1,78 @@
+{
+  "actual_installed_sdk_source_members_verified": 170,
+  "assembler_source_sha256": "ba1b94cfcf4ff55d52a85e9508490039accb66f67f8d323085fd7df64b9d489e",
+  "baseline_unchanged_members": 199,
+  "collector_sha256": "71603a1eb47b1b7656f2ca6a8f2b2eb6faa99469a27aef63d4f0446828ef3a78",
+  "consumer_helper_inventory_sha256": "b0d2286e0dc31048cced32bed35ad45e47b95a02aafd1dc08d6b941e7993bc26",
+  "current_predecessor_observation_sha256": "b04482866aca0892d283f6f73b086369e397821e72afeecb8bf350734be32350",
+  "dataset_escrow_sha256": {
+    "dev": "ba14ceb14b2acd18dfe209227ed0473ab909bf55b7ff68bb327d933a999f332d",
+    "holdout": "397a6b32967cfad4fe300c362d7134194ccca760231bc98649844bddeac6b344"
+  },
+  "dataset_file_sha256": "3921eb51e5250b3e53fdddfb538fd3233a09b7e77d3fbd91799be2ae7ce1d212",
+  "dataset_namespace_review_sha256": "7f3678973c57275567cd8d11927d7163de3018bd1b1d585cefb926c268d5327e",
+  "deployment_inventory": {
+    "launch_notebook.py": {
+      "bytes": 19680,
+      "sha256": "254f5d154bf58bc3ed962321f77a18460fa5d51c654a8e263076099fe3b96e1f"
+    },
+    "notebook_builder.py": {
+      "bytes": 6303,
+      "sha256": "0c009595f85633377bf49e2019ab4cddd05e4526a59d9ea89b6bfc7335fe7149"
+    },
+    "parent_entry.py": {
+      "bytes": 1778,
+      "sha256": "91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3"
+    },
+    "prepare_entry.py": {
+      "bytes": 21064,
+      "sha256": "c85bbd12460480ca26798860ae358dd8f3fc5e3e2556090d0589828e44ef2648"
+    },
+    "source_loader.py": {
+      "bytes": 10125,
+      "sha256": "a707f1bc72540bca9d1c245f1cc55969d81f1f0be6032ffbc42c8dcc94eadad0"
+    }
+  },
+  "environment_sha256": "184f0726d4cc716840d242c80c9d3dfcfbcf8a07c52cb6fc7c5cd34f4928267d",
+  "evaluator_answer_semantic_reads": false,
+  "format": "irisx/run008-runtime-review-v1",
+  "historical_candidate_inventory_sha256": "de519816720ceb3bf07e0bf015c888b7e4bd9fdb344c2dbe355281230920ee88",
+  "independent_tests": {
+    "active_verifier_each_mode": 8,
+    "admission_each_mode": 21,
+    "extra_transport_each_mode": 8,
+    "publication_each_mode": 30,
+    "staged_collector_transition_each_mode": 2
+  },
+  "loader_overlay_manifest_sha256": "1d3aabee0419acd2b42a4343d36028b0ba296f14f30341e5be8e6c83e42600f0",
+  "loader_overlay_review_sha256": "ffb141edfc37a357b73939000d113d78ff5775922c868d602e9e619fd1ac7bab",
+  "model_or_GPU_calls": 0,
+  "narrow_delta": "Explicitly reject official access_token.txt alternate credential metadata before OAuth; no credential body read and no runtime/scientific source change.",
+  "normalized_source_contract_sha256": "af60cb785acd15f50abdd5bfa210525d9f55af47c1b938327f2c50b4846d5523",
+  "owner_direction_sha256": "d32898e63c2c0fc4fb9a7e785d056b5f1c083cd9e9df730ee944123292301a14",
+  "phase_policy_sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda",
+  "production_GPU_validation_passed": false,
+  "production_numerics_or_scientific_success_claim": false,
+  "proposal_sha256": "bf951dd9b5d0c88e6f863101e7c6a0be268e2cb589955a6586d86978e93af8db",
+  "provider_calls": 0,
+  "review_date_utc": "2026-10-14",
+  "reviewed_closed_candidate_members": 423,
+  "runtime259_and_source_archive_byte_identical_to_reviewed_proposal": true,
+  "scope": "INDEPENDENT_EXACT_LOCAL_SOURCE_MATERIAL_AND_CONSUMER_BINDINGS; provider execution still requires separate published-source and actual-readback reviews",
+  "scorer_pins_sha256": "58216d4cf1ced5740b7f66b7be845d38ce327f5fb84048876aa54d3ca29f9f72",
+  "source_archive_sha256": "4d8b414bd35ca79a2eaaec7042880966879ed13bdeaf96762eaee7932ee1de4c",
+  "source_only_upload_verified": true,
+  "source_proposal_inventory_sha256": "fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd",
+  "source_sha256": "c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b",
+  "status": "PASS",
+  "supersedes_unpublished_review_sha256": "90e89dd2c63e387490d34ce15e75426e90fa4f2757624d98a6eb6d69a3472545",
+  "unchanged_consumer_helper_members": 21,
+  "unchanged_run007_baseline_members": 200,
+  "versions": {
+    "active": 41,
+    "code": 21,
+    "code_predecessor": 20,
+    "inactive": 40,
+    "notebook_predecessor": 39
+  }
+}

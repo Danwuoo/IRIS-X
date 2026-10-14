@@ -1,0 +1,14 @@
+{
+  "code_version": 20,
+  "format": "irisx/run008-sanitized-predecessor-summary-v1",
+  "matches_historical_v39_source": true,
+  "notebook_version": 39,
+  "observation_sha256": "4858af4d89d8c571f2b9f410d7299da8ab0eb9027cf1bc35ac087b92ab568991",
+  "observed_epoch": 1791936466.289734,
+  "provider_failure_message_present": false,
+  "provider_mutation_calls": 0,
+  "provider_status": "ERROR",
+  "runtime_or_scientific_evidence": false,
+  "saved_source_sha256": "a3076380789de383c1df7c710023d8ca9e9a64a37405547bcebf0e066405d4b9",
+  "scope": "Exact existing resource status/source/settings bracket; no manual-editor-session or GPU-success attestation."
+}

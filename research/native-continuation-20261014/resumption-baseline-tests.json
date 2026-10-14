@@ -1,0 +1,61 @@
+{
+  "format": "irisx/run008-resumption-baseline-tests-v1",
+  "baseline_commit": "6a78b90910ba7f101efd4e134ae5f7cb0c95e24e",
+  "tests_each_mode": {
+    "loader": 34,
+    "inherited_mapping": 21,
+    "successor_assembly": 20
+  },
+  "normal_and_optimized_passed": true,
+  "scope": "unchanged prior reviewed CPU source; no new transport or GPU qualification",
+  "logs": [
+    {
+      "name": "assembly-normal.log",
+      "sha256": "bc80b99ba57f1d9f7ef77e4fba08d2c57d920a0146b5054bd93fe280fdbd45d7",
+      "passed": true,
+      "summary": [
+        "Ran 20 tests in 23.770s"
+      ]
+    },
+    {
+      "name": "assembly-optimized.log",
+      "sha256": "f3def9e304e570f4f13fae42047988c825bc2070fbf5a92d6d3040968d2efb89",
+      "passed": true,
+      "summary": [
+        "Ran 20 tests in 20.409s"
+      ]
+    },
+    {
+      "name": "inherited-normal.log",
+      "sha256": "820425ef393a0c1e221b76647c8a33fb343fd0045974fda3ee851f92a3e35b1f",
+      "passed": true,
+      "summary": [
+        "Ran 21 tests in 4.623s"
+      ]
+    },
+    {
+      "name": "inherited-optimized.log",
+      "sha256": "b0a493eb78a081a0ffe58add76f14fed8ce74e327720a66c86d1b2cbb2443533",
+      "passed": true,
+      "summary": [
+        "Ran 21 tests in 10.031s"
+      ]
+    },
+    {
+      "name": "loader-normal.log",
+      "sha256": "f69e0f34bfb3ab77d6efcea624f984ac15d37f3a77180fd83528600b37b1adf5",
+      "passed": true,
+      "summary": [
+        "Ran 34 tests in 6.454s"
+      ]
+    },
+    {
+      "name": "loader-optimized.log",
+      "sha256": "2e0f27938acadb077450e41b32fff22eb6d37039dd13da370a4cfb270fa4740f",
+      "passed": true,
+      "summary": [
+        "Ran 34 tests in 11.618s"
+      ]
+    }
+  ]
+}
