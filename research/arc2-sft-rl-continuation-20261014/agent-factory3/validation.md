@@ -77,8 +77,8 @@ The local ignored output receipts are not provider/model evidence:
   760MiB and installer cache6.4MiB. These are observed setup figures, not Qwen
   training/inference memory or wall-time measurements.
 - Reproduction records:
-  [`requirements-contract.txt`](../../tools/arc2_agent_factory3_bridge_20261014/requirements-contract.txt),
-  [`requirements-torch-cpu.txt`](../../tools/arc2_agent_factory3_bridge_20261014/requirements-torch-cpu.txt).
+  [`requirements-contract.txt`](../../../tools/arc2_agent_factory3_bridge_20261014/requirements-contract.txt),
+  [`requirements-torch-cpu.txt`](../../../tools/arc2_agent_factory3_bridge_20261014/requirements-torch-cpu.txt).
   These are dependency records, not a complete hash-locked environment or an
   instruction to run a framework/training installer.
 

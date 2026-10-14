@@ -124,4 +124,5 @@ C=full-B-extra-wall-time-matched continued SFT, no TTT, train-derived selection,
 and full PUBLIC120/167. A future runtime successor needs separate source identity,
 review and unchanged-control model/replay/gradient/cost evidence before any
 local-side training. See the implementation report and independent review in
-`research/arc2-agent-factory3-20261014/`.
+[the Agent Factory 3 RL-method research section](../../research/arc2-sft-rl-continuation-20261014/agent-factory3/integration.zh-TW.md)
+and its [independent review](../../research/arc2-sft-rl-continuation-20261014/agent-factory3/independent-review.md).

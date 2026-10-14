@@ -127,5 +127,5 @@ DDIS標籤下偷偷帶入。這次實際套用的目的是可稽核component接�
 不得把IRIS-X整體license誤當成取代這些元件條款；也沒有宣稱上游作者背書。
 
 本次完整來源與blob/SHA256可見
-[`source-manifest.json`](../../tools/arc2_agent_factory3_bridge_20261014/source-manifest.json)。
+[`source-manifest.json`](../../../tools/arc2_agent_factory3_bridge_20261014/source-manifest.json)。
 獨立審查另見[獨立review](independent-review.md)。

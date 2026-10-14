@@ -1,4 +1,4 @@
-# 離線續接工具交接
+# 離線續接工具與本地實驗循環交接
 
 日期：2026-10-14 UTC。研究基準固定為
 `cc14bd1a79aac1fe6135017c9e09d4834300675d`；工作分支為
@@ -12,11 +12,17 @@
 
 此 companion 提供既有 SFT256 → RL／等成本額外 SFT 比較的離線準備與結果解讀。
 它不執行訓練、不提交或監看 Kaggle、不重跑 scorer，也不重建原始私人 admission。
-本地 executor 的執行／提交責任與登入分開；沒有 credentials、帳號設定、
+本地執行端的執行／提交責任與登入分開；沒有 credentials、帳號設定、
 原始 evaluator 答案或私有執行封包隨此工具移轉。
 
 CPU 元件、保存的 log-probability 與宣告性 metadata 不能代替真實模型 replay、LoRA
 梯度、儲存／重載、整段成本或 GPU 實證。工具使用不改寫 run008 的凍結比較。
+
+第6節是「研究開發端交付 → 本地執行端驗收／提交／監看／有界修復 → 真實結果回交」
+的預設不執行程序。協調者負責交付精確版本、確認當次任務範圍與接收結果；本地端是
+該次 Kaggle 工作的唯一 publisher。研究開發端不登入 Kaggle、不呼叫 provider、不啟動
+模型或訓練。文件、Git 發布與 CPU 通過都不建立執行授權；沒有當次有效授權及全部原
+admission 時停在準備階段。本文不記錄個人機器、帳號或私人任務狀態。
 
 ## 取得與核對
 
@@ -37,6 +43,53 @@ Stage 0 的 `prepare`／`analyze` 只需 Python 標準函式庫及支援 descrip
 獨立 opt-in 的 audit-loss 入口另需 AF3 bridge、Pydantic 與 PyTorch；不得由 Stage 0
 命令暗中載入。依賴與 CPU proof 環境見 [AF3 使用說明](../../tools/arc2_agent_factory3_bridge_20261014/README.md)。
 各入口的可用版本與驗收狀態以[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)為準。
+
+### 固定來源交付身分
+
+本次交接所檢查的 checkout 是 `e17b6857ee6e874b2b5ed28a766f35e0b8028ea2`，tree
+`408182146a41cfbba7dbb9ead040b54e4790587a`。程式驗收版本是
+`8b9ca9cf915969e15339d99bc090762f349f1572`，tree
+`cedac0a7486685c641506335930d7f6ab429b514`；兩者只有進度文件差異，執行碼相同。
+這些是本次編輯前的來源 anchors，**不是本文最終文件 commit**。協調者會在發布核對後
+另行交付最終完整 SHA／tree／變動清單，本頁不預填或自指尚不存在的 commit。
+接收端先核對那份精確交付及工作區差異；不能只 checkout 移動中的分支便執行。
+
+下列 SHA-256 在上述 checkout 重新核對。完整 Stage 1 檔案指紋及 CPU 範圍見
+[獨立審查](stage1-independent-review.md#reviewed-source-fingerprints)；20個 frozen／bridge
+來源的逐檔 pins 見 audit manifest。這些 hashes 只識別程式，不是生產 admission。
+
+| 路徑（相對 repository root） | SHA-256 |
+| --- | --- |
+| `tools/arc2_abc_continuation_20261014/audit.py` | `fb7ede3a20f4921842f637f6cd32465a22ecfe61b0ffa7bbe9c4bb8627c825d0` |
+| `tools/arc2_abc_continuation_20261014/streaming.py` | `4c7ea1d1c00f13329a7cd2491880b269e02d04cd169336aa3926751626328b81` |
+| `tools/arc2_abc_continuation_20261014/cli.py` | `c41bccf7a36920a55bddd0e682798be1243aa9d7fec5633e683f930af647419d` |
+| `tools/arc2_abc_continuation_20261014/audit-source-pins.json` | `015e2549da2ab445b30273fa62e106d98510b26c2f130866eae393418531b8cd` |
+| `tools/arc2_agent_factory3_bridge_20261014/bridge.py` | `68e09ed7c01bc51a32a7ddf31eaceb16d928dc3f20069d3f53967a9d70ab74a3` |
+| `tools/arc2_agent_factory3_bridge_20261014/source-manifest.json` | `9810243f51001318e5d08c608358092c12895e81e76dfcd82ec08f500ce439e1` |
+| `tools/arc2_sft_rl_continuation_20261014/source-pins.json` | `220640c4f5a963d38153633040a0428ae2174e827b41f4dc466b119b1cf0c062` |
+
+原 run008 的 frozen runtime identity 是
+`c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b`；source archive 是
+`4d8b414bd35ca79a2eaaec7042880966879ed13bdeaf96762eaee7932ee1de4c`；loader overlay manifest
+是 `1d3aabee0419acd2b42a4343d36028b0ba296f14f30341e5be8e6c83e42600f0`。
+歷史候選 manifest `beda6a5647df0431ac2ac8da26db170d84776be8f59181b5fee537e87423a857`
+及 inventory `bb096f6d53967523961f894c954daa1b4b1f956d54af3586d89bf544aea90cf2`
+只供對照；新 numeric pins、路徑或 trainer 變更都需要新的候選與對應審查，不能沿用其放行。
+
+原 native transport 的本次 byte 核對如下，路徑前綴均為
+`tools/arc_qwen_rlvr004_20261013/publication_run008/`。launcher 含後續既有 CA 傳遞修正，
+應併讀 [TLS 審查](../native-continuation-20261014/independent-native-tls-review.json)，
+不能把更早 launch review 的舊 launcher hash 當成本版。
+
+| 檔案 | SHA-256 |
+| --- | --- |
+| `launch.py` | `e1794056b20dd1c143cb8ea23b1e985f579ab008260ef6b9d1f50c451301e48b` |
+| `config.py` | `a4492c5a7b4d6cb42b2ee212f35b788fc70730fbd2fc13bf8b5cac03b48091fc` |
+| `native_auth.py` | `b9b5aec37385f7a5de37ae92bbf0bfb3b7b664f0bc31c3fcc044532cb46a19de` |
+| `sdk-lock.json` | `3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d` |
+| `operator_common.py` | `f9b2acad7816b4af97baa877821ce4c9e3d16831fa340caf02d3e8c00b3f2805` |
+| `rl_transport.py` | `a4da4850d7a2e44af2d85d4be65e55913a746ddeb66a26238500457911261bac` |
+| `rl_collect.py` | `71603a1eb47b1b7656f2ca6a8f2b2eb6faa99469a27aef63d4f0446828ef3a78` |
 
 `source-pins.json` 固定五個公開來源，總共118,615 bytes；Python原始碼只雜湊，
 不import、不執行。它驗證選定來源bytes，不驗證完整checkout、Git HEAD、
@@ -141,3 +194,194 @@ symlink／祖先交換、拒絕覆寫、失敗／中斷cleanup及CPU CLI。
 測試數字、CI 與缺失證據統一見[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)。
 原始暫停 checkpoint `0451441` 的 race 與研究文件 `d13500c` 皆按其固定版本解讀；
 不得將後續修復結果回寫為舊版本已通過。
+
+## 6. 本地執行與研究回交程序（預設不執行）
+
+### 6.1 接收順序與確切缺件
+
+先讀本文、唯一[進度文件](DEVELOPMENT-PROGRESS.zh-TW.md)、
+[方法總覽第7節](method-landscape.zh-TW.md#七建議的實驗順序與觸發條件)，再讀
+[run008 原交接](../native-continuation-20261013/RUN008-LOCAL-HANDOFF.md)、
+[transfer reconstruction](../../tools/arc_qwen_rlvr004_20261013/transfer_run008/README.md)、
+[admission](../../tools/arc_qwen_rlvr004_20261013/admission_run008/README.md)、
+[native operator](../../tools/arc_qwen_rlvr004_20261013/publication_run008/README.md)。
+舊文件的當時 transfer-only／stop-after-submit 記錄保留為歷史，不自行移植成當次授權。
+
+公開 checkout **不構成完整可執行封包**。接收端以明確指定的檔案逐項驗證，缺件回報其
+種類及需要的來源，不搜尋秘密、不從 fixture／compact report 補造。
+
+#### 既有 A/B/C baseline 的原必要輸入
+
+1. **原 run007／run008 reconstruction：** genuine Git snapshot
+   `e951604b829497e81bc6e18b32662ff050bd54db`，原 authentic-inputs 的已核對 archive，
+   `source-rebuild`、`candidate-rebuild`、`REBUILD-REPORT.json` 及311檔 inert
+   `independent-reviewed-proposal`。傳輸 README 列出原 hashes 與有界重建命令。
+   308檔 portable components 子集不等於完整候選；缺少歷史 fixture 的測試不能 skip-to-green。
+   evaluator archive 保留隔離，必要的 opaque hash 不等於語意讀取答案。
+2. **當次官方觀察與 authority：** 真正 owner direction、最新 notebook／Dataset bracket
+   及其六個原始 readbacks（source、notebook before／after／status、Dataset before／after）。
+   `admission_run008/seal_inputs.py` 只封存已有 readback，自己不查 provider。
+   公開資料沒有原私人 bracket、owner direction、`draft-0001` 或完整執行 approvals；
+   不生成假的歷史文件通過 validator。若既有接口不能產生當前所需 bracket，先回交缺口，
+   明確審查新的有限讀取路徑，不能猜造命令或解除 gate。
+3. **接收環境的實際 binding：** exact interpreter／SDK source lock／launcher／既有 trust、
+   private local config、manifest／material／action／monitor-consumer review 及其獨立 hashes。
+   現行 transport 固定 Kaggle2.2.4／kagglesdk0.1.37 和原 wrapper bytes；目的環境不同時，
+   需要狹窄 portability successor 與審查。保留已審 wrapper 的正常 isolated HOME 設定；
+   不得為規避拒絕而更換 HOME、關閉 TLS、改 proxy／權限或換存取途徑，也不複製憑證。
+   正常 destination binding 必須獨立審查；登入與任何新增權限依當次確認規則獨立處理。
+4. **真實模型材料與 owner gates：** pinned offline weights、完整 wheelhouse、獨立 code
+   Dataset、訓練資料 lineage、原 owner admission／checkpoint／consumer／scorer 材料。
+   loader 必須保持 installed pinned-wheel inventory、API／ABI、kernel mapping 和 byte
+   identity 檢查，不能只看 cuDNN version string 或以系統 library 代替。原
+   [loader repair](../../tools/arc_qwen_rlvr004_20261013/loader_repair_run008/README.md)
+   的 CPU／ELF 通過不是目的環境 cuDNN／Qwen／GPU 通過。
+
+#### 已產出的 audit：離線分析輸入，不是 baseline 的事前 gate
+
+**真實 training audit 與 context：** 原 producer 的完整
+`experiment/audit/sweep-N.json`、獨立保留的原檔 SHA、train32 records／exclusions、
+source／plan／panel／sampling-policy／pre-update policy 收據，及據此明確建立的
+`irisx/abc-audit-context-v1`。來源與 schema 見
+[Stage 1 inputs](../../tools/arc2_abc_continuation_20261014/README.md#inputs-original-audit-bytes-not-a-compact-terminal-report)。
+第一個真實 audit 檢查只接收每檔≤16MiB；先核對實際 bytes，較大即拒絕，不能切 batch、
+截短、漏 slots 或放寬 reader。若前次根本未產生 audit，companion 保留
+`MISSING_ORIGINAL_ARTIFACTS`，由通過原 admission 的既有 A/B/C 產生並在回收後分析；
+不以「先要有 audit」阻擋首次原 A/B/C，也不能把 CPU fixtures 當原始執行資料。
+以上是缺件核對清單，不聲稱任何私人材料已存在或可讀。只有在接收端已有適合依賴的
+CPU 環境時，才照 Stage 1 README 執行 audit CLI 與 normal／`-O` focused tests；不自動
+安裝模型／框架。原始檔與 context 雖通過，結果仍是 saved-scalar conformance，非真實
+模型 replay 或更新放行。本文不另提供依賴缺失 admission 的可直接執行 RUN 命令。
+
+### 6.2 先驗收原路徑，再考慮 changed trainer
+
+分清兩條路徑：
+
+- **既有 A/B/C：** 原 run008 source／材料／owner admission 與 repair readiness 通過，
+  且當次執行範圍有效，即沿原 runtime 數學、原 model-owner 數值／狀態 gates 執行。
+  若已有原 audits 就先核對；尚無 audits 則由這次原 A/B/C 產生，終態回收後再用 Stage 1
+  CPU companion 分析。缺少事前 audit 或 CPU-only companion 都不增加一個阻止首次原
+  A/B/C 的新 gate，也不改凍結研究安排。
+- **未來 AF3 model hook：** 目前 Stage 1 只接受 CPU tensors，**不是 CUDA model hook**；
+  把真實 tensors 複製到 CPU 不構成正式接線。真實原 audit conformance 是這條後續接線的
+  證據輸入，不能用 fixtures 代替，也不能先偷換成 AF3 trainer 來產生它。
+
+任何 changed trainer 先由研究開發端提出獨立 source-reviewed successor，並重新綁定
+受影響的 assembler／runtime／consumer／active-wire 審查；現行 run008 assembler 只准
+loader overlays，不能直接塞入 AF3 模組或沿用舊 admission。接線依
+[shadow specification](../../tools/arc2_abc_continuation_20261014/README.md#local-shadow-wiring-specification)：
+同 A lineage、同完整 batch、同真正 pre-update unchanged policy，逐軌跡 replay／backward，
+比較每個 LoRA target 的 loss／finite gradient／差異，保留原 token／prefix／DFA／cache。
+nonforced p95≤0.05、max≤0.20、strict-DDIS coverage=100% 不變，至少一個 LoRA target
+非零；完整 batch 通過前不 commit，實測 rollback、save/reload、owner exit／closure。
+所有 shadow／失敗／rollback 成本計入；若進 B，C 配對其整段 model-phase wall。
+
+### 6.3 唯一 publisher 的有限提交與監看路徑
+
+下列是現有 operator action 的順序索引，不是已執行紀錄或開放式重試授權。
+完整 CLI flags 以 `publication_run008/launch.py` 的 publish／collect help 與其 README
+為準；每次都需 explicit manifest/material/review/local-config 及各自 SHA。
+
+1. **核對、觀察、review：** 先靜態核對交付 SHA／bytes、當次授權及已有材料；經授權取得
+   並封存當次 fresh read-only bracket，完成新的 proposal／final admission、destination
+   action review 與完整 local config。候選及 manifest/material/review 齊備後，才做不建立
+   Provider 的 local `validate`，再進 `readiness` 重查 exact numeric identities、source、
+   privacy、settings、mounts、status 與無衝突 active run。`validate` 需要成形契約，不能
+   用來代替缺失候選的重建。保存 claims／journals；
+   有未知寫入先 read-only reconcile。歷史 code20／notebook39 ERROR 及預估21／40／41
+   都不能當本次現況或可用版本，plain ERROR 不等於 GPU 不可用。
+2. **code 與 mount：** 只由唯一 publisher 對 reviewed `code-payload` 做一次 claimed
+   `update-code`；weights／wheels／資料與 code 各自版本化，保留原七個 non-code pins。
+   `verify-code` 或 exact numeric `verify-code-files` 做完整 bytes／closed inventory
+   readback，再由 `admission_run008/accept_numeric_mount.py` 通過真實下載的 owned
+   no-model mount acceptance。不可上傳整個 repo、候選、私人 receipts 或 evaluator archive。
+3. **inactive 與靜態審查：** `save-inactive` → `verify-inactive`，核對真實 numeric source、
+   settings／Dataset identity，GPU／TPU／Internet OFF。取得 persisted-readback audit、
+   新 independent stage2／monitor-consumer／static-pin reviews；原21個 consumer helpers
+   與 collector binding 保持 closed，不能以純 source review 代替這些動態證據。
+4. **準備、獨立檢查、一次 RUN：** `prepare-active` 只建立一個新的 immutable predispatch
+   epoch 與四個 JIT 文件：`active-finalized.ipynb`、`original-request.json`、`operator.json`、
+   `parent-private-scorer.json`。保留 finalization、wire、prepared journal；由
+   `review_run008/verify_active_wire.py` 依當次真實 static pins 核對，產生對應獨立 active
+   review 後才 `activate`。60秒 dispatch-age 上限不變；stale preparation 保留並停止，
+   不能自動重抽時鐘。一次 accepted／uncertain send 後用 `verify-run` readback/reconcile，
+   不能把讀取中斷當理由重發 RUN。provider 接受不等於已跑模型。
+5. **直到終態與完整回收：** 同一 admitted numeric run 用 `collect watch` 或其等價已審查
+   poll/collect 流程持續監看；QUEUED／RUNNING／暫時無輸出都不是完成。transient read
+   backoff，terminal 後仍繼續到 selected outputs 完成 indexing／下載／驗證，或出現需
+   回交的實際 blocker。讀回 exact source、logs 與結果，驗證原 owner、closure、seals、
+   原 consumer／scorer；不因 provider COMPLETE 就停止，也不假定所有 outputs 都已盤點。
+   原 collector 只收 selected outputs；log 缺失或截斷須明列，不能繞過其有界傳輸限制。
+
+所有 setup／queue／learning／inference／scoring／closure 都在原43200秒內；保留
+inner42000／outer42180／provider42300 offsets。整場已消耗時鐘及每次 physical charges
+不重置或退還；新 reviewed attempt 才能有自己的明確新 identity／clock，舊結果永久保留。
+實際 GPU-unavailable／zero-hours 回報即停止後續 dispatch，不查 quota、不新開資源或付費。
+使用原單張 NvidiaRtxPro6000 訓練資源；4×L4 是另外的最終推論驗證，不能以單訓練卡
+或 CPU 通過推定4×L4能部署。Internet-off 與既有 ARC3 metadata association 保留，
+不讀 ARC3 task data、不做官方 competition submission。
+
+### 6.4 本地修復邊界與研究決策
+
+本地端可在當次明確授權內診斷並修復可重現的有限工程問題，例如 packaging／path
+binding／transport readback／已定位的 loader selection；先保留 failed source、錯誤、
+receipts、logs、clock 與成本，測試與獨立 review 之後才準備 distinct successor。
+修復使用獨立工作區／repair branch，記錄明確新 source commit、delta 與 review，交回研究
+開發端審查整合；不覆寫其正在開發的工作區／分支，也不悄悄寫回 frozen run008。
+不盲目重送相同候選、不抹除 claim、不因失敗放寬 exact-byte／數值／isolation／closure。
+原 collector 不會 relaunch；下一次提交必須重新走上列 source／admission／readback gates。
+唯一 publisher 指當次 Kaggle mutation 的單一責任者，不授予任意修改其他工作線的權限；
+未知 provider 寫入先 reconcile，不能把未知當成未發生後重試。敏感材料或下載遭拒仍停止，
+不改用其他下載／存取途徑繞過。
+
+若需要改演算法、sampling／parent、分母、budget、硬體／資源、資料存取、material pins、
+新的權限／認證／法律承諾，或現有介面無法安全完成必要步驟，先回交研究開發端／協調者，
+不以「修復」代替授權或科學設計。不能靜默加入 AF3 runtime、OPSM、entropy、async、TTT，
+不能在 all-zero 後追加抽樣。
+
+首輪固定 A=同 session SFT256 並 save/reload；B=train32、最多4個不重疊64-slot batch、
+最多256 attempts／4次更新；C=同 A＋fresh optimizer 的額外 SFT，匹配 B **整段同步
+model-phase wall**（setup、sample、reward、replay、失敗／rollback、save/reload/verification），
+不用 idle padding。dev16 只選一次，tie A→B→C；凍結後才 selected PUBLIC、held32
+predictions、model closure、隔離 scoring。PUBLIC120始終120 tasks／167 queries，固定
+兩視圖334 planned views；答案不進 solver、training、prompt、selector 或記憶。
+
+結果回交後依[既有方法順序](method-landscape.zh-TW.md#七建議的實驗順序與觸發條件)：
+- 工程／replay incomplete：先補證據或修復，不能判成0分或方法無效。
+- 完整 all-zero／all-one、無相對 reward 訊號：保留 zero-signal，不補抽樣；研究端再決定
+  train-only curriculum／verified trajectories／rejection-SFT 的獨立對照。
+- 有真實更新：先完成 A/B/C；B>A但未勝等成本C，不支持 RL 額外價值。有淨增益才安排
+  新獨立 panel／family 重複，再一次改一項；reused held32 不稱全新確認。
+- 穩定可重載 baseline 及預算足夠後才獨立 TTT；program／repair 要和獨立提案同成本；
+  只有 evaluator 診斷出候選池含正解但 top2 流失，才考慮 selector／多角色，不回灌答案。
+
+### 6.5 終態回交內容與完成標準
+
+回交的是一份去敏結果摘要加有限的來源／artifact hash 清單，供研究開發端選下一步；
+不另建第二份 mutable 進度表或 handoff。協調者把結論與證據索引寫回唯一進度文件。
+摘要最少包含：
+
+1. 實際 source commit/tree、runtime／archive／manifest／code-byte hashes、精確 numeric
+   Dataset/notebook/run 版本、UTC觀察時間、原 epoch/deadline、來源變更與測試／review 範圍。
+2. 各欄分開：provider terminal、safe model/runtime closure、comparison complete、B/C
+   compute matched、完整 scorer、method efficacy。每欄明列 passed／failed／unknown／not-run，
+   缺 scoring 保留 null，沒有可用數據不能填0。CPU、GPU、4×L4 與 CI 狀態分列。
+3. planned256／dispatched／eligible／infrastructure excluded／context excluded／not reached；
+   完整 all-zero／all-one／mixed groups、pass@8 coverage；非法模型答案0與基礎設施null分開。
+   replay p95/max／nonforced coverage、committed updates、rollback、save/reload 與 lineage 證據。
+4. A/B/C wall、全B model-phase wall與C、tokens／forward work／memory、失敗及shadow成本；
+   unknown physical cost／billing 不猜值。固定dev選擇 provenance、相同case gain/loss、
+   PUBLIC120/167有效分數與held32重用限制；原始case IDs／grids不放公開摘要。
+5. 真正阻塞點、已做的有限修復／仍缺前提，以及對第7節哪個條件有證據；不要自行 promotion、
+   successful-baseline tag 或在回交前偷偷換下一個研究方法。
+
+原 collector 的有限 evidence 檔名為 `TERMINAL-VALIDATION.json`、
+`TERMINAL-CHECKPOINT.json`、`RETRIEVAL-RECEIPT.json`；失敗分支可能只有
+`TERMINAL-DIAGNOSTIC.json`、`TERMINAL-BLOCKER.json` 或 `WATCH-BLOCKER.json`。
+只記錄實際存在的檔案及獨立保存的 hash，不能補造成功三件組。原始 logs、完整 receipts、
+training audits／context、checkpoint、模型、evaluator data 與 archives 留在其原有私有邊界；
+不直接貼進 Git／handoff 或交給研究端的公共封包。去敏衍生摘要須標為摘要，不能冒充原收據。
+
+當次程序到「terminal＋可取得 outputs 的驗證＋分類後回交」才完成；若權限、安全 gate、
+材料或 provider 狀態真正阻塞，回交 exact action／target／blocker，保留待決狀態。
+QUEUED、accepted RUN、CPU pass、source 發布或 collector exit0 都不能替代這個完成條件。

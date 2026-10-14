@@ -7,7 +7,7 @@
 
 **進度入口：** 本文主體保存研究完成時的來源與提案；當前實作、任務、證據與下一步
 統一見[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)。第 7 節保存實驗順序與
-觸發理由，不另維護執行狀態；元件設計見[整合說明](../arc2-agent-factory3-20261014/integration.zh-TW.md)。
+觸發理由，不另維護執行狀態；元件設計見[整合說明](agent-factory3/integration.zh-TW.md)。
 
 ## 一、先講結論
 

@@ -75,7 +75,7 @@ Shadow work and failures are explicitly charged rather than treated as free.
   `provenance.py`, `fixtures.py`, `tests/test_contract.py`, and
   `tests/test_torch_conformance.py`: **all six exactly match** the reviewed
   implementation identities in the
-  [Agent Factory 3 independent review](../arc2-agent-factory3-20261014/independent-review.md).
+  [Agent Factory 3 independent review](agent-factory3/independent-review.md).
 
 ## Evidence and publication limits
 
@@ -85,9 +85,10 @@ identities. **The full suite was not rerun after this documentation update.**
 The earlier CI's seven findings and cancelled jobs remain historical facts;
 the new local six-finding invariant result is not a fresh full-suite or CI pass.
 
-Local HEAD remains `0d4d19c71d2c84720d4956b36d8e99108e8c0a2b`. The integrating
-lead's prior readback and cancelled publication attempts establish that the new
-Agent Factory 3 work and navigation must not be claimed as remotely published.
+At the 2026-10-14 review recorded here, local HEAD was
+`0d4d19c71d2c84720d4956b36d8e99108e8c0a2b`. The integrating lead's then-current
+readback and cancelled publication attempts did not establish remote publication
+of the then-new Agent Factory 3 work and navigation.
 This reviewer performed no remote read/write, publication retry, commit,
 ref mutation, dependency installation, model/provider operation, training,
 or full-suite run. A later successful publication requires its own exact

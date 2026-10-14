@@ -4,7 +4,7 @@
 
 後續狀態：本文分析的是固定基準。新研究線另完成了真正 upstream
 `TrainingSample`／`DDISLoss`／`MeanMetricState` 的離線 CPU bridge，見
-[實際整合](../arc2-agent-factory3-20261014/integration.zh-TW.md)與[進度入口](README.md)。
+[實際整合](agent-factory3/integration.zh-TW.md)與[進度入口](README.md)。
 下文「本地獨立表達」仍描述未修改的 frozen runtime，不再代表整條研究線沒有執行上游元件。
 
 本文只做公開第一手文獻與既有來源碼研究。未改動 runtime、凍結檔案、門檻或實驗配置；未訓練模型、安裝套件、呼叫模型 API、登入供應商或發布執行版本。文中「已實作」只表示來源碼存在，不表示完整 Qwen14B GPU 更新、ARC-AGI-2 效益或四張 L4 推論已驗證。所有後續實驗均是新提案，不能直接寫回目前凍結 A/B/C。
