@@ -1,0 +1,33 @@
+{
+  "format": "irisx.task.v1",
+  "id": "WSF-04",
+  "title": "Incremental mutable ARC boundary and complete management onboarding",
+  "workstream": "core",
+  "state": "planned",
+  "depends_on": ["WSF-03"],
+  "owner_role": "local-developer",
+  "plan_ref": "workstream-pr2-pr4-plan",
+  "scope_paths": [
+    "src/irisx/cli.py",
+    "src/irisx/domains/arc_agi_2/**",
+    "tests/test_arc_domain_boundary.py",
+    "tests/test_cli_import_boundary.py",
+    "tests/test_workstream_management.py",
+    "tests/inventory.json",
+    "docs/README.md",
+    "docs/management/**",
+    "docs/development/**",
+    "docs/workstreams/**",
+    "docs/verification/WSF-04/**"
+  ],
+  "base_branch": "refactor/workstream-pr3-validation",
+  "head_branch": "refactor/workstream-pr4-arc-boundary",
+  "base_commit": null,
+  "implementation_commit": null,
+  "acceptance": ["A4-1", "A4-2", "A4-3", "A4-4", "A4-5", "A4-6", "A4-7"],
+  "blockers": [],
+  "handoff_ref": null,
+  "verification_refs": [],
+  "review_refs": [],
+  "concurrency_group": null
+}

@@ -1,0 +1,344 @@
+{
+  "format": "irisx.developer-handoff.v1",
+  "task": "WSF-02",
+  "state": "review_ready",
+  "base_commit": "08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059",
+  "target_commit": "9ea92a7337f41dd9f1a194c77cf9c0598483140b",
+  "base_branch": "chore/workstream-foundation-20261014",
+  "head_branch": "refactor/workstream-pr2-packaging",
+  "self_review": true,
+  "independent_review": "pending",
+  "effective_model_mode": "not visible to task; unverified",
+  "os": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+  "acceptance": {
+    "A2-1": "self-test passed",
+    "A2-2": "self-test passed",
+    "A2-3": "self-test passed",
+    "A2-4": "self-test passed with explicit limits",
+    "A2-5": "self-test passed with explicit limits",
+    "A2-6": "self-test passed"
+  },
+  "tests": [
+    {
+      "command": "isolated Python -m unittest on contracts,engine,reference_flow,admission,transport,cli_import_boundary,distribution,workstream_management",
+      "tests": 105,
+      "failures": 0,
+      "errors": 0,
+      "skips": 2,
+      "exit_code": 0,
+      "skips_reason": "two actual Windows symlink operations need unavailable privilege; mocked link guard is tested"
+    },
+    {
+      "command": "python -O -m unittest discover -s tests -p test_cli_import_boundary.py -v",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "exit_code": 0
+    },
+    {
+      "command": "python -O -m unittest discover -s tests -p test_distribution.py -v",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skips": 1,
+      "exit_code": 0
+    },
+    {
+      "command": "python -O -m unittest discover -s tests -p test_workstream_management.py -v",
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skips": 1,
+      "exit_code": 0
+    },
+    {
+      "command": "python tools/dev.py check; python tools/dev.py render --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python tools/repository_check.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python tools/repository_check.py --self-test",
+      "tests": 3,
+      "exit_code": 0
+    },
+    {
+      "command": "python -B tests/test_workstream_navigation.py",
+      "tests": 10,
+      "exit_code": 0
+    },
+    {
+      "command": "python tools/distribution_check.py --output .irisx/core/WSF-02/distribution-code-checkpoint",
+      "exit_code": 0,
+      "commands": [
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\builder-venv\\Scripts\\python.exe",
+            "-m",
+            "pip",
+            "wheel",
+            "--no-index",
+            "--no-deps",
+            "--no-build-isolation",
+            "--wheel-dir",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\stage-a\\wheelhouse",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\stage-a"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\stage-a",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-01.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\builder-venv\\Scripts\\python.exe",
+            "-m",
+            "pip",
+            "wheel",
+            "--no-index",
+            "--no-deps",
+            "--no-build-isolation",
+            "--wheel-dir",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\stage-b\\wheelhouse",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\stage-b"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\stage-b",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-02.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\python.exe",
+            "-m",
+            "pip",
+            "install",
+            "--no-index",
+            "--no-deps",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\stage-a\\wheelhouse\\irisx-0.2.0-py3-none-any.whl"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-03.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\python.exe",
+            "-I",
+            "-B",
+            "-c",
+            "import irisx,json,site,pathlib,sys; print(json.dumps({'origin':irisx.__file__,'prefix':sys.prefix,'site_paths':site.getsitepackages(),'editable_pth':[str(p) for s in site.getsitepackages() for p in pathlib.Path(s).glob('*editable*.pth')]}))"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-04.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\python.exe",
+            "-I",
+            "-B",
+            "-m",
+            "irisx",
+            "--help"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-05.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\python.exe",
+            "-I",
+            "-B",
+            "-m",
+            "irisx",
+            "fixture",
+            "prepare",
+            "--output",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27\\fixture"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-06.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\python.exe",
+            "-I",
+            "-B",
+            "-m",
+            "irisx",
+            "spec",
+            "validate",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27\\fixture\\specification.json"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-07.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\python.exe",
+            "-I",
+            "-B",
+            "-m",
+            "irisx",
+            "trial",
+            "validate",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27\\fixture\\trial.json"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-08.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\python.exe",
+            "-I",
+            "-B",
+            "-m",
+            "irisx",
+            "trial",
+            "run",
+            "--trial",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27\\fixture\\trial.json",
+            "--output",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27\\run"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-09.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\python.exe",
+            "-I",
+            "-B",
+            "-m",
+            "irisx",
+            "package",
+            "build",
+            "--run",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27\\run",
+            "--output",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27\\package"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-10.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\python.exe",
+            "-I",
+            "-B",
+            "-m",
+            "irisx",
+            "package",
+            "verify",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27\\package"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-11.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\irisx.exe",
+            "--help"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-12.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\python.exe",
+            "-I",
+            "-B",
+            "-m",
+            "irisx",
+            "admission",
+            "validate",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27\\public-admission\\trials\\p2-admission\\admission.json"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-13.log"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Scripts\\python.exe",
+            "-I",
+            "-B",
+            "-m",
+            "irisx",
+            "package",
+            "verify",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27\\missing"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+          "exit_code": 2,
+          "expected_exit_code": 2,
+          "log": "command-14.log"
+        }
+      ]
+    }
+  ],
+  "distribution": {
+    "wheels": [
+      {
+        "sha256": "94485cfec717151880427548a6ed32c6a0ba7b789ab85ed7cea1a2a437a6bd65",
+        "members": 123,
+        "record_verified": true
+      },
+      {
+        "sha256": "94485cfec717151880427548a6ed32c6a0ba7b789ab85ed7cea1a2a437a6bd65",
+        "members": 123,
+        "record_verified": true
+      }
+    ],
+    "installation": {
+      "origin": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Lib\\site-packages\\irisx\\__init__.py",
+      "prefix": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv",
+      "site_paths": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv",
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr2-pr4-20261014\\IRIS-X\\.irisx\\core\\WSF-02\\distribution-code-checkpoint\\consumer-venv\\Lib\\site-packages"
+      ],
+      "editable_pth": [],
+      "external_cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-vhzpfk27",
+      "pythonpath_removed": true,
+      "non_editable": true
+    },
+    "synthetic_reference_flow": "passed"
+  },
+  "preserved_refs": {
+    "foundation": "08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059",
+    "main": "baaf47d4f449c534ddd4646ab9b3175bbaf1ef89",
+    "run008": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+    "tags_sha256": "c045b6d54c6165031dcd792aeaf26767964264be2587f4d58142775595251528"
+  },
+  "limits": [
+    "independent verification pending",
+    "legacy aggregate remains red; unmatched signatures are unclassified",
+    "actual symlink negative operation unverified on Windows; Linux3.11/3.12/3.14 not executed",
+    "no authentic run reconstruction, GPU, Kaggle, training, provider readback or new PUBLIC120 result",
+    "navigation/catalog pins prove local source availability, not external literature truth or remote runtime compatibility"
+  ]
+}

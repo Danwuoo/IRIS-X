@@ -6,8 +6,9 @@ Updated: 2026-10-14. Workstream: `core`.
 
 Shared P1 contracts, canonical serialization, deterministic reference evaluation,
 selection, Domain Package verification, CLI and repository/build/test tooling.
-The foundation and this planning increment change navigation and development
-instructions, not product/runtime behavior. Main integration is not authorized.
+The packaging increment adds nested wheel collection, lazy ARC execution imports and
+repository management. Follow the [board](../../management/BOARD.md) for task state
+and the [catalog](../../management/documents.json) for document lifecycle. Main integration is not authorized.
 
 ## Evidence
 
@@ -29,12 +30,11 @@ checks or a matched before/after baseline. Full CI is not green.
 
 ## Blockers
 
-The wheel backend collects only flat Python modules; editable installation does
-not prove nested distribution. CLI imports ARC/Kaggle implementations at module
-scope. Aggregate tests mix setup/dependency gaps, missing historical fixtures,
+Formal wheel and CLI boundaries have dedicated self-tests; their reports remain
+developer evidence until independent review. Aggregate tests mix setup/dependency gaps, missing historical fixtures,
 missing test/reference files and assertion failures. Their attribution needs
 matched test-level comparison, not blanket inherited-error classification.
-The unified management tooling and physical package/test separation are pending.
+Physical domain/test separation belongs to subsequent stacked increments.
 
 ## Next
 

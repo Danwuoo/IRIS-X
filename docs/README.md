@@ -1,6 +1,12 @@
 # Documentation
 
-This directory contains only current product-era guidance.
+Start with the [development board](management/BOARD.md), [document catalog](management/documents.json),
+and [management guide](management/README.md). Task JSON records carry engineering state;
+commit-bound reports carry test evidence. Independent verification remains separate.
+Use the [workstream guide](workstreams/README.md) for core, ARC and synthetic line-b scope.
+
+The retained entries below are the historical product-era reading index; consumed
+execution instructions do not restart work.
 
 - [Stage 4 E01 output lifecycle](development/nvarc-output-lifecycle.md) defines
   immutable generations, single-marker commit, verified root projection and
