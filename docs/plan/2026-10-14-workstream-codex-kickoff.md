@@ -17,6 +17,10 @@
 1. `docs/plan/2026-10-14-workstream-pr2-pr4-local-development.md`（完整規格與 A2/A3/A4 驗收）。
 2. `docs/workstreams/README.md`、`docs/workstreams/core/STATUS.md`、`docs/workstreams/line-b/STATUS.md`。
 3. `tests/README.md`、`tools/irisx_build_backend.py`、`src/irisx/cli.py`，以及計畫指定的相關模組。
+4. `docs/workstreams/arc-agi-2/RESEARCH.md`，並按本階段範圍閱讀其中 R1–R5 的固定原文。既有完整研究文件是設計輸入，不可僅看 run008 工程 handoff。
+
+研究延續補充：必須交付計畫 A2-6／A3-7／A4-7，保留研究主問題、原結果與限制、當前凍結實驗及條件式後續。不要重新選題、把架構 A/B/C 與 run008 訓練 A/B/C 混為一談，或因無新 GPU 分數把研究判成無效。`arc-next-line` 不是新 `line-b`。
+跨分支原文可讀固定 GitHub 文件或本地已取得的 Git objects；不為閱讀下載模型、封包或 evaluator inputs。若 task 已啟動，先做補充計畫差異核對並記錄採用 SHA，不重置原分支或重寫 stack。
 
 不要把歷史 AGENTS 的 Active 執行段落當成這次任務，也不必下載或恢復 run008 封包。
 取得遠端 `chore/workstream-foundation-20261014` 的目前 HEAD，確認本計畫存在且 `76809c05c9d51de4a9d19e99c09e1dbd70edc9f9` 是其祖先，記錄完整起點 SHA。

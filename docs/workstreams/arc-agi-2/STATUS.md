@@ -4,6 +4,10 @@ Updated: 2026-10-14. Workstream: `arc-agi-2`.
 
 ## Scope
 
+For the existing scientific direction, original research documents, measured
+results and the next discriminating experiment, start with [RESEARCH](RESEARCH.md).
+This STATUS covers engineering and resumption; it is not the research summary.
+
 Preserve the repaired run008 engineering checkpoint and its resumption evidence
 while the shared foundation is organized. This status references a separate
 branch; the runtime changes are not merged into the foundation's main-based tree.
@@ -47,6 +51,11 @@ does not retry, bypass, rename, repackage or attest the archive. Readable source
 and handoff are sufficient for the current navigation work.
 
 ## Next
+
+Preserve the research question and its evidence-to-experiment links during PR 2–4.
+Read R4/R5 through RESEARCH for the current SFT256/RL/extra-SFT comparison and its
+conditional successors; do not replace it with the earlier architecture A/B/C
+or treat a missing run008 score as loss of the existing research results.
 
 Preserve this checkpoint and carry out the independent core foundation. Do not
 download reproducible archives for that work. If execution is later authorized,

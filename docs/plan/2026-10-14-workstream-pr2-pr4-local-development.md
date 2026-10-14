@@ -48,6 +48,21 @@ run008 的 focused CPU 修復證據、部分 Drive 交付、無新 GPU / PUBLIC1
 不變更登入、權限、TLS／proxy 或全域 Git／Codex 設定。
 依賴優先使用既有 interpreter / cache；不能取得所需工具時明列 blocker，不擅自大量下載 ML 套件。
 
+
+### 2.1 研究方向延續是必要驗收，不只是保留檔案
+
+2026-10-14 補充：使用者指出已有多份完整研究文件；重整不得把它們降為只剩歷史鏈結或 run008 操作交接。
+讀取 [ARC 研究方向入口](../workstreams/arc-agi-2/RESEARCH.md)，再依任務閱讀其 R1–R5 原文。
+該入口整理由既有文件支持的脈絡，不取代原研究，也不新訂實驗或啟動訓練。
+
+保留「研究主問題 → 原方向／方法評估 → 結果與限制 → 當前凍結實驗 → 條件式後續」的可追溯關係。
+當前 SFT256／小量 RL／等成本 SFT 與較早 direct-grid／program／feedback-repair 是不同比較，不能混稱同一 A/B/C。
+研究假說未回答不等於否定；歷史有效結果不因 run008 無新分數而消失。不得用較舊的 SFT64 草案覆蓋後來的分批設計。
+此處只整理公開方向與彙總證據，不讀 evaluator 答案、私有操作證據或重新下載封包。
+
+本地 task 若已從較早 foundation 起點施工，先記錄已採用的計畫 SHA，再取這份補充做文件差異核對；
+不重置既有分支、不回寫 main、不自動改寫已發布的 stack。交接需標明是否已實作 A2-6／A3-7／A4-7。
+
 ## 3. 分支、執行與交接方式
 
 ```text
@@ -124,6 +139,7 @@ docs/
     registry.json                   # 保留純導覽 schema，不塞 task / authorization
     core/STATUS.md                   # 範圍與證據摘要＋任務看板連結
     arc-agi-2/STATUS.md
+    arc-agi-2/RESEARCH.md             # 既有方向／證據／下一實驗的導讀，不複製結果帳本
     line-b/STATUS.md
 tools/dev.py                        # repo 開發工具，不是產品 CLI 或 provider operator
 ```
@@ -141,6 +157,9 @@ kind 至少區分 guide / plan / decision / reference / evidence / prompt；
 status 為 draft / active / superseded / historical。用 Git 記錄修訂，不額外人工維護每篇文件的內容版本號。
 先登錄 README、AGENTS、現行 product/development 入口、workstream 入口、本計畫、新管理文件與新增驗證報告；
 歷史集合用固定索引與明確 legacy scope 納管，不強迫重寫所有舊文件或補 YAML front matter。
+但 ARC 研究入口的 R1–R5 與其關鍵結果報告要逐份索引，不可一律藏入 legacy scope。
+方法評估可用 reference、實驗設計用 plan、已測結果用 evidence；lifecycle status 不等於科學有效／無效，
+不得只依日期或雲端故障將仍承載方向的文件標成 superseded。supersedes 需原文的明確替代關係與範圍。
 新增／修改的活躍文件必須被登錄；凍結歷史免改動且不得因此免除既有完整性檢查。
 
 Task 最小欄位：`format`、`id`、`title`、`workstream`、`state`、`depends_on`、`owner_role`、
@@ -208,6 +227,7 @@ Task：WSF-02。範圍：`tools/irisx_build_backend.py`、`src/irisx/cli.py`、�
 - A2-3：舊 public CLI smoke / contract / reference flow 通過；所有新 import 邊界測試一般及 `-O` 通過。
 - A2-4：management metadata、狀態流轉、壞路徑／重複 ID／缺 review 負測試與 generated view 一致性通過。
 - A2-5：明列 base/head 對照與非範圍舊失敗；未碰的凍結區域 Git blob identity 保持，未更新 main/run008/tags。
+- A2-6：catalog 登錄 ARC RESEARCH 入口、R1–R5 原方向／綜整文件與關鍵結果，保留各自角色、固定來源及與 WSF-02/03/04 的關係；不把研究方向另起爐灶。
 
 正式安裝建議由可攜 Python 測試 harness 建立 venv 並呼叫：
 `python -m pip wheel --no-index --no-deps --no-build-isolation ...` 及
@@ -266,6 +286,7 @@ legacy audit 紅燈和 scoped gate 綠燈可同時存在，報告必須分別標
 - A3-4：至少一次兩條線同時執行的小型 CPU 測試，證明輸出／task IDs／暫存檔不碰撞；不啟動任何 GPU。
 - A3-5：CI 分別顯示公開 suites 與原 aggregate；錯誤、blocked、skipped 數字不混為成功。
 - A3-6：`tools/dev.py verify --suite ...` 使用受控 inventory，產生具名報告；管理 check 與文件導覽在 CI 生效。
+- A3-7：導覽／管理負測試能抓出缺少研究入口、懸空來源或未固定的跨分支引用；離線檢查不假稱遠端內容已驗證。研究結論與原文的忠實性另由審查核對，不用關鍵字測試代替。
 
 ## 8. PR 4：ARC 漸進隔離與管理系統完整演練
 
@@ -297,6 +318,7 @@ core/ARC/line-b STATUS 使用相同結構，歷史 trial/research 文件仍可�
 - A4-5：從乾淨 checkout 演練新增一項 line-b 任務、登錄文件、執行 scoped check、產生 handoff，再返回 core 任務；
   產生的看板一致、工作線不需讀 run008 私有材料。
 - A4-6：交付完整但有限定的總結：哪些已隔離、哪些故意保留、哪些重建未驗證；不把部分 pass 稱為 full-green。
+- A4-7：以固定 run008 `cc14bd1a` 另核對最新研究／工具的保留與引用範圍，不能只驗 main-based tree；交接列出沿用、只引用、未驗證的項目。由 ARC STATUS → RESEARCH → 原方向／結果／當前實驗的路徑完成閱讀演練，區分兩組 A/B/C、不同分母及未回答假說。Git 來源未變不代表已完成重建或 runtime 相容性驗證。
 
 ## 9. 驗證紀錄與本對話的審查程序
 
@@ -312,6 +334,7 @@ raw logs / 小型 wheel / 暫存測試產物留 ignored `.irisx`，公開 report
 | Regression | 相同條件的 base/head test IDs／signature 對照；未配對者標明 unclassified |
 | Distribution | wheel SHA、RECORD 核對、乾淨 venv 安裝與外部 cwd 的 package origin |
 | Management | catalog/task/BOARD checks、依賴圖、code ownership、負測試與完整交接鏈 |
+| Research continuity | 採用的計畫 SHA、R1–R5 索引、原結果／限制、當前假說與條件式下一步；A2-6／A3-7／A4-7 的實際範圍 |
 | Limits | 未跑項目、原因、缺失依賴、已知問題與下一步；獨立 review 初始 pending |
 
 使用者把每階段的 branch / code SHA / Draft PR 與 handoff 路徑交回本對話後，
@@ -329,6 +352,7 @@ verified_with_limits 只用於明確不影響本階段目標的殘留限制；wh
 三條 stacked development branches 與各自清楚的差異／checkpoint 存在，main 和 run008 保持原工作線。
 PR 2–4 的程式、tests、文件管理工具與報告可由本地 task 實際交付；未獨立審查前停在 review_ready。
 第二線可獨立進行合成工程開發；ARC 的續接證據與凍結來源完整保存。
+ARC 已有的研究方向、原始分析與成果能被直接找到，不能只剩一頁雲端故障或未提交狀態。
 全專案有單一閱讀入口、任務狀態來源與可重跑驗證，不再用根 AGENTS 或多份手寫進度表取代開發管理。
 
 ## 11. 來源與實作參考
