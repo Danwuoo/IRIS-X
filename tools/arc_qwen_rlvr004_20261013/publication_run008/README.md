@@ -61,6 +61,40 @@ provider entry; direct script help/local validation remains nonauthenticating.
 The regression test covers every named alternate environment path above using
 synthetic values, without opening an actual credential file.
 
+## Existing native TLS and proxy configuration
+
+The initial native readiness attempt failed TLS certificate verification before
+any Dataset/notebook mutation or dispatch epoch. The launcher had retained
+SSL_CERT_FILE while dropping REQUESTS_CA_BUNDLE. Requests uses its own bundle
+selector, so preserving SSL_CERT_FILE alone did not reproduce the already
+working official wrapper's transport environment. The failed readiness evidence
+is retained privately; it is not success evidence.
+
+The narrow launcher correction retains the existing REQUESTS_CA_BUNDLE selector
+only after checking its canonical regular-file path, bounded bytes and the exact
+SHA-256 of the bundle already trusted by this runtime. No certificate is added,
+installed, edited or transmitted, no hostname is changed, and TLS verification
+is never disabled. The existing SSL_CERT_FILE/SSL_CERT_DIR selectors remain
+inherited unchanged. When no Requests selector is present, default certificate
+verification remains True; no new bundle is guessed.
+
+The complete Requests environment audit covers REQUESTS_CA_BUNDLE with its
+CURL_CA_BUNDLE fallback and upper/lowercase HTTP_PROXY, HTTPS_PROXY, ALL_PROXY and
+NO_PROXY. The current established Requests selector takes priority; the launcher
+preserves that selector and the existing proxy/no-proxy settings, while excluding
+CURL_CA_BUNDLE and arbitrary client-cert or verification-disable switches. It
+does not reinterpret SSL_CERT_FILE as another Requests trust source. Authentication,
+Python-import and verbose settings remain closed as described above.
+
+Offline regression tests exercise actual Requests environment merging and all
+four send paths (SDK, upload, download and metadata-only download) with mocked
+HTTP sends. Every path receives the exact existing CA file as verify; malformed,
+false-like, missing, linked or changed bundle paths fail before provider creation.
+The supported interface has no verify=False option, and a source regression
+forbids adding that override. Existing proxy and NO_PROXY behavior is covered.
+Runtime, common transport, collector, candidate and consumer bytes are unchanged
+by this launcher-only production correction.
+
 ## Independently reviewed contracts
 
 Native config format: `irisx/run008-native-operator-config-v1`. It retains the

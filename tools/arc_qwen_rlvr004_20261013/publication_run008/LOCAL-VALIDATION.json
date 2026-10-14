@@ -22,8 +22,23 @@
   "format": "irisx/run008-native-transport-local-validation-v1",
   "grant_changes": 0,
   "model_calls": 0,
-  "normal_tests": 30,
-  "optimized_tests": 30,
+  "native_tls_correction": {
+    "actual_requests_merge_verified_offline": true,
+    "existing_ca_sha256": "ab6933a81e6f0d142e6d5f58ed465589d899a523c2752055761af11d4ee38f2b",
+    "mocked_send_paths_verified": [
+      "SDK",
+      "upload",
+      "download",
+      "metadata-only download"
+    ],
+    "provider_calls": 0,
+    "runtime_collector_and_candidate_changed": false,
+    "scope": "launcher-only inherited existing Requests CA selector",
+    "tls_verification_disabled": false,
+    "trust_anchors_changed": false
+  },
+  "normal_tests": 35,
+  "optimized_tests": 35,
   "original_history_changed": false,
   "provider_calls": 0,
   "provider_execution_admitted_by_this_report": false,
@@ -40,8 +55,8 @@
       "sha256": "a4492c5a7b4d6cb42b2ee212f35b788fc70730fbd2fc13bf8b5cac03b48091fc"
     },
     "launch.py": {
-      "bytes": 2360,
-      "sha256": "1b78a2a5f2f869ad026c0f6ca3420857a4eaf559b7e2b6da128eb63d0a1898a1"
+      "bytes": 3611,
+      "sha256": "e1794056b20dd1c143cb8ea23b1e985f579ab008260ef6b9d1f50c451301e48b"
     },
     "native_auth.py": {
       "bytes": 9716,
@@ -66,6 +81,10 @@
     "tests/test_native_auth.py": {
       "bytes": 6909,
       "sha256": "cfba5d7a95d5695efcfa965023e8294168dd99e0408a876c11c06bbb8bfb58b1"
+    },
+    "tests/test_native_tls.py": {
+      "bytes": 6534,
+      "sha256": "849dc7e8241fcbf2e7e95db6fd7cc41c34c4eabb4972a87e577136b35671a8bf"
     },
     "tests/test_native_transport.py": {
       "bytes": 28116,

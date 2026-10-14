@@ -1,0 +1,53 @@
+{
+  "base_source_commit": "e9f7c2601645eeecd4281ccb4dc255832641b02b",
+  "base_source_review_sha256": "74846f7cc943dd2e5c7c87873544149e1c7562c0b00f8e862f40825e20a9a951",
+  "checks": [
+    "Only launch.py production bytes changed; original configured CA selector retained after exact existing-bundle checks.",
+    "No certificate, trust-store, hostname, credential, OAuth scope or transport route changed.",
+    "Requests actual environment merging preserves certificate verification and approved proxy/NO_PROXY configuration on SDK/upload/download/metadata paths.",
+    "False-like, missing, changed, linked and unbounded certificate selectors reject before Provider creation.",
+    "No verification-disable or client-certificate option introduced.",
+    "Original failed readiness has one redacted failure event and no mutation/refresh claim or epoch; failure is preserved."
+  ],
+  "continuation_requirement": "Publish and verify this exact narrow source update, then issue a distinct private stage1 action review; final002/runtime/material/consumer bindings remain unchanged.",
+  "existing_ca_sha256": "ab6933a81e6f0d142e6d5f58ed465589d899a523c2752055761af11d4ee38f2b",
+  "format": "irisx/run008-independent-native-tls-review-v1",
+  "independent_tests": {
+    "failed": 0,
+    "normal": 35,
+    "optimized": 35
+  },
+  "independently_observed_existing_selectors_same_file": true,
+  "log_sha256": {
+    "normal": "74842bf60929ca893e49566f66894358c7ff2000cde19d28000ef181343c495a",
+    "optimized": "a4a72a1636fb5327306812e0c1abd7ebfdd13623d0eeac9a0d0f4f133355f7e4"
+  },
+  "production_GPU_validation_passed": false,
+  "provider_calls_by_reviewer": 0,
+  "provider_execution_admitted_by_this_document": false,
+  "review_date_utc": "2026-10-14",
+  "reviewed_changed_files": {
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/LOCAL-VALIDATION.json": {
+      "bytes": 3580,
+      "sha256": "863dc287c8cab7a748ccbee4801e8f0a75a778d8510311ed69a9f47ca394dc2f"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/README.md": {
+      "bytes": 12587,
+      "sha256": "4698890f2fa3e4e4187e69595c2fb4b3f296742fddd40ecc4af9da1e662c5970"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/launch.py": {
+      "bytes": 3611,
+      "sha256": "e1794056b20dd1c143cb8ea23b1e985f579ab008260ef6b9d1f50c451301e48b"
+    },
+    "tools/arc_qwen_rlvr004_20261013/publication_run008/tests/test_native_tls.py": {
+      "bytes": 6534,
+      "sha256": "849dc7e8241fcbf2e7e95db6fd7cc41c34c4eabb4972a87e577136b35671a8bf"
+    }
+  },
+  "runtime_or_GPU_calls": 0,
+  "scope": "NARROW_EXISTING_CA_LAUNCHER_PROPAGATION_ONLY",
+  "status": "PASS",
+  "unchanged_collector_sha256": "71603a1eb47b1b7656f2ca6a8f2b2eb6faa99469a27aef63d4f0446828ef3a78",
+  "unchanged_final_candidate_manifest_sha256": "beda6a5647df0431ac2ac8da26db170d84776be8f59181b5fee537e87423a857",
+  "unchanged_runtime_source_sha256": "c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b"
+}
