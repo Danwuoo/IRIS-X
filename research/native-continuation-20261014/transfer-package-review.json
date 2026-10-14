@@ -1,0 +1,130 @@
+{
+  "format": "irisx/run008-independent-transfer-package-review-v1",
+  "implementation_commit": "98b488a2fc3185a64c392933f087b72ab13f1989",
+  "independent_tests": {
+    "diff_whitespace": "PASS",
+    "existing_safe_transfer_verifier_and_rebuilder_each_mode": 17,
+    "final_helper_actual_fresh_clone_rebuild": {
+      "Git_lazy_fetch_disabled": true,
+      "builder_child_mode": "normal canonical Python",
+      "historical_candidate_files": 426,
+      "historical_source_files": 283,
+      "inert_run008_proposal_files": 311,
+      "parent_mode": "optimized",
+      "proposal_inventory_sha256": "fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd",
+      "status": "PASS"
+    },
+    "final_rebuild_helper_each_mode": 10,
+    "final_repository_invariants": {
+      "inherited_README_findings": 7,
+      "introduced_placement_findings": 0,
+      "status": "FAIL"
+    },
+    "independent_transport_wire_collector_each_mode": 18,
+    "modes": [
+      "normal",
+      "optimized"
+    ],
+    "native_publication_auth_TLS_each_mode": 35,
+    "numeric_admission_each_mode": 21,
+    "separate_full_aggregate_attempt": {
+      "classification": "Unavailable retained fixtures/dependencies and README invariant failure were observed; no full-suite green or blanket inherited-error attribution is claimed.",
+      "errors": 35,
+      "failures": 2,
+      "matched_clean_baseline_comparison_performed": false,
+      "skips": 74,
+      "status": "FAIL",
+      "tests": 1583
+    }
+  },
+  "limitations_and_required_next_steps": [
+    "Current scope is packaging only; no Kaggle upload, save, RUN, authentication or quota query was performed by this reviewer.",
+    "Fresh private owner authority, exact readback bracket, local environment configuration and full dependent reviews are intentionally absent; the included component subset must not impersonate the original closed candidate.",
+    "A source ZIP lacks Git history. Use genuine pinned Git objects or the verified original bundle plus original authentic-inputs archive for the documented offline rebuild.",
+    "Admission and active-wire suites require authentic private fixtures and remain blocked on a public-only download; do not synthesize historical approvals to pass them.",
+    "Destination authentication, supported wrapper/SDK/CA bindings, numeric readback, no-model mount acceptance, inactive readback and static/dynamic wire review remain separate gates.",
+    "One immutable 43200-second session clock and complete PUBLIC120 120-task/167-query denominator remain unchanged; CPU tests establish no GPU, numerical or scientific success.",
+    "Original Drive preservation, final Git publication, final source/combined archive readback and remote CI are publisher checks outside this frozen supplement review."
+  ],
+  "portable_supplement": {
+    "bytes": 10045888,
+    "closed_members_including_inventory": 321,
+    "complete_closed_candidate": false,
+    "exact_consumer_helper_members": 21,
+    "exact_included_candidate_files": 308,
+    "exact_runtime_members": 259,
+    "full_extract_crc_member_sha256_and_closure": "PASS",
+    "inventory_sha256": "bca736668e492b39d5856a03f9dbd5a096209747c3bb6d0eb1eaf2c3be34dcec",
+    "name": "IRIS-X-run008-portable-components-20261014.zip",
+    "nested_code_upload_exact_code_payload_closure": "PASS",
+    "nested_source_zip_crc_paths_hashes_and_runtime_equality": "PASS",
+    "omitted_candidate_files": 116,
+    "original_archive_exact_byte_recovery_matches": 102,
+    "original_candidate_files_including_original_inventory": 424,
+    "original_candidate_inventory_sha256": "bb096f6d53967523961f894c954daa1b4b1f956d54af3586d89bf544aea90cf2",
+    "original_candidate_manifest_sha256": "beda6a5647df0431ac2ac8da26db170d84776be8f59181b5fee537e87423a857",
+    "payload_files": 320,
+    "safe_relative_paths_no_links_or_duplicate_members": "PASS",
+    "sha256": "c88c50346e1d098732cfd0b77ad1353c381d524612c6bfbca9b23fc65d83b453",
+    "standalone_checksum_entries_verified": 8
+  },
+  "privacy_and_isolation": {
+    "answer_bodies_semantically_read": false,
+    "credential_or_token_values_found": false,
+    "evaluator_answer_bodies_in_new_deliverables": false,
+    "new_current_private_auth_config_or_secret_locations_included": false,
+    "original_evaluator_archives": "Referenced by original IDs and hashes, not duplicated or modified.",
+    "private_request_identifier_matches": 0,
+    "raw_private_conversation_or_request_values_found": false,
+    "scan_limit": "Filename/provenance inspection, recursive source/archive checks, sensitive-field and secret-pattern scans; synthetic test literals and historical public provenance are distinguished from actual account material.",
+    "specific_omitted_private_request_identifiers_scanned": 3
+  },
+  "review_date_utc": "2026-10-14",
+  "reviewed_files": {
+    "AGENTS.md": {
+      "bytes": 84633,
+      "sha256": "e2c2c1c869ea7247c5647870d9d834e9f00d265c7f00a0c43112d480c3e0f3ee"
+    },
+    "research/native-continuation-20261013/RUN008-LOCAL-HANDOFF.md": {
+      "bytes": 12430,
+      "sha256": "dfea109316d6e7230df0f1b659a60b959f3e592f1d0c91f974f118837ae42be7"
+    },
+    "research/native-continuation-20261014/transfer-status.md": {
+      "bytes": 5164,
+      "sha256": "9274dea3376c2e2904b736ac3f4c17103ec3a9835821a67d63288051902b8854"
+    },
+    "tools/arc_qwen_rlvr004_20261013/transfer_run008/README.md": {
+      "bytes": 12426,
+      "sha256": "ef719c90d791d190171568b247e11ecfb240f34f7e08de35d7ffc14b3cf6a174"
+    },
+    "tools/arc_qwen_rlvr004_20261013/transfer_run008/rebuild_engineering.py": {
+      "bytes": 6047,
+      "sha256": "9446892f36eca892dbd6ce68a1912b3c5ac0d310208c614cd561a9f18f8cd54f"
+    },
+    "tools/arc_qwen_rlvr004_20261013/transfer_run008/test_rebuild_engineering.py": {
+      "bytes": 4785,
+      "sha256": "676926548097966fa00b3ade37e2e2b26957009a0725b5da65717d7253b43ed5"
+    }
+  },
+  "scope": "Public-safe engineering transfer and local reconstruction; not complete candidate, provider publication or GPU admission.",
+  "source_snapshot_audit": {
+    "all_tracked_bytes_present_exactly": true,
+    "checked_archive_sha256": "611f044acab8d0d1db35af89631c72a9c2928fc95edc984e5e2933013b18aad2",
+    "checked_commit": "98b488a2fc3185a64c392933f087b72ab13f1989",
+    "crc_and_safe_paths": "PASS",
+    "final_source_archive": "Must be built from the final committed tree and bound and verified separately in the external delivery manifest; this review does not attest unpublished future archive bytes.",
+    "historical_path_boundary": "Exact existing public source retains engineering provenance paths and historical authentication lookup constants in old code/tests/docs. These are inert historical strings, not credentials or current account configuration, and require destination rebinding.",
+    "missing_extra_or_mismatched_files": 0,
+    "tracked_files": 2700
+  },
+  "status": "PASS_WITH_STATED_BOUNDARIES",
+  "verified_status": {
+    "code21_provider_write_proven": false,
+    "last_verified_code_version": 20,
+    "last_verified_notebook_status": "ERROR",
+    "last_verified_notebook_version": 39,
+    "latest_execution_recovery": "2026-10-14 01:11:47 UTC: sandbox setup failed before command execution, with no provider calls.",
+    "new_PUBLIC120_result": null,
+    "run008_epoch": null
+  }
+}
