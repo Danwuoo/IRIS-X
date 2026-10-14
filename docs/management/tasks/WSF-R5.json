@@ -3,7 +3,7 @@
   "id": "WSF-R5",
   "title": "Make controlled seed effective before child interpreter startup",
   "workstream": "core",
-  "state": "in_progress",
+  "state": "review_ready",
   "depends_on": [
     "WSF-R1-R4"
   ],
@@ -29,13 +29,17 @@
   "base_branch": "refactor/workstream-pr4-arc-boundary",
   "head_branch": "fix/workstream-review-r1-r4-20261014",
   "base_commit": "1a08648603e1af2fe66998a0e53b11d02abf5c6b",
-  "implementation_commit": null,
+  "implementation_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
   "acceptance": [
     "WSF-R5"
   ],
   "blockers": [],
-  "handoff_ref": null,
-  "verification_refs": [],
+  "handoff_ref": "wsf-r5-handoff",
+  "verification_refs": [
+    "wsf-r5-handoff",
+    "wsf-r5-self-tests",
+    "wsf-r5-onboarding"
+  ],
   "review_refs": [
     "wsf-r5-independent-review-20261014"
   ],

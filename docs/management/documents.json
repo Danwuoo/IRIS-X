@@ -940,6 +940,42 @@
         "WSF-R5"
       ],
       "supersedes": []
+    },
+    {
+      "id": "wsf-r5-handoff",
+      "path": "docs/verification/WSF-R5/HANDOFF.md",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R5"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf-r5-self-tests",
+      "path": "docs/verification/WSF-R5/self-tests.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R5"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf-r5-onboarding",
+      "path": "docs/verification/WSF-R5/onboarding.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R5"
+      ],
+      "supersedes": []
     }
   ],
   "legacy_indexes": [
