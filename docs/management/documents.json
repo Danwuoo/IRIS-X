@@ -828,6 +828,154 @@
         "WSF-04"
       ],
       "supersedes": []
+    },
+    {
+      "id": "wsf02-independent-review-20261014",
+      "path": "docs/verification/WSF-R1-R4/independent-review-WSF-02.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "independent-reviewer",
+      "related_tasks": [
+        "WSF-02",
+        "WSF-R1-R4"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf03-independent-review-20261014",
+      "path": "docs/verification/WSF-R1-R4/independent-review-WSF-03.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "independent-reviewer",
+      "related_tasks": [
+        "WSF-03",
+        "WSF-R1-R4"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf04-independent-review-20261014",
+      "path": "docs/verification/WSF-R1-R4/independent-review-WSF-04.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "independent-reviewer",
+      "related_tasks": [
+        "WSF-04",
+        "WSF-R1-R4"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "workstream-review-r1-r4-plan",
+      "path": "docs/plan/2026-10-14-workstream-review-r1-r4.md",
+      "kind": "plan",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R1-R4"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf-r1-r4-handoff",
+      "path": "docs/verification/WSF-R1-R4/HANDOFF.md",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R1-R4"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf-r1-r4-self-tests",
+      "path": "docs/verification/WSF-R1-R4/self-tests.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R1-R4"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf-r1-r4-onboarding",
+      "path": "docs/verification/WSF-R1-R4/onboarding.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R1-R4"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf-r5-independent-review-20261014",
+      "path": "docs/verification/WSF-R5/independent-review.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "independent-reviewer",
+      "related_tasks": [
+        "WSF-R1-R4",
+        "WSF-R5"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "workstream-review-r5-plan",
+      "path": "docs/plan/2026-10-14-workstream-review-r5.md",
+      "kind": "plan",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R5"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf-r5-handoff",
+      "path": "docs/verification/WSF-R5/HANDOFF.md",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R5"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf-r5-self-tests",
+      "path": "docs/verification/WSF-R5/self-tests.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R5"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "wsf-r5-onboarding",
+      "path": "docs/verification/WSF-R5/onboarding.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R5"
+      ],
+      "supersedes": []
     }
   ],
   "legacy_indexes": [

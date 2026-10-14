@@ -11,11 +11,13 @@ import subprocess
 import sys
 import time
 
+# Admit this checkout's tool helpers explicitly when launched with safe-path.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 try:
-    from .suite_runner import validate_gate
+    from .suite_runner import controlled_python_command, controlled_python_environment, validate_child_startup, validate_gate
     from .workstream_management import load_json, safe_path
 except ImportError:
-    from suite_runner import validate_gate
+    from suite_runner import controlled_python_command, controlled_python_environment, validate_child_startup, validate_gate
     from workstream_management import load_json, safe_path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,10 +55,11 @@ def exercise_task(commit: str, base_branch: str, head_branch: str) -> dict:
     }
 
 
-def finish_task(task: dict, commit: str, report: dict) -> dict:
+def finish_task(task: dict, commit: str, report: dict, *, base_commit: str | None = None) -> dict:
     errors = validate_gate({"line-b": report}, ["line-b"])
-    if (not isinstance(commit, str) or not re.fullmatch(r"[0-9a-f]{40}", commit) or task.get("base_commit") != commit or
+    if (not isinstance(commit, str) or not re.fullmatch(r"[0-9a-f]{40}", commit) or task.get("base_commit") != (base_commit or commit) or
             task.get("id") != TASK_ID or task.get("state") != "in_progress" or errors or
+            report.get("attestable") is not True or report.get("evidence_kind") != "commit" or
             report.get("target_commit") != commit or report.get("format") != "irisx.suite-report.v1" or
             report.get("suite") != "line-b"):
         raise ValueError("onboarding task needs passing commit-bound self-tests before review_ready")
@@ -139,9 +142,11 @@ def run_onboarding(root: Path, output: Path) -> dict:
     report = {"format": "irisx.onboarding-report.v1", "status": "failed",
               "scope": "synthetic engineering-only non-deployable; developer self-check",
               "independent_review": "pending", "commands": [], "target_commit": None}
-    environment = os.environ.copy()
-    environment.update(PYTHONHASHSEED="0", PYTHONDONTWRITEBYTECODE="1", HF_HUB_OFFLINE="1",
+    environment = controlled_python_environment()
+    environment.update(HF_HUB_OFFLINE="1",
                        TRANSFORMERS_OFFLINE="1", HF_DATASETS_OFFLINE="1")
+    report["python_environment"] = {name: environment[name] for name in
+                                    ("PYTHONHASHSEED", "PYTHONDONTWRITEBYTECODE")}
 
     def run(argv: list[str], cwd: Path) -> str:
         result = subprocess.run(argv, cwd=cwd, env=environment, capture_output=True,
@@ -193,15 +198,32 @@ def run_onboarding(root: Path, output: Path) -> dict:
         register_document(catalog, GUIDE_ID, GUIDE_PATH, "guide")
         write_json(checkout, "docs/management/documents.json", catalog)
         python = sys.executable
-        run([python, "-B", "tools/dev.py", "render"], checkout)
-        run([python, "-B", "tools/dev.py", "context", "--task", TASK_ID], checkout)
-        run([python, "-B", "tools/dev.py", "check"], checkout)
+        probe = ("import json,sys; sys.path.insert(0," + repr(str(checkout / "tools")) + "); "
+                 "from suite_runner import interpreter_startup; print(json.dumps(interpreter_startup()))")
+        report["startup"] = json.loads(run(controlled_python_command(python, "-c", probe), checkout))
+        if validate_child_startup(report["startup"]):
+            raise ValueError("onboarding child interpreter startup controls mismatch")
+        run(controlled_python_command(python, "tools/dev.py", "render"), checkout)
+        run(controlled_python_command(python, "tools/dev.py", "context", "--task", TASK_ID), checkout)
+        run(controlled_python_command(python, "tools/dev.py", "check"), checkout)
+        # The exercise's new plan/task metadata is a real part of the tested tree.
+        # Commit it only in this owned clone before requesting formal evidence;
+        # keep the original source commit separately, without self-hash cycles.
+        run(["git", "-c", f"core.hooksPath={hooks}", "add", "--", "docs/management",
+             PLAN_PATH, GUIDE_PATH], checkout)
+        run(["git", "-c", f"core.hooksPath={hooks}", "-c", "user.name=IRIS-X synthetic onboarding",
+             "-c", "user.email=synthetic-onboarding@invalid.example", "commit", "-m",
+             "test: register synthetic onboarding metadata"], checkout)
+        exercise_commit = run(["git", "rev-parse", "HEAD"], checkout)
+        report["exercise_commit"] = exercise_commit
+        run(["git", "diff", "--exit-code", commit, exercise_commit, "--",
+             "src", "tools", "tests", ".github", "pyproject.toml"], checkout)
         suite_output = checkout / ".irisx/line-b/onboarding-suite"
-        run([python, "-B", "tools/dev.py", "verify", "--suite", "line-b", "--output", str(suite_output)], checkout)
+        run(controlled_python_command(python, "tools/dev.py", "verify", "--require-committed", "--suite", "line-b", "--output", str(suite_output)), checkout)
         suite_report = load_json(safe_path(checkout, ".irisx/line-b/onboarding-suite/report.json"))
-        task = finish_task(task, commit, suite_report)
+        task = finish_task(task, exercise_commit, suite_report, base_commit=commit)
         handoff = ("# Synthetic onboarding developer handoff\n\n"
-                   f"Task: {TASK_ID}; state: review_ready.\n\ntarget_commit: {commit}\n\n"
+                   f"Task: {TASK_ID}; state: review_ready.\n\ntarget_commit: {exercise_commit}\n\nsource_base_commit: {commit}\n\n"
                    "The committed program was reused unchanged. Temporary task/document metadata\n"
                    "was added only in this self-owned checkout. The line-b controlled suite passed;\n"
                    f"tests={suite_report['tests']}, failures={suite_report['failures']}, errors={suite_report['errors']}, "
@@ -212,15 +234,15 @@ def run_onboarding(root: Path, output: Path) -> dict:
         register_document(catalog, HANDOFF_ID, HANDOFF_PATH, "evidence")
         write_json(checkout, "docs/management/documents.json", catalog)
         write_json(checkout, f"docs/management/tasks/{TASK_ID}.json", task)
-        run([python, "-B", "tools/dev.py", "render"], checkout)
-        run([python, "-B", "tools/dev.py", "render", "--check"], checkout)
+        run(controlled_python_command(python, "tools/dev.py", "render"), checkout)
+        run(controlled_python_command(python, "tools/dev.py", "render", "--check"), checkout)
         report["navigation_chain"] = navigation_chain(checkout, catalog, task)
         report["research_sources"] = research_sources(checkout, catalog)
         for source in report["research_sources"]:
             run(["git", "cat-file", "-e", source["commit"] + ":" + source["path"]], checkout)
             source["git_blob"] = run(["git", "rev-parse", source["commit"] + ":" + source["path"]], checkout)
             source["local_git_object"] = "present"
-        run([python, "-B", "tools/dev.py", "context", "--task", "WSF-04"], checkout)
+        run(controlled_python_command(python, "tools/dev.py", "context", "--task", "WSF-04"), checkout)
         run(["git", "diff", "--exit-code", "HEAD", "--", "src", "tools", "tests", ".github", "pyproject.toml"], checkout)
         if any((checkout / "docs/management/tasks" / name).read_bytes() != data
                for name, data in original_task_bytes.items()):

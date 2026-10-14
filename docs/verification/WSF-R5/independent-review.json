@@ -1,0 +1,61 @@
+{
+  "format": "irisx.review.v1",
+  "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+  "reviewer_role": "independent",
+  "outcome": "changes_requested",
+  "source": "https://github.com/Danwuoo/IRIS-X/pull/9#pullrequestreview-5517762334",
+  "limitations": [
+    "Exact helper source review, constant-only synthetic regressions and remote CI readback; no independent full local project-suite/wheel/onboarding rerun.",
+    "Original audit bodies, Windows long-path/symlink limits, authentic reconstruction, numerical replay, GPU and efficacy remain unverified; prior synthetic SGD violation retained."
+  ],
+  "findings": [
+    "WSF-R5"
+  ],
+  "reviewed_delivery": "1a08648603e1af2fe66998a0e53b11d02abf5c6b",
+  "original_findings_corrected_within_bounded_scope": [
+    "WSF-R1",
+    "WSF-R2",
+    "WSF-R3",
+    "WSF-R4"
+  ],
+  "independent_regressions": {
+    "environment": "Linux / CPython3.13.5",
+    "normal": {
+      "tests": 31,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "optimized": {
+      "tests": 31,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  },
+  "reviewed_helper_blobs": {
+    "tools/workstream_management.py": "38bc4c1a209fb7b7f6533b9ab35b56dbd95500bb",
+    "tools/suite_runner.py": "878fd5a322b24c21de3e7d023e32cf0848ddd7dd",
+    "tools/source_identity.py": "ba62986defd86008e52f863189212164b8a1a72b",
+    "tools/workstream_gate.py": "ac5c5cbe46b9f7d89c8d8b5023618a03a3198f72"
+  },
+  "attributed_remote_ci": {
+    "workstream_run": 38557453591,
+    "public_jobs_passed": 28,
+    "formal_jobs_passed": 4,
+    "gate_job": 115832014263,
+    "navigation_run": 38557453832,
+    "offline_validation_run": 38557453584,
+    "audit_aggregate": "BLOCKED/non-success before import, not passing audits",
+    "comparison_merge_commit": "28661101f00902f053897ac24e6df1605cc85d5e",
+    "tree": "b185403b76e59011737ecf188f7fcd7f5d55aa93",
+    "management_artifact": {
+      "id": 11890680844,
+      "zip_sha256": "3df5453376043d3ba9a3b34105b40c4e198f4542d305f7d07b386dbcb7e76328"
+    },
+    "formal_artifact": {
+      "id": 11890074290,
+      "zip_sha256": "faf48cd26305b82e0e8100b74893cf98d97c620400072e8d1a04ad9f474efa18"
+    }
+  }
+}

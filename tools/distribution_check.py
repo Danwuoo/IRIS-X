@@ -19,8 +19,15 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import venv
 import zipfile
+
+# Safe-path children do not add the script directory automatically. Only this
+# source tool directory is admitted for the shared startup and snapshot helpers.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    from .suite_runner import controlled_python_command, controlled_python_environment, validate_child_startup
+except ImportError:
+    from suite_runner import controlled_python_command, controlled_python_environment, validate_child_startup
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,6 +37,16 @@ ADMISSION_INPUTS = (
     "docs/decisions/0001-adopt-product-oriented-domain-ai-specialization.md",
     "docs/decisions/0002-adopt-p1-contract-and-serialization-foundation.md",
     "docs/decisions/0003-record-p2-admission-block.md",
+)
+HASH_REFERENCE = "import json; print(json.dumps([hash('IRIS-X seed sentinel'), hash('synthetic engineering')]))"
+INSTALLED_PROBE = (
+    "import irisx,json,os,site,pathlib,sys; "
+    "print(json.dumps({'origin':irisx.__file__,'prefix':sys.prefix,'site_paths':site.getsitepackages(),"
+    "'editable_pth':[str(p) for s in site.getsitepackages() for p in pathlib.Path(s).glob('*editable*.pth')],"
+    "'startup':{'flags':{name:getattr(sys.flags,name) for name in "
+    "('optimize','safe_path','no_user_site','dont_write_bytecode','ignore_environment','isolated','hash_randomization')},"
+    "'python_environment':{name:os.environ.get(name) for name in ('PYTHONHASHSEED','PYTHONDONTWRITEBYTECODE')}},"
+    "'seed_hashes':[hash('IRIS-X seed sentinel'),hash('synthetic engineering')]}))"
 )
 
 
@@ -121,31 +138,51 @@ def check(output: Path, root: Path = ROOT) -> dict:
     output.mkdir(parents=True)
     report = {"schema": "irisx/distribution-self-check-v1", "status": "failed", "python": sys.version,
               "platform": platform.platform(), "commands": [], "scope": "synthetic engineering only", "independent_review": "pending"}
-    report["target_commit"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
-    environment = os.environ.copy()
-    environment.pop("PYTHONPATH", None)
-    environment.update({"PYTHONHASHSEED": "0", "PIP_NO_INDEX": "1", "PIP_DISABLE_PIP_VERSION_CHECK": "1", "PYTHONDONTWRITEBYTECODE": "1"})
+    report.update(target_commit=None, attestable=False, evidence_kind="development")
+    report["head_commit"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+    environment = controlled_python_environment()
+    environment.update({"PIP_NO_INDEX": "1", "PIP_DISABLE_PIP_VERSION_CHECK": "1"})
+    report["python_environment"] = {name: environment[name] for name in
+                                    ("PYTHONHASHSEED", "PYTHONDONTWRITEBYTECODE")}
 
-    def run(command: list[str], cwd: Path, expected: int = 0) -> str:
+    def run(command: list[str], cwd: Path, expected: int = 0, *, native_console: bool = False) -> str:
         number = len(report["commands"]) + 1
-        result = subprocess.run(command, cwd=cwd, env=environment, text=True, encoding="utf-8", errors="replace", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        command_environment = environment
+        if native_console:
+            # A console executable cannot accept Python's interpreter flags.
+            # Admit only these two fixed controls on the already scrubbed base.
+            command_environment = dict(environment, PYTHONSAFEPATH="1", PYTHONNOUSERSITE="1")
+        result = subprocess.run(command, cwd=cwd, env=command_environment, text=True, encoding="utf-8", errors="replace", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         (output / f"command-{number:02}.log").write_text(result.stdout, encoding="utf-8")
-        report["commands"].append({"argv": command, "cwd": str(cwd), "exit_code": result.returncode, "expected_exit_code": expected, "log": f"command-{number:02}.log"})
+        receipt = {"argv": command, "cwd": str(cwd), "exit_code": result.returncode, "expected_exit_code": expected, "log": f"command-{number:02}.log"}
+        if native_console:
+            receipt["python_environment"] = {name: command_environment[name] for name in
+                                              ("PYTHONHASHSEED", "PYTHONDONTWRITEBYTECODE", "PYTHONSAFEPATH", "PYTHONNOUSERSITE")}
+        report["commands"].append(receipt)
         if result.returncode != expected:
             raise RuntimeError(f"command {number} returned {result.returncode}; expected {expected}; see command log")
         return result.stdout
 
     try:
+        # Formal evidence uses the same committed raw-Git source as suite reports;
+        # neither staged/dirty inputs nor caller edits can supply wheel bytes.
+        try:
+            from .source_identity import create_snapshot
+        except ImportError:
+            from source_identity import create_snapshot
+        source_snapshot = create_snapshot(root, output / "source", require_committed=True)
+        root = source_snapshot.root
+        report.update(source_snapshot.binding)
         stages = [output / "stage-a", output / "stage-b"]
         for stage in stages:
             stage_sources(root, stage)
         builder = output / "builder-venv"
-        venv.EnvBuilder(with_pip=True).create(builder)
+        run(controlled_python_command(sys.executable, "-m", "venv", str(builder)), output)
         builder_python = str(venv_python(builder))
         wheels = []
         for stage in stages:
             wheel_dir = stage / "wheelhouse"
-            run([builder_python, "-m", "pip", "wheel", "--no-index", "--no-deps", "--no-build-isolation", "--wheel-dir", str(wheel_dir), str(stage)], stage)
+            run(controlled_python_command(builder_python, "-m", "pip", "wheel", "--no-index", "--no-deps", "--no-build-isolation", "--wheel-dir", str(wheel_dir), str(stage)), stage)
             matches = list(wheel_dir.glob("*.whl"))
             if len(matches) != 1:
                 raise ValueError("expected exactly one wheel per staging root")
@@ -155,15 +192,17 @@ def check(output: Path, root: Path = ROOT) -> dict:
             raise ValueError("clean staging builds are not byte reproducible")
         report["wheels"] = wheel_reports
         consumer = output / "consumer-venv"
-        venv.EnvBuilder(with_pip=True).create(consumer)
+        run(controlled_python_command(sys.executable, "-m", "venv", str(consumer)), output)
         python = str(venv_python(consumer))
         with tempfile.TemporaryDirectory(prefix="irisx-external-wheel-") as temporary:
             external = Path(temporary).resolve()
             if external.is_relative_to(root.resolve()):
                 raise ValueError("external smoke cwd unexpectedly inside source checkout")
-            run([python, "-m", "pip", "install", "--no-index", "--no-deps", str(wheels[0])], external)
-            probe = "import irisx,json,site,pathlib,sys; print(json.dumps({'origin':irisx.__file__,'prefix':sys.prefix,'site_paths':site.getsitepackages(),'editable_pth':[str(p) for s in site.getsitepackages() for p in pathlib.Path(s).glob('*editable*.pth')]}))"
-            origin = json.loads(run([python, "-I", "-B", "-c", probe], external))
+            run(controlled_python_command(python, "-m", "pip", "install", "--no-index", "--no-deps", str(wheels[0])), external)
+            reference = json.loads(run(controlled_python_command(python, "-c", HASH_REFERENCE), external))
+            origin = json.loads(run(controlled_python_command(python, "-c", INSTALLED_PROBE), external))
+            if validate_child_startup(origin.get("startup")) or origin.get("seed_hashes") != reference:
+                raise ValueError("installed interpreter startup or same-interpreter seed reference mismatch")
             if not Path(origin["origin"]).resolve().is_relative_to(consumer.resolve()) or origin["editable_pth"]:
                 raise ValueError("package origin is not the non-editable consumer venv")
             report["installation"] = {**origin, "external_cwd": str(external), "pythonpath_removed": True, "non_editable": True}
@@ -176,23 +215,38 @@ def check(output: Path, root: Path = ROOT) -> dict:
                 ["package", "verify", str(external / "package")],
             ]
             for args in commands:
-                run([python, "-I", "-B", "-m", "irisx", *args], external)
+                run(controlled_python_command(python, "-m", "irisx", *args), external)
             if (root / "src/irisx/domains/arc_agi_2/cli.py").is_file():
-                run([python, "-I", "-B", "-m", "irisx", "arc-agi-2", "--help"], external)
-                run([python, "-I", "-B", "-m", "irisx", "arc-agi-2", "source", "validate", str(external / "missing-arc-source")], external, expected=2)
+                run(controlled_python_command(python, "-m", "irisx", "arc-agi-2", "--help"), external)
+                run(controlled_python_command(python, "-m", "irisx", "arc-agi-2", "source", "validate", str(external / "missing-arc-source")), external, expected=2)
                 report["arc_parser_facade"] = "passed (help and missing-path error only)"
             if (root / "src/irisx/domains/line_b/flow.py").is_file():
-                run([python, "-I", "-B", "-m", "irisx.domains.line_b.flow", "--output", str(external / "line-b")], external)
+                run(controlled_python_command(python, "-m", "irisx.domains.line_b.flow", "--output", str(external / "line-b")), external)
                 result = json.loads((external / "line-b/handoff.json").read_text(encoding="utf-8"))
                 if result.get("scope") != "synthetic engineering-only non-deployable" or result.get("package_created") is not True:
                     raise ValueError("installed line-b did not complete the synthetic package loop")
                 report["line_b_synthetic_flow"] = "passed"
             cli = consumer / ("Scripts/irisx.exe" if os.name == "nt" else "bin/irisx")
-            run([str(cli), "--help"], external)
+            # Execute the installed script itself under the controlled consumer
+            # interpreter. The Windows distlib .exe contains a Python zip entry.
+            run(controlled_python_command(python, str(cli), "--help"), external)
+            native_probe = json.loads(run([python, "-B", "-c", INSTALLED_PROBE], external, native_console=True))
+            if validate_child_startup(native_probe.get("startup"), optimize=0) or native_probe.get("seed_hashes") != reference:
+                raise ValueError("native-console environment support probe does not enforce startup controls")
+            run([str(cli), "--help"], external, native_console=True)
+            report["native_console"] = {
+                "environment_support_probe": native_probe["startup"],
+                "seed_reference_matched": True,
+                "native_cli_flags_readback": "not introspected; separate same-interpreter support probe only",
+            }
             copy_declared(root, external / "public-admission", ADMISSION_INPUTS)
-            run([python, "-I", "-B", "-m", "irisx", "admission", "validate", str(external / "public-admission/trials/p2-admission/admission.json")], external)
-            run([python, "-I", "-B", "-m", "irisx", "package", "verify", str(external / "missing")], external, expected=2)
+            run(controlled_python_command(python, "-m", "irisx", "admission", "validate", str(external / "public-admission/trials/p2-admission/admission.json")), external)
+            run(controlled_python_command(python, "-m", "irisx", "package", "verify", str(external / "missing")), external, expected=2)
             report["synthetic_reference_flow"] = "passed"
+        source_changes = source_snapshot.changes()
+        if source_changes:
+            report.update(target_commit=None, attestable=False, evidence_kind="development", source_changes=source_changes)
+            raise ValueError("source changed during formal validation")
         report["status"] = "passed"
     except Exception as error:
         report["error"] = f"{type(error).__name__}: {error}"

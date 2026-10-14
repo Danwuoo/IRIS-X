@@ -3,7 +3,7 @@
   "id": "WSF-04",
   "title": "Incremental mutable ARC boundary and complete management onboarding",
   "workstream": "core",
-  "state": "review_ready",
+  "state": "changes_requested",
   "depends_on": [
     "WSF-03"
   ],
@@ -49,7 +49,12 @@
     "A4-6",
     "A4-7"
   ],
-  "blockers": [],
+  "blockers": [
+    "WSF-R1: independent review requests correction; source https://github.com/Danwuoo/IRIS-X/pull/8#pullrequestreview-5515492879",
+    "WSF-R2: independent review requests correction; source https://github.com/Danwuoo/IRIS-X/pull/8#pullrequestreview-5515492879",
+    "WSF-R3: independent review requests correction; source https://github.com/Danwuoo/IRIS-X/pull/8#pullrequestreview-5515492879",
+    "WSF-R4: independent review requests correction; source https://github.com/Danwuoo/IRIS-X/pull/8#pullrequestreview-5515492879"
+  ],
   "handoff_ref": "wsf04-handoff",
   "verification_refs": [
     "wsf04-self-tests",
@@ -58,6 +63,8 @@
     "wsf04-migration",
     "wsf04-migration-map"
   ],
-  "review_refs": [],
+  "review_refs": [
+    "wsf04-independent-review-20261014"
+  ],
   "concurrency_group": null
 }

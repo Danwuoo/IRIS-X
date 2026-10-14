@@ -1,0 +1,2961 @@
+{
+  "format": "irisx.workstream-r5-self-tests.v1",
+  "task": "WSF-R5",
+  "state": "review_ready",
+  "base_commit": "1a08648603e1af2fe66998a0e53b11d02abf5c6b",
+  "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+  "independent_review": "pending",
+  "scope": "WSF-R5 startup only; R1-R4 correction retained; developer/subagent self-tests",
+  "environment": {
+    "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "parent_and_explicit_children": "-P -s -B; optional -O/-OO",
+    "python_allowlist": {
+      "PYTHONHASHSEED": "0",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "native_console_additional_allowlist": {
+      "PYTHONSAFEPATH": "1",
+      "PYTHONNOUSERSITE": "1"
+    },
+    "model_stack": "No Torch/NumPy model stack installed for this task",
+    "offline_flags": true,
+    "neural_opt_in": "0"
+  },
+  "before_repair_constant_startup": {
+    "format": "irisx.r5-before-repair.v1",
+    "reviewed_delivery": "1a08648603e1af2fe66998a0e53b11d02abf5c6b",
+    "reviewed_code": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+    "scope": "constant-only fresh interpreter startup; no original test/runtime body",
+    "results": [
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-c",
+          "import json,sys,os;print(json.dumps({'python':sys.version,'flags':{'hash_randomization':sys.flags.hash_randomization,'ignore_environment':sys.flags.ignore_environment,'no_user_site':sys.flags.no_user_site,'safe_path':sys.flags.safe_path,'optimize':sys.flags.optimize},'environment':{k:os.environ.get(k) for k in ('PYTHONHASHSEED','PYTHONDONTWRITEBYTECODE')},'hashes':[hash(s) for s in ('IRIS-X WSF-R5 constant','alpha','beta')]}))"
+        ],
+        "exit_code": 0,
+        "result": {
+          "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+          "flags": {
+            "hash_randomization": 0,
+            "ignore_environment": 0,
+            "no_user_site": 1,
+            "safe_path": true,
+            "optimize": 0
+          },
+          "environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          },
+          "hashes": [
+            5530507348953173698,
+            6408890135650488130,
+            9063898771175018756
+          ]
+        }
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-c",
+          "import json,sys,os;print(json.dumps({'python':sys.version,'flags':{'hash_randomization':sys.flags.hash_randomization,'ignore_environment':sys.flags.ignore_environment,'no_user_site':sys.flags.no_user_site,'safe_path':sys.flags.safe_path,'optimize':sys.flags.optimize},'environment':{k:os.environ.get(k) for k in ('PYTHONHASHSEED','PYTHONDONTWRITEBYTECODE')},'hashes':[hash(s) for s in ('IRIS-X WSF-R5 constant','alpha','beta')]}))"
+        ],
+        "exit_code": 0,
+        "result": {
+          "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+          "flags": {
+            "hash_randomization": 1,
+            "ignore_environment": 1,
+            "no_user_site": 1,
+            "safe_path": true,
+            "optimize": 0
+          },
+          "environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          },
+          "hashes": [
+            -7827297638520940691,
+            4103539416897316299,
+            4217769416352648989
+          ]
+        }
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-c",
+          "import json,sys,os;print(json.dumps({'python':sys.version,'flags':{'hash_randomization':sys.flags.hash_randomization,'ignore_environment':sys.flags.ignore_environment,'no_user_site':sys.flags.no_user_site,'safe_path':sys.flags.safe_path,'optimize':sys.flags.optimize},'environment':{k:os.environ.get(k) for k in ('PYTHONHASHSEED','PYTHONDONTWRITEBYTECODE')},'hashes':[hash(s) for s in ('IRIS-X WSF-R5 constant','alpha','beta')]}))"
+        ],
+        "exit_code": 0,
+        "result": {
+          "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+          "flags": {
+            "hash_randomization": 1,
+            "ignore_environment": 1,
+            "no_user_site": 1,
+            "safe_path": true,
+            "optimize": 0
+          },
+          "environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          },
+          "hashes": [
+            -2164595429832077225,
+            1381497795122390691,
+            6773762215048083695
+          ]
+        }
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "-c",
+          "import json,sys,os;print(json.dumps({'python':sys.version,'flags':{'hash_randomization':sys.flags.hash_randomization,'ignore_environment':sys.flags.ignore_environment,'no_user_site':sys.flags.no_user_site,'safe_path':sys.flags.safe_path,'optimize':sys.flags.optimize},'environment':{k:os.environ.get(k) for k in ('PYTHONHASHSEED','PYTHONDONTWRITEBYTECODE')},'hashes':[hash(s) for s in ('IRIS-X WSF-R5 constant','alpha','beta')]}))"
+        ],
+        "exit_code": 0,
+        "result": {
+          "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+          "flags": {
+            "hash_randomization": 0,
+            "ignore_environment": 0,
+            "no_user_site": 1,
+            "safe_path": true,
+            "optimize": 1
+          },
+          "environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          },
+          "hashes": [
+            5530507348953173698,
+            6408890135650488130,
+            9063898771175018756
+          ]
+        }
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-O",
+          "-c",
+          "import json,sys,os;print(json.dumps({'python':sys.version,'flags':{'hash_randomization':sys.flags.hash_randomization,'ignore_environment':sys.flags.ignore_environment,'no_user_site':sys.flags.no_user_site,'safe_path':sys.flags.safe_path,'optimize':sys.flags.optimize},'environment':{k:os.environ.get(k) for k in ('PYTHONHASHSEED','PYTHONDONTWRITEBYTECODE')},'hashes':[hash(s) for s in ('IRIS-X WSF-R5 constant','alpha','beta')]}))"
+        ],
+        "exit_code": 0,
+        "result": {
+          "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+          "flags": {
+            "hash_randomization": 1,
+            "ignore_environment": 1,
+            "no_user_site": 1,
+            "safe_path": true,
+            "optimize": 1
+          },
+          "environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          },
+          "hashes": [
+            5418333258906511453,
+            -4076940969833504290,
+            5237306855706064904
+          ]
+        }
+      }
+    ],
+    "raw_report_sha256": "05a0632769f634813d9434e8809cbd786fa01fec8819f19d4ac7f323a755026a"
+  },
+  "public_suites": [
+    {
+      "suite": "core",
+      "status": "passed",
+      "tests": 63,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "inventory_blob": "a7582916751fbc5828031b89968aa74091268b56",
+      "runner_blob": "c0d5844def603621b29c4bd12048e48fc26b46bb",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+        "tree": "97ffbb6c6fd6058baa36fd2d33137df1ab086789",
+        "manifest_sha256": "4723a4abd6aaf4f37d392f6b1836e03180a28b31ca3de31bb93d92fd0e3ab72a"
+      },
+      "selected_paths": [
+        "tests/test_admission.py",
+        "tests/test_cli_import_boundary.py",
+        "tests/test_contracts.py",
+        "tests/test_engine.py",
+        "tests/test_reference_flow.py",
+        "tests/test_transport.py"
+      ],
+      "child_python_environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "raw_report": ".irisx\\r5\\p\\core\\report.json",
+      "raw_report_sha256": "cd78c3e0038490320f8a98e6f1d219e51156d016c6d02b1c2e493d9fb838f109",
+      "startup": {
+        "flags": {
+          "optimize": 0,
+          "safe_path": true,
+          "no_user_site": 1,
+          "dont_write_bytecode": 1,
+          "ignore_environment": 0,
+          "isolated": 0,
+          "hash_randomization": 0
+        },
+        "python_environment": {
+          "PYTHONHASHSEED": "0",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      },
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\r5\\p\\core\\module-000.json",
+          "sha256": "6628b6152adeb2373699616a9f3278a7d168337c53348c0c0ec6493ec8381b50",
+          "log_sha256": "02822520b6b9e613cfc4270e3dca1713389e5c4d6010798edd961023d5e368cb"
+        },
+        {
+          "report": ".irisx\\r5\\p\\core\\module-001.json",
+          "sha256": "761ffe3e9a55c13bf59d6300b3a34d955f36ec626f4f123127f48bfbdf22f08b",
+          "log_sha256": "514fc291fd9c0d8ef654b5a673c5482b21997b330c9f2d1370060b67c0e94083"
+        },
+        {
+          "report": ".irisx\\r5\\p\\core\\module-002.json",
+          "sha256": "e39e591fc22c0a0ba7e444429a26c3aea8c69ebb3636c749cb9b90211b3e11cb",
+          "log_sha256": "2fa15acbff0a72dbb98ae4a821b00c989f7f7d65112f5d25ebcae0623c813238"
+        },
+        {
+          "report": ".irisx\\r5\\p\\core\\module-003.json",
+          "sha256": "79dbec65c1d9ae65340ec77827c91be981f0185c3814a24dcc1444481d0b9f11",
+          "log_sha256": "4b3c8b884f8d82b24018962295cc1c75a7f05d3ae5abc4a3771999313c67158f"
+        },
+        {
+          "report": ".irisx\\r5\\p\\core\\module-004.json",
+          "sha256": "86066518e13fc7071f40e51f31f8f56cff3c5a21d9b483257bc1864109573a3f",
+          "log_sha256": "874cf9adcd34c76850d8590b9ac567014bf1ccd43031f679d198148bac7c010c"
+        },
+        {
+          "report": ".irisx\\r5\\p\\core\\module-005.json",
+          "sha256": "636d9431f87aaa28dce9eb5ed04d71a347e3c820ee015ab2094388b31fe95ea4",
+          "log_sha256": "8e369ae0bfc9eafa2547b402b33b25b5da194b459c9ab9832021d5e6bfbfaa1f"
+        }
+      ],
+      "skip_records": []
+    },
+    {
+      "suite": "distribution",
+      "status": "passed",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skips": 1,
+      "expected_skips": 1,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "inventory_blob": "a7582916751fbc5828031b89968aa74091268b56",
+      "runner_blob": "c0d5844def603621b29c4bd12048e48fc26b46bb",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+        "tree": "97ffbb6c6fd6058baa36fd2d33137df1ab086789",
+        "manifest_sha256": "4723a4abd6aaf4f37d392f6b1836e03180a28b31ca3de31bb93d92fd0e3ab72a"
+      },
+      "selected_paths": [
+        "tests/test_distribution.py"
+      ],
+      "child_python_environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "raw_report": ".irisx\\r5\\p\\distribution\\report.json",
+      "raw_report_sha256": "caf68d6b0c0ebd88f8fbabdd39fdbe1a94f82e27fe2dba09c3b6457058244bdd",
+      "startup": {
+        "flags": {
+          "optimize": 0,
+          "safe_path": true,
+          "no_user_site": 1,
+          "dont_write_bytecode": 1,
+          "ignore_environment": 0,
+          "isolated": 0,
+          "hash_randomization": 0
+        },
+        "python_environment": {
+          "PYTHONHASHSEED": "0",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      },
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\r5\\p\\distribution\\module-000.json",
+          "sha256": "38c7c9b93138bff069db6c24fa2696edf99416b2edf32146aec8b61449e935b8",
+          "log_sha256": "aa08ab51893b817deae5fdb0864a290af23f2b783957de44c981e7b64052f7c5"
+        }
+      ],
+      "skip_records": [
+        {
+          "path": "tests/test_distribution.py",
+          "records": [
+            {
+              "test_id": "test_distribution.DistributionTests.test_linked_source_fails_without_following_target",
+              "reason": "platform cannot create symlinks: [WinError 1314] A required privilege is not held by the client: 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\r5\\\\p\\\\distribution\\\\tmpitdbdsro\\\\external.py' -> 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\r5\\\\p\\\\distribution\\\\tmpitdbdsro\\\\stage\\\\src\\\\irisx\\\\linked.py'"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "suite": "management",
+      "status": "passed",
+      "tests": 208,
+      "failures": 0,
+      "errors": 0,
+      "skips": 1,
+      "expected_skips": 1,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "inventory_blob": "a7582916751fbc5828031b89968aa74091268b56",
+      "runner_blob": "c0d5844def603621b29c4bd12048e48fc26b46bb",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+        "tree": "97ffbb6c6fd6058baa36fd2d33137df1ab086789",
+        "manifest_sha256": "4723a4abd6aaf4f37d392f6b1836e03180a28b31ca3de31bb93d92fd0e3ab72a"
+      },
+      "selected_paths": [
+        "tests/test_domain_dependencies.py",
+        "tests/test_interpreter_startup.py",
+        "tests/test_no_training.py",
+        "tests/test_onboarding.py",
+        "tests/test_research_navigation.py",
+        "tests/test_review_lifecycle.py",
+        "tests/test_snapshot_collection.py",
+        "tests/test_source_identity.py",
+        "tests/test_suite_runner.py",
+        "tests/test_workstream_gate.py",
+        "tests/test_workstream_management.py"
+      ],
+      "child_python_environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "raw_report": ".irisx\\r5\\p\\management\\report.json",
+      "raw_report_sha256": "687767f09c25600229432465f8b123f50c65f70baa08b97c044bf1cdeb69ead5",
+      "startup": {
+        "flags": {
+          "optimize": 0,
+          "safe_path": true,
+          "no_user_site": 1,
+          "dont_write_bytecode": 1,
+          "ignore_environment": 0,
+          "isolated": 0,
+          "hash_randomization": 0
+        },
+        "python_environment": {
+          "PYTHONHASHSEED": "0",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      },
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\r5\\p\\management\\module-000.json",
+          "sha256": "717ae5ed6b187afb675606eadd2b0ca0db2815dd338ab641d129a1bc96d0f414",
+          "log_sha256": "52b16231a369dfde10ae06690a3aedd0212becc30ce270bcdf2c2549594a88ce"
+        },
+        {
+          "report": ".irisx\\r5\\p\\management\\module-001.json",
+          "sha256": "42b4e8b306747b0fa4f01963ed753c2efbab1cfc4b9e0433a4a4684b381e7a6f",
+          "log_sha256": "12ea46c65f0505bc5a7549e438ef38afdb56f2c8b79f8203415cd7b9b2c458a8"
+        },
+        {
+          "report": ".irisx\\r5\\p\\management\\module-002.json",
+          "sha256": "a89b7cf01ba982c1b3eb982fb2bb235d6afc1aa51fd9728cd39b727d5a601ddb",
+          "log_sha256": "883ed6c6a91b283a78c51c4a453c6a198d5e46cb7352d63f97710c13b77f007d"
+        },
+        {
+          "report": ".irisx\\r5\\p\\management\\module-003.json",
+          "sha256": "7137cea0fb8878402a220332b272f41a70cdc305af45b919b37cdef1149b2962",
+          "log_sha256": "165685ad36e72c0067a866f7349da71c73c87ba33ba48ed127ae5a911862d37a"
+        },
+        {
+          "report": ".irisx\\r5\\p\\management\\module-004.json",
+          "sha256": "e69eaf717de3909059a8a6074ea28e61c3c364928d5f8914e7a80e4fff589f7f",
+          "log_sha256": "e122b27a3e7f9d6623e19e3df18a6a5a57034fc49669e67280b43e283f92b017"
+        },
+        {
+          "report": ".irisx\\r5\\p\\management\\module-005.json",
+          "sha256": "ee2082d2f82989789026fef011fdd381503e38ccb20aa52f28a5298213dd9743",
+          "log_sha256": "f07a12f1705acfbd1e1cc30ab2dc1355a328c750d69f00599688d9406367e958"
+        },
+        {
+          "report": ".irisx\\r5\\p\\management\\module-006.json",
+          "sha256": "3c208346d61ce45f13adba4f58bec1ab4fce6a9b625986298aabcc625bed9a72",
+          "log_sha256": "720cfb1e22f42ea2fa9336a79f3709d53688ddaf8e9241b3998c6fef81829450"
+        },
+        {
+          "report": ".irisx\\r5\\p\\management\\module-007.json",
+          "sha256": "1b1e30bb2530040d149c3103b2973f80216d535cc7dbc7d4dc90bc6f243c0abc",
+          "log_sha256": "6909a90ebe8cfaaf4058ed40fd63447810f7fa04cde05b6879ad5d82c563d963"
+        },
+        {
+          "report": ".irisx\\r5\\p\\management\\module-008.json",
+          "sha256": "829fc49bfaf18e80c48cd176a0f951e00ff2201b769052b1d0fe44f0d88222a6",
+          "log_sha256": "16b0f23f856cb3ed5441420479f3b12669977618e52093677ddaf8cca8dd39d3"
+        },
+        {
+          "report": ".irisx\\r5\\p\\management\\module-009.json",
+          "sha256": "5efd384f67a7ea9d3dfad4ebc7d538e3c721f6a13848c7921fab6fe6339ade2d",
+          "log_sha256": "9745c1927abbb07eaca18db5648eef627e78069d35104123a7e72ef1f67bfeef"
+        },
+        {
+          "report": ".irisx\\r5\\p\\management\\module-010.json",
+          "sha256": "b344a2627af496a361caeb8451309a8de3b8bc089939e8a2f8bbd3c2d459d765",
+          "log_sha256": "58a91f325660e0d4c3dc1a165210c6d88e4a6579154110e191f7655e096cb4d8"
+        }
+      ],
+      "skip_records": [
+        {
+          "path": "tests/test_workstream_management.py",
+          "records": [
+            {
+              "test_id": "test_workstream_management.ManagementTests.test_linked_document_path_rejected",
+              "reason": "Platform does not permit test symlinks: [WinError 1314] A required privilege is not held by the client: 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\r5\\\\p\\\\management\\\\irisx-management-test-fo90hhm2\\\\outside' -> 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\r5\\\\p\\\\management\\\\irisx-management-test-fo90hhm2\\\\repository\\\\docs\\\\managed\\\\linked'"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "suite": "navigation",
+      "status": "passed",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "inventory_blob": "a7582916751fbc5828031b89968aa74091268b56",
+      "runner_blob": "c0d5844def603621b29c4bd12048e48fc26b46bb",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+        "tree": "97ffbb6c6fd6058baa36fd2d33137df1ab086789",
+        "manifest_sha256": "4723a4abd6aaf4f37d392f6b1836e03180a28b31ca3de31bb93d92fd0e3ab72a"
+      },
+      "selected_paths": [
+        "tests/test_workstream_navigation.py"
+      ],
+      "child_python_environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "raw_report": ".irisx\\r5\\p\\navigation\\report.json",
+      "raw_report_sha256": "4a54e271f6eb2c5634b518fb0c54e8ba1c81d7ce1d45b546225e40a507dcaa5d",
+      "startup": {
+        "flags": {
+          "optimize": 0,
+          "safe_path": true,
+          "no_user_site": 1,
+          "dont_write_bytecode": 1,
+          "ignore_environment": 0,
+          "isolated": 0,
+          "hash_randomization": 0
+        },
+        "python_environment": {
+          "PYTHONHASHSEED": "0",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      },
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\r5\\p\\navigation\\module-000.json",
+          "sha256": "c523bbc723a6f38fd48b412404ffddb27df19421741bb06a8692bd6df12d8ef3",
+          "log_sha256": "e85529956b2a65e646e505b810c6864482cf39712725d3cf3e53c7bda7b57959"
+        }
+      ],
+      "skip_records": []
+    },
+    {
+      "suite": "integrity",
+      "status": "passed",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "inventory_blob": "a7582916751fbc5828031b89968aa74091268b56",
+      "runner_blob": "c0d5844def603621b29c4bd12048e48fc26b46bb",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+        "tree": "97ffbb6c6fd6058baa36fd2d33137df1ab086789",
+        "manifest_sha256": "4723a4abd6aaf4f37d392f6b1836e03180a28b31ca3de31bb93d92fd0e3ab72a"
+      },
+      "selected_paths": [
+        "tests/test_repository_check.py"
+      ],
+      "child_python_environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "raw_report": ".irisx\\r5\\p\\integrity\\report.json",
+      "raw_report_sha256": "e3bbf066cc258f8b4c903af62a3a921c1ef7d0f1c1fd7ca13e59e63171c0d0ab",
+      "startup": {
+        "flags": {
+          "optimize": 0,
+          "safe_path": true,
+          "no_user_site": 1,
+          "dont_write_bytecode": 1,
+          "ignore_environment": 0,
+          "isolated": 0,
+          "hash_randomization": 0
+        },
+        "python_environment": {
+          "PYTHONHASHSEED": "0",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      },
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\r5\\p\\integrity\\module-000.json",
+          "sha256": "811e61eaab3cce72b8a78b2551e75190cac1ec63870ac13be8d71e8041a327c2",
+          "log_sha256": "7d71bde6c54788223ccda6bf42ba39636e384ec56129da5848a27b7bd82dcfd9"
+        }
+      ],
+      "skip_records": []
+    },
+    {
+      "suite": "arc-unit",
+      "status": "passed",
+      "tests": 125,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "inventory_blob": "a7582916751fbc5828031b89968aa74091268b56",
+      "runner_blob": "c0d5844def603621b29c4bd12048e48fc26b46bb",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+        "tree": "97ffbb6c6fd6058baa36fd2d33137df1ab086789",
+        "manifest_sha256": "4723a4abd6aaf4f37d392f6b1836e03180a28b31ca3de31bb93d92fd0e3ab72a"
+      },
+      "selected_paths": [
+        "tests/arc_agi_2/test_cli_boundary.py",
+        "tests/test_arc_agi2.py",
+        "tests/test_arc_kaggle_submission.py",
+        "tests/test_arc_nvarc_sdg.py",
+        "tests/test_arc_nvarc_transport_io.py",
+        "tests/test_arc_offline_evaluation.py",
+        "tests/test_arc_prompt_optimizer.py",
+        "tests/test_arc_prompt_pilot.py",
+        "tests/test_arc_trial_002.py",
+        "tests/test_kaggle_checkpoint.py",
+        "tests/test_nvarc_gpu_preflight.py",
+        "tests/test_nvarc_gpu_preflight_v2.py",
+        "tests/test_nvarc_method.py",
+        "tests/test_stage4_provider_evidence.py",
+        "tests/test_trial_001_layout.py"
+      ],
+      "child_python_environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "raw_report": ".irisx\\r5\\p\\arc-unit\\report.json",
+      "raw_report_sha256": "c17a7411120d592ae77a670fe951882782b0c8fe9966b748dfdceaee6692f00d",
+      "startup": {
+        "flags": {
+          "optimize": 0,
+          "safe_path": true,
+          "no_user_site": 1,
+          "dont_write_bytecode": 1,
+          "ignore_environment": 0,
+          "isolated": 0,
+          "hash_randomization": 0
+        },
+        "python_environment": {
+          "PYTHONHASHSEED": "0",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      },
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-000.json",
+          "sha256": "7ed2efd4fe010b5c983d55197361993214cd32c2c93561c7311ee9755916f981",
+          "log_sha256": "82fe3394b1f174dbe95ca07d9f61910d408fa7a6ac1c8984d53d1f6ab74bb3f9"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-001.json",
+          "sha256": "839c753f912902ac814fa637c80b3dcb70459ca473cffd8d92b0bbc2dedb8c39",
+          "log_sha256": "e7a5f5251b1e0b82142fafc4f9b5ba79c617f58ef62db32abf2e391f31432591"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-002.json",
+          "sha256": "a904f691c09c7a25d2c07cc1823dde1f457563177f7222fd2513d351d229f166",
+          "log_sha256": "850e090c9cd4b1ddef9fe9ae37f358a3be21d97cebf0563c63f13409ced33ed6"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-003.json",
+          "sha256": "bf1284c355446ab78e9ca5fed8345df866e66cb6d0a9accc25451a6f403ed394",
+          "log_sha256": "a6a1df2cbf886cb51e01bfdff8336a76ce9fe524d10d3d0695ab6515e3ac0ad6"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-004.json",
+          "sha256": "adc52f5a99619c02e5af6208485054f433c075e4d62f09ee574c9376fffc6ba6",
+          "log_sha256": "88de696eff57fe8c04345b41f7a374a0f7bab96e8c1dbaa40e4c4a911978dc55"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-005.json",
+          "sha256": "eeb5c75e6d56a9a8f7eec6734ee378f299fbe55e5cdf7faad6f78847ca53b687",
+          "log_sha256": "d73e51fe80c8d62692fb04ac342ffcd97212cdad18d30411151cb0f03616003d"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-006.json",
+          "sha256": "8f21095e4ecf5af21f83b80e127f4e02f71e4f301e7d194fa4f7d752dc23eec5",
+          "log_sha256": "6f3198dbfa8af8ca54e024110028273d5f0ca2100d0997aeb54b50e8e1db80c5"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-007.json",
+          "sha256": "6e300539cb5b1161b90670afa035754b4628ab0a35530ce63378363214d644ef",
+          "log_sha256": "ebc43d52afa3fc68d92faf326b220257f4245270352309f3dbe1ef8d3416239d"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-008.json",
+          "sha256": "07a38d597987df47b8c64a5dda6a0ceb9e743ae169bb45db2d688d4181aa9eae",
+          "log_sha256": "4de8d27e73f2003cc0f18c28b28108394d2c2b2f9ca0da96a02f3100243d3c03"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-009.json",
+          "sha256": "7461c2803f6c37ede96a0d32b5f6028203102a865a738981f91f88ba5ea3e1b6",
+          "log_sha256": "65cad34b7e338f5a3facb6466dcacd62995b7a03d415a71be444033e26b1eec0"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-010.json",
+          "sha256": "efcceb29c905309b38085737a5c3c3a1f09f8357019db00e713074b0e30eadb2",
+          "log_sha256": "6bab106ba0b57f5166963e12e9dd46407ac8690eab1bc60340fd857e9842fef4"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-011.json",
+          "sha256": "5fc48b20d6915d795e873206bb33d6260401471b40433680d44a8184e603dcc0",
+          "log_sha256": "d947b43b273ab47ee4811bc7389442a4cc8b3f58ddf959711bd9e485a0368e37"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-012.json",
+          "sha256": "70c132c3a16a99c5c91dfedb89df6a322bb0b80a28c2a886131d3043ee4d0960",
+          "log_sha256": "c12338a362c0a53a91e2a71b3ea82c4e85dab0df42c0242d778391d277bc915a"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-013.json",
+          "sha256": "046eb06e46405422fa248378b6873ff75146e10c146a3feeccaf1a8cd19a6320",
+          "log_sha256": "6a27a2d4e129d9b5c953afe2c6d21d0d3a6fdd07d981cbd73474baa79e534038"
+        },
+        {
+          "report": ".irisx\\r5\\p\\arc-unit\\module-014.json",
+          "sha256": "e6cf961ec057839329410de2d2c781077bcf15da6e93d19e1b7396c3b3d1e461",
+          "log_sha256": "c3ce1386837224a52a80e16db7eebbdbb30680364a42511a71911f3678981de5"
+        }
+      ],
+      "skip_records": []
+    },
+    {
+      "suite": "line-b",
+      "status": "passed",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "inventory_blob": "a7582916751fbc5828031b89968aa74091268b56",
+      "runner_blob": "c0d5844def603621b29c4bd12048e48fc26b46bb",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+        "tree": "97ffbb6c6fd6058baa36fd2d33137df1ab086789",
+        "manifest_sha256": "4723a4abd6aaf4f37d392f6b1836e03180a28b31ca3de31bb93d92fd0e3ab72a"
+      },
+      "selected_paths": [
+        "tests/line_b/test_flow.py"
+      ],
+      "child_python_environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "raw_report": ".irisx\\r5\\p\\line-b\\report.json",
+      "raw_report_sha256": "ec6e4b95a8fe46af72928f25cf6a0e8e5905c31c1fb2f55c20ecc96f0db85079",
+      "startup": {
+        "flags": {
+          "optimize": 0,
+          "safe_path": true,
+          "no_user_site": 1,
+          "dont_write_bytecode": 1,
+          "ignore_environment": 0,
+          "isolated": 0,
+          "hash_randomization": 0
+        },
+        "python_environment": {
+          "PYTHONHASHSEED": "0",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      },
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\r5\\p\\line-b\\module-000.json",
+          "sha256": "85d543b09628ca7f2aae555611cc839a479a37acea1f0c9404a8d6c85bf2dc60",
+          "log_sha256": "9b1b5a5971b2cb24dc00c018694df9beac314b33e069eac206e39319d868cbca"
+        }
+      ],
+      "skip_records": []
+    }
+  ],
+  "public_totals": {
+    "tests": 442,
+    "failures": 0,
+    "errors": 0,
+    "skips": 2,
+    "expected_skips": 2,
+    "unexpected_skips": 0,
+    "blocked": 0
+  },
+  "optimized": {
+    "format": "irisx.r5-optimized-self-tests.v1",
+    "status": "passed",
+    "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+    "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+    "source_before": {
+      "head_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "tree": "97ffbb6c6fd6058baa36fd2d33137df1ab086789",
+      "git_status": "",
+      "fingerprint": "4c52bbcb867bea0cc76574024d22c56e631dfc12457bd3c984a2de15bb0e637d",
+      "working_manifest_sha256": "a1be0e0359d4a07ac7eab2a946bd2f854e6db170e482d42073905dcd8755f230",
+      "manifest_files": 2641
+    },
+    "source_after": {
+      "head_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "tree": "97ffbb6c6fd6058baa36fd2d33137df1ab086789",
+      "git_status": "",
+      "fingerprint": "4c52bbcb867bea0cc76574024d22c56e631dfc12457bd3c984a2de15bb0e637d",
+      "working_manifest_sha256": "a1be0e0359d4a07ac7eab2a946bd2f854e6db170e482d42073905dcd8755f230",
+      "manifest_files": 2641
+    },
+    "source_before_after_equal": true,
+    "evidence_scope": "developer direct-file -O checks, working-byte identity distinct from formal raw-Git snapshots",
+    "environment_allowlist": {
+      "PYTHONHASHSEED": "0",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "independent_review": "pending",
+    "commands": [
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "tests/test_workstream_management.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 35,
+        "skips": 1,
+        "log": "command-01.log",
+        "log_sha256": "c8e59d828995dab84fab9de753426f74d11bd2045643fd457f0a6f425cecddad"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "tests/test_review_lifecycle.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 30,
+        "skips": 0,
+        "log": "command-02.log",
+        "log_sha256": "611168476b134143ef5b7f473736a5d4c20f12f4e6fb40fd92e97463f8f091a6"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "tests/test_source_identity.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 11,
+        "skips": 0,
+        "log": "command-03.log",
+        "log_sha256": "bec8ab41c3a27ded37569ebd7505cbefba6dba3cd74ce40ded3ff0703f1802c3"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "tests/test_snapshot_collection.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 10,
+        "skips": 0,
+        "log": "command-04.log",
+        "log_sha256": "770f1b6884682e6e531a99214692503e7a7c4a139894575947adc790d814939e"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "tests/test_suite_runner.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 28,
+        "skips": 0,
+        "log": "command-05.log",
+        "log_sha256": "d8a95480c984535f34ef234060f071b0a493b4c9730ecff49a2eefd4db82e5fb"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "tests/test_no_training.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 14,
+        "skips": 0,
+        "log": "command-06.log",
+        "log_sha256": "084f41983d8441789150aacbb8449b383a6b1939fbd31f837e704748aacb37cc"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "tests/test_workstream_gate.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 27,
+        "skips": 0,
+        "log": "command-07.log",
+        "log_sha256": "2816fbb98773300b127ee7f1e1b4b154ce7deec2c56646f684adee6cb94e75e4"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "tests/test_onboarding.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 15,
+        "skips": 0,
+        "log": "command-08.log",
+        "log_sha256": "83be797f07e5d05eb0ff20099c10aff9a6bb60c7695d59503beb764326cea232"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "tests/test_distribution.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 9,
+        "skips": 1,
+        "log": "command-09.log",
+        "log_sha256": "226100ef2709c727f9539447953d0cef25a4db7505c6be4af6ac7907cfaab83a"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "tests/test_interpreter_startup.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 12,
+        "skips": 0,
+        "log": "command-10.log",
+        "log_sha256": "3001a6886756f90bcd2bb013b140fab6864da86f1c363fa329720ec87a2a7550"
+      }
+    ],
+    "raw_report": ".irisx\\r5\\optimized\\report.json",
+    "raw_report_sha256": "76f33d93ebae671878a50c8033920dd112029d14720049222303dd44ccd68805"
+  },
+  "formal_distribution": [
+    {
+      "schema": "irisx/distribution-self-check-v1",
+      "status": "passed",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "commands": [
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "venv",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\builder-venv"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-01.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\builder-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "pip",
+            "wheel",
+            "--no-index",
+            "--no-deps",
+            "--no-build-isolation",
+            "--wheel-dir",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\stage-a\\wheelhouse",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\stage-a"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\stage-a",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-02.log",
+          "log_sha256": "e5202b941b877e9fdb1f74d99fea1641f681d6ef341a85b5d8839051069cbfdd"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\builder-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "pip",
+            "wheel",
+            "--no-index",
+            "--no-deps",
+            "--no-build-isolation",
+            "--wheel-dir",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\stage-b\\wheelhouse",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\stage-b"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\stage-b",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-03.log",
+          "log_sha256": "86f1d137e4347e3483d9b452ca2a33ac0d30581e786c2fa037650ba63befb7a3"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "venv",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-04.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "pip",
+            "install",
+            "--no-index",
+            "--no-deps",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\stage-a\\wheelhouse\\irisx-0.2.0-py3-none-any.whl"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-05.log",
+          "log_sha256": "e8cf05d409cea435302c02be1a52bb252889fb3a3d93479d34a621f30af0b172"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-c",
+            "import json; print(json.dumps([hash('IRIS-X seed sentinel'), hash('synthetic engineering')]))"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-06.log",
+          "log_sha256": "54344767aa532b710acf58e9c20f4b81076cd4376bd33c59d588d509079dda88"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-c",
+            "import irisx,json,os,site,pathlib,sys; print(json.dumps({'origin':irisx.__file__,'prefix':sys.prefix,'site_paths':site.getsitepackages(),'editable_pth':[str(p) for s in site.getsitepackages() for p in pathlib.Path(s).glob('*editable*.pth')],'startup':{'flags':{name:getattr(sys.flags,name) for name in ('optimize','safe_path','no_user_site','dont_write_bytecode','ignore_environment','isolated','hash_randomization')},'python_environment':{name:os.environ.get(name) for name in ('PYTHONHASHSEED','PYTHONDONTWRITEBYTECODE')}},'seed_hashes':[hash('IRIS-X seed sentinel'),hash('synthetic engineering')]}))"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-07.log",
+          "log_sha256": "bcd6d4cfdcb2f0f46f56ed29e073c1fc316e1c1a898f57a54914464290abed84"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx",
+            "--help"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-08.log",
+          "log_sha256": "c89a2ad4bb4309a88391c565c7abd1ade92369df11b2e0f2a46ef8cd2b11a9b4"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx",
+            "fixture",
+            "prepare",
+            "--output",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\fixture"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-09.log",
+          "log_sha256": "c417c4d8921f2e17faadc58c0bd900dc89aebe85b9400d340bbb0bb5a71430af"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx",
+            "spec",
+            "validate",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\fixture\\specification.json"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-10.log",
+          "log_sha256": "c4cb64bcc3787931abde488d9dab9b2a1055fcf842c8b43f259201593079619f"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx",
+            "trial",
+            "validate",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\fixture\\trial.json"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-11.log",
+          "log_sha256": "9f5509d69cb3d71d35060013180a5d8f93f5b435df9320033792b62bffa732f2"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx",
+            "trial",
+            "run",
+            "--trial",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\fixture\\trial.json",
+            "--output",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\run"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-12.log",
+          "log_sha256": "681d74e6b2ed394c6a6589afe7b44cf7b3c7abd0f1d2469888198a39bec63e2a"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx",
+            "package",
+            "build",
+            "--run",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\run",
+            "--output",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\package"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-13.log",
+          "log_sha256": "1840e3e317bf6eb2c1af2a4570f78c25ea8e98df1bf37b8897e496f38c7d0d03"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx",
+            "package",
+            "verify",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\package"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-14.log",
+          "log_sha256": "759ac4bfa80a17667c394aea000a59ae58c962dfc698e01c7aa0733cfe78fcd5"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx",
+            "arc-agi-2",
+            "--help"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-15.log",
+          "log_sha256": "5d74365bc9250bc8aeed72bb446bed5b9afee81662eb8864939a269516b05887"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx",
+            "arc-agi-2",
+            "source",
+            "validate",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\missing-arc-source"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 2,
+          "expected_exit_code": 2,
+          "log": "command-16.log",
+          "log_sha256": "31c21d4bb35cbd3d7afed6500819a704744e9fbfcb3cb0083d81f09c9481460f"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx.domains.line_b.flow",
+            "--output",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\line-b"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-17.log",
+          "log_sha256": "9deef8dbeb10c2dd32214e8138e03ef5d84caf606ab61c9d250f27399119479f"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\irisx.exe",
+            "--help"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-18.log",
+          "log_sha256": "c89a2ad4bb4309a88391c565c7abd1ade92369df11b2e0f2a46ef8cd2b11a9b4"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-B",
+            "-c",
+            "import irisx,json,os,site,pathlib,sys; print(json.dumps({'origin':irisx.__file__,'prefix':sys.prefix,'site_paths':site.getsitepackages(),'editable_pth':[str(p) for s in site.getsitepackages() for p in pathlib.Path(s).glob('*editable*.pth')],'startup':{'flags':{name:getattr(sys.flags,name) for name in ('optimize','safe_path','no_user_site','dont_write_bytecode','ignore_environment','isolated','hash_randomization')},'python_environment':{name:os.environ.get(name) for name in ('PYTHONHASHSEED','PYTHONDONTWRITEBYTECODE')}},'seed_hashes':[hash('IRIS-X seed sentinel'),hash('synthetic engineering')]}))"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-19.log",
+          "python_environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONSAFEPATH": "1",
+            "PYTHONNOUSERSITE": "1"
+          },
+          "log_sha256": "bcd6d4cfdcb2f0f46f56ed29e073c1fc316e1c1a898f57a54914464290abed84"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\irisx.exe",
+            "--help"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-20.log",
+          "python_environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONSAFEPATH": "1",
+            "PYTHONNOUSERSITE": "1"
+          },
+          "log_sha256": "c89a2ad4bb4309a88391c565c7abd1ade92369df11b2e0f2a46ef8cd2b11a9b4"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx",
+            "admission",
+            "validate",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\public-admission\\trials\\p2-admission\\admission.json"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-21.log",
+          "log_sha256": "565ac05843a50a72203a9c3e132206efbb6d72cd6b5febd2160f9fcfeba21ebb"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-m",
+            "irisx",
+            "package",
+            "verify",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4\\missing"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+          "exit_code": 2,
+          "expected_exit_code": 2,
+          "log": "command-22.log",
+          "log_sha256": "98b0621ff7ef593a2bdae6dbc9e30637771b9a0c2ef55b6ce378dcb947977acf"
+        }
+      ],
+      "scope": "synthetic engineering only",
+      "independent_review": "pending",
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "attestable": true,
+      "evidence_kind": "commit",
+      "head_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "python_environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "inventory_blob": "a7582916751fbc5828031b89968aa74091268b56",
+      "runner_blob": "c0d5844def603621b29c4bd12048e48fc26b46bb",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+        "tree": "97ffbb6c6fd6058baa36fd2d33137df1ab086789",
+        "manifest_sha256": "4723a4abd6aaf4f37d392f6b1836e03180a28b31ca3de31bb93d92fd0e3ab72a"
+      },
+      "wheels": [
+        {
+          "sha256": "f00fb0257ef7c8ca016149f5338d47cd7c90de7f1a885964cef018c0cd9e3776",
+          "members": 128,
+          "record_verified": true
+        },
+        {
+          "sha256": "f00fb0257ef7c8ca016149f5338d47cd7c90de7f1a885964cef018c0cd9e3776",
+          "members": 128,
+          "record_verified": true
+        }
+      ],
+      "installation": {
+        "origin": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Lib\\site-packages\\irisx\\__init__.py",
+        "prefix": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv",
+        "site_paths": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-n\\consumer-venv\\Lib\\site-packages"
+        ],
+        "editable_pth": [],
+        "startup": {
+          "flags": {
+            "optimize": 0,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": 1,
+            "ignore_environment": 0,
+            "isolated": 0,
+            "hash_randomization": 0
+          },
+          "python_environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          }
+        },
+        "seed_hashes": [
+          -76389193887929065,
+          3201080044707177514
+        ],
+        "external_cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-i4scduc4",
+        "pythonpath_removed": true,
+        "non_editable": true
+      },
+      "arc_parser_facade": "passed (help and missing-path error only)",
+      "line_b_synthetic_flow": "passed",
+      "native_console": {
+        "environment_support_probe": {
+          "flags": {
+            "optimize": 0,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": 1,
+            "ignore_environment": 0,
+            "isolated": 0,
+            "hash_randomization": 0
+          },
+          "python_environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          }
+        },
+        "seed_reference_matched": true,
+        "native_cli_flags_readback": "not introspected; separate same-interpreter support probe only"
+      },
+      "synthetic_reference_flow": "passed",
+      "mode": "normal",
+      "raw_report": ".irisx\\r5\\f-n\\report.json",
+      "raw_report_sha256": "c7c1305f8a22a7489f4924c3b4b044030703b1528cd3730e8f0c4e7f49afe643"
+    },
+    {
+      "schema": "irisx/distribution-self-check-v1",
+      "status": "passed",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "commands": [
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "venv",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\builder-venv"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-01.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\builder-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "pip",
+            "wheel",
+            "--no-index",
+            "--no-deps",
+            "--no-build-isolation",
+            "--wheel-dir",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\stage-a\\wheelhouse",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\stage-a"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\stage-a",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-02.log",
+          "log_sha256": "0fabb2ba3fce896c69dd04e42a1e8629b7b0285565bea8a3844fd44e71e5a8a5"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\builder-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "pip",
+            "wheel",
+            "--no-index",
+            "--no-deps",
+            "--no-build-isolation",
+            "--wheel-dir",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\stage-b\\wheelhouse",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\stage-b"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\stage-b",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-03.log",
+          "log_sha256": "e9a47c67e9805eff0e70a8f90d743cc1e49d27d29695e56c9339abca9c0888f3"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "venv",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-04.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "pip",
+            "install",
+            "--no-index",
+            "--no-deps",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\stage-a\\wheelhouse\\irisx-0.2.0-py3-none-any.whl"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-05.log",
+          "log_sha256": "e0258ca7a5a89b7ccbef4a1f60fa12f0b82ce41f6837eb9a7d48d1214cf92dd3"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-c",
+            "import json; print(json.dumps([hash('IRIS-X seed sentinel'), hash('synthetic engineering')]))"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-06.log",
+          "log_sha256": "54344767aa532b710acf58e9c20f4b81076cd4376bd33c59d588d509079dda88"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-c",
+            "import irisx,json,os,site,pathlib,sys; print(json.dumps({'origin':irisx.__file__,'prefix':sys.prefix,'site_paths':site.getsitepackages(),'editable_pth':[str(p) for s in site.getsitepackages() for p in pathlib.Path(s).glob('*editable*.pth')],'startup':{'flags':{name:getattr(sys.flags,name) for name in ('optimize','safe_path','no_user_site','dont_write_bytecode','ignore_environment','isolated','hash_randomization')},'python_environment':{name:os.environ.get(name) for name in ('PYTHONHASHSEED','PYTHONDONTWRITEBYTECODE')}},'seed_hashes':[hash('IRIS-X seed sentinel'),hash('synthetic engineering')]}))"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-07.log",
+          "log_sha256": "cae47545290da0a8bf4e232e39cdacc73745431e79cc2ee4be9264aa0b5ad1f5"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx",
+            "--help"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-08.log",
+          "log_sha256": "c89a2ad4bb4309a88391c565c7abd1ade92369df11b2e0f2a46ef8cd2b11a9b4"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx",
+            "fixture",
+            "prepare",
+            "--output",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\fixture"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-09.log",
+          "log_sha256": "be36506866580e75075cb426e183923ff2485ed08261f85b3d493327cb769540"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx",
+            "spec",
+            "validate",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\fixture\\specification.json"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-10.log",
+          "log_sha256": "c4cb64bcc3787931abde488d9dab9b2a1055fcf842c8b43f259201593079619f"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx",
+            "trial",
+            "validate",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\fixture\\trial.json"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-11.log",
+          "log_sha256": "9f5509d69cb3d71d35060013180a5d8f93f5b435df9320033792b62bffa732f2"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx",
+            "trial",
+            "run",
+            "--trial",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\fixture\\trial.json",
+            "--output",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\run"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-12.log",
+          "log_sha256": "681d74e6b2ed394c6a6589afe7b44cf7b3c7abd0f1d2469888198a39bec63e2a"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx",
+            "package",
+            "build",
+            "--run",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\run",
+            "--output",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\package"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-13.log",
+          "log_sha256": "1840e3e317bf6eb2c1af2a4570f78c25ea8e98df1bf37b8897e496f38c7d0d03"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx",
+            "package",
+            "verify",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\package"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-14.log",
+          "log_sha256": "759ac4bfa80a17667c394aea000a59ae58c962dfc698e01c7aa0733cfe78fcd5"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx",
+            "arc-agi-2",
+            "--help"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-15.log",
+          "log_sha256": "5d74365bc9250bc8aeed72bb446bed5b9afee81662eb8864939a269516b05887"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx",
+            "arc-agi-2",
+            "source",
+            "validate",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\missing-arc-source"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 2,
+          "expected_exit_code": 2,
+          "log": "command-16.log",
+          "log_sha256": "525d970c07bfb89d8c8398b87d305b7e79bae7607ff5730a03cb0c210c9d2c94"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx.domains.line_b.flow",
+            "--output",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\line-b"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-17.log",
+          "log_sha256": "9deef8dbeb10c2dd32214e8138e03ef5d84caf606ab61c9d250f27399119479f"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\irisx.exe",
+            "--help"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-18.log",
+          "log_sha256": "c89a2ad4bb4309a88391c565c7abd1ade92369df11b2e0f2a46ef8cd2b11a9b4"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-B",
+            "-c",
+            "import irisx,json,os,site,pathlib,sys; print(json.dumps({'origin':irisx.__file__,'prefix':sys.prefix,'site_paths':site.getsitepackages(),'editable_pth':[str(p) for s in site.getsitepackages() for p in pathlib.Path(s).glob('*editable*.pth')],'startup':{'flags':{name:getattr(sys.flags,name) for name in ('optimize','safe_path','no_user_site','dont_write_bytecode','ignore_environment','isolated','hash_randomization')},'python_environment':{name:os.environ.get(name) for name in ('PYTHONHASHSEED','PYTHONDONTWRITEBYTECODE')}},'seed_hashes':[hash('IRIS-X seed sentinel'),hash('synthetic engineering')]}))"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-19.log",
+          "python_environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONSAFEPATH": "1",
+            "PYTHONNOUSERSITE": "1"
+          },
+          "log_sha256": "0b2f0b402c127a0b59683a9b143dcff2b6a396779a1d0a7daed278ef35fc91b1"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\irisx.exe",
+            "--help"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-20.log",
+          "python_environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONSAFEPATH": "1",
+            "PYTHONNOUSERSITE": "1"
+          },
+          "log_sha256": "c89a2ad4bb4309a88391c565c7abd1ade92369df11b2e0f2a46ef8cd2b11a9b4"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx",
+            "admission",
+            "validate",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\public-admission\\trials\\p2-admission\\admission.json"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "log": "command-21.log",
+          "log_sha256": "565ac05843a50a72203a9c3e132206efbb6d72cd6b5febd2160f9fcfeba21ebb"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-m",
+            "irisx",
+            "package",
+            "verify",
+            "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m\\missing"
+          ],
+          "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+          "exit_code": 2,
+          "expected_exit_code": 2,
+          "log": "command-22.log",
+          "log_sha256": "8ecafdacf6247365e72d6669f1815cc54817b0591ee795f9331799403f566215"
+        }
+      ],
+      "scope": "synthetic engineering only",
+      "independent_review": "pending",
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "attestable": true,
+      "evidence_kind": "commit",
+      "head_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "python_environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "inventory_blob": "a7582916751fbc5828031b89968aa74091268b56",
+      "runner_blob": "c0d5844def603621b29c4bd12048e48fc26b46bb",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+        "tree": "97ffbb6c6fd6058baa36fd2d33137df1ab086789",
+        "manifest_sha256": "4723a4abd6aaf4f37d392f6b1836e03180a28b31ca3de31bb93d92fd0e3ab72a"
+      },
+      "wheels": [
+        {
+          "sha256": "f00fb0257ef7c8ca016149f5338d47cd7c90de7f1a885964cef018c0cd9e3776",
+          "members": 128,
+          "record_verified": true
+        },
+        {
+          "sha256": "f00fb0257ef7c8ca016149f5338d47cd7c90de7f1a885964cef018c0cd9e3776",
+          "members": 128,
+          "record_verified": true
+        }
+      ],
+      "installation": {
+        "origin": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Lib\\site-packages\\irisx\\__init__.py",
+        "prefix": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv",
+        "site_paths": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\f-o\\consumer-venv\\Lib\\site-packages"
+        ],
+        "editable_pth": [],
+        "startup": {
+          "flags": {
+            "optimize": 1,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": 1,
+            "ignore_environment": 0,
+            "isolated": 0,
+            "hash_randomization": 0
+          },
+          "python_environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          }
+        },
+        "seed_hashes": [
+          -76389193887929065,
+          3201080044707177514
+        ],
+        "external_cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-m6z3ld8m",
+        "pythonpath_removed": true,
+        "non_editable": true
+      },
+      "arc_parser_facade": "passed (help and missing-path error only)",
+      "line_b_synthetic_flow": "passed",
+      "native_console": {
+        "environment_support_probe": {
+          "flags": {
+            "optimize": 0,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": 1,
+            "ignore_environment": 0,
+            "isolated": 0,
+            "hash_randomization": 0
+          },
+          "python_environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          }
+        },
+        "seed_reference_matched": true,
+        "native_cli_flags_readback": "not introspected; separate same-interpreter support probe only"
+      },
+      "synthetic_reference_flow": "passed",
+      "mode": "optimized",
+      "raw_report": ".irisx\\r5\\f-o\\report.json",
+      "raw_report_sha256": "99ff1347019c9b9e9667a38006a8c205a6e489c5b646b87dbfc8110ba166bee2"
+    }
+  ],
+  "onboarding": [
+    {
+      "format": "irisx.onboarding-report.v1",
+      "status": "passed",
+      "scope": "synthetic engineering-only non-deployable; developer self-check",
+      "independent_review": "pending",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source",
+          "exit_code": 0,
+          "log": "command-01.log",
+          "log_sha256": "817078b1f309e8cf524f8a506e79393d465bdbfb49f4899f6387b298c148a0c1"
+        },
+        {
+          "argv": [
+            "git",
+            "branch",
+            "--show-current"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source",
+          "exit_code": 0,
+          "log": "command-02.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "-c",
+            "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\empty-hooks",
+            "clone",
+            "--quiet",
+            "--shared",
+            "--no-checkout",
+            "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source",
+            "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source",
+          "exit_code": 0,
+          "log": "command-03.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "-c",
+            "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\empty-hooks",
+            "switch",
+            "--detach",
+            "41c5c164c255e4fd6df57bc60ccde480072b1a3e"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-04.log",
+          "log_sha256": "e9fe4a964be5e1b78419df0ae813afa3ff48ac1219ea13a27c0eacb754245bd5"
+        },
+        {
+          "argv": [
+            "git",
+            "-c",
+            "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\empty-hooks",
+            "switch",
+            "-c",
+            "codex/onboarding-line-b-1791986130871187000"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-05.log",
+          "log_sha256": "efe8ebc1eb5f604e9d6ae61df365413d42a71d9964a52e6a5ec23f1c70ee0587"
+        },
+        {
+          "argv": [
+            "git",
+            "status",
+            "--porcelain"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-06.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-c",
+            "import json,sys; sys.path.insert(0,'C:\\\\Users\\\\wurre\\\\.codex\\\\tmp\\\\r5-bxs1xny5\\\\source\\\\.irisx\\\\n2\\\\checkout\\\\tools'); from suite_runner import interpreter_startup; print(json.dumps(interpreter_startup()))"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-07.log",
+          "log_sha256": "26c06bafe57b58d3fd392f47bda45b529b92cb6a499bffc705c697dc6f418f29"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "tools/dev.py",
+            "render"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-08.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "tools/dev.py",
+            "context",
+            "--task",
+            "ONBOARD-LB-01"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-09.log",
+          "log_sha256": "85518819b8b3e1dc5f31d5471ccf62014ad8714c6cab07a219ef59ad0624142e"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "tools/dev.py",
+            "check"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-10.log",
+          "log_sha256": "d018ed241d6b13f765c87a190c52e167f53abc2b7db397b888fc48e39066980f"
+        },
+        {
+          "argv": [
+            "git",
+            "-c",
+            "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\empty-hooks",
+            "add",
+            "--",
+            "docs/management",
+            "docs/plan/synthetic-line-b-onboarding.md",
+            "docs/development/synthetic-line-b-onboarding.md"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-11.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "-c",
+            "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\empty-hooks",
+            "-c",
+            "user.name=IRIS-X synthetic onboarding",
+            "-c",
+            "user.email=synthetic-onboarding@invalid.example",
+            "commit",
+            "-m",
+            "test: register synthetic onboarding metadata"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-12.log",
+          "log_sha256": "84edefdf13de73032bdc763cf6da67f66d312f5018f8d9262aa964d285995213"
+        },
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-13.log",
+          "log_sha256": "cef0c8fc1ef44c0061d88c0ce3fb5a6a54fc7604b01892775b08587807eaacec"
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--exit-code",
+            "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+            "94c883727ff0d5ad24cb7554b7d9e205c4d905d9",
+            "--",
+            "src",
+            "tools",
+            "tests",
+            ".github",
+            "pyproject.toml"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-14.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "tools/dev.py",
+            "verify",
+            "--require-committed",
+            "--suite",
+            "line-b",
+            "--output",
+            "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout\\.irisx\\line-b\\onboarding-suite"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-15.log",
+          "log_sha256": "2cb163e90889bdf1b8c522c86089b2157719569adae8bfcada448c8f7910a25e"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "tools/dev.py",
+            "render"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-16.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "tools/dev.py",
+            "render",
+            "--check"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-17.log",
+          "log_sha256": "d018ed241d6b13f765c87a190c52e167f53abc2b7db397b888fc48e39066980f"
+        },
+        {
+          "argv": [
+            "git",
+            "cat-file",
+            "-e",
+            "cc14bd1a79aac1fe6135017c9e09d4834300675d:research/native-continuation-20261013/primary-method-assessment.md"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-18.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "cc14bd1a79aac1fe6135017c9e09d4834300675d:research/native-continuation-20261013/primary-method-assessment.md"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-19.log",
+          "log_sha256": "0d2b2ddc3c3a0bd44a0823d9b9250f1676d7ca66b749e7cb14f7eeb34bde795e"
+        },
+        {
+          "argv": [
+            "git",
+            "cat-file",
+            "-e",
+            "cc14bd1a79aac1fe6135017c9e09d4834300675d:docs/plan/2026-10-13-native-research-continuation.md"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-20.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "cc14bd1a79aac1fe6135017c9e09d4834300675d:docs/plan/2026-10-13-native-research-continuation.md"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-21.log",
+          "log_sha256": "63619ad4ea4bd0619bd4752f5d975b878fd959339c9b4bfeba01c3efb4874ccb"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "tools/dev.py",
+            "context",
+            "--task",
+            "WSF-04"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-22.log",
+          "log_sha256": "03aca790a29b8e6d6a53904f74d95a6534bc05380ea0529eb44751ec62eb892b"
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--",
+            "src",
+            "tools",
+            "tests",
+            ".github",
+            "pyproject.toml"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+          "exit_code": 0,
+          "log": "command-23.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "python_environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "initial_checkout_clean": true,
+      "startup": {
+        "flags": {
+          "optimize": 0,
+          "safe_path": true,
+          "no_user_site": 1,
+          "dont_write_bytecode": 1,
+          "ignore_environment": 0,
+          "isolated": 0,
+          "hash_randomization": 0
+        },
+        "python_environment": {
+          "PYTHONHASHSEED": "0",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      },
+      "exercise_commit": "94c883727ff0d5ad24cb7554b7d9e205c4d905d9",
+      "navigation_chain": [
+        {
+          "role": "entry",
+          "path": "docs/README.md"
+        },
+        {
+          "role": "board",
+          "path": "docs/management/BOARD.md"
+        },
+        {
+          "role": "task",
+          "path": "docs/management/tasks/ONBOARD-LB-01.json"
+        },
+        {
+          "role": "plan",
+          "path": "docs/plan/synthetic-line-b-onboarding.md"
+        },
+        {
+          "role": "code",
+          "path": "src/irisx/domains/line_b/flow.py"
+        },
+        {
+          "role": "handoff",
+          "path": "docs/verification/ONBOARD-LB-01/HANDOFF.md"
+        }
+      ],
+      "research_sources": [
+        {
+          "id": "arc-r4-primary-method-assessment",
+          "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/native-continuation-20261013/primary-method-assessment.md",
+          "commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+          "path": "research/native-continuation-20261013/primary-method-assessment.md",
+          "remote_availability": "unverified",
+          "research_content_review": "pending human review",
+          "git_blob": "60b92ee928d5c099bc528dd4411704adfe9066a0",
+          "local_git_object": "present"
+        },
+        {
+          "id": "arc-r5-native-research-continuation",
+          "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/plan/2026-10-13-native-research-continuation.md",
+          "commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+          "path": "docs/plan/2026-10-13-native-research-continuation.md",
+          "remote_availability": "unverified",
+          "research_content_review": "pending human review",
+          "git_blob": "42da3379ca9e634f223f36844cdee3e77a2a1786",
+          "local_git_object": "present"
+        }
+      ],
+      "task_id": "ONBOARD-LB-01",
+      "task_state": "review_ready",
+      "program_and_original_tasks_unchanged": true,
+      "returned_to_task": "WSF-04",
+      "line_b_suite": {
+        "status": "passed",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "blocked": 0,
+        "target_commit": "94c883727ff0d5ad24cb7554b7d9e205c4d905d9"
+      },
+      "checkout": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\checkout",
+      "sandbox_head_branch": "codex/onboarding-line-b-1791986130871187000",
+      "mode": "normal",
+      "raw_report": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n2\\report.json",
+      "raw_report_sha256": "a1791b6486d4e7bc09ef7ec373e7535a96e1138de1b39a6659a9786ea942548e"
+    },
+    {
+      "format": "irisx.onboarding-report.v1",
+      "status": "passed",
+      "scope": "synthetic engineering-only non-deployable; developer self-check",
+      "independent_review": "pending",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source",
+          "exit_code": 0,
+          "log": "command-01.log",
+          "log_sha256": "817078b1f309e8cf524f8a506e79393d465bdbfb49f4899f6387b298c148a0c1"
+        },
+        {
+          "argv": [
+            "git",
+            "branch",
+            "--show-current"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source",
+          "exit_code": 0,
+          "log": "command-02.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "-c",
+            "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\empty-hooks",
+            "clone",
+            "--quiet",
+            "--shared",
+            "--no-checkout",
+            "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source",
+            "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source",
+          "exit_code": 0,
+          "log": "command-03.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "-c",
+            "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\empty-hooks",
+            "switch",
+            "--detach",
+            "41c5c164c255e4fd6df57bc60ccde480072b1a3e"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-04.log",
+          "log_sha256": "e9fe4a964be5e1b78419df0ae813afa3ff48ac1219ea13a27c0eacb754245bd5"
+        },
+        {
+          "argv": [
+            "git",
+            "-c",
+            "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\empty-hooks",
+            "switch",
+            "-c",
+            "codex/onboarding-line-b-1791986271398096400"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-05.log",
+          "log_sha256": "2254ddd804f87c39dc70c89651d02c7ce4142e85001823e30df8f55b759fc2fe"
+        },
+        {
+          "argv": [
+            "git",
+            "status",
+            "--porcelain"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-06.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "-c",
+            "import json,sys; sys.path.insert(0,'C:\\\\Users\\\\wurre\\\\.codex\\\\tmp\\\\r5-bxs1xny5\\\\source\\\\.irisx\\\\o2\\\\checkout\\\\tools'); from suite_runner import interpreter_startup; print(json.dumps(interpreter_startup()))"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-07.log",
+          "log_sha256": "1c6c195dc278cf05bfac3eda9eb1100a03cad0e6ea258c7a0efee7a150bc96b0"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "tools/dev.py",
+            "render"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-08.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "tools/dev.py",
+            "context",
+            "--task",
+            "ONBOARD-LB-01"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-09.log",
+          "log_sha256": "85518819b8b3e1dc5f31d5471ccf62014ad8714c6cab07a219ef59ad0624142e"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "tools/dev.py",
+            "check"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-10.log",
+          "log_sha256": "d018ed241d6b13f765c87a190c52e167f53abc2b7db397b888fc48e39066980f"
+        },
+        {
+          "argv": [
+            "git",
+            "-c",
+            "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\empty-hooks",
+            "add",
+            "--",
+            "docs/management",
+            "docs/plan/synthetic-line-b-onboarding.md",
+            "docs/development/synthetic-line-b-onboarding.md"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-11.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "-c",
+            "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\empty-hooks",
+            "-c",
+            "user.name=IRIS-X synthetic onboarding",
+            "-c",
+            "user.email=synthetic-onboarding@invalid.example",
+            "commit",
+            "-m",
+            "test: register synthetic onboarding metadata"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-12.log",
+          "log_sha256": "01064e4047a42beabec55014e16b15f0d393709c0b698983e1a46073908b41e9"
+        },
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-13.log",
+          "log_sha256": "dc481631771efad8ec78612141b6e3abc261ded10faf8b4360496f5601f40741"
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--exit-code",
+            "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+            "9d696d9f6e0917a48393056a4c5ac84572228725",
+            "--",
+            "src",
+            "tools",
+            "tests",
+            ".github",
+            "pyproject.toml"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-14.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "tools/dev.py",
+            "verify",
+            "--require-committed",
+            "--suite",
+            "line-b",
+            "--output",
+            "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout\\.irisx\\line-b\\onboarding-suite"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-15.log",
+          "log_sha256": "86ed9a2f3630dedd8a99bb8d673136e3db8bab52d91154b9fde02602afbdf113"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "tools/dev.py",
+            "render"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-16.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "tools/dev.py",
+            "render",
+            "--check"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-17.log",
+          "log_sha256": "d018ed241d6b13f765c87a190c52e167f53abc2b7db397b888fc48e39066980f"
+        },
+        {
+          "argv": [
+            "git",
+            "cat-file",
+            "-e",
+            "cc14bd1a79aac1fe6135017c9e09d4834300675d:research/native-continuation-20261013/primary-method-assessment.md"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-18.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "cc14bd1a79aac1fe6135017c9e09d4834300675d:research/native-continuation-20261013/primary-method-assessment.md"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-19.log",
+          "log_sha256": "0d2b2ddc3c3a0bd44a0823d9b9250f1676d7ca66b749e7cb14f7eeb34bde795e"
+        },
+        {
+          "argv": [
+            "git",
+            "cat-file",
+            "-e",
+            "cc14bd1a79aac1fe6135017c9e09d4834300675d:docs/plan/2026-10-13-native-research-continuation.md"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-20.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "cc14bd1a79aac1fe6135017c9e09d4834300675d:docs/plan/2026-10-13-native-research-continuation.md"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-21.log",
+          "log_sha256": "63619ad4ea4bd0619bd4752f5d975b878fd959339c9b4bfeba01c3efb4874ccb"
+        },
+        {
+          "argv": [
+            "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\r5\\v\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "tools/dev.py",
+            "context",
+            "--task",
+            "WSF-04"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-22.log",
+          "log_sha256": "03aca790a29b8e6d6a53904f74d95a6534bc05380ea0529eb44751ec62eb892b"
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--",
+            "src",
+            "tools",
+            "tests",
+            ".github",
+            "pyproject.toml"
+          ],
+          "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+          "exit_code": 0,
+          "log": "command-23.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "python_environment": {
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "initial_checkout_clean": true,
+      "startup": {
+        "flags": {
+          "optimize": 1,
+          "safe_path": true,
+          "no_user_site": 1,
+          "dont_write_bytecode": 1,
+          "ignore_environment": 0,
+          "isolated": 0,
+          "hash_randomization": 0
+        },
+        "python_environment": {
+          "PYTHONHASHSEED": "0",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      },
+      "exercise_commit": "9d696d9f6e0917a48393056a4c5ac84572228725",
+      "navigation_chain": [
+        {
+          "role": "entry",
+          "path": "docs/README.md"
+        },
+        {
+          "role": "board",
+          "path": "docs/management/BOARD.md"
+        },
+        {
+          "role": "task",
+          "path": "docs/management/tasks/ONBOARD-LB-01.json"
+        },
+        {
+          "role": "plan",
+          "path": "docs/plan/synthetic-line-b-onboarding.md"
+        },
+        {
+          "role": "code",
+          "path": "src/irisx/domains/line_b/flow.py"
+        },
+        {
+          "role": "handoff",
+          "path": "docs/verification/ONBOARD-LB-01/HANDOFF.md"
+        }
+      ],
+      "research_sources": [
+        {
+          "id": "arc-r4-primary-method-assessment",
+          "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/native-continuation-20261013/primary-method-assessment.md",
+          "commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+          "path": "research/native-continuation-20261013/primary-method-assessment.md",
+          "remote_availability": "unverified",
+          "research_content_review": "pending human review",
+          "git_blob": "60b92ee928d5c099bc528dd4411704adfe9066a0",
+          "local_git_object": "present"
+        },
+        {
+          "id": "arc-r5-native-research-continuation",
+          "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/plan/2026-10-13-native-research-continuation.md",
+          "commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+          "path": "docs/plan/2026-10-13-native-research-continuation.md",
+          "remote_availability": "unverified",
+          "research_content_review": "pending human review",
+          "git_blob": "42da3379ca9e634f223f36844cdee3e77a2a1786",
+          "local_git_object": "present"
+        }
+      ],
+      "task_id": "ONBOARD-LB-01",
+      "task_state": "review_ready",
+      "program_and_original_tasks_unchanged": true,
+      "returned_to_task": "WSF-04",
+      "line_b_suite": {
+        "status": "passed",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "blocked": 0,
+        "target_commit": "9d696d9f6e0917a48393056a4c5ac84572228725"
+      },
+      "checkout": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\checkout",
+      "sandbox_head_branch": "codex/onboarding-line-b-1791986271398096400",
+      "mode": "optimized",
+      "raw_report": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o2\\report.json",
+      "raw_report_sha256": "ee4f4798f216c35c5b4a71484a110ffba36b2696457172deb0cc75ac67c0d96a"
+    }
+  ],
+  "failed_onboarding_attempts": [
+    {
+      "status": "failed",
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "startup": {
+        "flags": {
+          "optimize": 0,
+          "safe_path": true,
+          "no_user_site": 1,
+          "dont_write_bytecode": 1,
+          "ignore_environment": 0,
+          "isolated": 0,
+          "hash_randomization": 0
+        },
+        "python_environment": {
+          "PYTHONHASHSEED": "0",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      },
+      "exercise_commit": "1819296e9e3fd3c69b98fa5df9d82165285b2f40",
+      "error": "TimeoutExpired: Command '['C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\r5\\\\v\\\\Scripts\\\\python.exe', '-P', '-s', '-B', 'tools/dev.py', 'verify', '--require-committed', '--suite', 'line-b', '--output', 'C:\\\\Users\\\\wurre\\\\.codex\\\\tmp\\\\r5-bxs1xny5\\\\source\\\\.irisx\\\\n\\\\checkout\\\\.irisx\\\\line-b\\\\onboarding-suite']' timed out after 180 seconds",
+      "raw_report": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\n\\report.json",
+      "raw_report_sha256": "179e9fd4d214218e7fdc8f71d622e7a273191631bef0d13a53956563b3fc04ff",
+      "attribution": "180s timeout during line-b verify in concurrent first check batch; source/startup probe passed, complete exercise failed. Sequential fresh-output retries are separate evidence; precise timing cause unverified."
+    },
+    {
+      "status": "failed",
+      "target_commit": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+      "startup": {
+        "flags": {
+          "optimize": 1,
+          "safe_path": true,
+          "no_user_site": 1,
+          "dont_write_bytecode": 1,
+          "ignore_environment": 0,
+          "isolated": 0,
+          "hash_randomization": 0
+        },
+        "python_environment": {
+          "PYTHONHASHSEED": "0",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        }
+      },
+      "exercise_commit": "079a813abc864707eddbbae0f22947a3f3c4be7b",
+      "error": "TimeoutExpired: Command '['C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\r5\\\\v\\\\Scripts\\\\python.exe', '-P', '-s', '-B', '-O', 'tools/dev.py', 'verify', '--require-committed', '--suite', 'line-b', '--output', 'C:\\\\Users\\\\wurre\\\\.codex\\\\tmp\\\\r5-bxs1xny5\\\\source\\\\.irisx\\\\o\\\\checkout\\\\.irisx\\\\line-b\\\\onboarding-suite']' timed out after 180 seconds",
+      "raw_report": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source\\.irisx\\o\\report.json",
+      "raw_report_sha256": "b693d4437a1cccd34f15fcab830fbb77fce71b21b39c2c48eef48b4a4bf6c6e0",
+      "attribution": "180s timeout during line-b verify in concurrent first check batch; source/startup probe passed, complete exercise failed. Sequential fresh-output retries are separate evidence; precise timing cause unverified."
+    }
+  ],
+  "onboarding_preparation": {
+    "source": "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source",
+    "code": "41c5c164c255e4fd6df57bc60ccde480072b1a3e",
+    "commands": [
+      {
+        "argv": [
+          "git",
+          "-c",
+          "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\empty-hooks",
+          "clone",
+          "--quiet",
+          "--shared",
+          "--no-checkout",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X",
+          "C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\source"
+        ],
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "git",
+          "-c",
+          "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r5-bxs1xny5\\empty-hooks",
+          "switch",
+          "--detach",
+          "41c5c164c255e4fd6df57bc60ccde480072b1a3e"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "network": "none; source-only local Git object store"
+  },
+  "independent_review_record": "independent-review.json",
+  "prior_receipts_retained": [
+    "../WSF-R1-R4/HANDOFF.md",
+    "../WSF-R1-R4/self-tests.json",
+    "../WSF-R1-R4/onboarding.json"
+  ],
+  "preservation": {
+    "frozen_and_unchanged_control_scopes": [
+      "src",
+      "trials",
+      "research",
+      "archive",
+      "PRODUCT_THESIS.md",
+      "pyproject.toml",
+      "docs/workstreams/arc-agi-2",
+      "docs/workstreams/line-b",
+      ".github",
+      "tools/workstream_management.py",
+      "tools/source_identity.py",
+      "tools/workstream_gate.py",
+      "tools/no_training.py"
+    ],
+    "changed_paths": [
+      "docs/management/BOARD.md",
+      "docs/management/documents.json",
+      "docs/management/tasks/WSF-R1-R4.json",
+      "docs/management/tasks/WSF-R5.json",
+      "docs/plan/2026-10-14-workstream-review-r5.md",
+      "docs/verification/WSF-R5/independent-review.json",
+      "docs/workstreams/core/STATUS.md",
+      "tests/README.md",
+      "tests/inventory.json",
+      "tests/test_distribution.py",
+      "tests/test_interpreter_startup.py",
+      "tests/test_onboarding.py",
+      "tests/test_snapshot_collection.py",
+      "tools/dev.py",
+      "tools/distribution_check.py",
+      "tools/onboarding_check.py",
+      "tools/suite_runner.py"
+    ],
+    "tag_refs_sha256": "c045b6d54c6165031dcd792aeaf26767964264be2587f4d58142775595251528",
+    "main": "baaf47d4f449c534ddd4646ab9b3175bbaf1ef89",
+    "run008": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+    "earlier_branches": {
+      "refactor/workstream-pr2-packaging": "2e706a5a4e4afb67f64517e4ee174584dcb06e18",
+      "refactor/workstream-pr3-validation": "756cd560f8d61256ed35e12c3c3637ec456c6141",
+      "refactor/workstream-pr4-arc-boundary": "c514e9d5b3c438b70c90824ec1fd2796aa840740"
+    },
+    "no_training_provider_download_merge_or_history_rewrite": true
+  },
+  "failed_blocked_unverified": [
+    "Reviewed -I startup failure reproduced with constants; seed env0 but effective randomization1 and different fresh-process hashes. New same-interpreter controls pass, without portable hardcoded values.",
+    "Two declared actual Windows symlink privilege skips remain counted; mocked/junction controls pass.",
+    "Two first concurrent onboarding exercises timed out at180s during line-b verify; preserved as failed. No matching Python orphan remained. Sequential fresh-output retry results recorded separately; exact delay cause unverified.",
+    "Native console flags not directly introspected from frozen CLI; separate same-interpreter controlled environment support probe plus native --help retained.",
+    "Original audit/aggregate remain unexecuted BLOCKED/non-success; prior audit errors, long-path preparation failures and actual synthetic-SGD scope violation remain historical.",
+    "Current R5 remote CI, Linux/other interpreter execution, complete independent acceptance, authentic reconstruction, numerical/model/evaluator/GPU replay and scientific efficacy remain unverified.",
+    "Controlled startup retains the same trusted system-site/sitecustomize surface as -I; not a comprehensive hostile-Python sandbox."
+  ]
+}

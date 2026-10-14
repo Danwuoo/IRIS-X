@@ -21,15 +21,17 @@ REQUIRED_TASK_FIELDS = TASK_FIELDS - {"review_refs", "concurrency_group"}
 DOC_FIELDS = {"id", "path", "url", "kind", "workstream", "status", "owner_role", "related_tasks", "supersedes"}
 
 
+def _unique_json(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
 def load_json(path: Path):
-    def unique(pairs):
-        result = {}
-        for key, value in pairs:
-            if key in result:
-                raise ValueError(f"duplicate JSON key: {key}")
-            result[key] = value
-        return result
-    return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique)
+    return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=_unique_json)
 
 
 def safe_path(root: Path, value: str, *, glob: bool = False) -> Path:
@@ -75,21 +77,259 @@ def _cycles(records: dict, field: str) -> list[str]:
     return errors
 
 
-def render_board(root: Path) -> str:
+TASK_CONTROLS = ("id", "workstream", "depends_on", "plan_ref", "scope_paths", "acceptance")
+POSITIVE_REVIEWS = {"verified", "verified_with_limits"}
+NEGATIVE_REVIEWS = {"changes_requested", "blocked"}
+DEPENDENCY_FILES = {
+    "pyproject.toml", "setup.py", "setup.cfg", "Pipfile", "Pipfile.lock",
+    "poetry.lock", "uv.lock", "requirements.txt", "constraints.txt",
+    "docs/workstreams/dependencies.json",
+}
+
+
+def _verification_input(path: str) -> bool:
+    """Classify source/test/dependency/CI inputs, not all report metadata."""
+    return (path.startswith(("src/", "tools/", "tests/", ".github/")) or
+            path in DEPENDENCY_FILES or
+            (Path(path).name.startswith(("requirements", "constraints")) and path.endswith((".txt", ".in"))) or
+            path.endswith((".py", ".pyi", ".sh", ".ps1", ".bat", ".cmd", ".tmpl", ".ipynb")))
+
+
+def _covers(cover: str, required: str) -> bool:
+    # Exact globs or a literal subtree are auditable. Do not guess containment
+    # between different wildcard languages and silently narrow a task.
+    if cover == required:
+        return True
+    if not any(char in required for char in "*?["):
+        return fnmatch.fnmatchcase(required, cover)
+    if cover.endswith("/**") and not any(char in cover[:-3] for char in "*?["):
+        return required.startswith(cover[:-2])
+    return False
+
+
+def _git(root: Path, arguments: list[str]) -> str:
+    result = subprocess.run(["git", *arguments], cwd=root, capture_output=True,
+                            text=True, encoding="utf-8", errors="surrogateescape")
+    if result.returncode:
+        raise ValueError("cannot inspect review Git binding: " + " ".join(arguments[:2]))
+    return result.stdout
+
+
+def _commit_exists(root: Path, commit: object) -> bool:
+    if not isinstance(commit, str) or not SHA.fullmatch(commit) or not (root / ".git").exists():
+        return False
+    result = subprocess.run(["git", "cat-file", "-t", commit], cwd=root, capture_output=True, text=True)
+    return not result.returncode and result.stdout.strip() == "commit"
+
+
+def _review_valid(report: object) -> bool:
+    if not isinstance(report, dict):
+        return False
+    limitations, source = report.get("limitations"), report.get("source")
+    outcome = report.get("outcome")
+    return (report.get("format") == "irisx.review.v1" and
+            report.get("reviewer_role") == "independent" and
+            isinstance(report.get("target_commit"), str) and SHA.fullmatch(report["target_commit"]) is not None and
+            isinstance(outcome, str) and outcome in POSITIVE_REVIEWS | NEGATIVE_REVIEWS and
+            isinstance(source, str) and bool(source.strip()) and
+            isinstance(limitations, list) and all(isinstance(value, str) for value in limitations) and
+            (outcome != "verified_with_limits" or bool(limitations) and all(value.strip() for value in limitations)))
+
+
+def _coverage_issues(root: Path, task: dict, report: dict, docs: dict) -> list[str]:
+    coverage = report.get("scope_paths")
+    if not isinstance(coverage, list) or not coverage or any(not isinstance(path, str) for path in coverage):
+        return ["review lacks explicit scope_paths coverage"]
+    for path in coverage:
+        safe_path(root, path, glob=True)
+        if not re.split(r"[*?[]", path)[0].rstrip("/"):
+            return ["review coverage requires explicit path prefixes"]
+    target = report["target_commit"]
+    candidates = set(_git(root, ["ls-tree", "-r", "--name-only", "-z", target]).split("\0"))
+    candidates.update(_git(root, ["ls-files", "-z", "--cached", "--others", "--",
+                                 *task["scope_paths"]]).split("\0"))
+    # A declared wildcard may contain executable input outside conventional
+    # src/tools/tests paths (for example scripts/**). Require that whole declared
+    # scope, not just today's matching files, so added source cannot narrow it.
+    required = [pattern for pattern in task["scope_paths"]
+                if _verification_input(pattern) or
+                any(_verification_input(path) and fnmatch.fnmatchcase(path, pattern)
+                    for path in candidates if path)]
+    plan_path = docs.get(task["plan_ref"], {}).get("path")
+    if plan_path:
+        required.append(plan_path)
+    # Shared dependency/CI input paths included by a broad writable task glob
+    # cannot disappear merely because their suffix is JSON rather than Python.
+    for path in DEPENDENCY_FILES:
+        if any(fnmatch.fnmatchcase(path, pattern) for pattern in task["scope_paths"]):
+            required.append(path)
+    missing = sorted({path for path in required if not any(_covers(pattern, path) for pattern in coverage)})
+    if missing:
+        return ["review coverage does not cover current task inputs: " + ", ".join(missing)]
+    old_task = json.loads(_git(root, ["show", target + ":docs/management/tasks/" + task["id"] + ".json"]),
+                          object_pairs_hook=_unique_json)
+    if not isinstance(old_task, dict) or any(old_task.get(field) != task.get(field) for field in TASK_CONTROLS):
+        return ["reviewed task controls changed; acceptance/dependency/plan/scope need a new review"]
+    old_catalog = json.loads(_git(root, ["show", target + ":docs/management/documents.json"]),
+                             object_pairs_hook=_unique_json)
+    old_plans = [doc for doc in old_catalog["documents"] if doc["id"] == task["plan_ref"]]
+    plan = docs.get(task["plan_ref"], {})
+    if len(old_plans) != 1 or any(old_plans[0].get(field) != plan.get(field) for field in ("path", "url")):
+        return ["reviewed canonical plan catalog binding changed; a new review is required"]
+    # Code checkpoints contain the canonical task/plan. Delivery may add the
+    # handoff, state/ref metadata and unrelated work without changing coverage.
+    changed = set()
+    for command in (
+        ["diff", "--no-renames", "--name-only", "-z", target, "HEAD", "--"],
+        ["diff", "--no-renames", "--name-only", "-z", "--cached", "--"],
+        ["diff", "--no-renames", "--name-only", "-z", "--"],
+        # Include ignored source under the explicit reviewed paths. Legitimate
+        # .irisx outputs are outside those source paths; an ignore rule cannot
+        # hide new executable input from current review freshness.
+        ["ls-files", "--others", "-z", "--", *coverage],
+    ):
+        changed.update(path for path in _git(root, command).split("\0") if path)
+    stale = sorted(path for path in changed
+                   if (_verification_input(path) or path == plan_path) and
+                   any(fnmatch.fnmatchcase(path, pattern) for pattern in coverage))
+    return ["reviewed source/test/dependency/CI coverage changed: " + ", ".join(stale)] if stale else []
+
+
+def review_status(root: Path, catalog=None, tasks=None) -> dict:
+    """Resolve current coverage separately from historical verified-at-commit.
+
+    Review documents are data only. This performs JSON/Git source comparisons,
+    never imports reviewed code, follows network URLs or authenticates a claimed
+    human review. The independent conversation must verify that provenance.
+    """
+    if catalog is None or tasks is None:
+        catalog, tasks = _records(root)
+    docs = {doc["id"]: doc for doc in catalog["documents"]}
+    task_index = {task["id"]: task for task in tasks}
+    reports, unreadable = {}, {}
+    references = {ref for task in tasks for ref in task.get("review_refs", [])}
+    seeds = references | {doc["id"] for doc in docs.values()
+                          if any(key in task_index for key in doc.get("related_tasks", []))}
+    relevant_documents = set(seeds)
+    # Resolve both directions so a replacement inherits its predecessor's task
+    # association even when omitted from task.review_refs or related_tasks.
+    while True:
+        expanded = relevant_documents | {ref for key in relevant_documents
+                                         for ref in docs.get(key, {}).get("supersedes", [])}
+        expanded.update(doc["id"] for doc in docs.values()
+                        if any(ref in relevant_documents for ref in doc.get("supersedes", [])))
+        if expanded == relevant_documents:
+            break
+        relevant_documents = expanded
+    for key in relevant_documents:
+        doc = docs.get(key, {})
+        if "path" not in doc or Path(doc["path"]).suffix != ".json":
+            if key in references:
+                unreadable[key] = "review requires a local irisx.review.v1 JSON receipt"
+            continue
+        try:
+            report = load_json(safe_path(root, doc["path"]))
+            if isinstance(report, dict) and report.get("format") == "irisx.review.v1":
+                reports[key] = report
+            elif key in references:
+                unreadable[key] = "not an irisx.review.v1 report"
+        except (ValueError, OSError, TypeError) as exc:
+            unreadable[key] = str(exc)
+    superseded = {ref for doc in docs.values() for ref in doc.get("supersedes", [])}
+    results = {}
+    for key, task in task_index.items():
+        associated = set(task.get("review_refs", [])) | {doc["id"] for doc in docs.values()
+                                                       if key in doc.get("related_tasks", [])}
+        while True:
+            expanded = associated | {ref for doc_id in associated
+                                     for ref in docs.get(doc_id, {}).get("supersedes", [])}
+            expanded.update(doc["id"] for doc in docs.values()
+                            if any(ref in associated for ref in doc.get("supersedes", [])))
+            if expanded == associated:
+                break
+            associated = expanded
+        status = {"historical_verified": [], "current_verified": False, "current_review_ids": [], "reasons": []}
+        for doc_id in sorted(associated):
+            report = reports.get(doc_id)
+            if _review_valid(report) and report["outcome"] in POSITIVE_REVIEWS and _commit_exists(root, report["target_commit"]):
+                status["historical_verified"].append({"review_id": doc_id, "target_commit": report["target_commit"],
+                                                      "outcome": report["outcome"]})
+        effective = [doc_id for doc_id in sorted(associated)
+                     if docs.get(doc_id, {}).get("status") == "active" and doc_id not in superseded and
+                     (doc_id in reports or doc_id in unreadable)]
+        status["current_review_ids"] = effective
+        negatives = [doc_id for doc_id in effective
+                     if isinstance(reports.get(doc_id, {}).get("outcome"), str) and
+                     reports[doc_id]["outcome"] in NEGATIVE_REVIEWS]
+        if negatives:
+            status["reasons"].append("effective review requests changes or blocks acceptance: " + ", ".join(negatives))
+        elif effective:
+            positives = []
+            for doc_id in effective:
+                report = reports.get(doc_id)
+                if not _review_valid(report) or not _commit_exists(root, report.get("target_commit") if isinstance(report, dict) else None):
+                    status["reasons"].append("invalid or unbound independent review: " + doc_id)
+                elif report["outcome"] in POSITIVE_REVIEWS:
+                    if report["target_commit"] != task.get("implementation_commit"):
+                        status["reasons"].append("effective review targets a different implementation commit: " + doc_id)
+                    else:
+                        try:
+                            issues = _coverage_issues(root, task, report, docs)
+                        except (ValueError, OSError, TypeError, KeyError) as exc:
+                            issues = ["cannot establish current review coverage: " + str(exc)]
+                        if issues:
+                            status["reasons"].extend(issues)
+                        else:
+                            positives.append(doc_id)
+            # An invalid or stale active leaf cannot be hidden by selecting a
+            # different older PASS. Ambiguous active leaves require reconciliation.
+            status["current_verified"] = bool(positives) and not status["reasons"]
+        if not status["current_verified"] and not status["reasons"]:
+            status["reasons"].append("no effective commit-bound independent review with current coverage")
+        results[key] = status
+    visiting, complete = set(), set()
+    def resolve(key):
+        if key in complete:
+            return results[key]["current_verified"]
+        if key in visiting:
+            results[key]["current_verified"] = False
+            results[key]["reasons"].append("dependency cycle prevents current acceptance")
+            return False
+        visiting.add(key)
+        task = task_index[key]
+        for upstream in task.get("depends_on", []):
+            if upstream not in task_index or not resolve(upstream) or task_index[upstream].get("state") != "verified":
+                results[key]["current_verified"] = False
+                results[key]["reasons"].append("upstream task is not currently verified: " + upstream)
+        visiting.remove(key)
+        complete.add(key)
+        return results[key]["current_verified"]
+    for key in task_index:
+        resolve(key)
+    return results
+
+
+def render_board(root: Path, *, review_states: dict | None = None) -> str:
     catalog, tasks = _records(root)
     docs = {d["id"]: d for d in catalog["documents"]}
-    lines = [MARKER, "# Development board", "", "Task records are the sole state source. All downstream work is provisional until independent review.", "", "| Task | Stream | State | Dependencies | Implementation | Handoff | Limitations |", "| --- | --- | --- | --- | --- | --- | --- |"]
+    reviews = review_states if review_states is not None else review_status(root, catalog, tasks)
+    lines = [MARKER, "# Development board", "", "Task records are the sole state source. Historical verified-at-commit evidence does not authorize changed current coverage. All downstream work is provisional until independent review.", "", "| Task | Stream | Recorded state | Current acceptance | Historical verified-at | Dependencies | Implementation | Handoff | Limitations |", "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
     for task in sorted(tasks, key=lambda t: t["id"]):
         ref = docs.get(task.get("handoff_ref"), {})
         target = "../" + ref["path"].removeprefix("docs/") if "path" in ref else ref.get("url")
         handoff = f"[report]({target})" if target else "pending"
         limitations = list(task.get("blockers", []))
+        review_state = reviews[task["id"]]
+        if not review_state["current_verified"] and (task.get("review_refs") or task["state"] == "verified"):
+            limitations.extend(review_state["reasons"])
         for review_id in task.get("review_refs", []):
             review_doc = docs.get(review_id, {})
             if "path" in review_doc:
                 review = load_json(safe_path(root, review_doc["path"]))
                 limitations.extend(review.get("limitations", []))
-        cells = [f"[{task['id']}](tasks/{task['id']}.json)", task["workstream"], task["state"], ", ".join(task["depends_on"]) or "—", task.get("implementation_commit") or "pending", handoff, "; ".join(limitations) or "—"]
+        historical = ", ".join(item["target_commit"] for item in review_state["historical_verified"]) or "—"
+        current = "verified" if review_state["current_verified"] and task["state"] == "verified" else "not currently verified"
+        cells = [f"[{task['id']}](tasks/{task['id']}.json)", task["workstream"], task["state"], current, historical, ", ".join(task["depends_on"]) or "—", task.get("implementation_commit") or "pending", handoff, "; ".join(limitations) or "—"]
         lines.append("| " + " | ".join(str(c).replace("|", "\\|").replace("\n", " ") for c in cells) + " |")
     return "\n".join(lines) + "\n"
 
@@ -205,19 +445,6 @@ def validate(root: Path) -> list[str]:
                 errors.append(f"missing commit/handoff for {task['state']}: {key}")
             if task["state"] == "blocked" and not task["blockers"]:
                 errors.append(f"blocked task lacks blockers: {key}")
-            if task["state"] == "verified":
-                valid_review = False
-                for ref in task.get("review_refs", []):
-                    doc = docs.get(ref, {})
-                    if "path" not in doc:
-                        continue
-                    report = load_json(safe_path(root, doc["path"]))
-                    limitations = report.get("limitations")
-                    source = report.get("source")
-                    if (report.get("format") == "irisx.review.v1" and report.get("target_commit") == task["implementation_commit"] and report.get("reviewer_role") == "independent" and report.get("outcome") in {"verified", "verified_with_limits"} and isinstance(source, str) and source.strip() and isinstance(limitations, list) and all(isinstance(x, str) for x in limitations) and (report["outcome"] != "verified_with_limits" or limitations)):
-                        valid_review = True
-                if not valid_review:
-                    errors.append(f"verified lacks commit-bound independent review: {key}")
         for doc in docs.values():
             for ref in doc["related_tasks"]:
                 if ref not in task_index:
@@ -231,6 +458,11 @@ def validate(root: Path) -> list[str]:
                     errors.append(f"dangling dependency: {task['id']} -> {ref}")
         errors.extend(_cycles(task_index, "depends_on"))
         errors.extend(_cycles(docs, "supersedes"))
+        current_reviews = review_status(root, catalog, tasks)
+        for task in tasks:
+            if task["state"] == "verified" and not current_reviews[task["id"]]["current_verified"]:
+                errors.append("verified lacks current commit-bound independent review: " +
+                              task["id"] + ": " + "; ".join(current_reviews[task["id"]]["reasons"]))
         for path in ("README.md", "AGENTS.md", "PRODUCT_THESIS.md", "docs/README.md", "docs/product/README.md", "docs/development/README.md", "docs/development/operating-model.md", "docs/development/data-and-execution-policy.md", "docs/workstreams/README.md", "tests/README.md"):
             if (root / path).is_file() and path.casefold() not in paths:
                 errors.append(f"missing required document catalog entry: {path}")
@@ -289,7 +521,7 @@ def validate(root: Path) -> list[str]:
                 if path.casefold() not in paths:
                     errors.append(f"unregistered new active document: {path}")
         board = safe_path(root, "docs/management/BOARD.md")
-        if not board.is_file() or board.read_text(encoding="utf-8") != render_board(root):
+        if not board.is_file() or board.read_text(encoding="utf-8") != render_board(root, review_states=current_reviews):
             errors.append("stale or missing generated BOARD")
     except (ValueError, OSError, KeyError, TypeError, AttributeError) as exc:
         errors.append(str(exc))

@@ -3,7 +3,7 @@
   "id": "WSF-02",
   "title": "Formal wheel and CLI boundary with repository management foundations",
   "workstream": "core",
-  "state": "review_ready",
+  "state": "changes_requested",
   "depends_on": [],
   "owner_role": "local-developer",
   "plan_ref": "workstream-pr2-pr4-plan",
@@ -37,12 +37,16 @@
     "A2-5",
     "A2-6"
   ],
-  "blockers": [],
+  "blockers": [
+    "WSF-R1: independent review requests correction; source https://github.com/Danwuoo/IRIS-X/pull/6#pullrequestreview-5515478962"
+  ],
   "handoff_ref": "WSF-02-handoff",
   "verification_refs": [
     "WSF-02-self-tests",
     "WSF-02-baseline"
   ],
-  "review_refs": [],
+  "review_refs": [
+    "wsf02-independent-review-20261014"
+  ],
   "concurrency_group": null
 }

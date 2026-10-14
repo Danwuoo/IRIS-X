@@ -1,0 +1,14 @@
+{
+  "format": "irisx.review.v1",
+  "target_commit": "9ea92a7337f41dd9f1a194c77cf9c0598483140b",
+  "reviewer_role": "independent",
+  "outcome": "changes_requested",
+  "limitations": [
+    "Source review, bounded synthetic reproductions and remote CI readback only; no independent full-checkout project-suite/wheel/onboarding rerun.",
+    "Original synthetic SGD violation retained; no unrestricted aggregate authorized."
+  ],
+  "source": "https://github.com/Danwuoo/IRIS-X/pull/6#pullrequestreview-5515478962",
+  "findings": [
+    "WSF-R1"
+  ]
+}

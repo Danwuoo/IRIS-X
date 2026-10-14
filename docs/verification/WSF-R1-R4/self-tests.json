@@ -1,0 +1,1776 @@
+{
+  "format": "irisx.workstream-corrective-self-tests.v1",
+  "task": "WSF-R1-R4",
+  "state": "review_ready",
+  "base_commit": "c514e9d5b3c438b70c90824ec1fd2796aa840740",
+  "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+  "independent_review": "pending",
+  "scope": "Four helper defects only; developer/subagent self-review",
+  "environment": {
+    "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "ml_dependencies": "No Torch/NumPy model stack installed for this task",
+    "parent_offline_flags": true,
+    "neural_opt_in": "0",
+    "child_mode": "-I -B; caller PYTHONPATH removed; no child hashseed claim"
+  },
+  "public_suites": [
+    {
+      "suite": "core",
+      "status": "passed",
+      "tests": 63,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "inventory_blob": "1840f6b0043e86cf87ec45f856bd82b7c8493fd2",
+      "runner_blob": "878fd5a322b24c21de3e7d023e32cf0848ddd7dd",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+        "tree": "9565c0aeb7d869196b8c78bfebc7eeac92485b77",
+        "manifest_sha256": "41a62049dc7eccd33435c2532b91cced10bc72fb8687fe9e4719ab7911e16742"
+      },
+      "raw_report": ".irisx/core/WSF-R1-R4/final-code/core/report.json",
+      "raw_report_sha256": "2f5ea381fb5d64de0e2320cb7fdce0f88b6d7720683cadb888f711041ed0bc85",
+      "command": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "verify",
+        "--require-committed",
+        "--suite",
+        "core",
+        "--output",
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\final-code\\core"
+      ],
+      "selected_paths": [
+        "tests/test_admission.py",
+        "tests/test_cli_import_boundary.py",
+        "tests/test_contracts.py",
+        "tests/test_engine.py",
+        "tests/test_reference_flow.py",
+        "tests/test_transport.py"
+      ],
+      "skip_records": [],
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\core\\WSF-R1-R4\\final-code\\core\\module-000.json",
+          "sha256": "c5ff21f9f795e7352a5af2ee5b6effd649dea50260cda9293669b5bf4961d725",
+          "log_sha256": "02822520b6b9e613cfc4270e3dca1713389e5c4d6010798edd961023d5e368cb"
+        },
+        {
+          "report": ".irisx\\core\\WSF-R1-R4\\final-code\\core\\module-001.json",
+          "sha256": "d623d25fed817c3a287480da6470f1af0718341f718202096fd3da5d6fb44943",
+          "log_sha256": "d0f9b0bbf6f925757dff1b992eddd2b3d5ab50f42e809fd9c15498285b2f3456"
+        },
+        {
+          "report": ".irisx\\core\\WSF-R1-R4\\final-code\\core\\module-002.json",
+          "sha256": "26be1328f65f329c36926ad58f6f697988acac3f41718048afabfa9b7b223b16",
+          "log_sha256": "695d70041dd6a05e89fb2b7394771141dcce0a3cf570d86c886de7d2e8efb8ff"
+        },
+        {
+          "report": ".irisx\\core\\WSF-R1-R4\\final-code\\core\\module-003.json",
+          "sha256": "b0bd6bfc596339792986c8c87417986e8461e38360a79c02da40687e7a98574a",
+          "log_sha256": "ba089a85110327b70c97c1ed087311475fb9dc60afd31b5481f6a50d998ff571"
+        },
+        {
+          "report": ".irisx\\core\\WSF-R1-R4\\final-code\\core\\module-004.json",
+          "sha256": "de9df8bd4d9d5519db0df4227da1a3077da21ca2d338c2d09bd43ed703b735c1",
+          "log_sha256": "f9dee024302924b0d175a6af09a0d5a7cdfb2bdaccc05dc6291491b2feab4f0f"
+        },
+        {
+          "report": ".irisx\\core\\WSF-R1-R4\\final-code\\core\\module-005.json",
+          "sha256": "a114f5362676743561d500b968000ee911bf0d4545f58d5b37c59019bb152dc7",
+          "log_sha256": "a01d465c3d229cac4e7c4c166440a9f53b121b39c1ed055d11bb868935bf3199"
+        }
+      ]
+    },
+    {
+      "suite": "distribution",
+      "status": "passed",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skips": 1,
+      "expected_skips": 1,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "inventory_blob": "1840f6b0043e86cf87ec45f856bd82b7c8493fd2",
+      "runner_blob": "878fd5a322b24c21de3e7d023e32cf0848ddd7dd",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+        "tree": "9565c0aeb7d869196b8c78bfebc7eeac92485b77",
+        "manifest_sha256": "41a62049dc7eccd33435c2532b91cced10bc72fb8687fe9e4719ab7911e16742"
+      },
+      "raw_report": ".irisx/c2/distribution/report.json",
+      "raw_report_sha256": "08c5745f0c23908fb23a948a089417172684089d8e55a81b7caeb7ab0ed6867a",
+      "command": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "verify",
+        "--require-committed",
+        "--suite",
+        "distribution",
+        "--output",
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\c2\\distribution"
+      ],
+      "selected_paths": [
+        "tests/test_distribution.py"
+      ],
+      "skip_records": [
+        {
+          "path": "tests/test_distribution.py",
+          "records": [
+            {
+              "test_id": "test_distribution.DistributionTests.test_linked_source_fails_without_following_target",
+              "reason": "platform cannot create symlinks: [WinError 1314] A required privilege is not held by the client: 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\c2\\\\distribution\\\\tmpxfn_syjv\\\\external.py' -> 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\c2\\\\distribution\\\\tmpxfn_syjv\\\\stage\\\\src\\\\irisx\\\\linked.py'"
+            }
+          ]
+        }
+      ],
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\c2\\distribution\\module-000.json",
+          "sha256": "a9305570dc626f7de74833f639e54cb59f3af9806f354a5282a32808bc659970",
+          "log_sha256": "078cb659f39ac223480574a758fa6acc0f6b57481f260b2f743e0b715d63f3ef"
+        }
+      ]
+    },
+    {
+      "suite": "management",
+      "status": "passed",
+      "tests": 195,
+      "failures": 0,
+      "errors": 0,
+      "skips": 1,
+      "expected_skips": 1,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "inventory_blob": "1840f6b0043e86cf87ec45f856bd82b7c8493fd2",
+      "runner_blob": "878fd5a322b24c21de3e7d023e32cf0848ddd7dd",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+        "tree": "9565c0aeb7d869196b8c78bfebc7eeac92485b77",
+        "manifest_sha256": "41a62049dc7eccd33435c2532b91cced10bc72fb8687fe9e4719ab7911e16742"
+      },
+      "raw_report": ".irisx/c2/management/report.json",
+      "raw_report_sha256": "16c5858edc1baf0a271b66b3564a149544101eb4fceefe933beb3c16e98ebbd6",
+      "command": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "verify",
+        "--require-committed",
+        "--suite",
+        "management",
+        "--output",
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\c2\\management"
+      ],
+      "selected_paths": [
+        "tests/test_domain_dependencies.py",
+        "tests/test_no_training.py",
+        "tests/test_onboarding.py",
+        "tests/test_research_navigation.py",
+        "tests/test_review_lifecycle.py",
+        "tests/test_snapshot_collection.py",
+        "tests/test_source_identity.py",
+        "tests/test_suite_runner.py",
+        "tests/test_workstream_gate.py",
+        "tests/test_workstream_management.py"
+      ],
+      "skip_records": [
+        {
+          "path": "tests/test_workstream_management.py",
+          "records": [
+            {
+              "test_id": "test_workstream_management.ManagementTests.test_linked_document_path_rejected",
+              "reason": "Platform does not permit test symlinks: [WinError 1314] A required privilege is not held by the client: 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\c2\\\\management\\\\irisx-management-test-akadnr9q\\\\outside' -> 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\c2\\\\management\\\\irisx-management-test-akadnr9q\\\\repository\\\\docs\\\\managed\\\\linked'"
+            }
+          ]
+        }
+      ],
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\c2\\management\\module-000.json",
+          "sha256": "b77a4e1aadff4688bcf43099f60d9e14f172eb52fd6500314f0b6b9e4d2c1825",
+          "log_sha256": "f409dfb1c0aed23e498377011f0340888e2a9218ddd048c9596edb3e76492c1b"
+        },
+        {
+          "report": ".irisx\\c2\\management\\module-001.json",
+          "sha256": "25fd33a988419be84d9891fde3377c8be80998c7485e58a419c4e5f93fe085f2",
+          "log_sha256": "c372284ceea5411360083349c4fb537a82b2e0ddeb19614978e31a9e5a2f0348"
+        },
+        {
+          "report": ".irisx\\c2\\management\\module-002.json",
+          "sha256": "246877e3ab690e6d067354b035d143f1e7f425ff28b10c59a8bbd859d2621e23",
+          "log_sha256": "0afcbd3a542821d024987df4f335817cf77a5e193500747e74f45d13afbda771"
+        },
+        {
+          "report": ".irisx\\c2\\management\\module-003.json",
+          "sha256": "f3de14af5a05f561754694560722c871f9d35190f1b8c60d6cd44253440cc7d7",
+          "log_sha256": "19eb7c4515f0ae152653f91698cce5a98d6cc0948937e6ea87643c1c38c9c874"
+        },
+        {
+          "report": ".irisx\\c2\\management\\module-004.json",
+          "sha256": "3e19844ac882214007700fea09b9f9eeec8d0fe75ef56b102496774046e9b324",
+          "log_sha256": "9b5e62f24d85199d1f9065929b20eb21a7f8aebd1898668f99e3957117d47083"
+        },
+        {
+          "report": ".irisx\\c2\\management\\module-005.json",
+          "sha256": "375b577c930d339a0176c1d64dde96df909fe14fffea8bf6ed7e5eef5a3fa957",
+          "log_sha256": "549647f142956e423f599fb71cf73bb82c725e32424c84a60cebda05ddcb6fa3"
+        },
+        {
+          "report": ".irisx\\c2\\management\\module-006.json",
+          "sha256": "52e988dba5dfc6ecf15c88edcfb1fb7ff4a862a3d3f8fc9a5e43eb4e8a6cc927",
+          "log_sha256": "68a620d140dd60c161c99a0fe1c8b3577e1962df97291d3499169a6cf0ff59ea"
+        },
+        {
+          "report": ".irisx\\c2\\management\\module-007.json",
+          "sha256": "a86d4bd3ab78e50bdb393d3445c0655b04b25bd60385f736f0366a890b0c75d5",
+          "log_sha256": "66d9848247d450a7740a30089e8e1264d4f94a542fcb98c1240caf9240519309"
+        },
+        {
+          "report": ".irisx\\c2\\management\\module-008.json",
+          "sha256": "220eeac43c5974339e4c2c7a05a759f2c007e0797a27094d533cfe8d352b6b44",
+          "log_sha256": "f8014e1ee924f76865928d13c5fc14bdb3565d6346c7becde9b2f2c916c7f5c9"
+        },
+        {
+          "report": ".irisx\\c2\\management\\module-009.json",
+          "sha256": "83c29a674bbc432514bf8bfd13f0bb5e05ad96874847b5f98383d20b626a4a9f",
+          "log_sha256": "dedb98e31fcac65f8bffaf26ab1c150738f69b1d69b9299f53f2140b41c8315d"
+        }
+      ]
+    },
+    {
+      "suite": "navigation",
+      "status": "passed",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "inventory_blob": "1840f6b0043e86cf87ec45f856bd82b7c8493fd2",
+      "runner_blob": "878fd5a322b24c21de3e7d023e32cf0848ddd7dd",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+        "tree": "9565c0aeb7d869196b8c78bfebc7eeac92485b77",
+        "manifest_sha256": "41a62049dc7eccd33435c2532b91cced10bc72fb8687fe9e4719ab7911e16742"
+      },
+      "raw_report": ".irisx/c2/navigation/report.json",
+      "raw_report_sha256": "6ce76ead9c2cfc9d1f17a5bbcb017f1d84a1ce665657068068910bb378e6c67a",
+      "command": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "verify",
+        "--require-committed",
+        "--suite",
+        "navigation",
+        "--output",
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\c2\\navigation"
+      ],
+      "selected_paths": [
+        "tests/test_workstream_navigation.py"
+      ],
+      "skip_records": [],
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\c2\\navigation\\module-000.json",
+          "sha256": "03da0737f5df76168f4e66f5944ec2175aa14a4805224ed97e87d10f956e197a",
+          "log_sha256": "453bac5be6ad62ac7edcc9e1f354f686bbf3fccb86c9bc89493062b514f622a9"
+        }
+      ]
+    },
+    {
+      "suite": "integrity",
+      "status": "passed",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "inventory_blob": "1840f6b0043e86cf87ec45f856bd82b7c8493fd2",
+      "runner_blob": "878fd5a322b24c21de3e7d023e32cf0848ddd7dd",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+        "tree": "9565c0aeb7d869196b8c78bfebc7eeac92485b77",
+        "manifest_sha256": "41a62049dc7eccd33435c2532b91cced10bc72fb8687fe9e4719ab7911e16742"
+      },
+      "raw_report": ".irisx/c2/integrity/report.json",
+      "raw_report_sha256": "d2a02562ab9259c1f9d202df17d4d043c87d848f0b3dd007f2f155ff1226ffa4",
+      "command": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "verify",
+        "--require-committed",
+        "--suite",
+        "integrity",
+        "--output",
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\c2\\integrity"
+      ],
+      "selected_paths": [
+        "tests/test_repository_check.py"
+      ],
+      "skip_records": [],
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\c2\\integrity\\module-000.json",
+          "sha256": "6d1be55740b65cbbf7e1680051dbf4c2e1f1243985be9cc61b0a1dcc6f5830ec",
+          "log_sha256": "9062a69a3b484eb5cf5a2c76ad11e6f40d5a739d234da155868526e7656daf85"
+        }
+      ]
+    },
+    {
+      "suite": "arc-unit",
+      "status": "passed",
+      "tests": 125,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "inventory_blob": "1840f6b0043e86cf87ec45f856bd82b7c8493fd2",
+      "runner_blob": "878fd5a322b24c21de3e7d023e32cf0848ddd7dd",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+        "tree": "9565c0aeb7d869196b8c78bfebc7eeac92485b77",
+        "manifest_sha256": "41a62049dc7eccd33435c2532b91cced10bc72fb8687fe9e4719ab7911e16742"
+      },
+      "raw_report": ".irisx/c2/arc-unit/report.json",
+      "raw_report_sha256": "a79b0054a2fce0ef593381856ae4ea82bfed9db619376ca8843ab46a654924c0",
+      "command": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "verify",
+        "--require-committed",
+        "--suite",
+        "arc-unit",
+        "--output",
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\c2\\arc-unit"
+      ],
+      "selected_paths": [
+        "tests/arc_agi_2/test_cli_boundary.py",
+        "tests/test_arc_agi2.py",
+        "tests/test_arc_kaggle_submission.py",
+        "tests/test_arc_nvarc_sdg.py",
+        "tests/test_arc_nvarc_transport_io.py",
+        "tests/test_arc_offline_evaluation.py",
+        "tests/test_arc_prompt_optimizer.py",
+        "tests/test_arc_prompt_pilot.py",
+        "tests/test_arc_trial_002.py",
+        "tests/test_kaggle_checkpoint.py",
+        "tests/test_nvarc_gpu_preflight.py",
+        "tests/test_nvarc_gpu_preflight_v2.py",
+        "tests/test_nvarc_method.py",
+        "tests/test_stage4_provider_evidence.py",
+        "tests/test_trial_001_layout.py"
+      ],
+      "skip_records": [],
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-000.json",
+          "sha256": "97d15fff742e5c03a50b66c02b15ab8bda89db65cee46f7fce2a186ec5f47f91",
+          "log_sha256": "75dbf016b895b87f768b04761e549f25d8d24479403c19784337c181abb9c403"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-001.json",
+          "sha256": "fafc5318a0a8f7012707801130df9502c04b7f64f8f8ee5f352729ee6f98ba48",
+          "log_sha256": "7ff0bade98d0023e581bec95ea3d87bab473693dbfbb15c8d0be79c726638428"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-002.json",
+          "sha256": "4a8c4d359fd0ff184349ab4778b76df5bbd43ae8bdcdf1f54f1ac53b0b496bbb",
+          "log_sha256": "637fed3373024068f68d16d20c5efd5be695dc4fff145d57d345ac48103dcd48"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-003.json",
+          "sha256": "1b65b80453df01a0ef16c01fc9ca27db658d2ae4ab7a7a10bb308b6ddc0c2c59",
+          "log_sha256": "989cca0b65d36329b91f4828eaad2f77b7c01bf18b968f7824ec1508635a4637"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-004.json",
+          "sha256": "aa1cdf0297650b28322034fa118441a213689802aca6797947e88a8aae933e5f",
+          "log_sha256": "80379eb1224b93968e5964cba9222620aa07604637f60174e6cd2c86119d8664"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-005.json",
+          "sha256": "2c16fd41cffa44b47ee5477c1994962dc87d0b1a99c05f3ee37f63cc7e46ac6c",
+          "log_sha256": "7e3864938d24f624e2e526c1e558a7d8527daa4a3a51fcd2c759a481a3b8d27b"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-006.json",
+          "sha256": "81299ca404dd0feca06b9064e7fa0e87d2f6af66068823915a6144f82d21e103",
+          "log_sha256": "1f75dab548c9e241ecb6b672aa1604ed6474789deb6003b3a98e9612f9d98189"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-007.json",
+          "sha256": "e6e008057195b7db29927544a73b7553cb10f94901522c7c9cf285da3ddc545d",
+          "log_sha256": "3bfb2905ec6d2c138c4b79d39e8dc00baec2f432652f86ae379819c16d021708"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-008.json",
+          "sha256": "4d412ca43957761464921a9c478de74fbce69356ca5dd1f1bbcd1ff6f384d9fe",
+          "log_sha256": "cee402faf3ecde4504c691ce76b830d3752ed6ac9c454c2e7e6af7dfe0257ec1"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-009.json",
+          "sha256": "075f10a61320ec61e7463e4dea84d07887366e43cfd05dc6173c8415b4cf0dab",
+          "log_sha256": "6fb1f8c6e1c2f2dd8cbd63eba520f00fd35c840df8d840ea6d60bf6a7dc8d1be"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-010.json",
+          "sha256": "f79ccf616dd83994728d2b1f35d3b27c072cafb8dc4dd570be2639cf9058bd6d",
+          "log_sha256": "c8a628ceb0a1e1440a0c7a4729888fae1dc9c522c5fc5c82d51d0855d2e60794"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-011.json",
+          "sha256": "fdc5574112be73283c58c15fdbc94ac42a89be408e30fbb9965a5ae27a52adf4",
+          "log_sha256": "3b7b34a9d071525706768961317b7fc8f9f2399b79d387a06243269c6cc87c79"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-012.json",
+          "sha256": "dc724c0e287fa5ffbad109a7b738338ad09764af1c2dbffffcc633e45ea88dc8",
+          "log_sha256": "0c8aaf8b8c470b2991c1cc77352668d4d595b6e3f34db552c91d231ef0c15a3b"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-013.json",
+          "sha256": "6026716fae923ec481f4f726a827e0b151e063b3e14b169bc72ee347a748f000",
+          "log_sha256": "e7c58202cab88aa9ab397e934d20b3f2a63a6248bf0d0b59238dcde0ec8c3d7c"
+        },
+        {
+          "report": ".irisx\\c2\\arc-unit\\module-014.json",
+          "sha256": "2d3909312476d123a27cd80b91faa296dc76c67d10fa7b69d9cc105e02d8d070",
+          "log_sha256": "44b8856d2e7365726e9a78fdcab213b3e3ec22c3eeed6af729eaeb81e457c30d"
+        }
+      ]
+    },
+    {
+      "suite": "line-b",
+      "status": "passed",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "attestable": true,
+      "evidence_kind": "commit",
+      "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "inventory_blob": "1840f6b0043e86cf87ec45f856bd82b7c8493fd2",
+      "runner_blob": "878fd5a322b24c21de3e7d023e32cf0848ddd7dd",
+      "source_identity": {
+        "format": "irisx.source-identity.v1",
+        "commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+        "tree": "9565c0aeb7d869196b8c78bfebc7eeac92485b77",
+        "manifest_sha256": "41a62049dc7eccd33435c2532b91cced10bc72fb8687fe9e4719ab7911e16742"
+      },
+      "raw_report": ".irisx/core/WSF-R1-R4/final-code/line-b/report.json",
+      "raw_report_sha256": "edf5a5373e7e087cf29dc34e2e1047b6653951464b02277cbbd9766b8b23e600",
+      "command": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+        "-B",
+        "tools/dev.py",
+        "verify",
+        "--require-committed",
+        "--suite",
+        "line-b",
+        "--output",
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\final-code\\line-b"
+      ],
+      "selected_paths": [
+        "tests/line_b/test_flow.py"
+      ],
+      "skip_records": [],
+      "module_fingerprints": [
+        {
+          "report": ".irisx\\core\\WSF-R1-R4\\final-code\\line-b\\module-000.json",
+          "sha256": "92f876fef0507dfc62ad3e1173686a518b0d1d34ca6ef71830ebfa388f737a16",
+          "log_sha256": "cbf835dd154746258105d38f7a651cfa1937b1eca3e61daf8bd33c4ee0a54514"
+        }
+      ]
+    }
+  ],
+  "public_totals": {
+    "tests": 428,
+    "failures": 0,
+    "errors": 0,
+    "skips": 2,
+    "expected_skips": 2,
+    "unexpected_skips": 0,
+    "blocked": 0
+  },
+  "formal_distribution": {
+    "schema": "irisx/distribution-self-check-v1",
+    "status": "passed",
+    "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "commands": [
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\builder-venv\\Scripts\\python.exe",
+          "-m",
+          "pip",
+          "wheel",
+          "--no-index",
+          "--no-deps",
+          "--no-build-isolation",
+          "--wheel-dir",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\stage-a\\wheelhouse",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\stage-a"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\stage-a",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-01.log",
+        "log_sha256": "d4482ee25aa8d6471ffef6d04ac50c5eddb9cf05b0227524141528075e428c7b"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\builder-venv\\Scripts\\python.exe",
+          "-m",
+          "pip",
+          "wheel",
+          "--no-index",
+          "--no-deps",
+          "--no-build-isolation",
+          "--wheel-dir",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\stage-b\\wheelhouse",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\stage-b"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\stage-b",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-02.log",
+        "log_sha256": "4a622097bd4291e54035e65b3d8af4aca8a28c9d495fd91d2472cce562aae7b3"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-m",
+          "pip",
+          "install",
+          "--no-index",
+          "--no-deps",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\stage-a\\wheelhouse\\irisx-0.2.0-py3-none-any.whl"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-03.log",
+        "log_sha256": "b55176207ce8639bee873667c3776db9e8e09a240e4325716dd9aa11d82abe2b"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-c",
+          "import irisx,json,site,pathlib,sys; print(json.dumps({'origin':irisx.__file__,'prefix':sys.prefix,'site_paths':site.getsitepackages(),'editable_pth':[str(p) for s in site.getsitepackages() for p in pathlib.Path(s).glob('*editable*.pth')]}))"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-04.log",
+        "log_sha256": "51afb0ccf75076d61329766f0ea589ad85a0b776cf43d0ca6b4cbc427cacfa69"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "--help"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-05.log",
+        "log_sha256": "c89a2ad4bb4309a88391c565c7abd1ade92369df11b2e0f2a46ef8cd2b11a9b4"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "fixture",
+          "prepare",
+          "--output",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\fixture"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-06.log",
+        "log_sha256": "59db27f1362fb57cd4b660323eff72047da59315fd54510d46184fc1ceaf157d"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "spec",
+          "validate",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\fixture\\specification.json"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-07.log",
+        "log_sha256": "c4cb64bcc3787931abde488d9dab9b2a1055fcf842c8b43f259201593079619f"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "trial",
+          "validate",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\fixture\\trial.json"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-08.log",
+        "log_sha256": "9f5509d69cb3d71d35060013180a5d8f93f5b435df9320033792b62bffa732f2"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "trial",
+          "run",
+          "--trial",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\fixture\\trial.json",
+          "--output",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\run"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-09.log",
+        "log_sha256": "681d74e6b2ed394c6a6589afe7b44cf7b3c7abd0f1d2469888198a39bec63e2a"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "package",
+          "build",
+          "--run",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\run",
+          "--output",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\package"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-10.log",
+        "log_sha256": "1840e3e317bf6eb2c1af2a4570f78c25ea8e98df1bf37b8897e496f38c7d0d03"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "package",
+          "verify",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\package"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-11.log",
+        "log_sha256": "759ac4bfa80a17667c394aea000a59ae58c962dfc698e01c7aa0733cfe78fcd5"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "arc-agi-2",
+          "--help"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-12.log",
+        "log_sha256": "5d74365bc9250bc8aeed72bb446bed5b9afee81662eb8864939a269516b05887"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "arc-agi-2",
+          "source",
+          "validate",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\missing-arc-source"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 2,
+        "expected_exit_code": 2,
+        "log": "command-13.log",
+        "log_sha256": "6b6b1342e55860c0d5bce0b788fb6bb52a03299cdbb139477b93a52dab977c22"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx.domains.line_b.flow",
+          "--output",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\line-b"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-14.log",
+        "log_sha256": "9deef8dbeb10c2dd32214e8138e03ef5d84caf606ab61c9d250f27399119479f"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\irisx.exe",
+          "--help"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-15.log",
+        "log_sha256": "c89a2ad4bb4309a88391c565c7abd1ade92369df11b2e0f2a46ef8cd2b11a9b4"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "admission",
+          "validate",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\public-admission\\trials\\p2-admission\\admission.json"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-16.log",
+        "log_sha256": "565ac05843a50a72203a9c3e132206efbb6d72cd6b5febd2160f9fcfeba21ebb"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "package",
+          "verify",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas\\missing"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+        "exit_code": 2,
+        "expected_exit_code": 2,
+        "log": "command-17.log",
+        "log_sha256": "8cf7da0fae0fe8f08218cec04f8e8a7f50b6c4c096283e94e679637e03a48d66"
+      }
+    ],
+    "scope": "synthetic engineering only",
+    "independent_review": "pending",
+    "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+    "attestable": true,
+    "evidence_kind": "commit",
+    "head_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+    "inventory_blob": "1840f6b0043e86cf87ec45f856bd82b7c8493fd2",
+    "runner_blob": "878fd5a322b24c21de3e7d023e32cf0848ddd7dd",
+    "source_identity": {
+      "format": "irisx.source-identity.v1",
+      "commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "tree": "9565c0aeb7d869196b8c78bfebc7eeac92485b77",
+      "manifest_sha256": "41a62049dc7eccd33435c2532b91cced10bc72fb8687fe9e4719ab7911e16742"
+    },
+    "wheels": [
+      {
+        "sha256": "f00fb0257ef7c8ca016149f5338d47cd7c90de7f1a885964cef018c0cd9e3776",
+        "members": 128,
+        "record_verified": true
+      },
+      {
+        "sha256": "f00fb0257ef7c8ca016149f5338d47cd7c90de7f1a885964cef018c0cd9e3776",
+        "members": 128,
+        "record_verified": true
+      }
+    ],
+    "installation": {
+      "origin": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Lib\\site-packages\\irisx\\__init__.py",
+      "prefix": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv",
+      "site_paths": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv",
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\formal-final\\consumer-venv\\Lib\\site-packages"
+      ],
+      "editable_pth": [],
+      "external_cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-3hqqlwas",
+      "pythonpath_removed": true,
+      "non_editable": true
+    },
+    "arc_parser_facade": "passed (help and missing-path error only)",
+    "line_b_synthetic_flow": "passed",
+    "synthetic_reference_flow": "passed",
+    "raw_report": ".irisx/core/WSF-R1-R4/formal-final/report.json",
+    "raw_report_sha256": "083016676e8a75b81cd1a1413a585a76a4c57e69ca5294aaa3074063e5299128"
+  },
+  "optimized": {
+    "format": "irisx.optimized-self-check.v1",
+    "status": "passed",
+    "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+    "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+    "independent_review": "pending",
+    "source_before": {
+      "head_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "tree": "9565c0aeb7d869196b8c78bfebc7eeac92485b77",
+      "git_status": "",
+      "fingerprint": "ba1062ca3b5dab73ae2e6423f2bcccbc573df46d97e746a2c784ff4c4c3324a2",
+      "working_manifest_sha256": "4de348d3ec7edb49f5d105f6ee0575b9d9fe41f9b0e8fb296510f9517a1f50c7",
+      "manifest_files": 2634
+    },
+    "source_after": {
+      "head_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "tree": "9565c0aeb7d869196b8c78bfebc7eeac92485b77",
+      "git_status": "",
+      "fingerprint": "ba1062ca3b5dab73ae2e6423f2bcccbc573df46d97e746a2c784ff4c4c3324a2",
+      "working_manifest_sha256": "4de348d3ec7edb49f5d105f6ee0575b9d9fe41f9b0e8fb296510f9517a1f50c7",
+      "manifest_files": 2634
+    },
+    "commands": [
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "-O",
+          "tests/test_workstream_management.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 35,
+        "skips": 1,
+        "log": "command-01.log",
+        "log_sha256": "455420406e18bd840269002d304fa06226e283725c88421d619242c748ec7b3e"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "-O",
+          "tests/test_review_lifecycle.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 30,
+        "skips": 0,
+        "log": "command-02.log",
+        "log_sha256": "1f383338520115c62eee74c3149b5061225483a30fe45eadd99df003244c965a"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "-O",
+          "tests/test_source_identity.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 11,
+        "skips": 0,
+        "log": "command-03.log",
+        "log_sha256": "3acf5fce09ea56156c951431304b86a7ca98cfda4d77974ba7701f899e07296b"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "-O",
+          "tests/test_snapshot_collection.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 10,
+        "skips": 0,
+        "log": "command-04.log",
+        "log_sha256": "b4eba57063583b16955c6e325e6cd1897f17f62c9ca35c4e70520b3cc92732c1"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "-O",
+          "tests/test_suite_runner.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 28,
+        "skips": 0,
+        "log": "command-05.log",
+        "log_sha256": "6090845b41fab72d04a411bff5e852aea40146690c9b21d065114c6a73aa3090"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "-O",
+          "tests/test_no_training.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 14,
+        "skips": 0,
+        "log": "command-06.log",
+        "log_sha256": "bb5d55df9351a9c96591947079dd90cac99394eae3339138beaf766aa8d7eb46"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "-O",
+          "tests/test_workstream_gate.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 27,
+        "skips": 0,
+        "log": "command-07.log",
+        "log_sha256": "98c3d0a1a75a65d663ded9db1fc99b7037a433f09d01fe33dbdae92c36365365"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "-O",
+          "tests/test_onboarding.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 14,
+        "skips": 0,
+        "log": "command-08.log",
+        "log_sha256": "8df908af61869325a66a4c0cc4dbb8c9b4f683a4aacd9081118f798046926c24"
+      }
+    ],
+    "raw_report": ".irisx/core/WSF-R1-R4/optimized-final/report.json",
+    "raw_report_sha256": "de0efac9eb06bac97def7862f90db2c8df5548f9afbd032fbba6421228787bb9",
+    "evidence_scope": "developer direct-file -O self-tests on clean code checkpoint; not a matrix attestation",
+    "source_before_after_equal": true,
+    "manifest_note": "Working byte identity, including normal Windows checkout newlines, is distinct from the formal raw Git blob manifest. Original full before/after manifests remain in the ignored raw report bound by raw_report_sha256."
+  },
+  "onboarding": {
+    "format": "irisx.onboarding-report.v1",
+    "status": "passed",
+    "scope": "synthetic engineering-only non-deployable; developer self-check",
+    "independent_review": "pending",
+    "commands": [
+      {
+        "argv": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source",
+        "exit_code": 0,
+        "log": "command-01.log"
+      },
+      {
+        "argv": [
+          "git",
+          "branch",
+          "--show-current"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source",
+        "exit_code": 0,
+        "log": "command-02.log"
+      },
+      {
+        "argv": [
+          "git",
+          "-c",
+          "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\empty-hooks",
+          "clone",
+          "--quiet",
+          "--shared",
+          "--no-checkout",
+          "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source",
+          "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source",
+        "exit_code": 0,
+        "log": "command-03.log"
+      },
+      {
+        "argv": [
+          "git",
+          "-c",
+          "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\empty-hooks",
+          "switch",
+          "--detach",
+          "15c1209c88ee54738595b92cf9d35c2f0d4a3177"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-04.log"
+      },
+      {
+        "argv": [
+          "git",
+          "-c",
+          "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\empty-hooks",
+          "switch",
+          "-c",
+          "codex/onboarding-line-b-1791976755164839100"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-05.log"
+      },
+      {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-06.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "tools/dev.py",
+          "render"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-07.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "tools/dev.py",
+          "context",
+          "--task",
+          "ONBOARD-LB-01"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-08.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "tools/dev.py",
+          "check"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-09.log"
+      },
+      {
+        "argv": [
+          "git",
+          "-c",
+          "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\empty-hooks",
+          "add",
+          "--",
+          "docs/management",
+          "docs/plan/synthetic-line-b-onboarding.md",
+          "docs/development/synthetic-line-b-onboarding.md"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-10.log"
+      },
+      {
+        "argv": [
+          "git",
+          "-c",
+          "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\empty-hooks",
+          "-c",
+          "user.name=IRIS-X synthetic onboarding",
+          "-c",
+          "user.email=synthetic-onboarding@invalid.example",
+          "commit",
+          "-m",
+          "test: register synthetic onboarding metadata"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-11.log"
+      },
+      {
+        "argv": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-12.log"
+      },
+      {
+        "argv": [
+          "git",
+          "diff",
+          "--exit-code",
+          "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+          "cfbc843444d492cb09819988a623d4cbd002b6b2",
+          "--",
+          "src",
+          "tools",
+          "tests",
+          ".github",
+          "pyproject.toml"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-13.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "tools/dev.py",
+          "verify",
+          "--require-committed",
+          "--suite",
+          "line-b",
+          "--output",
+          "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout\\.irisx\\line-b\\onboarding-suite"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-14.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "tools/dev.py",
+          "render"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-15.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "tools/dev.py",
+          "render",
+          "--check"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-16.log"
+      },
+      {
+        "argv": [
+          "git",
+          "cat-file",
+          "-e",
+          "cc14bd1a79aac1fe6135017c9e09d4834300675d:research/native-continuation-20261013/primary-method-assessment.md"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-17.log"
+      },
+      {
+        "argv": [
+          "git",
+          "rev-parse",
+          "cc14bd1a79aac1fe6135017c9e09d4834300675d:research/native-continuation-20261013/primary-method-assessment.md"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-18.log"
+      },
+      {
+        "argv": [
+          "git",
+          "cat-file",
+          "-e",
+          "cc14bd1a79aac1fe6135017c9e09d4834300675d:docs/plan/2026-10-13-native-research-continuation.md"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-19.log"
+      },
+      {
+        "argv": [
+          "git",
+          "rev-parse",
+          "cc14bd1a79aac1fe6135017c9e09d4834300675d:docs/plan/2026-10-13-native-research-continuation.md"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-20.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X\\.irisx\\core\\WSF-R1-R4\\venv\\Scripts\\python.exe",
+          "-B",
+          "tools/dev.py",
+          "context",
+          "--task",
+          "WSF-04"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-21.log"
+      },
+      {
+        "argv": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--",
+          "src",
+          "tools",
+          "tests",
+          ".github",
+          "pyproject.toml"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+        "exit_code": 0,
+        "log": "command-22.log"
+      }
+    ],
+    "target_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+    "initial_checkout_clean": true,
+    "exercise_commit": "cfbc843444d492cb09819988a623d4cbd002b6b2",
+    "navigation_chain": [
+      {
+        "role": "entry",
+        "path": "docs/README.md"
+      },
+      {
+        "role": "board",
+        "path": "docs/management/BOARD.md"
+      },
+      {
+        "role": "task",
+        "path": "docs/management/tasks/ONBOARD-LB-01.json"
+      },
+      {
+        "role": "plan",
+        "path": "docs/plan/synthetic-line-b-onboarding.md"
+      },
+      {
+        "role": "code",
+        "path": "src/irisx/domains/line_b/flow.py"
+      },
+      {
+        "role": "handoff",
+        "path": "docs/verification/ONBOARD-LB-01/HANDOFF.md"
+      }
+    ],
+    "research_sources": [
+      {
+        "id": "arc-r4-primary-method-assessment",
+        "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/native-continuation-20261013/primary-method-assessment.md",
+        "commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+        "path": "research/native-continuation-20261013/primary-method-assessment.md",
+        "remote_availability": "unverified",
+        "research_content_review": "pending human review",
+        "git_blob": "60b92ee928d5c099bc528dd4411704adfe9066a0",
+        "local_git_object": "present"
+      },
+      {
+        "id": "arc-r5-native-research-continuation",
+        "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/plan/2026-10-13-native-research-continuation.md",
+        "commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+        "path": "docs/plan/2026-10-13-native-research-continuation.md",
+        "remote_availability": "unverified",
+        "research_content_review": "pending human review",
+        "git_blob": "42da3379ca9e634f223f36844cdee3e77a2a1786",
+        "local_git_object": "present"
+      }
+    ],
+    "task_id": "ONBOARD-LB-01",
+    "task_state": "review_ready",
+    "program_and_original_tasks_unchanged": true,
+    "returned_to_task": "WSF-04",
+    "line_b_suite": {
+      "status": "passed",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "blocked": 0,
+      "target_commit": "cfbc843444d492cb09819988a623d4cbd002b6b2"
+    },
+    "checkout": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\checkout",
+    "sandbox_head_branch": "codex/onboarding-line-b-1791976755164839100",
+    "raw_report": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o\\report.json",
+    "raw_report_sha256": "60b9a8246e7cdb0480c4b7c2befe2ee4a1987455b6e9a771be8e435d37f392ab"
+  },
+  "onboarding_preparation": {
+    "source": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source",
+    "output": "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source\\.irisx\\o",
+    "code": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+    "commands": [
+      {
+        "argv": [
+          "git",
+          "-c",
+          "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\empty-hooks",
+          "clone",
+          "--quiet",
+          "--shared",
+          "--no-checkout",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-review-r1-r4-20261014\\IRIS-X",
+          "C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\source"
+        ],
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "git",
+          "-c",
+          "core.hooksPath=C:\\Users\\wurre\\.codex\\tmp\\r14-_1cug7p9\\empty-hooks",
+          "switch",
+          "--detach",
+          "15c1209c88ee54738595b92cf9d35c2f0d4a3177"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "network": "none: clone source is local worktree and object store",
+    "raw_report_sha256": "64f10f6b0f299d40359d9968444ced1968fff32ccb2bb7ea41e7d9ea1e80845a"
+  },
+  "earlier_failed_onboarding_attempts": [
+    {
+      "status": "failed",
+      "target_commit": "f4c6f23a7cc4f5d3ce22fd8d0b9f154a5b8e5915",
+      "exercise_commit": "34cc8b1c9ba25dbad44775a259fecd843a8ddf0b",
+      "raw_report": ".irisx\\core\\WSF-R1-R4\\onboarding-code\\report.json",
+      "raw_report_sha256": "9f69897d4ffbd039ef45546b9522cb3450a915a5076bbbbe4b969423ecc10e19",
+      "suite_report_sha256": "a62de5aeedbcd745cf879bb717f53ef220ef945d39f8013eaed1940c16514f9e",
+      "tests": 0,
+      "errors": 1,
+      "attestable": false,
+      "reason": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\core\\\\WSF-R1-R4\\\\onboarding-code\\\\checkout\\\\.irisx\\\\line-b\\\\onboarding-suite\\\\source\\\\research\\\\qwen-checkpoint-repair-20261012\\\\reviews\\\\independent-runtime-review\\\\baseline-source002-normal.log'",
+      "attribution": "Path lengths exceeded 260 characters; shorter local-clone retry used. No failed receipt relabelled."
+    },
+    {
+      "status": "failed",
+      "target_commit": "f4c6f23a7cc4f5d3ce22fd8d0b9f154a5b8e5915",
+      "exercise_commit": "c65e4d5e9262e359d5a34168926d4b51b78eda6a",
+      "raw_report": ".irisx\\o\\report.json",
+      "raw_report_sha256": "b8961bbfb4801afae7cedbbfb138320655a5b841236ecaec1cc998665d94716b",
+      "suite_report_sha256": "8d6cfc70653946af0345064c4f9649e7a57c3781098056afa9f0f94d2d620fa1",
+      "tests": 0,
+      "errors": 1,
+      "attestable": false,
+      "reason": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\o\\\\checkout\\\\.irisx\\\\line-b\\\\onboarding-suite\\\\source\\\\tools\\\\arc_qwen_checkpoint_repair_deployment_20261012\\\\source-support\\\\independent-runtime-review\\\\baseline-regressions\\\\test_freeze_bindings.py'",
+      "attribution": "Path lengths exceeded 260 characters; shorter local-clone retry used. No failed receipt relabelled."
+    }
+  ],
+  "earlier_failed_public_attempts": [
+    {
+      "suite": "arc-unit",
+      "status": "failed",
+      "tests": 0,
+      "failures": 0,
+      "errors": 1,
+      "attestable": false,
+      "target_commit": null,
+      "head_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "reason": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\core\\\\WSF-R1-R4\\\\final-code\\\\arc-unit\\\\source\\\\tools\\\\arc_qwen_checkpoint_repair_deployment_20261012\\\\source-support\\\\independent-runtime-review\\\\baseline-regressions\\\\test_freeze_bindings.py'",
+      "raw_report": ".irisx/core/WSF-R1-R4/final-code/arc-unit/report.json",
+      "raw_report_sha256": "0f98a0f900553acf25855ff9ac1517cd6bdf66a5a90e1295384c83d41383dc39",
+      "attribution": "Nested source path exceeds Windows path capacity; short .irisx/c2 output retry. Original failure retained."
+    },
+    {
+      "suite": "distribution",
+      "status": "failed",
+      "tests": 0,
+      "failures": 0,
+      "errors": 1,
+      "attestable": false,
+      "target_commit": null,
+      "head_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "reason": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\core\\\\WSF-R1-R4\\\\final-code\\\\distribution\\\\source\\\\tools\\\\arc_qwen_checkpoint_repair_deployment_20261012\\\\source-support\\\\independent-runtime-review\\\\baseline-regressions\\\\test_freeze_bindings.py'",
+      "raw_report": ".irisx/core/WSF-R1-R4/final-code/distribution/report.json",
+      "raw_report_sha256": "d592dcd38a961ec8dc6fc495a54f5cd1af1c50be62b8d19d422741b0f70c7f10",
+      "attribution": "Nested source path exceeds Windows path capacity; short .irisx/c2 output retry. Original failure retained."
+    },
+    {
+      "suite": "integrity",
+      "status": "failed",
+      "tests": 0,
+      "failures": 0,
+      "errors": 1,
+      "attestable": false,
+      "target_commit": null,
+      "head_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "reason": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\core\\\\WSF-R1-R4\\\\final-code\\\\integrity\\\\source\\\\tools\\\\arc_qwen_checkpoint_repair_deployment_20261012\\\\source-support\\\\independent-runtime-review\\\\baseline-regressions\\\\test_freeze_bindings.py'",
+      "raw_report": ".irisx/core/WSF-R1-R4/final-code/integrity/report.json",
+      "raw_report_sha256": "c9b8dde9e377fc53ed374090567f41eed76bcecb63100e02d2b79b91191628b9",
+      "attribution": "Nested source path exceeds Windows path capacity; short .irisx/c2 output retry. Original failure retained."
+    },
+    {
+      "suite": "management",
+      "status": "failed",
+      "tests": 0,
+      "failures": 0,
+      "errors": 1,
+      "attestable": false,
+      "target_commit": null,
+      "head_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "reason": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\core\\\\WSF-R1-R4\\\\final-code\\\\management\\\\source\\\\tools\\\\arc_qwen_checkpoint_repair_deployment_20261012\\\\source-support\\\\independent-runtime-review\\\\baseline-regressions\\\\test_freeze_bindings.py'",
+      "raw_report": ".irisx/core/WSF-R1-R4/final-code/management/report.json",
+      "raw_report_sha256": "37b8aa0a53dc8d89b1c6621ea64b320ae164a627d8c128b4e5ca1a047dc338a9",
+      "attribution": "Nested source path exceeds Windows path capacity; short .irisx/c2 output retry. Original failure retained."
+    },
+    {
+      "suite": "navigation",
+      "status": "failed",
+      "tests": 0,
+      "failures": 0,
+      "errors": 1,
+      "attestable": false,
+      "target_commit": null,
+      "head_commit": "15c1209c88ee54738595b92cf9d35c2f0d4a3177",
+      "reason": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\wurre\\\\.codex\\\\worktrees\\\\workstream-review-r1-r4-20261014\\\\IRIS-X\\\\.irisx\\\\core\\\\WSF-R1-R4\\\\final-code\\\\navigation\\\\source\\\\tools\\\\arc_qwen_checkpoint_repair_deployment_20261012\\\\source-support\\\\independent-runtime-review\\\\baseline-regressions\\\\test_freeze_bindings.py'",
+      "raw_report": ".irisx/core/WSF-R1-R4/final-code/navigation/report.json",
+      "raw_report_sha256": "0e4cea2948432c11f8176635687d0f766bb0ca6414a98737d735680ec5c6a898",
+      "attribution": "Nested source path exceeds Windows path capacity; short .irisx/c2 output retry. Original failure retained."
+    }
+  ],
+  "loader_inventory_entries": [
+    {
+      "path": "tools/arc_qwen_rlvr003_20261013/source/experiment_flow/tests/test_batched_flow.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr003_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_batched_flow"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr003_20261013/source/experiment_flow/tests/test_flow.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr003_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_flow"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr003_20261013/source/validation/tests/test_release.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr003_20261013/source"
+      ],
+      "module_name": "validation.tests.test_release"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr003_20261013/source/validation/tests/test_validation.py",
+      "suite": "arc-reconstruction",
+      "dependency_class": "historical",
+      "import_roots": [
+        "tools/arc_qwen_rlvr003_20261013/source"
+      ],
+      "module_name": "validation.tests.test_validation"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr004_20261013/source/experiment_flow/tests/test_batched_flow.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr004_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_batched_flow"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr004_20261013/source/experiment_flow/tests/test_flow.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr004_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_flow"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr004_20261013/source/validation/tests/test_release.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr004_20261013/source"
+      ],
+      "module_name": "validation.tests.test_release"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr004_20261013/source/validation/tests/test_validation.py",
+      "suite": "arc-reconstruction",
+      "dependency_class": "historical",
+      "import_roots": [
+        "tools/arc_qwen_rlvr004_20261013/source"
+      ],
+      "module_name": "validation.tests.test_validation"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr_20261012/source/experiment_flow/tests/test_batched_flow.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261012/source"
+      ],
+      "module_name": "experiment_flow.tests.test_batched_flow"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr_20261012/source/experiment_flow/tests/test_flow.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261012/source"
+      ],
+      "module_name": "experiment_flow.tests.test_flow"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr_20261012/source/validation/tests/test_release.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261012/source"
+      ],
+      "module_name": "validation.tests.test_release"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr_20261012/source/validation/tests/test_validation.py",
+      "suite": "arc-reconstruction",
+      "dependency_class": "historical",
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261012/source"
+      ],
+      "module_name": "validation.tests.test_validation"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr_20261013/source/experiment_flow/tests/test_batched_flow.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_batched_flow"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr_20261013/source/experiment_flow/tests/test_flow.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_flow"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr_20261013/source/validation/tests/test_release.py",
+      "suite": "arc-unit-audit",
+      "dependency_class": "stdlib",
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261013/source"
+      ],
+      "module_name": "validation.tests.test_release"
+    },
+    {
+      "path": "tools/arc_qwen_rlvr_20261013/source/validation/tests/test_validation.py",
+      "suite": "arc-reconstruction",
+      "dependency_class": "historical",
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261013/source"
+      ],
+      "module_name": "validation.tests.test_validation"
+    }
+  ],
+  "acceptance": {
+    "WSF-R1": {
+      "developer_result": "passed",
+      "coverage": "30 real synthetic Git lifecycle tests plus management schema tests. Stale committed/staged/unstaged/untracked inputs, omitted/superseded negative review and transitive pending upstream reject current acceptance; metadata-only delivery/unrelated line remain positive. Historical approval remains visible."
+    },
+    "WSF-R2": {
+      "developer_result": "passed",
+      "coverage": "11 source-identity regressions: committed FAIL versus dirty PASS, strict dirty rejection before import, source drift during test, caller change/revert isolation, snapshot mutation; whole-tree Git/blob and byte binding."
+    },
+    "WSF-R3": {
+      "developer_result": "passed",
+      "coverage": "10 constant-only snapshot regressions: missing root reproduces collection error, explicit root passes; same-name snapshots isolated; PYTHONPATH/namespace/link/root escape negatives. Original tool test bodies not executed."
+    },
+    "WSF-R4": {
+      "developer_result": "passed",
+      "coverage": "27 real synthetic Git matrix regressions: report/module omission, substitution/addition/duplicates, mixed inventory/runner/tree/commit, skip policy and source admission negatives. Synthetic OS/Python labels are fixtures, not actual cross-platform execution."
+    }
+  },
+  "prior_review": {
+    "outcome": "changes_requested",
+    "review_links": [
+      "https://github.com/Danwuoo/IRIS-X/pull/6#pullrequestreview-5515478962",
+      "https://github.com/Danwuoo/IRIS-X/pull/7#pullrequestreview-5515483789",
+      "https://github.com/Danwuoo/IRIS-X/pull/8#pullrequestreview-5515492879"
+    ],
+    "reproduction_zip": "IRIS-X-independent-review-reproductions-2026-10-14.zip not attached/read/downloaded in this task",
+    "original_helper_blobs": {
+      "tools/workstream_management.py": "3c55aa175a258cebc30d6a0a2feba2f2042017f6",
+      "tools/suite_runner.py": "bd1a6e2e98f1131c2d4359568de8040f8ad4cf1d",
+      "tools/workstream_gate.py": "80675d5dd2746dd6b1098411f15f9bb9bf990462"
+    },
+    "attributed_remote_readback": {
+      "source": "Owner independent PR8 review, not rerun here",
+      "run": 38527215623,
+      "arc_audit_job": 115730295970,
+      "gate_job": 115731017479,
+      "artifact": 11876991483,
+      "artifact_zip_sha256": "de14a2cdd933c3f20b031d4964b96ec65ac3dfad5b1aae9d91d9e32bd5528644",
+      "tested_commit": "034f9224a3bc3138923059a1bf0f8c8aa1bd4f7b",
+      "public_jobs_passed": 28,
+      "formal_jobs_passed": 4,
+      "gate": "passed",
+      "navigation_run": 38527215613,
+      "offline_validation_run": 38527215654,
+      "arc_audit": {
+        "tests": 2705,
+        "failures": 15,
+        "errors": 115,
+        "unexpected_skips": 87
+      }
+    }
+  },
+  "preservation": {
+    "changed_paths": [
+      ".github/workflows/ci.yml",
+      ".github/workflows/workstream-validation.yml",
+      "docs/management/BOARD.md",
+      "docs/management/README.md",
+      "docs/management/documents.json",
+      "docs/management/tasks/WSF-02.json",
+      "docs/management/tasks/WSF-03.json",
+      "docs/management/tasks/WSF-04.json",
+      "docs/management/tasks/WSF-R1-R4.json",
+      "docs/management/templates/independent-review.md",
+      "docs/plan/2026-10-14-workstream-review-r1-r4.md",
+      "docs/verification/WSF-R1-R4/independent-review-WSF-02.json",
+      "docs/verification/WSF-R1-R4/independent-review-WSF-03.json",
+      "docs/verification/WSF-R1-R4/independent-review-WSF-04.json",
+      "docs/workstreams/core/STATUS.md",
+      "tests/README.md",
+      "tests/inventory.json",
+      "tests/test_onboarding.py",
+      "tests/test_review_lifecycle.py",
+      "tests/test_snapshot_collection.py",
+      "tests/test_source_identity.py",
+      "tests/test_suite_runner.py",
+      "tests/test_workstream_gate.py",
+      "tests/test_workstream_management.py",
+      "tools/dev.py",
+      "tools/distribution_check.py",
+      "tools/no_training.py",
+      "tools/onboarding_check.py",
+      "tools/source_identity.py",
+      "tools/suite_runner.py",
+      "tools/workstream_gate.py",
+      "tools/workstream_management.py"
+    ],
+    "frozen_product_research_scopes_unchanged": [
+      "src",
+      "trials",
+      "research",
+      "archive",
+      "PRODUCT_THESIS.md",
+      "pyproject.toml",
+      "docs/workstreams/arc-agi-2",
+      "docs/workstreams/line-b"
+    ],
+    "tag_refs_sha256": "c045b6d54c6165031dcd792aeaf26767964264be2587f4d58142775595251528",
+    "main": "baaf47d4f449c534ddd4646ab9b3175bbaf1ef89",
+    "origin_main": "baaf47d4f449c534ddd4646ab9b3175bbaf1ef89",
+    "run008": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+    "earlier_branches": {
+      "refactor/workstream-pr2-packaging": "2e706a5a4e4afb67f64517e4ee174584dcb06e18",
+      "refactor/workstream-pr3-validation": "756cd560f8d61256ed35e12c3c3637ec456c6141",
+      "refactor/workstream-pr4-arc-boundary": "c514e9d5b3c438b70c90824ec1fd2796aa840740"
+    },
+    "no_model_evaluator_packet_download_provider_training_or_merge": true
+  },
+  "failed_blocked_unverified": [
+    "Two earlier onboarding attempts failed before test import on long nested Windows paths; preserved with null target/attestable=false.",
+    "Five first final-code public attempts failed before import on long nested output paths; short .irisx/c2 retries are separately recorded.",
+    "Original ARC audit and offline aggregate are not executed on this repair branch. Branch-scoped first CI steps report BLOCKED/non-success; prior failures are retained.",
+    "Earlier actual synthetic SGD scope violation remains recorded in WSF-04; no-training guard is bounded, not a general Python sandbox.",
+    "Current remote CI and Linux/Python 3.11/3.12/3.14 execution remain unverified here; original snapshot collection 12 errors not rerun.",
+    "Two real Windows symlink tests require unavailable privilege; mocked/junction negative checks pass.",
+    "Independent acceptance, full-green CI, authentic reconstruction, model/evaluator replay and GPU/scientific result remain unverified."
+  ]
+}

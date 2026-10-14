@@ -2,7 +2,11 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import os
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 import zipfile
@@ -22,6 +26,50 @@ distribution = load_file("distribution_check_tests", ROOT / "tools/distribution_
 
 
 class DistributionTests(unittest.TestCase):
+    def test_installed_probe_uses_fresh_seed_reference_and_isolates_python_pollution(self):
+        with tempfile.TemporaryDirectory(prefix="irisx-wheel-startup-") as temporary:
+            root = Path(temporary)
+            owned = root / "owned"
+            foreign = root / "foreign"
+            owned.mkdir()
+            foreign.mkdir()
+            sentinel = root / "foreign-imported"
+            (owned / "irisx.py").write_text("VALUE = 'approved constant'\n", encoding="utf-8")
+            malicious = "from pathlib import Path\nPath(" + repr(str(sentinel)) + ").write_text('foreign')\nraise RuntimeError('foreign import')\n"
+            for name in ("irisx.py", "sitecustomize.py"):
+                (foreign / name).write_text(malicious, encoding="utf-8")
+            inherited = dict(os.environ, PYTHONPATH=str(foreign), PYTHONHOME=str(root / "absent-python-home"),
+                             PYTHONUSERBASE=str(foreign), PYTHONHASHSEED="random", PYTHONSAFEPATH="0")
+            environment = distribution.controlled_python_environment(inherited)
+            self.assertEqual({key for key in environment if key.upper().startswith("PYTHON")},
+                             {"PYTHONHASHSEED", "PYTHONDONTWRITEBYTECODE"})
+            for optimize in (0, 1):
+                with self.subTest(optimize=optimize):
+                    # The expected hash is computed by this same interpreter in
+                    # another fresh process, not a cross-version numeric constant.
+                    reference = subprocess.run(
+                        [sys.executable, "-B", *(["-O"] if optimize else []), "-c", distribution.HASH_REFERENCE],
+                        cwd=root, env=environment, capture_output=True, text=True, check=True)
+                    expected = json.loads(reference.stdout)
+                    probes = []
+                    for _ in range(2):
+                        script = "import sys; sys.path.insert(0," + repr(str(owned)) + "); " + distribution.INSTALLED_PROBE
+                        result = subprocess.run(distribution.controlled_python_command(sys.executable, "-c", script, optimize=optimize),
+                                                cwd=foreign, env=environment, capture_output=True, text=True, check=True)
+                        probe = json.loads(result.stdout)
+                        self.assertEqual(distribution.validate_child_startup(probe["startup"], optimize=optimize), [])
+                        self.assertEqual(probe["seed_hashes"], expected)
+                        self.assertEqual(Path(probe["origin"]), owned / "irisx.py")
+                        probes.append(probe["seed_hashes"])
+                    self.assertEqual(probes[0], probes[1])
+                    native_environment = dict(environment, PYTHONSAFEPATH="1", PYTHONNOUSERSITE="1")
+                    support = subprocess.run([sys.executable, "-B", "-c", script], cwd=foreign,
+                                             env=native_environment, capture_output=True, text=True, check=True)
+                    native_probe = json.loads(support.stdout)
+                    self.assertEqual(distribution.validate_child_startup(native_probe["startup"], optimize=0), [])
+                    self.assertEqual(native_probe["seed_hashes"], expected)
+            self.assertFalse(sentinel.exists())
+
     def stage(self, target: Path):
         distribution.stage_sources(ROOT, target)
         return load_file("isolated_irisx_backend", target / "tools/irisx_build_backend.py")
