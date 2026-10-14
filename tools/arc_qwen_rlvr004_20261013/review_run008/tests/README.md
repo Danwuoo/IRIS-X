@@ -11,9 +11,9 @@ Run each file from repository root using the existing native venv:
 ```sh
 python_path="$(dirname "$PWD")/kaggle_setup/venv/bin/python"
 for mode in '' '-O'; do
-  "$python_path" -I $mode -B research/native-continuation-20261014/tests/test_independent_transport.py
-  "$python_path" -I $mode -B research/native-continuation-20261014/tests/test_active_verifier.py
-  "$python_path" -I $mode -B research/native-continuation-20261014/tests/test_collector_transition.py
+  "$python_path" -I $mode -B tools/arc_qwen_rlvr004_20261013/review_run008/tests/test_independent_transport.py
+  "$python_path" -I $mode -B tools/arc_qwen_rlvr004_20261013/review_run008/tests/test_active_verifier.py
+  "$python_path" -I $mode -B tools/arc_qwen_rlvr004_20261013/review_run008/tests/test_collector_transition.py
 done
 ```
 

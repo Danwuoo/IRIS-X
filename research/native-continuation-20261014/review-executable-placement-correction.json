@@ -1,0 +1,131 @@
+{
+  "author": "Independent run008 launch reviewer; relocation separately reviewed by native transport author",
+  "base_source_commit": "f6a3793b1886c2178a1ae02b8f1124e0c047eb3c",
+  "corrected_ci_observations": [
+    {
+      "commit": "e9f7c2601645eeecd4281ccb4dc255832641b02b",
+      "conclusion": "failure",
+      "inherited_readme_findings": 7,
+      "introduced_executable_placement_findings": 4,
+      "job_id": 115614080734,
+      "private_correction_receipt_sha256": "c0885f70adb9ce27297da926b4c56c74eca64a81d526e115c5c6cced8f787f2b",
+      "run_id": 38490433922,
+      "source": "Publisher official GitHub job-log readback",
+      "total_findings": 11
+    },
+    {
+      "commit": "f6a3793b1886c2178a1ae02b8f1124e0c047eb3c",
+      "conclusion": "failure",
+      "inherited_readme_findings": 7,
+      "introduced_executable_placement_findings": 4,
+      "job_id": 115617029683,
+      "private_correction_receipt_sha256": "01aa8be12594950f4ea0a32945eeecc283fb6e230c6168d378e4c76ef8674449",
+      "run_id": 38491352123,
+      "source": "Publisher official GitHub job-log readback",
+      "total_findings": 11
+    }
+  ],
+  "correction": "The earlier source review mentioned seven historical README issues without the four newly introduced research executable placement errors. Both published e9f7c260 and f6a3793b actually had eleven findings. This report supersedes that incomplete CI classification; original reviews and failed CI remain preserved.",
+  "format": "irisx/run008-review-executable-placement-correction-v1",
+  "limitations": [
+    "Remote CI for the repaired tree remains pending publication.",
+    "Seven inherited README findings remain; this is not a full CI success.",
+    "Existing committed reviews retain historical paths; current operator invocation must use the relocated verifier path."
+  ],
+  "preserved": {
+    "actual_epoch_allocated": false,
+    "collector_sha256": "71603a1eb47b1b7656f2ca6a8f2b2eb6faa99469a27aef63d4f0446828ef3a78",
+    "final_candidate_manifest_sha256": "beda6a5647df0431ac2ac8da26db170d84776be8f59181b5fee537e87423a857",
+    "production_GPU_validation_passed": false,
+    "provider_calls": 0,
+    "runtime_source_sha256": "c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b"
+  },
+  "relocations": [
+    {
+      "bytes": 13658,
+      "new_path": "tools/arc_qwen_rlvr004_20261013/review_run008/verify_active_wire.py",
+      "new_sha256": "955f6adec5f9608d96754e18ecc9958d1b9edd0998e226621dba18f14af75e00",
+      "old_path": "research/native-continuation-20261014/verify_active_wire.py",
+      "old_sha256": "955f6adec5f9608d96754e18ecc9958d1b9edd0998e226621dba18f14af75e00"
+    },
+    {
+      "bytes": 7217,
+      "new_path": "tools/arc_qwen_rlvr004_20261013/review_run008/tests/test_active_verifier.py",
+      "new_sha256": "9237a9ff05adea6c9f7d3ea7355c8f7101f5c855d09af114961a9f5aeaa5a2f1",
+      "old_path": "research/native-continuation-20261014/tests/test_active_verifier.py",
+      "old_sha256": "e3ec3b3bc529e6a0df671db4bc3788a0faf66d68b4b5660ff05e65ce0a3b38df"
+    },
+    {
+      "bytes": 3912,
+      "new_path": "tools/arc_qwen_rlvr004_20261013/review_run008/tests/test_collector_transition.py",
+      "new_sha256": "81530c0e1c4254674efe73c6c158dabc75ab92a404e9ab70101d6ea8d137ffd6",
+      "old_path": "research/native-continuation-20261014/tests/test_collector_transition.py",
+      "old_sha256": "192aca8b093ce1b266280f339926cc8854e9411d6bd8e77ecc73166b81a6d789"
+    },
+    {
+      "bytes": 5370,
+      "new_path": "tools/arc_qwen_rlvr004_20261013/review_run008/tests/test_independent_transport.py",
+      "new_sha256": "bcc529686bd405706662626146cca026a39ef0d86820fc9f1c21316d24735ed8",
+      "old_path": "research/native-continuation-20261014/tests/test_independent_transport.py",
+      "old_sha256": "1f3437d10940e77505fa90577e477721a5944767e5b601d58d6f81fdedd5380d"
+    },
+    {
+      "bytes": 1669,
+      "new_path": "tools/arc_qwen_rlvr004_20261013/review_run008/tests/README.md",
+      "new_sha256": "d699f0aaa39aeb4bfbde19d9312e90ed3a7dfd0a8e79a810b6ea649eb5ef852a",
+      "old_path": "research/native-continuation-20261014/tests/README.md",
+      "old_sha256": "4ed75a904029e87259e822c7d47dde66638082a6ac36f5253c4f0c2d219344f9"
+    }
+  ],
+  "repository_check": {
+    "command": "python tools/repository_check.py",
+    "exit_code": 1,
+    "full_ci_passed": false,
+    "log_sha256": "010621af1c5724c6d80d7a91a9da5d9ce522f8d99b936828d4967a228dd544c9",
+    "remaining_findings": [
+      "README.md is missing required term: Engineering Trials",
+      "README.md is missing current authority term: Decision 0010",
+      "README.md is missing current authority term: Decision 0012",
+      "README.md is missing current authority term: Decision 0014",
+      "README.md is missing current authority term: Decision 0015",
+      "README.md is missing current authority term: Trial 001 status page",
+      "README.md is missing current authority term: ARC-AGI-2"
+    ],
+    "total_findings": 7,
+    "unexpected_active_executable_findings": 0,
+    "validator_changed": false,
+    "validator_sha256": "f25c0d16b450707cddecb8ada1909c72f3ce50e2e8a6b98b081bcb2e10427d9c"
+  },
+  "semantic_changes": [
+    "Verifier remains byte-identical.",
+    "Three test repository root references change one parent level; one verifier source path changes to the approved tools location.",
+    "Test README commands use the relocated paths."
+  ],
+  "status": "LOCAL_PLACEMENT_REPAIRED",
+  "tests": {
+    "active_verifier_normal": {
+      "log_sha256": "10e4dedb9bd0e588d5c83294971e3db8e4dcda5f1a527ea597e42f94de285f82",
+      "tests_passed": 8
+    },
+    "active_verifier_optimized": {
+      "log_sha256": "f8a68310f45ade0de5974330e90a078348b9d55c7f9ed9cc1e1c72be86d3be47",
+      "tests_passed": 8
+    },
+    "collector_transition_normal": {
+      "log_sha256": "93385d3c63db27612886f2dd0c73ef220e743dc0258960b535326b0e8d5d7da1",
+      "tests_passed": 2
+    },
+    "collector_transition_optimized": {
+      "log_sha256": "5b9472bd84743fa658bb4b8f3eeb418ff844e0af830bddd1bbf5a6d1208f93e6",
+      "tests_passed": 2
+    },
+    "independent_transport_normal": {
+      "log_sha256": "220912ddbaef5f3dcc0925b58ed42ca84f3e51688a7ed22e33b292f91fcd329b",
+      "tests_passed": 8
+    },
+    "independent_transport_optimized": {
+      "log_sha256": "7ccf2943b70b2d3625cd7f941b189739dc490123cf65d2dd1acdaaaf13be5b1b",
+      "tests_passed": 8
+    }
+  }
+}

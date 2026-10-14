@@ -1,7 +1,7 @@
 """Independent offline rejection/cleanup probes; fixtures never grant publication."""
 from pathlib import Path
 import hashlib, importlib.util, importlib, json, os, py_compile, signal, sys, tempfile, time, types, unittest
-ROOT=Path(__file__).absolute().parents[3]
+ROOT=Path(__file__).absolute().parents[4]
 (ROOT/'.irisx/run008-launch-review/public-test-scratch').mkdir(parents=True,exist_ok=True)
 PACKAGE=ROOT/'tools/arc_qwen_rlvr004_20261013/publication_run008'
 def load(name,path):

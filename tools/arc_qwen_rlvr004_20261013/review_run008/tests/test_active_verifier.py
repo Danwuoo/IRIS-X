@@ -2,9 +2,9 @@
 from pathlib import Path
 import copy,hashlib,json,sys,tempfile,types,unittest
 from unittest.mock import patch
-ROOT=Path(__file__).absolute().parents[3]
+ROOT=Path(__file__).absolute().parents[4]
 (ROOT/'.irisx/run008-launch-review/public-test-scratch').mkdir(parents=True,exist_ok=True)
-VERIFIER=ROOT/'research/native-continuation-20261014/verify_active_wire.py'
+VERIFIER=ROOT/'tools/arc_qwen_rlvr004_20261013/review_run008/verify_active_wire.py'
 v=types.ModuleType('independent_active_review_test');v.__file__=str(VERIFIER)
 exec(compile(VERIFIER.read_bytes(),str(VERIFIER),'exec',dont_inherit=True,optimize=sys.flags.optimize),vars(v))
 DRAFT=ROOT/'.irisx/run008-admission/draft-0001';EPOCH=1790000000

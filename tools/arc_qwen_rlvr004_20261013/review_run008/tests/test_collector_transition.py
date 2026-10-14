@@ -2,7 +2,7 @@
 from pathlib import Path
 import sys,unittest
 from unittest import mock
-ROOT=Path(__file__).absolute().parents[3]
+ROOT=Path(__file__).absolute().parents[4]
 (ROOT/'.irisx/run008-launch-review/public-test-scratch').mkdir(parents=True,exist_ok=True)
 DIRECTORY=ROOT/'tools/arc_qwen_rlvr004_20261013/publication_run008'
 sys.path.insert(0,str(DIRECTORY/'tests'))
