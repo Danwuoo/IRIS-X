@@ -20,8 +20,15 @@ Never put raw archives, evaluator bodies, private logs or conversation in Git.
 No new charges/resources, legal agreements, official competition submission or
 success tagging without qualifying evidence.
 One publisher must reconcile actual remote identities before any write. Exact
-private-notebook access is currently unresolved; continue local work, but do not
-evade provider denial or launch without source/version/status verification.
+private-notebook access and the native transport were subsequently verified; the
+current blocker is supported network execution failing during sandbox setup,
+before the program starts. Last verified remote code20/notebook39 remains ERROR;
+no new run008 execution or score is proven. The 2026-10-14 current task is repaired
+transfer packaging, updating the existing Drive handoff and sanitized Git
+commit/push only; do not launch a notebook during that packaging step. Preserve
+original archives and sharing, exclude credentials/private chat/evaluator bodies,
+and require fresh environment bindings and remote readback before future execution.
+See `research/native-continuation-20261013/RUN008-LOCAL-HANDOFF.md` for current state.
 See `docs/plan/2026-10-13-native-research-continuation.md` and
 `research/native-continuation-20261013/` for the pre-implementation synthesis.
 
