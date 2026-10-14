@@ -48,7 +48,7 @@ def validate_manifest(entries: list[dict]) -> None:
         name = entry["path"]
         if not isinstance(name, str) or not name or "\\" in name or ":" in name or PurePosixPath(name).is_absolute() or any(p in ("", ".", "..") for p in name.split("/")):
             raise SourceIdentityError("unsafe source manifest path")
-        if entry["path"].startswith((".git/", ".irisx/")) or entry["path"] in {".git", ".irisx"}:
+        if name.split("/", 1)[0].casefold() in {".git", ".irisx"}:
             raise SourceIdentityError("source manifest cannot include Git/output directories")
         if entry["path"].casefold() in names:
             raise SourceIdentityError("source manifest path/case collision")

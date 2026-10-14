@@ -12,6 +12,7 @@ The referenced machine-readable review uses this shape:
   "target_commit": "<actual full 40-character implementation SHA>",
   "reviewer_role": "independent",
   "source": "<actual independent reviewer report or review provenance>",
+  "scope_paths": ["<reviewed repository-relative source/test/dependency/CI globs>", "<canonical plan path>"],
   "outcome": "verified_with_limits",
   "limitations": ["Actual scoped residual limitation"]
 }
@@ -36,3 +37,13 @@ presence is insufficient. Do not provide a review's own containing commit SHA.
 Retain an old review as historical when the code/tests/dependencies/CI change.
 Request a new review for the affected task and downstream dependency scope.
 None of these outcomes authorizes merging a PR or external execution.
+
+Positive acceptance requires explicit scope_paths covering the task's program,
+tests, dependency/CI inputs and canonical plan. The validator compares those
+paths and the task's semantic controls with the target Git commit. Delivery
+metadata alone may advance HEAD without invalidating source acceptance.
+Register replacement reviews through the catalog's supersedes relationship;
+an active changes_requested/blocked outcome prevents current acceptance, while
+the previous positive outcome remains historical. Upstream tasks must also
+retain current independent acceptance. These structural checks do not prove
+the human review itself was adequate or independently performed.

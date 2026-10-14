@@ -171,6 +171,9 @@ class SourceIdentityTests(unittest.TestCase):
         for entry in ({**ordinary, "path": "../escape.py"}, {**ordinary, "mode": "120000"}, {**ordinary, "mode": "160000"}):
             with self.subTest(entry=entry), self.assertRaises(identity.SourceIdentityError):
                 identity.validate_manifest([entry])
+        for path in (".git", ".GIT", ".git/config", ".GiT/config", ".irisx", ".IRISX", ".irisx/report.json", ".IrIsX/report.json"):
+            with self.subTest(reserved_path=path), self.assertRaisesRegex(identity.SourceIdentityError, "Git/output directories"):
+                identity.validate_manifest([{**ordinary, "path": path}])
         with self.assertRaisesRegex(identity.SourceIdentityError, "collision"):
             identity.validate_manifest([ordinary, {**ordinary, "path": "src/A.py"}])
         with self.assertRaisesRegex(identity.SourceIdentityError, "parent path/case collision"):

@@ -61,6 +61,7 @@ def _authoritative(root: Path, commit: str) -> dict:
     tree = _git(root, "rev-parse", commit + "^{tree}").decode("ascii").strip()
     files = {}
     folded = set()
+    components = {}
     for raw in _git(root, "ls-tree", "-r", "-z", "--full-tree", commit).split(b"\0"):
         if not raw:
             continue
@@ -70,7 +71,15 @@ def _authoritative(root: Path, commit: str) -> dict:
         if (kind != "blob" or mode not in {"100644", "100755"}
                 or not _relative_path(path) or path.casefold() in folded):
             raise ValueError("unsafe/colliding target source path: " + path)
+        if path.split("/", 1)[0].casefold() in {".git", ".irisx"}:
+            raise ValueError("target source cannot include Git/output directories: " + path)
         folded.add(path.casefold())
+        parts = path.split("/")
+        for count in range(1, len(parts) + 1):
+            prefix = "/".join(parts[:count])
+            previous = components.setdefault(prefix.casefold(), prefix)
+            if previous != prefix:
+                raise ValueError("colliding target source parent path: " + path)
         files[path] = {"path": path, "mode": mode, "blob": blob}
     inventory_row = files.get("tests/inventory.json")
     runner_row = files.get("tools/suite_runner.py")

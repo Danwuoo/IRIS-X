@@ -66,12 +66,21 @@ validator rejects duplicate keys/IDs, unsafe or linked paths, missing and
 unregistered active documents, dangling references, unknown fields, invalid
 states, dependency cycles, overlapping concurrently writable scopes, stale
 board output and verified tasks without a valid independent review reference.
+Current acceptance also requires explicit review source coverage, unchanged
+reviewed inputs and task controls, an effective positive review after catalog
+supersession, and currently accepted upstream tasks. Historical positive reviews
+remain visible in BOARD even when they no longer support current acceptance.
+Handoff and lifecycle metadata may advance HEAD without changing reviewed code.
 Structural validation does not attest that a human review's conclusions are
 correct or that a remote URL is available; the independent conversation checks
 those sources separately.
 
 Controlled suite selection uses `python tools/dev.py verify --suite ...`;
-its static inventory and named reports do not replace the full historical
+use `--require-committed` for formal commit-bound evidence. Dirty iteration is
+reported as development evidence with no target_commit and cannot satisfy the
+matrix gate. The runner executes an isolated source snapshot and checks caller
+and snapshot identity before and after testing.
+Its static inventory and named reports do not replace the full historical
 `python tools/repository_check.py --all` entry or make existing failures pass.
 Use [test guidance](../../tests/README.md) for the implemented suites.
 

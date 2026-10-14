@@ -60,8 +60,12 @@ class WorkstreamGateTests(unittest.TestCase):
         self.git("-c", "user.name=IRIS-X synthetic fixture", "-c", "user.email=fixture@example.invalid",
                  "commit", "--quiet", "-m", "Synthetic gate source identity")
         self.commit = self.git("rev-parse", "HEAD").strip()
+        self.evidence = self.evidence_for(self.commit)
+        self.write_reports()
+
+    def evidence_for(self, commit: str) -> dict:
         rows = []
-        for record in self.git("ls-tree", "-r", "-z", "--full-tree", self.commit).split("\0"):
+        for record in self.git("ls-tree", "-r", "-z", "--full-tree", commit).split("\0"):
             if record:
                 metadata, path = record.split("\t", 1)
                 mode, kind, blob = metadata.split()
@@ -69,11 +73,13 @@ class WorkstreamGateTests(unittest.TestCase):
                 rows.append({"path": path, "mode": mode, "blob": blob})
         digest = hashlib.sha256(json.dumps(sorted(rows, key=lambda row: row["path"]), sort_keys=True,
             separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
-        self.evidence = {"attestable": True, "evidence_kind": "commit", "target_commit": self.commit,
-            "inventory_blob": self.git("rev-parse", self.commit + ":tests/inventory.json").strip(),
-            "runner_blob": self.git("rev-parse", self.commit + ":tools/suite_runner.py").strip(),
-            "source_identity": {"format": "irisx.source-identity.v1", "commit": self.commit,
-                "tree": self.git("rev-parse", self.commit + "^{tree}").strip(), "manifest_sha256": digest}}
+        return {"attestable": True, "evidence_kind": "commit", "target_commit": commit,
+            "inventory_blob": self.git("rev-parse", commit + ":tests/inventory.json").strip(),
+            "runner_blob": self.git("rev-parse", commit + ":tools/suite_runner.py").strip(),
+            "source_identity": {"format": "irisx.source-identity.v1", "commit": commit,
+                "tree": self.git("rev-parse", commit + "^{tree}").strip(), "manifest_sha256": digest}}
+
+    def write_reports(self) -> None:
         for operating_system in gate.OPERATING_SYSTEMS:
             for python in gate.PYTHONS:
                 for suite in gate.SUITES:
@@ -82,10 +88,45 @@ class WorkstreamGateTests(unittest.TestCase):
                 self.write(self.formal_path(operating_system, python),
                            self.formal_report(operating_system, python))
 
-    def git(self, *arguments) -> str:
+    def git(self, *arguments, input_bytes=None) -> str:
         completed = subprocess.run(["git", *arguments], cwd=self.repository, check=True,
-                                   capture_output=True, text=True, encoding="utf-8")
-        return completed.stdout
+                                   capture_output=True, input=input_bytes)
+        return completed.stdout.decode("utf-8")
+
+    def commit_with_virtual_paths(self, paths: tuple[str, ...]) -> str:
+        """Create raw Git tree entries without materializing unsafe Windows paths."""
+        rows = []
+        for record in self.git("ls-tree", "-r", "-z", "--full-tree", self.commit).split("\0"):
+            if record:
+                metadata, path = record.split("\t", 1)
+                mode, kind, blob = metadata.split()
+                self.assertEqual(kind, "blob")
+                rows.append((path, mode, blob))
+        blob = self.git("hash-object", "-w", "--stdin",
+                        input_bytes=b"# Constant-only source metadata fixture; never executed.\n").strip()
+        rows.extend((path, "100644", blob) for path in paths)
+        tree = {}
+        for path, mode, blob in rows:
+            node = tree
+            parts = path.split("/")
+            for part in parts[:-1]:
+                node = node.setdefault(part, {})
+            node[parts[-1]] = (mode, blob)
+
+        def write_tree(node):
+            records = []
+            for name, entry in sorted(node.items()):
+                if isinstance(entry, dict):
+                    mode, kind, identity = "040000", "tree", write_tree(entry)
+                else:
+                    mode, identity = entry
+                    kind = "blob"
+                records.append(f"{mode} {kind} {identity}\t{name}\0".encode("utf-8"))
+            return self.git("mktree", "-z", input_bytes=b"".join(records)).strip()
+
+        return self.git("-c", "user.name=IRIS-X synthetic fixture", "-c", "user.email=fixture@example.invalid",
+                        "commit-tree", write_tree(tree), "-p", self.commit,
+                        "-m", "Virtual source manifest fixture without checkout").strip()
 
     def check(self, commit=None, repository=None):
         return gate.check_matrix(self.root, commit or self.commit,
@@ -377,6 +418,55 @@ class WorkstreamGateTests(unittest.TestCase):
                 self.git("-c", "user.name=IRIS-X synthetic fixture", "-c", "user.email=fixture@example.invalid",
                          "commit", "--quiet", "-m", "Invalid synthetic inventory " + kind)
                 self.assertTrue(self.check(commit=self.git("rev-parse", "HEAD").strip()))
+
+    def test_metadata_only_source_tree_with_consistent_parent_case_passes(self):
+        checkout_commit = self.commit
+        paths = ("src/Fixture/a.py", "src/Fixture/b.py")
+        self.commit = self.commit_with_virtual_paths(paths)
+        self.evidence = self.evidence_for(self.commit)
+        self.write_reports()
+        self.assertTrue(set(paths) <= set(self.git("ls-tree", "-r", "--name-only", self.commit).splitlines()))
+        self.assertEqual(self.check(), [])
+        self.assertEqual(self.git("rev-parse", "HEAD").strip(), checkout_commit)
+        self.assertFalse((self.repository / "src").exists())
+
+    def test_metadata_only_parent_component_case_collisions_are_rejected(self):
+        checkout_commit = self.commit
+        cases = (("src/Foo/a.py", "src/foo/b.py"),
+                 ("src/fixture/Parent/a.py", "src/fixture/parent/b.py"))
+        for paths in cases:
+            with self.subTest(paths=paths):
+                self.commit = checkout_commit
+                self.commit = self.commit_with_virtual_paths(paths)
+                self.evidence = self.evidence_for(self.commit)
+                self.write_reports()
+                self.assertTrue(set(paths) <= set(self.git("ls-tree", "-r", "--name-only", self.commit).splitlines()))
+                errors = self.check()
+                self.assertEqual(len(errors), 1)
+                self.assertIn("colliding target source parent path", errors[0])
+                self.assertEqual(self.git("rev-parse", "HEAD").strip(), checkout_commit)
+                self.assertFalse((self.repository / "src").exists())
+
+    def test_metadata_only_tracked_git_and_output_paths_are_rejected(self):
+        checkout_commit = self.commit
+        checkout_config = (self.repository / ".git/config").read_bytes()
+        for path in (".git/fixture.txt", ".irisx/fixture.txt", ".git", ".irisx",
+                     ".GIT", ".IRISX", ".GIT/config", ".IRISX/fixture.txt",
+                     ".GIT/nested/config", ".IRISX/cache/payload.txt"):
+            with self.subTest(path=path):
+                self.commit = checkout_commit
+                self.commit = self.commit_with_virtual_paths((path,))
+                self.evidence = self.evidence_for(self.commit)
+                self.write_reports()
+                self.assertIn(path, self.git("ls-tree", "-r", "--name-only", self.commit).splitlines())
+                errors = self.check()
+                self.assertEqual(len(errors), 1)
+                self.assertIn("target source cannot include Git/output directories: " + path, errors[0])
+                self.assertEqual(self.git("rev-parse", "HEAD").strip(), checkout_commit)
+                self.assertTrue((self.repository / ".git").is_dir())
+                self.assertEqual((self.repository / ".git/config").read_bytes(), checkout_config)
+                self.assertFalse((self.repository / ".git/fixture.txt").exists())
+                self.assertFalse((self.repository / ".irisx").exists())
 
 
 if __name__ == "__main__":
