@@ -6,5 +6,5 @@ Task records are the sole state source. All downstream work is provisional until
 | Task | Stream | State | Dependencies | Implementation | Handoff | Limitations |
 | --- | --- | --- | --- | --- | --- | --- |
 | [WSF-02](tasks/WSF-02.json) | core | review_ready | — | 9ea92a7337f41dd9f1a194c77cf9c0598483140b | [report](../verification/WSF-02/HANDOFF.md) | — |
-| [WSF-03](tasks/WSF-03.json) | core | planned | WSF-02 | pending | pending | — |
+| [WSF-03](tasks/WSF-03.json) | core | in_progress | WSF-02 | pending | pending | — |
 | [WSF-04](tasks/WSF-04.json) | core | planned | WSF-03 | pending | pending | — |

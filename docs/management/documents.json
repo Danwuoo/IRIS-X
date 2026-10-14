@@ -658,6 +658,32 @@
         "WSF-02"
       ],
       "supersedes": []
+    },
+    {
+      "id": "line-b-code-governance",
+      "path": "src/irisx/domains/line_b/AGENTS.md",
+      "kind": "guide",
+      "workstream": "line-b",
+      "status": "active",
+      "owner_role": "line-b-maintainer",
+      "related_tasks": [
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "line-b-engineering-guide",
+      "path": "src/irisx/domains/line_b/README.md",
+      "kind": "guide",
+      "workstream": "line-b",
+      "status": "active",
+      "owner_role": "line-b-maintainer",
+      "related_tasks": [
+        "WSF-03",
+        "WSF-04"
+      ],
+      "supersedes": []
     }
   ],
   "legacy_indexes": [

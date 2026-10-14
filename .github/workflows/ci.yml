@@ -8,6 +8,7 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.11", "3.14"]
@@ -19,9 +20,20 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install --no-build-isolation -e .
-      - run: python tools/repository_check.py --self-test
-      - run: python tools/repository_check.py
-      - run: python -m unittest discover -s tests -v
+      - run: python -m pip install -r tests/requirements-audit.txt
+      - name: Prepare bounded workspace scratch
+        run: python -c "import os,pathlib,shutil; p=pathlib.Path('.irisx/core/ci/legacy/tmp'); p.mkdir(parents=True,exist_ok=True); assert shutil.disk_usage(p).free > 5*1024**3"
+      - name: Retained complete aggregate
+        env:
+          PYTHONHASHSEED: "0"
+          PYTHONDONTWRITEBYTECODE: "1"
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_DATASETS_OFFLINE: "1"
+          TMPDIR: ${{ github.workspace }}/.irisx/core/ci/legacy/tmp
+          TMP: ${{ github.workspace }}/.irisx/core/ci/legacy/tmp
+          TEMP: ${{ github.workspace }}/.irisx/core/ci/legacy/tmp
+        run: python tools/repository_check.py --all
       - run: irisx fixture prepare --output .irisx/ci/fixture
       - run: irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run
       - run: irisx package build --run .irisx/ci/run --output .irisx/ci/package

@@ -1,0 +1,2 @@
+# Test-only dependency; product wheel remains dependency-free.
+packaging==26.3

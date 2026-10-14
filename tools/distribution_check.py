@@ -121,6 +121,7 @@ def check(output: Path, root: Path = ROOT) -> dict:
     output.mkdir(parents=True)
     report = {"schema": "irisx/distribution-self-check-v1", "status": "failed", "python": sys.version,
               "platform": platform.platform(), "commands": [], "scope": "synthetic engineering only", "independent_review": "pending"}
+    report["target_commit"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     environment = os.environ.copy()
     environment.pop("PYTHONPATH", None)
     environment.update({"PYTHONHASHSEED": "0", "PIP_NO_INDEX": "1", "PIP_DISABLE_PIP_VERSION_CHECK": "1", "PYTHONDONTWRITEBYTECODE": "1"})
@@ -176,6 +177,12 @@ def check(output: Path, root: Path = ROOT) -> dict:
             ]
             for args in commands:
                 run([python, "-I", "-B", "-m", "irisx", *args], external)
+            if (root / "src/irisx/domains/line_b/flow.py").is_file():
+                run([python, "-I", "-B", "-m", "irisx.domains.line_b.flow", "--output", str(external / "line-b")], external)
+                result = json.loads((external / "line-b/handoff.json").read_text(encoding="utf-8"))
+                if result.get("scope") != "synthetic engineering-only non-deployable" or result.get("package_created") is not True:
+                    raise ValueError("installed line-b did not complete the synthetic package loop")
+                report["line_b_synthetic_flow"] = "passed"
             cli = consumer / ("Scripts/irisx.exe" if os.name == "nt" else "bin/irisx")
             run([str(cli), "--help"], external)
             copy_declared(root, external / "public-admission", ADMISSION_INPUTS)

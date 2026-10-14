@@ -1,0 +1,102 @@
+name: workstream-validation
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+  HF_HUB_OFFLINE: "1"
+  TRANSFORMERS_OFFLINE: "1"
+  HF_DATASETS_OFFLINE: "1"
+
+jobs:
+  public-suites:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.14"]
+        suite: [core, distribution, management, navigation, integrity, arc-unit, line-b]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -r tests/requirements-public.txt
+      - run: python tools/dev.py check
+      - run: python tools/dev.py render --check
+      - run: python tools/dev.py verify --suite ${{ matrix.suite }} --output .irisx/core/ci/${{ matrix.suite }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-${{ matrix.suite }}-${{ matrix.os }}-${{ matrix.python }}
+          path: .irisx/core/ci/${{ matrix.suite }}/report.json
+          if-no-files-found: error
+  formal-distribution:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python tools/distribution_check.py --output .irisx/core/ci/formal
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: formal-${{ matrix.os }}-${{ matrix.python }}
+          path: .irisx/core/ci/formal/report.json
+          if-no-files-found: error
+  arc-public-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: python -m pip install -r tests/requirements-audit.txt
+      - run: python tools/dev.py verify --suite arc-unit-audit --output .irisx/arc-agi-2/ci/public-audit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: arc-public-audit
+          path: .irisx/arc-agi-2/ci/public-audit/report.json
+          if-no-files-found: error
+  workstream-gate:
+    if: always()
+    needs: [public-suites, formal-distribution]
+    runs-on: ubuntu-latest
+    env:
+      WORKSTREAM_NEEDS: ${{ toJson(needs) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - uses: actions/download-artifact@v4
+        with:
+          path: .irisx/core/gate-reports
+      - run: python tools/workstream_gate.py --reports .irisx/core/gate-reports
