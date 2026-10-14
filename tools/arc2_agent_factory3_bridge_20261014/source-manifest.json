@@ -1,0 +1,42 @@
+{
+  "files": [
+    {
+      "bytes": 11316,
+      "git_blob_sha": "127de4b0d1b382c870f2c4949720875481e7b1e7",
+      "local": "vendor/LICENSE",
+      "sha256": "61900d0f9ecd85c532cacd77f9cc98fa68b55a4ab81f0d6435f178c0151d460d",
+      "upstream_path": "LICENSE"
+    },
+    {
+      "bytes": 4661,
+      "git_blob_sha": "e1f25644fd04ed996cdcd72d1814979be585f165",
+      "local": "vendor/types.py",
+      "sha256": "bc6d7328b831d11699378261fae7556ad3516ea1b23c82bf843053a43f33c6c6",
+      "upstream_path": "src/agent_factory_3/trainer/types.py"
+    },
+    {
+      "bytes": 12546,
+      "git_blob_sha": "28afd41a146e1bc2c178f50c0b68eb5d2fa7fdfb",
+      "local": "vendor/losses/ddis_loss.py",
+      "sha256": "541ebd935dcbe27789e80aeb6ddfb8ce44390f71b796d026c428d9c13859c090",
+      "upstream_path": "src/agent_factory_3/trainer/losses/ddis_loss.py"
+    },
+    {
+      "bytes": 1145,
+      "git_blob_sha": "bb805e047c1609f7228e14f46a09e731e38720f2",
+      "local": "vendor/losses/metric_state.py",
+      "sha256": "1cac291fadcf4a291568c2b0245fdd1df71bbaea628da44df4f006df0d4005f1",
+      "upstream_path": "src/agent_factory_3/trainer/losses/metric_state.py"
+    }
+  ],
+  "format": "irisx/agent-factory3-source-manifest-v1",
+  "license": "Apache-2.0",
+  "modifications": "Three copied Python components and LICENSE are byte-identical. Local package initializers, adapter, fixtures, tests, provenance and NOTICE are additions.",
+  "retrieval": "GitHub connector fetch_file pinned to exact full commit; local git hash-object matches upstream blob hashes",
+  "root_notice_status": "not present at pinned commit (404; independent recursive tree verification)",
+  "scope": "Offline direct component invocation only; no full framework install or runtime rewiring",
+  "upstream_commit": "a1836decb836cd52cf2b27f5022f6838cee75df3",
+  "upstream_commit_date": "2026-05-11T14:44:26Z",
+  "upstream_repository": "https://github.com/ycchen-tw/agent-factory-3",
+  "verified_latest_commit_utc_date": "2026-10-14"
+}

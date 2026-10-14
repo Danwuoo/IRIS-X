@@ -54,7 +54,10 @@ Do not equate a rejection with proof that no output exists.
 
 ## Handoff and checks
 
-See [local executor handoff](../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md)
+See [current research progress](../../research/arc2-sft-rl-continuation-20261014/README.md),
+[next-stage preparation](../../research/arc2-sft-rl-continuation-20261014/NEXT-STAGE-PLAN.zh-TW.md),
+[actual Agent Factory 3 bridge](../arc2_agent_factory3_bridge_20261014/README.md),
+[local executor handoff](../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md)
 and [independent review](../../research/arc2-sft-rl-continuation-20261014/offline-continuation-review.md).
 Run focused tests from the repository root:
 

@@ -1,0 +1,4 @@
+# Observed effective direct dependencies; retrieve from official PyPI if needed.
+# This is a record, not an installation action or a full environment lock.
+numpy==2.3.5
+pydantic==2.13.4

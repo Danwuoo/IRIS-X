@@ -5,6 +5,11 @@
 本文件是研究與實驗次序建議，不代表已採用、已訓練或已取得新分數。
 研究線從 run008 延伸；main、run008 原分支及工程重整線保持獨立。
 
+**後續開發狀態更新：** 本文主體保存研究完成時的來源與提案。Stage 0 後來已於
+`0d4d19c` 完成修復與審查；Agent Factory 3 亦已另立實際 CPU 元件 bridge。
+請以[目前研究進度](README.md)、[整合實證](../arc2-agent-factory3-20261014/integration.zh-TW.md)
+及[下一階段準備](NEXT-STAGE-PLAN.zh-TW.md)區分最新實作與尚未執行的方法提案。
+
 ## 一、先講結論
 
 1. **先完成目前的小型、可解釋比較，而非先換大型 Agent 框架。** 共同基準 A=SFT256，B=有限的可驗證 reward 更新，C=等整段額外時間的 SFT。三者差異、reward 訊號與實際成本還沒有本輪有效結果。
@@ -134,4 +139,4 @@ Repo 從固定 upstream independently expressed 的 DDIS 全名為 **Direct Doub
 ## 九、本輪交付與限制
 
 本研究只檢查公開repo來源、已保存的歷史文件與live primary research。沒有讀取evaluator答案、重新跑scorer、取得Kaggle登入、查詢provider或啟動訓練。
-離線開發半成品保存在 `0451441727e8aea602873902ebccbf6b38576e03`，明確標示未完成；輸出路徑race與最終integration review仍待修正／完成，不能作操作性release。這份研究不以尚未完成的工具測試宣稱方法有效。
+研究完成當時，離線開發半成品保存在 `0451441727e8aea602873902ebccbf6b38576e03`，當時的輸出路徑race與最終integration review尚未完成。這段是歷史狀態；後續修復與148／148測試已於 `0d4d19c` 保存，詳見[目前進度](README.md)。工具測試仍不證明方法有效。

@@ -1,0 +1,15 @@
+Agent Factory 3 components
+Copyright 2026 Agent Factory 3 contributors
+https://github.com/ycchen-tw/agent-factory-3
+Commit: a1836decb836cd52cf2b27f5022f6838cee75df3
+
+The upstream types.py, losses/ddis_loss.py and losses/metric_state.py are
+unmodified copies. The accompanying LICENSE is the exact upstream Apache-2.0
+license. Empty package initialization files are local integration glue.
+The upstream root NOTICE path returned HTTP 404 at this pinned commit.
+This attribution file was added by IRIS-X; it is not an upstream NOTICE.
+The parent IRIS-X project's license does not replace these component terms.
+
+The adapter, synthetic fixtures, source manifest and tests are local additions.
+They do not imply upstream endorsement, full-framework adoption, production
+authorization, GPU validation or measured ARC-AGI-2 performance.

@@ -4,6 +4,15 @@
 `cc14bd1a79aac1fe6135017c9e09d4834300675d`；工作分支為
 `feat/arc2-sft-rl-continuation-20261014`。
 
+最新導覽見[研究進度頁](README.md)，後續開發範圍見[下一階段準備](NEXT-STAGE-PLAN.zh-TW.md)。
+Stage 0 的最終來源已在遠端核對為
+[`0d4d19c71d2c84720d4956b36d8e99108e8c0a2b`](https://github.com/Danwuoo/IRIS-X/commit/0d4d19c71d2c84720d4956b36d8e99108e8c0a2b)，
+normal／`-O` 各148項通過，並完成獨立審查。此後另新增的
+[Agent Factory 3 bridge](../../tools/arc2_agent_factory3_bridge_20261014/README.md)
+已實際執行固定上游元件，normal／`-O` 各25項通過；其[獨立審查](../arc2-agent-factory3-20261014/independent-review.md)
+與[完整驗證分類](../arc2-agent-factory3-20261014/validation.md)另列。
+取得來源時須確認該 commit 確實包含所需模組，不能以 stage0 的 SHA 假稱已包含後續整合。
+
 ## 交付範圍
 
 此工具補上既有 SFT256 → RL／等成本額外 SFT 比較的離線準備與結果解讀。
@@ -11,8 +20,10 @@
 本地 executor 的執行／提交責任與登入仍分開；沒有 credentials、帳號設定、
 原始 evaluator 答案或私有執行封包隨此工具移轉。
 
-研究提案尚未因此成為新的 RL／TTT／Agent 實驗。另立的 agent-factory-3 元件
-整合有自己的來源、依賴與測試邊界，並未接入此工具或改寫 run008 的凍結比較。
+研究提案尚未因此成為新的 RL／TTT／Agent 實驗。agent-factory-3 元件整合已完成
+離線 CPU 實際呼叫，保有自己的來源、依賴與測試邊界；尚未接入此工具或 production
+模型 runtime，沒有改寫 run008 的凍結比較。下一階段先準備可審查的 receipt 與逐軌跡
+shadow 接點；真實模型 replay、LoRA 梯度、儲存／重載、整段成本與 GPU 仍需實證。
 
 ## 取得與核對
 
