@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 from unittest import mock
@@ -19,6 +21,28 @@ COMMIT = "a" * 40
 
 
 class OnboardingTests(unittest.TestCase):
+    def test_fresh_onboarding_interpreter_and_dev_bootstrap_isolate_python_pollution(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="irisx-onboarding-startup-") as temporary:
+            foreign = Path(temporary)
+            sentinel = foreign / "imported"
+            malicious = "from pathlib import Path\nPath(" + repr(str(sentinel)) + ").write_text('foreign')\nraise RuntimeError('foreign import')\n"
+            for name in ("sitecustomize.py", "workstream_management.py", "suite_runner.py"):
+                (foreign / name).write_text(malicious, encoding="utf-8")
+            environment = onboarding.controlled_python_environment(dict(
+                os.environ, PYTHONPATH=str(foreign), PYTHONHOME=str(foreign / "absent-home"),
+                PYTHONUSERBASE=str(foreign), PYTHONHASHSEED="random", PYTHONSAFEPATH="0"))
+            script = ("import json,sys; sys.path.insert(0," + repr(str(ROOT / "tools")) + "); "
+                      "from suite_runner import interpreter_startup; print(json.dumps(interpreter_startup()))")
+            for optimize in (0, 1):
+                with self.subTest(optimize=optimize):
+                    result = subprocess.run(onboarding.controlled_python_command(sys.executable, "-c", script, optimize=optimize),
+                                            cwd=foreign, env=environment, capture_output=True, text=True, check=True)
+                    self.assertEqual(onboarding.validate_child_startup(json.loads(result.stdout), optimize=optimize), [])
+                    help_result = subprocess.run(onboarding.controlled_python_command(sys.executable, ROOT / "tools/dev.py", "--help", optimize=optimize),
+                                                 cwd=foreign, env=environment, capture_output=True, text=True, check=True)
+                    self.assertIn("verify", help_result.stdout)
+            self.assertFalse(sentinel.exists())
+
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory(prefix="irisx-onboarding-test-")
         self.addCleanup(self.tmp.cleanup)

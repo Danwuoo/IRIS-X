@@ -1,0 +1,43 @@
+{
+  "format": "irisx.task.v1",
+  "id": "WSF-R5",
+  "title": "Make controlled seed effective before child interpreter startup",
+  "workstream": "core",
+  "state": "in_progress",
+  "depends_on": [
+    "WSF-R1-R4"
+  ],
+  "owner_role": "local-developer",
+  "plan_ref": "workstream-review-r5-plan",
+  "scope_paths": [
+    "tools/suite_runner.py",
+    "tools/distribution_check.py",
+    "tools/onboarding_check.py",
+    "tools/dev.py",
+    "tests/test_interpreter_startup.py",
+    "tests/test_suite_runner.py",
+    "tests/test_snapshot_collection.py",
+    "tests/test_distribution.py",
+    "tests/test_onboarding.py",
+    "tests/inventory.json",
+    "tests/README.md",
+    "docs/management/**",
+    "docs/verification/WSF-R5/**",
+    "docs/plan/2026-10-14-workstream-review-r5.md",
+    "docs/workstreams/core/STATUS.md"
+  ],
+  "base_branch": "refactor/workstream-pr4-arc-boundary",
+  "head_branch": "fix/workstream-review-r1-r4-20261014",
+  "base_commit": "1a08648603e1af2fe66998a0e53b11d02abf5c6b",
+  "implementation_commit": null,
+  "acceptance": [
+    "WSF-R5"
+  ],
+  "blockers": [],
+  "handoff_ref": null,
+  "verification_refs": [],
+  "review_refs": [
+    "wsf-r5-independent-review-20261014"
+  ],
+  "concurrency_group": null
+}

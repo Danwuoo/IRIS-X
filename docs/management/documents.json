@@ -915,6 +915,31 @@
         "WSF-R1-R4"
       ],
       "supersedes": []
+    },
+    {
+      "id": "wsf-r5-independent-review-20261014",
+      "path": "docs/verification/WSF-R5/independent-review.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "independent-reviewer",
+      "related_tasks": [
+        "WSF-R1-R4",
+        "WSF-R5"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "workstream-review-r5-plan",
+      "path": "docs/plan/2026-10-14-workstream-review-r5.md",
+      "kind": "plan",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-R5"
+      ],
+      "supersedes": []
     }
   ],
   "legacy_indexes": [

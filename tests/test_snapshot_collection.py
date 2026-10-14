@@ -68,7 +68,9 @@ class SnapshotCollectionTests(unittest.TestCase):
         self.assertEqual(report["status"], "passed", report)
         self.assertEqual(report["tests"], 2)
         self.assertEqual(len(report["commands"]), 2)
-        self.assertTrue(all("-I" in command for command in report["commands"]))
+        self.assertTrue(all(all(flag in command for flag in ("-P", "-s", "-B"))
+                            and "-I" not in command and "-E" not in command
+                            for command in report["commands"]))
         self.assertNotEqual(report["modules"][0]["path"], report["modules"][1]["path"])
 
     def test_global_pythonpath_does_not_replace_owner_constants(self):

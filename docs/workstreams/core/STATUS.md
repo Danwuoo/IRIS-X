@@ -37,6 +37,18 @@ Navigation run 38527215613 passed; arc-public-audit and offline-validation run
 This attributed reviewer readback is separate from developer local aggregate
 counts, and does not make the four demonstrated defects acceptable.
 
+The later [PR9 independent review](https://github.com/Danwuoo/IRIS-X/pull/9#pullrequestreview-5517762334)
+targets code `15c1209c88ee54738595b92cf9d35c2f0d4a3177` and delivery
+`1a08648603e1af2fe66998a0e53b11d02abf5c6b`. Its exact-helper constant-only
+Linux/CPython3.13.5 regressions pass 31 tests normally and the same 31 under -O.
+R1–R4 are corrected within that independently tested scope; the new blocker is
+WSF-R5, where -I ignores the declared startup seed. This changes_requested
+outcome does not retrospectively approve the earlier PR6–8 implementation SHAs.
+The sourced [review record](../../verification/WSF-R5/independent-review.json)
+also attributes 28 public jobs, four formal jobs and gate/navigation passing in
+PR9's prior remote CI. Audit/aggregate stopped before import as BLOCKED/non-success,
+and full local project/wheel/onboarding independent reruns remain unavailable.
+
 The synchronized foundation is `08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059`,
 descended from the main comparison anchor
 `baaf47d4f449c534ddd4646ab9b3175bbaf1ef89`. PR 4 starts from PR 3 delivery
@@ -77,8 +89,10 @@ proved movable under those absent inputs; retention is intentional.
 
 ## Next
 
-Use [WSF-R1-R4](../../management/tasks/WSF-R1-R4.json) and its
-[bounded correction](../../plan/2026-10-14-workstream-review-r1-r4.md).
+Use [WSF-R5](../../management/tasks/WSF-R5.json) and its
+[small startup correction](../../plan/2026-10-14-workstream-review-r5.md), on
+the same Draft PR9 branch. Retain [WSF-R1-R4](../../management/tasks/WSF-R1-R4.json)
+and its handoff, with the latest independently bounded pass and new R5 denial.
 Run only the controlled public/synthetic checks described in
 [tests/README](../../../tests/README.md). Preserve previous aggregate receipts
 without rerunning unrestricted aggregate/import-time workloads. Return actual branch/code/delivery/PR identities to

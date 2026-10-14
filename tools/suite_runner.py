@@ -13,7 +13,7 @@ import sys
 import types
 import unittest
 
-# -I children deliberately ignore PYTHONPATH and the caller's script directory.
+# -P children omit the caller's script directory and inherit no Python settings.
 # Bootstrap only this controlled tools directory, then declared per-file roots.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -32,6 +32,50 @@ FIELDS = {"path", "workstream", "dependency_class", "suite", "role", "dependenci
 OPTIONAL_FIELDS = {"import_roots", "module_name"}
 CLASSES = {"stdlib", "small-python", "historical", "operational", "native", "training", "unclassified-public"}
 PROTECTED = {"historical", "operational", "native", "training"}
+PYTHON_ENVIRONMENT = {"PYTHONHASHSEED": "0", "PYTHONDONTWRITEBYTECODE": "1"}
+
+
+def controlled_python_environment(inherited=None) -> dict:
+    """Remove inherited Python configuration before interpreter initialization.
+
+    -I/-E ignore PYTHONHASHSEED too, so callers use -P/-s/-B with this explicit
+    allowlist. Non-Python settings, including offline restrictions, are retained.
+    Reports record this allowlist only, never the rest of the inherited values.
+    """
+    inherited = os.environ if inherited is None else inherited
+    environment = {name: value for name, value in inherited.items()
+                   if not name.upper().startswith("PYTHON")}
+    environment.update(PYTHON_ENVIRONMENT)
+    return environment
+
+
+def controlled_python_command(executable, *arguments, optimize=None) -> list[str]:
+    """Launch a safe-path, no-user-site child whose fixed hash seed is honored."""
+    optimize = sys.flags.optimize if optimize is None else optimize
+    if type(optimize) is not int or optimize not in (0, 1, 2):
+        raise ValueError("optimization must be 0, 1 or 2")
+    if any(argument in {"-I", "-E"} for argument in arguments):
+        raise ValueError("isolated/ignore-environment flags would disable the fixed seed")
+    return [str(executable), "-P", "-s", "-B", *(["-" + "O" * optimize] if optimize else []),
+            *(str(argument) for argument in arguments)]
+
+
+def interpreter_startup() -> dict:
+    """Expose actual startup controls and only the explicit Python allowlist."""
+    return {"flags": {name: getattr(sys.flags, name) for name in
+                      ("optimize", "safe_path", "no_user_site", "dont_write_bytecode",
+                       "ignore_environment", "isolated", "hash_randomization")},
+            "python_environment": {name: os.environ.get(name) for name in PYTHON_ENVIRONMENT}}
+
+
+def validate_child_startup(startup, optimize=None) -> list[str]:
+    """Fail closed when the seed or isolation was not effective at child startup."""
+    optimize = sys.flags.optimize if optimize is None else optimize
+    expected = {"flags": {"optimize": optimize, "safe_path": True, "no_user_site": 1,
+                          "dont_write_bytecode": 1, "ignore_environment": 0, "isolated": 0,
+                          "hash_randomization": 0},
+                "python_environment": PYTHON_ENVIRONMENT}
+    return [] if startup == expected else ["child interpreter startup controls do not match the fixed-seed isolation policy"]
 
 
 def validate_entry_imports(root: Path, entry: dict) -> None:
@@ -168,10 +212,14 @@ def _child(root: Path, suite: str, path: str, report_path: Path, binding: dict |
     if binding is not None:
         report.update(binding)
     report.update(path=path, collection_errors=0, collection_messages=[])
+    report["interpreter_startup"] = interpreter_startup()
     file = safe_path(root, path)
     declared = [safe_path(root, name) for name in entry.get("import_roots", [])]
     sys.path[:0] = list(dict.fromkeys(str(p) for p in [*declared, file.parent, root / "tests", root / "src", root]))
     try:
+        startup_errors = validate_child_startup(report["interpreter_startup"])
+        if startup_errors:
+            raise ValueError("; ".join(startup_errors))
         identity_errors = verify_binding(root, report)
         if identity_errors:
             raise ValueError("; ".join(identity_errors))
@@ -228,9 +276,9 @@ def run_suite(root: Path, suite: str, output: Path, *, require_committed: bool =
         if any(e["dependency_class"] in PROTECTED or e["collector"] != "unittest" for e in selected):
             report.update(status="blocked", blocked=len(selected), exit_code=2, reason="requires authentic inputs, native training scope, or reviewed standalone script; no module imported")
         else:
-            env = os.environ.copy()
-            env.pop("PYTHONPATH", None)
-            env.update({"PYTHONHASHSEED": "0", "PYTHONDONTWRITEBYTECODE": "1", "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1", "HF_DATASETS_OFFLINE": "1", "TMPDIR": str(output), "TMP": str(output), "TEMP": str(output)})
+            env = controlled_python_environment()
+            env.update({"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1", "HF_DATASETS_OFFLINE": "1", "TMPDIR": str(output), "TMP": str(output), "TEMP": str(output)})
+            report["child_python_environment"] = dict(PYTHON_ENVIRONMENT)
             child_output = snapshot.root / ".irisx/suite-reports"
             child_output.mkdir(parents=True)
             binding_path = child_output / "source-binding.json"
@@ -240,14 +288,14 @@ def run_suite(root: Path, suite: str, output: Path, *, require_committed: bool =
                 if changes:
                     raise ValueError("; ".join(changes))
                 child_path = child_output / f"module-{number:03d}.json"
-                command = [sys.executable, *( ["-O"] if sys.flags.optimize else []), "-I", "-B", str(snapshot.root / "tools/suite_runner.py"), "--root", str(snapshot.root), "--suite", suite, "--child", entry["path"], "--child-report", str(child_path), "--binding", str(binding_path)]
+                command = controlled_python_command(sys.executable, str(snapshot.root / "tools/suite_runner.py"), "--root", str(snapshot.root), "--suite", suite, "--child", entry["path"], "--child-report", str(child_path), "--binding", str(binding_path))
                 report["commands"].append(command)
                 try:
                     completed = subprocess.run(command, cwd=snapshot.root, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180)
                     (output / f"module-{number:03d}.log").write_text(completed.stdout + completed.stderr, encoding="utf-8")
                     if child_path.is_file():
                         child = load_json(child_path)
-                        if (child.get("format") != "irisx.suite-report.v1" or child.get("suite") != suite or child.get("path") != entry["path"] or any(child.get(k) != snapshot.binding[k] for k in snapshot.binding) or any(type(child.get(k)) is not int or child[k] < 0 for k in ("tests", "failures", "errors", "skips", "expected_skips", "unexpected_skips", "blocked", "exit_code")) or child["skips"] != child["expected_skips"] + child["unexpected_skips"]):
+                        if (child.get("format") != "irisx.suite-report.v1" or child.get("suite") != suite or child.get("path") != entry["path"] or any(child.get(k) != snapshot.binding[k] for k in snapshot.binding) or any(type(child.get(k)) is not int or child[k] < 0 for k in ("tests", "failures", "errors", "skips", "expected_skips", "unexpected_skips", "blocked", "exit_code")) or child["skips"] != child["expected_skips"] + child["unexpected_skips"] or validate_child_startup(child.get("interpreter_startup"))):
                             child = _empty(suite)
                             child.update(path=entry["path"], errors=1, collection_errors=1, collection_messages=["invalid child report identity/counts"])
                     else:

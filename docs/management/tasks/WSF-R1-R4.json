@@ -3,7 +3,7 @@
   "id": "WSF-R1-R4",
   "title": "Correct effective review, suite source identity, snapshot loading and authoritative gate",
   "workstream": "core",
-  "state": "review_ready",
+  "state": "changes_requested",
   "depends_on": [
     "WSF-04"
   ],
@@ -45,13 +45,17 @@
     "WSF-R3",
     "WSF-R4"
   ],
-  "blockers": [],
+  "blockers": [
+    "WSF-R5: controlled seed is ignored by -I at reviewed code15c; original R1-R4 independently pass bounded31+31 controls, not retroactive acceptance of PR6-8."
+  ],
   "handoff_ref": "wsf-r1-r4-handoff",
   "verification_refs": [
     "wsf-r1-r4-handoff",
     "wsf-r1-r4-self-tests",
     "wsf-r1-r4-onboarding"
   ],
-  "review_refs": [],
+  "review_refs": [
+    "wsf-r5-independent-review-20261014"
+  ],
   "concurrency_group": null
 }

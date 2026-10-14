@@ -5,6 +5,8 @@ from pathlib import Path
 import sys
 import time
 
+# -P omits the script directory; admit only these checkout-owned tool helpers.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from workstream_management import MARKER, _records, render_board, safe_path, validate
 
 ROOT = Path(__file__).resolve().parents[1]

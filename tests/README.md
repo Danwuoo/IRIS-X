@@ -100,6 +100,21 @@ steps, while their original commands and earlier failures remain retained.
 Public suites and formal distribution continue to run. This does not clear
 historical audit errors, establish full-green CI or broaden no-training safety.
 
+## WSF-R5 deterministic interpreter startup
+
+The [PR9 independent review](https://github.com/Danwuoo/IRIS-X/pull/9#pullrequestreview-5517762334)
+passed R1–R4 in its bounded 31 normal / 31 optimized regressions, but requested
+changes for seed0 being ignored by `-I`. Python documents that `-I` implies
+`-E` and ignores PYTHON* settings ([official startup semantics](https://docs.python.org/3.13/using/cmdline.html#cmdoption-I)).
+The [small R5 correction](../docs/plan/2026-10-14-workstream-review-r5.md) removes
+inherited PYTHON* variables and restores only explicit fixed startup controls.
+Fresh per-file children use `-P -s -B`, preserving optimization when requested;
+actual startup flags and same-interpreter hash comparisons prove effective seed0.
+Snapshot/source/package/protected-import and complete-gate negatives remain.
+Related packaging/onboarding commands use the same controlled startup; reports
+name only necessary allowlist settings and actual measured flags. Existing
+unexecuted audits and historic scope failures remain unchanged.
+
 ## Retained failure records
 
 These are historical observations, not results of this PR:

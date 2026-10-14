@@ -1469,6 +1469,21 @@
       "expected_skips": []
     },
     {
+      "path": "tests/test_interpreter_startup.py",
+      "workstream": "core",
+      "dependency_class": "stdlib",
+      "suite": "management",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source",
+        "local-git"
+      ],
+      "collector": "unittest",
+      "reason": "Constant-only fresh-subprocess effective seed, startup flags and polluted PYTHON namespace isolation controls; no fitting, provider or model/evaluator inputs.",
+      "expected_skips": []
+    },
+    {
       "path": "tests/test_kaggle_benchmark.py",
       "workstream": "arc-agi-2",
       "dependency_class": "stdlib",
