@@ -1,0 +1,480 @@
+{
+  "format": "irisx.developer-handoff.v1",
+  "task": "WSF-03",
+  "state": "review_ready",
+  "base_commit": "2e706a5a4e4afb67f64517e4ee174584dcb06e18",
+  "target_commit": "411ed472358391d568d52c48f90211085d2238b2",
+  "base_branch": "refactor/workstream-pr2-packaging",
+  "head_branch": "refactor/workstream-pr3-validation",
+  "self_review": true,
+  "independent_review": "pending",
+  "effective_model_mode": "not visible; unverified",
+  "acceptance": {
+    "A3-1": "self-test passed",
+    "A3-2": "self-test passed with limits",
+    "A3-3": "self-test passed",
+    "A3-4": "self-test passed",
+    "A3-5": "self-test passed with limits",
+    "A3-6": "self-test passed",
+    "A3-7": "self-test passed"
+  },
+  "public_suites": [
+    {
+      "suite": "core",
+      "status": "passed",
+      "tests": 63,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "411ed472358391d568d52c48f90211085d2238b2",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python tools/dev.py verify --suite core --output .irisx/core/WSF-03/code-core",
+      "raw_report_sha256": "86f5cf1652c9e5c51acc7d9a0402f7b0f0551cf59ff7080130553362f5bcea76"
+    },
+    {
+      "suite": "distribution",
+      "status": "passed",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skips": 1,
+      "expected_skips": 1,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "411ed472358391d568d52c48f90211085d2238b2",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python tools/dev.py verify --suite distribution --output .irisx/core/WSF-03/code-distribution",
+      "raw_report_sha256": "c142513838061e2ad0c435020e6bb180c79a4610f279c367d24e6c47ace838ad"
+    },
+    {
+      "suite": "management",
+      "status": "passed",
+      "tests": 84,
+      "failures": 0,
+      "errors": 0,
+      "skips": 1,
+      "expected_skips": 1,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "411ed472358391d568d52c48f90211085d2238b2",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python tools/dev.py verify --suite management --output .irisx/core/WSF-03/code-management",
+      "raw_report_sha256": "93570d25dcc87cd2019a33fc1e5c0487c92826b1414f0724a7551ef8654fd22a"
+    },
+    {
+      "suite": "navigation",
+      "status": "passed",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "411ed472358391d568d52c48f90211085d2238b2",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python tools/dev.py verify --suite navigation --output .irisx/core/WSF-03/code-navigation",
+      "raw_report_sha256": "960440846135b8c7475909520b2b2ed6dfdea3a2fd9a36d5310a41667c43739c"
+    },
+    {
+      "suite": "integrity",
+      "status": "passed",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "411ed472358391d568d52c48f90211085d2238b2",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python tools/dev.py verify --suite integrity --output .irisx/core/WSF-03/code-integrity",
+      "raw_report_sha256": "ec71b0b8d6b0a612af01dd05a60bedf5e3b6cf814d9099f1a0b5aac7ef2b60a6"
+    },
+    {
+      "suite": "arc-unit",
+      "status": "passed",
+      "tests": 124,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "411ed472358391d568d52c48f90211085d2238b2",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python tools/dev.py verify --suite arc-unit --output .irisx/core/WSF-03/code-arc-unit",
+      "raw_report_sha256": "b708dd69ea9527ffaea836edebbcb2ef9794160c207a5c825cc44ec21813b2ab"
+    },
+    {
+      "suite": "line-b",
+      "status": "passed",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "411ed472358391d568d52c48f90211085d2238b2",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python tools/dev.py verify --suite line-b --output .irisx/core/WSF-03/code-line-b",
+      "raw_report_sha256": "6625e37f0fca9bc2ae58d677886f39d8ecf0a8170bde538327bbb12c33b94a38"
+    }
+  ],
+  "public_total": {
+    "tests": 316,
+    "failures": 0,
+    "errors": 0,
+    "skips": 2
+  },
+  "blocked_before_import": [
+    {
+      "suite": "arc-reconstruction",
+      "status": "blocked",
+      "tests": 0,
+      "blocked": 85,
+      "exit_code": 2,
+      "reason": "requires authentic inputs, native training scope, or reviewed standalone script; no module imported"
+    },
+    {
+      "suite": "arc-native",
+      "status": "blocked",
+      "tests": 0,
+      "blocked": 32,
+      "exit_code": 2,
+      "reason": "requires authentic inputs, native training scope, or reviewed standalone script; no module imported"
+    },
+    {
+      "suite": "operational",
+      "status": "blocked",
+      "tests": 0,
+      "blocked": 7,
+      "exit_code": 2,
+      "reason": "requires authentic inputs, native training scope, or reviewed standalone script; no module imported"
+    }
+  ],
+  "inventory": {
+    "entries": 412,
+    "by_suite": {
+      "arc-unit": 40,
+      "arc-reconstruction": 88,
+      "arc-native": 34,
+      "core": 7,
+      "arc-unit-audit": 227,
+      "distribution": 1,
+      "integrity": 1,
+      "management": 4,
+      "navigation": 1,
+      "operational": 7,
+      "line-b": 2
+    },
+    "coverage": "tests/**/*.py + tools/**/test_*.py and explicit additional helpers",
+    "unresolved_public_modules": "arc-unit-audit,not relabeled private or omitted"
+  },
+  "distribution": {
+    "target_commit": "411ed472358391d568d52c48f90211085d2238b2",
+    "wheels": [
+      {
+        "sha256": "e394725c94608a866d315fcdac0ddd1d3951b5a307bd91c75e6fc552b385e60d",
+        "members": 126,
+        "record_verified": true
+      },
+      {
+        "sha256": "e394725c94608a866d315fcdac0ddd1d3951b5a307bd91c75e6fc552b385e60d",
+        "members": 126,
+        "record_verified": true
+      }
+    ],
+    "installation": {
+      "origin": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Lib\\site-packages\\irisx\\__init__.py",
+      "prefix": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv",
+      "site_paths": [
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv",
+        "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Lib\\site-packages"
+      ],
+      "editable_pth": [],
+      "external_cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+      "pythonpath_removed": true,
+      "non_editable": true
+    },
+    "synthetic_reference_flow": "passed",
+    "line_b_synthetic_flow": "passed",
+    "commands": [
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\builder-venv\\Scripts\\python.exe",
+          "-m",
+          "pip",
+          "wheel",
+          "--no-index",
+          "--no-deps",
+          "--no-build-isolation",
+          "--wheel-dir",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\stage-a\\wheelhouse",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\stage-a"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\stage-a",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-01.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\builder-venv\\Scripts\\python.exe",
+          "-m",
+          "pip",
+          "wheel",
+          "--no-index",
+          "--no-deps",
+          "--no-build-isolation",
+          "--wheel-dir",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\stage-b\\wheelhouse",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\stage-b"
+        ],
+        "cwd": "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\stage-b",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-02.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-m",
+          "pip",
+          "install",
+          "--no-index",
+          "--no-deps",
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\stage-a\\wheelhouse\\irisx-0.2.0-py3-none-any.whl"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-03.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-c",
+          "import irisx,json,site,pathlib,sys; print(json.dumps({'origin':irisx.__file__,'prefix':sys.prefix,'site_paths':site.getsitepackages(),'editable_pth':[str(p) for s in site.getsitepackages() for p in pathlib.Path(s).glob('*editable*.pth')]}))"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-04.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "--help"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-05.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "fixture",
+          "prepare",
+          "--output",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y\\fixture"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-06.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "spec",
+          "validate",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y\\fixture\\specification.json"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-07.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "trial",
+          "validate",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y\\fixture\\trial.json"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-08.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "trial",
+          "run",
+          "--trial",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y\\fixture\\trial.json",
+          "--output",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y\\run"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-09.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "package",
+          "build",
+          "--run",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y\\run",
+          "--output",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y\\package"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-10.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "package",
+          "verify",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y\\package"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-11.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx.domains.line_b.flow",
+          "--output",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y\\line-b"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-12.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\irisx.exe",
+          "--help"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-13.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "admission",
+          "validate",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y\\public-admission\\trials\\p2-admission\\admission.json"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log": "command-14.log"
+      },
+      {
+        "argv": [
+          "C:\\Users\\wurre\\.codex\\worktrees\\workstream-pr3-20261014\\IRIS-X\\.irisx\\core\\WSF-03\\distribution-code\\consumer-venv\\Scripts\\python.exe",
+          "-I",
+          "-B",
+          "-m",
+          "irisx",
+          "package",
+          "verify",
+          "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y\\missing"
+        ],
+        "cwd": "C:\\Users\\wurre\\AppData\\Local\\Temp\\irisx-external-wheel-tp144x_y",
+        "exit_code": 2,
+        "expected_exit_code": 2,
+        "log": "command-15.log"
+      }
+    ]
+  },
+  "optimized_self_tests": {
+    "suite_runner": 28,
+    "research_navigation": 8,
+    "workstream_gate": 14,
+    "line_b": 12,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "preserved_frozen_differences": [],
+  "CI": "workflow implemented/YAML parsed;remote matrix and required-check registration not verified;legacy/public ARC audit separate red-capable jobs",
+  "limits": [
+    "full legacy audit remains red;new PermissionError remains unclassified after nonreproducing focused replay",
+    "arc-unit is124-case smoke surface;remaining public audit modules remain visible and are not accepted by this green gate",
+    "cross-platform3.11/3.14 CI not independently verified",
+    "authentic historical/private/native suites blocked-before-import,not pass",
+    "two expected Windows symlink privilege skips",
+    "no provider/GPU/training/new PUBLIC120 result or independent acceptance"
+  ]
+}

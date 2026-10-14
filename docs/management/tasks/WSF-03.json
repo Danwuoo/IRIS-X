@@ -3,7 +3,7 @@
   "id": "WSF-03",
   "title": "Controlled test suites, visible CI and line-b synthetic engineering flow",
   "workstream": "core",
-  "state": "in_progress",
+  "state": "review_ready",
   "depends_on": [
     "WSF-02"
   ],
@@ -35,7 +35,7 @@
   "base_branch": "refactor/workstream-pr2-packaging",
   "head_branch": "refactor/workstream-pr3-validation",
   "base_commit": "2e706a5a4e4afb67f64517e4ee174584dcb06e18",
-  "implementation_commit": null,
+  "implementation_commit": "411ed472358391d568d52c48f90211085d2238b2",
   "acceptance": [
     "A3-1",
     "A3-2",
@@ -46,8 +46,11 @@
     "A3-7"
   ],
   "blockers": [],
-  "handoff_ref": null,
-  "verification_refs": [],
+  "handoff_ref": "WSF-03-handoff",
+  "verification_refs": [
+    "WSF-03-self-tests",
+    "WSF-03-legacy-audit"
+  ],
   "review_refs": [],
   "concurrency_group": null
 }
