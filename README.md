@@ -6,24 +6,10 @@ Repository 包含 provider-neutral contracts、deterministic offline reference f
 
 ## ARC-AGI-2 研究線目前進度（2026-10-14 UTC）
 
-目前研究開發分支是 `feat/arc2-sft-rl-continuation-20261014`，從 run008 的
-`cc14bd1a79aac1fe6135017c9e09d4834300675d` 延伸。請從
-[研究進度與文件入口](research/arc2-sft-rl-continuation-20261014/README.md) 開始，
-不要把下面的歷史快照當成這條研究線的最新進度。
-
-- **Stage 0 離線續接已完成並核對遠端 `0d4d19c`**：來源綁定計畫、既有 collector
-  報告聚合、輸出路徑競爭修復與獨立審查，normal／`-O` 各148項通過。
-- **Agent Factory 3 已實際套用選定上游元件於獨立 CPU bridge**：真正的
-  `TrainingSample`、`DDISLoss`、`MeanMetricState`，normal／`-O` 各25項通過；
-  合成 logits 的 loss／gradient 對照差為0。見[整合說明](research/arc2-agent-factory3-20261014/integration.zh-TW.md)。
-  這批新來源與文件的遠端保存狀態，以[進度頁](research/arc2-sft-rl-continuation-20261014/README.md)的核對紀錄為準。
-- [下一階段準備](research/arc2-sft-rl-continuation-20261014/NEXT-STAGE-PLAN.zh-TW.md)
-  聚焦完整 batch receipt 與逐軌跡 shadow replay 接點；尚未實作 production 接線、
-  啟動訓練或得到新 ARC 分數。提交／執行交由本地端。
-
-原 SFT256 A／有限 RL B／整段額外時間配對 SFT C、no-TTT、PUBLIC120 tasks／167 queries
-不變。完整 repository suite 與 CI 仍有既有失敗；CPU 元件通過不代表模型或 GPU 通過。
-main、run008、PR #9 與工程管理支線保持獨立。
+目前研究線的狀態、任務、依賴、證據與下一步，統一見
+[開發進度管理](research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)。
+方法、使用方式及固定審查紀錄見[研究文件入口](research/arc2-sft-rl-continuation-20261014/README.md)。
+下面保留各版本的歷史快照，不代表本研究線的最新進度。
 
 ## 歷史固定版本與執行紀錄
 
@@ -53,7 +39,7 @@ main、run008、PR #9 與工程管理支線保持獨立。
 | 路線 | 入口 | 內容 |
 | --- | --- | --- |
 | 產品與方法 | [PRODUCT_THESIS](PRODUCT_THESIS.md)、[產品文件](docs/product/README.md) | Domain Specification、trial、package 及產品邊界。 |
-| 目前 ARC2 研究線 | [進度與文件入口](research/arc2-sft-rl-continuation-20261014/README.md)、[下一階段準備](research/arc2-sft-rl-continuation-20261014/NEXT-STAGE-PLAN.zh-TW.md) | Stage 0、實際 Agent Factory 3 元件、保存狀態及模型接線待驗項。 |
+| 目前 ARC2 研究線 | [開發進度管理](research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)、[文件入口](research/arc2-sft-rl-continuation-20261014/README.md) | 唯一進度與計畫入口，以及方法、使用與歷史證據導覽。 |
 | 離線工程基礎 | [src/irisx/](src/irisx/)、[tests/](tests/README.md) | P1 contracts、reference flow、package verification 與對應測試。 |
 | 歷史 code18 固定來源 | [快照紀錄](docs/plan/2026-10-13-code18-run005-repository-snapshot.md)、[RUN005 binding](tools/arc_qwen_rlvr004_20261013/driver_path_repair/RUN005-BINDING.json)、[REBUILD](tools/arc_qwen_rlvr004_20261013/driver_path_repair/REBUILD.md) | 精確來源、封裝指紋、重建命令和缺失的外部證據。 |
 | 歷史實驗 | [trials/](trials/README.md)、[research/](research/README.md) | 各 trial／研究版本的問題、實作及結果；不得跨版本移植分數。 |

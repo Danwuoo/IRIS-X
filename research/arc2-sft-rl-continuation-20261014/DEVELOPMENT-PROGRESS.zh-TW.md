@@ -1,0 +1,183 @@
+# ARC-AGI-2 開發進度管理
+
+更新：2026-10-14 16:31 UTC 續接範圍；本頁為持續更新的唯一進度管理文件。
+工作分支：`feat/arc2-sft-rl-continuation-20261014`。
+研究基準：[`cc14bd1a79aac1fe6135017c9e09d4834300675d`](https://github.com/Danwuoo/IRIS-X/tree/cc14bd1a79aac1fe6135017c9e09d4834300675d)。
+
+**目前正在做 Stage 1 的離線支援實作；Stage 1 真實 A/B/C 實驗證據仍未完成。**
+已發布來源與 CPU 元件驗證不能替代 Qwen／LoRA replay、GPU、完整比較或 ARC 分數。
+本環境只進行離線開發；真實訓練、執行與提交仍由本地端依其來源、材料與權限處理。
+
+## 一、文件責任與更新規則
+
+- **本頁：** 唯一維護當前狀態、計畫、任務依賴、驗收條件、證據索引與下一步。
+  每次有實作、測試、審查或發布結果，先更新對應任務列，再補證據與日期；未取得的結果保持未知。
+- [資料夾 README](README.md)只提供導覽；根目錄、research 與 docs 索引只連到本頁。
+  [NEXT-STAGE-PLAN](NEXT-STAGE-PLAN.zh-TW.md)保留舊路徑與標題連結，不另維護一份計畫。
+- [本地交接](OFFLINE-LOCAL-HANDOFF.md)維護使用方式與安全限制；方法總覽、論文附錄、
+  固定來源及歷史審查保存技術理由與當時證據，不回寫成新的執行結果。
+- 狀態用語：`待開始`、`進行中`、`待驗收`、`完成`、`受阻`。只有滿足該列完成條件並有
+  精確證據才標為完成。對真實實驗另註明 `未執行／未驗證`，不以支援工具進度代替。
+- 證據應記錄精確 source SHA、適用範圍、命令／測試結果、審查或 CI 連結及限制。
+  發布須記錄 commit／tree／branch readback；本地測試、Git 保存、CI、模型與方法效果分開。
+  新結果追加或明確替代舊狀態；舊失敗、實體成本、來源與時鐘不刪除。
+
+## 二、目前基線與證據索引
+
+| 證據 ID | 已核對結果 | 邊界與來源 |
+| --- | --- | --- |
+| E0 | Stage 0 已發布 `0d4d19c71d2c84720d4956b36d8e99108e8c0a2b`；normal 148／`-O` 148 通過 | [commit](https://github.com/Danwuoo/IRIS-X/commit/0d4d19c71d2c84720d4956b36d8e99108e8c0a2b)、[獨立審查](offline-continuation-review.md)；來源綁定 inert plan、collector 結構聚合與安全 I/O，不證明真實收集或模型成功 |
+| E1 | 實際呼叫上游 `TrainingSample`、`DDISLoss`、`MeanMetricState` 三個元件；normal 25／`-O` 25 通過，合成 raw-logit loss／gradient 差為 0 | [整合說明](../arc2-agent-factory3-20261014/integration.zh-TW.md)、[驗證](../arc2-agent-factory3-20261014/validation.md)、[獨立審查](../arc2-agent-factory3-20261014/independent-review.md)；僅 synthetic CPU，沒有真實 Qwen／LoRA graph |
+| E2 | 2026-10-14 16:10 UTC 最終發布核對：`66e54c90febd4d7f1a1e08f1f8b0e8d6c7c671ca`；tree `d74130a4f20ba45998fbf0d73858608536ffc824`；33 個變動檔案 readback | [commit](https://github.com/Danwuoo/IRIS-X/commit/66e54c90febd4d7f1a1e08f1f8b0e8d6c7c671ca)；包含 E1 與原導覽／計畫。run008 維持 `cc14bd1a`；本頁後續工作尚需自己的新版本核對 |
+| E3 | E2 的精確 [CI run38595816563](https://github.com/Danwuoo/IRIS-X/actions/runs/38595816563) 已結束：failure；1 個 job 失敗、3 個 cancelled | repository invariants 的 6 項既有 README 缺詞；unit／packaging 步驟 skipped，不能稱 CI 通過 |
+| E4 | 歷史本地完整 suite：1,583 tests、2 failures、35 errors、74 skips；AF3 加入前後 failure／error IDs 相同 | [驗證紀錄](../arc2-agent-factory3-20261014/validation.md)、[當時文件審查](documentation-update-review.md)；這是前次文件更新前的完整 suite，不能當本輪重跑結果 |
+| E5 | exact upstream `metric_state.py` 保留 EOF 空白行格式警告 | [來源 manifest](../../tools/arc2_agent_factory3_bridge_20261014/source-manifest.json)、[當時文件審查](documentation-update-review.md)；不修改 vendor bytes 來隱藏 warning |
+
+發布歷史仍保留：15:44／15:46 UTC 的 tree 發布嘗試回傳取消，15:54 重試取得 tree；
+16:06 寫入前遠端研究分支仍是 `0d4d19c`。E2 才是後續 commit／branch／tree 的核對，
+不能把取得 tree 當成當時已發布。歷史審查中「尚未發布」依其時間理解。
+
+E3 的六個缺詞為 `Engineering Trials`、`Decision 0010`、`Decision 0012`、
+`Decision 0014`、`Decision 0015`、`Trial 001 status page`。既有 validator 未被豁免；
+CI 問題與缺失歷史 fixtures 不可由 targeted CPU 通過抵銷。
+
+## 三、任務、依賴與下一步
+
+科學實驗仍按[方法總覽第 7 節](method-landscape.zh-TW.md#七建議的實驗順序與觸發條件)推進。
+下列 `S1-O` 是 Stage 1 的離線支援任務，不是新的實驗 arm；`S1-E` 才是真實證據工作。
+固定 A=SFT256；B=32 個固定 training parents、最多 4 個互斥 64-slot batch；
+C=從同一 A 做完整 B 額外 model-phase wall 配對的 SFT。固定 dev 選擇、no-TTT、
+PUBLIC120 tasks／167 queries 不變。不得加抽樣、換 parent、改分母、加入 OPSM／entropy／async
+或混入新方法。
+
+| 任務 ID | 工作與責任範圍 | 狀態／現有證據 | 依賴 | 完成條件與下一步 |
+| --- | --- | --- | --- | --- |
+| S0 | 既有離線準備與 collector 解讀 | 完成；E0 | 凍結來源 | 保留既有介面與原始 bytes；不重做同功能工具 |
+| AF3-0 | 實際上游元件 CPU bridge | 完成；E1、E2 | S0、固定上游 | 元件使用及 synthetic parity 已成立；模型接線另列 |
+| S1-O1 | training-only audit → AF3 loss 的純 adapter 與精簡報告 | 進行中；尚無本輪驗收結果 | S0、AF3-0、原 audit schema | 驗證全 64 slots、source／context／replay／recorded loss；保留 unknown／rejection；依第五節完成正負例與審查 |
+| S1-O2 | 真正 upstream loss 的逐軌跡 reduction | 進行中；尚無本輪驗收結果 | AF3-0、全 batch 契約 | 固定 `M×8×T_i`；不保留 64 個模型 graphs；比對 frozen／full／sequential scalar、gradient 與 metric weighting |
+| S1-O3 | 獨立 opt-in audit-loss CLI 與既有安全 reader 接線 | 進行中；沿用 16 MiB 上限 | S1-O1、S0 安全 I/O | 原 prepare／analyze 仍只需標準函式庫；顯式檔案與獨立 hash；超限拒絕、無搜尋、無靜默放寬，完成 CLI／timeout／cleanup 測試 |
+| S1-O4 | 離線整合、失敗測試與獨立審查 | 待開始；E0／E1 不替代本輪結果 | S1-O1～O3 的最終 bytes | normal／`-O` 與 CPU integration 分列；驗證 frozen source 未變、無提前 commit、graph 釋放；列實測 IDs、限制與 reviewer 結論 |
+| S1-O5 | source-bound、預設不執行的本地 shadow 接線規格 | 待開始 | S1-O1～O4 | 以同一 A／完整 training batch／unchanged-policy replay 定義 loss、LoRA gradient 與全成本對照；本地需求、缺件與原 admission 逐項可核對 |
+| S1-O6 | 來源保存與精確交付核對 | 待開始；E2 僅為本輪起點 | S1-O4、S1-O5 | 依已授權發布流程核對新 commit／tree／branch 與變動檔案；另讀該 SHA 的 CI，不沿用 E3；不改 main、run008、PR #9 |
+| S1-E1 | 本地真實來源、training audits 與模型材料接收 | 受阻／本環境未取得真實材料 | S1-O5、本地接收端來源與材料 | training-owned provenance、原 records、排除與實際檔案大小皆可核對；缺資料不補造，不從 compact report 還原 trajectories |
+| S1-E2 | 真實同模型 replay／LoRA 梯度／owner 狀態驗收 | 待開始／未執行 | S1-E1、本地完整原 admission | 通過第六節全部模型、數值、rollback、save/reload、closure 與資源要求；CPU logp 梯度不能替代 |
+| S1-E3 | 同 session 既有 A/B/C 比較 | 待開始／未驗證 | S1-E2、原 batch 與時鐘契約 | 原 reward、replay、更新、checkpoint、全 B/C wall、固定選擇與 closure 證據完整；未完成與 zero-signal 分開 |
+| S1-E4 | sealed 評分與研究判讀 | 待開始／未驗證 | S1-E3、隔離 evaluator、原 scorer | 完整 PUBLIC120／167 與相同案例 gain／loss；B 同時對 A、等成本 C 判讀；缺評分保持未知，不 promotion |
+
+**現在的下一步：** 完成 S1-O1、O2、O3 的有限離線實作，再用最終 bytes 進入 O4；
+獨立審查有缺陷即修正同範圍問題。之後完成 O5／O6 的交接與保存。本地 E1～E4 的
+執行不由這份進度表啟動；取得接收端真實證據後才更新實驗狀態。S1-E4 完整前，不把
+Stage 1 標成研究完成，也不提前轉向 Stage 2／TTT／Agent 新方法。
+
+## 四、技術設計與原始來源
+
+目標是讓已實際採用的 Agent Factory 3 元件具備可接續原 runtime 的**完整 batch
+契約＋逐軌跡 shadow loss**接口，而不是直接把64條真實模型 graph 堆到記憶體。
+新碼應使用獨立 successor 路徑與身分；原 run008、actor、math、plan、producer、
+collector 與 scorer 保留原 bytes。不能 monkey-patch 原 frozen 模組或用新 identity 冒充舊版本。
+
+目前已完成的 bridge 先驗證64個 declarations，再一次呼叫 upstream
+`compute_unpacked`；它只接受 CPU replay tensors。下一階段需要解決的是這個
+呼叫形狀與原模型 owner 的接點，並非再證明同一個小 tensor 公式。
+
+來源接點：
+- [原 runtime 更新流程](https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/tools/arc_qwen_rlvr004_20261013/source/rl_session/runtime.py#L396-L496)：完整 batch、逐軌跡 replay／backward、全部 admission 後才 commit。
+- [原 actor identity 與 support](https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/tools/arc_qwen_rlvr004_20261013/source/rl_session/actor.py)：原始 token、DFA、權重／cache／來源一致性。
+- [目前 bridge](../../tools/arc2_agent_factory3_bridge_20261014/bridge.py)、[實際上游來源 manifest](../../tools/arc2_agent_factory3_bridge_20261014/source-manifest.json)、[CPU proof](../../tools/arc2_agent_factory3_bridge_20261014/proof.py)。
+
+## 五、離線實作與驗收契約
+
+### S1-O1：完整 batch 的非機密接線契約
+
+第一個真實來源接點是**已存在的 training-only audit 檔**，不是 stage0 compact report。
+`TERMINAL-VALIDATION.json` 沒有原始 trajectories，不能由它反推或補造。原
+[`experiment_flow/flow.py`](https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/tools/arc_qwen_rlvr004_20261013/source/experiment_flow/flow.py#L220-L246)
+將 `{batch, summary, update, ...}` 保存為 `experiment/audit/sweep-N.json`，其中
+`update.replays[]` 保留 `log_pi`／`log_mu`／`detached_DDIS_loss`；原
+[`audit_checks.py`](https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/audit_checks.py#L201-L275)
+已有逐軌跡對照責任。先做明確指定檔案＋獨立來源hash的離線 audit adapter，保存原拒絕／
+缺失狀態；沒有真實檔案時只交 synthetic schema 測試。
+
+stage0 單檔上限16MiB不能直接放寬；原證據規畫的單batch audit上界約88MiB，不代表
+實際檔案都如此大。先核對實際size，超限明確拒絕；若確實需要較大輸入，另審有界reader
+的大小／深度／JSON／no-follow／中斷cleanup設計，不能偷偷改既有安全上限。
+只使用保存的 logp 可以重算loss及 `∂loss/∂logp`，無法重建模型graph、LoRA梯度或真實replay。
+這個 audit-loss companion 使用獨立 opt-in 入口；既有 stage0 prepare／analyze 保持標準
+函式庫與原介面，不暗中載入 PyTorch。將來輸出僅保留不含原始tokens／grids的緊湊
+batch conformance與unknown／rejection分類，對照原 recorded `detached_DDIS_loss`。
+只有宣告性資料時，仍明列 provenance 未驗證；不能改名成新的 collector 成功收據。
+
+先列出 producer 欄位→bridge 欄位→owner 核對責任的逐項映射：固定32 parents／records、
+batch0–3、每批8×8完整 slots、policy identity、generation epoch、actor／cache mode、
+原始 prompt/generated IDs、位置、DFA support／states、behavior logp、reward provenance。
+只能以 training-owned receipt 作將來真實來源；不能從 evaluator 答案或 PUBLIC outcome
+補欄位。metadata 自洽不是 provenance authentication，沒有的證據保持 missing。
+
+交付應是獨立 adapter 契約與 fabricated 非ARC fixtures。測試覆蓋錯版本、缺／重／亂序slot、
+混合 cache／prompt、fatal／stop、retokenization、source drift、未知／非法reward與 zero-signal。
+不新增登入、provider 操作、檔案搜尋或秘密資料讀取功能。
+
+### S1-O2：使用真正 upstream loss 的逐軌跡 reduction
+
+完整 batch 必須先通過現有結構檢查，固定 advantage 與分母 `M×8×T_i`，然後逐軌跡
+計算 upstream contribution；不得對單條 trajectory 重算 group baseline／M 或當成一個新batch。
+本次 upstream bytes 與 license 保留，streaming 邏輯寫在新 glue。零advantage仍保留原 replay
+診斷要求，整批 M=0 則不做 replay／loss／更新。
+
+CPU 驗收：同一64-slot synthetic batch 比較 frozen local、目前 full upstream與新streaming
+scalar／原始 logits gradients／metric weighting；不同長度、mixed counts、嚴格ratio邊界、
+zero groups 均需通過。normal／`-O`、失敗／timeout／cleanup、graph釋放與禁止提前commit
+測試分開列出。不得以 mock 成功聲稱真實 owner rollback 或模型梯度驗證。
+
+### S1-O5：本地模型接線的 shadow 規格與交接
+
+產出 source-bound、預設不執行的接線規格；在本地另行審查的 successor 上，從**同一A、
+同一完整原始 training batch、相同 unchanged-policy replay**比較本地與上游的 loss／
+LoRA各target梯度。不能用額外抽樣、不同tokenization或不同模型副本掩蓋差異。
+
+shadow 計算不是免費：新增 forward／backward、hash、Python、同步、記憶體、保存及失敗
+成本全部記錄。若接進正式 B，其整段額外 wall 必須由 C 匹配，且仍受原整場12h與各
+operation／batch期限限制。若作另立診斷，不可把它的成本或結果移植成既有 A/B/C 的證據。
+
+此階段目前只準備接口、非模型 CPU 測試與本地交接，不在本環境載入Qwen、執行LoRA、
+建立新GPU工作、提交Kaggle或呼叫本地executor。真正模型驗收仍需接收端的來源與材料。
+
+## 六、本地模型證據的驗收契約
+
+| 項目 | 已有 | 本地真實接線仍須提供 |
+| --- | --- | --- |
+| 來源與數學 | 固定 upstream／frozen local hashes、合成loss／logit-gradient parity | successor封裝與實際執行source一致，不能沿用舊admission |
+| reward／資料 | 完整slot與排除宣告檢查 | authenticated train-only lineage、原records與排除、實際reward；無PUBLIC答案流入 |
+| actor與replay | 原IDs／prefix／DFA宣告／version一致性 | 同原模型與adapter、真實DFA support、teacher-forcing causal alignment與cache實證 |
+| 數值 | synthetic零差、strict bounds | 原nonforced max≤.20／p95≤.05／unclipped=1，以及每個LoRA tensor finite gradient、至少一個非零；不能只看scalar loss |
+| 狀態與失敗 | CPU負例與結構拒絕 | 零更新前權重不變、完整batch才commit、真實rollback、save/reload、owner終止與完整receipt |
+| 資源與結果 | 小CPU fixture | 單訓練GPU的peak memory／全B wall；最終4×L4另驗；原完整A/B/C與PUBLIC120／167評分 |
+
+以上重申既有契約，不另加與研究問題無關的管理門檻。缺一項不能改寫為0分、已驗證或放行。
+
+## 七、既有決策條件
+
+- 工程／replay失敗：先修正來源明確的問題，保留實體成本與舊證據，不當成方法失敗或換熱門方法。
+- 完整batch無相對reward訊號：不補抽樣、不改parent；保留zero-signal與incomplete區別。
+  若後續確需改善訊號，才按原計畫考慮train-only curriculum／verified trajectories／rejection-SFT。
+- 有真實更新：先完成同session A/B/C與固定選擇。B>A但未勝同成本C，不能宣稱RL有額外價值。
+- 有相對增益：依原unused-parent／family replication條件驗證；reused held32不冒稱全新確認集。
+- TTT、program proposal／feedback repair、selector／多角色仍按既有獨立觸發條件，這次不混入。
+
+## 八、離線交付與後續更新驗收
+
+1. 從根 README／research／docs 索引可直達本頁；資料夾 README 只導覽，舊計畫路徑與
+   標題可繼續使用，使用說明不複製 mutable status。歷史證據與獨特科學內容完整保留。
+2. S1-O4 驗收須針對實作完成後的最終 bytes，保存獨立 review、normal／`-O`、適當 CPU
+   integration、source invariance 與精確失敗分類。未重跑的完整 suite 明確標示未重跑。
+3. S1-O6 每次只填實際核對到的 commit／tree／branch／檔案與精確 CI；未完成的發布或
+   CI 保持待驗。Git 保存不代表執行授權，CI 失敗不改寫為方法失敗。
+4. 接收本地結果時，依 S1-E1～E4 補證據與剩餘缺項；每一項都保留原版本、成本和失敗。
+   只有完整研究結果才能觸發第七節及方法總覽的後續實驗條件。
+
+### 更新紀錄
+
+- 2026-10-14：從原 NEXT-STAGE-PLAN 與方法總覽第 7 節整理單一管理頁，納入已核對的
+  E0～E5；Stage 1 離線實作進行中，真實 A/B/C／GPU／ARC 證據仍未建立。
+  文件整合本身不代表 S1-O4 的程式驗收或新版本發布完成。

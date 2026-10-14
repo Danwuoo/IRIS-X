@@ -3,13 +3,10 @@
 This directory contains only current product-era guidance.
 
 - **2026-10-14 ARC-AGI-2 research continuation:**
-  [current progress and document index](../research/arc2-sft-rl-continuation-20261014/README.md),
-  [method study](../research/arc2-sft-rl-continuation-20261014/method-landscape.zh-TW.md),
-  [offline local handoff](../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md),
-  [actual Agent Factory 3 component integration](../research/arc2-agent-factory3-20261014/integration.zh-TW.md),
-  and [next-stage preparation](../research/arc2-sft-rl-continuation-20261014/NEXT-STAGE-PLAN.zh-TW.md).
-  The status page distinguishes verified published stage0, reviewed local
-  component work, publication blockers, and still-unverified model/GPU evidence.
+  [development progress ledger](../research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)
+  is the single source for current tasks, dependencies, evidence, acceptance,
+  and next actions. The [document index](../research/arc2-sft-rl-continuation-20261014/README.md)
+  links the method studies, usage instructions, and dated review records.
 
 - [Stage 4 E01 output lifecycle](development/nvarc-output-lifecycle.md) defines
   immutable generations, single-marker commit, verified root projection and

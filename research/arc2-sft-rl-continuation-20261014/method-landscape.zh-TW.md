@@ -5,10 +5,9 @@
 本文件是研究與實驗次序建議，不代表已採用、已訓練或已取得新分數。
 研究線從 run008 延伸；main、run008 原分支及工程重整線保持獨立。
 
-**後續開發狀態更新：** 本文主體保存研究完成時的來源與提案。Stage 0 後來已於
-`0d4d19c` 完成修復與審查；Agent Factory 3 亦已另立實際 CPU 元件 bridge。
-請以[目前研究進度](README.md)、[整合實證](../arc2-agent-factory3-20261014/integration.zh-TW.md)
-及[下一階段準備](NEXT-STAGE-PLAN.zh-TW.md)區分最新實作與尚未執行的方法提案。
+**進度入口：** 本文主體保存研究完成時的來源與提案；當前實作、任務、證據與下一步
+統一見[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)。第 7 節保存實驗順序與
+觸發理由，不另維護執行狀態；元件設計見[整合說明](../arc2-agent-factory3-20261014/integration.zh-TW.md)。
 
 ## 一、先講結論
 
@@ -127,7 +126,7 @@ Repo 從固定 upstream independently expressed 的 DDIS 全名為 **Direct Doub
 | **4：Agent機制** | 同checkpoint、同總預算比較grid／independentprogram／feedbackrepair | repair勝過額外獨立提案、或program與grid明確互補 | 候選池沒正解先改提案／資料；不是先改selector |
 | **5：Selector／多角色** | 固定候選池測兩槽選擇；之後單控制器vs有限委派 | oracle有增益但top2流失，或子假設真正互補 | 多角色只增加成本、共享錯誤或污染選擇時停止 |
 
-以上是待批准／待結果觸發的研究次序，本次只查資料與做離線規劃；不在此環境提交或啟動訓練。
+以上保存研究完成時的條件式次序；目前採取的工作與狀態見[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)，本節不構成提交或訓練授權。
 
 ## 八、硬體現實與尚缺證據
 
@@ -139,4 +138,4 @@ Repo 從固定 upstream independently expressed 的 DDIS 全名為 **Direct Doub
 ## 九、本輪交付與限制
 
 本研究只檢查公開repo來源、已保存的歷史文件與live primary research。沒有讀取evaluator答案、重新跑scorer、取得Kaggle登入、查詢provider或啟動訓練。
-研究完成當時，離線開發半成品保存在 `0451441727e8aea602873902ebccbf6b38576e03`，當時的輸出路徑race與最終integration review尚未完成。這段是歷史狀態；後續修復與148／148測試已於 `0d4d19c` 保存，詳見[目前進度](README.md)。工具測試仍不證明方法有效。
+研究完成當時，離線開發半成品保存在 `0451441727e8aea602873902ebccbf6b38576e03`，當時的輸出路徑race與最終integration review尚未完成。這段是歷史狀態；後續實作與驗證統一見[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)。工具測試仍不證明方法有效。

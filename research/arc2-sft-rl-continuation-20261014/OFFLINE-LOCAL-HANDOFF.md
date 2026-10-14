@@ -4,26 +4,19 @@
 `cc14bd1a79aac1fe6135017c9e09d4834300675d`；工作分支為
 `feat/arc2-sft-rl-continuation-20261014`。
 
-最新導覽見[研究進度頁](README.md)，後續開發範圍見[下一階段準備](NEXT-STAGE-PLAN.zh-TW.md)。
-Stage 0 的最終來源已在遠端核對為
-[`0d4d19c71d2c84720d4956b36d8e99108e8c0a2b`](https://github.com/Danwuoo/IRIS-X/commit/0d4d19c71d2c84720d4956b36d8e99108e8c0a2b)，
-normal／`-O` 各148項通過，並完成獨立審查。此後另新增的
-[Agent Factory 3 bridge](../../tools/arc2_agent_factory3_bridge_20261014/README.md)
-已實際執行固定上游元件，normal／`-O` 各25項通過；其[獨立審查](../arc2-agent-factory3-20261014/independent-review.md)
-與[完整驗證分類](../arc2-agent-factory3-20261014/validation.md)另列。
-取得來源時須確認該 commit 確實包含所需模組，不能以 stage0 的 SHA 假稱已包含後續整合。
+工具版本、開發任務、驗收證據與下一步統一見
+[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)。本頁只維護使用方式與限制；
+取得來源時須確認精確 commit 包含所需模組，不能以 Stage 0 的 SHA 指稱後續整合。
 
 ## 交付範圍
 
-此工具補上既有 SFT256 → RL／等成本額外 SFT 比較的離線準備與結果解讀。
+此 companion 提供既有 SFT256 → RL／等成本額外 SFT 比較的離線準備與結果解讀。
 它不執行訓練、不提交或監看 Kaggle、不重跑 scorer，也不重建原始私人 admission。
-本地 executor 的執行／提交責任與登入仍分開；沒有 credentials、帳號設定、
+本地 executor 的執行／提交責任與登入分開；沒有 credentials、帳號設定、
 原始 evaluator 答案或私有執行封包隨此工具移轉。
 
-研究提案尚未因此成為新的 RL／TTT／Agent 實驗。agent-factory-3 元件整合已完成
-離線 CPU 實際呼叫，保有自己的來源、依賴與測試邊界；尚未接入此工具或 production
-模型 runtime，沒有改寫 run008 的凍結比較。下一階段先準備可審查的 receipt 與逐軌跡
-shadow 接點；真實模型 replay、LoRA 梯度、儲存／重載、整段成本與 GPU 仍需實證。
+CPU 元件、保存的 log-probability 與宣告性 metadata 不能代替真實模型 replay、LoRA
+梯度、儲存／重載、整段成本或 GPU 實證。工具使用不改寫 run008 的凍結比較。
 
 ## 取得與核對
 
@@ -31,10 +24,14 @@ shadow 接點；真實模型 replay、LoRA 梯度、儲存／重載、整段成�
 替代執行來源身分。一般公開 Git checkout 即包含必要來源，無須取得 Drive
 封包或帳號設定。保留 run008、main 與工程重整線，不混入它們的新變更。
 
-此 companion 只需 Python 標準函式庫及支援 descriptor-relative、
+Stage 0 的 `prepare`／`analyze` 只需 Python 標準函式庫及支援 descriptor-relative、
 `O_NOFOLLOW`／`O_DIRECTORY` 的 POSIX API。Windows 等不支援環境會明確拒絕
 檔案操作，應交給支援的本地 POSIX 環境；不要停用安全檢查。Python版本與
 檔案系統仍須在接收端測試，此機器的實際路徑不能直接照搬。
+
+獨立 opt-in 的 audit-loss 入口另需 AF3 bridge、Pydantic 與 PyTorch；不得由 Stage 0
+命令暗中載入。依賴與 CPU proof 環境見 [AF3 使用說明](../../tools/arc2_agent_factory3_bridge_20261014/README.md)。
+各入口的可用版本與驗收狀態以[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)為準。
 
 `source-pins.json` 固定五個公開來源，總共118,615 bytes；Python原始碼只雜湊，
 不import、不執行。它驗證選定來源bytes，不驗證完整checkout、Git HEAD、
@@ -136,6 +133,6 @@ symlink／祖先交換、拒絕覆寫、失敗／中斷cleanup及CPU CLI。
 歷史fixtures並未隨這次公開checkout具備。完整shape的合成報告只證明schema與聚合，
 不是原run結果、full14B數值驗證、scorer重播或Kaggle狀態。
 
-此交付不聲稱整個repository CI通過；既有README assertions與缺失歷史fixtures另列。
-原始暫停checkpoint `0451441` 的race保留為歷史；研究文件 `d13500c` 描述的當時狀態，
-由本交接與最終review限定更新。
+測試數字、CI 與缺失證據統一見[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)。
+原始暫停 checkpoint `0451441` 的 race 與研究文件 `d13500c` 皆按其固定版本解讀；
+不得將後續修復結果回寫為舊版本已通過。
