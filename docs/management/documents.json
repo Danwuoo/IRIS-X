@@ -622,6 +622,42 @@
         "WSF-04"
       ],
       "supersedes": []
+    },
+    {
+      "id": "WSF-02-handoff",
+      "path": "docs/verification/WSF-02/HANDOFF.md",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-02"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "WSF-02-self-tests",
+      "path": "docs/verification/WSF-02/self-tests.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-02"
+      ],
+      "supersedes": []
+    },
+    {
+      "id": "WSF-02-baseline",
+      "path": "docs/verification/WSF-02/baseline.json",
+      "kind": "evidence",
+      "workstream": "core",
+      "status": "active",
+      "owner_role": "local-developer",
+      "related_tasks": [
+        "WSF-02"
+      ],
+      "supersedes": []
     }
   ],
   "legacy_indexes": [

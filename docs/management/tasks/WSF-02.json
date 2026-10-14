@@ -3,7 +3,7 @@
   "id": "WSF-02",
   "title": "Formal wheel and CLI boundary with repository management foundations",
   "workstream": "core",
-  "state": "in_progress",
+  "state": "review_ready",
   "depends_on": [],
   "owner_role": "local-developer",
   "plan_ref": "workstream-pr2-pr4-plan",
@@ -28,11 +28,21 @@
   "base_branch": "chore/workstream-foundation-20261014",
   "head_branch": "refactor/workstream-pr2-packaging",
   "base_commit": "08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059",
-  "implementation_commit": null,
-  "acceptance": ["A2-1", "A2-2", "A2-3", "A2-4", "A2-5", "A2-6"],
+  "implementation_commit": "9ea92a7337f41dd9f1a194c77cf9c0598483140b",
+  "acceptance": [
+    "A2-1",
+    "A2-2",
+    "A2-3",
+    "A2-4",
+    "A2-5",
+    "A2-6"
+  ],
   "blockers": [],
-  "handoff_ref": null,
-  "verification_refs": [],
+  "handoff_ref": "WSF-02-handoff",
+  "verification_refs": [
+    "WSF-02-self-tests",
+    "WSF-02-baseline"
+  ],
   "review_refs": [],
   "concurrency_group": null
 }
