@@ -1,0 +1,39 @@
+{
+  "authority": "reproducibility-only",
+  "baseline_commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+  "dispatch_authorized": false,
+  "files": [
+    {
+      "bytes": 58716,
+      "path": "tools/arc_qwen_rlvr004_20261013/publication_run008/rl_collect.py",
+      "role": "collector-report-contract-source-only",
+      "sha256": "71603a1eb47b1b7656f2ca6a8f2b2eb6faa99469a27aef63d4f0446828ef3a78"
+    },
+    {
+      "bytes": 31040,
+      "path": "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/validate_owned_outputs.py",
+      "role": "content-validation-contract-source-only",
+      "sha256": "8f6233c7354002d5d31076daf292f79d50ed2722bf3fcbe4ae826d0783b8b98f"
+    },
+    {
+      "bytes": 8663,
+      "path": "tools/arc_qwen_rlvr004_20261013/source/design/MEASURED-POLICY.json",
+      "role": "scientific-policy-data",
+      "sha256": "3d278b7478fa859e23d60a69b5a12ae2a26964ea774354691aa7bc11dbb84bda"
+    },
+    {
+      "bytes": 7431,
+      "path": "tools/arc_qwen_rlvr004_20261013/source/experiment_flow/controlled_batched.py",
+      "role": "controlled-synthetic-reference-only",
+      "sha256": "c7bbd75e8047e91e80c53988cd493fff8dd4060d628e4543032984ff25e41a5e"
+    },
+    {
+      "bytes": 12765,
+      "path": "tools/arc_qwen_rlvr004_20261013/source/rl_session/plan.py",
+      "role": "historical-plan-source-only",
+      "sha256": "73fb2f1197270c821a9bb8f39653db5529609145ccb84a8173d4bd476f43ff02"
+    }
+  ],
+  "format": "irisx/arc2-offline-continuation-source-pins-v1",
+  "scope": "selected-public-source-bytes-only"
+}
