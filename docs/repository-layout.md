@@ -1,41 +1,53 @@
-# Product-Era Repository Layout
+# Repository Layout and Workstream Boundaries
 
-Status: active P1, closed ARC-AGI-2 Trial 001, and runtime-verified bounded
-Trial 002 smoke under the Decision 0010 lightweight development workflow as of
-2026-09-22.
+Updated: 2026-10-14. This is the workstream-foundation layout based on main
+`baaf47d4f449c534ddd4646ab9b3175bbaf1ef89`, not a migration of run008 into main.
+Start at the [workstream guide](workstreams/README.md) and
+[registry](workstreams/registry.json). The directory tree is still physically
+shared; the first increment separates navigation and responsibilities only.
 
-| Path | Role | Current state |
+| Path | Responsibility | Current boundary |
 | --- | --- | --- |
-| `PRODUCT_THESIS.md` | Canonical product authority | Adopted and byte-verified |
-| `docs/product/` | Product scope, contracts, package format, non-goals, and admission | P1 contracts, historical P2 admission, and current ARC-AGI-2 scope documented |
-| `docs/development/` | Operating model and data/execution policy | Offline P1 and admitted P2 work governed |
-| `docs/decisions/` | Current decisions | Product direction, P1 foundation, historical P2 block, ARC-AGI-2 admission, and Kaggle handoff recorded |
-| `src/irisx/` | Product implementation | P1 contracts/reference flow, historical admission validator, retained Trial 001 implementation, Trial 002 bounded runner/evaluator, closed-world transport, quarantine, and package verification |
-| `tests/` | Active tests | Repository, contracts, selection, package, CLI, admission, and admitted-trial coverage |
-| `trials/` | Admission and Engineering Trials | Historical admission, closed Trial 001 status and lineage, plus the runtime-verified Trial 002 status, audit, and notebook |
-| `research/` | Product-driven research | Conditional; no question opened |
-| `tools/` | Current utilities | Offline repository validator and read-only Trial 001 layout audit |
-| `archive/` | Git-native historical catalog | Read-only |
-| `.irisx/` | Generated local outputs | Ignored |
+| `PRODUCT_THESIS.md` | Product direction | Adopted bytes unchanged |
+| `AGENTS.md` | Short common rules and scope routing | Historical run logs addressed by pinned Git links |
+| `docs/workstreams/` | One STATUS per stream and a navigation-only registry | Core, ARC-AGI-2, unassigned line-b |
+| `docs/product/` | Contracts, package format and product scope | Existing contracts retained |
+| `docs/development/` | Routine development and data/execution policy | Shared workflow, not run authorization |
+| `docs/decisions/` | Durable decisions and historical rationale | Existing files unchanged |
+| `src/irisx/` | Shared P1 code and retained ARC implementations | Flat layout and public imports unchanged |
+| `tests/` | Existing suites plus standalone navigation checks | Dependency classes documented; no tests removed |
+| `tools/` | Build backend, repository checker, run-specific utilities | No script moves or byte changes in this increment |
+| `trials/` | Trial-specific status, source and retained outcomes | Historical paths and identities preserved |
+| `research/` | Research evidence and compact reviews | Run008 continuation is on its pinned branch, not silently imported |
+| `.github/workflows/` | Existing full validation plus independent navigation check | Existing full-validation workflow retained |
+| `archive/` | Read-only Git-native historical catalog | Catalog and tag unchanged |
+| `.irisx/` | Ignored local output and isolated workstream scratch | Not publication authority or a transferable live machine |
 
-The [`Trial 001 status page`](../trials/first-real-domain/README.md) carries the
-terminal state and retained boundary. Decisions 0004–0009
-retain the exact data, model, transport, runtime, and `run-001` identities.
-Decision 0010 removes the need to repeat that chain across current guidance:
-routine local work proceeds directly, while any future external run requires a
-new scoped question, explicit owner authorization, and a passing technical
-preflight. Decision 0011
-adds the distinct checkpoint-aware `run-002` v4 transport without changing the
-frozen `run-001` bytes. Decision 0013 preserves both earlier identities and
-authorized only a four-invocation, unbounded-time `run-003` v5 completion
-benchmark with checkpoint and `result.zip` evidence. Decision 0012 closes the
-trial without a locally accepted result, score, promotion, or Domain Package.
-Decision 0014 opens the separate Trial 002 question. Decision 0015 preserves
-the failed first smoke and authorizes one competition-mounted replacement with
-runtime-verified L4 x4 and exactly four Qwen3.5-4B inference invocations. That
-replacement completed with four valid grids and 0/4 local exact match; its
-external execution and retrieval authority is consumed.
+## Where changes belong
 
-Historical payload is not deep-moved into `archive/`. Its original tree is
-addressed by the annotated tag `archive/pre-product-transition-2026-09-17`;
-the active `archive/` directory contains only recovery metadata.
+Common contract/CLI/build/CI changes belong to the shared lane. Existing `arc_*`,
+Kaggle runners and run-specific tools belong to ARC-AGI-2; locate its current
+checkpoint through [ARC STATUS](workstreams/arc-agi-2/STATUS.md), not a guessed
+local path. Second-line scope and its proposed path allocation are in
+[line-b STATUS](workstreams/line-b/STATUS.md); these paths are not created yet.
+
+Do not move frozen runtime, notebook, scorer, overlay, inventory, review or
+reconstruction paths for cosmetic consistency. A later migration needs an exact
+before/after inventory, compatible imports where appropriate, packaging tests,
+and proof that historical reconstruction still resolves its original bytes.
+The current wheel builder is flat; nested packages require a separate build
+change and a non-editable installation test before use.
+
+## Historical index (not current execution authority)
+
+Decision 0010 supplies routine risk-based development. Decision 0012 records the
+closed ARC-AGI-2 Trial 001 without a locally accepted result; consult the
+[Trial 001 status page](../trials/first-real-domain/README.md). Decision 0014 and
+Decision 0015 preserve the distinct consumed Trial 002 smoke and its original
+identities. Later experiments do not overwrite those records.
+
+The pre-product payload remains in Git at the annotated tag
+`archive/pre-product-transition-2026-09-17`, not deep-moved into `archive/`.
+The code18/run005 snapshot and the run008 branch remain distinct source anchors.
+See [tests/README.md](../tests/README.md) for what can be checked without private
+inputs and what remains dependent or unverified.
