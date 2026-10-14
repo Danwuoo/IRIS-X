@@ -1,0 +1,53 @@
+{
+  "format": "irisx.task.v1",
+  "id": "WSF-R1-R4",
+  "title": "Correct effective review, suite source identity, snapshot loading and authoritative gate",
+  "workstream": "core",
+  "state": "in_progress",
+  "depends_on": [
+    "WSF-04"
+  ],
+  "owner_role": "local-developer",
+  "plan_ref": "workstream-review-r1-r4-plan",
+  "scope_paths": [
+    "tools/workstream_management.py",
+    "tools/suite_runner.py",
+    "tools/source_identity.py",
+    "tools/workstream_gate.py",
+    "tools/dev.py",
+    "tools/no_training.py",
+    "tools/onboarding_check.py",
+    "tools/distribution_check.py",
+    "tests/inventory.json",
+    "tests/test_workstream_management.py",
+    "tests/test_suite_runner.py",
+    "tests/test_workstream_gate.py",
+    "tests/test_no_training.py",
+    "tests/test_onboarding.py",
+    "tests/test_review_lifecycle.py",
+    "tests/test_source_identity.py",
+    "tests/test_snapshot_collection.py",
+    "tests/README.md",
+    ".github/workflows/workstream-validation.yml",
+    "docs/management/**",
+    "docs/verification/WSF-R1-R4/**",
+    "docs/plan/2026-10-14-workstream-review-r1-r4.md",
+    "docs/workstreams/core/STATUS.md",
+    ".github/workflows/ci.yml"
+  ],
+  "base_branch": "refactor/workstream-pr4-arc-boundary",
+  "head_branch": "fix/workstream-review-r1-r4-20261014",
+  "base_commit": "c514e9d5b3c438b70c90824ec1fd2796aa840740",
+  "implementation_commit": null,
+  "acceptance": [
+    "WSF-R1",
+    "WSF-R2",
+    "WSF-R3",
+    "WSF-R4"
+  ],
+  "blockers": [],
+  "handoff_ref": null,
+  "verification_refs": [],
+  "review_refs": [],
+  "concurrency_group": null
+}

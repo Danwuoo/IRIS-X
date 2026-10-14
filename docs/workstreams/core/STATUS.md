@@ -19,6 +19,24 @@ plan, code checkpoint and handoff; STATUS does not duplicate task progress.
 
 ## Evidence
 
+The independent [PR6](https://github.com/Danwuoo/IRIS-X/pull/6#pullrequestreview-5515478962),
+[PR7](https://github.com/Danwuoo/IRIS-X/pull/7#pullrequestreview-5515483789), and
+[PR8](https://github.com/Danwuoo/IRIS-X/pull/8#pullrequestreview-5515492879) reviews
+request changes to review freshness, executed-source identity, snapshot package
+loading and authoritative gate completeness. Their scope is source review,
+constant-only synthetic reproductions and remote CI readback, with no independent
+local rerun of the whole project/wheel/onboarding. Original review targets and
+receipts remain unchanged; task records link the sourced negative outcomes.
+
+The PR8 review read [workstream run 38527215623](https://github.com/Danwuoo/IRIS-X/actions/runs/38527215623):
+28 public-suite jobs, four formal-distribution jobs and the fixed gate passed.
+Navigation run 38527215613 passed; arc-public-audit and offline-validation run
+38527215654 failed. Its ARC audit artifact records 2,705 tests, 15 failures,
+115 errors and 87 unexpected skips at synthetic merge commit
+`034f9224a3bc3138923059a1bf0f8c8aa1bd4f7b` on Linux/Python3.14.8.
+This attributed reviewer readback is separate from developer local aggregate
+counts, and does not make the four demonstrated defects acceptable.
+
 The synchronized foundation is `08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059`,
 descended from the main comparison anchor
 `baaf47d4f449c534ddd4646ab9b3175bbaf1ef89`. PR 4 starts from PR 3 delivery
@@ -48,8 +66,8 @@ local aggregates remain separately recorded in the handoffs; full CI is not gree
 
 ## Blockers
 
-Independent commit-bound verification and remote CI matrix outcomes remain
-pending. Broader ARC/public and complete legacy audits retain collection,
+Independent acceptance remains changes_requested. The earlier bounded remote
+matrix passed, while its audit jobs failed. Broader ARC/public and legacy audits retain collection,
 dependency, platform, missing-input and assertion failures. Attribution needs
 matched test IDs/signatures; unmatched observations stay unclassified.
 
@@ -59,11 +77,11 @@ proved movable under those absent inputs; retention is intentional.
 
 ## Next
 
-Use [WSF-04](../../management/tasks/WSF-04.json) and its
-[plan](../../plan/2026-10-14-workstream-pr2-pr4-local-development.md) for the
-remaining acceptance and handoff route. Run the management checks and controlled
-public suites described in [tests/README](../../../tests/README.md), retain
-the full `--all` audit and return actual branch/code/delivery/PR identities to
+Use [WSF-R1-R4](../../management/tasks/WSF-R1-R4.json) and its
+[bounded correction](../../plan/2026-10-14-workstream-review-r1-r4.md).
+Run only the controlled public/synthetic checks described in
+[tests/README](../../../tests/README.md). Preserve previous aggregate receipts
+without rerunning unrestricted aggregate/import-time workloads. Return actual branch/code/delivery/PR identities to
 the original ChatGPT conversation. Task state stays at `review_ready` until
 that conversation supplies independent verification. No merge follows.
 

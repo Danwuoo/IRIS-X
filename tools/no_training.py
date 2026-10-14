@@ -29,6 +29,7 @@ _ENTRY_FIELDS = {
     "path", "workstream", "dependency_class", "suite", "role", "dependencies",
     "collector", "reason", "expected_skips",
 }
+_OPTIONAL_ENTRY_FIELDS = {"import_roots", "module_name"}
 _DEPENDENCY_CLASSES = {
     "stdlib", "small-python", "historical", "operational", "native",
     "training", "unclassified-public",
@@ -83,11 +84,20 @@ def _classifications(root: Path, inventory) -> dict[str, dict]:
             raise InventoryClassificationError("invalid suite definition")
     result = {}
     for entry in entries:
-        if not isinstance(entry, dict) or set(entry) != _ENTRY_FIELDS:
+        if not isinstance(entry, dict) or not _ENTRY_FIELDS <= set(entry) or set(entry) - _ENTRY_FIELDS - _OPTIONAL_ENTRY_FIELDS:
             raise InventoryClassificationError("unknown or missing inventory entry fields")
         path = _safe_path(root, entry["path"])
         if entry["path"].split("/")[0] not in {"tests", "tools"} or path.suffix != ".py" or not path.is_file():
             raise InventoryClassificationError(f"missing/unmanaged Python path: {entry['path']}")
+        if set(entry) & _OPTIONAL_ENTRY_FIELDS:
+            try:
+                from .suite_runner import validate_entry_imports
+            except ImportError:
+                from suite_runner import validate_entry_imports
+            try:
+                validate_entry_imports(root, entry)
+            except ValueError as exc:
+                raise InventoryClassificationError(f"invalid snapshot import metadata: {exc}") from exc
         key = entry["path"].casefold()
         if key in result:
             raise InventoryClassificationError(f"duplicate classification: {entry['path']}")

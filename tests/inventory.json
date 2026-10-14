@@ -3054,6 +3054,51 @@
       "expected_skips": []
     },
     {
+      "path": "tests/test_review_lifecycle.py",
+      "workstream": "core",
+      "dependency_class": "stdlib",
+      "suite": "management",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source",
+        "local-git"
+      ],
+      "collector": "unittest",
+      "reason": "Reviewer-requested negative/positive controls using fresh synthetic Git repositories or constant-only snapshot packages; no original ARC fitting, model, provider or authentic input use.",
+      "expected_skips": []
+    },
+    {
+      "path": "tests/test_snapshot_collection.py",
+      "workstream": "core",
+      "dependency_class": "stdlib",
+      "suite": "management",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source",
+        "local-git"
+      ],
+      "collector": "unittest",
+      "reason": "Reviewer-requested negative/positive controls using fresh synthetic Git repositories or constant-only snapshot packages; no original ARC fitting, model, provider or authentic input use.",
+      "expected_skips": []
+    },
+    {
+      "path": "tests/test_source_identity.py",
+      "workstream": "core",
+      "dependency_class": "stdlib",
+      "suite": "management",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source",
+        "local-git"
+      ],
+      "collector": "unittest",
+      "reason": "Reviewer-requested negative/positive controls using fresh synthetic Git repositories or constant-only snapshot packages; no original ARC fitting, model, provider or authentic input use.",
+      "expected_skips": []
+    },
+    {
       "path": "tests/test_stage4_dependency_inventory.py",
       "workstream": "arc-agi-2",
       "dependency_class": "stdlib",
@@ -4601,7 +4646,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr003_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_batched_flow"
     },
     {
       "path": "tools/arc_qwen_rlvr003_20261013/source/experiment_flow/tests/test_flow.py",
@@ -4615,7 +4664,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr003_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_flow"
     },
     {
       "path": "tools/arc_qwen_rlvr003_20261013/source/validation/tests/test_release.py",
@@ -4629,7 +4682,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr003_20261013/source"
+      ],
+      "module_name": "validation.tests.test_release"
     },
     {
       "path": "tools/arc_qwen_rlvr003_20261013/source/validation/tests/test_validation.py",
@@ -4644,7 +4701,11 @@
       ],
       "collector": "unittest",
       "reason": "Mixed adversaries copy actual sealed checkpoints and experiment evidence from historical portfolio63-rl-session sibling (NATIVE), with additional synthetic controls.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr003_20261013/source"
+      ],
+      "module_name": "validation.tests.test_validation"
     },
     {
       "path": "tools/arc_qwen_rlvr003_20261013/support/tests/prove_environment_library.py",
@@ -4935,7 +4996,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr004_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_batched_flow"
     },
     {
       "path": "tools/arc_qwen_rlvr004_20261013/source/experiment_flow/tests/test_flow.py",
@@ -4949,7 +5014,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr004_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_flow"
     },
     {
       "path": "tools/arc_qwen_rlvr004_20261013/source/validation/tests/test_release.py",
@@ -4963,7 +5032,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr004_20261013/source"
+      ],
+      "module_name": "validation.tests.test_release"
     },
     {
       "path": "tools/arc_qwen_rlvr004_20261013/source/validation/tests/test_validation.py",
@@ -4978,7 +5051,11 @@
       ],
       "collector": "unittest",
       "reason": "Mixed adversaries copy actual sealed checkpoints and experiment evidence from historical portfolio63-rl-session sibling (NATIVE), with additional synthetic controls.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr004_20261013/source"
+      ],
+      "module_name": "validation.tests.test_validation"
     },
     {
       "path": "tools/arc_qwen_rlvr004_20261013/support/tests/prove_environment_library.py",
@@ -5141,7 +5218,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261012/source"
+      ],
+      "module_name": "experiment_flow.tests.test_batched_flow"
     },
     {
       "path": "tools/arc_qwen_rlvr_20261012/source/experiment_flow/tests/test_flow.py",
@@ -5155,7 +5236,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261012/source"
+      ],
+      "module_name": "experiment_flow.tests.test_flow"
     },
     {
       "path": "tools/arc_qwen_rlvr_20261012/source/validation/tests/test_release.py",
@@ -5169,7 +5254,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261012/source"
+      ],
+      "module_name": "validation.tests.test_release"
     },
     {
       "path": "tools/arc_qwen_rlvr_20261012/source/validation/tests/test_validation.py",
@@ -5184,7 +5273,11 @@
       ],
       "collector": "unittest",
       "reason": "Mixed adversaries copy actual sealed checkpoints and experiment evidence from historical portfolio63-rl-session sibling (NATIVE), with additional synthetic controls.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261012/source"
+      ],
+      "module_name": "validation.tests.test_validation"
     },
     {
       "path": "tools/arc_qwen_rlvr_20261012/support/tests/prove_environment_library.py",
@@ -5286,7 +5379,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_batched_flow"
     },
     {
       "path": "tools/arc_qwen_rlvr_20261013/source/experiment_flow/tests/test_flow.py",
@@ -5300,7 +5397,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261013/source"
+      ],
+      "module_name": "experiment_flow.tests.test_flow"
     },
     {
       "path": "tools/arc_qwen_rlvr_20261013/source/validation/tests/test_release.py",
@@ -5314,7 +5415,11 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261013/source"
+      ],
+      "module_name": "validation.tests.test_release"
     },
     {
       "path": "tools/arc_qwen_rlvr_20261013/source/validation/tests/test_validation.py",
@@ -5329,7 +5434,11 @@
       ],
       "collector": "unittest",
       "reason": "Mixed adversaries copy actual sealed checkpoints and experiment evidence from historical portfolio63-rl-session sibling (NATIVE), with additional synthetic controls.",
-      "expected_skips": []
+      "expected_skips": [],
+      "import_roots": [
+        "tools/arc_qwen_rlvr_20261013/source"
+      ],
+      "module_name": "validation.tests.test_validation"
     },
     {
       "path": "tools/arc_qwen_rlvr_20261013/support/tests/prove_environment_library.py",

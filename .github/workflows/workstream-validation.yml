@@ -36,7 +36,7 @@ jobs:
       - run: python -m pip install -r tests/requirements-public.txt
       - run: python tools/dev.py check
       - run: python tools/dev.py render --check
-      - run: python tools/dev.py verify --suite ${{ matrix.suite }} --output .irisx/core/ci/${{ matrix.suite }}
+      - run: python tools/dev.py verify --require-committed --suite ${{ matrix.suite }} --output .irisx/core/ci/${{ matrix.suite }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -69,6 +69,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      - name: Original ARC audit deferred by bounded repair scope
+        if: github.head_ref == 'fix/workstream-review-r1-r4-20261014' || github.ref_name == 'fix/workstream-review-r1-r4-20261014'
+        run: python -c "raise SystemExit('BLOCKED by owner repair scope; original ARC audit was not executed. This is not a passing audit.')"
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -77,7 +80,7 @@ jobs:
         with:
           python-version: "3.14"
       - run: python -m pip install -r tests/requirements-audit.txt
-      - run: python tools/dev.py verify --suite arc-unit-audit --output .irisx/arc-agi-2/ci/public-audit
+      - run: python tools/dev.py verify --require-committed --suite arc-unit-audit --output .irisx/arc-agi-2/ci/public-audit
       - uses: actions/upload-artifact@v4
         if: always()
         with:

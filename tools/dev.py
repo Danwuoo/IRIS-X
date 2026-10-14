@@ -22,14 +22,16 @@ def main(argv=None):
     verify = commands.add_parser("verify")
     verify.add_argument("--suite", required=True)
     verify.add_argument("--output", type=Path)
+    verify.add_argument("--require-committed", action="store_true", help="refuse non-attestable development source")
     args = parser.parse_args(argv)
     try:
         if args.command == "verify":
             from suite_runner import run_suite
             output = args.output or ROOT / f".irisx/core/verification/{args.suite}/{time.time_ns()}"
-            report = run_suite(ROOT, args.suite, output.absolute())
+            report = run_suite(ROOT, args.suite, output.absolute(), require_committed=args.require_committed)
             print(f"{args.suite}: {report['status']}; tests={report['tests']} failures={report['failures']} errors={report['errors']} skips={report['skips']} blocked={report['blocked']}")
             print(output / "report.json")
+            print(f"evidence: {report.get('evidence_kind', 'development')}; attestable={report.get('attestable', False)}; target_commit={report.get('target_commit')}")
             return report["exit_code"]
         if args.command == "status":
             print(render_board(ROOT), end="")

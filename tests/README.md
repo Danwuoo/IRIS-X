@@ -77,6 +77,29 @@ parameter updates occurred during developer tests; WSF-04 records the scope
 failure and the new barrier, and does not retroactively label earlier execution
 training-free. No model experiment, provider run or new scientific score follows.
 
+## WSF-R1–R4 corrective verification
+
+For commit-bound acceptance use `python tools/dev.py verify --require-committed
+--suite <suite> --output .irisx/core/<task>/<new-attempt>`. A clean source runs
+from raw committed Git blobs in an isolated local snapshot. Inventory, runner
+and whole-source manifest identities accompany both parent and module reports;
+caller/snapshot changes invalidate attestation. No remote source fetch or Git
+checkout filter/hook is used. Normal dirty iteration remains available without
+the flag, explicitly `evidence_kind=development`, `attestable=false`, with null
+`target_commit` and separate `head_commit`; it cannot pass an acceptance gate.
+
+Tool snapshot entries declare `import_roots` and `module_name` for their single
+owning source root. Each file gets a fresh isolated process. The gate reads
+the tested commit's inventory Git object to derive mandatory modules and OS skip
+policy; report-selected paths do not define completeness. Missing target Git
+objects, source binding, required modules or valid skip records fail closed.
+
+The owner-authorized corrective branch defers the original ARC audit and legacy
+aggregate before execution. Their CI jobs remain explicit non-success BLOCKED
+steps, while their original commands and earlier failures remain retained.
+Public suites and formal distribution continue to run. This does not clear
+historical audit errors, establish full-green CI or broaden no-training safety.
+
 ## Retained failure records
 
 These are historical observations, not results of this PR:

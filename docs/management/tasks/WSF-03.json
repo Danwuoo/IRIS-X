@@ -3,7 +3,7 @@
   "id": "WSF-03",
   "title": "Controlled test suites, visible CI and line-b synthetic engineering flow",
   "workstream": "core",
-  "state": "review_ready",
+  "state": "changes_requested",
   "depends_on": [
     "WSF-02"
   ],
@@ -45,12 +45,19 @@
     "A3-6",
     "A3-7"
   ],
-  "blockers": [],
+  "blockers": [
+    "WSF-R1: independent review requests correction; source https://github.com/Danwuoo/IRIS-X/pull/7#pullrequestreview-5515483789",
+    "WSF-R2: independent review requests correction; source https://github.com/Danwuoo/IRIS-X/pull/7#pullrequestreview-5515483789",
+    "WSF-R3: independent review requests correction; source https://github.com/Danwuoo/IRIS-X/pull/7#pullrequestreview-5515483789",
+    "WSF-R4: independent review requests correction; source https://github.com/Danwuoo/IRIS-X/pull/7#pullrequestreview-5515483789"
+  ],
   "handoff_ref": "WSF-03-handoff",
   "verification_refs": [
     "WSF-03-self-tests",
     "WSF-03-legacy-audit"
   ],
-  "review_refs": [],
+  "review_refs": [
+    "wsf03-independent-review-20261014"
+  ],
   "concurrency_group": null
 }

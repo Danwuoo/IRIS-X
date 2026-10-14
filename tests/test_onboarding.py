@@ -59,7 +59,19 @@ class OnboardingTests(unittest.TestCase):
         return {"format": "irisx.suite-report.v1", "suite": "line-b",
                 "status": "passed", "tests": 2, "failures": 0, "errors": 0, "skips": 0,
                 "expected_skips": 0, "unexpected_skips": 0, "blocked": 0, "exit_code": 0,
-                "target_commit": COMMIT}
+                "target_commit": COMMIT, "attestable": True, "evidence_kind": "commit"}
+
+    def test_handoff_binds_committed_exercise_without_changing_source_base(self) -> None:
+        exercise = "b" * 40
+        report = dict(self.suite_report(), target_commit=exercise)
+        task = onboarding.finish_task(self.task, exercise, report, base_commit=COMMIT)
+        self.assertEqual(task["base_commit"], COMMIT)
+        self.assertEqual(task["implementation_commit"], exercise)
+
+    def test_development_pass_cannot_support_commit_handoff(self) -> None:
+        for change in ({"attestable": False}, {"evidence_kind": "development"}, {"target_commit": None}):
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                onboarding.finish_task(self.task, COMMIT, dict(self.suite_report(), **change))
 
     def test_task_is_synthetic_separate_and_has_no_review_claim(self) -> None:
         self.assertEqual(self.task["workstream"], "line-b")

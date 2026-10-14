@@ -5,9 +5,11 @@ from __future__ import annotations
 import copy
 from contextlib import redirect_stderr, redirect_stdout
 import io
+import hashlib
 import json
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 from unittest import mock
@@ -17,15 +19,61 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 import workstream_gate as gate
 
-COMMIT = "a" * 40
-
-
 class WorkstreamGateTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.tmp = tempfile.TemporaryDirectory(prefix="irisx-gate-test-")
+        self.tmp = tempfile.TemporaryDirectory(prefix="irisx-gate-synthetic-git-")
         self.addCleanup(self.tmp.cleanup)
+        self.repository = Path(self.tmp.name) / "repository"
+        self.repository.mkdir()
         self.root = Path(self.tmp.name) / "reports"
         self.root.mkdir()
+        self.inventory = {"format": "irisx.tests.v1", "suites": {
+            suite: {"public": True} for suite in gate.SUITES}, "entries": []}
+        for suite in gate.SUITES:
+            for suffix in (("a", "b") if suite == "core" else ("a",)):
+                path = "tests/test_synthetic_" + suite.replace("-", "_") + "_" + suffix + ".py"
+                target = self.repository / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("import unittest\nclass Fixture(unittest.TestCase):\n    def test_constant(self): self.assertEqual(2 + 2, 4)\n", encoding="utf-8")
+                entry = {"path": path, "workstream": "core", "dependency_class": "stdlib", "suite": suite,
+                         "role": "test", "dependencies": [], "collector": "unittest",
+                         "reason": "Authored constant-only synthetic gate inventory; fixture reports are not OS execution evidence",
+                         "expected_skips": []}
+                if suite == "core" and suffix == "a":
+                    self.skip_id = "test_synthetic_core_a.Fixture.test_link"
+                    entry["expected_skips"] = [{"test_id": self.skip_id, "reason_contains": "WinError 1314",
+                                                "platforms": ["win32"]}]
+                    with target.open("a", encoding="utf-8") as stream:
+                        stream.write("    def test_link(self): self.assertEqual(1, 1)\n")
+                self.inventory["entries"].append(entry)
+        helper = self.repository / "tests/core_support.py"
+        helper.write_text("# Constant-only helper, never a passing module report.\n", encoding="utf-8")
+        self.inventory["entries"].append({"path": "tests/core_support.py", "workstream": "core",
+            "dependency_class": "stdlib", "suite": "core", "role": "helper", "dependencies": [],
+            "collector": "helper", "reason": "Authored helper-only fixture", "expected_skips": []})
+        self.write(self.repository / "tests/inventory.json", self.inventory)
+        runner = self.repository / "tools/suite_runner.py"
+        runner.parent.mkdir()
+        runner.write_text("# Authored runner identity fixture; never executed.\n", encoding="utf-8")
+        self.git("init", "--quiet")
+        self.git("add", "--", "tests", "tools")
+        self.git("-c", "user.name=IRIS-X synthetic fixture", "-c", "user.email=fixture@example.invalid",
+                 "commit", "--quiet", "-m", "Synthetic gate source identity")
+        self.commit = self.git("rev-parse", "HEAD").strip()
+        rows = []
+        for record in self.git("ls-tree", "-r", "-z", "--full-tree", self.commit).split("\0"):
+            if record:
+                metadata, path = record.split("\t", 1)
+                mode, kind, blob = metadata.split()
+                self.assertEqual(kind, "blob")
+                rows.append({"path": path, "mode": mode, "blob": blob})
+        digest = hashlib.sha256(json.dumps(sorted(rows, key=lambda row: row["path"]), sort_keys=True,
+            separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
+        self.evidence = {"attestable": True, "evidence_kind": "commit", "target_commit": self.commit,
+            "inventory_blob": self.git("rev-parse", self.commit + ":tests/inventory.json").strip(),
+            "runner_blob": self.git("rev-parse", self.commit + ":tools/suite_runner.py").strip(),
+            "source_identity": {"format": "irisx.source-identity.v1", "commit": self.commit,
+                "tree": self.git("rev-parse", self.commit + "^{tree}").strip(), "manifest_sha256": digest}}
         for operating_system in gate.OPERATING_SYSTEMS:
             for python in gate.PYTHONS:
                 for suite in gate.SUITES:
@@ -34,25 +82,41 @@ class WorkstreamGateTests(unittest.TestCase):
                 self.write(self.formal_path(operating_system, python),
                            self.formal_report(operating_system, python))
 
+    def git(self, *arguments) -> str:
+        completed = subprocess.run(["git", *arguments], cwd=self.repository, check=True,
+                                   capture_output=True, text=True, encoding="utf-8")
+        return completed.stdout
+
+    def check(self, commit=None, repository=None):
+        return gate.check_matrix(self.root, commit or self.commit,
+                                 repository_root=repository or self.repository)
+
     def public_path(self, suite: str = "core", operating_system: str = "ubuntu-latest", python: str = "3.11") -> Path:
         return self.root / f"public-{suite}-{operating_system}-{python}/report.json"
 
     def formal_path(self, operating_system: str = "ubuntu-latest", python: str = "3.11") -> Path:
         return self.root / f"formal-{operating_system}-{python}/report.json"
 
-    @staticmethod
-    def public_report(suite: str, operating_system: str, python: str) -> dict:
+    def public_report(self, suite: str, operating_system: str, python: str) -> dict:
         summary = {"format": "irisx.suite-report.v1", "suite": suite, "status": "passed",
-                   "tests": 1, "failures": 0, "errors": 0, "skips": 0, "expected_skips": 0,
+                   "tests": 0, "failures": 0, "errors": 0, "skips": 0, "expected_skips": 0,
                    "unexpected_skips": 0, "blocked": 0, "exit_code": 0}
-        child = dict(summary, path="tests/test_synthetic.py", collection_errors=0, collection_messages=[])
-        return dict(summary, target_commit=COMMIT, python=python + ".99 synthetic fixture",
-                    platform="Windows-11-fixture" if operating_system == "windows-latest" else "Linux-6-fixture",
-                    selected_paths=[child["path"]], modules=[child])
+        summary.update(copy.deepcopy(self.evidence))
+        modules = []
+        for entry in self.inventory["entries"]:
+            if entry["suite"] == suite and entry["role"] != "helper":
+                child = copy.deepcopy(summary)
+                child.update(path=entry["path"], tests=2 if entry["path"].endswith("core_a.py") else 1,
+                             collection_errors=0, collection_messages=[], skip_records=[])
+                modules.append(child)
+        summary.update(tests=sum(module["tests"] for module in modules),
+            python=python + ".99 synthetic fixture",
+            platform="Windows-11-fixture" if operating_system == "windows-latest" else "Linux-6-fixture",
+            selected_paths=[child["path"] for child in modules], modules=modules)
+        return summary
 
-    @staticmethod
-    def formal_report(operating_system: str, python: str) -> dict:
-        return {"schema": "irisx/distribution-self-check-v1", "status": "passed", "target_commit": COMMIT,
+    def formal_report(self, operating_system: str, python: str) -> dict:
+        return {**copy.deepcopy(self.evidence), "schema": "irisx/distribution-self-check-v1", "status": "passed", "target_commit": self.commit,
                 "python": python + ".99 synthetic fixture",
                 "platform": "Windows-11-fixture" if operating_system == "windows-latest" else "Linux-6-fixture",
                 "wheels": [{"sha256": "b" * 64, "record_verified": True, "members": 42},
@@ -82,13 +146,13 @@ class WorkstreamGateTests(unittest.TestCase):
         changed = copy.deepcopy(original)
         mutate(changed)
         self.write(path, changed)
-        self.assertTrue(gate.check_matrix(self.root, COMMIT))
+        self.assertTrue(self.check())
         self.write(path, original)
 
     def test_complete_28_public_and_four_formal_reports_pass_read_only(self) -> None:
         before = {path.relative_to(self.root): path.read_bytes() for path in self.root.rglob("*.json")}
         self.assertEqual(len(before), 32)
-        self.assertEqual(gate.check_matrix(self.root, COMMIT), [])
+        self.assertEqual(self.check(), [])
         self.assertEqual(before, {path.relative_to(self.root): path.read_bytes() for path in self.root.rglob("*.json")})
 
     def test_missing_public_or_formal_report_is_rejected(self) -> None:
@@ -96,7 +160,7 @@ class WorkstreamGateTests(unittest.TestCase):
             with self.subTest(path=path):
                 original = path.read_bytes()
                 path.unlink()
-                self.assertTrue(gate.check_matrix(self.root, COMMIT))
+                self.assertTrue(self.check())
                 path.write_bytes(original)
 
     def test_target_commit_mismatch_is_rejected_for_public_and_formal(self) -> None:
@@ -167,24 +231,152 @@ class WorkstreamGateTests(unittest.TestCase):
         for invalid in (None, [], "invalid"):
             with self.subTest(invalid=invalid):
                 self.write(path, invalid)
-                self.assertTrue(gate.check_matrix(self.root, COMMIT))
+                self.assertTrue(self.check())
         path.write_text('{"status":"passed", "status":"failed"}\n', encoding="utf-8")
-        self.assertTrue(gate.check_matrix(self.root, COMMIT))
+        self.assertTrue(self.check())
         path.write_bytes(original)
 
     def test_main_requires_successful_jobs_as_well_as_complete_reports(self) -> None:
         needs = {"public-suites": {"result": "success"}, "formal-distribution": {"result": "success"}}
+        arguments = ["--reports", str(self.root), "--repository-root", str(self.repository)]
         with mock.patch.dict(gate.os.environ, {"WORKSTREAM_NEEDS": json.dumps(needs)}), \
-             mock.patch.object(gate.subprocess, "check_output", return_value=COMMIT + "\n"), \
              redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
-            self.assertEqual(gate.main(["--reports", str(self.root)]), 0)
+            self.assertEqual(gate.main(arguments), 0)
         for result in ("cancelled", "failure", "skipped", None):
             with self.subTest(result=result):
                 needs["public-suites"]["result"] = result
                 with mock.patch.dict(gate.os.environ, {"WORKSTREAM_NEEDS": json.dumps(needs)}), \
-                     mock.patch.object(gate.subprocess, "check_output", return_value=COMMIT + "\n"), \
                      redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
-                    self.assertEqual(gate.main(["--reports", str(self.root)]), 1)
+                    self.assertEqual(gate.main(arguments), 1)
+
+    @staticmethod
+    def recalculate(report):
+        for field in gate.COUNTS:
+            report[field] = sum(module[field] for module in report["modules"])
+
+    def test_consistent_omission_of_module_selection_and_counts_is_rejected(self):
+        def omit(report):
+            report["modules"].pop()
+            report["selected_paths"].pop()
+            self.recalculate(report)
+        self.assert_rejected(self.public_path(), omit)
+
+    def test_substituted_extra_duplicate_and_reordered_modules_are_rejected(self):
+        def replace(report):
+            report["modules"][1]["path"] = "tests/substituted.py"
+            report["selected_paths"][1] = "tests/substituted.py"
+        def extra(report):
+            module = copy.deepcopy(report["modules"][0])
+            module["path"] = "tests/extra.py"
+            report["modules"].append(module)
+            report["selected_paths"].append(module["path"])
+            self.recalculate(report)
+        def duplicate(report):
+            report["modules"].append(copy.deepcopy(report["modules"][0]))
+            report["selected_paths"].append(report["modules"][0]["path"])
+            self.recalculate(report)
+        def reorder(report):
+            report["modules"].reverse()
+            report["selected_paths"].reverse()
+        for mutate in (replace, extra, duplicate, reorder):
+            with self.subTest(mutate=mutate.__name__):
+                self.assert_rejected(self.public_path(), mutate)
+
+    def test_helper_module_cannot_replace_required_test(self):
+        def substitute(report):
+            report["modules"][1]["path"] = "tests/core_support.py"
+            report["selected_paths"][1] = "tests/core_support.py"
+        self.assert_rejected(self.public_path(), substitute)
+
+    def test_report_binding_mismatch_or_development_evidence_is_rejected(self):
+        changes = ({"attestable": False}, {"attestable": 1}, {"evidence_kind": "development"},
+                   {"inventory_blob": "c" * 40}, {"runner_blob": "d" * 40})
+        for change in changes:
+            with self.subTest(change=change):
+                self.assert_rejected(self.public_path(), lambda report: report.update(change))
+                self.assert_rejected(self.public_path(), lambda report: report["modules"][0].update(change))
+                self.assert_rejected(self.formal_path(), lambda report: report.update(change))
+        for field in ("tree", "commit", "manifest_sha256"):
+            with self.subTest(field=field):
+                self.assert_rejected(self.public_path(), lambda report: report["source_identity"].update({field: "f" * 64}))
+                self.assert_rejected(self.public_path(), lambda report: report["modules"][0]["source_identity"].update({field: "f" * 64}))
+                self.assert_rejected(self.formal_path(), lambda report: report["source_identity"].update({field: "f" * 64}))
+
+    def test_another_real_inventory_and_runner_blob_cannot_be_mixed(self):
+        changed = copy.deepcopy(self.inventory)
+        changed["entries"][0]["reason"] += " Different synthetic committed inventory."
+        self.write(self.repository / "tests/inventory.json", changed)
+        (self.repository / "tools/suite_runner.py").write_text("# Different fixture runner identity.\n", encoding="utf-8")
+        self.git("add", "--", "tests/inventory.json", "tools/suite_runner.py")
+        self.git("-c", "user.name=IRIS-X synthetic fixture", "-c", "user.email=fixture@example.invalid",
+                 "commit", "--quiet", "-m", "Different synthetic authoritative inventory")
+        other = self.git("rev-parse", "HEAD").strip()
+        inventory_blob = self.git("rev-parse", other + ":tests/inventory.json").strip()
+        runner_blob = self.git("rev-parse", other + ":tools/suite_runner.py").strip()
+        self.assert_rejected(self.public_path(), lambda report: report.update(inventory_blob=inventory_blob))
+        self.assert_rejected(self.public_path(), lambda report: report["modules"][0].update(inventory_blob=inventory_blob))
+        self.assert_rejected(self.public_path(), lambda report: report["modules"][0].update(runner_blob=runner_blob))
+
+    def test_target_git_objects_override_dirty_checkout_inventory_and_runner(self):
+        self.write(self.repository / "tests/inventory.json", {"unrelated": "dirty bytes are not authoritative"})
+        (self.repository / "tools/suite_runner.py").write_text("# Dirty fixture runner.\n", encoding="utf-8")
+        self.assertEqual(self.check(), [])
+
+    def test_missing_git_objects_or_non_git_source_fails_closed(self):
+        self.assertTrue(self.check(commit="0" * 40))
+        self.assertTrue(self.check(commit="not-a-commit"))
+        self.assertTrue(self.check(repository=self.root))
+
+    def add_allowed_skip(self, report):
+        module = report["modules"][0]
+        module.update(skips=1, expected_skips=1,
+                      skip_records=[{"test_id": self.skip_id, "reason": "Synthetic Windows WinError 1314 privilege condition"}])
+        self.recalculate(report)
+
+    def test_actual_skip_records_are_allowed_only_by_target_inventory_os(self):
+        windows = self.public_path(operating_system="windows-latest")
+        report = self.read(windows)
+        self.add_allowed_skip(report)
+        self.write(windows, report)
+        self.assertEqual(self.check(), [])
+        self.assert_rejected(self.public_path(), self.add_allowed_skip)
+
+    def test_skip_forgery_missing_duplicate_wrong_id_reason_or_counts_is_rejected(self):
+        path = self.public_path(operating_system="windows-latest")
+        original = self.read(path)
+        def changes(report, kind):
+            self.add_allowed_skip(report)
+            module = report["modules"][0]
+            if kind == "missing": module.pop("skip_records")
+            elif kind == "id": module["skip_records"][0]["test_id"] = "fabricated.case"
+            elif kind == "reason": module["skip_records"][0]["reason"] = "fabricated reason"
+            elif kind == "claimed": module["skip_records"][0]["expected"] = True
+            elif kind == "duplicate":
+                module["skip_records"].append(copy.deepcopy(module["skip_records"][0]))
+                module.update(skips=2, expected_skips=2)
+                self.recalculate(report)
+            elif kind == "count":
+                module.update(skips=2, expected_skips=2)
+                self.recalculate(report)
+        for kind in ("missing", "id", "reason", "claimed", "duplicate", "count"):
+            with self.subTest(kind=kind):
+                self.assert_rejected(path, lambda report: changes(report, kind))
+        self.assertEqual(self.read(path), original)
+
+    def test_target_inventory_duplicates_invalid_json_and_missing_module_are_rejected(self):
+        cases = ("duplicate", "json", "module")
+        for kind in cases:
+            with self.subTest(kind=kind):
+                changed = copy.deepcopy(self.inventory)
+                if kind == "duplicate": changed["entries"].append(copy.deepcopy(changed["entries"][0]))
+                elif kind == "module": changed["entries"][0]["path"] = "tests/unavailable.py"
+                if kind == "json":
+                    (self.repository / "tests/inventory.json").write_text('{"format":"a","format":"b"}', encoding="utf-8")
+                else: self.write(self.repository / "tests/inventory.json", changed)
+                self.git("add", "--", "tests/inventory.json")
+                self.git("-c", "user.name=IRIS-X synthetic fixture", "-c", "user.email=fixture@example.invalid",
+                         "commit", "--quiet", "-m", "Invalid synthetic inventory " + kind)
+                self.assertTrue(self.check(commit=self.git("rev-parse", "HEAD").strip()))
 
 
 if __name__ == "__main__":

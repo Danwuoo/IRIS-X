@@ -83,6 +83,9 @@ class SuiteRunnerTests(unittest.TestCase):
         output = self.root / ".irisx/core/suite-test" / f"attempt-{self.attempt:03d}"
         report = runner.run_suite(self.root, suite, output)
         self.assertEqual(json.loads((output / "report.json").read_text(encoding="utf-8")), report)
+        self.assertFalse(report["attestable"], "a synthetic no-Git root cannot attest a commit")
+        self.assertEqual(report["evidence_kind"], "development")
+        self.assertIsNone(report["target_commit"])
         return report
 
     def assert_failed(self, report: dict) -> None:

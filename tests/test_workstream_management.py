@@ -8,6 +8,7 @@ import importlib.util
 import io
 import json
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -109,13 +110,26 @@ class ManagementTests(unittest.TestCase):
         self.write_text("docs/managed/HANDOFF.md", "# Developer handoff\n\nSelf-review only.\n")
 
     def prepare_verified(self) -> dict:
+        # A synthetic positive is bound to an actual local Git commit that
+        # contains the task controls and code. A 40-character string alone is
+        # not review evidence.
+        self.write_text("src/irisx/example.py", "VALUE = 'synthetic source'\n")
+        self.write_text("tests/test_example.py", "# Synthetic source; never collected here.\n")
+        self.flush()
+        for arguments in (["init", "--quiet"], ["add", "."],
+                          ["-c", "user.name=Synthetic Fixture", "-c", "user.email=fixture@example.invalid",
+                           "-c", "commit.gpgsign=false", "commit", "--quiet", "-m", "Synthetic code checkpoint"]):
+            subprocess.run(["git", *arguments], cwd=self.root, check=True, capture_output=True)
+        commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=self.root, check=True,
+                                capture_output=True, text=True).stdout.strip()
         self.prepare_review_ready()
         task = self.tasks["TASK-A.json"]
-        task.update(state="verified", review_refs=["review"])
+        task.update(state="verified", implementation_commit=commit, review_refs=["review"])
         self.catalog["documents"].append(self.document("review", "docs/managed/REVIEW.json", "evidence"))
-        review = {"format": "irisx.review.v1", "target_commit": "a" * 40,
+        review = {"format": "irisx.review.v1", "target_commit": commit,
                   "reviewer_role": "independent", "outcome": "verified", "limitations": [],
-                  "source": "Synthetic independent review fixture; not actual acceptance"}
+                  "source": "Synthetic independent review fixture; not actual acceptance",
+                  "scope_paths": [*task["scope_paths"], "docs/managed/PLAN.md"]}
         self.write_json("docs/managed/REVIEW.json", review)
         return review
 
@@ -328,11 +342,26 @@ class ManagementTests(unittest.TestCase):
         board = management.render_board(self.root)
         self.assertIn("Linux-only check remains unexecuted", board)
 
+    def test_fake_sha_without_git_is_not_independent_acceptance(self) -> None:
+        self.prepare_review_ready()
+        task = self.tasks["TASK-A.json"]
+        task.update(state="verified", review_refs=["review"])
+        self.catalog["documents"].append(self.document("review", "docs/managed/REVIEW.json", "evidence"))
+        self.write_json("docs/managed/REVIEW.json", {
+            "format": "irisx.review.v1", "target_commit": "a" * 40,
+            "reviewer_role": "independent", "outcome": "verified",
+            "limitations": [], "source": "Synthetic fixture; no actual review",
+            "scope_paths": [*task["scope_paths"], "docs/managed/PLAN.md"],
+        })
+        self.assert_rejected("review", "unbound")
+        self.assertEqual(management.review_status(self.root)["TASK-A"]["historical_verified"], [])
+
     def test_review_provenance_and_limitations_require_concrete_types(self) -> None:
         review = self.prepare_verified()
         invalid = [
             {"source": True}, {"source": []}, {"source": "   "},
             {"limitations": "AB"}, {"limitations": {}}, {"limitations": [None]},
+            {"outcome": []},
             {"outcome": "verified_with_limits", "limitations": []},
         ]
         for change in invalid:

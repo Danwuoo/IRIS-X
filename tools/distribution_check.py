@@ -121,7 +121,8 @@ def check(output: Path, root: Path = ROOT) -> dict:
     output.mkdir(parents=True)
     report = {"schema": "irisx/distribution-self-check-v1", "status": "failed", "python": sys.version,
               "platform": platform.platform(), "commands": [], "scope": "synthetic engineering only", "independent_review": "pending"}
-    report["target_commit"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+    report.update(target_commit=None, attestable=False, evidence_kind="development")
+    report["head_commit"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     environment = os.environ.copy()
     environment.pop("PYTHONPATH", None)
     environment.update({"PYTHONHASHSEED": "0", "PIP_NO_INDEX": "1", "PIP_DISABLE_PIP_VERSION_CHECK": "1", "PYTHONDONTWRITEBYTECODE": "1"})
@@ -136,6 +137,15 @@ def check(output: Path, root: Path = ROOT) -> dict:
         return result.stdout
 
     try:
+        # Formal evidence uses the same committed raw-Git source as suite reports;
+        # neither staged/dirty inputs nor caller edits can supply wheel bytes.
+        try:
+            from .source_identity import create_snapshot
+        except ImportError:
+            from source_identity import create_snapshot
+        source_snapshot = create_snapshot(root, output / "source", require_committed=True)
+        root = source_snapshot.root
+        report.update(source_snapshot.binding)
         stages = [output / "stage-a", output / "stage-b"]
         for stage in stages:
             stage_sources(root, stage)
@@ -193,6 +203,10 @@ def check(output: Path, root: Path = ROOT) -> dict:
             run([python, "-I", "-B", "-m", "irisx", "admission", "validate", str(external / "public-admission/trials/p2-admission/admission.json")], external)
             run([python, "-I", "-B", "-m", "irisx", "package", "verify", str(external / "missing")], external, expected=2)
             report["synthetic_reference_flow"] = "passed"
+        source_changes = source_snapshot.changes()
+        if source_changes:
+            report.update(target_commit=None, attestable=False, evidence_kind="development", source_changes=source_changes)
+            raise ValueError("source changed during formal validation")
         report["status"] = "passed"
     except Exception as error:
         report["error"] = f"{type(error).__name__}: {error}"
