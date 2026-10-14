@@ -1,10 +1,10 @@
 # ARC-AGI-2 開發進度管理
 
-更新：2026-10-14 16:50 UTC；本頁為持續更新的唯一進度管理文件。
+更新：2026-10-14 16:55 UTC；本頁為持續更新的唯一進度管理文件。
 工作分支：`feat/arc2-sft-rl-continuation-20261014`。
 研究基準：[`cc14bd1a79aac1fe6135017c9e09d4834300675d`](https://github.com/Danwuoo/IRIS-X/tree/cc14bd1a79aac1fe6135017c9e09d4834300675d)。
 
-**Stage 1 的離線支援實作與最終 CPU 驗收已完成，正在核對發布；真實 A/B/C 實驗證據仍未完成。**
+**Stage 1 的離線支援實作、最終 CPU 驗收與來源發布已完成；真實 A/B/C 實驗證據仍未完成。**
 已發布來源與 CPU 元件驗證不能替代 Qwen／LoRA replay、GPU、完整比較或 ARC 分數。
 本環境只進行離線開發；真實訓練、執行與提交仍由本地端依其來源、材料與權限處理。
 
@@ -36,6 +36,8 @@
 | E7 | 最終獨立 focused：Stage0 148＋AF3 25＋Stage1 60＝233 normal／233 `-O`，六次package discovery全數通過、無skip，測前後執行碼hash不變 | [本輪獨立審查](stage1-independent-review.md)；新60項為audit25、streaming21、CLI14，僅CPU與合成producer-schema；含原producer／consumer64 trajectories互通、真process timeout／SIGTERM／cleanup |
 | E8 | 本輪exact66基線與最終來源各重跑完整suite，均1,583 tests／2 failures／35 errors／74 skips；37個failure／error IDs及skip-reason計數一致 | [本輪獨立審查](stage1-independent-review.md)；無新增失敗，但整體仍失敗。新工具測試由E7獨立discovery覆蓋，不能把既有root suite數目當新工具覆蓋 |
 | E9 | [逐軌跡API與本地shadow規格](../../tools/arc2_abc_continuation_20261014/README.md#local-shadow-wiring-specification)完成來源→adapter→owner映射、同A／同batch／同unchanged-policy對照與全成本契約 | 實際介面仍CPU-only；未接CUDA模型、沒有真實歷史audit。安全reader16MiB不變，另做88MiB超限正常／`-O`拒絕測試，不能聲稱支援全部可能audit大小 |
+| E10 | 本輪程式已發布 `8b9ca9cf915969e15339d99bc090762f349f1572`，tree `cedac0a7486685c641506335930d7f6ab429b514`，15檔遠端bytes全部一致；run008遠端仍`cc14bd1a` | [commit](https://github.com/Danwuoo/IRIS-X/commit/8b9ca9cf915969e15339d99bc090762f349f1572)；本次來源／測試／審查／交接皆已保存，核對當時本地HEAD對齊且工作區乾淨；以下文件收據更新不改執行碼 |
+| E11 | E10精確CI run38602023452已結束failure：1 job failure、3 cancelled | [CI](https://github.com/Danwuoo/IRIS-X/actions/runs/38602023452)；實際job115983374504仍為同6項README缺詞；unit／packaging skipped。這是本輪實際讀取，非沿用E3／E6；不能稱CI綠燈 |
 
 發布歷史仍保留：15:44／15:46 UTC 的 tree 發布嘗試回傳取消，15:54 重試取得 tree；
 16:06 寫入前遠端研究分支仍是 `0d4d19c`。E2 才是後續 commit／branch／tree 的核對，
@@ -63,14 +65,15 @@ PUBLIC120 tasks／167 queries 不變。不得加抽樣、換 parent、改分母�
 | S1-O3 | 獨立 opt-in audit-loss CLI 與既有安全 reader 接線 | 完成；E7；CLI14 normal／14 `-O`，語意拒絕、真process timeout／SIGTERM／cleanup通過 | S1-O1、S0 安全 I/O | 原 prepare／analyze 仍只需標準函式庫；顯式檔案與獨立 hash；超限拒絕、無搜尋、無靜默放寬，完成 CLI／timeout／cleanup 測試 |
 | S1-O4 | 離線整合、失敗測試與獨立審查 | 完成（有限離線範圍）；E7、E8；233／233及paired aggregate精確分類，整體suite仍失敗 | S1-O1～O3 的最終 bytes | normal／`-O` 與 CPU integration 分列；驗證 frozen source 未變、無提前 commit、graph 釋放；列實測 IDs、限制與 reviewer 結論 |
 | S1-O5 | source-bound、預設不執行的本地 shadow 接線規格 | 完成（規格）；E9；[實際介面與owner邊界](../../tools/arc2_abc_continuation_20261014/README.md#local-shadow-wiring-specification)已獨立審查，模型接線未執行 | S1-O1～O4 | 以同一 A／完整 training batch／unchanged-policy replay 定義 loss、LoRA gradient 與全成本對照；本地需求、缺件與原 admission 逐項可核對 |
-| S1-O6 | 來源保存與精確交付核對 | 進行中；E6已保存文件，E7～E9已驗收；本輪程式與審查待commit／遠端readback | S1-O4、S1-O5 | 依已授權發布流程核對新 commit／tree／branch 與變動檔案；另讀該 SHA 的 CI，不沿用 E3；不改 main、run008、PR #9 |
+| S1-O6 | 來源保存與精確交付核對 | 完成（程式保存與核對）；E10已核對15檔；E11精確CI失敗已分類 | S1-O4、S1-O5 | 依已授權發布流程核對新 commit／tree／branch 與變動檔案；另讀該 SHA 的 CI，不沿用 E3；不改 main、run008、PR #9 |
 | S1-E1 | 本地真實來源、training audits 與模型材料接收 | 受阻／本環境未取得真實材料 | S1-O5、本地接收端來源與材料 | training-owned provenance、原 records、排除與實際檔案大小皆可核對；缺資料不補造，不從 compact report 還原 trajectories |
 | S1-E2 | 真實同模型 replay／LoRA 梯度／owner 狀態驗收 | 待開始／未執行 | S1-E1、本地完整原 admission | 通過第六節全部模型、數值、rollback、save/reload、closure 與資源要求；CPU logp 梯度不能替代 |
 | S1-E3 | 同 session 既有 A/B/C 比較 | 待開始／未驗證 | S1-E2、原 batch 與時鐘契約 | 原 reward、replay、更新、checkpoint、全 B/C wall、固定選擇與 closure 證據完整；未完成與 zero-signal 分開 |
 | S1-E4 | sealed 評分與研究判讀 | 待開始／未驗證 | S1-E3、隔離 evaluator、原 scorer | 完整 PUBLIC120／167 與相同案例 gain／loss；B 同時對 A、等成本 C 判讀；缺評分保持未知，不 promotion |
 
-**現在的下一步：** 完成 S1-O6 的最終來源、審查、文件保存與遠端readback；
-CI依該精確SHA另查，不沿用早期checkpoint。S1-O1～O5只完成有限離線工具及接線規格。本地 E1～E4 的
+**現在的下一步：** 本地接收端依S1-E1核對真實材料、來源與檔案大小，
+再進入E2的原模型驗收。本輪離線交付收據已補齊，程式bytes與精確CI均已核對。
+S1-O1～O6只完成有限離線工具、接線規格與來源保存。本地 E1～E4 的
 執行不由這份進度表啟動；取得接收端真實證據後才更新實驗狀態。S1-E4 完整前，不把
 Stage 1 標成研究完成，也不提前轉向 Stage 2／TTT／Agent 新方法。
 
@@ -195,3 +198,6 @@ operation／batch期限限制。若作另立診斷，不可把它的成本或結
 
 - 2026-10-14 16:50 UTC：最終233 normal／233 `-O`及本輪paired aggregate核對完成；
   E7～E9更新，S1-O1～O5驗收範圍明列為離線工具／規格，S1-O6仍待本次發布。
+
+- 2026-10-14 16:55 UTC：E10已核對commit／tree／15檔bytes及未改run008；
+  E11已讀取精確CI終態與實際失敗log，仍為原6項README缺詞；真正模型與完整A/B/C結果保持未驗證。
