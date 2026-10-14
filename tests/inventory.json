@@ -33,9 +33,41 @@
     },
     "operational": {
       "public": false
+    },
+    "arc-training": {
+      "public": false
     }
   },
   "entries": [
+    {
+      "path": "tests/arc_agi_2/__init__.py",
+      "workstream": "arc-agi-2",
+      "dependency_class": "stdlib",
+      "suite": "arc-unit",
+      "role": "helper",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source"
+      ],
+      "collector": "helper",
+      "reason": "Fresh synthetic inputs; static dependency directions, controlled CLI predecessor comparison, or management harness boundaries. No authentic inputs, provider or parameter updates.",
+      "expected_skips": []
+    },
+    {
+      "path": "tests/arc_agi_2/test_cli_boundary.py",
+      "workstream": "arc-agi-2",
+      "dependency_class": "stdlib",
+      "suite": "arc-unit",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source",
+        "fixed-predecessor-git-object:756cd560f8d61256ed35e12c3c3637ec456c6141"
+      ],
+      "collector": "unittest",
+      "reason": "Fresh synthetic inputs; static dependency directions, controlled CLI predecessor comparison, or management harness boundaries. No authentic inputs, provider or parameter updates.",
+      "expected_skips": []
+    },
     {
       "path": "tests/arc_support.py",
       "workstream": "arc-agi-2",
@@ -48,6 +80,32 @@
       ],
       "collector": "helper",
       "reason": "Helper/child/fixture module; never counted as an independent passing test module. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
+      "expected_skips": []
+    },
+    {
+      "path": "tests/line_b/__init__.py",
+      "workstream": "line-b",
+      "dependency_class": "stdlib",
+      "suite": "line-b",
+      "role": "helper",
+      "dependencies": [
+        "python>=3.11"
+      ],
+      "collector": "helper",
+      "reason": "New synthetic engineering-only label fixture; shared contracts/engine/package; no ARC inputs",
+      "expected_skips": []
+    },
+    {
+      "path": "tests/line_b/test_flow.py",
+      "workstream": "line-b",
+      "dependency_class": "stdlib",
+      "suite": "line-b",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11"
+      ],
+      "collector": "unittest",
+      "reason": "New synthetic engineering-only label fixture; shared contracts/engine/package; no ARC inputs",
       "expected_skips": []
     },
     {
@@ -1046,16 +1104,17 @@
     {
       "path": "tests/test_arc_nvarc.py",
       "workstream": "arc-agi-2",
-      "dependency_class": "native",
-      "suite": "arc-native",
+      "dependency_class": "training",
+      "suite": "arc-training",
       "role": "test",
       "dependencies": [
         "python>=3.11",
         "repository-source",
-        "torch"
+        "torch",
+        "owner-training-authorization"
       ],
       "collector": "unittest",
-      "reason": "Direct optional ML/native test imports or operations: torch. Current owner no-training scope does not authorize executing neural training tests; missing dependencies are blocked, not passed.",
+      "reason": "Calls the original pure-Python tiny_train or fixture_e2e analytic SGD path; owner explicitly forbids training. Protected before import in scoped runner, explicitly blocked with retained test IDs/counts in aggregate. This is a public test requiring training scope, not a private-fixture classification.",
       "expected_skips": []
     },
     {
@@ -1117,15 +1176,16 @@
     {
       "path": "tests/test_arc_nvarc_boundaries.py",
       "workstream": "arc-agi-2",
-      "dependency_class": "stdlib",
-      "suite": "arc-unit",
+      "dependency_class": "training",
+      "suite": "arc-training",
       "role": "test",
       "dependencies": [
         "python>=3.11",
-        "repository-source"
+        "repository-source",
+        "owner-training-authorization"
       ],
       "collector": "unittest",
-      "reason": "Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
+      "reason": "Calls the original pure-Python tiny_train or fixture_e2e analytic SGD path; owner explicitly forbids training. Protected before import in scoped runner, explicitly blocked with retained test IDs/counts in aggregate. This is a public test requiring training scope, not a private-fixture classification.",
       "expected_skips": []
     },
     {
@@ -1367,6 +1427,20 @@
       ]
     },
     {
+      "path": "tests/test_domain_dependencies.py",
+      "workstream": "core",
+      "dependency_class": "stdlib",
+      "suite": "management",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source"
+      ],
+      "collector": "unittest",
+      "reason": "Fresh synthetic inputs; static dependency directions, controlled CLI predecessor comparison, or management harness boundaries. No authentic inputs, provider or parameter updates.",
+      "expected_skips": []
+    },
+    {
       "path": "tests/test_engine.py",
       "workstream": "core",
       "dependency_class": "stdlib",
@@ -1434,6 +1508,20 @@
       ],
       "collector": "unittest",
       "reason": "Public CPU audit (not private/exempt): full static fixture/dependency review or platform/import baseline remains unresolved. Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
+      "expected_skips": []
+    },
+    {
+      "path": "tests/test_no_training.py",
+      "workstream": "core",
+      "dependency_class": "stdlib",
+      "suite": "management",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source"
+      ],
+      "collector": "unittest",
+      "reason": "Fresh synthetic inputs; static dependency directions, controlled CLI predecessor comparison, or management harness boundaries. No authentic inputs, provider or parameter updates.",
       "expected_skips": []
     },
     {
@@ -2865,6 +2953,20 @@
       "expected_skips": []
     },
     {
+      "path": "tests/test_onboarding.py",
+      "workstream": "core",
+      "dependency_class": "stdlib",
+      "suite": "management",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source"
+      ],
+      "collector": "unittest",
+      "reason": "Fresh synthetic inputs; static dependency directions, controlled CLI predecessor comparison, or management harness boundaries. No authentic inputs, provider or parameter updates.",
+      "expected_skips": []
+    },
+    {
       "path": "tests/test_publish_arc_next_offline_quicksave.py",
       "workstream": "arc-agi-2",
       "dependency_class": "small-python",
@@ -2939,6 +3041,19 @@
       "expected_skips": []
     },
     {
+      "path": "tests/test_research_navigation.py",
+      "workstream": "core",
+      "dependency_class": "stdlib",
+      "suite": "management",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11"
+      ],
+      "collector": "unittest",
+      "reason": "New isolated metadata/selection/research-source negative tests; no private inputs",
+      "expected_skips": []
+    },
+    {
       "path": "tests/test_stage4_dependency_inventory.py",
       "workstream": "arc-agi-2",
       "dependency_class": "stdlib",
@@ -2995,6 +3110,19 @@
       "expected_skips": []
     },
     {
+      "path": "tests/test_suite_runner.py",
+      "workstream": "core",
+      "dependency_class": "stdlib",
+      "suite": "management",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11"
+      ],
+      "collector": "unittest",
+      "reason": "New isolated metadata/selection/research-source negative tests; no private inputs",
+      "expected_skips": []
+    },
+    {
       "path": "tests/test_transport.py",
       "workstream": "core",
       "dependency_class": "stdlib",
@@ -3020,6 +3148,19 @@
       ],
       "collector": "unittest",
       "reason": "Static TestCase/function inventory: tests use inline, tracked repository or freshly generated temporary fixtures; no direct authentic private input requirement found. Not an execution or independent verification claim.",
+      "expected_skips": []
+    },
+    {
+      "path": "tests/test_workstream_gate.py",
+      "workstream": "core",
+      "dependency_class": "stdlib",
+      "suite": "management",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11"
+      ],
+      "collector": "unittest",
+      "reason": "Synthetic complete CI matrix report and gate rejection fixtures; no remote job or provider access",
       "expected_skips": []
     },
     {
@@ -5972,71 +6113,6 @@
       ],
       "collector": "unittest",
       "reason": "Successor fixture helpers wrap actual retained owner bytes/final-source/release snapshots; original historical inputs required.",
-      "expected_skips": []
-    },
-    {
-      "path": "tests/test_suite_runner.py",
-      "workstream": "core",
-      "dependency_class": "stdlib",
-      "suite": "management",
-      "role": "test",
-      "dependencies": [
-        "python>=3.11"
-      ],
-      "collector": "unittest",
-      "reason": "New isolated metadata/selection/research-source negative tests; no private inputs",
-      "expected_skips": []
-    },
-    {
-      "path": "tests/test_research_navigation.py",
-      "workstream": "core",
-      "dependency_class": "stdlib",
-      "suite": "management",
-      "role": "test",
-      "dependencies": [
-        "python>=3.11"
-      ],
-      "collector": "unittest",
-      "reason": "New isolated metadata/selection/research-source negative tests; no private inputs",
-      "expected_skips": []
-    },
-    {
-      "path": "tests/line_b/__init__.py",
-      "workstream": "line-b",
-      "dependency_class": "stdlib",
-      "suite": "line-b",
-      "role": "helper",
-      "dependencies": [
-        "python>=3.11"
-      ],
-      "collector": "helper",
-      "reason": "New synthetic engineering-only label fixture; shared contracts/engine/package; no ARC inputs",
-      "expected_skips": []
-    },
-    {
-      "path": "tests/line_b/test_flow.py",
-      "workstream": "line-b",
-      "dependency_class": "stdlib",
-      "suite": "line-b",
-      "role": "test",
-      "dependencies": [
-        "python>=3.11"
-      ],
-      "collector": "unittest",
-      "reason": "New synthetic engineering-only label fixture; shared contracts/engine/package; no ARC inputs",
-      "expected_skips": []
-    },
-    {
-      "path": "tests/test_workstream_gate.py",
-      "workstream": "core",
-      "dependency_class": "stdlib",
-      "suite": "management",
-      "role": "test",
-      "dependencies": [
-        "python>=3.11"
-      ],
-      "collector": "unittest",
-      "reason": "Synthetic complete CI matrix report and gate rejection fixtures; no remote job or provider access",
       "expected_skips": []
     }
   ]

@@ -1,5 +1,12 @@
 # Development
 
+Start with the [generated task board](../management/BOARD.md),
+[management guide](../management/README.md), and selected
+[workstream](../workstreams/README.md). Use `python tools/dev.py context --task
+WSF-04` to find the current plan, scope and handoff. Document/task metadata is
+single-sourced; `python tools/dev.py check` includes static dependency checks.
+The historical procedures below retain their original authority and limits.
+
 IRIS-X uses the lightweight, risk-based workflow adopted by Decision 0010.
 Routine local, offline, reversible work proceeds through
 **Build–Measure–Select** without a new decision record. Owner direction is

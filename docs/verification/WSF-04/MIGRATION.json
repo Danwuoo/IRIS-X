@@ -1,0 +1,612 @@
+{
+  "format": "irisx.arc-migration.v1",
+  "task_id": "WSF-04",
+  "state_source": "docs/management/tasks/WSF-04.json",
+  "base_branch": "refactor/workstream-pr3-validation",
+  "head_branch": "refactor/workstream-pr4-arc-boundary",
+  "base_commit": "756cd560f8d61256ed35e12c3c3637ec456c6141",
+  "target_code_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+  "foundation_commit": "08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059",
+  "fixed_run008_commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+  "review_kind": "developer and implementing subagent self-review",
+  "independent_review": "pending",
+  "scope": "Mutable ARC CLI registration/dispatch only; all original ARC/Kaggle implementations and historical source/notebook/scorer/manifest/review/archive paths remain unchanged.",
+  "rows": [
+    {
+      "old_path": "src/irisx/cli.py:build_parser ARC registration",
+      "target_path": "src/irisx/domains/arc_agi_2/cli.py:register_parser",
+      "action": "move mutable parser registration; keep root build_parser entry",
+      "mutable": true,
+      "reason": "Current owner explicitly authorizes active CLI boundary extraction. PR2 current CLI differs from frozen foundation/run008; no legacy solver implementation is moved.",
+      "consumers": [
+        "src/irisx/__main__.py",
+        "pyproject.toml console irisx.cli:main",
+        "tests/test_cli_import_boundary.py",
+        "tests/test_reference_flow.py",
+        "tests/test_admission.py"
+      ],
+      "path_or_byte_pins": {
+        "foundation_cli_blob": "9870f93591f0afbf9009741953987a61fbae7530",
+        "run008_cli_blob": "9870f93591f0afbf9009741953987a61fbae7530",
+        "stage_base_cli_blob": "771c23b73ae94ae0e18a1ca6eb7d24808a651a7f"
+      },
+      "required_parameters": [
+        "path_type supplied by shared CLI _path; preserve absolute path conversion"
+      ],
+      "tests": [
+        "Compare full parser help/options/tree with predecessor in fresh processes",
+        "Generic help admits parser-only registration while blocking legacy ARC/Kaggle/ML/tool imports",
+        "Normal and optimized import boundary tests",
+        "Installed non-editable wheel root/ARC help"
+      ],
+      "rollback": "Revert only the new unmerged PR4 boundary commit on its own branch; do not reset a published branch or alter historical objects.",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
+      "permitted_change": "parser/dispatch extraction only"
+    },
+    {
+      "old_path": "src/irisx/cli.py:execute ARC branches and local imports",
+      "target_path": "src/irisx/domains/arc_agi_2/cli.py:execute",
+      "action": "move ARC dispatch; shared execute routes selected command",
+      "mutable": true,
+      "reason": "Parser/dispatch glue is the authorized mutable entry; domain facade calls original implementations at their exact paths.",
+      "consumers": [
+        "tests/test_cli_import_boundary.py selected ARC failure path",
+        "CLI source/model/trial/result/package/baseline commands",
+        "tools/distribution_check.py installed CLI"
+      ],
+      "path_or_byte_pins": {
+        "retained_entry_point": "irisx.cli:main",
+        "retained_exports": [
+          "main",
+          "execute",
+          "build_parser",
+          "_path"
+        ],
+        "runtime_artifact_pins": "No manifest or historical source hash rewritten",
+        "stage_base_cli_blob": "771c23b73ae94ae0e18a1ca6eb7d24808a651a7f"
+      },
+      "required_parameters": [
+        "repository_root computed from shared src/irisx/cli.py __file__.parents[2], supplied explicitly",
+        "Do not recompute repository root from deeper domain facade __file__"
+      ],
+      "tests": [
+        "Mock every dispatcher command using synthetic paths/no acquisition",
+        "Assert outbound-build calls receive original repository_root",
+        "Assert root missing/unsupported argument exit2 and selected ARC missing path exit2",
+        "Dependency direction negative tests for reverse/cross-domain/dynamic imports"
+      ],
+      "rollback": "Revert only own PR4 dispatch commit and retain unchanged legacy modules; no provider retry follows.",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
+      "permitted_change": "parser/dispatch extraction only"
+    },
+    {
+      "old_path": "src/irisx/arc_agi2.py",
+      "target_path": "src/irisx/arc_agi2.py",
+      "action": "retain byte-for-byte; explicit facade dependency exception",
+      "mutable": false,
+      "reason": "Legacy runtime/source/consumer identities and authentic reconstruction inputs cannot be requalified by this CPU facade change.",
+      "consumers": [
+        "tests/test_arc_agi2.py",
+        "arc_trial_002.py"
+      ],
+      "path_or_byte_pins": {
+        "foundation_blob": "a15f79e31bb60ae981e094a27d3e204d2abbc20f",
+        "run008_blob": "a15f79e31bb60ae981e094a27d3e204d2abbc20f",
+        "stage_base_blob": "a15f79e31bb60ae981e094a27d3e204d2abbc20f"
+      },
+      "observed_relative_or_dynamic_mechanisms": [],
+      "tests": [
+        "Git blob equality against foundation and fixed run008",
+        "Self-contained arc-unit tests; authentic exact bundle reconstruction remains blocked"
+      ],
+      "rollback": "No move planned. Keep original path/bytes; remove only new facade routing if reverting.",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
+      "permitted_change": "none; original paths and blobs retained"
+    },
+    {
+      "old_path": "src/irisx/arc_package.py",
+      "target_path": "src/irisx/arc_package.py",
+      "action": "retain byte-for-byte; explicit facade dependency exception",
+      "mutable": false,
+      "reason": "Legacy runtime/source/consumer identities and authentic reconstruction inputs cannot be requalified by this CPU facade change.",
+      "consumers": [
+        "kaggle_runner.py sibling path",
+        "CLI package build/verify"
+      ],
+      "path_or_byte_pins": {
+        "foundation_blob": "2c451e4a18979a2d273b07bd7999ce02aba0c6eb",
+        "run008_blob": "2c451e4a18979a2d273b07bd7999ce02aba0c6eb",
+        "stage_base_blob": "2c451e4a18979a2d273b07bd7999ce02aba0c6eb"
+      },
+      "observed_relative_or_dynamic_mechanisms": [
+        {
+          "line": 134,
+          "mechanism": "__file__"
+        }
+      ],
+      "tests": [
+        "Git blob equality against foundation and fixed run008",
+        "Self-contained arc-unit tests; authentic exact bundle reconstruction remains blocked"
+      ],
+      "rollback": "No move planned. Keep original path/bytes; remove only new facade routing if reverting.",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
+      "permitted_change": "none; original paths and blobs retained"
+    },
+    {
+      "old_path": "src/irisx/arc_trial_002.py",
+      "target_path": "src/irisx/arc_trial_002.py",
+      "action": "retain byte-for-byte; explicit facade dependency exception",
+      "mutable": false,
+      "reason": "Legacy runtime/source/consumer identities and authentic reconstruction inputs cannot be requalified by this CPU facade change.",
+      "consumers": [
+        "tests/test_arc_trial_002.py",
+        "kaggle_runner_trial002.py",
+        "outbound runtime/core.py and installed wheel member"
+      ],
+      "path_or_byte_pins": {
+        "foundation_blob": "e2c7ecc12ef6d77734175aad0b7526ceb882d5f1",
+        "run008_blob": "e2c7ecc12ef6d77734175aad0b7526ceb882d5f1",
+        "stage_base_blob": "e2c7ecc12ef6d77734175aad0b7526ceb882d5f1"
+      },
+      "observed_relative_or_dynamic_mechanisms": [],
+      "tests": [
+        "Git blob equality against foundation and fixed run008",
+        "Self-contained arc-unit tests; authentic exact bundle reconstruction remains blocked"
+      ],
+      "rollback": "No move planned. Keep original path/bytes; remove only new facade routing if reverting.",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
+      "permitted_change": "none; original paths and blobs retained"
+    },
+    {
+      "old_path": "src/irisx/kaggle.py",
+      "target_path": "src/irisx/kaggle.py",
+      "action": "retain byte-for-byte; explicit facade dependency exception",
+      "mutable": false,
+      "reason": "Legacy runtime/source/consumer identities and authentic reconstruction inputs cannot be requalified by this CPU facade change.",
+      "consumers": [
+        "tests/test_kaggle_handoff.py",
+        "tests/test_kaggle_checkpoint.py",
+        "tests/test_kaggle_benchmark.py",
+        "runtime runner v3/v4/v5 exact paths"
+      ],
+      "path_or_byte_pins": {
+        "foundation_blob": "10e58c101da0af3d7a725b0b0737ba114a316f1a",
+        "run008_blob": "10e58c101da0af3d7a725b0b0737ba114a316f1a",
+        "stage_base_blob": "10e58c101da0af3d7a725b0b0737ba114a316f1a"
+      },
+      "observed_relative_or_dynamic_mechanisms": [],
+      "tests": [
+        "Git blob equality against foundation and fixed run008",
+        "Self-contained arc-unit tests; authentic exact bundle reconstruction remains blocked"
+      ],
+      "rollback": "No move planned. Keep original path/bytes; remove only new facade routing if reverting.",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
+      "permitted_change": "none; original paths and blobs retained"
+    },
+    {
+      "old_path": "src/irisx/kaggle_runner*.py and all remaining src/irisx/arc*.py",
+      "target_path": "same paths",
+      "action": "retain all legacy solvers/helpers",
+      "mutable": false,
+      "reason": "Exact outbound runtime runner paths, embedded notebook imports, historic wheel member names and unknown archival/pickle consumers must be preserved.",
+      "consumers": [
+        "legacy notebook source cells",
+        "src/irisx/kaggle.py runner selection",
+        "src/irisx/arc_trial_002.py runner/core wheel checks",
+        "run-specific source/overlay assemblies"
+      ],
+      "path_or_byte_pins": "Do not update any frozen manifest, review, archive or notebook to accommodate movement.",
+      "tests": [
+        "All src/irisx/arc*.py and kaggle*.py byte inventory equality; no helper migration in PR4"
+      ],
+      "rollback": "No mutation planned.",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
+      "permitted_change": "none; original paths and blobs retained"
+    },
+    {
+      "old_path": "tools/irisx_build_backend.py:_source_files and pyproject.toml",
+      "target_path": "same paths plus nested new ARC facade wheel members",
+      "action": "retain established nested package collector and stable console entry",
+      "mutable": false,
+      "reason": "PR2 already supports package recursion; facade must ship via normal nested package __init__.py and must not change product resource allowlist.",
+      "consumers": [
+        "pip wheel/install",
+        "tests/test_distribution.py",
+        "tools/distribution_check.py",
+        "tools/repository_check.py required source path"
+      ],
+      "path_or_byte_pins": [
+        "irisx.cli:main entry",
+        "src/irisx/cli.py path remains",
+        "licenses/NeMo-RL-LICENSE.txt allowlist"
+      ],
+      "tests": [
+        "Reproducible wheel/RECORD and external fresh-venv flow",
+        "Installed parser facade presence",
+        "No extra evaluator/resources/tests/cache bytes"
+      ],
+      "rollback": "Revert new facade only; preserve PR2 build backend.",
+      "verification_status": "developer source/public checks passed with handoff limits; independent review pending",
+      "permitted_change": "none; original paths and blobs retained"
+    }
+  ],
+  "source_scan": {
+    "observed_source_checkpoint": "411ed472358391d568d52c48f90211085d2238b2",
+    "observation_note": "PR3 implementation is being assembled; this audit binds observed source blobs, not a final PR3 delivery SHA",
+    "scan": {
+      "scope": "tracked Python sources, code-cell notebook source only, source-manifest/inventory names; excluded owner/readback/answer/evaluator-only/config paths",
+      "counts": {
+        "python": 1357,
+        "notebooks": 51,
+        "source_manifests": 67
+      },
+      "cli_consumers": [
+        {
+          "path": "src/irisx/__main__.py",
+          "matches": [
+            {
+              "line": 1,
+              "tokens": [
+                "from .cli import main"
+              ]
+            }
+          ]
+        },
+        {
+          "path": "tests/test_admission.py",
+          "matches": [
+            {
+              "line": 12,
+              "tokens": [
+                "from irisx import cli"
+              ]
+            }
+          ]
+        },
+        {
+          "path": "tests/test_cli_import_boundary.py",
+          "matches": [
+            {
+              "line": 29,
+              "tokens": [
+                "from irisx import cli"
+              ]
+            }
+          ]
+        },
+        {
+          "path": "tests/test_reference_flow.py",
+          "matches": [
+            {
+              "line": 14,
+              "tokens": [
+                "from irisx import cli"
+              ]
+            }
+          ]
+        },
+        {
+          "path": "tools/distribution_check.py",
+          "matches": [
+            {
+              "line": 67,
+              "tokens": [
+                "src/irisx/cli.py"
+              ]
+            }
+          ]
+        },
+        {
+          "path": "tools/irisx_build_backend.py",
+          "matches": [
+            {
+              "line": 87,
+              "tokens": [
+                "irisx.cli"
+              ]
+            }
+          ]
+        },
+        {
+          "path": "tools/repository_check.py",
+          "matches": [
+            {
+              "line": 91,
+              "tokens": [
+                "src/irisx/cli.py"
+              ]
+            }
+          ]
+        }
+      ],
+      "notebook_legacy_imports": [],
+      "manifest_cli_matches": [],
+      "cli_functions": [
+        {
+          "name": "_path",
+          "line": 17,
+          "end_line": 18
+        },
+        {
+          "name": "build_parser",
+          "line": 21,
+          "end_line": 172
+        },
+        {
+          "name": "execute",
+          "line": 175,
+          "end_line": 356
+        },
+        {
+          "name": "main",
+          "line": 359,
+          "end_line": 367
+        }
+      ],
+      "exact_module_analysis": {
+        "inspect_getsource_cli_matches": false,
+        "dynamic_import_cli_matches": false,
+        "pickle_cli_matches": false,
+        "cli_root_relative_uses": [
+          {
+            "line": 247,
+            "expression": "Path(__file__).resolve().parents[2]"
+          },
+          {
+            "line": 314,
+            "expression": "Path(__file__).resolve().parents[2]"
+          }
+        ]
+      },
+      "limits": [
+        "Static/AST/string scans do not prove absence of every dynamic/archival consumer.",
+        "No historical archive, model, official/evaluator input or private owner/readback was obtained.",
+        "No remote status/content attestation or GPU/runtime compatibility established."
+      ],
+      "notebook_runner_and_snapshot_tokens": [
+        {
+          "path": "trials/arc-agi-2-baseline/kaggle-notebook.ipynb",
+          "cell": 1,
+          "source_line": 57,
+          "tokens": [
+            "irisx.kaggle_runner_trial002"
+          ]
+        },
+        {
+          "path": "trials/arc-agi-2-prompt-pilot/kaggle-notebook.ipynb",
+          "cell": 1,
+          "source_line": 55,
+          "tokens": [
+            "irisx.kaggle_runner_prompt_pilot"
+          ]
+        },
+        {
+          "path": "trials/arc-agi-2-prompt-pilot/repair-002/kaggle-notebook.ipynb",
+          "cell": 1,
+          "source_line": 95,
+          "tokens": [
+            "irisx.kaggle_runner_prompt_pilot"
+          ]
+        },
+        {
+          "path": "trials/arc-agi-2-qwen35-nvarc/kaggle-notebook.ipynb",
+          "cell": 1,
+          "source_line": 30,
+          "tokens": [
+            "irisx.arc_nvarc_kaggle"
+          ]
+        }
+      ],
+      "working_tree_preserved_legacy_paths_differences": []
+    },
+    "limits": [
+      "Static/AST/string scans do not prove absence of every dynamic/archival consumer.",
+      "No historical archive, model, official/evaluator input or private owner/readback was obtained.",
+      "No remote status/content attestation or GPU/runtime compatibility established."
+    ]
+  },
+  "run008_preservation": {
+    "retained_in_foundation": [
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/source",
+        "foundation_tree": "562cea83bce003142618d2e82a039dfc715eebc3",
+        "run008_tree": "562cea83bce003142618d2e82a039dfc715eebc3",
+        "scope": "retained unchanged source; no execution",
+        "stage_base_tree": "562cea83bce003142618d2e82a039dfc715eebc3"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/release",
+        "foundation_tree": "07bb5b5b66715a286f7330d8dd2549da26be82c5",
+        "run008_tree": "07bb5b5b66715a286f7330d8dd2549da26be82c5",
+        "scope": "retained unchanged source; no execution",
+        "stage_base_tree": "07bb5b5b66715a286f7330d8dd2549da26be82c5"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/support",
+        "foundation_tree": "ba9fb2fae1079d2424a8bddee41249ff03b9d5d9",
+        "run008_tree": "ba9fb2fae1079d2424a8bddee41249ff03b9d5d9",
+        "scope": "retained unchanged source; no execution",
+        "stage_base_tree": "ba9fb2fae1079d2424a8bddee41249ff03b9d5d9"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/driver_path_repair",
+        "foundation_tree": "e4a182e28169c8322a03972c0031feb3b6d28bfb",
+        "run008_tree": "e4a182e28169c8322a03972c0031feb3b6d28bfb",
+        "scope": "retained unchanged source; no execution",
+        "stage_base_tree": "e4a182e28169c8322a03972c0031feb3b6d28bfb"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/local_tests",
+        "foundation_tree": "b59f5807382053c8993b4fd9da4610c32f696b62",
+        "run008_tree": "b59f5807382053c8993b4fd9da4610c32f696b62",
+        "scope": "retained unchanged source; no execution",
+        "stage_base_tree": "b59f5807382053c8993b4fd9da4610c32f696b62"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/publication",
+        "foundation_tree": "a414353cff6c7aed8684ade82a390f08b7cdc4f5",
+        "run008_tree": "a414353cff6c7aed8684ade82a390f08b7cdc4f5",
+        "scope": "retained unchanged source; no execution",
+        "stage_base_tree": "a414353cff6c7aed8684ade82a390f08b7cdc4f5"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/publication_local",
+        "foundation_tree": "6378a37bac278df2689ede064b66fb05f6e43029",
+        "run008_tree": "6378a37bac278df2689ede064b66fb05f6e43029",
+        "scope": "retained unchanged source; no execution",
+        "stage_base_tree": "6378a37bac278df2689ede064b66fb05f6e43029"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/publication_run005",
+        "foundation_tree": "df24265c0cb3abe9d4b1b42a51aef1f390dc7a06",
+        "run008_tree": "df24265c0cb3abe9d4b1b42a51aef1f390dc7a06",
+        "scope": "retained unchanged source; no execution",
+        "stage_base_tree": "df24265c0cb3abe9d4b1b42a51aef1f390dc7a06"
+      }
+    ],
+    "reference_only_newer_directories": [
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/admission_run008",
+        "run008_tree": "c84a292b755258ddad7e31614b715eea43b260c7",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/loader_repair_run008",
+        "run008_tree": "597c6093619bfd06e16e6800a2d11af3f2b6dae0",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/run008_successor",
+        "run008_tree": "b77cb0ec3fa8b37abf8f9cb350982ceaa00d2b05",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/publication_run008",
+        "run008_tree": "d49d5d0af9dc4543e41f61740cca6c5cb73fcc56",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/review_run008",
+        "run008_tree": "cd7f8f14fb0c515a90a5276d3b6c35254c942905",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/transfer_run008",
+        "run008_tree": "0022be3cbb6934c57650fc8f25a8f0db97cf661b",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/transfer_handoff_20261014",
+        "run008_tree": "5dc6472ca9241d6e204c255a40845cf12e78f83d",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/preparation_successor",
+        "run008_tree": "3b5dd9bbee9d6c43395ff6474d1260ea0af5279c",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/preparation_diagnostics_repair",
+        "run008_tree": "2a53766b7337a841f8094833d940cabbaaa4da68",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/cudnn_mapping_repair",
+        "run008_tree": "cbf82999df5748a2a07183b38b536f77abfaf83d",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/installer_logging_repair",
+        "run008_tree": "7e80970ee12e48a1fece32da1d35c91e4f5a5618",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/publication_run006",
+        "run008_tree": "6ea679237176f0d9f33cbf354d07df32570bba3c",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/publication_run007",
+        "run008_tree": "f75d9e2385c99f446615a32d9552996c3d2140cf",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      },
+      {
+        "path": "tools/arc_qwen_rlvr004_20261013/recovery_records",
+        "run008_tree": "f93bda0e1f272425977477554ce7573c8054b1b5",
+        "foundation_tree": null,
+        "scope": "reference-only; not merged/imported/reconstructed"
+      }
+    ],
+    "latest_research_reference_only": [
+      "research/native-continuation-20261013/historical-experiments.md",
+      "research/native-continuation-20261013/primary-method-assessment.md",
+      "docs/plan/2026-10-13-native-research-continuation.md",
+      "research/native-continuation-20261013/RUN008-LOCAL-HANDOFF.md"
+    ],
+    "unverified": [
+      "authentic bundle reconstruction",
+      "full 14B/cuDNN GPU workload",
+      "numeric replay",
+      "current provider state",
+      "PUBLIC120 efficacy",
+      "four-L4 deployment"
+    ],
+    "method": "Git object/path metadata only; no private records or evaluator bodies read"
+  },
+  "research_continuity": {
+    "architecture_ABC": "direct grid / independent program proposals / feedback repair",
+    "run008_training_ABC": "same-session SFT256 / up to four disjoint 64-slot RL batches / whole-extra-model-phase wall-matched extra-SFT",
+    "public_denominator": "120 tasks / 167 queries; historical BASE/TTT120/172 and exposed uncapped4/6 remain distinct",
+    "status": "existing question fixed; no new result or execution authority"
+  },
+  "dependency_direction": {
+    "shared_cli_allowed": [
+      "irisx.domains.arc_agi_2.cli (parser-only registration and explicit selected-command routing)"
+    ],
+    "arc_facade_allowed": [
+      "retained legacy ARC/Kaggle modules listed by the dispatch implementation; exact old paths"
+    ],
+    "core_forbidden": [
+      "domain implementation imports from shared contracts/engine/package",
+      "line-b implementation imports"
+    ],
+    "domain_cross_imports_forbidden": [
+      "arc_agi_2 -> line_b",
+      "line_b -> arc_agi_2",
+      "line_b -> legacy ARC/Kaggle implementation"
+    ]
+  },
+  "deferred_helpers": "No other legacy helper is proved mutable with the absent authentic reconstruction inputs. Retention is intentional and must not be called a completed runtime migration.",
+  "protected_regions": [
+    "src/irisx/arc*.py",
+    "src/irisx/kaggle*.py",
+    "trials/**",
+    "research/**",
+    "archive/**",
+    "tools/arc_qwen_rlvr004_20261013/** (existing foundation paths)"
+  ],
+  "target_identity_note": "Root integration owner binds target_code_commit to the implementation checkpoint before delivery; the report does not contain its own delivery SHA.",
+  "unverified": [
+    "final PR4 code checkpoint and developer acceptance until root report is sealed",
+    "independent acceptance",
+    "all dynamic/archival/pickle consumers",
+    "authentic package reconstruction",
+    "original Linux/CPython3.12 numerical replay",
+    "14B/cuDNN/GPU/competition-topology runtime",
+    "current remote provider or archive state",
+    "new PUBLIC120 scientific outcome"
+  ]
+}

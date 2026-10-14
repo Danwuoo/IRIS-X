@@ -30,6 +30,7 @@ jobs:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
           HF_DATASETS_OFFLINE: "1"
+          ARC_LEARNING_NEURAL_TESTS: "0"
           TMPDIR: ${{ github.workspace }}/.irisx/core/ci/legacy/tmp
           TMP: ${{ github.workspace }}/.irisx/core/ci/legacy/tmp
           TEMP: ${{ github.workspace }}/.irisx/core/ci/legacy/tmp

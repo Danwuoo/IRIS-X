@@ -61,6 +61,22 @@ exit codes and test IDs. Missing historical inputs remain blockers;new synthetic
 fixtures never impersonate authentic owner/readback evidence. Repeated preparation
 attempts have separate receipts. A focused pass is not full CI,GPU or efficacy.
 
+The owner also prohibits training, including the retained pure-Python synthetic
+SGD. `arc-training` explicitly records those public cases, distinct from missing
+private inputs. Scoped selection blocks them before import. The unchanged public
+entry `python tools/repository_check.py --all` retains complete unittest discovery
+through `tools/no_training.py --aggregate`, preserving every collected test ID,
+order and count while reporting training cases as BLOCKED errors. They remain
+nonzero failures, never passing skips. Keep `ARC_LEARNING_NEURAL_TESTS=0`.
+Discovery is the original aggregate's import-based mechanism; this is not a
+general Python sandbox or proof about arbitrary import-time generated code.
+
+Earlier WSF-02/03 receipts are immutable observations: absent ML dependencies
+did not stop `tiny_train` in original aggregate/public boundary tests. Those
+parameter updates occurred during developer tests; WSF-04 records the scope
+failure and the new barrier, and does not retroactively label earlier execution
+training-free. No model experiment, provider run or new scientific score follows.
+
 ## Retained failure records
 
 These are historical observations, not results of this PR:

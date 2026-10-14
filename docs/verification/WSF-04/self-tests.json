@@ -1,0 +1,383 @@
+{
+  "format": "irisx.developer-handoff.v1",
+  "task": "WSF-04",
+  "state": "review_ready",
+  "base_branch": "refactor/workstream-pr3-validation",
+  "head_branch": "refactor/workstream-pr4-arc-boundary",
+  "base_commit": "756cd560f8d61256ed35e12c3c3637ec456c6141",
+  "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+  "foundation_commit": "08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059",
+  "self_review": true,
+  "independent_review": "pending",
+  "effective_model_mode": "not visible to task; unverified",
+  "acceptance": {
+    "A4-1": "self-test passed with stated limits",
+    "A4-2": "self-test passed with stated limits",
+    "A4-3": "self-test passed with stated limits",
+    "A4-4": "self-test passed with stated limits",
+    "A4-5": "self-test passed with stated limits",
+    "A4-6": "self-test passed with stated limits",
+    "A4-7": "self-test passed with stated limits"
+  },
+  "public_suites": [
+    {
+      "suite": "core",
+      "status": "passed",
+      "tests": 63,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python -B tools/dev.py verify --suite core --output .irisx/core/WSF-04/code/core",
+      "raw_report_sha256": "bcb2000c3befbd77db0c96063c610c9a9e7c45a1264adb3cdd5538dd0b545107"
+    },
+    {
+      "suite": "distribution",
+      "status": "passed",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skips": 1,
+      "expected_skips": 1,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python -B tools/dev.py verify --suite distribution --output .irisx/core/WSF-04/code/distribution",
+      "raw_report_sha256": "55d497cc72ea9226df9ca3a8f70f3dfcd17bfd4da5964e2806d5052262d60704"
+    },
+    {
+      "suite": "management",
+      "status": "passed",
+      "tests": 128,
+      "failures": 0,
+      "errors": 0,
+      "skips": 1,
+      "expected_skips": 1,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python -B tools/dev.py verify --suite management --output .irisx/core/WSF-04/code/management",
+      "raw_report_sha256": "42e48d8e0c73680e2dca564d87b793f8945b695ba915a2de347b4920ea59fac2"
+    },
+    {
+      "suite": "navigation",
+      "status": "passed",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python -B tools/dev.py verify --suite navigation --output .irisx/core/WSF-04/code/navigation",
+      "raw_report_sha256": "95d3e055b698fa7739d919c91ebb550a700a210862886ac657f9edfb9682562f"
+    },
+    {
+      "suite": "integrity",
+      "status": "passed",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python -B tools/dev.py verify --suite integrity --output .irisx/core/WSF-04/code/integrity",
+      "raw_report_sha256": "17f5a7bd15fbb955f6e00c1ddbd6ddcaa57aeda41d24c4f67bdec7d6de991d72"
+    },
+    {
+      "suite": "arc-unit",
+      "status": "passed",
+      "tests": 125,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python -B tools/dev.py verify --suite arc-unit --output .irisx/core/WSF-04/code/arc-unit",
+      "raw_report_sha256": "886cc4395a6af8ef41918723d36350ccc39c3ffee0729f65db6ed1981a4abeb6"
+    },
+    {
+      "suite": "line-b",
+      "status": "passed",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "expected_skips": 0,
+      "unexpected_skips": 0,
+      "blocked": 0,
+      "exit_code": 0,
+      "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "command": "python -B tools/dev.py verify --suite line-b --output .irisx/core/WSF-04/code/line-b",
+      "raw_report_sha256": "f21451fec6b4288c5a4b672ac03ca18990f3b5c7b88e714e71d6c4fa1fb4306e"
+    }
+  ],
+  "optimized": {
+    "status": "passed",
+    "commands": [
+      {
+        "argv": [
+          "python",
+          "-B",
+          "-O",
+          "tests/test_cli_import_boundary.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 3,
+        "skips": 0
+      },
+      {
+        "argv": [
+          "python",
+          "-B",
+          "-O",
+          "tests/test_distribution.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 8,
+        "skips": 1
+      },
+      {
+        "argv": [
+          "python",
+          "-B",
+          "-O",
+          "tests/test_workstream_management.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 34,
+        "skips": 1
+      },
+      {
+        "argv": [
+          "python",
+          "-B",
+          "-O",
+          "tests/test_suite_runner.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 28,
+        "skips": 0
+      },
+      {
+        "argv": [
+          "python",
+          "-B",
+          "-O",
+          "tests/arc_agi_2/test_cli_boundary.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 6,
+        "skips": 0
+      },
+      {
+        "argv": [
+          "python",
+          "-B",
+          "-O",
+          "tests/test_domain_dependencies.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 18,
+        "skips": 0
+      },
+      {
+        "argv": [
+          "python",
+          "-B",
+          "-O",
+          "tests/test_no_training.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 14,
+        "skips": 0
+      },
+      {
+        "argv": [
+          "python",
+          "-B",
+          "-O",
+          "tests/test_onboarding.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "tests": 12,
+        "skips": 0
+      }
+    ],
+    "raw_report_sha256": "225c5afc098f57466dfffbf801f76a9290f5dadd86346b596d2b82f24027d138"
+  },
+  "distribution": {
+    "command": "python -B tools/distribution_check.py --output .irisx/core/WSF-04/formal-code",
+    "status": "passed",
+    "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+    "wheels": [
+      {
+        "sha256": "6f1551a0b63f42d970588b8b48a00fa9ba70a661253408fd766fb319a4d06cf6",
+        "members": 128,
+        "record_verified": true
+      },
+      {
+        "sha256": "6f1551a0b63f42d970588b8b48a00fa9ba70a661253408fd766fb319a4d06cf6",
+        "members": 128,
+        "record_verified": true
+      }
+    ],
+    "commands": 17,
+    "command_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      2
+    ],
+    "expected_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      2
+    ],
+    "origin_relative": ".irisx/core/WSF-04/formal-code/consumer-venv/Lib/site-packages/irisx/__init__.py",
+    "non_editable": true,
+    "pythonpath_removed": true,
+    "external_cwd": true,
+    "editable_pth": [],
+    "synthetic_reference_flow": "passed",
+    "line_b_synthetic_flow": "passed",
+    "arc_parser_facade": "passed (help and missing-path error only)",
+    "raw_report_sha256": "0fccbb113f70e33d484b69c14b199e77766109c37f82d7eed4c9ce2a24fdd914"
+  },
+  "onboarding_ref": "docs/verification/WSF-04/onboarding.json",
+  "preservation": {
+    "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+    "foundation_commit": "08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059",
+    "run008_commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+    "protected_pathspecs": [
+      "PRODUCT_THESIS.md",
+      "src/irisx/arc*",
+      "src/irisx/kaggle*",
+      "src/irisx/contracts.py",
+      "src/irisx/engine.py",
+      "src/irisx/package.py",
+      "trials",
+      "research",
+      "archive",
+      "tools/arc*"
+    ],
+    "changed_protected_paths": [],
+    "deleted_paths": [],
+    "refs": {
+      "main": "baaf47d4f449c534ddd4646ab9b3175bbaf1ef89",
+      "origin_main": "baaf47d4f449c534ddd4646ab9b3175bbaf1ef89",
+      "origin_run008": "cc14bd1a79aac1fe6135017c9e09d4834300675d"
+    },
+    "tags_sha256": "c045b6d54c6165031dcd792aeaf26767964264be2587f4d58142775595251528",
+    "scope": "Git byte/path identities only; no private archive, numerical replay or provider evidence obtained",
+    "status": "passed"
+  },
+  "preservation_raw_sha256": "6f506c0fe4f2a952af49474df3f9d21776aa53c557ce76f9928592802db530e4",
+  "protected_training_suite": {
+    "command": "python tools/dev.py verify --suite arc-training",
+    "status": "blocked",
+    "exit_code": 2,
+    "tests": 0,
+    "blocked": 2,
+    "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+    "raw_report_sha256": "d9acdab9ad1bd5bccf144035a516d8eca5162f1700c80493dfdc8e79960856ec",
+    "raw_report": ".irisx/core/WSF-04/training-blocked/report.json"
+  },
+  "legacy_audit_ref": "docs/verification/WSF-04/legacy-audit.json",
+  "scope_failure": {
+    "status": "recorded and prevented in WSF-04 current environment",
+    "observation": "Earlier WSF-02/03 aggregate and WSF-03 arc-unit boundary tests executed original pure-Python synthetic SGD. Absence of ML libraries did not prevent parameter updates. The previous training-free statement was incorrect; original receipts remain unchanged.",
+    "known_calls": [
+      "irisx.arc_nvarc_training.tiny_train",
+      "irisx.arc_nvarc_training.TinyTransitionModel.train_step"
+    ],
+    "affected_test_modules": [
+      "tests/test_arc_nvarc.py",
+      "tests/test_arc_nvarc_boundaries.py"
+    ],
+    "exact_total_updates": "unverified; not retroactively invented",
+    "no_new_model_experiment_provider_run_or_public_score": true
+  },
+  "limits": [
+    "Only Windows CPython3.14.7 developer self-checks; Linux/3.11/3.12 and current GitHub CI not independently verified.",
+    "Two actual Windows symlink privilege skips; mock/junction negatives pass.",
+    "Legacy aggregate remains red; unmatched signatures and timing/Windows failures not blanket-attributed.",
+    "No authentic reconstruction, private transfer archives, model/evaluator inputs, original numerical replay, full-model GPU, provider reconciliation or PUBLIC120 scoring.",
+    "Static dependency checks recognize ordinary/relative imports and direct or importlib-alias literal calls; arbitrary generated/getattr/assignment-derived imports remain outside proof.",
+    "Known no-training safeguards are in-process developer controls in the stated no-ML environment, not a general Python sandbox.",
+    "ARC isolation is mutable CLI entry only. Frozen helpers remain original; run008 reference-only trees are not imported into foundation.",
+    "New workstream gate is not registered as branch protection; independent review and all merge decisions remain pending."
+  ],
+  "remote_preservation_readback": {
+    "method": "git ls-remote origin exact named refs; one read-only comparison before delivery",
+    "main": "baaf47d4f449c534ddd4646ab9b3175bbaf1ef89",
+    "run008": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+    "foundation": "08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059",
+    "pr2_delivery": "2e706a5a4e4afb67f64517e4ee174584dcb06e18",
+    "pr3_delivery": "756cd560f8d61256ed35e12c3c3637ec456c6141",
+    "current_ci": "not independently read or verified"
+  }
+}

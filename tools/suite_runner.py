@@ -17,8 +17,8 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 FIELDS = {"path", "workstream", "dependency_class", "suite", "role", "dependencies", "collector", "reason", "expected_skips"}
-CLASSES = {"stdlib", "small-python", "historical", "operational", "native", "unclassified-public"}
-PROTECTED = {"historical", "operational", "native"}
+CLASSES = {"stdlib", "small-python", "historical", "operational", "native", "training", "unclassified-public"}
+PROTECTED = {"historical", "operational", "native", "training"}
 
 
 def validate_inventory(root: Path, data=None) -> list[str]:

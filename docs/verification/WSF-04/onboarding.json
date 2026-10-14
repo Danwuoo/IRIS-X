@@ -1,0 +1,91 @@
+{
+  "format": "irisx.onboarding-report.v1",
+  "status": "passed",
+  "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990",
+  "task_id": "ONBOARD-LB-01",
+  "task_state": "review_ready",
+  "program_and_original_tasks_unchanged": true,
+  "returned_to_task": "WSF-04",
+  "line_b_suite": {
+    "status": "passed",
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "blocked": 0,
+    "target_commit": "0e344020e73ba59c06051b598d1720a74e3fe990"
+  },
+  "navigation_chain": [
+    {
+      "role": "entry",
+      "path": "docs/README.md"
+    },
+    {
+      "role": "board",
+      "path": "docs/management/BOARD.md"
+    },
+    {
+      "role": "task",
+      "path": "docs/management/tasks/ONBOARD-LB-01.json"
+    },
+    {
+      "role": "plan",
+      "path": "docs/plan/synthetic-line-b-onboarding.md"
+    },
+    {
+      "role": "code",
+      "path": "src/irisx/domains/line_b/flow.py"
+    },
+    {
+      "role": "handoff",
+      "path": "docs/verification/ONBOARD-LB-01/HANDOFF.md"
+    }
+  ],
+  "research_sources": [
+    {
+      "id": "arc-r4-primary-method-assessment",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/research/native-continuation-20261013/primary-method-assessment.md",
+      "commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+      "path": "research/native-continuation-20261013/primary-method-assessment.md",
+      "remote_availability": "unverified",
+      "research_content_review": "pending human review",
+      "git_blob": "60b92ee928d5c099bc528dd4411704adfe9066a0",
+      "local_git_object": "present"
+    },
+    {
+      "id": "arc-r5-native-research-continuation",
+      "url": "https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/plan/2026-10-13-native-research-continuation.md",
+      "commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d",
+      "path": "docs/plan/2026-10-13-native-research-continuation.md",
+      "remote_availability": "unverified",
+      "research_content_review": "pending human review",
+      "git_blob": "42da3379ca9e634f223f36844cdee3e77a2a1786",
+      "local_git_object": "present"
+    }
+  ],
+  "independent_review": "pending",
+  "command": "python -B tools/onboarding_check.py --output .irisx/core/WSF-04/onboarding-code",
+  "commands": 18,
+  "command_exit_codes": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "raw_report_sha256": "07cc890a1bd735989d734393e477ab04c700eaf71267739ddb0175280715f75a",
+  "raw_report": ".irisx/core/WSF-04/onboarding-code/report.json"
+}
