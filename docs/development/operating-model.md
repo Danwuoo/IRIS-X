@@ -20,11 +20,13 @@ ignored output roots. The registry is an index only. Historical trial READMEs
 remain terminal evidence for their own identities, not competing current project
 status pages.
 
-Shared changes are small PRs into main; domain lines receive the reviewed common
-changes without merging each other's entire experimental branch. A main commit
-is an integration point, not automatically a successful model or green baseline.
-The first foundation references run008 through immutable Git URLs and does not
-merge its code. Avoid simultaneous edits to shared CLI, contracts, build or CI.
+The owner's 2026-10-14 instruction keeps restructuring on independent branches:
+no main merge or push, no auto-merge, and no automatic merge between the stacked
+PRs. PR #5 remains Draft. Use foundation -> PR 2 -> PR 3 -> PR 4 as the dependency
+chain, with each Draft PR targeting its predecessor branch rather than main.
+Main remains a reference, not a successful-model or green baseline. Run008 is
+referenced through immutable Git URLs and is not merged into this work.
+Avoid simultaneous edits to shared CLI, contracts, build, management schemas or CI.
 
 ## Routine work
 
@@ -53,6 +55,17 @@ commit, tested scope, failures and missing inputs separately. Keep the complete
 handoff entry `python tools/repository_check.py --all`; navigation or focused CPU
 passes must not be called full CI, real-model or GPU success. Preserve the
 existing suite while its dependency split is implemented in a later PR.
+
+## Unified document and development management
+
+The [PR 2–4 plan](../plan/2026-10-14-workstream-pr2-pr4-local-development.md)
+defines a repository-native document catalog, task records, generated board,
+scoped validation entry and separate developer/independent reports. Implement
+these incrementally with the code, not as a parallel cloud service or manual
+tracker. Routine work needs one task record and a useful handoff, not a new ADR
+for every edit. The detailed plan distinguishes planned interfaces from commands
+that have actually been implemented. No independent verification follows merely
+from a developer or subagent claiming that tests passed.
 
 ## Research track
 

@@ -32,6 +32,13 @@ virtual environments, agent sessions and ignored output roots. Do not edit the
 same shared file concurrently across lines. See the workstream guide for the
 integration sequence; no automatic merge, provider call or run follows.
 
+Owner direction on 2026-10-14: keep restructuring on independent branches; do
+not merge or push to main, merge PRs, enable auto-merge, delete branches or move
+tags. PR #5 stays Draft. Follow the
+[PR 2–4 local plan](docs/plan/2026-10-14-workstream-pr2-pr4-local-development.md)
+for stacked bases, unified document/task management and commit-bound independent
+verification. Developer self-review does not establish independent acceptance.
+
 Preserve adopted thesis bytes, public contracts, acceptance thresholds and frozen
 source/notebook/scorer/manifest identities. Do not rename, reformat or replace a
 hash-bound artifact with a compatibility shim. Preserve previous failures,

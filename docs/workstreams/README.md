@@ -25,12 +25,16 @@ For example, use ignored `.irisx/core/<task>/`, `.irisx/arc-agi-2/<new-task>/` a
 are exceptions: keep them unchanged. Separate Git worktrees do not isolate shared
 provider accounts, notebooks, GPUs or credentials.
 
-Common changes use a small `chore/` or `fix/` PR into main. Domain tasks use their
-own `feat/` branches and integrate the common PR after review. Do not merge a
-whole ARC experiment into line-b or maintain two independently patched copies of
-the common contracts. Never reset another worktree or overwrite its output.
+Owner direction on 2026-10-14 keeps this work on independent branches. Do not
+merge or push to main, enable auto-merge, delete branches or move tags. PR #5
+stays Draft; its main base is a comparison target, not permission to merge.
+PR 2 targets the foundation branch, PR 3 targets the PR 2 branch, and PR 4 targets
+the PR 3 branch. The exact branch names and checkpoints are in the
+[local development plan](../plan/2026-10-14-workstream-pr2-pr4-local-development.md).
+Do not merge a whole ARC experiment into line-b or maintain independently patched
+copies of the common contracts. Never reset another worktree or overwrite output.
 
-For this first increment the base is main at
+The original foundation base is main at
 `baaf47d4f449c534ddd4646ab9b3175bbaf1ef89`. Run008 stays at the separately
 preserved `cc14bd1a79aac1fe6135017c9e09d4834300675d` reference; its implementation
 and private operational context are not imported. References to files absent
@@ -50,22 +54,25 @@ reviewed test fixtures, never counterfeit original owner/readback evidence.
 
 Navigation checks have their own workflow; the existing full workflow and its
 failures are retained. A passing navigation job proves only navigation. Changes
-to core/CLI/build/CI must eventually exercise both domain suites; this first PR
+to core/CLI/build/CI must eventually exercise both domain suites; the foundation
 does not pretend that test split or nested wheel support already exists.
 
 Any future authorized external run needs its own actual identity and applicable
 review. Keep one publisher for shared resources. No provider call, GPU run,
 automatic retry, quota query or competition submission is part of this foundation.
 
-## Increment sequence
+## Increment sequence and unified management
 
-1. This PR: current entries, status routing, test dependency documentation and a
-   standalone navigation regression check; preserve historical bytes and paths.
-2. Next shared PR: non-editable wheel/install coverage, nested-package support,
-   CLI import boundaries and explicit test selection without hiding failures.
-3. Second-line increment: declare its workload, requirements and resource budget,
-   then baseline/evaluation/package verification in its own scope. Only afterwards
-   migrate mutable ARC modules incrementally with reconstruction checks.
+The [PR 2–4 plan](../plan/2026-10-14-workstream-pr2-pr4-local-development.md)
+and [Codex kickoff](../plan/2026-10-14-workstream-codex-kickoff.md) specify the
+remaining implementation: packaging/CLI plus management foundations; test/CI
+separation and the synthetic second line; then incremental ARC isolation.
+
+One document catalog and one set of task records will drive a generated board.
+The workstream registry remains navigation-only. STATUS retains scope and domain
+evidence, not a duplicate task ledger. Developer handoffs remain review_ready
+until an independently sourced, commit-bound review supports verification.
+The management tooling is planned work, not implemented by this documentation.
 
 Unchanged historical rules remain in the pinned
 [pre-foundation root](https://github.com/Danwuoo/IRIS-X/blob/baaf47d4f449c534ddd4646ab9b3175bbaf1ef89/AGENTS.md).
