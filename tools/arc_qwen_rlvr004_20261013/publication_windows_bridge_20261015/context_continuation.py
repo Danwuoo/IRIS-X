@@ -1,4 +1,4 @@
-"""Offline, same-boot interpretation of one completed f5 recovery disposition.
+"""Offline interpretation of one completed f5 recovery disposition.
 
 Historical recovery and current-release admission are separate. The current
 configuration is bound to its actual descriptor and this adapter's checkout;
@@ -17,8 +17,11 @@ runtime/socket, source-review, pending-refresh and remote-state gates.
 
 Every historical source descriptor AND the core's complete sibling source tree
 must match the fixed f5 manifest before any historical Python is compiled. The
-unchanged historical validator alone decides which original UNKNOWN is covered
-by the completed recovery. A pre-worker disposition never borrows that coverage.
+unchanged historical validator decides which original UNKNOWN was covered at
+the sealed completion time. Fresh live admission is checked separately: a
+later clock adjustment or boot cannot undo that historical termination boundary.
+This does not establish current same-boot identity or global process absence.
+A pre-worker disposition never borrows the historical recovery's coverage.
 """
 from __future__ import annotations
 
@@ -30,6 +33,7 @@ import os
 from pathlib import Path
 import re
 import stat
+import time
 import types
 
 HISTORICAL_COMMIT = 'f5f780cb5823579288385158ce6da70a1ca33899'
@@ -402,12 +406,53 @@ def validate_context(c, current_config, pending_claims, *, current_boot_descript
             historical._root_records = historical_roots
             pending_claims = [row for row in pending_claims if row not in classified]
         identity = types.SimpleNamespace(state_root=root, document_sha256=original_row['sha256'])
-        callbacks = {'STATE': root}
-        observer = c.get('recovery_boot_observation')
-        if callable(observer):
-            callbacks['recovery_boot_observation'] = observer
-        result = historical.validate_eligibility(callbacks, identity, pending_claims,
-            current_boot_descriptor=current_boot_descriptor, now_epoch=now_epoch)
+        # Recompute the sealed historical disposition at its actual completion,
+        # using its authentic after-Restart observation. These are historical
+        # inputs, not substitutes for the live observer below. The unchanged f5
+        # code still validates the full Restart/request/source/receipt chain,
+        # seal and exact original UNKNOWN, and rejects every later unresolved
+        # native session/refresh in the current STATE projection.
+        # This narrow adapter supports the existing sealed f5 history, whose
+        # authentic after-observation precedes completion by 12.629 seconds.
+        # The unchanged historical freshness check remains: a different history
+        # taking longer than its 120-second limit is rejected, not normalized.
+        historical_snapshot = historical._root_records(root)
+        result = historical.validate_eligibility({'STATE': root}, identity, pending_claims,
+            current_boot_descriptor=capability['after_boot'],
+            now_epoch=eligibility['completed_epoch'])
+        # Root snapshots alone cannot detect in-place edits of sealed event
+        # bodies. Recheck just the two already-validated bounded inventories
+        # around the live observer, without scanning unrelated later events.
+        original_rows = historical._inventory(document(preparation['inventory']), root)
+        seal = _json(historical_snapshot[historical._prefix(preparation) + '-sealed.claim.json'])
+        completed_rows = historical._inventory({'format': 'irisx/recovery-inventory-v1',
+            'state_root': str(root), 'files': seal['files']}, root)
+        for rows in (original_rows, completed_rows):
+            for name, row in rows.items():
+                descriptor = {**row, 'path': str(root / name)}
+                chain.append((descriptor, _verified(descriptor)))
+        after = document(capability['after_boot'])
+        if current_boot_descriptor is None:
+            observer = c.get('recovery_boot_observation')
+            _need(callable(observer), 'context_fresh_boot_observer_required')
+            current_boot_descriptor = observer(review, preparation['challenge'])
+        current = document(current_boot_descriptor)
+        observed, _ = historical._observation(current, preparation['challenge'], review)
+        if now_epoch is None:
+            now_epoch = time.time()
+        # A sealed, successful full Restart is an irreversible historical
+        # process-termination boundary under the existing trusted-host/no-
+        # rollback model. It does not need a permanent same-boot assertion.
+        # Keep fresh native identity, reviewed source/runtime, observer closure
+        # and current-state checks; no tolerance is added to boot timestamps.
+        _need(historical._number(now_epoch) and now_epoch >= eligibility['completed_epoch']
+              and abs(observed - now_epoch) <= historical.BOOT_SKEW_SECONDS
+              and all(current[key] == after[key] for key in (
+                  'host_install_sha256', 'windows_version', 'windows_build',
+                  'source_sha256', 'runtime_sha256')),
+              'context_live_observation_changed_or_stale')
+        _need(historical._root_records(root) == historical_snapshot,
+              'context_live_state_changed')
         # An observer cannot replace source/configuration/chain files unnoticed.
         for row, raw in chain:
             _need(_verified(row) == raw, 'context_chain_changed')

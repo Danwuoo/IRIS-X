@@ -150,13 +150,20 @@ WSL caller-death、正式 pre-auth 只針對受影響的邊界重驗，不能把
 不能拿來自動重跑或解決新的 ddd UNKNOWN。新事件只依其實際來源、證據與已審查 disposition 處理；
 原 UNKNOWN／closure false／claim／journal 不修改、不刪鎖、不換 namespace。
 
-### 6.3.3 已完成恢復後的同boot context續接
+### 6.3.3 已完成恢復後的歷史與即時context續接
 
 [原 context 說明](https://github.com/Danwuoo/IRIS-X/blob/e491ba4be3562d48d78f4f615a1dd155bcdc0cfc/research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#633-已完成恢復後的同boot-context續接)保存 f5→a724 的歷史邊界。
 舊 checkout 原址、sealed history 與實際 WSL owner 不得以示範值替代；新 source／config 要依目前
 release 的真實 review，不把歷史 runtime 驗證冒充目前 runtime 已驗收，也不重播已消耗 capability。
-歷史恢復只驗證原封存來源、同 host／boot、相同 STATE／scratch 與精確 pending；目前候選／
-來源／設定由當前 release 的原 gates 驗收，不再要求它們等於舊模板或另造 migration review。
+歷史恢復以原 after-Restart observation 與原 completion time 交給未修改的 f5 validator 重驗，
+只處置原995 UNKNOWN。這份真實原件間隔12.629秒；其他 history 若超出原120秒 freshness
+仍拒絕，不改時間或加容差。這是已完成的程序終止邊界，後來校時或再開機不會使舊程序復活。
+即時另做 fresh no-auth observation、同 host／Windows／source／runtime 與原 observation closure
+驗證；不宣稱已證明 same boot，也不宣稱全系統程序不存在。相同 STATE／scratch、精確 pending、
+封存 event bytes、當前 publication 與 pending-refresh gates 保留；後來 UNKNOWN 不借舊 coverage。
+目前候選／來源／設定由當前 release 的原 gates 驗收，不要求等於舊模板或另造 migration review。
+續接先唯讀核對原1,686檔與封存鏈，再由現有 actual owner 做一次 fresh observation／remote bracket；
+只有 transport/context 與衍生 pins 改變，不重建 SDK、不重驗未變 native 七來源、不重新 Restart。
 
 ### 6.3.4 Collector-only canonical material續接與完整發布預檢
 

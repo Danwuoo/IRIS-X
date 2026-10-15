@@ -456,10 +456,16 @@ class ContextTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'sealed_bytes_changed'):
             self.validate()
 
-    def test_same_boot_freshness_host_and_runtime_remain_required(self):
+    def test_live_freshness_host_and_runtime_remain_required(self):
         good = self.r._document(self.boot)
-        mutations = {'host_install_sha256': '0' * 64, 'last_boot_utc': f.utc(self.fixture.now + 51),
-                     'runtime_sha256': {'python': '0' * 64, 'base_python': 'b' * 64}}
+        mutations = {'host_install_sha256': '0' * 64,
+                     'runtime_sha256': {'python': '0' * 64, 'base_python': 'b' * 64},
+                     'source_sha256': {**good['source_sha256'], 'win_runtime.py': '0' * 64},
+                     'windows_build': '26101', 'windows_version': '10.0.26101',
+                     'native_process_closure_verified': False, 'auth_started': True,
+                     'credential_contents_accessed': True, 'provider_calls': 1,
+                     'network_used': True, 'tick_count64_ms': -1,
+                     'challenge': '0' * 64}
         for key, value in mutations.items():
             with self.subTest(key=key):
                 bad = copy.deepcopy(good)
@@ -467,8 +473,78 @@ class ContextTests(unittest.TestCase):
                 row = f.write(Path(self.temp.name) / 'wrong-boot.json', bad)
                 with self.assertRaises(ValueError):
                     self.validate(current_boot_descriptor=row)
-        with self.assertRaisesRegex(ValueError, 'boot_changed_or_stale'):
+        with self.assertRaisesRegex(ValueError, 'live_observation_changed_or_stale'):
             self.validate(now_epoch=self.now + 2000)
+
+    def test_wallclock_boot_value_drift_does_not_reopen_historical_disposition(self):
+        later = self.fixture.now + 2000
+        for drift in (1.802125, -1.802125, 30):
+            with self.subTest(drift=drift):
+                value = self.fixture.boot(later, self.fixture.now + 50 + drift)
+                # Clock/CIM may shift while independent uptime stays continuous.
+                value['tick_count64_ms'] = round((later - self.fixture.now - 50) * 1000)
+                row = f.write(Path(self.temp.name) / 'clock-drift.json', value)
+                before = self.r._scan(self.state)
+                result = self.validate(current_boot_descriptor=row, now_epoch=later)
+                self.assertEqual(result, {self.fixture.review_value['unknown_session']:
+                    self.pending[0]['claim']['sha256']})
+                self.assertEqual(self.r._scan(self.state), before)
+
+    def test_later_boot_keeps_only_original_historical_coverage_without_writes(self):
+        later = self.fixture.now + 2000
+        value = self.fixture.boot(later, later - 5)
+        self.assertLess(value['tick_count64_ms'], self.r._document(self.boot)['tick_count64_ms'])
+        row = f.write(Path(self.temp.name) / 'later-boot.json', value)
+        before = self.r._scan(self.state)
+        result = self.validate(current_boot_descriptor=row, now_epoch=later)
+        self.assertEqual(result, {self.fixture.review_value['unknown_session']:
+            self.pending[0]['claim']['sha256']})
+        self.assertEqual(self.r._scan(self.state), before)
+        old_journal = self.r._document(self.pending[0]['journal'])
+        self.assertEqual(old_journal['stage'], 'UNKNOWN')
+        self.assertIs(old_journal['native_process_closure_verified'], False)
+
+    def test_later_boot_cannot_cover_later_unknown_or_auth_refresh(self):
+        later = self.fixture.now + 2000
+        row = f.write(Path(self.temp.name) / 'later-boot.json', self.fixture.boot(later, later - 5))
+        nonce = '4' * 64
+        self.fixture._session(nonce, ['open'], self.current_descriptor,
+            self.fixture.review_value['original_native_configuration'], unknown=True)
+        with self.assertRaisesRegex(ValueError, 'later_session_unknown'):
+            self.validate(current_boot_descriptor=row, now_epoch=later)
+        for suffix in ('.claim.json', '-journal.json'):
+            (self.state / ('native-bridge-' + nonce + suffix)).unlink()
+        name = 'native-auth-refresh-' + '4' * 24
+        claim = f.write(self.state / (name + '.claim.json'), {'stage': 'intent'})
+        f.write(self.state / (name + '-journal.json'),
+            {'stage': 'refresh_unknown', 'claim_sha256': claim['sha256']})
+        with self.assertRaisesRegex(ValueError, 'later_refresh_unknown'):
+            self.validate(current_boot_descriptor=row, now_epoch=later)
+
+    def test_live_clock_is_finite_and_not_before_historical_completion(self):
+        for now in (float('nan'), float('inf'), True, self.now - 1):
+            with self.subTest(now=now):
+                with self.assertRaisesRegex(ValueError, 'live_observation_changed_or_stale'):
+                    self.validate(now_epoch=now)
+
+    def test_live_observer_cannot_append_even_closed_state_during_validation(self):
+        def observer(review, challenge):
+            self.fixture._session('4' * 64, ['open', 'close'], self.current_descriptor,
+                self.fixture.review_value['original_native_configuration'])
+            return self.boot
+        self.callbacks['recovery_boot_observation'] = observer
+        with self.assertRaisesRegex(ValueError, 'context_live_state_changed'):
+            self.validate()
+
+    def test_live_observer_cannot_change_current_publication_manifest(self):
+        self.bind_publication()
+        def observer(review, challenge):
+            path = Path(self.manifest_descriptor['path'])
+            path.write_bytes(path.read_bytes() + b' ')
+            return self.boot
+        self.callbacks['recovery_boot_observation'] = observer
+        with self.assertRaises(ValueError):
+            self.validate()
 
     def test_completed_disposition_outlives_consumed_capability_without_replay(self):
         later = self.fixture.now + 2000
@@ -587,6 +663,19 @@ class PreworkerContextTests(unittest.TestCase):
             row = json.loads((self.state / (name + '-journal.json')).read_bytes())
             self.assertEqual(row['stage'], 'UNKNOWN')
             self.assertIs(row['native_process_closure_verified'], False)
+
+    def test_later_boot_does_not_turn_preworker_disposition_into_reboot_coverage(self):
+        later = self.fixture.now + 2000
+        boot = f.write(Path(self.temp.name) / 'later-boot.json', self.fixture.boot(later, later - 5))
+        before = self.r._scan(self.state)
+        result = self.validate(current_boot_descriptor=boot, now_epoch=later)
+        self.assertEqual(set(result), {self.fixture.review_value['unknown_session'], self.lease_session})
+        self.assertEqual(self.r._scan(self.state), before)
+        # Contradictory pre-worker evidence is still rejected after a later boot.
+        path = self.state / next(name for name in self.lease_files if name.startswith('events/'))
+        path.unlink()
+        with self.assertRaises(ValueError):
+            self.validate(current_boot_descriptor=boot, now_epoch=later)
 
     def test_exact_pending_pair_required_not_only_claim_hash(self):
         original = copy.deepcopy(self.pending)

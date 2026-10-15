@@ -299,6 +299,132 @@
     }
   },
   "format": "irisx/windows-bridge-offline-validation-v1",
+  "historical_live_boundary_revision": {
+    "author": {
+      "command": "python [-O] -m unittest discover -s tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests -v",
+      "environment": "Inherited plus PYTHONHASHSEED=0, workspace TMPDIR, HF_HUB_OFFLINE=1, TRANSFORMERS_OFFLINE=1, HF_DATASETS_OFFLINE=1, CUDA_VISIBLE_DEVICES empty",
+      "normal": {
+        "errors": 0,
+        "failures": 0,
+        "log": {
+          "bytes": 94480,
+          "sha256": "0562305b9ae662702cb3f2547a6cb73b688c8cd01e6a1be1f4d25c6d8e5d0d21"
+        },
+        "seconds": 62.167,
+        "skipped": 0,
+        "tests": 600
+      },
+      "optimized": {
+        "errors": 0,
+        "failures": 0,
+        "log": {
+          "bytes": 94480,
+          "sha256": "814d9b29a190b8b25b8aa4fc6aa34890b05c245b25af3ddf662323daf98c1f2d"
+        },
+        "seconds": 61.892,
+        "skipped": 0,
+        "tests": 600
+      }
+    },
+    "format": "irisx/historical-live-boundary-validation-v1",
+    "full_unrelated_repository_suite": "NOT RERUN; unchanged components reuse prior evidence.",
+    "historical_coverage": "Only the original995 UNKNOWN; the reviewed preworker classifier independently handles ddd without changing UNKNOWN or closure-false bytes.",
+    "historical_observation_age_limit_seconds": 120,
+    "independent_review": {
+      "current_pins": 8,
+      "exact_historical_f5_source_pins": 18,
+      "normal": {
+        "errors": 0,
+        "failures": 0,
+        "log": {
+          "bytes": 12036,
+          "sha256": "167d38531144b904fe957f141d1cdd37b76bb30b13ab49b6f737ed7951f74cbc"
+        },
+        "seconds": 31.77,
+        "skipped": 0,
+        "tests": 70
+      },
+      "optimized": {
+        "errors": 0,
+        "failures": 0,
+        "log": {
+          "bytes": 12036,
+          "sha256": "9aaa813b0930fadb2a818a04dfdbce72a9c3f66e8fb9999f88f50277e5c55873"
+        },
+        "seconds": 31.272,
+        "skipped": 0,
+        "tests": 70
+      },
+      "pin_receipt": {
+        "bytes": 1419,
+        "sha256": "a5ceeedfcaa4e57fa691c8ead5f98a9f273a4c27c11ff2f875c2b8c649b03249"
+      },
+      "report": {
+        "bytes": 5741,
+        "sha256": "d5a87ca5d10b5aedb4966683a54703769a4d11a960e31ddc490d9fd4af87a5ca"
+      },
+      "resolved_findings": [
+        "Original and completion-sealed event bodies are now rechecked around the live observer.",
+        "The generic slow-reconciliation limitation is explicitly documented and regression tested; no synthetic time or widened tolerance."
+      ],
+      "status": "PASS_FIXED_F5_SCOPE"
+    },
+    "live_claims": "Fresh host/Windows/source/runtime and observation closure only; no claim of current same-boot identity, global process absence or GPU success.",
+    "local_actual_state_acceptance": "NOT RUN HERE; original1686-file STATE remains local and unchanged by this work; exact new source admission and fresh observation remain required.",
+    "new_gpu_or_arc_results": false,
+    "parent_source_commit": "0d3524caba46a4d3944d2f1686dd388f0833dc61",
+    "repository_invariants": {
+      "count": 6,
+      "log": {
+        "bytes": 400,
+        "sha256": "4514bf93b3d3d75e03666042d91439f70c27617a47cb33ccbdcd8d5899b5522a"
+      },
+      "status": "FAIL_INHERITED"
+    },
+    "scope": "Read-only interpretation of the existing sealed f5 recovery, separate live admission, bounded sealed-event race checks; no provider/native/training execution.",
+    "source_files": {
+      "bridge_client.py": {
+        "bytes": 47428,
+        "sha256": "0c51c44fda476e4d3aa290082fa2178ce930966466dcd153302d49adc578b6a4"
+      },
+      "context_continuation.py": {
+        "bytes": 24600,
+        "sha256": "7d2b5702f008b9600215d1f22e93b9cc45d8404ac93fbf08730f5d6d196430ae"
+      },
+      "launch.py": {
+        "bytes": 5359,
+        "sha256": "3197d163fd652e81d359394fb11367d06d1dec2d3abab8164cf2e2997fd09ee5"
+      },
+      "operator_common.py": {
+        "bytes": 26232,
+        "sha256": "88faa050b8cd7564e2d46552091773df4025b0589bd37771f79ea8648f2c053a"
+      },
+      "recovery_entry.py": {
+        "bytes": 10466,
+        "sha256": "337ae2747486e2e6d1d5523d35fe5c7baa6d23f13d5e04f4a59a42d4875509a3"
+      },
+      "rl_transport.py": {
+        "bytes": 65640,
+        "sha256": "7a5a766baa4ab2654037deeab9d39e98bbd2be7b5c7eb9c341d861f86eb6cda0"
+      },
+      "tests/test_context_continuation.py": {
+        "bytes": 40571,
+        "sha256": "1d89a3c512b0cd4d30e124ad1f8ebf08311477647773560b4264a1ade9d33a56"
+      },
+      "tests/test_context_observer_integrity.py": {
+        "bytes": 4242,
+        "sha256": "6024c617938176b6a19ef9e2019c357f0413518a1edd52942e14ef66f4bbba67"
+      }
+    },
+    "supported_historical_interval_seconds": 12.629,
+    "unchanged_from_parent": [
+      "native seven sources and sdk-lock.json",
+      "recovery_epoch.py, recovery_boot_probe.py and context-source-pins.json",
+      "preworker_disposition.py, publication_state.py and config.py",
+      "rl_collect.py, v41 preparation repair, assembler and scientific runtime/archive"
+    ],
+    "unsupported_history": "A different sealed history whose authentic after-observation is older than the frozen 120-second bound at completion is rejected unchanged."
+  },
   "historical_native_observations_not_relabelled": true,
   "historical_native_probe_commit": "8f2a6d032e01b02aa0563c851cbb1be60946bd67",
   "historical_receipt_source_commit": "d684f63cf6c52044dee4359f84f6cc75527db734",

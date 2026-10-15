@@ -159,15 +159,22 @@ a new provider session in a namespace blocked by an earlier UNKNOWN.
 
 ## Offline tests
 
-Completed f5 recovery dispositions have a separate, read-only same-boot adapter
+The completed f5 recovery disposition has a separate, read-only historical adapter
 in `context_continuation.py`, with historical source pins in
 `context-source-pins.json`. It preserves the original validator and all sealed
 records while checking a reviewed successor source location and the actual WSL
 context. Current release/configuration admission is independent of the historical
 recovery disposition; it need not match the old candidate or source bytes.
-The actual current configuration and source still pass the existing release
-gates, while state/scratch, boot/host and exact pending-session isolation remain.
-Deployment is specified once in the [local handoff, section 6.3.3](../../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#633-已完成恢復後的同boot-context續接).
+The frozen validator rechecks the sealed disposition at its authentic completion
+using the original after-Restart observation. This narrowly supports the existing
+f5 history (12.629 seconds between those observations); a different history beyond
+the unchanged 120-second historical freshness limit is rejected, never normalized.
+Fresh live host/source/runtime, observation closure, state/scratch and exact
+pending-session checks are separate. Later clock drift or reboot cannot revive
+processes terminated by the historical full Restart. This does not prove current
+same-boot identity or global process absence, cover a later UNKNOWN, replay recovery,
+or remove the existing current release/publication/refresh gates.
+Deployment is specified once in the [local handoff, section 6.3.3](../../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#633-已完成恢復後的歷史與即時context續接).
 The original f5 checkout must remain available at its descriptor paths.
 
 ```bash
