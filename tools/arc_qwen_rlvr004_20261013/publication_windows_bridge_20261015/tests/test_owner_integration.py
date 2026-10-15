@@ -37,7 +37,8 @@ OPERATOR_SOURCES = frozenset(('config.py', 'operator_common.py', 'bridge_client.
     'rl_transport.py', 'rl_collect.py', 'launch.py', 'verify_active_wire.py',
     'native_config.py', 'native_auth.py', 'sdk_worker.py', 'sdk-lock.json',
     'protocol.py', 'win_runtime.py', 'win_supervisor.py', 'native_probe.py',
-    'recovery_epoch.py', 'recovery_boot_probe.py', 'recovery_entry.py'))
+    'recovery_epoch.py', 'recovery_boot_probe.py', 'recovery_entry.py',
+    'context_continuation.py', 'context-source-pins.json'))
 
 
 def sha(raw):
@@ -745,8 +746,8 @@ class AdmissionSourceClosureTests(unittest.TestCase):
         return self.transport.review_gate(args.review, args.review_sha, args.manifest_sha,
                                          args.material_sha, [ROOT / 'rl_transport.py', ROOT / 'operator_common.py'])
 
-    def test_complete_review_requires_all_18_native_and_wsl_operator_sources(self):
-        self.assertEqual(len(self.transport.OPERATOR_SOURCE_NAMES), 18)
+    def test_complete_review_requires_all_20_native_and_wsl_operator_sources(self):
+        self.assertEqual(len(self.transport.OPERATOR_SOURCE_NAMES), 20)
         self.assertEqual(set(self.transport.OPERATOR_SOURCE_NAMES), OPERATOR_SOURCES)
         self.assertEqual(self.check_review(self.review), self.review)
         for omitted in sorted(OPERATOR_SOURCES):
@@ -790,7 +791,7 @@ class AdmissionSourceClosureTests(unittest.TestCase):
 
         with patch.object(self.transport.subprocess, 'run', side_effect=git_show):
             self.assertEqual(self.transport.git_publication_gate(args), 'f' * 40)
-            self.assertEqual(len(seen), 18)
+            self.assertEqual(len(seen), 20)
             self.assertEqual(set(seen), OPERATOR_SOURCES)
             for mode in ('missing', 'stale'):
                 for name in sorted(OPERATOR_SOURCES):

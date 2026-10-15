@@ -149,6 +149,14 @@ a new provider session in a namespace blocked by an earlier UNKNOWN.
 
 ## Offline tests
 
+Completed f5 recovery dispositions have a separate, read-only same-boot adapter
+in `context_continuation.py`, with historical source pins in
+`context-source-pins.json`. It preserves the original validator and all sealed
+records while checking a reviewed successor source location and the actual WSL
+context. Deployment and the bounded two-field configuration migration are
+specified once in the [local handoff, section 6.3.3](../../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#633-已完成恢復後的同boot-context續接).
+The original f5 checkout must remain available at its descriptor paths.
+
 ```bash
 <test-python> -m unittest discover -s tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests -v
 <test-python> -O -m unittest discover -s tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests -v

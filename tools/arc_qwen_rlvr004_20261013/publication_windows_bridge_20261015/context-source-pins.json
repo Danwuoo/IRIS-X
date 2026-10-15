@@ -1,0 +1,78 @@
+{
+  "commit": "f5f780cb5823579288385158ce6da70a1ca33899",
+  "format": "irisx/context-source-pins-v1",
+  "sources": {
+    "bridge_client.py": {
+      "bytes": 47423,
+      "sha256": "e9be1c45d6f8d24fc0ad8f0256f2e7d820720b6cbc665bc2555391a52d909ee0"
+    },
+    "config.py": {
+      "bytes": 25073,
+      "sha256": "9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a"
+    },
+    "launch.py": {
+      "bytes": 5359,
+      "sha256": "84b3f78745e4aeb35abc4560c76e6567654f171b85b15c73fabd4820481728e7"
+    },
+    "native_auth.py": {
+      "bytes": 15321,
+      "sha256": "785e696dc702e5042f415e3da1bd3fbf43ff34f3f8a579a702ec2f262aefdcd4"
+    },
+    "native_config.py": {
+      "bytes": 16714,
+      "sha256": "5008d989004f2c99948a157f9fda09f6ce751ee93c07ce39f1659f3789fb9fe8"
+    },
+    "native_probe.py": {
+      "bytes": 39716,
+      "sha256": "d38630677f70dac21d0369623c1d7f7e6650d9085b0d3b9e38a7c2918072f73f"
+    },
+    "operator_common.py": {
+      "bytes": 22192,
+      "sha256": "63992707cce95d6c2253028499d5634c48ee704ab9c4af301f0acb2fc8e97099"
+    },
+    "protocol.py": {
+      "bytes": 37021,
+      "sha256": "5f67b8655497565cb149dbd7bd4aa675be8cec058089295f0d2a75873787cf24"
+    },
+    "recovery_boot_probe.py": {
+      "bytes": 22766,
+      "sha256": "46bc3f0b8c47dd53e7da0db58de01f39fc078811e9372fcc803a52db8b496b31"
+    },
+    "recovery_entry.py": {
+      "bytes": 10466,
+      "sha256": "088b47b89a61a314bcf7bb497ed4e3daa659e4d78b9150950ff86d6f977f5d4d"
+    },
+    "recovery_epoch.py": {
+      "bytes": 80549,
+      "sha256": "2d7ecb31f7571a51382597a1fc5ddd75939b296794d7de28cef10cc06b2439dc"
+    },
+    "rl_collect.py": {
+      "bytes": 58716,
+      "sha256": "776ca71df7600f88f7c71e620af72c1883508667fcd2d033c60a58f058130f86"
+    },
+    "rl_transport.py": {
+      "bytes": 59489,
+      "sha256": "d566625f7ddd379d773a530c610911017558b56051a4daff98f9fe09e2191499"
+    },
+    "sdk-lock.json": {
+      "bytes": 19816,
+      "sha256": "3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d"
+    },
+    "sdk_worker.py": {
+      "bytes": 49426,
+      "sha256": "bd75a7a221b58d7c3723cb98a3f3485135da2a69b2f518683cd9e30eefe29dcd"
+    },
+    "verify_active_wire.py": {
+      "bytes": 19347,
+      "sha256": "8a5b7844d1c5cfee3f5c026967d1dab2ed8465aa11e563aec276ba909c086438"
+    },
+    "win_runtime.py": {
+      "bytes": 35240,
+      "sha256": "7280b755d3155fb3d5d4f9989c0ea592d7a0d8be8750d635360f06fe766db69d"
+    },
+    "win_supervisor.py": {
+      "bytes": 16841,
+      "sha256": "f2c8ff86424a993ff7e6a22e056cdf11ffb5d0969b64947d138c08f7c00a7001"
+    }
+  }
+}

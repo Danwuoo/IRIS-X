@@ -23,7 +23,7 @@ import time
 from types import MappingProxyType
 
 PROTOCOL_SOURCE_SHA256 = '5f67b8655497565cb149dbd7bd4aa675be8cec058089295f0d2a75873787cf24'
-RECOVERY_SOURCE_SHA256 = '2d7ecb31f7571a51382597a1fc5ddd75939b296794d7de28cef10cc06b2439dc'
+CONTEXT_SOURCE_SHA256 = 'ad09f4bc12f27af5d71957ea0f484ca6131720d1d11dccaa1642bb24343e1a0e'
 SDK_LOCK_SHA256 = '3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d'
 LEASE_SECONDS = 43200.0
 CLOSURE_WAIT_SECONDS = 5.0
@@ -308,11 +308,11 @@ class BridgeClient:
         if pending:
             # A separately completed recovery disposition can cover only exact
             # immutable old claims. Every uncovered/new UNKNOWN still blocks.
-            module = self.c['load_source_module']('reviewed_recovery_epoch_' + RECOVERY_SOURCE_SHA256,
-                Path(__file__).with_name('recovery_epoch.py'), RECOVERY_SOURCE_SHA256)
+            module = self.c['load_source_module']('reviewed_context_continuation_' + CONTEXT_SOURCE_SHA256,
+                Path(__file__).with_name('context_continuation.py'), CONTEXT_SOURCE_SHA256)
             callbacks = {**self.c, 'recovery_boot_observation':
                          lambda review, challenge: observe_recovery_boot(self.c, review, challenge)}
-            module.validate_eligibility(callbacks, self.c['configured'](), pending)
+            module.validate_context(callbacks, self.c['configured'](), pending)
 
     def _refresh_intent(self, payload, sequence, request_hash):
         _need(self.ready and self.refresh is None, 'bridge_refresh_state')

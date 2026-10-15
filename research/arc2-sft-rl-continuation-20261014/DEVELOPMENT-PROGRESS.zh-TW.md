@@ -78,6 +78,9 @@
 | E45 | 獨立recovery epoch離線完成：355 normal／355 `-O`及38 observer normal／38 `-O`全部通過、zero skips；獨立reviewer同數通過且來源前後不變，無剩餘offline blocking finding | 同STATE／publisher lock、原29檔不變；full Windows Restart為新的當前process boundary，challenge／host／boot／來源與runtime綁定；一次性read-only dataset→kernel→status→kernel→dataset及新Job0後保存固定completion seal。正常publication仍須原admission；無Restart／provider執行證據，不能標為已恢復 |
 
 | E46 | 最終recovery executable source完整suite：1,621 tests／2 failures／35 errors／74 skips；新增38 root observer tests通過，37個failure/error IDs與保存ca8 baseline完全相同，未重跑baseline | 正確PYTHONHASHSEED=0、workspace TMPDIR、offline flags、CUDA_VISIBLE_DEVICES空值；仍同6項README findings，整體FAIL，bridge355 focused另行驗收。沒有新增failure/error IDs；來源及詳細logs hashes見[recovery_epoch_revision](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json) |
+| E47 | 固定[f5f780cb](https://github.com/Danwuoo/IRIS-X/commit/f5f780cb5823579288385158ce6da70a1ca33899)已完成真實本地恢復：客觀Windows新boot為2026-10-15 11:20:51.500 UTC；同host/install與request時序通過。11:46:14.525285 UTC一次性官方唯讀reconciliation成功，entry exit0／entry外層stderr0／真Job0／proxy exit0 | remote仍code20、notebook39 ERROR、原a307來源；沒有refresh／upload／RUN。原29份證據與原failed-open UNKNOWN／closurefalse保持不變，總61 state及31-row completion seal完整保存。eligibility SHA `bdf522126b1d7d8e7128cb1b0f229917cf23dd836f004818dddbeb600165659b`；新session receipt `14627f4e2f1fb495570ce0aef083e845ff8bbc940486d2ec6aa82cbd5cff8b05`；seal `9ed49137330ca36535379a376e99cce96449163936c68bb082d8b319ac3e353b`；result index `e9ef4c4d073ec0027e4b31178781e2ec552fdce6c0d4594ca4ede98fa4d9e10d`。新closure只屬新session，沒有補造舊receipt |
+| E48 | E47 wrapper正常結束後，下一個真實WSL context的 `WSL_INTEROP` selector改變；正常入口在任何publisher／provider之前拒絕。遞迴比對實際normal config，其餘欄位相同；f5 eligibility又要求完整封存template SHA，故context重綁受阻 | blocker原件SHA `3b216b03eb8aadd852289c95c71a018c7239458701ad7cb85a0b8f464e97bf49`；先前 `1dedc658…`只識別其nested context check。未建立新版current config、未注入舊env、未延長expiry或重播恢復。進行受限同boot context successor；原f5核心與sealed evidence保留。這是工程續接問題，A/B/C仍未執行 |
+| E49 | 同boot context／source-location successor完成離線驗收：395 normal／395 `-O`全部通過、零skip；獨立審查再各395通過。只允許已審查實際新版repository_root與當前WSL_INTEROP兩欄；20來源review／Gitgate涵蓋adapter與固定f5 manifest | 原18歷史來源及13個native/core/config/probe檔逐byte保留；完整repository 1,621 tests／2 failures／35 errors／74 skips，37個failure/error IDs與保存f5 log相同、無新增／缺失，仍6項README findings，整體FAIL。normal、`-O`、來源及獨立審查log hashes見[context_continuation_revision](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。此結果不代稱真實同owner no-auth驗收或provider放行 |
 
 本地去敏觀察收據 `OBSERVATION.json` 的SHA256為
 `faffc10ca4325726b95f3a99bbc4a2d30b3cad26d20d91ef0e355d28c9413123`。
@@ -149,19 +152,20 @@ successor驗收，不把CPU-only工具限制變成原A/B/C的循環依賴。
 | DOC-AF3 | AF3研究來源併入本資料夾，修復導覽與引用 | 完成（文件整併）；E13，三份獨特研究／驗證／審查與重要RL來源地位保留 | E1、E7、E12 | 保留pinned上游、license與元件實際採用證據；不改程式namespace／vendor／frozen source，無重複進度頁 |
 | HANDOFF-CYCLE | 將既有本地交接延伸為提交、監看、有限工程修復及結果回傳流程 | 完成（交接規格）；E13，只更新既有交接文件；實際本地執行另列E1～E4 | S1-O1～O6、原執行契約 | 明列fresh remote／材料／admission、single publisher、監看到terminal、結果回傳與方法觸發條件；本文件不派發工作 |
 | S1-P1 | 本地publisher的狹窄POSIX portability successor | 完成（離線交付）；E19～E25，106 normal／106 `-O`、獨立審查與19檔遠端readback | 純POSIX使用仍需本地native OAuth；本輪選擇S1-P2沿用Windows登入 | 保存此可重現版本；不因選擇Windows橋而改寫POSIX已測來源，也不把來源保存當provider放行 |
-| S1-P2 | WSL durable owner＋Windows官方SDK bounded bridge | 受阻；E39三項no-auth與E40正式readiness已通過，但E41新open失敗，舊UNKNOWN缺原生closure證據；E43診斷已實測，E45獨立recovery epoch離線驗收完成；本機前置驗收待執行 | S1-P1、精確SDK0.1.37、native Job／ACL／pipe驗收、原材料與全部新hash-bound reviews | bounded IPC／DTO、refresh前fsync握手、獨立每RPC watchdog、全Job清空、未知結果不重送；先離線與本機合成驗收，再依原admission進既有A/B/C流程 |
-| S1-E1 | 本地真實來源、模型材料與已存在audit接收 | 材料與原admission重建完成（E40）；發布在E41 open UNKNOWN受阻，本輪audit尚未產出 | 原執行契約、本地來源與材料 | 先完成目的環境portable successor與原admission，核對training-owned provenance／原records／排除及exact numeric materials。首次原A/B/C可在原admission通過後產生audit，不以尚未產出的結果阻擋原流程 |
+| S1-P2 | WSL durable owner＋Windows官方SDK bounded bridge | 受阻；E47真實recovery與新Job0已完成；E49 successor離線驗收完成，待本地same-owner context proof；原E41 UNKNOWN不改 | S1-P1、精確SDK0.1.37、native Job／ACL／pipe驗收、原材料與全部新hash-bound reviews | bounded IPC／DTO、refresh前fsync握手、獨立每RPC watchdog、全Job清空、未知結果不重送；先離線與本機合成驗收，再依原admission進既有A/B/C流程 |
+| S1-E1 | 本地真實來源、模型材料與已存在audit接收 | 材料與原admission重建完成（E40）；E47恢復完成，續接在E48 context/source部署受阻；本輪audit尚未產出 | 原執行契約、本地來源與材料 | 先完成目的環境portable successor與原admission，核對training-owned provenance／原records／排除及exact numeric materials。首次原A/B/C可在原admission通過後產生audit，不以尚未產出的結果阻擋原流程 |
 | S1-E2 | 原runtime真實replay／LoRA梯度／owner狀態驗收 | 待開始／未執行 | S1-E1、本地完整原admission | E2與E3是同次原執行中的驗收，不要求先有另一場成功證據。原runtime逐步核對模型、數值、rollback、save/reload、closure與資源；CPU logp梯度不能替代。若另接AF3模型hook，才加另立successor的同模型差分驗收 |
 | S1-E3 | 同 session 既有 A/B/C 比較 | 待開始／未驗證 | S1-E1、原admission／batch／時鐘；E2由該次原runtime逐步驗收 | 原 reward、replay、更新、checkpoint、全 B/C wall、固定選擇與 closure 證據完整；未完成與 zero-signal 分開 |
 | S1-E4 | sealed 評分與研究判讀 | 待開始／未驗證 | S1-E3、隔離 evaluator、原 scorer | 完整 PUBLIC120／167 與相同案例 gain／loss；B 同時對 A、等成本 C 判讀；缺評分保持未知，不 promotion |
 
-**現在的下一步：** 原E41 UNKNOWN與29份state保持不變。E43完成forward-only診斷的
-三項本地no-auth驗收；E44提供完整原狀態與原碼順序的條件性補證。E45新增獨立recovery epoch，
-已完成離線測試／審查；固定來源後交本地驗證新boot observer、recovery-mode pre-auth及純validate。
-依[本地恢復步驟](OFFLINE-LOCAL-HANDOFF.md#632-原failed-open的獨立恢復邊界)，保存前置證據並確認
-使用者可手動Windows「重新啟動」後，才可能建立新的process termination boundary與一次性唯讀核對。
-這不補造原receipt、不改寫原UNKNOWN；新的closure只屬新session。尚未執行Restart／recovery／新provider。
-根因仍未知；目前沒有新的dataset版本、notebook RUN或A/B/C結果。真實PUBLIC120／167保持未評分，
+**現在的下一步：** E47已完成本地手動Restart與一次性官方唯讀核對；不要重做已完成的recovery。
+原E41 UNKNOWN／29份state、E47新session及其completion seal全部保持原bytes。E48改以獨立adapter
+驗證歷史固定f5閉包、當前受審查程式與同boot lineage。原review來源與repository_root是同一checkout，
+故原址保留，另部署新版；僅審查實際新版root及真實WSL selector兩欄，其他配置完全相同。
+E49已完成離線測試與獨立審查；本地先核對本頁所在commit的遠端bytes，依[同boot續接](OFFLINE-LOCAL-HANDOFF.md#633-已完成恢復後的同boot-context續接)
+在同一owner／原publisher.lock內做no-auth context驗證、61檔保全核對及原admission。
+已完成的disposition原本就可跨已消耗lease存在；此修復不延expiry、不重新使用capability、不要求第二次Restart。
+原failed-open根因仍未知；沒有新的dataset版本、notebook RUN或A/B/C結果。真實PUBLIC120／167保持未評分，
 原Windows登入留原profile，不建立WSL OAuth，不提前轉向Stage2／TTT／Agent新方法。
 
 ## 四、技術設計與原始來源
@@ -391,3 +395,9 @@ DDIS數學與真實元件CPU整合證據，集中於[AF3整合研究](agent-fact
   必須先authenticated才可下一request；重複UNKNOWN不得改原proof；proxy kill錯誤仍關閉pipes；
   ancestor鄰檔churn只檢type／dev／inode，原檔與STATE完整metadata／集合檢查保留。
   共355 bridge＋38 observer各normal／`-O`通過；它們是CPU synthetic驗收，不是本機recovery成功。
+
+- 2026-10-15 12:06 UTC：E47記錄已完成的真實本地recovery；E48明確定位其後context rollover。
+  以來源與配置差分做窄續接，保留原recovery核心及全部歷史檔案；不再要求重啟或重跑一次性reconcile。
+
+- 2026-10-15 12:19 UTC：E49完成兩欄遷移的395／395與獨立review；完整suite精確failure/error集合
+  與保存f5一致。原checkout不可更新，另部署新root；真正same-owner驗收及fresh provider核對仍由本地執行。

@@ -1,4 +1,231 @@
 {
+  "context_continuation_revision": {
+    "actual_previous_recovery": {
+      "completed_utc": "2026-10-15T11:46:14.525285Z",
+      "completion_seal_sha256": "9ed49137330ca36535379a376e99cce96449163936c68bb082d8b319ac3e353b",
+      "eligibility_sha256": "bdf522126b1d7d8e7128cb1b0f229917cf23dd836f004818dddbeb600165659b",
+      "entry_exit_status": 0,
+      "new_native_closure_verified": true,
+      "original_failed_open_still_unknown": true,
+      "original_state_files": 29,
+      "post_completion_context_blocker_sha256": "3b216b03eb8aadd852289c95c71a018c7239458701ad7cb85a0b8f464e97bf49",
+      "proxy_exit_status": 0,
+      "refresh": false,
+      "remote_code_version": 20,
+      "remote_notebook_status": "ERROR",
+      "remote_notebook_version": 39,
+      "source_commit": "f5f780cb5823579288385158ce6da70a1ca33899",
+      "state_files": 61,
+      "upload_or_run": false
+    },
+    "aggregate": {
+      "added_failure_error_ids": [],
+      "baseline_log_sha256": "3a01ad7bf97a47c8b44c59dd8c3074a25e503cab0e46dde99deb17808b0fbd42",
+      "baseline_rerun": false,
+      "environment": "inherited plus PYTHONHASHSEED=0, workspace TMPDIR, HF_HUB_OFFLINE=1, TRANSFORMERS_OFFLINE=1, HF_DATASETS_OFFLINE=1, CUDA_VISIBLE_DEVICES empty",
+      "errors": 35,
+      "exit_code": 1,
+      "failure_error_id_count": 37,
+      "failures": 2,
+      "focused_bridge_suite_is_separate": true,
+      "log_sha256": "51648c43864d8b555dd354ba33d416d0be6de5e8af829721c701fef1683139b8",
+      "readme_findings": 6,
+      "removed_failure_error_ids": [],
+      "same_failure_error_ids_as_saved_f5_baseline": true,
+      "skips": 74,
+      "tests": 1621
+    },
+    "allowed_configuration_changes": [
+      "repository_root",
+      "runtime.interop_environment_sha256.WSL_INTEROP"
+    ],
+    "baseline_commit": "f5f780cb5823579288385158ce6da70a1ca33899",
+    "current_operator_review_sources": 20,
+    "focused": {
+      "normal": {
+        "errors": 0,
+        "failures": 0,
+        "log_sha256": "46612fdf962d9aaf64198750849576957a91bfc0f1265f5edd6e8ec41f191aa6",
+        "seconds": 20.83,
+        "skips": 0,
+        "tests": 395
+      },
+      "optimized": {
+        "errors": 0,
+        "failures": 0,
+        "log_sha256": "89a73a3e9902eda26a9a137e2f2211efdcc3c6dcbfccd07295df942fcdef4808",
+        "seconds": 23.023,
+        "skips": 0,
+        "tests": 395
+      }
+    },
+    "historical_core_bytes_unchanged": true,
+    "historical_f5_manifest_sources": 18,
+    "independent_review": {
+      "artifact_sha256": "54ebc529cedc575ca4027306d1deca2985f831d6b45f30fdbe2f3f82b9b69589",
+      "blocking_findings": 0,
+      "errors": 0,
+      "failures": 0,
+      "focused_normal_tests": 395,
+      "focused_optimized_tests": 395,
+      "normal_log_sha256": "bea9ba5ddf798703d5b7d584fbb67096f5fcf4fe3b69ca43712bc69d34358b59",
+      "optimized_log_sha256": "b7d3700e153cd6bc7eeba9f3bc1625d1189d1f97425862a48ddcda012bfb1901",
+      "skips": 0,
+      "status": "PASS",
+      "unchanged_source_test_snapshot_sha256": "0eef64c7f5328628e63e51a0875f04595632b73cbe36978a067760bd31028a54"
+    },
+    "new_restart_or_recovery_executed": false,
+    "preserved_native_core_config_probe_files": 13,
+    "provider_calls_in_this_development": 0,
+    "same_owner_local_noauth_acceptance": "pending",
+    "scope": "offline same-boot continuation of an already sealed f5 recovery; actual local acceptance remains pending",
+    "source_test_files": {
+      "bridge_client.py": {
+        "bytes": 47428,
+        "sha256": "004c28baada2929d5f1e9365f25fbd9f805fc92122a25ba7c69d2e7794594930"
+      },
+      "config.py": {
+        "bytes": 25073,
+        "sha256": "9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a"
+      },
+      "context-source-pins.json": {
+        "bytes": 2587,
+        "sha256": "09e51f695d1dfd216f162b8451cd34331f35f9d137da749bc35e4fde8f6882a7"
+      },
+      "context_continuation.py": {
+        "bytes": 15947,
+        "sha256": "ad09f4bc12f27af5d71957ea0f484ca6131720d1d11dccaa1642bb24343e1a0e"
+      },
+      "launch.py": {
+        "bytes": 5359,
+        "sha256": "1507df560627a74460585d9ac44f776ab7651e73b2cefe9b6e0f2af52ff34b5d"
+      },
+      "native_auth.py": {
+        "bytes": 15321,
+        "sha256": "785e696dc702e5042f415e3da1bd3fbf43ff34f3f8a579a702ec2f262aefdcd4"
+      },
+      "native_config.py": {
+        "bytes": 16714,
+        "sha256": "5008d989004f2c99948a157f9fda09f6ce751ee93c07ce39f1659f3789fb9fe8"
+      },
+      "native_probe.py": {
+        "bytes": 39716,
+        "sha256": "d38630677f70dac21d0369623c1d7f7e6650d9085b0d3b9e38a7c2918072f73f"
+      },
+      "operator_common.py": {
+        "bytes": 22628,
+        "sha256": "3000c291c75b65505c6ba5735e5f86f67ee5ac7b1e43c21433b49952538dafff"
+      },
+      "preauth_probe.py": {
+        "bytes": 20535,
+        "sha256": "2e6ffff0a4008935e03376807508d14ba9cdac41efd5dba112c3da067aef9c45"
+      },
+      "protocol.py": {
+        "bytes": 37021,
+        "sha256": "5f67b8655497565cb149dbd7bd4aa675be8cec058089295f0d2a75873787cf24"
+      },
+      "recovery_boot_probe.py": {
+        "bytes": 22766,
+        "sha256": "46bc3f0b8c47dd53e7da0db58de01f39fc078811e9372fcc803a52db8b496b31"
+      },
+      "recovery_entry.py": {
+        "bytes": 10466,
+        "sha256": "c29927d5d77a866fc28fdb8b83481e8e165919f4cc5618a12482a8e780f8bab3"
+      },
+      "recovery_epoch.py": {
+        "bytes": 80549,
+        "sha256": "2d7ecb31f7571a51382597a1fc5ddd75939b296794d7de28cef10cc06b2439dc"
+      },
+      "rl_collect.py": {
+        "bytes": 58716,
+        "sha256": "8db1b75452eba3b164d2dff9645b2936b94e0fe9cb4ce949aaf031b2824ce419"
+      },
+      "rl_transport.py": {
+        "bytes": 59548,
+        "sha256": "4f1f834c429388a571502ddb654c79854b5b96dcdf45e129b4fa4d5dc6619879"
+      },
+      "sdk-lock.json": {
+        "bytes": 19816,
+        "sha256": "3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d"
+      },
+      "sdk_worker.py": {
+        "bytes": 49426,
+        "sha256": "bd75a7a221b58d7c3723cb98a3f3485135da2a69b2f518683cd9e30eefe29dcd"
+      },
+      "tests/test_bridge_client.py": {
+        "bytes": 48753,
+        "sha256": "d59e5113b51c9ec0ca0533eb86bbf4ad6a2d5697fc68bd776693ec77ecad0be4"
+      },
+      "tests/test_bridge_protocol.py": {
+        "bytes": 23233,
+        "sha256": "65d2d2d061fe0482ad5c4098fd4789dba2b587151ea2ce373288f23ec8c90e40"
+      },
+      "tests/test_config_admission.py": {
+        "bytes": 42689,
+        "sha256": "aa5f906d6ea3125e0fca45776c48e6f23386aafe1e96d1dc350a824a5e13fb19"
+      },
+      "tests/test_context_continuation.py": {
+        "bytes": 23829,
+        "sha256": "695d7721b0bb76433b7b255ac06019a9a7801ff522e1000f7d7479d954febf63"
+      },
+      "tests/test_context_owner_wiring.py": {
+        "bytes": 4817,
+        "sha256": "a45df2a9aa20054ce20dce537f66c9f4714f57dffc8c3898d129e558227c4367"
+      },
+      "tests/test_native_config.py": {
+        "bytes": 12434,
+        "sha256": "4b4311d3048954abf571e46b39ccd638ac46a4a807c79f0216a1b576df4b1d90"
+      },
+      "tests/test_native_sdk_worker.py": {
+        "bytes": 42337,
+        "sha256": "a14dcd71c393e4cf2b9a096e653ec166fb5f273bacd2b68ddffef7007653197d"
+      },
+      "tests/test_owner_integration.py": {
+        "bytes": 46492,
+        "sha256": "3309cfae5b4250fdf907ce5707289063a0646287cb357ae4e2b6a2119fde0326"
+      },
+      "tests/test_preauth_probe.py": {
+        "bytes": 14186,
+        "sha256": "5ca3fd63cd3728f13c2194f1c33084c2fc36c1339b0f1c7cecc3caf42bb6b51b"
+      },
+      "tests/test_recovery_entry.py": {
+        "bytes": 5938,
+        "sha256": "18830c3aa6177f582b99ffe8a20c0acbd7799ce59efce52755af807aeb699fa3"
+      },
+      "tests/test_recovery_epoch.py": {
+        "bytes": 41634,
+        "sha256": "1534798522126281a6ebb5d0fafe6b442c74e57b7532194c926d88333b039bd1"
+      },
+      "tests/test_recovery_observer_launch.py": {
+        "bytes": 13124,
+        "sha256": "4edc435c8ad63d3ff85024929457b28f9522b135521b556ef04d198eb6ff02ea"
+      },
+      "tests/test_recovery_wiring.py": {
+        "bytes": 9511,
+        "sha256": "74b22d9f076d9472ac4240d63e1928cbd246506098af6707d8fd045c1dd66a3a"
+      },
+      "tests/test_windows_runtime.py": {
+        "bytes": 49584,
+        "sha256": "bfb9f64d81a031336a999f750bc5fff4e3f4ddab35cfcf84df52d23ea397a265"
+      },
+      "verify_active_wire.py": {
+        "bytes": 19347,
+        "sha256": "8a5b7844d1c5cfee3f5c026967d1dab2ed8465aa11e563aec276ba909c086438"
+      },
+      "win_runtime.py": {
+        "bytes": 35240,
+        "sha256": "7280b755d3155fb3d5d4f9989c0ea592d7a0d8be8750d635360f06fe766db69d"
+      },
+      "win_supervisor.py": {
+        "bytes": 16841,
+        "sha256": "f2c8ff86424a993ff7e6a22e056cdf11ffb5d0969b64947d138c08f7c00a7001"
+      },
+      "wsl_native_probe.py": {
+        "bytes": 12116,
+        "sha256": "fcc5f07ad4a658c42c6ead9d42239a2743f3f175058feb1604f8963772842932"
+      }
+    }
+  },
   "diagnostic_revision": {
     "base_commit": "b2b1be8f3165e107f2bcfb93733e9d217892ac40",
     "focused": {
@@ -533,7 +760,7 @@
     "skips": 74,
     "tests": 1583
   },
-  "scope": "Original top-level fields describe historical d684f63; diagnostic_revision describes f998839; venv_repair_revision describes 01ca4f14 and its actual no-auth acceptance. open_failure_diagnostic_revision describes a forward-only diagnostic successor; historical failed-open UNKNOWN remains blocked, with no new native/provider or scientific admission. recovery_epoch_revision describes the explicit offline recovery successor, not an executed Restart or recovered publication.",
+  "scope": "Original top-level fields describe historical d684f63; diagnostic_revision describes f998839; venv_repair_revision describes 01ca4f14 and its actual no-auth acceptance. open_failure_diagnostic_revision describes a forward-only diagnostic successor; historical failed-open UNKNOWN remains blocked, with no new native/provider or scientific admission. recovery_epoch_revision describes the explicit offline recovery successor, not an executed Restart or recovered publication. context_continuation_revision records the same-boot successor CPU/source validation and separately identifies the actual completed f5 recovery; it does not claim successor local acceptance or publication.",
   "source_files": {
     "bridge_client.py": {
       "bytes": 30257,

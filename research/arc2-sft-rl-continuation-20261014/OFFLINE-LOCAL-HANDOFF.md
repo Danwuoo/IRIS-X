@@ -449,6 +449,38 @@ persistent ext4；Windows只接收同一固定commit的公開bridge來源、獨�
 仍未知；在固定原source及完整STATE未遭外部刪改／rollback前提，可排除受控original_refresh dispatch。
 不能排除外部grant變動，因此Restart後仍由官方既有認證實際核對；若grant失效或要求新權限，另請確認。
 
+### 6.3.3 已完成恢復後的同boot context續接
+
+此節只接續已成功完成、sealed且同一Windows boot的f5 disposition；實際結果與目前版本見
+[唯一進度頁E47／E48](DEVELOPMENT-PROGRESS.zh-TW.md)。不重新prepare、reserve、reconcile，
+不延長或重用已消耗的capability；原29份證據、原failed-open UNKNOWN與新session/seal均不更改。
+
+- **保留原f5 checkout原址。** 原review的18個source descriptors指向該checkout，不是可隨意替換的
+  副本。另建立獨立的新commit checkout供successor執行；不要在原址checkout新版、搬走舊檔或改review。
+  新adapter先用固定f5 manifest驗證全部18個descriptor與完整siblings，再從已驗證bytes載入原validator。
+- **只審查兩個必要配置差異。** 新normal config只可更改`repository_root`及
+  `runtime.interop_environment_sha256.WSL_INTEROP`。前者必須等於新版adapter位於固定repo-relative
+  package路徑所推導的實際root，並符合原Git/source gate；後者必須來自當前真正WSL context。
+  原candidate、scratch、STATE、evidence、gpu-stop、material、native config／路徑、runtime與版本配置
+  全部逐欄相同。此例外不適用任意檔案搬遷或新的publication namespace。
+- **維持單一實際owner。** 新selector取值、新config保存、獨立配置／20檔source review及後續使用
+  必須在同一仍存活的WSL owner中完成。每次新的context都須依真實環境重綁和審查；不重用任何示範
+  hash，不注入舊`WSL_INTEROP`，不改`WSLENV`、proxy、TLS、HOME或Windows登入。
+- **先做限定no-auth驗證。** 同一owner持有原`publisher.lock`，並在新commit的原材料／review驗證與
+  既有`git_publication_gate`通過後，
+  使用隔離Python載入固定adapter，提供`configuration_descriptor`、原pending claim descriptors與
+  一次新的既有no-auth boot observation，呼叫`validate_context`。不要建構`BridgeClient`，不要呼叫
+  prepare/reconcile或provider。驗證同host/install/boot、protected current sources、原history、seal、
+  全61檔與任何新UNKNOWN／refresh阻擋；前後核對STATE bytes相同。具體owner腳本由本地審查，
+  本節不是生成空白PASS review的依據。
+- **再回原admission。** 當前actual config和20檔source由原review綁新commit；新root不能取代
+  遠端版本／source／status／mounts／retention／single-publisher等原檢查。正常入口仍在新claim及
+  native launch前驗證context；任何新UNKNOWN仍阻擋，既有loop只在實際授權與fresh observation後續接。
+
+歷史config的SHA只作原validator的惰性identity；不送入runtime loader或live observer。
+原f5核心、config parser、native七檔及boot observer維持固定bytes；helper執行另外先比對固定f5 pins。
+已完成disposition可跨原短lease的既有規則保留；此路徑不能跨下一次Windows boot。
+
 ### 6.4 本地修復邊界與研究決策
 
 本地端可在當次明確授權內診斷並修復可重現的有限工程問題，例如 packaging／path

@@ -8,9 +8,9 @@ import ast, contextlib, email.utils, fcntl, hashlib, json, os, re, shutil, signa
 from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse, urljoin
 
-BASE = WORK = STATE = STOP = CONFIG = None
+BASE = WORK = STATE = STOP = CONFIG = CONFIG_PATH = None
 CONFIG_SOURCE_SHA256 = '9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a'
-BRIDGE_CLIENT_SHA256 = 'e9be1c45d6f8d24fc0ad8f0256f2e7d820720b6cbc665bc2555391a52d909ee0'
+BRIDGE_CLIENT_SHA256 = '004c28baada2929d5f1e9365f25fbd9f805fc92122a25ba7c69d2e7794594930'
 REF = 'danielwuu/iris-x-learning-agent-20261011'
 DREF = 'danielwuu/iris-x-learning-agent-code-20261011'
 MODEL = 'qwen-lm/qwen-3/transformers/14b/1'
@@ -29,15 +29,22 @@ def configured():
 
 def configure(config_path, config_sha256, manifest_path, manifest_sha256, *, recovery=False):
     """Compile exact local configuration code; bind once before any provider."""
-    global BASE, WORK, STATE, STOP, CONFIG
+    global BASE, WORK, STATE, STOP, CONFIG, CONFIG_PATH
     need(CONFIG is None, 'local_configuration_already_bound')
     path=Path(__file__).absolute().with_name('config.py')
     module=load_source_module('reviewed_rl_local_config_'+CONFIG_SOURCE_SHA256,path,CONFIG_SOURCE_SHA256)
     try:config_=module.load(config_path,config_sha256,manifest_path,manifest_sha256, recovery=recovery)
     except ValueError as error:raise GuardError(str(error)) from None
-    CONFIG=config_;BASE=config_.repository_root;WORK=config_.candidate_root
+    CONFIG=config_;CONFIG_PATH=Path(config_path).absolute();BASE=config_.repository_root;WORK=config_.candidate_root
     STATE=config_.state_root;STOP=config_.gpu_stop_path
     return config_
+
+def configuration_descriptor():
+    """Exact admitted current document; historical identity never drives launch."""
+    config_=configured()
+    need(CONFIG_PATH is not None, 'current_configuration_path_required')
+    raw=verified(CONFIG_PATH,config_.document_sha256,cap=1024**2)
+    return {'path':str(CONFIG_PATH),'bytes':len(raw),'sha256':config_.document_sha256}
 
 def credential_guard():
     config_=configured()
