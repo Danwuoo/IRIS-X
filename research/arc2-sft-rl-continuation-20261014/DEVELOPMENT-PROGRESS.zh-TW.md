@@ -46,6 +46,7 @@
 | E16 | 本地實測與獨立portability來源審查確認無可直接使用的run008入口：Windows Kaggle2.2.4／SDK0.1.36；既有WSL venv為SDK0.1.36且缺Kaggle，均不符鎖定2.2.4／0.1.37與完整source closure | 原launcher／config綁定原wrapper、venv及wrapper HOME；不能偽造它們或整個換回舊抽取token的adapter。需目的環境狹窄successor、原source-lock、官方內部認證、real HOME／Windows ACL及其相依action／collector／active-wire審查；尚未產出放行收據 |
 | E17 | 本地transfer控制流程10 normal／10 `-O`通過；Stage0在WSL ext4 scratch為148 normal／148 `-O`通過 | 先前DrvFS scratch的148 tests各有14 failures／21 errors，涉及0700、FIFO與rename語意，失敗logs保留；只更換支援的scratch，沒有改gate。沒有安裝Torch或重跑AF3／Stage1，E7／E13的233／233仍是雲端歷史證據，不能代稱本機通過 |
 | E18 | 接手後executor transport中斷兩次，後續於2026-10-15 05:01 UTC恢復並以實際命令核對；WSL原程序已不在，該次位於ext4 `/tmp`的scratch目錄亦不在 | ext4重建未取得結果，本地`repository_check.py --all`只留部分unit log而無終態，均列interrupted／unknown，沒有補造通過。第一份invariants另有本地clone未帶archive tag的缺件；從原本機Git取回該tag後，獨立invariants重跑仍為同6項README缺詞、exit1，沒有其他finding。沒有Kaggle RUN在本輪等待監看，封包／提交仍未完成 |
+| E19 | 移轉補證：原`launch.py publish --help`安全前置檢查實際exit1，在第45行讀取不存在的`[checkout-parent]/kaggle_setup/kaggle.sh`時拋出`FileNotFoundError: [Errno 2] No such file or directory`，未進認證或建立provider | 只核對環境／來源／本地錯誤，不安裝依賴、不改發布器、不呼叫Kaggle。Windows Python3.12.10、WSL舊operator venv Python3.12.3；SDK差異仍同E16。等待協調者交付Astra修復commit後才續接 |
 
 本地去敏觀察收據 `OBSERVATION.json` 的SHA256為
 `faffc10ca4325726b95f3a99bbc4a2d30b3cad26d20d91ef0e355d28c9413123`。
@@ -56,6 +57,24 @@ transfer normal／`-O` logs分別為
 `4c14f4ba99df152d55cf43accf219e99278b6746ee1a72699951f46f1c507a0d`／
 `a09f6b0ce19bcbea600a03c4e84d8c1ce9c1946600c298595cd4fa073bc7009f`。
 這些只識別上述本地觀察與CPU測試，原始檔均留在ignored側，不能當成production放行或GPU結果。
+
+E19的移轉接點均在`tools/arc_qwen_rlvr004_20261013/`：
+`publication_run008/launch.py:14–56`綁定wrapper／venv／HOME；
+`config.py:76,97–98,127–136`強制POSIX及原環境；
+`native_auth.py:21–34`綁定Python3.12的site-packages及完整SDK來源鎖。
+`operator_common.py:7,52`另使用fcntl／SIGALRM，不能直接改成Windows interpreter。
+更新config／auth時，須傳遞common、transport、collector、launcher及當次review的來源pins；
+`rl_transport.py:263`亦有`official_native_wrapper_required`，不能只改launcher。
+舊`publication_local/config.py:79–109,132–194`可提供real HOME、Windows ACL／reparse設計；
+其`operator_common.py:325–326`的抽取token路徑不能整體搬回run008。
+獨立審查確認沒有現成drop-in，要求目的環境successor及新的相依review，不構成執行放行。
+
+重建尚待：以原Git objects、Python3.12及正確原始LF bytes，在可持續的POSIX/ext4工作目錄
+重新執行既有`transfer_run008/rebuild_engineering.py`，保留原輸入及失敗。必須實際取得
+283檔source-rebuild、426檔candidate-rebuild與原REBUILD-REPORT，再取得311檔inert
+independent-reviewed-proposal及工程重建report；portable components子集不能代替。
+其後才是目的環境binding／fresh官方bracket與owner／proposal及原admission；本次沒有補造。
+本機操作路徑與原始錯誤log另由當次回報提供，不把私人帳號設定或原始log放入公開Git。
 
 發布歷史仍保留：15:44／15:46 UTC 的 tree 發布嘗試回傳取消，15:54 重試取得 tree；
 16:06 寫入前遠端研究分支仍是 `0d4d19c`。E2 才是後續 commit／branch／tree 的核對，
@@ -270,3 +289,6 @@ DDIS數學與真實元件CPU整合證據，集中於[AF3整合研究](agent-fact
   與Git blob只差CRLF而遭原重建工具拒絕；失敗保留，另嘗試用原Git來源的WSL ext4 checkout
   驗證，但executor中斷，未取得結果。不改原blob或放寬exact-byte gate。
   A/B/C、真模型／GPU、audit、成本與新分數仍未取得。
+
+- 2026-10-15移轉補證：E19記錄原launcher在provider前的實際缺wrapper錯誤、source gate位置及
+  尚缺重建步驟；協調者已交Astra處理portability，本地只補證據，等待修復commit，不平行改發布器或提交。
