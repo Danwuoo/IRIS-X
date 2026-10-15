@@ -245,7 +245,9 @@ class ContextTests(unittest.TestCase):
                     node = node[key]
                 node[parts[-1]] = value
                 self.bind_current()
-                with self.assertRaisesRegex(ValueError, 'changed_beyond_interop'):
+                diagnostic = ('reviewed_material_lineage_required' if field in
+                    ('candidate_root', 'publication_manifest_sha256') else 'changed_beyond_interop')
+                with self.assertRaisesRegex(ValueError, diagnostic):
                     self.validate()
 
     def test_selector_schema_is_exact(self):

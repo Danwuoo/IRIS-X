@@ -204,7 +204,8 @@ class EpochTests(unittest.TestCase):
         name = 'native-bridge-' + nonce
         claim = {'format': 'irisx/windows-bridge-session-claim-v1', 'nonce': nonce,
             'account': 'danielwuu', 'versions': self.versions, 'configuration_sha256': local['sha256'],
-            'bridge_configuration_sha256': native['sha256'], 'publication_manifest_sha256': 'f' * 64,
+            'bridge_configuration_sha256': native['sha256'],
+            'publication_manifest_sha256': self.local['publication_manifest_sha256'],
             'deadline_epoch': self.now + (1000 if recovery else 43200), 'max_seconds': 43200.0,
             'synthetic_test_only': False}
         if recovery:

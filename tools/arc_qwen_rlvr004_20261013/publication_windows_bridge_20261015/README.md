@@ -37,7 +37,7 @@ interface; source availability alone does not admit credentials or publication.
 `launch.py publish|collect ACTION` preserves the prior required manifest,
 material, review and local-config flags plus their hashes. It execs only the
 pinned WSL Python with `-I -B`. All original mutation and wire gates remain.
-`review_gate` and `git_publication_gate` bind all 18 operator/source/verifier
+`review_gate` and `git_publication_gate` bind all 22 operator/source/verifier
 files; the seven Windows source descriptors must match the same WSL Git files.
 
 The WSL config format is `irisx/run008-windows-bridge-operator-config-v1`.
@@ -167,3 +167,19 @@ publication and source gates with external SDK/Windows boundaries replaced.
 They cannot establish native cleanup, genuine credential ACLs, provider access,
 GPU execution or ARC results. Test counts and exact evidence are maintained in
 the single progress document, not duplicated here.
+
+## Collector-only material succession
+
+`material_lineage.py` validates a separately reviewed canonical successor using
+only the final collector hash change and its mechanically derived release bytes.
+`publication_state.py` gives the unchanged f5 validator a bounded read-only view
+of its original records while verifying later manifest-bound publication files.
+Neither helper authorizes provider work or changes historical UNKNOWN records.
+
+`launch.py publish validate-publication` requires the existing full contract plus
+`--monitor-review`, `--monitor-sha`, and `--consumer-root`. It exercises the original
+finalizer in memory with a synthetic epoch and checks the upload/wire/consumer
+closure. All four mutation/JIT actions also perform this check before opening the
+provider. It does not replace actual readback, mounts, audit, active-wire or
+collection evidence. Canonical assembly, exact receipt schemas, same-owner review
+and timing acceptance are specified in [handoff section 6.3.4](../../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#634-collector-only-canonical-material續接與完整發布預檢).

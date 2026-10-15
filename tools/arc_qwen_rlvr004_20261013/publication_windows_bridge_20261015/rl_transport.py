@@ -5,11 +5,11 @@ These local successor bytes retain the source-only, official-auth action gates.
 Official local SDK calls remain bounded, write-once and review-gated. Decision0075 admits terminal monitoring and exact selected-output retrieval.
 No automatic relaunch is supported.
 """
-import argparse, contextlib, hashlib, json, math, os, stat, subprocess, sys, time, types, zipfile
+import argparse, ast, contextlib, hashlib, json, math, os, stat, subprocess, sys, time, types, zipfile
 from pathlib import Path
 
 # Acyclic local dependency pin. Compile source before any authentication or RPC.
-COMMON_SOURCE_SHA256 = '3000c291c75b65505c6ba5735e5f86f67ee5ac7b1e43c21433b49952538dafff'
+COMMON_SOURCE_SHA256 = 'ba3807d44a52eb19dbbfdf20abfbfb96792227abc3b25412df4c8f37edfbd018'
 _common_path=Path(__file__).absolute().with_name('operator_common.py')
 if any(p.is_symlink() for p in (_common_path,*_common_path.parents)) or not stat.S_ISREG(_common_path.stat().st_mode):
     raise ValueError('unsafe_local_common_source')
@@ -33,7 +33,8 @@ OPERATOR_SOURCE_NAMES = ('config.py', 'native_auth.py', 'sdk-lock.json',
     'bridge_client.py', 'protocol.py', 'native_config.py', 'sdk_worker.py',
     'win_runtime.py', 'win_supervisor.py', 'native_probe.py', 'verify_active_wire.py',
     'recovery_epoch.py', 'recovery_boot_probe.py', 'recovery_entry.py',
-    'context_continuation.py', 'context-source-pins.json')
+    'context_continuation.py', 'context-source-pins.json', 'material_lineage.py',
+    'publication_state.py')
 
 # Allocation comes from the independently hash-bound live local configuration.
 # Historical code18/v35 evidence is validated separately and never relabelled.
@@ -287,7 +288,59 @@ def load_contract(args):
     approved={(n['role'],n['sha256']) for n in material['approved_notebooks']}
     need(all((n['role'],n['sha256']) in approved for n in m['notebooks']),'approved_notebooks')
     review_gate(args.review,args.review_sha,args.manifest_sha,args.material_sha,[SCRIPT,SCRIPT.with_name('operator_common.py')])
+    _common.bind_action_review(args.review,args.review_sha)
     return m
+
+def publication_preflight(m,args):
+    """Check future static dependencies now, without provider, claims or a clock.
+
+    Epoch 1 is only an in-memory deterministic finalizer exercise. None of its
+    four outputs is persisted, reviewed for dispatch, or passed to a consumer.
+    Numeric readback, mount, inactive, audit and real active-wire gates still
+    require their own subsequently observed receipts.
+    """
+    review=monitor_gate(args)
+    root=secure_path(args.consumer_root)
+    pins=obj(root/'CONSUMER-OPERATOR.json')
+    contract_=m['consumer_contract']
+    expected={'source_sha256':contract_['source_sha256'],
+        'source_archive_sha256':contract_['source_archive']['sha256'],
+        'release_sha256':contract_['release']['sha256'],
+        'policy_sha256':contract_['phase_policy']['sha256']}
+    need(all(pins.get(key)==value for key,value in expected.items()),'preflight_consumer_release_chain')
+    entry=verified(root/'reviewed_entry.py',review['consumer_files']['reviewed_entry.py'])
+    tree=ast.parse(entry)
+    assignments=[node for node in tree.body if isinstance(node,ast.Assign)
+        and any(isinstance(target,ast.Name) and target.id=='REVIEWED_OPERATOR_PINS_SHA256'
+                for target in node.targets)]
+    need(len(assignments)==1 and ast.literal_eval(assignments[0].value)==file_sha(root/'CONSUMER-OPERATOR.json'),
+         'preflight_reviewed_entry_operator_pin')
+    collector=verified(SCRIPT.with_name('rl_collect.py'),pins['collector_entry_sha256'])
+    compiled=compile(collector,str(SCRIPT.with_name('rl_collect.py')),'exec',dont_inherit=True,optimize=sys.flags.optimize)
+    need(any(isinstance(code,types.CodeType) and code.co_name=='validate_received'
+             for code in compiled.co_consts),'preflight_collector_callsite_present')
+    documents=finalized_documents(m,args.manifest,1)
+    protocol=load_source_module('reviewed_preflight_protocol',SCRIPT.with_name('protocol.py'),
+                               review['operator_files']['protocol.py'])
+    upload=m['datasets'][0]['transport_archive']
+    protocol.validate_request('start_upload',{'name':Path(upload['path']).name,
+        'bytes':upload['bytes'],'sha256':upload['sha256']})
+    inactive=row(m,'inactive')
+    inactive_raw=descriptor_at(Path(args.manifest).absolute().parent,inactive)
+    wire_hashes={}
+    for role,raw in (('inactive',inactive_raw),('rlvr004',documents['active-finalized.ipynb'])):
+        wire=kernel_wire(row(m,role),raw)
+        protocol.validate_request('save',{'wire':wire})
+        protocol.canonical({'wire':wire})
+        wire_hashes[role]=sha(canonical(wire))
+    # Retain only bounded hashes, never synthetic owner/scorer/operator bytes.
+    return {'status':'OFFLINE_PUBLICATION_CLOSURE_PASS','provider_calls':0,'state_writes':0,
+        'production_dispatch_admitted':False,'actual_epoch_reserved':False,'synthetic_epoch':1,
+        'publication_manifest_sha256':args.manifest_sha,'collector_sha256':pins['collector_entry_sha256'],
+        'consumer_entry_sha256':sha(entry),'synthetic_finalizer_documents':
+            {name:{'bytes':len(raw),'sha256':sha(raw)} for name,raw in sorted(documents.items())},
+        'static_wire_sha256':wire_hashes,
+        'genuine_numeric_mount_inactive_audit_active_wire_still_required':True}
 
 def settings(meta,n):
     need(meta.id==138123872 and meta.ref==REF and meta.is_private is True,'returned_notebook_identity')
@@ -589,7 +642,7 @@ def verify_notebook(provider,m,args,role):
     return result
 
 def parser():
-    p=argparse.ArgumentParser();p.add_argument('action',choices=['validate','readiness','update-code','verify-code','verify-code-files','save-inactive','verify-inactive','prepare-active','activate','verify-run'])
+    p=argparse.ArgumentParser();p.add_argument('action',choices=['validate','validate-publication','readiness','update-code','verify-code','verify-code-files','save-inactive','verify-inactive','prepare-active','activate','verify-run'])
     for x in ('manifest','manifest-sha','material','material-sha','review','review-sha','local-config','local-config-sha'):p.add_argument('--'+x,required=True)
     for x in ('monitor-review','monitor-sha','mount','mount-sha','audit','audit-sha','consumer-root','active-review','active-review-sha'):p.add_argument('--'+x)
     return p
@@ -599,7 +652,10 @@ def main():
     try:
         m=load_contract(a)
         if a.action=='validate':print(json.dumps({'status':'LOCAL_CONTRACT_PASS','provider_calls':0}));return 0
+        if a.action=='validate-publication':print(json.dumps(publication_preflight(m,a)));return 0
         execution_gate(a)
+        if a.action in ('update-code','save-inactive','prepare-active','activate'):
+            publication_preflight(m,a)
         if a.action=='activate':active_review_gate(m,a)
         if a.action in ('update-code','save-inactive','activate'):no_gpu_stop()
         with lock():

@@ -8,9 +8,9 @@ import ast, contextlib, email.utils, fcntl, hashlib, json, os, re, shutil, signa
 from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse, urljoin
 
-BASE = WORK = STATE = STOP = CONFIG = CONFIG_PATH = None
+BASE = WORK = STATE = STOP = CONFIG = CONFIG_PATH = MANIFEST_PATH = ACTION_REVIEW = None
 CONFIG_SOURCE_SHA256 = '9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a'
-BRIDGE_CLIENT_SHA256 = '004c28baada2929d5f1e9365f25fbd9f805fc92122a25ba7c69d2e7794594930'
+BRIDGE_CLIENT_SHA256 = '2708754672e39d4343891c159e37b3bc6810d8f5b2e2001f454822b97322ed12'
 REF = 'danielwuu/iris-x-learning-agent-20261011'
 DREF = 'danielwuu/iris-x-learning-agent-code-20261011'
 MODEL = 'qwen-lm/qwen-3/transformers/14b/1'
@@ -29,13 +29,13 @@ def configured():
 
 def configure(config_path, config_sha256, manifest_path, manifest_sha256, *, recovery=False):
     """Compile exact local configuration code; bind once before any provider."""
-    global BASE, WORK, STATE, STOP, CONFIG, CONFIG_PATH
+    global BASE, WORK, STATE, STOP, CONFIG, CONFIG_PATH, MANIFEST_PATH
     need(CONFIG is None, 'local_configuration_already_bound')
     path=Path(__file__).absolute().with_name('config.py')
     module=load_source_module('reviewed_rl_local_config_'+CONFIG_SOURCE_SHA256,path,CONFIG_SOURCE_SHA256)
     try:config_=module.load(config_path,config_sha256,manifest_path,manifest_sha256, recovery=recovery)
     except ValueError as error:raise GuardError(str(error)) from None
-    CONFIG=config_;CONFIG_PATH=Path(config_path).absolute();BASE=config_.repository_root;WORK=config_.candidate_root
+    CONFIG=config_;CONFIG_PATH=Path(config_path).absolute();MANIFEST_PATH=Path(manifest_path).absolute();BASE=config_.repository_root;WORK=config_.candidate_root
     STATE=config_.state_root;STOP=config_.gpu_stop_path
     return config_
 
@@ -45,6 +45,35 @@ def configuration_descriptor():
     need(CONFIG_PATH is not None, 'current_configuration_path_required')
     raw=verified(CONFIG_PATH,config_.document_sha256,cap=1024**2)
     return {'path':str(CONFIG_PATH),'bytes':len(raw),'sha256':config_.document_sha256}
+
+def publication_manifest_descriptor():
+    """Actual configure input, not a guessed historical candidate pathname."""
+    config_=configured()
+    need(MANIFEST_PATH is not None, 'current_manifest_path_required')
+    raw=verified(MANIFEST_PATH,config_.publication_manifest_sha256,cap=4*1024**2)
+    need(MANIFEST_PATH.parent==config_.candidate_root,'current_manifest_candidate_root')
+    return {'path':str(MANIFEST_PATH),'bytes':len(raw),'sha256':config_.publication_manifest_sha256}
+
+def bind_action_review(path,digest):
+    """Called only after transport's exact action/source review gate succeeds."""
+    global ACTION_REVIEW
+    need(ACTION_REVIEW is None,'action_review_already_bound')
+    raw=verified(path,digest,cap=4*1024**2)
+    ACTION_REVIEW={'path':str(Path(path).absolute()),'bytes':len(raw),'sha256':digest}
+
+def material_lineage_descriptor():
+    """Read lineage only from the already admitted, immutable action review."""
+    need(ACTION_REVIEW is not None,'admitted_action_review_required')
+    row=ACTION_REVIEW
+    review=json.loads(verified(row['path'],row['sha256'],row['bytes'],4*1024**2))
+    need(review.get('status')=='PASS' and review.get('local_config_sha256')==configured().document_sha256
+         and review.get('publication_manifest_sha256')==configured().publication_manifest_sha256,
+         'admitted_action_review_changed')
+    lineage=review.get('candidate_lineage')
+    if lineage is None:return None
+    need(type(lineage)is dict and set(lineage)=={'path','bytes','sha256'},'candidate_lineage_descriptor_schema')
+    verified(lineage['path'],lineage['sha256'],lineage['bytes'],4*1024**2)
+    return dict(lineage)
 
 def credential_guard():
     config_=configured()

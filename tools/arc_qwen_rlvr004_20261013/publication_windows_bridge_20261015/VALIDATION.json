@@ -314,6 +314,793 @@
     "source_files_unchanged_before_after": 25,
     "source_map_sha256": "be3040cec5307c9545afdbe2e76b79bc7327c4bbac47a7827e50839ac18a4ad4"
   },
+  "material_successor_revision": {
+    "actual_blocker": {
+      "a724_collector_sha256": "8db1b75452eba3b164d2dff9645b2936b94e0fe9cb4ce949aaf031b2824ce419",
+      "candidate_collector_sha256": "117baa170c24768a83cd8c97c45b39385aec162646be329ed62a68a3f74be182",
+      "guard_failure_source_proven": true,
+      "prepare_active_executed": false
+    },
+    "actual_local_acceptance_pending": [
+      "genuine canonical proposal and independent namespace/runtime/material reviews",
+      "two identical genuine final assemblies and external lineage with original83 immutable frontier",
+      "actual same-owner noauth context/config/source review",
+      "real pre-epoch entry/finalizer/JIT timing within unchanged60-secondwindow",
+      "fresh remote observation and all original dynamic publication/collection gates"
+    ],
+    "actual_previous_context": {
+      "formal_readiness_passed": true,
+      "native_closure_verified": true,
+      "native_session_closed": true,
+      "noauth_context_passed": true,
+      "original29_unknown_unchanged": true,
+      "original61_unchanged": true,
+      "publication_mutation": false,
+      "readiness_utc": "2026-10-15T12:44:49Z",
+      "remote_code_version": 20,
+      "remote_notebook_status": "ERROR",
+      "remote_notebook_version": 39,
+      "source_commit": "a7245eff47719769ed83d564668c9b0e920863b5",
+      "state_files": 83
+    },
+    "aggregate": {
+      "added_failure_error_ids": [],
+      "baseline_log_sha256": "51648c43864d8b555dd354ba33d416d0be6de5e8af829721c701fef1683139b8",
+      "baseline_rerun": false,
+      "environment": "inherited plus PYTHONHASHSEED=0, workspace TMPDIR, HF_HUB_OFFLINE=1, TRANSFORMERS_OFFLINE=1, HF_DATASETS_OFFLINE=1, CUDA_VISIBLE_DEVICES empty",
+      "errors": 35,
+      "exit_code": 1,
+      "failure_error_id_count": 37,
+      "failures": 2,
+      "focused_bridge_suite_is_separate": true,
+      "log_sha256": "55a4b0358ae63f3572404b1f73f8c6cfb5853b51377032f1c39388a78617c3fb",
+      "readme_findings": 6,
+      "removed_failure_error_ids": [],
+      "same_failure_error_ids_as_saved_a724_baseline": true,
+      "seconds": 149.533,
+      "skips": 74,
+      "tests": 1621
+    },
+    "allowed_configuration_changes": [
+      "repository_root",
+      "runtime.interop_environment_sha256.WSL_INTEROP",
+      "candidate_root",
+      "publication_manifest_sha256"
+    ],
+    "assembler_sha256": "ba1b94cfcf4ff55d52a85e9508490039accb66f67f8d323085fd7df64b9d489e",
+    "baseline_commit": "a7245eff47719769ed83d564668c9b0e920863b5",
+    "candidate_changes_require_reviewed_canonical_lineage": true,
+    "collector_all_functions_and_classes_unchanged": true,
+    "current_operator_review_sources": 22,
+    "exact_candidate_changed_files": 14,
+    "final_collector_sha256": "9cd82f83b44e060ba26e751fb224cc24b5e9a1b7464d53282c23251e209ca562",
+    "fixed_f5_native_recovery_config_probe_files_unchanged": 13,
+    "focused": {
+      "normal": {
+        "errors": 0,
+        "failures": 0,
+        "log_sha256": "de03193eb80291afb34fbff19fa91dc803da2c3942991ee209dd3a6685d46eb3",
+        "seconds": 29.651,
+        "skips": 0,
+        "tests": 472
+      },
+      "optimized": {
+        "errors": 0,
+        "failures": 0,
+        "log_sha256": "9fabdcc6170659cfcc8fce67dbf8cd44a2c713fd9884a9cae8b268cdaa2e3b10",
+        "seconds": 30.039,
+        "skips": 0,
+        "tests": 472
+      }
+    },
+    "historical_core_commit": "f5f780cb5823579288385158ce6da70a1ca33899",
+    "independent_review": {
+      "artifact_sha256": "6bae01cac85fff71619d4c14ae38d0879c002425062530df8e3b196b99479cb8",
+      "summary": {
+        "actual_local_acceptance_remaining": [
+          "Canonically regenerate proposal and candidate from genuine preserved inputs with fresh independent runtime/material reviews; compare two full rebuilds.",
+          "Independently authenticate the external comparison and lineage descriptors, actual configuration, all 22 operator sources and immutable actual 83-file frontier.",
+          "Verify genuine same-owner same-boot context and measure full candidate/ZIP validation cost before any real epoch; preserve the existing 60-second dispatch bound.",
+          "Run actual local full-contract and validate-publication gates with current monitor and consumer bindings before any Provider construction.",
+          "Obtain fresh official readiness and all original numeric readback, mount, inactive audit, active-wire, single-RUN, terminal, closure and scientific gates in their authorized sequence."
+        ],
+        "additional_reviewed_interface_dependencies": {
+          "tools/arc_qwen_rlvr004_20261013/admission_run008/assemble.py": {
+            "bytes": 28507,
+            "sha256": "ba1b94cfcf4ff55d52a85e9508490039accb66f67f8d323085fd7df64b9d489e"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/CONSUMER-INVENTORY.json": {
+            "bytes": 2001,
+            "sha256": "d88b66c3b45435c2b328c2cc36c9c605c889ba76e48a36c22729db0ec2fda710"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/CONSUMER-OPERATOR.json": {
+            "bytes": 606,
+            "sha256": "913ba758dd6e7b527a24ad214918e4204d832e4dd423e5e5cf1fde1691a8e6f8"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/__init__.py": {
+            "bytes": 81,
+            "sha256": "fe4372b53acbc855f6e35741f441a17c2438c9d7acb1f02dbc97c8bc9405a6c3"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/__init__.py": {
+            "bytes": 61,
+            "sha256": "6a69c09536694ee56ec7a93ba1674ff118800da9dd3708905e17f40ea299f0a1"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/audit_checks.py": {
+            "bytes": 38651,
+            "sha256": "778ae86de3dce6cd1d3f62b1b1cd374c926b7a581a71df1bcd272bde060c1ffa"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/budget_checks.py": {
+            "bytes": 7337,
+            "sha256": "9b9aa0a168529a81aed2e682df0b3a2319b65af5fbfeb3c9b37f5f25a9b7f103"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/checkpoint_metadata.py": {
+            "bytes": 11031,
+            "sha256": "f66b33c38e279a2dd37c4a12b62ea78817aa5968ef8c5e10f459c50090eb8572"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/grid_checks.py": {
+            "bytes": 4482,
+            "sha256": "4ef2c33434e9064c93b6da75329067aff60ae3222417a2d608cede7f3e0cbb11"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/ledger_checks.py": {
+            "bytes": 17557,
+            "sha256": "7125f8d3cf3276d1158442060023bf8cdca120ccf3a3d283eaf554a5a14a4790"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/native_identity.py": {
+            "bytes": 1736,
+            "sha256": "032d59bcee00a0b7bae2517fda7ca5ac6129ae87f3e84887578659180d1e32c6"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/outer_checks.py": {
+            "bytes": 11548,
+            "sha256": "8e1da0765a9a6e56fb283a7dbd534f5132b02cf6bfa430f5e7184535957c2c58"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/prediction_checks.py": {
+            "bytes": 12790,
+            "sha256": "b4cd960e207af13381c0dcfb6386a1ce1d4210f9d7c00277f557a15845b6fb6d"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/public_checks.py": {
+            "bytes": 20670,
+            "sha256": "30a5e52be09f68f1873f86aee287476d4abc5046d46fe4831a78c8df157d1cb0"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/release_checks.py": {
+            "bytes": 19651,
+            "sha256": "80a7088602b7bcfc2d9d11fa29461fc6ac20b24b6d65b3a3a0c05f104b4cb70a"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/safe_io.py": {
+            "bytes": 9405,
+            "sha256": "d4c1a0ebadc5614308ecb307ecdfa1e75fe4824d7d615ddc6bd2028c8965726e"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/storage_checks.py": {
+            "bytes": 3384,
+            "sha256": "8593998541dbd9d6ed343073503aa488a3aeae69a5423586f7853c8bf7959b99"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/tensor_checks.py": {
+            "bytes": 16547,
+            "sha256": "4dfa4f04f900f2792aedd64d856a39b98c55c13366cc002325f5bc9d8116f2fd"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/training_checks.py": {
+            "bytes": 5235,
+            "sha256": "81b2aa01e71eb5e7c6c567c637f18c5d21469d2b4371c2df4ee4db34f0fb5206"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/validate_owned_outputs.py": {
+            "bytes": 31040,
+            "sha256": "8f6233c7354002d5d31076daf292f79d50ed2722bf3fcbe4ae826d0783b8b98f"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/lineage.py": {
+            "bytes": 6724,
+            "sha256": "dde53283604b846f71b6527f630de77e573fa40ae42e740735789d77e14690c1"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/production.py": {
+            "bytes": 7974,
+            "sha256": "aa2bdfdfdec9d16f3f9f7da2ac6b2ffd6307ade9f30b45c4200fd37e5859f7ed"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/reviewed_entry.py": {
+            "bytes": 9990,
+            "sha256": "f064fe5ef3d0788f67bae88992ff60f7b37f0c88d8e71337f7695fdfeba50862"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/streaming_zip.py": {
+            "bytes": 15479,
+            "sha256": "db07e9931cdeb6368bd86fa28361634d733d9b6db0ed4ddd16b1d866bd983021"
+          },
+          "tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/terminal.py": {
+            "bytes": 8902,
+            "sha256": "8cba5dbd37d1c2c2d20c91bf468599f33773b195c33c09ed7201e75c317c0fde"
+          },
+          "tools/arc_qwen_rlvr004_20261013/support/assembly/finalize.py": {
+            "bytes": 4327,
+            "sha256": "a51505236d649c5fbf4cf7d892c97148ffbccae80ba3621265df581052c0d93b"
+          },
+          "tools/arc_qwen_rlvr004_20261013/support/deployment/notebook_builder.py": {
+            "bytes": 6303,
+            "sha256": "b3b4db0c9d7bcca30662b1d6f6656f3fa770d831f48c97f1330de8e7a0922752"
+          },
+          "tools/arc_qwen_rlvr004_20261013/support/deployment/source_loader.py": {
+            "bytes": 10125,
+            "sha256": "fe76c07f12aaa0790159e00d2149003a0a6e37e253baccafed5dc83e342b0f59"
+          },
+          "tools/arc_qwen_rlvr004_20261013/support/tests/test_deployment.py": {
+            "bytes": 9607,
+            "sha256": "48c0fa89b70d7eee17225363d3247f3b01cec03b18a17014790e2faeafa9dba4"
+          }
+        },
+        "auth_provider_model_or_scorer_called": false,
+        "base_commit": "a7245eff47719769ed83d564668c9b0e920863b5",
+        "blocking_source_findings_remaining": [],
+        "collector_behavior_unchanged_except_two_dependency_pins": true,
+        "format": "irisx/independent-material-successor-offline-review-v1",
+        "git_diff_check_passed": true,
+        "inventory_counts": {
+          "additional_dependencies": 29,
+          "bridge_sources": 24,
+          "test_modules": 19
+        },
+        "limitations": [
+          "Synthetic fixtures do not establish genuine canonical candidate acceptance, native cleanup, authentication, provider publication, GPU execution or scientific results.",
+          "The complete repository aggregate is outside this independent targeted review; no global-green claim is made.",
+          "VALIDATION.json is deliberately excluded from source inventory to keep its review-hash reference acyclic.",
+          "Earlier failed full-suite logs are retained separately; final 472-case runs supersede three corrected stale test expectations."
+        ],
+        "production_dispatch_authorized": false,
+        "protected_f5_source_equality": {
+          "all_byte_identical": true,
+          "commit": "f5f780cb5823579288385158ce6da70a1ca33899",
+          "files": [
+            "config.py",
+            "native_auth.py",
+            "native_config.py",
+            "protocol.py",
+            "recovery_boot_probe.py",
+            "recovery_epoch.py",
+            "sdk-lock.json",
+            "sdk_worker.py",
+            "win_runtime.py",
+            "win_supervisor.py",
+            "native_probe.py",
+            "preauth_probe.py",
+            "wsl_native_probe.py"
+          ]
+        },
+        "resolved_findings": [
+          "Immutable frontier validation reads only the descriptor-pinned 83-file subset; dynamic publication namespace closure is separate.",
+          "Native manifest identity fields and genuine readiness event naming remain compatible with the immutable frontier schema.",
+          "Manifest readback paths admit legitimate leading-underscore source members, including empty __init__.py files.",
+          "Closed old-to-old identity reconstruction precedes the exact 14-file collector-only successor reconstruction.",
+          "Source-closure test expectations now require 22 files; exact added preflight statements are normalized while original function AST checks remain.",
+          "Real-interface fixtures use active RUN=1 and inactive QUICK_SAVE=3, and assert exact wire sources and modes.",
+          "Handoff states required assembler --mode flags and distinguishes structural preflight from actual consumer-callsite evidence."
+        ],
+        "reviewed_at_utc": "2026-10-15T13:37:05.667669+00:00",
+        "reviewed_documents": [
+          {
+            "bytes": 11986,
+            "path": "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/README.md",
+            "sha256": "b0d48e7646fb2eee08d066364798c519f7ae485085a94810b4f09cd2fbac3d51"
+          },
+          {
+            "bytes": 50920,
+            "path": "research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md",
+            "sha256": "9fe3b82ac39ea28d4103173b91ae273e868b38c833c8d007dedc6dd37863adc7"
+          }
+        ],
+        "scope": "Canonical collector-only lineage, bounded publication-state projection, source pins, offline publication preflight, unchanged collection behavior, and operational handoff. No authentic local candidate or runtime admission.",
+        "source_and_test_snapshots_unchanged": true,
+        "source_edits_by_reviewer": false,
+        "source_inventory": {
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/bridge_client.py": {
+            "bytes": 47428,
+            "sha256": "2708754672e39d4343891c159e37b3bc6810d8f5b2e2001f454822b97322ed12"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/config.py": {
+            "bytes": 25073,
+            "sha256": "9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/context-source-pins.json": {
+            "bytes": 2587,
+            "sha256": "09e51f695d1dfd216f162b8451cd34331f35f9d137da749bc35e4fde8f6882a7"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/context_continuation.py": {
+            "bytes": 19783,
+            "sha256": "c65d0638e746d6f99fc42d310dcd38c9b2680897f93542f566ef13bbf14a075f"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/launch.py": {
+            "bytes": 5359,
+            "sha256": "9f181514de9b62307eb98ce970d12adb285abc66b6e95bafd2fac8fa2636a5fb"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/material_lineage.py": {
+            "bytes": 30390,
+            "sha256": "2f17db9901057e5f1e72e38663984505d3ea8b54b61387ea355770574bc04459"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/native_auth.py": {
+            "bytes": 15321,
+            "sha256": "785e696dc702e5042f415e3da1bd3fbf43ff34f3f8a579a702ec2f262aefdcd4"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/native_config.py": {
+            "bytes": 16714,
+            "sha256": "5008d989004f2c99948a157f9fda09f6ce751ee93c07ce39f1659f3789fb9fe8"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/native_probe.py": {
+            "bytes": 39716,
+            "sha256": "d38630677f70dac21d0369623c1d7f7e6650d9085b0d3b9e38a7c2918072f73f"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/operator_common.py": {
+            "bytes": 24373,
+            "sha256": "ba3807d44a52eb19dbbfdf20abfbfb96792227abc3b25412df4c8f37edfbd018"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/preauth_probe.py": {
+            "bytes": 20535,
+            "sha256": "2e6ffff0a4008935e03376807508d14ba9cdac41efd5dba112c3da067aef9c45"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/protocol.py": {
+            "bytes": 37021,
+            "sha256": "5f67b8655497565cb149dbd7bd4aa675be8cec058089295f0d2a75873787cf24"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/publication_state.py": {
+            "bytes": 31662,
+            "sha256": "bcb1a441437f221ef6e2e62af5cf49b4a58e31d12f86ca12f885b261b86d69a5"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/recovery_boot_probe.py": {
+            "bytes": 22766,
+            "sha256": "46bc3f0b8c47dd53e7da0db58de01f39fc078811e9372fcc803a52db8b496b31"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/recovery_entry.py": {
+            "bytes": 10466,
+            "sha256": "f78848528b65390365506ee0b4e450e3e59a494e64042ddd9272422d443478e8"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/recovery_epoch.py": {
+            "bytes": 80549,
+            "sha256": "2d7ecb31f7571a51382597a1fc5ddd75939b296794d7de28cef10cc06b2439dc"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/rl_collect.py": {
+            "bytes": 58716,
+            "sha256": "9cd82f83b44e060ba26e751fb224cc24b5e9a1b7464d53282c23251e209ca562"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/rl_transport.py": {
+            "bytes": 63197,
+            "sha256": "bcb166527b79e28ce0847c10e5660f6975f1e69a049ad9658720e8f725920f24"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/sdk-lock.json": {
+            "bytes": 19816,
+            "sha256": "3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/sdk_worker.py": {
+            "bytes": 49426,
+            "sha256": "bd75a7a221b58d7c3723cb98a3f3485135da2a69b2f518683cd9e30eefe29dcd"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/verify_active_wire.py": {
+            "bytes": 19347,
+            "sha256": "8a5b7844d1c5cfee3f5c026967d1dab2ed8465aa11e563aec276ba909c086438"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/win_runtime.py": {
+            "bytes": 35240,
+            "sha256": "7280b755d3155fb3d5d4f9989c0ea592d7a0d8be8750d635360f06fe766db69d"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/win_supervisor.py": {
+            "bytes": 16841,
+            "sha256": "f2c8ff86424a993ff7e6a22e056cdf11ffb5d0969b64947d138c08f7c00a7001"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/wsl_native_probe.py": {
+            "bytes": 12116,
+            "sha256": "fcc5f07ad4a658c42c6ead9d42239a2743f3f175058feb1604f8963772842932"
+          }
+        },
+        "source_pin_edges_verified": [
+          {
+            "pin": "SOURCE_PINS_SHA256",
+            "sha256": "09e51f695d1dfd216f162b8451cd34331f35f9d137da749bc35e4fde8f6882a7",
+            "source": "context_continuation.py",
+            "target": "context-source-pins.json"
+          },
+          {
+            "pin": "MATERIAL_LINEAGE_SHA256",
+            "sha256": "2f17db9901057e5f1e72e38663984505d3ea8b54b61387ea355770574bc04459",
+            "source": "context_continuation.py",
+            "target": "material_lineage.py"
+          },
+          {
+            "pin": "PUBLICATION_STATE_SHA256",
+            "sha256": "bcb1a441437f221ef6e2e62af5cf49b4a58e31d12f86ca12f885b261b86d69a5",
+            "source": "context_continuation.py",
+            "target": "publication_state.py"
+          },
+          {
+            "pin": "CONTEXT_SOURCE_SHA256",
+            "sha256": "c65d0638e746d6f99fc42d310dcd38c9b2680897f93542f566ef13bbf14a075f",
+            "source": "bridge_client.py",
+            "target": "context_continuation.py"
+          },
+          {
+            "pin": "CONFIG_SOURCE_SHA256",
+            "sha256": "9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a",
+            "source": "operator_common.py",
+            "target": "config.py"
+          },
+          {
+            "pin": "BRIDGE_CLIENT_SHA256",
+            "sha256": "2708754672e39d4343891c159e37b3bc6810d8f5b2e2001f454822b97322ed12",
+            "source": "operator_common.py",
+            "target": "bridge_client.py"
+          },
+          {
+            "pin": "COMMON_SOURCE_SHA256",
+            "sha256": "ba3807d44a52eb19dbbfdf20abfbfb96792227abc3b25412df4c8f37edfbd018",
+            "source": "rl_transport.py",
+            "target": "operator_common.py"
+          },
+          {
+            "pin": "COMMON_SOURCE_SHA256",
+            "sha256": "ba3807d44a52eb19dbbfdf20abfbfb96792227abc3b25412df4c8f37edfbd018",
+            "source": "rl_collect.py",
+            "target": "operator_common.py"
+          },
+          {
+            "pin": "TRANSPORT_SOURCE_SHA256",
+            "sha256": "bcb166527b79e28ce0847c10e5660f6975f1e69a049ad9658720e8f725920f24",
+            "source": "rl_collect.py",
+            "target": "rl_transport.py"
+          },
+          {
+            "pin": "TRANSPORT_SHA256",
+            "sha256": "bcb166527b79e28ce0847c10e5660f6975f1e69a049ad9658720e8f725920f24",
+            "source": "recovery_entry.py",
+            "target": "rl_transport.py"
+          },
+          {
+            "pin": "CORE_SHA256",
+            "sha256": "2d7ecb31f7571a51382597a1fc5ddd75939b296794d7de28cef10cc06b2439dc",
+            "source": "recovery_entry.py",
+            "target": "recovery_epoch.py"
+          },
+          {
+            "pin": "CLIENT_SHA256",
+            "sha256": "2708754672e39d4343891c159e37b3bc6810d8f5b2e2001f454822b97322ed12",
+            "source": "recovery_entry.py",
+            "target": "bridge_client.py"
+          },
+          {
+            "pin": "CONFIG_SOURCE_SHA256",
+            "sha256": "9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a",
+            "source": "launch.py",
+            "target": "config.py"
+          },
+          {
+            "pin": "ENTRY_SHA256",
+            "sha256": "bcb166527b79e28ce0847c10e5660f6975f1e69a049ad9658720e8f725920f24",
+            "source": "launch.py",
+            "target": "rl_transport.py"
+          },
+          {
+            "pin": "ENTRY_SHA256",
+            "sha256": "9cd82f83b44e060ba26e751fb224cc24b5e9a1b7464d53282c23251e209ca562",
+            "source": "launch.py",
+            "target": "rl_collect.py"
+          },
+          {
+            "pin": "ENTRY_SHA256",
+            "sha256": "f78848528b65390365506ee0b4e450e3e59a494e64042ddd9272422d443478e8",
+            "source": "launch.py",
+            "target": "recovery_entry.py"
+          }
+        ],
+        "status": "PASS_OFFLINE_SOURCE_AND_SYNTHETIC_TEST_REVIEW_ONLY",
+        "test_inventory": {
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_bridge_client.py": {
+            "bytes": 48753,
+            "sha256": "d59e5113b51c9ec0ca0533eb86bbf4ad6a2d5697fc68bd776693ec77ecad0be4"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_bridge_protocol.py": {
+            "bytes": 23233,
+            "sha256": "65d2d2d061fe0482ad5c4098fd4789dba2b587151ea2ce373288f23ec8c90e40"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_config_admission.py": {
+            "bytes": 42689,
+            "sha256": "aa5f906d6ea3125e0fca45776c48e6f23386aafe1e96d1dc350a824a5e13fb19"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_context_continuation.py": {
+            "bytes": 23995,
+            "sha256": "9433e11fd4788aff29fd3699af07c8f28559a1f11cafdda8bd7ac0ec63d7075f"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_context_owner_wiring.py": {
+            "bytes": 4817,
+            "sha256": "a45df2a9aa20054ce20dce537f66c9f4714f57dffc8c3898d129e558227c4367"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_context_publication_integration.py": {
+            "bytes": 7307,
+            "sha256": "d498de9b755b57ba78368d6f0374a73b654bfd29f72108230aa9a917f5706e20"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_material_lineage.py": {
+            "bytes": 30825,
+            "sha256": "fda26cdbb992700a3e09a6ee779886a7f7eebada951d21af3e3f606bc11447cf"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_native_config.py": {
+            "bytes": 12434,
+            "sha256": "4b4311d3048954abf571e46b39ccd638ac46a4a807c79f0216a1b576df4b1d90"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_native_sdk_worker.py": {
+            "bytes": 42337,
+            "sha256": "a14dcd71c393e4cf2b9a096e653ec166fb5f273bacd2b68ddffef7007653197d"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_owner_integration.py": {
+            "bytes": 47846,
+            "sha256": "34ddd0ba0521bdf8182b7dbe1fb527a23e68733453906894cbde80dde2bac37c"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_preauth_probe.py": {
+            "bytes": 14186,
+            "sha256": "5ca3fd63cd3728f13c2194f1c33084c2fc36c1339b0f1c7cecc3caf42bb6b51b"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_publication_preflight.py": {
+            "bytes": 9002,
+            "sha256": "3b6be22294a68a805718d2b2a8d40c62746134b16868f64324083ea15003ebbe"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_publication_state.py": {
+            "bytes": 23543,
+            "sha256": "33c26e8d1657c75c139e87754a789643ead3595ed500d9b098c6a42390fc43a2"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_real_publication_interfaces.py": {
+            "bytes": 19878,
+            "sha256": "0cf317f83794e56013cb4f77cdc82585a455396d04005d56f37ddc5f0f24280d"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_recovery_entry.py": {
+            "bytes": 5938,
+            "sha256": "18830c3aa6177f582b99ffe8a20c0acbd7799ce59efce52755af807aeb699fa3"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_recovery_epoch.py": {
+            "bytes": 41679,
+            "sha256": "e0cd1362a96c3fbe5679c42065c2adaa7be190abb6850d086bab91ab21964059"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_recovery_observer_launch.py": {
+            "bytes": 13124,
+            "sha256": "4edc435c8ad63d3ff85024929457b28f9522b135521b556ef04d198eb6ff02ea"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_recovery_wiring.py": {
+            "bytes": 9511,
+            "sha256": "74b22d9f076d9472ac4240d63e1928cbd246506098af6707d8fd045c1dd66a3a"
+          },
+          "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_windows_runtime.py": {
+            "bytes": 49584,
+            "sha256": "bfb9f64d81a031336a999f750bc5fff4e3f4ddab35cfcf84df52d23ea397a265"
+          }
+        },
+        "test_results": [
+          {
+            "errors": 0,
+            "exit_status": 0,
+            "failures": 0,
+            "log": {
+              "bytes": 72781,
+              "path": ".irisx/material-successor-review-20261015/bridge-472-normal.log",
+              "sha256": "9c5a6e9e4e2ebc2ab15e7cf0d97952d983e319e6b773b89b9be202e50d632d3e"
+            },
+            "mode": "normal",
+            "seconds": 35.204,
+            "skips": 0,
+            "suite": "complete_windows_bridge_offline",
+            "tests": 472
+          },
+          {
+            "errors": 0,
+            "exit_status": 0,
+            "failures": 0,
+            "log": {
+              "bytes": 72781,
+              "path": ".irisx/material-successor-review-20261015/bridge-472-optimized.log",
+              "sha256": "833be0a9109c7a42b32160398743d0db6af054e5ce0b4f1a80a5c3d2028e5f11"
+            },
+            "mode": "optimized",
+            "seconds": 40.156,
+            "skips": 0,
+            "suite": "complete_windows_bridge_offline",
+            "tests": 472
+          }
+        ],
+        "test_snapshot_descriptors": {
+          "after": {
+            "bytes": 6950,
+            "path": ".irisx/material-successor-review-20261015/bridge-472-sources-after.sha256",
+            "sha256": "07a54891258cf2a32d595da270fb561e783eccbfb3caf17a30e2c8e8058bc506"
+          },
+          "before": {
+            "bytes": 6950,
+            "path": ".irisx/material-successor-review-20261015/bridge-472-sources-before.sha256",
+            "sha256": "07a54891258cf2a32d595da270fb561e783eccbfb3caf17a30e2c8e8058bc506"
+          }
+        },
+        "verified_boundaries": [
+          "External lineage authority derives from the admitted action review; no receipt or PASS label alone grants execution.",
+          "Only repository root, actual WSL selector, candidate root and publication manifest binding may differ from the frozen configuration.",
+          "Frozen scientific source, archive, helper and proposal fields remain exact through the lineage gate; only the enumerated 14 derived candidate files can change.",
+          "Every native, refresh and recovery root remains visible to the unchanged f5 validator; new UNKNOWN sessions, pending refresh and historical mutation still reject.",
+          "Publication projection is manifest/version bounded, single-link and race checked; known empty or exact-hash partial readbacks remain reconcilable.",
+          "Static preflight exercises finalization only in memory at epoch 1 and cannot reserve a real clock or provide publication evidence.",
+          "Fresh-process integration executes the actual current collector caller check and exact helper imports, then rejects deliberately absent terminal evidence before scoring.",
+          "Direct arbitrary callers and stale collector pins reject; provider, network, model, scorer and production state writes are forbidden in interface fixtures."
+        ]
+      }
+    },
+    "new_cloud_provider_auth_training_calls": 0,
+    "new_commit_remote_and_ci": "verify after publishing this revision; historical CI is not current CI",
+    "new_kaggle_upload_or_run": false,
+    "new_scientific_score": null,
+    "pure_preflight": "in-memory epoch1 only; structural callsite check; real dynamic readback/mount/audit/active-wire/consumer evidence still required",
+    "source_test_inventory_sha256": "53ade6e69b52a56c61181dbbea1135a8d27764fde0234459670a05b3b9e0fd21",
+    "sources_and_tests": {
+      "bridge_client.py": {
+        "bytes": 47428,
+        "sha256": "2708754672e39d4343891c159e37b3bc6810d8f5b2e2001f454822b97322ed12"
+      },
+      "config.py": {
+        "bytes": 25073,
+        "sha256": "9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a"
+      },
+      "context-source-pins.json": {
+        "bytes": 2587,
+        "sha256": "09e51f695d1dfd216f162b8451cd34331f35f9d137da749bc35e4fde8f6882a7"
+      },
+      "context_continuation.py": {
+        "bytes": 19783,
+        "sha256": "c65d0638e746d6f99fc42d310dcd38c9b2680897f93542f566ef13bbf14a075f"
+      },
+      "launch.py": {
+        "bytes": 5359,
+        "sha256": "9f181514de9b62307eb98ce970d12adb285abc66b6e95bafd2fac8fa2636a5fb"
+      },
+      "material_lineage.py": {
+        "bytes": 30390,
+        "sha256": "2f17db9901057e5f1e72e38663984505d3ea8b54b61387ea355770574bc04459"
+      },
+      "native_auth.py": {
+        "bytes": 15321,
+        "sha256": "785e696dc702e5042f415e3da1bd3fbf43ff34f3f8a579a702ec2f262aefdcd4"
+      },
+      "native_config.py": {
+        "bytes": 16714,
+        "sha256": "5008d989004f2c99948a157f9fda09f6ce751ee93c07ce39f1659f3789fb9fe8"
+      },
+      "native_probe.py": {
+        "bytes": 39716,
+        "sha256": "d38630677f70dac21d0369623c1d7f7e6650d9085b0d3b9e38a7c2918072f73f"
+      },
+      "operator_common.py": {
+        "bytes": 24373,
+        "sha256": "ba3807d44a52eb19dbbfdf20abfbfb96792227abc3b25412df4c8f37edfbd018"
+      },
+      "preauth_probe.py": {
+        "bytes": 20535,
+        "sha256": "2e6ffff0a4008935e03376807508d14ba9cdac41efd5dba112c3da067aef9c45"
+      },
+      "protocol.py": {
+        "bytes": 37021,
+        "sha256": "5f67b8655497565cb149dbd7bd4aa675be8cec058089295f0d2a75873787cf24"
+      },
+      "publication_state.py": {
+        "bytes": 31662,
+        "sha256": "bcb1a441437f221ef6e2e62af5cf49b4a58e31d12f86ca12f885b261b86d69a5"
+      },
+      "recovery_boot_probe.py": {
+        "bytes": 22766,
+        "sha256": "46bc3f0b8c47dd53e7da0db58de01f39fc078811e9372fcc803a52db8b496b31"
+      },
+      "recovery_entry.py": {
+        "bytes": 10466,
+        "sha256": "f78848528b65390365506ee0b4e450e3e59a494e64042ddd9272422d443478e8"
+      },
+      "recovery_epoch.py": {
+        "bytes": 80549,
+        "sha256": "2d7ecb31f7571a51382597a1fc5ddd75939b296794d7de28cef10cc06b2439dc"
+      },
+      "rl_collect.py": {
+        "bytes": 58716,
+        "sha256": "9cd82f83b44e060ba26e751fb224cc24b5e9a1b7464d53282c23251e209ca562"
+      },
+      "rl_transport.py": {
+        "bytes": 63197,
+        "sha256": "bcb166527b79e28ce0847c10e5660f6975f1e69a049ad9658720e8f725920f24"
+      },
+      "sdk-lock.json": {
+        "bytes": 19816,
+        "sha256": "3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d"
+      },
+      "sdk_worker.py": {
+        "bytes": 49426,
+        "sha256": "bd75a7a221b58d7c3723cb98a3f3485135da2a69b2f518683cd9e30eefe29dcd"
+      },
+      "tests/test_bridge_client.py": {
+        "bytes": 48753,
+        "sha256": "d59e5113b51c9ec0ca0533eb86bbf4ad6a2d5697fc68bd776693ec77ecad0be4"
+      },
+      "tests/test_bridge_protocol.py": {
+        "bytes": 23233,
+        "sha256": "65d2d2d061fe0482ad5c4098fd4789dba2b587151ea2ce373288f23ec8c90e40"
+      },
+      "tests/test_config_admission.py": {
+        "bytes": 42689,
+        "sha256": "aa5f906d6ea3125e0fca45776c48e6f23386aafe1e96d1dc350a824a5e13fb19"
+      },
+      "tests/test_context_continuation.py": {
+        "bytes": 23995,
+        "sha256": "9433e11fd4788aff29fd3699af07c8f28559a1f11cafdda8bd7ac0ec63d7075f"
+      },
+      "tests/test_context_owner_wiring.py": {
+        "bytes": 4817,
+        "sha256": "a45df2a9aa20054ce20dce537f66c9f4714f57dffc8c3898d129e558227c4367"
+      },
+      "tests/test_context_publication_integration.py": {
+        "bytes": 7307,
+        "sha256": "d498de9b755b57ba78368d6f0374a73b654bfd29f72108230aa9a917f5706e20"
+      },
+      "tests/test_material_lineage.py": {
+        "bytes": 30825,
+        "sha256": "fda26cdbb992700a3e09a6ee779886a7f7eebada951d21af3e3f606bc11447cf"
+      },
+      "tests/test_native_config.py": {
+        "bytes": 12434,
+        "sha256": "4b4311d3048954abf571e46b39ccd638ac46a4a807c79f0216a1b576df4b1d90"
+      },
+      "tests/test_native_sdk_worker.py": {
+        "bytes": 42337,
+        "sha256": "a14dcd71c393e4cf2b9a096e653ec166fb5f273bacd2b68ddffef7007653197d"
+      },
+      "tests/test_owner_integration.py": {
+        "bytes": 47846,
+        "sha256": "34ddd0ba0521bdf8182b7dbe1fb527a23e68733453906894cbde80dde2bac37c"
+      },
+      "tests/test_preauth_probe.py": {
+        "bytes": 14186,
+        "sha256": "5ca3fd63cd3728f13c2194f1c33084c2fc36c1339b0f1c7cecc3caf42bb6b51b"
+      },
+      "tests/test_publication_preflight.py": {
+        "bytes": 9002,
+        "sha256": "3b6be22294a68a805718d2b2a8d40c62746134b16868f64324083ea15003ebbe"
+      },
+      "tests/test_publication_state.py": {
+        "bytes": 23543,
+        "sha256": "33c26e8d1657c75c139e87754a789643ead3595ed500d9b098c6a42390fc43a2"
+      },
+      "tests/test_real_publication_interfaces.py": {
+        "bytes": 19878,
+        "sha256": "0cf317f83794e56013cb4f77cdc82585a455396d04005d56f37ddc5f0f24280d"
+      },
+      "tests/test_recovery_entry.py": {
+        "bytes": 5938,
+        "sha256": "18830c3aa6177f582b99ffe8a20c0acbd7799ce59efce52755af807aeb699fa3"
+      },
+      "tests/test_recovery_epoch.py": {
+        "bytes": 41679,
+        "sha256": "e0cd1362a96c3fbe5679c42065c2adaa7be190abb6850d086bab91ab21964059"
+      },
+      "tests/test_recovery_observer_launch.py": {
+        "bytes": 13124,
+        "sha256": "4edc435c8ad63d3ff85024929457b28f9522b135521b556ef04d198eb6ff02ea"
+      },
+      "tests/test_recovery_wiring.py": {
+        "bytes": 9511,
+        "sha256": "74b22d9f076d9472ac4240d63e1928cbd246506098af6707d8fd045c1dd66a3a"
+      },
+      "tests/test_windows_runtime.py": {
+        "bytes": 49584,
+        "sha256": "bfb9f64d81a031336a999f750bc5fff4e3f4ddab35cfcf84df52d23ea397a265"
+      },
+      "verify_active_wire.py": {
+        "bytes": 19347,
+        "sha256": "8a5b7844d1c5cfee3f5c026967d1dab2ed8465aa11e563aec276ba909c086438"
+      },
+      "win_runtime.py": {
+        "bytes": 35240,
+        "sha256": "7280b755d3155fb3d5d4f9989c0ea592d7a0d8be8750d635360f06fe766db69d"
+      },
+      "win_supervisor.py": {
+        "bytes": 16841,
+        "sha256": "f2c8ff86424a993ff7e6a22e056cdf11ffb5d0969b64947d138c08f7c00a7001"
+      },
+      "wsl_native_probe.py": {
+        "bytes": 12116,
+        "sha256": "fcc5f07ad4a658c42c6ead9d42239a2743f3f175058feb1604f8963772842932"
+      }
+    },
+    "superseded_failures": {
+      "initial_aggregate": "same inherited37 failure/error IDs plus newly introduced documentation EOF blank-line warning; warning fixed and final aggregate rerun",
+      "initial_context_fixture": "five errors: fixture hardcoded old manifest instead of its configured manifest; corrected fixture preserves default behavior",
+      "initial_full_bridge": "three stale expectations:20 sources instead of22 and source differential rejected intentional pure preflight; narrow exact-statement normalization retained every old function AST comparison"
+    }
+  },
   "open_failure_diagnostic_revision": {
     "actual_failed_open": {
       "cause": "unproven",

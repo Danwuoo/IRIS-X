@@ -481,6 +481,71 @@ persistent ext4；Windows只接收同一固定commit的公開bridge來源、獨�
 原f5核心、config parser、native七檔及boot observer維持固定bytes；helper執行另外先比對固定f5 pins。
 已完成disposition可跨原短lease的既有規則保留；此路徑不能跨下一次Windows boot。
 
+### 6.3.4 Collector-only canonical material續接與完整發布預檢
+
+本節接續6.3.3已完成的同boot disposition。真實canonical candidate必須在本地重新生成及
+獨立驗收；雲端synthetic測試、靜態預檢或來源commit不代表已上傳、RUN或取得A/B/C結果。
+現有collection／research runtime不改演算法；新collector的差異只有兩個必要dependency pins。
+
+1. **固定所有來源後才組裝。** 先核對交付commit／tree及22個operator來源；保留原f5 checkout、
+   a724 checkout、原candidate、原29 UNKNOWN、sealed61及已核對83檔frontier原bytes。
+   不在舊址checkout新版，也不將新collector hash手改到已批准的舊candidate。
+   既有idle owner不能換candidate／material；以其既有`{"action":"finish"}`控制正常退出，
+   確認原session exit與PID消失後，在獨立新checkout建立一個新owner。不要強殺、刪鎖或改舊STATE。
+2. **重用原canonical assembler與真實輸入。** 使用
+   `tools/arc_qwen_rlvr004_20261013/admission_run008/assemble.py`，來源SHA256必須為
+   `ba1b94cfcf4ff55d52a85e9508490039accb66f67f8d323085fd7df64b9d489e`。
+   使用`--mode proposal`，其他完整原參數為：
+   `--repository-root --source-proposal-root --base-root --observation-root --observation-sha
+   --owner-direction-path --owner-direction-sha --collector-path --collector-sha --output-root`。
+   沿用封存的原source proposal、base、完整historical observation及owner direction；只有collector
+   path／hash指向這次固定來源，output使用不存在的新路徑。舊observation仍標為歷史組裝輸入，
+   不冒充fresh remote observation。新`ADMISSION-PROPOSAL.json`與原件只能有collector SHA不同。
+3. **取得真實獨立review，再final組裝兩次。** 依原19項binding核對namespace、runtime、material。
+   原namespace bytes只有經獨立審查確認所有輸入相同才可沿用；runtime／material須重新綁新proposal
+   及collector，不能複製PASS後補hash。使用`--mode final`並保留上列參數，另提供
+   `--proposal-path --proposal-sha --solver-review-path --solver-review-sha
+   --runtime-review-path --runtime-review-sha --material-review-path --material-review-sha`。
+   以同一組已審查輸入在第二個獨立空output重新組裝，逐檔與inventory完全比對；保留verifier來源
+   descriptor與實際比較結果。若原canonical bytes不一致，停止並保留差分，不放寬determinism。
+4. **審查有界material lineage。** 新owner使用真實WSL selector，normal config只可相對原f5模板
+   更改`repository_root`、`runtime.interop_environment_sha256.WSL_INTEROP`、`candidate_root`及
+   `publication_manifest_sha256`。其他路徑、runtime、native config、版本與STATE全部相同。
+   外部receipt格式`irisx/run008-collector-material-lineage-v1`，完整schema與機械比對實作見
+   [material_lineage.py](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/material_lineage.py)。
+   它包含原／新config descriptors、原eligibility／seal、兩個candidate的root／inventory／manifest、
+   原83檔`state_frontier`、22個`operator_sources`及`canonical_rebuild` descriptor；不放進candidate
+   造成自我hash循環。comparison格式`irisx/run008-collector-rebuild-comparison-v1`，綁實際assembler、
+   verifier、兩次新inventory相等、原inventory、去除collector欄的原proposal canonical hash與精確14檔
+   差分。`all_files_byte_identical=true`只能來自實際完整比對。當前action review以`candidate_lineage`
+   descriptor綁此receipt，並照原規則綁實際config／material／manifest／來源commit。receipt本身不授權。
+5. **先一次檢查整條靜態閉包。** 在同一owner以新實際config及原CLI必填hash參數執行
+   `launch.py publish validate`，再執行`launch.py publish validate-publication`，後者另外必須提供
+   `--monitor-review --monitor-sha --consumer-root`。monitor review須真實綁新candidate與新collector，
+   不能再使用舊monitor review。此預檢核對upload DTO、inactive／active wire、consumer／reviewed entry
+   四pins與collector callsite結構、原finalizer依賴。epoch1只在記憶體試算四個文件，沒有保存、reservation或
+   dispatch權限；callsite結構檢查不等於實際consumer呼叫驗收。輸出`OFFLINE_PUBLICATION_CLOSURE_PASS`不是實際發布成功。
+6. **同owner no-auth context與成本驗收。** 持原publisher lock，完成原Git／source／actual review gate，
+   透過真正common的configuration、manifest、action-review-derived lineage callbacks驗證
+   `validate_context`，使用一次原no-auth boot observation。原83檔集合／bytes前後不變。
+   新publication-state view只解析manifest／版本綁定的已知publication檔及bounded code readback；
+   原native／refresh／recovery記錄原樣交固定f5 validator，新UNKNOWN與pending refresh仍阻擋。
+   此helper不寫STATE、不改historical predicate。以真實完整candidate測量一次entry的lineage／ZIP
+   重建耗時，連同既有JIT步驟確認原60秒activation window可行；測量應在實際epoch開始前，不能延長
+   window或預留假epoch。native七檔與既有三項本機no-auth來源未改，不因純WSL helper另發明原生門檻。
+7. **再走原動態發布流程。** fresh readiness及無active conflict、retention、exact payload inventory
+   仍為必要條件。`update-code`、`save-inactive`、`prepare-active`、`activate`現在都在Provider開啟前
+   執行同一靜態預檢，因此四個action從一開始就須帶上真實monitor review與consumer root。
+   接著依6.3既有次序核對dataset roundtrip／numeric mounts、inactive source／audit、原JIT四件組、
+   active wire、唯一RUN、terminal監看與實際collector；各動態review仍在其真正evidence取得後產生。
+   初始83只是不變的歷史子集，合法publication檔可追加；不能要求永遠恰好83，也不能隱藏新的native未知。
+
+精確14個允許變動的candidate檔由`material_lineage.CHANGED_FILES`列出：proposal、兩份新review、
+code manifest／ZIP、notebook release與兩個notebooks、consumer material／release、operator pins／entry、
+publication manifest及assembly inventory。其餘259 runtime、source archive、21helpers、namespace及科學
+設定全部逐byte不變。helper亦先重建原candidate自身的canonical identity，再重建新candidate；來源更新
+到collector、再到candidate、外部lineage及action review是單向鏈，不能反向把candidate hash寫回source。
+
 ### 6.4 本地修復邊界與研究決策
 
 本地端可在當次明確授權內診斷並修復可重現的有限工程問題，例如 packaging／path

@@ -2,8 +2,12 @@
 
 This adapter accepts a changed WSL_INTEROP selector and a new source checkout
 root bound to this exact adapter location in an actual, separately loaded current
-configuration. The original source checkout and operational paths remain intact. It does not load that historical
-configuration as a runtime, reopen a capability, create records, authenticate,
+configuration. A separately reviewed canonical collector-only material lineage
+may additionally replace candidate_root and its manifest identity. The original
+source checkout and all other operational paths remain intact. A bounded current
+publication view passes native/recovery records unchanged to the fixed validator.
+It does not load the historical configuration as a runtime, reopen a capability,
+create records, authenticate,
 contact a provider, or launch recovery. The caller retains its unchanged current
 runtime/socket, source-review, pending-refresh and remote-state gates.
 
@@ -25,6 +29,8 @@ import types
 
 HISTORICAL_COMMIT = 'f5f780cb5823579288385158ce6da70a1ca33899'
 SOURCE_PINS_SHA256 = '09e51f695d1dfd216f162b8451cd34331f35f9d137da749bc35e4fde8f6882a7'
+MATERIAL_LINEAGE_SHA256 = '2f17db9901057e5f1e72e38663984505d3ea8b54b61387ea355770574bc04459'
+PUBLICATION_STATE_SHA256 = 'bcb1a441437f221ef6e2e62af5cf49b4a58e31d12f86ca12f885b261b86d69a5'
 SOURCE_NAMES = frozenset(('bridge_client.py', 'config.py', 'launch.py', 'native_auth.py',
     'native_config.py', 'native_probe.py', 'operator_common.py', 'protocol.py',
     'recovery_boot_probe.py', 'recovery_entry.py', 'recovery_epoch.py', 'rl_collect.py',
@@ -251,7 +257,7 @@ def _repository_context(current, original, configured):
                       and not operational.is_relative_to(current_root), 'context_repository_operational_overlap')
 
 
-def _normal_context(current, original):
+def _normal_context(current, original, *, material_lineage=None):
     for document in (current, original):
         runtime = document.get('runtime')
         _need(type(runtime) is dict, 'context_runtime_schema')
@@ -262,7 +268,23 @@ def _normal_context(current, original):
     normalized['repository_root'] = original['repository_root']
     normalized['runtime']['interop_environment_sha256']['WSL_INTEROP'] = (
         original['runtime']['interop_environment_sha256']['WSL_INTEROP'])
+    if material_lineage is not None:
+        _need(material_lineage['candidate_root'] == current['candidate_root']
+              and material_lineage['publication_manifest_sha256'] == current['publication_manifest_sha256'],
+              'context_material_lineage_configuration')
+        for key in ('candidate_root', 'publication_manifest_sha256'):
+            normalized[key] = original[key]
     _need(_canonical(normalized) == _canonical(original), 'context_configuration_changed_beyond_interop')
+
+
+def _current_helper(name, digest):
+    path = _path(Path(__file__).absolute()).with_name(name)
+    raw = _read(path)
+    _need(_digest(raw) == digest, 'context_current_helper_source_pin')
+    module = types.ModuleType('reviewed_context_helper_' + digest)
+    module.__file__ = str(path)
+    exec(compile(raw, str(path), 'exec', dont_inherit=True), module.__dict__)
+    return module
 
 
 def validate_context(c, current_config, pending_claims, *, current_boot_descriptor=None, now_epoch=None):
@@ -300,7 +322,22 @@ def validate_context(c, current_config, pending_claims, *, current_boot_descript
         original_row = binding['local_configuration_template']
         original = document(original_row)
         _repository_context(actual, original, current_config)
-        _normal_context(actual, original)
+        lineage = None
+        lineage_arguments = None
+        if any(actual.get(key) != original.get(key)
+               for key in ('candidate_root', 'publication_manifest_sha256')):
+            lineage_callback = c.get('material_lineage_descriptor')
+            _need(callable(lineage_callback), 'context_reviewed_material_lineage_required')
+            lineage_row = lineage_callback()
+            _need(lineage_row is not None, 'context_reviewed_material_lineage_required')
+            lineage_module = _current_helper('material_lineage.py', MATERIAL_LINEAGE_SHA256)
+            lineage_arguments = dict(actual_descriptor=actual_row, actual=actual,
+                original_descriptor=original_row, original=original,
+                eligibility_descriptor=eligibility_row, receipt_descriptor=lineage_row,
+                source_names=SOURCE_NAMES | {'context_continuation.py', 'context-source-pins.json',
+                                            'material_lineage.py', 'publication_state.py'})
+            lineage = lineage_module.validate_lineage(globals(), c, current_config, **lineage_arguments)
+        _normal_context(actual, original, material_lineage=lineage)
         # This is the first execution of historical code, after all fixed pins.
         historical = types.ModuleType('reviewed_f5_context_' + pins['recovery_epoch.py']['sha256'])
         historical.__file__ = str(core_path)
@@ -318,6 +355,16 @@ def validate_context(c, current_config, pending_claims, *, current_boot_descript
                   'context_source_not_pinned_f5')
             return original_helper(row, role)
         historical._reviewed_module = pinned_helper
+        publication_view = None
+        manifest_callback = c.get('publication_manifest_descriptor')
+        if callable(manifest_callback):
+            manifest_row = manifest_callback()
+            _need(manifest_row['sha256'] == actual['publication_manifest_sha256'],
+                  'context_actual_publication_manifest')
+            state_module = _current_helper('publication_state.py', PUBLICATION_STATE_SHA256)
+            publication_view = state_module.capture(root, manifest_row, actual['versions'], historical,
+                frontier=None if lineage is None else lineage['state_frontier'])
+            historical._root_records = publication_view.root_records
         identity = types.SimpleNamespace(state_root=root, document_sha256=original_row['sha256'])
         callbacks = {'STATE': root}
         observer = c.get('recovery_boot_observation')
@@ -333,6 +380,17 @@ def validate_context(c, current_config, pending_claims, *, current_boot_descript
         _need(actual_row['sha256'] == current_config.document_sha256
               and str(current_config.state_root) == str(root), 'context_actual_configuration_binding')
         _repository_context(actual, original, current_config)
+        if publication_view is not None:
+            publication_view.verify_unchanged()
+            _need(_digest(_read(Path(__file__).absolute().with_name('publication_state.py')))
+                  == PUBLICATION_STATE_SHA256, 'context_current_helper_source_pin')
+        if lineage_arguments is not None:
+            _need(lineage_callback() == lineage_arguments['receipt_descriptor'],
+                  'context_material_lineage_review_changed')
+            _need(lineage_module.validate_lineage(globals(), c, current_config, **lineage_arguments) == lineage,
+                  'context_material_lineage_changed')
+            _need(_digest(_read(Path(__file__).absolute().with_name('material_lineage.py')))
+                  == MATERIAL_LINEAGE_SHA256, 'context_current_helper_source_pin')
         return result
     except (KeyError, TypeError, AttributeError, RecursionError):
         raise ContextError('context_invalid_chain_or_configuration') from None

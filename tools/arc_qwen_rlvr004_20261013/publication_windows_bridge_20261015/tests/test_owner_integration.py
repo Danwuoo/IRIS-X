@@ -38,7 +38,8 @@ OPERATOR_SOURCES = frozenset(('config.py', 'operator_common.py', 'bridge_client.
     'native_config.py', 'native_auth.py', 'sdk_worker.py', 'sdk-lock.json',
     'protocol.py', 'win_runtime.py', 'win_supervisor.py', 'native_probe.py',
     'recovery_epoch.py', 'recovery_boot_probe.py', 'recovery_entry.py',
-    'context_continuation.py', 'context-source-pins.json'))
+    'context_continuation.py', 'context-source-pins.json',
+    'material_lineage.py', 'publication_state.py'))
 
 
 def sha(raw):
@@ -746,8 +747,8 @@ class AdmissionSourceClosureTests(unittest.TestCase):
         return self.transport.review_gate(args.review, args.review_sha, args.manifest_sha,
                                          args.material_sha, [ROOT / 'rl_transport.py', ROOT / 'operator_common.py'])
 
-    def test_complete_review_requires_all_20_native_and_wsl_operator_sources(self):
-        self.assertEqual(len(self.transport.OPERATOR_SOURCE_NAMES), 20)
+    def test_complete_review_requires_all_22_native_and_wsl_operator_sources(self):
+        self.assertEqual(len(self.transport.OPERATOR_SOURCE_NAMES), 22)
         self.assertEqual(set(self.transport.OPERATOR_SOURCE_NAMES), OPERATOR_SOURCES)
         self.assertEqual(self.check_review(self.review), self.review)
         for omitted in sorted(OPERATOR_SOURCES):
@@ -791,7 +792,7 @@ class AdmissionSourceClosureTests(unittest.TestCase):
 
         with patch.object(self.transport.subprocess, 'run', side_effect=git_show):
             self.assertEqual(self.transport.git_publication_gate(args), 'f' * 40)
-            self.assertEqual(len(seen), 20)
+            self.assertEqual(len(seen), 22)
             self.assertEqual(set(seen), OPERATOR_SOURCES)
             for mode in ('missing', 'stale'):
                 for name in sorted(OPERATOR_SOURCES):
@@ -825,8 +826,27 @@ class SourceSeparationTests(unittest.TestCase):
 
     def test_scientific_consumers_unchanged_outside_upload_boundary(self):
         def definitions(path):
-            nodes = [node for node in ast.parse(path.read_bytes()).body
+            raw = path.read_text()
+            if path == ROOT / 'rl_transport.py':
+                # Exact additional admission/preflight statements are removed
+                # only for this differential; every original function's AST
+                # must still match the preserved portable publisher below.
+                additions = (
+                    "    _common.bind_action_review(args.review,args.review_sha)\n",
+                    "        if a.action=='validate-publication':print(json.dumps(publication_preflight(m,a)));return 0\n",
+                    "        if a.action in ('update-code','save-inactive','prepare-active','activate'):\n            publication_preflight(m,a)\n",
+                )
+                for addition in additions:
+                    self.assertEqual(raw.count(addition), 1)
+                    raw = raw.replace(addition, '')
+                self.assertEqual(raw.count("'validate','validate-publication','readiness'"), 1)
+                raw = raw.replace("'validate','validate-publication','readiness'", "'validate','readiness'")
+            nodes = [node for node in ast.parse(raw).body
                      if isinstance(node, (ast.FunctionDef, ast.ClassDef))]
+            if path == ROOT / 'rl_transport.py':
+                preflight = [node for node in nodes if node.name == 'publication_preflight']
+                self.assertEqual(len(preflight), 1)
+                nodes.remove(preflight[0])
             if path == ROOT / 'rl_transport.py':
                 gate = next(node for node in nodes if node.name == 'execution_gate')
                 additions = [node for node in ast.walk(gate) if isinstance(node, ast.Constant)
