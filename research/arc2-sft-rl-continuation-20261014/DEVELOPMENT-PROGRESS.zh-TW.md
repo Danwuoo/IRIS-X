@@ -1,7 +1,8 @@
 # ARC-AGI-2 開發進度管理
 
-更新：2026-10-14 17:09 UTC；本頁為持續更新的唯一進度管理文件。
-工作分支：`feat/arc2-sft-rl-continuation-20261014`。
+更新：2026-10-15 UTC；本頁為持續更新的唯一進度管理文件。
+研究交付分支：`feat/arc2-sft-rl-continuation-20261014`；本地接手紀錄分支：
+`fix/arc2-abc-local-execution-20261015`。
 研究基準：[`cc14bd1a79aac1fe6135017c9e09d4834300675d`](https://github.com/Danwuoo/IRIS-X/tree/cc14bd1a79aac1fe6135017c9e09d4834300675d)。
 
 **Stage 1 離線支援已交付；重要 RL 來源 AF3 的研究整併與本地循環交接已通過離線驗收。真實 A/B/C 實驗證據仍未完成。**
@@ -40,6 +41,21 @@
 | E11 | E10精確CI run38602023452已結束failure：1 job failure、3 cancelled | [CI](https://github.com/Danwuoo/IRIS-X/actions/runs/38602023452)；實際job115983374504仍為同6項README缺詞；unit／packaging skipped。這是本輪實際讀取，非沿用E3／E6；不能稱CI綠燈 |
 | E12 | 文件收據已發布 `e17b6857ee6e874b2b5ed28a766f35e0b8028ea2`，tree `408182146a41cfbba7dbb9ead040b54e4790587a`，15檔遠端bytes再次相符；精確CI38602503929結束failure，1failure／3cancelled | [commit](https://github.com/Danwuoo/IRIS-X/commit/e17b6857ee6e874b2b5ed28a766f35e0b8028ea2)、[CI](https://github.com/Danwuoo/IRIS-X/actions/runs/38602503929)；實際job115985000987仍為同6項README缺詞，unit／packaging skipped；本次之後的文件整併另驗 |
 | E13 | 本次docs-only整併獨立驗收：233 normal／233 `-O`全通過；fresh root suite仍1,583 tests／2 failures／35 errors／74 skips，37個failure/error IDs、skip-reason計數與E8兩份歷史logs一致 | 本次只重跑final，沒有再跑baseline；2,388個non-Markdown檔測前後不變，20來源pins、4vendor SHA／Git blobs及14handoff hashes相符。20份Markdown的183相對links／21anchors零問題，舊AF3研究路徑已清除。normal／`-O`實際placement仍同6項README findings |
+| E14 | 2026-10-15本地接手：獨立checkout與遠端研究HEAD均為`fe21075521aa7305f2f5361f68cd301ea2b0d83b`，tree `6ba90e18bfe419d06c4bfc65212af21e647194d2`；凍結來源遠端仍`cc14bd1a` | 實際PowerShell／Git／Python與WSL命令可執行；未改原工作區、main或PR #9。原歷史snapshot `e951604b829497e81bc6e18b32662ff050bd54db`的tree已核對為`f9b10d12b912f3a92238375451c0ad56d4cb7efb` |
+| E15 | 2026-10-15 04:57:11 UTC官方唯讀觀察：code Dataset **v20**、[notebook](https://www.kaggle.com/code/danielwuu/iris-x-learning-agent-20261011) numeric **v39** status為**ERROR**；source SHA256 `a3076380789de383c1df7c710023d8ca9e9a64a37405547bcebf0e066405d4b9` | Dataset與notebook前後身分／版本及source一致，六件SDK解碼後觀察留在ignored側；並非HTTP wire bytes或run008 admission。現有登入可讀，沒有resource／credential mutation、quota查詢、新RUN或新PUBLIC分數；不能把歷史v39當本輪A/B/C結果 |
+| E16 | 本地實測與獨立portability來源審查確認無可直接使用的run008入口：Windows Kaggle2.2.4／SDK0.1.36；既有WSL venv為SDK0.1.36且缺Kaggle，均不符鎖定2.2.4／0.1.37與完整source closure | 原launcher／config綁定原wrapper、venv及wrapper HOME；不能偽造它們或整個換回舊抽取token的adapter。需目的環境狹窄successor、原source-lock、官方內部認證、real HOME／Windows ACL及其相依action／collector／active-wire審查；尚未產出放行收據 |
+| E17 | 本地transfer控制流程10 normal／10 `-O`通過；Stage0在WSL ext4 scratch為148 normal／148 `-O`通過 | 先前DrvFS scratch的148 tests各有14 failures／21 errors，涉及0700、FIFO與rename語意，失敗logs保留；只更換支援的scratch，沒有改gate。沒有安裝Torch或重跑AF3／Stage1，E7／E13的233／233仍是雲端歷史證據，不能代稱本機通過 |
+| E18 | 接手後executor transport中斷兩次，後續於2026-10-15 05:01 UTC恢復並以實際命令核對；WSL原程序已不在，該次位於ext4 `/tmp`的scratch目錄亦不在 | ext4重建未取得結果，本地`repository_check.py --all`只留部分unit log而無終態，均列interrupted／unknown，沒有補造通過。第一份invariants另有本地clone未帶archive tag的缺件；從原本機Git取回該tag後，獨立invariants重跑仍為同6項README缺詞、exit1，沒有其他finding。沒有Kaggle RUN在本輪等待監看，封包／提交仍未完成 |
+
+本地去敏觀察收據 `OBSERVATION.json` 的SHA256為
+`faffc10ca4325726b95f3a99bbc4a2d30b3cad26d20d91ef0e355d28c9413123`。
+E17的ext4 Stage0 normal／`-O` logs分別為
+`25a239970b17dc9752550345d1aa53e7d67a4f35e0333e20d17ba90a892e483a`／
+`2371e5ca9c6dc2204529e19be801fe3abbb5644f8c8a1835978e17a829e22c45`；
+transfer normal／`-O` logs分別為
+`4c14f4ba99df152d55cf43accf219e99278b6746ee1a72699951f46f1c507a0d`／
+`a09f6b0ce19bcbea600a03c4e84d8c1ce9c1946600c298595cd4fa073bc7009f`。
+這些只識別上述本地觀察與CPU測試，原始檔均留在ignored側，不能當成production放行或GPU結果。
 
 發布歷史仍保留：15:44／15:46 UTC 的 tree 發布嘗試回傳取消，15:54 重試取得 tree；
 16:06 寫入前遠端研究分支仍是 `0d4d19c`。E2 才是後續 commit／branch／tree 的核對，
@@ -82,12 +98,15 @@ successor驗收，不把CPU-only工具限制變成原A/B/C的循環依賴。
 | S1-O6 | 來源保存與精確交付核對 | 完成（程式保存與核對）；E10已核對15檔；E11精確CI失敗已分類 | S1-O4、S1-O5 | 依已授權發布流程核對新 commit／tree／branch 與變動檔案；另讀該 SHA 的 CI，不沿用 E3；不改 main、run008、PR #9 |
 | DOC-AF3 | AF3研究來源併入本資料夾，修復導覽與引用 | 完成（文件整併）；E13，三份獨特研究／驗證／審查與重要RL來源地位保留 | E1、E7、E12 | 保留pinned上游、license與元件實際採用證據；不改程式namespace／vendor／frozen source，無重複進度頁 |
 | HANDOFF-CYCLE | 將既有本地交接延伸為提交、監看、有限工程修復及結果回傳流程 | 完成（交接規格）；E13，只更新既有交接文件；實際本地執行另列E1～E4 | S1-O1～O6、原執行契約 | 明列fresh remote／材料／admission、single publisher、監看到terminal、結果回傳與方法觸發條件；本文件不派發工作 |
-| S1-E1 | 本地真實來源、模型材料與已存在audit接收 | 待本地核對；本環境未取得真實材料，本輪audit尚待產出 | 原執行契約、本地來源與材料 | 核對training-owned provenance／原records／排除；有既有audit即檢查原bytes與size。首次原A/B/C可在原admission通過後產生audit，不以尚未產出的結果阻擋原流程 |
+| S1-E1 | 本地真實來源、模型材料與已存在audit接收 | 進行中／目的環境binding受阻；E14～E17。原材料已找到，歷史重建另核對；本輪audit尚未產出 | 原執行契約、本地來源與材料 | 先完成目的環境portable successor與原admission，核對training-owned provenance／原records／排除及exact numeric materials。首次原A/B/C可在原admission通過後產生audit，不以尚未產出的結果阻擋原流程 |
 | S1-E2 | 原runtime真實replay／LoRA梯度／owner狀態驗收 | 待開始／未執行 | S1-E1、本地完整原admission | E2與E3是同次原執行中的驗收，不要求先有另一場成功證據。原runtime逐步核對模型、數值、rollback、save/reload、closure與資源；CPU logp梯度不能替代。若另接AF3模型hook，才加另立successor的同模型差分驗收 |
 | S1-E3 | 同 session 既有 A/B/C 比較 | 待開始／未驗證 | S1-E1、原admission／batch／時鐘；E2由該次原runtime逐步驗收 | 原 reward、replay、更新、checkpoint、全 B/C wall、固定選擇與 closure 證據完整；未完成與 zero-signal 分開 |
 | S1-E4 | sealed 評分與研究判讀 | 待開始／未驗證 | S1-E3、隔離 evaluator、原 scorer | 完整 PUBLIC120／167 與相同案例 gain／loss；B 同時對 A、等成本 C 判讀；缺評分保持未知，不 promotion |
 
 **現在的下一步：** 以此次交付的精確commit／tree接續，
+本地E14～E17已確認executor及官方唯讀存取，實際遠端仍code20／notebook39 ERROR。
+當前需補目的環境portability successor及其獨立審查；已有登入不代表原wrapper／SDK放行。
+原材料重建與本地CPU結果須保留各次環境差異，不能把preliminary observation當production admission。
 由已授權的本地執行端按S1-E1核對真實來源、材料與原admission，開始原E3流程，
 由原runtime在該次執行中逐步完成E2驗收並產生audit；已有audit再核對其檔案大小。
 沒有材料或接收端可執行授權時，保存明確blocker，不由本環境代替提交或訓練。
@@ -245,3 +264,9 @@ DDIS數學與真實元件CPU整合證據，集中於[AF3整合研究](agent-fact
 
 - 2026-10-14 17:09 UTC：DOC-AF3與HANDOFF-CYCLE通過獨立驗收，E13記錄本次重跑；
   原A/B/C先依原admission執行並產生audits，AF3模型hook仍是分開審查的後續接線。
+
+- 2026-10-15：本地完成E14～E17接手檢查。官方唯讀確認仍code20／v39 ERROR，未提交新版本；
+  獨立審查定位目的環境wrapper／SDK差異。先前Windows checkout的autocrlf另使歷史LICENSE
+  與Git blob只差CRLF而遭原重建工具拒絕；失敗保留，另嘗試用原Git來源的WSL ext4 checkout
+  驗證，但executor中斷，未取得結果。不改原blob或放寬exact-byte gate。
+  A/B/C、真模型／GPU、audit、成本與新分數仍未取得。
