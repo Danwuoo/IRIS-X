@@ -53,6 +53,10 @@
 | E21 | 目的環境離線修復完成：獨立POSIX successor以真實HOME、明確venv／executable SHA／Python patch／SDKroot取代歷史wrapper；原mutation／collector／官方session行為由AST等價回歸核對，active-wire獨立綁定精確numeric versions | [介面與來源邊界](../../tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/README.md)。獨立審查無剩餘新blocking finding；90個受保護來源與286fdb3完全一致，7個原transport來源亦符合cc14bd1 Git objects。實際提交仍需目的端認證、材料與admission |
 | E22 | Portability final106 normal／106 `-O`全部通過、零skip；獨立reviewer另跑同106／106。另以實際copied venv各模式核對runtime boundary及170個已安裝官方source，未import SDK／讀credentials／呼叫provider | [固定驗收收據及逐檔hash](../../tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/VALIDATION.json)。真process lock／timeout／cleanup、FIFO／symlink替換、四條TLS路徑及frozen producer互通均涵蓋；source probe是刻意未裝全Kaggle相依的測試venv，不代稱目的端環境可用 |
 | E23 | 本次完整repo suite實跑1,583 tests／2 failures／35 errors／74 skips；37個failure/error IDs與E13歷史log完全相同，新增／缺少均0 | 本輪未重跑baseline，不能稱paired新比較。獨立normal／`-O` placement仍同6項README缺詞；沒有新placement finding。失敗與初次缺Requests、synthetic proxy expectation、numeric回讀producer不符的修正前logs皆保留；focused通過不能抵銷aggregate或CI失敗 |
+| E24 | POSIX successor 已發布 `b09e442fe706f06545be2cb4aa3363e04f807a71`，tree `746cc76943dea5913975fc4dcbd271b6424eeffc`；19檔Git取回逐byte與最終reviewed index／worktree相符 | [commit](https://github.com/Danwuoo/IRIS-X/commit/b09e442fe706f06545be2cb4aa3363e04f807a71)；只完成E21／E22離線來源保存，不代表Windows橋、原認證、材料重建或provider admission完成 |
+| E25 | E24精確CI38688413326終態failure：1 job failure／3 cancelled | [CI](https://github.com/Danwuoo/IRIS-X/actions/runs/38688413326)；實際job116268483868仍是同6項README缺詞，unit／packaging skipped；沒有稱CI成功 |
+| E26 | Windows／WSL整合的本地合成能力前置：executor實際命令成功；Windows目前已在existing job內，仍可將suspended合成子程序指派新Job Object。關閉job handle及強制終止controller兩種情境，已持有handle的root／leaf均signaled且controller已wait | 此為固定合成程序的有限觀察；job accounting在清理前為4個active processes，測試只逐一追蹤root／leaf，不宣稱完整job inventory、跨OS取消或production closure通過。未載入Kaggle／認證，未改ACL ；來源為本地獨立紀錄 [b51c4ae3](https://github.com/Danwuoo/IRIS-X/commit/b51c4ae3b0f81e0823a3db731a21d68047967c57)，此處重新編號保留其範圍 |
+| E27 | 固定script endpoints的Windows→WSL→Windows Python／PowerShell→WSL→Windows管線4／4通過：2,067 bytes含UTF-8／NUL／binary，stdout逐byte一致、stderr分離，exit0／7均正確傳遞 | 先前雙層inline `-c`形式產生`SyntaxError: unterminated string literal`，失敗保留；不是auth錯誤。未驗證正式framing、oversize、超時／取消與大型串流。既有profile／store／credential ACL與reparse僅查metadata；profile根目錄的owner／Allow不同於credential檔，不能混同為POSIX0600／UID gate；沒有改任何權限 ；來源為本地獨立紀錄 [b51c4ae3](https://github.com/Danwuoo/IRIS-X/commit/b51c4ae3b0f81e0823a3db731a21d68047967c57)，此處重新編號保留其範圍 |
 
 本地去敏觀察收據 `OBSERVATION.json` 的SHA256為
 `faffc10ca4325726b95f3a99bbc4a2d30b3cad26d20d91ef0e355d28c9413123`。
@@ -123,7 +127,8 @@ successor驗收，不把CPU-only工具限制變成原A/B/C的循環依賴。
 | S1-O6 | 來源保存與精確交付核對 | 完成（程式保存與核對）；E10已核對15檔；E11精確CI失敗已分類 | S1-O4、S1-O5 | 依已授權發布流程核對新 commit／tree／branch 與變動檔案；另讀該 SHA 的 CI，不沿用 E3；不改 main、run008、PR #9 |
 | DOC-AF3 | AF3研究來源併入本資料夾，修復導覽與引用 | 完成（文件整併）；E13，三份獨特研究／驗證／審查與重要RL來源地位保留 | E1、E7、E12 | 保留pinned上游、license與元件實際採用證據；不改程式namespace／vendor／frozen source，無重複進度頁 |
 | HANDOFF-CYCLE | 將既有本地交接延伸為提交、監看、有限工程修復及結果回傳流程 | 完成（交接規格）；E13，只更新既有交接文件；實際本地執行另列E1～E4 | S1-O1～O6、原執行契約 | 明列fresh remote／材料／admission、single publisher、監看到terminal、結果回傳與方法觸發條件；本文件不派發工作 |
-| S1-P1 | 本地publisher的狹窄POSIX portability successor | 待交付；離線實作／106 normal及`-O`／獨立審查完成，E19～E23；精確Git readback待本次發布 | 本地原始重建、原source lock、官方native OAuth、完整hash／consumer／action／wire reviews | 保存並核對精確Git交付後，本地重建283／426／311檔，配置真實runtime，取得fresh bracket與全部原admission才進原單一publisher流程；native OAuth建立仍須另行當次同意，不使用Windows store |
+| S1-P1 | 本地publisher的狹窄POSIX portability successor | 完成（離線交付）；E19～E25，106 normal／106 `-O`、獨立審查與19檔遠端readback | 純POSIX使用仍需本地native OAuth；本輪選擇S1-P2沿用Windows登入 | 保存此可重現版本；不因選擇Windows橋而改寫POSIX已測來源，也不把來源保存當provider放行 |
+| S1-P2 | WSL durable owner＋Windows官方SDK bounded bridge | 進行中；沿用既有Windows profile，E26／E27僅原生能力前置 | S1-P1、精確SDK0.1.37、native Job／ACL／pipe驗收、原材料與全部新hash-bound reviews | bounded IPC／DTO、refresh前fsync握手、獨立每RPC watchdog、全Job清空、未知結果不重送；先離線與本機合成驗收，再依原admission進既有A/B/C流程 |
 | S1-E1 | 本地真實來源、模型材料與已存在audit接收 | 進行中／目的環境binding受阻；E14～E17。原材料已找到，歷史重建另核對；本輪audit尚未產出 | 原執行契約、本地來源與材料 | 先完成目的環境portable successor與原admission，核對training-owned provenance／原records／排除及exact numeric materials。首次原A/B/C可在原admission通過後產生audit，不以尚未產出的結果阻擋原流程 |
 | S1-E2 | 原runtime真實replay／LoRA梯度／owner狀態驗收 | 待開始／未執行 | S1-E1、本地完整原admission | E2與E3是同次原執行中的驗收，不要求先有另一場成功證據。原runtime逐步核對模型、數值、rollback、save/reload、closure與資源；CPU logp梯度不能替代。若另接AF3模型hook，才加另立successor的同模型差分驗收 |
 | S1-E3 | 同 session 既有 A/B/C 比較 | 待開始／未驗證 | S1-E1、原admission／batch／時鐘；E2由該次原runtime逐步驗收 | 原 reward、replay、更新、checkpoint、全 B/C wall、固定選擇與 closure 證據完整；未完成與 zero-signal 分開 |
@@ -131,7 +136,8 @@ successor驗收，不把CPU-only工具限制變成原A/B/C的循環依賴。
 
 **現在的下一步：** 以此次交付的精確commit／tree接續，
 本地E14～E17已確認executor及官方唯讀存取，實際遠端仍code20／notebook39 ERROR。
-當前需補目的環境portability successor及其獨立審查；已有登入不代表原wrapper／SDK放行。
+POSIX successor已於E24保存；當前依S1-P2開發沿用Windows官方登入的bounded bridge。
+原profile／store不搬移，沒有新WSL OAuth；已有登入不代表SDK／Job／IPC／材料放行。
 原材料重建與本地CPU結果須保留各次環境差異，不能把preliminary observation當production admission。
 由已授權的本地執行端按S1-E1核對真實來源、材料與原admission，開始原E3流程，
 由原runtime在該次執行中逐步完成E2驗收並產生audit；已有audit再核對其檔案大小。
@@ -306,3 +312,13 @@ DDIS數學與真實元件CPU整合證據，集中於[AF3整合研究](agent-fact
   此阻擋只針對純POSIX publisher；另評估WSL持有state／claims、Windows官方SDK原地認證的
   bounded bridge是否能保留同等timeout／cleanup／auth／傳輸完整性。該bridge尚未實作或放行，
   不能把已完成POSIX測試代稱為Windows登入重用可執行。
+
+- 2026-10-15 05:54 UTC：E24／E25保存POSIX交付與精確CI結果；本地b51c4ae3能力紀錄併入E26／E27。
+  目前選擇S1-P2重用既有Windows官方登入，先完成獨立bounded bridge與本機失敗清理驗收。
+  原12h是實驗時鐘，不是停止查明terminal的監看上限；read-only worker lease須完整清理後才可輪替，
+  不重置原JIT／訓練clock或重送mutation。Windows橋仍未完成，不以Linux mock或有限PID觀察代稱可執行。
+
+- 2026-10-15原生diagnostic checkpoint：新增三檔no-auth probe，獨立source review確認固定合成範圍；
+  以實際supervisor PID、完整observer Job membership／清空與失敗cleanup取代兩個PID的不足證明。
+  [使用方式](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/README.md#early-native-diagnostic)。
+  此checkpoint仍待本地真實執行；production source binding／IPC／phase watchdog尚未完成，不可用於provider。
