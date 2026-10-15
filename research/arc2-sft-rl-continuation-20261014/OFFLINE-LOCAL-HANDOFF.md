@@ -166,7 +166,7 @@ release 的真實 review，不把歷史 runtime 驗證冒充目前 runtime 已�
 保留原 assembler 與歷史收據。當前路徑只做一次完整 release admission，`material_lineage.py`
 不再是必要續接 gate，不再為每次交接重做兩份 candidate 或要求 collector-only migration review。
 
-本次 collector bytes 有實質 bootstrap 變更，因此仍須以固定新來源，沿用原 assembler 正規生成
+collector 或 deployment bytes 有實質變更時，仍須以固定新來源，沿用原 assembler 正規生成
 proposal→真實 runtime/material review→final candidate，並通過原 `validate-publication`。
 不得手改已批准 candidate 的 hash。之後只有 transport/common 修復時，collector 不再為嵌入
 兩個 literal pins 而改 bytes；明確傳入的 review hash、來源 descriptors 與全部原契約仍逐一核對。
@@ -181,6 +181,24 @@ SDK worker／JobProcess 未啟動的 disposition。supervisor/proxy 本身曾執
 本地最短接續：固定 release 與一次受影響 no-auth 驗收 → 原 assembler 與單次完整材料驗收 →
 既有 owner/lock 下檢查真實 90 檔與當前 context → fresh readiness → 第 6.3 節原發布及監看。
 這些靜態／CPU 檢查不等於本地 disposition 通過、provider 接受或完整 A/B/C。
+
+### v41 啟動修復的本次差分
+
+1. 保留 v41 的五份 numeric outputs、原 clocks、v21／v40／v41 readbacks 及所有原 STATE。
+   fixed source 修改兩個 deployment caller、collector nullable schema，及一個 runtime policy 的
+   6 個固定 offline-guard 環境值（加上 derived release self-pin）；Windows
+   supervisor／worker／protocol／auth／SDK bytes 未改，同一已驗證 runtime 的 native 收據可重用。
+2. 使用本次 [admission assembler](../../tools/arc_qwen_rlvr004_20261013/admission_run008/README.md)
+   沿既有 proposal → 真實 review → final 流程一次重建。原 source proposal 仍唯讀；assembler
+   驗證 consumed v41 caller hashes 後覆蓋兩個新 caller；runtime 的其餘 257／259 與科學 bytes 不變，
+   source／archive／normalized self-pin 正規重算並核對固定新值。
+   新 deployment inventory、assembler／collector SHA 由原 review／manifest／consumer 契約傳遞；
+   不手改舊 approved candidate，也不加入 material-lineage 或第二份 candidate 門檻。
+3. 只核對本次變動與完整當次 pins，fresh readiness 確認目前 dataset／notebook／active status，
+   再循第 6.3 節原提交與監看。最後已知是 v21／v41 ERROR，下一組數字必須由實際觀察推導。
+4. collector 的 null 欄位只修相容性；對原 v41 五份已下載 bytes 可做明確離線回歸，不能把
+   合成測試當真正 terminal receipt。新 run 若仍失敗保存實際診斷；缺 log／inventory 明列未知。
+   官方 exact-version listing/log 支援另行完成，沒有可讀版本 echo 時不宣稱 server attribution。
 
 ### 6.4 本地修復邊界與研究決策
 

@@ -79,10 +79,17 @@ class AdmissionTests(unittest.TestCase):
         self.assertIsNone(result['successor_epoch'])
         self.assertFalse(self.release['production_admitted'])
 
-    def test_02_reviewed_runtime_and_helpers_unchanged(self):
+    def test_02_reviewed_guard_successor_and_helpers_unchanged(self):
         self.assertEqual(self.result['source_sha256'], a.SOURCE_SHA)
         self.assertEqual(self.result['source_archive_sha256'], a.ARCHIVE_SHA)
-        self.assertEqual((self.candidate / 'code-payload/source.zip').read_bytes(), (PROPOSAL / 'code-payload/source.zip').read_bytes())
+        old_archive = (PROPOSAL / 'code-payload/source.zip').read_bytes()
+        new_archive = (self.candidate / 'code-payload/source.zip').read_bytes()
+        self.assertEqual(a.sha(old_archive), a.ORIGINAL_ARCHIVE_SHA)
+        self.assertEqual(a.sha(new_archive), a.ARCHIVE_SHA)
+        with zipfile.ZipFile(io.BytesIO(old_archive)) as old, zipfile.ZipFile(io.BytesIO(new_archive)) as new:
+            self.assertEqual(set(old.namelist()), set(new.namelist()))
+            self.assertEqual({n for n in old.namelist() if old.read(n) != new.read(n)},
+                             {'owned_runtime/parent_scoring.py', 'owned_runtime/release.py'})
         inventory = a.obj((self.candidate / 'terminal-consumer/CONSUMER-INVENTORY.json').read_bytes())
         self.assertEqual(len(inventory['files']), 21)
         for name, digest in inventory['files'].items():

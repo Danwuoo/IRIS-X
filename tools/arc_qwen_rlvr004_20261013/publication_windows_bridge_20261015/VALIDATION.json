@@ -1919,6 +1919,194 @@
     }
   },
   "training_or_scoring_executed": false,
+  "v41_startup_successor_revision": {
+    "actual_current_canonical_assembly": "NOT_RUN; authentic private materials absent in cloud; local existing canonical procedure required",
+    "actual_v41_collector_replay": "NOT_RUN; five-file collection tests are synthetic, not raw v41 receipts",
+    "aggregate_suite": {
+      "lead_rerun": false,
+      "worker_attempt": "An already-started repository --all invocation lacked matched hashseed/offline/TMPDIR prerequisites; retained as non-comparable, not a release baseline or passing proof."
+    },
+    "baseline_commit": "84a5a1f870c42899f3bea79996d1b9360c4bfee9",
+    "ci": "Final commit CI must be checked after publication. Baseline84a5 failed six inherited README invariants; unit/packaging skipped.",
+    "cloud_provider_calls": 0,
+    "cpu_discovered_following_boundary": {
+      "exact_guard_source_sha256": "a678e3986e8c69acf003205cb86a66fc4efb652879ec4ab18d81f747cdc8f6b0",
+      "fixed_guard_variables": 6,
+      "full_environment_equality_retained": true,
+      "predecessor_rejected": true,
+      "real_gpu_model_or_cudnn_execution": false,
+      "successor_passed": true,
+      "wrong_value_or_extra_key_rejected": true
+    },
+    "focused": {
+      "failed": 0,
+      "groups": {
+        "assembly_public_bytes": 9,
+        "preparation": 46,
+        "windows_bridge": 558
+      },
+      "logs": {
+        "assembly-normal.log": {
+          "bytes": 1993,
+          "sha256": "83a23508378794733c57617fc8d8d30ad98b06ae3984be17a60d18dae6aca730"
+        },
+        "assembly-optimized.log": {
+          "bytes": 1993,
+          "sha256": "c7b4c7a15a3b6686d7b6e8628c68b1b1db52273aaea84fb4fa3692d152324564"
+        },
+        "bridge-final-normal.log": {
+          "bytes": 87129,
+          "sha256": "00ae0f227b2d7d49b84e7103d4afa847a3a4642e30b83de28da74920826a9090"
+        },
+        "bridge-final-optimized.log": {
+          "bytes": 87129,
+          "sha256": "62d2b314cf66f8edda76fd7cc665c2e49db1ab401a0dfa493be257c4c5dd2042"
+        },
+        "preparation-normal.log": {
+          "bytes": 7835,
+          "sha256": "d308ab3be2c3d0460efb69720b018b5905a89c2d65e9a536f6a9013b224f5816"
+        },
+        "preparation-optimized.log": {
+          "bytes": 7836,
+          "sha256": "985b5bd865bc8635795ad5c9168938af1e0b638b4a84636e39b3a1edb24d5a19"
+        }
+      },
+      "normal": 613,
+      "optimized": 613,
+      "skipped": 0
+    },
+    "independent_review": {
+      "failed": 0,
+      "normal": 613,
+      "optimized": 613,
+      "report_sha256": "886ca58370af4555ce9672de250cc07747f75782acb0799bb0a0ec10aad0f044",
+      "scope": "Offline code, source binding and documentation; not private canonical, real v41 collection or GPU admission",
+      "skipped": 0,
+      "source_bindings_sha256": "3f432b85f89f89a247eb1b0a5b78ced25479bf59587c4c95b09335a1b22f7046",
+      "status": "PASS"
+    },
+    "limits": [
+      "Exact source/archive public reconstruction is not canonical material or action admission.",
+      "CPU uses real isolated interpreter and pinned guard with synthetic wheel/ELF/Torch inputs; actual cuDNN/GPU still untested.",
+      "Original UNKNOWN, remote VM/cost closure and missing scientific results are not promoted.",
+      "Official version-labeled listing/log support is separate and not a prerequisite for this established startup repair."
+    ],
+    "native_windows_runtime_changed": false,
+    "original_historical_source_files_changed": false,
+    "production_gpu_or_arc_results": "NOT_RUN",
+    "real_predecessor": {
+      "active_notebook_version": 41,
+      "ambient_distribution_version": "unknown",
+      "backend_loaded": "unknown",
+      "code_dataset_version": 21,
+      "first_observed_terminal_utc": "2026-10-15T15:58:28Z",
+      "full_output_inventory": "unknown",
+      "global_deadline": 1792122887,
+      "inactive_notebook_version": 40,
+      "numeric_outputs_verified": 5,
+      "official_execution_log": "not_retrieved",
+      "original_epoch": 1792079687,
+      "provider_terminal": "ERROR",
+      "public_score": null,
+      "source": "Sanitized local executor report; raw evidence retained locally, not copied to public Git.",
+      "stage": "parent-environment-policy",
+      "startup_diagnostic_sha256": "0ba5efaf361da5336338a0ff170728ea7cf96aa1af447d74d5f770e0ff0de069"
+    },
+    "repository_layout": {
+      "inherited_readme_findings": 6,
+      "new_layout_findings": 0,
+      "status": "FAIL"
+    },
+    "runtime_members": 259,
+    "runtime_members_unchanged_from_v41": 257,
+    "scientific_baseline_members_changed": 0,
+    "scope": "Two deployment preparation callers, exact persistent offline-guard environment compatibility, nullable startup diagnostic schema and coherent source/archive/consumer/wire bindings. No research-method change.",
+    "source_identity": {
+      "archive_sha256": "ffaea7e6dd0fd3df1b6bc0566b27278f47f318b2d680d96e358a1cc5b8584dff",
+      "delta": {
+        "owned_runtime/parent_scoring.py": {
+          "new": {
+            "bytes": 24808,
+            "sha256": "48e9b757429ffd3273b79909356fe61780fbd005d967817ba04c9caf4f8e7592"
+          },
+          "old": {
+            "bytes": 24291,
+            "sha256": "c95e9caf5e4f8230d90661bc8b68159fe29a63b52c1d6cff4f22dab05023a42e"
+          }
+        },
+        "owned_runtime/release.py": {
+          "new": {
+            "bytes": 6370,
+            "sha256": "2d7690f0f8b99b8238b0f15d0c3116ff575cbb92fffc21a19e638369076612d6"
+          },
+          "old": {
+            "bytes": 6370,
+            "sha256": "a42c6ebcdd4217d528704beb85fa7d828dc400e8bccf4834f10efa42a145e0e3"
+          }
+        }
+      },
+      "normalized_source_contract_sha256": "78808411d6af1529fefb1f4eb123580051b0bf1c522f94a959ad4db5d5152997",
+      "source_sha256": "38698fd0861b2940bd303b59899011da0fb53d2daa4da846de80521bfc2c828b"
+    },
+    "source_test_files": {
+      "tools/arc_qwen_rlvr004_20261013/admission_run008/assemble.py": {
+        "bytes": 32665,
+        "sha256": "2e8bb0e13123376f88720373f13658640ca7c17c09a57f367d8689c5a2fe9388"
+      },
+      "tools/arc_qwen_rlvr004_20261013/admission_run008/test_admission.py": {
+        "bytes": 15902,
+        "sha256": "7661b0da9126b4935f6be75a6528b69f0ce940b227e7cb9ebb3a2061887ea194"
+      },
+      "tools/arc_qwen_rlvr004_20261013/admission_run008/test_preparation_repair.py": {
+        "bytes": 9864,
+        "sha256": "b1536fcf5faa90be58fbade9636a2bced97438ca9eddb13c827a8c1e844525fc"
+      },
+      "tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/cpu_parent_worker.py": {
+        "bytes": 4896,
+        "sha256": "ec13d04494e5cf0f914d9a62390fec3a7d3000a60c61ed7ee03ab7882474c74d"
+      },
+      "tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/launch_notebook.py": {
+        "bytes": 21644,
+        "sha256": "466c7a7a5549298172e2d2def0ad90a7f146458010c09b446b9d777cf5df3aee"
+      },
+      "tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/parent_scoring.py": {
+        "bytes": 24808,
+        "sha256": "48e9b757429ffd3273b79909356fe61780fbd005d967817ba04c9caf4f8e7592"
+      },
+      "tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/prepare_entry.py": {
+        "bytes": 21016,
+        "sha256": "3b1c429224510bc4a65878d82959ce088f6f88767f88200eefb72392ff2e3e47"
+      },
+      "tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/test_preparation_environment.py": {
+        "bytes": 23893,
+        "sha256": "04acc200673f41a1878ab8af8d43fc6f5f8d454ff5e4a55a2be1303b8b8e3702"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/launch.py": {
+        "bytes": 5359,
+        "sha256": "cb7cb54be32154684db75affb84bbd00834e3e0a944be13c32d3db2334234718"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/rl_collect.py": {
+        "bytes": 66366,
+        "sha256": "f0ae9c90bcd76ebf02b495905052101f1206d98bd5219cd6c125a4452efbfca4"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_material_lineage.py": {
+        "bytes": 31243,
+        "sha256": "b7bd6084ee385109bf05c69594c45432373bd1b72551eb1a8b60401eb303a9a7"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_owner_integration.py": {
+        "bytes": 50395,
+        "sha256": "14512f6f59d971b2468553f4d9db6908749c71a065cec5d21deb5ee5c815924c"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_startup_diagnostic_schema.py": {
+        "bytes": 24316,
+        "sha256": "228bb0a52d06bbd76c927ea7278369435d71a37f9ce9e5d04dc3b2367b3abfcb"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/verify_active_wire.py": {
+        "bytes": 19347,
+        "sha256": "119226513286055b8200360fc0f463825becce84248c8337a75cb61e7c1f1162"
+      }
+    }
+  },
   "venv_repair_revision": {
     "allowed_immediate_job_flags": [
       8192,

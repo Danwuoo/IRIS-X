@@ -355,7 +355,13 @@ PREOWNED_STAGES={'source-guard-import','source-import-policy','parent-environmen
 def preowned_failure_binding(m,args,f,before,diagnostic,outer):
     """Exact trusted-source diagnostic attribution; never a closure capability."""
     expected_keys={'format','status','stage','exception_type','safe_message','frames','observed_epoch','observed_monotonic','original_epoch','deadline_epoch','source_sha256','request_sha256','dispatch_state','proof_available','proof_verified','clean_owned_closure_verified','closure_authority','model_or_GPU_execution_claim','environment_values_recorded','operational_success','VM_teardown_or_billing_claim'}
-    need(type(diagnostic)is dict and set(diagnostic)==expected_keys,'closed_startup_diagnostic')
+    # The diagnostic-overlay producer adds a nullable child-failure projection.
+    # Preserve the exact legacy schema, but never admit arbitrary extra keys.
+    # A pre-owned, not-dispatched stage cannot have a child projection, even a
+    # well-formed one: absence/null conveys no preparation or closure evidence.
+    need(type(diagnostic)is dict and set(diagnostic) in
+         (expected_keys, expected_keys | {'preparation_failure'}),'closed_startup_diagnostic')
+    need(diagnostic.get('preparation_failure') is None,'preowned_preparation_failure_must_be_null')
     need(before['status']=='ERROR' and before['version']==transport.ACTIVE_VERSION and before['gpu_stop'] is False,'preowned_error_only')
     need(diagnostic['format']=='irisx/rlvr-parent-startup-failure-v1' and diagnostic['status']=='FAILED' and diagnostic['stage'] in PREOWNED_STAGES and diagnostic['dispatch_state']=='not-dispatched','preowned_stage_only')
     flags=('proof_available','proof_verified','clean_owned_closure_verified','closure_authority','model_or_GPU_execution_claim','environment_values_recorded','operational_success','VM_teardown_or_billing_claim')

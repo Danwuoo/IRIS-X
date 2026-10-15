@@ -22,8 +22,8 @@ import types
 
 FORMAT = 'irisx/run008-windows-bridge-active-review-static-pins-v1'
 CONFIG_FORMAT = 'irisx/run008-windows-bridge-operator-config-v1'
-SOURCE = 'c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b'
-ARCHIVE = '4d8b414bd35ca79a2eaaec7042880966879ed13bdeaf96762eaee7932ee1de4c'
+SOURCE = '38698fd0861b2940bd303b59899011da0fb53d2daa4da846de80521bfc2c828b'
+ARCHIVE = 'ffaea7e6dd0fd3df1b6bc0566b27278f47f318b2d680d96e358a1cc5b8584dff'
 REF = 'danielwuu/iris-x-learning-agent-20261011'
 DREF = 'danielwuu/iris-x-learning-agent-code-20261011'
 VERSION_FIELDS = {'code_predecessor', 'code', 'inactive_predecessor', 'inactive', 'active'}

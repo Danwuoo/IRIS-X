@@ -179,8 +179,15 @@ class MaterialLineageTests(unittest.TestCase):
                         for name in self.source_names}
         source = {'runtime/file%03d.py' % i: ('# synthetic runtime %d\n' % i).encode() for i in range(259)}
         helpers = {'helper%02d.py' % i: ('# synthetic helper %d\n' % i).encode() for i in range(21)}
-        assembler = ROOT.parent / 'admission_run008/assemble.py'
-        self.assembler = {'path': str(assembler), **desc(assembler.read_bytes())}
+        # This retired lineage contract authenticates the historical assembler,
+        # not the current deployment successor. Preserve its exact public bytes.
+        raw = subprocess.check_output(['git', 'show',
+            '84a5a1f870c42899f3bea79996d1b9360c4bfee9:tools/arc_qwen_rlvr004_20261013/admission_run008/assemble.py'],
+            cwd=ROOT)
+        self.assertEqual(sha(raw), m.ASSEMBLER_SHA256)
+        assembler = self.root / 'historical-assemble.py'
+        assembler.write_bytes(raw)
+        self.assembler = {'path': str(assembler), **desc(raw)}
         self.old = fixture_candidate('1' * 64, source, helpers, assembler_sha=self.assembler['sha256'], reviewer='old synthetic')
         self.new = fixture_candidate(self.sources['rl_collect.py']['sha256'], source, helpers,
                                      assembler_sha=self.assembler['sha256'], reviewer='new independent synthetic')

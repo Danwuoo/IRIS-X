@@ -3,18 +3,28 @@
 This is a new offline bridge from the independently reviewed run008 source
 proposal to a numeric publication candidate. It does not call Kaggle, inspect
 credentials, allocate provider versions, mint a real session epoch, import a
-model, execute a scorer, or semantically read evaluator archives. The lead is
+model, execute a scorer, or semantically read evaluator archives. The local executor is
 the sole publisher. The original run007 failed source, clocks, proofs and charges
 remain historical evidence.
 
-The reviewed runtime remains
-`c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b`,
-with source.zip
-`4d8b414bd35ca79a2eaaec7042880966879ed13bdeaf96762eaee7932ee1de4c`.
-Only the numeric code reference, external reviews and derived release/notebook/
-consumer pins change here. The four reviewed loader overlays are not edited.
-All 259 runtime members and all 21 consumer helper members retain their exact
-reviewed bytes. SFT256 A, up to four disjoint64-slot B batches, wall-matched C,
+The original consumed runtime `c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b`
+and archive `4d8b414bd35ca79a2eaaec7042880966879ed13bdeaf96762eaee7932ee1de4c`
+remain immutable inputs. The reviewed guard-compatible successor is source
+`38698fd0861b2940bd303b59899011da0fb53d2daa4da846de80521bfc2c828b`, archive
+`ffaea7e6dd0fd3df1b6bc0566b27278f47f318b2d680d96e358a1cc5b8584dff`.
+Only `owned_runtime/parent_scoring.py` changes policy (six exact offline-guard
+values before exec); `owned_runtime/release.py` receives the derived normalized
+source pin. The other 257 members, all baseline scientific bytes and full child
+environment equality are preserved. New identities propagate through original
+runtime/material review, notebook release, source manifest/freeze, consumer and
+active-wire pins; historical approvals cannot approve this successor.
+The numeric code reference, external reviews and derived release/notebook/
+consumer pins follow the actual predecessor. The v41 successor additionally
+replaces exactly two authenticated deployment callers using the pinned
+[model-free preparation repair](../preparation_environment_repair/README.md).
+The original consumed proposal remains unchanged; the existing deployment
+inventory and assembler-source fields bind the new bytes through every review. The four original loader overlay files are not edited.
+All 21 consumer helper members retain their exact reviewed bytes. SFT256 A, up to four disjoint64-slot B batches, wall-matched C,
 no TTT, full PUBLIC120120/167, numerical, byte, process and isolation gates remain.
 
 ## Stages and authority
@@ -101,3 +111,9 @@ review/owner/observation rejection, original evidence preservation, source-only
 upload, actual fresh-process no-model mount import, both extracted layouts,
 corruption, nonzero exit, timeout, expired-clock no-dispatch and postspawn parent
 failure cleanup. These tests are CPU mechanics, not real GPU/scientific results.
+
+The public-byte regression `test_preparation_repair.py` runs without private
+materials and checks both consumed caller identities, successor pins, mandatory
+namespace substitutions and descriptor/review propagation. It is not the full
+canonical assembly test above; the genuine local candidate still needs its
+existing proposal/final admission. No extra migration review is introduced.

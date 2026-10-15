@@ -20,8 +20,21 @@ HERE = Path(__file__).absolute().parent
 TOOL = HERE.parent
 PREPARE_SHA = '302c61282ce6abc19254cf22d2f16104f0cbd523af28b8431a52a70a683510c2'
 PROPOSAL_INVENTORY_SHA = 'fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd'
-SOURCE_SHA = 'c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b'
-ARCHIVE_SHA = '4d8b414bd35ca79a2eaaec7042880966879ed13bdeaf96762eaee7932ee1de4c'
+ORIGINAL_SOURCE_SHA = 'c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b'
+ORIGINAL_ARCHIVE_SHA = '4d8b414bd35ca79a2eaaec7042880966879ed13bdeaf96762eaee7932ee1de4c'
+SOURCE_SHA = '38698fd0861b2940bd303b59899011da0fb53d2daa4da846de80521bfc2c828b'
+ARCHIVE_SHA = 'ffaea7e6dd0fd3df1b6bc0566b27278f47f318b2d680d96e358a1cc5b8584dff'
+GUARDED_PARENT_SHA = '48e9b757429ffd3273b79909356fe61780fbd005d967817ba04c9caf4f8e7592'
+ORIGINAL_PARENT_SHA = 'c95e9caf5e4f8230d90661bc8b68159fe29a63b52c1d6cff4f22dab05023a42e'
+# Consumed v41 deployment bytes remain the input; only these two callers change.
+PREPARATION_ORIGINAL = {
+    'launch_notebook.py': '254f5d154bf58bc3ed962321f77a18460fa5d51c654a8e263076099fe3b96e1f',
+    'prepare_entry.py': 'c85bbd12460480ca26798860ae358dd8f3fc5e3e2556090d0589828e44ef2648',
+}
+PREPARATION_REPAIRS = {
+    'launch_notebook.py': '466c7a7a5549298172e2d2def0ad90a7f146458010c09b446b9d777cf5df3aee',
+    'prepare_entry.py': '3b1c429224510bc4a65878d82959ce088f6f88767f88200eefb72392ff2e3e47',
+}
 FORMAT = 'irisx/qwen14b-rlvr-run008-publication-contract-v1'
 PROPOSAL_FORMAT = 'irisx/run008-admission-proposal-v1'
 
@@ -176,6 +189,52 @@ def review_inputs(proposal, *, proposal_path, proposal_sha, solver_review_path, 
     return solver_raw, runtime_raw, material_raw
 
 
+def repaired_preparation(deployment):
+    """Apply only the fixed two-caller deployment successor.
+
+    The original closed source proposal is still authenticated before this call.
+    Normal proposal/deployment inventory and independent runtime/material review
+    bind these bytes. This helper cannot approve or publish them.
+    """
+    result = dict(deployment)
+    old_run = '/kaggle/working/irisx-qwen14b-rlvr-20261012-run005'
+    old_env = '/tmp/irisx-qwen14b-rlvr-20261012-environment005'
+    for name, digest in PREPARATION_REPAIRS.items():
+        need(name in deployment and sha(deployment[name]) == PREPARATION_ORIGINAL[name],
+             'exact consumed v41 preparation caller required: ' + name)
+        raw = pinned(TOOL / 'preparation_environment_repair' / name, digest)
+        raw = s.replace(raw, old_env, ENV)
+        if name == 'prepare_entry.py':
+            raw = s.replace(raw, old_run, RUN)
+        else:
+            raw = s.replace(raw, 'exact run005/source005 paths required',
+                            'exact fresh successor run/source paths required')
+        compile(raw, name, 'exec', dont_inherit=True, optimize=sys.flags.optimize)
+        need(raw != deployment[name], 'preparation repair must change its caller')
+        result[name] = raw
+    need(set(result) == set(deployment) and
+         {name for name in result if result[name] != deployment[name]} == set(PREPARATION_REPAIRS),
+         'only two preparation deployment callers may change')
+    return result
+
+
+def repaired_runtime(source, environment):
+    """Exact one-policy successor plus its derived normalized self-consistency pin."""
+    need(len(source) == 259 and sha(canonical(sorted((n, sha(b)) for n, b in source.items())))
+         == ORIGINAL_SOURCE_SHA, 'exact consumed v41 runtime required')
+    target = 'owned_runtime/parent_scoring.py'
+    need(sha(source[target]) == ORIGINAL_PARENT_SHA, 'exact consumed parent policy required')
+    body = pinned(TOOL / 'preparation_environment_repair/parent_scoring.py', GUARDED_PARENT_SHA)
+    compile(body, target, 'exec', dont_inherit=True, optimize=sys.flags.optimize)
+    changed, normalized = s.runtime_bytes(source, {target: body}, environment)
+    archive_builder = s.dependency(TOOL / 'prepare_successor_release.py', s.ASSEMBLER_SHA,
+                                   'guarded_runtime_archive_primitives')
+    archive = archive_builder.zip_blobs(changed, stored=True)
+    need(sha(canonical(sorted((n, sha(b)) for n, b in changed.items()))) == SOURCE_SHA
+         and sha(archive) == ARCHIVE_SHA, 'exact reviewed guard successor identities')
+    return changed, archive, normalized
+
+
 def assemble(*, repository_root, source_proposal_root, base_root, observation_root, observation_sha,
              owner_direction_path, owner_direction_sha, collector_path, collector_sha, output_root, mode='proposal',
              proposal_path=None, proposal_sha=None, solver_review_path=None, solver_review_sha=None,
@@ -188,7 +247,7 @@ def assemble(*, repository_root, source_proposal_root, base_root, observation_ro
     original = s.closed(source_proposal_root, 'ASSEMBLY-INVENTORY.json', PROPOSAL_INVENTORY_SHA)
     base = s.closed(base_root, 'ASSEMBLY-INVENTORY.json', s.BASE_INVENTORY)
     inherited = obj(original['ASSEMBLY-PROPOSAL.json'])
-    need(inherited['source_sha256'] == SOURCE_SHA and inherited['source_archive_sha256'] == ARCHIVE_SHA
+    need(inherited['source_sha256'] == ORIGINAL_SOURCE_SHA and inherited['source_archive_sha256'] == ORIGINAL_ARCHIVE_SHA
          and inherited['proposed_code_version'] is None and inherited['publication_admitted'] is False,
          'exact independently reviewed inert source')
     observation, observed_files = observation_inputs(observation_root, observation_sha)
@@ -201,10 +260,13 @@ def assemble(*, repository_root, source_proposal_root, base_root, observation_ro
     reference = DREF + '/' + str(versions['code'])
     deployment = {n.removeprefix('code-payload/deployment/'): b for n, b in original.items() if n.startswith('code-payload/deployment/')}
     deployment['source_loader.py'] = s.replace(deployment['source_loader.py'], s.UNBOUND_REFERENCE, reference)
+    deployment = repaired_preparation(deployment)
     source = {n.removeprefix('producer-source/'): b for n, b in original.items() if n.startswith('producer-source/')}
-    need(len(source) == 259 and sha(canonical(sorted((n, sha(b)) for n, b in source.items()))) == SOURCE_SHA,
-         'unchanged reviewed runtime259')
-    need(sha(original['code-payload/source.zip']) == ARCHIVE_SHA, 'unchanged reviewed source archive')
+    need(len(source) == 259 and sha(canonical(sorted((n, sha(b)) for n, b in source.items()))) == ORIGINAL_SOURCE_SHA,
+         'exact consumed runtime259')
+    need(sha(original['code-payload/source.zip']) == ORIGINAL_ARCHIVE_SHA, 'exact consumed source archive')
+    original_source = dict(source)
+    source, archive, normalized_sha = repaired_runtime(source, original['consumer-release/environment.json'])
     old_material = obj(base['consumer-release/material_review.json'])
     old_solver = s.pinned(Path(base_root).parent / 'source-rebuild/review-only/solver-descriptor.json', old_material['dataset_file_sha256'])
     solver = s.solver_projection(old_solver, old_material)
@@ -212,15 +274,19 @@ def assemble(*, repository_root, source_proposal_root, base_root, observation_ro
     prior, release = obj(base['publication-manifest.json']), obj(original['notebook-release.json'])
     proposal = {'format': PROPOSAL_FORMAT, 'status': 'INDEPENDENT_REVIEW_REQUIRED',
         'source_sha256': SOURCE_SHA, 'source_archive_sha256': ARCHIVE_SHA,
-        **{key: inherited[key] for key in ('environment_sha256', 'normalized_source_contract_sha256', 'phase_policy_sha256',
+        **{key: inherited[key] for key in ('environment_sha256', 'phase_policy_sha256',
             'scorer_pins_sha256', 'loader_overlay_manifest_sha256', 'loader_overlay_review_sha256')},
+        'normalized_source_contract_sha256': normalized_sha,
         'dataset_file_sha256': sha(solver), 'dataset_escrow_sha256': old_material['dataset_escrow_sha256'],
         'deployment_inventory': {n: desc(b) for n, b in sorted(deployment.items())},
         'collector_sha256': collector_sha, 'consumer_helper_inventory_sha256': sha(original['terminal-consumer/CONSUMER-INVENTORY.json']),
         'current_predecessor_observation_sha256': observation_sha, 'owner_direction_sha256': owner_direction_sha,
         'versions': versions, 'assembler_source_sha256': sha(read(HERE / 'assemble.py')),
         'source_proposal_inventory_sha256': PROPOSAL_INVENTORY_SHA, 'historical_candidate_inventory_sha256': s.BASE_INVENTORY,
-        'namespaces': inherited['namespaces'], 'runtime_delta': inherited['runtime_delta'],
+        'namespaces': inherited['namespaces'], 'runtime_delta': {name: {**row, 'new': desc(source[name])}
+            for name, row in inherited['runtime_delta'].items()},
+        'v41_successor_delta': {name: {'old': desc(original_source[name]), 'new': desc(source[name])}
+            for name in source if source[name] != original_source[name]},
         'source_members': 259, 'unchanged_run007_source_members': 254, 'unchanged_run007_baseline_members': 200,
         'baseline_unchanged_members': 199, 'consumer_helper_members': 21,
         'dataset_content_sha256': old_material['dataset_content_sha256'], 'production_GPU_validation_passed': False,
@@ -247,11 +313,12 @@ def assemble(*, repository_root, source_proposal_root, base_root, observation_ro
         'release/MATERIAL-REVIEW.json': material_raw, 'release/REVIEWED-ENVIRONMENT.json': original['consumer-release/environment.json'],
         **{'deployment/' + n: b for n, b in deployment.items()}}
     manifest = {'format': 'irisx/rlvr-code-material-v1', 'reference': reference,
-        'source': {'archive': {'name': 'source.zip', **desc(original['code-payload/source.zip'])}, 'source_sha256': SOURCE_SHA,
+        'source': {'archive': {'name': 'source.zip', **desc(archive)}, 'source_sha256': SOURCE_SHA,
                    'files': {n: desc(b) for n, b in sorted(source.items())}},
         'auxiliary_files': {n: desc(b) for n, b in sorted(auxiliary.items())}}
-    payload = {**auxiliary, 'manifest.json': encoded(manifest), 'source.zip': original['code-payload/source.zip']}
+    payload = {**auxiliary, 'manifest.json': encoded(manifest), 'source.zip': archive}
     release.update(production_admitted=approved, code_reference=reference, code_manifest_sha256=sha(payload['manifest.json']),
+        source_sha256=SOURCE_SHA, source_archive_sha256=ARCHIVE_SHA,
         material_review_sha256=sha(material_raw), deployment=proposal['deployment_inventory'],
         original_owner_request={key: owner[key] for key in ('owner_id', 'request_id', 'instruction')},
         admission_scope='RUN008_REVIEWED_SOURCE_ONLY; numeric code mount, inactive readback and separate publisher/wire review required' if approved else 'INERT_RUN008_ADMISSION_PROPOSAL')
@@ -279,7 +346,8 @@ def assemble(*, repository_root, source_proposal_root, base_root, observation_ro
     files['consumer-release/release.json'] = independent
     consumers = {n.removeprefix('terminal-consumer/'): b for n, b in original.items() if n.startswith('terminal-consumer/')}
     operator = obj(consumers['CONSUMER-OPERATOR.json'])
-    operator.update(release_sha256=sha(independent), collector_entry_sha256=collector_sha if approved else None)
+    operator.update(source_sha256=SOURCE_SHA, source_archive_sha256=ARCHIVE_SHA,
+                    release_sha256=sha(independent), collector_entry_sha256=collector_sha if approved else None)
     consumers['CONSUMER-OPERATOR.json'] = encoded(operator)
     if approved:
         consumers['reviewed_entry.py'] = s.replace(consumers['reviewed_entry.py'], 'REVIEWED_OPERATOR_PINS_SHA256 = None',
@@ -316,7 +384,7 @@ def assemble(*, repository_root, source_proposal_root, base_root, observation_ro
     dataset.update(expected_predecessor_version=versions['code_predecessor'], expected_version=versions['code'],
         root_manifest={'path': 'manifest.json', 'sha256': sha(payload['manifest.json'])}, upload_inventory=upload,
         upload_inventory_sha256=sha(canonical(upload) + b'\n'), transport_archive=descriptor(files['code-upload.zip'], 'code-upload.zip'),
-        version_notes='Run008 reviewed coherent owned cuDNN loader selection; original materials/science/process/scorer/full167/12h gates retained. No GPU/scientific success claim.',
+        version_notes='Run008 preparation ordering and exact offline-guard environment compatibility repair; exact installed cuDNN and original materials/science/process/scorer/full167/12h gates retained. No GPU/scientific success claim.',
         expected_readback_layouts={'original-upload': upload,
             'extracted-root': sorted(material_rows + [descriptor(b, n) for n, b in source.items()], key=lambda r: r['path']),
             'extracted-source-directory': sorted(material_rows + [descriptor(b, 'source/' + n) for n, b in source.items()], key=lambda r: r['path'])})

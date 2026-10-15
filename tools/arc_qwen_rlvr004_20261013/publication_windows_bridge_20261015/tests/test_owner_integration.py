@@ -863,8 +863,8 @@ class SourceSeparationTests(unittest.TestCase):
                      'save-inactive', 'verify-inactive', 'prepare-active', 'activate', 'verify-run', 'reconcile-read-only'])
                 parents[0].elts.remove(additions[0])
             if path == ROOT / 'rl_collect.py':
-                # Only the source bootstrap changed. Validate its exact main
-                # prefix/base-class delta, then retain the complete original
+                # Validate the exact bootstrap and nullable pre-owned schema
+                # deltas, then retain the complete original
                 # collection, scientific, retry and launch-binding comparison.
                 helpers = {'_BootstrapOnce', 'bootstrap_arguments', '_bootstrap_need',
                            '_bootstrap_digest', '_bootstrap_read', '_bootstrap_object', 'bootstrap'}
@@ -887,6 +887,15 @@ except Exception as error:
                 self.assertEqual([ast.dump(base) for base in pending.bases],
                                  [ast.dump(ast.Name(id='ValueError', ctx=ast.Load()))])
                 pending.bases = [ast.Name(id='GuardError', ctx=ast.Load())]
+                binding = next(node for node in nodes if node.name == 'preowned_failure_binding')
+                repaired = ast.parse("""
+need(type(diagnostic)is dict and set(diagnostic) in
+     (expected_keys, expected_keys | {'preparation_failure'}),'closed_startup_diagnostic')
+need(diagnostic.get('preparation_failure') is None,'preowned_preparation_failure_must_be_null')
+""").body
+                self.assertEqual([ast.dump(node, include_attributes=False) for node in binding.body[2:4]],
+                                 [ast.dump(node, include_attributes=False) for node in repaired])
+                binding.body[2:4] = ast.parse("need(type(diagnostic)is dict and set(diagnostic)==expected_keys,'closed_startup_diagnostic')").body
             return {node.name: ast.dump(node, include_attributes=False) for node in nodes}
         old, new = definitions(PORTABLE / 'rl_transport.py'), definitions(ROOT / 'rl_transport.py')
         self.assertEqual(set(old), set(new))

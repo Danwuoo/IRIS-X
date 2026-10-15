@@ -18,42 +18,43 @@
 
 ## 二、目前基線與證據索引
 
-研究分支為 `feat/arc2-sft-rl-continuation-20261014`；本地與遠端已成功 fast-forward 到
-[`e491ba4be3562d48d78f4f615a1dd155bcdc0cfc`](https://github.com/Danwuoo/IRIS-X/commit/e491ba4be3562d48d78f4f615a1dd155bcdc0cfc)。
-這是本次修復的已保存 parent 基準；本頁隨新修復同一 commit 保存，
-確切交付 SHA 以接收時 Git HEAD／遠端 readback 為準。較早 `fix/arc2-abc-local-execution-20261015`、
-`fix/arc2-abc-portable-publication-20261015` 與 f5／a724 checkout 保持歷史身分；不覆寫其證據。
-本次修復另有 CPU 證據；不得沿用 e491 的本地驗收結論。
+研究分支只有 `feat/arc2-sft-rl-continuation-20261014`。最後已發布並由本地實際執行的來源為
+[`84a5a1f870c42899f3bea79996d1b9360c4bfee9`](https://github.com/Danwuoo/IRIS-X/commit/84a5a1f870c42899f3bea79996d1b9360c4bfee9)。
+本頁與啟動修復同一 commit 保存，交付 SHA 由接收時 HEAD／遠端 readback 核對。歷史 fix refs、
+f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.com/Danwuoo/IRIS-X/blob/84a5a1f870c42899f3bea79996d1b9360c4bfee9/research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)
+保存 lease 失敗與修復前的精確證據，不在本頁重複累積。
 
 | 項目 | 最後已確認的事實 | 證據範圍與限制 |
 | --- | --- | --- |
-| Stage 0／Stage 1 離線工具 | inert plan、report analysis、training audit adapter、upstream 逐軌跡 loss 與 shadow 規格已交付 | [Stage 0 審查](offline-continuation-review.md)、[Stage 1 審查](stage1-independent-review.md)；不是模型 hook 或 ARC 分數 |
-| AF3 真正元件 | `TrainingSample`、`DDISLoss`、`MeanMetricState` 實際 CPU 呼叫及合成 loss／gradient parity 已成立 | [整合與 proof](agent-factory3/integration.zh-TW.md)；無真實 Qwen／LoRA／GPU 效益證據 |
-| e491 本地材料與 no-auth | 本地回報：425 檔 canonical candidate 兩次重建逐 byte 相同；真實獨立 reviews、lineage、純 validate 與同 owner no-auth 通過，實測 12.6506 秒 | 僅適用該來源與當次材料；不證明之後 readiness、完整 JIT、upload 或 RUN 成功 |
-| 最新 readiness 阻礙 | 本地回報，2026-10-15 14:20:33 UTC：在 worker 啟動前以 `supervisor_lease_failed` 拒絕 | 新 ddd session 為 UNKNOWN、closure false；STATE 共 90 檔，原 83 檔逐 byte 未變；沒有 upload、RUN 或 A/B/C |
-| 既有歷史恢復 | 原 29 份 STATE 證據及原 failed-open 的 UNKNOWN／closure false 保留；先前 f5 恢復與 a724 readiness 只支持各自當次結果 | [E41–E52 原紀錄](archive/engineering-history.zh-TW.md#e0e52-與原始證據補充)；舊恢復不能消除新 UNKNOWN |
-| 本次雲端驗收 | 作者與獨立 reviewer 各自 545 normal／545 `-O` 通過；28 靜態 pins 正確、47 檔 review 前後不變。未重跑無變更的完整 suite | [固定 VALIDATION](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json) 的 `streamlined_release_revision`；前版完整 suite 的 1,621 tests／2 failures／35 errors／74 skips 與 37 個既有 failure/error IDs 留在 `material_successor_revision` |
-| Repository／CI | 仍有 6 項既有 README invariants 缺詞；先前精確 CI 失敗，unit／packaging skipped | [歷史 CI 與失敗收據](archive/engineering-history.zh-TW.md)；focused 通過不表示完整 suite／CI 綠燈；本次 layout 仍同 6 項；遠端 CI 需按最後精確 commit 另核對 |
-| 真實研究結果 | A/B/C、原始 training audit、真實 replay／LoRA 更新、B/C 成本匹配及 sealed PUBLIC 評分仍未取得 | PUBLIC120 固定 120 tasks／167 queries；未知不是 0 分，不能宣稱 RL 有效或無效 |
+| Stage 0／Stage 1 | 離線計畫、report analysis、training audit adapter 與 upstream 逐軌跡 loss 已交付 | [Stage 0](offline-continuation-review.md)、[Stage 1](stage1-independent-review.md)；無模型 hook 或 ARC 分數 |
+| AF3 真正元件 | `TrainingSample`、`DDISLoss`、`MeanMetricState` 實際 CPU 呼叫及合成 loss／gradient parity 成立 | [整合與 proof](agent-factory3/integration.zh-TW.md)；真實 Qwen／LoRA／GPU 效益仍未知 |
+| 84a5 本地與發布 | 本地 native10、WSL caller-death、pre-auth、真實 90 檔 disposition、canonical admission 通過；code Dataset v21 的 269 檔／15,849,580 bytes numeric readback 相符 | inactive40 → active41 真正提交；所有 9 個 native sessions closed，原 995／ddd UNKNOWN 原件不變 |
+| v41 真實終態 | 2026-10-15 15:58:28 UTC 首次觀察 ERROR；Internet OFF、RTX Pro 6000、private | [原 notebook](https://www.kaggle.com/code/danielwuu/iris-x-learning-agent-20261011)，kernel ID 138123872 不是 scriptVersionId；native closure 不證明遠端 VM teardown |
+| 啟動原因 | notebook 的 ambient interpreter 在離線環境建立前查固定 cuDNN，distribution 存在但 version 不等 9.10.2.21；停於 parent-environment-policy | ambient 實際版本與 backend 是否載入未知；prepare caller 同排序風險尚未執行。`preparation_failure:null` 另使 collector 拒絕 schema |
+| 已取回證據 | 五份 numeric41 outputs 各有 HTTP200、bytes／SHA receipt：startup diagnostic、preparation request、original request、operator、outer notebook | 五份不是全 inventory；outer notebook 無 execution outputs，不能當官方 execution log。模型／audit／score／cost 其他檔存在性未知 |
+| 本次狹窄修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；新 source/archive 正規重綁，canonical／GPU 待本地驗收 |
+| Repository／CI | 84a5 精確 CI 失敗：6 項既有 README invariants 缺詞，unit／packaging skipped | 本次 focused 驗證見 [VALIDATION](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)；新遠端 CI 依最終 commit 另核對，未重跑不變完整 suite |
+| 真實研究結果 | 原 A/B/C 已提交但未進模型階段；training audit、更新、B/C 成本匹配及 PUBLIC 評分均未取得 | PUBLIC 固定 120 tasks／167 queries；未知不是 0 分，也不是 RL 無效的結果 |
 
-14:20:33 本地去敏 failure report SHA256：
-`1364f2dade49a8de44d3e8663b1d21e0d8ecdd30be7979d671b2528548ae8c98`；capture SHA256：
-`69d2004240191cfeac995add924633dfa0123f1c16f87f288910ac784dcdd79f`。
-原件留在本地，未公開；上述 hashes 只識別回報，不等於新的 closure 或放行收據。
+v41 startup diagnostic SHA256：`0ba5efaf361da5336338a0ff170728ea7cf96aa1af447d74d5f770e0ff0de069`。
+CPU 另以真正 pinned offline guard 重現子程序增加 6 個固定環境鍵、與舊 loader 全等檢查不相容；
+新 policy 在 exec 前綁定同樣固定值，保留全等與所有 byte/map 檢查。這是下一邊界的 CPU 發現，並非 v41 已執行到此。
+原 epoch `1792079687`、global deadline `1792122887` 保留，不重設；去敏投影不能替代原件。
+現有 competition metadata association 沿用較早版本；材料仍是固定 training/1 與 PUBLIC120/1，
+沒有把研究改成 ARC-AGI-3，也不為這項既有掛載新增修改。
 
 ## 三、任務、依賴與下一步
 
 | 工作 | 目前狀態 | 下一個完成條件 |
 | --- | --- | --- |
-| 狹窄跨 OS lease 修復、歷史恢復／目前 release 分離、穩定 collector bootstrap 與 pre-worker disposition | 離線實作與獨立審查完成；545／545 測試通過。本地新版本 native、90 檔 disposition 與 canonical 尚未驗收 | 固定 commit readback 後交本地一次受影響驗收；重用不變元件，不再要求額外 material-lineage／雙 candidate 交接門檻 |
-| 本地接收與新 UNKNOWN 處置 | 受阻於上列 readiness 失敗 | 以新版本的真實證據處理精確事件；保留原 90 檔及歷史子集，不重跑已完成的舊恢復、不補造 closure |
-| 原 A/B/C 執行 | 未執行／未驗證 | 當次授權、全部原 admission 與目的端驗收成立後，依[單一交接流程](OFFLINE-LOCAL-HANDOFF.md#63-唯一-publisher-的有限提交與監看路徑)續接至 terminal 與完整可取得結果 |
-| 科學判讀與下一輪 | 待真實結果 | 驗證 reward、replay、checkpoint、全成本、closure 與完整 scorer，再按[方法決策表](method-landscape.zh-TW.md#七建議的實驗順序與觸發條件)續接已授權研究；ERROR 不代表方法成功 |
+| 兩 caller／guard 契約／collector schema 修復 | 作者與獨立 reviewer 各 613 normal／613 `-O` 通過（46 準備、9 組裝、558 bridge）；結果保存於同版 VALIDATION | 固定來源發布後，本地對變動 deployment／collector／runtime policy 與 source pins 生成一次 canonical、核對完整 pins；不重測未變 Windows native runtime |
+| 原 A/B/C 下一輪 | 沿原 run007／run008 notebook 模式；未提交新 run | fresh remote versions/status → code 與 inactive 回讀 → 一次 JIT RUN → 持續監看到 terminal／可取得結果；版本由真實觀察推導，不預先保留 22／42／43 |
+| v41 官方 log／inventory | 現有 bridge 尚未支援；SDK 0.1.37 可送 numeric version_label，但 response 無 version/source echo | 另作最小唯讀支援，不阻擋已確定的啟動修復；完整分頁與 numeric bodies／log attribution 分開，不能靠 latest CLI 補稱 exact41 |
+| 科學判讀 | 待真實模型結果 | reward、replay、checkpoint、全成本與完整 scorer 成立後，才按[既有方法決策](method-landscape.zh-TW.md#七建議的實驗順序與觸發條件)決定下一變因 |
 
-下一步交本地驗收固定修復，再依既有 notebook 路徑執行與監看到真實結果。研究設計仍為 SFT256 A、固定互斥 64-slot RL batches B、
-匹配完整 B model-phase wall 的 extra-SFT C；no-TTT、dev 選擇與 PUBLIC120／167 不變。
-AF3 companion 可在原 audit 產生後分析；真正 AF3 模型 hook 仍需另立 successor，
-不能成為首次原 A/B/C 的循環依賴，也不能偷偷換掉 frozen trainer。
+研究設計仍為 SFT256 A、固定互斥 64-slot RL batches B、匹配完整 B model-phase wall 的 extra-SFT C；
+no-TTT、dev 選擇與 PUBLIC120／167 不變。AF3 companion 在原 audit 產生後分析；
+真正 AF3 模型 hook 仍需另立受審查 successor，不能偷換 frozen trainer 或阻擋首次原 A/B/C。
 
 ## 四、技術設計與原始來源
 
