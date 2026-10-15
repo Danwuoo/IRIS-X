@@ -36,7 +36,8 @@ PROVIDER_TEXT = 'Bearer SYNTHETIC-PRIVATE-CREDENTIAL ' + SIGNED_URL
 OPERATOR_SOURCES = frozenset(('config.py', 'operator_common.py', 'bridge_client.py',
     'rl_transport.py', 'rl_collect.py', 'launch.py', 'verify_active_wire.py',
     'native_config.py', 'native_auth.py', 'sdk_worker.py', 'sdk-lock.json',
-    'protocol.py', 'win_runtime.py', 'win_supervisor.py', 'native_probe.py'))
+    'protocol.py', 'win_runtime.py', 'win_supervisor.py', 'native_probe.py',
+    'recovery_epoch.py', 'recovery_boot_probe.py', 'recovery_entry.py'))
 
 
 def sha(raw):
@@ -744,8 +745,8 @@ class AdmissionSourceClosureTests(unittest.TestCase):
         return self.transport.review_gate(args.review, args.review_sha, args.manifest_sha,
                                          args.material_sha, [ROOT / 'rl_transport.py', ROOT / 'operator_common.py'])
 
-    def test_complete_review_requires_all_15_native_and_wsl_operator_sources(self):
-        self.assertEqual(len(self.transport.OPERATOR_SOURCE_NAMES), 15)
+    def test_complete_review_requires_all_18_native_and_wsl_operator_sources(self):
+        self.assertEqual(len(self.transport.OPERATOR_SOURCE_NAMES), 18)
         self.assertEqual(set(self.transport.OPERATOR_SOURCE_NAMES), OPERATOR_SOURCES)
         self.assertEqual(self.check_review(self.review), self.review)
         for omitted in sorted(OPERATOR_SOURCES):
@@ -789,7 +790,7 @@ class AdmissionSourceClosureTests(unittest.TestCase):
 
         with patch.object(self.transport.subprocess, 'run', side_effect=git_show):
             self.assertEqual(self.transport.git_publication_gate(args), 'f' * 40)
-            self.assertEqual(len(seen), 15)
+            self.assertEqual(len(seen), 18)
             self.assertEqual(set(seen), OPERATOR_SOURCES)
             for mode in ('missing', 'stale'):
                 for name in sorted(OPERATOR_SOURCES):
@@ -823,9 +824,21 @@ class SourceSeparationTests(unittest.TestCase):
 
     def test_scientific_consumers_unchanged_outside_upload_boundary(self):
         def definitions(path):
-            return {node.name: ast.dump(node, include_attributes=False)
-                    for node in ast.parse(path.read_bytes()).body
-                    if isinstance(node, (ast.FunctionDef, ast.ClassDef))}
+            nodes = [node for node in ast.parse(path.read_bytes()).body
+                     if isinstance(node, (ast.FunctionDef, ast.ClassDef))]
+            if path == ROOT / 'rl_transport.py':
+                gate = next(node for node in nodes if node.name == 'execution_gate')
+                additions = [node for node in ast.walk(gate) if isinstance(node, ast.Constant)
+                             and node.value == 'reconcile-read-only']
+                self.assertEqual(len(additions), 1)
+                parents = [node for node in ast.walk(gate) if isinstance(node, (ast.List, ast.Tuple, ast.Set))
+                           and additions[0] in node.elts]
+                self.assertEqual(len(parents), 1)
+                self.assertEqual([node.value for node in parents[0].elts],
+                    ['poll', 'collect', 'watch', 'readiness', 'update-code', 'verify-code', 'verify-code-files',
+                     'save-inactive', 'verify-inactive', 'prepare-active', 'activate', 'verify-run', 'reconcile-read-only'])
+                parents[0].elts.remove(additions[0])
+            return {node.name: ast.dump(node, include_attributes=False) for node in nodes}
         old, new = definitions(PORTABLE / 'rl_transport.py'), definitions(ROOT / 'rl_transport.py')
         self.assertEqual(set(old), set(new))
         # Uploads now use opaque handles; review/Git admission must also cover

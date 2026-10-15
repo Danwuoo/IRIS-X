@@ -390,6 +390,65 @@ persistent ext4；Windows只接收同一固定commit的公開bridge來源、獨�
 若閉合的來源、runtime、ACL或原credential metadata不符，停在精確失敗點交回修復，不停用gate。
 跨OSworker的12h lease只約束該worker，不等於原實驗clock；只允許clean read-only輪替。
 
+### 6.3.2 原failed-open的獨立恢復邊界
+
+適用範圍只有E41的原failed-open與原29份state；目前證據／驗收狀態以
+[單一進度文件E43–E45](DEVELOPMENT-PROGRESS.zh-TW.md)為準。程式可用不代表已獲准重啟或provider執行。
+原UNKNOWN、closurefalse、原claim／journal／events全部保留；不刪除lock、不換publication namespace。
+新的process boundary與新的Job-zero不能改稱原事件closure。
+
+1. **本地純前置核對，尚不Restart。** 從固定修復commit取精確來源，保留原01ca來源與原config，
+   新runtime/config另存並逐檔比對。原STATE完整枚舉含hidden／非regular，確認4根檔＋25events的
+   名稱、bytes、SHA與封存一致；原closed readiness沒有raw receipt，不應補造或要求補造。
+   以實際原件建立`irisx/recovery-source-review-v1`：原inventory、原15來源及現行18來源descriptors、
+   原config／native config、每個request preimage（含deadline／max_seconds）、明列無nonce的四份
+   auxiliary records、原closed claim／journal hashes、boot來源／runtime hashes。
+   此review是本地獨立審查輸入，單有hash或測試fixture不是授權或真實證據。
+2. **驗收新的no-auth入口。** 在原Windows venv執行`recovery_boot_probe.py`，提供fresh64hex challenge、
+   probe／win_runtime／venv python／base python四個固定hash參數；timeout15秒包含cleanup。
+   只查固定OS boot metadata、host/install的challenge-bound hash及完整PowerShell child Job0；不讀credential內容、
+   不import SDK、不連provider。實際保存stdout／stderr／exit與source前後hash。
+   單獨從WSL啟動時20秒外層只約束interop proxy；若native probe在bootstrap／檔案syscall阻塞，
+   proxy退出不證明probe已終止，失敗不產生boot證據且不得繼續。native worker內的同probe另有
+   原supervisor outer Job／deadline。不要把standalone timeout當完整Windows清理證明。
+   另用明確標示synthetic的distinct recovery native config跑原`preauth_probe.py`，核對第八來源
+   `recovery_boot_probe.py`及recovery open binding；READY後仍不ACK，要求新的nonce-bound Job0。
+   合成capability值只能用no-auth probe，絕不能拿來執行recovery entry。
+3. **純validate。** 以normal local config執行`launch.py recover validate`，沿用原manifest／material／review／
+   local-config及各SHA旗標，另給`--input`及`--input-sha`。input精確兩欄`inventory`、`review`，
+   值均為`{path,bytes,sha256}` descriptor。此命令持原publisher lock、驗證原材料／來源與完整29檔，
+   不建立recovery記錄、不呼叫native或provider。失敗報精確固定reason，不以修改fixture來放行。
+4. **使用者確認時間後，保存Restart前置。** `recover prepare`的input為同兩descriptors加fresh`challenge`
+   與`expires_epoch`；最多3600秒epoch。先取真實新no-auth boot observation，再durably保存preparation。
+   review內`restart_authority`的authorization hash與witness-review hash綁已審查的使用者批准及見證
+   身分／作業方式；不是尚未發生的restart report hash，不可虛構批准。保存後才通知使用者在Windows
+   Start選「重新啟動」，需先存檔，會結束Windows／WSL所有當前程序。沒有自動reboot指令。
+   Shutdown、sleep、hibernate或單獨WSL重啟不符合此路徑；不要為繞過驗收而改系統設定。
+5. **Restart後重新核對來源與綁定，仍先不mutation。** 同主機／install、不同且較新的LastBootUpTime、
+   GetTickCount64與觀察時間相容、fresh challenge-bound observer全部通過；保留手動Restart的typed
+   witness descriptor與實際requested UTC。可信本機OS與操作者的證據不是防惡意主機的密碼學attestation。
+   再獨立審查post-restart normal local/native config templates（WSL_INTEROP可能合法改變）、原state及
+   同account／版本配置／材料；`irisx/recovery-binding-review-v1`指定兩個不存在的新輸出config路徑；native輸出須在原native目錄，local config可留ext4，另綁先前真實remote metadata／source／terminal狀態作expected reference。
+6. **明確受准的一次性read-only reconcile。** 只有原execution review明列`reconcile-read-only`且Git／材料／
+   18來源全部admitted時才可執行。input四欄`preparation`、`restart`、`binding_review` descriptors及fresh
+   `session_nonce`。同owner lock下取fresh boot→保存exclusive reservation→精確template overlay→consume
+   launch ticket→固定dataset／kernel／status／kernel／dataset→close。兩端allowlist都禁止upload、save、
+   version、download及mutation；完整原官方認證與refresh雙ACK不變。讀取值須與reviewed expected相符、
+   無active duplicate、同source／版本／mounts，新nonce真Job0與proxy exit0才可finalize。
+   現有grant refresh若必要，仍由官方library原地保存，intent／completion兩次WSL fsync ACK；
+   lost／unknown refresh或任何不確定read／closure保持阻擋，不能重用reservation。
+7. **歷史disposition封存後回原流程。** eligibility與exclusive sealed index綁完整original29、新session／
+   refresh／completion records。後續正常入口用受審查normal template，重新做fresh boot及原全部admission；
+   eligibility只適用同一post-Restart boot及精確受審查source／config lineage，之後再重啟或換來源需另審查；
+   只涵蓋精確那個old failed-open claim／journal，任何新UNKNOWN仍阻擋。sealed index不掃未來watch events，
+   原根record安全上限512仍適用，達限停下，不刪歷史繞過。仍需fresh官方版本/status、retention、payload、
+   mounts與singlepublisher gates才能在另獲准的原流程進行mutation；本恢復動作本身沒有publication授權。
+
+任何準備過期、claim已消耗、寫入中斷、缺seal、證據漂移或新unknown均停止並保存現狀交回。
+目前實作是一次明確審查的窄恢復，不提供自動多epoch重試、擴權或無限清理。原事件auth load是否發生
+仍未知；在固定原source及完整STATE未遭外部刪改／rollback前提，可排除受控original_refresh dispatch。
+不能排除外部grant變動，因此Restart後仍由官方既有認證實際核對；若grant失效或要求新權限，另請確認。
+
 ### 6.4 本地修復邊界與研究決策
 
 本地端可在當次明確授權內診斷並修復可重現的有限工程問題，例如 packaging／path

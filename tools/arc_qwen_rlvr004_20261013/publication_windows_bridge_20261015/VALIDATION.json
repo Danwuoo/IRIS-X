@@ -149,7 +149,26 @@
       "source_inventory_sha256": "8b56cabcc90d88b2f56a288b638c1c3dbd475364920cc2d4900de1d217f6f389",
       "static_source_pin_edges_verified": 22
     },
-    "native_acceptance": "not_run_for_this_successor",
+    "local_acceptance": {
+      "acceptance_index_sha256": "62c18de1b4c2fdbc133669957968e81acb317857dc7a8b4ff52a8730c4d20222",
+      "auth_used": false,
+      "evidence_origin": "reported actual local executor captures; raw evidence retained locally",
+      "historical_unknown_closure_proven": false,
+      "native_checks_passed": 10,
+      "native_checks_total": 10,
+      "native_stdout_sha256": "b1ce0ebb5e1ce48331504cfca9772e90ab476291929f9502336a9249c4e2f1ef",
+      "new_nonce_job_active_processes": 0,
+      "original_29_state_files_unchanged": true,
+      "preauth_ack": false,
+      "preauth_ready": true,
+      "preauth_stdout_sha256": "a401667e45c59ea2fdd992cfc2c26124d6def09a1b67a9da548ad97561c62b58",
+      "provider_calls": 0,
+      "sdk_imported": false,
+      "source_commit": "ca8f0dca5c016363c3fd25aec7faaec0ae712bdd",
+      "wsl_caller_death_members_stopped": 8,
+      "wsl_stdout_sha256": "c8fc21b28bf96b0dc024bc616dc9e516ad137dab2e98c1392beb5ca571c6e791"
+    },
+    "native_acceptance": "passed_three_local_no_auth_probes_at_ca8f0dca",
     "production_predecessor": "01ca4f14d23edaba64111f9ff0bab6d6deb20a91",
     "provider_or_auth_used_in_this_revision_validation": false,
     "scientific_execution": "not_run",
@@ -258,6 +277,211 @@
   "production_preauth_cli_acceptance": false,
   "production_wsl_interop_acceptance": false,
   "real_sdk_auth_provider_network_used": false,
+  "recovery_epoch_revision": {
+    "aggregate": {
+      "baseline_rerun": false,
+      "environment": "inherited plus PYTHONHASHSEED=0, workspace TMPDIR, three offline flags, CUDA_VISIBLE_DEVICES empty",
+      "errors": 35,
+      "exit_code": 1,
+      "failure_error_id_count": 37,
+      "failures": 2,
+      "focused_bridge_suite_is_separate": true,
+      "log_sha256": "3a01ad7bf97a47c8b44c59dd8c3074a25e503cab0e46dde99deb17808b0fbd42",
+      "new_root_observer_tests": 38,
+      "readme_findings": 6,
+      "same_failure_error_ids_as_saved_ca8_baseline": true,
+      "skips": 74,
+      "source_scope": "final executable source after directory identity fix; final documentation receipts added afterward",
+      "tests": 1621
+    },
+    "base_commit": "ca8f0dca5c016363c3fd25aec7faaec0ae712bdd",
+    "focused": {
+      "normal": {
+        "errors": 0,
+        "failures": 0,
+        "log_sha256": "56f353b1729246255ee1da7c0c7fe1ba904a3feff1b783bf1589e02665a09d41",
+        "skips": 0,
+        "tests": 355
+      },
+      "optimized": {
+        "errors": 0,
+        "failures": 0,
+        "log_sha256": "2a9ba0e3d23e0fac29834219455d961c41485e79a901079f3f658ab5e76a54a5",
+        "skips": 0,
+        "tests": 355
+      }
+    },
+    "independent_review": {
+      "blocking_offline_findings": 0,
+      "focused_normal_tests": 355,
+      "focused_optimized_tests": 355,
+      "log_sha256": {
+        "normal": "ee4a33f02906782a85e12a1a5fb0c6820b84a888014a1237f312aaa3b27eb9c3",
+        "observer-normal": "c990ef2c838294b41fdf7235e32fbc408022edbda8032320f2527e8e2c992a98",
+        "observer-optimized": "6ff30d8247f91f133289c612bd3117f177620a7cf5a4f211e4df1f59b4c46531",
+        "optimized": "54a8fa74be86873866e94dfe5718cd99d50ab0d0c8b930db116e56f259d3cd7b"
+      },
+      "native_acceptance": "pending",
+      "observer_normal_tests": 38,
+      "observer_optimized_tests": 38,
+      "review_artifact_sha256": "e9484e7474823110591655f55b6136f9e1c73cd61665afa8f6fb9f94784626bb",
+      "scope": "offline source and synthetic tests only; no Restart, auth, provider or scientific execution",
+      "skips": 0,
+      "source_inventory_sha256": "8a04994ad9450badedf5676842009facbd11562dfc2d3e0ceaf89510fedc8a83",
+      "source_tests_and_sdk_lock_unchanged_before_after": true
+    },
+    "manual_restart_executed": false,
+    "maximum_epoch_seconds": 3600,
+    "native_recovery_acceptance": "not_run",
+    "new_scientific_result": false,
+    "normal_session_eligibility": "same reviewed post-Restart boot, exact source/config lineage, original gates still required",
+    "original_controlled_refresh_dispatch": "excluded only under stated trusted-host assumptions; auth load and external grant changes remain unknown",
+    "original_unknown_modified": false,
+    "provider_or_auth_used": false,
+    "retry_policy": "one consumed attempt, no automatic new epoch or namespace",
+    "scope": "explicit same-namespace one-use read-only recovery; manual Restart and actual local acceptance pending",
+    "source_files": {
+      "tests/test_recovery_boot_probe.py": {
+        "bytes": 25403,
+        "sha256": "86136b5241b6dc2adc248e39adf469fcbead399a38f7c5df08d7f8a2c0b17bab"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/bridge_client.py": {
+        "bytes": 47423,
+        "sha256": "e9be1c45d6f8d24fc0ad8f0256f2e7d820720b6cbc665bc2555391a52d909ee0"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/config.py": {
+        "bytes": 25073,
+        "sha256": "9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/launch.py": {
+        "bytes": 5359,
+        "sha256": "84b3f78745e4aeb35abc4560c76e6567654f171b85b15c73fabd4820481728e7"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/native_auth.py": {
+        "bytes": 15321,
+        "sha256": "785e696dc702e5042f415e3da1bd3fbf43ff34f3f8a579a702ec2f262aefdcd4"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/native_config.py": {
+        "bytes": 16714,
+        "sha256": "5008d989004f2c99948a157f9fda09f6ce751ee93c07ce39f1659f3789fb9fe8"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/native_probe.py": {
+        "bytes": 39716,
+        "sha256": "d38630677f70dac21d0369623c1d7f7e6650d9085b0d3b9e38a7c2918072f73f"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/operator_common.py": {
+        "bytes": 22192,
+        "sha256": "63992707cce95d6c2253028499d5634c48ee704ab9c4af301f0acb2fc8e97099"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/preauth_probe.py": {
+        "bytes": 20535,
+        "sha256": "2e6ffff0a4008935e03376807508d14ba9cdac41efd5dba112c3da067aef9c45"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/protocol.py": {
+        "bytes": 37021,
+        "sha256": "5f67b8655497565cb149dbd7bd4aa675be8cec058089295f0d2a75873787cf24"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/recovery_boot_probe.py": {
+        "bytes": 22766,
+        "sha256": "46bc3f0b8c47dd53e7da0db58de01f39fc078811e9372fcc803a52db8b496b31"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/recovery_entry.py": {
+        "bytes": 10466,
+        "sha256": "088b47b89a61a314bcf7bb497ed4e3daa659e4d78b9150950ff86d6f977f5d4d"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/recovery_epoch.py": {
+        "bytes": 80549,
+        "sha256": "2d7ecb31f7571a51382597a1fc5ddd75939b296794d7de28cef10cc06b2439dc"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/rl_collect.py": {
+        "bytes": 58716,
+        "sha256": "776ca71df7600f88f7c71e620af72c1883508667fcd2d033c60a58f058130f86"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/rl_transport.py": {
+        "bytes": 59489,
+        "sha256": "d566625f7ddd379d773a530c610911017558b56051a4daff98f9fe09e2191499"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/sdk-lock.json": {
+        "bytes": 19816,
+        "sha256": "3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/sdk_worker.py": {
+        "bytes": 49426,
+        "sha256": "bd75a7a221b58d7c3723cb98a3f3485135da2a69b2f518683cd9e30eefe29dcd"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_bridge_client.py": {
+        "bytes": 48753,
+        "sha256": "d59e5113b51c9ec0ca0533eb86bbf4ad6a2d5697fc68bd776693ec77ecad0be4"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_bridge_protocol.py": {
+        "bytes": 23233,
+        "sha256": "65d2d2d061fe0482ad5c4098fd4789dba2b587151ea2ce373288f23ec8c90e40"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_config_admission.py": {
+        "bytes": 42689,
+        "sha256": "aa5f906d6ea3125e0fca45776c48e6f23386aafe1e96d1dc350a824a5e13fb19"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_native_config.py": {
+        "bytes": 12434,
+        "sha256": "4b4311d3048954abf571e46b39ccd638ac46a4a807c79f0216a1b576df4b1d90"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_native_sdk_worker.py": {
+        "bytes": 42337,
+        "sha256": "a14dcd71c393e4cf2b9a096e653ec166fb5f273bacd2b68ddffef7007653197d"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_owner_integration.py": {
+        "bytes": 46433,
+        "sha256": "a994d7959f15b8cc61475b0e7a3888ea7054e6aa09617a55db915849f90d2db6"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_preauth_probe.py": {
+        "bytes": 14186,
+        "sha256": "5ca3fd63cd3728f13c2194f1c33084c2fc36c1339b0f1c7cecc3caf42bb6b51b"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_recovery_entry.py": {
+        "bytes": 5938,
+        "sha256": "18830c3aa6177f582b99ffe8a20c0acbd7799ce59efce52755af807aeb699fa3"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_recovery_epoch.py": {
+        "bytes": 41634,
+        "sha256": "1534798522126281a6ebb5d0fafe6b442c74e57b7532194c926d88333b039bd1"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_recovery_observer_launch.py": {
+        "bytes": 13124,
+        "sha256": "4edc435c8ad63d3ff85024929457b28f9522b135521b556ef04d198eb6ff02ea"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_recovery_wiring.py": {
+        "bytes": 9511,
+        "sha256": "74b22d9f076d9472ac4240d63e1928cbd246506098af6707d8fd045c1dd66a3a"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests/test_windows_runtime.py": {
+        "bytes": 49584,
+        "sha256": "bfb9f64d81a031336a999f750bc5fff4e3f4ddab35cfcf84df52d23ea397a265"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/verify_active_wire.py": {
+        "bytes": 19347,
+        "sha256": "8a5b7844d1c5cfee3f5c026967d1dab2ed8465aa11e563aec276ba909c086438"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/win_runtime.py": {
+        "bytes": 35240,
+        "sha256": "7280b755d3155fb3d5d4f9989c0ea592d7a0d8be8750d635360f06fe766db69d"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/win_supervisor.py": {
+        "bytes": 16841,
+        "sha256": "f2c8ff86424a993ff7e6a22e056cdf11ffb5d0969b64947d138c08f7c00a7001"
+      },
+      "tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/wsl_native_probe.py": {
+        "bytes": 12116,
+        "sha256": "fcc5f07ad4a658c42c6ead9d42239a2743f3f175058feb1604f8963772842932"
+      }
+    },
+    "source_review": "independent_offline_pass",
+    "standalone_observer_failure_cleanup": "WSL proxy bound does not prove native bootstrap termination; no observation admitted on failure",
+    "trusted_host_assumptions": [
+      "exact original source ran normally",
+      "complete actual original STATE was not externally deleted, modified, or rolled back",
+      "manual Restart witness and current OS boot metadata trusted"
+    ]
+  },
   "repository_aggregate": {
     "baseline_log_sha256": "5408a1b0cf673b4c5a2b37589f5ae5356d0e870609443fd6321e72e5842d4ec0",
     "baseline_rerun": false,
@@ -309,7 +533,7 @@
     "skips": 74,
     "tests": 1583
   },
-  "scope": "Original top-level fields describe historical d684f63; diagnostic_revision describes f998839; venv_repair_revision describes 01ca4f14 and its actual no-auth acceptance. open_failure_diagnostic_revision describes a forward-only diagnostic successor; historical failed-open UNKNOWN remains blocked, with no new native/provider or scientific admission.",
+  "scope": "Original top-level fields describe historical d684f63; diagnostic_revision describes f998839; venv_repair_revision describes 01ca4f14 and its actual no-auth acceptance. open_failure_diagnostic_revision describes a forward-only diagnostic successor; historical failed-open UNKNOWN remains blocked, with no new native/provider or scientific admission. recovery_epoch_revision describes the explicit offline recovery successor, not an executed Restart or recovered publication.",
   "source_files": {
     "bridge_client.py": {
       "bytes": 30257,

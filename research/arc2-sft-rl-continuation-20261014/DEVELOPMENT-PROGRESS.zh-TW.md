@@ -73,6 +73,12 @@
 | E41 | 隨後08:11:34.117961–08:11:35.537807 UTC update-code outer exit2、bridge_eof_or_invalid_read；停在新session sequence1 open，mutation_attempted=false，session UNKNOWN且native_process_closure_verified=false | 原29份state已封存，無retention inventory／codeclaim／upload／versionintent；原source／config／interop environment未變。實際native exit／stderr receipt／READY與phase未持久保存，不能推論未開始認證或Job已清空。FAILURE-HANDOFF SHA256 `21d7174e4fb8c0d7895052ce7e883663d2fb26ce17805e252b74882e7e4a991c`只識別本地封存證據；根因未知，舊UNKNOWN保持阻擋，不改寫history／namespace或重送 |
 | E42 | failed-open診斷successor通過269 normal／269 `-O`、zero skips；獨立reviewer同269／269、22個static pins相符，無blocking finding。fresh完整suite仍1,583 tests／2 failures／35 errors／74 skips | [open_failure_diagnostic_revision](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。37個failure/error IDs與保存POSIX baseline相同，未重跑baseline；6項README findings未變。保留固定診斷／真實已取得closure，不改UNKNOWN、auth、deadline或mutation admission；新版native未測，E41原closure缺失不可回填。另行設計獨立recovery epoch仍需明確審查，沒有執行或放行 |
 
+| E43 | ca8f0dca本地三項no-auth全部PASS：08:52:21–36 UTC native10／10；08:53:15–18 WSL caller-death八members停止／Job0；08:54:24–28 pre-auth READY有效、ACK=false、nonce-bound Job0 | 27來源Windows／WSL／Git相符且前後不變；SDK／credential／provider／network均未使用。INDEX SHA256 `62c18de1b4c2fdbc133669957968e81acb317857dc7a8b4ff52a8730c4d20222`；這些是新合成session，不能回填E41 closure。ca8[CI38708124018](https://github.com/Danwuoo/IRIS-X/actions/runs/38708124018)為failure，同6項README缺詞，unit／packaging skipped |
+| E44 | 09:42:39 UTC本地完整枚舉原29檔：4根claim／journal＋25events、僅events子目錄；集合／大小／SHA均與封存相符，無hidden／tmp／link／special／JSON異常 | 精確01ca原碼要求refresh intent先經WSL exclusive claim、event及journal fsync，ACK後才controlled original_refresh。在固定source正常執行、可信主機且無外部刪改／rollback前提，未dispatch受控refresh；不等於auth未載入或外部grant狀態已知。原closed readiness無raw receipt，僅按原closed predicate、source及event驗證，不要求不存在的檔案 |
+| E45 | 獨立recovery epoch離線完成：355 normal／355 `-O`及38 observer normal／38 `-O`全部通過、zero skips；獨立reviewer同數通過且來源前後不變，無剩餘offline blocking finding | 同STATE／publisher lock、原29檔不變；full Windows Restart為新的當前process boundary，challenge／host／boot／來源與runtime綁定；一次性read-only dataset→kernel→status→kernel→dataset及新Job0後保存固定completion seal。正常publication仍須原admission；無Restart／provider執行證據，不能標為已恢復 |
+
+| E46 | 最終recovery executable source完整suite：1,621 tests／2 failures／35 errors／74 skips；新增38 root observer tests通過，37個failure/error IDs與保存ca8 baseline完全相同，未重跑baseline | 正確PYTHONHASHSEED=0、workspace TMPDIR、offline flags、CUDA_VISIBLE_DEVICES空值；仍同6項README findings，整體FAIL，bridge355 focused另行驗收。沒有新增failure/error IDs；來源及詳細logs hashes見[recovery_epoch_revision](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json) |
+
 本地去敏觀察收據 `OBSERVATION.json` 的SHA256為
 `faffc10ca4325726b95f3a99bbc4a2d30b3cad26d20d91ef0e355d28c9413123`。
 E17的ext4 Stage0 normal／`-O` logs分別為
@@ -143,19 +149,20 @@ successor驗收，不把CPU-only工具限制變成原A/B/C的循環依賴。
 | DOC-AF3 | AF3研究來源併入本資料夾，修復導覽與引用 | 完成（文件整併）；E13，三份獨特研究／驗證／審查與重要RL來源地位保留 | E1、E7、E12 | 保留pinned上游、license與元件實際採用證據；不改程式namespace／vendor／frozen source，無重複進度頁 |
 | HANDOFF-CYCLE | 將既有本地交接延伸為提交、監看、有限工程修復及結果回傳流程 | 完成（交接規格）；E13，只更新既有交接文件；實際本地執行另列E1～E4 | S1-O1～O6、原執行契約 | 明列fresh remote／材料／admission、single publisher、監看到terminal、結果回傳與方法觸發條件；本文件不派發工作 |
 | S1-P1 | 本地publisher的狹窄POSIX portability successor | 完成（離線交付）；E19～E25，106 normal／106 `-O`、獨立審查與19檔遠端readback | 純POSIX使用仍需本地native OAuth；本輪選擇S1-P2沿用Windows登入 | 保存此可重現版本；不因選擇Windows橋而改寫POSIX已測來源，也不把來源保存當provider放行 |
-| S1-P2 | WSL durable owner＋Windows官方SDK bounded bridge | 受阻；E39三項no-auth與E40正式readiness已通過，但E41新open失敗，舊UNKNOWN缺原生closure證據；窄診斷修補進行中 | S1-P1、精確SDK0.1.37、native Job／ACL／pipe驗收、原材料與全部新hash-bound reviews | bounded IPC／DTO、refresh前fsync握手、獨立每RPC watchdog、全Job清空、未知結果不重送；先離線與本機合成驗收，再依原admission進既有A/B/C流程 |
+| S1-P2 | WSL durable owner＋Windows官方SDK bounded bridge | 受阻；E39三項no-auth與E40正式readiness已通過，但E41新open失敗，舊UNKNOWN缺原生closure證據；E43診斷已實測，E45獨立recovery epoch離線驗收完成；本機前置驗收待執行 | S1-P1、精確SDK0.1.37、native Job／ACL／pipe驗收、原材料與全部新hash-bound reviews | bounded IPC／DTO、refresh前fsync握手、獨立每RPC watchdog、全Job清空、未知結果不重送；先離線與本機合成驗收，再依原admission進既有A/B/C流程 |
 | S1-E1 | 本地真實來源、模型材料與已存在audit接收 | 材料與原admission重建完成（E40）；發布在E41 open UNKNOWN受阻，本輪audit尚未產出 | 原執行契約、本地來源與材料 | 先完成目的環境portable successor與原admission，核對training-owned provenance／原records／排除及exact numeric materials。首次原A/B/C可在原admission通過後產生audit，不以尚未產出的結果阻擋原流程 |
 | S1-E2 | 原runtime真實replay／LoRA梯度／owner狀態驗收 | 待開始／未執行 | S1-E1、本地完整原admission | E2與E3是同次原執行中的驗收，不要求先有另一場成功證據。原runtime逐步核對模型、數值、rollback、save/reload、closure與資源；CPU logp梯度不能替代。若另接AF3模型hook，才加另立successor的同模型差分驗收 |
 | S1-E3 | 同 session 既有 A/B/C 比較 | 待開始／未驗證 | S1-E1、原admission／batch／時鐘；E2由該次原runtime逐步驗收 | 原 reward、replay、更新、checkpoint、全 B/C wall、固定選擇與 closure 證據完整；未完成與 zero-signal 分開 |
 | S1-E4 | sealed 評分與研究判讀 | 待開始／未驗證 | S1-E3、隔離 evaluator、原 scorer | 完整 PUBLIC120／167 與相同案例 gain／loss；B 同時對 A、等成本 C 判讀；缺評分保持未知，不 promotion |
 
-**現在的下一步：** 保存E41原失敗與29份state，先完成固定格式失敗診斷的窄修補、
-正常／`-O`測試及獨立審查，再交本地做獨立no-auth驗證。新診斷只能補強未來觀察，
-不能回填舊事件已遺失的native receipt或把controller退出當全Job清空。
-原UNKNOWN未取得可驗證的原事件closure前，禁止新provider session、換namespace或重送update-code。
-根因仍未知；E40的readiness成功不替代E41的closure。原Windows profile／store不搬移，
-沒有新WSL OAuth；本環境不代替本地提交或訓練。Stage 1真實A/B/C及PUBLIC120／167仍未執行，
-不提前轉向Stage 2／TTT／Agent新方法。
+**現在的下一步：** 原E41 UNKNOWN與29份state保持不變。E43完成forward-only診斷的
+三項本地no-auth驗收；E44提供完整原狀態與原碼順序的條件性補證。E45新增獨立recovery epoch，
+已完成離線測試／審查；固定來源後交本地驗證新boot observer、recovery-mode pre-auth及純validate。
+依[本地恢復步驟](OFFLINE-LOCAL-HANDOFF.md#632-原failed-open的獨立恢復邊界)，保存前置證據並確認
+使用者可手動Windows「重新啟動」後，才可能建立新的process termination boundary與一次性唯讀核對。
+這不補造原receipt、不改寫原UNKNOWN；新的closure只屬新session。尚未執行Restart／recovery／新provider。
+根因仍未知；目前沒有新的dataset版本、notebook RUN或A/B/C結果。真實PUBLIC120／167保持未評分，
+原Windows登入留原profile，不建立WSL OAuth，不提前轉向Stage2／TTT／Agent新方法。
 
 ## 四、技術設計與原始來源
 
@@ -373,3 +380,14 @@ DDIS數學與真實元件CPU整合證據，集中於[AF3整合研究](agent-fact
   `_failed`未保存native finish／receipt拒絕原因，supervisor也可能在已查得Job-zero後因
   command completion檢查失敗而丟失closure；這是確認的診斷缺口，不是已證實E41根因。
   修補只保存固定安全欄位及真實已取得closure，失敗仍UNKNOWN；不新增自動recovery或重送路徑。
+
+- 2026-10-15 recovery epoch：以實際29檔projection校準事件模型；3bracket與failure輔助檔沒有nonce，
+  不因時間鄰近補綁到session。原readiness的七步與failed-open兩次UNKNOWN各自驗證。新recovery必須
+  綁原材料／現行18檔operator來源、純no-auth boot觀察與受審查的手動Restart證據；精確唯讀核對、
+  同grant refresh的原雙ACK、當次真Job0均通過後才建立歷史failed-open disposition。
+  原Journal仍UNKNOWN／closurefalse，失敗或torn seal保持阻擋；不自動重送或改研究方法。
+
+- 最終recovery離線審查補強：18個reviewed來源必須等於實際執行sibling bytes；open acceptance後
+  必須先authenticated才可下一request；重複UNKNOWN不得改原proof；proxy kill錯誤仍關閉pipes；
+  ancestor鄰檔churn只檢type／dev／inode，原檔與STATE完整metadata／集合檢查保留。
+  共355 bridge＋38 observer各normal／`-O`通過；它們是CPU synthetic驗收，不是本機recovery成功。

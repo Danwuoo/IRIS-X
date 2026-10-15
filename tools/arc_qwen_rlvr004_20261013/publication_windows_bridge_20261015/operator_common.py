@@ -9,8 +9,8 @@ from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse, urljoin
 
 BASE = WORK = STATE = STOP = CONFIG = None
-CONFIG_SOURCE_SHA256 = '11cbdaa9f08a14ba9efcf15207991d5179682413899853becf562f6b4af7169f'
-BRIDGE_CLIENT_SHA256 = 'aa15891066fa9e82cb84c7c2e313667e801858fede8ecadbafd385fafd87c928'
+CONFIG_SOURCE_SHA256 = '9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a'
+BRIDGE_CLIENT_SHA256 = 'e9be1c45d6f8d24fc0ad8f0256f2e7d820720b6cbc665bc2555391a52d909ee0'
 REF = 'danielwuu/iris-x-learning-agent-20261011'
 DREF = 'danielwuu/iris-x-learning-agent-code-20261011'
 MODEL = 'qwen-lm/qwen-3/transformers/14b/1'
@@ -27,13 +27,13 @@ def configured():
     need(CONFIG is not None, 'reviewed_local_configuration_required')
     return CONFIG
 
-def configure(config_path, config_sha256, manifest_path, manifest_sha256):
+def configure(config_path, config_sha256, manifest_path, manifest_sha256, *, recovery=False):
     """Compile exact local configuration code; bind once before any provider."""
     global BASE, WORK, STATE, STOP, CONFIG
     need(CONFIG is None, 'local_configuration_already_bound')
     path=Path(__file__).absolute().with_name('config.py')
     module=load_source_module('reviewed_rl_local_config_'+CONFIG_SOURCE_SHA256,path,CONFIG_SOURCE_SHA256)
-    try:config_=module.load(config_path,config_sha256,manifest_path,manifest_sha256)
+    try:config_=module.load(config_path,config_sha256,manifest_path,manifest_sha256, recovery=recovery)
     except ValueError as error:raise GuardError(str(error)) from None
     CONFIG=config_;BASE=config_.repository_root;WORK=config_.candidate_root
     STATE=config_.state_root;STOP=config_.gpu_stop_path

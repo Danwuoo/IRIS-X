@@ -231,7 +231,7 @@ def config_schema(document):
     need(document['username'] == 'danielwuu' and is_sha(document['publication_manifest_sha256']), 'local_config_identity')
 
 
-def load(config_path, config_sha256, manifest_path, manifest_sha256):
+def load(config_path, config_sha256, manifest_path, manifest_sha256, *, recovery=False):
     need(is_sha(config_sha256) and is_sha(manifest_sha256), 'local_document_hash')
     document = read_json(config_path, config_sha256)
     config_schema(document)
@@ -276,7 +276,7 @@ def load(config_path, config_sha256, manifest_path, manifest_sha256):
     need(predecessor['provider_status'] in ('COMPLETE', 'ERROR', 'CANCEL_ACKNOWLEDGED'), 'local_remote_predecessor_not_terminal')
     return LocalConfig(**paths, runtime=runtime, versions=MappingProxyType(dict(versions)),
                        document_sha256=config_sha256, publication_manifest_sha256=manifest_sha256,
-                       windows_bridge=load_windows_bridge(document['windows_bridge'],versions))
+                       windows_bridge=load_windows_bridge(document['windows_bridge'],versions, recovery=recovery))
 
 
 def child_environment(runtime, inherited):
@@ -332,7 +332,7 @@ def interop_guard(runtime, inherited):
     need(not inherited.get('WSLENV'), 'unreviewed_cross_os_environment_mapping')
 
 
-def load_windows_bridge(document, versions):
+def load_windows_bridge(document, versions, *, recovery=False):
     """Bind public source/runtime metadata and genuine synthetic native evidence.
 
     This is a structural source/receipt check. Existing independent action review
@@ -356,12 +356,19 @@ def load_windows_bridge(document, versions):
         need(row['wsl_path'] == expected, 'windows_bridge_exact_drive_mapping')
         raw = bounded_read(row['wsl_path'],128*1024**2)
         need(hashlib.sha256(raw).hexdigest() == row['sha256'], 'windows_bridge_file_bytes')
+    need(type(recovery) is bool, 'windows_recovery_mode_type')
     native = read_json(document['configuration']['wsl_path'],document['configuration']['sha256'])
-    need(native.get('format') == 'irisx/run008-windows-sdk-runtime-v1'
+    expected_format = 'irisx/run008-windows-sdk-recovery-runtime-v1' if recovery else 'irisx/run008-windows-sdk-runtime-v1'
+    need(native.get('format') == expected_format
          and native.get('account') == 'danielwuu' and native.get('versions') == dict(versions),
          'windows_bridge_native_configuration')
     native_sources = {'win_runtime.py', 'win_supervisor.py', 'protocol.py',
                       'native_config.py', 'native_auth.py', 'sdk_worker.py', 'sdk-lock.json'}
+    if recovery:
+        native_sources.add('recovery_boot_probe.py')
+        recovery_stanza(native.get('recovery'))
+    else:
+        need('recovery' not in native, 'windows_recovery_mode_required')
     need(type(native.get('sources')) is dict and set(native['sources']) == native_sources,
          'windows_native_source_closure')
     for name in native_sources:
@@ -411,3 +418,21 @@ def load_windows_bridge(document, versions):
          and proof.get('pyvenv_cfg_sha256') == native['runtime']['pyvenv_cfg_sha256'],
          'windows_native_probe_runtime')
     return dict(document)
+
+
+def recovery_stanza(value):
+    """Structural mode binding only; an epoch capability is separate admission."""
+    fields = {'capability_sha256', 'reservation_sha256', 'challenge',
+              'host_install_sha256', 'last_boot_utc', 'expires_epoch', 'allowed_operations'}
+    need(type(value) is dict and set(value) == fields, 'windows_recovery_stanza_schema')
+    need(all(is_sha(value[key]) for key in ('capability_sha256', 'reservation_sha256',
+              'challenge', 'host_install_sha256')), 'windows_recovery_stanza_hash')
+    need(type(value['last_boot_utc']) is str and 0 < len(value['last_boot_utc']) <= 64
+         and value['last_boot_utc'].endswith('Z'), 'windows_recovery_boot_time')
+    import math
+    expiry = value['expires_epoch']
+    need(type(expiry) in (int, float) and math.isfinite(expiry) and expiry > 0,
+         'windows_recovery_expiry')
+    need(value['allowed_operations'] == ['open', 'dataset', 'kernel', 'status', 'close'],
+         'windows_recovery_operations')
+    return dict(value)

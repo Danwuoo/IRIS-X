@@ -37,7 +37,7 @@ interface; source availability alone does not admit credentials or publication.
 `launch.py publish|collect ACTION` preserves the prior required manifest,
 material, review and local-config flags plus their hashes. It execs only the
 pinned WSL Python with `-I -B`. All original mutation and wire gates remain.
-`review_gate` and `git_publication_gate` bind all 15 operator/source/verifier
+`review_gate` and `git_publication_gate` bind all 18 operator/source/verifier
 files; the seven Windows source descriptors must match the same WSL Git files.
 
 The WSL config format is `irisx/run008-windows-bridge-operator-config-v1`.
@@ -56,6 +56,36 @@ schema is in `native_config.validate_document`. `sources` contains only
 No config contains tokens, credential contents, delegated auth directories or a
 substitute HOME. These consumer-local files remain ignored, not public Git data.
 A receipt is structurally checked evidence, not independent review authority.
+
+## Explicit failed-open recovery interface
+
+`launch.py recover validate|prepare|reconcile-read-only` is a separate entry, with
+all original contract flags plus `--input` / `--input-sha`. The canonical
+[local recovery procedure](../../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#632-原failed-open的獨立恢復邊界)
+defines exact input descriptors and approval order. `validate` is local-only;
+`prepare` additionally runs the bounded no-auth boot observer and saves state;
+`reconcile-read-only` requires a separately approved manual Windows Restart,
+new boot evidence and an exact source/config/action review. No command restarts
+the computer or automatically retries a failed capability.
+
+Normal native configuration retains the seven-source v1 format. The distinct
+`irisx/run008-windows-sdk-recovery-runtime-v1` adds only the eighth pinned source
+`recovery_boot_probe.py` and an exact recovery stanza: capability/reservation
+hashes, challenge, host/install hash, boot time, expiry, and the fixed
+open/dataset/kernel/status/close allowlist. Normal entry rejects recovery mode.
+`recovery_epoch.py` owns append-only preparation, one-use reservation, historical
+disposition and a fixed completion seal under the same publisher lock/state.
+`recovery_entry.py` connects that core to the existing owner and
+`RecoveryBridgeClient`; it derives configuration from independently reviewed
+templates, never caller-selected extra operations. The old UNKNOWN and its
+closure=false bytes remain unchanged. New-session closure uses the original
+Job-zero predicate, without exception.
+
+All hash descriptors are integrity bindings, not proof of permission or trusted
+host history. Full Restart establishes a new current process boundary; it does
+not reconstruct a lost historical receipt. Saved fixtures are synthetic CPU
+evidence only. Current actual native and provider acceptance belongs solely in
+the development progress document, not this interface description.
 
 ## Early native diagnostic
 

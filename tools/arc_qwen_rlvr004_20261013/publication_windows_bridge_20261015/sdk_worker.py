@@ -32,6 +32,8 @@ DOWNLOAD_CAP = 8 * 1024 * 1024 * 1024
 HEX = re.compile(r'[0-9a-f]{64}\Z')
 HANDLE = re.compile(r'[0-9a-f]{64}\Z')
 MUTATIONS = frozenset(('StartBlobUpload', 'CreateDatasetVersionById', 'SaveKernel'))
+RECOVERY_OPERATIONS = frozenset(('open', 'dataset', 'kernel', 'status', 'close'))
+RECOVERY_ROUTES = frozenset(('GetDataset', 'GetKernel', 'GetKernelSessionStatus', 'GenerateAccessToken'))
 ROUTES = {
     'datasets.DatasetApiService': {'GetDataset', 'ListDatasetFiles', 'DownloadDataset', 'CreateDatasetVersionById'},
     'kernels.KernelsApiService': {'GetKernel', 'GetKernelSessionStatus', 'DownloadKernelOutput', 'SaveKernel'},
@@ -42,7 +44,7 @@ ROUTES = {
 # Filled only after the corresponding reviewed sources settle. An unbound
 # checkout cannot start an authenticated Windows worker.
 WIN_RUNTIME_SHA256 = '7280b755d3155fb3d5d4f9989c0ea592d7a0d8be8750d635360f06fe766db69d'
-NATIVE_CONFIG_SHA256 = 'fe2ec44a37e8895077162a3369d859967001e5a50f4294d2d8e0fb954fa35282'
+NATIVE_CONFIG_SHA256 = '5008d989004f2c99948a157f9fda09f6ce751ee93c07ce39f1659f3789fb9fe8'
 
 
 class WorkerGuardError(ValueError):
@@ -179,15 +181,22 @@ class HttpBoundary:
     failure is terminal. HTTP adapters have zero retry; mutation counters never
     reset (except one fresh GenerateAccessToken identity after durable claim).
     """
-    def __init__(self, phase=None):
+    def __init__(self, phase=None, *, recovery=False, refresh_exchange=None, lease_guard=None):
+        need(type(recovery) is bool, 'worker_recovery_mode')
         self.mutations = {}
         self.refresh_objects = set()
         self.phase = phase or nullcontext
+        self.recovery = recovery
+        self.refresh_exchange = refresh_exchange
+        self.lease_guard = lease_guard
 
     def bind(self, client, auth):
         session = no_retry_session(client.http_client()._session)
         send = session.send
         def bounded(request, **kw):
+            if self.recovery:
+                need(callable(self.lease_guard), 'recovery_http_lease_required')
+                self.lease_guard()
             auth.check()
             parsed = urlparse(request.url)
             need(parsed.scheme == 'https' and parsed.hostname == 'api.kaggle.com'
@@ -196,11 +205,20 @@ class HttpBoundary:
             operation = parsed.path.rsplit('/', 1)[-1]
             need(request.method == 'POST' and any(parsed.path == '/v1/' + service + '/' + operation
                  and operation in allowed for service, allowed in ROUTES.items()), 'unreviewed_rpc_operation')
+            need(not self.recovery or operation in RECOVERY_ROUTES, 'recovery_rpc_forbidden')
             if operation in MUTATIONS:
                 need(operation not in self.mutations, 'rpc_mutation_resend_forbidden')
                 self.mutations[operation] = True
             if operation == 'GenerateAccessToken':
                 need(auth.refreshing and auth.refresh_credential is not None, 'unclaimed_auth_refresh')
+                if self.recovery:
+                    exchange = self.refresh_exchange
+                    need(isinstance(exchange, RefreshExchange) and getattr(auth, 'exchange', None) is exchange
+                         and exchange.ready and exchange.refresh_pending
+                         and exchange.refresh_claimed_id in exchange.claims
+                         and getattr(self.phase, '__self__', None) is exchange
+                         and getattr(self.phase, '__func__', None) is RefreshExchange.official_rpc,
+                         'recovery_durable_refresh_required')
                 # A credential object is unique for each official load; do not use
                 # id(), which may be reused after collection during a long watch.
                 marker = auth.refresh_credential
@@ -230,11 +248,14 @@ class HttpBoundary:
 
 
 class StorageHttp:
-    def __init__(self, requests_module=None):
+    def __init__(self, requests_module=None, *, recovery=False):
+        need(type(recovery) is bool, 'worker_recovery_mode')
         self._requests_module = requests_module
+        self.recovery = recovery
 
     @property
     def requests(self):
+        need(not self.recovery, 'recovery_storage_forbidden')
         if self._requests_module is None:
             import requests
             self._requests_module = requests
@@ -242,6 +263,7 @@ class StorageHttp:
 
     @contextmanager
     def download(self, response, cap, *, metadata=False):
+        need(not self.recovery, 'recovery_storage_forbidden')
         _integer(cap, 0, DOWNLOAD_CAP)
         session = None
         try:
@@ -286,6 +308,7 @@ class StorageHttp:
                 session.close()
 
     def chunks(self, response, cap):
+        need(not self.recovery, 'recovery_storage_forbidden')
         total = 0
         for block in response.iter_content(CHUNK):
             need(type(block) is bytes and len(block) <= CHUNK, 'download_chunk_bound')
@@ -295,6 +318,7 @@ class StorageHttp:
                 yield block
 
     def metadata(self, response, expected_size, cap):
+        need(not self.recovery, 'recovery_storage_forbidden')
         _integer(expected_size, 0, cap)
         with self.download(response, cap, metadata=True) as download:
             length = download.headers.get('Content-Length')
@@ -305,6 +329,7 @@ class StorageHttp:
                 'scope': 'numeric output request; Content-Length and successful response only'}
 
     def put(self, url, source, size):
+        need(not self.recovery, 'recovery_storage_forbidden')
         safe_url(url, upload=True)
         with no_retry_session(self.requests.Session()) as session:
             request = self.requests.Request('PUT', url, data=source,
@@ -329,7 +354,9 @@ class StorageHttp:
 
 class WorkerProvider:
     """Explicit official requests; all resource identities remain fixed."""
-    def __init__(self, authentication, versions, storage=None):
+    def __init__(self, authentication, versions, storage=None, *, recovery=False):
+        need(type(recovery) is bool, 'worker_recovery_mode')
+        self.recovery = recovery
         self.authentication, self.versions = authentication, dict(versions)
         need(set(self.versions) == {'code_predecessor', 'code', 'inactive_predecessor', 'inactive', 'active'},
              'reviewed_version_schema')
@@ -338,7 +365,8 @@ class WorkerProvider:
         need(self.versions['code'] == self.versions['code_predecessor'] + 1
              and self.versions['inactive'] == self.versions['inactive_predecessor'] + 1
              and self.versions['active'] == self.versions['inactive'] + 1, 'reviewed_version_sequence')
-        self.storage = storage or StorageHttp()
+        need(not recovery or storage is None, 'recovery_custom_storage_forbidden')
+        self.storage = storage or StorageHttp(recovery=recovery)
         self.uploads = {}
         self.started = self.put_attempted = self.version_attempted = self.save_attempted = False
         self.failed = False
@@ -367,6 +395,7 @@ class WorkerProvider:
         return status_dto(self.client.kernels.kernels_api_client.get_kernel_session_status(request))
 
     def list_files(self, version):
+        need(not self.recovery, 'recovery_operation_forbidden')
         from kagglesdk.datasets.types.dataset_api_service import ApiListDatasetFilesRequest
         _integer(version, 1, self.versions['code'])
         token, tokens, rows = '', set(), {}
@@ -391,6 +420,7 @@ class WorkerProvider:
         raise WorkerGuardError('provider_pagination_cap')
 
     def output(self, name, version):
+        need(not self.recovery, 'recovery_operation_forbidden')
         from kagglesdk.kernels.types.kernels_api_service import ApiDownloadKernelOutputRequest
         need(type(version) is int and version in {self.versions[key] for key in
             ('inactive_predecessor', 'inactive', 'active')}, 'reviewed_numeric_output_version_required')
@@ -400,6 +430,7 @@ class WorkerProvider:
         return self.client.kernels.kernels_api_client.download_kernel_output(request)
 
     def dataset_download(self, name, version):
+        need(not self.recovery, 'recovery_operation_forbidden')
         from kagglesdk.datasets.types.dataset_api_service import ApiDownloadDatasetRequest
         need(type(version) is int and version in {self.versions['code_predecessor'], self.versions['code']},
              'reviewed_numeric_dataset_download_version_required')
@@ -411,6 +442,7 @@ class WorkerProvider:
         return self.client.datasets.dataset_api_client.download_dataset(request)
 
     def start_upload(self, name, size, digest):
+        need(not self.recovery, 'recovery_operation_forbidden')
         from kagglesdk.blobs.types.blob_api_service import ApiStartBlobUploadRequest, ApiBlobType
         need(not self.started and not self.failed, 'upload_init_resend_forbidden')
         relative(name)
@@ -438,6 +470,7 @@ class WorkerProvider:
             raise
 
     def upload_once(self, handle, source, size, digest):
+        need(not self.recovery, 'recovery_operation_forbidden')
         need(type(handle) is str and HANDLE.fullmatch(handle) and handle in self.uploads, 'unknown_upload_handle')
         upload = self.uploads[handle]
         need(not self.put_attempted and not self.failed and upload['stage'] == 'begin', 'upload_put_resend_forbidden')
@@ -467,6 +500,7 @@ class WorkerProvider:
             raise
 
     def version(self, handle, notes, expected_predecessor_version):
+        need(not self.recovery, 'recovery_operation_forbidden')
         from kagglesdk.datasets.types.dataset_api_service import (
             ApiCreateDatasetVersionByIdRequest, ApiCreateDatasetVersionRequestBody, ApiDatasetNewFile)
         need(type(handle) is str and HANDLE.fullmatch(handle) and handle in self.uploads, 'unknown_upload_handle')
@@ -499,6 +533,7 @@ class WorkerProvider:
             self.uploads.pop(handle, None)
 
     def save(self, wire):
+        need(not self.recovery, 'recovery_operation_forbidden')
         from kagglesdk.kernels.types.kernels_api_service import ApiSaveKernelRequest
         from kagglesdk.kernels.types.kernels_enums import KernelExecutionType
         need(not self.save_attempted and not self.failed, 'save_resend_forbidden')
@@ -530,6 +565,7 @@ class RefreshExchange:
         self.claims = {}
         self.phase_id = 0
         self.refresh_pending = self.phase_active = False
+        self.refresh_claimed_id = None
 
     def bind_request(self, sequence, request_sha256):
         self.sequence, self.request_sha256 = sequence, request_sha256
@@ -555,15 +591,18 @@ class RefreshExchange:
     def intent(self, metadata):
         self.check_ready()
         self.refresh_pending = True
+        self.refresh_claimed_id = None
         self.channel.send('refresh_request', metadata, sequence=self.sequence,
                           request_sha256=self.request_sha256)
         self._ack(metadata['refresh_id'], 'intent')
+        self.refresh_claimed_id = metadata['refresh_id']
 
     def accepted(self, metadata):
         self.channel.send('refresh_result', metadata, sequence=self.sequence,
                           request_sha256=self.request_sha256)
         self._ack(metadata['refresh_id'], 'accepted')
         self.refresh_pending = False
+        self.refresh_claimed_id = None
 
     @contextmanager
     def official_rpc(self):
@@ -611,7 +650,7 @@ def error_dto(error, mutation=False):
         code, classification = 'PROVIDER_FAILURE', 'DIAGNOSTIC_TRUNCATED_BLOCKED'
     elif status == 429 or status is not None and status >= 500:
         code, classification = 'PROVIDER_FAILURE', 'TRANSIENT'
-    elif name in ('WorkerGuardError', 'AuthGuardError', 'RuntimeGuardError', 'WindowsGuardError'):
+    elif name in ('WorkerGuardError', 'AuthGuardError', 'RuntimeGuardError', 'WindowsGuardError', 'ProbeError'):
         code, classification = 'VERIFICATION_FAILED', 'VERIFICATION_BLOCKED'
     elif name in ('ProtocolError', 'EOFError', 'BrokenPipeError'):
         code, classification = 'PROTOCOL_FAILURE', 'VERIFICATION_BLOCKED'
@@ -642,20 +681,41 @@ def run_worker(runtime, versions, channel, protocol, auth_module, *,
     The caller supplies source-verified local modules, a runtime already bound to
     the supervisor Job, and a FramedIO on duplicate stdout/stdin handles.
     """
+    recovery = getattr(runtime, 'recovery', None)
+    recovery_enabled = recovery is not None
     exchange = RefreshExchange(channel)
-    boundary = HttpBoundary(exchange.official_rpc)
+    def recovery_lease():
+        need(time.time() < min(deadline_epoch, recovery['expires_epoch'])
+             and time.monotonic() < lease_end, 'worker_recovery_expired')
+    boundary = HttpBoundary(exchange.official_rpc, recovery=recovery_enabled,
+        refresh_exchange=exchange, lease_guard=recovery_lease if recovery_enabled else None)
     auth = auth_module.OfficialSession(runtime, exchange, boundary.bind)
     provider = None
     sequence, active_hash, operation = 1, None, 'open'
     content_started = False
     sequence_guard = protocol.SequenceGuard()
     need(type(deadline_epoch) in (int, float) and math.isfinite(deadline_epoch)
-         and type(max_seconds) in (int, float) and 0 < max_seconds <= 43200,
+         and type(max_seconds) in (int, float) and math.isfinite(max_seconds) and 0 < max_seconds <= 43200
+         and (monotonic_deadline is None or type(monotonic_deadline) in (int, float)
+              and math.isfinite(monotonic_deadline)),
          'worker_lease_invalid')
     lease_end = monotonic_deadline if monotonic_deadline is not None else time.monotonic() + min(
         max_seconds, max(0, deadline_epoch - time.time()))
     channel.deadline = lease_end
     try:
+        if recovery_enabled:
+            need(type(recovery) is dict and set(recovery) == {'capability_sha256', 'reservation_sha256',
+                 'challenge', 'host_install_sha256', 'last_boot_utc', 'expires_epoch', 'allowed_operations'}
+                 and recovery['allowed_operations'] == ['open', 'dataset', 'kernel', 'status', 'close']
+                 and all(type(recovery[key]) is str and HEX.fullmatch(recovery[key]) for key in
+                         ('capability_sha256', 'reservation_sha256', 'challenge', 'host_install_sha256')),
+                 'worker_recovery_binding')
+            need(type(recovery['expires_epoch']) in (int, float) and math.isfinite(recovery['expires_epoch'])
+                 and deadline_epoch <= recovery['expires_epoch'], 'worker_recovery_lease')
+            lease_end = min(lease_end, time.monotonic() + min(max_seconds,
+                deadline_epoch - time.time(), recovery['expires_epoch'] - time.time()))
+            channel.deadline = lease_end
+            recovery_lease()
         while True:
             envelope = channel.receive(kinds={'request'})
             payload = sequence_guard.accept(envelope)
@@ -663,6 +723,9 @@ def run_worker(runtime, versions, channel, protocol, auth_module, *,
             active_hash = envelope['request_sha256']
             operation, arguments = payload['operation'], payload['arguments']
             content_started = False
+            if recovery_enabled:
+                recovery_lease()
+                need(operation in RECOVERY_OPERATIONS, 'recovery_operation_forbidden')
             protocol.validate_request(operation, arguments)
             need(protocol.request_hash(operation, arguments, deadline_epoch=payload['deadline_epoch'],
                  max_seconds=payload['max_seconds']) == active_hash, 'request_content_binding')
@@ -677,14 +740,24 @@ def run_worker(runtime, versions, channel, protocol, auth_module, *,
                      and arguments['bridge_configuration_sha256'] == runtime.config_sha256
                      and arguments['deadline_epoch'] == deadline_epoch
                      and arguments['max_seconds'] == max_seconds, 'native_open_binding')
+                need(('recovery' in arguments) == recovery_enabled, 'native_open_mode_binding')
+                if recovery_enabled:
+                    need(arguments['recovery'] == {key: recovery[key]
+                         for key in ('capability_sha256', 'reservation_sha256')}, 'native_open_recovery_binding')
+                    runtime.verify_recovery_boot(deadline_epoch=deadline_epoch, max_seconds=max_seconds,
+                        monotonic_deadline=min(lease_end, channel.deadline))
                 ready = auth.prepare()
                 channel.send('ready', ready, sequence=sequence, request_sha256=active_hash)
                 ack = channel.receive(kinds={'ready_ack'}, sequence=sequence, request_sha256=active_hash)
                 need(ack['payload'] == {'ready': True}, 'ready_ack_required')
                 exchange.ready = True
                 auth.protocol_ready()
+                if recovery_enabled:
+                    runtime.verify_recovery_boot(deadline_epoch=deadline_epoch, max_seconds=max_seconds,
+                        monotonic_deadline=min(lease_end, channel.deadline))
+                    recovery_lease()
                 auth.open()
-                provider = WorkerProvider(auth, versions)
+                provider = WorkerProvider(auth, versions, recovery=recovery_enabled) if recovery_enabled else WorkerProvider(auth, versions)
                 result = {'authenticated': True}
             else:
                 need(provider is not None and operation != 'open', 'worker_not_authenticated')
@@ -749,10 +822,14 @@ def run_worker(runtime, versions, channel, protocol, auth_module, *,
                     and not result['mutation_uncertain'] and not boundary.mutations
                     and not exchange.refresh_pending and not exchange.phase_active and not auth.uncertain)
                 if safe_close:
+                    if recovery_enabled:
+                        recovery_lease()
                     sequence_guard.complete(sequence, active_hash)
                     channel.deadline = lease_end
                     closing = channel.receive(kinds={'request'})
                     close_payload = sequence_guard.accept(closing)
+                    if recovery_enabled:
+                        recovery_lease()
                     need(close_payload['operation'] == 'close' and close_payload['arguments'] == {},
                          'readonly_failure_close_only')
                     need(time.time() < close_payload['deadline_epoch'] <= deadline_epoch,
@@ -831,7 +908,7 @@ def main(argv=None):
         runtime = config.load_runtime(args.config, args.config_sha)
         runtime.verify_runtime()
         need(Path(runtime.worker_path) == Path(__file__).absolute(), 'native_worker_source_identity')
-        # Native config has already checked the complete seven-file closure.
+        # Native config checked the complete legacy or recovery source closure.
         # Compile these two leaf modules from those same reviewed descriptors.
         def leaf(name):
             descriptor = runtime.document['sources'][name + '.py']

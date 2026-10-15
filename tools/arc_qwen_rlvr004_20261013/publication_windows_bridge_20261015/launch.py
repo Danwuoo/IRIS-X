@@ -13,9 +13,9 @@ import stat
 import sys
 import types
 
-CONFIG_SOURCE_SHA256 = '11cbdaa9f08a14ba9efcf15207991d5179682413899853becf562f6b4af7169f'
+CONFIG_SOURCE_SHA256 = '9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a'
 # Parent propagates final transport/collector source pins after binding review.
-ENTRY_SHA256 = {'rl_transport.py': '9d94bdde8d1cbf0f973f9976451ca5b12a3a424bef7a12b4df58b4432bd8eb58', 'rl_collect.py': '2a556c9b7a2776ae35508a8bceab8e316f8f49a27605a57939324c281b895f61'}
+ENTRY_SHA256 = {'rl_transport.py': 'd566625f7ddd379d773a530c610911017558b56051a4daff98f9fe09e2191499', 'rl_collect.py': '776ca71df7600f88f7c71e620af72c1883508667fcd2d033c60a58f058130f86', 'recovery_entry.py': '088b47b89a61a314bcf7bb497ed4e3daa659e4d78b9150950ff86d6f977f5d4d'}
 
 
 def pinned_source(path, digest):
@@ -81,12 +81,13 @@ def binding_arguments(argv):
 
 
 def plan(argv):
-    if len(argv) < 2 or argv[0] not in ('publish', 'collect') or argv[1].startswith('-'):
-        raise ValueError('usage: launch.py publish|collect ACTION [reviewed contract arguments]')
+    if len(argv) < 2 or argv[0] not in ('publish', 'collect', 'recover') or argv[1].startswith('-'):
+        raise ValueError('usage: launch.py publish|collect|recover ACTION [reviewed contract arguments]')
     args = binding_arguments(argv[1:])
     module = config_module()
     runtime = module.read_runtime(args.local_config, args.local_config_sha)
-    entry = Path(__file__).absolute().with_name('rl_transport.py' if argv[0] == 'publish' else 'rl_collect.py')
+    entry = Path(__file__).absolute().with_name({'publish': 'rl_transport.py',
+        'collect': 'rl_collect.py', 'recover': 'recovery_entry.py'}[argv[0]])
     pinned_source(entry, ENTRY_SHA256[entry.name])
     environment = module.child_environment(runtime, os.environ)
     return str(runtime.executable), [str(runtime.executable), '-I', '-B', str(entry), *argv[1:]], environment
@@ -94,14 +95,14 @@ def plan(argv):
 
 def parser():
     result = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
-    result.add_argument('mode', choices=('publish', 'collect'))
+    result.add_argument('mode', choices=('publish', 'collect', 'recover'))
     result.add_argument('arguments', nargs=argparse.REMAINDER,
                         help='ACTION plus original contract options, including --local-config and --local-config-sha')
     return result
 
 
 def main():
-    if sys.argv[1:] in (['-h'], ['--help'], ['publish', '--help'], ['collect', '--help']):
+    if sys.argv[1:] in (['-h'], ['--help'], ['publish', '--help'], ['collect', '--help'], ['recover', '--help']):
         parser().print_help()
         return 0
     executable, argv, environment = plan(sys.argv[1:])

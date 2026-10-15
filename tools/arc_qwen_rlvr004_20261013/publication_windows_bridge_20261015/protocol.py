@@ -47,6 +47,7 @@ OPERATIONS = frozenset(('open', 'dataset', 'kernel', 'status', 'list_files', 'ou
 OPERATION_TIMEOUTS = {operation: (900 if operation in ('output', 'dataset_download') else
     600 if operation == 'upload_once' else 120) for operation in OPERATIONS}
 MUTATIONS = frozenset(('start_upload', 'upload_once', 'version', 'save'))
+RECOVERY_OPERATIONS = frozenset(('open', 'dataset', 'kernel', 'status', 'close'))
 ERROR_CODES = frozenset(('PROVIDER_FAILURE', 'AUTH_REFRESH_UNKNOWN',
     'PROTOCOL_FAILURE', 'VERIFICATION_FAILED', 'DEADLINE_EXCEEDED'))
 CLASSIFICATIONS = frozenset(('ACCESS_BLOCKED', 'GPU_UNAVAILABLE_STOP', 'TRANSIENT',
@@ -248,8 +249,13 @@ def validate_request(operation, arguments):
     _need(type(operation) is str and operation in OPERATIONS, 'bridge_operation')
     _need(type(arguments) is dict)
     if operation == 'open':
-        _keys(arguments, ('account', 'versions', 'configuration_sha256', 'bridge_configuration_sha256',
-            'publication_manifest_sha256', 'deadline_epoch', 'max_seconds'))
+        fields = ('account', 'versions', 'configuration_sha256', 'bridge_configuration_sha256',
+            'publication_manifest_sha256', 'deadline_epoch', 'max_seconds')
+        _keys(arguments, fields + (('recovery',) if 'recovery' in arguments else ()))
+        if 'recovery' in arguments:
+            _keys(arguments['recovery'], ('capability_sha256', 'reservation_sha256'))
+            for digest in arguments['recovery'].values():
+                _sha(digest)
         _need(arguments['account'] == 'danielwuu')
         _keys(arguments['versions'], ('code_predecessor', 'code', 'inactive_predecessor', 'inactive', 'active'))
         for version in arguments['versions'].values():

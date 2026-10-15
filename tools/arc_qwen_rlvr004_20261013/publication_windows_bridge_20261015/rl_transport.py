@@ -9,7 +9,7 @@ import argparse, contextlib, hashlib, json, math, os, stat, subprocess, sys, tim
 from pathlib import Path
 
 # Acyclic local dependency pin. Compile source before any authentication or RPC.
-COMMON_SOURCE_SHA256 = '0878d5be5d2ce6f9ebf1e7559e57842a0dbed769bf41a9b12f2dc514677a3910'
+COMMON_SOURCE_SHA256 = '63992707cce95d6c2253028499d5634c48ee704ab9c4af301f0acb2fc8e97099'
 _common_path=Path(__file__).absolute().with_name('operator_common.py')
 if any(p.is_symlink() for p in (_common_path,*_common_path.parents)) or not stat.S_ISREG(_common_path.stat().st_mode):
     raise ValueError('unsafe_local_common_source')
@@ -31,7 +31,8 @@ SCRIPT=Path(__file__).resolve()
 OPERATOR_SOURCE_NAMES = ('config.py', 'native_auth.py', 'sdk-lock.json',
     'operator_common.py', 'rl_transport.py', 'rl_collect.py', 'launch.py',
     'bridge_client.py', 'protocol.py', 'native_config.py', 'sdk_worker.py',
-    'win_runtime.py', 'win_supervisor.py', 'native_probe.py', 'verify_active_wire.py')
+    'win_runtime.py', 'win_supervisor.py', 'native_probe.py', 'verify_active_wire.py',
+    'recovery_epoch.py', 'recovery_boot_probe.py', 'recovery_entry.py')
 
 # Allocation comes from the independently hash-bound live local configuration.
 # Historical code18/v35 evidence is validated separately and never relabelled.
@@ -462,7 +463,7 @@ def execution_gate(args, *, monitor=False):
     """The reviewed action list cannot enlarge the current one-submit scope."""
     need(type(monitor)is bool,'monitor_flag_type')
     review=review_gate(args.review,args.review_sha,args.manifest_sha,args.material_sha,[SCRIPT,SCRIPT.with_name('operator_common.py')])
-    permitted={'poll','collect','watch','readiness','update-code','verify-code','verify-code-files','save-inactive','verify-inactive','prepare-active','activate','verify-run'}
+    permitted={'poll','collect','watch','readiness','update-code','verify-code','verify-code-files','save-inactive','verify-inactive','prepare-active','activate','verify-run','reconcile-read-only'}
     need((args.action in {'poll','collect','watch'}) is monitor,'wrong_execution_role')
     actions=review.get('allowed_actions')
     need(review.get('provider_execution_admitted') is True,'provider_execution_not_reviewed')

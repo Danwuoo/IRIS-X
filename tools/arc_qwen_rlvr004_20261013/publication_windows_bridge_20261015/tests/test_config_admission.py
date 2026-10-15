@@ -676,7 +676,7 @@ class LauncherAdmissionTests(unittest.TestCase):
 
     def test_source_pins_match_checked_in_source_without_test_override(self):
         self.assertEqual(LAUNCH.CONFIG_SOURCE_SHA256, sha((ROOT / 'config.py').read_bytes()))
-        self.assertEqual(set(LAUNCH.ENTRY_SHA256), {'rl_transport.py', 'rl_collect.py'})
+        self.assertEqual(set(LAUNCH.ENTRY_SHA256), {'rl_transport.py', 'rl_collect.py', 'recovery_entry.py'})
         for name, digest in LAUNCH.ENTRY_SHA256.items():
             self.assertEqual(digest, sha((ROOT / name).read_bytes()), name)
         self.assertEqual(LAUNCH.config_module().FORMAT, CONFIG.FORMAT)
@@ -705,7 +705,7 @@ class LauncherAdmissionTests(unittest.TestCase):
                     LAUNCH.binding_arguments(arguments)
 
     def test_exact_bound_interpreter_entry_and_forwarded_argv_for_both_modes(self):
-        for mode, name in (('publish', 'rl_transport.py'), ('collect', 'rl_collect.py')):
+        for mode, name in (('publish', 'rl_transport.py'), ('collect', 'rl_collect.py'), ('recover', 'recovery_entry.py')):
             with self.subTest(mode=mode), patch.dict(os.environ, {
                     'PYTHONPATH': '/alternate-source', 'KAGGLE_API_TOKEN': 'SYNTHETIC-NOT-A-TOKEN'}):
                 arguments = self.arguments(mode)
@@ -738,7 +738,7 @@ class LauncherAdmissionTests(unittest.TestCase):
         self.assertFalse(marker.exists())
 
     def test_entry_source_pin_failure_prevents_exec(self):
-        for mode, name in (('publish', 'rl_transport.py'), ('collect', 'rl_collect.py')):
+        for mode, name in (('publish', 'rl_transport.py'), ('collect', 'rl_collect.py'), ('recover', 'recovery_entry.py')):
             with self.subTest(mode=mode), patch.dict(LAUNCH.ENTRY_SHA256, {name: '0' * 64}):
                 with self.assertRaisesRegex(ValueError, 'operator_source_bytes'):
                     LAUNCH.plan(self.arguments(mode))

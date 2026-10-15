@@ -297,6 +297,91 @@ class HttpTests(unittest.TestCase):
         self.assertTrue(self.response.closed)
 
 
+class RecoveryHttpTests(unittest.TestCase):
+    def setUp(self):
+        self.sent,self.frames=[],[]
+        def send(request,**kwargs):
+            self.sent.append(request)
+            return Response([b'{}'],{'Content-Type':'application/json'})
+        self.session=SimpleNamespace(send=send)
+        channel=SimpleNamespace(send=lambda *args,**kwargs:self.frames.append(args),
+            receive=lambda **kwargs:{'payload':{'refresh_id':'a'*64,'phase':'intent',
+                'claim_sha256':'b'*64,'journal_sha256':'c'*64}})
+        self.exchange=worker.RefreshExchange(channel)
+        self.exchange.ready=True;self.exchange.bind_request(1,'d'*64)
+        self.auth=SimpleNamespace(check=lambda:None,refreshing=False,refresh_credential=None,exchange=self.exchange)
+        self.expired=False
+        def guard():
+            worker.need(not self.expired,'worker_recovery_expired')
+        client=SimpleNamespace(http_client=lambda:SimpleNamespace(_session=self.session))
+        with patch.object(worker,'no_retry_session',lambda value:value):
+            self.boundary=worker.HttpBoundary(self.exchange.official_rpc,recovery=True,
+                refresh_exchange=self.exchange,lease_guard=guard)
+            self.boundary.bind(client,self.auth)
+    def request(self,service,operation):
+        return SimpleNamespace(method='POST',url='https://api.kaggle.com/v1/'+service+'/'+operation)
+    def test_only_three_read_routes_allowed(self):
+        for service,operations in worker.ROUTES.items():
+            for operation in operations:
+                request=self.request(service,operation)
+                if operation in ('GetDataset','GetKernel','GetKernelSessionStatus'):
+                    self.session.send(request)
+                else:
+                    with self.subTest(operation=operation),self.assertRaises(worker.WorkerGuardError):
+                        self.session.send(request)
+        self.assertEqual(len(self.sent),3)
+        self.assertEqual(self.boundary.mutations,{})
+    def test_refresh_needs_durable_intent_and_exact_exchange(self):
+        self.auth.refreshing=True;self.auth.refresh_credential=object()
+        request=self.request('users.AccountService','GenerateAccessToken')
+        with self.assertRaisesRegex(worker.WorkerGuardError,'recovery_durable_refresh_required'):
+            self.session.send(request)
+        self.exchange.intent({'refresh_id':'a'*64,'account':'danielwuu','old_expiration_epoch':1})
+        self.auth.exchange=None
+        with self.assertRaises(worker.WorkerGuardError):self.session.send(request)
+        self.auth.exchange=self.exchange
+        self.session.send(request)
+        with self.assertRaisesRegex(worker.WorkerGuardError,'auth_rpc_resend_forbidden'):
+            self.session.send(request)
+        self.assertEqual(len(self.sent),1)
+    def test_lost_intent_ack_blocks_refresh_rpc(self):
+        self.auth.refreshing=True;self.auth.refresh_credential=object()
+        self.exchange.channel.receive=lambda **kwargs:(_ for _ in ()).throw(EOFError())
+        with self.assertRaises(EOFError):self.exchange.intent({'refresh_id':'a'*64})
+        with self.assertRaises(worker.WorkerGuardError):
+            self.session.send(self.request('users.AccountService','GenerateAccessToken'))
+        self.assertEqual(self.sent,[])
+    def test_expired_recovery_cannot_send_even_read_or_refresh(self):
+        self.expired=True
+        with self.assertRaisesRegex(worker.WorkerGuardError,'worker_recovery_expired'):
+            self.session.send(self.request('datasets.DatasetApiService','GetDataset'))
+        self.assertEqual(self.sent,[])
+    def test_direct_storage_helpers_all_fail_before_http(self):
+        storage=worker.StorageHttp(recovery=True)
+        with self.assertRaises(worker.WorkerGuardError):storage.requests
+        with self.assertRaises(worker.WorkerGuardError):
+            with storage.download(Response(),1):pass
+        with self.assertRaises(worker.WorkerGuardError):list(storage.chunks(Response(),1))
+        with self.assertRaises(worker.WorkerGuardError):storage.metadata(Response(),1,1)
+        with self.assertRaises(worker.WorkerGuardError):storage.put('https://storage.googleapis.com/a',io.BytesIO(b'x'),1)
+    def test_direct_provider_helpers_all_fail_before_sdk_or_storage(self):
+        provider=worker.WorkerProvider(SimpleNamespace(),VERSIONS,recovery=True)
+        cases=(('list_files',(20,)),('output',('x',39)),('dataset_download',('x',20)),
+            ('start_upload',('x.zip',1,'a'*64)),('upload_once',('a'*64,io.BytesIO(b'x'),1,'b'*64)),
+            ('version',('a'*64,'notes',20)),('save',({},)))
+        for method,args in cases:
+            with self.subTest(method=method),self.assertRaisesRegex(worker.WorkerGuardError,'recovery_operation_forbidden'):
+                getattr(provider,method)(*args)
+        with self.assertRaises(worker.WorkerGuardError):
+            worker.WorkerProvider(SimpleNamespace(),VERSIONS,SimpleNamespace(),recovery=True)
+    def test_unrecognized_internal_mode_is_rejected(self):
+        for mode in ('recovery','legacy',1,None,{}):
+            with self.subTest(mode=mode):
+                with self.assertRaises(worker.WorkerGuardError):worker.HttpBoundary(recovery=mode)
+                with self.assertRaises(worker.WorkerGuardError):worker.StorageHttp(recovery=mode)
+                with self.assertRaises(worker.WorkerGuardError):worker.WorkerProvider(SimpleNamespace(),VERSIONS,recovery=mode)
+
+
 VERSIONS = {'code_predecessor': 20, 'code': 21, 'inactive_predecessor': 39, 'inactive': 40, 'active': 41}
 
 
@@ -409,7 +494,7 @@ with module.isolate_sdk_output() as (reader, writer):
 class FullFramingTests(unittest.TestCase):
     """Actual FramedIO/SequenceGuard over local pipes with fully fake SDK/auth."""
     @contextmanager
-    def running(self, *, refresh=False, provider_error=False):
+    def running(self, *, refresh=False, provider_error=False, recovery=False, boot_failure=0):
         read_worker, write_client = os.pipe()
         read_client, write_worker = os.pipe()
         handles = [os.fdopen(fd, mode, buffering=0) for fd, mode in (
@@ -447,7 +532,7 @@ class FullFramingTests(unittest.TestCase):
             def close(inner):
                 events.append('closed')
         class FakeProvider:
-            def __init__(inner, authentication, versions):
+            def __init__(inner, authentication, versions, *, recovery=False):
                 inner.authentication = authentication
             def status(inner):
                 if provider_error:
@@ -458,7 +543,15 @@ class FullFramingTests(unittest.TestCase):
                 return {'status': 'COMPLETE', 'failureMessage': ''}
             def close(inner):
                 inner.authentication.close()
-        runtime = SimpleNamespace(config_sha256='3' * 64)
+        self.recovery={'capability_sha256':'a'*64,'reservation_sha256':'b'*64,
+            'challenge':'c'*64,'host_install_sha256':'d'*64,'last_boot_utc':'2026-10-15T08:00:00.000000Z',
+            'expires_epoch':self.lease+10,'allowed_operations':['open','dataset','kernel','status','close']}
+        def verify_recovery_boot(**kwargs):
+            events.append('fresh_boot')
+            if boot_failure and events.count('fresh_boot')==boot_failure:
+                raise worker.WorkerGuardError('synthetic_boot_mismatch')
+        runtime = SimpleNamespace(config_sha256='3' * 64,
+            recovery=self.recovery if recovery else None,verify_recovery_boot=verify_recovery_boot)
         def serve():
             try:
                 result.append(worker.run_worker(runtime, VERSIONS, server, protocol,
@@ -482,10 +575,14 @@ class FullFramingTests(unittest.TestCase):
         self.client.send('request', {'operation': operation, 'arguments': arguments,
             'deadline_epoch': deadline, 'max_seconds': 120}, sequence=sequence, request_sha256=digest)
         return digest
-    def open_request(self):
-        return self.command(1, 'open', {'account': 'danielwuu', 'versions': VERSIONS,
+    def open_request(self, recovery=None):
+        args={'account': 'danielwuu', 'versions': VERSIONS,
             'configuration_sha256': '4' * 64, 'bridge_configuration_sha256': '3' * 64,
-            'publication_manifest_sha256': '5' * 64, 'deadline_epoch': self.lease, 'max_seconds': 600})
+            'publication_manifest_sha256': '5' * 64, 'deadline_epoch': self.lease, 'max_seconds': 600}
+        if recovery is not None:args['recovery']=recovery
+        return self.command(1,'open',args)
+    def recovery_binding(self):
+        return {key:self.recovery[key] for key in ('capability_sha256','reservation_sha256')}
     def ready(self, digest):
         frame = self.client.receive(kinds={'ready'}, sequence=1, request_sha256=digest)
         self.assertEqual(frame['payload']['sdk_source_count'], 170)
@@ -549,6 +646,99 @@ class FullFramingTests(unittest.TestCase):
             closing = self.command(3, 'close', {})
             self.client.receive(kinds={'response'}, sequence=3, request_sha256=closing)
         self.assertEqual(result, [0])
+    def test_recovery_fresh_boot_before_prepare_and_open_then_status_close(self):
+        with self.running(recovery=True) as (events,result):
+            digest=self.open_request(self.recovery_binding());self.ready(digest)
+            self.client.receive(kinds={'response'},sequence=1,request_sha256=digest)
+            status=self.command(2,'status',{})
+            self.client.receive(kinds={'response'},sequence=2,request_sha256=status)
+            closing=self.command(3,'close',{})
+            self.client.receive(kinds={'response'},sequence=3,request_sha256=closing)
+        self.assertEqual(result,[0])
+        self.assertEqual(events,['fresh_boot','verified_all_sources','ready_ack','fresh_boot','open','closed'])
+    def test_recovery_missing_ready_ack_stops_before_second_boot_or_auth(self):
+        with self.running(recovery=True) as (events,result):
+            digest=self.open_request(self.recovery_binding())
+            self.client.receive(kinds={'ready'},sequence=1,request_sha256=digest)
+            self.client.writer.close()
+            with self.assertRaises((protocol.ProtocolError,EOFError)):
+                self.client.receive(kinds={'response'},sequence=1,request_sha256=digest)
+        self.assertEqual(result,[2])
+        self.assertEqual(events,['fresh_boot','verified_all_sources','closed'])
+    def test_recovery_refresh_keeps_durable_two_ack_exchange(self):
+        for accept in (True,False):
+            with self.subTest(accept=accept):
+                with self.running(recovery=True,refresh=True) as (events,result):
+                    digest=self.open_request(self.recovery_binding());self.ready(digest)
+                    request=self.client.receive(kinds={'refresh_request'},sequence=1,request_sha256=digest)
+                    refresh_id=request['payload']['refresh_id']
+                    self.client.send('refresh_ack',{'refresh_id':refresh_id if accept else 'f'*64,
+                        'phase':'intent','claim_sha256':'6'*64,'journal_sha256':'7'*64},
+                        sequence=1,request_sha256=digest)
+                    if not accept:
+                        self.client.receive(kinds={'error'},sequence=1,request_sha256=digest)
+                    else:
+                        self.client.receive(kinds={'phase_start'},sequence=1,request_sha256=digest)
+                        self.client.receive(kinds={'phase_end'},sequence=1,request_sha256=digest)
+                        self.client.receive(kinds={'refresh_result'},sequence=1,request_sha256=digest)
+                        self.client.send('refresh_ack',{'refresh_id':refresh_id,'phase':'accepted',
+                            'claim_sha256':'6'*64,'journal_sha256':'8'*64},sequence=1,request_sha256=digest)
+                        self.client.receive(kinds={'response'},sequence=1,request_sha256=digest)
+                        closing=self.command(2,'close',{})
+                        self.client.receive(kinds={'response'},sequence=2,request_sha256=closing)
+                self.assertEqual(result,[0 if accept else 2])
+                self.assertEqual(events.count('GenerateAccessToken_double'),1 if accept else 0)
+    def test_open_mode_and_capability_parity_fail_before_boot_or_auth(self):
+        for recovery,binding in ((True,None),(False,{'capability_sha256':'a'*64,'reservation_sha256':'b'*64}),
+             (True,{'capability_sha256':'e'*64,'reservation_sha256':'b'*64}),
+             (True,{'capability_sha256':'a'*64,'reservation_sha256':'e'*64})):
+            with self.subTest(recovery=recovery,binding=binding):
+                with self.running(recovery=recovery) as (events,result):
+                    digest=self.open_request(binding)
+                    frame=self.client.receive(kinds={'error'},sequence=1,request_sha256=digest)
+                    self.assertEqual(frame['payload']['code'],'VERIFICATION_FAILED')
+                self.assertEqual(result,[2]);self.assertEqual(events,['closed'])
+    def test_fresh_boot_failure_never_authenticates(self):
+        for failed in (1,2):
+            with self.subTest(failed=failed),self.running(recovery=True,boot_failure=failed) as (events,result):
+                digest=self.open_request(self.recovery_binding())
+                if failed==2:self.ready(digest)
+                self.client.receive(kinds={'error'},sequence=1,request_sha256=digest)
+            self.assertNotIn('open',events)
+            if failed==1:self.assertNotIn('verified_all_sources',events)
+            self.assertEqual(result,[2])
+    def test_recovery_rejects_all_excluded_frames_before_provider_dispatch(self):
+        save={'id':138123872,'slug':worker.REF,'new_title':'synthetic','text':'{}','language':'python',
+            'kernel_type':'notebook','dataset_data_sources':[],'model_data_sources':[],
+            'competition_data_sources':[],'kernel_data_sources':[],'is_private':True,'enable_gpu':True,
+            'enable_tpu':False,'enable_internet':False,'docker_image':'synthetic',
+            'kernel_execution_type':3,'session_timeout_seconds':1,'machine_shape':None}
+        cases={'list_files':{'dataset':True,'version':20},
+            'output':{'name':'x','version':39,'cap':1,'expected_bytes':None,'expected_sha256':None},
+            'dataset_download':{'name':None,'version':20,'cap':1,'expected_bytes':None,'expected_sha256':None},
+            'binary_metadata':{'name':'x','version':39,'expected_size':1,'cap':1},
+            'start_upload':{'name':'x.zip','bytes':1,'sha256':'a'*64},
+            'upload_once':{'handle':'a'*64,'bytes':1,'sha256':'b'*64},
+            'version':{'handle':'a'*64,'notes':'notes','expected_predecessor_version':20},'save':{'wire':save}}
+        self.assertEqual(set(cases),protocol.OPERATIONS-protocol.RECOVERY_OPERATIONS)
+        for operation,args in cases.items():
+            with self.subTest(operation=operation):
+                with self.running(recovery=True) as (events,result):
+                    digest=self.open_request(self.recovery_binding());self.ready(digest)
+                    self.client.receive(kinds={'response'},sequence=1,request_sha256=digest)
+                    digest=self.command(2,operation,args)
+                    frame=self.client.receive(kinds={'error'},sequence=2,request_sha256=digest)
+                    self.assertEqual(frame['payload']['code'],'VERIFICATION_FAILED')
+                self.assertEqual(result,[2])
+    def test_recovery_expiry_blocks_next_request(self):
+        with self.running(recovery=True) as (events,result):
+            digest=self.open_request(self.recovery_binding());self.ready(digest)
+            self.client.receive(kinds={'response'},sequence=1,request_sha256=digest)
+            self.recovery['expires_epoch']=time.time()-1
+            digest=self.command(2,'status',{})
+            frame=self.client.receive(kinds={'error'},sequence=2,request_sha256=digest)
+            self.assertEqual(frame['payload']['code'],'VERIFICATION_FAILED')
+        self.assertEqual(result,[2])
 
 
 if __name__ == '__main__':

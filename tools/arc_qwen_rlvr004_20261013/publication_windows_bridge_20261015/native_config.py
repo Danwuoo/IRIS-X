@@ -5,6 +5,7 @@ before calling load_runtime. All authentication remains behind OfficialSession.
 This file changes no environment, permissions, profile, credential or TLS state.
 """
 from contextlib import contextmanager
+from datetime import datetime, timezone
 import hashlib
 import json
 import math
@@ -14,10 +15,15 @@ from pathlib import Path
 import re
 import sys
 import sysconfig
+import time
+import types
 
 FORMAT = 'irisx/run008-windows-sdk-runtime-v1'
+RECOVERY_FORMAT = 'irisx/run008-windows-sdk-recovery-runtime-v1'
 SOURCE_NAMES = frozenset(('win_runtime.py', 'win_supervisor.py', 'protocol.py',
     'native_config.py', 'native_auth.py', 'sdk_worker.py', 'sdk-lock.json'))
+RECOVERY_SOURCE_NAMES = SOURCE_NAMES | {'recovery_boot_probe.py'}
+RECOVERY_OPERATIONS = ('open', 'dataset', 'kernel', 'status', 'close')
 VERSION_KEYS = frozenset(('code_predecessor', 'code', 'inactive_predecessor', 'inactive', 'active'))
 NETWORK_KEYS = frozenset(('HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY',
     'REQUESTS_CA_BUNDLE', 'SSL_CERT_FILE', 'SSL_CERT_DIR'))
@@ -76,10 +82,14 @@ def strict_json(raw):
 
 
 def validate_document(doc):
-    need(type(doc) is dict and set(doc) == {'format', 'account', 'identity', 'runtime',
+    need(type(doc) is dict, 'native_config_schema')
+    recovery = doc.get('format') == RECOVERY_FORMAT
+    need(set(doc) == {'format', 'account', 'identity', 'runtime',
          'source_root', 'sources', 'versions', 'network_environment_sha256',
-         'requests_ca_bundle'}, 'native_config_schema')
-    need(doc['format'] == FORMAT and doc['account'] == 'danielwuu', 'native_config_identity')
+         'requests_ca_bundle'} | ({'recovery'} if recovery else set()), 'native_config_schema')
+    need(doc['format'] in (FORMAT, RECOVERY_FORMAT) and doc['account'] == 'danielwuu', 'native_config_identity')
+    if recovery:
+        validate_recovery(doc['recovery'])
     identity = doc['identity']
     need(type(identity) is dict and set(identity) == {'sid', 'profile'}, 'native_identity_schema')
     need(type(identity['sid']) is str and re.fullmatch(r'S-1-5-21-(?:[0-9]{1,10}-){3}[0-9]{1,10}', identity['sid']),
@@ -103,7 +113,8 @@ def validate_document(doc):
     need(type(version) is list and len(version) == 3 and all(type(x) is int for x in version)
          and version[:2] == [3, 12] and 0 <= version[2] <= 99, 'native_python_version')
     sources = doc['sources']
-    need(type(sources) is dict and set(sources) == SOURCE_NAMES, 'native_source_closure')
+    need(type(sources) is dict and set(sources) == (RECOVERY_SOURCE_NAMES if recovery else SOURCE_NAMES),
+         'native_source_closure')
     for row in sources.values():
         need(type(row) is dict and set(row) == {'bytes', 'sha256'} and type(row['bytes']) is int
              and 0 < row['bytes'] <= 1024 * 1024 and is_sha(row['sha256']), 'native_source_descriptor')
@@ -124,6 +135,30 @@ def validate_document(doc):
     return doc
 
 
+def utc_epoch(value):
+    need(type(value) is str and re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z', value),
+         'native_recovery_utc')
+    try:
+        return datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=timezone.utc).timestamp()
+    except (ValueError, OverflowError, OSError) as error:
+        raise ValueError('native_recovery_utc') from error
+
+
+def validate_recovery(value):
+    need(type(value) is dict and set(value) == {'capability_sha256', 'reservation_sha256',
+         'challenge', 'host_install_sha256', 'last_boot_utc', 'expires_epoch', 'allowed_operations'},
+         'native_recovery_schema')
+    for name in ('capability_sha256', 'reservation_sha256', 'challenge', 'host_install_sha256'):
+        need(is_sha(value[name]), 'native_recovery_hash')
+    expiry = value['expires_epoch']
+    need(type(expiry) in (int, float) and math.isfinite(expiry) and 0 < expiry <= 1e11,
+         'native_recovery_expiry')
+    need(0 <= utc_epoch(value['last_boot_utc']) < expiry, 'native_recovery_boot_time')
+    need(type(value['allowed_operations']) is list and value['allowed_operations'] == list(RECOVERY_OPERATIONS),
+         'native_recovery_operations')
+    return value
+
+
 class NativeRuntime:
     def __init__(self, document, config_path, config_sha256, win):
         self.document = validate_document(document)
@@ -133,13 +168,15 @@ class NativeRuntime:
         self.worker_path = self.source_root / 'sdk_worker.py'
         self.executable = document['runtime']['executable']['path']
         self.versions = dict(document['versions'])
+        self.recovery = document.get('recovery')
+        self.source_names = RECOVERY_SOURCE_NAMES if self.recovery is not None else SOURCE_NAMES
 
     def read_source(self, path, cap):
         value = native_path(str(path))
         source = ntpath.normcase(value)
         root = ntpath.normcase(str(self.source_root))
         sdk = ntpath.normcase(str(self.sdk_root))
-        reviewed = ntpath.dirname(source) == root and ntpath.basename(source) in SOURCE_NAMES
+        reviewed = ntpath.dirname(source) == root and ntpath.basename(source) in self.source_names
         sdk_member = source.startswith(sdk + '\\') and source.endswith('.py')
         need(reviewed or sdk_member, 'native_read_outside_source_inventory')
         return self.win.read_source(value, cap)
@@ -151,6 +188,9 @@ class NativeRuntime:
                  'native_bridge_source_bytes')
 
     def verify_runtime(self):
+        if self.recovery is not None:
+            validate_recovery(self.recovery)
+            need(time.time() < self.recovery['expires_epoch'], 'native_recovery_expired')
         need(os.name == 'nt' and sys.platform == 'win32', 'native_windows_required')
         need(sys.flags.isolated == 1 and sys.flags.dont_write_bytecode == 1
              and sys.flags.ignore_environment == 1, 'native_isolated_runtime')
@@ -186,7 +226,51 @@ class NativeRuntime:
             need(hashlib.sha256(raw).hexdigest() == ca['sha256'], 'native_ca_bytes_changed')
         self.verify_sources()
         return {'format': 'irisx/windows-sdk-runtime-boundary-v1', 'real_profile': True,
-                'bridge_source_count': len(SOURCE_NAMES), 'credential_contents_inspected': False}
+                'bridge_source_count': len(self.source_names), 'credential_contents_inspected': False}
+
+    def verify_recovery_boot(self, *, deadline_epoch, max_seconds, monotonic_deadline):
+        """Fresh pinned native observation, never a cached receipt or caller flag."""
+        need(self.recovery is not None, 'native_recovery_required')
+        self.verify_runtime()
+        recovery = validate_recovery(self.recovery)
+        need(type(deadline_epoch) in (int, float) and math.isfinite(deadline_epoch)
+             and deadline_epoch <= recovery['expires_epoch']
+             and type(max_seconds) in (int, float) and math.isfinite(max_seconds) and 0 < max_seconds <= 43200
+             and type(monotonic_deadline) in (int, float) and math.isfinite(monotonic_deadline),
+             'native_recovery_lease')
+        name = 'recovery_boot_probe.py'
+        row = self.document['sources'][name]
+        path = self.source_root / name
+        raw = self.read_source(path, 1024 * 1024)
+        need(len(raw) == row['bytes'] and hashlib.sha256(raw).hexdigest() == row['sha256'],
+             'native_recovery_probe_source')
+        module = types.ModuleType('_irisx_pinned_recovery_boot_probe')
+        module.__file__, module.__package__ = str(path), ''
+        exec(compile(raw, str(path), 'exec', dont_inherit=True, optimize=sys.flags.optimize), vars(module))
+        expected_sources = {key: self.document['sources'][key]['sha256']
+                            for key in ('recovery_boot_probe.py', 'win_runtime.py')}
+        expected_runtime = {'python': self.document['runtime']['executable']['sha256'],
+                            'base_python': self.document['runtime']['base_executable']['sha256']}
+        start = time.time()
+        timeout = min(15, max_seconds, deadline_epoch - start,
+                      recovery['expires_epoch'] - start, monotonic_deadline - time.monotonic())
+        need(timeout >= 1, 'native_recovery_observation_deadline')
+        observation = module.observe_boot(recovery['challenge'], expected_source_sha256=expected_sources,
+            expected_runtime_sha256=expected_runtime, timeout_seconds=timeout)
+        observation = module.validate_observation(module.canonical_bytes(observation), challenge=recovery['challenge'],
+            expected_source_sha256=expected_sources, expected_runtime_sha256=expected_runtime)
+        end = time.time()
+        need(start <= utc_epoch(observation['observed_utc']) <= end
+             and end < min(deadline_epoch, recovery['expires_epoch'])
+             and time.monotonic() < monotonic_deadline, 'native_recovery_observation_freshness')
+        need(observation['challenge'] == recovery['challenge']
+             and observation['source_sha256'] == expected_sources and observation['runtime_sha256'] == expected_runtime
+             and observation['host_install_sha256'] == recovery['host_install_sha256']
+             and observation['last_boot_utc'] == recovery['last_boot_utc'], 'native_recovery_boot_changed')
+        self.verify_runtime()
+        need(time.time() < min(deadline_epoch, recovery['expires_epoch'])
+             and time.monotonic() < monotonic_deadline, 'native_recovery_observation_deadline')
+        return observation
 
     @contextmanager
     def credential_guard(self, *, allow_write=False):

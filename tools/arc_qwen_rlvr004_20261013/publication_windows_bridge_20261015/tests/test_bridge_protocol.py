@@ -50,6 +50,29 @@ class ShortWriter(io.BytesIO):
 
 
 class ProtocolTests(unittest.TestCase):
+    def recovery_open(self):
+        return {'account':'danielwuu','versions':{'code_predecessor':20,'code':21,
+            'inactive_predecessor':39,'inactive':40,'active':41},'configuration_sha256':HASH,
+            'bridge_configuration_sha256':HASH,'publication_manifest_sha256':HASH,
+            'deadline_epoch':1792044000,'max_seconds':600,
+            'recovery':{'capability_sha256':'c'*64,'reservation_sha256':'d'*64}}
+
+    def test_recovery_open_extends_only_exact_hash_binding(self):
+        args=self.recovery_open();p.validate_request('open',args)
+        legacy={k:v for k,v in args.items() if k!='recovery'};p.validate_request('open',legacy)
+        self.assertNotEqual(p.request_hash('open',args,deadline_epoch=1792044000,max_seconds=120),
+                            p.request_hash('open',legacy,deadline_epoch=1792044000,max_seconds=120))
+        for value in (None,True,{}, {'capability_sha256':'c'*64},
+                      {'capability_sha256':'c'*64,'reservation_sha256':'d'*64,'mode':'recovery'},
+                      {'capability_sha256':'c'*64,'reservation_sha256':'raw-secret'}):
+            bad=self.recovery_open();bad['recovery']=value
+            with self.subTest(value=value),self.assertRaises(p.ProtocolError):p.validate_request('open',bad)
+
+    def test_recovery_metadata_never_extends_later_operation_schema(self):
+        for operation in p.OPERATIONS-{'open'}:
+            with self.subTest(operation=operation),self.assertRaises(p.ProtocolError):
+                p.validate_request(operation,{'recovery':self.recovery_open()['recovery']})
+
     def test_request_roundtrip_short_io(self):
         message = req()
         out = ShortWriter()

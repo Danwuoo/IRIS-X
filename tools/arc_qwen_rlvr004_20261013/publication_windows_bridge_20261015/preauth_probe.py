@@ -32,13 +32,14 @@ import time
 import types
 
 FORMAT = 'irisx/windows-production-cli-preauth-probe-v1'
+BOOT_OBSERVER_SHA256 = '46bc3f0b8c47dd53e7da0db58de01f39fc078811e9372fcc803a52db8b496b31'
 SOURCE_SHA256 = {
     'win_runtime.py': '7280b755d3155fb3d5d4f9989c0ea592d7a0d8be8750d635360f06fe766db69d',
-    'win_supervisor.py': 'a879c9c35fae574202ff8095ee95a3a08f68a355e30c58e403b1ee5bb75a6204',
-    'protocol.py': '086c70bc50d942c753ac19b8b6f994a54bef1e6a3b0819cacd496d4d09c57b3d',
-    'native_config.py': 'fe2ec44a37e8895077162a3369d859967001e5a50f4294d2d8e0fb954fa35282',
+    'win_supervisor.py': 'f2c8ff86424a993ff7e6a22e056cdf11ffb5d0969b64947d138c08f7c00a7001',
+    'protocol.py': '5f67b8655497565cb149dbd7bd4aa675be8cec058089295f0d2a75873787cf24',
+    'native_config.py': '5008d989004f2c99948a157f9fda09f6ce751ee93c07ce39f1659f3789fb9fe8',
     'native_auth.py': '785e696dc702e5042f415e3da1bd3fbf43ff34f3f8a579a702ec2f262aefdcd4',
-    'sdk_worker.py': 'c62059254723542a46d5d76bbe7d817410fee41742b53972ef771640b67a43fe',
+    'sdk_worker.py': 'bd75a7a221b58d7c3723cb98a3f3485135da2a69b2f518683cd9e30eefe29dcd',
     'sdk-lock.json': '3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d',
 }
 HEX = re.compile(r'[0-9a-f]{64}\Z')
@@ -150,10 +151,15 @@ def prepare(args, *, source_root=None):
     raw_config = bounded_read(config_path, 1024 * 1024)
     need(sha(raw_config) == args.native_config_sha256, 'preauth_config_hash')
     document = config_module.validate_document(config_module.strict_json(raw_config))
-    need(set(document['sources']) == set(SOURCE_SHA256), 'preauth_source_closure')
+    expected_sources = dict(SOURCE_SHA256)
+    if document.get('format') == 'irisx/run008-windows-sdk-recovery-runtime-v1':
+        expected_sources['recovery_boot_probe.py'] = BOOT_OBSERVER_SHA256
+        source['recovery_boot_probe.py'] = bounded_read(here / 'recovery_boot_probe.py', 1024 * 1024)
+        need(sha(source['recovery_boot_probe.py']) == BOOT_OBSERVER_SHA256, 'preauth_local_source_hash')
+    need(set(document['sources']) == set(expected_sources), 'preauth_source_closure')
     native_root = native_to_wsl(document['source_root'])
     snapshots = {str(config_path): {'sha256': sha(raw_config), 'cap': 1024 * 1024}}
-    for name, expected in SOURCE_SHA256.items():
+    for name, expected in expected_sources.items():
         descriptor = document['sources'][name]
         need(descriptor == {'bytes': len(source[name]), 'sha256': expected}, 'preauth_config_source_binding')
         native_path = native_root / name
@@ -180,6 +186,7 @@ def prepare(args, *, source_root=None):
         need(sha(bounded_read(path, 16 * 1024 * 1024)) == ca['sha256'], 'preauth_ca_hash')
         snapshots[str(path)] = {'sha256': ca['sha256'], 'cap': 16 * 1024 * 1024}
     return {'protocol': protocol, 'document': document, 'snapshots': snapshots,
+        'expected_sources': expected_sources,
         'config_sha256': args.native_config_sha256, 'source_root': here,
         'executable': args.native_python, 'supervisor': args.native_supervisor,
         'native_config': args.native_config}
@@ -277,7 +284,13 @@ def exercise(prepared, *, timeout_seconds=120, transport_factory=None):
          and 1 <= timeout_seconds <= 120, 'preauth_timeout_bounds')
     protocol = prepared['protocol']
     nonce = protocol.new_nonce()
+    recovery = prepared['document'].get('recovery')
+    if recovery is not None:
+        timeout_seconds = min(timeout_seconds, recovery['expires_epoch'] - time.time())
+        need(timeout_seconds >= 1, 'preauth_recovery_expired')
     deadline_epoch = time.time() + timeout_seconds
+    if recovery is not None:
+        deadline_epoch = min(deadline_epoch, recovery['expires_epoch'])
     deadline = time.monotonic() + timeout_seconds
     config_sha = prepared['config_sha256']
     diagnostic_config = sha(b'irisx/preauth-no-operator-contract-v1\n' + config_sha.encode('ascii'))
@@ -286,6 +299,8 @@ def exercise(prepared, *, timeout_seconds=120, transport_factory=None):
         'configuration_sha256': diagnostic_config, 'bridge_configuration_sha256': config_sha,
         'publication_manifest_sha256': diagnostic_manifest,
         'deadline_epoch': deadline_epoch, 'max_seconds': timeout_seconds}
+    if recovery is not None:
+        arguments['recovery'] = {key: recovery[key] for key in ('capability_sha256', 'reservation_sha256')}
     digest = protocol.request_hash('open', arguments, deadline_epoch=deadline_epoch,
                                    max_seconds=timeout_seconds)
     argv = [prepared['executable'], '-I', '-B', prepared['supervisor'], '--config',
@@ -328,7 +343,9 @@ def exercise(prepared, *, timeout_seconds=120, transport_factory=None):
         'real_operator_contract_tested': False, 'production_execution_admitted': False,
         'ready_ack_sent': False, 'auth_started': False, 'sdk_imported': False,
         'credential_contents_accessed': False, 'provider_calls': 0, 'network_used': False,
-        'native_configuration_sha256': config_sha, 'source_sha256': dict(SOURCE_SHA256),
+        'native_configuration_sha256': config_sha,
+        'source_sha256': dict(prepared.get('expected_sources', SOURCE_SHA256)),
+        'recovery_boot_mode': recovery is not None,
         'python_executable_sha256': prepared['document']['runtime']['executable']['sha256'],
         'python_base_executable_sha256': prepared['document']['runtime']['base_executable']['sha256'],
         'pyvenv_cfg_sha256': prepared['document']['runtime']['pyvenv_cfg_sha256'],

@@ -22,7 +22,8 @@ import threading
 import time
 from types import MappingProxyType
 
-PROTOCOL_SOURCE_SHA256 = '086c70bc50d942c753ac19b8b6f994a54bef1e6a3b0819cacd496d4d09c57b3d'
+PROTOCOL_SOURCE_SHA256 = '5f67b8655497565cb149dbd7bd4aa675be8cec058089295f0d2a75873787cf24'
+RECOVERY_SOURCE_SHA256 = '2d7ecb31f7571a51382597a1fc5ddd75939b296794d7de28cef10cc06b2439dc'
 SDK_LOCK_SHA256 = '3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d'
 LEASE_SECONDS = 43200.0
 CLOSURE_WAIT_SECONDS = 5.0
@@ -197,6 +198,7 @@ class BridgeClient:
         self.refresh = None
         self.session_name = None
         self.session_proof = None
+        self.native_receipt_bytes = self.native_exit_status = None
         self._validate_binding()
         source = Path(__file__).with_name('protocol.py')
         self.protocol = c['load_source_module']('reviewed_windows_bridge_protocol_' +
@@ -209,14 +211,15 @@ class BridgeClient:
               for v in versions.values()), 'bridge_reviewed_numeric_versions')
         _need(_sha(config.document_sha256) and _sha(config.publication_manifest_sha256),
               'bridge_configuration_manifest_hash')
-        self.nonce = self.protocol.new_nonce()
-        self.lease_deadline = clock() + LEASE_SECONDS
-        self.lease_epoch = wall_clock() + LEASE_SECONDS
+        self.nonce, lease_seconds, self.lease_epoch = self._session_parameters()
+        self.lease_deadline = clock() + lease_seconds
         self.open_binding = {'account': ACCOUNT, 'versions': versions,
             'configuration_sha256': config.document_sha256,
             'bridge_configuration_sha256': binding['configuration']['sha256'],
             'publication_manifest_sha256': config.publication_manifest_sha256,
-            'deadline_epoch': self.lease_epoch, 'max_seconds': LEASE_SECONDS}
+            'deadline_epoch': self.lease_epoch, 'max_seconds': lease_seconds}
+        self.open_binding = self._open_arguments(self.open_binding)
+        self._before_session_claim()
         self.session_name = 'native-bridge-' + self.nonce
         claim = c['claim'](self.session_name, {'format': 'irisx/windows-bridge-session-claim-v1',
             'nonce': self.nonce, **self.open_binding, 'synthetic_test_only': self.synthetic})
@@ -238,6 +241,15 @@ class BridgeClient:
         except BaseException:
             self._failed('BRIDGE_OPEN_UNKNOWN')
             raise
+
+    def _session_parameters(self):
+        return self.protocol.new_nonce(), LEASE_SECONDS, self.wall_clock() + LEASE_SECONDS
+
+    def _open_arguments(self, arguments):
+        return arguments
+
+    def _before_session_claim(self):
+        """Recovery successor consumes its independent launch claim here."""
 
     def _validate_binding(self):
         _need(type(self.binding) is dict and set(self.binding) ==
@@ -281,15 +293,26 @@ class BridgeClient:
                   'auth_refresh_unknown_reconcile_only')
 
     def _pending_sessions(self):
+        pending = []
         for path in self.c['STATE'].glob('native-bridge-*.claim.json'):
             self.c['secure_path'](path)
             journal = path.with_name(path.name[:-len('.claim.json')] + '-journal.json')
             _need(journal.is_file(), 'bridge_previous_session_unknown_reconcile_only')
             proof = self.c['obj'](journal)
-            _need(proof.get('stage') == 'closed'
-                  and proof.get('native_process_closure_verified') is True
-                  and proof.get('claim_sha256') == self.c['file_sha'](path),
-                  'bridge_previous_session_unknown_reconcile_only')
+            if not (proof.get('stage') == 'closed'
+                    and proof.get('native_process_closure_verified') is True
+                    and proof.get('claim_sha256') == self.c['file_sha'](path)):
+                _need(any(self.c['STATE'].glob('recovery-epoch-*-eligibility.claim.json')),
+                      'bridge_previous_session_unknown_reconcile_only')
+                pending.append({'claim': self.c['descriptor'](path), 'journal': self.c['descriptor'](journal)})
+        if pending:
+            # A separately completed recovery disposition can cover only exact
+            # immutable old claims. Every uncovered/new UNKNOWN still blocks.
+            module = self.c['load_source_module']('reviewed_recovery_epoch_' + RECOVERY_SOURCE_SHA256,
+                Path(__file__).with_name('recovery_epoch.py'), RECOVERY_SOURCE_SHA256)
+            callbacks = {**self.c, 'recovery_boot_observation':
+                         lambda review, challenge: observe_recovery_boot(self.c, review, challenge)}
+            module.validate_eligibility(callbacks, self.c['configured'](), pending)
 
     def _refresh_intent(self, payload, sequence, request_hash):
         _need(self.ready and self.refresh is None, 'bridge_refresh_state')
@@ -649,6 +672,7 @@ class BridgeClient:
             _need(remaining > 0, 'bridge_closure_deadline')
             status, raw = self.transport.finish(remaining)
             self._receipt(status, raw, clean=True)
+            self.native_receipt_bytes, self.native_exit_status = raw, status
             self.session_proof.update(stage='closed', native_process_closure_verified=True)
             self._journal_session()
             self.closed = True
@@ -676,3 +700,177 @@ class BridgeClient:
 
     def __exit__(self, exc_type, exc, traceback):
         self.close()
+
+
+class RecoveryBridgeClient(BridgeClient):
+    """One exact read-only reconciliation under a live RecoveryOwner lock.
+
+    This class is reached only by the separately source-bound recovery entry.
+    It cannot rotate, download, upload or reuse a consumed reservation. The
+    original session records remain untouched; owner validation returns only
+    their exact hash-bound exceptional set for this one connection.
+    """
+    def __init__(self, c, binding, owner, reservation, current_boot):
+        self._recovery_setup(owner, reservation, current_boot, time.time())
+        self._initialize(c, binding, None, time.monotonic, time.time)
+
+    @classmethod
+    def for_recovery_testing(cls, c, binding, owner, reservation, current_boot,
+                             transport_factory, *, clock=time.monotonic, wall_clock=time.time):
+        _need(callable(transport_factory), 'bridge_test_transport_required')
+        value = cls.__new__(cls)
+        value._recovery_setup(owner, reservation, current_boot, wall_clock())
+        value._initialize(c, binding, transport_factory, clock, wall_clock)
+        return value
+
+    @classmethod
+    def for_testing(cls, *args, **kwargs):
+        raise ValueError('bridge_recovery_owner_required')
+
+    def _recovery_setup(self, owner, reservation, current_boot, now):
+        self.recovery_owner, self.recovery_reservation = owner, reservation
+        self.recovery_context = owner.admit_session(reservation,
+            current_boot_descriptor=current_boot, now_epoch=now)
+        self.recovery_operations = ['open', *self.recovery_context['calls'], 'close']
+        _need(self.recovery_operations == ['open', 'dataset', 'kernel', 'status', 'kernel', 'dataset', 'close'],
+              'bridge_recovery_exact_read_bracket')
+        self.recovery_operation_index = 0
+
+    def _pending_sessions(self):
+        covered = self.recovery_owner.validate_frontier_reserved(self.recovery_reservation)
+        for path in self.c['STATE'].glob('native-bridge-*.claim.json'):
+            self.c['secure_path'](path)
+            name = path.name[:-len('.claim.json')]
+            journal = path.with_name(name + '-journal.json')
+            _need(journal.is_file(), 'bridge_previous_session_unknown_reconcile_only')
+            digest = self.c['file_sha'](path)
+            if name in covered:
+                _need(digest == covered[name], 'bridge_recovery_old_claim_changed')
+                continue  # Core already validated the exact original journal/events.
+            proof = self.c['obj'](journal)
+            _need(proof.get('stage') == 'closed'
+                  and proof.get('native_process_closure_verified') is True
+                  and proof.get('claim_sha256') == digest,
+                  'bridge_previous_session_unknown_reconcile_only')
+
+    def _session_parameters(self):
+        stanza = self.recovery_context['native_recovery']
+        remaining = stanza['expires_epoch'] - self.wall_clock()
+        _need(_finite(remaining) and 0 < remaining <= LEASE_SECONDS, 'bridge_recovery_expired')
+        return self.recovery_context['session_nonce'], remaining, stanza['expires_epoch']
+
+    def _open_arguments(self, arguments):
+        stanza = self.recovery_context['native_recovery']
+        return {**arguments, 'recovery': {key: stanza[key] for key in
+                ('capability_sha256', 'reservation_sha256')}}
+
+    def _before_session_claim(self):
+        self.recovery_owner.validate_frontier_reserved(self.recovery_reservation)
+
+    def _command(self, operation, arguments, **kwargs):
+        _need(self.recovery_operation_index < len(self.recovery_operations)
+              and operation == self.recovery_operations[self.recovery_operation_index],
+              'bridge_recovery_read_only_sequence')
+        self.recovery_operation_index += 1  # A failed dispatch is never replayed.
+        return super()._command(operation, arguments, **kwargs)
+
+    def upload_once(self, *args, **kwargs):
+        raise ValueError('bridge_recovery_upload_forbidden')
+
+    def download(self, *args, **kwargs):
+        raise ValueError('bridge_recovery_download_forbidden')
+
+    def can_rotate_read_only(self):
+        return False
+
+    def rotate_read_only(self):
+        raise BridgeUnknown('bridge_recovery_rotation_forbidden')
+
+
+def observe_recovery_boot(c, review, challenge):
+    """Fresh bounded, fixed native no-auth observation for durable disposition.
+
+    The observer's own validated child-Job receipt is required. Proxy cleanup
+    alone never creates an observation. Output is bounded metadata stored only
+    in the reviewed ignored evidence root, outside the original STATE frontier.
+    """
+    _need(_sha(challenge), 'bridge_recovery_challenge')
+    configured = c['configured']()
+    binding = dict(configured.windows_bridge)
+    native_raw = c['verified'](binding['configuration']['wsl_path'],
+                              binding['configuration']['sha256'], cap=1024**2)
+    protocol = c['load_source_module']('reviewed_recovery_observation_protocol_' + PROTOCOL_SOURCE_SHA256,
+        Path(__file__).with_name('protocol.py'), PROTOCOL_SOURCE_SHA256)
+    native = protocol.strict_json(native_raw)
+    sources, runtime = review['boot_source_sha256'], review['boot_runtime_sha256']
+    _need(set(sources) == {'recovery_boot_probe.py', 'win_runtime.py'}
+          and set(runtime) == {'python', 'base_python'} and all(_sha(x) for x in [*sources.values(), *runtime.values()]),
+          'bridge_recovery_observation_pins')
+    _need(native['runtime']['executable']['sha256'] == runtime['python']
+          and native['runtime']['base_executable']['sha256'] == runtime['base_python'],
+          'bridge_recovery_observation_runtime')
+    probe_native = str(PureWindowsPath(native['source_root']) / 'recovery_boot_probe.py')
+    probe_path = PureWindowsPath(probe_native)
+    probe_wsl = '/mnt/' + probe_path.drive[0].lower() + '/' + '/'.join(probe_path.parts[1:])
+    _mapped_path({'native_path': probe_native, 'wsl_path': probe_wsl,
+                  'sha256': sources['recovery_boot_probe.py']})
+    c['verified'](probe_wsl, sources['recovery_boot_probe.py'], cap=1024**2)
+    c['verified'](binding['executable']['wsl_path'], runtime['python'], cap=128*1024**2)
+    observer = c['load_source_module']('reviewed_recovery_observer_' + sources['recovery_boot_probe.py'],
+        Path(__file__).with_name('recovery_boot_probe.py'), sources['recovery_boot_probe.py'])
+    argv = [binding['executable']['wsl_path'], '-I', '-B', probe_native,
+        '--challenge', challenge, '--probe-sha256', sources['recovery_boot_probe.py'],
+        '--runtime-sha256', sources['win_runtime.py'], '--python-sha256', runtime['python'],
+        '--base-python-sha256', runtime['base_python'], '--timeout-seconds', '15']
+    output, errors, faults, threads = bytearray(), bytearray(), [], []
+    process = None
+    def drain(stream, target, cap):
+        try:
+            while True:
+                chunk = stream.read(min(1024, cap + 1 - len(target)))
+                if not chunk:
+                    break
+                target.extend(chunk)
+                if len(target) > cap:
+                    faults.append('bridge_recovery_observation_output_cap')
+                    break
+        except BaseException:
+            faults.append('bridge_recovery_observation_pipe')
+    deadline = time.monotonic() + 20
+    try:
+        with c['wall_bound'](20):
+            process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE, shell=False, close_fds=True, bufsize=0)
+            for stream, target, cap in ((process.stdout, output, 8192), (process.stderr, errors, 1024)):
+                thread = threading.Thread(target=drain, args=(stream, target, cap), daemon=True)
+                thread.start(); threads.append(thread)
+            while process.poll() is None:
+                _need(not faults and not errors, 'bridge_recovery_observation_output')
+                _need(time.monotonic() < deadline - 2, 'bridge_recovery_observation_timeout')
+                time.sleep(0.01)
+            for thread in threads:
+                thread.join(max(0, deadline - 1 - time.monotonic()))
+            _need(process.returncode == 0 and not errors and not faults
+                  and all(not t.is_alive() for t in threads), 'bridge_recovery_observation_failed')
+            raw = bytes(output)
+            observer.validate_observation(raw, challenge=challenge,
+                expected_source_sha256=sources, expected_runtime_sha256=runtime)
+    finally:
+        if process is not None:
+            try:
+                if process.poll() is None:
+                    process.kill()  # WSL proxy only; failure never yields closure evidence.
+                    try:
+                        process.wait(timeout=max(0.01, min(1, deadline-time.monotonic())))
+                    except subprocess.TimeoutExpired:
+                        pass
+            finally:
+                for stream in (process.stdout, process.stderr):
+                    try:
+                        stream.close()
+                    except (OSError, ValueError):
+                        pass
+                for thread in threads:
+                    thread.join(max(0, min(0.1, deadline-time.monotonic())))
+    path = configured.evidence_root / ('recovery-boot-' + os.urandom(32).hex() + '.json')
+    return c['write_new'](path, raw)
