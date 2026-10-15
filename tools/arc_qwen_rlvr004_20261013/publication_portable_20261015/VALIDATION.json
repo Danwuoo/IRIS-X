@@ -1,0 +1,157 @@
+{
+  "aggregate_repository": {
+    "baseline_receipt_sha256": "9695d2fae52228d07ba2456d29d939cdce43f038e4d6b3b7ff2d024c889bc355",
+    "baseline_rerun_this_cycle": false,
+    "current_errors": 35,
+    "current_failures": 2,
+    "current_receipt_sha256": "5408a1b0cf673b4c5a2b37589f5ae5356d0e870609443fd6321e72e5842d4ec0",
+    "current_skips": 74,
+    "current_tests": 1583,
+    "failure_error_id_count": 37,
+    "missing_ids": [],
+    "new_ids": [],
+    "same_ids": true
+  },
+  "authentic_destination_reconstruction_verified": false,
+  "base_commit": "286fdb302771e81e9deaf40f948cea264abacbe5",
+  "date_utc": "2026-10-15",
+  "files": {
+    "FROZEN-SOURCE-PROVENANCE.json": {
+      "bytes": 1783,
+      "sha256": "d11f69baf956ce33df3a0e60fa76d6a9d5cbe3beab9e1ee12d872869dbee7bc0"
+    },
+    "README.md": {
+      "bytes": 8344,
+      "sha256": "c7e7dc8a7d791448603c8eef395881b244c365d938c328a547c437e86e60656e"
+    },
+    "SDK-WHEEL-PROVENANCE.json": {
+      "bytes": 1201,
+      "sha256": "68413905d8062b3b73b8c2f8358fecaebcf30f1d7ecb96c6d058c781f6048248"
+    },
+    "config.py": {
+      "bytes": 17669,
+      "sha256": "079a76924a216fa7a0c7e45cb7844a4d89fd0fd07086bdda87fdd5d2b2fe1873"
+    },
+    "launch.py": {
+      "bytes": 5146,
+      "sha256": "2366134f6541fdc0fe7c82c91ec67a10eab64d68ccd468ea912c86e2a054f60b"
+    },
+    "native_auth.py": {
+      "bytes": 10409,
+      "sha256": "745573124bc8207be5edaa66a19bc0597a3fa1db6a777dffeda0d13912297162"
+    },
+    "operator_common.py": {
+      "bytes": 27949,
+      "sha256": "f79b3356271fb5fabf0f3f7235a71be55b205bdb87c3137061764b671cf2b093"
+    },
+    "rl_collect.py": {
+      "bytes": 58716,
+      "sha256": "150999bcfd2b6e24443576b8d75ef4b5034d7d62cca4b320631b866a4907119e"
+    },
+    "rl_transport.py": {
+      "bytes": 59255,
+      "sha256": "4b8bb950e1c2bae351e52c85646ec0d82e39d6bf97bbe1d38eb24808e224f626"
+    },
+    "sdk-lock.json": {
+      "bytes": 19816,
+      "sha256": "3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d"
+    },
+    "tests/test_frozen_equivalence.py": {
+      "bytes": 4008,
+      "sha256": "f22f06f4bc273cef0db0a9dc66f2fea42f0884d5fc18c328dc9d0756bd37eaec"
+    },
+    "tests/test_portable_binding.py": {
+      "bytes": 28347,
+      "sha256": "183a231f8511d7400a06d713035feef0004ff404148d99ddac1dd4c10bd2cf78"
+    },
+    "tests/test_portable_tls.py": {
+      "bytes": 5367,
+      "sha256": "5bb7c62ffb46d41467d0d216c4094ab679779040ef926048ec4b31033ef9ce34"
+    },
+    "tests/test_portable_transport.py": {
+      "bytes": 7204,
+      "sha256": "e08be83ffa55f9d21ad2d2dc67714ad31d5c5e8411c513aacfff28c2211a4de9"
+    },
+    "tests/test_portable_wire.py": {
+      "bytes": 37673,
+      "sha256": "1e3ce3d7ed0020d92c8d8b7fb32bf1e4b6800239eb960e5783a3d63811fb46d3"
+    },
+    "verify_active_wire.py": {
+      "bytes": 19341,
+      "sha256": "fdbfc3733f5fd5ba9f7bf0771c029a4dadfba7b13045676311f88c9a0345b595"
+    }
+  },
+  "focused_tests": {
+    "command": "<test-venv>/bin/python [-O] -B -m unittest discover -s tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/tests -v",
+    "normal": {
+      "errors": 0,
+      "failures": 0,
+      "log_sha256": "ab13dbc568140d9de8b2b2b8277d978712f89c938e45ac3d90e6f7658c432465",
+      "run": 106,
+      "skipped": 0
+    },
+    "optimized": {
+      "errors": 0,
+      "failures": 0,
+      "log_sha256": "5b091626437e9fba7b6b1364399746c045e52e98333a7000f8a6af36c56726fb",
+      "run": 106,
+      "skipped": 0
+    },
+    "python": "3.12.14",
+    "requests": "2.32.5"
+  },
+  "format": "irisx/portable-publisher-offline-validation-v1",
+  "incremental_diff_whitespace": "PASS from the named base; not a claim about all historical branches",
+  "independent_review": {
+    "conclusion": "No new blocking finding within the reviewed offline portability source scope.",
+    "frozen_original_files_unchanged": 90,
+    "limitations": [
+      "Focused offline suites and static source review do not establish aggregate repository success, CI success, authentic material reconstruction, native OAuth readiness, provider admission, GPU/model execution or scientific results.",
+      "Pathname-based common I/O and official OAuth load/save retain the frozen same-account concurrent-filesystem replacement boundary; the new pre-open source/config readers reject tested FIFO/symlink swaps, but this is not a hostile-filesystem proof.",
+      "The reviewed interpreter/venv startup and transitive dependencies remain trusted separately; the immutable lock covers all170 Kaggle2.2.4 and SDK0.1.37 Python members, not the whole interpreter/dependency environment.",
+      "Destination must independently reconstruct authentic283-source426-candidate311-proposal artifacts and obtain native OAuth consent/store, fresh numeric remote brackets, new collector-bound admission/material/transport/monitor/wire reviews before any production action."
+    ],
+    "normal_log_sha256": "8b029569828d13ab676b1a14f09509fa05ee58371d4f450b5eae9a91ad41c6cb",
+    "normal_tests": 106,
+    "optimized_log_sha256": "6c40793551bd233eb29483ec6d2b8f78076b7e0b5d58cff80a642ada2d3a499f",
+    "optimized_tests": 106,
+    "review_sha256": "96155f6f466575d438428cd356aa80473ea3d533d2d31bd7c43a13839cf094f0",
+    "skips": 0
+  },
+  "installed_source_probe": {
+    "credential_contents_inspected": false,
+    "independently_repeated": true,
+    "normal_receipt_sha256": "062f9b57bbeb6585a3ad749b045134df6c13e2f0434f50da5219c906b648e468",
+    "normal_source_count": 170,
+    "optimized_receipt_sha256": "6b883ac8f7a4f83483aedb65f972281f613cbc85c1cf5db608e1d2328c6fe95c",
+    "optimized_source_count": 170,
+    "provider_calls": 0,
+    "runtime_guard_verified": true,
+    "scope": "Actual copied venv, two exact official wheels installed --no-deps, Requests for mocked transport tests; other Kaggle dependencies intentionally absent. Not a provider-ready installation.",
+    "sdk_imported": false
+  },
+  "local_oauth_verified": false,
+  "preliminary_failures_preserved": [
+    "Default test Python:104 tests with8 errors because Requests was absent.",
+    "Requests-equipped initial suite:1 synthetic TLS expectation failure from inherited lowercase proxy priority; fixture now binds both case variants without changing runtime environment.",
+    "Independent initial numeric verifier mismatch against actual producer unversioned metadata; corrected and actual frozen producer exercised by tests."
+  ],
+  "provider_execution_admitted": false,
+  "public_score": null,
+  "repository_placement": {
+    "issues": [
+      "README.md missing Engineering Trials",
+      "README.md missing Decision 0010",
+      "README.md missing Decision 0012",
+      "README.md missing Decision 0014",
+      "README.md missing Decision 0015",
+      "README.md missing Trial 001 status page"
+    ],
+    "normal_exit": 1,
+    "normal_log_sha256": "4514bf93b3d3d75e03666042d91439f70c27617a47cb33ccbdcd8d5899b5522a",
+    "optimized_exit": 1,
+    "optimized_log_sha256": "4514bf93b3d3d75e03666042d91439f70c27617a47cb33ccbdcd8d5899b5522a"
+  },
+  "status": "OFFLINE_TESTED_REVIEWED_NOT_PROVIDER_ADMITTED",
+  "training_or_gpu_executed": false
+}

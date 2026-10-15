@@ -1,0 +1,42 @@
+{
+  "files": {
+    "config.py": {
+      "bytes": 8905,
+      "path": "tools/arc_qwen_rlvr004_20261013/publication_run008/config.py",
+      "sha256": "a4492c5a7b4d6cb42b2ee212f35b788fc70730fbd2fc13bf8b5cac03b48091fc"
+    },
+    "launch.py": {
+      "bytes": 3611,
+      "path": "tools/arc_qwen_rlvr004_20261013/publication_run008/launch.py",
+      "sha256": "e1794056b20dd1c143cb8ea23b1e985f579ab008260ef6b9d1f50c451301e48b"
+    },
+    "native_auth.py": {
+      "bytes": 9716,
+      "path": "tools/arc_qwen_rlvr004_20261013/publication_run008/native_auth.py",
+      "sha256": "b9b5aec37385f7a5de37ae92bbf0bfb3b7b664f0bc31c3fcc044532cb46a19de"
+    },
+    "operator_common.py": {
+      "bytes": 27952,
+      "path": "tools/arc_qwen_rlvr004_20261013/publication_run008/operator_common.py",
+      "sha256": "f9b2acad7816b4af97baa877821ce4c9e3d16831fa340caf02d3e8c00b3f2805"
+    },
+    "rl_collect.py": {
+      "bytes": 58716,
+      "path": "tools/arc_qwen_rlvr004_20261013/publication_run008/rl_collect.py",
+      "sha256": "71603a1eb47b1b7656f2ca6a8f2b2eb6faa99469a27aef63d4f0446828ef3a78"
+    },
+    "rl_transport.py": {
+      "bytes": 59269,
+      "path": "tools/arc_qwen_rlvr004_20261013/publication_run008/rl_transport.py",
+      "sha256": "a4da4850d7a2e44af2d85d4be65e55913a746ddeb66a26238500457911261bac"
+    },
+    "sdk-lock.json": {
+      "bytes": 19816,
+      "path": "tools/arc_qwen_rlvr004_20261013/publication_run008/sdk-lock.json",
+      "sha256": "3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d"
+    }
+  },
+  "format": "irisx/portable-publisher-frozen-source-provenance-v1",
+  "scope": "Transport-only successor; original runtime, math, admission and authentic histories remain unchanged.",
+  "source_commit": "cc14bd1a79aac1fe6135017c9e09d4834300675d"
+}

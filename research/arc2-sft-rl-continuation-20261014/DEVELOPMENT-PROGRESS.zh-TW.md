@@ -3,6 +3,8 @@
 更新：2026-10-15 UTC；本頁為持續更新的唯一進度管理文件。
 研究交付分支：`feat/arc2-sft-rl-continuation-20261014`；本地接手紀錄分支：
 `fix/arc2-abc-local-execution-20261015`。
+本次狹窄 portability 修復另在 `fix/arc2-abc-portable-publication-20261015`，
+起點為本地補證 commit `286fdb302771e81e9deaf40f948cea264abacbe5`；不覆寫前兩條線。
 研究基準：[`cc14bd1a79aac1fe6135017c9e09d4834300675d`](https://github.com/Danwuoo/IRIS-X/tree/cc14bd1a79aac1fe6135017c9e09d4834300675d)。
 
 **Stage 1 離線支援已交付；重要 RL 來源 AF3 的研究整併與本地循環交接已通過離線驗收。真實 A/B/C 實驗證據仍未完成。**
@@ -47,6 +49,10 @@
 | E17 | 本地transfer控制流程10 normal／10 `-O`通過；Stage0在WSL ext4 scratch為148 normal／148 `-O`通過 | 先前DrvFS scratch的148 tests各有14 failures／21 errors，涉及0700、FIFO與rename語意，失敗logs保留；只更換支援的scratch，沒有改gate。沒有安裝Torch或重跑AF3／Stage1，E7／E13的233／233仍是雲端歷史證據，不能代稱本機通過 |
 | E18 | 接手後executor transport中斷兩次，後續於2026-10-15 05:01 UTC恢復並以實際命令核對；WSL原程序已不在，該次位於ext4 `/tmp`的scratch目錄亦不在 | ext4重建未取得結果，本地`repository_check.py --all`只留部分unit log而無終態，均列interrupted／unknown，沒有補造通過。第一份invariants另有本地clone未帶archive tag的缺件；從原本機Git取回該tag後，獨立invariants重跑仍為同6項README缺詞、exit1，沒有其他finding。沒有Kaggle RUN在本輪等待監看，封包／提交仍未完成 |
 | E19 | 移轉補證：原`launch.py publish --help`安全前置檢查實際exit1，在第45行讀取不存在的`[checkout-parent]/kaggle_setup/kaggle.sh`時拋出`FileNotFoundError: [Errno 2] No such file or directory`，未進認證或建立provider | 只核對環境／來源／本地錯誤，不安裝依賴、不改發布器、不呼叫Kaggle。Windows Python3.12.10、WSL舊operator venv Python3.12.3；SDK差異仍同E16。等待協調者交付Astra修復commit後才續接 |
+| E20 | 2026-10-15官方registry wheel靜態比對：Kaggle2.2.4／SDK0.1.37的170個Python來源全部符合原sdk-lock，missing／extra／mismatch皆0；兩wheel均宣告Python>=3.11 | [精確wheel來源與hash](../../tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/SDK-WHEEL-PROVENANCE.json)。未import SDK、登入或呼叫provider；不代表已完成目的端安裝、全相依鎖定或認證 |
+| E21 | 目的環境離線修復完成：獨立POSIX successor以真實HOME、明確venv／executable SHA／Python patch／SDKroot取代歷史wrapper；原mutation／collector／官方session行為由AST等價回歸核對，active-wire獨立綁定精確numeric versions | [介面與來源邊界](../../tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/README.md)。獨立審查無剩餘新blocking finding；90個受保護來源與286fdb3完全一致，7個原transport來源亦符合cc14bd1 Git objects。實際提交仍需目的端認證、材料與admission |
+| E22 | Portability final106 normal／106 `-O`全部通過、零skip；獨立reviewer另跑同106／106。另以實際copied venv各模式核對runtime boundary及170個已安裝官方source，未import SDK／讀credentials／呼叫provider | [固定驗收收據及逐檔hash](../../tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/VALIDATION.json)。真process lock／timeout／cleanup、FIFO／symlink替換、四條TLS路徑及frozen producer互通均涵蓋；source probe是刻意未裝全Kaggle相依的測試venv，不代稱目的端環境可用 |
+| E23 | 本次完整repo suite實跑1,583 tests／2 failures／35 errors／74 skips；37個failure/error IDs與E13歷史log完全相同，新增／缺少均0 | 本輪未重跑baseline，不能稱paired新比較。獨立normal／`-O` placement仍同6項README缺詞；沒有新placement finding。失敗與初次缺Requests、synthetic proxy expectation、numeric回讀producer不符的修正前logs皆保留；focused通過不能抵銷aggregate或CI失敗 |
 
 本地去敏觀察收據 `OBSERVATION.json` 的SHA256為
 `faffc10ca4325726b95f3a99bbc4a2d30b3cad26d20d91ef0e355d28c9413123`。
@@ -117,6 +123,7 @@ successor驗收，不把CPU-only工具限制變成原A/B/C的循環依賴。
 | S1-O6 | 來源保存與精確交付核對 | 完成（程式保存與核對）；E10已核對15檔；E11精確CI失敗已分類 | S1-O4、S1-O5 | 依已授權發布流程核對新 commit／tree／branch 與變動檔案；另讀該 SHA 的 CI，不沿用 E3；不改 main、run008、PR #9 |
 | DOC-AF3 | AF3研究來源併入本資料夾，修復導覽與引用 | 完成（文件整併）；E13，三份獨特研究／驗證／審查與重要RL來源地位保留 | E1、E7、E12 | 保留pinned上游、license與元件實際採用證據；不改程式namespace／vendor／frozen source，無重複進度頁 |
 | HANDOFF-CYCLE | 將既有本地交接延伸為提交、監看、有限工程修復及結果回傳流程 | 完成（交接規格）；E13，只更新既有交接文件；實際本地執行另列E1～E4 | S1-O1～O6、原執行契約 | 明列fresh remote／材料／admission、single publisher、監看到terminal、結果回傳與方法觸發條件；本文件不派發工作 |
+| S1-P1 | 本地publisher的狹窄POSIX portability successor | 待交付；離線實作／106 normal及`-O`／獨立審查完成，E19～E23；精確Git readback待本次發布 | 本地原始重建、原source lock、官方native OAuth、完整hash／consumer／action／wire reviews | 保存並核對精確Git交付後，本地重建283／426／311檔，配置真實runtime，取得fresh bracket與全部原admission才進原單一publisher流程；native OAuth建立仍須另行當次同意，不使用Windows store |
 | S1-E1 | 本地真實來源、模型材料與已存在audit接收 | 進行中／目的環境binding受阻；E14～E17。原材料已找到，歷史重建另核對；本輪audit尚未產出 | 原執行契約、本地來源與材料 | 先完成目的環境portable successor與原admission，核對training-owned provenance／原records／排除及exact numeric materials。首次原A/B/C可在原admission通過後產生audit，不以尚未產出的結果阻擋原流程 |
 | S1-E2 | 原runtime真實replay／LoRA梯度／owner狀態驗收 | 待開始／未執行 | S1-E1、本地完整原admission | E2與E3是同次原執行中的驗收，不要求先有另一場成功證據。原runtime逐步核對模型、數值、rollback、save/reload、closure與資源；CPU logp梯度不能替代。若另接AF3模型hook，才加另立successor的同模型差分驗收 |
 | S1-E3 | 同 session 既有 A/B/C 比較 | 待開始／未驗證 | S1-E1、原admission／batch／時鐘；E2由該次原runtime逐步驗收 | 原 reward、replay、更新、checkpoint、全 B/C wall、固定選擇與 closure 證據完整；未完成與 zero-signal 分開 |
@@ -292,3 +299,10 @@ DDIS數學與真實元件CPU整合證據，集中於[AF3整合研究](agent-fact
 
 - 2026-10-15移轉補證：E19記錄原launcher在provider前的實際缺wrapper錯誤、source gate位置及
   尚缺重建步驟；協調者已交Astra處理portability，本地只補證據，等待修復commit，不平行改發布器或提交。
+
+- 2026-10-15 portability修復：從286fdb3另開修復分支。選擇保留Linux/POSIX的flock、SIGALRM、
+  fsync及owned-process契約；不擴成Windows核心移植。原SDK官方source確認OAuth依真實HOME，
+  KAGGLE_CONFIG_DIR不能轉移OAuth；沒有native WSL store時保留明確登入阻擋，不建立跨環境憑證通路。
+  此阻擋只針對純POSIX publisher；另評估WSL持有state／claims、Windows官方SDK原地認證的
+  bounded bridge是否能保留同等timeout／cleanup／auth／傳輸完整性。該bridge尚未實作或放行，
+  不能把已完成POSIX測試代稱為Windows登入重用可執行。

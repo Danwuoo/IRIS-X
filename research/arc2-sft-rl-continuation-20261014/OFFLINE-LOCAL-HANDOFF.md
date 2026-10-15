@@ -1,8 +1,10 @@
 # 離線續接工具與本地實驗循環交接
 
-日期：2026-10-14 UTC。研究基準固定為
+日期：2026-10-15 UTC。研究基準固定為
 `cc14bd1a79aac1fe6135017c9e09d4834300675d`；工作分支為
 `feat/arc2-sft-rl-continuation-20261014`。
+目的環境 portability 修復另由 `fix/arc2-abc-portable-publication-20261015`
+交付；各次精確版本與驗收狀態只見下列進度入口。
 
 工具版本、開發任務、驗收證據與下一步統一見
 [開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)。本頁只維護使用方式與限制；
@@ -46,11 +48,11 @@ Stage 0 的 `prepare`／`analyze` 只需 Python 標準函式庫及支援 descrip
 
 ### 固定來源交付身分
 
-本次交接所檢查的 checkout 是 `e17b6857ee6e874b2b5ed28a766f35e0b8028ea2`，tree
+2026-10-14原交接所檢查的 checkout 是 `e17b6857ee6e874b2b5ed28a766f35e0b8028ea2`，tree
 `408182146a41cfbba7dbb9ead040b54e4790587a`。程式驗收版本是
 `8b9ca9cf915969e15339d99bc090762f349f1572`，tree
 `cedac0a7486685c641506335930d7f6ab429b514`；兩者只有進度文件差異，執行碼相同。
-這些是本次編輯前的來源 anchors，**不是本文最終文件 commit**。協調者會在發布核對後
+這些是歷史Stage1來源 anchors，**不是目的環境修復或本文最終文件 commit**。協調者會在發布核對後
 另行交付最終完整 SHA／tree／變動清單，本頁不預填或自指尚不存在的 commit。
 接收端先核對那份精確交付及工作區差異；不能只 checkout 移動中的分支便執行。
 
@@ -76,7 +78,7 @@ Stage 0 的 `prepare`／`analyze` 只需 Python 標準函式庫及支援 descrip
 及 inventory `bb096f6d53967523961f894c954daa1b4b1f956d54af3586d89bf544aea90cf2`
 只供對照；新 numeric pins、路徑或 trainer 變更都需要新的候選與對應審查，不能沿用其放行。
 
-原 native transport 的本次 byte 核對如下，路徑前綴均為
+原 native transport 的歷史 byte 核對如下，路徑前綴均為
 `tools/arc_qwen_rlvr004_20261013/publication_run008/`。launcher 含後續既有 CA 傳遞修正，
 應併讀 [TLS 審查](../native-continuation-20261014/independent-native-tls-review.json)，
 不能把更早 launch review 的舊 launcher hash 當成本版。
@@ -204,7 +206,8 @@ symlink／祖先交換、拒絕覆寫、失敗／中斷cleanup及CPU CLI。
 [run008 原交接](../native-continuation-20261013/RUN008-LOCAL-HANDOFF.md)、
 [transfer reconstruction](../../tools/arc_qwen_rlvr004_20261013/transfer_run008/README.md)、
 [admission](../../tools/arc_qwen_rlvr004_20261013/admission_run008/README.md)、
-[native operator](../../tools/arc_qwen_rlvr004_20261013/publication_run008/README.md)。
+[原 native operator](../../tools/arc_qwen_rlvr004_20261013/publication_run008/README.md)與
+[目的端 POSIX successor](../../tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/README.md)。
 舊文件的當時 transfer-only／stop-after-submit 記錄保留為歷史，不自行移植成當次授權。
 
 公開 checkout **不構成完整可執行封包**。接收端以明確指定的檔案逐項驗證，缺件回報其
@@ -279,8 +282,28 @@ nonforced p95≤0.05、max≤0.20、strict-DDIS coverage=100% 不變，至少一
 ### 6.3 唯一 publisher 的有限提交與監看路徑
 
 下列是現有 operator action 的順序索引，不是已執行紀錄或開放式重試授權。
-完整 CLI flags 以 `publication_run008/launch.py` 的 publish／collect help 與其 README
-為準；每次都需 explicit manifest/material/review/local-config 及各自 SHA。
+原 `publication_run008` 的歷史wrapper綁定不適用移轉後機器。目的端使用經本次獨立審查的
+[POSIX successor介面](../../tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/README.md)，
+完整CLI flags由其publish／collect入口承接；每次都需explicit manifest/material/review/local-config及各自SHA。
+
+開始前另做目的端準備：
+
+- 在持續存在的native Linux／WSL ext4路徑重建checkout與ignored scratch，保留原失敗。
+  不把`/tmp`存活或DrvFS權限／rename／FIFO行為當成已驗證的native語意。
+- 先完成原`transfer_run008/rebuild_engineering.py`的283檔source、426檔candidate與311檔inert
+  proposal及各自report；移轉components子集與純單元測試不能取代這些真實重建。
+- 建立或核對明確的Python3.12 venv，固定Kaggle2.2.4及SDK0.1.37，核對完整170-source closure。
+  官方`python3.12 -m venv --copies /chosen/native-venv`可避免多層interpreter symlink；不要覆寫既存venv。
+  在該新venv用`python -I -B -m pip install 'kaggle==2.2.4' 'kagglesdk==0.1.37'`安裝官方pins與相依，
+  再跑`python -I -B -m pip check`；以`importlib.metadata`記錄版本與來源root，不要import Kaggle當作metadata probe。
+  實際interpreter bytes、patch version、sysconfig purelib、real HOME及既有CA選擇寫入本次private local config，
+  供獨立review綁定；不把個人機器路徑或config內容提交公開Git。
+- 若native HOME尚無官方OAuth，先停在認證建立這一關。新的官方登入固定要求`resources.admin:*`，
+  並保存native HOME/.kaggle，須另外取得使用者當次同意並由使用者完成官方consent。
+  精確官方命令及來源見successor README；不得複製Windows store、改HOME、抽取token或擴權代替。
+- 新collector SHA須由原assembler的explicit collector參數重新綁入proposal與consumer release，
+  並重做相依material／transport／monitor／Git／active-wire reviews；原259 runtime members及21 helpers不改。
+  使用successor的exact-version static-pin verifier；不要將原21／40／41寫死的review重用於另一組版本。
 
 1. **核對、觀察、review：** 先靜態核對交付 SHA／bytes、當次授權及已有材料；經授權取得
    並封存當次 fresh read-only bracket，完成新的 proposal／final admission、destination
@@ -302,7 +325,7 @@ nonforced p95≤0.05、max≤0.20、strict-DDIS coverage=100% 不變，至少一
 4. **準備、獨立檢查、一次 RUN：** `prepare-active` 只建立一個新的 immutable predispatch
    epoch 與四個 JIT 文件：`active-finalized.ipynb`、`original-request.json`、`operator.json`、
    `parent-private-scorer.json`。保留 finalization、wire、prepared journal；由
-   `review_run008/verify_active_wire.py` 依當次真實 static pins 核對，產生對應獨立 active
+   `publication_portable_20261015/verify_active_wire.py` 依當次真實 static pins 核對，產生對應獨立 active
    review 後才 `activate`。60秒 dispatch-age 上限不變；stale preparation 保留並停止，
    不能自動重抽時鐘。一次 accepted／uncertain send 後用 `verify-run` readback/reconcile，
    不能把讀取中斷當理由重發 RUN。provider 接受不等於已跑模型。
