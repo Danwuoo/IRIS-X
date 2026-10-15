@@ -231,6 +231,42 @@ SDK worker／JobProcess 未啟動的 disposition。supervisor/proxy 本身曾執
   確認全部歷史 bytes 不變、consumer／wire／mount 選路一致，再沿第 6.3 節 fresh readiness →
   code／inactive／RUN／terminal 走完。Windows native／SDK／科學 runtime 未變的既有證據重用。
 
+### 已接受 v43 的獨立唯讀監看續接
+
+v43／code22 已接受；原監看程序與匿名 pipes 中斷，最後保存的是 readonly kernel
+operation accepted，沒有舊 Job-zero／closure 證據。原 STATE、已接受 RUN、source 與
+clock 全部保留。新 [status observer](../../tools/arc_qwen_rlvr004_20261013/readonly_observer_20261015/observe.py)
+是一個另外審查的唯讀能力，不重用、關閉或宣告解決舊 native session。
+
+本版只做一次 `get_kernel → get_kernel_session_status → get_kernel`，固定 v43、kernel
+138123872 與接受的 source／完整 metadata。不得把 provider terminal 當作模型安全收束、
+GPU 用量、帳單或科學成功。numeric output retrieval 尚未在本版開放。
+
+本地先獨立核對 helper 的固定 commit bytes／SHA、原 native config（ec328670…）、
+原 923-byte metadata DTO（0a22a919…），再由原 native Windows venv 執行 supervisor entry：
+
+```text
+<original-python.exe> -I -B <observe.py> --helper-sha <reviewed-helper-sha256> --bridge-root <unchanged-native-source-directory> --config <original-native-config> --config-sha ec32867044bd6de4f8cead0cc6d9f73a45419c1a091dbe3cdbdfadaf669fe0f9 --accepted-metadata <byte-identical-local-metadata-copy> --accepted-metadata-sha 0a22a9193407c049cbbceeb01f8ea9c5385d2a1855d0f97a6371adfa8a364106 --output <fresh-observation-directory>
+```
+
+metadata 原樣複製至 Windows staging，不重新序列化；source body 不需要搬入新參數。
+output 的父目錄須存在且為 ordinary no-reparse 路徑，新目錄不得已存在、位於 native source
+內或任何 `state*` ancestry。只執行 supervisor entry，不直接使用內部 `--worker`。
+每次會獨立保存 launch、worker-result、supervisor-result；只接受 matching nonce／request hash
+及新 worker 的真實 closure，舊 closure 永遠維持未證。未完成或缺 receipt 仍是未完成。
+
+原 SID-scoped `publication-worker-v1` mutex 不換名稱、不接管 existing/abandoned object；
+若仍存在即拒絕。沿用原 native Job containment、真實 parent process handle、完整 SDK source
+lock 與 profile／SID／venv／TLS 綁定。新私有 hold-open pipe 不是外部 caller EOF 證據；
+最多 300 秒的原始 monotonic lease 與真實 parent watch 才是本次生命週期界線。
+只允許兩個 official read RPC；在開啟 writable credential handle 前拒絕 refresh，另於 refresh
+exchange／HTTP 出口再次拒絕。需要更新 token 時回報既有 AUTH_REFRESH_UNKNOWN 與
+pre-network refusal，不自動 refresh、登入、另換 store 或重試。此限制不解除其他 auth pending。
+
+保留 epoch1792092816、execution1792134816、outer1792134996、global1792136016；
+每筆 observer 只縮短自己的期限，不重設 run deadline。這個 helper 不改 accepted notebook，
+不開新的 RUN／Restart／quota 查詢，也不取用舊 Job handle 或 pipe。
+
 ### 6.4 本地修復邊界與研究決策
 
 當次明確授權內的有限工程修復，先保存失敗 source／receipts／logs／clock／成本，再測試、獨立審查
