@@ -1101,6 +1101,171 @@
       "initial_full_bridge": "three stale expectations:20 sources instead of22 and source differential rejected intentional pure preflight; narrow exact-statement normalization retained every old function AST comparison"
     }
   },
+  "multiround_publication_revision": {
+    "author": {
+      "commands": [
+        "python [-O] -m unittest discover -s tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests -v (588 tests before final two composition tests were added)",
+        "python [-O] -m unittest discover -s tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/tests -p test_multiround_context.py -v",
+        "python [-O] -m unittest discover -s tools/arc_qwen_rlvr004_20261013/admission_run008 -p test_preparation_repair.py -v"
+      ],
+      "initial_test_failure": "One expected occurrence-count typo in the explicitly normalized test AST differential, fixed before final passing runs; original failed log retained.",
+      "logs": {
+        "assembly-normal.log": {
+          "bytes": 1552,
+          "sha256": "a01df1236af091c25fa2dede6b4aba1a6cb8dd76616020b8443754689358a78e"
+        },
+        "assembly-optimized.log": {
+          "bytes": 1552,
+          "sha256": "bbeea94ca156d055f0a64d891685bbbf681667d15202ef124aa349e213b010ab"
+        },
+        "bridge-final-normal.log": {
+          "bytes": 92241,
+          "sha256": "ee1a1c35dea097f4631e8652d208a5cea4316e92b198686d4d11e9d669e935ec"
+        },
+        "bridge-final-optimized.log": {
+          "bytes": 92241,
+          "sha256": "7835522d924edbc1be4abb9d714500357c330fa862f02b427f5e507ab95178d8"
+        },
+        "composition-normal.log": {
+          "bytes": 466,
+          "sha256": "32ea08ee0d150e93188d57cd87c393c4b84fdbd5d68d16b61101f9ca79a8520d"
+        },
+        "composition-optimized.log": {
+          "bytes": 466,
+          "sha256": "f56d7b8b50b0a92c40ff218ac3568b82a212da5cef4fc49495c1f38607874664"
+        }
+      },
+      "normal": {
+        "assembly": 9,
+        "bridge": 588,
+        "errors": 0,
+        "failures": 0,
+        "frozen_f5_composition": 2,
+        "skipped": 0
+      },
+      "optimized": {
+        "assembly": 9,
+        "bridge": 588,
+        "errors": 0,
+        "failures": 0,
+        "frozen_f5_composition": 2,
+        "skipped": 0
+      }
+    },
+    "format": "irisx/multiround-publication-validation-v1",
+    "full_unrelated_repository_suite": "NOT RERUN; relevant bridge/assembly only",
+    "independent_review": {
+      "bindings": {
+        "bytes": 11540,
+        "sha256": "66624d1c4763a2efa572cee8d4aa865866d38a687c5edb620bd08a5bbb7134a5"
+      },
+      "normal": {
+        "assembly": 9,
+        "bridge": 588,
+        "errors": 0,
+        "extra_checks": 5,
+        "failures": 0,
+        "frozen_f5_composition": 2,
+        "skipped": 0
+      },
+      "optimized": {
+        "assembly": 9,
+        "bridge": 588,
+        "errors": 0,
+        "extra_checks": 5,
+        "failures": 0,
+        "frozen_f5_composition": 2,
+        "skipped": 0
+      },
+      "report": {
+        "bytes": 3474,
+        "sha256": "fbdb6a24f6bdcd4a3ba7cb472d64e1e14249750f8b866b9957088d5774a3d220"
+      },
+      "scope": "Full588 bridge followed by2 added composition and9 assembly tests per mode; not a claim of rerunning full590 after adding composition.",
+      "status": "PASS"
+    },
+    "local_actual_state_acceptance": "NOT RUN HERE; original 1686-file state and historical manifest remain local; sanitized projection inspected, no private artifacts or evaluator bodies copied.",
+    "new_gpu_or_arc_results": false,
+    "parent_source_commit": "0af57780d61cc72c759fa9b67330bb655abcb761",
+    "repository_invariants": {
+      "count": 6,
+      "findings": [
+        "README Engineering Trials",
+        "README Decision 0010",
+        "README Decision 0012",
+        "README Decision 0014",
+        "README Decision 0015",
+        "README Trial 001 status page"
+      ],
+      "status": "FAIL_INHERITED"
+    },
+    "scope": "Offline per-round publication and collector routing, authentic prior-manifest projection, retention continuity; no native/provider/training execution.",
+    "source_files": {
+      "bridge_client.py": {
+        "bytes": 47428,
+        "sha256": "055fed70acb246de2ecc97569263786b27a9eaf1bffd1065a776cdefbbca5e50"
+      },
+      "config.py": {
+        "bytes": 29808,
+        "sha256": "65d40a128e0e6a313df1d3b37071638cba76d0914cb27c6339cf5652f36554f0"
+      },
+      "context_continuation.py": {
+        "bytes": 21449,
+        "sha256": "0201ebe4c1792a15d7a58a26db274823bcc87e42750df480bd362eda61cabf23"
+      },
+      "launch.py": {
+        "bytes": 5359,
+        "sha256": "34ab15db0c553c8e0fb9685230ddac68e0240326ca622fda99ae9ef971fb03fb"
+      },
+      "operator_common.py": {
+        "bytes": 26232,
+        "sha256": "4f50b0be9eb51250b286b68356c55a1f6e06c5f3811c733a0a6416e6d35f54f0"
+      },
+      "publication_state.py": {
+        "bytes": 44288,
+        "sha256": "85101ee677e9c768cc8a5583cbf8df222a9198338040e0f0260bd87a96e9ea77"
+      },
+      "recovery_entry.py": {
+        "bytes": 10466,
+        "sha256": "403e3e078bba06d1b1635ca76228f0334d512519aad9406f89e38f393099718c"
+      },
+      "rl_collect.py": {
+        "bytes": 66555,
+        "sha256": "882d658e53e327d0d310174125bd5a3c6e6864820502b78a6d13940278aaaec2"
+      },
+      "rl_transport.py": {
+        "bytes": 65640,
+        "sha256": "bb93f259112ca1e50fc45da39c5c51cb7743a1a9e9853cda855410e0c70fdc7f"
+      },
+      "tests/test_multiround_context.py": {
+        "bytes": 4742,
+        "sha256": "7f4b0f647d6ddd4c38aed8592c7548497daa3d8de48af964b38e8b7d05c203ba"
+      },
+      "tests/test_multiround_state.py": {
+        "bytes": 14527,
+        "sha256": "b04fa9b20b825a28e2086785bb50043bbbfa0148b2139c1e2e7f9b66bb3e20cc"
+      },
+      "tests/test_multiround_transport.py": {
+        "bytes": 25750,
+        "sha256": "20a7751defba28331d97c3c2a44617b1362e94df3bb76c36c101b8d3086318df"
+      },
+      "tests/test_owner_integration.py": {
+        "bytes": 51809,
+        "sha256": "85f44360d652264172f46e50ef8e073172c3e8517d47bfa38e5ce5c2f9dd83b5"
+      },
+      "verify_active_wire.py": {
+        "bytes": 19998,
+        "sha256": "2ab7be25726d38863379a7b63d682f86abd33d52b91116c73734cc9e647da301"
+      }
+    },
+    "unchanged_from_parent": [
+      "native seven sources including sdk-lock.json",
+      "frozen recovery_epoch/recovery_boot_probe and context-source-pins",
+      "native_probe and preworker_disposition",
+      "v41 preparation repairs, assembler and scientific runtime/archive",
+      "21 scientific terminal-consumer helpers"
+    ]
+  },
   "open_failure_diagnostic_revision": {
     "actual_failed_open": {
       "cause": "unproven",

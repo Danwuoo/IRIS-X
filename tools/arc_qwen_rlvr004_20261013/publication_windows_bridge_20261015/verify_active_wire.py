@@ -149,6 +149,17 @@ def manifest_versions(manifest, allocation):
     return rows
 
 
+def publication_root(configuration, native_state, allocation):
+    """Derive the same numeric namespace independently of operator code."""
+    need(configuration.get('state_root') == str(native_state), 'exact local state binding')
+    if 'publication' not in configuration:
+        return native_state
+    publication = configuration['publication']
+    need(type(publication) is dict and set(publication) == {'history'}
+         and type(publication['history']) is list, 'reviewed publication namespace')
+    return path(str(native_state / 'publications' / ('code-v' + str(allocation['code']))))
+
+
 def verify(pins_path, pins_sha):
     pins = obj(read(pins_path, pins_sha))
     need(pins.get('format') == FORMAT and pins.get('status') == 'SOURCE_AND_PRELAUNCH_READBACKS_REVIEWED'
@@ -172,6 +183,7 @@ def verify(pins_path, pins_sha):
     need(versions(cfg['versions']) == allocation, 'independently reviewed local version allocation')
     need(cfg['candidate_root'] == str(root) and cfg['state_root'] == str(state)
          and cfg['publication_manifest_sha256'] == pins['publication_manifest_sha256'], 'exact local state binding')
+    state = publication_root(cfg, state, allocation)
     code = obj(read(str(state / ('dataset-code-v' + str(allocation['code']) + '-receipt.json')), pins['code_receipt_sha256']))
     inactive = obj(read(str(state / 'notebook-inactive-receipt.json'), pins['inactive_receipt_sha256']))
     need(exact_int(code['dataset_id'], 12504696) and exact_int(code['version'], allocation['code'])

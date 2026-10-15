@@ -22,9 +22,9 @@ import sys
 import time
 import types
 
-TRANSPORT_SHA256 = 'ad748018a5e48d0be64b3683dd7139e6218021cfebb251f4d9c48e77369d02c6'
+TRANSPORT_SHA256 = 'bb93f259112ca1e50fc45da39c5c51cb7743a1a9e9853cda855410e0c70fdc7f'
 CORE_SHA256 = '2d7ecb31f7571a51382597a1fc5ddd75939b296794d7de28cef10cc06b2439dc'
-CLIENT_SHA256 = '2c4f6fead148a089152410221bcef9cd7b6bff5d97825e6b54d82e20d42e3552'
+CLIENT_SHA256 = '055fed70acb246de2ecc97569263786b27a9eaf1bffd1065a776cdefbbca5e50'
 READ_BRACKET = ['dataset', 'kernel', 'status', 'kernel', 'dataset']
 
 

@@ -136,6 +136,9 @@ class LocalConfig:
     document_sha256: str
     publication_manifest_sha256: str
     windows_bridge: dict
+    publication_state_root: object = None
+    publication_evidence_root: object = None
+    publication_history: tuple = ()
 
 
 def real_home():
@@ -227,8 +230,73 @@ def read_runtime(config_path, config_sha256):
 def config_schema(document):
     fields = {'format', 'repository_root', 'candidate_root', 'scratch_root', 'state_root', 'evidence_root',
               'gpu_stop_path', 'runtime', 'windows_bridge', 'username', 'publication_manifest_sha256', 'versions', 'remote_predecessor'}
-    need(set(document) == fields and document['format'] == FORMAT, 'local_config_schema')
+    need(set(document) in (fields, fields | {'publication'}) and document['format'] == FORMAT, 'local_config_schema')
     need(document['username'] == 'danielwuu' and is_sha(document['publication_manifest_sha256']), 'local_config_identity')
+
+
+def publication_selection(document, paths, versions):
+    """Select one numeric round without relocating the shared native journal."""
+    if 'publication' not in document:
+        return paths['state_root'], paths['evidence_root'], ()
+    selection = document['publication']
+    need(type(selection) is dict and set(selection) == {'history'}, 'local_publication_schema')
+    history = selection['history']
+    need(type(history) is list and 0 < len(history) <= 64, 'local_publication_history')
+    selected = paths['state_root'] / 'publications' / ('code-v' + str(versions['code']))
+    evidence = paths['evidence_root'] / ('code-v' + str(versions['code']))
+    secure_path(selected); secure_path(evidence)
+    result, codes, notebooks, legacy = [], {versions['code']}, {versions['inactive'], versions['active']}, 0
+    allocated = []
+    for row in history:
+        need(type(row) is dict and set(row) == {'root', 'manifest'}, 'local_publication_history_row')
+        root = secure_path(row['root'])
+        descriptor = row['manifest']
+        need(type(descriptor) is dict and set(descriptor) == {'path', 'bytes', 'sha256'}
+             and type(descriptor['bytes']) is int and 0 < descriptor['bytes'] <= 4 * 1024**2
+             and is_sha(descriptor['sha256']), 'local_publication_manifest_descriptor')
+        raw = bounded_read(descriptor['path'], 4 * 1024**2)
+        need(len(raw) == descriptor['bytes'] and hashlib.sha256(raw).hexdigest() == descriptor['sha256'],
+             'local_publication_manifest_bytes')
+        old = read_json(descriptor['path'], descriptor['sha256'])
+        need(old.get('format') == 'irisx/qwen14b-rlvr-run008-publication-contract-v1',
+             'local_publication_manifest_format')
+        datasets, rows = old.get('datasets'), old.get('notebooks')
+        need(type(datasets) is list and len(datasets) == 1 and type(datasets[0]) is dict
+             and datasets[0].get('id') == 12504696 and datasets[0].get('reference') == DREF,
+             'local_publication_dataset')
+        need(type(rows) is list and len(rows) == 2 and all(type(item) is dict for item in rows),
+             'local_publication_notebooks')
+        roles = {item.get('role'): item for item in rows}
+        need(set(roles) == {'inactive', 'rlvr004'}, 'local_publication_notebooks')
+        old_versions = (datasets[0].get('expected_predecessor_version'), datasets[0].get('expected_version'),
+                        roles['inactive'].get('expected_predecessor_version'), roles['inactive'].get('expected_version'),
+                        roles['rlvr004'].get('expected_version'))
+        need(all(type(value) is int and 0 < value <= 2**31 - 1 for value in old_versions),
+             'local_publication_versions')
+        before, code, prior, inactive, active = old_versions
+        need(code == before + 1 and inactive == prior + 1 and active == inactive + 1
+             and roles['rlvr004'].get('expected_predecessor_version') == inactive,
+             'local_publication_successor_versions')
+        need(all(item.get('existing_notebook_id') == 138123872 and item.get('existing_notebook_reference') == REF
+                 for item in rows), 'local_publication_notebooks')
+        need(code not in codes and inactive not in notebooks and active not in notebooks,
+             'local_publication_duplicate_allocation')
+        codes.add(code); notebooks.update((inactive, active))
+        need(code < versions['code'] and active < versions['inactive'], 'local_publication_future_history')
+        if root == paths['state_root']:
+            legacy += 1
+        else:
+            need(root == paths['state_root'] / 'publications' / ('code-v' + str(code)),
+                 'local_publication_history_root')
+        need(root.is_dir() and not inside(secure_path(descriptor['path']), paths['state_root']),
+             'local_publication_history_location')
+        allocated.append((code, active))
+        result.append(MappingProxyType({'root': str(root), 'manifest': MappingProxyType(dict(descriptor))}))
+    need(legacy == 1, 'local_publication_legacy_root')
+    latest = max(allocated)
+    need(latest == (versions['code_predecessor'], versions['inactive_predecessor']),
+         'local_publication_predecessor_allocation')
+    return selected, evidence, tuple(result)
 
 
 def load(config_path, config_sha256, manifest_path, manifest_sha256, *, recovery=False):
@@ -274,9 +342,12 @@ def load(config_path, config_sha256, manifest_path, manifest_sha256, *, recovery
     need(predecessor['code_version'] == versions['code_predecessor'] and predecessor['notebook_version'] == versions['inactive_predecessor'], 'local_remote_predecessor_versions')
     need(is_sha(predecessor['snapshot_sha256']) and is_sha(predecessor['notebook_source_sha256']) and predecessor['notebook_source_sha256'] == notebooks['inactive']['predecessor_source_sha256'], 'local_remote_predecessor_source')
     need(predecessor['provider_status'] in ('COMPLETE', 'ERROR', 'CANCEL_ACKNOWLEDGED'), 'local_remote_predecessor_not_terminal')
+    publication_root, publication_evidence, publication_history = publication_selection(document, paths, versions)
     return LocalConfig(**paths, runtime=runtime, versions=MappingProxyType(dict(versions)),
                        document_sha256=config_sha256, publication_manifest_sha256=manifest_sha256,
-                       windows_bridge=load_windows_bridge(document['windows_bridge'],versions, recovery=recovery))
+                       windows_bridge=load_windows_bridge(document['windows_bridge'],versions, recovery=recovery),
+                       publication_state_root=publication_root, publication_evidence_root=publication_evidence,
+                       publication_history=publication_history)
 
 
 def child_environment(runtime, inherited):

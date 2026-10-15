@@ -34,7 +34,7 @@ import types
 
 HISTORICAL_COMMIT = 'f5f780cb5823579288385158ce6da70a1ca33899'
 SOURCE_PINS_SHA256 = '09e51f695d1dfd216f162b8451cd34331f35f9d137da749bc35e4fde8f6882a7'
-PUBLICATION_STATE_SHA256 = 'bcb1a441437f221ef6e2e62af5cf49b4a58e31d12f86ca12f885b261b86d69a5'
+PUBLICATION_STATE_SHA256 = '85101ee677e9c768cc8a5583cbf8df222a9198338040e0f0260bd87a96e9ea77'
 PREWORKER_SOURCE_SHA256 = '8624ebfbaf3c620a995723cb5dde23cb52b07b2f03afef406879f1fc0829e9b9'
 SOURCE_NAMES = frozenset(('bridge_client.py', 'config.py', 'launch.py', 'native_auth.py',
     'native_config.py', 'native_probe.py', 'operator_common.py', 'protocol.py',
@@ -360,7 +360,9 @@ def validate_context(c, current_config, pending_claims, *, current_boot_descript
             _need(manifest_row['sha256'] == actual['publication_manifest_sha256'],
                   'context_actual_publication_manifest')
             state_module = _current_helper('publication_state.py', PUBLICATION_STATE_SHA256)
-            publication_view = state_module.capture(root, manifest_row, actual['versions'], historical)
+            publication_view = state_module.capture(root, manifest_row, actual['versions'], historical,
+                publication_root=getattr(current_config, 'publication_state_root', None),
+                publication_history=actual.get('publication', {}).get('history', ()))
             historical._root_records = publication_view.root_records
         # A strictly source-proven rejection before worker creation is not a
         # native Job-zero receipt. Keep its UNKNOWN journal byte-identical and

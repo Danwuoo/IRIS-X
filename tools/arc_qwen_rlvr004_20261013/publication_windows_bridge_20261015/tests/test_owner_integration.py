@@ -830,7 +830,20 @@ class SourceSeparationTests(unittest.TestCase):
     def test_scientific_consumers_unchanged_outside_upload_boundary(self):
         def definitions(path):
             raw = path.read_text()
+            if path.parent == ROOT:
+                # Only publication paths/helpers are renamed. The shared native
+                # STATE and native claim/journal are tested separately and stay
+                # unchanged. Normalize these explicit routing calls solely for
+                # the preserved scientific-consumer AST differential.
+                raw = raw.replace('publication_root()', 'STATE')
+                raw = raw.replace('publication_evidence_root()', 'CONFIG.evidence_root')
+                raw = raw.replace('publication_claim(', 'claim(')
+                raw = raw.replace('publication_journal(', 'journal(')
             if path == ROOT / 'rl_transport.py':
+                self.assertEqual(raw.count(',**publication_paths()'), 1)
+                raw = raw.replace(',**publication_paths()', '')
+                self.assertEqual(raw.count('    publication_guard()\n'), 1)
+                raw = raw.replace('    publication_guard()\n', '')
                 # Exact additional admission/preflight statements are removed
                 # only for this differential; every original function's AST
                 # must still match the preserved portable publisher below.
@@ -850,6 +863,9 @@ class SourceSeparationTests(unittest.TestCase):
                 preflight = [node for node in nodes if node.name == 'publication_preflight']
                 self.assertEqual(len(preflight), 1)
                 nodes.remove(preflight[0])
+                helpers = {'historical_retention_roots', 'retained_inventory_matches'}
+                self.assertEqual({node.name for node in nodes} & helpers, helpers)
+                nodes = [node for node in nodes if node.name not in helpers]
             if path == ROOT / 'rl_transport.py':
                 gate = next(node for node in nodes if node.name == 'execution_gate')
                 additions = [node for node in ast.walk(gate) if isinstance(node, ast.Constant)
@@ -903,7 +919,10 @@ need(diagnostic.get('preparation_failure') is None,'preowned_preparation_failure
         # the complete bridge closure (exercised above for every missing/stale
         # member). All other publication and scientific consumer functions stay
         # byte-equivalent at the AST level.
-        for name in old.keys() - {'update_code', 'review_gate', 'git_publication_gate'}:
+        # Retention gained cross-round baseline comparison; its complete original
+        # numeric coverage, new capture and drift rejection are exercised by
+        # test_multiround_transport, rather than claiming an unchanged AST.
+        for name in old.keys() - {'update_code', 'review_gate', 'git_publication_gate', 'dataset_check'}:
             self.assertEqual(old[name], new[name], name)
         self.assertEqual(definitions(PORTABLE / 'rl_collect.py'), definitions(ROOT / 'rl_collect.py'))
         self.assertEqual((PORTABLE / 'sdk-lock.json').read_bytes(), (ROOT / 'sdk-lock.json').read_bytes())

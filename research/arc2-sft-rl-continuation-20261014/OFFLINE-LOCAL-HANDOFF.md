@@ -200,6 +200,30 @@ SDK worker／JobProcess 未啟動的 disposition。supervisor/proxy 本身曾執
    合成測試當真正 terminal receipt。新 run 若仍失敗保存實際診斷；缺 log／inventory 明列未知。
    官方 exact-version listing/log 支援另行完成，沒有可讀版本 echo 時不宣稱 server attribution。
 
+### 多輪發布使用同一 native history
+
+每輪仍只做一次 canonical admission。新的 WSL config 可選用 `publication`，其唯一欄位
+`history` 是既有輪次的 `{root, manifest:{path,bytes,sha256}}` 清單；具體 schema 見
+[bridge 介面](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/README.md#multi-round-publication-selection)。
+沒有該欄位的舊 config 維持原 flat layout，不能拿新 manifest 解析舊 accepted RUN。
+
+- `state_root`／`scratch_root`、native／refresh／recovery records、共用 events、publisher.lock 與 gpu-stop 不換根。
+  新 publication 檔固定選 `state_root/publications/code-vN`；collector outputs／cache 選
+  `evidence_root/code-vN`。N 取當次真實 allocation，不由 manifest hash 另開重試 namespace。
+- 首次續接把真正 v41 manifest descriptor 與原 flat state_root 列為歷史輪次；舊 config、
+  19 件 publication 檔、4 件 retention、269 件 payload 及其他歷史 bytes 原址保留。
+  之後把已完成輪次及它自己的 manifest 加入同一清單。未決 publication mutation 要先原路 reconcile，
+  新目錄不能繞過；舊 995／ddd UNKNOWN 仍只由原精確 disposition 處理。
+- `validate`／`validate-publication` 回傳本輪 publication／evidence 路徑。numeric mount 的
+  `--code-root`／`--code-receipt-path`、persisted audit、static pins 與 active-wire review 使用本輪
+  真正原件；static pins 的 state_root 仍表示共用 native STATE，不把舊 receipt 搬過來。
+- update-code 沿用原 numeric retention listing，先比對歷史 inventory，再把本輪新觀察寫入本輪目錄。
+  原 captured20 不改成21；下一個 newly exposed numeric version 由真正 provider listing 取得。
+  metadata inventory 仍不是 payload byte verification。
+- 固定新來源後，本地對真實舊 manifest／STATE 做一次純 projection 與 normal／`-O` 回歸，
+  確認全部歷史 bytes 不變、consumer／wire／mount 選路一致，再沿第 6.3 節 fresh readiness →
+  code／inactive／RUN／terminal 走完。Windows native／SDK／科學 runtime 未變的既有證據重用。
+
 ### 6.4 本地修復邊界與研究決策
 
 當次明確授權內的有限工程修復，先保存失敗 source／receipts／logs／clock／成本，再測試、獨立審查

@@ -205,3 +205,32 @@ finalizer in memory with a synthetic epoch and checks the upload/wire/consumer
 closure. All four mutation/JIT actions also perform this check before opening the
 provider. It does not replace actual readback, mounts, audit, active-wire or
 collection evidence. Canonical assembly and the reusable release admission are specified in [handoff section 6.3.4](../../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#634-collector-only-canonical-material續接與完整發布預檢).
+
+
+## Multi-round publication selection
+
+The optional WSL config field `publication` has exactly one key, `history`.
+Each history entry is `{root, manifest: {path, bytes, sha256}}` for an actual
+previous publication and its original accepted manifest. Omitting `publication`
+preserves legacy-flat behavior. With it, the current numeric code allocation
+selects `state_root/publications/code-vN` and `evidence_root/code-vN`; neither
+path is chosen by the candidate hash. `validate` and `validate-publication`
+report the selected paths. Native STATE, shared events, recovery/refresh records,
+recovery-boot evidence, global publisher lock and GPU stop remain shared.
+
+Register the original flat v41 directory with its actual v41 manifest; do not
+move or rewrite it. Later histories use their deterministic code directories.
+All discovered round directories must be registered, allocations cannot collide,
+and previous publication claims need matching completed readbacks before a new
+round. Partial current-round files still support read-only reconciliation.
+Fresh predecessor checks remain necessary; terminal ERROR does not establish
+GPU teardown or method efficacy. Unknown native/provider outcomes are not
+resolved by selecting a new directory.
+
+Transport claims/JIT/readback, collector caches/envelope and wire verification
+use the same selected directory. Keep static `state_root` pins bound to native
+STATE; numeric mount and persisted-readback audit descriptors point to the
+selected code receipt/readback. Historical retention inventories retain their
+capture provenance. A new numeric listing is compared with those baselines,
+then a new current-predecessor observation is appended in the selected round.
+The original metadata-only versus payload-byte distinction remains.

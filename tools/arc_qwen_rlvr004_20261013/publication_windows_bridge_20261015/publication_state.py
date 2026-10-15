@@ -393,7 +393,8 @@ def _publication_records(files, root, descriptor, versions, manifest):
     return parsed
 
 
-def _snapshot(root, descriptor, versions, historical, frontier):
+def _round_snapshot(root, descriptor, versions, historical, frontier, *,
+                    excluded_directories=(), publication_only=False, resolved=False):
     manifest, versions, layouts, manifest_identity = _manifest(descriptor, versions)
     root = _path(root)
     _need(not _path(descriptor['path']).is_relative_to(root), 'publication_state_manifest_inside_state')
@@ -449,7 +450,12 @@ def _snapshot(root, descriptor, versions, historical, frontier):
         _need(len({name.casefold() for name in names}) == len(names), 'publication_state_name_alias')
         for name in names:
             info = os.stat(name, dir_fd=directory, follow_symlinks=False)
+            if name in excluded_directories:
+                _need(stat.S_ISDIR(info.st_mode), 'publication_state_rounds_directory_type')
+                add(name + '/', (0, None, _identity(info)))
+                continue
             if name == 'events':
+                _need(not publication_only, 'publication_state_round_events_forbidden')
                 _need(stat.S_ISDIR(info.st_mode), 'publication_state_events_directory_type')
                 add('events/', (0, None, _identity(info)))
                 continue
@@ -472,6 +478,8 @@ def _snapshot(root, descriptor, versions, historical, frontier):
                     matching = [inventory for inventory in layouts.values()
                                 if all(inventory.get(path) == value for path, value in actual.items())]
                     _need(bool(matching), 'publication_state_mixed_payload_layout')
+                    if resolved:
+                        _need(actual in matching, 'publication_state_historical_readback_incomplete')
                     archive_record = None
                     if 'provider.zip' in children:
                         archive_raw, archive_record = _read_at(rd, 'provider.zip', ARCHIVE_CAP)
@@ -495,6 +503,7 @@ def _snapshot(root, descriptor, versions, historical, frontier):
             if name in allowed:
                 publication[name] = raw
             else:
+                _need(not publication_only, 'publication_state_unexpected_round_file')
                 # Do not classify native/refresh/recovery records by their contents.
                 # Even malformed or new names must reach the unchanged f5 parser.
                 historical._relative(name)
@@ -508,6 +517,9 @@ def _snapshot(root, descriptor, versions, historical, frontier):
         if readback in names:
             _need(code_stem + '.claim.json' in parsed and code_stem + '-journal.json' in parsed,
                   'publication_state_readback_claim_required')
+        if resolved:
+            _need(readback in names, 'publication_state_historical_readback_required')
+            _resolved_publication(publication, parsed, root, versions, manifest)
         for name, row in baseline.items():
             historical._relative(name)
             _need(type(row) is dict and set(row) == {'bytes', 'sha256'}
@@ -523,20 +535,190 @@ def _snapshot(root, descriptor, versions, historical, frontier):
             _need(record[:2] == (row['bytes'], row['sha256']), 'publication_state_frontier_changed')
         _need(names == sorted(os.listdir(directory)) and _identity(before) == _identity(os.fstat(directory)),
               'publication_state_root_race')
-    return roots, fingerprint, manifest_identity
+    return roots, fingerprint, manifest_identity, parsed
+
+
+def _versions_from_manifest(descriptor):
+    raw, _ = _descriptor(descriptor)
+    document = _json(raw)
+    datasets, rows = document['datasets'], document['notebooks']
+    _need(type(datasets) is list and len(datasets) == 1 and type(rows) is list and len(rows) == 2,
+          'publication_state_manifest_versions')
+    roles = {row['role']: row for row in rows}
+    versions = {'code_predecessor': datasets[0]['expected_predecessor_version'],
+                'code': datasets[0]['expected_version'],
+                'inactive_predecessor': roles['inactive']['expected_predecessor_version'],
+                'inactive': roles['inactive']['expected_version'], 'active': roles['rlvr004']['expected_version']}
+    _manifest(descriptor, versions)
+    return versions
+
+
+def _normalized_notebook(raw):
+    notebook = _json(raw)
+    _need(type(notebook.get('cells')) is list, 'publication_state_saved_notebook_schema')
+    for cell in notebook['cells']:
+        _need(type(cell) is dict, 'publication_state_saved_notebook_schema')
+        if type(cell.get('source')) is list:
+            _need(all(type(line) is str for line in cell['source']), 'publication_state_saved_notebook_schema')
+            cell['source'] = ''.join(cell['source'])
+    return notebook
+
+
+def _resolved_publication(files, parsed, root, versions, manifest):
+    """Accepted/read-back history only; no runtime closure or scientific claim."""
+    required_retention = {'historical-code-v' + str(number) + '-inventory.json'
+                          for number in range(8, max(7, versions['code_predecessor'] - 9) + 1)}
+    _need(required_retention <= set(parsed), 'publication_state_previous_retention_missing')
+    _need('active-readback.claim.json' in parsed, 'publication_state_previous_readback_claim_missing')
+    code = 'dataset-code-v' + str(versions['code'])
+    for stem in (code, 'notebook-inactive', 'notebook-rlvr004'):
+        _need(all(stem + suffix in parsed for suffix in ('.claim.json', '-journal.json', '-receipt.json')),
+              'publication_state_previous_mutation_unresolved')
+    receipt, journal = parsed[code + '-receipt.json'], parsed[code + '-journal.json']
+    _need(receipt.get('exact_byte_roundtrip') is True and type(journal.get('version_calls')) is int
+          and journal['version_calls'] == 1,
+          'publication_state_previous_code_unresolved')
+    for role in ('inactive', 'rlvr004'):
+        stem = 'notebook-' + role
+        receipt, journal = parsed[stem + '-receipt.json'], parsed[stem + '-journal.json']
+        _need(type(journal.get('save_calls')) is int and journal['save_calls'] == 1
+              and receipt.get('normalized_source_exact') is True
+              and stem + '-saved.ipynb' in files and stem + '-wire.json' in files,
+              'publication_state_previous_notebook_unresolved')
+        descriptor = receipt.get('saved_source')
+        _need(type(descriptor) is dict and set(descriptor) == {'path', 'bytes', 'sha256'}
+              and descriptor['path'] == str(root / (stem + '-saved.ipynb'))
+              and type(descriptor['bytes']) is int
+              and (descriptor['bytes'], descriptor['sha256']) ==
+                  (len(files[stem + '-saved.ipynb']), _digest(files[stem + '-saved.ipynb'])),
+              'publication_state_previous_saved_source')
+        wire = parsed[stem + '-wire.json']
+        submitted = wire['text'].encode('utf-8')
+        _need(journal.get('wire_sha256') == _digest(files[stem + '-wire.json'])
+              and journal.get('source_sha256') == receipt.get('submitted_source_sha256') == _digest(submitted)
+              and _normalized_notebook(files[stem + '-saved.ipynb']) == _normalized_notebook(submitted),
+              'publication_state_previous_wire_source_binding')
+        if role == 'inactive':
+            expected = next(row for row in manifest['notebooks'] if row['role'] == 'inactive')
+            _need(receipt.get('submitted_source_sha256') == expected.get('sha256'),
+                  'publication_state_previous_inactive_source')
+            _need(receipt.get('status') == 'COMPLETE', 'publication_state_previous_inactive_unresolved')
+        else:
+            _need('finalization.json' in files and 'active-finalized.ipynb' in files,
+                  'publication_state_previous_finalization_required')
+            final = parsed['finalization.json']
+            _need(receipt.get('finalization_sha256') == journal.get('finalization_sha256') ==
+                  _digest(files['finalization.json'])
+                  and final.get('finalized_sha256') == receipt.get('submitted_source_sha256') ==
+                  _digest(files['active-finalized.ipynb']), 'publication_state_previous_finalization_binding')
+
+
+def _snapshot(root, descriptor, versions, historical, frontier, publication_root=None, publication_history=()):
+    root = _path(root)
+    selected = root if publication_root is None else _path(publication_root)
+    if selected == root:
+        _need(not publication_history, 'publication_state_legacy_history_conflict')
+        roots, fingerprint, manifest_identity, _ = _round_snapshot(root, descriptor, versions, historical, frontier)
+        return roots, fingerprint, manifest_identity
+    _need(selected == root / 'publications' / ('code-v' + str(versions['code'])),
+          'publication_state_selected_round_root')
+    _need(type(publication_history) in (list, tuple) and 0 < len(publication_history) <= 64,
+          'publication_state_history_schema')
+    _need(not _path(descriptor['path']).is_relative_to(root), 'publication_state_manifest_inside_state')
+    current_manifest, versions, _, _ = _manifest(descriptor, versions)
+    rounds, codes, notebook_versions, legacy = [], {versions['code']}, {versions['inactive'], versions['active']}, 0
+    for row in publication_history:
+        _need(type(row) is dict and set(row) == {'root', 'manifest'}, 'publication_state_history_row')
+        location, bound = _path(row['root']), row['manifest']
+        _need(not _path(bound['path']).is_relative_to(root), 'publication_state_manifest_inside_state')
+        allocated = _versions_from_manifest(bound)
+        _need(allocated['code'] not in codes and not ({allocated['inactive'], allocated['active']} & notebook_versions),
+              'publication_state_duplicate_allocation')
+        codes.add(allocated['code']); notebook_versions.update((allocated['inactive'], allocated['active']))
+        _need(allocated['code'] < versions['code'] and allocated['active'] < versions['inactive'],
+              'publication_state_future_history')
+        if location == root:
+            legacy += 1
+        else:
+            _need(location == root / 'publications' / ('code-v' + str(allocated['code'])),
+                  'publication_state_history_root')
+        rounds.append((location, bound, allocated))
+    _need(legacy == 1, 'publication_state_legacy_root')
+    rounds.sort(key=lambda item: item[2]['code'])
+    latest = rounds[-1]
+    _need((latest[2]['code'], latest[2]['active']) ==
+          (versions['code_predecessor'], versions['inactive_predecessor']),
+          'publication_state_predecessor_allocation')
+    fingerprint, identities, roots, inodes = {}, {}, None, {}
+    def merge(location, records):
+        for name, record in records.items():
+            absolute = str(location) if name == '/' else str(location / name.rstrip('/'))
+            if absolute in fingerprint:
+                _need(fingerprint[absolute] == record, 'publication_state_shared_directory_changed')
+                continue
+            inode = record[2][:2]
+            _need(inode not in inodes, 'publication_state_inode_alias')
+            inodes[inode] = absolute
+            fingerprint[absolute] = record
+    # The legacy mixed root is parsed against its OWN accepted manifest.
+    for location, bound, allocated in rounds:
+        records, marks, identity, parsed = _round_snapshot(location, bound, allocated, historical,
+            frontier if location == root else None, excluded_directories=('publications',) if location == root else (),
+            publication_only=location != root, resolved=True)
+        merge(location, marks); identities[str(location)] = identity
+        if location == root:
+            roots = records
+        if location == latest[0]:
+            expected = next(row for row in current_manifest['notebooks'] if row['role'] == 'inactive')
+            _need(expected.get('predecessor_source_sha256') ==
+                  parsed['notebook-rlvr004-receipt.json']['saved_source']['sha256'],
+                  'publication_state_predecessor_source')
+    parent = root / 'publications'
+    registered = {location.name for location, _, _ in rounds if location != root}
+    if parent.exists():
+        with _directory(parent) as directory:
+            before = os.fstat(directory)
+            names = sorted(os.listdir(directory))
+            _need(len(names) <= 65 and len({name.casefold() for name in names}) == len(names)
+                  and set(names) - {selected.name} == registered, 'publication_state_unregistered_round')
+            merge(parent, {'/': (0, None, _identity(before))})
+            for name in names:
+                _need(stat.S_ISDIR(os.stat(name, dir_fd=directory, follow_symlinks=False).st_mode),
+                      'publication_state_round_directory_type')
+            if selected.name in names:
+                _, marks, identity, _ = _round_snapshot(selected, descriptor, versions, historical, None,
+                                                       publication_only=True)
+                merge(selected, marks); identities[str(selected)] = identity
+            else:
+                identities[str(selected)] = _manifest(descriptor, versions)[3]
+            _need(names == sorted(os.listdir(directory)) and _identity(before) == _identity(os.fstat(directory)),
+                  'publication_state_rounds_race')
+    else:
+        _need(not registered, 'publication_state_missing_rounds')
+        identities[str(selected)] = _manifest(descriptor, versions)[3]
+    return roots, fingerprint, identities
 
 
 class Snapshot:
     """Immutable recorded bytes, with full live rechecks on every f5 callback."""
-    __slots__ = ('_root', '_descriptor', '_versions', '_historical', '_frontier', '_records', '_fingerprint', '_manifest_identity')
+    __slots__ = ('_root', '_descriptor', '_versions', '_historical', '_frontier', '_records', '_fingerprint', '_manifest_identity', '_publication_root', '_publication_history')
 
-    def __init__(self, root, descriptor, versions, historical, frontier):
+    def __init__(self, root, descriptor, versions, historical, frontier, publication_root=None, publication_history=()):
         object.__setattr__(self, '_root', _path(root))
         object.__setattr__(self, '_descriptor', _json(_canonical(descriptor)))
         object.__setattr__(self, '_versions', dict(versions))
         object.__setattr__(self, '_historical', historical)
         object.__setattr__(self, '_frontier', None if frontier is None else _json(_canonical(frontier)))
-        roots, fingerprint, manifest_identity = _snapshot(self._root, self._descriptor, self._versions, historical, self._frontier)
+        object.__setattr__(self, '_publication_root', None if publication_root is None else _path(publication_root))
+        _need(type(publication_history) in (list, tuple), 'publication_state_history_schema')
+        history = []
+        for row in publication_history:
+            _need(type(row) in (dict, MappingProxyType) and set(row) == {'root', 'manifest'},
+                  'publication_state_history_row')
+            history.append({'root': row['root'], 'manifest': dict(row['manifest'])})
+        object.__setattr__(self, '_publication_history', _json(_canonical({'history': history}))['history'])
+        roots, fingerprint, manifest_identity = _snapshot(self._root, self._descriptor, self._versions, historical, self._frontier,
+            self._publication_root, self._publication_history)
         object.__setattr__(self, '_records', MappingProxyType(roots))
         object.__setattr__(self, '_fingerprint', MappingProxyType(fingerprint))
         object.__setattr__(self, '_manifest_identity', manifest_identity)
@@ -545,7 +727,8 @@ class Snapshot:
         raise AttributeError('immutable publication state snapshot')
 
     def verify_unchanged(self):
-        roots, fingerprint, manifest_identity = _snapshot(self._root, self._descriptor, self._versions, self._historical, self._frontier)
+        roots, fingerprint, manifest_identity = _snapshot(self._root, self._descriptor, self._versions, self._historical, self._frontier,
+            self._publication_root, self._publication_history)
         _need(roots == self._records and fingerprint == self._fingerprint
               and manifest_identity == self._manifest_identity, 'publication_state_changed_during_observation')
 
@@ -555,7 +738,8 @@ class Snapshot:
         return dict(self._records)
 
 
-def capture(root, manifest_descriptor, versions, historical, *, frontier=None):
+def capture(root, manifest_descriptor, versions, historical, *, frontier=None,
+            publication_root=None, publication_history=()):
     """Capture real STATE without writes; install snapshot.root_records per module.
 
     frontier, when supplied, is the independently reviewed immutable baseline
@@ -564,6 +748,25 @@ def capture(root, manifest_descriptor, versions, historical, *, frontier=None):
     Temporary/partial download debris is deliberately a fail-closed blocker.
     """
     try:
-        return Snapshot(root, manifest_descriptor, versions, historical, frontier)
+        return Snapshot(root, manifest_descriptor, versions, historical, frontier, publication_root, publication_history)
     except (KeyError, TypeError, AttributeError, RecursionError):
         raise PublicationStateError('publication_state_invalid_schema') from None
+
+
+class _NativeRecordPassthrough:
+    """Bounded syntax only; never confers native closure or recovery eligibility."""
+    FILE_CAP = DOC_CAP
+    TREE_CAP = 32 * 1024**2
+    FILE_COUNT_CAP = 512
+    _relative = staticmethod(_relative)
+    strict_json = staticmethod(_json)
+
+
+def validate_selection(root, manifest_descriptor, versions, *, publication_root, publication_history):
+    """Validate publication chains before I/O even when no native claim is pending.
+
+    All native/recovery records are retained in the returned view. Their action
+    eligibility belongs exclusively to the caller's unchanged native guards.
+    """
+    return capture(root, manifest_descriptor, versions, _NativeRecordPassthrough,
+                   publication_root=publication_root, publication_history=publication_history)

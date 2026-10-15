@@ -163,9 +163,9 @@ def bindings(args):
     global OUT,DOWNLOADS
     m=transport.load_contract(args)
     globals().update({k:v for k,v in _common.__dict__.items() if not k.startswith('_')})
-    OUT=CONFIG.evidence_root;DOWNLOADS=OUT/'downloads'
+    OUT=publication_evidence_root();DOWNLOADS=OUT/'downloads'
     review=transport.monitor_gate(args)
-    launch_path=STATE/'notebook-rlvr004-receipt.json';journal_path=STATE/'notebook-rlvr004-journal.json';final_path=STATE/'finalization.json'
+    launch_path=publication_root()/'notebook-rlvr004-receipt.json';journal_path=publication_root()/'notebook-rlvr004-journal.json';final_path=publication_root()/'finalization.json'
     l=obj(launch_path);j=obj(journal_path);f=obj(final_path)
     need(l['launch_journal_sha256']==file_sha(journal_path) and l['finalization_sha256']==file_sha(final_path),'launch_hash_chain')
     need(l['manifest_sha256']==j['manifest_sha256']==f['manifest_sha256']==args.manifest_sha and j['save_calls']==1 and j['expected_version']==l['version']==transport.ACTIVE_VERSION and j['kernel_id']==l['kernel_id']==138123872,'exact_launch_identity')
@@ -177,7 +177,7 @@ def bindings(args):
     need((l['git_publication_completed'] and type(l['git_commit']) is str and
           len(l['git_commit']) == 40 and all(c in '0123456789abcdef' for c in l['git_commit'])) or
          (not l['git_publication_completed'] and l['git_commit'] is None), 'honest_git_commit')
-    raw=verified(STATE/'active-finalized.ipynb',f['finalized_sha256']);n=transport.row(m,'rlvr004')
+    raw=verified(publication_root()/'active-finalized.ipynb',f['finalized_sha256']);n=transport.row(m,'rlvr004')
     template=verified(Path(args.manifest).resolve().parent/n['path'],f['template_sha256'])
     transport.check_finalization(m,args,f)
     need(sha(raw)==l['submitted_source_sha256']==j['source_sha256'],'source_launch_hash')
@@ -186,9 +186,9 @@ def bindings(args):
     need(all(j[k]==f[k] for k in ['predispatch_epoch','deadline_epoch','global_deadline_epoch','execution_deadline_epoch','outer_deadline_epoch','provider_timeout_seconds']),'clock_envelope_link')
     need(0<=j['dispatch_epoch']-f['predispatch_epoch']<=60,'dispatch_freshness')
     need(all(f.get(k)==v for k,v in transport.clock(f['predispatch_epoch']).items()),'absolute_clock_policy')
-    need(j['claim_sha256']==file_sha(STATE/'notebook-rlvr004.claim.json'),'original_claim_binding')
-    need(j['wire_sha256']==file_sha(STATE/'notebook-rlvr004-wire.json'),'launch_wire_hash')
-    need(obj(STATE/'notebook-rlvr004-wire.json')==transport.kernel_wire(n,raw),'exact_wire_settings')
+    need(j['claim_sha256']==file_sha(publication_root()/'notebook-rlvr004.claim.json'),'original_claim_binding')
+    need(j['wire_sha256']==file_sha(publication_root()/'notebook-rlvr004-wire.json'),'launch_wire_hash')
+    need(obj(publication_root()/'notebook-rlvr004-wire.json')==transport.kernel_wire(n,raw),'exact_wire_settings')
     need(l['model_sources_returned'] in MODEL_ALIASES,'exact_returned_model')
     transport.saved_settings(l['settings'],n,transport.ACTIVE_VERSION)
     need(l['model_sources_returned']==l['settings'].get('modelDataSources'),'raw_model_receipt_link')
@@ -287,7 +287,7 @@ def assemble_consumer_envelope(m,args,f,receipt,terminal,archive_row,terminal_ro
         need(members.get(path.name)=={'bytes':path.stat().st_size,'sha256':file_sha(path)},'compact_original_matches_sealed_archive')
     owner=obj(owner_path,4*1024**2);clock_doc=obj(clock_path);inventory_sha=file_sha(inventory_path)
     need(clock_doc['original_epoch']==f['predispatch_epoch'],'runtime_original_epoch')
-    b=owner['bootstrap'];jit=obj(STATE/'operator.json')
+    b=owner['bootstrap'];jit=obj(publication_root()/'operator.json')
     need(b['original_epoch']==f['predispatch_epoch'] and b['raw_source_sha256']==contract['source_sha256'],'runtime_bootstrap_identity')
     for key in ('original_request_sha256','parent_scorer_sha256'):
         # The bootstrap records original_request as a file reference, while operator records its digest.
@@ -302,7 +302,7 @@ def assemble_consumer_envelope(m,args,f,receipt,terminal,archive_row,terminal_ro
         retain(key+'.json',transport.descriptor_at(root,contract[key]))
     mapped={'outer_notebook':('outer-notebook.ipynb','active-finalized.ipynb'),'operator':('operator.json','operator.json'),'original_request':('original-request.json','original-request.json'),'parent_scorer':('parent-scorer.json','parent-private-scorer.json')};refs={}
     for key,(name,local) in mapped.items():
-        raw=read(STATE/local,4*1024**2);retain(name,raw);refs[key]={'path':name,'file_sha256':sha(raw)}
+        raw=read(publication_root()/local,4*1024**2);retain(name,raw);refs[key]={'path':name,'file_sha256':sha(raw)}
     raw=transport.descriptor_at(root,contract['source_archive']);retain('source.zip',raw);refs['source_archive']={'path':'source.zip','file_sha256':sha(raw)}
     review_inputs={key:{'path':contract['review_input_paths'][key],'file_sha256':contract[key]['sha256']} for key in ('environment','phase_policy')}
     need(owner['config']['environment_path']==review_inputs['environment']['path'] and owner['config']['policy_path']==review_inputs['phase_policy']['path'],'actual_review_paths')
@@ -417,7 +417,7 @@ def collect_preowned_failure(provider,m,l,j,f,args,before,prefix,outer,caps,requ
     need(type(after['observed_epoch']) in (int,float) and math.isfinite(after['observed_epoch']) and before['observed_epoch']<=after['observed_epoch'],'ordered_preowned_collection_bracket')
     attempted={r['provider_path'] for r in rows_}|set(missing)
     unattempted=sorted((set(caps)|set(failure_paths(prefix)))-attempted)
-    receipt={'format':'irisx/rlvr-selected-retrieval-v1','manifest_sha256':args.manifest_sha,'reference':REF,'kernel_id':138123872,'numeric_output_version':transport.ACTIVE_VERSION,'launch_receipt_sha256':file_sha(STATE/'notebook-rlvr004-receipt.json'),'before':before,'after':after,'files':rows_,'inventory_scope':'selected_outputs_only','whole_provider_inventory_verified':False,'missing_paths':missing,'unattempted_paths':unattempted,'required_paths_unattempted':sorted(required-attempted),'checkpoint_downloaded':False,'checkpoint_archive_observation':None,'checkpoint_provider_path':m['terminal_contract']['checkpoint_path'],'checkpoint_numeric_version':transport.ACTIVE_VERSION,'separate_checkpoint_presence':'UNKNOWN','collected_epoch':time.time(),'collection_scope':'source_bound_preowned_failure_frontier','diagnostic_binding':bound}
+    receipt={'format':'irisx/rlvr-selected-retrieval-v1','manifest_sha256':args.manifest_sha,'reference':REF,'kernel_id':138123872,'numeric_output_version':transport.ACTIVE_VERSION,'launch_receipt_sha256':file_sha(publication_root()/'notebook-rlvr004-receipt.json'),'before':before,'after':after,'files':rows_,'inventory_scope':'selected_outputs_only','whole_provider_inventory_verified':False,'missing_paths':missing,'unattempted_paths':unattempted,'required_paths_unattempted':sorted(required-attempted),'checkpoint_downloaded':False,'checkpoint_archive_observation':None,'checkpoint_provider_path':m['terminal_contract']['checkpoint_path'],'checkpoint_numeric_version':transport.ACTIVE_VERSION,'separate_checkpoint_presence':'UNKNOWN','collected_epoch':time.time(),'collection_scope':'source_bound_preowned_failure_frontier','diagnostic_binding':bound}
     rp=OUT/f'retrieval-{time.time_ns()}.json';write_new(rp,receipt)
     result={'status':'INCOMPLETE_DIAGNOSTIC_EVIDENCE','reason':'SOURCE_BOUND_PRE_OWNED_STARTUP_FAILURE','provider_status':'ERROR','missing':missing,'unattempted_paths':unattempted,'required_paths_unattempted':receipt['required_paths_unattempted'],'retrieval_receipt':descriptor(rp),'diagnostic_binding':bound,'terminal_validated':False,'consumer_admitted':False,'production_admitted':False,'scientific_evidence_eligible':False,'science_complete':False,'operational_complete':False,'comparison_complete':False,'comparison_eligible':False,'compute_matched':False,'public_benchmark_evidence_eligible':False,'verified_public_threshold_reached':False,'provider_operational_success':False,'owned_closure_verified':False,'physical_costs_known':False,'billing_verified':False,'operational_success':False,'public_score':None,'public_goal_met':False,'scientific_goal_met':False,'goal_met':False,'automatic_retry':False,'whole_provider_inventory_verified':False,'separate_checkpoint_presence':'UNKNOWN','qualification':'A source-linked pre-owned diagnostic ends further missing-output polling. Unattempted outputs and runtime costs/closure remain unknown; no remote OS or VM-teardown attestation.'}
     event('preowned-incomplete-outputs',result);write_new(OUT/'TERMINAL-BLOCKER.json',result)
@@ -453,8 +453,8 @@ def unsealed_session_diagnostic(m,args,f,receipt,terminal,present,prefix,outer,w
     need(wrappers['closure_valid'] is True and wrappers['operational'] is False and wrappers['runtime_tree_link_checked'] is True and wrappers['terminal_status']=='diagnostic' and wrappers['model_closure_verified_by_this_helper'] is False,'unsealed_raw_stage_proof')
     need(runtime_outer['inner_closure'] is None and runtime_outer['request_sha256'] is None and runtime_outer['worker_exited'] is True and runtime_outer['worker_session_empty'] is True,'unsealed_authenticated_fields_remain_null')
     need(type(runtime_outer['worker_returncode'])is int and runtime_outer['worker_returncode']!=0,'unsealed_failed_worker')
-    launch=obj(STATE/'notebook-rlvr004-receipt.json')
-    need(receipt['numeric_output_version']==transport.ACTIVE_VERSION and receipt['manifest_sha256']==args.manifest_sha and receipt['launch_receipt_sha256']==file_sha(STATE/'notebook-rlvr004-receipt.json'),'unsealed_external_receipt_identity')
+    launch=obj(publication_root()/'notebook-rlvr004-receipt.json')
+    need(receipt['numeric_output_version']==transport.ACTIVE_VERSION and receipt['manifest_sha256']==args.manifest_sha and receipt['launch_receipt_sha256']==file_sha(publication_root()/'notebook-rlvr004-receipt.json'),'unsealed_external_receipt_identity')
     before,after=receipt['before'],receipt['after']
     for snap in (before,after):
         need(snap['version']==transport.ACTIVE_VERSION and snap['status'] in TERMINAL and snap['source_sha256']==launch['saved_source']['sha256'] and snap['gpu_stop'] is False and all(type(snap.get(k))is str and re.fullmatch('[a-f0-9]{64}',snap[k]) for k in ('metadata_before_sha256','metadata_sha256')),'unsealed_provider_bracket')
@@ -537,7 +537,7 @@ def source_bound_gpu_stop(m,args,f,receipt,terminal,present,prefix,wrappers,repo
         admitted=(report.get('status')=='STOPPED_INCOMPLETE' and report.get('diagnostic_evidence_valid') is True and report.get('release_content_binding_valid') is True
             or report.get('status')=='REVIEWED_PRODUCTION_CONTENT_COMPLETE' and report.get('evidence_valid') is True and report.get('production_admitted') is True)
         need(admitted,'gpu_observation_requires_admitted_content')
-    launch_path=STATE/'notebook-rlvr004-receipt.json';launch=obj(launch_path)
+    launch_path=publication_root()/'notebook-rlvr004-receipt.json';launch=obj(launch_path)
     need(receipt['numeric_output_version']==transport.ACTIVE_VERSION and receipt['manifest_sha256']==args.manifest_sha and receipt['launch_receipt_sha256']==file_sha(launch_path),'gpu_observation_receipt_identity')
     for snap in (receipt['before'],receipt['after']):
         need(snap['version']==transport.ACTIVE_VERSION and snap['source_sha256']==launch['saved_source']['sha256'] and snap['status'] in TERMINAL and snap['gpu_stop'] is False,'gpu_observation_source_bracket')
@@ -599,7 +599,7 @@ def collect(provider,m,l,j,f,args,before=None,final_incomplete=False):
     need(sum(r['bytes'] for r in rows_)<=aggregate,'selected_aggregate')
     cp=checkpoint_observation(provider,m,terminal) if terminal is not None else None
     after=poll(provider,m,l);need(before['status']==after['status'] and after['gpu_stop'] is False,'terminal_collection_bracket')
-    receipt={'format':'irisx/rlvr-selected-retrieval-v1','manifest_sha256':args.manifest_sha,'reference':REF,'kernel_id':138123872,'numeric_output_version':transport.ACTIVE_VERSION,'launch_receipt_sha256':file_sha(STATE/'notebook-rlvr004-receipt.json'),'before':before,'after':after,'files':rows_,'inventory_scope':'selected_outputs_only','whole_provider_inventory_verified':False,'missing_paths':sorted(set(missing)),'checkpoint_downloaded':False,'checkpoint_archive_observation':cp,'checkpoint_provider_path':t['checkpoint_path'],'checkpoint_numeric_version':transport.ACTIVE_VERSION,'collected_epoch':time.time()}
+    receipt={'format':'irisx/rlvr-selected-retrieval-v1','manifest_sha256':args.manifest_sha,'reference':REF,'kernel_id':138123872,'numeric_output_version':transport.ACTIVE_VERSION,'launch_receipt_sha256':file_sha(publication_root()/'notebook-rlvr004-receipt.json'),'before':before,'after':after,'files':rows_,'inventory_scope':'selected_outputs_only','whole_provider_inventory_verified':False,'missing_paths':sorted(set(missing)),'checkpoint_downloaded':False,'checkpoint_archive_observation':cp,'checkpoint_provider_path':t['checkpoint_path'],'checkpoint_numeric_version':transport.ACTIVE_VERSION,'collected_epoch':time.time()}
     rp=OUT/f'retrieval-{time.time_ns()}.json';write_new(rp,receipt)
     absent=sorted(required-{r['provider_path'] for r in rows_})
     if cp is not None and cp['transport_observation']=='PENDING_HTTP404':absent.append(t['checkpoint_path'])

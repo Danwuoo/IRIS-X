@@ -18,9 +18,9 @@
 
 ## 二、目前基線與證據索引
 
-研究分支只有 `feat/arc2-sft-rl-continuation-20261014`。最後已發布並由本地實際執行的來源為
-[`84a5a1f870c42899f3bea79996d1b9360c4bfee9`](https://github.com/Danwuoo/IRIS-X/commit/84a5a1f870c42899f3bea79996d1b9360c4bfee9)。
-本頁與啟動修復同一 commit 保存，交付 SHA 由接收時 HEAD／遠端 readback 核對。歷史 fix refs、
+研究分支只有 `feat/arc2-sft-rl-continuation-20261014`。啟動修復已發布為
+[`0af57780d61cc72c759fa9b67330bb655abcb761`](https://github.com/Danwuoo/IRIS-X/commit/0af57780d61cc72c759fa9b67330bb655abcb761)，本地已核對部署／pins，但尚未提交 successor；實際 Kaggle v41 使用 84a5。
+本頁與多輪發布修復同一 commit 保存，交付 SHA 由接收時 HEAD／遠端 readback 核對。歷史 fix refs、
 f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.com/Danwuoo/IRIS-X/blob/84a5a1f870c42899f3bea79996d1b9360c4bfee9/research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)
 保存 lease 失敗與修復前的精確證據，不在本頁重複累積。
 
@@ -32,8 +32,9 @@ f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.
 | v41 真實終態 | 2026-10-15 15:58:28 UTC 首次觀察 ERROR；Internet OFF、RTX Pro 6000、private | [原 notebook](https://www.kaggle.com/code/danielwuu/iris-x-learning-agent-20261011)，kernel ID 138123872 不是 scriptVersionId；native closure 不證明遠端 VM teardown |
 | 啟動原因 | notebook 的 ambient interpreter 在離線環境建立前查固定 cuDNN，distribution 存在但 version 不等 9.10.2.21；停於 parent-environment-policy | ambient 實際版本與 backend 是否載入未知；prepare caller 同排序風險尚未執行。`preparation_failure:null` 另使 collector 拒絕 schema |
 | 已取回證據 | 五份 numeric41 outputs 各有 HTTP200、bytes／SHA receipt：startup diagnostic、preparation request、original request、operator、outer notebook | 五份不是全 inventory；outer notebook 無 execution outputs，不能當官方 execution log。模型／audit／score／cost 其他檔存在性未知 |
-| 本次狹窄修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；新 source/archive 正規重綁，canonical／GPU 待本地驗收 |
-| Repository／CI | 84a5 精確 CI 失敗：6 項既有 README invariants 缺詞，unit／packaging skipped | 本次 focused 驗證見 [VALIDATION](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)；新遠端 CI 依最終 commit 另核對，未重跑不變完整 suite |
+| 已發布的啟動修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；新 source/archive 正規重綁，canonical／GPU 待本地驗收 |
+| 多輪續接缺口 | 0af 本地唯讀 normal／`-O` 實證：舊 code-v21-readback、固定 notebook／JIT 檔與 captured20 retention 無法套用新 allocation；1,686 件原 STATE 前後完全不變 | 未新建 owner／candidate／epoch、未 provider 或上傳；22／42／43 只是未刷新推測。已完成每輪 publication／collector 目錄修復，native STATE 與全域鎖共用；真實原件驗收待本地 |
+| Repository／CI | 0af 精確 CI 失敗：6 項既有 README invariants 缺詞，unit／packaging skipped | 本次 focused 驗證見 [VALIDATION](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)；新遠端 CI 依最終 commit 另核對，未重跑不變完整 suite |
 | 真實研究結果 | 原 A/B/C 已提交但未進模型階段；training audit、更新、B/C 成本匹配及 PUBLIC 評分均未取得 | PUBLIC 固定 120 tasks／167 queries；未知不是 0 分，也不是 RL 無效的結果 |
 
 v41 startup diagnostic SHA256：`0ba5efaf361da5336338a0ff170728ea7cf96aa1af447d74d5f770e0ff0de069`。
@@ -47,7 +48,8 @@ CPU 另以真正 pinned offline guard 重現子程序增加 6 個固定環境鍵
 
 | 工作 | 目前狀態 | 下一個完成條件 |
 | --- | --- | --- |
-| 兩 caller／guard 契約／collector schema 修復 | 作者與獨立 reviewer 各 613 normal／613 `-O` 通過（46 準備、9 組裝、558 bridge）；結果保存於同版 VALIDATION | 固定來源發布後，本地對變動 deployment／collector／runtime policy 與 source pins 生成一次 canonical、核對完整 pins；不重測未變 Windows native runtime |
+| 兩 caller／guard 契約／collector schema 修復 | 0af 已發布；作者與獨立 reviewer 各 613 normal／613 `-O` 通過（46 準備、9 組裝、558 bridge） | 科學 runtime／archive 與 native 七件來源在本次 bookkeeping 修復中沿用，不重做未變驗收 |
+| 多輪 publication／collector 續接 | 作者與獨立 reviewer 各通過 normal／`-O` 的 588 bridge＋2 frozen-f5 組合＋9 assembly，共 599 項／模式；review 結果保存於 VALIDATION。每輪以 code 數字版本選目錄，舊輪綁自己的 manifest，原 retention 保留 | 順序整合涵蓋 code→inactive→JIT／wire→RUN→collector；錯 manifest、重複 allocation、UNKNOWN、retention drift 與快取隔離均驗證。固定 commit 後，本地以真正舊 manifest／1,686 檔驗收一次，沿原程序提交 |
 | 原 A/B/C 下一輪 | 沿原 run007／run008 notebook 模式；未提交新 run | fresh remote versions/status → code 與 inactive 回讀 → 一次 JIT RUN → 持續監看到 terminal／可取得結果；版本由真實觀察推導，不預先保留 22／42／43 |
 | v41 官方 log／inventory | 現有 bridge 尚未支援；SDK 0.1.37 可送 numeric version_label，但 response 無 version/source echo | 另作最小唯讀支援，不阻擋已確定的啟動修復；完整分頁與 numeric bodies／log attribution 分開，不能靠 latest CLI 補稱 exact41 |
 | 科學判讀 | 待真實模型結果 | reward、replay、checkpoint、全成本與完整 scorer 成立後，才按[既有方法決策](method-landscape.zh-TW.md#七建議的實驗順序與觸發條件)決定下一變因 |

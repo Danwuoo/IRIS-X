@@ -9,7 +9,7 @@ import argparse, ast, contextlib, hashlib, json, math, os, stat, subprocess, sys
 from pathlib import Path
 
 # Acyclic local dependency pin. Compile source before any authentication or RPC.
-COMMON_SOURCE_SHA256 = 'c23c0a937e11a1031b1474d81de4b8b79dacaea4b43b03f05933f20c9185fa37'
+COMMON_SOURCE_SHA256 = '4f50b0be9eb51250b286b68356c55a1f6e06c5f3811c733a0a6416e6d35f54f0'
 _common_path=Path(__file__).absolute().with_name('operator_common.py')
 if any(p.is_symlink() for p in (_common_path,*_common_path.parents)) or not stat.S_ISREG(_common_path.stat().st_mode):
     raise ValueError('unsafe_local_common_source')
@@ -49,7 +49,7 @@ SNAPSHOT_COMMIT='e951604b829497e81bc6e18b32662ff050bd54db'
 REMOTE_PREDECESSOR=None
 
 def code_claim_name():return f'dataset-code-v{CODE_VERSION}'
-def code_state(suffix):return STATE/(code_claim_name()+suffix)
+def code_state(suffix):return publication_root()/(code_claim_name()+suffix)
 def profile_versions():
     return {'code_predecessor':CODE_PREDECESSOR,'code':CODE_VERSION,
             'inactive_predecessor':NOTEBOOK_PREDECESSOR,'inactive':INACTIVE_VERSION,'active':ACTIVE_VERSION}
@@ -252,8 +252,8 @@ def check_finalization(m,args,f):
     docs=finalized_documents(m,args.manifest,f['predispatch_epoch'])
     need(set(f['documents'])==set(docs),'finalization_documents')
     for name,raw in docs.items():
-        d=f['documents'][name];need(d['path']==str(STATE/name) and d['sha256']==sha(raw) and d['bytes']==len(raw),'finalization_descriptor')
-        need(read(STATE/name,4*1024**2)==raw,'finalization_reconstruction')
+        d=f['documents'][name];need(d['path']==str(publication_root()/name) and d['sha256']==sha(raw) and d['bytes']==len(raw),'finalization_descriptor')
+        need(read(publication_root()/name,4*1024**2)==raw,'finalization_reconstruction')
     need(f['finalized_sha256']==sha(docs['active-finalized.ipynb']),'finalized_notebook_hash')
     return docs
 
@@ -289,6 +289,7 @@ def load_contract(args):
     need(all((n['role'],n['sha256']) in approved for n in m['notebooks']),'approved_notebooks')
     review_gate(args.review,args.review_sha,args.manifest_sha,args.material_sha,[SCRIPT,SCRIPT.with_name('operator_common.py')])
     _common.bind_action_review(args.review,args.review_sha)
+    publication_guard()
     return m
 
 def publication_preflight(m,args):
@@ -335,6 +336,7 @@ def publication_preflight(m,args):
         wire_hashes[role]=sha(canonical(wire))
     # Retain only bounded hashes, never synthetic owner/scorer/operator bytes.
     return {'status':'OFFLINE_PUBLICATION_CLOSURE_PASS','provider_calls':0,'state_writes':0,
+        **(publication_paths() if STATE is not None else {}),
         'production_dispatch_admitted':False,'actual_epoch_reserved':False,'synthetic_epoch':1,
         'publication_manifest_sha256':args.manifest_sha,'collector_sha256':pins['collector_entry_sha256'],
         'consumer_entry_sha256':sha(entry),'synthetic_finalizer_documents':
@@ -376,6 +378,29 @@ def bracket(provider,version,expected_sha=None,n=None):
     event(prefix+'-status',{'status':status.status.name,'failure_message':clean_message(status.failure_message)})
     return {'version':version,'status':status.status.name,'source_sha256':sha(raw),'metadata_sha256':b['sha256'],'metadata_before_sha256':a['sha256'],'observed_epoch':time.time(),'gpu_stop':classification=='GPU_UNAVAILABLE_STOP'},raw,after.metadata
 
+def historical_retention_roots():
+    """Read each admitted round's own allocation; never relabel its captures."""
+    result=[]
+    for entry in getattr(CONFIG,'publication_history',()):
+        descriptor_=entry['manifest']
+        manifest=strict_object(verified(descriptor_['path'],descriptor_['sha256'],descriptor_['bytes'],4*1024**2))
+        datasets=manifest.get('datasets')
+        need(type(datasets)is list and len(datasets)==1,'historical_retention_dataset_schema')
+        dataset=datasets[0];predecessor_=dataset.get('expected_predecessor_version');code=dataset.get('expected_version')
+        need(type(predecessor_)is int and type(code)is int and 20<=predecessor_<code<=CODE_PREDECESSOR
+             and code==predecessor_+1 and dataset.get('id')==12504696 and dataset.get('reference')==DREF,
+             'historical_retention_allocation')
+        result.append((secure_path(entry['root']),predecessor_))
+    return result
+
+def retained_inventory_matches(proof,old,captured,digest,files):
+    return (type(proof.get('numeric_version'))is int and proof['numeric_version']==old
+        and type(proof.get('dataset_id'))is int and proof['dataset_id']==12504696
+        and type(proof.get('captured_while_current_version'))is int
+        and proof['captured_while_current_version']==captured
+        and proof.get('inventory_sha256')==digest and proof.get('files_inventory')==files
+        and proof.get('payload_bytes_rehashed') is False)
+
 def dataset_check(provider,version, *, capture_prewrite=False, metadata_only=False):
     """Preserve old versions including the one falling out of the latest-ten view."""
     d=provider.dataset();need(d.id==12504696 and d.ref==DREF and d.is_private is True and d.current_version_number==version,'dataset_predecessor_identity')
@@ -389,6 +414,7 @@ def dataset_check(provider,version, *, capture_prewrite=False, metadata_only=Fal
     if capture_prewrite:need(version==CODE_PREDECESSOR and not code_state('.claim.json').exists(),'history_capture_only_before_claim')
     pinned={1:'9a8b5f698c942407b74cc5b16e0ad1d77dd2ac4a6800f991c8bd9f9584353a1b',2:'402aebb539a8163ed516d2e2915c75f5b7a16c56e1d244ac99088f62a2f2e6b9',3:'8c1b22bd9b676ad2a10f31ee820ed4d1732f04dca9d0a81835fdc456c6bd318d',4:'dc87ea2368b0ce1b750b3572327d57adc670474a8c511a485c43704b62c3e01f',5:'54fbc4f2d6543cc82255fdd71113ffce44ca88aab83442f1ac9d80abbe52e255',6:'8db523abc333759e431e396146e991564523aa2d2daac30374a384f86023dcac',7:'55ee43dcab68f291aa517ad823c58993c8ec813a520173e09676598ae9dcda79'}
     historical=[]
+    prior_roots=[] if metadata_only else historical_retention_roots()
     # The successor latest-ten window begins at predecessor-8. Capture through
     # predecessor-9 before mutation, including the version that will disappear.
     for old in (() if metadata_only else range(1,max(7,CODE_PREDECESSOR-9)+1)):
@@ -396,9 +422,15 @@ def dataset_check(provider,version, *, capture_prewrite=False, metadata_only=Fal
         digest=sha(canonical(files))
         if old in pinned:need(digest==pinned[old],'historical_numeric_version_inventory_changed')
         else:
-            baseline=STATE/f'historical-code-v{old}-inventory.json'
+            for prior_root,captured in prior_roots:
+                prior=prior_root/f'historical-code-v{old}-inventory.json'
+                if old<=max(7,captured-9):
+                    need(prior.is_file(),'prior_historical_baseline_missing')
+                    need(retained_inventory_matches(obj(prior),old,captured,digest,files),
+                         'prior_historical_baseline_changed')
+            baseline=publication_root()/f'historical-code-v{old}-inventory.json'
             if baseline.exists():
-                proof=obj(baseline);need(proof['numeric_version']==old and proof['dataset_id']==12504696 and proof['captured_while_current_version']==CODE_PREDECESSOR and proof['inventory_sha256']==digest and proof['files_inventory']==files and proof['payload_bytes_rehashed'] is False,'historical_baseline_changed')
+                proof=obj(baseline);need(retained_inventory_matches(proof,old,CODE_PREDECESSOR,digest,files),'historical_baseline_changed')
             else:
                 need(capture_prewrite and version==CODE_PREDECESSOR and not code_state('.claim.json').exists(),'historical_baseline_missing_prewrite_required')
                 write_new(baseline,{'dataset_id':12504696,'numeric_version':old,'captured_while_current_version':CODE_PREDECESSOR,'inventory_sha256':digest,'files_inventory':files,'payload_bytes_rehashed':False})
@@ -412,7 +444,7 @@ def predecessor(provider,m,role):
     n=row(m,role);expected=n['predecessor_source_sha256']
     status_expected=REMOTE_PREDECESSOR['provider_status']
     if role=='rlvr004':
-        rec=obj(STATE/'notebook-inactive-receipt.json')
+        rec=obj(publication_root()/'notebook-inactive-receipt.json')
         need(rec['version']==INACTIVE_VERSION and rec['status']=='COMPLETE','inactive_not_complete')
         expected=rec['saved_source']['sha256'];status_expected='COMPLETE'
     snapshot,_,_=bracket(provider,n['expected_predecessor_version'],expected,n=row(m,'inactive') if role=='rlvr004' else None)
@@ -423,19 +455,19 @@ def update_code(provider,m,args):
     no_gpu_stop();d=m['datasets'][0];dataset_check(provider,CODE_PREDECESSOR,capture_prewrite=True);predecessor(provider,m,'inactive')
     payload=Path(args.manifest).resolve().parent/d['transport_archive']['path'];verified(payload,d['transport_archive']['sha256'],d['transport_archive']['bytes'])
     name=code_claim_name();j={'manifest_sha256':args.manifest_sha,'stage':'claimed','init_calls':0,'put_calls':0,'version_calls':0,'payload_sha256':file_sha(payload),'expected_version':CODE_VERSION,'expected_predecessor_version':CODE_PREDECESSOR}
-    c=claim(name,j);j['claim_sha256']=c['sha256'];journal(name,j)
-    j.update(stage='init_intent',init_calls=1);journal(name,j);u=provider.start_upload(payload)
+    c=publication_claim(name,j);j['claim_sha256']=c['sha256'];publication_journal(name,j)
+    j.update(stage='init_intent',init_calls=1);publication_journal(name,j);u=provider.start_upload(payload)
     need(type(u.handle)is str and bool(u.handle) and type(u.origin)is dict,'upload_init_incomplete')
     safe_origin=u.origin
     need(safe_origin['payload_sha256']==j['payload_sha256'] and safe_origin['official_init_response'] is True
          and safe_origin['token_or_signed_url_persisted'] is False,'bridge_upload_authority_binding')
-    authority=event('official-staging-authority',safe_origin);j.update(stage='init_accepted_ram_only',authority_metadata_sha256=authority['sha256']);journal(name,j)
-    no_gpu_stop();j.update(stage='put_intent',put_calls=1);journal(name,j);provider.upload_once(u.handle,payload)
-    j['stage']='put_accepted';journal(name,j)
-    dataset_check(provider,CODE_PREDECESSOR);no_gpu_stop();j.update(stage='version_intent',version_calls=1);journal(name,j)
+    authority=event('official-staging-authority',safe_origin);j.update(stage='init_accepted_ram_only',authority_metadata_sha256=authority['sha256']);publication_journal(name,j)
+    no_gpu_stop();j.update(stage='put_intent',put_calls=1);publication_journal(name,j);provider.upload_once(u.handle,payload)
+    j['stage']='put_accepted';publication_journal(name,j)
+    dataset_check(provider,CODE_PREDECESSOR);no_gpu_stop();j.update(stage='version_intent',version_calls=1);publication_journal(name,j)
     r=provider.version(u.handle,d['version_notes']);del u
     event('version-response',r.to_dict())
-    need(not r.error and r.ref==DREF,'version_response_error');j['stage']='version_accepted';j['response']=r.to_dict();journal(name,j)
+    need(not r.error and r.ref==DREF,'version_response_error');j['stage']='version_accepted';j['response']=r.to_dict();publication_journal(name,j)
     return {'status':'VERSION_ACCEPTED_READBACK_REQUIRED','version':CODE_VERSION}
 
 def expected_layout(m,actual):
@@ -449,7 +481,7 @@ def verify_code(provider,m,args,per_file=False):
     need(j['expected_version']==CODE_VERSION and j['expected_predecessor_version']==CODE_PREDECESSOR,'run008_code_journal_versions')
     need(j['claim_sha256']==file_sha(code_state('.claim.json')),'code_claim_binding')
     before=dataset_check(provider,CODE_VERSION);event('code-before',before)
-    out=secure_path(STATE/f'code-v{CODE_VERSION}-readback');out.mkdir(exist_ok=True);payload=secure_path(out/'payload');actual={};archive=None
+    out=secure_path(publication_root()/f'code-v{CODE_VERSION}-readback');out.mkdir(exist_ok=True);payload=secure_path(out/'payload');actual={};archive=None
     if per_file:
         listed=provider.list_files(dataset=True,version=CODE_VERSION);expected=None;layout=None
         for name,rr in m['datasets'][0]['expected_readback_layouts'].items():
@@ -531,14 +563,14 @@ def execution_gate(args, *, monitor=False):
 def run_prerequisites(m,args):
     """Review exact source, private readbacks and CPU mount; no watcher readiness."""
     monitor_gate(args)
-    code=obj(code_state('-receipt.json'));inactive=obj(STATE/'notebook-inactive-receipt.json')
+    code=obj(code_state('-receipt.json'));inactive=obj(publication_root()/'notebook-inactive-receipt.json')
     need(code['dataset_id']==12504696 and code['version']==CODE_VERSION and code['is_private'] is True and inactive['kernel_id']==138123872 and inactive['version']==INACTIVE_VERSION,'run008_prerequisite_versions')
     need(code['exact_byte_roundtrip'] is True and code['manifest_sha256']==args.manifest_sha and inactive['manifest_sha256']==args.manifest_sha and inactive['status']=='COMPLETE','publication_readbacks_required')
     need(args.mount and args.mount_sha and args.audit and args.audit_sha,'mount_audit_required')
     mount=json.loads(verified(args.mount,args.mount_sha));audit=json.loads(verified(args.audit,args.audit_sha))
     need(mount['status']=='PASS' and mount['publication_manifest_sha256']==args.manifest_sha and mount['code_dataset_version']==CODE_VERSION and mount['model_calls']==0 and mount['owned_tree_closed'] is True and mount['code_receipt_sha256']==file_sha(code_state('-receipt.json')),'actual_mount_gate')
-    need(audit['status']=='PASS' and audit['publication_manifest_sha256']==args.manifest_sha and audit['code_receipt_sha256']==file_sha(code_state('-receipt.json')) and audit['inactive_receipt_sha256']==file_sha(STATE/'notebook-inactive-receipt.json') and audit['mount_receipt_sha256']==args.mount_sha,'persisted_audit_gate')
-    return {'mount_receipt_sha256':args.mount_sha,'persisted_audit_sha256':args.audit_sha,'monitor_review_sha256':args.monitor_sha,'code_receipt_sha256':file_sha(code_state('-receipt.json')),'inactive_receipt_sha256':file_sha(STATE/'notebook-inactive-receipt.json')}
+    need(audit['status']=='PASS' and audit['publication_manifest_sha256']==args.manifest_sha and audit['code_receipt_sha256']==file_sha(code_state('-receipt.json')) and audit['inactive_receipt_sha256']==file_sha(publication_root()/'notebook-inactive-receipt.json') and audit['mount_receipt_sha256']==args.mount_sha,'persisted_audit_gate')
+    return {'mount_receipt_sha256':args.mount_sha,'persisted_audit_sha256':args.audit_sha,'monitor_review_sha256':args.monitor_sha,'code_receipt_sha256':file_sha(code_state('-receipt.json')),'inactive_receipt_sha256':file_sha(publication_root()/'notebook-inactive-receipt.json')}
 
 def kernel_wire(n,raw):
     return {'id':138123872,'slug':REF,'new_title':n['title'],'text':raw.decode(),'language':'python','kernel_type':'notebook','dataset_data_sources':PINS,'model_data_sources':[MODEL],'competition_data_sources':['arc-prize-2026-arc-agi-3'],'kernel_data_sources':[],'is_private':True,'enable_gpu':n['enable_gpu'],'enable_tpu':False,'enable_internet':False,'docker_image':DOCKER,'kernel_execution_type':n['save_version_value'],'session_timeout_seconds':n['session_timeout_seconds'],'machine_shape':n['machine_shape']}
@@ -551,18 +583,18 @@ def save(provider,m,args,role):
     gates=run_prerequisites(m,args) if active else {}
     pre=predecessor(provider,m,role);no_gpu_stop();name='notebook-'+role
     j={'role':role,'reference':REF,'kernel_id':138123872,'expected_version':n['expected_version'],'manifest_sha256':args.manifest_sha,'material_approval_sha256':args.material_sha,'transport_review_sha256':args.review_sha,'save_calls':0,'stage':'claimed','predecessor':pre,'git_publication_completed':git_verified,'git_commit':git_commit if git_verified else None,'stop_after_submit_readback':False,'provider_monitoring_authorized':True,**gates}
-    c=claim(name,j);j['claim_sha256']=c['sha256'];journal(name,j)
+    c=publication_claim(name,j);j['claim_sha256']=c['sha256'];publication_journal(name,j)
     raw=verified(Path(args.manifest).resolve().parent/n['path'],n['sha256'],n['bytes'])
     if active:
         epoch=int(time.time());documents=finalized_documents(m,args.manifest,epoch)
-        entries={name:write_new(STATE/name,data) for name,data in documents.items()}
+        entries={name:write_new(publication_root()/name,data) for name,data in documents.items()}
         raw=documents['active-finalized.ipynb']
         final={'format':'irisx/rlvr-finalization-v1','manifest_sha256':args.manifest_sha,'template_sha256':n['sha256'],'finalized_sha256':sha(raw),'documents':entries,'finalizer_sha256':m['jit']['entry']['sha256'],**clock(epoch)}
-        f=write_new(STATE/'finalization.json',final);j.update(clock(epoch));j['finalization_sha256']=f['sha256']
+        f=write_new(publication_root()/'finalization.json',final);j.update(clock(epoch));j['finalization_sha256']=f['sha256']
     else:j.update(dispatch_epoch=None,deadline_epoch=None,provider_timeout_seconds=None)
-    wire=kernel_wire(n,raw);w=write_new(STATE/(name+'-wire.json'),wire)
+    wire=kernel_wire(n,raw);w=write_new(publication_root()/(name+'-wire.json'),wire)
     j.update(stage='wire_prepared' if active else 'save_intent',save_calls=0 if active else 1,source_sha256=sha(raw),wire_sha256=w['sha256'])
-    journal(name,j)
+    publication_journal(name,j)
     if active:
         return {'status':'ACTIVE_PREPARED_REVIEW_REQUIRED','version':ACTIVE_VERSION,'wire_sha256':w['sha256'],'finalization_sha256':j['finalization_sha256'],'predispatch_epoch':j['predispatch_epoch'],'maximum_dispatch_age_seconds':60}
     no_gpu_stop();r=provider.save(wire)
@@ -573,7 +605,7 @@ def save(provider,m,args,role):
         if classification=='GPU_UNAVAILABLE_STOP' and not STOP.exists():write_new(STOP,{'classification':classification,'message':message,'time_epoch':time.time()})
         raise ProviderReportedError(clean_message(r.error))
     need(r.kernel_id==138123872 and r.ref in (REF,'/code/'+REF) and r.version_number==n['expected_version'] and not r.invalid_dataset_sources and not r.invalid_model_sources and not r.invalid_competition_sources and not r.invalid_kernel_sources,'save_response_identity')
-    j.update(stage='save_accepted',save_accepted=True,response_version=r.version_number,accepted_epoch=time.time());journal(name,j)
+    j.update(stage='save_accepted',save_accepted=True,response_version=r.version_number,accepted_epoch=time.time());publication_journal(name,j)
     if active:
         # One immediate source/settings/status bracket; terminal monitoring is a
         # separately reviewed collector action and never resends this RUN.
@@ -584,14 +616,14 @@ def active_review_gate(m,args):
     """Independent review binds the real JIT bytes; stale epochs cannot dispatch."""
     need(args.active_review and args.active_review_sha,'active_wire_review_required')
     review=strict_object(verified(args.active_review,args.active_review_sha,cap=1024**2))
-    journal_path=STATE/'notebook-rlvr004-journal.json';j=obj(journal_path)
-    f=obj(STATE/'finalization.json');wire=obj(STATE/'notebook-rlvr004-wire.json')
+    journal_path=publication_root()/'notebook-rlvr004-journal.json';j=obj(journal_path)
+    f=obj(publication_root()/'finalization.json');wire=obj(publication_root()/'notebook-rlvr004-wire.json')
     need(review.get('format')=='irisx/run008-active-wire-review-v1' and review.get('status')=='PASS' and review.get('synthetic_test_only') is False,'active_wire_review_admission')
-    bindings={'publication_manifest_sha256':args.manifest_sha,'material_approval_sha256':args.material_sha,'transport_review_sha256':args.review_sha,'local_config_sha256':args.local_config_sha,'wire_sha256':file_sha(STATE/'notebook-rlvr004-wire.json'),'finalization_sha256':file_sha(STATE/'finalization.json'),'finalized_source_sha256':file_sha(STATE/'active-finalized.ipynb'),'prepared_journal_sha256':file_sha(journal_path),'predispatch_epoch':f['predispatch_epoch'],'numeric_notebook_version':ACTIVE_VERSION}
+    bindings={'publication_manifest_sha256':args.manifest_sha,'material_approval_sha256':args.material_sha,'transport_review_sha256':args.review_sha,'local_config_sha256':args.local_config_sha,'wire_sha256':file_sha(publication_root()/'notebook-rlvr004-wire.json'),'finalization_sha256':file_sha(publication_root()/'finalization.json'),'finalized_source_sha256':file_sha(publication_root()/'active-finalized.ipynb'),'prepared_journal_sha256':file_sha(journal_path),'predispatch_epoch':f['predispatch_epoch'],'numeric_notebook_version':ACTIVE_VERSION}
     need(all(review.get(k)==v for k,v in bindings.items()),'active_review_exact_bindings')
-    need(j['stage']=='wire_prepared' and j['save_calls']==0 and j['expected_version']==ACTIVE_VERSION and j['manifest_sha256']==args.manifest_sha and j['claim_sha256']==file_sha(STATE/'notebook-rlvr004.claim.json'),'prepared_run_claim')
+    need(j['stage']=='wire_prepared' and j['save_calls']==0 and j['expected_version']==ACTIVE_VERSION and j['manifest_sha256']==args.manifest_sha and j['claim_sha256']==file_sha(publication_root()/'notebook-rlvr004.claim.json'),'prepared_run_claim')
     check_finalization(m,args,f)
-    need(wire==kernel_wire(row(m,'rlvr004'),read(STATE/'active-finalized.ipynb')) and j['source_sha256']==bindings['finalized_source_sha256'] and j['wire_sha256']==bindings['wire_sha256'] and j['finalization_sha256']==bindings['finalization_sha256'],'prepared_run_exact_wire')
+    need(wire==kernel_wire(row(m,'rlvr004'),read(publication_root()/'active-finalized.ipynb')) and j['source_sha256']==bindings['finalized_source_sha256'] and j['wire_sha256']==bindings['wire_sha256'] and j['finalization_sha256']==bindings['finalization_sha256'],'prepared_run_exact_wire')
     need(0<=time.time()-f['predispatch_epoch']<=60,'stale_epoch_no_send')
     return j,wire
 
@@ -603,39 +635,39 @@ def activate(provider,m,args):
     # Recheck after the last network read and before durable intent; no JIT rebuild.
     j,wire=active_review_gate(m,args);no_gpu_stop()
     j.update(stage='save_intent',save_calls=1,dispatch_sample_epoch=time.time(),dispatch_epoch=time.time(),active_wire_review_sha256=args.active_review_sha)
-    journal('notebook-rlvr004',j)
+    publication_journal('notebook-rlvr004',j)
     need(0<=time.time()-j['predispatch_epoch']<=60,'stale_epoch_no_send')
     r=provider.save(wire)
     if r.error:raise ProviderReportedError(clean_message(r.error))
     need(r.kernel_id==138123872 and r.ref in (REF,'/code/'+REF) and r.version_number==ACTIVE_VERSION and not r.invalid_dataset_sources and not r.invalid_model_sources and not r.invalid_competition_sources and not r.invalid_kernel_sources,'save_response_identity')
     j.update(stage='save_accepted',save_accepted=True,response_version=r.version_number,accepted_epoch=time.time())
-    journal('notebook-rlvr004',j)
+    publication_journal('notebook-rlvr004',j)
     return verify_notebook(provider,m,args,'rlvr004')
 
 
 def verify_notebook(provider,m,args,role):
-    name='notebook-'+role;n=row(m,role);j=obj(STATE/(name+'-journal.json'))
+    name='notebook-'+role;n=row(m,role);j=obj(publication_root()/(name+'-journal.json'))
     # One initial read intent; later reconciliation references it without another RUN.
     if role=='rlvr004':
-        intent={'manifest_sha256':args.manifest_sha,'numeric_notebook_version':ACTIVE_VERSION,'launch_claim_sha256':file_sha(STATE/'notebook-rlvr004.claim.json'),'action':'initial_post_submit_readback'}
-        path=STATE/'active-readback.claim.json'
+        intent={'manifest_sha256':args.manifest_sha,'numeric_notebook_version':ACTIVE_VERSION,'launch_claim_sha256':file_sha(publication_root()/'notebook-rlvr004.claim.json'),'action':'initial_post_submit_readback'}
+        path=publication_root()/'active-readback.claim.json'
         if path.exists():need(obj(path)==intent,'initial_readback_claim_changed')
-        else:claim('active-readback',intent)
-    need(j['expected_version']==n['expected_version'] and j['manifest_sha256']==args.manifest_sha and j['save_calls']==1 and j['claim_sha256']==file_sha(STATE/(name+'.claim.json')),'launch_journal_binding')
-    raw=read(STATE/'active-finalized.ipynb') if role=='rlvr004' else read(Path(args.manifest).resolve().parent/n['path'])
+        else:publication_claim('active-readback',intent)
+    need(j['expected_version']==n['expected_version'] and j['manifest_sha256']==args.manifest_sha and j['save_calls']==1 and j['claim_sha256']==file_sha(publication_root()/(name+'.claim.json')),'launch_journal_binding')
+    raw=read(publication_root()/'active-finalized.ipynb') if role=='rlvr004' else read(Path(args.manifest).resolve().parent/n['path'])
     need(sha(raw)==j['source_sha256'],'submitted_source_binding')
     if role=='rlvr004':
-        f=obj(STATE/'finalization.json');need(file_sha(STATE/'finalization.json')==j['finalization_sha256'] and f['finalized_sha256']==sha(raw) and f['manifest_sha256']==args.manifest_sha,'finalization_binding')
+        f=obj(publication_root()/'finalization.json');need(file_sha(publication_root()/'finalization.json')==j['finalization_sha256'] and f['finalized_sha256']==sha(raw) and f['manifest_sha256']==args.manifest_sha,'finalization_binding')
         check_finalization(m,args,f)
         need(all(j.get(k)==v for k,v in clock(f['predispatch_epoch']).items() if k!='dispatch_epoch') and 0<=j['dispatch_epoch']-f['predispatch_epoch']<=60,'launch_clock_binding')
     snap,saved,meta=bracket(provider,n['expected_version'],n=n)
     need(source_normalize(saved)==source_normalize(raw),'provider_source_normalization')
     if role=='inactive':need(snap['status']=='COMPLETE','inactive_not_complete')
-    source_path=STATE/(name+'-saved.ipynb')
+    source_path=publication_root()/(name+'-saved.ipynb')
     if source_path.exists():need(read(source_path)==saved,'saved_source_changed_after_receipt')
     else:write_new(source_path,saved)
-    result={'manifest_sha256':args.manifest_sha,'reference':REF,'kernel_id':138123872,'version':n['expected_version'],'status':snap['status'],'role':role,'submitted_source_sha256':sha(raw),'saved_source':descriptor(source_path),'normalized_source_exact':True,'provider_acceptance_reconciled':j.get('stage')=='save_intent','single_post_submit_readback':False,'model_sources_returned':meta.model_data_sources,'dataset_sources_returned':meta.dataset_data_sources,'settings':meta.to_dict(),'launch_journal_sha256':file_sha(STATE/(name+'-journal.json')),'finalization_sha256':file_sha(STATE/'finalization.json') if role=='rlvr004' else None,'predecessor':j['predecessor'],'snapshot':snap,'git_publication_completed':j['git_publication_completed'],'git_commit':j['git_commit'],'stop_after_submit_readback':False,'provider_monitoring_authorized':True}
-    dest=STATE/(name+'-receipt.json')
+    result={'manifest_sha256':args.manifest_sha,'reference':REF,'kernel_id':138123872,'version':n['expected_version'],'status':snap['status'],'role':role,'submitted_source_sha256':sha(raw),'saved_source':descriptor(source_path),'normalized_source_exact':True,'provider_acceptance_reconciled':j.get('stage')=='save_intent','single_post_submit_readback':False,'model_sources_returned':meta.model_data_sources,'dataset_sources_returned':meta.dataset_data_sources,'settings':meta.to_dict(),'launch_journal_sha256':file_sha(publication_root()/(name+'-journal.json')),'finalization_sha256':file_sha(publication_root()/'finalization.json') if role=='rlvr004' else None,'predecessor':j['predecessor'],'snapshot':snap,'git_publication_completed':j['git_publication_completed'],'git_commit':j['git_commit'],'stop_after_submit_readback':False,'provider_monitoring_authorized':True}
+    dest=publication_root()/(name+'-receipt.json')
     if dest.exists():
         prior=obj(dest);need(prior['saved_source']==result['saved_source'] and prior['launch_journal_sha256']==result['launch_journal_sha256'],'receipt_reconciliation_changed');event(name+'-observation',result)
     else:write_new(dest,result)
@@ -651,7 +683,7 @@ def main():
     a=parser().parse_args();provider=None
     try:
         m=load_contract(a)
-        if a.action=='validate':print(json.dumps({'status':'LOCAL_CONTRACT_PASS','provider_calls':0}));return 0
+        if a.action=='validate':print(json.dumps({'status':'LOCAL_CONTRACT_PASS','provider_calls':0,**publication_paths()}));return 0
         if a.action=='validate-publication':print(json.dumps(publication_preflight(m,a)));return 0
         execution_gate(a)
         if a.action in ('update-code','save-inactive','prepare-active','activate'):

@@ -9,8 +9,10 @@ from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse, urljoin
 
 BASE = WORK = STATE = STOP = CONFIG = CONFIG_PATH = MANIFEST_PATH = ACTION_REVIEW = None
-CONFIG_SOURCE_SHA256 = '9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a'
-BRIDGE_CLIENT_SHA256 = '2c4f6fead148a089152410221bcef9cd7b6bff5d97825e6b54d82e20d42e3552'
+PUBLICATION_STATE = PUBLICATION_EVIDENCE = None
+CONFIG_SOURCE_SHA256 = '65d40a128e0e6a313df1d3b37071638cba76d0914cb27c6339cf5652f36554f0'
+BRIDGE_CLIENT_SHA256 = '055fed70acb246de2ecc97569263786b27a9eaf1bffd1065a776cdefbbca5e50'
+PUBLICATION_STATE_SHA256 = '85101ee677e9c768cc8a5583cbf8df222a9198338040e0f0260bd87a96e9ea77'
 REF = 'danielwuu/iris-x-learning-agent-20261011'
 DREF = 'danielwuu/iris-x-learning-agent-code-20261011'
 MODEL = 'qwen-lm/qwen-3/transformers/14b/1'
@@ -29,7 +31,7 @@ def configured():
 
 def configure(config_path, config_sha256, manifest_path, manifest_sha256, *, recovery=False):
     """Compile exact local configuration code; bind once before any provider."""
-    global BASE, WORK, STATE, STOP, CONFIG, CONFIG_PATH, MANIFEST_PATH
+    global BASE, WORK, STATE, STOP, CONFIG, CONFIG_PATH, MANIFEST_PATH, PUBLICATION_STATE, PUBLICATION_EVIDENCE
     need(CONFIG is None, 'local_configuration_already_bound')
     path=Path(__file__).absolute().with_name('config.py')
     module=load_source_module('reviewed_rl_local_config_'+CONFIG_SOURCE_SHA256,path,CONFIG_SOURCE_SHA256)
@@ -37,6 +39,8 @@ def configure(config_path, config_sha256, manifest_path, manifest_sha256, *, rec
     except ValueError as error:raise GuardError(str(error)) from None
     CONFIG=config_;CONFIG_PATH=Path(config_path).absolute();MANIFEST_PATH=Path(manifest_path).absolute();BASE=config_.repository_root;WORK=config_.candidate_root
     STATE=config_.state_root;STOP=config_.gpu_stop_path
+    PUBLICATION_STATE=getattr(config_,'publication_state_root',None) or STATE
+    PUBLICATION_EVIDENCE=getattr(config_,'publication_evidence_root',None) or config_.evidence_root
     return config_
 
 def configuration_descriptor():
@@ -198,6 +202,39 @@ def journal(name, value):
 def claim(name, value):
     configured()
     return write_new(STATE/f'{name}.claim.json',value)
+
+def publication_root():
+    """Selected numeric round; native/recovery STATE is never redirected."""
+    configured()
+    return PUBLICATION_STATE if PUBLICATION_STATE is not None else STATE
+
+def publication_evidence_root():
+    config_=configured()
+    return PUBLICATION_EVIDENCE if PUBLICATION_EVIDENCE is not None else config_.evidence_root
+
+def publication_paths():
+    return {'publication_state_root':str(publication_root()),
+            'publication_evidence_root':str(publication_evidence_root())}
+
+def publication_guard():
+    """Admit the split namespace even when native history has no UNKNOWN."""
+    config_=configured()
+    if publication_root()==STATE:
+        return None
+    path=Path(__file__).with_name('publication_state.py')
+    module=load_source_module('reviewed_publication_state_'+PUBLICATION_STATE_SHA256,path,PUBLICATION_STATE_SHA256)
+    return module.validate_selection(STATE,publication_manifest_descriptor(),dict(config_.versions),
+        publication_root=publication_root(),publication_history=getattr(config_,'publication_history',()))
+
+def publication_claim(name, value):
+    return write_new(publication_root()/f'{name}.claim.json',value)
+
+def publication_journal(name, value):
+    event(name,value)
+    p=secure_path(publication_root()/f'{name}-journal.json');p.parent.mkdir(parents=True,exist_ok=True)
+    t=p.with_name(p.name+'.'+uuid.uuid4().hex+'.tmp');write_new(t,value)
+    os.replace(t,p);sync_directory(p.parent);return p
+
 @contextlib.contextmanager
 def lock(name='operator'):
     config_=configured()
@@ -317,6 +354,7 @@ def safe_url(url, upload=False):
 class Provider:
     """Every provider, storage and credential operation stays in Windows."""
     def __init__(self):
+        publication_guard()
         credential_guard()
         path=Path(__file__).with_name('bridge_client.py')
         module=load_source_module('reviewed_windows_bridge_client_'+BRIDGE_CLIENT_SHA256,path,BRIDGE_CLIENT_SHA256)
