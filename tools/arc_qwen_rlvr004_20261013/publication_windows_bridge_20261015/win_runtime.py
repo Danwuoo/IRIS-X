@@ -169,6 +169,7 @@ class API:
         sig(self.k, 'CreatePipe', [C.POINTER(HANDLE), C.POINTER(HANDLE), LPVOID, DWORD])
         sig(self.k, 'SetHandleInformation', [HANDLE, DWORD, DWORD])
         sig(self.k, 'ReadFile', [HANDLE, LPVOID, DWORD, C.POINTER(DWORD), LPVOID])
+        sig(self.k, 'DeviceIoControl', [HANDLE, DWORD, LPVOID, DWORD, LPVOID, DWORD, C.POINTER(DWORD), LPVOID])
         sig(self.k, 'WriteFile', [HANDLE, LPVOID, DWORD, C.POINTER(DWORD), LPVOID])
 
     def check(self, ok, code):
@@ -229,7 +230,7 @@ def strict_local_path(path):
     need(type(path) is str and 3 <= len(path) <= 32700 and '\x00' not in path, 'windows_path_invalid')
     path = path.replace('/', '\\')
     drive, tail = ntpath.splitdrive(path)
-    need(len(drive) == 2 and drive[0].isalpha() and drive[1] == ':' and tail.startswith('\\'), 'windows_local_drive_required')
+    need(len(drive) == 2 and drive[0] in 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' and drive[1] == ':' and tail.startswith('\\'), 'windows_local_drive_required')
     pieces = tail[1:].split('\\') if tail != '\\' else []
     need(all(p and p not in ('.', '..') and not p.endswith((' ', '.'))
              and not any(c in p for c in ':*?<>|"') for p in pieces), 'windows_ambiguous_path')
@@ -306,6 +307,7 @@ class PrivateFileGuard:
         self.path = profile_relative(str(path), self.identity, expected_relative)
         need(type(allow_write) is bool, 'windows_guard_mode_invalid')
         self.allow_write = allow_write
+        need(type(max_bytes) is int and 0 < max_bytes <= 65536, 'windows_private_file_cap_invalid')
         self.max_bytes = max_bytes
         self.handles = []
         self.proof = None
@@ -461,7 +463,7 @@ def _pipe(parent_reads):
 
 class JobProcess:
     """Only explicit stdio handles inherited; Job handle is never inherited."""
-    def __init__(self, argv, *, cwd=None, env=None):
+    def __init__(self, argv, *, cwd=None, env=None, job_nonce=None):
         need(type(argv) in (list, tuple) and argv and all(type(x) is str and '\0' not in x for x in argv), 'windows_argv_invalid')
         strict_local_path(argv[0])
         need(len(subprocess.list2cmdline(argv)) < 32700, 'windows_command_too_long')
@@ -470,7 +472,18 @@ class JobProcess:
         self.pid = None; self.closed_proof = None
         a = api(); children = []; attrs = None; attrs_ready = False; pi = PROCESS_INFORMATION()
         try:
-            self.job = a.handle(a.k.CreateJobObjectW(None, None), 'windows_job_create_failed')
+            if job_nonce is None:
+                self.job = a.handle(a.k.CreateJobObjectW(None, None), 'windows_job_create_failed')
+            else:
+                identity = current_identity()
+                with SecurityDescriptor('D:P(A;;GA;;;' + identity.sid + ')(A;;GA;;;SY)') as sd:
+                    C.set_last_error(0)
+                    self.job = a.handle(a.k.CreateJobObjectW(C.byref(sd.attributes),
+                        _job_name(job_nonce, identity)), 'windows_job_create_failed')
+                    if C.get_last_error() == 183:
+                        # Never terminate an existing Job we do not own.
+                        a.k.CloseHandle(self.job); self.job = None
+                        raise WindowsGuardError('windows_job_nonce_reused')
             limits = JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
             limits.BasicLimitInformation.LimitFlags = KILL_ON_JOB_CLOSE
             a.check(a.k.SetInformationJobObject(self.job, 9, C.byref(limits), C.sizeof(limits)), 'windows_job_limits_failed')
@@ -593,6 +606,37 @@ class JobProcess:
         self.terminate_and_prove_empty()
 
 
+def _job_name(nonce, identity=None):
+    need(type(nonce) is str and len(nonce) == 64 and all(c in '0123456789abcdef' for c in nonce),
+         'windows_job_nonce_invalid')
+    identity = identity or current_identity()
+    digest = hashlib.sha256((identity.sid + '\0' + nonce).encode('ascii')).hexdigest()
+    return 'Global\\IRIS-X-Bridge-Job-' + digest
+
+
+def require_worker_job(nonce):
+    """Check the immediate Job without creating or duplicating ANY Job handle.
+
+    Exact nonce/Job membership is attested by the pinned supervisor's atomic
+    JOB_LIST + IsProcessInJob check BEFORE ResumeThread. This worker-side check
+    alone does not establish nonce membership or defeat same-user forgery.
+    Even a QUERY-only OpenJobObject handle would keep the Job alive if its sole
+    supervisor died during a suspended/stuck bootstrap, so it is forbidden here.
+    """
+    need(type(nonce) is str and len(nonce) == 64 and all(c in '0123456789abcdef' for c in nonce),
+         'windows_job_nonce_invalid')
+    a = api(); member = BOOL()
+    a.check(a.k.IsProcessInJob(a.k.GetCurrentProcess(), None, C.byref(member)), 'windows_worker_job_query_failed')
+    need(member.value, 'windows_worker_job_missing')
+    limits = JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
+    # NULL queries this process's immediate Job (including nested hosting Jobs)
+    # and does not materialize a handle in the worker's handle table.
+    a.check(a.k.QueryInformationJobObject(None, 9, C.byref(limits), C.sizeof(limits), None), 'windows_worker_job_limits_failed')
+    need(limits.BasicLimitInformation.LimitFlags == KILL_ON_JOB_CLOSE, 'windows_worker_job_limits_invalid')
+    return {'current_job_kill_on_close': True, 'breakaway_permitted': False,
+            'exact_membership_authority': 'supervisor_before_resume'}
+
+
 class ParentWatch:
     """Holds an original parent-process handle to avoid PID-reuse ambiguity."""
     def __init__(self, pid=None):
@@ -623,7 +667,11 @@ def read_source(path, cap):
     The caller checks source digests and SDK location/ownership separately.
     """
     path = strict_local_path(str(path))
-    need(ntpath.splitext(path)[1].lower() in ('.py', '.pyc', '.pyd', '.dll', '.exe', '.whl', '.pth'), 'windows_source_extension_invalid')
+    parts = [part.casefold() for part in path.split('\\')]
+    need('.kaggle' not in parts and parts[-1] not in
+         ('credentials.json', 'kaggle.json', 'oauth.json', 'access_token', 'access_token.txt'),
+         'windows_credential_source_read_forbidden')
+    need(ntpath.splitext(path)[1].lower() in ('.py', '.pyc', '.pyd', '.dll', '.exe', '.whl', '.pth', '.json', '.cfg', '.pem', '.crt'), 'windows_source_extension_invalid')
     need(type(cap) is int and 0 < cap <= 128 * 1024 * 1024, 'windows_source_cap_invalid')
     a = api(); handles = []
     try:

@@ -57,6 +57,11 @@
 | E25 | E24精確CI38688413326終態failure：1 job failure／3 cancelled | [CI](https://github.com/Danwuoo/IRIS-X/actions/runs/38688413326)；實際job116268483868仍是同6項README缺詞，unit／packaging skipped；沒有稱CI成功 |
 | E26 | Windows／WSL整合的本地合成能力前置：executor實際命令成功；Windows目前已在existing job內，仍可將suspended合成子程序指派新Job Object。關閉job handle及強制終止controller兩種情境，已持有handle的root／leaf均signaled且controller已wait | 此為固定合成程序的有限觀察；job accounting在清理前為4個active processes，測試只逐一追蹤root／leaf，不宣稱完整job inventory、跨OS取消或production closure通過。未載入Kaggle／認證，未改ACL ；來源為本地獨立紀錄 [b51c4ae3](https://github.com/Danwuoo/IRIS-X/commit/b51c4ae3b0f81e0823a3db731a21d68047967c57)，此處重新編號保留其範圍 |
 | E27 | 固定script endpoints的Windows→WSL→Windows Python／PowerShell→WSL→Windows管線4／4通過：2,067 bytes含UTF-8／NUL／binary，stdout逐byte一致、stderr分離，exit0／7均正確傳遞 | 先前雙層inline `-c`形式產生`SyntaxError: unterminated string literal`，失敗保留；不是auth錯誤。未驗證正式framing、oversize、超時／取消與大型串流。既有profile／store／credential ACL與reparse僅查metadata；profile根目錄的owner／Allow不同於credential檔，不能混同為POSIX0600／UID gate；沒有改任何權限 ；來源為本地獨立紀錄 [b51c4ae3](https://github.com/Danwuoo/IRIS-X/commit/b51c4ae3b0f81e0823a3db731a21d68047967c57)，此處重新編號保留其範圍 |
+| E28 | 原生diagnostic `8f2a6d032e01b02aa0563c851cbb1be60946bd67`、tree `41520ec7a3297573d521b0c72e26c187dd5fbf8a` 已逐byte回讀；本地Windows3.12.10 `-I -B`實際exit0、約7.01秒、stderr0，原8案例全通過 | stdout SHA256 `622d3651d30cf212a37df0665b19618179306dfa493ab33c3cd3d08cfe70a98f`；實際native parent死亡、Job owner強殺、deadline／EOF均觀察完整outer Job歸零，metadata負例與mutex亦通過。只適用該三檔來源及當時global Python；尚未測目前新framing／phase watchdog／venv／正式CLI／OAuth，不重標為新來源PASS |
+| E29 | E28精確CI38689806693終態failure：1 job failure／3 cancelled | [CI](https://github.com/Danwuoo/IRIS-X/actions/runs/38689806693)；實際job116272866733仍同6項README缺詞，unit／packaging skipped；與本地native測試各自記錄 |
+| E30 | 本地新建單一Windows Python3.12.10 venv，官方Kaggle2.2.4／SDK0.1.37，完整35套件安裝；`pip check` exit0、170-source lock全數一致 | ENV-RECEIPT SHA256 `ec2daea5687f0feae32fcc0d7675baf2649d35da7f156ab38ed975713f3593fc`。官方wheel hashes與E20一致；初次Temp失敗保留，同venv改用project Temp後完成。沒有import SDK／登入／讀credential或修改HOME／ACL；原global SDK0.1.36保留。只證明安裝／靜態來源，尚未執行新版native probe或provider |
+| E31 | Windows／WSL bridge最終離線232 normal／232 `-O`、zero skips；獨立reviewer對同一snapshot另跑232／232，25個source／test檔前後不變，22個dependency pins吻合 | [固定來源與驗收收據](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。涵蓋實際binary pipe DTO／fsync／opaque upload／404及503／unknown不重送／15檔Git與review closure、十案例及pre-auth harness的合成負例。原collector所有function／class AST不變；transport僅update_code、review_gate、git_publication_gate三項有界差異。尚未有新版native／WSL／正式pre-auth實測或provider admission |
+| E32 | 最終code凍結後再次執行完整repo suite：1,583 tests／2 failures／35 errors／74 skips；37個failure/error IDs與保存的POSIX baseline相同，未重跑baseline | [本輪精確收據](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。workspace TMPDIR及offline flags齊備；root suite不涵蓋E31獨立232 tests。既有6項README finding仍失敗；初次錯誤TMPDIR的partial run保留，不能當合格比較 |
 
 本地去敏觀察收據 `OBSERVATION.json` 的SHA256為
 `faffc10ca4325726b95f3a99bbc4a2d30b3cad26d20d91ef0e355d28c9413123`。
@@ -128,7 +133,7 @@ successor驗收，不把CPU-only工具限制變成原A/B/C的循環依賴。
 | DOC-AF3 | AF3研究來源併入本資料夾，修復導覽與引用 | 完成（文件整併）；E13，三份獨特研究／驗證／審查與重要RL來源地位保留 | E1、E7、E12 | 保留pinned上游、license與元件實際採用證據；不改程式namespace／vendor／frozen source，無重複進度頁 |
 | HANDOFF-CYCLE | 將既有本地交接延伸為提交、監看、有限工程修復及結果回傳流程 | 完成（交接規格）；E13，只更新既有交接文件；實際本地執行另列E1～E4 | S1-O1～O6、原執行契約 | 明列fresh remote／材料／admission、single publisher、監看到terminal、結果回傳與方法觸發條件；本文件不派發工作 |
 | S1-P1 | 本地publisher的狹窄POSIX portability successor | 完成（離線交付）；E19～E25，106 normal／106 `-O`、獨立審查與19檔遠端readback | 純POSIX使用仍需本地native OAuth；本輪選擇S1-P2沿用Windows登入 | 保存此可重現版本；不因選擇Windows橋而改寫POSIX已測來源，也不把來源保存當provider放行 |
-| S1-P2 | WSL durable owner＋Windows官方SDK bounded bridge | 進行中；沿用既有Windows profile，E26／E27僅原生能力前置 | S1-P1、精確SDK0.1.37、native Job／ACL／pipe驗收、原材料與全部新hash-bound reviews | bounded IPC／DTO、refresh前fsync握手、獨立每RPC watchdog、全Job清空、未知結果不重送；先離線與本機合成驗收，再依原admission進既有A/B/C流程 |
+| S1-P2 | WSL durable owner＋Windows官方SDK bounded bridge | 進行中；E31離線實作／獨立審查完成；E28原8案例原生通過、E30新venv靜態驗證；新版精確來源仍待本地驗收 | S1-P1、精確SDK0.1.37、native Job／ACL／pipe驗收、原材料與全部新hash-bound reviews | bounded IPC／DTO、refresh前fsync握手、獨立每RPC watchdog、全Job清空、未知結果不重送；先離線與本機合成驗收，再依原admission進既有A/B/C流程 |
 | S1-E1 | 本地真實來源、模型材料與已存在audit接收 | 進行中／目的環境binding受阻；E14～E17。原材料已找到，歷史重建另核對；本輪audit尚未產出 | 原執行契約、本地來源與材料 | 先完成目的環境portable successor與原admission，核對training-owned provenance／原records／排除及exact numeric materials。首次原A/B/C可在原admission通過後產生audit，不以尚未產出的結果阻擋原流程 |
 | S1-E2 | 原runtime真實replay／LoRA梯度／owner狀態驗收 | 待開始／未執行 | S1-E1、本地完整原admission | E2與E3是同次原執行中的驗收，不要求先有另一場成功證據。原runtime逐步核對模型、數值、rollback、save/reload、closure與資源；CPU logp梯度不能替代。若另接AF3模型hook，才加另立successor的同模型差分驗收 |
 | S1-E3 | 同 session 既有 A/B/C 比較 | 待開始／未驗證 | S1-E1、原admission／batch／時鐘；E2由該次原runtime逐步驗收 | 原 reward、replay、更新、checkpoint、全 B/C wall、固定選擇與 closure 證據完整；未完成與 zero-signal 分開 |
@@ -321,4 +326,10 @@ DDIS數學與真實元件CPU整合證據，集中於[AF3整合研究](agent-fact
 - 2026-10-15原生diagnostic checkpoint：新增三檔no-auth probe，獨立source review確認固定合成範圍；
   以實際supervisor PID、完整observer Job membership／清空與失敗cleanup取代兩個PID的不足證明。
   [使用方式](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/README.md#early-native-diagnostic)。
-  此checkpoint仍待本地真實執行；production source binding／IPC／phase watchdog尚未完成，不可用於provider。
+  該歷史checkpoint其後完成E28原生實測。當前source binding／IPC／phase watchdog已實作，
+  正在最終來源審查與新原生驗收，不能把E28沿用為當前production放行。
+
+- 2026-10-15 06:16 UTC：E28／E29補入實際原生與CI結果。新bridge已接通WSL owner、binary protocol、
+  native SDK worker及durable refresh handshake；獨立審查補強Windows base Python／pyvenv綁定、
+  native副本與WSL Git來源一致性、全15檔publication closure。新版十案例、WSL caller-death、
+  完整官方venv、正式入口與既有OAuth仍待本地實測；尚未有新provider call、upload、RUN或A/B/C分數。

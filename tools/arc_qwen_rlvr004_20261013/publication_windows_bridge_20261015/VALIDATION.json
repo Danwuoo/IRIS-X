@@ -1,0 +1,193 @@
+{
+  "focused": {
+    "normal": {
+      "errors": 0,
+      "failures": 0,
+      "log_sha256": "28dbd385030603e9c526838bdf34e765073813b221ca247d441ad6e1ba0e8c7c",
+      "skips": 0,
+      "tests": 232
+    },
+    "optimized": {
+      "errors": 0,
+      "failures": 0,
+      "log_sha256": "23e0c8da41387f43f8427e7f8711c9c2767c497ad3b7271b3c41461b8bcdfb98",
+      "skips": 0,
+      "tests": 232
+    }
+  },
+  "format": "irisx/windows-bridge-offline-validation-v1",
+  "historical_native_observations_not_relabelled": true,
+  "historical_native_probe_commit": "8f2a6d032e01b02aa0563c851cbb1be60946bd67",
+  "independent_review": {
+    "blocking_source_findings": 0,
+    "dependency_pins_verified": 22,
+    "errors": 0,
+    "failures": 0,
+    "focused_normal_tests": 232,
+    "focused_optimized_tests": 232,
+    "scope": "source publication and bounded no-auth local diagnostics only; not provider admission",
+    "skips": 0,
+    "source_files_unchanged_before_after": 25,
+    "source_map_sha256": "be3040cec5307c9545afdbe2e76b79bc7327c4bbac47a7827e50839ac18a4ad4"
+  },
+  "preserved_posix_commit": "b09e442fe706f06545be2cb4aa3363e04f807a71",
+  "production_native_windows_acceptance": false,
+  "production_preauth_cli_acceptance": false,
+  "production_wsl_interop_acceptance": false,
+  "real_sdk_auth_provider_network_used": false,
+  "repository_aggregate": {
+    "baseline_log_sha256": "5408a1b0cf673b4c5a2b37589f5ae5356d0e870609443fd6321e72e5842d4ec0",
+    "baseline_rerun": false,
+    "errors": 35,
+    "failure_error_ids": [
+      "setUpClass (test_nvarc_native_editor_transport.NativeEditorTransportTests)",
+      "test_003_analysis_uses_all_five_approved_arms (test_nvarc_abc_004.ABCBeamBoundaries.test_003_analysis_uses_all_five_approved_arms)",
+      "test_004_predecessor_analysis_has_three_approved_arms (test_nvarc_abc_005.ABCPairedBoundaries.test_004_predecessor_analysis_has_three_approved_arms)",
+      "test_active_repository_is_valid (test_repository_check.RepositoryCheckTests.test_active_repository_is_valid)",
+      "test_control_treatments_and_total_ceiling (test_nvarc_abc_003.ABCTuningBoundaries.test_control_treatments_and_total_ceiling)",
+      "test_exact_package_preflight_and_save_guard (test_nvarc_abc.ABCBoundaryTests.test_exact_package_preflight_and_save_guard)",
+      "test_exact_plan_and_quick_save_projection (test_nvarc_abc_004.ABCBeamBoundaries.test_exact_plan_and_quick_save_projection)",
+      "test_exact_plan_and_quick_save_projection (test_nvarc_abc_005.ABCPairedBoundaries.test_exact_plan_and_quick_save_projection)",
+      "test_exact_review_allows_save_with_unknown_facts_and_preserves_v3 (test_nvarc_native_save_v4.NativeSaveV4Tests.test_exact_review_allows_save_with_unknown_facts_and_preserves_v3)",
+      "test_fixed_material_representation_and_budgets (test_nvarc_abc.ABCBoundaryTests.test_fixed_material_representation_and_budgets)",
+      "test_format_field_closure_and_unavailable_list_order_required (test_nvarc_native_save_v4.NativeSaveV4Tests.test_format_field_closure_and_unavailable_list_order_required) (change='order')",
+      "test_legacy_review_bytes_stay_frozen_and_new_export_proposal_is_inert (test_nvarc_native_export.NativeExportProcessTests.test_legacy_review_bytes_stay_frozen_and_new_export_proposal_is_inert)",
+      "test_mixed_seed_parent_exports_real_tiny_cpu_evidence_in_fresh_child (test_nvarc_native_export.NativeExportProcessTests.test_mixed_seed_parent_exports_real_tiny_cpu_evidence_in_fresh_child)",
+      "test_notebook_guard_accepts_exact_plan_and_rejects_rehashed_bytes_before_setup (test_nvarc_abc.ABCBoundaryTests.test_notebook_guard_accepts_exact_plan_and_rejects_rehashed_bytes_before_setup)",
+      "test_nvarc_e12_answer_evidence (unittest.loader._FailedTest.test_nvarc_e12_answer_evidence)",
+      "test_nvarc_e12_runtime (unittest.loader._FailedTest.test_nvarc_e12_runtime)",
+      "test_public_shape_and_palette_fail_closed_without_truth (test_nvarc_abc.ABCBoundaryTests.test_public_shape_and_palette_fail_closed_without_truth)",
+      "test_scalar_fixture_matches_pinned_reference_within_original_four_ulp (test_nvarc_e12_prefix_contract.PrefixContractTests.test_scalar_fixture_matches_pinned_reference_within_original_four_ulp)",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='agent_execution_authorized')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='internet')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='l4_quota_multiplier')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='local_resource_admission')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='maximum_paid_usd')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='maximum_quick_saves')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_clearance_ref')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_editor_sessions_closed')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_resource_exception_ref')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='owner_resource_exception_sha256')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='prior_sessions_reconciled')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='private')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='quick_save_authorized')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='quota_observed_at')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='quota_reservation_id')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='reserved_quota_hours')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='resource_information_status')",
+      "test_scope_bindings_and_fabricated_resource_facts_rejected (test_nvarc_native_save_v4.NativeSaveV4Tests.test_scope_bindings_and_fabricated_resource_facts_rejected) (key='resource_information_unavailable')",
+      "test_worker_sidecar_detection_and_exact_plan (test_nvarc_abc_002.ABCRepairTests.test_worker_sidecar_detection_and_exact_plan)"
+    ],
+    "failures": 2,
+    "log_sha256": "9eaa92198ad46fa855b9a270a2a745d8813a2f7daf56bd1413f9da14ba6a109d",
+    "placement_findings": 6,
+    "same_ids_as_saved_posix_baseline": true,
+    "scope": "final frozen source; root suite does not discover the 232 new focused tests",
+    "skips": 74,
+    "tests": 1583
+  },
+  "scope": "offline development and source-bound local diagnostic handoff; no production admission",
+  "source_files": {
+    "bridge_client.py": {
+      "bytes": 30257,
+      "sha256": "dc5006c8e1bf89aff38cbbf359093cef14fb216e708949d7c54b05816150910d"
+    },
+    "config.py": {
+      "bytes": 23625,
+      "sha256": "11cbdaa9f08a14ba9efcf15207991d5179682413899853becf562f6b4af7169f"
+    },
+    "launch.py": {
+      "bytes": 5172,
+      "sha256": "e70baa1213b6143197b17de0c7b944ce13a0c0a60cad71fbafe8a62e778ef1dc"
+    },
+    "native_auth.py": {
+      "bytes": 15321,
+      "sha256": "785e696dc702e5042f415e3da1bd3fbf43ff34f3f8a579a702ec2f262aefdcd4"
+    },
+    "native_config.py": {
+      "bytes": 11518,
+      "sha256": "fe2ec44a37e8895077162a3369d859967001e5a50f4294d2d8e0fb954fa35282"
+    },
+    "native_probe.py": {
+      "bytes": 26913,
+      "sha256": "fefac944520803fde3f46d7935f0e72d04f47a1775966458f0e2a75d9fc5a157"
+    },
+    "operator_common.py": {
+      "bytes": 22154,
+      "sha256": "c1bddaa8b13598a8546de6e77f8bf29403e2507743adccb1654bdc5be79fedd5"
+    },
+    "preauth_probe.py": {
+      "bytes": 19424,
+      "sha256": "5b0453da3ec5c7691cf0388a85c7e63a4fa57cb6ec9321caebb8e19bd3cea83a"
+    },
+    "protocol.py": {
+      "bytes": 36653,
+      "sha256": "086c70bc50d942c753ac19b8b6f994a54bef1e6a3b0819cacd496d4d09c57b3d"
+    },
+    "rl_collect.py": {
+      "bytes": 58716,
+      "sha256": "117baa170c24768a83cd8c97c45b39385aec162646be329ed62a68a3f74be182"
+    },
+    "rl_transport.py": {
+      "bytes": 59395,
+      "sha256": "cc05fc8b6878aa7648a5a526d93fa5b1262e7f2e72a725c986bbe6bd83b18c82"
+    },
+    "sdk-lock.json": {
+      "bytes": 19816,
+      "sha256": "3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d"
+    },
+    "sdk_worker.py": {
+      "bytes": 44153,
+      "sha256": "4a8b165fdc7a4cb1224070a5599972599e1ecf7c4ae04d9041c36bef611fdf7c"
+    },
+    "tests/test_bridge_client.py": {
+      "bytes": 30757,
+      "sha256": "2b0ac39e67c3d7292aba57633e822e10559808e83ead8c63b7a2dffcc653edf1"
+    },
+    "tests/test_bridge_protocol.py": {
+      "bytes": 21652,
+      "sha256": "b87f3df0e5c68f9b09db773c2d3d5c7739d1e8839ce8a8f9ac09fa5fa45879de"
+    },
+    "tests/test_config_admission.py": {
+      "bytes": 42600,
+      "sha256": "11005b593a57587c3f9f4481ab62e0f1a2f74c2c1f20c488553480c29079f326"
+    },
+    "tests/test_native_config.py": {
+      "bytes": 4918,
+      "sha256": "1f0b80b8aff8cd7f864614ca0a3064df481fda3821c1b0d40ed1b99b07ccbd12"
+    },
+    "tests/test_native_sdk_worker.py": {
+      "bytes": 29023,
+      "sha256": "fe4c669f7d212eeabb8c363452688e1ac0774ebbcc8bc1df00868c684b8936d9"
+    },
+    "tests/test_owner_integration.py": {
+      "bytes": 45399,
+      "sha256": "81998f610152c21db322d45aa8ae9ef89f1967620e134d3f9388a162c109f309"
+    },
+    "tests/test_preauth_probe.py": {
+      "bytes": 14186,
+      "sha256": "5ca3fd63cd3728f13c2194f1c33084c2fc36c1339b0f1c7cecc3caf42bb6b51b"
+    },
+    "tests/test_windows_runtime.py": {
+      "bytes": 27377,
+      "sha256": "4408aa187d0c30caa3c2bccfa0af377cc84f8fdf33dcaab862b2d42831d220b7"
+    },
+    "verify_active_wire.py": {
+      "bytes": 19347,
+      "sha256": "8a5b7844d1c5cfee3f5c026967d1dab2ed8465aa11e563aec276ba909c086438"
+    },
+    "win_runtime.py": {
+      "bytes": 34681,
+      "sha256": "ae56db730ab84a8fa83c6439d5b6d0c537e0c348d0e93ea3b5618362e7e6f41e"
+    },
+    "win_supervisor.py": {
+      "bytes": 15807,
+      "sha256": "263ef72771a22227fed070d6edfe02a759621307e0a2debece3f852c319a424d"
+    },
+    "wsl_native_probe.py": {
+      "bytes": 12116,
+      "sha256": "fcc5f07ad4a658c42c6ead9d42239a2743f3f175058feb1604f8963772842932"
+    }
+  },
+  "training_or_scoring_executed": false
+}

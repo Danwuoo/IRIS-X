@@ -282,9 +282,12 @@ nonforced p95≤0.05、max≤0.20、strict-DDIS coverage=100% 不變，至少一
 ### 6.3 唯一 publisher 的有限提交與監看路徑
 
 下列是現有 operator action 的順序索引，不是已執行紀錄或開放式重試授權。
-原 `publication_run008` 的歷史wrapper綁定不適用移轉後機器。目的端使用經本次獨立審查的
-[POSIX successor介面](../../tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/README.md)，
-完整CLI flags由其publish／collect入口承接；每次都需explicit manifest/material/review/local-config及各自SHA。
+原 `publication_run008` 的歷史wrapper綁定不適用移轉後機器。純POSIX方案保留於
+[POSIX successor介面](../../tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/README.md)；
+本次選擇WSL持有state、Windows官方SDK沿用原profile的
+[Windows／WSL bridge介面](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/README.md)。
+該方案先完成下列6.3.1本地驗收，再承接相同publish／collect action。每次都需explicit
+manifest/material/review/local-config及各自SHA；目前是否已驗收只讀單一進度頁，不以此程序當完成證據。
 
 開始前另做目的端準備：
 
@@ -292,7 +295,8 @@ nonforced p95≤0.05、max≤0.20、strict-DDIS coverage=100% 不變，至少一
   不把`/tmp`存活或DrvFS權限／rename／FIFO行為當成已驗證的native語意。
 - 先完成原`transfer_run008/rebuild_engineering.py`的283檔source、426檔candidate與311檔inert
   proposal及各自report；移轉components子集與純單元測試不能取代這些真實重建。
-- 建立或核對明確的Python3.12 venv，固定Kaggle2.2.4及SDK0.1.37，核對完整170-source closure。
+- 以下兩項native POSIX登入／SDK步驟只適用純POSIX方案；目前選擇Windows橋時改用6.3.1，
+  不在WSL建立OAuth。純POSIX方案建立或核對明確的Python3.12 venv，固定Kaggle2.2.4及SDK0.1.37，核對完整170-source closure。
   官方`python3.12 -m venv --copies /chosen/native-venv`可避免多層interpreter symlink；不要覆寫既存venv。
   在該新venv用`python -I -B -m pip install 'kaggle==2.2.4' 'kagglesdk==0.1.37'`安裝官方pins與相依，
   再跑`python -I -B -m pip check`；以`importlib.metadata`記錄版本與來源root，不要import Kaggle當作metadata probe。
@@ -325,7 +329,7 @@ nonforced p95≤0.05、max≤0.20、strict-DDIS coverage=100% 不變，至少一
 4. **準備、獨立檢查、一次 RUN：** `prepare-active` 只建立一個新的 immutable predispatch
    epoch 與四個 JIT 文件：`active-finalized.ipynb`、`original-request.json`、`operator.json`、
    `parent-private-scorer.json`。保留 finalization、wire、prepared journal；由
-   `publication_portable_20261015/verify_active_wire.py` 依當次真實 static pins 核對，產生對應獨立 active
+   所選successor的`verify_active_wire.py`依其格式及當次真實 static pins 核對，產生對應獨立 active
    review 後才 `activate`。60秒 dispatch-age 上限不變；stale preparation 保留並停止，
    不能自動重抽時鐘。一次 accepted／uncertain send 後用 `verify-run` readback/reconcile，
    不能把讀取中斷當理由重發 RUN。provider 接受不等於已跑模型。
@@ -343,6 +347,47 @@ inner42000／outer42180／provider42300 offsets。整場已消耗時鐘及每次
 使用原單張 NvidiaRtxPro6000 訓練資源；4×L4 是另外的最終推論驗證，不能以單訓練卡
 或 CPU 通過推定4×L4能部署。Internet-off 與既有 ARC3 metadata association 保留，
 不讀 ARC3 task data、不做官方 competition submission。
+
+### 6.3.1 沿用既有Windows登入的本地橋接驗收
+
+這是選定的目的端實作，不另改研究方法。WSL的checkout／candidate／state／scratch保留在
+persistent ext4；Windows只接收同一固定commit的公開bridge來源、獨立venv及非秘密本地設定。
+原登入留在原Windows profile，由官方library使用；沒有新的WSL OAuth、credential搬移或HOME替換。
+
+1. 核對交付commit／tree與所有source bytes。另在Windows實際native路徑放置相同bridge source；
+   不以換行轉換的checkout替代Git blob。native config的七檔來源必須同時等於WSL reviewed sibling。
+2. 用既有官方Python3.12建立新的Windows venv，不覆寫既有環境。以該venv執行：
+
+   ```powershell
+   & <official-python.exe> -I -B -m venv <new-native-venv>
+   & <new-native-venv>\Scripts\python.exe -I -B -m pip install 'kaggle==2.2.4' 'kagglesdk==0.1.37'
+   & <new-native-venv>\Scripts\python.exe -I -B -m pip check
+   ```
+
+   保存實際package版本／官方wheel來源及hash；metadata使用`importlib.metadata`，不為檢查版本
+   import Kaggle。SDK lock只覆蓋170個官方Python來源，不能代稱整個venv供應鏈已鎖定。
+   WSL owner只需原Python3.12與標準函式庫；不將Windows帳號設定傳入WSL。
+3. 以新Windows venv `-I -B`跑`native_probe.py`，保存stdout JSON、stderr、exitcode與hash；
+   必須十案例完整通過，來源四hash及venv executable／base executable／pyvenv.cfg均吻合。
+   另從WSL執行同commit的`wsl_native_probe.py`，實際測caller死亡→pipe EOF→native Job全清空。
+   兩者皆為合成程序；歷史global Python原8案例不能代替新版實測。
+4. 由本地metadata建立ignored native config：實際token SID/profile、venv/base executable bytes、
+   pyvenv.cfg、Python patch、purelib、完整七檔來源、既有network環境hash及同一版本配置。
+   不修改proxy／TLS／ACL，不加權限，不讀出或填入credential值。WSL config另綁現有
+   WSL_INTEROP socket selector與exact drive mapping、native config與genuine probe receipt的hash。
+   若WSLENV帶入未審查跨OS環境設定，停下說明，不靜默變更系統設定。
+5. 以同commit的`preauth_probe.py`測正式supervisor／worker CLI，僅send open、驗證ready後
+   故意不送ready_ack並關閉input，要求nonce-bound Job-zero closure。此時官方SDK只驗source及
+   store metadata，未載入credential內容／登入／RPC。失敗或無closure保留unknown，不繼續認證。
+   確切CLI參數看該工具`--help`；沒有把probe結果改寫為provider PASS。
+6. 新source／native實測／config皆交獨立review。全15檔operator source要已commit且remote驗證，
+   原collector、proposal、consumer、material、monitor、active-wire每條相依hash重新綁定。
+   接著回6.3第一步的fresh official observation與完整admission，才可走正常既有auth／readiness。
+   任何官方refresh均由Windows官方library保存原store，前後要求WSL fsync ACK；中斷或未知不自動重送。
+
+所有diagnostic／local config／原始log留ignored側；對研究端只回傳來源與非秘密結果／hash／缺件。
+若閉合的來源、runtime、ACL或原credential metadata不符，停在精確失敗點交回修復，不停用gate。
+跨OSworker的12h lease只約束該worker，不等於原實驗clock；只允許clean read-only輪替。
 
 ### 6.4 本地修復邊界與研究決策
 

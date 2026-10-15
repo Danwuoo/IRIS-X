@@ -15,6 +15,7 @@ import os
 import queue
 import shutil
 import subprocess
+import struct
 import sys
 import threading
 import time
@@ -33,13 +34,16 @@ def public_hash(path, cap):
 
 
 SOURCE_HASHES = {name: public_hash(HERE / name, 1024 * 1024) for name in
-                 ('win_runtime.py', 'win_supervisor.py', 'native_probe.py')}
+                 ('win_runtime.py', 'win_supervisor.py', 'native_probe.py', 'protocol.py')}
 PYTHON_SHA256 = public_hash(sys.executable, 128 * 1024 * 1024)
 PYTHON_VERSION = '.'.join(str(v) for v in sys.version_info[:3])
+PYTHON_BASE_EXECUTABLE_SHA256 = public_hash(getattr(sys, '_base_executable', None) or sys.executable, 128 * 1024 * 1024)
+PYVENV_CFG_SHA256 = (public_hash(Path(sys.prefix) / 'pyvenv.cfg', 65536)
+                    if sys.prefix != sys.base_prefix else None)
 sys.path.insert(0, str(HERE))
 from win_runtime import (ExclusiveMutex, JobProcess, PrivateFileGuard, SecurityDescriptor,
                          WindowsGuardError, api, current_identity, need, profile_relative,
-                         HANDLE, DWORD, LPVOID)
+                         HANDLE, DWORD, LPVOID, require_worker_job)
 from win_supervisor import supervise
 
 
@@ -118,6 +122,27 @@ def synthetic_file(path, sddl):
         a.k.CloseHandle(h)
 
 
+def synthetic_junction(path, target, sddl):
+    # A new private test directory junction needs no symlink privilege. No
+    # existing path, permission or reparse target is changed.
+    a = api()
+    with SecurityDescriptor(sddl) as sd:
+        a.check(a.k.CreateDirectoryW(str(path), C.byref(sd.attributes)), 'probe_junction_directory_failed')
+    h = a.handle(a.k.CreateFileW(str(path), 0x40000000, 0, None, 3,
+                                0x00200000 | 0x02000000, None), 'probe_junction_open_failed')
+    try:
+        substitute = ('\\??\\' + str(target)).encode('utf-16le')
+        display = str(target).encode('utf-16le')
+        paths = substitute + b'\0\0' + display + b'\0\0'
+        raw = struct.pack('<IHHHHHH', 0xA0000003, 8 + len(paths), 0,
+                          0, len(substitute), len(substitute) + 2, len(display)) + paths
+        buf = C.create_string_buffer(raw); count = DWORD()
+        a.check(a.k.DeviceIoControl(h, 0x000900A4, buf, len(raw), None, 0,
+                                   C.byref(count), None), 'probe_junction_create_failed')
+    finally:
+        a.k.CloseHandle(h)
+
+
 def metadata_checks():
     ident = current_identity()
     root = Path(ident.profile) / ('irisx-offline-probe-' + uuid.uuid4().hex)
@@ -161,9 +186,21 @@ def metadata_checks():
         else:
             raise WindowsGuardError('probe_hardlink_accepted')
         alias.unlink()
+        junction = root / 'synthetic-junction'
+        synthetic_junction(junction, root, sddl)
+        try:
+            try:
+                with PrivateFileGuard(str(junction / good.name)):
+                    pass
+            except WindowsGuardError as exc:
+                need(str(exc) == 'windows_reparse_path_forbidden', 'probe_wrong_reparse_rejection')
+            else:
+                raise WindowsGuardError('probe_reparse_accepted')
+        finally:
+            os.rmdir(junction)
         return {'private_metadata': True, 'in_place_write_revalidated': True,
                 'unapproved_allow_rejected': True, 'wrong_profile_rejected': True,
-                'hardlink_rejected': True, 'real_auth_accessed': False}
+                'hardlink_rejected': True, 'reparse_ancestor_rejected': True, 'real_auth_accessed': False}
     finally:
         shutil.rmtree(root)
 
@@ -180,14 +217,15 @@ def lock_check():
 
 
 def job_check():
-    job = JobProcess(command('--tree'))
+    nonce = uuid.uuid4().hex + uuid.uuid4().hex
+    job = JobProcess(command('--tree', nonce), job_nonce=nonce)
     try:
         data = line_with_timeout(PipeLines(job.stdout))
         with ProcessRefs([data['child'], data['grandchild']]) as refs:
             need(job.active_processes() >= 2, 'probe_job_missing_grandchild')
             proof = job.terminate_and_prove_empty()
             refs.assert_stopped()
-            return proof
+            return {**proof, 'exact_membership_checked_before_resume': True, 'worker_null_job_check': True}
     finally:
         if job.job:
             job.terminate_and_prove_empty()
@@ -274,7 +312,7 @@ def parent_death_check():
         identity = next(v for v in values if 'job_owner' in v)
         supervisor_pid = identity['job_owner']
         members = stable_members(owner)
-        need(all(pid in members for pid in (tree['child'], tree['grandchild'], supervisor_pid)), 'probe_membership_missing_tree')
+        need(all(pid in members for pid in (tree['child'], tree['grandchild'], supervisor_pid, identity['native_parent_pid'])), 'probe_membership_missing_tree')
         refs = ProcessRefs(members)
         kill_actual_process(identity['native_parent_pid'])
         assert_job_empty(owner)
@@ -292,10 +330,189 @@ def parent_death_check():
             refs.close()
 
 
+
+def framed_module():
+    # Public reviewed protocol only; no SDK/config/auth modules are imported.
+    import protocol
+    return protocol
+
+
+class FramedPipeAdapter:
+    def __init__(self, pipe):
+        self.pipe = pipe
+    def read(self, count):
+        return self.pipe.read(min(count, 65536))
+    def write(self, data):
+        for offset in range(0, len(data), 65536):
+            self.pipe.write(bytes(data[offset:offset + 65536]))
+        return len(data)
+    def flush(self):
+        pass
+
+
+def probe_request(protocol, channel, sequence, operation, arguments, seconds):
+    deadline = time.time() + seconds
+    payload = {'operation': operation, 'arguments': arguments,
+               'deadline_epoch': deadline, 'max_seconds': seconds}
+    digest = protocol.request_hash(operation, arguments, deadline_epoch=deadline, max_seconds=seconds)
+    channel.send('request', payload, sequence=sequence, request_sha256=digest)
+    return digest
+
+
+def framed_watch_check(mode):
+    protocol = framed_module(); nonce = uuid.uuid4().hex + uuid.uuid4().hex
+    owner = JobProcess(command('--framed-supervisor', mode, nonce))
+    began = time.monotonic()
+    try:
+        channel = protocol.FramedIO(FramedPipeAdapter(owner.stdout), FramedPipeAdapter(owner.stdin), nonce=nonce,
+                                   deadline=time.monotonic() + 12)
+        seconds = 0.6 if mode == 'operation' else 8
+        arguments = {'account': 'danielwuu', 'versions': {'code_predecessor': 20, 'code': 21,
+            'inactive_predecessor': 39, 'inactive': 40, 'active': 41},
+            'configuration_sha256': 'a' * 64, 'bridge_configuration_sha256': 'b' * 64,
+            'publication_manifest_sha256': 'c' * 64, 'deadline_epoch': time.time() + 10,
+            'max_seconds': 10}
+        digest = probe_request(protocol, channel, 1, 'open', arguments, seconds)
+        if mode == 'phase':
+            channel.receive(kinds={'response'}, sequence=1, request_sha256=digest)
+            probe_request(protocol, channel, 2, 'output', {'name': 'synthetic.zip', 'version': 1,
+                'cap': 1024, 'expected_bytes': None, 'expected_sha256': None}, 8)
+        assert_job_empty(owner, 12)
+        receipt = line_with_timeout(PipeLines(owner.stderr))
+        expected = 'operation_deadline' if mode == 'operation' else 'official_rpc_deadline'
+        need(receipt['reason'] == expected and receipt['closure']['active_processes'] == 0,
+             'probe_native_watchdog_failed')
+        need(time.monotonic() - began < 6, 'probe_native_watchdog_too_late')
+        return {'reason': expected, 'active_processes': 0, 'observer_job_active_processes': 0,
+                'real_protocol_observed': True, 'hung_worker_stopped': True}
+    finally:
+        owner.terminate_and_prove_empty()
+
+
+def framed_worker(mode, nonce):
+    protocol = framed_module(); require_worker_job(nonce)
+    channel = protocol.FramedIO(sys.stdin.buffer, sys.stdout.buffer, nonce=nonce)
+    request = channel.receive(kinds={'request'})
+    sequence = request['sequence']; digest = request['request_sha256']
+    if mode == 'phase':
+        channel.send('response', {'operation': 'open', 'result': {'authenticated': True}},
+                     sequence=sequence, request_sha256=digest)
+        request = channel.receive(kinds={'request'})
+        sequence = request['sequence']; digest = request['request_sha256']
+        channel.send('phase_start', {'phase_id': 1, 'kind': 'official_rpc', 'max_seconds': 120,
+            'deadline_epoch': time.time() + 0.6}, sequence=sequence, request_sha256=digest)
+    # Process tree intentionally does no work and does not cooperate with the
+    # deadline. Only the independent real native supervisor can enforce it.
+    subprocess.Popen(command('--grandchild'), stdin=subprocess.DEVNULL,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    time.sleep(30)
+    return 0
+
+
+
+def public_bindings():
+    return {'source_sha256': dict(SOURCE_HASHES), 'python_version': PYTHON_VERSION,
+            'python_executable_sha256': PYTHON_SHA256,
+            'python_base_executable_sha256': PYTHON_BASE_EXECUTABLE_SHA256,
+            'pyvenv_cfg_sha256': PYVENV_CFG_SHA256}
+
+
+def public_bindings_unchanged():
+    return (all(public_hash(HERE / name, 1024 * 1024) == digest for name, digest in SOURCE_HASHES.items())
+            and public_hash(sys.executable, 128 * 1024 * 1024) == PYTHON_SHA256
+            and public_hash(getattr(sys, '_base_executable', None) or sys.executable,
+                            128 * 1024 * 1024) == PYTHON_BASE_EXECUTABLE_SHA256
+            and (public_hash(Path(sys.prefix) / 'pyvenv.cfg', 65536)
+                 if sys.prefix != sys.base_prefix else None) == PYVENV_CFG_SHA256)
+
+
+
+def require_observed_tree(identity, tree, members):
+    # With base python.exe the supervisor's direct parent is this independent
+    # observer, deliberately outside its child Job. Only an intermediate venv
+    # launcher belongs to the child Job; EOF evidence does not require one.
+    need(all(pid in members for pid in (identity['job_owner'], tree['child'], tree['grandchild'])),
+         'probe_wsl_observer_membership')
+
+def wsl_observer():
+    """Synthetic WSL caller death -> native pipe EOF -> full Job closure.
+
+    The native observer outlives the killed WSL caller. It holds an outer Job,
+    never the inner supervisor Job handle. Its tiny EOF relay is diagnostic-only;
+    this does not claim to exercise the production config/SDK entry point.
+    """
+    owner = None; refs = None
+    receipt = {'format': 'irisx/wsl-native-observer-result-v1', 'ok': False,
+        'scope': 'synthetic_wsl_caller_death_pipe_eof_job_closure',
+        'native_windows': True, 'network_used': False, 'real_auth_accessed': False,
+        **public_bindings()}
+    try:
+        owner = JobProcess(command('--probe-supervisor', '15'))
+        lines = PipeLines(owner.stdout)
+        values = [line_with_timeout(lines), line_with_timeout(lines)]
+        identity = next(value for value in values if 'job_owner' in value)
+        tree = next(value for value in values if 'child' in value)
+        members = stable_members(owner)
+        require_observed_tree(identity, tree, members)
+        refs = ProcessRefs(members)
+        pipe_closed = threading.Event(); pipe_state = {'eof': False}
+        def watch_caller_pipe():
+            try:
+                pipe_state['eof'] = os.read(0, 1) == b''
+            except OSError:
+                pipe_state['eof'] = False
+            finally:
+                owner.stdin.close()
+                pipe_closed.set()
+        threading.Thread(target=watch_caller_pipe, daemon=True).start()
+        ready = {'format': 'irisx/wsl-native-observer-ready-v1', 'native_windows': True,
+                 'member_count': len(members), 'roles': {**identity, **tree}, **public_bindings()}
+        os.write(1, (json.dumps(ready, sort_keys=True, separators=(',', ':')) + '\n').encode('ascii'))
+        need(pipe_closed.wait(12), 'probe_wsl_caller_eof_missing')
+        need(pipe_state['eof'], 'probe_wsl_caller_pipe_not_eof')
+        assert_job_empty(owner, 8)
+        refs.assert_stopped()
+        supervisor = line_with_timeout(PipeLines(owner.stderr))
+        need(supervisor['reason'] == 'caller_pipe_eof' and supervisor['closure']['active_processes'] == 0,
+             'probe_wsl_supervisor_closure_failed')
+        need(public_bindings_unchanged(), 'probe_wsl_public_sources_changed')
+        receipt.update(ok=True, caller_pipe_eof_observed=True,
+            observer_job_active_processes=0, original_member_handles_stopped=True,
+            all_members_tracked=len(members), supervisor=supervisor,
+            source_unchanged=True)
+    except WindowsGuardError as exc:
+        receipt['reason'] = str(exc)
+    except BaseException:
+        receipt['reason'] = 'probe_wsl_observer_internal_error'
+    finally:
+        if owner is not None:
+            try:
+                owner.terminate_and_prove_empty()
+            except BaseException:
+                receipt.update(ok=False, reason='probe_wsl_cleanup_unproven')
+        if refs is not None:
+            refs.close()
+    os.write(1, (json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n').encode('ascii'))
+    return 0 if receipt['ok'] else 1
+
+
 def child_mode(args):
+    if args == ['--wsl-observer']:
+        return wsl_observer()
+    if args[0] == '--framed-worker':
+        return framed_worker(args[1], args[2])
+    if args[0] == '--framed-supervisor':
+        protocol = framed_module(); nonce = args[2]
+        result = supervise(command('--framed-worker', args[1], nonce), timeout_seconds=10,
+            deadline_unix=time.time() + 10, scope='offline-probe-' + uuid.uuid4().hex,
+            protocol=protocol, nonce=nonce)
+        os.write(2, (json.dumps({'reason': result.reason, 'closure': result.closure}) + '\n').encode('ascii'))
+        return result.code
     if args[0] == '--grandchild':
         time.sleep(60); return 0
     if args[0] == '--tree':
+        if len(args) > 1:
+            require_worker_job(args[1])
         child = subprocess.Popen(command('--grandchild'), stdin=subprocess.DEVNULL,
                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         os.write(1, (json.dumps({'child': os.getpid(), 'grandchild': child.pid}) + '\n').encode('ascii'))
@@ -328,7 +545,9 @@ def main():
         os.write(1, (json.dumps({'format': 'irisx/windows-native-probe-v1', 'ok': False,
             'native_windows': False, 'reason': 'native_windows_required',
             'source_sha256': SOURCE_HASHES, 'python_version': PYTHON_VERSION,
-            'python_executable_sha256': PYTHON_SHA256}, sort_keys=True) + '\n').encode('ascii'))
+            'python_executable_sha256': PYTHON_SHA256,
+            'python_base_executable_sha256': PYTHON_BASE_EXECUTABLE_SHA256,
+            'pyvenv_cfg_sha256': PYVENV_CFG_SHA256}, sort_keys=True) + '\n').encode('ascii'))
         return 2
     import msvcrt
     for fd in (0, 1, 2):
@@ -340,7 +559,9 @@ def main():
              ('deadline', lambda: supervisor_check('timeout')),
              ('pipe_eof', lambda: supervisor_check('pipe_eof')),
              ('supervisor_kill', lambda: supervisor_check('supervisor_kill')),
-             ('parent_death', parent_death_check)]
+             ('parent_death', parent_death_check),
+             ('framed_operation_deadline', lambda: framed_watch_check('operation')),
+             ('framed_official_rpc_deadline', lambda: framed_watch_check('phase'))]
     for name, check in cases:
         try:
             checks[name] = {'ok': True, 'result': check()}
@@ -350,13 +571,15 @@ def main():
         except BaseException:
             all_ok = False
             checks[name] = {'ok': False, 'reason': 'probe_internal_error'}
-    unchanged = all(public_hash(HERE / name, 1024 * 1024) == digest for name, digest in SOURCE_HASHES.items())
+    unchanged = public_bindings_unchanged()
     checks['source_unchanged'] = {'ok': unchanged}
     all_ok = all_ok and unchanged
     result = {'format': 'irisx/windows-native-probe-v1', 'ok': all_ok,
         'native_windows': True, 'network_used': False, 'real_auth_accessed': False, 'checks': checks,
         'source_sha256': SOURCE_HASHES, 'python_version': PYTHON_VERSION,
-        'python_executable_sha256': PYTHON_SHA256}
+        'python_executable_sha256': PYTHON_SHA256,
+            'python_base_executable_sha256': PYTHON_BASE_EXECUTABLE_SHA256,
+            'pyvenv_cfg_sha256': PYVENV_CFG_SHA256}
     code = 0 if all_ok else 1
     os.write(1, (json.dumps(result, sort_keys=True, separators=(',', ':')) + '\n').encode('ascii'))
     return code

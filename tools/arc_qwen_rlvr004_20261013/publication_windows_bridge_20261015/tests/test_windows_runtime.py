@@ -1,0 +1,524 @@
+"""Policy/ABI/mocked ordering tests. Passing on Linux is NOT native proof."""
+import ctypes as C
+import importlib.util
+import math
+import pathlib
+import sys
+import unittest
+from types import SimpleNamespace
+from unittest import mock
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+import win_runtime as wr
+import win_supervisor as ws
+
+
+class PolicyTests(unittest.TestCase):
+    def test_non_windows_fails_without_dll_load(self):
+        with mock.patch.object(wr.os, 'name', 'posix'):
+            with self.assertRaisesRegex(wr.WindowsGuardError, 'native_windows_required'):
+                wr.API()
+
+    def test_accept_local_canonical_path(self):
+        self.assertEqual(wr.strict_local_path('c:/Users/owner/file'), r'C:\Users\owner\file')
+
+    def test_reject_ambiguous_or_remote_paths(self):
+        for value in (r'\\host\share\file', r'\\?\C:\file', 'C:relative', '/tmp/file',
+                      'C:\\a\\..\\b', 'C:\\a\\.\\b', 'C:\\a\\',
+                      'C:\\a.\\b', 'C:\\a \\b', 'C:\\a:b', 'C:\\a\0b'):
+            with self.subTest(value=value), self.assertRaises(wr.WindowsGuardError):
+                wr.strict_local_path(value)
+
+    def test_native_profile_only(self):
+        identity = wr.Identity('S-1-5-21-1', r'C:\Users\owner')
+        expected = r'C:\Users\owner\.kaggle\credentials.json'
+        self.assertEqual(wr.profile_relative(expected, identity, r'.kaggle\credentials.json'), expected)
+        for path in (r'D:\Users\owner\a', r'C:\Users\owner2\a', r'C:\Users\owner', r'C:\Windows\a'):
+            with self.subTest(path=path), self.assertRaisesRegex(wr.WindowsGuardError, 'original_profile'):
+                wr.profile_relative(path, identity)
+
+    def test_exact_store_name(self):
+        identity = wr.Identity('sid', r'C:\Users\owner')
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'store_path_mismatch'):
+            wr.profile_relative(r'C:\Users\owner\.kaggle\other.json', identity, r'.kaggle\credentials.json')
+
+    def test_acl_owner_and_allowlist(self):
+        owner = 'S-1-5-21-1'
+        entries = [(0, 0, 0x1f01ff, owner), (0, 0x10, 0x1f01ff, 'S-1-5-18'),
+                   (0, 0, 0x1f01ff, 'S-1-5-32-544')]
+        self.assertEqual(set(wr.validate_acl(owner, owner, entries)), {owner, 'S-1-5-18', 'S-1-5-32-544'})
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'owner_sid'):
+            wr.validate_acl('other', owner, entries)
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'unapproved_allow'):
+            wr.validate_acl(owner, owner, entries + [(0, 0, 1, 'S-1-1-0')])
+
+    def test_acl_deny_not_a_grant(self):
+        owner = 'owner'
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'owner_access_missing'):
+            wr.validate_acl(owner, owner, [(1, 0, 1, owner)])
+        self.assertEqual(wr.validate_acl(owner, owner, [(0, 0, 1, owner), (1, 0, 1, 'everyone')]), (owner,))
+
+    def test_acl_inherit_only_not_current_grant(self):
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'owner_access_missing'):
+            wr.validate_acl('owner', 'owner', [(0, 8, 1, 'owner')])
+
+    def test_unsupported_acl_type_rejected(self):
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'unsupported_ace'):
+            wr.validate_acl('owner', 'owner', [(5, 0, 1, 'owner')])
+
+    def test_source_reader_rejects_credentials_before_any_native_open(self):
+        with mock.patch.object(wr, 'api', side_effect=AssertionError('must not open any file')):
+            for path in (r'C:\Users\owner\.kaggle\credentials.json',
+                         r'C:\Users\owner\.KAGGLE\other.json', r'C:\anywhere\oauth.json',
+                         r'C:\elsewhere\credentials.json'):
+                with self.subTest(path=path), self.assertRaisesRegex(wr.WindowsGuardError, 'credential_source_read_forbidden'):
+                    wr.read_source(path, 65536)
+
+    def test_timeout_finite_strict_bound(self):
+        for value in (True, False, 0, -1, math.nan, math.inf, -math.inf, 43200.01, '3'):
+            with self.subTest(value=value), self.assertRaises(wr.WindowsGuardError):
+                wr.bounded_seconds(value)
+        self.assertEqual(wr.bounded_seconds(1), 1.0)
+
+    def test_deadline_never_restarts(self):
+        self.assertEqual(ws.remaining_timeout(30, 120, now=100), 20)
+        self.assertEqual(ws.remaining_timeout(5, 120, now=100), 5)
+        for deadline in (99, 100, 43301, math.nan, math.inf):
+            with self.subTest(deadline=deadline), self.assertRaises(wr.WindowsGuardError):
+                ws.remaining_timeout(30, deadline, now=100)
+
+    def test_abi_uses_windows_fixed_width_on_linux(self):
+        self.assertEqual(C.sizeof(wr.DWORD), 4)
+        self.assertEqual(C.sizeof(wr.BOOL), 4)
+        self.assertEqual(C.sizeof(wr.FILETIME), 8)
+        self.assertEqual(C.sizeof(wr.BY_HANDLE_FILE_INFORMATION), 52)
+        self.assertEqual(C.sizeof(wr.JOBOBJECT_BASIC_ACCOUNTING_INFORMATION), 48)
+        self.assertEqual(C.sizeof(wr.IO_COUNTERS), 48)
+        if C.sizeof(C.c_void_p) == 8:
+            self.assertEqual(C.sizeof(wr.STARTUPINFOW), 104)
+            self.assertEqual(C.sizeof(wr.STARTUPINFOEXW), 112)
+            self.assertEqual(C.sizeof(wr.JOBOBJECT_EXTENDED_LIMIT_INFORMATION), 144)
+
+
+class FakeAPI:
+    def __init__(self, *, reject_job_attribute=False, member=True, resume=1):
+        self.calls = []; self.next_handle = 100
+        self.reject_job_attribute = reject_job_attribute
+        self.member = member; self.resume = resume
+        self.k = self
+
+    def check(self, value, code):
+        wr.need(value, code); return value
+
+    def handle(self, value, code):
+        wr.need(value, code); return value
+
+    def CreateJobObjectW(self, *args):
+        self.calls.append(('job',)); return 50
+
+    def SetInformationJobObject(self, h, category, info, size):
+        flags = C.cast(info, C.POINTER(wr.JOBOBJECT_EXTENDED_LIMIT_INFORMATION)).contents.BasicLimitInformation.LimitFlags
+        self.calls.append(('limits', flags)); return 1
+
+    def QueryInformationJobObject(self, h, category, info, size, written):
+        if category == 9:
+            C.cast(info, C.POINTER(wr.JOBOBJECT_EXTENDED_LIMIT_INFORMATION)).contents.BasicLimitInformation.LimitFlags = wr.KILL_ON_JOB_CLOSE
+        elif category == 1:
+            C.cast(info, C.POINTER(wr.JOBOBJECT_BASIC_ACCOUNTING_INFORMATION)).contents.ActiveProcesses = 0
+        self.calls.append(('query', category)); return 1
+
+    def CreatePipe(self, read, write, attrs, size):
+        self.next_handle += 2
+        C.cast(read, C.POINTER(wr.HANDLE)).contents.value = self.next_handle
+        C.cast(write, C.POINTER(wr.HANDLE)).contents.value = self.next_handle + 1
+        return 1
+
+    def SetHandleInformation(self, h, mask, flags):
+        self.calls.append(('inherit', h, mask, flags)); return 1
+
+    def InitializeProcThreadAttributeList(self, attrs, count, reserved, size):
+        C.cast(size, C.POINTER(wr.SIZE_T)).contents.value = 256
+        return int(attrs is not None)
+
+    def UpdateProcThreadAttribute(self, attrs, flags, key, value, size, old, out):
+        self.calls.append(('attribute', key, tuple(value)))
+        return not (key == wr.JOB_LIST and self.reject_job_attribute)
+
+    def CreateProcessW(self, executable, command, psa, tsa, inherit, flags, env, cwd, startup, pi):
+        self.calls.append(('create', inherit, flags))
+        process = C.cast(pi, C.POINTER(wr.PROCESS_INFORMATION)).contents
+        process.hProcess = 90; process.hThread = 91; process.dwProcessId = 92
+        return 1
+
+    def IsProcessInJob(self, process, job, member):
+        self.calls.append(('member',))
+        C.cast(member, C.POINTER(wr.BOOL)).contents.value = self.member
+        return 1
+
+    def ResumeThread(self, thread):
+        self.calls.append(('resume',)); return self.resume
+
+    def DeleteProcThreadAttributeList(self, attrs):
+        self.calls.append(('delete_attributes',))
+
+    def TerminateJobObject(self, job, code):
+        self.calls.append(('terminate_job',)); return 1
+
+    def CloseHandle(self, handle):
+        self.calls.append(('close', handle)); return 1
+
+
+class MockedProcessTests(unittest.TestCase):
+    def test_atomic_membership_before_resume_and_zero_before_close(self):
+        fake = FakeAPI()
+        with mock.patch.object(wr, 'api', return_value=fake):
+            job = wr.JobProcess([r'C:\Python\python.exe', '-I', 'worker.py'])
+            proof = job.terminate_and_prove_empty()
+        self.assertEqual(proof['active_processes'], 0)
+        calls = fake.calls
+        names = [c[0] for c in calls]
+        create = names.index('create')
+        self.assertLess(next(i for i, c in enumerate(calls) if c[:2] == ('attribute', wr.JOB_LIST)), create)
+        self.assertLess(names.index('member'), names.index('resume'))
+        creation = calls[create]
+        self.assertTrue(creation[2] & wr.CREATE_SUSPENDED)
+        self.assertFalse(creation[2] & 0x01000000)  # CREATE_BREAKAWAY_FROM_JOB
+        handles = next(c[2] for c in calls if c[:2] == ('attribute', wr.HANDLE_LIST))
+        self.assertNotIn(50, handles)
+        self.assertEqual(calls[names.index('limits')][1], wr.KILL_ON_JOB_CLOSE)
+        self.assertLess(next(i for i, c in enumerate(calls) if c == ('query', 1)),
+                        next(i for i, c in enumerate(calls) if c == ('close', 50)))
+
+    def test_no_fallback_when_atomic_job_attribute_unavailable(self):
+        fake = FakeAPI(reject_job_attribute=True)
+        with mock.patch.object(wr, 'api', return_value=fake):
+            with self.assertRaisesRegex(wr.WindowsGuardError, 'atomic_job_unavailable'):
+                wr.JobProcess([r'C:\Python\python.exe'])
+        self.assertNotIn('create', [c[0] for c in fake.calls])
+        self.assertIn(('close', 50), fake.calls)
+
+    def test_resume_refused_until_verified_member(self):
+        fake = FakeAPI(member=False)
+        with mock.patch.object(wr, 'api', return_value=fake):
+            with self.assertRaisesRegex(wr.WindowsGuardError, 'child_not_in_job'):
+                wr.JobProcess([r'C:\Python\python.exe'])
+        self.assertNotIn('resume', [c[0] for c in fake.calls])
+        self.assertIn(('terminate_job',), fake.calls)
+
+    def test_resume_failure_kills_job(self):
+        fake = FakeAPI(resume=0xffffffff)
+        with mock.patch.object(wr, 'api', return_value=fake):
+            with self.assertRaisesRegex(wr.WindowsGuardError, 'child_resume_failed'):
+                wr.JobProcess([r'C:\Python\python.exe'])
+        self.assertIn(('terminate_job',), fake.calls)
+        self.assertIn(('close', 50), fake.calls)
+
+
+class NamedJobTests(unittest.TestCase):
+    def test_nonce_name_binds_user_and_exact_nonce(self):
+        one = wr.Identity('S-1-5-21-1', r'C:\Users\one')
+        two = wr.Identity('S-1-5-21-2', r'C:\Users\two')
+        self.assertNotEqual(wr._job_name('a' * 64, one), wr._job_name('a' * 64, two))
+        self.assertNotEqual(wr._job_name('a' * 64, one), wr._job_name('b' * 64, one))
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'nonce_invalid'):
+            wr._job_name('not-a-nonce', one)
+
+    def test_worker_rejects_no_job_without_opening_handle(self):
+        fake = FakeAPI(member=False)
+        fake.OpenJobObjectW = mock.Mock(side_effect=AssertionError('must never open Job'))
+        fake.GetCurrentProcess = lambda: 89
+        with mock.patch.object(wr, 'api', return_value=fake):
+            with self.assertRaisesRegex(wr.WindowsGuardError, 'job_missing'):
+                wr.require_worker_job('a' * 64)
+        fake.OpenJobObjectW.assert_not_called()
+        self.assertFalse(any(c[0] == 'close' for c in fake.calls))
+
+    def test_worker_uses_null_job_without_opening_or_inheriting_handle(self):
+        fake = FakeAPI()
+        fake.OpenJobObjectW = mock.Mock(side_effect=AssertionError('must never open Job'))
+        fake.GetCurrentProcess = lambda: 89
+        query = fake.QueryInformationJobObject
+        def null_query(handle, *args):
+            self.assertIsNone(handle)
+            return query(handle, *args)
+        fake.QueryInformationJobObject = null_query
+        with mock.patch.object(wr, 'api', return_value=fake):
+            proof = wr.require_worker_job('a' * 64)
+            self.assertTrue(proof['current_job_kill_on_close'])
+            self.assertEqual(proof['exact_membership_authority'], 'supervisor_before_resume')
+        fake.OpenJobObjectW.assert_not_called()
+        self.assertFalse(any(c[0] == 'close' for c in fake.calls))
+
+    def test_worker_rejects_breakaway_permitted_job(self):
+        fake = FakeAPI(); fake.GetCurrentProcess = lambda: 89
+        def query(handle, category, info, size, written):
+            C.cast(info, C.POINTER(wr.JOBOBJECT_EXTENDED_LIMIT_INFORMATION)).contents.BasicLimitInformation.LimitFlags = wr.KILL_ON_JOB_CLOSE | 0x800
+            return 1
+        fake.QueryInformationJobObject = query
+        with mock.patch.object(wr, 'api', return_value=fake):
+            with self.assertRaisesRegex(wr.WindowsGuardError, 'limits_invalid'):
+                wr.require_worker_job('a' * 64)
+
+    def test_duplicate_named_job_is_not_terminated(self):
+        fake = FakeAPI()
+        class Descriptor:
+            def __init__(self, *args):
+                self.attributes = wr.SECURITY_ATTRIBUTES()
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                pass
+        with mock.patch.object(wr, 'api', return_value=fake), mock.patch.object(wr, 'SecurityDescriptor', Descriptor), \
+             mock.patch.object(wr, 'current_identity', return_value=wr.Identity('sid', r'C:\Users\one')), \
+             mock.patch.object(C, 'set_last_error', create=True), \
+             mock.patch.object(C, 'get_last_error', return_value=183, create=True):
+            with self.assertRaisesRegex(wr.WindowsGuardError, 'nonce_reused'):
+                wr.JobProcess([r'C:\Python\python.exe'], job_nonce='a' * 64)
+        self.assertIn(('close', 50), fake.calls)
+        self.assertNotIn(('terminate_job',), fake.calls)
+
+
+class WatchdogTests(unittest.TestCase):
+    def setUp(self):
+        import protocol
+        self.protocol = protocol
+        self.clock = [100.0, 1000.0]
+        self.nonce = 'a' * 64
+        self.watch = ws.CommandWatch(protocol, self.nonce, lease_epoch=2000,
+            lease_monotonic=1100, monotonic=lambda: self.clock[0], wall=lambda: self.clock[1])
+        self.bindings = {}
+
+    def frame(self, kind, payload, sequence=1, digest=None):
+        protocol = self.protocol
+        if kind == 'request':
+            digest = protocol.request_hash(payload['operation'], payload['arguments'],
+                deadline_epoch=payload['deadline_epoch'], max_seconds=payload['max_seconds'])
+            self.bindings[sequence] = digest
+        digest = digest or self.bindings[sequence]
+        raw = protocol.canonical({'protocol': protocol.PROTOCOL, 'kind': kind,
+            'nonce': self.nonce, 'sequence': sequence, 'request_sha256': digest, 'payload': payload})
+        return protocol.HEADER.pack(protocol.MAGIC, protocol.CONTROL, len(raw)) + raw
+
+    def open(self):
+        arguments = {'account': 'danielwuu', 'versions': {'code_predecessor': 20,
+            'code': 21, 'inactive_predecessor': 39, 'inactive': 40, 'active': 41},
+            'configuration_sha256': 'b' * 64, 'bridge_configuration_sha256': 'c' * 64,
+            'publication_manifest_sha256': 'd' * 64, 'deadline_epoch': 2000, 'max_seconds': 1000}
+        self.watch.observe('request', self.frame('request', {'operation': 'open',
+            'arguments': arguments, 'deadline_epoch': 1120, 'max_seconds': 120}))
+
+    def output(self):
+        self.open()
+        self.watch.observe('response', self.frame('response', {'operation': 'open', 'result': {'authenticated': True}}))
+        self.watch.observe('request', self.frame('request', {'operation': 'output',
+            'arguments': {'name': 'synthetic.zip', 'version': 1, 'cap': 1024,
+                          'expected_bytes': None, 'expected_sha256': None},
+            'deadline_epoch': 1900, 'max_seconds': 900}, sequence=2))
+
+    def test_operation_deadline_independent_of_worker(self):
+        self.open()
+        self.clock[:] = [220, 1120]
+        self.assertEqual(self.watch.expired(), 'operation_deadline')
+
+    def test_nested_rpc_120_inside_download_900(self):
+        self.output()
+        self.watch.observe('response', self.frame('phase_start', {
+            'phase_id': 1, 'kind': 'official_rpc', 'max_seconds': 120,
+            'deadline_epoch': 1120}, sequence=2))
+        self.clock[:] = [220, 1120]
+        self.assertEqual(self.watch.expired(), 'official_rpc_deadline')
+        self.assertGreater(self.watch.command_deadline, self.clock[0])
+
+    def test_phase_end_does_not_reset_command(self):
+        self.output(); original = self.watch.command_deadline
+        self.watch.observe('response', self.frame('phase_start', {
+            'phase_id': 1, 'kind': 'official_rpc', 'max_seconds': 120,
+            'deadline_epoch': 1120}, sequence=2))
+        self.clock[:] = [150, 1050]
+        self.watch.observe('response', self.frame('phase_end', {'phase_id': 1}, sequence=2))
+        self.assertIsNone(self.watch.phase_deadline)
+        self.assertEqual(self.watch.command_deadline, original)
+
+    def test_expired_phase_cannot_be_cleared_by_late_end(self):
+        self.output()
+        self.watch.observe('response', self.frame('phase_start', {
+            'phase_id': 1, 'kind': 'official_rpc', 'max_seconds': 120,
+            'deadline_epoch': 1120}, sequence=2))
+        self.clock[:] = [221, 1121]
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'deadline_expired'):
+            self.watch.observe('response', self.frame('phase_end', {'phase_id': 1}, sequence=2))
+        self.assertIsNotNone(self.watch.phase_deadline)
+
+    def test_refresh_cannot_extend_operation(self):
+        self.open(); deadline = self.watch.command_deadline
+        self.clock[:] = [110, 1010]
+        self.watch.observe('response', self.frame('refresh_request', {'refresh_id': 'e' * 64,
+            'account': 'danielwuu', 'old_expiration_epoch': 900}))
+        self.assertEqual(self.watch.command_deadline, deadline)
+
+    def test_unfinished_phase_cannot_be_hidden_by_response(self):
+        self.open()
+        self.watch.observe('response', self.frame('phase_start', {'phase_id': 1,
+            'kind': 'official_rpc', 'max_seconds': 120, 'deadline_epoch': 1120}))
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'phase_unfinished'):
+            self.watch.observe('response', self.frame('response',
+                {'operation': 'open', 'result': {'authenticated': True}}))
+
+    def test_response_wrong_binding_rejected(self):
+        self.open()
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'control_binding'):
+            self.watch.observe('response', self.frame('response',
+                {'operation': 'open', 'result': {'authenticated': True}}, digest='f' * 64))
+
+    def test_partial_frame_never_marks_complete(self):
+        self.open()
+        self.watch.observe('response', b'IX')
+        with self.assertRaises(self.protocol.ProtocolError):
+            self.watch.finish('response')
+
+    def test_duplicate_active_phase_rejected(self):
+        self.output()
+        frame = self.frame('phase_start', {'phase_id': 1, 'kind': 'official_rpc',
+            'max_seconds': 120, 'deadline_epoch': 1120}, sequence=2)
+        self.watch.observe('response', frame)
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'phase_replay'):
+            self.watch.observe('response', frame)
+
+
+class BootstrapTests(unittest.TestCase):
+    def test_unbound_pin_fails_before_file_access(self):
+        with self.assertRaisesRegex(RuntimeError, 'bootstrap_unbound'):
+            ws._pinned_module('never_load', '/nonexistent', 'UNBOUND')
+
+    def test_source_hash_mismatch_prevents_code_execution(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / 'fixture.py'
+            path.write_text("raise AssertionError('must never execute')\n", encoding='utf-8')
+            with self.assertRaisesRegex(RuntimeError, 'bootstrap_hash'):
+                ws._pinned_module('never_load', path, '0' * 64)
+        self.assertNotIn('never_load', sys.modules)
+
+    def test_cli_has_no_arbitrary_worker_argv(self):
+        import inspect
+        source = inspect.getsource(ws.main)
+        self.assertNotIn("add_argument('worker'", source)
+        self.assertIn('runtime.worker_path', source)
+        self.assertIn("'--config-sha'", source)
+
+
+class WSLHarnessTests(unittest.TestCase):
+    def setUp(self):
+        import wsl_native_probe
+        self.harness = wsl_native_probe
+        self.expected = {'source_sha256': {name: 'a' * 64 for name in wsl_native_probe.SOURCE_NAMES},
+            'python_executable_sha256': 'b' * 64, 'python_base_executable_sha256': 'c' * 64,
+            'pyvenv_cfg_sha256': 'd' * 64}
+        self.receipt = {'format': 'irisx/wsl-native-observer-result-v1', 'ok': True,
+            'scope': 'synthetic_wsl_caller_death_pipe_eof_job_closure',
+            'native_windows': True, 'python_version': '3.12.10', **self.expected,
+            'network_used': False, 'real_auth_accessed': False, 'caller_pipe_eof_observed': True,
+            'observer_job_active_processes': 0, 'original_member_handles_stopped': True,
+            'all_members_tracked': 5, 'source_unchanged': True,
+            'supervisor': {'reason': 'caller_pipe_eof', 'closure': {
+                'format': 'irisx/windows-job-closure-v1', 'active_processes': 0,
+                'kill_on_close': True, 'breakaway_permitted': False, 'atomic_job_assignment': True}}}
+
+    def test_native_observer_accepts_base_python_parent_outside_child_job(self):
+        import native_probe
+        native_probe.require_observed_tree({'job_owner': 10, 'native_parent_pid': 99},
+                                          {'child': 20, 'grandchild': 30}, (10, 20, 30))
+        native_probe.require_observed_tree({'job_owner': 10, 'native_parent_pid': 9},
+                                          {'child': 20, 'grandchild': 30}, (9, 10, 20, 30))
+        with self.assertRaises(wr.WindowsGuardError):
+            native_probe.require_observed_tree({'job_owner': 10, 'native_parent_pid': 99},
+                                              {'child': 20, 'grandchild': 30}, (10, 20))
+
+    def test_accepts_complete_exact_bound_closure(self):
+        self.assertIs(self.harness.verify_closure(self.receipt, self.expected), self.receipt)
+
+    def test_rejects_missing_or_stale_base_runtime(self):
+        for field in ('python_executable_sha256', 'python_base_executable_sha256', 'pyvenv_cfg_sha256'):
+            damaged = dict(self.receipt); damaged[field] = 'e' * 64
+            with self.subTest(field=field), self.assertRaises(self.harness.ProbeError):
+                self.harness.verify_closure(damaged, self.expected)
+
+    def test_native_process_exit_alone_is_not_closure(self):
+        for field, value in (('caller_pipe_eof_observed', False),
+                             ('observer_job_active_processes', 1),
+                             ('observer_job_active_processes', False),
+                             ('original_member_handles_stopped', False),
+                             ('all_members_tracked', 2), ('source_unchanged', False)):
+            damaged = dict(self.receipt); damaged[field] = value
+            with self.subTest(field=field), self.assertRaises(self.harness.ProbeError):
+                self.harness.verify_closure(damaged, self.expected)
+
+    def test_wrong_native_stop_reason_rejected(self):
+        import copy
+        damaged = copy.deepcopy(self.receipt)
+        damaged['supervisor']['reason'] = 'deadline'
+        with self.assertRaises(self.harness.ProbeError):
+            self.harness.verify_closure(damaged, self.expected)
+
+    def test_bool_is_not_process_count(self):
+        import copy
+        damaged = copy.deepcopy(self.receipt)
+        damaged['supervisor']['closure']['active_processes'] = False
+        with self.assertRaises(self.harness.ProbeError):
+            self.harness.verify_closure(damaged, self.expected)
+
+    def test_source_map_binds_all_four_members(self):
+        damaged = dict(self.receipt)
+        damaged['source_sha256'] = dict(self.receipt['source_sha256'])
+        damaged['source_sha256'].pop('protocol.py')
+        with self.assertRaises(self.harness.ProbeError):
+            self.harness.verify_closure(damaged, self.expected)
+
+    def test_json_rejects_duplicates_and_nonfinite_values(self):
+        for raw in (b'{"ok":true,"ok":false}', b'{"x":NaN}', b'[]'):
+            with self.subTest(raw=raw), self.assertRaises(self.harness.ProbeError):
+                self.harness.strict_json(raw)
+
+    def test_native_mapping_is_exact_and_rejects_ambiguous_paths(self):
+        self.assertEqual(str(self.harness.native_probe_path(r'C:\Users\owner\native_probe.py')),
+                         '/mnt/c/Users/owner/native_probe.py')
+        for path in (r'\\host\share\native_probe.py', r'\\?\C:\native_probe.py',
+                     r'C:\owner\..\native_probe.py', r'C:\owner.\native_probe.py',
+                     r'C:\owner\different.py', r'C:relative\native_probe.py'):
+            with self.subTest(path=path), self.assertRaises(self.harness.ProbeError):
+                self.harness.native_probe_path(path)
+
+    def test_all_native_sources_prehashed_before_execution(self):
+        seen = []
+        def digest(path, cap):
+            seen.append(path)
+            return self.expected['source_sha256'][path.name]
+        with mock.patch.object(self.harness, 'file_hash', side_effect=digest):
+            self.harness.verify_native_sources(r'C:\reviewed\native_probe.py', self.expected['source_sha256'])
+        self.assertEqual({path.name for path in seen}, set(self.harness.SOURCE_NAMES))
+        self.assertTrue(all(str(path.parent) == '/mnt/c/reviewed' for path in seen))
+        with mock.patch.object(self.harness, 'file_hash', return_value='f' * 64):
+            with self.assertRaisesRegex(self.harness.ProbeError, 'prelaunch_source_mismatch'):
+                self.harness.verify_native_sources(r'C:\wrong\native_probe.py', self.expected['source_sha256'])
+
+    def test_public_source_hash_rejects_symlink_ancestor(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory); real = root / 'real'; real.mkdir()
+            (real / 'source.py').write_text('pass', encoding='utf-8')
+            alias = root / 'alias'; alias.symlink_to(real, target_is_directory=True)
+            with self.assertRaisesRegex(self.harness.ProbeError, 'path_alias'):
+                self.harness.file_hash(alias / 'source.py', 65536)
+
+    def test_non_wsl_refused_before_any_execution(self):
+        args = SimpleNamespace(native_python='/not/read/python.exe')
+        fake_uname = SimpleNamespace(release='ordinary-linux')
+        with mock.patch.object(self.harness.os, 'uname', return_value=fake_uname), \
+             mock.patch.object(self.harness.subprocess, 'Popen', side_effect=AssertionError('must not launch')):
+            with self.assertRaisesRegex(self.harness.ProbeError, 'requires_wsl'):
+                self.harness.run(args)
+
+
+if __name__ == '__main__':
+    unittest.main()
