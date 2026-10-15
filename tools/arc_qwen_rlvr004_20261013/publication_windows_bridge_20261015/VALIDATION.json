@@ -87,6 +87,172 @@
     "source_files_unchanged_before_after": 25,
     "source_map_sha256": "be3040cec5307c9545afdbe2e76b79bc7327c4bbac47a7827e50839ac18a4ad4"
   },
+  "open_failure_diagnostic_revision": {
+    "actual_failed_open": {
+      "cause": "unproven",
+      "failure_handoff_sha256": "21d7174e4fb8c0d7895052ce7e883663d2fb26ce17805e252b74882e7e4a991c",
+      "mutation_attempted": false,
+      "native_exit_status_available": false,
+      "native_process_closure_verified": false,
+      "native_receipt_available": false,
+      "operation": "open",
+      "original_states_preserved": 29,
+      "publication_body_entered": false,
+      "ready_or_auth_stage_persisted": false,
+      "recovery_admitted": false,
+      "sequence": 1,
+      "source_commit": "01ca4f14d23edaba64111f9ff0bab6d6deb20a91",
+      "stage": "UNKNOWN",
+      "utc": "2026-10-15T08:11:35Z"
+    },
+    "aggregate": {
+      "baseline_rerun": false,
+      "errors": 35,
+      "exit_code": 1,
+      "failure_error_id_count": 37,
+      "failure_error_ids_equal_saved_posix_baseline": true,
+      "failures": 2,
+      "focused_suite_is_separate": true,
+      "log_sha256": "3b69dfa95d08137c939b3935dd14d91a1938177215b26d831ca322ac2a0b7dc8",
+      "new_or_missing_failure_error_ids": [],
+      "readme_findings": 6,
+      "skips": 74,
+      "tests": 1583
+    },
+    "base_commit": "8384d52b80afd53cf5dce1135d0e6fe6f5de0f35",
+    "focused": {
+      "normal": {
+        "errors": 0,
+        "failures": 0,
+        "log_sha256": "402add3bce8b9db4faa65601cd3e0e470c7f9b8c269c53449beeea5934cd6e2c",
+        "skips": 0,
+        "tests": 269
+      },
+      "optimized": {
+        "errors": 0,
+        "failures": 0,
+        "log_sha256": "195aeafc7b94a55b84067c50a1755bcbfc4f35f1ab58604485206fccf2cbc35b",
+        "skips": 0,
+        "tests": 269
+      }
+    },
+    "historical_unknown_changed": false,
+    "independent_review": {
+      "blocking_findings": 0,
+      "core_source_and_test_hashes_unchanged_before_after": true,
+      "focused_normal_tests": 269,
+      "focused_optimized_tests": 269,
+      "normal_log_sha256": "d2667f7da925503d0304f2fc9d7994c8c6ed3da1de3149d4164b0788fdae6164",
+      "optimized_log_sha256": "32f358874bada8294eed4e16d89a3a6f78c56a41fd282dede394f70e7cf56549",
+      "skips": 0,
+      "source_files_unchanged_before_after": 25,
+      "source_inventory_sha256": "8b56cabcc90d88b2f56a288b638c1c3dbd475364920cc2d4900de1d217f6f389",
+      "static_source_pin_edges_verified": 22
+    },
+    "native_acceptance": "not_run_for_this_successor",
+    "production_predecessor": "01ca4f14d23edaba64111f9ff0bab6d6deb20a91",
+    "provider_or_auth_used_in_this_revision_validation": false,
+    "scientific_execution": "not_run",
+    "scope": "bounded fixed-enum failure metadata and preservation of genuine queried closure after failed completion; no automatic reconciliation or retry",
+    "source_files": {
+      "bridge_client.py": {
+        "bytes": 36505,
+        "sha256": "aa15891066fa9e82cb84c7c2e313667e801858fede8ecadbafd385fafd87c928"
+      },
+      "config.py": {
+        "bytes": 23625,
+        "sha256": "11cbdaa9f08a14ba9efcf15207991d5179682413899853becf562f6b4af7169f"
+      },
+      "launch.py": {
+        "bytes": 5172,
+        "sha256": "925c5b3d2997218170de363e38a7bab5bf6af81755e3bd27ae514e592776d4aa"
+      },
+      "native_auth.py": {
+        "bytes": 15321,
+        "sha256": "785e696dc702e5042f415e3da1bd3fbf43ff34f3f8a579a702ec2f262aefdcd4"
+      },
+      "native_config.py": {
+        "bytes": 11518,
+        "sha256": "fe2ec44a37e8895077162a3369d859967001e5a50f4294d2d8e0fb954fa35282"
+      },
+      "native_probe.py": {
+        "bytes": 39716,
+        "sha256": "d38630677f70dac21d0369623c1d7f7e6650d9085b0d3b9e38a7c2918072f73f"
+      },
+      "operator_common.py": {
+        "bytes": 22154,
+        "sha256": "0878d5be5d2ce6f9ebf1e7559e57842a0dbed769bf41a9b12f2dc514677a3910"
+      },
+      "preauth_probe.py": {
+        "bytes": 19424,
+        "sha256": "bee325a8ae6da523e405ffef62dbb4a0658c6e26e6603de093177e927c72caf7"
+      },
+      "protocol.py": {
+        "bytes": 36653,
+        "sha256": "086c70bc50d942c753ac19b8b6f994a54bef1e6a3b0819cacd496d4d09c57b3d"
+      },
+      "rl_collect.py": {
+        "bytes": 58716,
+        "sha256": "2a556c9b7a2776ae35508a8bceab8e316f8f49a27605a57939324c281b895f61"
+      },
+      "rl_transport.py": {
+        "bytes": 59395,
+        "sha256": "9d94bdde8d1cbf0f973f9976451ca5b12a3a424bef7a12b4df58b4432bd8eb58"
+      },
+      "sdk_worker.py": {
+        "bytes": 44153,
+        "sha256": "c62059254723542a46d5d76bbe7d817410fee41742b53972ef771640b67a43fe"
+      },
+      "tests/test_bridge_client.py": {
+        "bytes": 48753,
+        "sha256": "d59e5113b51c9ec0ca0533eb86bbf4ad6a2d5697fc68bd776693ec77ecad0be4"
+      },
+      "tests/test_bridge_protocol.py": {
+        "bytes": 21652,
+        "sha256": "b87f3df0e5c68f9b09db773c2d3d5c7739d1e8839ce8a8f9ac09fa5fa45879de"
+      },
+      "tests/test_config_admission.py": {
+        "bytes": 42600,
+        "sha256": "11005b593a57587c3f9f4481ab62e0f1a2f74c2c1f20c488553480c29079f326"
+      },
+      "tests/test_native_config.py": {
+        "bytes": 4918,
+        "sha256": "1f0b80b8aff8cd7f864614ca0a3064df481fda3821c1b0d40ed1b99b07ccbd12"
+      },
+      "tests/test_native_sdk_worker.py": {
+        "bytes": 29023,
+        "sha256": "fe4c669f7d212eeabb8c363452688e1ac0774ebbcc8bc1df00868c684b8936d9"
+      },
+      "tests/test_owner_integration.py": {
+        "bytes": 45399,
+        "sha256": "81998f610152c21db322d45aa8ae9ef89f1967620e134d3f9388a162c109f309"
+      },
+      "tests/test_preauth_probe.py": {
+        "bytes": 14186,
+        "sha256": "5ca3fd63cd3728f13c2194f1c33084c2fc36c1339b0f1c7cecc3caf42bb6b51b"
+      },
+      "tests/test_windows_runtime.py": {
+        "bytes": 49584,
+        "sha256": "bfb9f64d81a031336a999f750bc5fff4e3f4ddab35cfcf84df52d23ea397a265"
+      },
+      "verify_active_wire.py": {
+        "bytes": 19347,
+        "sha256": "8a5b7844d1c5cfee3f5c026967d1dab2ed8465aa11e563aec276ba909c086438"
+      },
+      "win_runtime.py": {
+        "bytes": 35240,
+        "sha256": "7280b755d3155fb3d5d4f9989c0ea592d7a0d8be8750d635360f06fe766db69d"
+      },
+      "win_supervisor.py": {
+        "bytes": 16841,
+        "sha256": "a879c9c35fae574202ff8095ee95a3a08f68a355e30c58e403b1ee5bb75a6204"
+      },
+      "wsl_native_probe.py": {
+        "bytes": 12116,
+        "sha256": "fcc5f07ad4a658c42c6ead9d42239a2743f3f175058feb1604f8963772842932"
+      }
+    }
+  },
   "preserved_posix_commit": "b09e442fe706f06545be2cb4aa3363e04f807a71",
   "production_native_windows_acceptance": false,
   "production_preauth_cli_acceptance": false,
@@ -143,7 +309,7 @@
     "skips": 74,
     "tests": 1583
   },
-  "scope": "Original top-level result fields describe historical d684f63. diagnostic_revision describes f998839 and its failed native result. venv_repair_revision describes source commit 01ca4f14 and actual no-auth native/WSL/preauth acceptance. Provider admission and scientific execution remain separate and pending.",
+  "scope": "Original top-level fields describe historical d684f63; diagnostic_revision describes f998839; venv_repair_revision describes 01ca4f14 and its actual no-auth acceptance. open_failure_diagnostic_revision describes a forward-only diagnostic successor; historical failed-open UNKNOWN remains blocked, with no new native/provider or scientific admission.",
   "source_files": {
     "bridge_client.py": {
       "bytes": 30257,

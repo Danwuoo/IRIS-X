@@ -272,7 +272,13 @@ def supervise(argv, *, timeout_seconds, deadline_unix, parent_pid=None,
             if cause and reason == 'worker_exit':
                 reason = cause[0]
             if watch is not None and reason == 'worker_exit':
-                watch.complete()
+                try:
+                    watch.complete()
+                except BaseException:
+                    # Completion failure remains a failed operation. Preserve
+                    # the genuine queried closure already obtained above; it
+                    # does not authenticate or complete the interrupted command.
+                    reason = 'worker_completion_check_failed'
             code = 0 if reason == 'worker_exit' and worker_code == 0 else 124
             return SupervisionResult(code, reason, closure)
         finally:
@@ -294,30 +300,41 @@ def main(argv=None):
     receipt = {'format': 'irisx/windows-supervisor-result-v1', 'nonce': args.nonce,
                'ok': False, 'reason': 'supervisor_bootstrap_failed', 'closure': None}
     try:
+        receipt['reason'] = 'supervisor_platform_failed'
         if (os.name != 'nt' or sys.flags.isolated != 1 or sys.flags.dont_write_bytecode != 1
                 or sys.flags.ignore_environment != 1):
             raise RuntimeError('native_isolated_windows_required')
+        receipt['reason'] = 'supervisor_binding_failed'
         if re.fullmatch('[0-9a-f]{64}', args.nonce) is None or re.fullmatch('[0-9a-f]{64}', args.config_sha) is None:
             raise RuntimeError('supervisor_binding_invalid')
+        receipt['reason'] = 'supervisor_stdio_failed'
         import msvcrt
         for fd in (0, 1, 2):
             msvcrt.setmode(fd, os.O_BINARY)
         directory = Path(__file__).absolute().parent
+        receipt['reason'] = 'supervisor_runtime_bootstrap_failed'
         win = _pinned_module('win_runtime', directory / 'win_runtime.py', WIN_RUNTIME_SHA256)
         _install_runtime(win)
         # Capture the absolute monotonic lease before any expensive verification.
+        receipt['reason'] = 'supervisor_lease_failed'
         budget = remaining_timeout(args.max_seconds, args.deadline_epoch)
         lease_deadline = started + budget
+        receipt['reason'] = 'supervisor_config_bootstrap_failed'
         config = _pinned_module('native_config', directory / 'native_config.py', NATIVE_CONFIG_SHA256)
+        receipt['reason'] = 'supervisor_runtime_verification_failed'
         runtime = config.load_runtime(args.config, args.config_sha, supervisor=True)
+        receipt['reason'] = 'supervisor_source_identity_failed'
         need(config.same_path(str(directory), runtime.source_root), 'windows_supervisor_source_identity')
+        receipt['reason'] = 'supervisor_protocol_bootstrap_failed'
         descriptor = runtime.document['sources']['protocol.py']
         protocol = _pinned_module('protocol', directory / 'protocol.py', descriptor['sha256'])
         command = [runtime.executable, '-I', '-B', str(runtime.worker_path),
                    '--config', args.config, '--config-sha', args.config_sha, '--nonce', args.nonce,
                    '--deadline-epoch', str(args.deadline_epoch), '--max-seconds', str(args.max_seconds)]
+        receipt['reason'] = 'supervisor_worker_lease_failed'
         remaining = lease_deadline - time.monotonic()
         need(remaining > 0, 'windows_bootstrap_deadline')
+        receipt['reason'] = 'supervisor_supervision_failed'
         result = supervise(command, timeout_seconds=remaining, deadline_unix=args.deadline_epoch,
                            protocol=protocol, nonce=args.nonce)
         receipt.update(reason=result.reason, closure=result.closure, ok=result.code == 0)

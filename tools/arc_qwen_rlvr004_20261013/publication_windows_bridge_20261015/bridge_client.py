@@ -27,6 +27,16 @@ SDK_LOCK_SHA256 = '3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab732
 LEASE_SECONDS = 43200.0
 CLOSURE_WAIT_SECONDS = 5.0
 RECEIPT_CAP = 4096
+SUPERVISOR_REASONS = frozenset(('supervisor_bootstrap_failed', 'supervisor_platform_failed',
+    'supervisor_binding_failed', 'supervisor_stdio_failed', 'supervisor_runtime_bootstrap_failed',
+    'supervisor_lease_failed', 'supervisor_config_bootstrap_failed',
+    'supervisor_runtime_verification_failed', 'supervisor_source_identity_failed',
+    'supervisor_protocol_bootstrap_failed', 'supervisor_worker_lease_failed',
+    'supervisor_supervision_failed', 'supervisor_error', 'worker_completion_check_failed',
+    'caller_pipe_eof', 'input_limit', 'caller_pipe_or_protocol_error', 'output_limit',
+    'output_pipe_error', 'output_pipe_or_protocol_error', 'worker_stderr_limit',
+    'worker_stderr_pipe_error', 'deadline', 'operation_deadline', 'official_rpc_deadline',
+    'parent_death', 'worker_exit', 'relay_drain_timeout'))
 ACCOUNT = 'danielwuu'
 READ_ONLY_OPERATIONS = frozenset(('dataset', 'kernel', 'status', 'list_files', 'output',
     'dataset_download', 'binary_metadata'))
@@ -104,12 +114,17 @@ class _Pipes:
         self.reader, self.writer = self.process.stdout, self.process.stdin
         self.receipt = bytearray()
         self.receipt_failed = False
+        self.receipt_bytes_seen = 0
+        self.proxy_exit_status = None
         def drain():
             try:
                 while True:
                     block = self.process.stderr.read(4096)
                     if not block:
                         break
+                    # Saturating observation only; never retain unbounded stderr.
+                    self.receipt_bytes_seen = min(RECEIPT_CAP + 1,
+                                                  self.receipt_bytes_seen + len(block))
                     if len(self.receipt) + len(block) > RECEIPT_CAP:
                         self.receipt_failed = True
                     elif not self.receipt_failed:
@@ -122,6 +137,7 @@ class _Pipes:
     def finish(self, timeout):
         start = time.monotonic()
         code = self.process.wait(timeout=timeout)
+        self.proxy_exit_status = code
         self.thread.join(max(0, timeout - (time.monotonic() - start)))
         _need(not self.thread.is_alive() and not self.receipt_failed,
               'bridge_supervisor_receipt_unavailable')
@@ -140,6 +156,7 @@ class _Pipes:
                 self.process.wait(timeout=1)
             except (OSError, subprocess.TimeoutExpired):
                 pass
+        self.proxy_exit_status = self.process.returncode
         self.thread.join(0.1)
 
 
@@ -519,23 +536,105 @@ class BridgeClient:
         if self.failure_handled:
             return
         self.failure_handled = True
+        diagnostics = {'format': 'irisx/windows-bridge-failure-diagnostics-v1',
+            'ready_observed': self.ready is True,
+            'authenticated_observed': self.authenticated is True,
+            'rpc_phase_observed': 'active' if self.active_phase is not None else
+                ('completed' if self.last_phase_id else 'not_started'),
+            'cleanup': 'not_started', 'writer_close': 'not_attempted',
+            'finish': 'not_attempted', 'release': 'not_attempted',
+            'proxy_exit_status': None, 'receipt_validation': 'not_attempted',
+            'receipt_bytes_capped': None, 'receipt_sha256': None,
+            'supervisor_reason': 'unavailable'}
+        if self.session_proof is not None:
+            self.session_proof['failure_diagnostics'] = diagnostics
         try:
             self._mark_unknown(code)
-        finally:
-            if self.transport is not None:
-                try:
-                    self.transport.writer.close()  # Native parent-EOF watchdog.
-                    remaining = min(CLOSURE_WAIT_SECONDS, self.lease_deadline - self.clock())
-                    if remaining > 0:
-                        status, raw = self.transport.finish(remaining)
+        except BaseException:
+            # Retain refresh uncertainty in memory and still attempt the session
+            # journal below. Cleanup must never replace the primary failure.
+            pass
+        if self.transport is None:
+            diagnostics['cleanup'] = 'no_transport'
+        else:
+            diagnostics['cleanup'] = 'incomplete'
+            try:
+                self.transport.writer.close()  # Native parent-EOF watchdog.
+                diagnostics['writer_close'] = 'closed'
+            except BaseException:
+                diagnostics['writer_close'] = 'failed'
+            # A failed writer close does not discard the independent bounded
+            # native receipt. The original lease and cleanup cap still apply.
+            try:
+                remaining = min(CLOSURE_WAIT_SECONDS, self.lease_deadline - self.clock())
+                if remaining <= 0:
+                    diagnostics['finish'] = 'budget_expired'
+                else:
+                    status, raw = self.transport.finish(remaining)
+                    diagnostics['finish'] = 'complete'
+                    if type(status) is int and -(2**31) <= status <= 2**32 - 1:
+                        diagnostics['proxy_exit_status'] = status
+                    diagnostics['receipt_validation'] = 'rejected'
+                    if type(raw) is bytes:
+                        diagnostics['receipt_bytes_capped'] = min(len(raw), RECEIPT_CAP + 1)
+                        if not raw:
+                            diagnostics['receipt_validation'] = 'absent'
+                        elif len(raw) > RECEIPT_CAP:
+                            diagnostics['receipt_validation'] = 'oversized'
+                        else:
+                            diagnostics['receipt_sha256'] = hashlib.sha256(raw).hexdigest()
+                            # Diagnostic reason extraction cannot establish
+                            # closure. Keep only fixed literals from a bounded,
+                            # strictly decoded, nonce-bound receipt envelope.
+                            try:
+                                result = self.protocol.strict_json(raw)
+                                if (raw.endswith(b'\n') and raw.count(b'\n') == 1
+                                        and type(result) is dict and set(result) ==
+                                        {'format', 'nonce', 'ok', 'reason', 'closure'}
+                                        and result['format'] == 'irisx/windows-supervisor-result-v1'
+                                        and result['nonce'] == self.nonce
+                                        and type(result['ok']) is bool
+                                        and type(result['reason']) is str):
+                                    diagnostics['supervisor_reason'] = result['reason'] \
+                                        if result['reason'] in SUPERVISOR_REASONS else 'unrecognized'
+                            except BaseException:
+                                pass
+                    try:
                         self._receipt(status, raw, clean=False)
-                except BaseException:
-                    pass
-                finally:
+                        diagnostics['receipt_validation'] = 'valid_job_zero'
+                    except BaseException:
+                        pass
+            except (subprocess.TimeoutExpired, TimeoutError):
+                diagnostics['finish'] = 'timeout'
+                diagnostics['receipt_validation'] = 'unavailable'
+            except BaseException:
+                diagnostics['finish'] = 'failed'
+                diagnostics['receipt_validation'] = 'unavailable'
+            finally:
+                try:
                     self.transport.release()
-            if self.session_proof is not None:
-                self.session_proof['native_process_closure_verified'] = self.closure_verified
+                    diagnostics['release'] = 'complete'
+                except BaseException:
+                    diagnostics['release'] = 'failed'
+            if isinstance(self.transport, _Pipes):
+                # finish can fail after the proxy exits, or after stderr hits
+                # its cap. Neither observation is native closure authority.
+                status = self.transport.proxy_exit_status
+                if type(status) is int and -(2**31) <= status <= 2**32 - 1:
+                    diagnostics['proxy_exit_status'] = status
+                diagnostics['receipt_bytes_capped'] = self.transport.receipt_bytes_seen
+                if self.transport.receipt_bytes_seen > RECEIPT_CAP:
+                    diagnostics['receipt_validation'] = 'oversized'
+            if (diagnostics['writer_close'] == 'closed' and diagnostics['finish'] == 'complete'
+                    and diagnostics['release'] == 'complete'):
+                diagnostics['cleanup'] = 'complete'
+        if self.session_proof is not None:
+            self.session_proof.update(stage='UNKNOWN', unknown_reason=code,
+                native_process_closure_verified=self.closure_verified)
+            try:
                 self._journal_session()
+            except BaseException:
+                pass
 
     def close(self):
         if self.closed:
@@ -557,7 +656,7 @@ class BridgeClient:
             self._failed('BRIDGE_CLOSE_UNKNOWN')
             raise
         finally:
-            if self.transport is not None:
+            if self.transport is not None and not self.failure_handled:
                 self.transport.release()
 
     def can_rotate_read_only(self):

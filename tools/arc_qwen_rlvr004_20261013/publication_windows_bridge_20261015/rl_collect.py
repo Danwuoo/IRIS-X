@@ -7,8 +7,8 @@ import argparse, hashlib, importlib.util, json, math, stat, sys, time, types
 from pathlib import Path
 
 # Upstream-only pins keep collector -> transport -> common acyclic and source-only.
-COMMON_SOURCE_SHA256 = 'c1bddaa8b13598a8546de6e77f8bf29403e2507743adccb1654bdc5be79fedd5'
-TRANSPORT_SOURCE_SHA256 = 'cc05fc8b6878aa7648a5a526d93fa5b1262e7f2e72a725c986bbe6bd83b18c82'
+COMMON_SOURCE_SHA256 = '0878d5be5d2ce6f9ebf1e7559e57842a0dbed769bf41a9b12f2dc514677a3910'
+TRANSPORT_SOURCE_SHA256 = '9d94bdde8d1cbf0f973f9976451ca5b12a3a424bef7a12b4df58b4432bd8eb58'
 _local_sources={}
 for _name,_digest in [('operator_common.py',COMMON_SOURCE_SHA256),('rl_transport.py',TRANSPORT_SOURCE_SHA256)]:
     _path=Path(__file__).absolute().with_name(_name)

@@ -14,8 +14,10 @@ import tempfile
 import time
 import types
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
+DIAGNOSTIC_CANARY = 'synthetic-private-canary://C:/Synthetic/credential?token=never-persist'
 
 
 def load(name, path):
@@ -186,6 +188,8 @@ class SyntheticServer:
                     'retry_after_seconds': 0.5, 'mutation_uncertain': False})
                 return
             if op == 'open':
+                if self.fault == 'open_eof':
+                    return
                 self.emit('ready', {'sdk_lock_sha256': client_module.SDK_LOCK_SHA256,
                     'sdk_source_count': 170, 'account': 'danielwuu', 'existing_official_store': True})
             elif op == 'close':
@@ -234,6 +238,12 @@ class SyntheticServer:
             else:
                 raise ValueError('synthetic_operation_unimplemented')
         elif kind == 'ready_ack':
+            if self.fault == 'open_ready_eof':
+                return
+            if self.fault == 'open_phase_eof':
+                self.emit('phase_start', {'phase_id': 1, 'kind': 'official_rpc',
+                    'max_seconds': 120, 'deadline_epoch': time.time() + 120})
+                return
             if self.refresh:
                 self.emit('refresh_request', {'refresh_id': self.refresh_id,
                     'account': 'danielwuu', 'old_expiration_epoch': 0})
@@ -304,6 +314,313 @@ class BridgeClientTests(unittest.TestCase):
     def session(self):
         files = list(self.common.root.glob('native-bridge-*-journal.json'))
         return json.loads(files[-1].read_bytes())
+
+    def fail_open(self, configure, *, fault='open_eof'):
+        client = client_module.BridgeClient.__new__(client_module.BridgeClient)
+        def factory(*args):
+            server = SyntheticServer(self.common, *args, fault=fault)
+            self.servers.append(server)
+            configure(server, client)
+            return server
+        with self.assertRaisesRegex(ValueError, '^bridge_eof_or_invalid_read$'):
+            client._initialize(self.common.mapping, binding(), factory, time.monotonic, time.time)
+        return client
+
+    def assert_closed_failure_diagnostics(self, client):
+        proof = self.session()
+        self.assertEqual(proof['stage'], 'UNKNOWN')
+        self.assertTrue(client.unknown)
+        self.assertFalse(client.can_rotate_read_only())
+        self.assertEqual(proof['native_process_closure_verified'], client.closure_verified)
+        diagnostics = proof['failure_diagnostics']
+        self.assertEqual(set(diagnostics), {'format', 'ready_observed', 'authenticated_observed',
+            'rpc_phase_observed', 'cleanup', 'writer_close', 'finish', 'release',
+            'proxy_exit_status', 'receipt_validation', 'receipt_bytes_capped', 'receipt_sha256',
+            'supervisor_reason'})
+        self.assertEqual(diagnostics['format'], 'irisx/windows-bridge-failure-diagnostics-v1')
+        self.assertLess(len(canonical(diagnostics)), 1024)
+        self.assertNotIn(DIAGNOSTIC_CANARY, canonical(proof).decode())
+        before = len(self.servers)
+        with self.assertRaisesRegex(ValueError, 'previous_session_unknown'):
+            self.create()
+        self.assertEqual(len(self.servers), before)
+        return diagnostics
+
+    def test_open_failure_preserves_bounded_receipt_rejection_diagnostics(self):
+        cases = ('absent', 'malformed', 'oversized', 'duplicate_key', 'duplicate_receipt',
+                 'wrong_nonce', 'extra_stderr', 'job_nonzero', 'not_bytes')
+        for case in cases:
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as root:
+                self.common = Common(Path(root))
+                observed = []
+                def configure(server, client):
+                    _, raw = server.finish(1)
+                    result = json.loads(raw)
+                    result.update(ok=False, reason=DIAGNOSTIC_CANARY)
+                    if case == 'wrong_nonce':
+                        result['nonce'] = '0' * 64
+                    if case == 'job_nonzero':
+                        result['closure']['active_processes'] = 1
+                    raw = canonical(result)
+                    if case == 'absent':
+                        raw = b''
+                    elif case == 'malformed':
+                        raw = b'{' + DIAGNOSTIC_CANARY.encode() + b'\n'
+                    elif case == 'oversized':
+                        raw = DIAGNOSTIC_CANARY.encode() * client_module.RECEIPT_CAP
+                    elif case == 'duplicate_key':
+                        raw = raw[:-2] + b',"ok":false}\n'
+                    elif case == 'duplicate_receipt':
+                        raw += raw
+                    elif case == 'extra_stderr':
+                        raw += DIAGNOSTIC_CANARY.encode() + b'\n'
+                    elif case == 'not_bytes':
+                        raw = DIAGNOSTIC_CANARY
+                    observed.append(raw)
+                    server.finish = lambda timeout: (124, raw)
+                client = self.fail_open(configure)
+                diagnostics = self.assert_closed_failure_diagnostics(client)
+                self.assertFalse(client.closure_verified)
+                self.assertFalse(diagnostics['ready_observed'])
+                self.assertFalse(diagnostics['authenticated_observed'])
+                self.assertEqual(diagnostics['rpc_phase_observed'], 'not_started')
+                self.assertEqual(diagnostics['cleanup'], 'complete')
+                self.assertEqual(diagnostics['finish'], 'complete')
+                self.assertEqual(diagnostics['proxy_exit_status'], 124)
+                self.assertEqual(diagnostics['receipt_validation'],
+                    case if case in ('absent', 'oversized') else 'rejected')
+                self.assertEqual(diagnostics['supervisor_reason'],
+                                 'unrecognized' if case == 'job_nonzero' else 'unavailable')
+                raw = observed[0]
+                self.assertEqual(diagnostics['receipt_bytes_capped'],
+                    min(len(raw), client_module.RECEIPT_CAP + 1) if type(raw) is bytes else None)
+                self.assertEqual(diagnostics['receipt_sha256'], digest(raw)
+                    if type(raw) is bytes and 0 < len(raw) <= client_module.RECEIPT_CAP else None)
+
+    def test_valid_failed_jobzero_receipt_never_clears_unknown(self):
+        for fault, ready, phase in [('open_eof', False, 'not_started'),
+                                   ('open_ready_eof', True, 'not_started'),
+                                   ('open_phase_eof', True, 'active')]:
+            with self.subTest(fault=fault), tempfile.TemporaryDirectory() as root:
+                self.common = Common(Path(root))
+                def configure(server, client):
+                    _, raw = server.finish(1)
+                    result = json.loads(raw)
+                    result.update(ok=False, reason=DIAGNOSTIC_CANARY)
+                    server.finish = lambda timeout: (124, canonical(result))
+                client = self.fail_open(configure, fault=fault)
+                diagnostics = self.assert_closed_failure_diagnostics(client)
+                self.assertTrue(client.closure_verified)
+                self.assertEqual(diagnostics['receipt_validation'], 'valid_job_zero')
+                self.assertEqual(diagnostics['supervisor_reason'], 'unrecognized')
+                self.assertEqual(diagnostics['ready_observed'], ready)
+                self.assertFalse(diagnostics['authenticated_observed'])
+                self.assertEqual(diagnostics['rpc_phase_observed'], phase)
+                with self.assertRaisesRegex(client_module.BridgeUnknown, 'unknown_reconcile'):
+                    client.close()
+
+    def test_allowlisted_supervisor_reason_is_diagnostic_only(self):
+        for reason in sorted(client_module.SUPERVISOR_REASONS):
+            with self.subTest(reason=reason), tempfile.TemporaryDirectory() as root:
+                self.common = Common(Path(root))
+                def configure(server, client):
+                    _, raw = server.finish(1)
+                    result = json.loads(raw)
+                    result.update(ok=False, reason=reason, closure=None)
+                    server.finish = lambda timeout: (124, canonical(result))
+                client = self.fail_open(configure)
+                diagnostics = self.assert_closed_failure_diagnostics(client)
+                self.assertEqual(diagnostics['supervisor_reason'], reason)
+                self.assertEqual(diagnostics['receipt_validation'], 'rejected')
+                self.assertFalse(client.closure_verified)
+
+    def test_supervisor_reason_requires_closed_nonce_bound_receipt_envelope(self):
+        cases = ('extra_key', 'wrong_format', 'wrong_nonce', 'wrong_ok_type', 'wrong_reason_type')
+        for case in cases:
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as root:
+                self.common = Common(Path(root))
+                def configure(server, client):
+                    _, raw = server.finish(1)
+                    result = json.loads(raw)
+                    result.update(ok=False, reason='supervisor_binding_failed')
+                    if case == 'extra_key':
+                        result['arbitrary'] = DIAGNOSTIC_CANARY
+                    elif case == 'wrong_format':
+                        result['format'] = DIAGNOSTIC_CANARY
+                    elif case == 'wrong_nonce':
+                        result['nonce'] = '0' * 64
+                    elif case == 'wrong_ok_type':
+                        result['ok'] = 0
+                    elif case == 'wrong_reason_type':
+                        result['reason'] = [DIAGNOSTIC_CANARY]
+                    server.finish = lambda timeout: (124, canonical(result))
+                client = self.fail_open(configure)
+                diagnostics = self.assert_closed_failure_diagnostics(client)
+                self.assertEqual(diagnostics['supervisor_reason'], 'unavailable')
+                self.assertEqual(diagnostics['receipt_validation'], 'rejected')
+                self.assertFalse(client.closure_verified)
+
+    def test_writer_close_failure_still_preserves_bounded_receipt(self):
+        budgets = []
+        def configure(server, client):
+            original = server.finish
+            def finish(timeout):
+                budgets.append(timeout)
+                return original(timeout)
+            def broken_close():
+                raise OSError(DIAGNOSTIC_CANARY)
+            server.finish, server.writer.close = finish, broken_close
+        client = self.fail_open(configure)
+        diagnostics = self.assert_closed_failure_diagnostics(client)
+        self.assertTrue(client.closure_verified)
+        self.assertEqual(diagnostics['writer_close'], 'failed')
+        self.assertEqual(diagnostics['finish'], 'complete')
+        self.assertEqual(diagnostics['release'], 'complete')
+        self.assertEqual(diagnostics['cleanup'], 'incomplete')
+        self.assertEqual(len(budgets), 1)
+        self.assertGreater(budgets[0], 0)
+        self.assertLessEqual(budgets[0], client_module.CLOSURE_WAIT_SECONDS)
+
+    def test_authenticated_phase_observation_survives_following_eof(self):
+        client = self.create(fault='phases')
+        client.call('status', {})
+        self.servers[-1].fault = 'eof'
+        with self.assertRaisesRegex(ValueError, '^bridge_eof_or_invalid_read$'):
+            client.call('status', {})
+        diagnostics = self.assert_closed_failure_diagnostics(client)
+        self.assertTrue(diagnostics['ready_observed'])
+        self.assertTrue(diagnostics['authenticated_observed'])
+        self.assertEqual(diagnostics['rpc_phase_observed'], 'completed')
+
+    def test_cleanup_timeout_failure_and_expired_budget_keep_primary_eof(self):
+        for fault in ('timeout', 'finish_failed', 'release_failed', 'budget_expired'):
+            with self.subTest(fault=fault), tempfile.TemporaryDirectory() as root:
+                self.common = Common(Path(root))
+                finishes = []
+                def configure(server, client):
+                    original = server.finish
+                    def finish(timeout):
+                        finishes.append(timeout)
+                        if fault == 'timeout':
+                            raise subprocess.TimeoutExpired(DIAGNOSTIC_CANARY, timeout,
+                                output=DIAGNOSTIC_CANARY, stderr=DIAGNOSTIC_CANARY)
+                        if fault == 'finish_failed':
+                            raise RuntimeError(DIAGNOSTIC_CANARY)
+                        return original(timeout)
+                    server.finish = finish
+                    if fault == 'release_failed':
+                        def broken_release():
+                            raise OSError(DIAGNOSTIC_CANARY)
+                        server.release = broken_release
+                    if fault == 'budget_expired':
+                        control = server.control
+                        def expire(envelope):
+                            client.lease_deadline = client.clock() - 1
+                            return control(envelope)
+                        server.control = expire
+                client = self.fail_open(configure)
+                diagnostics = self.assert_closed_failure_diagnostics(client)
+                self.assertEqual(diagnostics['cleanup'], 'incomplete')
+                self.assertEqual(diagnostics['finish'], {'timeout': 'timeout',
+                    'finish_failed': 'failed', 'release_failed': 'complete',
+                    'budget_expired': 'budget_expired'}[fault])
+                self.assertEqual(len(finishes), 0 if fault == 'budget_expired' else 1)
+                self.assertEqual(client.closure_verified, fault == 'release_failed')
+                if fault in ('timeout', 'finish_failed'):
+                    self.assertEqual(diagnostics['receipt_validation'], 'unavailable')
+                    self.assertIsNone(diagnostics['receipt_sha256'])
+                if fault == 'release_failed':
+                    self.assertEqual(diagnostics['release'], 'failed')
+
+    def test_receipt_validator_failure_never_replaces_primary_eof(self):
+        def configure(server, client):
+            def broken_receipt(*args, **kwargs):
+                raise RuntimeError(DIAGNOSTIC_CANARY)
+            client._receipt = broken_receipt
+        client = self.fail_open(configure)
+        diagnostics = self.assert_closed_failure_diagnostics(client)
+        self.assertFalse(client.closure_verified)
+        self.assertEqual(diagnostics['receipt_validation'], 'rejected')
+        self.assertIsNotNone(diagnostics['receipt_sha256'])
+
+    def test_unknown_journal_failure_never_replaces_primary_eof(self):
+        for permanent in (False, True):
+            with self.subTest(permanent=permanent), tempfile.TemporaryDirectory() as root:
+                self.common = Common(Path(root))
+                attempts = []
+                original = self.common.journal
+                def journal(name, value):
+                    if value['stage'] == 'UNKNOWN':
+                        attempts.append(name)
+                        if permanent or len(attempts) == 1:
+                            raise OSError(DIAGNOSTIC_CANARY)
+                    return original(name, value)
+                self.common.mapping['journal'] = journal
+                client = self.fail_open(lambda server, client: None)
+                self.assertEqual(len(attempts), 2)
+                self.assertTrue(client.unknown and client.closure_verified)
+                self.assertEqual(client.session_proof['stage'], 'UNKNOWN')
+                self.assertEqual(client.session_proof['failure_diagnostics']['receipt_validation'],
+                                 'valid_job_zero')
+                if not permanent:
+                    self.assert_closed_failure_diagnostics(client)
+                else:
+                    self.assertEqual(self.session()['stage'], 'operation_intent')
+                    with self.assertRaisesRegex(ValueError, 'previous_session_unknown'):
+                        self.create()
+
+    def test_close_release_failure_preserves_primary_receipt_error(self):
+        client = self.create(fault='missing_receipt')
+        releases = []
+        def broken_release():
+            releases.append(True)
+            raise RuntimeError(DIAGNOSTIC_CANARY)
+        self.servers[-1].release = broken_release
+        with self.assertRaisesRegex(ValueError, '^bridge_supervisor_receipt_bytes$'):
+            client.close()
+        self.assertEqual(len(releases), 1)
+        diagnostics = self.assert_closed_failure_diagnostics(client)
+        self.assertEqual(diagnostics['release'], 'failed')
+        self.assertEqual(diagnostics['receipt_validation'], 'absent')
+
+    def test_real_proxy_oversized_stderr_keeps_exit_and_capped_count(self):
+        processes = []
+        def factory(*args):
+            pipes = client_module._Pipes([sys.executable, '-I', '-B', '-c',
+                'import sys; sys.stderr.write(' + repr(DIAGNOSTIC_CANARY) + ' * 200)'])
+            processes.append(pipes)
+            return pipes
+        client = client_module.BridgeClient.__new__(client_module.BridgeClient)
+        with self.assertRaises((ValueError, BrokenPipeError)):
+            client._initialize(self.common.mapping, binding(), factory, time.monotonic, time.time)
+        diagnostics = self.assert_closed_failure_diagnostics(client)
+        self.assertEqual(diagnostics['proxy_exit_status'], 0)
+        self.assertEqual(diagnostics['receipt_validation'], 'oversized')
+        self.assertEqual(diagnostics['receipt_bytes_capped'], client_module.RECEIPT_CAP + 1)
+        self.assertIsNone(diagnostics['receipt_sha256'])
+        self.assertFalse(client.closure_verified)
+        self.assertFalse(processes[0].thread.is_alive())
+        self.assertLessEqual(len(processes[0].receipt), client_module.RECEIPT_CAP)
+
+    def test_real_proxy_timeout_records_cleanup_exit_without_native_closure(self):
+        processes = []
+        def factory(*args):
+            pipes = client_module._Pipes([sys.executable, '-I', '-B', '-c',
+                'import os,time; os.close(1); time.sleep(60)'])
+            processes.append(pipes)
+            return pipes
+        client = client_module.BridgeClient.__new__(client_module.BridgeClient)
+        with mock.patch.object(client_module, 'CLOSURE_WAIT_SECONDS', 0.02):
+            with self.assertRaisesRegex(ValueError, '^bridge_eof_or_invalid_read$'):
+                client._initialize(self.common.mapping, binding(), factory, time.monotonic, time.time)
+        diagnostics = self.assert_closed_failure_diagnostics(client)
+        self.assertEqual(diagnostics['finish'], 'timeout')
+        self.assertEqual(diagnostics['proxy_exit_status'], -signal.SIGKILL)
+        self.assertEqual(diagnostics['receipt_validation'], 'unavailable')
+        self.assertEqual(diagnostics['receipt_bytes_capped'], 0)
+        self.assertIsNone(diagnostics['receipt_sha256'])
+        self.assertFalse(client.closure_verified)
+        self.assertFalse(processes[0].thread.is_alive())
 
     def test_source_bound_fixed_argv_and_open_binding(self):
         client = self.create()

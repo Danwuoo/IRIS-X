@@ -428,6 +428,140 @@ class BootstrapTests(unittest.TestCase):
         self.assertIn("'--config-sha'", source)
 
 
+class SupervisionFailureReceiptTests(unittest.TestCase):
+    """Synthetic ordering only: no native API, authentication or provider call."""
+    CLOSURE = {'format': 'irisx/windows-job-closure-v1', 'active_processes': 0,
+               'kill_on_close': True, 'breakaway_permitted': False,
+               'atomic_job_assignment': True}
+
+    def supervise_fixture(self, completion_error=None, closure_error=None, worker_code=0):
+        events = []
+        watch = mock.Mock()
+        watch.expired.return_value = None
+        watch.complete.side_effect = completion_error
+        job = SimpleNamespace(job=1, stdout=SimpleNamespace(read=lambda: b''),
+            stderr=SimpleNamespace(read=lambda: b''), poll=lambda: worker_code,
+            _close_handles=lambda: events.append('handles_closed'))
+        def close(**kwargs):
+            events.append('closure_query')
+            job.job = None
+            if closure_error is not None:
+                raise closure_error
+            return self.CLOSURE
+        job.terminate_and_prove_empty = close
+        def thread(*, target, daemon):
+            # Both drain relays complete synchronously. The input relay is kept
+            # open; these tests never touch an actual file descriptor.
+            return SimpleNamespace(start=lambda: target() if target.__name__ != 'input_relay' else None)
+        parent = mock.MagicMock()
+        parent.__enter__.return_value.dead.return_value = False
+        with mock.patch.object(ws, 'ExclusiveMutex', return_value=mock.MagicMock()), \
+             mock.patch.object(ws, 'ParentWatch', return_value=parent), \
+             mock.patch.object(ws, 'JobProcess', return_value=job), \
+             mock.patch.object(ws, 'CommandWatch', return_value=watch), \
+             mock.patch.object(ws.threading, 'Thread', side_effect=thread):
+            result = ws.supervise(['synthetic'], timeout_seconds=5,
+                deadline_unix=ws.time.time() + 5, protocol=object(), nonce='a' * 64)
+        return result, events, watch
+
+    def test_completion_failure_preserves_queried_zero_and_stays_failed(self):
+        for error in (wr.WindowsGuardError('windows_worker_incomplete_command'),
+                      RuntimeError('secret-canary/private/path'), KeyboardInterrupt()):
+            with self.subTest(error=type(error).__name__):
+                result, events, watch = self.supervise_fixture(completion_error=error)
+            self.assertEqual(result.code, 124)
+            self.assertEqual(result.reason, 'worker_completion_check_failed')
+            self.assertIs(result.closure, self.CLOSURE)
+            self.assertEqual(events, ['closure_query', 'handles_closed'])
+            watch.complete.assert_called_once_with()
+
+    def test_completed_success_and_nonzero_worker_are_unchanged(self):
+        for worker_code, expected in ((0, 0), (2, 124)):
+            with self.subTest(worker_code=worker_code):
+                result, events, _ = self.supervise_fixture(worker_code=worker_code)
+            self.assertEqual(result.code, expected)
+            self.assertEqual(result.reason, 'worker_exit')
+            self.assertIs(result.closure, self.CLOSURE)
+            self.assertEqual(events, ['closure_query', 'handles_closed'])
+
+    def test_failed_closure_query_cannot_be_promoted_to_receipt(self):
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'synthetic_closure_failed'):
+            self.supervise_fixture(closure_error=wr.WindowsGuardError('synthetic_closure_failed'))
+
+    def run_main(self, fail_stage=None, result=None):
+        import json
+        from contextlib import ExitStack
+        writes = []
+        runtime = SimpleNamespace(source_root=str(ROOT), executable='synthetic-python',
+            worker_path=str(ROOT / 'sdk_worker.py'), document={'sources': {
+                'protocol.py': {'sha256': 'b' * 64}}})
+        config = SimpleNamespace(load_runtime=mock.Mock(return_value=runtime),
+                                 same_path=mock.Mock(return_value=True))
+        canary = RuntimeError('secret-canary/private/path?access_token=hidden')
+        def pinned(name, path, digest):
+            if name == fail_stage:
+                raise canary
+            return {'win_runtime': wr, 'native_config': config, 'protocol': object()}[name]
+        if fail_stage == 'runtime_verification':
+            config.load_runtime.side_effect = canary
+        if fail_stage == 'source_identity':
+            config.same_path.return_value = False
+        args = ['--config', 'synthetic.json', '--config-sha', 'c' * 64,
+                '--nonce', 'a' * 64, '--deadline-epoch', str(ws.time.time() + 5),
+                '--max-seconds', '5']
+        with ExitStack() as stack:
+            stack.enter_context(mock.patch.object(ws, 'os', SimpleNamespace(
+                name='nt', O_BINARY=0, write=lambda fd, data: writes.append((fd, data)))))
+            stack.enter_context(mock.patch.object(ws.sys, 'flags', SimpleNamespace(
+                isolated=1, dont_write_bytecode=1, ignore_environment=1, optimize=0)))
+            stack.enter_context(mock.patch.dict(sys.modules, {'msvcrt': SimpleNamespace(setmode=lambda *a: None)}))
+            stack.enter_context(mock.patch.object(ws, '_pinned_module', side_effect=pinned))
+            stack.enter_context(mock.patch.object(ws, 'supervise',
+                side_effect=canary if fail_stage == 'supervision' else None,
+                return_value=result or ws.SupervisionResult(0, 'worker_exit', self.CLOSURE)))
+            code = ws.main(args)
+        self.assertEqual(len(writes), 1)
+        self.assertEqual(writes[0][0], 2)
+        raw = writes[0][1]
+        self.assertTrue(raw.endswith(b'\n'))
+        self.assertEqual(raw.count(b'\n'), 1)
+        self.assertNotIn(b'canary', raw)
+        self.assertNotIn(b'private', raw)
+        self.assertNotIn(b'access_token', raw)
+        receipt = json.loads(raw)
+        self.assertEqual(set(receipt), {'format', 'nonce', 'ok', 'reason', 'closure'})
+        self.assertEqual(receipt['nonce'], 'a' * 64)
+        return code, receipt
+
+    def test_main_emits_fixed_failure_stage_without_exception_data(self):
+        for stage, reason in (('win_runtime', 'supervisor_runtime_bootstrap_failed'),
+                ('native_config', 'supervisor_config_bootstrap_failed'),
+                ('runtime_verification', 'supervisor_runtime_verification_failed'),
+                ('source_identity', 'supervisor_source_identity_failed'),
+                ('protocol', 'supervisor_protocol_bootstrap_failed'),
+                ('supervision', 'supervisor_supervision_failed')):
+            with self.subTest(stage=stage):
+                code, receipt = self.run_main(fail_stage=stage)
+            self.assertEqual(code, 125)
+            self.assertEqual(receipt['reason'], reason)
+            self.assertFalse(receipt['ok'])
+            self.assertIsNone(receipt['closure'])
+
+    def test_main_preserves_failed_completion_result_and_closure(self):
+        code, receipt = self.run_main(result=ws.SupervisionResult(
+            124, 'worker_completion_check_failed', self.CLOSURE))
+        self.assertEqual(code, 124)
+        self.assertFalse(receipt['ok'])
+        self.assertEqual(receipt['reason'], 'worker_completion_check_failed')
+        self.assertEqual(receipt['closure'], self.CLOSURE)
+
+    def test_main_success_receipt_is_unchanged(self):
+        code, receipt = self.run_main()
+        self.assertEqual(code, 0)
+        self.assertTrue(receipt['ok'])
+        self.assertEqual(receipt['reason'], 'worker_exit')
+        self.assertEqual(receipt['closure'], self.CLOSURE)
+
 class ProbeDiagnosticsTests(unittest.TestCase):
     def setUp(self):
         import native_probe

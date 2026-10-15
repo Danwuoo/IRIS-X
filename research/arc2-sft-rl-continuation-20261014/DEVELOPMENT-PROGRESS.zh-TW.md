@@ -69,6 +69,9 @@
 | E37 | 本地f998839診斷重跑exit1、13.58秒、仍6／10；job_tree實際membership true、兩query成功、immediate flags為12288（0x3000），被`windows_worker_job_limits_invalid`拒絕。parent_death三段handshake完整，最終receipt為0-byte EOF；兩framed案例為supervisor的`windows_worker_incomplete_command`及parent的`bridge_eof_or_invalid_read` | stdout SHA256 `8d3f02f3b161fd146a2f9f9687088975bfc2e778e0bf378643cc8018267b30e8`，capture SHA256 `2e1f4da6ed962061cbba118e974996c089fc4b61794a5af0cb2988350d3171c5`；原六案例及完整outer Job歸零仍通過。production bytes仍同d684，未auth／network。framed錯誤是在worker_exit後檢查未完成request產生，是否隨guard修正消失仍待實測 |
 | E38 | 狹窄venv修復通過251 normal／251 `-O`、zero skips；獨立reviewer同251／251且25檔前後hash不變；production function差異只有`require_worker_job`，owned JobProcess與supervisor／SDK worker所有function／class AST保持原樣 | [venv_repair_revision完整來源收據](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。exact immediate 0x2000／0x3000及誠實flags分列，outer仍exact0x2000；parent-watch只換合成控制器拓樸，驗證base／venv bytes與雙方PID／完整membership。依賴pins同步更新；新版native／WSL／pre-auth與provider仍待本地，不能將離線測試當原生放行 |
 | E39 | 本地對01ca4f14三項真實no-auth驗收全部通過：07:18:03–19 UTC native十案例10／10；07:20:24–27 WSL caller SIGKILL後8 members停止、observer Job 0；07:22:42–46正式CLI pre-auth valid ready、故意不ACK、nonce-bound Job 0 | [原生與interop收據摘要](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。三者outer exit0／stderr0，pre-auth inner exit124／caller_pipe_eof為預期拒絕繼續auth；parent-watch追蹤9 members、framed兩deadline均通過。27來源及runtime／config bytes不變，INDEX SHA256 `165c4d16cd5778ce45e1275980c9b6f714a1df31a65cc419833cf1ddfc13e467`。原始captures留本地；未SDK import／讀credential內容／provider call，20→21及39→40→41僅diagnostic配置、未保留版本 |
+| E40 | 2026-10-15本地重新建立283／426／311材料、三份獨立review與8-binding LOCAL_CONTRACT_PASS；08:10:41.497818–08:10:55.955410 UTC正式readiness exit0，原生session closed且closure verified | 使用01ca4f14來源與原Windows官方登入；fresh observation仍code Dataset v20、notebook v39 ERROR及原source a3076380…。沒有新code／notebook版本、RUN或A/B/C結果；該成功receipt只適用readiness本次session |
+| E41 | 隨後08:11:34.117961–08:11:35.537807 UTC update-code outer exit2、bridge_eof_or_invalid_read；停在新session sequence1 open，mutation_attempted=false，session UNKNOWN且native_process_closure_verified=false | 原29份state已封存，無retention inventory／codeclaim／upload／versionintent；原source／config／interop environment未變。實際native exit／stderr receipt／READY與phase未持久保存，不能推論未開始認證或Job已清空。FAILURE-HANDOFF SHA256 `21d7174e4fb8c0d7895052ce7e883663d2fb26ce17805e252b74882e7e4a991c`只識別本地封存證據；根因未知，舊UNKNOWN保持阻擋，不改寫history／namespace或重送 |
+| E42 | failed-open診斷successor通過269 normal／269 `-O`、zero skips；獨立reviewer同269／269、22個static pins相符，無blocking finding。fresh完整suite仍1,583 tests／2 failures／35 errors／74 skips | [open_failure_diagnostic_revision](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。37個failure/error IDs與保存POSIX baseline相同，未重跑baseline；6項README findings未變。保留固定診斷／真實已取得closure，不改UNKNOWN、auth、deadline或mutation admission；新版native未測，E41原closure缺失不可回填。另行設計獨立recovery epoch仍需明確審查，沒有執行或放行 |
 
 本地去敏觀察收據 `OBSERVATION.json` 的SHA256為
 `faffc10ca4325726b95f3a99bbc4a2d30b3cad26d20d91ef0e355d28c9413123`。
@@ -140,23 +143,19 @@ successor驗收，不把CPU-only工具限制變成原A/B/C的循環依賴。
 | DOC-AF3 | AF3研究來源併入本資料夾，修復導覽與引用 | 完成（文件整併）；E13，三份獨特研究／驗證／審查與重要RL來源地位保留 | E1、E7、E12 | 保留pinned上游、license與元件實際採用證據；不改程式namespace／vendor／frozen source，無重複進度頁 |
 | HANDOFF-CYCLE | 將既有本地交接延伸為提交、監看、有限工程修復及結果回傳流程 | 完成（交接規格）；E13，只更新既有交接文件；實際本地執行另列E1～E4 | S1-O1～O6、原執行契約 | 明列fresh remote／材料／admission、single publisher、監看到terminal、結果回傳與方法觸發條件；本文件不派發工作 |
 | S1-P1 | 本地publisher的狹窄POSIX portability successor | 完成（離線交付）；E19～E25，106 normal／106 `-O`、獨立審查與19檔遠端readback | 純POSIX使用仍需本地native OAuth；本輪選擇S1-P2沿用Windows登入 | 保存此可重現版本；不因選擇Windows橋而改寫POSIX已測來源，也不把來源保存當provider放行 |
-| S1-P2 | WSL durable owner＋Windows官方SDK bounded bridge | 橋接實作及本機no-auth驗收完成；E35／E37失敗保留，E38修復後E39三項全過；provider admission待本地獨立review與fresh observation | S1-P1、精確SDK0.1.37、native Job／ACL／pipe驗收、原材料與全部新hash-bound reviews | bounded IPC／DTO、refresh前fsync握手、獨立每RPC watchdog、全Job清空、未知結果不重送；先離線與本機合成驗收，再依原admission進既有A/B/C流程 |
-| S1-E1 | 本地真實來源、模型材料與已存在audit接收 | 進行中／目的環境binding受阻；E14～E17。原材料已找到，歷史重建另核對；本輪audit尚未產出 | 原執行契約、本地來源與材料 | 先完成目的環境portable successor與原admission，核對training-owned provenance／原records／排除及exact numeric materials。首次原A/B/C可在原admission通過後產生audit，不以尚未產出的結果阻擋原流程 |
+| S1-P2 | WSL durable owner＋Windows官方SDK bounded bridge | 受阻；E39三項no-auth與E40正式readiness已通過，但E41新open失敗，舊UNKNOWN缺原生closure證據；窄診斷修補進行中 | S1-P1、精確SDK0.1.37、native Job／ACL／pipe驗收、原材料與全部新hash-bound reviews | bounded IPC／DTO、refresh前fsync握手、獨立每RPC watchdog、全Job清空、未知結果不重送；先離線與本機合成驗收，再依原admission進既有A/B/C流程 |
+| S1-E1 | 本地真實來源、模型材料與已存在audit接收 | 材料與原admission重建完成（E40）；發布在E41 open UNKNOWN受阻，本輪audit尚未產出 | 原執行契約、本地來源與材料 | 先完成目的環境portable successor與原admission，核對training-owned provenance／原records／排除及exact numeric materials。首次原A/B/C可在原admission通過後產生audit，不以尚未產出的結果阻擋原流程 |
 | S1-E2 | 原runtime真實replay／LoRA梯度／owner狀態驗收 | 待開始／未執行 | S1-E1、本地完整原admission | E2與E3是同次原執行中的驗收，不要求先有另一場成功證據。原runtime逐步核對模型、數值、rollback、save/reload、closure與資源；CPU logp梯度不能替代。若另接AF3模型hook，才加另立successor的同模型差分驗收 |
 | S1-E3 | 同 session 既有 A/B/C 比較 | 待開始／未驗證 | S1-E1、原admission／batch／時鐘；E2由該次原runtime逐步驗收 | 原 reward、replay、更新、checkpoint、全 B/C wall、固定選擇與 closure 證據完整；未完成與 zero-signal 分開 |
 | S1-E4 | sealed 評分與研究判讀 | 待開始／未驗證 | S1-E3、隔離 evaluator、原 scorer | 完整 PUBLIC120／167 與相同案例 gain／loss；B 同時對 A、等成本 C 判讀；缺評分保持未知，不 promotion |
 
-**現在的下一步：** 以此次交付的精確commit／tree接續，
-本地E14～E17已確認executor及官方唯讀存取，實際遠端仍code20／notebook39 ERROR。
-POSIX successor已於E24保存；當前依S1-P2開發沿用Windows官方登入的bounded bridge。
-原profile／store不搬移，沒有新WSL OAuth；已有登入不代表SDK／Job／IPC／材料放行。
-原材料重建與本地CPU結果須保留各次環境差異，不能把preliminary observation當production admission。
-由已授權的本地執行端按S1-E1核對真實來源、材料與原admission，開始原E3流程，
-由原runtime在該次執行中逐步完成E2驗收並產生audit；已有audit再核對其檔案大小。
-沒有材料或接收端可執行授權時，保存明確blocker，不由本環境代替提交或訓練。
-S1-O1～O6只完成有限離線工具、接線規格與來源保存。本地 E1～E4 的
-執行不由這份進度表啟動；取得接收端真實證據後才更新實驗狀態。S1-E4 完整前，不把
-Stage 1 標成研究完成，也不提前轉向 Stage 2／TTT／Agent 新方法。
+**現在的下一步：** 保存E41原失敗與29份state，先完成固定格式失敗診斷的窄修補、
+正常／`-O`測試及獨立審查，再交本地做獨立no-auth驗證。新診斷只能補強未來觀察，
+不能回填舊事件已遺失的native receipt或把controller退出當全Job清空。
+原UNKNOWN未取得可驗證的原事件closure前，禁止新provider session、換namespace或重送update-code。
+根因仍未知；E40的readiness成功不替代E41的closure。原Windows profile／store不搬移，
+沒有新WSL OAuth；本環境不代替本地提交或訓練。Stage 1真實A/B/C及PUBLIC120／167仍未執行，
+不提前轉向Stage 2／TTT／Agent新方法。
 
 ## 四、技術設計與原始來源
 
@@ -369,3 +368,8 @@ DDIS數學與真實元件CPU整合證據，集中於[AF3整合研究](agent-fact
   真實review，透過官方Windows登入取得fresh notebook／dataset observation。診斷配置不是版本reservation，
   不可把合成review改標為provider批准；若缺原始candidate材料，先完成既有重建，不跳過gate。
   尚未dataset upload／notebook run／A/B/C訓練或新分數。
+
+- 2026-10-15 08:38 UTC：E40／E41區分成功readiness與後續failed-open。現有來源在
+  `_failed`未保存native finish／receipt拒絕原因，supervisor也可能在已查得Job-zero後因
+  command completion檢查失敗而丟失closure；這是確認的診斷缺口，不是已證實E41根因。
+  修補只保存固定安全欄位及真實已取得closure，失敗仍UNKNOWN；不新增自動recovery或重送路徑。

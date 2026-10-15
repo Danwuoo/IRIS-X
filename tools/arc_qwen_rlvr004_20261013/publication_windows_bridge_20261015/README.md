@@ -91,6 +91,32 @@ native synthetic observer. Its receipt is additional local interop evidence;
 it does not manufacture production acceptance or read credentials. Consult its
 `--help` for exact local path arguments after verifying the source commit.
 
+
+## Failed-open diagnostics and recovery boundary
+
+An unsuccessful open remains `UNKNOWN`, including when a valid native Job-zero
+receipt proves process closure. Neither the proxy exit nor a later successful
+probe makes that operation successful or automatically permits another session.
+The existing owner namespace, claims, refresh records and immutable event history
+must be preserved. There is no automatic failed-open reconciliation command.
+
+Future failures persist only bounded diagnostic metadata: observed ready/auth/RPC
+phase milestones, cleanup outcomes, proxy exit, receipt byte count/hash and a
+fixed allowlist of supervisor reason literals. Unknown text is never exported.
+`cleanup=complete` describes completion of the bounded cleanup calls, not native
+closure; only `native_process_closure_verified` records the existing validated
+nonce-bound Job-zero predicate. Phase completion does not mean open succeeded.
+Bootstrap failures retain a fixed stage label. If completion checking fails after
+a genuine Job-zero query, that closure is retained with a failed result.
+
+Older failures whose native receipt was discarded cannot be repaired by these
+new diagnostics. A missing receipt stays missing; controller exit, elapsed time,
+new probes or absence of a provider upload claim cannot substitute for it.
+Run the existing synthetic native, WSL caller-death and production pre-auth probes
+against newly pinned source/config bytes on the local executor before relying on
+changed native code. Those no-auth probes are separate evidence and must not open
+a new provider session in a namespace blocked by an earlier UNKNOWN.
+
 ## Offline tests
 
 ```bash
