@@ -23,7 +23,7 @@ from pathlib import Path
 
 # These two pins are updated only by the reviewed source integration. No sibling
 # module is imported or executed before its bytes match its bootstrap pin.
-WIN_RUNTIME_SHA256 = 'ae56db730ab84a8fa83c6439d5b6d0c537e0c348d0e93ea3b5618362e7e6f41e'
+WIN_RUNTIME_SHA256 = '7280b755d3155fb3d5d4f9989c0ea592d7a0d8be8750d635360f06fe766db69d'
 NATIVE_CONFIG_SHA256 = 'fe2ec44a37e8895077162a3369d859967001e5a50f4294d2d8e0fb954fa35282'
 MAX_STREAM_BYTES = 32 * 1024 * 1024 * 1024
 MAX_STDERR_BYTES = 1024 * 1024

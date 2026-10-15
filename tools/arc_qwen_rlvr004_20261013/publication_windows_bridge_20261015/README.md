@@ -73,11 +73,18 @@ train a model. Run only on the authorized local Windows executor:
 Keep stdout, stderr and exit status separate. Linux produces a native-required
 failure, not a skipped pass. A non-venv diagnostic can report its observations
 but cannot satisfy final venv admission. Ten cases cover metadata, mutex, Job
-tree, deadline, pipe EOF, actual Job-owner kill, actual native-parent death,
+tree, deadline, pipe EOF, actual Job-owner kill, explicit controller death,
 source stability, framed operation expiry and nested official-RPC expiry.
 An outer observer Job must be empty before success; merely observing two PIDs
 stop is insufficient. This tests the internal synthetic supervisor path, not
 production CLI, SDK, existing OAuth, Kaggle or scientific efficacy.
+The ParentWatch case alone launches its synthetic controller with the already
+hash-bound base interpreter, then launches the original venv supervisor/worker.
+It watches that controller PID explicitly; killing a venv redirector instead
+can close its own Job before the supervisor emits a receipt. The production
+parent-watch default is unchanged. An immediate venv Job may have exact flags
+0x3000; the supervisor-owned outer Job still requires exact 0x2000, atomic
+membership before resume, no inherited Job handle and full closure proof.
 
 The separate `wsl_native_probe.py` diagnoses WSL caller death through a fixed
 native synthetic observer. Its receipt is additional local interop evidence;

@@ -45,7 +45,7 @@ sys.path.insert(0, str(HERE))
 from win_runtime import (ExclusiveMutex, JobProcess, PrivateFileGuard, SecurityDescriptor,
                          WindowsGuardError, api, current_identity, need, profile_relative,
                          HANDLE, DWORD, LPVOID, BOOL, JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
-                         require_worker_job)
+                         require_worker_job, read_source, strict_local_path)
 from win_supervisor import supervise
 
 
@@ -122,6 +122,8 @@ def output_facts(data, label):
     if type(value) is not dict:
         return result
     known = ('child', 'grandchild', 'job_owner', 'native_parent_pid', 'parent_owner',
+             'watched_controller_pid', 'controller_python_sha256', 'supervisor_python_sha256',
+             'controller_is_base_python', 'worker_job',
              'reason', 'closure', 'format', 'exception', 'current_job', 'mode')
     result['known_fields'] = [key for key in known if key in value]
     result['unknown_field_count'] = sum(key not in known for key in value)
@@ -180,6 +182,50 @@ def cleanup_with_diagnostics(job):
 
 def command(*args):
     return [sys.executable, '-I', '-B', str(Path(__file__).resolve()), *args]
+
+
+def verified_python(path, expected_sha256):
+    path = strict_local_path(path)
+    need(path.lower().endswith('\\python.exe'), 'probe_python_path_invalid')
+    need(type(expected_sha256) is str and re.fullmatch('[0-9a-f]{64}', expected_sha256),
+         'probe_python_hash_invalid')
+    need(hashlib.sha256(read_source(path, 128 * 1024 * 1024)).hexdigest() == expected_sha256,
+         'probe_python_hash_mismatch')
+    return path
+
+
+def controller_command():
+    # Only this disposable controller uses the actual already-bound base
+    # interpreter. The supervisor and all of its workers still use the original
+    # venv interpreter, whose path and bytes are verified at every handoff.
+    base = verified_python(getattr(sys, '_base_executable', None) or sys.executable,
+                           PYTHON_BASE_EXECUTABLE_SHA256)
+    original = verified_python(sys.executable, PYTHON_SHA256)
+    return [base, '-I', '-B', str(Path(__file__).resolve()), '--parent-owner',
+            original, PYTHON_SHA256, base, PYTHON_BASE_EXECUTABLE_SHA256]
+
+
+def controller_supervisor_command(original, original_sha, expected_base, base_sha):
+    expected_base = verified_python(expected_base, base_sha)
+    actual_base = verified_python(sys.executable, base_sha)
+    need(actual_base.casefold() == expected_base.casefold() and sys.prefix == sys.base_prefix,
+         'probe_controller_python_identity')
+    original = verified_python(original, original_sha)
+    return [original, '-I', '-B', str(Path(__file__).resolve()), '--probe-supervisor',
+            '15', '--watched-controller', str(os.getpid()), original, original_sha]
+
+
+def watched_controller(identity, controller, members):
+    pid = controller.get('parent_owner')
+    need(type(pid) is int and pid > 0 and pid in members and
+         type(identity.get('watched_controller_pid')) is int and identity['watched_controller_pid'] == pid,
+         'probe_controller_identity')
+    need(controller.get('controller_is_base_python') is True and
+         controller.get('controller_python_sha256') == PYTHON_BASE_EXECUTABLE_SHA256 and
+         controller.get('supervisor_python_sha256') == PYTHON_SHA256 and
+         identity.get('supervisor_python_sha256') == PYTHON_SHA256,
+         'probe_controller_runtime_binding')
+    return pid
 
 
 def line_with_timeout(stream, seconds=10, *, stage='unspecified'):
@@ -361,7 +407,8 @@ def job_check():
             need(job.active_processes() >= 2, 'probe_job_missing_grandchild')
             proof = job.terminate_and_prove_empty()
             refs.assert_stopped()
-            return {**proof, 'exact_membership_checked_before_resume': True, 'worker_null_job_check': True}
+            return {**proof, 'exact_membership_checked_before_resume': True,
+                    'worker_null_job_check': True, 'worker_job': data['worker_job']}
     finally:
         cleanup_with_diagnostics(job)
 
@@ -437,9 +484,10 @@ def supervisor_check(mode):
 
 
 def parent_death_check():
-    # Outer probe retains stdin's write side after killing the intermediary
-    # owner: EOF cannot explain the supervisor's parent_death observation.
-    owner = JobProcess(command('--parent-owner'))
+    # Kill the explicit base-Python controller, not the supervisor's venv
+    # redirector (whose own kill-on-close Job would destroy the supervisor before
+    # ParentWatch could report). Keep stdin open, so EOF cannot explain PASS.
+    owner = JobProcess(controller_command())
     refs = None
     try:
         lines = PipeLines(owner.stdout)
@@ -448,18 +496,22 @@ def parent_death_check():
                   line_with_timeout(lines, stage='parent_death_handshake_3')]
         tree = next(v for v in values if 'child' in v)
         identity = next(v for v in values if 'job_owner' in v)
+        controller = next(v for v in values if 'parent_owner' in v)
         supervisor_pid = identity['job_owner']
         members = stable_members(owner)
-        need(all(pid in members for pid in (tree['child'], tree['grandchild'], supervisor_pid, identity['native_parent_pid'])), 'probe_membership_missing_tree')
+        controller_pid = watched_controller(identity, controller, members)
+        need(all(pid in members for pid in (tree['child'], tree['grandchild'], supervisor_pid,
+                                           identity['native_parent_pid'])), 'probe_membership_missing_tree')
         refs = ProcessRefs(members)
-        kill_actual_process(identity['native_parent_pid'])
+        kill_actual_process(controller_pid)
         assert_job_empty(owner)
         refs.assert_stopped()
         receipt = line_with_timeout(PipeLines(owner.stderr), stage='parent_death_receipt')
         need(receipt['reason'] == 'parent_death' and receipt['closure']['active_processes'] == 0,
              'probe_parent_death_not_observed')
         return {'reason': 'parent_death', 'active_processes': 0, 'descendants_stopped': True,
-                'caller_pipe_kept_open': True, 'actual_native_parent_killed': True,
+                'caller_pipe_kept_open': True, 'actual_watched_controller_killed': True,
+                'controller_uses_bound_base_python': True, 'supervisor_uses_original_python': True,
                 'all_members_tracked': len(members),
                 'observer_job_active_processes': 0}
     finally:
@@ -665,11 +717,15 @@ def child_mode(args):
     if args[0] == '--grandchild':
         time.sleep(60); return 0
     if args[0] == '--tree':
+        worker_job = None
         if len(args) > 1:
-            checked_worker_job(args[1])
+            worker_job = checked_worker_job(args[1])
         child = subprocess.Popen(command('--grandchild'), stdin=subprocess.DEVNULL,
                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        os.write(1, (json.dumps({'child': os.getpid(), 'grandchild': child.pid}) + '\n').encode('ascii'))
+        tree = {'child': os.getpid(), 'grandchild': child.pid}
+        if worker_job is not None:
+            tree['worker_job'] = worker_job
+        os.write(1, (json.dumps(tree) + '\n').encode('ascii'))
         time.sleep(60); return 0
     if args[0] == '--lock-probe':
         try:
@@ -680,16 +736,31 @@ def child_mode(args):
                 os.write(1, b'locked\n'); return 0
             return 3
     if args[0] == '--probe-supervisor':
-        os.write(1, (json.dumps({'job_owner': os.getpid(), 'native_parent_pid': os.getppid()}) + '\n').encode('ascii'))
+        need(len(args) in (2, 6), 'probe_supervisor_arguments')
+        controller_pid = None
+        identity = {'job_owner': os.getpid(), 'native_parent_pid': os.getppid()}
+        if len(args) == 6:
+            need(args[2] == '--watched-controller' and args[3].isascii() and args[3].isdecimal(),
+                 'probe_controller_pid_invalid')
+            controller_pid = int(args[3]); need(0 < controller_pid <= 0xffffffff, 'probe_controller_pid_invalid')
+            expected = verified_python(args[4], args[5])
+            actual = verified_python(sys.executable, args[5])
+            need(actual.casefold() == expected.casefold(), 'probe_supervisor_python_identity')
+            identity.update(watched_controller_pid=controller_pid, supervisor_python_sha256=args[5])
+        os.write(1, (json.dumps(identity) + '\n').encode('ascii'))
         duration = float(args[1])
         result = supervise(command('--tree'), timeout_seconds=duration,
-            deadline_unix=time.time() + duration, scope='offline-probe-' + uuid.uuid4().hex)
+            deadline_unix=time.time() + duration, scope='offline-probe-' + uuid.uuid4().hex,
+            parent_pid=controller_pid)
         os.write(2, (json.dumps({'reason': result.reason, 'closure': result.closure}) + '\n').encode('ascii'))
         return result.code
     if args[0] == '--parent-owner':
-        child = subprocess.Popen(command('--probe-supervisor', '15'), stdin=sys.stdin.buffer,
+        need(len(args) == 5, 'probe_controller_arguments')
+        supervisor_argv = controller_supervisor_command(*args[1:])
+        child = subprocess.Popen(supervisor_argv, stdin=sys.stdin.buffer,
                                  stdout=sys.stdout.buffer, stderr=sys.stderr.buffer)
-        os.write(1, (json.dumps({'parent_owner': os.getpid()}) + '\n').encode('ascii'))
+        os.write(1, (json.dumps({'parent_owner': os.getpid(), 'controller_is_base_python': True,
+            'controller_python_sha256': args[4], 'supervisor_python_sha256': args[2]}) + '\n').encode('ascii'))
         child.wait(timeout=25); return 0
     return 2
 

@@ -252,13 +252,33 @@ class NamedJobTests(unittest.TestCase):
 
     def test_worker_rejects_breakaway_permitted_job(self):
         fake = FakeAPI(); fake.GetCurrentProcess = lambda: 89
-        def query(handle, category, info, size, written):
-            C.cast(info, C.POINTER(wr.JOBOBJECT_EXTENDED_LIMIT_INFORMATION)).contents.BasicLimitInformation.LimitFlags = wr.KILL_ON_JOB_CLOSE | 0x800
-            return 1
-        fake.QueryInformationJobObject = query
-        with mock.patch.object(wr, 'api', return_value=fake):
-            with self.assertRaisesRegex(wr.WindowsGuardError, 'limits_invalid'):
-                wr.require_worker_job('a' * 64)
+        for flags in (0, 0x1000, 0x0800, 0x2800, 0x3800, 0x2001, 0x3001, 0xffffffff):
+            def query(handle, category, info, size, written):
+                self.assertIsNone(handle)
+                C.cast(info, C.POINTER(wr.JOBOBJECT_EXTENDED_LIMIT_INFORMATION)).contents.BasicLimitInformation.LimitFlags = flags
+                return 1
+            fake.QueryInformationJobObject = query
+            with self.subTest(flags=flags), mock.patch.object(wr, 'api', return_value=fake):
+                with self.assertRaisesRegex(wr.WindowsGuardError, 'limits_invalid'):
+                    wr.require_worker_job('a' * 64)
+
+    def test_immediate_launcher_job_reports_silent_breakaway_truthfully(self):
+        fake = FakeAPI(); fake.GetCurrentProcess = lambda: 89
+        fake.OpenJobObjectW = mock.Mock(side_effect=AssertionError('must never open Job'))
+        for flags in (0x2000, 0x3000):
+            def query(handle, category, info, size, written):
+                self.assertIsNone(handle)
+                C.cast(info, C.POINTER(wr.JOBOBJECT_EXTENDED_LIMIT_INFORMATION)).contents.BasicLimitInformation.LimitFlags = flags
+                return 1
+            fake.QueryInformationJobObject = query
+            with self.subTest(flags=flags), mock.patch.object(wr, 'api', return_value=fake):
+                proof = wr.require_worker_job('a' * 64)
+            self.assertEqual(proof['current_job_limit_flags'], flags)
+            self.assertEqual(proof['current_job_silent_breakaway'], flags == 0x3000)
+            self.assertFalse(proof['current_job_explicit_breakaway'])
+            self.assertNotIn('breakaway_permitted', proof)
+        fake.OpenJobObjectW.assert_not_called()
+        self.assertFalse(any(c[0] == 'close' for c in fake.calls))
 
     def test_duplicate_named_job_is_not_terminated(self):
         fake = FakeAPI()
@@ -551,6 +571,69 @@ class ProbeDiagnosticsTests(unittest.TestCase):
              mock.patch.object(self.probe.time, 'sleep', side_effect=lambda seconds: events.append('hang')):
             self.assertEqual(self.probe.framed_worker('phase', 'a' * 64), 0)
         self.assertEqual(events, ['spawn', 'response', 'phase_start', 'hang'])
+
+    def test_controller_python_rejects_unsafe_path_before_read(self):
+        with mock.patch.object(self.probe, 'read_source', side_effect=AssertionError('must not read')):
+            for path in (r'\\host\share\python.exe', r'C:\a\..\python.exe',
+                         r'C:\a\other.exe', r'C:\a\credentials.json'):
+                with self.subTest(path=path), self.assertRaises(wr.WindowsGuardError):
+                    self.probe.verified_python(path, 'a' * 64)
+
+    def test_controller_python_reads_bound_public_bytes_and_rejects_stale_hash(self):
+        import hashlib
+        raw = b'public synthetic executable'; digest = hashlib.sha256(raw).hexdigest()
+        with mock.patch.object(self.probe, 'read_source', return_value=raw) as source:
+            self.assertEqual(self.probe.verified_python(r'C:\base\python.exe', digest), r'C:\base\python.exe')
+            source.assert_called_once_with(r'C:\base\python.exe', 128 * 1024 * 1024)
+            with self.assertRaisesRegex(wr.WindowsGuardError, 'python_hash_mismatch'):
+                self.probe.verified_python(r'C:\base\python.exe', 'f' * 64)
+
+    def test_controller_launch_uses_base_and_carries_original_venv_binding(self):
+        with mock.patch.object(self.probe.sys, 'executable', r'C:\venv\Scripts\python.exe'), \
+             mock.patch.object(self.probe.sys, '_base_executable', r'C:\base\python.exe'), \
+             mock.patch.object(self.probe, 'verified_python', side_effect=lambda path, digest: path) as verify:
+            argv = self.probe.controller_command()
+        self.assertEqual(argv[0], r'C:\base\python.exe')
+        self.assertEqual(argv[4:], ['--parent-owner', r'C:\venv\Scripts\python.exe',
+            self.probe.PYTHON_SHA256, r'C:\base\python.exe', self.probe.PYTHON_BASE_EXECUTABLE_SHA256])
+        self.assertEqual(verify.call_count, 2)
+
+    def test_controller_supervisor_stays_on_original_venv(self):
+        with mock.patch.object(self.probe.sys, 'executable', r'C:\base\python.exe'), \
+             mock.patch.object(self.probe.sys, 'prefix', 'base'), mock.patch.object(self.probe.sys, 'base_prefix', 'base'), \
+             mock.patch.object(self.probe.os, 'getpid', return_value=77), \
+             mock.patch.object(self.probe, 'verified_python', side_effect=lambda path, digest: path) as verify:
+            argv = self.probe.controller_supervisor_command(r'C:\venv\Scripts\python.exe', 'a' * 64,
+                                                            r'C:\base\python.exe', 'b' * 64)
+        self.assertEqual(argv[0], r'C:\venv\Scripts\python.exe')
+        self.assertEqual(argv[4:], ['--probe-supervisor', '15', '--watched-controller', '77',
+                                    r'C:\venv\Scripts\python.exe', 'a' * 64])
+        self.assertEqual(verify.call_count, 3)
+
+    def test_controller_rejects_wrong_actual_path_or_venv_identity(self):
+        for actual, prefix in ((r'C:\wrong\python.exe', 'base'), (r'C:\base\python.exe', 'venv')):
+            with self.subTest(actual=actual, prefix=prefix), \
+                 mock.patch.object(self.probe.sys, 'executable', actual), mock.patch.object(self.probe.sys, 'prefix', prefix), \
+                 mock.patch.object(self.probe.sys, 'base_prefix', 'base'), \
+                 mock.patch.object(self.probe, 'verified_python', side_effect=lambda path, digest: path):
+                with self.assertRaisesRegex(wr.WindowsGuardError, 'controller_python_identity'):
+                    self.probe.controller_supervisor_command(r'C:\venv\Scripts\python.exe', 'a' * 64,
+                                                            r'C:\base\python.exe', 'b' * 64)
+
+    def test_watched_controller_requires_echo_membership_and_runtime_binding(self):
+        identity = {'watched_controller_pid': 77, 'supervisor_python_sha256': self.probe.PYTHON_SHA256}
+        controller = {'parent_owner': 77, 'controller_is_base_python': True,
+            'controller_python_sha256': self.probe.PYTHON_BASE_EXECUTABLE_SHA256,
+            'supervisor_python_sha256': self.probe.PYTHON_SHA256}
+        self.assertEqual(self.probe.watched_controller(identity, controller, (77, 88)), 77)
+        for change in ({'watched_controller_pid': 88}, {'watched_controller_pid': True},
+                       {'supervisor_python_sha256': '0' * 64}):
+            with self.subTest(change=change), self.assertRaises(wr.WindowsGuardError):
+                self.probe.watched_controller({**identity, **change}, controller, (77, 88))
+        with self.assertRaises(wr.WindowsGuardError):
+            self.probe.watched_controller(identity, controller, (88,))
+        with self.assertRaises(wr.WindowsGuardError):
+            self.probe.watched_controller(identity, {**controller, 'controller_is_base_python': False}, (77, 88))
 
 
 class WSLHarnessTests(unittest.TestCase):

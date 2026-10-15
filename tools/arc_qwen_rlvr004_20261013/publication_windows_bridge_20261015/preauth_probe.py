@@ -33,12 +33,12 @@ import types
 
 FORMAT = 'irisx/windows-production-cli-preauth-probe-v1'
 SOURCE_SHA256 = {
-    'win_runtime.py': 'ae56db730ab84a8fa83c6439d5b6d0c537e0c348d0e93ea3b5618362e7e6f41e',
-    'win_supervisor.py': '263ef72771a22227fed070d6edfe02a759621307e0a2debece3f852c319a424d',
+    'win_runtime.py': '7280b755d3155fb3d5d4f9989c0ea592d7a0d8be8750d635360f06fe766db69d',
+    'win_supervisor.py': 'b1c7021beeed51a00f7f752669733cb77312d4a7a3055aaf37b6a1043fbeaba2',
     'protocol.py': '086c70bc50d942c753ac19b8b6f994a54bef1e6a3b0819cacd496d4d09c57b3d',
     'native_config.py': 'fe2ec44a37e8895077162a3369d859967001e5a50f4294d2d8e0fb954fa35282',
     'native_auth.py': '785e696dc702e5042f415e3da1bd3fbf43ff34f3f8a579a702ec2f262aefdcd4',
-    'sdk_worker.py': '4a8b165fdc7a4cb1224070a5599972599e1ecf7c4ae04d9041c36bef611fdf7c',
+    'sdk_worker.py': 'c62059254723542a46d5d76bbe7d817410fee41742b53972ef771640b67a43fe',
     'sdk-lock.json': '3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d',
 }
 HEX = re.compile(r'[0-9a-f]{64}\Z')

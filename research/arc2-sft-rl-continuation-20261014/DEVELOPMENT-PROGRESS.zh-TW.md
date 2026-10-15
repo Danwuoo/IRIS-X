@@ -66,6 +66,8 @@
 | E34 | E33精確CI38693296388已completed／failure：1 job failure、3 cancelled | [CI](https://github.com/Danwuoo/IRIS-X/actions/runs/38693296388)；實際job116283954687仍為6項既有README缺詞，unit／packaging skipped。新bridge focused與完整suite結果分別見E31／E32；不混同為CI成功 |
 | E35 | 本地對d684f63的新Windows venv native十案例實測**失敗**：exit1、13.02秒、6／10通過。job_tree／parent_death為`probe_output_invalid`，framed_operation_deadline為`probe_native_watchdog_failed`，framed_official_rpc_deadline為`probe_internal_error` | stdout SHA256 `fa8b025996e538431f2bf090b0ab39f1af89650b752343f8d6290b596021e069`，capture SHA256 `1fc039a61d7fada28231108f94c306427800786cddbdc499fff2218e105a74bf`；27個module檔及runtime hashes符合。deadline、metadata含reparse、mutex、pipeEOF、source_unchanged、supervisor_kill通過，相關outer Job歸零；缺失原因尚未證明。WSL caller-death與pre-auth未執行，沒有auth／provider／upload／RUN；保留失敗並先增加精確合成診斷，不放寬門檻 |
 | E36 | no-auth diagnostic successor完成244 normal／244 `-O`、zero skips；獨立reviewer另跑相關58／58並核對兩檔hash；僅native_probe與其測試有程式差異，production所有source／pins維持d684f63 | [分開標示的diagnostic_revision收據](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。回傳固定錯誤碼、數值Job flags與分階段結構資訊，無原始stderr／路徑／credentials；先證明Job歸零再有界讀取合成診斷。短operation timer移到合成open後，原overall lease不重設。新版native實測尚待本地，不把244離線測試當native PASS |
+| E37 | 本地f998839診斷重跑exit1、13.58秒、仍6／10；job_tree實際membership true、兩query成功、immediate flags為12288（0x3000），被`windows_worker_job_limits_invalid`拒絕。parent_death三段handshake完整，最終receipt為0-byte EOF；兩framed案例為supervisor的`windows_worker_incomplete_command`及parent的`bridge_eof_or_invalid_read` | stdout SHA256 `8d3f02f3b161fd146a2f9f9687088975bfc2e778e0bf378643cc8018267b30e8`，capture SHA256 `2e1f4da6ed962061cbba118e974996c089fc4b61794a5af0cb2988350d3171c5`；原六案例及完整outer Job歸零仍通過。production bytes仍同d684，未auth／network。framed錯誤是在worker_exit後檢查未完成request產生，是否隨guard修正消失仍待實測 |
+| E38 | 狹窄venv修復通過251 normal／251 `-O`、zero skips；獨立reviewer同251／251且25檔前後hash不變；production function差異只有`require_worker_job`，owned JobProcess與supervisor／SDK worker所有function／class AST保持原樣 | [venv_repair_revision完整來源收據](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。exact immediate 0x2000／0x3000及誠實flags分列，outer仍exact0x2000；parent-watch只換合成控制器拓樸，驗證base／venv bytes與雙方PID／完整membership。依賴pins同步更新；新版native／WSL／pre-auth與provider仍待本地，不能將離線測試當原生放行 |
 
 本地去敏觀察收據 `OBSERVATION.json` 的SHA256為
 `faffc10ca4325726b95f3a99bbc4a2d30b3cad26d20d91ef0e355d28c9413123`。
@@ -353,3 +355,9 @@ DDIS數學與真實元件CPU整合證據，集中於[AF3整合研究](agent-fact
   [Windows API](https://learn.microsoft.com/en-us/windows/win32/api/jobapi2/nf-jobapi2-queryinformationjobobject)
   的NULL query讀取immediate Job，因此目前exact flags檢查可能遇到該內層；尚待本機numeric flags證明。
   只補安全診斷與合成open完成後才起算的短operation測試時鐘；production guard／outer Job規則未改。
+
+- 2026-10-15 07:04 UTC：E37證實官方venv的0x3000 immediate Job。修復只辨識exact0x2000／0x3000，
+  owned outer Job仍要求exact0x2000與原子指派；不得把inner silent breakaway誤報為outer可逃逸。
+  parent-watch合成案例改以已hash綁定的base Python控制器啟動原venv supervisor，明確監看控制器PID，
+  避免殺redirector時其KILL_ON_CLOSE先帶走supervisor。原receipt與全Job零程序門檻保留；
+  framed案例仍需新原生實測確認，不因source解釋便改記為成功。

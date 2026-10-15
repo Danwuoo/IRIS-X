@@ -629,11 +629,19 @@ def require_worker_job(nonce):
     a.check(a.k.IsProcessInJob(a.k.GetCurrentProcess(), None, C.byref(member)), 'windows_worker_job_query_failed')
     need(member.value, 'windows_worker_job_missing')
     limits = JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
-    # NULL queries this process's immediate Job (including nested hosting Jobs)
-    # and does not materialize a handle in the worker's handle table.
+    # NULL queries the immediate Job, which may be the pinned CPython venv
+    # launcher's nested Job rather than our containment Job. That launcher uses
+    # KILL_ON_JOB_CLOSE | SILENT_BREAKAWAY_OK (observed natively as 0x3000).
+    # A child may escape that inner Job but not the supervisor's outer Job,
+    # whose exact 0x2000 flags and membership remain checked before resume.
+    # The two values do not themselves identify or authenticate a venv.
+    # This query does not materialize a handle in the worker's handle table.
     a.check(a.k.QueryInformationJobObject(None, 9, C.byref(limits), C.sizeof(limits), None), 'windows_worker_job_limits_failed')
-    need(limits.BasicLimitInformation.LimitFlags == KILL_ON_JOB_CLOSE, 'windows_worker_job_limits_invalid')
-    return {'current_job_kill_on_close': True, 'breakaway_permitted': False,
+    flags = int(limits.BasicLimitInformation.LimitFlags)
+    need(flags in (KILL_ON_JOB_CLOSE, KILL_ON_JOB_CLOSE | 0x1000), 'windows_worker_job_limits_invalid')
+    return {'current_job_kill_on_close': True, 'current_job_limit_flags': flags,
+            'current_job_explicit_breakaway': False,
+            'current_job_silent_breakaway': bool(flags & 0x1000),
             'exact_membership_authority': 'supervisor_before_resume'}
 
 

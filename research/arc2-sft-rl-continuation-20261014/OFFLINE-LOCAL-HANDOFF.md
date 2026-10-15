@@ -356,7 +356,7 @@ persistent ext4；Windows只接收同一固定commit的公開bridge來源、獨�
 
 1. 核對交付commit／tree與所有source bytes。另在Windows實際native路徑放置相同bridge source；
    不以換行轉換的checkout替代Git blob。native config的七檔來源必須同時等於WSL reviewed sibling。
-2. 用既有官方Python3.12建立新的Windows venv，不覆寫既有環境。以該venv執行：
+2. 用既有官方Python3.12建立獨立Windows venv，不覆寫既有環境。若已有本流程建立且來源／版本／hash均吻合的venv，直接重用，不因每次probe修復再建一份。首次建立時執行：
 
    ```powershell
    & <official-python.exe> -I -B -m venv <new-native-venv>
@@ -370,7 +370,8 @@ persistent ext4；Windows只接收同一固定commit的公開bridge來源、獨�
 3. 以新Windows venv `-I -B`跑`native_probe.py`，保存stdout JSON、stderr、exitcode與hash；
    必須十案例完整通過，來源四hash及venv executable／base executable／pyvenv.cfg均吻合。
    另從WSL執行同commit的`wsl_native_probe.py`，實際測caller死亡→pipe EOF→native Job全清空。
-   兩者皆為合成程序；歷史global Python原8案例不能代替新版實測。
+   兩者皆為合成程序；歷史global Python原8案例不能代替新版實測。parent-watch案例僅控制器
+   使用已綁定base Python，supervisor／worker仍用原venv；明確監看控制器PID，保留完整closure要求。
 4. 由本地metadata建立ignored native config：實際token SID/profile、venv/base executable bytes、
    pyvenv.cfg、Python patch、purelib、完整七檔來源、既有network環境hash及同一版本配置。
    不修改proxy／TLS／ACL，不加權限，不讀出或填入credential值。WSL config另綁現有
