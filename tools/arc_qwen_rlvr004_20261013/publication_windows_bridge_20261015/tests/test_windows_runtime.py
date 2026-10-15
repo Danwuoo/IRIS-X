@@ -408,6 +408,151 @@ class BootstrapTests(unittest.TestCase):
         self.assertIn("'--config-sha'", source)
 
 
+class ProbeDiagnosticsTests(unittest.TestCase):
+    def setUp(self):
+        import native_probe
+        self.probe = native_probe
+        self.probe.DIAGNOSTICS.clear()
+
+    def tearDown(self):
+        self.probe.DIAGNOSTICS.clear()
+
+    def test_exception_does_not_export_message_or_private_path(self):
+        import json
+        result = self.probe.exception_facts(FileNotFoundError(2, 'private secret', '/private/credential-path'))
+        self.assertEqual(result, {'exception_type': 'FileNotFoundError', 'errno': 2})
+        self.assertNotIn('private', json.dumps(result))
+        self.assertEqual(self.probe.exception_facts(RuntimeError('token-value')),
+                         {'exception_type': 'RuntimeError'})
+
+    def test_fixed_code_preserved_but_arbitrary_message_rejected(self):
+        result = self.probe.exception_facts(wr.WindowsGuardError('windows_worker_job_limits_invalid'))
+        self.assertEqual(result['code'], 'windows_worker_job_limits_invalid')
+        self.assertNotIn('code', self.probe.exception_facts(wr.WindowsGuardError('C:\\private\\secret')))
+        import protocol
+        self.assertEqual(self.probe.exception_facts(protocol.ProtocolError('bridge_eof_or_invalid_read'))['code'],
+                         'bridge_eof_or_invalid_read')
+
+    def test_output_structure_distinguishes_eof_partial_nonjson_and_cap(self):
+        eof = self.probe.output_facts(b'', 'frame_1')
+        self.assertTrue(eof['eof']); self.assertEqual(eof['bytes'], 0)
+        partial = self.probe.output_facts(b'{"child":123}', 'frame_2')
+        self.assertFalse(partial['newline']); self.assertEqual(partial['json'], 'object')
+        bad = self.probe.output_facts(b'private path or token\n', 'frame_3')
+        self.assertEqual(bad['json'], 'invalid')
+        large = self.probe.output_facts(b'x' * 4097, 'frame_4')
+        self.assertTrue(large['over_cap']); self.assertNotIn('json', large)
+
+    def test_unknown_output_and_unhashable_fields_cannot_escape(self):
+        import json
+        raw = b'{"private":"token-value","reason":[],"exception":{"exception_type":[]}}\n'
+        facts = self.probe.output_facts(raw, 'synthetic_test')
+        self.assertEqual(facts['unknown_field_count'], 1)
+        self.assertNotIn('token-value', json.dumps(facts)); self.assertNotIn('private', json.dumps(facts))
+
+    def test_safe_child_failure_record_preserves_only_allowed_fields(self):
+        import json
+        raw = json.dumps({'format': 'irisx/native-probe-child-error-v1',
+            'exception': {'exception_type': 'WindowsGuardError', 'code': 'windows_worker_job_limits_invalid',
+                          'message': '/private/secret'},
+            'current_job': {'member_query_ok': True, 'member_query_error': 0, 'is_member': True,
+                           'limits_query_ok': True, 'limits_query_error': 0, 'limit_flags': 0,
+                           'private': 'secret'}}).encode() + b'\n'
+        facts = self.probe.output_facts(raw, 'cleanup_stderr')
+        self.assertEqual(facts['current_job']['limit_flags'], 0)
+        self.assertEqual(facts['exception']['code'], 'windows_worker_job_limits_invalid')
+        self.assertNotIn('private', json.dumps(facts)); self.assertNotIn('secret', json.dumps(facts))
+
+    def test_null_job_diagnostic_never_opens_handle_or_weakens_guard(self):
+        fake = FakeAPI(); fake.GetCurrentProcess = lambda: 89
+        fake.OpenJobObjectW = mock.Mock(side_effect=AssertionError('must never open Job'))
+        def query(handle, category, info, size, written):
+            self.assertIsNone(handle)
+            C.cast(info, C.POINTER(wr.JOBOBJECT_EXTENDED_LIMIT_INFORMATION)).contents.BasicLimitInformation.LimitFlags = 0
+            return 1
+        fake.QueryInformationJobObject = query
+        with mock.patch.object(self.probe, 'api', return_value=fake), mock.patch.object(wr, 'api', return_value=fake), \
+             mock.patch.object(C, 'set_last_error', create=True), mock.patch.object(C, 'get_last_error', return_value=0, create=True):
+            with self.assertRaisesRegex(wr.WindowsGuardError, 'job_limits_invalid'):
+                self.probe.checked_worker_job('a' * 64)
+        self.assertEqual(self.probe.DIAGNOSTICS[0]['limit_flags'], 0)
+        self.assertTrue(self.probe.DIAGNOSTICS[0]['is_member'])
+        fake.OpenJobObjectW.assert_not_called()
+
+    def test_cleanup_proves_zero_before_reading_synthetic_stderr(self):
+        events = []
+        chunks = iter((b'{"reason":"caller_pipe_or_protocol_error","closure":{"active_processes":0}}\n', b''))
+        def read(count):
+            events.append('read'); return next(chunks)
+        pipe = SimpleNamespace(handle=1, read=read)
+        job = SimpleNamespace(stderr=pipe,
+            terminate_and_prove_empty=lambda **kw: events.append(('zero', kw)),
+            _close_handles=lambda: events.append('close'))
+        self.probe.cleanup_with_diagnostics(job)
+        self.assertEqual(events[0], ('zero', {'close_pipes': False}))
+        self.assertEqual(events[-1], 'close')
+        self.assertEqual(self.probe.DIAGNOSTICS[0]['supervisor_reason'], 'caller_pipe_or_protocol_error')
+        self.assertEqual(self.probe.DIAGNOSTICS[0]['active_processes'], 0)
+
+    def test_read_exception_is_not_reported_as_eof(self):
+        stream = SimpleNamespace(readline=mock.Mock(side_effect=OSError(5, '/private/path')))
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'probe_output_read_failed'):
+            self.probe.line_with_timeout(stream, stage='parent_death_handshake_2')
+        facts = self.probe.DIAGNOSTICS[0]
+        self.assertEqual(facts['event'], 'line_read_error')
+        self.assertEqual(facts['stage'], 'parent_death_handshake_2')
+        self.assertNotIn('eof', facts)
+
+    def test_diagnostic_record_count_is_bounded(self):
+        for _ in range(30):
+            self.probe.record_diagnostic({'event': 'test'})
+        self.assertEqual(len(self.probe.DIAGNOSTICS), 12)
+
+    def test_short_operation_timer_starts_after_bounded_open_response(self):
+        import protocol
+        events = []; clock = [100.0]
+        def send(kind, payload, **binding):
+            events.append((kind, payload, binding))
+        def receive(**binding):
+            events.append(('receive', binding)); clock[0] = 103.0
+        channel = SimpleNamespace(send=send, receive=receive)
+        with mock.patch.object(self.probe.time, 'time', side_effect=lambda: clock[0]), \
+             mock.patch.object(self.probe.time, 'monotonic', return_value=17):
+            began = self.probe.begin_framed_watch(protocol, channel, 'operation', 110)
+        self.assertEqual(began, 17)
+        self.assertEqual(events[0][1]['operation'], 'open')
+        self.assertEqual(events[0][1]['deadline_epoch'], 108)
+        self.assertEqual(events[1][0], 'receive')
+        self.assertEqual(events[2][1]['operation'], 'output')
+        self.assertEqual(events[2][2]['sequence'], 2)
+        self.assertEqual(events[2][1]['max_seconds'], 0.6)
+        self.assertEqual(events[2][1]['deadline_epoch'], 103.6)
+
+    def test_phase_request_cannot_extend_original_lease_after_handshake(self):
+        import protocol
+        sent = []; clock = [100.0]
+        channel = SimpleNamespace(send=lambda kind, payload, **binding: sent.append(payload),
+            receive=lambda **binding: clock.__setitem__(0, 104.0))
+        with mock.patch.object(self.probe.time, 'time', side_effect=lambda: clock[0]):
+            self.probe.begin_framed_watch(protocol, channel, 'phase', 110)
+        self.assertEqual(sent[-1]['deadline_epoch'], 110)
+        self.assertEqual(sent[-1]['max_seconds'], 8)
+
+    def test_framed_descendant_exists_before_open_response(self):
+        events = []
+        requests = iter(({'sequence': 1, 'request_sha256': 'a' * 64},
+                         {'sequence': 2, 'request_sha256': 'b' * 64}))
+        channel = SimpleNamespace(receive=lambda **kw: next(requests),
+            send=lambda kind, payload, **kw: events.append(kind))
+        protocol = SimpleNamespace(FramedIO=lambda *args, **kw: channel)
+        with mock.patch.object(self.probe, 'framed_module', return_value=protocol), \
+             mock.patch.object(self.probe, 'checked_worker_job'), \
+             mock.patch.object(self.probe.subprocess, 'Popen', side_effect=lambda *a, **kw: events.append('spawn')), \
+             mock.patch.object(self.probe.time, 'sleep', side_effect=lambda seconds: events.append('hang')):
+            self.assertEqual(self.probe.framed_worker('phase', 'a' * 64), 0)
+        self.assertEqual(events, ['spawn', 'response', 'phase_start', 'hang'])
+
+
 class WSLHarnessTests(unittest.TestCase):
     def setUp(self):
         import wsl_native_probe

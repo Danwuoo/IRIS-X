@@ -64,6 +64,8 @@
 | E32 | 最終code凍結後再次執行完整repo suite：1,583 tests／2 failures／35 errors／74 skips；37個failure/error IDs與保存的POSIX baseline相同，未重跑baseline | [本輪精確收據](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。workspace TMPDIR及offline flags齊備；root suite不涵蓋E31獨立232 tests。既有6項README finding仍失敗；初次錯誤TMPDIR的partial run保留，不能當合格比較 |
 | E33 | Bridge來源正式發布 `d684f63cf6c52044dee4359f84f6cc75527db734`，tree `03ecf14a07ad584803aebb94954a5c59f24b4476`；remote branch／29檔Git、index與worktree逐byte一致 | [固定commit](https://github.com/Danwuoo/IRIS-X/commit/d684f63cf6c52044dee4359f84f6cc75527db734)；分支`fix/arc2-abc-portable-publication-20261015`，本地三項驗收固定這個程式版本。公開payload只有source／tests／非秘密handoff，沒有credential／evaluator答案或raw logs；發布完成不等於provider放行 |
 | E34 | E33精確CI38693296388已completed／failure：1 job failure、3 cancelled | [CI](https://github.com/Danwuoo/IRIS-X/actions/runs/38693296388)；實際job116283954687仍為6項既有README缺詞，unit／packaging skipped。新bridge focused與完整suite結果分別見E31／E32；不混同為CI成功 |
+| E35 | 本地對d684f63的新Windows venv native十案例實測**失敗**：exit1、13.02秒、6／10通過。job_tree／parent_death為`probe_output_invalid`，framed_operation_deadline為`probe_native_watchdog_failed`，framed_official_rpc_deadline為`probe_internal_error` | stdout SHA256 `fa8b025996e538431f2bf090b0ab39f1af89650b752343f8d6290b596021e069`，capture SHA256 `1fc039a61d7fada28231108f94c306427800786cddbdc499fff2218e105a74bf`；27個module檔及runtime hashes符合。deadline、metadata含reparse、mutex、pipeEOF、source_unchanged、supervisor_kill通過，相關outer Job歸零；缺失原因尚未證明。WSL caller-death與pre-auth未執行，沒有auth／provider／upload／RUN；保留失敗並先增加精確合成診斷，不放寬門檻 |
+| E36 | no-auth diagnostic successor完成244 normal／244 `-O`、zero skips；獨立reviewer另跑相關58／58並核對兩檔hash；僅native_probe與其測試有程式差異，production所有source／pins維持d684f63 | [分開標示的diagnostic_revision收據](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。回傳固定錯誤碼、數值Job flags與分階段結構資訊，無原始stderr／路徑／credentials；先證明Job歸零再有界讀取合成診斷。短operation timer移到合成open後，原overall lease不重設。新版native實測尚待本地，不把244離線測試當native PASS |
 
 本地去敏觀察收據 `OBSERVATION.json` 的SHA256為
 `faffc10ca4325726b95f3a99bbc4a2d30b3cad26d20d91ef0e355d28c9413123`。
@@ -135,7 +137,7 @@ successor驗收，不把CPU-only工具限制變成原A/B/C的循環依賴。
 | DOC-AF3 | AF3研究來源併入本資料夾，修復導覽與引用 | 完成（文件整併）；E13，三份獨特研究／驗證／審查與重要RL來源地位保留 | E1、E7、E12 | 保留pinned上游、license與元件實際採用證據；不改程式namespace／vendor／frozen source，無重複進度頁 |
 | HANDOFF-CYCLE | 將既有本地交接延伸為提交、監看、有限工程修復及結果回傳流程 | 完成（交接規格）；E13，只更新既有交接文件；實際本地執行另列E1～E4 | S1-O1～O6、原執行契約 | 明列fresh remote／材料／admission、single publisher、監看到terminal、結果回傳與方法觸發條件；本文件不派發工作 |
 | S1-P1 | 本地publisher的狹窄POSIX portability successor | 完成（離線交付）；E19～E25，106 normal／106 `-O`、獨立審查與19檔遠端readback | 純POSIX使用仍需本地native OAuth；本輪選擇S1-P2沿用Windows登入 | 保存此可重現版本；不因選擇Windows橋而改寫POSIX已測來源，也不把來源保存當provider放行 |
-| S1-P2 | WSL durable owner＋Windows官方SDK bounded bridge | 進行中；E31離線實作／獨立審查完成；E28原8案例原生通過、E30新venv靜態驗證；新版精確來源仍待本地驗收 | S1-P1、精確SDK0.1.37、native Job／ACL／pipe驗收、原材料與全部新hash-bound reviews | bounded IPC／DTO、refresh前fsync握手、獨立每RPC watchdog、全Job清空、未知結果不重送；先離線與本機合成驗收，再依原admission進既有A/B/C流程 |
+| S1-P2 | WSL durable owner＋Windows官方SDK bounded bridge | 進行中；E31離線實作完成；E35新版native實測4案例失敗，原生驗收受阻並回同範圍診斷修復 | S1-P1、精確SDK0.1.37、native Job／ACL／pipe驗收、原材料與全部新hash-bound reviews | bounded IPC／DTO、refresh前fsync握手、獨立每RPC watchdog、全Job清空、未知結果不重送；先離線與本機合成驗收，再依原admission進既有A/B/C流程 |
 | S1-E1 | 本地真實來源、模型材料與已存在audit接收 | 進行中／目的環境binding受阻；E14～E17。原材料已找到，歷史重建另核對；本輪audit尚未產出 | 原執行契約、本地來源與材料 | 先完成目的環境portable successor與原admission，核對training-owned provenance／原records／排除及exact numeric materials。首次原A/B/C可在原admission通過後產生audit，不以尚未產出的結果阻擋原流程 |
 | S1-E2 | 原runtime真實replay／LoRA梯度／owner狀態驗收 | 待開始／未執行 | S1-E1、本地完整原admission | E2與E3是同次原執行中的驗收，不要求先有另一場成功證據。原runtime逐步核對模型、數值、rollback、save/reload、closure與資源；CPU logp梯度不能替代。若另接AF3模型hook，才加另立successor的同模型差分驗收 |
 | S1-E3 | 同 session 既有 A/B/C 比較 | 待開始／未驗證 | S1-E1、原admission／batch／時鐘；E2由該次原runtime逐步驗收 | 原 reward、replay、更新、checkpoint、全 B/C wall、固定選擇與 closure 證據完整；未完成與 zero-signal 分開 |
@@ -339,3 +341,15 @@ DDIS數學與真實元件CPU整合證據，集中於[AF3整合研究](agent-fact
 - 2026-10-15 06:37 UTC：E31～E34保存最終232／232、獨立審查、完整suite、來源發布及精確CI。
   固定d684f63交本地三項no-auth驗收：新版native十案例、WSL caller-death、正式CLI pre-auth。
   原Windows登入仍留原profile；通過後仍須fresh remote observation、原材料及完整review，才依既有循環繼續。
+
+- 2026-10-15 06:44 UTC：本地E35回傳新版native 6／10，立即停止後續WSL／pre-auth與provider。
+  job_tree及兩個framed案例共用新的NULL-handle Job guard，這是source相關性而非已證實根因；
+  parent_death另查handshake。只做合成錯誤碼／query flags／分階段輸出診斷，保留完整Job與deadline要求。
+
+- 2026-10-15 06:52 UTC：核對官方CPython 3.12.10的
+  [venv build](https://github.com/python/cpython/blob/v3.12.10/PCbuild/venvlauncher.vcxproj#L91-L105)
+  與[launcher Job設定](https://github.com/python/cpython/blob/v3.12.10/PC/launcher.c#L739-L770)：
+  venv redirector確實會另建KILL_ON_JOB_CLOSE＋SILENT_BREAKAWAY_OK的內層Job。
+  [Windows API](https://learn.microsoft.com/en-us/windows/win32/api/jobapi2/nf-jobapi2-queryinformationjobobject)
+  的NULL query讀取immediate Job，因此目前exact flags檢查可能遇到該內層；尚待本機numeric flags證明。
+  只補安全診斷與合成open完成後才起算的短operation測試時鐘；production guard／outer Job規則未改。

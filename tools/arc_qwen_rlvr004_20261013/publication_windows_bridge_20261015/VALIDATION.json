@@ -1,4 +1,47 @@
 {
+  "diagnostic_revision": {
+    "base_commit": "b2b1be8f3165e107f2bcfb93733e9d217892ac40",
+    "focused": {
+      "normal": {
+        "errors": 0,
+        "failures": 0,
+        "log_sha256": "0317bc645164460cf32e96468773f4a79306110806994f431fec6ecde967ee38",
+        "skips": 0,
+        "tests": 244
+      },
+      "optimized": {
+        "errors": 0,
+        "failures": 0,
+        "log_sha256": "bb95499bdf81d12bb37ac535d286fc9725e64cd6f6afe61d90653eb6a57b09fb",
+        "skips": 0,
+        "tests": 244
+      }
+    },
+    "independent_review": {
+      "blocking_findings": 0,
+      "errors": 0,
+      "failures": 0,
+      "focused_normal_tests": 58,
+      "focused_optimized_tests": 58,
+      "scope": "two-file diagnostic delta; no production admission",
+      "skips": 0
+    },
+    "native_acceptance_retest": "pending",
+    "production_source_changed": false,
+    "provider_or_auth_used": false,
+    "repository_aggregate_rerun": false,
+    "scope": "synthetic native diagnostics and isolated post-open watchdog timer only",
+    "source_files": {
+      "native_probe.py": {
+        "bytes": 35714,
+        "sha256": "08119750b92ed87e7329b9a984ec65b33839b68d905737e1ed7f5ff688d33ca2"
+      },
+      "tests/test_windows_runtime.py": {
+        "bytes": 35955,
+        "sha256": "dfcc665c087ad87e62c48870133bdde17adc402745bcf6b6a1242356aea8b14a"
+      }
+    }
+  },
   "focused": {
     "normal": {
       "errors": 0,
@@ -18,6 +61,7 @@
   "format": "irisx/windows-bridge-offline-validation-v1",
   "historical_native_observations_not_relabelled": true,
   "historical_native_probe_commit": "8f2a6d032e01b02aa0563c851cbb1be60946bd67",
+  "historical_receipt_source_commit": "d684f63cf6c52044dee4359f84f6cc75527db734",
   "independent_review": {
     "blocking_source_findings": 0,
     "dependency_pins_verified": 22,
@@ -86,7 +130,7 @@
     "skips": 74,
     "tests": 1583
   },
-  "scope": "offline development and source-bound local diagnostic handoff; no production admission",
+  "scope": "Top-level focused/source_files/independent_review/repository_aggregate describe historical d684f63; diagnostic_revision describes the probe-only successor. No production admission.",
   "source_files": {
     "bridge_client.py": {
       "bytes": 30257,

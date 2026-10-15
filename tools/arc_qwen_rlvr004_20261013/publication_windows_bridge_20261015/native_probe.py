@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 import queue
+import re
 import shutil
 import subprocess
 import struct
@@ -43,26 +44,161 @@ PYVENV_CFG_SHA256 = (public_hash(Path(sys.prefix) / 'pyvenv.cfg', 65536)
 sys.path.insert(0, str(HERE))
 from win_runtime import (ExclusiveMutex, JobProcess, PrivateFileGuard, SecurityDescriptor,
                          WindowsGuardError, api, current_identity, need, profile_relative,
-                         HANDLE, DWORD, LPVOID, require_worker_job)
+                         HANDLE, DWORD, LPVOID, BOOL, JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
+                         require_worker_job)
 from win_supervisor import supervise
+
+
+# Diagnostic-only observations. Never contain raw output, exception messages,
+# traceback paths, environment values, or credential data. Each case remains a
+# failure until its original assertions pass; observations are not new checks.
+DIAGNOSTICS = []
+SUPERVISOR_REASONS = frozenset(('worker_exit', 'deadline', 'operation_deadline',
+    'official_rpc_deadline', 'parent_death', 'caller_pipe_eof',
+    'caller_pipe_or_protocol_error', 'output_pipe_or_protocol_error',
+    'input_limit', 'output_limit', 'output_pipe_error', 'worker_stderr_limit',
+    'worker_stderr_pipe_error', 'relay_drain_timeout', 'supervisor_error'))
+EXCEPTION_TYPES = frozenset(('WindowsGuardError', 'ProtocolError', 'OSError',
+    'ValueError', 'TypeError', 'KeyError', 'IndexError', 'StopIteration',
+    'JSONDecodeError', 'UnicodeDecodeError', 'TimeoutExpired', 'TimeoutError',
+    'BrokenPipeError', 'PermissionError', 'FileNotFoundError', 'RuntimeError'))
+QUERY_FIELDS = frozenset(('member_query_ok', 'member_query_error', 'is_member',
+    'limits_query_ok', 'limits_query_error', 'limit_flags'))
+
+
+def record_diagnostic(value):
+    if len(DIAGNOSTICS) < 12:
+        DIAGNOSTICS.append(value)
+
+
+def exception_facts(exc):
+    name = type(exc).__name__
+    result = {'exception_type': name if name in EXCEPTION_TYPES else 'other'}
+    # Only the two reviewed fixed-code exception classes supply a code. All
+    # other messages (including OS errors containing paths) are discarded.
+    if type(exc) is WindowsGuardError or (name == 'ProtocolError' and type(exc).__module__ == 'protocol'):
+        code = str(exc)
+        if re.fullmatch(r'(?:windows|probe|bridge)_[a-z0-9_]{1,96}', code):
+            result['code'] = code
+    for key in ('errno', 'winerror'):
+        value = getattr(exc, key, None)
+        if type(value) is int and 0 <= value <= 0xffffffff:
+            result[key] = value
+    return result
+
+
+def current_job_facts():
+    """Read numeric NULL-Job facts, without opening or duplicating a Job."""
+    a = api(); member = BOOL(); limits = JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
+    C.set_last_error(0)
+    member_ok = bool(a.k.IsProcessInJob(a.k.GetCurrentProcess(), None, C.byref(member)))
+    member_error = C.get_last_error()
+    C.set_last_error(0)
+    limits_ok = bool(a.k.QueryInformationJobObject(None, 9, C.byref(limits), C.sizeof(limits), None))
+    limits_error = C.get_last_error()
+    return {'member_query_ok': member_ok, 'member_query_error': member_error,
+            'is_member': bool(member.value) if member_ok else None,
+            'limits_query_ok': limits_ok, 'limits_query_error': limits_error,
+            'limit_flags': int(limits.BasicLimitInformation.LimitFlags) if limits_ok else None}
+
+
+def checked_worker_job(nonce):
+    # Observe the exact API used by the unchanged guard. Its requirement is
+    # deliberately not relaxed when a venv creates additional nested Jobs.
+    record_diagnostic({'event': 'current_job', **current_job_facts()})
+    return require_worker_job(nonce)
+
+
+def output_facts(data, label):
+    result = {'event': 'synthetic_line', 'stage': label, 'bytes': len(data),
+              'eof': not data, 'newline': data.endswith(b'\n'), 'over_cap': len(data) > 4096}
+    if not data or len(data) > 4096:
+        return result
+    try:
+        value = json.loads(data.decode('ascii'))
+    except (ValueError, UnicodeError, RecursionError):
+        result['json'] = 'invalid'; return result
+    result['json'] = 'object' if type(value) is dict else 'other'
+    if type(value) is not dict:
+        return result
+    known = ('child', 'grandchild', 'job_owner', 'native_parent_pid', 'parent_owner',
+             'reason', 'closure', 'format', 'exception', 'current_job', 'mode')
+    result['known_fields'] = [key for key in known if key in value]
+    result['unknown_field_count'] = sum(key not in known for key in value)
+    if type(value.get('reason')) is str and value['reason'] in SUPERVISOR_REASONS:
+        result['supervisor_reason'] = value['reason']
+    closure = value.get('closure')
+    if type(closure) is dict and type(closure.get('active_processes')) is int:
+        result['active_processes'] = max(-1, min(0xffffffff, closure['active_processes']))
+    if value.get('format') == 'irisx/native-probe-child-error-v1':
+        error = value.get('exception')
+        if type(error) is dict:
+            result['exception'] = {key: val for key, val in error.items() if
+                (key == 'exception_type' and type(val) is str and val in EXCEPTION_TYPES | {'other'}) or
+                (key == 'code' and type(val) is str and re.fullmatch(r'(?:windows|probe|bridge)_[a-z0-9_]{1,96}', val)) or
+                (key in ('errno', 'winerror') and type(val) is int and 0 <= val <= 0xffffffff)}
+        facts = value.get('current_job')
+        if type(facts) is dict:
+            result['current_job'] = {key: val for key, val in facts.items()
+                if key in QUERY_FIELDS and (val is None or type(val) is bool or
+                    type(val) is int and 0 <= val <= 0xffffffff)}
+    return result
+
+
+def cleanup_with_diagnostics(job):
+    """Prove zero first, then drain at most 8 KiB of synthetic stderr."""
+    try:
+        job.terminate_and_prove_empty(close_pipes=False)
+        if not job.stderr or not job.stderr.handle:
+            return
+        result = queue.Queue(maxsize=1)
+        def reader():
+            try:
+                raw = b''
+                while len(raw) <= 8192:
+                    chunk = job.stderr.read(min(4096, 8193 - len(raw)))
+                    if not chunk:
+                        break
+                    raw += chunk
+                result.put(raw)
+            except BaseException as exc:
+                result.put(exc)
+        threading.Thread(target=reader, daemon=True).start()
+        try:
+            raw = result.get(timeout=2)
+        except queue.Empty:
+            record_diagnostic({'event': 'stderr_drain_timeout'}); return
+        if isinstance(raw, BaseException):
+            record_diagnostic({'event': 'stderr_drain_error', **exception_facts(raw)}); return
+        if len(raw) > 8192:
+            record_diagnostic({'event': 'stderr_over_cap', 'bytes': len(raw)}); return
+        for line in raw.splitlines(keepends=True)[:8]:
+            record_diagnostic(output_facts(line, 'cleanup_stderr'))
+    finally:
+        job._close_handles()
 
 
 def command(*args):
     return [sys.executable, '-I', '-B', str(Path(__file__).resolve()), *args]
 
 
-def line_with_timeout(stream, seconds=10):
+def line_with_timeout(stream, seconds=10, *, stage='unspecified'):
     result = queue.Queue(maxsize=1)
     def reader():
         try:
             result.put(stream.readline(4097))
-        except BaseException:
-            result.put(b'')
+        except BaseException as exc:
+            result.put(exc)
     threading.Thread(target=reader, daemon=True).start()
     try:
         data = result.get(timeout=seconds)
     except queue.Empty:
+        record_diagnostic({'event': 'line_timeout', 'stage': stage})
         raise WindowsGuardError('probe_output_timeout') from None
+    if isinstance(data, BaseException):
+        record_diagnostic({'event': 'line_read_error', 'stage': stage, **exception_facts(data)})
+        raise WindowsGuardError('probe_output_read_failed') from None
+    record_diagnostic(output_facts(data, stage))
     need(0 < len(data) <= 4096 and data.endswith(b'\n'), 'probe_output_invalid')
     return json.loads(data.decode('ascii'))
 
@@ -220,15 +356,14 @@ def job_check():
     nonce = uuid.uuid4().hex + uuid.uuid4().hex
     job = JobProcess(command('--tree', nonce), job_nonce=nonce)
     try:
-        data = line_with_timeout(PipeLines(job.stdout))
+        data = line_with_timeout(PipeLines(job.stdout), stage='job_tree_handshake')
         with ProcessRefs([data['child'], data['grandchild']]) as refs:
             need(job.active_processes() >= 2, 'probe_job_missing_grandchild')
             proof = job.terminate_and_prove_empty()
             refs.assert_stopped()
             return {**proof, 'exact_membership_checked_before_resume': True, 'worker_null_job_check': True}
     finally:
-        if job.job:
-            job.terminate_and_prove_empty()
+        cleanup_with_diagnostics(job)
 
 
 def kill_actual_process(pid):
@@ -268,7 +403,8 @@ def supervisor_check(mode):
     refs = None
     try:
         lines = PipeLines(owner.stdout)
-        values = [line_with_timeout(lines), line_with_timeout(lines)]
+        values = [line_with_timeout(lines, stage='supervisor_handshake_1'),
+                  line_with_timeout(lines, stage='supervisor_handshake_2')]
         data = next(v for v in values if 'child' in v)
         owner_identity = next(v for v in values if 'job_owner' in v)
         members = stable_members(owner)
@@ -285,7 +421,7 @@ def supervisor_check(mode):
             return {'descendants_stopped': True, 'kill_on_close_observed': True,
                     'all_members_tracked': len(members), 'observer_job_active_processes': 0,
                     'actual_job_owner_killed': True}
-        receipt = line_with_timeout(PipeLines(owner.stderr))
+        receipt = line_with_timeout(PipeLines(owner.stderr), stage='supervisor_receipt')
         expected = 'deadline' if mode == 'timeout' else 'caller_pipe_eof'
         need(receipt['reason'] == expected and receipt['closure']['active_processes'] == 0,
              'probe_supervisor_reason_or_closure_failed')
@@ -295,7 +431,7 @@ def supervisor_check(mode):
         # This runs even on handshake failure and proves all created processes
         # stopped before the probe reports failure. It does not explain PASS:
         # assertions above observe an empty outer Job before cleanup terminates.
-        owner.terminate_and_prove_empty()
+        cleanup_with_diagnostics(owner)
         if refs:
             refs.close()
 
@@ -307,7 +443,9 @@ def parent_death_check():
     refs = None
     try:
         lines = PipeLines(owner.stdout)
-        values = [line_with_timeout(lines), line_with_timeout(lines), line_with_timeout(lines)]
+        values = [line_with_timeout(lines, stage='parent_death_handshake_1'),
+                  line_with_timeout(lines, stage='parent_death_handshake_2'),
+                  line_with_timeout(lines, stage='parent_death_handshake_3')]
         tree = next(v for v in values if 'child' in v)
         identity = next(v for v in values if 'job_owner' in v)
         supervisor_pid = identity['job_owner']
@@ -317,7 +455,7 @@ def parent_death_check():
         kill_actual_process(identity['native_parent_pid'])
         assert_job_empty(owner)
         refs.assert_stopped()
-        receipt = line_with_timeout(PipeLines(owner.stderr))
+        receipt = line_with_timeout(PipeLines(owner.stderr), stage='parent_death_receipt')
         need(receipt['reason'] == 'parent_death' and receipt['closure']['active_processes'] == 0,
              'probe_parent_death_not_observed')
         return {'reason': 'parent_death', 'active_processes': 0, 'descendants_stopped': True,
@@ -325,7 +463,7 @@ def parent_death_check():
                 'all_members_tracked': len(members),
                 'observer_job_active_processes': 0}
     finally:
-        owner.terminate_and_prove_empty()
+        cleanup_with_diagnostics(owner)
         if refs:
             refs.close()
 
@@ -350,8 +488,12 @@ class FramedPipeAdapter:
         pass
 
 
-def probe_request(protocol, channel, sequence, operation, arguments, seconds):
-    deadline = time.time() + seconds
+def probe_request(protocol, channel, sequence, operation, arguments, seconds, *, lease_epoch=None):
+    now = time.time()
+    deadline = now + seconds
+    if lease_epoch is not None:
+        deadline = min(deadline, lease_epoch)
+    need(deadline > now, 'probe_request_lease_expired')
     payload = {'operation': operation, 'arguments': arguments,
                'deadline_epoch': deadline, 'max_seconds': seconds}
     digest = protocol.request_hash(operation, arguments, deadline_epoch=deadline, max_seconds=seconds)
@@ -359,26 +501,36 @@ def probe_request(protocol, channel, sequence, operation, arguments, seconds):
     return digest
 
 
+def begin_framed_watch(protocol, channel, mode, lease_epoch):
+    arguments = {'account': 'danielwuu', 'versions': {'code_predecessor': 20, 'code': 21,
+        'inactive_predecessor': 39, 'inactive': 40, 'active': 41},
+        'configuration_sha256': 'a' * 64, 'bridge_configuration_sha256': 'b' * 64,
+        'publication_manifest_sha256': 'c' * 64, 'deadline_epoch': lease_epoch,
+        'max_seconds': 10}
+    digest = probe_request(protocol, channel, 1, 'open', arguments, 8, lease_epoch=lease_epoch)
+    channel.receive(kinds={'response'}, sequence=1, request_sha256=digest)
+    # The short watchdog test starts only once the real supervisor has relayed
+    # a valid worker response. Slow venv startup cannot consume its 0.6 seconds.
+    # The original overall lease is never restarted by this handshake.
+    need(lease_epoch - time.time() > 1, 'probe_startup_left_insufficient_lease')
+    began = time.monotonic()
+    seconds = 0.6 if mode == 'operation' else 8
+    probe_request(protocol, channel, 2, 'output', {'name': 'synthetic.zip', 'version': 1,
+        'cap': 1024, 'expected_bytes': None, 'expected_sha256': None}, seconds,
+        lease_epoch=lease_epoch)
+    return began
+
+
 def framed_watch_check(mode):
     protocol = framed_module(); nonce = uuid.uuid4().hex + uuid.uuid4().hex
+    lease_epoch = time.time() + 10
     owner = JobProcess(command('--framed-supervisor', mode, nonce))
-    began = time.monotonic()
     try:
         channel = protocol.FramedIO(FramedPipeAdapter(owner.stdout), FramedPipeAdapter(owner.stdin), nonce=nonce,
                                    deadline=time.monotonic() + 12)
-        seconds = 0.6 if mode == 'operation' else 8
-        arguments = {'account': 'danielwuu', 'versions': {'code_predecessor': 20, 'code': 21,
-            'inactive_predecessor': 39, 'inactive': 40, 'active': 41},
-            'configuration_sha256': 'a' * 64, 'bridge_configuration_sha256': 'b' * 64,
-            'publication_manifest_sha256': 'c' * 64, 'deadline_epoch': time.time() + 10,
-            'max_seconds': 10}
-        digest = probe_request(protocol, channel, 1, 'open', arguments, seconds)
-        if mode == 'phase':
-            channel.receive(kinds={'response'}, sequence=1, request_sha256=digest)
-            probe_request(protocol, channel, 2, 'output', {'name': 'synthetic.zip', 'version': 1,
-                'cap': 1024, 'expected_bytes': None, 'expected_sha256': None}, 8)
+        began = begin_framed_watch(protocol, channel, mode, lease_epoch)
         assert_job_empty(owner, 12)
-        receipt = line_with_timeout(PipeLines(owner.stderr))
+        receipt = line_with_timeout(PipeLines(owner.stderr), stage='framed_supervisor_receipt')
         expected = 'operation_deadline' if mode == 'operation' else 'official_rpc_deadline'
         need(receipt['reason'] == expected and receipt['closure']['active_processes'] == 0,
              'probe_native_watchdog_failed')
@@ -386,25 +538,27 @@ def framed_watch_check(mode):
         return {'reason': expected, 'active_processes': 0, 'observer_job_active_processes': 0,
                 'real_protocol_observed': True, 'hung_worker_stopped': True}
     finally:
-        owner.terminate_and_prove_empty()
+        cleanup_with_diagnostics(owner)
 
 
 def framed_worker(mode, nonce):
-    protocol = framed_module(); require_worker_job(nonce)
+    protocol = framed_module(); checked_worker_job(nonce)
     channel = protocol.FramedIO(sys.stdin.buffer, sys.stdout.buffer, nonce=nonce)
     request = channel.receive(kinds={'request'})
     sequence = request['sequence']; digest = request['request_sha256']
+    # Establish the descendant before the open response permits the parent to
+    # start its short timer. No startup work consumes the timed-hang interval.
+    subprocess.Popen(command('--grandchild'), stdin=subprocess.DEVNULL,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    channel.send('response', {'operation': 'open', 'result': {'authenticated': True}},
+                 sequence=sequence, request_sha256=digest)
+    request = channel.receive(kinds={'request'})
+    sequence = request['sequence']; digest = request['request_sha256']
     if mode == 'phase':
-        channel.send('response', {'operation': 'open', 'result': {'authenticated': True}},
-                     sequence=sequence, request_sha256=digest)
-        request = channel.receive(kinds={'request'})
-        sequence = request['sequence']; digest = request['request_sha256']
         channel.send('phase_start', {'phase_id': 1, 'kind': 'official_rpc', 'max_seconds': 120,
             'deadline_epoch': time.time() + 0.6}, sequence=sequence, request_sha256=digest)
     # Process tree intentionally does no work and does not cooperate with the
     # deadline. Only the independent real native supervisor can enforce it.
-    subprocess.Popen(command('--grandchild'), stdin=subprocess.DEVNULL,
-                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     time.sleep(30)
     return 0
 
@@ -512,7 +666,7 @@ def child_mode(args):
         time.sleep(60); return 0
     if args[0] == '--tree':
         if len(args) > 1:
-            require_worker_job(args[1])
+            checked_worker_job(args[1])
         child = subprocess.Popen(command('--grandchild'), stdin=subprocess.DEVNULL,
                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         os.write(1, (json.dumps({'child': os.getpid(), 'grandchild': child.pid}) + '\n').encode('ascii'))
@@ -553,7 +707,18 @@ def main():
     for fd in (0, 1, 2):
         msvcrt.setmode(fd, os.O_BINARY)
     if len(sys.argv) > 1:
-        return child_mode(sys.argv[1:])
+        try:
+            return child_mode(sys.argv[1:])
+        except BaseException as exc:
+            # Every dispatched mode is fixed synthetic code. Do not print the
+            # default traceback, which could expose local file paths.
+            facts = next((value for value in DIAGNOSTICS if value.get('event') == 'current_job'), None)
+            record = {'format': 'irisx/native-probe-child-error-v1',
+                      'exception': exception_facts(exc)}
+            if facts is not None:
+                record['current_job'] = {key: facts[key] for key in QUERY_FIELDS if key in facts}
+            os.write(2, (json.dumps(record, sort_keys=True, separators=(',', ':')) + '\n').encode('ascii'))
+            return 125
     checks = {}; all_ok = True
     cases = [('metadata', metadata_checks), ('mutex', lock_check), ('job_tree', job_check),
              ('deadline', lambda: supervisor_check('timeout')),
@@ -563,14 +728,17 @@ def main():
              ('framed_operation_deadline', lambda: framed_watch_check('operation')),
              ('framed_official_rpc_deadline', lambda: framed_watch_check('phase'))]
     for name, check in cases:
+        DIAGNOSTICS.clear()
         try:
             checks[name] = {'ok': True, 'result': check()}
         except WindowsGuardError as exc:
             all_ok = False
-            checks[name] = {'ok': False, 'reason': str(exc), 'win32_error': C.get_last_error()}
-        except BaseException:
+            checks[name] = {'ok': False, 'reason': str(exc), 'win32_error': C.get_last_error(),
+                            'exception': exception_facts(exc), 'diagnostics': list(DIAGNOSTICS)}
+        except BaseException as exc:
             all_ok = False
-            checks[name] = {'ok': False, 'reason': 'probe_internal_error'}
+            checks[name] = {'ok': False, 'reason': 'probe_internal_error',
+                            'exception': exception_facts(exc), 'diagnostics': list(DIAGNOSTICS)}
     unchanged = public_bindings_unchanged()
     checks['source_unchanged'] = {'ok': unchanged}
     all_ok = all_ok and unchanged
