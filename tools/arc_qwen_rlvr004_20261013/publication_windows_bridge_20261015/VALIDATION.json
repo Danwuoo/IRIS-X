@@ -143,7 +143,7 @@
     "skips": 74,
     "tests": 1583
   },
-  "scope": "Top-level focused/source_files/independent_review/repository_aggregate describe historical d684f63; diagnostic_revision describes f998839 and its failed native result; venv_repair_revision describes the current narrow correction, awaiting actual native acceptance. No production admission.",
+  "scope": "Original top-level result fields describe historical d684f63. diagnostic_revision describes f998839 and its failed native result. venv_repair_revision describes source commit 01ca4f14 and actual no-auth native/WSL/preauth acceptance. Provider admission and scientific execution remain separate and pending.",
   "source_files": {
     "bridge_client.py": {
       "bytes": 30257,
@@ -281,14 +281,59 @@
       "skips": 0,
       "source_files_unchanged_before_after": 25
     },
-    "native_acceptance_retest": "pending",
+    "local_acceptance": {
+      "acceptance_index_sha256": "165c4d16cd5778ce45e1275980c9b6f714a1df31a65cc419833cf1ddfc13e467",
+      "all_source_and_runtime_config_bytes_unchanged": true,
+      "credential_contents_read": false,
+      "dataset_notebook_versions_reserved": false,
+      "evidence_origin": "reported local executor captures; raw logs retained locally",
+      "native": {
+        "both_framed_deadlines_passed": true,
+        "end_utc": "2026-10-15T07:18:19Z",
+        "outer_exit_code": 0,
+        "parent_watch_original_members_tracked": 9,
+        "passed_checks": 10,
+        "start_utc": "2026-10-15T07:18:03Z",
+        "stderr_bytes": 0,
+        "stdout_sha256": "a52753b24aef3c5b68a9c7350ecc75ffb8ec3f9f55f48a81f21aeac704f166af",
+        "total_checks": 10
+      },
+      "production_cli_preauth": {
+        "end_utc": "2026-10-15T07:22:46Z",
+        "native_exit_code": 124,
+        "native_stop_reason": "caller_pipe_eof",
+        "nonce_bound_job_active_processes": 0,
+        "outer_exit_code": 0,
+        "ready_ack_sent": false,
+        "ready_valid": true,
+        "start_utc": "2026-10-15T07:22:42Z",
+        "stderr_bytes": 0,
+        "stdout_sha256": "2c4193f4e492acb93810f71c804d57d6eb2759bf35342173d18aad9ad7fd0ee1"
+      },
+      "provider_admission": false,
+      "provider_calls": 0,
+      "sdk_imported": false,
+      "source_commit": "01ca4f14d23edaba64111f9ff0bab6d6deb20a91",
+      "wsl_caller_death": {
+        "caller_sigkill": true,
+        "end_utc": "2026-10-15T07:20:27Z",
+        "observer_job_active_processes": 0,
+        "original_members_stopped": 8,
+        "outer_exit_code": 0,
+        "start_utc": "2026-10-15T07:20:24Z",
+        "stderr_bytes": 0,
+        "stdout_sha256": "8cd8bdae84efbd3d3b6a15384b21b064cc2076e5a5e048b5381e242812d60e30"
+      }
+    },
+    "native_acceptance_retest": "passed_10_of_10",
     "outer_job_flags": 8192,
     "production_logic_changes": [
       "win_runtime.require_worker_job"
     ],
     "provider_or_auth_used": false,
     "repository_aggregate_rerun": false,
-    "scope": "exact immediate-Job flags correction plus isolated synthetic explicit-controller ParentWatch test; native retest required",
+    "scope": "Narrow Job correction, offline tests, and real local no-auth acceptance; provider admission remains pending",
+    "source_commit": "01ca4f14d23edaba64111f9ff0bab6d6deb20a91",
     "source_files": {
       "bridge_client.py": {
         "bytes": 30257,
