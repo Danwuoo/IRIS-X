@@ -62,6 +62,8 @@
 | E30 | 本地新建單一Windows Python3.12.10 venv，官方Kaggle2.2.4／SDK0.1.37，完整35套件安裝；`pip check` exit0、170-source lock全數一致 | ENV-RECEIPT SHA256 `ec2daea5687f0feae32fcc0d7675baf2649d35da7f156ab38ed975713f3593fc`。官方wheel hashes與E20一致；初次Temp失敗保留，同venv改用project Temp後完成。沒有import SDK／登入／讀credential或修改HOME／ACL；原global SDK0.1.36保留。只證明安裝／靜態來源，尚未執行新版native probe或provider |
 | E31 | Windows／WSL bridge最終離線232 normal／232 `-O`、zero skips；獨立reviewer對同一snapshot另跑232／232，25個source／test檔前後不變，22個dependency pins吻合 | [固定來源與驗收收據](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。涵蓋實際binary pipe DTO／fsync／opaque upload／404及503／unknown不重送／15檔Git與review closure、十案例及pre-auth harness的合成負例。原collector所有function／class AST不變；transport僅update_code、review_gate、git_publication_gate三項有界差異。尚未有新版native／WSL／正式pre-auth實測或provider admission |
 | E32 | 最終code凍結後再次執行完整repo suite：1,583 tests／2 failures／35 errors／74 skips；37個failure/error IDs與保存的POSIX baseline相同，未重跑baseline | [本輪精確收據](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。workspace TMPDIR及offline flags齊備；root suite不涵蓋E31獨立232 tests。既有6項README finding仍失敗；初次錯誤TMPDIR的partial run保留，不能當合格比較 |
+| E33 | Bridge來源正式發布 `d684f63cf6c52044dee4359f84f6cc75527db734`，tree `03ecf14a07ad584803aebb94954a5c59f24b4476`；remote branch／29檔Git、index與worktree逐byte一致 | [固定commit](https://github.com/Danwuoo/IRIS-X/commit/d684f63cf6c52044dee4359f84f6cc75527db734)；分支`fix/arc2-abc-portable-publication-20261015`，本地三項驗收固定這個程式版本。公開payload只有source／tests／非秘密handoff，沒有credential／evaluator答案或raw logs；發布完成不等於provider放行 |
+| E34 | E33精確CI38693296388已completed／failure：1 job failure、3 cancelled | [CI](https://github.com/Danwuoo/IRIS-X/actions/runs/38693296388)；實際job116283954687仍為6項既有README缺詞，unit／packaging skipped。新bridge focused與完整suite結果分別見E31／E32；不混同為CI成功 |
 
 本地去敏觀察收據 `OBSERVATION.json` 的SHA256為
 `faffc10ca4325726b95f3a99bbc4a2d30b3cad26d20d91ef0e355d28c9413123`。
@@ -333,3 +335,7 @@ DDIS數學與真實元件CPU整合證據，集中於[AF3整合研究](agent-fact
   native SDK worker及durable refresh handshake；獨立審查補強Windows base Python／pyvenv綁定、
   native副本與WSL Git來源一致性、全15檔publication closure。新版十案例、WSL caller-death、
   完整官方venv、正式入口與既有OAuth仍待本地實測；尚未有新provider call、upload、RUN或A/B/C分數。
+
+- 2026-10-15 06:37 UTC：E31～E34保存最終232／232、獨立審查、完整suite、來源發布及精確CI。
+  固定d684f63交本地三項no-auth驗收：新版native十案例、WSL caller-death、正式CLI pre-auth。
+  原Windows登入仍留原profile；通過後仍須fresh remote observation、原材料及完整review，才依既有循環繼續。
