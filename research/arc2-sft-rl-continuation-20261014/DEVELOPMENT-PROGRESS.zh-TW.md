@@ -31,14 +31,14 @@ f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.
 | Stage 0／Stage 1 | 離線計畫、report analysis、training audit adapter 與 upstream 逐軌跡 loss 已交付 | [Stage 0](offline-continuation-review.md)、[Stage 1](stage1-independent-review.md)；無模型 hook 或 ARC 分數 |
 | AF3 真正元件 | `TrainingSample`、`DDISLoss`、`MeanMetricState` 實際 CPU 呼叫及合成 loss／gradient parity 成立 | [整合與 proof](agent-factory3/integration.zh-TW.md)；真實 Qwen／LoRA／GPU 效益仍未知 |
 | 84a5 本地與發布 | 本地 native10、WSL caller-death、pre-auth、真實 90 檔 disposition、canonical admission 通過；code Dataset v21 的 269 檔／15,849,580 bytes numeric readback 相符 | inactive40 → active41 真正提交；所有 9 個 native sessions closed，原 995／ddd UNKNOWN 原件不變 |
-| v43 當前實證 | code22／inactive42 真收據與 manifest 相符；19:33:50.121 UTC 接受 active43；最後20:06:13 UTC bracket RUNNING，來源／設定相符 | 其後 caller／匿名 pipes 中斷；原 readonly kernel accepted、mutation false、closure 未證。原3,511件 STATE保存，尚無 v43 terminal／GPU／成本或科學結果 |
+| v43 當前實證 | code22／inactive42 真收據與 manifest 相符；19:33:50.121 UTC 接受 active43；最新20:45:36.341 UTC 獨立 bracket RUNNING，來源／設定相符 | 原 caller／匿名 pipes 中斷；新 observer 真正 worker_exit／Job0，無refresh／mutation，原3,511件 STATE bytes不變，舊closure仍未證；無 v43 terminal／GPU／成本或科學結果 |
 | v41 真實終態 | 2026-10-15 15:58:28 UTC 首次觀察 ERROR；Internet OFF、RTX Pro 6000、private | [原 notebook](https://www.kaggle.com/code/danielwuu/iris-x-learning-agent-20261011)，kernel ID 138123872 不是 scriptVersionId；native closure 不證明遠端 VM teardown |
 | 啟動原因 | notebook 的 ambient interpreter 在離線環境建立前查固定 cuDNN，distribution 存在但 version 不等 9.10.2.21；停於 parent-environment-policy | ambient 實際版本與 backend 是否載入未知；prepare caller 同排序風險尚未執行。`preparation_failure:null` 另使 collector 拒絕 schema |
 | 已取回證據 | 五份 numeric41 outputs 各有 HTTP200、bytes／SHA receipt：startup diagnostic、preparation request、original request、operator、outer notebook | 五份不是全 inventory；outer notebook 無 execution outputs，不能當官方 execution log。模型／audit／score／cost 其他檔存在性未知 |
 | 已發布的啟動修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；新 source/archive／canonical 已本地驗收，v43 GPU／方法結果仍待實證 |
 | 多輪續接 | 0d3524 已隔離每輪 publication／collector 目錄，native STATE 與全域鎖共用；本地18:03 fresh no-auth 停於舊f5永久 same-boot 字串 gate | 原1,686檔完全不變，未新建 native claim／canonical／run、未 provider。CIM boot值變1.802125秒，host／Windows／source／runtime相同；符合校時漂移但未證明 same boot，不拿猜測當PASS |
 | 歷史／即時 context 修復 | 原封存Restart＋reconciliation在原completion time重驗；fresh host／source／runtime／closure另核對，封存events及live STATE前後綁定 | 只支援現有f5原件的12.629秒歷史間隔，保留原120秒限制；later UNKNOWN／refresh／publication變更仍阻擋，不加BootID框架、容差或重啟 |
-| Repository／CI | a5c3 精確 CI 仍失敗：6 項既有 README invariants 缺詞，unit／packaging skipped | 本次 focused 驗證見 [VALIDATION](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)；新遠端 CI 依最終 commit 另核對，未重跑不變完整 suite |
+| Repository／CI | ae960a2 精確 CI 仍失敗：6 項既有 README invariants 缺詞，unit／packaging skipped | 本次 focused 驗證見 [VALIDATION](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)；新遠端 CI 依最終 commit 另核對，未重跑不變完整 suite |
 | 真實研究結果 | v41 未進模型階段；v43 已提交但階段未知；training audit、更新、B/C 成本匹配及 PUBLIC 評分均未取得 | PUBLIC 固定 120 tasks／167 queries；未知不是 0 分，也不是 RL 無效的結果 |
 
 v41 startup diagnostic SHA256：`0ba5efaf361da5336338a0ff170728ea7cf96aa1af447d74d5f770e0ff0de069`。
@@ -54,7 +54,7 @@ CPU 另以真正 pinned offline guard 重現子程序增加 6 個固定環境鍵
 | --- | --- | --- |
 | 兩 caller／guard 契約／collector schema 修復 | 0af 已發布；作者與獨立 reviewer 各 613 normal／613 `-O` 通過（46 準備、9 組裝、558 bridge） | 科學 runtime／archive 與 native 七件來源在本次 bookkeeping 修復中沿用，不重做未變驗收 |
 | 多輪 publication／collector 續接 | 0d3524 的作者／獨立review每模式599項PASS維持歷史證據；本次最終bridge每模式600項、獨立context每模式70項PASS，精確hash見VALIDATION | 本地真實 history／fresh readback 已通過並接受 v43；保留原件，已驗證且未變元件不重做 |
-| 原 A/B/C v43 | 沿原 run007／run008 模式已接受 code22／inactive42／active43，監看 caller 中斷 | 先部署已審查 status-only observer，取得 fresh source-bound bracket；繼續原 run 到 terminal／可取得結果，不重送或重設時鐘 |
+| 原 A/B/C v43 | 沿原 run007／run008 模式已接受 code22／inactive42／active43，監看 caller 中斷 | status-only observer已真實驗收，短生命週期 bracket持續至terminal；終態後獨立selected retrieval，不重送或重設時鐘 |
 | v41 官方 log／inventory | 現有 bridge 尚未支援；SDK 0.1.37 可送 numeric version_label，但 response 無 version/source echo | 另作最小唯讀支援，不阻擋已確定的啟動修復；完整分頁與 numeric bodies／log attribution 分開，不能靠 latest CLI 補稱 exact41 |
 | 科學判讀 | 待真實模型結果 | reward、replay、checkpoint、全成本與完整 scorer 成立後，才按[既有方法決策](method-landscape.zh-TW.md#七建議的實驗順序與觸發條件)決定下一變因 |
 
@@ -98,5 +98,14 @@ no-TTT、dev 選擇與 PUBLIC120／167 不變。AF3 companion 在原 audit 產�
 兩個 read RPC 的四個精確 HTTPS URL。output 拒絕 `state*` ancestry／native source／既有目錄。
 helper SHA256 `696cbfc6336fa208526352c4479bf3a32eb5a835d8fa75aca01a87ffa7346655`；
 test SHA256 `dce7d59ea01c99d180658e3e0a01a6ac135b031d01d55d9254d9d71dff3ba6ef`。
-原 native 七來源及 SDK lock 不變，不重跑其歷史 suite。本地 native 執行與 fresh provider
-observation 仍待驗收；這些 CPU／source review 不證明遠端終態、GPU、成本或科學結果。
+原 native 七來源及 SDK lock 不變，不重跑其歷史 suite。本地已真正取得20:45:36.341 UTC RUNNING bracket與新Job0，原3,511件 STATE不變，舊session closure仍未證；不代表遠端終態、GPU、成本或科學結果。
+
+### v43 selected retrieval 的窄驗證
+
+另增 `retrieve.py`，status observer與已接受run不變。新增57項CPU測試，合併固定observer29項，
+作者與獨立review各86 normal／86 `-O` PASS；另有5項獨立mocked supervisor負例／finalization驗證。
+retrieval helper SHA256 `68a2291e1ebb174471baec9067babe6f71a6305f4ab3641921f18461e188e8be`；
+test SHA256 `b4661450c8cfcd338829914c42dad08ce9cc4479b5dbdf9f94f99411c537111e`。
+只允許原selected白名單的單一numeric43檔案；terminal前不下載，完整來源／設定bracket、原clock、
+no-refresh／mutex／Job、exactcap／diskreserve、prior-terminal完整receipt鏈與Job0後hash／finalize
+皆保留。實際native／provider下載仍未執行；跨筆aggregate／ZIP／owner／wrapper／科學驗收不由新helper授予。

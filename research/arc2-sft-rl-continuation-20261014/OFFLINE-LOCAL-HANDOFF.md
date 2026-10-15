@@ -267,6 +267,41 @@ pre-network refusal，不自動 refresh、登入、另換 store 或重試。此�
 每筆 observer 只縮短自己的期限，不重設 run deadline。這個 helper 不改 accepted notebook，
 不開新的 RUN／Restart／quota 查詢，也不取用舊 Job handle 或 pipe。
 
+### v43 終態後的 selected numeric outputs
+
+status observer 保持 ae960a2 的固定 bytes。另用同目錄的 `retrieve.py`，旁邊的
+`observe.py` 必須仍是 SHA256 `696cbfc6336fa208526352c4479bf3a32eb5a835d8fa75aca01a87ffa7346655`。
+每筆只取一個原 collector `output_paths` 白名單中的檔案，不含 checkpoint body、全 inventory
+或額外 failure-path fallback。只在 fresh v43 source/settings bracket 真正為 terminal 後送
+`DownloadKernelOutput(version_number=43)`，完成後再核對相同 terminal status 的完整 bracket。
+
+同一原 Windows runtime／config／metadata 參數不變，另外提供原 134,508-byte manifest
+副本與 SHA256 `619dc66bb9b4c1697c0753475ab3e68123d77edbc1d9b0737ba3cbd238db7442`。
+第一筆選 `irisx-qwen14b-rlvr-20261013-run008.evidence.zip.terminal.json`，cap 16 MiB；
+輸出仍在 fresh、非 STATE 的獨立目錄。原 source／config／manifest 不重新組裝。
+
+```text
+<original-python.exe> -I -B <retrieve.py> --helper-sha <reviewed-retrieve-sha256> --bridge-root <unchanged-native-source-directory> --config <original-native-config> --config-sha ec32867044bd6de4f8cead0cc6d9f73a45419c1a091dbe3cdbdfadaf669fe0f9 --accepted-metadata <byte-identical-metadata-copy> --accepted-metadata-sha 0a22a9193407c049cbbceeb01f8ea9c5385d2a1855d0f97a6371adfa8a364106 --manifest <byte-identical-manifest-copy> --manifest-sha 619dc66bb9b4c1697c0753475ab3e68123d77edbc1d9b0737ba3cbd238db7442 --name <exact-selected-provider-path> --output <fresh-retrieval-directory>
+```
+
+成功才會有 finalized `payload.bin`；`retrieval-result.json` 將其 bytes／SHA 綁到 numeric43、
+provider path、兩側 source/status brackets、原 clocks、request／worker hashes 及新 Job-zero。
+原 native session 未閉合的證據保持不動。失敗只留下真實 partial／failed receipts，不能改名當成功。
+每筆最多300秒且不越過原global期限；輸入／串流／後驗 hash 皆受限，沿原 no-refresh／mutex／
+containment。下載前及每chunk檢查4 GiB free reserve，拒絕壓縮 Content-Encoding、長度不符。
+
+取 `.evidence.zip` 時再加 `--terminal-receipt <prior-retrieval-result.json>` 與
+`--terminal-receipt-sha <actual-receipt-sha256>`。必須是本helper真正完成的前一筆 terminal JSON
+下載，完整 launch／worker／Job-zero／檔案 hash 鏈相符，且 terminal 格式、output root、完整archive
+宣告成立；不能手造收據或只傳一份自行填寫的 terminal JSON。archive 必須符合其宣告 bytes／SHA
+以及原 manifest 的 5 GiB＋16 MiB cap。raw archive／private evaluator材料只留本地私有證據區。
+
+這是 selected-observation-only transport，不是原 collector 的驗收。跨筆按 numeric version＋
+provider path 去重；保留partial的實際磁碟用量，不能把重複下載當不同證據。cross-invocation
+aggregate 尚未驗證；原 evidence cap＋256 MiB aggregate、ZIP 安全、owner／wrapper／inventory、
+checkpoint／scorer 與科學 admission 仍須由原 offline contracts 獨立成立。404 只代表該 selected
+output pending或missing；terminal、hash成功或新Job-zero都不證明遠端模型收束或科學成功。
+
 ### 6.4 本地修復邊界與研究決策
 
 當次明確授權內的有限工程修復，先保存失敗 source／receipts／logs／clock／成本，再測試、獨立審查
