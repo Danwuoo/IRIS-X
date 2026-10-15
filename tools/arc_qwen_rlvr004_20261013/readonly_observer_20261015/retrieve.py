@@ -24,6 +24,13 @@ TERMINAL_PATH = PREFIX + '.evidence.zip.terminal.json'
 EVIDENCE_PATH = PREFIX + '.evidence.zip'
 RESERVE = 4 * 1024**3
 MAX_SECONDS = 300
+SUPERVISOR_ERROR_CODES = frozenset({
+    'worker_result_bound', 'worker_result_binding', 'new_job_closure_required',
+    'terminal_source_bracket_required', 'terminal_bracket_clock', 'terminal_bracket_changed',
+    'download_cap_type', 'bounded_download_file', 'download_file_changed', 'download_cap',
+    'original_retrieval_deadline', 'closed_download_hash_changed', 'final_output_exists',
+    'linked_path_forbidden',
+})
 
 
 def need(value, code):
@@ -103,12 +110,17 @@ def digest_file(base, path, cap, deadline):
     path = base.no_links(path)
     before = path.stat()
     identity = lambda s: (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns, s.st_nlink)
+    # Native Windows path and descriptor APIs can expose different ctime values.
+    # Compare that field only within the same API, never drop its change check.
+    cross_identity = (lambda s: (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_nlink)) \
+        if os.name == 'nt' else identity
     need(stat.S_ISREG(before.st_mode) and before.st_nlink == 1 and 0 <= before.st_size <= cap,
          'bounded_download_file')
     hashed = hashlib.sha256()
     total = 0
     with path.open('rb') as stream:
-        need(identity(os.fstat(stream.fileno())) == identity(before), 'download_file_changed')
+        opened = os.fstat(stream.fileno())
+        need(cross_identity(opened) == cross_identity(before), 'download_file_changed')
         while True:
             need(time.monotonic() < deadline and time.time() < base.CLOCK['global_deadline'],
                  'original_retrieval_deadline')
@@ -118,7 +130,7 @@ def digest_file(base, path, cap, deadline):
             total += len(block)
             need(total <= cap, 'download_cap')
             hashed.update(block)
-        need(identity(os.fstat(stream.fileno())) == identity(before), 'download_file_changed')
+        need(identity(os.fstat(stream.fileno())) == identity(opened), 'download_file_changed')
     need(identity(base.no_links(path).stat()) == identity(before) and total == before.st_size,
          'download_file_changed')
     return {'bytes': total, 'sha256': hashed.hexdigest()}
@@ -371,6 +383,7 @@ def supervise(args, argv):
                'scientific_success_verified': False, 'old_native_session_closure_verified': False}
     input_fd, hold_open = os.pipe()
     code = 2
+    stage, closed = 'supervise', False
     try:
         child = [runtime.executable, '-I', '-B', str(Path(__file__).absolute()), *argv,
                  '--worker', '--nonce', nonce, '--request-sha', request_sha,
@@ -381,7 +394,8 @@ def supervise(args, argv):
                 input_fd=input_fd, output_fd=stream.fileno(), scope='publication-worker-v1',
                 protocol=None, nonce=nonce)
             os.fsync(stream.fileno())
-        receipt.update(reason=result.reason, closure=result.closure)
+        receipt.update(reason=result.reason, supervisor_reason=result.reason, closure=result.closure)
+        stage = 'worker_result'
         raw = (output / 'worker-result.json').read_bytes()
         need(0 < len(raw) <= base.MAX_RESULT, 'worker_result_bound')
         value = base.strict_json(raw)
@@ -389,13 +403,19 @@ def supervise(args, argv):
              and value.get('format') == 'irisx/v43-selected-worker-v1', 'worker_result_binding')
         receipt['worker_result_sha256'] = base.sha(raw)
         if result.code == 0 and value.get('ok') is True:
+            stage = 'new_job_closure'
             new_job_closure(result.closure)
+            closed = True
+            stage = 'terminal_brackets'
             terminal_brackets(base, value['download']['before'], value['download']['after'])
+            stage = 'digest_file'
             row = digest_file(base, output / 'payload.part', caps[args.name], deadline)
+            stage = 'download_descriptor'
             need(row == value['download']['file'] and (expected_file is None or row == expected_file),
                  'closed_download_hash_changed')
             need(time.monotonic() < deadline and time.time() < base.CLOCK['global_deadline'],
                  'original_retrieval_deadline')
+            stage = 'finalize'
             need(not (output / 'payload.bin').exists(), 'final_output_exists')
             # Production is native Windows: rename fails if destination exists.
             os.rename(output / 'payload.part', output / 'payload.bin')
@@ -403,7 +423,15 @@ def supervise(args, argv):
                            before=value['download']['before'], after=value['download']['after'])
             code = 0
     except BaseException as error:
-        if str(error) == 'windows_duplicate_worker':
+        # Only fixed local codes may leave this process; exception text can
+        # contain private paths, provider bodies or credentials.
+        error_code = error.args[0] if len(error.args) == 1 and type(error.args[0]) is str else None
+        receipt.update(reason='post_close_validation_failed' if closed else 'retrieval_validation_failed',
+                       failure_stage=stage,
+                       error_code=error_code if error_code in SUPERVISOR_ERROR_CODES else 'unexpected_error')
+        if stage == 'supervise':
+            receipt['reason'] = 'retrieval_supervision_failed'
+        if error_code == 'windows_duplicate_worker':
             receipt['reason'] = 'original_mutex_exists_no_takeover'
     finally:
         os.close(hold_open)

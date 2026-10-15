@@ -483,6 +483,63 @@ class RetrieveOneTests(ClockedTests):
 
 
 class DigestFileTests(ClockedTests):
+    def digest_snapshots(self, *, platform='nt', path_changes=None,
+                         descriptor_changes=None, cross_changes=None):
+        """Keep real reads, with independent synthetic path/descriptor metadata."""
+        path = self.directory / 'identity.bin'
+        path.write_bytes(b'abc')
+        actual = path.stat()
+        # Synthetic identities reproduce the stable 409286400 ns API difference:
+        # path ctime exposes birth time while descriptor ctime exposes mtime.
+        before = {'st_dev': 101, 'st_ino': 202, 'st_size': 3, 'st_nlink': 1,
+                  'st_mtime_ns': 1700000000409286400,
+                  'st_ctime_ns': 1700000000000000000, 'st_mode': actual.st_mode}
+        opened = {**before, 'st_ctime_ns': before['st_mtime_ns']}
+        for key, delta in (cross_changes or {}).items():
+            opened[key] += delta
+        after, closed = dict(before), dict(opened)
+        for key, delta in (path_changes or {}).items():
+            after[key] += delta
+        for key, delta in (descriptor_changes or {}).items():
+            closed[key] += delta
+        bounded_path = SimpleNamespace(
+            stat=Mock(side_effect=[SimpleNamespace(**before), SimpleNamespace(**after)]),
+            open=path.open)
+        base = SimpleNamespace(**vars(observer))
+        base.no_links = Mock(return_value=bounded_path)
+        local_os = SimpleNamespace(**vars(os))
+        local_os.name = platform
+        local_os.fstat = Mock(side_effect=[SimpleNamespace(**opened), SimpleNamespace(**closed)])
+        # Replacing only retrieve.os avoids changing pathlib's host-platform choice.
+        with patch.object(retrieve, 'os', local_os):
+            result = retrieve.digest_file(base, path, 3, DEADLINE)
+        self.assertEqual(bounded_path.stat.call_count, 2)
+        self.assertEqual(local_os.fstat.call_count, 2)
+        self.assertEqual(base.no_links.call_count, 2)
+        return result
+
+    def test_windows_stable_cross_api_ctime_difference_is_valid(self):
+        self.assertEqual(self.digest_snapshots(), descriptor(b'abc'))
+
+    def test_non_windows_cross_api_ctime_difference_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, '^download_file_changed$'):
+            self.digest_snapshots(platform='posix')
+
+    def test_windows_path_identity_change_after_read_rejected(self):
+        for field in ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_ctime_ns', 'st_nlink'):
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, '^download_file_changed$'):
+                self.digest_snapshots(path_changes={field: 1})
+
+    def test_windows_descriptor_identity_change_after_read_rejected(self):
+        for field in ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_ctime_ns', 'st_nlink'):
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, '^download_file_changed$'):
+                self.digest_snapshots(descriptor_changes={field: 1})
+
+    def test_windows_cross_api_identity_mismatch_rejected(self):
+        for field in ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_nlink'):
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, '^download_file_changed$'):
+                self.digest_snapshots(cross_changes={field: 1})
+
     def test_regular_file_digest_and_exact_cap(self):
         path = self.directory / 'file.bin'
         path.write_bytes(b'abc')
@@ -554,6 +611,146 @@ class DigestFileTests(ClockedTests):
         with patch.object(retrieve.os, 'fstat', side_effect=changed):
             with self.assertRaisesRegex(ValueError, 'download_file_changed'):
                 retrieve.digest_file(observer, path, 3, DEADLINE)
+
+
+class SupervisorValidationTests(ClockedTests):
+    def setUp(self):
+        super().setUp()
+        self.payload = b'Synthetic closed worker output.\n'
+        self.worker_result = None
+        self.native_result = SimpleNamespace(code=0, reason='worker_exit', closure=closure())
+        self.supervisor = SimpleNamespace(_install_runtime=Mock(),
+                                         supervise=Mock(side_effect=self.closed_worker))
+        self.base = SimpleNamespace(**vars(observer))
+        self.base.pinned_module = Mock(return_value=self.supervisor)
+        self.base.observation_output = Mock(return_value=self.directory)
+        self.win = object()
+        self.cli = argv()
+        self.args = retrieve.arguments(self.cli)
+        self.bootstrap = self.enterContext(patch.object(retrieve, 'bootstrap', return_value=(
+            self.base, BRIDGE, self.win, SimpleNamespace(executable=sys.executable),
+            metadata(), manifest(), retrieve.selected_caps(manifest()))))
+
+    def closed_worker(self, unused_child, **kwargs):
+        """Emulate only the already-closed child; never launch a native process."""
+        launch_raw = (self.directory / 'launch.json').read_bytes()
+        launch = observer.strict_json(launch_raw)
+        self.assertEqual(kwargs['nonce'], launch['nonce'])
+        self.worker_result = {'format': 'irisx/v43-selected-worker-v1',
+            'nonce': launch['nonce'], 'request_sha256': observer.sha(launch_raw),
+            'ok': True, 'download': {
+                'before': snapshot(), 'after': snapshot(), 'file': descriptor(self.payload)}}
+        (self.directory / 'payload.part').write_bytes(self.payload)
+        raw = observer.canonical(self.worker_result)
+        self.assertEqual(os.write(kwargs['output_fd'], raw), len(raw))
+        return self.native_result
+
+    def run_supervisor(self):
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            code = retrieve.supervise(self.args, self.cli)
+        raw = (self.directory / 'retrieval-result.json').read_bytes()
+        receipt = observer.strict_json(raw)
+        self.assertEqual(json.loads(stdout.getvalue()), receipt)
+        if self.worker_result is not None:
+            self.assertEqual(receipt['worker_result_sha256'],
+                             observer.sha((self.directory / 'worker-result.json').read_bytes()))
+            self.assertTrue(self.worker_result['ok'])
+        self.supervisor.supervise.assert_called_once()
+        self.supervisor._install_runtime.assert_called_once_with(self.win)
+        return code, receipt, raw + stdout.getvalue().encode()
+
+    def assert_failed_and_preserved(self, code, receipt):
+        self.assertEqual(code, 2)
+        self.assertIs(receipt['ok'], False)
+        self.assertIs(receipt['download_finalized'], False)
+        self.assertIs(receipt['consumer_admitted'], False)
+        self.assertIs(receipt['scientific_success_verified'], False)
+        self.assertEqual(receipt['supervisor_reason'], 'worker_exit')
+        self.assertFalse((self.directory / 'payload.bin').exists())
+        self.assertEqual((self.directory / 'payload.part').read_bytes(), self.payload)
+
+    def test_closed_worker_success_finalizes_matching_payload(self):
+        code, receipt, unused_raw = self.run_supervisor()
+        self.assertEqual(code, 0)
+        self.assertIs(receipt['ok'], True)
+        self.assertIs(receipt['download_finalized'], True)
+        self.assertEqual(receipt['reason'], 'worker_exit')
+        self.assertEqual(receipt['closure'], closure())
+        self.assertEqual(receipt['file'], descriptor(self.payload))
+        self.assertEqual((self.directory / 'payload.bin').read_bytes(), self.payload)
+        self.assertFalse((self.directory / 'payload.part').exists())
+        self.assertNotIn('failure_stage', receipt)
+        self.assertNotIn('error_code', receipt)
+
+    def test_digest_failure_after_zero_process_closure_is_reported_and_preserved(self):
+        with patch.object(retrieve, 'digest_file', side_effect=ValueError('download_file_changed')) as digest:
+            code, receipt, unused_raw = self.run_supervisor()
+        digest.assert_called_once()
+        self.assert_failed_and_preserved(code, receipt)
+        self.assertEqual(receipt['closure'], closure())
+        self.assertEqual(receipt['reason'], 'post_close_validation_failed')
+        self.assertEqual(receipt['failure_stage'], 'digest_file')
+        self.assertEqual(receipt['error_code'], 'download_file_changed')
+
+    def test_unexpected_post_close_exception_text_is_not_disclosed(self):
+        secret = 'C:\\private\\cpu-fixture.json?token=SYNTHETIC-PRIVATE-TOKEN'
+        with patch.object(retrieve, 'digest_file', side_effect=RuntimeError(secret)):
+            code, receipt, raw = self.run_supervisor()
+        self.assert_failed_and_preserved(code, receipt)
+        self.assertEqual(receipt['reason'], 'post_close_validation_failed')
+        self.assertEqual(receipt['failure_stage'], 'digest_file')
+        self.assertEqual(receipt['error_code'], 'unexpected_error')
+        for private_text in (secret, 'C:\\private', 'cpu-fixture.json', 'SYNTHETIC-PRIVATE-TOKEN'):
+            self.assertNotIn(private_text.encode(), raw)
+
+    def test_nonzero_process_closure_rejects_before_digest_or_finalize(self):
+        self.native_result.closure['active_processes'] = 1
+        with patch.object(retrieve, 'digest_file') as digest:
+            code, receipt, unused_raw = self.run_supervisor()
+        digest.assert_not_called()
+        self.assert_failed_and_preserved(code, receipt)
+        self.assertEqual(receipt['closure']['active_processes'], 1)
+        self.assertEqual(receipt['reason'], 'retrieval_validation_failed')
+        self.assertEqual(receipt['failure_stage'], 'new_job_closure')
+        self.assertEqual(receipt['error_code'], 'new_job_closure_required')
+
+    def test_runtime_guard_subclass_preserves_duplicate_worker_reason(self):
+        # Use the native guard's real declaration without importing Windows APIs.
+        source = BRIDGE / 'win_runtime.py'
+        parsed = ast.parse(source.read_text(encoding='utf-8'), filename=str(source))
+        guard = next(node for node in parsed.body
+                     if isinstance(node, ast.ClassDef) and node.name == 'WindowsGuardError')
+        isolated = ast.fix_missing_locations(ast.Module(body=[guard], type_ignores=[]))
+        namespace = {}
+        exec(compile(isolated, str(source), 'exec'), namespace)
+        self.supervisor.supervise.side_effect = namespace['WindowsGuardError']('windows_duplicate_worker')
+        with patch.object(retrieve, 'digest_file') as digest:
+            code, receipt, unused_raw = self.run_supervisor()
+        digest.assert_not_called()
+        self.assertEqual(code, 2)
+        self.assertIs(receipt['ok'], False)
+        self.assertIs(receipt['download_finalized'], False)
+        self.assertEqual(receipt['reason'], 'original_mutex_exists_no_takeover')
+        self.assertEqual(receipt['failure_stage'], 'supervise')
+        self.assertFalse((self.directory / 'payload.bin').exists())
+
+    def test_observer_error_subclass_keeps_only_allowlisted_code(self):
+        with patch.object(retrieve, 'digest_file', side_effect=observer.ObserverError('linked_path_forbidden')):
+            code, receipt, unused_raw = self.run_supervisor()
+        self.assert_failed_and_preserved(code, receipt)
+        self.assertEqual(receipt['reason'], 'post_close_validation_failed')
+        self.assertEqual(receipt['failure_stage'], 'digest_file')
+        self.assertEqual(receipt['error_code'], 'linked_path_forbidden')
+
+    def test_nonstring_exception_argument_is_sanitized_without_secondary_failure(self):
+        with patch.object(retrieve, 'digest_file', side_effect=ValueError(['synthetic-private-detail'])):
+            code, receipt, raw = self.run_supervisor()
+        self.assert_failed_and_preserved(code, receipt)
+        self.assertEqual(receipt['reason'], 'post_close_validation_failed')
+        self.assertEqual(receipt['failure_stage'], 'digest_file')
+        self.assertEqual(receipt['error_code'], 'unexpected_error')
+        self.assertNotIn(b'synthetic-private-detail', raw)
 
 
 class PriorTerminalTests(ClockedTests):

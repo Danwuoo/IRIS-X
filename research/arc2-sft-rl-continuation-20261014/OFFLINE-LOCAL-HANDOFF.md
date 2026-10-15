@@ -287,6 +287,14 @@ status observer 保持 ae960a2 的固定 bytes。另用同目錄的 `retrieve.py
 成功才會有 finalized `payload.bin`；`retrieval-result.json` 將其 bytes／SHA 綁到 numeric43、
 provider path、兩側 source/status brackets、原 clocks、request／worker hashes 及新 Job-zero。
 原 native session 未閉合的證據保持不動。失敗只留下真實 partial／failed receipts，不能改名當成功。
+
+首次 native terminal JSON 的 worker／Job-zero 通過，但 parent 在跨 API ctime 比較時拒絕；
+原 `payload.part` 與 failed receipt 必須保留。使用本次修復的固定 helper，在另一個 fresh 目錄
+重新取相同 numeric43 terminal JSON；不得手動改名舊 partial 或修改舊 receipt。Windows 的
+Path.stat 與 fstat 分開保留完整前後身分（含 ctime）檢查，跨 API 比較共同的 dev／inode／size／
+mtime／nlink；POSIX 仍比較全部欄位。post-close 失敗另記固定 `failure_stage`／`error_code`，
+並保留 `supervisor_reason`；不傳遞任意 exception text。只有新實際成功 receipt 才能作 archive 輸入。
+
 每筆最多300秒且不越過原global期限；輸入／串流／後驗 hash 皆受限，沿原 no-refresh／mutex／
 containment。下載前及每chunk檢查4 GiB free reserve，拒絕壓縮 Content-Encoding、長度不符。
 
