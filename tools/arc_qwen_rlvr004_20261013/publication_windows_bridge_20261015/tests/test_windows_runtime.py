@@ -341,6 +341,46 @@ class WatchdogTests(unittest.TestCase):
         self.clock[:] = [220, 1120]
         self.assertEqual(self.watch.expired(), 'operation_deadline')
 
+    def test_request_duration_ignores_cross_os_wall_skew(self):
+        for wall in (-1000000, 1000000):
+            with self.subTest(wall=wall):
+                self.setUp()
+                self.clock[1] = wall
+                self.open()
+                self.assertEqual(self.watch.command_deadline, 220)
+                self.clock[0] = 220
+                self.assertEqual(self.watch.expired(), 'operation_deadline')
+
+    def test_request_duration_cannot_extend_original_lease(self):
+        self.clock[:] = [1090, -1000000]
+        self.open()
+        self.assertEqual(self.watch.command_deadline, 1100)
+        self.clock[0] = 1100
+        self.assertEqual(self.watch.expired(), 'deadline')
+
+    def test_native_phase_backward_wall_jump_is_duration_and_lease_capped(self):
+        for now, expected in ((100, 220), (990, 1000)):
+            with self.subTest(now=now):
+                self.setUp()
+                self.output()
+                self.clock[:] = [now, -1000000]
+                self.watch.observe('response', self.frame('phase_start', {
+                    'phase_id': 1, 'kind': 'official_rpc', 'max_seconds': 120,
+                    'deadline_epoch': 1120}, sequence=2))
+                self.assertEqual(self.watch.phase_deadline, expected)
+                self.assertLessEqual(expected, self.watch.lease_deadline)
+
+    def test_native_phase_forward_wall_jump_fails_closed(self):
+        self.output()
+        original = self.watch.command_deadline
+        self.clock[1] = 1000000
+        with self.assertRaisesRegex(wr.WindowsGuardError, 'rpc_phase_expired'):
+            self.watch.observe('response', self.frame('phase_start', {
+                'phase_id': 1, 'kind': 'official_rpc', 'max_seconds': 120,
+                'deadline_epoch': 1120}, sequence=2))
+        self.assertEqual(self.watch.command_deadline, original)
+        self.assertEqual(self.watch.lease_deadline, 1100)
+
     def test_nested_rpc_120_inside_download_900(self):
         self.output()
         self.watch.observe('response', self.frame('phase_start', {
@@ -488,7 +528,7 @@ class SupervisionFailureReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(wr.WindowsGuardError, 'synthetic_closure_failed'):
             self.supervise_fixture(closure_error=wr.WindowsGuardError('synthetic_closure_failed'))
 
-    def run_main(self, fail_stage=None, result=None):
+    def run_main(self, fail_stage=None, result=None, *, epoch=None, max_seconds=5, clock=None):
         import json
         from contextlib import ExitStack
         writes = []
@@ -507,19 +547,23 @@ class SupervisionFailureReceiptTests(unittest.TestCase):
         if fail_stage == 'source_identity':
             config.same_path.return_value = False
         args = ['--config', 'synthetic.json', '--config-sha', 'c' * 64,
-                '--nonce', 'a' * 64, '--deadline-epoch', str(ws.time.time() + 5),
-                '--max-seconds', '5']
+                '--nonce', 'a' * 64, '--deadline-epoch', str(ws.time.time() + 5 if epoch is None else epoch),
+                '--max-seconds', str(max_seconds)]
         with ExitStack() as stack:
+            if clock is not None:
+                stack.enter_context(mock.patch.object(ws, 'time', SimpleNamespace(
+                    monotonic=clock, time=mock.Mock(side_effect=AssertionError('foreign wall clock')))))
             stack.enter_context(mock.patch.object(ws, 'os', SimpleNamespace(
                 name='nt', O_BINARY=0, write=lambda fd, data: writes.append((fd, data)))))
             stack.enter_context(mock.patch.object(ws.sys, 'flags', SimpleNamespace(
                 isolated=1, dont_write_bytecode=1, ignore_environment=1, optimize=0)))
             stack.enter_context(mock.patch.dict(sys.modules, {'msvcrt': SimpleNamespace(setmode=lambda *a: None)}))
             stack.enter_context(mock.patch.object(ws, '_pinned_module', side_effect=pinned))
-            stack.enter_context(mock.patch.object(ws, 'supervise',
+            supervision = stack.enter_context(mock.patch.object(ws, 'supervise',
                 side_effect=canary if fail_stage == 'supervision' else None,
                 return_value=result or ws.SupervisionResult(0, 'worker_exit', self.CLOSURE)))
             code = ws.main(args)
+            self.main_supervision_call = supervision.call_args
         self.assertEqual(len(writes), 1)
         self.assertEqual(writes[0][0], 2)
         raw = writes[0][1]
@@ -532,6 +576,44 @@ class SupervisionFailureReceiptTests(unittest.TestCase):
         self.assertEqual(set(receipt), {'format', 'nonce', 'ok', 'reason', 'closure'})
         self.assertEqual(receipt['nonce'], 'a' * 64)
         return code, receipt
+
+    def test_production_lease_uses_duration_and_same_native_worker_deadline(self):
+        for epoch in (1000, 100000000000):
+            with self.subTest(epoch=epoch):
+                code, receipt = self.run_main(epoch=epoch, clock=mock.Mock(side_effect=[100, 103]))
+                self.assertEqual(code, 0)
+                self.assertTrue(receipt['ok'])
+                args, kwargs = self.main_supervision_call
+                command = args[0]
+                self.assertEqual(float(command[command.index('--lease-monotonic') + 1]), 105)
+                self.assertEqual(kwargs['lease_monotonic'], 105)
+                self.assertEqual(kwargs['timeout_seconds'], 2)
+                self.assertEqual(kwargs['deadline_unix'], epoch)
+
+    def test_bootstrap_consumes_lease_without_job_or_worker_start(self):
+        code, receipt = self.run_main(epoch=1000, clock=mock.Mock(side_effect=[100, 106]))
+        self.assertEqual(code, 125)
+        self.assertEqual(receipt['reason'], 'supervisor_worker_lease_failed')
+        self.assertIsNone(self.main_supervision_call)
+        self.assertIsNone(receipt['closure'])
+
+    def test_invalid_lease_fails_before_supervision(self):
+        for seconds, epoch in ((0, 1000), (43200.1, 1000), (math.inf, 1000), (5, math.nan)):
+            with self.subTest(seconds=seconds, epoch=epoch):
+                code, receipt = self.run_main(epoch=epoch, max_seconds=seconds,
+                                              clock=lambda: 100)
+                self.assertEqual(code, 125)
+                self.assertEqual(receipt['reason'], 'supervisor_lease_failed')
+                self.assertIsNone(self.main_supervision_call)
+                self.assertIsNone(receipt['closure'])
+
+    def test_expired_native_lease_cannot_start_job(self):
+        with mock.patch.object(ws, 'JobProcess') as job, \
+             mock.patch.object(ws.time, 'monotonic', return_value=100):
+            with self.assertRaisesRegex(wr.WindowsGuardError, 'bootstrap_deadline'):
+                ws.supervise(['synthetic'], timeout_seconds=5, deadline_unix=1000000,
+                             lease_monotonic=99)
+            job.assert_not_called()
 
     def test_main_emits_fixed_failure_stage_without_exception_data(self):
         for stage, reason in (('win_runtime', 'supervisor_runtime_bootstrap_failed'),

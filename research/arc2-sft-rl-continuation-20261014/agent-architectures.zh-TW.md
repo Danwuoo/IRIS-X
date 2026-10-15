@@ -4,9 +4,10 @@
 讀取基準：`cc14bd1a79aac1fe6135017c9e09d4834300675d`
 用途：供下一階段選擇可驗證機制；這是研究建議，沒有執行模型、安裝套件、登入、啟動新 run、修改既有實作或發布執行版本。
 
-本段描述原研究交付。後續 Stage 0 與 Agent Factory 3 的實際 CPU 元件開發狀態，
-請看[目前進度](README.md)及[下一階段準備](NEXT-STAGE-PLAN.zh-TW.md)；本架構清單的
-提案仍未因此成為已執行的模型／Agent 實驗。
+本文是機制、來源與成本理由的深入附錄。研究主線見[README](README.md)，
+目前實作見[進度頁](DEVELOPMENT-PROGRESS.zh-TW.md)；實驗順序只維護於
+[方法總覽第 7 節](method-landscape.zh-TW.md#七建議的實驗順序與觸發條件)。
+下列研究時的條件分析不另構成執行計畫，也未因此成為已執行的模型／Agent 實驗。
 
 ## 先看研究清單
 
@@ -186,7 +187,8 @@ Feedback 只帶舊程式 digest、已看到 demos 的 shape／mismatch／runtime
 | 分工分支有unique solves，但總wall後無收益 | Gate、排程、重複prefill和跨卡部署 | 宣稱multi-agent優勢 |
 | B沒有有效reward variance | 依既定audit區分乾淨零訊號與未完成；整個B都沒有有效更新才B=A，後續零訊號batch保留先前完整已commit的B | Reward-conditioned重抽樣、改門檻或把demo-fit當test truth |
 
-本表提供研究觸發條件，沒有改寫現行 admission／promotion thresholds，也沒有加入新的模型執行授權。
+本表保存 Agent 機制的細部診斷理由；整條研究線的決策順序仍以方法總覽為準，
+沒有改寫現行 admission／promotion thresholds，也沒有加入新的模型執行授權。
 
 ## 附錄 名稱對照與延後理由
 

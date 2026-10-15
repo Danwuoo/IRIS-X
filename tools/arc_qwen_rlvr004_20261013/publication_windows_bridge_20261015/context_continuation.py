@@ -1,11 +1,15 @@
 """Offline, same-boot interpretation of one completed f5 recovery disposition.
 
-This adapter accepts a changed WSL_INTEROP selector and a new source checkout
-root bound to this exact adapter location in an actual, separately loaded current
-configuration. A separately reviewed canonical collector-only material lineage
-may additionally replace candidate_root and its manifest identity. The original
-source checkout and all other operational paths remain intact. A bounded current
-publication view passes native/recovery records unchanged to the fixed validator.
+Historical recovery and current-release admission are separate. The current
+configuration is bound to its actual descriptor and this adapter's checkout;
+STATE and scratch stay in the recovered namespace. Current source, candidate,
+native configuration and runtime admission belong to the caller's existing
+contract/configuration/source gates, not equality with a historical release.
+A bounded current publication view preserves native/recovery records. Only
+source-proven pre-worker rejections are separately interpreted without inventing
+closure; their unchanged on-disk evidence is excluded from the old validator's
+view. The original source checkout and recovery evidence stay
+intact, without requiring a material-lineage receipt for each current release.
 It does not load the historical configuration as a runtime, reopen a capability,
 create records, authenticate,
 contact a provider, or launch recovery. The caller retains its unchanged current
@@ -13,7 +17,8 @@ runtime/socket, source-review, pending-refresh and remote-state gates.
 
 Every historical source descriptor AND the core's complete sibling source tree
 must match the fixed f5 manifest before any historical Python is compiled. The
-unchanged historical validator alone decides which original UNKNOWN is covered.
+unchanged historical validator alone decides which original UNKNOWN is covered
+by the completed recovery. A pre-worker disposition never borrows that coverage.
 """
 from __future__ import annotations
 
@@ -29,16 +34,13 @@ import types
 
 HISTORICAL_COMMIT = 'f5f780cb5823579288385158ce6da70a1ca33899'
 SOURCE_PINS_SHA256 = '09e51f695d1dfd216f162b8451cd34331f35f9d137da749bc35e4fde8f6882a7'
-MATERIAL_LINEAGE_SHA256 = '2f17db9901057e5f1e72e38663984505d3ea8b54b61387ea355770574bc04459'
 PUBLICATION_STATE_SHA256 = 'bcb1a441437f221ef6e2e62af5cf49b4a58e31d12f86ca12f885b261b86d69a5'
+PREWORKER_SOURCE_SHA256 = '8624ebfbaf3c620a995723cb5dde23cb52b07b2f03afef406879f1fc0829e9b9'
 SOURCE_NAMES = frozenset(('bridge_client.py', 'config.py', 'launch.py', 'native_auth.py',
     'native_config.py', 'native_probe.py', 'operator_common.py', 'protocol.py',
     'recovery_boot_probe.py', 'recovery_entry.py', 'recovery_epoch.py', 'rl_collect.py',
     'rl_transport.py', 'sdk-lock.json', 'sdk_worker.py', 'verify_active_wire.py',
     'win_runtime.py', 'win_supervisor.py'))
-PROTECTED_CURRENT = frozenset(('config.py', 'native_auth.py', 'native_config.py',
-    'protocol.py', 'recovery_boot_probe.py', 'recovery_epoch.py', 'sdk-lock.json',
-    'sdk_worker.py', 'win_runtime.py', 'win_supervisor.py'))
 FILE_CAP = 4 * 1024**2
 FILE_COUNT_CAP = 512
 PACKAGE_SUFFIX = ('tools', 'arc_qwen_rlvr004_20261013',
@@ -214,9 +216,6 @@ def _sources(review, pins):
         _source(raw, name, pins)
         if name == 'recovery_epoch.py':
             core_raw = raw
-    current = _path(Path(__file__).absolute()).parent
-    for name in sorted(PROTECTED_CURRENT):
-        _source(_read(current / name), name, pins)
     return core_path, core_raw
 
 
@@ -257,24 +256,18 @@ def _repository_context(current, original, configured):
                       and not operational.is_relative_to(current_root), 'context_repository_operational_overlap')
 
 
-def _normal_context(current, original, *, material_lineage=None):
+def _shared_context(current, original, configured):
+    # Recovery covers this existing owner namespace, never a fresh STATE or
+    # scratch root. Other current-release fields are admitted independently.
+    for key in ('state_root', 'scratch_root'):
+        _need(_path(current.get(key)) == _path(original.get(key))
+              == _path(getattr(configured, key)), 'context_shared_' + key)
     for document in (current, original):
         runtime = document.get('runtime')
         _need(type(runtime) is dict, 'context_runtime_schema')
         selectors = runtime.get('interop_environment_sha256')
         _need(type(selectors) is dict and set(selectors) == {'WSL_INTEROP'}
               and _sha(selectors['WSL_INTEROP']), 'context_interop_selector_schema')
-    normalized = _json(_canonical(current))
-    normalized['repository_root'] = original['repository_root']
-    normalized['runtime']['interop_environment_sha256']['WSL_INTEROP'] = (
-        original['runtime']['interop_environment_sha256']['WSL_INTEROP'])
-    if material_lineage is not None:
-        _need(material_lineage['candidate_root'] == current['candidate_root']
-              and material_lineage['publication_manifest_sha256'] == current['publication_manifest_sha256'],
-              'context_material_lineage_configuration')
-        for key in ('candidate_root', 'publication_manifest_sha256'):
-            normalized[key] = original[key]
-    _need(_canonical(normalized) == _canonical(original), 'context_configuration_changed_beyond_interop')
 
 
 def _current_helper(name, digest):
@@ -287,10 +280,30 @@ def _current_helper(name, digest):
     return module
 
 
+def _events(root):
+    """Read existing journal evidence; this creates no disposition or receipt."""
+    result, total = {}, 0
+    with _directory(root / 'events') as fd:
+        before = os.fstat(fd)
+        names = sorted(os.listdir(fd))
+        _need(len(names) <= 100000, 'context_event_count')
+        for name in names:
+            _need(re.fullmatch(r'[0-9]+-[a-zA-Z0-9-]+-[0-9a-f]{8}\.json', name)
+                  is not None, 'context_event_name')
+            raw = _read_at(fd, name)
+            total += len(raw)
+            _need(total <= 256 * 1024**2, 'context_event_bytes')
+            result['events/' + name] = raw
+        _need(names == sorted(os.listdir(fd)) and _identity(before) == _identity(os.fstat(fd)),
+              'context_event_directory_race')
+    return result
+
+
 def validate_context(c, current_config, pending_claims, *, current_boot_descriptor=None, now_epoch=None):
     """Return exact historical coverage; never admit a runtime or execute work.
 
-    The production caller supplies its actual configured path/hash descriptor.
+    The production caller first admits the current release through its existing
+    contract/configuration/source gates and supplies its actual path/hash descriptor.
     A two-field historical identity is used only by the pure f5 validator; it is
     never provided to configured(), any runtime loader, or the live observer.
     """
@@ -322,22 +335,7 @@ def validate_context(c, current_config, pending_claims, *, current_boot_descript
         original_row = binding['local_configuration_template']
         original = document(original_row)
         _repository_context(actual, original, current_config)
-        lineage = None
-        lineage_arguments = None
-        if any(actual.get(key) != original.get(key)
-               for key in ('candidate_root', 'publication_manifest_sha256')):
-            lineage_callback = c.get('material_lineage_descriptor')
-            _need(callable(lineage_callback), 'context_reviewed_material_lineage_required')
-            lineage_row = lineage_callback()
-            _need(lineage_row is not None, 'context_reviewed_material_lineage_required')
-            lineage_module = _current_helper('material_lineage.py', MATERIAL_LINEAGE_SHA256)
-            lineage_arguments = dict(actual_descriptor=actual_row, actual=actual,
-                original_descriptor=original_row, original=original,
-                eligibility_descriptor=eligibility_row, receipt_descriptor=lineage_row,
-                source_names=SOURCE_NAMES | {'context_continuation.py', 'context-source-pins.json',
-                                            'material_lineage.py', 'publication_state.py'})
-            lineage = lineage_module.validate_lineage(globals(), c, current_config, **lineage_arguments)
-        _normal_context(actual, original, material_lineage=lineage)
+        _shared_context(actual, original, current_config)
         # This is the first execution of historical code, after all fixed pins.
         historical = types.ModuleType('reviewed_f5_context_' + pins['recovery_epoch.py']['sha256'])
         historical.__file__ = str(core_path)
@@ -362,9 +360,45 @@ def validate_context(c, current_config, pending_claims, *, current_boot_descript
             _need(manifest_row['sha256'] == actual['publication_manifest_sha256'],
                   'context_actual_publication_manifest')
             state_module = _current_helper('publication_state.py', PUBLICATION_STATE_SHA256)
-            publication_view = state_module.capture(root, manifest_row, actual['versions'], historical,
-                frontier=None if lineage is None else lineage['state_frontier'])
+            publication_view = state_module.capture(root, manifest_row, actual['versions'], historical)
             historical._root_records = publication_view.root_records
+        # A strictly source-proven rejection before worker creation is not a
+        # native Job-zero receipt. Keep its UNKNOWN journal byte-identical and
+        # interpret it separately from the old reboot disposition. The complete
+        # live roots/events remain checked; only the frozen validator's view
+        # omits these independently classified pairs.
+        root_reader = historical._root_records
+        roots = root_reader(root)
+        preworker = ()
+        event_files = None
+        if any(name.endswith('-journal.json') and
+               _json(raw).get('failure_diagnostics', {}).get('supervisor_reason')
+               == 'supervisor_lease_failed' for name, raw in roots.items()):
+            event_files = _events(root)
+            classifier = _current_helper('preworker_disposition.py', PREWORKER_SOURCE_SHA256)
+            def verified_evidence(row):
+                raw = _verified(row)
+                chain.append((row, raw))
+                return raw
+            preworker = classifier.classify({**roots, **event_files}, state_root=str(root),
+                native_configuration=binding['native_configuration_template'],
+                diagnostic_sources=review['recovery_sources'],
+                source_manifest=_read(_path(Path(__file__).absolute()).with_name('context-source-pins.json')),
+                verified=verified_evidence)
+            excluded = {name for item in preworker for name in item['excluded_root_names']}
+            _need(type(pending_claims) is list, 'context_pending_claims_schema')
+            classified = []
+            for item in preworker:
+                pair = {'claim': dict(item['claim']), 'journal': dict(item['journal'])}
+                _need(pending_claims.count(pair) == 1, 'context_preworker_pending_pair')
+                classified.append(pair)
+            def historical_roots(path):
+                complete = root_reader(path)
+                _need(complete == roots and _events(root) == event_files,
+                      'context_preworker_evidence_changed')
+                return {name: raw for name, raw in complete.items() if name not in excluded}
+            historical._root_records = historical_roots
+            pending_claims = [row for row in pending_claims if row not in classified]
         identity = types.SimpleNamespace(state_root=root, document_sha256=original_row['sha256'])
         callbacks = {'STATE': root}
         observer = c.get('recovery_boot_observation')
@@ -380,17 +414,17 @@ def validate_context(c, current_config, pending_claims, *, current_boot_descript
         _need(actual_row['sha256'] == current_config.document_sha256
               and str(current_config.state_root) == str(root), 'context_actual_configuration_binding')
         _repository_context(actual, original, current_config)
+        _shared_context(actual, original, current_config)
         if publication_view is not None:
             publication_view.verify_unchanged()
             _need(_digest(_read(Path(__file__).absolute().with_name('publication_state.py')))
                   == PUBLICATION_STATE_SHA256, 'context_current_helper_source_pin')
-        if lineage_arguments is not None:
-            _need(lineage_callback() == lineage_arguments['receipt_descriptor'],
-                  'context_material_lineage_review_changed')
-            _need(lineage_module.validate_lineage(globals(), c, current_config, **lineage_arguments) == lineage,
-                  'context_material_lineage_changed')
-            _need(_digest(_read(Path(__file__).absolute().with_name('material_lineage.py')))
-                  == MATERIAL_LINEAGE_SHA256, 'context_current_helper_source_pin')
+        if event_files is not None:
+            _need(_events(root) == event_files and root_reader(root) == roots,
+                  'context_preworker_evidence_changed')
+            _need(_digest(_read(Path(__file__).absolute().with_name('preworker_disposition.py')))
+                  == PREWORKER_SOURCE_SHA256, 'context_current_helper_source_pin')
+            result.update({item['session']: item['claim_sha256'] for item in preworker})
         return result
     except (KeyError, TypeError, AttributeError, RecursionError):
         raise ContextError('context_invalid_chain_or_configuration') from None

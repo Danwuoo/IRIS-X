@@ -674,6 +674,20 @@ def error_dto(error, mutation=False):
             'retry_after_seconds': retry, 'mutation_uncertain': bool(mutation)}
 
 
+def native_lease_deadline(max_seconds, monotonic_deadline=None, *, started=None):
+    """Cap this worker by the supervisor's same-Windows monotonic deadline."""
+    need(type(max_seconds) in (int, float) and math.isfinite(max_seconds)
+         and 0 < max_seconds <= 43200, 'worker_lease_invalid')
+    need(monotonic_deadline is None or type(monotonic_deadline) in (int, float)
+         and math.isfinite(monotonic_deadline), 'worker_lease_invalid')
+    now = time.monotonic() if started is None else started
+    deadline = now + max_seconds
+    if monotonic_deadline is not None:
+        deadline = min(deadline, monotonic_deadline)
+    need(deadline > now, 'worker_lease_expired')
+    return deadline
+
+
 def run_worker(runtime, versions, channel, protocol, auth_module, *,
                deadline_epoch, max_seconds, monotonic_deadline=None):
     """Serve one sequential stream; any error closes it, with no implicit retry.
@@ -699,8 +713,7 @@ def run_worker(runtime, versions, channel, protocol, auth_module, *,
          and (monotonic_deadline is None or type(monotonic_deadline) in (int, float)
               and math.isfinite(monotonic_deadline)),
          'worker_lease_invalid')
-    lease_end = monotonic_deadline if monotonic_deadline is not None else time.monotonic() + min(
-        max_seconds, max(0, deadline_epoch - time.time()))
+    lease_end = native_lease_deadline(max_seconds, monotonic_deadline)
     channel.deadline = lease_end
     try:
         if recovery_enabled:
@@ -729,10 +742,12 @@ def run_worker(runtime, versions, channel, protocol, auth_module, *,
             protocol.validate_request(operation, arguments)
             need(protocol.request_hash(operation, arguments, deadline_epoch=payload['deadline_epoch'],
                  max_seconds=payload['max_seconds']) == active_hash, 'request_content_binding')
-            need(time.time() < payload['deadline_epoch'] <= deadline_epoch
+            # Epochs are caller-domain bindings, not Windows clock readings.
+            # WSL enforces the original elapsed deadline and closes on expiry;
+            # this independent native bound cannot renew the session lease.
+            need(payload['deadline_epoch'] <= deadline_epoch
                  and 0 < payload['max_seconds'] <= protocol.OPERATION_TIMEOUTS[operation], 'request_deadline')
-            channel.deadline = min(lease_end, time.monotonic() + min(payload['max_seconds'],
-                payload['deadline_epoch'] - time.time()))
+            channel.deadline = min(lease_end, time.monotonic() + payload['max_seconds'])
             exchange.bind_request(sequence, active_hash)
             if sequence == 1:
                 need(operation == 'open', 'initial_open_required')
@@ -832,10 +847,9 @@ def run_worker(runtime, versions, channel, protocol, auth_module, *,
                         recovery_lease()
                     need(close_payload['operation'] == 'close' and close_payload['arguments'] == {},
                          'readonly_failure_close_only')
-                    need(time.time() < close_payload['deadline_epoch'] <= deadline_epoch,
+                    need(close_payload['deadline_epoch'] <= deadline_epoch,
                          'readonly_failure_close_deadline')
-                    channel.deadline = min(lease_end, time.monotonic() + min(close_payload['max_seconds'],
-                        close_payload['deadline_epoch'] - time.time()))
+                    channel.deadline = min(lease_end, time.monotonic() + close_payload['max_seconds'])
                     channel.send('response', {'operation': 'close', 'result': {'closed': True}},
                         sequence=closing['sequence'], request_sha256=closing['request_sha256'])
                     sequence_guard.complete(closing['sequence'], closing['request_sha256'])
@@ -885,6 +899,7 @@ def main(argv=None):
     parser.add_argument('--nonce', required=True)
     parser.add_argument('--deadline-epoch', type=float, required=True)
     parser.add_argument('--max-seconds', type=float, required=True)
+    parser.add_argument('--lease-monotonic', type=float, required=True)
     args = parser.parse_args(argv)
     # Capture the original lease before bootstrap, never renew it after imports.
     started = time.monotonic()
@@ -897,10 +912,10 @@ def main(argv=None):
         need(sys.flags.isolated == 1 and sys.flags.dont_write_bytecode == 1
              and sys.flags.ignore_environment == 1, 'native_isolated_source_execution_required')
         need(math.isfinite(args.deadline_epoch) and math.isfinite(args.max_seconds)
-             and 0 < args.max_seconds <= 43200 and args.deadline_epoch > time.time(),
+             and 0 < args.max_seconds <= 43200,
              'native_worker_lease')
         need(HEX.fullmatch(args.nonce) and HEX.fullmatch(args.config_sha), 'native_worker_binding')
-        deadline = started + min(args.max_seconds, args.deadline_epoch - time.time())
+        deadline = native_lease_deadline(args.max_seconds, args.lease_monotonic, started=started)
         directory = Path(__file__).absolute().parent
         win = _pinned_module('win_runtime', directory / 'win_runtime.py', WIN_RUNTIME_SHA256)
         win.require_worker_job(args.nonce)

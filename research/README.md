@@ -6,11 +6,10 @@ engineering failures.
 
 ## Current ARC-AGI-2 continuation, 2026-10-14
 
-Use the [development progress ledger](arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)
-for current status, tasks, dependencies, evidence, acceptance criteria, and next
-actions. The [document index](arc2-sft-rl-continuation-20261014/README.md) links
-method studies, tool usage, and dated source/review records. This index does not
-maintain a separate status or plan.
+先讀[研究主頁](arc2-sft-rl-continuation-20261014/README.md)的 ARC-AGI-2 問題、假設、
+凍結 SFT／RL／等成本比較與證據界線，再讀方法比較及實驗決策表。
+目前執行狀態與下一步只見[進度頁](arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)；
+歷史與固定審查由研究主頁導覽，本索引不另維護狀態或計畫。
 
 ## Historical research brief, 2026-10-05
 

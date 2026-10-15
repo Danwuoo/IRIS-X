@@ -2,11 +2,10 @@
 
 This directory contains only current product-era guidance.
 
-- **2026-10-14 ARC-AGI-2 research continuation:**
-  [development progress ledger](../research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)
-  is the single source for current tasks, dependencies, evidence, acceptance,
-  and next actions. The [document index](../research/arc2-sft-rl-continuation-20261014/README.md)
-  links the method studies, usage instructions, and dated review records.
+- **ARC-AGI-2 研究續接：**
+  [研究主頁](../research/arc2-sft-rl-continuation-20261014/README.md)說明問題、假設、
+  凍結 SFT／RL／等成本比較與證據；[進度頁](../research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)
+  只維護當前狀態與下一步。方法、交接、固定審查與工程歷史由研究主頁導覽。
 
 - [Stage 4 E01 output lifecycle](development/nvarc-output-lifecycle.md) defines
   immutable generations, single-marker commit, verified root projection and

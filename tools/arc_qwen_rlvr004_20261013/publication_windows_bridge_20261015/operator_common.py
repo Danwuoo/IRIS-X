@@ -10,7 +10,7 @@ from urllib.parse import urlparse, urljoin
 
 BASE = WORK = STATE = STOP = CONFIG = CONFIG_PATH = MANIFEST_PATH = ACTION_REVIEW = None
 CONFIG_SOURCE_SHA256 = '9bd6468cb4579e6a4eeaadb8d487b23b9732c545a170cc4b8fcf48c66f35f42a'
-BRIDGE_CLIENT_SHA256 = '2708754672e39d4343891c159e37b3bc6810d8f5b2e2001f454822b97322ed12'
+BRIDGE_CLIENT_SHA256 = '2c4f6fead148a089152410221bcef9cd7b6bff5d97825e6b54d82e20d42e3552'
 REF = 'danielwuu/iris-x-learning-agent-20261011'
 DREF = 'danielwuu/iris-x-learning-agent-code-20261011'
 MODEL = 'qwen-lm/qwen-3/transformers/14b/1'

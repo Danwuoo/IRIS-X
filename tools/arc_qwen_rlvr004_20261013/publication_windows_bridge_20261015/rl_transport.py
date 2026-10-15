@@ -9,7 +9,7 @@ import argparse, ast, contextlib, hashlib, json, math, os, stat, subprocess, sys
 from pathlib import Path
 
 # Acyclic local dependency pin. Compile source before any authentication or RPC.
-COMMON_SOURCE_SHA256 = 'ba3807d44a52eb19dbbfdf20abfbfb96792227abc3b25412df4c8f37edfbd018'
+COMMON_SOURCE_SHA256 = 'c23c0a937e11a1031b1474d81de4b8b79dacaea4b43b03f05933f20c9185fa37'
 _common_path=Path(__file__).absolute().with_name('operator_common.py')
 if any(p.is_symlink() for p in (_common_path,*_common_path.parents)) or not stat.S_ISREG(_common_path.stat().st_mode):
     raise ValueError('unsafe_local_common_source')
@@ -33,7 +33,7 @@ OPERATOR_SOURCE_NAMES = ('config.py', 'native_auth.py', 'sdk-lock.json',
     'bridge_client.py', 'protocol.py', 'native_config.py', 'sdk_worker.py',
     'win_runtime.py', 'win_supervisor.py', 'native_probe.py', 'verify_active_wire.py',
     'recovery_epoch.py', 'recovery_boot_probe.py', 'recovery_entry.py',
-    'context_continuation.py', 'context-source-pins.json', 'material_lineage.py',
+    'context_continuation.py', 'context-source-pins.json', 'preworker_disposition.py',
     'publication_state.py')
 
 # Allocation comes from the independently hash-bound live local configuration.

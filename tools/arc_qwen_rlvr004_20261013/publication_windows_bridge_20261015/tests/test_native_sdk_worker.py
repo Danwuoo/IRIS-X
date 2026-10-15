@@ -6,6 +6,7 @@ import importlib.machinery
 import importlib.util
 import io
 import json
+import math
 import os
 from pathlib import Path
 import sys
@@ -491,10 +492,27 @@ with module.isolate_sdk_output() as (reader, writer):
         self.assertNotIn(handle, provider.uploads)
 
 
+class NativeLeaseTests(unittest.TestCase):
+    def test_native_deadline_never_renews_supervisor_budget(self):
+        with patch.object(worker, 'time', SimpleNamespace(monotonic=lambda: 103)):
+            self.assertEqual(worker.native_lease_deadline(5, 105), 105)
+            self.assertEqual(worker.native_lease_deadline(5, 1000), 108)
+            self.assertEqual(worker.native_lease_deadline(5), 108)
+
+    def test_expired_and_invalid_native_leases_fail_closed(self):
+        for seconds, deadline in ((0, 105), (True, 105), (43200.1, 105),
+                                  (math.inf, 105), (5, math.nan), (5, True),
+                                  (5, 99), (5, 100)):
+            with self.subTest(seconds=seconds, deadline=deadline), \
+                 self.assertRaises(worker.WorkerGuardError):
+                worker.native_lease_deadline(seconds, deadline, started=100)
+
+
 class FullFramingTests(unittest.TestCase):
     """Actual FramedIO/SequenceGuard over local pipes with fully fake SDK/auth."""
     @contextmanager
-    def running(self, *, refresh=False, provider_error=False, recovery=False, boot_failure=0):
+    def running(self, *, refresh=False, provider_error=False, recovery=False, boot_failure=0,
+                native_wall_offset=0):
         read_worker, write_client = os.pipe()
         read_client, write_worker = os.pipe()
         handles = [os.fdopen(fd, mode, buffering=0) for fd, mode in (
@@ -559,7 +577,9 @@ class FullFramingTests(unittest.TestCase):
             finally:
                 handles[0].close()
                 handles[3].close()
-        with patch.object(worker, 'WorkerProvider', FakeProvider):
+        with patch.object(worker, 'WorkerProvider', FakeProvider), \
+             patch.object(worker, 'time', SimpleNamespace(monotonic=time.monotonic,
+                 time=lambda: time.time() + native_wall_offset)):
             thread = threading.Thread(target=serve, daemon=True)
             thread.start()
             try:
@@ -610,6 +630,23 @@ class FullFramingTests(unittest.TestCase):
         self.assertEqual(result, [0])
         self.assertEqual(events, ['verified_all_sources', 'ready_ack', 'open',
             'GenerateAccessToken_double', 'official_save_double', 'closed'])
+
+    def test_cross_os_wall_skew_preserves_open_operation_and_close(self):
+        for offset in (-172800, 172800):
+            for provider_error in (False, True):
+                with self.subTest(offset=offset, provider_error=provider_error):
+                    with self.running(native_wall_offset=offset,
+                                      provider_error=provider_error) as (events, result):
+                        digest = self.open_request()
+                        self.ready(digest)
+                        self.client.receive(kinds={'response'}, sequence=1, request_sha256=digest)
+                        status = self.command(2, 'status', {})
+                        self.client.receive(kinds={'error' if provider_error else 'response'},
+                                            sequence=2, request_sha256=status)
+                        closing = self.command(3, 'close', {})
+                        self.client.receive(kinds={'response'}, sequence=3, request_sha256=closing)
+                    self.assertEqual(result, [0])
+                    self.assertEqual(events, ['verified_all_sources', 'ready_ack', 'open', 'closed'])
     def test_bad_refresh_ack_stops_before_generate(self):
         with self.running(refresh=True) as (events, result):
             digest = self.open_request()

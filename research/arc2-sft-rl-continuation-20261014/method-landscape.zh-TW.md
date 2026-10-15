@@ -5,9 +5,9 @@
 本文件是研究與實驗次序建議，不代表已採用、已訓練或已取得新分數。
 研究線從 run008 延伸；main、run008 原分支及工程重整線保持獨立。
 
-**進度入口：** 本文主體保存研究完成時的來源與提案；當前實作、任務、證據與下一步
-統一見[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)。第 7 節保存實驗順序與
-觸發理由，不另維護執行狀態；元件設計見[整合說明](agent-factory3/integration.zh-TW.md)。
+**閱讀定位：** [研究主頁](README.md)先說明 ARC-AGI-2 問題、假設與凍結 A/B/C。
+本文集中方法比較，以及第 7 節唯一維護的實驗順序與觸發條件；公式／來源細節見兩份附錄。
+目前執行進度只見[當前狀態](DEVELOPMENT-PROGRESS.zh-TW.md)，實際 AF3 元件採用見[整合說明](agent-factory3/integration.zh-TW.md)。
 
 ## 一、先講結論
 
@@ -34,14 +34,9 @@ TTT 描述更新發生的時間與資料邊界，SFT／RL 描述訓練目標。�
 
 ### 3.1 目前凍結的首輪實驗
 
-- **A：** 同一 session 真正訓練256次、保存並重載的 SFT 錨點；不是把歷史 A64 改名。
-- **B：** 32個訓練 parent，固定拆成最多4個不重疊 batch；每批8 parent×8 sample=64 slots，最多256 attempts、4次更新。訓練用 demonstration-LOO 的 exact 0/1 reward；不因失敗或全零而補抽樣。
-- **C：** 從同一 A 出發，fresh optimizer 做額外 SFT；匹配 B 的**整段同步模型階段 wall time**，包括 setup、抽樣、reward、replay、失敗／rollback、save／reload／verification；不靠 idle padding 湊時間。
-- **評估：** dev16 選一次 A/B/C，平手固定 A→B→C；先凍結選擇再做 selected PUBLIC、held32 預測、模型關閉與評分。本輪不加 TTT。
-- **分母：** PUBLIC120=120 tasks／167 queries，兩個固定視圖共334 planned views；micro pass@2 分母永遠167。缺少評分是未知，不是0分；已有評分中的缺失／非法答案才按原 scorer 算錯。
-- **限制：** held32 已被專案重複使用，不是全新確認集；B lr=1e-6、A/C lr=2e-4，故比較的是干預組合，不是只改 objective 的因果實驗。完整 session 上限43200秒包含 queue 到 closure。
-
-來源：[現行policy](https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/tools/arc_qwen_rlvr004_20261013/source/design/MEASURED-POLICY.json)、[實際plan](https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/tools/arc_qwen_rlvr004_20261013/source/rl_session/plan.py)、[現代batched consumer](https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/tools/arc_qwen_rlvr004_20261013/release/terminal-consumer/consumer/validate_owned_outputs.py)。注意 `source/validation/` 還有舊 A64 schema，不能誤當現行 consumer。
+完整 A/B/C、dev 選擇、曝光限制、成本與 PUBLIC 分母集中在
+[研究主頁的凍結設計](README.md#二凍結的首輪-abc)。本節不另維護一份實驗配置。
+以下比較中的「已實作」描述來源碼與研究身分，不等於本輪模型驗收或品質結果。
 
 ### 3.2 已有歷史證據
 
@@ -119,11 +114,11 @@ Repo 從固定 upstream independently expressed 的 DDIS 全名為 **Direct Doub
 | 順序 | 問題與最低對照 | 何時推進 | 何時先停／換問題 |
 |---|---|---|---|
 | **0：離線證據與續接** | 保持凍結source、確認目前consumer與資料契約、修正可重現工程問題 | source與CPU/failure review清楚，再交本地executor | 工程錯誤不是0分；不把半成品或舊receipt當新authority |
-| **1：既有A/B/C** | 同session A；B固定batch；C整段wall matched；固定dev/held/PUBLIC | 得到完整reward/replay/checkpoint/closure/scoring證據 | zero-signal與incomplete分開；不因零訊號當場換parent／加抽樣 |
+| **1：既有A/B/C** | 同session A；B固定batch；C整段wall matched；固定dev/held/PUBLIC | 得到完整reward/replay/checkpoint/closure/scoring證據 | 完整 all-zero／all-one 與 incomplete 分開；只有整個 B 從未更新才 B=A，不因零訊號換 parent／加抽樣 |
 | **2a：若訊號太稀疏** | train-only curriculum／verified trajectories／rejection-SFT，保留原A與同總成本對照 | 先提升合法率、非零可驗證成功與候選多樣性 | 不盲目增加RLsteps或把partial score改成主要成功指標 |
-| **2b：若RL確有更新** | 新獨立panel上重複A/B/C；再分離std／length weighting、KL等一個變因 | gain/loss與成本顯示值得再測 | 無淨增益不promotion；小樣本不稱全面能力提升 |
+| **2b：若RL確有更新** | 新獨立panel上重複A/B/C；再分離std／length weighting、KL等一個變因 | B>A 且 B>C、gain/loss 與成本顯示值得再測 | B>A 但 C≥B 不支持 RL 額外價值；小樣本不稱全面能力提升 |
 | **3：TTT獨立消融** | 同一已凍結checkpoint，無TTT vs固定demo-only TTT；必要時做訓練方法×TTT的2×2 | 有可重載穩定baseline且整段預算可容納 | 不從未知query學label；不把更多推論算力當免費增益 |
-| **4：Agent機制** | 同checkpoint、同總預算比較grid／independentprogram／feedbackrepair | repair勝過額外獨立提案、或program與grid明確互補 | 候選池沒正解先改提案／資料；不是先改selector |
+| **4：Agent機制** | 同checkpoint、同總預算比較grid／independent program／feedback repair | repair勝過額外獨立提案、或program與grid明確互補 | 候選池沒正解先改提案／資料；不是先改selector |
 | **5：Selector／多角色** | 固定候選池測兩槽選擇；之後單控制器vs有限委派 | oracle有增益但top2流失，或子假設真正互補 | 多角色只增加成本、共享錯誤或污染選擇時停止 |
 
 以上保存研究完成時的條件式次序；目前採取的工作與狀態見[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)，本節不構成提交或訓練授權。
@@ -135,7 +130,10 @@ Repo 從固定 upstream independently expressed 的 DDIS 全名為 **Direct Doub
 - 尚缺本輪有效A/B/C與PUBLIC完整結果、獨立未重用確認panel、current14B RL peak memory／replaybackward時間、四L4部署實證。外部論文的高分、CPU fixture通過或provider COMPLETE都補不了這些證據。
 - 大規模SOAR搜尋、NVARC合成資料、critic-based PPO及多frontier-agent成本都不等價於本案budget；目前不估算未取得tariff的美元成本，不引入付費資源。
 
-## 九、本輪交付與限制
+## 九、來源查核與限制
 
-本研究只檢查公開repo來源、已保存的歷史文件與live primary research。沒有讀取evaluator答案、重新跑scorer、取得Kaggle登入、查詢provider或啟動訓練。
-研究完成當時，離線開發半成品保存在 `0451441727e8aea602873902ebccbf6b38576e03`，當時的輸出路徑race與最終integration review尚未完成。這段是歷史狀態；後續實作與驗證統一見[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)。工具測試仍不證明方法有效。
+本文保留 2026-10-14 的公開第一手研究與固定 repo 分析；沒有新增模型實驗或更新外部成績。
+ARC1、ARC2、ARC3、public／private split 與不同成本不得互換。
+[研究來源審查](research-source-review.md)保存當時查核邊界；後續工程實作與驗證見
+[當前進度](DEVELOPMENT-PROGRESS.zh-TW.md)及[固定歷史](archive/engineering-history.zh-TW.md)。
+工具測試與框架採用本身不能證明方法有效。

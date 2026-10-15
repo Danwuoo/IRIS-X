@@ -1,612 +1,215 @@
-# 離線續接工具與本地實驗循環交接
+# ARC-AGI-2 本地執行與結果回交
 
-日期：2026-10-15 UTC。研究基準固定為
-`cc14bd1a79aac1fe6135017c9e09d4834300675d`；工作分支為
-`feat/arc2-sft-rl-continuation-20261014`。
-目的環境 portability 修復另由 `fix/arc2-abc-portable-publication-20261015`
-交付；各次精確版本與驗收狀態只見下列進度入口。
-
-工具版本、開發任務、驗收證據與下一步統一見
-[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)。本頁只維護使用方式與限制；
-取得來源時須確認精確 commit 包含所需模組，不能以 Stage 0 的 SHA 指稱後續整合。
+先讀[研究問題與凍結 A/B/C](README.md)，再讀[當前進度](DEVELOPMENT-PROGRESS.zh-TW.md)。
+本頁只有一條接手流程：固定來源與材料 → 本地驗收 → 唯一 publisher 提交與監看 → 真實結果回交。
+命令與 schema 以各工具 README 為準；舊版本的特殊恢復步驟只保留固定歷史連結。
 
 ## 交付範圍
 
-此 companion 提供既有 SFT256 → RL／等成本額外 SFT 比較的離線準備與結果解讀。
-它不執行訓練、不提交或監看 Kaggle、不重跑 scorer，也不重建原始私人 admission。
-本地執行端的執行／提交責任與登入分開；沒有 credentials、帳號設定、
-原始 evaluator 答案或私有執行封包隨此工具移轉。
+使用者已授權沿既有 run007／run008 notebook 模式，持續「開發 → Kaggle 執行 → terminal／結果分析 →
+依證據決定下一輪」的研究循環；在這個範圍內的例行續接不逐輪重新詢問。研究開發端先交付經測試、
+獨立審查的精確來源、變更與缺件；本地端仍須逐次通過原材料與全部 admission。文件、Git 保存或
+CPU 通過本身不代替這些必要條件。新增費用、資源、權限或超出研究範圍的變更仍需另行確認。
+本地端是當次 Kaggle mutation 的唯一 publisher；研究開發端不代登入、不持有 credentials。
 
-CPU 元件、保存的 log-probability 與宣告性 metadata 不能代替真實模型 replay、LoRA
-梯度、儲存／重載、整段成本或 GPU 實證。工具使用不改寫 run008 的凍結比較。
-
-第6節是「研究開發端交付 → 本地執行端驗收／提交／監看／有界修復 → 真實結果回交」
-的預設不執行程序。協調者負責交付精確版本、確認當次任務範圍與接收結果；本地端是
-該次 Kaggle 工作的唯一 publisher。研究開發端不登入 Kaggle、不呼叫 provider、不啟動
-模型或訓練。文件、Git 發布與 CPU 通過都不建立執行授權；沒有當次有效授權及全部原
-admission 時停在準備階段。本文不記錄個人機器、帳號或私人任務狀態。
+Stage 0／Stage 1 companion 只做離線準備與已存在結果的條件式解讀，不訓練、不收集 provider
+結果、不重跑 scorer，也不製造原始私人 admission。原 audit 尚未產生時，由通過原 admission
+的原 A/B/C 產生；不以「先要有 audit」阻擋首次比較。真正 AF3 模型 hook 是另一個需審查的 successor。
 
 ## 取得與核對
 
-Stage 0 的 prepare／analyze 用法保留在下文。Stage 1 對原始 training audit 的 opt-in
-CLI、context schema、逐軌跡介面與16MiB輸入限制統一見
-[Stage 1 使用說明](../../tools/arc2_abc_continuation_20261014/README.md)，不在本頁複製另一套命令。
-新CLI的exit0只表示報告已寫出；報告可能明列unknown／incomplete／rejected，不能據此啟動更新。
-
-使用此分支中經遠端核對的 commit，保存完整 SHA；不要以日後移動的分支名稱
-替代執行來源身分。一般公開 Git checkout 即包含必要來源，無須取得 Drive
-封包或帳號設定。保留 run008、main 與工程重整線，不混入它們的新變更。
-
-Stage 0 的 `prepare`／`analyze` 只需 Python 標準函式庫及支援 descriptor-relative、
-`O_NOFOLLOW`／`O_DIRECTORY` 的 POSIX API。Windows 等不支援環境會明確拒絕
-檔案操作，應交給支援的本地 POSIX 環境；不要停用安全檢查。Python版本與
-檔案系統仍須在接收端測試，此機器的實際路徑不能直接照搬。
-
-獨立 opt-in 的 audit-loss 入口另需 AF3 bridge、Pydantic 與 PyTorch；不得由 Stage 0
-命令暗中載入。依賴與 CPU proof 環境見 [AF3 使用說明](../../tools/arc2_agent_factory3_bridge_20261014/README.md)。
-各入口的可用版本與驗收狀態以[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)為準。
+1. 接收協調者核對過的完整 commit／tree、變動清單、review 與驗收範圍，確認本地 bytes；
+   移動分支名稱與歷史測試數字不能替代來源身分。原 frozen runtime 基準為
+   `cc14bd1a79aac1fe6135017c9e09d4834300675d`，目前交付與未發布修復以進度頁區分。
+2. 保留舊 checkout 原址與其 descriptors、candidate、STATE、clock、claim／journal、失敗及 raw receipts；
+   新來源用明確獨立位置，不在原 f5 等已綁定 checkout 原址改檔，也不回寫 frozen runtime。
+3. 核對接收環境、真正材料及獨立 review。公開 checkout 不是完整可執行封包；
+   缺件就回報種類與來源，不能用 fixtures、compact report 或猜測版本補造。
 
 ### 固定來源交付身分
 
-2026-10-14原交接所檢查的 checkout 是 `e17b6857ee6e874b2b5ed28a766f35e0b8028ea2`，tree
-`408182146a41cfbba7dbb9ead040b54e4790587a`。程式驗收版本是
-`8b9ca9cf915969e15339d99bc090762f349f1572`，tree
-`cedac0a7486685c641506335930d7f6ab429b514`；兩者只有進度文件差異，執行碼相同。
-這些是歷史Stage1來源 anchors，**不是目的環境修復或本文最終文件 commit**。協調者會在發布核對後
-另行交付最終完整 SHA／tree／變動清單，本頁不預填或自指尚不存在的 commit。
-接收端先核對那份精確交付及工作區差異；不能只 checkout 移動中的分支便執行。
-
-下列 SHA-256 在上述 checkout 重新核對。完整 Stage 1 檔案指紋及 CPU 範圍見
-[獨立審查](stage1-independent-review.md#reviewed-source-fingerprints)；20個 frozen／bridge
-來源的逐檔 pins 見 audit manifest。這些 hashes 只識別程式，不是生產 admission。
-
-| 路徑（相對 repository root） | SHA-256 |
-| --- | --- |
-| `tools/arc2_abc_continuation_20261014/audit.py` | `fb7ede3a20f4921842f637f6cd32465a22ecfe61b0ffa7bbe9c4bb8627c825d0` |
-| `tools/arc2_abc_continuation_20261014/streaming.py` | `4c7ea1d1c00f13329a7cd2491880b269e02d04cd169336aa3926751626328b81` |
-| `tools/arc2_abc_continuation_20261014/cli.py` | `c41bccf7a36920a55bddd0e682798be1243aa9d7fec5633e683f930af647419d` |
-| `tools/arc2_abc_continuation_20261014/audit-source-pins.json` | `015e2549da2ab445b30273fa62e106d98510b26c2f130866eae393418531b8cd` |
-| `tools/arc2_agent_factory3_bridge_20261014/bridge.py` | `68e09ed7c01bc51a32a7ddf31eaceb16d928dc3f20069d3f53967a9d70ab74a3` |
-| `tools/arc2_agent_factory3_bridge_20261014/source-manifest.json` | `9810243f51001318e5d08c608358092c12895e81e76dfcd82ec08f500ce439e1` |
-| `tools/arc2_sft_rl_continuation_20261014/source-pins.json` | `220640c4f5a963d38153633040a0428ae2174e827b41f4dc466b119b1cf0c062` |
-
-原 run008 的 frozen runtime identity 是
-`c61025e67354272099e40941cadcd77202964846d9a4c42c51a1817f77bb661b`；source archive 是
-`4d8b414bd35ca79a2eaaec7042880966879ed13bdeaf96762eaee7932ee1de4c`；loader overlay manifest
-是 `1d3aabee0419acd2b42a4343d36028b0ba296f14f30341e5be8e6c83e42600f0`。
-歷史候選 manifest `beda6a5647df0431ac2ac8da26db170d84776be8f59181b5fee537e87423a857`
-及 inventory `bb096f6d53967523961f894c954daa1b4b1f956d54af3586d89bf544aea90cf2`
-只供對照；新 numeric pins、路徑或 trainer 變更都需要新的候選與對應審查，不能沿用其放行。
-
-原 native transport 的歷史 byte 核對如下，路徑前綴均為
-`tools/arc_qwen_rlvr004_20261013/publication_run008/`。launcher 含後續既有 CA 傳遞修正，
-應併讀 [TLS 審查](../native-continuation-20261014/independent-native-tls-review.json)，
-不能把更早 launch review 的舊 launcher hash 當成本版。
-
-| 檔案 | SHA-256 |
-| --- | --- |
-| `launch.py` | `e1794056b20dd1c143cb8ea23b1e985f579ab008260ef6b9d1f50c451301e48b` |
-| `config.py` | `a4492c5a7b4d6cb42b2ee212f35b788fc70730fbd2fc13bf8b5cac03b48091fc` |
-| `native_auth.py` | `b9b5aec37385f7a5de37ae92bbf0bfb3b7b664f0bc31c3fcc044532cb46a19de` |
-| `sdk-lock.json` | `3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d` |
-| `operator_common.py` | `f9b2acad7816b4af97baa877821ce4c9e3d16831fa340caf02d3e8c00b3f2805` |
-| `rl_transport.py` | `a4da4850d7a2e44af2d85d4be65e55913a746ddeb66a26238500457911261bac` |
-| `rl_collect.py` | `71603a1eb47b1b7656f2ca6a8f2b2eb6faa99469a27aef63d4f0446828ef3a78` |
-
-`source-pins.json` 固定五個公開來源，總共118,615 bytes；Python原始碼只雜湊，
-不import、不執行。它驗證選定來源bytes，不驗證完整checkout、Git HEAD、
-私人材料、原始review或實際遠端版本。
+各次已公開指紋見[歷史來源收據](archive/engineering-history.zh-TW.md#原-stage-1-與-transport-交付指紋)。
+它們識別歷史程式，不是新版本 admission；本次精確來源與狀態只見[當前進度](DEVELOPMENT-PROGRESS.zh-TW.md)。
 
 ## 1. 產生不會啟動工作的計畫
 
-在 repository root 執行。輸出父目錄須先存在，檔名須尚未存在。
-
-```sh
-mkdir -p .irisx/offline-continuation
-python3 -B tools/arc2_sft_rl_continuation_20261014/cli.py prepare \
-  --repository-root . \
-  --output .irisx/offline-continuation/plan.json
-```
-
-輸出包含 SFT256、32 parents×8 samples、最多四個互斥64-slot批次、完整 B wall
-配對 C、固定 dev 選擇、no-TTT、PUBLIC120／167，以及接收端必須保留的原始
-collector／owner／checkpoint artifact名稱。清單的 `not_inspected` 不可改稱已具備。
-原始材料缺失時保留blocker，不能由此計畫製造admission或成功收據。
+使用 [Stage 0 介面](../../tools/arc2_sft_rl_continuation_20261014/README.md#interfaces)的
+`cli.py prepare`；命令旗標以該固定版本 `--help` 為準。
+只需 Python 標準函式庫與支援 descriptor-relative no-follow API 的 POSIX 環境。
+計畫的 `not_inspected` 不可改稱材料已存在；不在不支援的 Windows 檔案操作上停用 gate。
 
 ## 2. 解讀已經存在的本地 collector 報告
 
-取得原 collector 產生的 `TERMINAL-VALIDATION.json`，保留原始bytes，從獨立保存的
-原始收據核對 SHA-256。自行計算hash只能核對檔案身分，不能建立外部收集真實性。
-下例的 `LOCAL_COLLECTOR` 與大寫 SHA 都是須替換的佔位文字。
+使用同一 [Stage 0 介面](../../tools/arc2_sft_rl_continuation_20261014/README.md#interfaces)的
+`cli.py analyze`，明確指定原 `TERMINAL-VALIDATION.json` 及獨立保存的 SHA256。
+如有原 checkpoint／retrieval receipt，成對提供檔案與各自 SHA；不沿 JSON 內路徑搜尋或下載。
+舊 SFT64／full-sweep schema 不能靜默套用。
 
-```sh
-python3 -B tools/arc2_sft_rl_continuation_20261014/cli.py analyze \
-  --report LOCAL_COLLECTOR/TERMINAL-VALIDATION.json \
-  --report-sha256 SHA256_OF_ORIGINAL_VALIDATION_FILE \
-  --output .irisx/offline-continuation/analysis.json
-```
-
-若原始 `TERMINAL-CHECKPOINT.json` 與 `RETRIEVAL-RECEIPT.json` 也有保存，可明確加上：
-
-```text
---checkpoint LOCAL_COLLECTOR/TERMINAL-CHECKPOINT.json
---checkpoint-sha256 SHA256_OF_ORIGINAL_CHECKPOINT_FILE
---retrieval LOCAL_COLLECTOR/RETRIEVAL-RECEIPT.json
---retrieval-sha256 SHA256_OF_ORIGINAL_RETRIEVAL_FILE
-```
-
-這只核對報告之間的bytes／hash／狀態鏈，不會沿著JSON內的路徑找檔，也不會連線
-下載。retrieval必須與checkpoint一起提供；每個檔名必須有其明確hash。
-支援原batched consumer的 `irisx/owned-rl-batched-offline-validation-v1`；
-舊SFT64／full-sweep schema不能靜默套用。格式不明的collector診斷可保留拒絕狀態，
-不因此獲得可用分數。
+原始 training audit 的獨立 opt-in CLI、context schema 與依賴見
+[Stage 1 輸入](../../tools/arc2_abc_continuation_20261014/README.md#inputs-original-audit-bytes-not-a-compact-terminal-report)及
+[CLI](../../tools/arc2_abc_continuation_20261014/README.md#cli)。每檔上限 16MiB；
+超限明確拒絕，不能切 batch、截短、漏 slots 或放寬原 reader。compact report 無原始 trajectories，不能代替 audit。
 
 ## 3. 正確閱讀結果
 
-- `OFFLINE_OUTPUT_WRITTEN`／exit0只表示寫出新檔，不表示輸入真實、完整或有效。
-  檢查 `analysis_structurally_consistent`、`issues`、`declared_axes` 和 nullable 指標。
-- `INPUT_REJECTED`／exit2是參數、檔案、hash、JSON或安全操作拒絕。
-  錯誤不輸出私人路徑、原文錯誤或JSON內容。
-- 合作式SIGINT／SIGTERM回報 `INTERRUPTED`／exit130；父程序仍須有timeout並等待
-  真正結束。工具不派生訓練或網路子程序。
-- 缺少scoring保留 `null`。只有原scorer已評分後的缺失／非法prediction才算錯；
-  不把中斷或漏收變成0分。PUBLIC固定167queries；120tasks是預期值，compact report
-  沒有task inventory，`task_count_verified`仍為false。
-- 正確案例ID可算條件式gain／loss，但不能證明全部case相同；不輸出case IDs或答案。
-  Dev count／tie一致不證明selection seal或先後順序，相關驗證旗標仍為false。
-- B/C整段同步model-phase wall包含setup、抽樣、reward、replay、失敗／rollback、
-  hash／Python、save／reload／verification；不能改成只配optimizer時間。
-- 全零完整稽核、未完成、之前已commit而後續失敗要分開；整個B從未commit才檢查B=A。
-  不得抹除先前完整更新或退回其實體成本。
-
-所有聚合都以不可信本地JSON為條件。此companion永遠不建立authenticated collection、
-method efficacy、promotion或下一輪dispatch authority。
+- exit0／`OFFLINE_OUTPUT_WRITTEN` 只表示寫出檔案；仍須檢查 consistency、issues、unknown／rejection。
+- 缺 scoring 保留 null。PUBLIC 分母固定 167 queries、預期 120 tasks；compact report 無法證明 task inventory。
+- saved log-probability 可比 loss／logp gradient，不能重建真實模型 graph／LoRA gradient；宣告 hash 也不驗證 provenance。
+- dev count／tie 自洽不證明 selection seal；配對 gain/loss 只在真正相同案例成立。
+- 完整 zero-signal、incomplete、先前已 commit 而後續失敗分開；只有整個 B 從未更新才檢查 B=A。
+- CPU、native、provider、runtime closure、comparison、cost match、scorer、方法收益與 CI 分欄，不互相代替。
 
 ## 4. 檔案安全與中斷後續接
 
-輸入為明確指定的單一常規檔，最多16MiB；拒絕symlink、hardlink、FIFO、重複JSON key、
-非有限數及不符hash。目錄與檔案使用no-follow descriptors，避免祖先替換把讀寫導向
-另一棵樹；安全界限不是先呼叫一次 `is_symlink()`。
-
-輸出使用受限staging與exclusive publication。既有或競爭產生的目的檔不覆寫；
-偵測namespace／identity改變即拒絕，不回報另一檔案hash。暫存清理由持有的directory
-descriptors進行，不沿交換後路徑操作。
-
-exclusive publication成功後若後續檢查、fsync或程序終止失敗，完整目的檔可能已存在。
-這時是**結果不確定，先檢查檔案**，不能直接重跑或刪除。工具不以stat-then-unlink移除
-已發布檔，避免刪掉競爭者替換的檔案。接收端應在可信目錄核對完整JSON與SHA，保留
-原檔，再選新輸出名稱。SIGKILL、斷電、惡意同UID程序或返回後namespace變更，不在
-Python cleanup可保證範圍。敵對替換的foreign staging entries會保留，不能任意刪除。
-
-若staging mkdir成功，但首次stat/open失敗而無法確認inode，空的0700目錄也可能保留；
-工具不刪除未能綁定所有權的名稱。這與已修復的祖先交換導向錯誤位置是不同情況。
-
-本工具不掃描／刪除任意舊暫存，也不替代OS使用者隔離或權限控制。
+[Stage 0 安全契約](../../tools/arc2_sft_rl_continuation_20261014/README.md#interpretation-and-safety)
+保留明確常規檔、16MiB、exact hash、no-follow、嚴格 JSON、exclusive output 與 descriptor-relative cleanup。
+不覆寫既有輸出，不掃描／刪除任意暫存。錯誤或中斷後完整輸出可能已存在，先在可信目錄核對，
+保留原檔再選新檔名；拒絕不等於「什麼都沒發生」。未知 provider 寫入更不能當未發生後重送。
 
 ## 5. 測試與證據範圍
 
-參見 [最終獨立審查](offline-continuation-review.md) 的精確結果與來源指紋。
-normal與`-O`都要測；涵蓋source pin、非有限數、完整分母、固定配對、不可信宣告、
-symlink／祖先交換、拒絕覆寫、失敗／中斷cleanup及CPU CLI。
-
-真正原consumer的拒絕分支可用空的合成目錄做interoperability檢查；完整成功路徑的
-歷史fixtures並未隨這次公開checkout具備。完整shape的合成報告只證明schema與聚合，
-不是原run結果、full14B數值驗證、scorer重播或Kaggle狀態。
-
-測試數字、CI 與缺失證據統一見[開發進度管理](DEVELOPMENT-PROGRESS.zh-TW.md)。
-原始暫停 checkpoint `0451441` 的 race 與研究文件 `d13500c` 皆按其固定版本解讀；
-不得將後續修復結果回寫為舊版本已通過。
+具體命令與固定證據見 [Stage 0 審查](offline-continuation-review.md)、[Stage 1 審查](stage1-independent-review.md)、
+[AF3 驗證](agent-factory3/validation.md)與 [bridge 驗證收據](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/VALIDATION.json)。
+normal／`-O`、失敗／timeout／cleanup、來源不變與獨立 review 均依最終來源驗收。
+完整 suite／CI 的既有失敗與缺 fixtures 保留；沒有重跑的範圍明列未重跑。
+歷史 native PASS 不自動適用變更過的 supervisor／worker；新版本必須有自己的適用性證據。
 
 ## 6. 本地執行與研究回交程序（預設不執行）
 
 ### 6.1 接收順序與確切缺件
 
-先讀本文、唯一[進度文件](DEVELOPMENT-PROGRESS.zh-TW.md)、
-[方法總覽第7節](method-landscape.zh-TW.md#七建議的實驗順序與觸發條件)，再讀
-[run008 原交接](../native-continuation-20261013/RUN008-LOCAL-HANDOFF.md)、
-[transfer reconstruction](../../tools/arc_qwen_rlvr004_20261013/transfer_run008/README.md)、
-[admission](../../tools/arc_qwen_rlvr004_20261013/admission_run008/README.md)、
-[原 native operator](../../tools/arc_qwen_rlvr004_20261013/publication_run008/README.md)與
-[目的端 POSIX successor](../../tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/README.md)。
-舊文件的當時 transfer-only／stop-after-submit 記錄保留為歷史，不自行移植成當次授權。
+只核對明確指定的原件，不搜尋秘密、不複製 credentials、不讀 evaluator 答案補欄位：
 
-公開 checkout **不構成完整可執行封包**。接收端以明確指定的檔案逐項驗證，缺件回報其
-種類及需要的來源，不搜尋秘密、不從 fixture／compact report 補造。
-
-#### 既有 A/B/C baseline 的原必要輸入
-
-1. **原 run007／run008 reconstruction：** genuine Git snapshot
-   `e951604b829497e81bc6e18b32662ff050bd54db`，原 authentic-inputs 的已核對 archive，
-   `source-rebuild`、`candidate-rebuild`、`REBUILD-REPORT.json` 及311檔 inert
-   `independent-reviewed-proposal`。傳輸 README 列出原 hashes 與有界重建命令。
-   308檔 portable components 子集不等於完整候選；缺少歷史 fixture 的測試不能 skip-to-green。
-   evaluator archive 保留隔離，必要的 opaque hash 不等於語意讀取答案。
-2. **當次官方觀察與 authority：** 真正 owner direction、最新 notebook／Dataset bracket
-   及其六個原始 readbacks（source、notebook before／after／status、Dataset before／after）。
-   `admission_run008/seal_inputs.py` 只封存已有 readback，自己不查 provider。
-   公開資料沒有原私人 bracket、owner direction、`draft-0001` 或完整執行 approvals；
-   不生成假的歷史文件通過 validator。若既有接口不能產生當前所需 bracket，先回交缺口，
-   明確審查新的有限讀取路徑，不能猜造命令或解除 gate。
-3. **接收環境的實際 binding：** exact interpreter／SDK source lock／launcher／既有 trust、
-   private local config、manifest／material／action／monitor-consumer review 及其獨立 hashes。
-   現行 transport 固定 Kaggle2.2.4／kagglesdk0.1.37 和原 wrapper bytes；目的環境不同時，
-   需要狹窄 portability successor 與審查。保留已審 wrapper 的正常 isolated HOME 設定；
-   不得為規避拒絕而更換 HOME、關閉 TLS、改 proxy／權限或換存取途徑，也不複製憑證。
-   正常 destination binding 必須獨立審查；登入與任何新增權限依當次確認規則獨立處理。
-4. **真實模型材料與 owner gates：** pinned offline weights、完整 wheelhouse、獨立 code
-   Dataset、訓練資料 lineage、原 owner admission／checkpoint／consumer／scorer 材料。
-   loader 必須保持 installed pinned-wheel inventory、API／ABI、kernel mapping 和 byte
-   identity 檢查，不能只看 cuDNN version string 或以系統 library 代替。原
-   [loader repair](../../tools/arc_qwen_rlvr004_20261013/loader_repair_run008/README.md)
-   的 CPU／ELF 通過不是目的環境 cuDNN／Qwen／GPU 通過。
-
-#### 已產出的 audit：離線分析輸入，不是 baseline 的事前 gate
-
-**真實 training audit 與 context：** 原 producer 的完整
-`experiment/audit/sweep-N.json`、獨立保留的原檔 SHA、train32 records／exclusions、
-source／plan／panel／sampling-policy／pre-update policy 收據，及據此明確建立的
-`irisx/abc-audit-context-v1`。來源與 schema 見
-[Stage 1 inputs](../../tools/arc2_abc_continuation_20261014/README.md#inputs-original-audit-bytes-not-a-compact-terminal-report)。
-第一個真實 audit 檢查只接收每檔≤16MiB；先核對實際 bytes，較大即拒絕，不能切 batch、
-截短、漏 slots 或放寬 reader。若前次根本未產生 audit，companion 保留
-`MISSING_ORIGINAL_ARTIFACTS`，由通過原 admission 的既有 A/B/C 產生並在回收後分析；
-不以「先要有 audit」阻擋首次原 A/B/C，也不能把 CPU fixtures 當原始執行資料。
-以上是缺件核對清單，不聲稱任何私人材料已存在或可讀。只有在接收端已有適合依賴的
-CPU 環境時，才照 Stage 1 README 執行 audit CLI 與 normal／`-O` focused tests；不自動
-安裝模型／框架。原始檔與 context 雖通過，結果仍是 saved-scalar conformance，非真實
-模型 replay 或更新放行。本文不另提供依賴缺失 admission 的可直接執行 RUN 命令。
+- **原材料：** genuine reconstruction、完整 source／candidate／proposal 與 reports，來源與指紋依
+  [transfer README](../../tools/arc_qwen_rlvr004_20261013/transfer_run008/README.md)。歷史 283／426／311 是原重建身分；目前 canonical successor 以自己的 inventory 為準，components 子集不能代替。
+- **原 admission：** owner direction、六件官方 bracket readbacks、proposal／final admission、
+  destination action／material／monitor reviews。入口見 [admission README](../../tools/arc_qwen_rlvr004_20261013/admission_run008/README.md)。歷史 observation 可作組裝來源，不能冒充 fresh readback。
+- **模型／資料：** pinned offline weights、完整 wheelhouse、獨立 code Dataset、train-only lineage、
+  原 owner／checkpoint／consumer／scorer。loader 的 pinned-wheel inventory、API／ABI、kernel mapping 與 bytes 必須成立，CPU／ELF 檢查不能代替 GPU。
+- **目的端：** 精確 interpreter、官方 Kaggle2.2.4／SDK0.1.37、來源 closure、config 與 native acceptance。
+  WSL 持有 persistent ext4 state／owner；Windows 官方 library 在原 profile 使用既有登入。
+  不改 HOME、TLS、proxy、ACL 或權限，不抽取 token、不另建 WSL OAuth 迴避原邊界。
 
 ### 6.2 先驗收原路徑，再考慮 changed trainer
 
-分清兩條路徑：
+原 A/B/C 保留 frozen runtime 與原 model-owner gates。AF3 CPU companion 不是 CUDA model hook；
+把模型 tensors 複製到 CPU 也不構成正式接線。未來 changed trainer 必須另立來源與審查，
+重新綁定受影響的 assembler／runtime／consumer／active wire，不把 AF3 模組塞進只准 loader overlays 的原封包。
 
-- **既有 A/B/C：** 原 run008 source／材料／owner admission 與 repair readiness 通過，
-  且當次執行範圍有效，即沿原 runtime 數學、原 model-owner 數值／狀態 gates 執行。
-  若已有原 audits 就先核對；尚無 audits 則由這次原 A/B/C 產生，終態回收後再用 Stage 1
-  CPU companion 分析。缺少事前 audit 或 CPU-only companion 都不增加一個阻止首次原
-  A/B/C 的新 gate，也不改凍結研究安排。
-- **未來 AF3 model hook：** 目前 Stage 1 只接受 CPU tensors，**不是 CUDA model hook**；
-  把真實 tensors 複製到 CPU 不構成正式接線。真實原 audit conformance 是這條後續接線的
-  證據輸入，不能用 fixtures 代替，也不能先偷換成 AF3 trainer 來產生它。
-
-任何 changed trainer 先由研究開發端提出獨立 source-reviewed successor，並重新綁定
-受影響的 assembler／runtime／consumer／active-wire 審查；現行 run008 assembler 只准
-loader overlays，不能直接塞入 AF3 模組或沿用舊 admission。接線依
-[shadow specification](../../tools/arc2_abc_continuation_20261014/README.md#local-shadow-wiring-specification)：
-同 A lineage、同完整 batch、同真正 pre-update unchanged policy，逐軌跡 replay／backward，
-比較每個 LoRA target 的 loss／finite gradient／差異，保留原 token／prefix／DFA／cache。
-nonforced p95≤0.05、max≤0.20、strict-DDIS coverage=100% 不變，至少一個 LoRA target
-非零；完整 batch 通過前不 commit，實測 rollback、save/reload、owner exit／closure。
-所有 shadow／失敗／rollback 成本計入；若進 B，C 配對其整段 model-phase wall。
+真正模型接線要求同 A、同完整 training batch、同 pre-update unchanged policy，逐軌跡比對 loss
+與每個 LoRA target 梯度，保留原 token／prefix／DFA／cache、replay 門檻、完整 batch 才 commit、
+rollback／save-reload／closure 與全成本。詳見 [AF3 模型驗收](agent-factory3/integration.zh-TW.md#本地模型證據的驗收契約)及
+[shadow 規格](../../tools/arc2_abc_continuation_20261014/README.md#local-shadow-wiring-specification)。
 
 ### 6.3 唯一 publisher 的有限提交與監看路徑
 
-下列是現有 operator action 的順序索引，不是已執行紀錄或開放式重試授權。
-原 `publication_run008` 的歷史wrapper綁定不適用移轉後機器。純POSIX方案保留於
-[POSIX successor介面](../../tools/arc_qwen_rlvr004_20261013/publication_portable_20261015/README.md)；
-本次選擇WSL持有state、Windows官方SDK沿用原profile的
-[Windows／WSL bridge介面](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/README.md)。
-該方案先完成下列6.3.1本地驗收，再承接相同publish／collect action。每次都需explicit
-manifest/material/review/local-config及各自SHA；目前是否已驗收只讀單一進度頁，不以此程序當完成證據。
+在上述已授權研究循環內，全部 admission 成立才續接；目前 blocker 見進度頁。以下是固定順序，
+不是未知寫入的自動重送授權。沿用 run007／run008 的離線 notebook，code 與 weights／wheels／資料 Dataset
+分開管理並鎖定精確版本，不另建偏離研究問題的 notebook 模式。
+實際 action flags／config schema 見 [Windows／WSL bridge](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/README.md#sourceconfig-interfaces)。
 
-開始前另做目的端準備：
+1. **固定來源、材料與純預檢。** 完成一次 reviewed canonical candidate、真實獨立 release review 與完整相依 pins；
+   同一 actual owner 核對 config、STATE 與原歷史。以完整 manifest／material／review／config 及 SHA 執行
+   `publish validate`、`publish validate-publication`；後者需要真實 monitor review 與 consumer root。
+   純 PASS 不代表發布；精確 no-auth／目前 runtime 驗收及未解除 UNKNOWN 仍是獨立條件。
+2. **Fresh readiness、一次 code 發布與驗收。** 正式 readiness 重查 exact numeric identities、source、
+   privacy／settings 與無 active conflict。通過後依 `update-code` 的 retention gates 及 claim 發布；
+   `verify-code`／`verify-code-files` 核對完整 bytes／inventory，再做真正 numeric mount acceptance。
+   weights／wheels／資料與 code 分版本，原七個 non-code pins 不變；只上傳 reviewed code payload。
+3. **Inactive 與動態審查。** `save-inactive` → `verify-inactive`，核對 numeric source／settings／Dataset，
+   GPU／TPU／Internet OFF；取得 persisted-readback audit 及真正 stage2／monitor／static-pin reviews。
+   不把靜態來源審查當成尚未存在的 readback 證據。
+4. **JIT 與一次 RUN。** `prepare-active` 建立 immutable epoch 與原四件組：active-finalized notebook、
+   original-request、operator、parent-private-scorer；獨立 active-wire review 後才 `activate`。
+   60 秒 dispatch-age 不變；過期保留並停下，不能自動重抽 clock。accepted／uncertain send 後
+   只以 `verify-run` readback／reconcile，不因讀取中斷重發 RUN。
+5. **監看到真正終態與回收。** 對同一 admitted numeric run 持續 `collect watch` 或已審查等價流程；
+   QUEUED／RUNNING／暫無輸出不是完成。terminal 後繼續到可取得 outputs 完成 indexing、下載及
+   原 owner／closure／seals／consumer／scorer 驗證，或有需回交的實際 blocker。原 collector 有界收集，
+   缺／截斷 logs 明列，不能用 provider COMPLETE 或 collector exit0 代替研究結果。
 
-- 在持續存在的native Linux／WSL ext4路徑重建checkout與ignored scratch，保留原失敗。
-  不把`/tmp`存活或DrvFS權限／rename／FIFO行為當成已驗證的native語意。
-- 先完成原`transfer_run008/rebuild_engineering.py`的283檔source、426檔candidate與311檔inert
-  proposal及各自report；移轉components子集與純單元測試不能取代這些真實重建。
-- 以下兩項native POSIX登入／SDK步驟只適用純POSIX方案；目前選擇Windows橋時改用6.3.1，
-  不在WSL建立OAuth。純POSIX方案建立或核對明確的Python3.12 venv，固定Kaggle2.2.4及SDK0.1.37，核對完整170-source closure。
-  官方`python3.12 -m venv --copies /chosen/native-venv`可避免多層interpreter symlink；不要覆寫既存venv。
-  在該新venv用`python -I -B -m pip install 'kaggle==2.2.4' 'kagglesdk==0.1.37'`安裝官方pins與相依，
-  再跑`python -I -B -m pip check`；以`importlib.metadata`記錄版本與來源root，不要import Kaggle當作metadata probe。
-  實際interpreter bytes、patch version、sysconfig purelib、real HOME及既有CA選擇寫入本次private local config，
-  供獨立review綁定；不把個人機器路徑或config內容提交公開Git。
-- 若native HOME尚無官方OAuth，先停在認證建立這一關。新的官方登入固定要求`resources.admin:*`，
-  並保存native HOME/.kaggle，須另外取得使用者當次同意並由使用者完成官方consent。
-  精確官方命令及來源見successor README；不得複製Windows store、改HOME、抽取token或擴權代替。
-- 新collector SHA須由原assembler的explicit collector參數重新綁入proposal與consumer release，
-  並重做相依material／transport／monitor／Git／active-wire reviews；原259 runtime members及21 helpers不改。
-  使用successor的exact-version static-pin verifier；不要將原21／40／41寫死的review重用於另一組版本。
-
-1. **核對、觀察、review：** 先靜態核對交付 SHA／bytes、當次授權及已有材料；經授權取得
-   並封存當次 fresh read-only bracket，完成新的 proposal／final admission、destination
-   action review 與完整 local config。候選及 manifest/material/review 齊備後，才做不建立
-   Provider 的 local `validate`，再進 `readiness` 重查 exact numeric identities、source、
-   privacy、settings、mounts、status 與無衝突 active run。`validate` 需要成形契約，不能
-   用來代替缺失候選的重建。保存 claims／journals；
-   有未知寫入先 read-only reconcile。歷史 code20／notebook39 ERROR 及預估21／40／41
-   都不能當本次現況或可用版本，plain ERROR 不等於 GPU 不可用。
-2. **code 與 mount：** 只由唯一 publisher 對 reviewed `code-payload` 做一次 claimed
-   `update-code`；weights／wheels／資料與 code 各自版本化，保留原七個 non-code pins。
-   `verify-code` 或 exact numeric `verify-code-files` 做完整 bytes／closed inventory
-   readback，再由 `admission_run008/accept_numeric_mount.py` 通過真實下載的 owned
-   no-model mount acceptance。不可上傳整個 repo、候選、私人 receipts 或 evaluator archive。
-3. **inactive 與靜態審查：** `save-inactive` → `verify-inactive`，核對真實 numeric source、
-   settings／Dataset identity，GPU／TPU／Internet OFF。取得 persisted-readback audit、
-   新 independent stage2／monitor-consumer／static-pin reviews；原21個 consumer helpers
-   與 collector binding 保持 closed，不能以純 source review 代替這些動態證據。
-4. **準備、獨立檢查、一次 RUN：** `prepare-active` 只建立一個新的 immutable predispatch
-   epoch 與四個 JIT 文件：`active-finalized.ipynb`、`original-request.json`、`operator.json`、
-   `parent-private-scorer.json`。保留 finalization、wire、prepared journal；由
-   所選successor的`verify_active_wire.py`依其格式及當次真實 static pins 核對，產生對應獨立 active
-   review 後才 `activate`。60秒 dispatch-age 上限不變；stale preparation 保留並停止，
-   不能自動重抽時鐘。一次 accepted／uncertain send 後用 `verify-run` readback/reconcile，
-   不能把讀取中斷當理由重發 RUN。provider 接受不等於已跑模型。
-5. **直到終態與完整回收：** 同一 admitted numeric run 用 `collect watch` 或其等價已審查
-   poll/collect 流程持續監看；QUEUED／RUNNING／暫時無輸出都不是完成。transient read
-   backoff，terminal 後仍繼續到 selected outputs 完成 indexing／下載／驗證，或出現需
-   回交的實際 blocker。讀回 exact source、logs 與結果，驗證原 owner、closure、seals、
-   原 consumer／scorer；不因 provider COMPLETE 就停止，也不假定所有 outputs 都已盤點。
-   原 collector 只收 selected outputs；log 缺失或截斷須明列，不能繞過其有界傳輸限制。
-
-所有 setup／queue／learning／inference／scoring／closure 都在原43200秒內；保留
-inner42000／outer42180／provider42300 offsets。整場已消耗時鐘及每次 physical charges
-不重置或退還；新 reviewed attempt 才能有自己的明確新 identity／clock，舊結果永久保留。
-實際 GPU-unavailable／zero-hours 回報即停止後續 dispatch，不查 quota、不新開資源或付費。
-使用原單張 NvidiaRtxPro6000 訓練資源；4×L4 是另外的最終推論驗證，不能以單訓練卡
-或 CPU 通過推定4×L4能部署。Internet-off 與既有 ARC3 metadata association 保留，
-不讀 ARC3 task data、不做官方 competition submission。
+整場 43,200 秒與原 inner42000／outer42180／provider42300 offsets 不變；所有已耗時鐘與 physical
+charges 保留。worker lease 與實驗 clock 分開，clean read-only 輪替不能重置研究時鐘或解除未知寫入。
+使用原單張 NvidiaRtxPro6000 資源；4×L4 是另待驗證的最終推論環境。實際 GPU-unavailable／
+zero-hours 回報即停 dispatch，不查 quota、不增資源或付費。保留 Internet-off 與既有 ARC3 metadata
+association，不讀 ARC3 task data、不做官方 competition submission。
 
 ### 6.3.1 沿用既有Windows登入的本地橋接驗收
 
-這是選定的目的端實作，不另改研究方法。WSL的checkout／candidate／state／scratch保留在
-persistent ext4；Windows只接收同一固定commit的公開bridge來源、獨立venv及非秘密本地設定。
-原登入留在原Windows profile，由官方library使用；沒有新的WSL OAuth、credential搬移或HOME替換。
-
-1. 核對交付commit／tree與所有source bytes。另在Windows實際native路徑放置相同bridge source；
-   不以換行轉換的checkout替代Git blob。native config的七檔來源必須同時等於WSL reviewed sibling。
-2. 用既有官方Python3.12建立獨立Windows venv，不覆寫既有環境。若已有本流程建立且來源／版本／hash均吻合的venv，直接重用，不因每次probe修復再建一份。首次建立時執行：
-
-   ```powershell
-   & <official-python.exe> -I -B -m venv <new-native-venv>
-   & <new-native-venv>\Scripts\python.exe -I -B -m pip install 'kaggle==2.2.4' 'kagglesdk==0.1.37'
-   & <new-native-venv>\Scripts\python.exe -I -B -m pip check
-   ```
-
-   保存實際package版本／官方wheel來源及hash；metadata使用`importlib.metadata`，不為檢查版本
-   import Kaggle。SDK lock只覆蓋170個官方Python來源，不能代稱整個venv供應鏈已鎖定。
-   WSL owner只需原Python3.12與標準函式庫；不將Windows帳號設定傳入WSL。
-3. 以新Windows venv `-I -B`跑`native_probe.py`，保存stdout JSON、stderr、exitcode與hash；
-   必須十案例完整通過，來源四hash及venv executable／base executable／pyvenv.cfg均吻合。
-   另從WSL執行同commit的`wsl_native_probe.py`，實際測caller死亡→pipe EOF→native Job全清空。
-   兩者皆為合成程序；歷史global Python原8案例不能代替新版實測。parent-watch案例僅控制器
-   使用已綁定base Python，supervisor／worker仍用原venv；明確監看控制器PID，保留完整closure要求。
-4. 由本地metadata建立ignored native config：實際token SID/profile、venv/base executable bytes、
-   pyvenv.cfg、Python patch、purelib、完整七檔來源、既有network環境hash及同一版本配置。
-   不修改proxy／TLS／ACL，不加權限，不讀出或填入credential值。WSL config另綁現有
-   WSL_INTEROP socket selector與exact drive mapping、native config與genuine probe receipt的hash。
-   若WSLENV帶入未審查跨OS環境設定，停下說明，不靜默變更系統設定。
-5. 以同commit的`preauth_probe.py`測正式supervisor／worker CLI，僅send open、驗證ready後
-   故意不送ready_ack並關閉input，要求nonce-bound Job-zero closure。此時官方SDK只驗source及
-   store metadata，未載入credential內容／登入／RPC。失敗或無closure保留unknown，不繼續認證。
-   確切CLI參數看該工具`--help`；沒有把probe結果改寫為provider PASS。
-6. 新source／native實測／config皆交獨立review。全15檔operator source要已commit且remote驗證，
-   原collector、proposal、consumer、material、monitor、active-wire每條相依hash重新綁定。
-   接著回6.3第一步的fresh official observation與完整admission，才可走正常既有auth／readiness。
-   任何官方refresh均由Windows官方library保存原store，前後要求WSL fsync ACK；中斷或未知不自動重送。
-
-所有diagnostic／local config／原始log留ignored側；對研究端只回傳來源與非秘密結果／hash／缺件。
-若閉合的來源、runtime、ACL或原credential metadata不符，停在精確失敗點交回修復，不停用gate。
-跨OSworker的12h lease只約束該worker，不等於原實驗clock；只允許clean read-only輪替。
+入口見 [bridge README](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/README.md)。
+精確來源、venv／base executable／pyvenv.cfg 與當次 source/config review 依實際版本驗收。
+同一 release 的驗證只做一次；來源／設定／runtime 不變時重用原收據。native 十案例、
+WSL caller-death、正式 pre-auth 只針對受影響的邊界重驗，不能把舊來源收據直接標成新來源 PASS。正常認證與 refresh 留 Windows 官方 library，
+保留 WSL intent／completion 兩次 durable ACK；不確定即停止。原安裝細節見
+[e491 固定說明](https://github.com/Danwuoo/IRIS-X/blob/e491ba4be3562d48d78f4f615a1dd155bcdc0cfc/research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#631-沿用既有windows登入的本地橋接驗收)，不因新修復重建已符合的 venv。
 
 ### 6.3.2 原failed-open的獨立恢復邊界
 
-適用範圍只有E41的原failed-open與原29份state；目前證據／驗收狀態以
-[單一進度文件E43–E45](DEVELOPMENT-PROGRESS.zh-TW.md)為準。程式可用不代表已獲准重啟或provider執行。
-原UNKNOWN、closurefalse、原claim／journal／events全部保留；不刪除lock、不換publication namespace。
-新的process boundary與新的Job-zero不能改稱原事件closure。
-
-1. **本地純前置核對，尚不Restart。** 從固定修復commit取精確來源，保留原01ca來源與原config，
-   新runtime/config另存並逐檔比對。原STATE完整枚舉含hidden／非regular，確認4根檔＋25events的
-   名稱、bytes、SHA與封存一致；原closed readiness沒有raw receipt，不應補造或要求補造。
-   以實際原件建立`irisx/recovery-source-review-v1`：原inventory、原15來源及現行18來源descriptors、
-   原config／native config、每個request preimage（含deadline／max_seconds）、明列無nonce的四份
-   auxiliary records、原closed claim／journal hashes、boot來源／runtime hashes。
-   此review是本地獨立審查輸入，單有hash或測試fixture不是授權或真實證據。
-2. **驗收新的no-auth入口。** 在原Windows venv執行`recovery_boot_probe.py`，提供fresh64hex challenge、
-   probe／win_runtime／venv python／base python四個固定hash參數；timeout15秒包含cleanup。
-   只查固定OS boot metadata、host/install的challenge-bound hash及完整PowerShell child Job0；不讀credential內容、
-   不import SDK、不連provider。實際保存stdout／stderr／exit與source前後hash。
-   單獨從WSL啟動時20秒外層只約束interop proxy；若native probe在bootstrap／檔案syscall阻塞，
-   proxy退出不證明probe已終止，失敗不產生boot證據且不得繼續。native worker內的同probe另有
-   原supervisor outer Job／deadline。不要把standalone timeout當完整Windows清理證明。
-   另用明確標示synthetic的distinct recovery native config跑原`preauth_probe.py`，核對第八來源
-   `recovery_boot_probe.py`及recovery open binding；READY後仍不ACK，要求新的nonce-bound Job0。
-   合成capability值只能用no-auth probe，絕不能拿來執行recovery entry。
-3. **純validate。** 以normal local config執行`launch.py recover validate`，沿用原manifest／material／review／
-   local-config及各SHA旗標，另給`--input`及`--input-sha`。input精確兩欄`inventory`、`review`，
-   值均為`{path,bytes,sha256}` descriptor。此命令持原publisher lock、驗證原材料／來源與完整29檔，
-   不建立recovery記錄、不呼叫native或provider。失敗報精確固定reason，不以修改fixture來放行。
-4. **使用者確認時間後，保存Restart前置。** `recover prepare`的input為同兩descriptors加fresh`challenge`
-   與`expires_epoch`；最多3600秒epoch。先取真實新no-auth boot observation，再durably保存preparation。
-   review內`restart_authority`的authorization hash與witness-review hash綁已審查的使用者批准及見證
-   身分／作業方式；不是尚未發生的restart report hash，不可虛構批准。保存後才通知使用者在Windows
-   Start選「重新啟動」，需先存檔，會結束Windows／WSL所有當前程序。沒有自動reboot指令。
-   Shutdown、sleep、hibernate或單獨WSL重啟不符合此路徑；不要為繞過驗收而改系統設定。
-5. **Restart後重新核對來源與綁定，仍先不mutation。** 同主機／install、不同且較新的LastBootUpTime、
-   GetTickCount64與觀察時間相容、fresh challenge-bound observer全部通過；保留手動Restart的typed
-   witness descriptor與實際requested UTC。可信本機OS與操作者的證據不是防惡意主機的密碼學attestation。
-   再獨立審查post-restart normal local/native config templates（WSL_INTEROP可能合法改變）、原state及
-   同account／版本配置／材料；`irisx/recovery-binding-review-v1`指定兩個不存在的新輸出config路徑；native輸出須在原native目錄，local config可留ext4，另綁先前真實remote metadata／source／terminal狀態作expected reference。
-6. **明確受准的一次性read-only reconcile。** 只有原execution review明列`reconcile-read-only`且Git／材料／
-   18來源全部admitted時才可執行。input四欄`preparation`、`restart`、`binding_review` descriptors及fresh
-   `session_nonce`。同owner lock下取fresh boot→保存exclusive reservation→精確template overlay→consume
-   launch ticket→固定dataset／kernel／status／kernel／dataset→close。兩端allowlist都禁止upload、save、
-   version、download及mutation；完整原官方認證與refresh雙ACK不變。讀取值須與reviewed expected相符、
-   無active duplicate、同source／版本／mounts，新nonce真Job0與proxy exit0才可finalize。
-   現有grant refresh若必要，仍由官方library原地保存，intent／completion兩次WSL fsync ACK；
-   lost／unknown refresh或任何不確定read／closure保持阻擋，不能重用reservation。
-7. **歷史disposition封存後回原流程。** eligibility與exclusive sealed index綁完整original29、新session／
-   refresh／completion records。後續正常入口用受審查normal template，重新做fresh boot及原全部admission；
-   eligibility只適用同一post-Restart boot及精確受審查source／config lineage，之後再重啟或換來源需另審查；
-   只涵蓋精確那個old failed-open claim／journal，任何新UNKNOWN仍阻擋。sealed index不掃未來watch events，
-   原根record安全上限512仍適用，達限停下，不刪歷史繞過。仍需fresh官方版本/status、retention、payload、
-   mounts與singlepublisher gates才能在另獲准的原流程進行mutation；本恢復動作本身沒有publication授權。
-
-任何準備過期、claim已消耗、寫入中斷、缺seal、證據漂移或新unknown均停止並保存現狀交回。
-目前實作是一次明確審查的窄恢復，不提供自動多epoch重試、擴權或無限清理。原事件auth load是否發生
-仍未知；在固定原source及完整STATE未遭外部刪改／rollback前提，可排除受控original_refresh dispatch。
-不能排除外部grant變動，因此Restart後仍由官方既有認證實際核對；若grant失效或要求新權限，另請確認。
+**此舊路徑只對應 E41 原 29 檔事件。** 原一次性人工 Restart／read-only reconciliation 已有 E47 結果。
+原文見 [e491 固定恢復說明](https://github.com/Danwuoo/IRIS-X/blob/e491ba4be3562d48d78f4f615a1dd155bcdc0cfc/research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#632-原failed-open的獨立恢復邊界)；
+不能拿來自動重跑或解決新的 ddd UNKNOWN。新事件只依其實際來源、證據與已審查 disposition 處理；
+原 UNKNOWN／closure false／claim／journal 不修改、不刪鎖、不換 namespace。
 
 ### 6.3.3 已完成恢復後的同boot context續接
 
-此節只接續已成功完成、sealed且同一Windows boot的f5 disposition；實際結果與目前版本見
-[唯一進度頁E47／E48](DEVELOPMENT-PROGRESS.zh-TW.md)。不重新prepare、reserve、reconcile，
-不延長或重用已消耗的capability；原29份證據、原failed-open UNKNOWN與新session/seal均不更改。
-
-- **保留原f5 checkout原址。** 原review的18個source descriptors指向該checkout，不是可隨意替換的
-  副本。另建立獨立的新commit checkout供successor執行；不要在原址checkout新版、搬走舊檔或改review。
-  新adapter先用固定f5 manifest驗證全部18個descriptor與完整siblings，再從已驗證bytes載入原validator。
-- **只審查兩個必要配置差異。** 新normal config只可更改`repository_root`及
-  `runtime.interop_environment_sha256.WSL_INTEROP`。前者必須等於新版adapter位於固定repo-relative
-  package路徑所推導的實際root，並符合原Git/source gate；後者必須來自當前真正WSL context。
-  原candidate、scratch、STATE、evidence、gpu-stop、material、native config／路徑、runtime與版本配置
-  全部逐欄相同。此例外不適用任意檔案搬遷或新的publication namespace。
-- **維持單一實際owner。** 新selector取值、新config保存、獨立配置／20檔source review及後續使用
-  必須在同一仍存活的WSL owner中完成。每次新的context都須依真實環境重綁和審查；不重用任何示範
-  hash，不注入舊`WSL_INTEROP`，不改`WSLENV`、proxy、TLS、HOME或Windows登入。
-- **先做限定no-auth驗證。** 同一owner持有原`publisher.lock`，並在新commit的原材料／review驗證與
-  既有`git_publication_gate`通過後，
-  使用隔離Python載入固定adapter，提供`configuration_descriptor`、原pending claim descriptors與
-  一次新的既有no-auth boot observation，呼叫`validate_context`。不要建構`BridgeClient`，不要呼叫
-  prepare/reconcile或provider。驗證同host/install/boot、protected current sources、原history、seal、
-  全61檔與任何新UNKNOWN／refresh阻擋；前後核對STATE bytes相同。具體owner腳本由本地審查，
-  本節不是生成空白PASS review的依據。
-- **再回原admission。** 當前actual config和20檔source由原review綁新commit；新root不能取代
-  遠端版本／source／status／mounts／retention／single-publisher等原檢查。正常入口仍在新claim及
-  native launch前驗證context；任何新UNKNOWN仍阻擋，既有loop只在實際授權與fresh observation後續接。
-
-歷史config的SHA只作原validator的惰性identity；不送入runtime loader或live observer。
-原f5核心、config parser、native七檔及boot observer維持固定bytes；helper執行另外先比對固定f5 pins。
-已完成disposition可跨原短lease的既有規則保留；此路徑不能跨下一次Windows boot。
+[原 context 說明](https://github.com/Danwuoo/IRIS-X/blob/e491ba4be3562d48d78f4f615a1dd155bcdc0cfc/research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#633-已完成恢復後的同boot-context續接)保存 f5→a724 的歷史邊界。
+舊 checkout 原址、sealed history 與實際 WSL owner 不得以示範值替代；新 source／config 要依目前
+release 的真實 review，不把歷史 runtime 驗證冒充目前 runtime 已驗收，也不重播已消耗 capability。
+歷史恢復只驗證原封存來源、同 host／boot、相同 STATE／scratch 與精確 pending；目前候選／
+來源／設定由當前 release 的原 gates 驗收，不再要求它們等於舊模板或另造 migration review。
 
 ### 6.3.4 Collector-only canonical material續接與完整發布預檢
 
-本節接續6.3.3已完成的同boot disposition。真實canonical candidate必須在本地重新生成及
-獨立驗收；雲端synthetic測試、靜態預檢或來源commit不代表已上傳、RUN或取得A/B/C結果。
-現有collection／research runtime不改演算法；新collector的差異只有兩個必要dependency pins。
+[工具介面](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/README.md#one-release-admission-and-a-stable-collector-bootstrap)
+說明穩定 collector bootstrap 與 publication view；
+[e491 canonical 程序](https://github.com/Danwuoo/IRIS-X/blob/e491ba4be3562d48d78f4f615a1dd155bcdc0cfc/research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#634-collector-only-canonical-material續接與完整發布預檢)
+保留原 assembler 與歷史收據。當前路徑只做一次完整 release admission，`material_lineage.py`
+不再是必要續接 gate，不再為每次交接重做兩份 candidate 或要求 collector-only migration review。
 
-1. **固定所有來源後才組裝。** 先核對交付commit／tree及22個operator來源；保留原f5 checkout、
-   a724 checkout、原candidate、原29 UNKNOWN、sealed61及已核對83檔frontier原bytes。
-   不在舊址checkout新版，也不將新collector hash手改到已批准的舊candidate。
-   既有idle owner不能換candidate／material；以其既有`{"action":"finish"}`控制正常退出，
-   確認原session exit與PID消失後，在獨立新checkout建立一個新owner。不要強殺、刪鎖或改舊STATE。
-2. **重用原canonical assembler與真實輸入。** 使用
-   `tools/arc_qwen_rlvr004_20261013/admission_run008/assemble.py`，來源SHA256必須為
-   `ba1b94cfcf4ff55d52a85e9508490039accb66f67f8d323085fd7df64b9d489e`。
-   使用`--mode proposal`，其他完整原參數為：
-   `--repository-root --source-proposal-root --base-root --observation-root --observation-sha
-   --owner-direction-path --owner-direction-sha --collector-path --collector-sha --output-root`。
-   沿用封存的原source proposal、base、完整historical observation及owner direction；只有collector
-   path／hash指向這次固定來源，output使用不存在的新路徑。舊observation仍標為歷史組裝輸入，
-   不冒充fresh remote observation。新`ADMISSION-PROPOSAL.json`與原件只能有collector SHA不同。
-3. **取得真實獨立review，再final組裝兩次。** 依原19項binding核對namespace、runtime、material。
-   原namespace bytes只有經獨立審查確認所有輸入相同才可沿用；runtime／material須重新綁新proposal
-   及collector，不能複製PASS後補hash。使用`--mode final`並保留上列參數，另提供
-   `--proposal-path --proposal-sha --solver-review-path --solver-review-sha
-   --runtime-review-path --runtime-review-sha --material-review-path --material-review-sha`。
-   以同一組已審查輸入在第二個獨立空output重新組裝，逐檔與inventory完全比對；保留verifier來源
-   descriptor與實際比較結果。若原canonical bytes不一致，停止並保留差分，不放寬determinism。
-4. **審查有界material lineage。** 新owner使用真實WSL selector，normal config只可相對原f5模板
-   更改`repository_root`、`runtime.interop_environment_sha256.WSL_INTEROP`、`candidate_root`及
-   `publication_manifest_sha256`。其他路徑、runtime、native config、版本與STATE全部相同。
-   外部receipt格式`irisx/run008-collector-material-lineage-v1`，完整schema與機械比對實作見
-   [material_lineage.py](../../tools/arc_qwen_rlvr004_20261013/publication_windows_bridge_20261015/material_lineage.py)。
-   它包含原／新config descriptors、原eligibility／seal、兩個candidate的root／inventory／manifest、
-   原83檔`state_frontier`、22個`operator_sources`及`canonical_rebuild` descriptor；不放進candidate
-   造成自我hash循環。comparison格式`irisx/run008-collector-rebuild-comparison-v1`，綁實際assembler、
-   verifier、兩次新inventory相等、原inventory、去除collector欄的原proposal canonical hash與精確14檔
-   差分。`all_files_byte_identical=true`只能來自實際完整比對。當前action review以`candidate_lineage`
-   descriptor綁此receipt，並照原規則綁實際config／material／manifest／來源commit。receipt本身不授權。
-5. **先一次檢查整條靜態閉包。** 在同一owner以新實際config及原CLI必填hash參數執行
-   `launch.py publish validate`，再執行`launch.py publish validate-publication`，後者另外必須提供
-   `--monitor-review --monitor-sha --consumer-root`。monitor review須真實綁新candidate與新collector，
-   不能再使用舊monitor review。此預檢核對upload DTO、inactive／active wire、consumer／reviewed entry
-   四pins與collector callsite結構、原finalizer依賴。epoch1只在記憶體試算四個文件，沒有保存、reservation或
-   dispatch權限；callsite結構檢查不等於實際consumer呼叫驗收。輸出`OFFLINE_PUBLICATION_CLOSURE_PASS`不是實際發布成功。
-6. **同owner no-auth context與成本驗收。** 持原publisher lock，完成原Git／source／actual review gate，
-   透過真正common的configuration、manifest、action-review-derived lineage callbacks驗證
-   `validate_context`，使用一次原no-auth boot observation。原83檔集合／bytes前後不變。
-   新publication-state view只解析manifest／版本綁定的已知publication檔及bounded code readback；
-   原native／refresh／recovery記錄原樣交固定f5 validator，新UNKNOWN與pending refresh仍阻擋。
-   此helper不寫STATE、不改historical predicate。以真實完整candidate測量一次entry的lineage／ZIP
-   重建耗時，連同既有JIT步驟確認原60秒activation window可行；測量應在實際epoch開始前，不能延長
-   window或預留假epoch。native七檔與既有三項本機no-auth來源未改，不因純WSL helper另發明原生門檻。
-7. **再走原動態發布流程。** fresh readiness及無active conflict、retention、exact payload inventory
-   仍為必要條件。`update-code`、`save-inactive`、`prepare-active`、`activate`現在都在Provider開啟前
-   執行同一靜態預檢，因此四個action從一開始就須帶上真實monitor review與consumer root。
-   接著依6.3既有次序核對dataset roundtrip／numeric mounts、inactive source／audit、原JIT四件組、
-   active wire、唯一RUN、terminal監看與實際collector；各動態review仍在其真正evidence取得後產生。
-   初始83只是不變的歷史子集，合法publication檔可追加；不能要求永遠恰好83，也不能隱藏新的native未知。
+本次 collector bytes 有實質 bootstrap 變更，因此仍須以固定新來源，沿用原 assembler 正規生成
+proposal→真實 runtime/material review→final candidate，並通過原 `validate-publication`。
+不得手改已批准 candidate 的 hash。之後只有 transport/common 修復時，collector 不再為嵌入
+兩個 literal pins 而改 bytes；明確傳入的 review hash、來源 descriptors 與全部原契約仍逐一核對。
+accepted RUN 後不得換 review 來重新解釋該次結果。
 
-精確14個允許變動的candidate檔由`material_lineage.CHANGED_FILES`列出：proposal、兩份新review、
-code manifest／ZIP、notebook release與兩個notebooks、consumer material／release、operator pins／entry、
-publication manifest及assembly inventory。其餘259 runtime、source archive、21helpers、namespace及科學
-設定全部逐byte不變。helper亦先重建原candidate自身的canonical identity，再重建新candidate；來源更新
-到collector、再到candidate、外部lineage及action review是單向鏈，不能反向把candidate hash寫回source。
+14:20 的 ddd failed-open 可由 `preworker_disposition.py` 唯讀檢查固定 f5 native/source、
+exact claim/open request、四個原始 events 與完整 diagnostics；只有實際資料全匹配才得到
+SDK worker／JobProcess 未啟動的 disposition。supervisor/proxy 本身曾執行；這不是 Job-zero。
+原 90 檔與 UNKNOWN／closure false 保持原 bytes，只讓歷史 validator 的 view 排除精確該 pair。
+缺少或矛盾的資料、其他 UNKNOWN／pending refresh 仍阻擋，不補造 raw receipt、不自動重啟。
+
+本地最短接續：固定 release 與一次受影響 no-auth 驗收 → 原 assembler 與單次完整材料驗收 →
+既有 owner/lock 下檢查真實 90 檔與當前 context → fresh readiness → 第 6.3 節原發布及監看。
+這些靜態／CPU 檢查不等於本地 disposition 通過、provider 接受或完整 A/B/C。
 
 ### 6.4 本地修復邊界與研究決策
 
-本地端可在當次明確授權內診斷並修復可重現的有限工程問題，例如 packaging／path
-binding／transport readback／已定位的 loader selection；先保留 failed source、錯誤、
-receipts、logs、clock 與成本，測試與獨立 review 之後才準備 distinct successor。
-修復使用獨立工作區／repair branch，記錄明確新 source commit、delta 與 review，交回研究
-開發端審查整合；不覆寫其正在開發的工作區／分支，也不悄悄寫回 frozen run008。
-不盲目重送相同候選、不抹除 claim、不因失敗放寬 exact-byte／數值／isolation／closure。
-原 collector 不會 relaunch；下一次提交必須重新走上列 source／admission／readback gates。
-唯一 publisher 指當次 Kaggle mutation 的單一責任者，不授予任意修改其他工作線的權限；
-未知 provider 寫入先 reconcile，不能把未知當成未發生後重試。敏感材料或下載遭拒仍停止，
-不改用其他下載／存取途徑繞過。
-
-若需要改演算法、sampling／parent、分母、budget、硬體／資源、資料存取、material pins、
-新的權限／認證／法律承諾，或現有介面無法安全完成必要步驟，先回交研究開發端／協調者，
-不以「修復」代替授權或科學設計。不能靜默加入 AF3 runtime、OPSM、entropy、async、TTT，
-不能在 all-zero 後追加抽樣。
-
-首輪固定 A=同 session SFT256 並 save/reload；B=train32、最多4個不重疊64-slot batch、
-最多256 attempts／4次更新；C=同 A＋fresh optimizer 的額外 SFT，匹配 B **整段同步
-model-phase wall**（setup、sample、reward、replay、失敗／rollback、save/reload/verification），
-不用 idle padding。dev16 只選一次，tie A→B→C；凍結後才 selected PUBLIC、held32
-predictions、model closure、隔離 scoring。PUBLIC120始終120 tasks／167 queries，固定
-兩視圖334 planned views；答案不進 solver、training、prompt、selector 或記憶。
-
-結果回交後依[既有方法順序](method-landscape.zh-TW.md#七建議的實驗順序與觸發條件)：
-- 工程／replay incomplete：先補證據或修復，不能判成0分或方法無效。
-- 完整 all-zero／all-one、無相對 reward 訊號：保留 zero-signal，不補抽樣；研究端再決定
-  train-only curriculum／verified trajectories／rejection-SFT 的獨立對照。
-- 有真實更新：先完成 A/B/C；B>A但未勝等成本C，不支持 RL 額外價值。有淨增益才安排
-  新獨立 panel／family 重複，再一次改一項；reused held32 不稱全新確認。
-- 穩定可重載 baseline 及預算足夠後才獨立 TTT；program／repair 要和獨立提案同成本；
-  只有 evaluator 診斷出候選池含正解但 top2 流失，才考慮 selector／多角色，不回灌答案。
+當次明確授權內的有限工程修復，先保存失敗 source／receipts／logs／clock／成本，再測試、獨立審查
+與另立 successor；不覆寫歷史、不盲目重送、不放寬 exact-byte、數值、isolation 或 closure。
+敏感材料或存取遭拒即停止，不換途徑規避。變更研究方法、parent／sampling、分母、budget、資源、
+資料、權限／認證或法律承諾需回交，不以工程修復代替授權。
+科學順序只見[方法決策表](method-landscape.zh-TW.md#七建議的實驗順序與觸發條件)，不在交接另立新計畫。
 
 ### 6.5 終態回交內容與完成標準
 
-回交的是一份去敏結果摘要加有限的來源／artifact hash 清單，供研究開發端選下一步；
-不另建第二份 mutable 進度表或 handoff。協調者把結論與證據索引寫回唯一進度文件。
-摘要最少包含：
+回交一份去敏摘要與實際 artifact hashes，更新唯一進度頁：
 
-1. 實際 source commit/tree、runtime／archive／manifest／code-byte hashes、精確 numeric
-   Dataset/notebook/run 版本、UTC觀察時間、原 epoch/deadline、來源變更與測試／review 範圍。
-2. 各欄分開：provider terminal、safe model/runtime closure、comparison complete、B/C
-   compute matched、完整 scorer、method efficacy。每欄明列 passed／failed／unknown／not-run，
-   缺 scoring 保留 null，沒有可用數據不能填0。CPU、GPU、4×L4 與 CI 狀態分列。
-3. planned256／dispatched／eligible／infrastructure excluded／context excluded／not reached；
-   完整 all-zero／all-one／mixed groups、pass@8 coverage；非法模型答案0與基礎設施null分開。
-   replay p95/max／nonforced coverage、committed updates、rollback、save/reload 與 lineage 證據。
-4. A/B/C wall、全B model-phase wall與C、tokens／forward work／memory、失敗及shadow成本；
-   unknown physical cost／billing 不猜值。固定dev選擇 provenance、相同case gain/loss、
-   PUBLIC120/167有效分數與held32重用限制；原始case IDs／grids不放公開摘要。
-5. 真正阻塞點、已做的有限修復／仍缺前提，以及對第7節哪個條件有證據；不要自行 promotion、
-   successful-baseline tag 或在回交前偷偷換下一個研究方法。
+- source commit／tree、runtime／archive／manifest／code hashes、exact Dataset／notebook／run versions、
+  UTC 時間、原 epoch／deadline、當次測試與獨立 review 範圍。
+- provider terminal、safe runtime closure、comparison complete、B/C cost match、完整 scorer、method efficacy
+  各欄的 passed／failed／unknown／not-run。CPU、native、GPU、4×L4、Git 與 CI 分開；缺 scoring 保留 null。
+- planned256、dispatched、eligible、infrastructure／context excluded、not reached；完整 all-zero／all-one／mixed、
+  pass@8、nonforced replay p95／max／coverage、committed updates、rollback／save-reload 與 lineage。
+- A/B/C 全 wall、B/C 完整 model-phase wall、tokens／forward work／memory、失敗及 shadow 成本；
+  dev selection provenance、相同案例 gain/loss、PUBLIC120／167 與 held32 重用限制。未知成本不猜值。
+- 真正 blocker、已做的有限修復與仍缺前提，以及支持哪個研究判斷；不自行 promotion 或成功標籤。
 
-原 collector 的有限 evidence 檔名為 `TERMINAL-VALIDATION.json`、
-`TERMINAL-CHECKPOINT.json`、`RETRIEVAL-RECEIPT.json`；失敗分支可能只有
-`TERMINAL-DIAGNOSTIC.json`、`TERMINAL-BLOCKER.json` 或 `WATCH-BLOCKER.json`。
-只記錄實際存在的檔案及獨立保存的 hash，不能補造成功三件組。原始 logs、完整 receipts、
-training audits／context、checkpoint、模型、evaluator data 與 archives 留在其原有私有邊界；
-不直接貼進 Git／handoff 或交給研究端的公共封包。去敏衍生摘要須標為摘要，不能冒充原收據。
+原有限收據為 `TERMINAL-VALIDATION.json`、`TERMINAL-CHECKPOINT.json`、`RETRIEVAL-RECEIPT.json`；
+失敗可能只有 `TERMINAL-DIAGNOSTIC.json`、`TERMINAL-BLOCKER.json` 或 `WATCH-BLOCKER.json`。
+只列實際存在者，不補造成功三件組。原 logs、training audits／context、模型、完整 receipts、
+evaluator 與 archives 留原私有邊界；去敏摘要不能冒充原收據，不公開 case IDs／grids 或 credentials。
 
-當次程序到「terminal＋可取得 outputs 的驗證＋分類後回交」才完成；若權限、安全 gate、
-材料或 provider 狀態真正阻塞，回交 exact action／target／blocker，保留待決狀態。
-QUEUED、accepted RUN、CPU pass、source 發布或 collector exit0 都不能替代這個完成條件。
+單輪完成條件是 terminal＋可取得 outputs 驗證＋分類回交；接著依既有 ARC-AGI-2 決策條件，
+在已授權範圍內開發並驗收下一輪，不以 ERROR 當方法成功，也不為了換輪次任意換方法。
+若有真正權限／安全／材料／provider blocker，回交 exact action／target／blocker 並保留待決。
+accepted RUN、來源發布或 CPU PASS 都不是完成。

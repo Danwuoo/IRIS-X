@@ -3,29 +3,161 @@
 Decision0075 permits independently reviewed terminal monitoring and selected
 numeric output collection. This collector cannot send or repeat a RUN.
 """
-import argparse, hashlib, importlib.util, json, math, stat, sys, time, types
+import argparse, ast, contextlib, hashlib, importlib.util, json, math, os, stat, sys, time, types
 from pathlib import Path
 
-# Upstream-only pins keep collector -> transport -> common acyclic and source-only.
-COMMON_SOURCE_SHA256 = 'ba3807d44a52eb19dbbfdf20abfbfb96792227abc3b25412df4c8f37edfbd018'
-TRANSPORT_SOURCE_SHA256 = 'bcb166527b79e28ce0847c10e5660f6975f1e69a049ad9658720e8f725920f24'
-_local_sources={}
-for _name,_digest in [('operator_common.py',COMMON_SOURCE_SHA256),('rl_transport.py',TRANSPORT_SOURCE_SHA256)]:
-    _path=Path(__file__).absolute().with_name(_name)
-    if any(p.is_symlink() for p in (_path,*_path.parents)) or not stat.S_ISREG(_path.stat().st_mode):
-        raise ValueError('unsafe_local_operator_source')
-    with _path.open('rb') as _f:_raw=_f.read(1024**2+1)
-    if len(_raw)>1024**2 or hashlib.sha256(_raw).hexdigest()!=_digest:
-        raise ValueError('local_operator_source_pin')
-    _local_sources[_name]=(_path,_raw)
-_path,_raw=_local_sources['rl_transport.py']
-transport=types.ModuleType('reviewed_rl_transport');transport.__file__=str(_path);transport.__package__=''
-exec(compile(_raw,str(_path),'exec',dont_inherit=True,optimize=sys.flags.optimize),transport.__dict__)
-_common=transport._common
-globals().update({k:v for k,v in _common.__dict__.items() if not k.startswith('_')})
-OUT=None
-DOWNLOADS=None
-class IndexingPending(GuardError):pass
+# The caller's explicitly supplied action-review digest is the bootstrap trust
+# root. Computing a digest or writing PASS does not grant execution authority.
+# Import/help stay inert; transport's existing contract/action/monitor gates and
+# the original launch-review binding still apply after this source-only step.
+transport = _common = None
+OUT = DOWNLOADS = None
+_BOOTSTRAP_REQUIRED = ('manifest', 'manifest-sha', 'material', 'material-sha',
+                       'review', 'review-sha', 'local-config', 'local-config-sha')
+_BOOTSTRAP_OPTIONAL = ('monitor-review', 'monitor-sha', 'mount', 'mount-sha',
+                       'audit', 'audit-sha', 'consumer-root', 'active-review',
+                       'active-review-sha')
+
+
+class _BootstrapOnce(argparse.Action):
+    def __call__(self, parser, namespace, value, option_string=None):
+        if getattr(namespace, self.dest, None) is not None:
+            parser.error('duplicate collector option: ' + option_string)
+        setattr(namespace, self.dest, value)
+
+
+def bootstrap_arguments(argv):
+    """Parse the full, exact CLI before reading or executing a dependency."""
+    if (len(argv) > 128 or any(type(arg) is not str or len(arg) > 8192 or
+                             '\x00' in arg for arg in argv) or '--' in argv):
+        raise ValueError('bounded_unambiguous_collector_arguments_required')
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
+    parser.add_argument('action', choices=('poll', 'collect', 'watch'))
+    for name in _BOOTSTRAP_REQUIRED:
+        parser.add_argument('--' + name, required=True, action=_BootstrapOnce)
+    for name in _BOOTSTRAP_OPTIONAL:
+        parser.add_argument('--' + name, action=_BootstrapOnce)
+    return parser.parse_args(argv)
+
+
+def _bootstrap_need(condition, code):
+    if not condition:
+        raise ValueError(code)
+
+
+def _bootstrap_digest(value):
+    return (type(value) is str and len(value) == 64 and
+            all(char in '0123456789abcdef' for char in value))
+
+
+def _bootstrap_read(path, digest, cap):
+    """Retain bounded verified bytes from one unchanged ordinary no-link file."""
+    _bootstrap_need(_bootstrap_digest(digest), 'bootstrap_digest_required')
+    _bootstrap_need(isinstance(path, (str, Path)) and bool(str(path)) and
+                    '\x00' not in str(path), 'bootstrap_path_required')
+    path = Path(path).absolute()
+    _bootstrap_need('..' not in path.parts, 'bootstrap_parent_path_segment')
+    def identity(info):
+        return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns,
+                info.st_ctime_ns, info.st_nlink)
+    def parents():
+        for parent in path.parents:
+            _bootstrap_need(stat.S_ISDIR(parent.lstat().st_mode),
+                            'bootstrap_linked_or_special_parent')
+    parents()
+    before = path.lstat()
+    _bootstrap_need(stat.S_ISREG(before.st_mode) and before.st_nlink == 1 and
+                    0 <= before.st_size <= cap, 'bootstrap_bounded_ordinary_file')
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)
+    with os.fdopen(fd, 'rb') as stream:
+        opened = os.fstat(stream.fileno())
+        _bootstrap_need(stat.S_ISREG(opened.st_mode) and identity(opened) == identity(before),
+                        'bootstrap_file_identity_changed')
+        raw = stream.read(cap + 1)
+        after, current = os.fstat(stream.fileno()), path.lstat()
+        _bootstrap_need(stat.S_ISREG(current.st_mode) and identity(after) == identity(before)
+                        and identity(current) == identity(before), 'bootstrap_file_identity_changed')
+    parents()
+    _bootstrap_need(len(raw) == before.st_size and len(raw) <= cap and
+                    hashlib.sha256(raw).hexdigest() == digest, 'bootstrap_file_hash')
+    return raw
+
+
+def _bootstrap_object(raw):
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            _bootstrap_need(key not in result, 'bootstrap_duplicate_json_key')
+            result[key] = value
+        return result
+    def finite(token):
+        value = float(token)
+        _bootstrap_need(math.isfinite(value), 'bootstrap_nonfinite_json')
+        return value
+    document = json.loads(raw.decode('utf-8'), object_pairs_hook=pairs,
+        parse_float=finite, parse_constant=lambda _: _bootstrap_need(False, 'bootstrap_nonfinite_json'))
+    _bootstrap_need(type(document) is dict, 'bootstrap_json_object_required')
+    pending, count = [(document, 0)], 0
+    while pending:
+        value, depth = pending.pop()
+        count += 1
+        _bootstrap_need(depth <= 64 and count <= 100000, 'bootstrap_json_structure_bound')
+        children = value.values() if type(value) is dict else value if type(value) is list else ()
+        pending.extend((child, depth + 1) for child in children)
+    return document
+
+
+def bootstrap(args):
+    """Authenticate the closed source bootstrap; never admit a provider action."""
+    global transport, _common
+    _bootstrap_need(transport is None and _common is None, 'collector_already_bootstrapped')
+    for name in _BOOTSTRAP_REQUIRED:
+        value = getattr(args, name.replace('-', '_'), None)
+        _bootstrap_need(type(value) is str and bool(value), 'bootstrap_explicit_binding_required')
+    documents = {}
+    for name, cap in (('review', 4 * 1024**2), ('local_config', 1024**2),
+                      ('manifest', 4 * 1024**2), ('material', 4 * 1024**2)):
+        documents[name] = _bootstrap_object(_bootstrap_read(
+            getattr(args, name), getattr(args, name + '_sha'), cap))
+    review, config, manifest, material = (documents[name] for name in
+                                         ('review', 'local_config', 'manifest', 'material'))
+    _bootstrap_need(review.get('status') == 'PASS' and
+        review.get('local_config_sha256') == args.local_config_sha and
+        review.get('publication_manifest_sha256') == args.manifest_sha and
+        review.get('material_approval_sha256') == args.material_sha, 'bootstrap_review_binding')
+    _bootstrap_need(config.get('publication_manifest_sha256') == args.manifest_sha,
+                    'bootstrap_config_manifest_binding')
+    scope = material.get('scope')
+    _bootstrap_need(type(scope) is dict and type(scope.get('publication_manifest')) is dict and
+        material.get('status') == 'APPROVED' and
+        scope['publication_manifest'].get('sha256') == args.manifest_sha,
+        'bootstrap_material_manifest_binding')
+    files = review.get('operator_files')
+    names = ('rl_collect.py', 'operator_common.py', 'rl_transport.py')
+    _bootstrap_need(type(files) is dict and all(_bootstrap_digest(files.get(name)) for name in names),
+                    'bootstrap_reviewed_sources_required')
+    root = Path(__file__).absolute().parent
+    sources = {name: _bootstrap_read(root / name, files[name], 1024**2) for name in names}
+    tree = ast.parse(sources['rl_transport.py'], filename=str(root / 'rl_transport.py'))
+    pins = [node for node in tree.body if isinstance(node, ast.Assign) and
+            len(node.targets) == 1 and isinstance(node.targets[0], ast.Name) and
+            node.targets[0].id == 'COMMON_SOURCE_SHA256']
+    stores = [node for node in ast.walk(tree) if isinstance(node, ast.Name) and
+              isinstance(node.ctx, ast.Store) and node.id == 'COMMON_SOURCE_SHA256']
+    _bootstrap_need(len(pins) == len(stores) == 1 and
+        isinstance(pins[0].value, ast.Constant) and
+        pins[0].value.value == files['operator_common.py'], 'bootstrap_transport_common_pin')
+    path = root / 'rl_transport.py'
+    candidate = types.ModuleType('reviewed_rl_transport')
+    candidate.__file__, candidate.__package__ = str(path), ''
+    exec(compile(sources['rl_transport.py'], str(path), 'exec', dont_inherit=True,
+                 optimize=sys.flags.optimize), candidate.__dict__)
+    transport, _common = candidate, candidate._common
+    globals().update({key: value for key, value in _common.__dict__.items() if not key.startswith('_')})
+    return transport
+
+
+class IndexingPending(ValueError):pass
 
 def bindings(args):
     global OUT,DOWNLOADS
@@ -525,6 +657,14 @@ def watch(provider,m,l,j,f,args):
             failures['collect']+=1;print(json.dumps(r),flush=True);time.sleep(retry_delay(r,failures['collect']))
 
 def main():
+    # Parse every option before the trusted dependency can execute any code.
+    initial = bootstrap_arguments(sys.argv[1:])
+    try:
+        bootstrap(initial)
+    except Exception as error:
+        print(json.dumps({'status':'COLLECTOR_BOOTSTRAP_BLOCKED','provider_calls':0,
+                          'error_type':type(error).__name__}))
+        return 2
     p=transport.parser();p._actions[1].choices=['poll','collect','watch']
     args=p.parse_args();provider=None
     try:

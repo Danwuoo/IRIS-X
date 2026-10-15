@@ -39,7 +39,7 @@ OPERATOR_SOURCES = frozenset(('config.py', 'operator_common.py', 'bridge_client.
     'protocol.py', 'win_runtime.py', 'win_supervisor.py', 'native_probe.py',
     'recovery_epoch.py', 'recovery_boot_probe.py', 'recovery_entry.py',
     'context_continuation.py', 'context-source-pins.json',
-    'material_lineage.py', 'publication_state.py'))
+    'preworker_disposition.py', 'publication_state.py'))
 
 
 def sha(raw):
@@ -61,6 +61,8 @@ def load_source(name, path):
 
 
 worker = load_source('owner_integration_worker', ROOT / 'sdk_worker.py')
+bootstrap_fixture = load_source('owner_integration_bootstrap_fixture',
+                                ROOT / 'tests/test_collector_bootstrap.py')
 
 
 def synthetic_binding():
@@ -334,6 +336,7 @@ class Harness:
         scratch.mkdir(exist_ok=True)
         self.root = Path(self.stack.enter_context(tempfile.TemporaryDirectory(prefix='owner-integration-', dir=scratch)))
         self.collector = load_source('owner_integration_collect_' + self.root.name, ROOT / 'rl_collect.py')
+        self.collector.bootstrap(bootstrap_fixture.synthetic_bootstrap_arguments(self.root / 'bootstrap'))
         self.transport, self.common = self.collector.transport, self.collector._common
         self.binding = synthetic_binding()
         self.version, self.offset = VERSIONS['code_predecessor'], 0
@@ -859,6 +862,31 @@ class SourceSeparationTests(unittest.TestCase):
                     ['poll', 'collect', 'watch', 'readiness', 'update-code', 'verify-code', 'verify-code-files',
                      'save-inactive', 'verify-inactive', 'prepare-active', 'activate', 'verify-run', 'reconcile-read-only'])
                 parents[0].elts.remove(additions[0])
+            if path == ROOT / 'rl_collect.py':
+                # Only the source bootstrap changed. Validate its exact main
+                # prefix/base-class delta, then retain the complete original
+                # collection, scientific, retry and launch-binding comparison.
+                helpers = {'_BootstrapOnce', 'bootstrap_arguments', '_bootstrap_need',
+                           '_bootstrap_digest', '_bootstrap_read', '_bootstrap_object', 'bootstrap'}
+                self.assertEqual({node.name for node in nodes} & helpers, helpers)
+                nodes = [node for node in nodes if node.name not in helpers]
+                main = next(node for node in nodes if node.name == 'main')
+                prefix = ast.parse("""
+initial = bootstrap_arguments(sys.argv[1:])
+try:
+    bootstrap(initial)
+except Exception as error:
+    print(json.dumps({'status':'COLLECTOR_BOOTSTRAP_BLOCKED','provider_calls':0,
+                      'error_type':type(error).__name__}))
+    return 2
+""").body
+                self.assertEqual([ast.dump(node, include_attributes=False) for node in main.body[:2]],
+                                 [ast.dump(node, include_attributes=False) for node in prefix])
+                del main.body[:2]
+                pending = next(node for node in nodes if node.name == 'IndexingPending')
+                self.assertEqual([ast.dump(base) for base in pending.bases],
+                                 [ast.dump(ast.Name(id='ValueError', ctx=ast.Load()))])
+                pending.bases = [ast.Name(id='GuardError', ctx=ast.Load())]
             return {node.name: ast.dump(node, include_attributes=False) for node in nodes}
         old, new = definitions(PORTABLE / 'rl_transport.py'), definitions(ROOT / 'rl_transport.py')
         self.assertEqual(set(old), set(new))

@@ -244,6 +244,8 @@ def exercise_preflight(test, root):
 
 def exercise_collector(test, root):
     collector = load_source('real_interface_current_collector', ROOT / 'rl_collect.py')
+    fixture = load_source('real_interface_bootstrap_fixture', ROOT / 'tests/test_collector_bootstrap.py')
+    collector.bootstrap(fixture.synthetic_bootstrap_arguments(root / 'bootstrap'))
     consumer = root / 'synthetic-consumer'
     pins = synthetic_consumer(consumer)
     manifest = {'synthetic_test_only': True,

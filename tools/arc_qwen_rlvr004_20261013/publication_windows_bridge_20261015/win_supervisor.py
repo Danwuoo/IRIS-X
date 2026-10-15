@@ -129,8 +129,10 @@ class CommandWatch:
                     need(payload['deadline_epoch'] <= self.lease_epoch
                          and 0 < payload['max_seconds'] <= self.protocol.OPERATION_TIMEOUTS[operation],
                          'windows_operation_bound')
-                    seconds = min(payload['max_seconds'], payload['deadline_epoch'] - self.wall())
-                    need(seconds > 0, 'windows_operation_expired')
+                    # Request epochs belong to WSL, whose original monotonic
+                    # timer and EOF cancellation remain authoritative there.
+                    # Never compare that clock with the Windows wall clock.
+                    seconds = payload['max_seconds']
                     self.command_deadline = min(self.lease_deadline, self.monotonic() + seconds)
                     self.operation = operation
                     continue
@@ -138,6 +140,9 @@ class CommandWatch:
                 if kind == 'phase_start':
                     need(self.phase_id is None and payload['phase_id'] > self.last_phase,
                          'windows_rpc_phase_replay')
+                    # Both endpoints of this phase are native Windows. Convert
+                    # its local wall deadline once; clock steps cannot extend
+                    # the duration, operation or immutable monotonic lease.
                     seconds = min(payload['max_seconds'], payload['deadline_epoch'] - self.wall())
                     need(seconds > 0 and self.command_deadline is not None, 'windows_rpc_phase_expired')
                     self.phase_deadline = min(self.command_deadline, self.monotonic() + seconds)
@@ -162,15 +167,24 @@ class CommandWatch:
 
 def supervise(argv, *, timeout_seconds, deadline_unix, parent_pid=None,
               scope='publication-worker-v1', input_fd=0, output_fd=1, env=None,
-              protocol=None, nonce=None):
+              protocol=None, nonce=None, lease_monotonic=None):
     """Return only after job-empty proof; stdin must stay open for worker lifetime.
 
-    Deadline-unix is the original worker lease deadline, distinct from immutable
-    experiment clocks. The production CLI binds worker source/arguments/config.
-    Generic argv is an internal primitive used only by the offline native probe.
+    Production passes its original native monotonic lease, already running
+    during bootstrap. Deadline-unix remains the WSL-domain identity binding;
+    immutable experiment clocks are separate. The legacy native-only probe
+    may omit lease_monotonic and use its same-host wall deadline.
     """
-    duration = remaining_timeout(timeout_seconds, deadline_unix)
-    deadline = time.monotonic() + duration
+    if lease_monotonic is None:
+        duration = remaining_timeout(timeout_seconds, deadline_unix)
+        deadline = time.monotonic() + duration
+    else:
+        duration = bounded_seconds(timeout_seconds)
+        need(type(lease_monotonic) in (int, float) and math.isfinite(lease_monotonic),
+             'windows_invalid_monotonic_lease')
+        now = time.monotonic()
+        deadline = min(lease_monotonic, now + duration)
+        need(deadline > now, 'windows_bootstrap_deadline')
     stop = threading.Event(); output_done = threading.Event(); stderr_done = threading.Event()
     watch = None if protocol is None else CommandWatch(protocol, nonce, lease_epoch=deadline_unix, lease_monotonic=deadline)
     cause = []; cause_lock = threading.Lock()
@@ -317,7 +331,10 @@ def main(argv=None):
         _install_runtime(win)
         # Capture the absolute monotonic lease before any expensive verification.
         receipt['reason'] = 'supervisor_lease_failed'
-        budget = remaining_timeout(args.max_seconds, args.deadline_epoch)
+        # The caller supplies a duration, not a shared wall-clock reading.
+        # WSL keeps its own earlier monotonic bound and EOF cancellation.
+        budget = bounded_seconds(args.max_seconds)
+        need(math.isfinite(args.deadline_epoch), 'windows_invalid_deadline')
         lease_deadline = started + budget
         receipt['reason'] = 'supervisor_config_bootstrap_failed'
         config = _pinned_module('native_config', directory / 'native_config.py', NATIVE_CONFIG_SHA256)
@@ -330,13 +347,14 @@ def main(argv=None):
         protocol = _pinned_module('protocol', directory / 'protocol.py', descriptor['sha256'])
         command = [runtime.executable, '-I', '-B', str(runtime.worker_path),
                    '--config', args.config, '--config-sha', args.config_sha, '--nonce', args.nonce,
-                   '--deadline-epoch', str(args.deadline_epoch), '--max-seconds', str(args.max_seconds)]
+                   '--deadline-epoch', str(args.deadline_epoch), '--max-seconds', str(args.max_seconds),
+                   '--lease-monotonic', repr(lease_deadline)]
         receipt['reason'] = 'supervisor_worker_lease_failed'
         remaining = lease_deadline - time.monotonic()
         need(remaining > 0, 'windows_bootstrap_deadline')
         receipt['reason'] = 'supervisor_supervision_failed'
         result = supervise(command, timeout_seconds=remaining, deadline_unix=args.deadline_epoch,
-                           protocol=protocol, nonce=args.nonce)
+                           protocol=protocol, nonce=args.nonce, lease_monotonic=lease_deadline)
         receipt.update(reason=result.reason, closure=result.closure, ok=result.code == 0)
         code = result.code
     except BaseException:

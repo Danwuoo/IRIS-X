@@ -2,6 +2,7 @@
 import contextlib
 import copy
 import importlib.util
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -24,6 +25,7 @@ def load(name, path):
 
 a = load('test_context_adapter_module', ROOT / 'context_continuation.py')
 f = load('test_context_historical_fixture', ROOT / 'tests/test_recovery_epoch.py')
+p = load('test_context_publication_fixture', ROOT / 'tests/test_publication_state.py')
 
 
 class ContextTests(unittest.TestCase):
@@ -79,7 +81,7 @@ class ContextTests(unittest.TestCase):
         self.current['repository_root'] = str(self.current_repository)
         self.current_path = Path(self.temp.name) / 'actual-current.json'
         self.config = types.SimpleNamespace(state_root=self.state, document_sha256=None,
-                                            repository_root=self.current_repository)
+            repository_root=self.current_repository, scratch_root=Path(self.current['scratch_root']))
         self.current['runtime']['interop_environment_sha256']['WSL_INTEROP'] = '7' * 64
         self.bind_current()
         def forbidden(*args, **kwargs):
@@ -98,6 +100,17 @@ class ContextTests(unittest.TestCase):
         options = {'now_epoch': self.now}
         options.update(kwargs)
         return a.validate_context(self.callbacks, self.config, self.pending, **options)
+
+    def bind_publication(self):
+        """A current-manifest view only; this fixture is not release admission."""
+        (self.deployment / 'publication_state.py').write_bytes((ROOT / 'publication_state.py').read_bytes())
+        self.current['candidate_root'] = str(Path(self.temp.name) / 'current-candidate')
+        self.current['versions'] = p.versions()
+        self.manifest_descriptor = f.write(Path(self.current['candidate_root']) / 'publication-manifest.json',
+            p.manifest(configured_versions=self.current['versions']))
+        self.current['publication_manifest_sha256'] = self.manifest_descriptor['sha256']
+        self.bind_current()
+        self.callbacks['publication_manifest_descriptor'] = lambda: self.manifest_descriptor
 
     def test_changed_selector_covers_only_original_unknown_without_writes_or_callbacks(self):
         before = self.r._scan(self.state)
@@ -220,16 +233,17 @@ class ContextTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'actual_configuration_binding'):
             self.validate()
 
-    def test_every_other_configuration_field_is_immutable(self):
+    def test_current_release_fields_do_not_have_to_equal_historical_configuration(self):
+        # These fields are admitted by the unchanged current config/contract
+        # gates. The recovery adapter only interprets the historical disposition.
         cases = [
-            ('username', 'somebody-else'), ('candidate_root', '/changed'),
-            ('scratch_root', '/changed'), ('evidence_root', '/changed'), ('gpu_stop_path', '/changed'),
-            ('publication_manifest_sha256', '0' * 64), ('extra_key', None),
-            ('runtime.home', '/changed'), ('runtime.venv_prefix', '/changed'),
+            ('candidate_root', '/changed'), ('evidence_root', '/changed'), ('gpu_stop_path', '/changed'),
+            ('publication_manifest_sha256', '0' * 64),
+            ('runtime.venv_prefix', '/changed'),
             ('runtime.sdk_root', '/changed'), ('runtime.requests_ca_bundle', {'path': '/changed', 'sha256': '0' * 64}),
             ('runtime.python_version', [3, 12, 2]), ('runtime.executable.sha256', '0' * 64),
-            ('runtime.extra_key', False), ('versions.active', 42),
-            ('versions.code', True), ('versions.code_predecessor', 20.0),
+            ('versions', {'code_predecessor': 21, 'code': 22, 'inactive_predecessor': 41,
+                          'inactive': 42, 'active': 43}),
             ('remote_predecessor.provider_status', 'COMPLETE'),
             ('windows_bridge.configuration.sha256', '0' * 64),
             ('windows_bridge.configuration.wsl_path', '/changed'),
@@ -245,10 +259,80 @@ class ContextTests(unittest.TestCase):
                     node = node[key]
                 node[parts[-1]] = value
                 self.bind_current()
-                diagnostic = ('reviewed_material_lineage_required' if field in
-                    ('candidate_root', 'publication_manifest_sha256') else 'changed_beyond_interop')
-                with self.assertRaisesRegex(ValueError, diagnostic):
+                self.validate()
+
+    def test_scratch_root_is_shared_with_history_and_actual_loaded_configuration(self):
+        for document, loaded in (('/changed', '/changed'), ('/changed', '/synthetic/scratch'),
+                                 ('/synthetic/scratch', '/changed')):
+            with self.subTest(document=document, loaded=loaded):
+                self.current['scratch_root'] = document
+                self.config.scratch_root = Path(loaded)
+                self.bind_current()
+                observer = mock.Mock(side_effect=AssertionError('not yet'))
+                self.callbacks['recovery_boot_observation'] = observer
+                with self.assertRaisesRegex(ValueError, 'shared_scratch_root'):
                     self.validate()
+                observer.assert_not_called()
+
+    def test_state_root_is_bound_to_actual_configuration_and_history(self):
+        self.current['state_root'] = '/changed'
+        self.bind_current()
+        with self.assertRaisesRegex(ValueError, 'actual_state_root'):
+            self.validate()
+        self.current['state_root'] = str(self.state)
+        self.bind_current()
+        self.config.state_root = Path('/changed')
+        with self.assertRaisesRegex(ValueError, 'actual_configuration_binding'):
+            self.validate()
+        original = copy.deepcopy(self.fixture.local)
+        original['state_root'] = '/changed'
+        self.config.state_root = self.state
+        with self.assertRaisesRegex(ValueError, 'shared_state_root'):
+            a._shared_context(self.current, original, self.config)
+
+    def test_candidate_successor_needs_no_material_lineage_callback_or_module(self):
+        self.bind_publication()
+        self.callbacks['material_lineage_descriptor'] = mock.Mock(side_effect=AssertionError('no lineage receipt'))
+        self.assertFalse((self.deployment / 'material_lineage.py').exists())
+        before = self.r._scan(self.state)
+        result = self.validate()
+        self.assertEqual(result, {self.fixture.review_value['unknown_session']:
+            self.pending[0]['claim']['sha256']})
+        self.callbacks['material_lineage_descriptor'].assert_not_called()
+        self.assertEqual(self.r._scan(self.state), before)
+
+    def test_current_publication_manifest_must_match_actual_configuration(self):
+        self.bind_publication()
+        self.current['publication_manifest_sha256'] = '0' * 64
+        self.bind_current()
+        with self.assertRaisesRegex(ValueError, 'actual_publication_manifest'):
+            self.validate()
+
+    def test_current_publication_view_keeps_every_new_unknown_blocking(self):
+        self.bind_publication()
+        self.fixture._session('4' * 64, ['open'], self.current_descriptor,
+            self.fixture.review_value['original_native_configuration'], unknown=True)
+        with self.assertRaisesRegex(ValueError, 'later_session_unknown'):
+            self.validate()
+
+    def test_current_publication_view_keeps_new_refresh_unknown_blocking(self):
+        self.bind_publication()
+        name = 'native-auth-refresh-' + '4' * 24
+        row = f.write(self.state / (name + '.claim.json'), {'stage': 'intent'})
+        f.write(self.state / (name + '-journal.json'), {'stage': 'refresh_unknown', 'claim_sha256': row['sha256']})
+        with self.assertRaisesRegex(ValueError, 'later_refresh_unknown'):
+            self.validate()
+
+    def test_current_publication_view_keeps_pending_claims_exact(self):
+        self.bind_publication()
+        with self.assertRaisesRegex(ValueError, 'pending_claims_not_exactly_covered'):
+            a.validate_context(self.callbacks, self.config, self.pending * 2, now_epoch=self.now)
+
+    def test_current_publication_view_rejects_unrecognized_root_names(self):
+        self.bind_publication()
+        f.write(self.state / 'unreviewed-extra.json', {'inert': True})
+        with self.assertRaisesRegex(ValueError, 'unexpected_root'):
+            self.validate()
 
     def test_selector_schema_is_exact(self):
         for value in ({}, {'WSL_INTEROP': None}, {'WSL_INTEROP': 'bad'},
@@ -335,18 +419,11 @@ class ContextTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'source_manifest_changed'):
                 self.validate()
 
-    def test_current_protected_source_changes_fail_before_observation(self):
-        original_read = a._read
-        self.callbacks['recovery_boot_observation'] = mock.Mock(side_effect=AssertionError('not yet'))
-        for name in a.PROTECTED_CURRENT:
-            with self.subTest(name=name):
-                def read(path):
-                    raw = original_read(path)
-                    return raw + b'\n' if Path(path) == self.deployment / name else raw
-                with mock.patch.object(a, '_read', side_effect=read):
-                    with self.assertRaisesRegex(ValueError, 'source_not_pinned_f5'):
-                        self.validate()
-        self.callbacks['recovery_boot_observation'].assert_not_called()
+    def test_current_source_successor_is_not_loaded_as_historical_validator(self):
+        for name in a.SOURCE_NAMES:
+            (self.deployment / name).write_bytes(b'raise AssertionError("current release is separately admitted")\n')
+        self.validate()
+        self.assertEqual({name: (self.history / name).read_bytes() for name in a.SOURCE_NAMES}, self.sources)
 
     def test_uncovered_new_unknown_session_blocks(self):
         self.fixture._session('4' * 64, ['open'], self.current_descriptor,
@@ -412,6 +489,14 @@ class ContextTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'descriptor_changed'):
             self.validate()
 
+    def test_observer_cannot_change_loaded_scratch_namespace(self):
+        def observer(review, challenge):
+            self.config.scratch_root = Path('/changed')
+            return self.boot
+        self.callbacks['recovery_boot_observation'] = observer
+        with self.assertRaisesRegex(ValueError, 'shared_scratch_root'):
+            self.validate()
+
     def test_no_fresh_observer_and_no_explicit_descriptor_blocks(self):
         del self.callbacks['recovery_boot_observation']
         with self.assertRaisesRegex(ValueError, 'fresh_boot_observer_required'):
@@ -441,6 +526,121 @@ class ContextTests(unittest.TestCase):
             with self.subTest(raw=raw):
                 with self.assertRaises(ValueError):
                     a._json(raw)
+
+
+class PreworkerContextTests(unittest.TestCase):
+    """Actual adapter + frozen f5 validator, with isolated synthetic bytes only."""
+    setUpClass = classmethod(ContextTests.setUpClass.__func__)
+    bind_current = ContextTests.bind_current
+    validate = ContextTests.validate
+
+    def setUp(self):
+        self.pre = load('context_preworker_fixture', ROOT / 'tests/test_preworker_disposition.py')
+        pins = json.loads((ROOT / 'context-source-pins.json').read_bytes())['sources']
+        original_after = f.EpochTests.after
+        def full_normal_template(fixture, preparation):
+            after, restart, binding_row = original_after(fixture, preparation)
+            # A real f5 reconciliation had a fully shaped normal f5 native
+            # template, distinct from the original failed 01ca configuration.
+            # Build that template before reservation/sealing, never rewrite it.
+            fixture.native = self.pre.synthetic_native_configuration(pins, fixture.versions)
+            native = f.write(fixture.root / 'normal-f5.json', fixture.native)
+            fixture.local = copy.deepcopy(fixture.local)
+            fixture.local['windows_bridge']['configuration'] = {
+                'wsl_path': native['path'], 'native_path': r'C:\Synthetic\normal-f5.json',
+                'sha256': native['sha256']}
+            normal = f.write(fixture.root / 'normal-local-f5.json', fixture.local)
+            binding = json.loads(Path(binding_row['path']).read_bytes())
+            binding.update(native_configuration_template=native,
+                           local_configuration_template=normal)
+            self.native_template = native
+            return after, restart, f.write(Path(binding_row['path']), binding)
+        with mock.patch.object(f.EpochTests, 'after', full_normal_template):
+            ContextTests.setUp(self)
+        (self.deployment / 'preworker_disposition.py').write_bytes((ROOT / 'preworker_disposition.py').read_bytes())
+        self.history_before = self.r._scan(self.state)
+        self.lease_files = self.pre.synthetic_lease_files(self.native_template['sha256'],
+            self.fixture.versions, configuration_sha256=self.current_descriptor['sha256'],
+            publication_manifest_sha256=self.current['publication_manifest_sha256'],
+            epoch=self.fixture.now + 111)
+        for name, raw in self.lease_files.items():
+            (self.state / name).write_bytes(raw)
+        claim_name = next(name for name in self.lease_files if name.endswith('.claim.json'))
+        journal_name = next(name for name in self.lease_files if name.endswith('-journal.json'))
+        def descriptor(name):
+            raw = self.lease_files[name]
+            return {'path': str(self.state / name), 'bytes': len(raw), 'sha256': self.r.sha(raw)}
+        self.pair = {'claim': descriptor(claim_name), 'journal': descriptor(journal_name)}
+        self.pending = [*self.pending, copy.deepcopy(self.pair)]
+        self.lease_session = claim_name.removesuffix('.claim.json')
+        self.now = self.fixture.now + 112
+
+    def test_existing_durable_diagnostics_cover_only_preworker_without_rewriting_unknown(self):
+        before = self.r._scan(self.state)
+        with mock.patch.object(subprocess, 'Popen', side_effect=AssertionError('no process')):
+            result = self.validate()
+        self.assertEqual(set(result), {self.fixture.review_value['unknown_session'], self.lease_session})
+        self.assertEqual(result[self.lease_session], self.pair['claim']['sha256'])
+        self.assertEqual(self.r._scan(self.state), before)
+        self.assertTrue(all(before[name] == raw for name, raw in self.history_before.items()))
+        for name in (self.lease_session, self.fixture.review_value['unknown_session']):
+            row = json.loads((self.state / (name + '-journal.json')).read_bytes())
+            self.assertEqual(row['stage'], 'UNKNOWN')
+            self.assertIs(row['native_process_closure_verified'], False)
+
+    def test_exact_pending_pair_required_not_only_claim_hash(self):
+        original = copy.deepcopy(self.pending)
+        for change in ('missing', 'duplicate', 'wrong_journal', 'wrong_path'):
+            with self.subTest(change=change):
+                self.pending = copy.deepcopy(original)
+                if change == 'missing':
+                    self.pending.pop()
+                elif change == 'duplicate':
+                    self.pending.append(copy.deepcopy(self.pair))
+                elif change == 'wrong_journal':
+                    self.pending[-1]['journal']['sha256'] = '0' * 64
+                else:
+                    self.pending[-1]['claim']['path'] += '.alias'
+                with self.assertRaisesRegex(ValueError, 'context_preworker_pending_pair'):
+                    self.validate()
+
+    def test_other_unknown_session_still_rejected(self):
+        self.fixture._session('d' * 64, ['open'], self.current_descriptor,
+                              self.native_template, unknown=True)
+        with self.assertRaises(ValueError):
+            self.validate()
+
+    def test_missing_event_and_contradictory_rpc_fail_closed(self):
+        name = next(name for name in self.lease_files if name.startswith('events/'))
+        path = self.state / name
+        raw = path.read_bytes()
+        path.unlink()
+        with self.assertRaises(ValueError):
+            self.validate()
+        path.write_bytes(raw)
+        path = self.state / 'events' / ('999-native-auth-refresh-' + self.lease_session + '-1234abcd.json')
+        f.write(path, {'nonce': self.lease_session.removeprefix('native-bridge-'),
+                       'stage': 'refresh_intent'})
+        with self.assertRaises(ValueError):
+            self.validate()
+
+    def test_event_mutation_during_boot_observation_is_rejected(self):
+        path = self.state / next(name for name in self.lease_files if name.startswith('events/'))
+        def observer(review, challenge):
+            path.write_bytes(path.read_bytes() + b' ')
+            return self.boot
+        self.callbacks['recovery_boot_observation'] = observer
+        with self.assertRaisesRegex(ValueError, 'context_preworker_evidence_changed'):
+            self.validate()
+
+    def test_helper_source_replacement_rejected_before_observer(self):
+        path = self.deployment / 'preworker_disposition.py'
+        path.write_bytes(path.read_bytes() + b'\n# changed\n')
+        observer = mock.Mock(side_effect=AssertionError('not reached'))
+        self.callbacks['recovery_boot_observation'] = observer
+        with self.assertRaisesRegex(ValueError, 'context_current_helper_source_pin'):
+            self.validate()
+        observer.assert_not_called()
 
 
 if __name__ == '__main__':

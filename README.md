@@ -4,11 +4,11 @@ IRIS-X 探索如何把領域材料、實際工作負載、需求與資源限制�
 
 Repository 包含 provider-neutral contracts、deterministic offline reference flow、package verification，以及 ARC 實驗、來源封裝與結果保全程式。產品方向見 [PRODUCT_THESIS.md](PRODUCT_THESIS.md)；產品目標不代表目前已完成可部署產品或已驗證模型優勢。
 
-## ARC-AGI-2 研究線目前進度（2026-10-14 UTC）
+## ARC-AGI-2 研究主線
 
-目前研究線的狀態、任務、依賴、證據與下一步，統一見
-[開發進度管理](research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)。
-方法、使用方式及固定審查紀錄見[研究文件入口](research/arc2-sft-rl-continuation-20261014/README.md)。
+從[研究主頁](research/arc2-sft-rl-continuation-20261014/README.md)閱讀問題、假設與凍結 A/B/C，
+再看方法比較與證據。當前阻礙及下一步見
+[進度頁](research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)。
 下面保留各版本的歷史快照，不代表本研究線的最新進度。
 
 ## 歷史固定版本與執行紀錄
@@ -39,7 +39,7 @@ Repository 包含 provider-neutral contracts、deterministic offline reference f
 | 路線 | 入口 | 內容 |
 | --- | --- | --- |
 | 產品與方法 | [PRODUCT_THESIS](PRODUCT_THESIS.md)、[產品文件](docs/product/README.md) | Domain Specification、trial、package 及產品邊界。 |
-| 目前 ARC2 研究線 | [開發進度管理](research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)、[文件入口](research/arc2-sft-rl-continuation-20261014/README.md) | 唯一進度與計畫入口，以及方法、使用與歷史證據導覽。 |
+| 目前 ARC2 研究線 | [研究主頁](research/arc2-sft-rl-continuation-20261014/README.md)、[當前進度](research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md) | ARC-AGI-2 問題、SFT／RL／等成本比較、方法證據與下一步。 |
 | 離線工程基礎 | [src/irisx/](src/irisx/)、[tests/](tests/README.md) | P1 contracts、reference flow、package verification 與對應測試。 |
 | 歷史 code18 固定來源 | [快照紀錄](docs/plan/2026-10-13-code18-run005-repository-snapshot.md)、[RUN005 binding](tools/arc_qwen_rlvr004_20261013/driver_path_repair/RUN005-BINDING.json)、[REBUILD](tools/arc_qwen_rlvr004_20261013/driver_path_repair/REBUILD.md) | 精確來源、封裝指紋、重建命令和缺失的外部證據。 |
 | 歷史實驗 | [trials/](trials/README.md)、[research/](research/README.md) | 各 trial／研究版本的問題、實作及結果；不得跨版本移植分數。 |

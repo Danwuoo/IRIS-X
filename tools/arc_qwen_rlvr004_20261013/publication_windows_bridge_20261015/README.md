@@ -27,7 +27,11 @@ interface; source availability alone does not admit credentials or publication.
 - `win_supervisor.py` is the sole Job-handle owner. Assignment is atomic before
   Resume; worker NULL Job queries cannot keep a dead supervisor's Job alive.
   Per-command and nested official-RPC watchdogs are independent of worker code.
-- The 43,200-second worker lease is separate from the original experiment clock.
+- The at-most 43,200-second worker lease uses a Windows-local monotonic deadline,
+  established before bootstrap and shared with the SDK worker. Ordinary operation
+  budgets are durations, not differences between Windows and WSL wall clocks.
+  WSL retains its own independent monotonic timeout and pipe-closure cleanup.
+  Absolute recovery expiry is unchanged. This worker lease is separate from the original experiment clock.
   A clean read-only worker can rotate before expiry; an unknown operation,
   refresh or mutation cannot. Collector monitoring still seeks the actual
   terminal result after the experiment deadline; no clock reset or resubmit.
@@ -139,9 +143,15 @@ nonce-bound Job-zero predicate. Phase completion does not mean open succeeded.
 Bootstrap failures retain a fixed stage label. If completion checking fails after
 a genuine Job-zero query, that closure is retained with a failed result.
 
-Older failures whose native receipt was discarded cannot be repaired by these
-new diagnostics. A missing receipt stays missing; controller exit, elapsed time,
-new probes or absence of a provider upload claim cannot substitute for it.
+A missing historical receipt stays missing; controller exit, elapsed time, new
+probes or absence of an upload claim cannot substitute for Job-zero closure.
+The narrow `preworker_disposition.py` classifier may instead interpret the
+existing, source-bound `supervisor_lease_failed` diagnostics as proof that the SDK
+worker/JobProcess boundary was never reached. It requires the exact f5 native
+configuration, source closure, claim/open request and four persisted events.
+The supervisor/proxy did run; this disposition is not Job-zero or success.
+The original UNKNOWN/closure-false bytes remain untouched; other UNKNOWNs still
+block. No new receipt, restart, authentication or provider call is generated.
 Run the existing synthetic native, WSL caller-death and production pre-auth probes
 against newly pinned source/config bytes on the local executor before relying on
 changed native code. Those no-auth probes are separate evidence and must not open
@@ -153,8 +163,11 @@ Completed f5 recovery dispositions have a separate, read-only same-boot adapter
 in `context_continuation.py`, with historical source pins in
 `context-source-pins.json`. It preserves the original validator and all sealed
 records while checking a reviewed successor source location and the actual WSL
-context. Deployment and the bounded two-field configuration migration are
-specified once in the [local handoff, section 6.3.3](../../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#633-已完成恢復後的同boot-context續接).
+context. Current release/configuration admission is independent of the historical
+recovery disposition; it need not match the old candidate or source bytes.
+The actual current configuration and source still pass the existing release
+gates, while state/scratch, boot/host and exact pending-session isolation remain.
+Deployment is specified once in the [local handoff, section 6.3.3](../../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#633-已完成恢復後的同boot-context續接).
 The original f5 checkout must remain available at its descriptor paths.
 
 ```bash
@@ -168,18 +181,27 @@ They cannot establish native cleanup, genuine credential ACLs, provider access,
 GPU execution or ARC results. Test counts and exact evidence are maintained in
 the single progress document, not duplicated here.
 
-## Collector-only material succession
+## One release admission and a stable collector bootstrap
 
-`material_lineage.py` validates a separately reviewed canonical successor using
-only the final collector hash change and its mechanically derived release bytes.
-`publication_state.py` gives the unchanged f5 validator a bounded read-only view
-of its original records while verifying later manifest-bound publication files.
-Neither helper authorizes provider work or changes historical UNKNOWN records.
+The collector now verifies the explicitly supplied review hash and its exact
+common/transport source descriptors before compiling those verified bytes.
+All original manifest/material/review/consumer and launched-review equality
+checks remain. A transport-only repair no longer changes collector bytes merely
+to repeat embedded common/transport literal pins. A changed review after an
+accepted RUN is still rejected; this is not a way to rebind active-run evidence.
+
+`material_lineage.py` and its tests remain historical compatibility utilities;
+it is no longer a mandatory source or context-admission gate. The current
+canonical candidate is admitted once by the original assembler and full release
+checks. `publication_state.py` retains the frozen validator's bounded read-only
+view while checking later manifest-bound publication files. The pre-worker
+classifier projects only its exact independently classified claim/journal pair
+out of that historical view; the complete live root/event snapshot is reread.
+None of these views rewrites STATE or authorizes provider work by itself.
 
 `launch.py publish validate-publication` requires the existing full contract plus
 `--monitor-review`, `--monitor-sha`, and `--consumer-root`. It exercises the original
 finalizer in memory with a synthetic epoch and checks the upload/wire/consumer
 closure. All four mutation/JIT actions also perform this check before opening the
 provider. It does not replace actual readback, mounts, audit, active-wire or
-collection evidence. Canonical assembly, exact receipt schemas, same-owner review
-and timing acceptance are specified in [handoff section 6.3.4](../../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#634-collector-only-canonical-material續接與完整發布預檢).
+collection evidence. Canonical assembly and the reusable release admission are specified in [handoff section 6.3.4](../../../research/arc2-sft-rl-continuation-20261014/OFFLINE-LOCAL-HANDOFF.md#634-collector-only-canonical-material續接與完整發布預檢).
