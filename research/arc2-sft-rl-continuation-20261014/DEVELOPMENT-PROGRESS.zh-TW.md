@@ -25,6 +25,8 @@
 context 修復已發布為 `a5c3da425aeeb31cb8b45d20684aec558fd0db84`，本地已驗收並提交 v43。
 native 檔案身分修復已發布為 `9fdc96325fd3f425b54fa99508d3181230f77f3e`，本地真實重取成功。
 wrapper／header 窄修已發布為 `4309b890d5c19dddd29b1fb87a26fa916df22cf1`；真實 wrapper replay 通過，header 首次失敗。
+header 去敏 stage／code 修復已發布為 `65543cbb4c3547fe038c3e0f42bb73ea770d3e92`；真實續接停於
+`checkpoint_before`／`unexpected_error`，尚未呼叫 checkpoint output，header 仍未取得。
 本頁與下一次窄修同一 commit 保存，交付 SHA 由接收時 HEAD／遠端 readback 核對。歷史 fix refs、
 f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.com/Danwuoo/IRIS-X/blob/84a5a1f870c42899f3bea79996d1b9360c4bfee9/research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)
 保存 lease 失敗與修復前的精確證據，不在本頁重複累積。
@@ -41,7 +43,7 @@ f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.
 | 已發布的啟動修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；v43 已實際越過啟動邊界 |
 | 多輪續接 | 0d3524 已隔離每輪 publication／collector 目錄，native STATE 與全域鎖共用；本地18:03 fresh no-auth 停於舊f5永久 same-boot 字串 gate | 原1,686檔完全不變，未新建 native claim／canonical／run、未 provider。CIM boot值變1.802125秒，host／Windows／source／runtime相同；符合校時漂移但未證明 same boot，不拿猜測當PASS |
 | 歷史／即時 context 修復 | 原封存Restart＋reconciliation在原completion time重驗；fresh host／source／runtime／closure另核對，封存events及live STATE前後綁定 | 只支援現有f5原件的12.629秒歷史間隔，保留原120秒限制；later UNKNOWN／refresh／publication變更仍阻擋，不加BootID框架、容差或重啟 |
-| Repository／CI | 4309b89 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
+| Repository／CI | 65543cb 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
 | 真實研究結果 | A SFT256；B 64/256 attempts、reward15/64、RL commit0；C 額外 SFT203。固定 dev 平手規則選 A；PUBLIC 原 scorer 完整 120 tasks／167 queries 為 0/167 | 以下是取回封存輸出的觀察，正式 consumer 尚拒絕；不代表 RL 更新有效或無效，也不是官方／獨立重評分數 |
 
 ### v43 模型與評分觀察
@@ -75,13 +77,65 @@ CPU 另以真正 pinned offline guard 重現子程序增加 6 個固定環境鍵
 現有 competition metadata association 沿用較早版本；材料仍是固定 training/1 與 PUBLIC120/1，
 沒有把研究改成 ARC-AGI-3，也不為這項既有掛載新增修改。
 
+### 下一輪：固定 training-only 數值診斷
+
+新增來源在 [numeric diagnostic successor](../../tools/arc_qwen_rlvr004_20261013/numeric_replay_diagnostic_20261016/assemble.py)，
+用途固定為 `training-only-numeric-diagnostic-v1`；不是可開關的另一套訓練方法。
+
+- 保留同 session A256、原首批 8 parents×8 samples、reward、64 條 replay／原 DDIS backward 與
+  max0.20／p95 0.05／unclipped1.0、30 秒逐條／600 秒整批、72／80 GiB 原門檻。
+  原 gate 的 PASS／FAIL 另外保留；兩種結果都不 dispatch／commit RL optimizer。
+- 固定看 parent ordinal0、7 的 slot0；各 offset0、1、last 去重。缺件／forced 明列，不能換樣或
+  挑本輪最差例。每條新增一次 eval／full-teacher 原多 row head 與至多三次 eval／full-prefix M1，
+  總計最多8個 full-model forward；不捕捉 hidden、不新增 hook、不額外 head projection。
+- 記錄 train→eval 的 mode／autograd／checkpoint 合併差、teacher→prefix 的 hidden／head-shape
+  合併差、prefix→原 cached actor 差。另用同一 logits 比較多 row／單 row masked-softmax。
+  不能把 teacher／prefix 差稱為已隔離 head 因果，也不能單指 attention kernel。
+- 額外同步 wall 最多120秒，單 forward 有獨立25秒 soft／30秒 hard watchdog，仍受原 batch／phase／
+  global 更早期限與 memory caps 限制。成功、失敗、host／同步工作及 forward input tokens 都留在
+  physical ledger；不重設 peak，不宣稱帳單已驗。
+- shadow 後清梯度並恢復**原 replay 前快照**，包含當時 RL optimizer／scheduler、post-sampling RNG
+  與邏輯計數；A adapter 必須相等。這不是把整段 A 訓練或實際工作／generation epoch 倒帶。
+  後三批192 slots 為 `not-requested-by-diagnostic`；C／dev／held／PUBLIC 全不執行，scoring 保留 null。
+
+成功工程狀態為 `owned-numeric-diagnostic-complete-no-update`；原64 replay、完整 shadow、真實
+rollback、原 deadline 與 live closed-model capability／raw safe closure 均須成立。任何缺件或原首批
+無 mixed signal 而未 replay，明列 `owned-numeric-diagnostic-incomplete`，不補抽樣／評分。
+仍使用原 process-termination diagnostic exporter，所以 terminal `status:diagnostic`、
+`model_closed:false` 不改；獨立工程分類不能冒充原 ABC consumer、comparison 或科學 admission。
+collector 核對原 container／source／JIT／closure 與4份 raw audit，後192 slots 必須確為未請求空格。
+
+新 namespace 為 `irisx-qwen14b-numeric-diagnostic-20261016-run001`／`source001`／`environment001`；
+原 publication format／角色名稱只作 wire compatibility，另綁固定 purpose 與較窄 owner direction。
+per-code publication isolation、原 mutex、UNKNOWN／auth-refresh 與 exact-byte gates 沿用。
+新 runtime 260 members，其中251個 consumed source members、全部200個 consumed baseline members
+不變；199是更早原 baseline 的歷史計數，另1個已存在 installer repair 並未在這輪重改。
+source SHA256 `69bf39ddee56278197eb4f1a46119d569dba45f51621a92588a56dd7d6f1e292`；
+archive SHA256 `085a64b4dbe9c35db40d81ef0ae28dcce445eaa78f5da0e85518900bab035061`；
+normalized contract `804598522bf81b54ddbfdb585ea21ee925905dc8ac87ddc9b717ea988aff4c4f`。
+
+作者整合80 normal／80 `-O` PASS：probe21、runtime16、packaging23、collector20。
+使用既有 Torch2.9 CPU、受控完整形狀 flow、真正 durable ledger 與原 ZIP／terminal helpers；
+沒有安裝或執行原 Qwen／Transformers／PEFT／GPU。`--tiny-proof` 的小 fixture 不符合固定64／ordinal7，
+不宣稱完整 factory proof。獨立 runtime review 的55項當時測試與8個額外對抗案例各模式均通過；
+review SHA256 `3aae4cba52e0a3e9ddf9475416e7efdd1819d6b187614190bf19d87cfebd6b72`。
+審查抓到新增 token 計量與 collector 後三批語義缺口，已補真 event 計量與 raw audit 負例；
+publication／collector 獨立審查亦 PASS：43 項 targeted、18 個拒絕負例與1個誠實 incomplete、
+9 個重新綁全套 hash 的 raw-audit 負例，各 normal／`-O` 均通過。review SHA256
+`5ebdb47ec5fa09b60d351b8c90548fae7d89e51340f6acf3b838eaf2c7b437a0`。
+以上只綁定來源；本地 exact proposal 的 solver／runtime／material reviews 仍須另核對，不能沿用未對應的 review。
+
+本地只讀已確認原兩份 closed assembly inventory、259-member source proposal 與原 solver descriptor
+完整；不缺料、不讀 evaluator bodies。新完整 private candidate／fresh predecessor observation、
+proposal→獨立 reviews→final、numeric mount／inactive／JIT／唯一 RUN 仍尚未執行。
+
 ## 三、任務、依賴與下一步
 
 | 工作 | 目前狀態 | 下一個完成條件 |
 | --- | --- | --- |
 | 兩 caller／guard 契約／collector schema 修復 | 0af 已發布；作者與獨立 reviewer 各 613 normal／613 `-O` 通過（46 準備、9 組裝、558 bridge） | 科學 runtime／archive 與 native 七件來源在本次 bookkeeping 修復中沿用，不重做未變驗收 |
 | 多輪 publication／collector 續接 | 0d3524 的作者／獨立review每模式599項PASS維持歷史證據；本次最終bridge每模式600項、獨立context每模式70項PASS，精確hash見VALIDATION | 本地真實 history／fresh readback 已通過並接受 v43；保留原件，已驗證且未變元件不重做 |
-| 原 A/B/C v43 取證 | 9fdc 真實取檔完成；4309 wrapper v2 原檔 replay PASS，22／6 observations、差集2，完整 subset 仍 false。header 首次實測失敗、HTTP／長度未知 | 保留原拒絕、全部 closure 與 failed header receipt；補 bounded worker stage／code 後只續做同 numeric43 header。tensor bodies、原 collector context 與整體 admission 仍未成立 |
+| 原 A/B/C v43 取證 | 9fdc 真實取檔完成；4309 wrapper v2 原檔 replay PASS，22／6 observations、差集2，完整 subset 仍 false。兩次 header 實測均失敗；65543 停於 checkpoint_before／unexpected_error，HTTP／長度未知 | 保留原拒絕、全部 closure 與 failed header receipts；先查 before bracket 來源，不據此推定 auth 或回填首次原因。tensor bodies、原 collector context 與整體 admission 仍未成立 |
 | v41 官方 log／inventory | 現有 bridge 尚未支援；SDK 0.1.37 可送 numeric version_label，但 response 無 version/source echo | 另作最小唯讀支援，不阻擋已確定的啟動修復；完整分頁與 numeric bodies／log attribution 分開，不能靠 latest CLI 補稱 exact41 |
 | 數值診斷與下一輪 | actor 為 eval／inference cached 增量解碼；replay 為 train／autograd checkpointed 全因果 teacher-forcing。相同 token／DFA 上仍有 gap | 既有 calibration 差分已完成；下一輪固定 training-only 診斷 mode／checkpoint、teacher／prefix 及 cached 路徑，teacher／prefix 仍合併 hidden 與 head shape 因素。不得猜 kernel 根因、放寬門檻或依 PUBLIC 答案改模型 |
 

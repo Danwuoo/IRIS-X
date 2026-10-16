@@ -337,11 +337,13 @@ Location redirect，可能預先讀 body 的 JSON-body URL redirect 誠實拒絕
 不能用作 prior-terminal receipt 或原 collector admission。no-refresh／原 mutex／300 秒與原 global
 期限不變；遇到 token、mutex、HTTP 或來源阻礙即保存實際失敗，不登入、接管或重新 RUN。
 
-4309 的首筆 header 已失敗並保留，不能當 header observation。此次只換固定 helper SHA256
-`793e3e1d10e6f0d0dd2a0ec43ca9d78ce8f3a81336fba60332de4441901fcda0`，在另一個 fresh output
-執行同一 numeric43 header 請求；原所有輸入 bytes 與 deadline 不變，不重取 terminal／archive。
-若仍失敗，回交 allowlisted `worker_failure_stage`／`worker_error_code`、header null 與新 Job0
-實際狀態；保留 failed worker／launch／parent receipts，不把失敗改稱 HTTP／長度已驗。
+4309 首筆與65543第二筆 header 都已失敗並保留，不能當 header observation。65543 helper SHA256
+`793e3e1d10e6f0d0dd2a0ec43ca9d78ce8f3a81336fba60332de4441901fcda0` 的真實回報為
+`worker_failure_stage:checkpoint_before`／`worker_error_code:unexpected_error`，尚未呼叫 checkpoint
+output；header null、finalized false、新 Job0、body consumed0、未 materialize，原3,511件 STATE 不變。
+本次 result SHA256 `b9dae444cf7ee6ca61654d910c5f98782333a9b5d07044b7970cdf582f7fdca1`。
+先檢查 before bracket 的來源相容性；原因未定位前不重試，不推斷 auth／HTTP，也不回填4309原因。
+其餘 header 契約與原 deadline 保留；這項不阻擋已審查的 training-only successor 準備。
 
 ### v43 nested-wrapper 的唯讀 successor 驗證
 
@@ -363,6 +365,47 @@ worker、runtime worker 必須有外層相同 triple；內層額外觀察須在�
 保留 prep22／inner6 的兩套原 inventory 與差集2，完整 subset false、helper model closure false；不合併或
 補造程序 exit/reaped/closure。新 wrapper 結果不證明舊 Windows native session 已閉合，也不賦予
 正式 collector `CollectionContext`、tensor 驗證、scorer 或整體科學 admission。
+
+### 固定 training-only numeric successor 的提交準備
+
+本輪只跑原 A256 與第一64 training batch 的原 replay／DDIS backward，加最多8個 bounded shadow
+forward 後強制無 RL commit；不執行其餘192／C／dev／held／PUBLIC。原方法與門檻、資料隔離、
+現有資源與43,200秒上限不變。完整研究解讀與 shadow 因素限制見[進度](DEVELOPMENT-PROGRESS.zh-TW.md#下一輪固定-training-only-數值診斷)。
+
+1. 取得本次固定 commit 與逐檔 readback；新程式只在
+   `tools/arc_qwen_rlvr004_20261013/numeric_replay_diagnostic_20261016/`。本地已核對的原件不重建：
+   source proposal inventory `fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd`、
+   base inventory `de519816720ceb3bf07e0bf015c888b7e4bd9fdb344c2dbe355281230920ee88`，以及 base 根目錄的
+   父目錄下 `source-rebuild/review-only/solver-descriptor.json`；後者需與 base material review 的
+   `dataset_file_sha256` 相等。這是實際父目錄，不是名為 `parent` 的子目錄。不要讀 evaluator escrow bodies。
+2. 由本地取得真正當下 predecessor observation，保留原 numeric版本／source／settings／terminal／
+   Dataset bytes；建立與已授權 training-only 範圍相符的 owner direction，格式和欄位以
+   [owner_inputs](../../tools/arc_qwen_rlvr004_20261013/numeric_replay_diagnostic_20261016/assemble.py)為準。
+   原 broad owner receipt 不代替較窄 purpose；request_id／instruction 來自真實授權，不使用測試fixture。
+3. 新 assembler `--mode proposal`，明確提供 `--repository-root`、`--source-proposal-root`、`--base-root`、
+   `--observation-root`／`--observation-sha`、`--owner-direction-path`／`--owner-direction-sha`、
+   `--collector-path`／`--collector-sha`、`--output-root`。輸出必須在該 repo 的
+   `.irisx/numeric-diagnostic-20261016/` 下的新目錄。collector 指向本次新 `publication/rl_collect.py`，
+   不是原 ABC collector。proposal 尚未授予 provider mutation，也不分配 epoch。
+4. 用真正 reviewer 核對此份 `ADMISSION-PROPOSAL.json`、兩個 solver path substitutions／reverse byte
+   equality、source/archive／namespace／purpose／17檔來源與 helper bindings；再提供 assembler 所列
+   `--proposal-*`、`--solver-review-*`、`--runtime-review-*`、`--material-review-*`，以 `--mode final`
+   寫另一個新目錄。既有雲端 CPU review 可作已驗範圍依據，不能直接冒充這份本地 proposal 的收據。
+5. 沿原已驗 bridge/operator 組裝，只替換本次 new `publication/{rl_transport.py,rl_collect.py,verify_active_wire.py}`；
+   其餘 exact source、native7、SDK、config／recovery contracts 沿用，不重建或重測未變元件。
+   collector bootstrap 仍需要同目錄、經 action review 綁定的原 `operator_common.py`／transport。
+   原 `state-run008`／`evidence-run008` 是 wire family 名稱，實際每輪用原 per-code publication isolation；
+   所有歷史 STATE、UNKNOWN、claim／journal 保留。真正 gate 阻礙回報，不套舊 closure 或重送。
+6. 只有 final source、local review、numeric code readback／mount、inactive readback／獨立 active-wire 與
+   JIT freshness 均成立後，由原唯一 publisher 接受一個 RUN，沿既有模式監看到終態並取 exact outputs。
+   版本取當下真回讀，不在此預填 code／active version；fresh epoch 只屬這個尚未接受的 successor。
+
+新工程完成須有 `owned-numeric-diagnostic-complete-no-update`、原64 replay、shadow／rollback、
+實際閉合 capability／raw closure 與完整 diagnostic archive。collector 寫 `NUMERIC_DIAGNOSTIC_COMPLETE`
+或誠實的 `NUMERIC_DIAGNOSTIC_INCOMPLETE`；`consumer_admitted`、comparison／PUBLIC／goal 全 false，
+public score null。terminal 的 process-termination authority 與 `model_closed:false` 保留，不用其
+代替 live closed-model capability。預先選定點的 scalar gap、dtype／shape、原 gate 與全實際成本
+供下一步定位；私人 tokens、logits、parents、audit／archives 都不公開。
 
 ### 6.4 本地修復邊界與研究決策
 
