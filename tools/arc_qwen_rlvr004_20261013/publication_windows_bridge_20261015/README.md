@@ -61,6 +61,25 @@ No config contains tokens, credential contents, delegated auth directories or a
 substitute HOME. These consumer-local files remain ignored, not public Git data.
 A receipt is structurally checked evidence, not independent review authority.
 
+## Fixed accepted-readonly continuation
+
+The action review may bind `readonly_frontier` to the one existing, reviewed
+presence RESULT descriptor and `readonly_caller` to four original descriptors:
+`jit`, `owner`, `seq14`, and `owner_start`. These private inputs are not new
+closure receipts. The exact edd claim, journal and 196-event frontier remain
+unchanged; only its independently classified pair is omitted from the frozen
+historical validator's view. It is never added to f5 recovery coverage.
+
+The original worker's complete absence cut and the reviewed single-client
+caller establish provider noninterference for that exact frontier. Current
+admission still requires the actual held publisher flock, same-SID native
+mutex, original source/runtime/configuration checks and fresh host observation.
+The bridge rechecks the cut before business requests and authentication ACKs;
+normal cleanup close remains available. A later UNKNOWN, uncertain refresh,
+changed original evidence or unrelated session is not covered by this exception.
+Old native closure remains false. No Restart, Job-handle takeover, permanent
+same-boot claim, new credential or STATE rewrite is involved.
+
 ## Explicit failed-open recovery interface
 
 `launch.py recover validate|prepare|reconcile-read-only` is a separate entry, with

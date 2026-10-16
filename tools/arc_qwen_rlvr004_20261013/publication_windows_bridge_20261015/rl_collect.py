@@ -1,4 +1,4 @@
-"""Locally rebound run008 collector, inert until a new owner continuation.
+"""Source-fixed training-only diagnostic collector; no ABC consumer admission.
 
 Decision0075 permits independently reviewed terminal monitoring and selected
 numeric output collection. This collector cannot send or repeat a RUN.
@@ -348,7 +348,10 @@ def strict_json(raw):
         for key,value in items:
             need(key not in result,'duplicate_diagnostic_json_key');result[key]=value
         return result
-    return json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _:(_ for _ in ()).throw(GuardError('nonfinite_diagnostic_json')))
+    def finite(token):
+        value=float(token);need(math.isfinite(value),'nonfinite_diagnostic_json');return value
+    return json.loads(raw,object_pairs_hook=pairs,parse_float=finite,
+        parse_constant=lambda _:need(False,'nonfinite_diagnostic_json'))
 
 PREOWNED_STAGES={'source-guard-import','source-import-policy','parent-environment-import','parent-environment-policy'}
 
@@ -444,37 +447,157 @@ def diagnostic_archive_helpers(args):
         for name in reversed(loaded):sys.modules.pop(name,None)
 
 
-def unsealed_session_diagnostic(m,args,f,receipt,terminal,present,prefix,outer,wrappers):
-    """Transport/source integrity for a terminated, unsealed session, never science."""
-    if terminal.get('status')!='diagnostic':return None
+NUMERIC_PURPOSE = 'training-only-numeric-diagnostic-v1'
+NUMERIC_COMPLETE = 'owned-numeric-diagnostic-complete-no-update'
+NUMERIC_INCOMPLETE = 'owned-numeric-diagnostic-incomplete'
+
+
+def numeric_completion(owned,flow,update,shadow,outer,wrappers):
+    """Validate the bounded source-reported outcome, not an independent GPU replay."""
+    if owned.get('status') != NUMERIC_COMPLETE:
+        return False
+    need(all(type(x) is dict for x in (flow,update,shadow)), 'numeric_complete_artifacts_required')
+    inner=outer.get('inner_closure') or {};model=inner.get('model_closure') or {}
+    need(wrappers['operational'] is True and outer.get('safe_closure') is True
+         and outer.get('model_stopped') is True and outer.get('worker_exited') is True
+         and outer.get('worker_session_empty') is True and type(outer.get('worker_returncode')) is int
+         and outer['worker_returncode']==0 and inner.get('status')=='complete'
+         and all(model.get(k) is True for k in ('closed','future_operations_blocked','model_references_released',
+             'device_synchronized','model_stopped','ledger_settled'))
+         and model.get('fatal_native_state') is None, 'numeric_complete_raw_model_closure')
+    need(owned.get('diagnostic_complete') is True and owned.get('terminal_error') is None
+         and owned.get('source_integrity_error') is None and flow.get('status')==NUMERIC_COMPLETE
+         and flow.get('diagnostic_complete') is True, 'numeric_complete_result_state')
+    need(flow.get('production_admitted') is False and flow.get('ARC_or_PUBLIC_efficacy_claim') is False
+         and flow.get('comparison_complete') is False and flow.get('no_C_dev_holdout_PUBLIC') is True
+         and flow.get('TTT') is False and all(flow.get(k) is None for k in ('dev_selection','holdout','public','comparison')),
+         'numeric_complete_training_only_scope')
+    for key,value in (('original_planned_attempts',256),('requested_attempts',64),('unrequested_original_panel_attempts',192)):
+        need(type(flow.get(key)) is int and flow[key]==value,'numeric_attempt_count_'+key)
+    need(all(flow.get('stage_status',{}).get(k)=='not-requested-by-diagnostic'
+             for k in ('C','dev','holdout','PUBLIC')),'numeric_unrequested_stages')
+    need(set(flow.get('arms',{}))=={'A','B'},'numeric_exact_two_arms')
+    a,b=flow['arms']['A'],flow['arms']['B']
+    need(a['adapter_sha256']==b['adapter_sha256'] and _bootstrap_digest(a['adapter_sha256']),
+         'numeric_exact_restored_adapter')
+    for arm in (a,b):
+        for key,value in (('anchor_updates',256),('rl_updates',0),('control_updates',0)):
+            need(type(arm['updates'].get(key)) is int and arm['updates'][key]==value,'numeric_update_count_'+key)
+    need(update.get('status')=='intentionally-no-update' and update.get('optimizer_dispatched') is False
+         and update.get('optimizer_committed') is False and update.get('rollback',{}).get('restored') is True
+         and update.get('within_original_batch_deadline') is True
+         and update.get('numeric_shadow_complete') is True and type(update.get('replays')) is list
+         and len(update['replays'])==64,'numeric_original_replays_no_update_restored')
+    gate=update.get('original_numeric_gate')
+    need(type(gate) is dict and set(gate)=={'admitted','failures','gate','per_trajectory','per_parent_ids'}
+         and type(gate['admitted']) is bool and type(gate['failures']) is list
+         and all(type(x) is str and 0<len(x)<=512 for x in gate['failures'])
+         and gate['admitted'] is (not bool(gate['failures']))
+         and gate==update.get('numerical_gate') and gate['per_trajectory']==update['replays'],
+         'numeric_original_gate_untouched')
+    expected_gate={'maximum_absolute_gap':.20,'minimum_unclipped_fraction':1.,'maximum_replay_seconds':30.,
+        'maximum_peak_bytes':72*1024**3,'fixture_only':False,'maximum_p95_gap':.05,
+        'maximum_reserved_bytes':80*1024**3,'maximum_batch_replay_backward_seconds':600.}
+    need(type(gate['gate']) is dict and set(gate['gate'])==set(expected_gate)
+         and all(type(gate['gate'][k]) is bool and gate['gate'][k] is v if type(v) is bool else
+                 type(gate['gate'][k]) in ((int,) if type(v) is int else (int,float)) and gate['gate'][k]==v for k,v in expected_gate.items()),
+         'numeric_original_fixed_thresholds')
+    replays=update['replays']
+    need(all(type(r) is dict and type(r.get('trajectory_id')) is str and 0<len(r['trajectory_id'])<=128
+             and type(r.get('parent_id')) is str and 0<len(r['parent_id'])<=512
+             and r.get('original_token_replay') is True and r.get('training_mode') is True
+             and type(r.get('log_pi')) is list and type(r.get('log_mu')) is list
+             and 0<len(r['log_pi'])==len(r['log_mu'])<=1024
+             and all(type(x) in (int,float) and math.isfinite(x) for x in r['log_pi']+r['log_mu'])
+             and type(r.get('nonforced_tokens')) is dict for r in replays)
+         and len({r['trajectory_id'] for r in replays})==64
+         and gate['per_parent_ids']==list(dict.fromkeys(r['parent_id'] for r in replays))
+         and len(gate['per_parent_ids'])==8,'numeric_complete_original_replay_schema')
+    for replay in replays:
+        metrics=replay['nonforced_tokens'];count=metrics.get('tokens')
+        need(type(count) is int and 0<=count<=len(replay['log_pi'])
+             and all(type(metrics.get(k)) in (int,float) and math.isfinite(metrics[k]) for k in
+                     ('max_abs_gap','p95_abs_gap','unclipped_fraction'))
+             and 0<=metrics['p95_abs_gap']<=metrics['max_abs_gap']
+             and 0<=metrics['unclipped_fraction']<=1
+             and type(metrics.get('clipped_tokens')) is int and 0<=metrics['clipped_tokens']<=count,
+             'numeric_original_metrics_schema')
+    need(shadow.get('schema')=='numeric-shadow-training-only-v1' and shadow.get('complete') is True and shadow.get('status')=='complete' and shadow.get('state_preserved') is True
+         and shadow.get('optimizer_commit_allowed') is False and shadow.get('gate_inputs_replaced') is False
+         and type(shadow.get('model_forward_calls')) is int and 0<shadow['model_forward_calls']<=8
+         and type(shadow.get('head_projection_calls')) is int and shadow['head_projection_calls']==0,
+         'numeric_bounded_complete_shadow')
+    return True
+
+
+def numeric_audits(flow,referenced):
+    """Bind all four original panel slots; later batches must remain unrequested."""
+    audits=flow.get('audit_sweeps');schedule=flow.get('batch_schedule')
+    need(type(audits) is list and len(audits)==4 and flow.get('audit_batches')==audits
+         and type(schedule) is list and len(schedule)==4
+         and all(type(parents) is list and len(parents)==8 and all(type(p) is str for p in parents) for parents in schedule)
+         and len(set(p for parents in schedule for p in parents))==32,'numeric_original_batch_inventory')
+    first=None
+    for index,ref in enumerate(audits):
+        need(type(ref) is dict and type(ref.get('batch_index')) is int and ref['batch_index']==index
+             and ref.get('parent_ids')==schedule[index],'numeric_audit_index_order')
+        record=referenced({k:ref[k] for k in ('path','file_sha256')},f'experiment/audit/sweep-{index}.json',16*1024**2)
+        need(type(record.get('batch_index')) is int and record['batch_index']==index
+             and record.get('parent_ids')==schedule[index] and record.get('summary')==ref.get('summary')
+             and record.get('status')==ref.get('status'),'numeric_raw_audit_projection')
+        if index==0:
+            first=record.get('update')
+            need(ref.get('update_status')==(None if first is None else first.get('status')),'numeric_first_update_status')
+            continue
+        need(record.get('status')=='not-requested-by-diagnostic' and record.get('update') is None
+             and ref.get('update_status') is None and ref.get('durability_ref') is None,
+             'numeric_later_batches_not_requested')
+        batch=record.get('batch');need(type(batch) is dict and type(batch.get('planned_attempts')) is int
+             and batch['planned_attempts']==64 and batch.get('parent_ids')==schedule[index]
+             and type(batch.get('rows')) is list and len(batch['rows'])==64,'numeric_unrequested_batch_shape')
+        for slot,row in enumerate(batch['rows']):
+            need(type(row) is dict and row.get('parent_id')==schedule[index][slot//8]
+                 and type(row.get('slot')) is int and row['slot']==slot%8
+                 and row.get('trajectory') is None and row.get('reward') is None and row.get('eligible') is False
+                 and row.get('status')=='not-reached' and row.get('reason')=='not-requested-by-diagnostic',
+                 'numeric_unrequested_slot_has_no_work')
+    return first
+
+
+def numeric_session_diagnostic(m,args,f,receipt,terminal,present,prefix,outer,wrappers):
+    """Source-bound engineering evidence; never invoke the ABC science consumer."""
+    need(terminal.get('status') == 'diagnostic', 'numeric_diagnostic_export_required')
     runtime_outer=strict_json(read(DOWNLOADS/prefix/'outer-closure.json',4*1024**2))
-    journal_=runtime_outer.get('journal',{})
-    if not (runtime_outer.get('safe_closure') is False and runtime_outer.get('model_stopped') is False and journal_.get('closed') is False):return None
-    need(wrappers['closure_valid'] is True and wrappers['operational'] is False and wrappers['runtime_tree_link_checked'] is True and wrappers['terminal_status']=='diagnostic' and wrappers['model_closure_verified_by_this_helper'] is False,'unsealed_raw_stage_proof')
-    need(runtime_outer['inner_closure'] is None and runtime_outer['request_sha256'] is None and runtime_outer['worker_exited'] is True and runtime_outer['worker_session_empty'] is True,'unsealed_authenticated_fields_remain_null')
-    need(type(runtime_outer['worker_returncode'])is int and runtime_outer['worker_returncode']!=0,'unsealed_failed_worker')
+    need(wrappers['closure_valid'] is True and type(wrappers['operational']) is bool
+         and wrappers['runtime_tree_link_checked'] is True and wrappers['terminal_status']=='diagnostic'
+         and wrappers['model_closure_verified_by_this_helper'] is False, 'numeric_raw_stage_proof')
     launch=obj(publication_root()/'notebook-rlvr004-receipt.json')
-    need(receipt['numeric_output_version']==transport.ACTIVE_VERSION and receipt['manifest_sha256']==args.manifest_sha and receipt['launch_receipt_sha256']==file_sha(publication_root()/'notebook-rlvr004-receipt.json'),'unsealed_external_receipt_identity')
+    need(receipt['numeric_output_version']==transport.ACTIVE_VERSION and receipt['manifest_sha256']==args.manifest_sha and receipt['launch_receipt_sha256']==file_sha(publication_root()/'notebook-rlvr004-receipt.json'),'numeric_external_receipt_identity')
     before,after=receipt['before'],receipt['after']
     for snap in (before,after):
-        need(snap['version']==transport.ACTIVE_VERSION and snap['status'] in TERMINAL and snap['source_sha256']==launch['saved_source']['sha256'] and snap['gpu_stop'] is False and all(type(snap.get(k))is str and re.fullmatch('[a-f0-9]{64}',snap[k]) for k in ('metadata_before_sha256','metadata_sha256')),'unsealed_provider_bracket')
-        need(type(snap['observed_epoch'])in (int,float) and math.isfinite(snap['observed_epoch']),'unsealed_observation_time')
-    need(type(receipt['collected_epoch'])in (int,float) and math.isfinite(receipt['collected_epoch']),'unsealed_collection_time')
-    need(before['status']==after['status'] and f['predispatch_epoch']<=before['observed_epoch']<=after['observed_epoch']<=receipt['collected_epoch'],'unsealed_ordered_bracket')
-    local,cp=terminal['checkpoint_archive_observation'],receipt['checkpoint_archive_observation']
-    if local is None:need(cp is None,'unsealed_null_checkpoint_preserved')
-    else:
-        need(type(cp)is dict and cp=={'filename':'checkpoints.zip','present':True,'byte_length':local['byte_length'],'transport_observation':'HTTP200_CONTENT_LENGTH_VERIFIED','body_materialized':False,'independently_sha256_verified':False,'observed_sha256':None},'unsealed_header_only_checkpoint')
+        need(snap['version']==transport.ACTIVE_VERSION and snap['status'] in TERMINAL and snap['source_sha256']==launch['saved_source']['sha256'] and snap['gpu_stop'] is False and all(type(snap.get(k))is str and re.fullmatch('[a-f0-9]{64}',snap[k]) for k in ('metadata_before_sha256','metadata_sha256')),'numeric_provider_bracket')
+        need(type(snap['observed_epoch'])in (int,float) and math.isfinite(snap['observed_epoch']),'numeric_observation_time')
+    need(type(receipt['collected_epoch'])in (int,float) and math.isfinite(receipt['collected_epoch']),'numeric_collection_time')
+    need(before['status']==after['status'] and f['predispatch_epoch']<=before['observed_epoch']<=after['observed_epoch']<=receipt['collected_epoch'],'numeric_ordered_bracket')
+    need(terminal.get('checkpoint_archive_observation') is None
+         and receipt['checkpoint_archive_observation'] is None, 'numeric_no_checkpoint_archive_or_header')
     contract=m['consumer_contract'];t=m['terminal_contract'];root=Path(args.manifest).resolve().parent
     owner_raw=read(DOWNLOADS/prefix/'owner-request.json',4*1024**2);clock_raw=read(DOWNLOADS/prefix/'owner-clock.json',1024**2)
     owner=strict_json(owner_raw);clock_doc=strict_json(clock_raw);outer_raw=read(DOWNLOADS/prefix/'outer-closure.json',4*1024**2)
-    inventory_raw=read(DOWNLOADS/prefix/'artifact-inventory.json',16*1024**2);owned=strict_json(read(DOWNLOADS/prefix/'owned-result.json',4*1024**2))
-    need(owner['format']=='owned-rl-worker-request-v1' and owner['scope']=='production-rl-abc' and owner['config']['fixture'] is False and owner['output_root']=='/kaggle/working/'+prefix,'unsealed_owner_scope')
-    need(owner['clock']==clock_doc==runtime_outer['original_clock'] and clock_doc['fixture'] is False and clock_doc['original_epoch']==f['predispatch_epoch'],'unsealed_original_clock')
-    source_files=owner['sources'];need(type(source_files)is dict and source_files and len(source_files)<=12000,'unsealed_closed_source_inventory')
-    for name,digest in source_files.items():relative(name);need(type(digest)is str and re.fullmatch('[a-f0-9]{64}',digest),'unsealed_source_member_digest')
-    need(sha(json.dumps(sorted(source_files.items()),sort_keys=True,separators=(',',':'),allow_nan=False).encode())==contract['source_sha256']==m['runtime_source_sha256'],'unsealed_source_identity')
-    need(owned['status']=='stopped-incomplete' and owned['production_admitted'] is False and owned['PUBLIC_score'] is None and owned['parent_scoring_ref'] is None and owned['fixture'] is False,'unsealed_no_outcome_admission')
+    inventory_raw=read(DOWNLOADS/prefix/'artifact-inventory.json',16*1024**2)
+    owned_raw=read(DOWNLOADS/prefix/'owned-result.json',4*1024**2);owned=strict_json(owned_raw)
+    need(owner.get('run_purpose')==NUMERIC_PURPOSE and owner['format']=='owned-rl-worker-request-v1' and owner['scope']=='production-rl-abc' and owner['config']['fixture'] is False and owner['output_root']=='/kaggle/working/'+prefix,'numeric_owner_scope')
+    need(owner['clock']==clock_doc==runtime_outer['original_clock'] and clock_doc['fixture'] is False and clock_doc['original_epoch']==f['predispatch_epoch'],'numeric_original_clock')
+    source_files=owner['sources'];need(type(source_files)is dict and source_files and len(source_files)<=12000,'numeric_closed_source_inventory')
+    for name,digest in source_files.items():relative(name);need(type(digest)is str and re.fullmatch('[a-f0-9]{64}',digest),'numeric_source_member_digest')
+    need(sha(json.dumps(sorted(source_files.items()),sort_keys=True,separators=(',',':'),allow_nan=False).encode())==contract['source_sha256']==m['runtime_source_sha256'],'numeric_source_identity')
+    need(owned.get('format')=='owned-rl-result-v1' and owned.get('run_purpose')==NUMERIC_PURPOSE
+         and owned.get('scope')=='training-only-numeric-diagnostic' and owned.get('fixture') is False
+         and owned.get('status') in (NUMERIC_COMPLETE, NUMERIC_INCOMPLETE), 'numeric_fixed_owned_result')
+    need(all(owned.get(k) is False for k in ('production_admitted','comparison_complete',
+         'public_benchmark_evidence_eligible','scientific_goal_met','ARC_or_14B_efficacy_claim'))
+         and all(owned.get(k) is None for k in ('PUBLIC_score','parent_scoring_ref','checkpoint_export')),
+         'numeric_no_scientific_admission_or_checkpoint_export')
     expected_jit=transport.check_finalization(m,args,f);b=owner['bootstrap'];n=transport.row(m,'rlvr004');source=n['source_parent'];remote='/kaggle/working/'+outer
     mapping={'outer_notebook':('outer_notebook.raw',expected_jit['active-finalized.ipynb'],remote+'/outer.ipynb'),
         'operator':('operator.raw',expected_jit['operator.json'],remote+'/operator.json'),
@@ -482,34 +605,82 @@ def unsealed_session_diagnostic(m,args,f,receipt,terminal,present,prefix,outer,w
         'parent_scorer':('parent_scorer.raw',expected_jit['parent-private-scorer.json'],remote+'/parent-private-scorer.json'),
         'material_review':('material_review.raw',transport.descriptor_at(root,contract['material_review']),source+'/release/MATERIAL-REVIEW.json'),
         'source_archive':('source_archive.zip',transport.descriptor_at(root,contract['source_archive']),source+'/source.zip')}
-    need(b['original_epoch']==f['predispatch_epoch'] and b['raw_source_sha256']==contract['source_sha256'] and b['scope']=='production-rl-abc' and b['role']=='rl-abc','unsealed_bootstrap_scope')
+    need(b['original_epoch']==f['predispatch_epoch'] and b['raw_source_sha256']==contract['source_sha256'] and b['scope']=='production-rl-abc' and b['role']=='rl-abc','numeric_bootstrap_scope')
     for key,(name,raw,path) in mapping.items():
-        if key=='parent_scorer':need(b['parent_scorer_sha256']==sha(raw),'unsealed_parent_scorer_pin')
-        else:need(b[key]=={'path':path,'file_sha256':sha(raw)},'unsealed_bootstrap_'+key)
+        if key=='parent_scorer':need(b['parent_scorer_sha256']==sha(raw),'numeric_parent_scorer_pin')
+        else:need(b[key]=={'path':path,'file_sha256':sha(raw)},'numeric_bootstrap_'+key)
     archive=DOWNLOADS/t['evidence_path'];archive_row=present[t['evidence_path']];terminal_row=present[t['terminal_path']]
     with diagnostic_archive_helpers(args) as (terminal_helper,zip_helper):
         checked,actual=terminal_helper.verify_terminal(archive,DOWNLOADS/t['terminal_path'],expected_archive_sha256=archive_row['sha256'],expected_terminal_sha256=terminal_row['sha256'],expected_source_sha256=contract['source_sha256'],expected_inventory_sha256=sha(inventory_raw),expected_request_sha256=sha(owner_raw),expected_outer_sha256=sha(outer_raw))
-        need(checked==terminal,'unsealed_terminal_bytes_changed')
+        need(checked==terminal,'numeric_terminal_bytes_changed')
         extra=terminal.get('retained_body_exceptions',{}).get('checkpoints.zip');checkpoint_body=None if extra is None else {'bytes':extra['original_bytes'],'sha256':extra['original_sha256']}
         pre=zip_helper.preflight_evidence_zip(archive,checkpoint_archive_body=checkpoint_body);records={r['name']:r for r in pre['members']}
         def archive_json(name,cap):
-            r=records[name];need(r['bytes']<=cap,'unsealed_metadata_cap')
+            r=records[name];need(r['bytes']<=cap,'numeric_metadata_cap')
             with archive.open('rb') as stream:
-                need(zip_helper._identity(os.fstat(stream.fileno()))==pre['file_identity'],'unsealed_archive_changed');stream.seek(r['data_offset']);raw=stream.read(r['bytes'])
-            need(len(raw)==r['bytes'] and {'bytes':len(raw),'sha256':sha(raw)}==actual['members'][name],'unsealed_metadata_hash');return strict_json(raw)
-        for name,raw in (('owner-request.json',owner_raw),('owner-clock.json',clock_raw),('artifact-inventory.json',inventory_raw),('outer-closure.json',outer_raw)):
-            need(actual['members'].get(name)=={'bytes':len(raw),'sha256':sha(raw)},'unsealed_compact_byte_link')
+                need(zip_helper._identity(os.fstat(stream.fileno()))==pre['file_identity'],'numeric_archive_changed');stream.seek(r['data_offset']);raw=stream.read(r['bytes'])
+            need(len(raw)==r['bytes'] and {'bytes':len(raw),'sha256':sha(raw)}==actual['members'][name],'numeric_metadata_hash');return strict_json(raw)
+        for name,raw in (('owner-request.json',owner_raw),('owner-clock.json',clock_raw),('artifact-inventory.json',inventory_raw),('outer-closure.json',outer_raw),('owned-result.json',owned_raw)):
+            need(actual['members'].get(name)=={'bytes':len(raw),'sha256':sha(raw)},'numeric_compact_byte_link')
         source_inventory=archive_json('release-source-inventory.json',4*1024**2)
-        need(source_inventory['files']==source_files and source_inventory['source_sha256']==contract['source_sha256'],'unsealed_archive_source_binding')
+        need(source_inventory['files']==source_files and source_inventory['source_sha256']==contract['source_sha256'],'numeric_archive_source_binding')
         lineage=archive_json('parent-lineage/index.json',4*1024**2)
-        need(lineage['format']=='owned-rl-parent-lineage-copies-v1' and lineage['all_original_bytes_retained'] is True and lineage['independent_approval_claim'] is False and set(lineage['files'])==set(mapping),'unsealed_closed_parent_lineage')
+        need(lineage['format']=='owned-rl-parent-lineage-copies-v1' and lineage['all_original_bytes_retained'] is True and lineage['independent_approval_claim'] is False and set(lineage['files'])==set(mapping),'numeric_closed_parent_lineage')
         for key,(name,raw,path) in mapping.items():
             member='parent-lineage/'+name;digest=sha(raw)
-            need(actual['members'].get(member)=={'bytes':len(raw),'sha256':digest},'unsealed_retained_'+key)
-            need(lineage['files'][key]=={'bytes':len(raw),'matches_original_binding':True,'original':{'path':path,'file_sha256':digest},'retained':{'path':'/kaggle/working/'+prefix+'/'+member,'file_sha256':digest}},'unsealed_original_'+key)
-        need(zip_helper._identity(archive.stat())==pre['file_identity'],'unsealed_archive_changed_after_checks')
-    result={'status':'UNSEALED_SESSION_DIAGNOSTICS','reason':'SOURCE_BOUND_TERMINATED_SESSION_WITHOUT_AUTHENTICATED_JOURNAL_CLOSURE','provider_status':receipt['after']['status'],'numeric_output_version':transport.ACTIVE_VERSION,'diagnostic_transport_integrity_verified':True,'external_stage_process_closure_verified':True,'runtime_worker_exited':True,'runtime_worker_session_empty':True,'runtime_authenticated_request_sha256':None,'runtime_authenticated_inner_closure':None,'runtime_safe_closure':False,'runtime_model_closure_verified':False,'runtime_closure_error':clean_message(runtime_outer.get('closure_error')) if runtime_outer.get('closure_error') is not None else None,'physical_journal_present_in_archive':'physical-journal.jsonl' in actual['members'],'physical_costs_known':False,'physical_costs':None,'billing_verified':False,'archive':{k:v for k,v in actual.items() if k!='members'},'archive_inventory_sha256':sha(canonical(actual['members'])),'deployment_closures':wrappers,'checkpoint_archive_observation':receipt['checkpoint_archive_observation'],'separate_checkpoint_presence':'UNKNOWN' if receipt['checkpoint_archive_observation'] is None else receipt['checkpoint_archive_observation']['transport_observation'],'independent_checkpoint_tensor_verification':False,'inventory_scope':'selected_outputs_only','whole_provider_inventory_verified':False,'automatic_retry':False,'public_score':None,'qualification':'Exact selected transport, ZIP inventory, original source/JIT and deployment process termination verified. The model/session journal is unsealed; no authenticated model closure, consumer admission, physical-cost total, science or billing claim.'}
-    for key in ('terminal_validated','consumer_admitted','production_admitted','external_owner_envelope_verified','scientific_evidence_eligible','science_complete','operational_complete','comparison_complete','comparison_eligible','compute_matched','public_benchmark_evidence_eligible','verified_public_threshold_reached','provider_operational_success','owned_closure_verified','operational_success','public_goal_met','scientific_goal_met','goal_met'):result[key]=False
+            need(actual['members'].get(member)=={'bytes':len(raw),'sha256':digest},'numeric_retained_'+key)
+            need(lineage['files'][key]=={'bytes':len(raw),'matches_original_binding':True,'original':{'path':path,'file_sha256':digest},'retained':{'path':'/kaggle/working/'+prefix+'/'+member,'file_sha256':digest}},'numeric_original_'+key)
+        def referenced(ref, name, cap):
+            need(type(ref) is dict and set(ref)=={'path','file_sha256'}
+                 and ref['path']=='/kaggle/working/'+prefix+'/'+name, 'numeric_fixed_artifact_reference')
+            member=actual['members'].get(name)
+            need(type(member) is dict and ref['file_sha256']==member['sha256'], 'numeric_artifact_hash_reference')
+            return archive_json(name,cap)
+        flow=update=shadow=None
+        if owned.get('result_ref') is not None:
+            need(owned['result_ref']==(runtime_outer.get('inner_closure') or {}).get('result_ref'),
+                 'numeric_inner_result_reference')
+            flow=referenced(owned['result_ref'],'experiment/result.json',16*1024**2)
+            need(flow.get('format')=='owned-training-numeric-diagnostic-v1'
+                 and flow.get('run_purpose')==NUMERIC_PURPOSE, 'numeric_fixed_flow_result')
+            if flow.get('numeric_shadow_ref') is not None:
+                shadow=referenced(flow['numeric_shadow_ref'],'experiment/numeric-shadow.json',256*1024)
+                update=numeric_audits(flow,referenced)
+                need(type(update) is dict and update.get('numeric_shadow_ref')==flow['numeric_shadow_ref'],
+                     'numeric_shadow_update_binding')
+        gpu_diagnostic=(archive_json('child-driver-resolution.json',65536)
+                        if 'child-driver-resolution.json' in actual['members'] else None)
+        complete=numeric_completion(owned,flow,update,shadow,runtime_outer,wrappers)
+        need(owned['diagnostic_complete'] is complete
+             and (owned['status']==NUMERIC_COMPLETE) is complete, 'numeric_honest_completion_classification')
+        need(zip_helper._identity(archive.stat())==pre['file_identity'],'numeric_archive_changed_after_checks')
+    result={'status':'NUMERIC_DIAGNOSTIC_COMPLETE' if complete else 'NUMERIC_DIAGNOSTIC_INCOMPLETE',
+        'run_purpose':NUMERIC_PURPOSE,'engineering_diagnostic_complete':complete,
+        'provider_status':receipt['after']['status'],'numeric_output_version':transport.ACTIVE_VERSION,
+        'diagnostic_transport_integrity_verified':True,'external_stage_process_closure_verified':True,
+        'source_bound_runtime_safe_closure':runtime_outer.get('safe_closure') is True,
+        'runtime_journal_independently_authenticated':False,
+        'terminal_export_model_closed':terminal['model_closed'],
+        'archive':{k:v for k,v in actual.items() if k!='members'},
+        'archive_inventory_sha256':sha(canonical(actual['members'])),
+        'deployment_closures':wrappers,'numeric_shadow_artifact':None if shadow is None else
+            {'path':'experiment/numeric-shadow.json',**actual['members']['experiment/numeric-shadow.json']},
+        'original_numeric_gate':None if update is None else
+            {k:v for k,v in update.get('original_numeric_gate',{}).items() if k not in ('per_trajectory','per_parent_ids')},
+        'physical_journal_present_in_archive':'physical-journal.jsonl' in actual['members'],
+        'physical_costs_known':False,'physical_costs':None,'billing_verified':False,
+        'inventory_scope':'selected_outputs_only','whole_provider_inventory_verified':False,
+        'automatic_retry':False,'public_score':None,
+        'source_bound_gpu_unavailable':explicit_cuda_unavailable(gpu_diagnostic),
+        'gpu_diagnostic_artifact':None if gpu_diagnostic is None else
+            {'path':'child-driver-resolution.json',**actual['members']['child-driver-resolution.json']},
+        'qualification':'Source-bound training-only diagnostic and original transport/container checks. '
+            'No independent numerical re-execution, scientific consumer admission, comparison, PUBLIC score or billing verification.'}
+    for key in ('consumer_admitted','production_admitted','external_owner_envelope_verified',
+                'scientific_evidence_eligible','science_complete','comparison_complete','comparison_eligible',
+                'compute_matched','public_benchmark_evidence_eligible','verified_public_threshold_reached',
+                'operational_success','public_goal_met','scientific_goal_met','goal_met'):
+        result[key]=False
     return result
 
 
@@ -610,23 +781,25 @@ def collect(provider,m,l,j,f,args,before=None,final_incomplete=False):
         raise IndexingPending('selected_numeric_outputs_pending_or_missing')
     need(terminal is not None and terminal.get('archive_complete') is True,'terminal_archive_incomplete')
     wrappers=wrapper_gate(m,args,f,outer,prefix)
-    diagnostic=unsealed_session_diagnostic(m,args,f,receipt,terminal,present,prefix,outer,wrappers)
-    if diagnostic is not None:
-        gpu_observation=source_bound_gpu_stop(m,args,f,receipt,terminal,present,prefix,wrappers,diagnostic)
-        diagnostic.update(actual_gpu_stop=gpu_observation is not None,gpu_observation=gpu_observation)
-        diagnostic['retrieval_receipt']=descriptor(rp)
-        write_new(OUT/'RETRIEVAL-RECEIPT.json',receipt);write_new(OUT/'TERMINAL-DIAGNOSTIC.json',diagnostic)
-        checkpoint={**diagnostic,'diagnostic_receipt':descriptor(OUT/'TERMINAL-DIAGNOSTIC.json'),'dispatch_epoch':j['dispatch_epoch'],'predispatch_epoch':f['predispatch_epoch'],'last_observed_terminal_epoch':after['observed_epoch'],'observed_dispatch_to_terminal_seconds':after['observed_epoch']-j['dispatch_epoch'],'timing_scope':'Observed dispatch to selected collection; billing unknown.'}
-        write_new(OUT/'TERMINAL-CHECKPOINT.json',checkpoint);return checkpoint
-    collection_path,release_root=assemble_consumer_envelope(m,args,f,receipt,terminal,present[t['evidence_path']],present[t['terminal_path']],prefix,outer,cp)
-    report=validate_received(m,args,collection_path,release_root,DOWNLOADS/t['evidence_path'],DOWNLOADS/t['terminal_path'])
-    raw=write_new(OUT/'TERMINAL-CONSUMER-RAW.json',report)
-    report=validation_gate(report,before['status'],wrappers['closure_valid'],wrappers['operational'])
-    gpu_observation=source_bound_gpu_stop(m,args,f,receipt,terminal,present,prefix,wrappers,report)
-    report.update(actual_gpu_stop=gpu_observation is not None,gpu_observation=gpu_observation)
-    report.update(separate_checkpoint_presence='UNKNOWN' if cp is None else cp['transport_observation'],inventory_scope='selected_outputs_only',whole_provider_inventory_verified=False,checkpoint_archive_observation=cp,independent_checkpoint_tensor_verification=False,raw_consumer_result=raw,deployment_closures=wrappers)
-    write_new(OUT/'RETRIEVAL-RECEIPT.json',receipt);write_new(OUT/'TERMINAL-VALIDATION.json',report)
-    checkpoint={'status':'TERMINAL_EVIDENCE_VERIFIED','actual_gpu_stop':gpu_observation is not None,'gpu_observation':gpu_observation,'provider_status':before['status'],'operational_success':report['operational_success'],'comparison_complete':report['comparison_complete'],'compute_matched':report['compute_matched'],'comparison_eligible':report['comparison_eligible'],'public_benchmark_evidence_eligible':report['public_benchmark_evidence_eligible'],'goal_met':report['goal_met'],'public_goal_met':report['public_goal_met'],'validation':descriptor(OUT/'TERMINAL-VALIDATION.json'),'retrieval':descriptor(OUT/'RETRIEVAL-RECEIPT.json'),'dispatch_epoch':j['dispatch_epoch'],'predispatch_epoch':f['predispatch_epoch'],'last_observed_terminal_epoch':after['observed_epoch'],'observed_dispatch_to_terminal_seconds':after['observed_epoch']-j['dispatch_epoch'],'timing_scope':'Observed wall includes queue, status lag and collection; billing unverified.','provider_vm_or_billing_state_verified':False,'automatic_retry':False,'inventory_scope':'selected_outputs_only','whole_provider_inventory_verified':False,'checkpoint_archive_observation':cp,'independent_checkpoint_tensor_verification':False}
+    diagnostic=numeric_session_diagnostic(m,args,f,receipt,terminal,present,prefix,outer,wrappers)
+    gpu_stop=diagnostic['source_bound_gpu_unavailable']
+    observation=None
+    if gpu_stop:
+        observation={'classification':'GPU_UNAVAILABLE_STOP',
+            'reason':'SOURCE_BOUND_CUDA_VISIBILITY_FALSE_ZERO',
+            'numeric_output_version':transport.ACTIVE_VERSION,
+            'manifest_sha256':args.manifest_sha,'runtime_source_sha256':m['runtime_source_sha256'],
+            'archive_sha256':present[t['evidence_path']]['sha256'],
+            'member':diagnostic['gpu_diagnostic_artifact'],
+            'cuda_visibility':{'cuda_available':False,'device_count':0},
+            'quota_state_verified':False,'billing_verified':False,
+            'automatic_retry':False,'sprint_stop':True}
+        if not STOP.exists():write_new(STOP,observation)
+        event('source-bound-numeric-cuda-stop',observation)
+    diagnostic.update(actual_gpu_stop=gpu_stop,gpu_observation=observation)
+    diagnostic['retrieval_receipt']=descriptor(rp)
+    write_new(OUT/'RETRIEVAL-RECEIPT.json',receipt);write_new(OUT/'TERMINAL-DIAGNOSTIC.json',diagnostic)
+    checkpoint={**diagnostic,'diagnostic_receipt':descriptor(OUT/'TERMINAL-DIAGNOSTIC.json'),'dispatch_epoch':j['dispatch_epoch'],'predispatch_epoch':f['predispatch_epoch'],'last_observed_terminal_epoch':after['observed_epoch'],'observed_dispatch_to_terminal_seconds':after['observed_epoch']-j['dispatch_epoch'],'timing_scope':'Observed dispatch to selected collection; billing unknown.'}
     write_new(OUT/'TERMINAL-CHECKPOINT.json',checkpoint);return checkpoint
 
 def retry_delay(result,count):
@@ -651,7 +824,7 @@ def watch(provider,m,l,j,f,args):
             # Pending numeric output indexing is not a terminal conclusion.
             result=collect(provider,m,l,j,f,args,snap,final_incomplete=False)
             print(json.dumps(result),flush=True)
-            return 0 if result['status']=='TERMINAL_EVIDENCE_VERIFIED' else 4
+            return 0 if result['status']=='NUMERIC_DIAGNOSTIC_COMPLETE' else 4
         except IndexingPending:
             failures['collect']+=1;time.sleep(min(120,15*2**min(failures['collect']-1,3)))
         except Exception as e:

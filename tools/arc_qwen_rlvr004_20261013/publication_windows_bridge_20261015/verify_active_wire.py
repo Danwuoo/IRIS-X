@@ -1,4 +1,4 @@
-"""Independent finite portable run008 actual-wire check. No provider, model or epoch allocation.
+"""Independent finite training numeric diagnostic actual-wire check. No provider, model or epoch allocation.
 
 The reviewer freezes static pins only after source and actual numeric/inactive
 readbacks have passed. This entry emits a receipt only for the real subsequently
@@ -22,8 +22,9 @@ import types
 
 FORMAT = 'irisx/run008-windows-bridge-active-review-static-pins-v1'
 CONFIG_FORMAT = 'irisx/run008-windows-bridge-operator-config-v1'
-SOURCE = '38698fd0861b2940bd303b59899011da0fb53d2daa4da846de80521bfc2c828b'
-ARCHIVE = 'ffaea7e6dd0fd3df1b6bc0566b27278f47f318b2d680d96e358a1cc5b8584dff'
+SOURCE = '69bf39ddee56278197eb4f1a46119d569dba45f51621a92588a56dd7d6f1e292'
+RUN_PURPOSE = 'training-only-numeric-diagnostic-v1'
+ARCHIVE = '085a64b4dbe9c35db40d81ef0ae28dcce445eaa78f5da0e85518900bab035061'
 REF = 'danielwuu/iris-x-learning-agent-20261011'
 DREF = 'danielwuu/iris-x-learning-agent-code-20261011'
 VERSION_FIELDS = {'code_predecessor', 'code', 'inactive_predecessor', 'inactive', 'active'}
@@ -36,8 +37,8 @@ NON_CODE_PINS = [
     'danielwuu/iris-arc-next-cpython312-offline/2',
     'danielwuu/iris-arc-granite42-run003-adapter-20261009/1',
 ]
-RUN = '/kaggle/working/irisx-qwen14b-rlvr-20261013-run008'
-SOURCE_ROOT = '/kaggle/working/irisx-qwen14b-rlvr-20261013-source008'
+RUN = '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-run001'
+SOURCE_ROOT = '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source001'
 DOCS = {'active-finalized.ipynb', 'original-request.json', 'operator.json', 'parent-private-scorer.json'}
 
 
@@ -170,8 +171,9 @@ def verify(pins_path, pins_sha):
     manifest_raw = read(str(root / 'publication-manifest.json'), pins['publication_manifest_sha256'])
     manifest = obj(manifest_raw)
     need(manifest['format'] == 'irisx/qwen14b-rlvr-run008-publication-contract-v1'
+         and manifest.get('run_purpose') == RUN_PURPOSE
          and manifest['run_authorized'] is True and manifest['runtime_source_sha256'] == SOURCE,
-         'reviewed run008 publication manifest')
+         'reviewed training numeric diagnostic publication manifest')
     need(manifest['consumer_contract']['source_archive']['sha256'] == ARCHIVE, 'original reviewed archive identity')
     rows = manifest_versions(manifest, allocation)
     for name, descriptor in pins['prelaunch_files'].items():

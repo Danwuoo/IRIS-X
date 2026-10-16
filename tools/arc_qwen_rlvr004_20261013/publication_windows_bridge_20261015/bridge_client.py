@@ -23,7 +23,7 @@ import time
 from types import MappingProxyType
 
 PROTOCOL_SOURCE_SHA256 = '5f67b8655497565cb149dbd7bd4aa675be8cec058089295f0d2a75873787cf24'
-CONTEXT_SOURCE_SHA256 = '7d2b5702f008b9600215d1f22e93b9cc45d8404ac93fbf08730f5d6d196430ae'
+CONTEXT_SOURCE_SHA256 = '68820f6ffd105b54eab1deb542376b285606c1a78806888f2b73b2171e74f67f'
 SDK_LOCK_SHA256 = '3d447ab7fad280fcc378fd18b57c3792c5b39798127f583679646027ab73288d'
 LEASE_SECONDS = 43200.0
 CLOSURE_WAIT_SECONDS = 5.0
@@ -197,6 +197,7 @@ class BridgeClient:
         self.mutations = set()
         self.refresh = None
         self.session_name = None
+        self.readonly_frontier_guard = None
         self.session_proof = None
         self.native_receipt_bytes = self.native_exit_status = None
         self._validate_binding()
@@ -219,6 +220,7 @@ class BridgeClient:
             'publication_manifest_sha256': config.publication_manifest_sha256,
             'deadline_epoch': self.lease_epoch, 'max_seconds': lease_seconds}
         self.open_binding = self._open_arguments(self.open_binding)
+        self._check_readonly_frontier()
         self._before_session_claim()
         self.session_name = 'native-bridge-' + self.nonce
         claim = c['claim'](self.session_name, {'format': 'irisx/windows-bridge-session-claim-v1',
@@ -282,8 +284,10 @@ class BridgeClient:
     def _journal_session(self):
         self.c['journal'](self.session_name, dict(self.session_proof))
 
-    def _pending_refresh(self):
+    def _pending_refresh(self, exclude=None):
         for path in self.c['STATE'].glob('native-auth-refresh-*.claim.json'):
+            if exclude is not None and path.name == exclude + '.claim.json':
+                continue
             self.c['secure_path'](path)
             journal = path.with_name(path.name[:-len('.claim.json')] + '-journal.json')
             _need(journal.is_file(), 'auth_refresh_unknown_reconcile_only')
@@ -310,12 +314,28 @@ class BridgeClient:
             # immutable old claims. Every uncovered/new UNKNOWN still blocks.
             module = self.c['load_source_module']('reviewed_context_continuation_' + CONTEXT_SOURCE_SHA256,
                 Path(__file__).with_name('context_continuation.py'), CONTEXT_SOURCE_SHA256)
-            callbacks = {**self.c, 'recovery_boot_observation':
+            callbacks = {**self.c, 'receive_readonly_frontier_guard': self._receive_readonly_guard,
+                         'recovery_boot_observation':
                          lambda review, challenge: observe_recovery_boot(self.c, review, challenge)}
             module.validate_context(callbacks, self.c['configured'](), pending)
 
+    def _receive_readonly_guard(self, guard):
+        _need(self.readonly_frontier_guard is None and callable(guard), 'bridge_frontier_guard_once')
+        self.readonly_frontier_guard = guard
+
+    def _check_readonly_frontier(self, *, refresh_ack=False):
+        if self.readonly_frontier_guard is not None:
+            current = self.refresh if refresh_ack else None
+            self._pending_refresh(exclude=current['name'] if current is not None else None)
+            if current is None:
+                self.readonly_frontier_guard(getattr(self, 'nonce', None))
+            else:
+                self.readonly_frontier_guard(self.nonce,
+                    {'name': current['name'], 'proof': dict(current['proof'])})
+
     def _refresh_intent(self, payload, sequence, request_hash):
         _need(self.ready and self.refresh is None, 'bridge_refresh_state')
+        self._check_readonly_frontier()
         self._pending_refresh()
         metadata = {'account': ACCOUNT, 'old_expiration_epoch': payload['old_expiration_epoch']}
         expected = hashlib.sha256(self.c['canonical'](metadata)).hexdigest()
@@ -332,6 +352,7 @@ class BridgeClient:
         # Set in-memory uncertainty before the first durable write can fail.
         self.refresh = {'name': name, 'proof': proof, 'accepted': False}
         journal = self.c['journal'](name, proof)
+        self._check_readonly_frontier(refresh_ack=True)
         self.io.send('refresh_ack', {'refresh_id': expected, 'phase': 'intent',
             'claim_sha256': claim['sha256'], 'journal_sha256': self.c['file_sha'](journal)},
             sequence=sequence, request_sha256=request_hash)
@@ -351,6 +372,7 @@ class BridgeClient:
             'new_grant_created': False, 'time_epoch': self.wall_clock()}
         journal = self.c['journal'](state['name'], proof)
         state['proof'], state['accepted'] = proof, True
+        self._check_readonly_frontier(refresh_ack=True)
         self.io.send('refresh_ack', {'refresh_id': payload['refresh_id'], 'phase': 'accepted',
             'claim_sha256': proof['claim_sha256'], 'journal_sha256': self.c['file_sha'](journal)},
             sequence=sequence, request_sha256=request_hash)
@@ -378,6 +400,7 @@ class BridgeClient:
                       and payload['sdk_lock_sha256'] == SDK_LOCK_SHA256
                       and payload['sdk_source_count'] == 170 and payload['account'] == ACCOUNT
                       and payload['existing_official_store'] is True, 'bridge_ready_source_account')
+                self._check_readonly_frontier()
                 self.ready = True
                 self.io.send('ready_ack', {'ready': True}, sequence=sequence, request_sha256=request_hash)
             elif kind == 'refresh_request':
@@ -410,6 +433,10 @@ class BridgeClient:
         self.protocol.validate_request(operation, arguments)
         self._check_versions(operation, arguments)
         _need(operation not in self.mutations, 'bridge_mutation_replay_forbidden')
+        # Cleanup runs after collector releases the publisher flock. Native
+        # close performs neither provider RPC nor authentication renewal.
+        if operation != 'close':
+            self._check_readonly_frontier()
         started = self.clock()
         seconds = min(self.protocol.OPERATION_TIMEOUTS[operation], self.lease_deadline - started)
         _need(seconds > 0, 'bridge_lease_expired')
@@ -432,6 +459,8 @@ class BridgeClient:
             _need(remaining > 0, 'bridge_command_deadline')
             with self.c['wall_bound'](remaining):
                 self._journal_session()
+                if operation != 'close':
+                    self._check_readonly_frontier()
                 self.io.send('request', {'operation': operation, 'arguments': arguments,
                     'deadline_epoch': deadline_epoch, 'max_seconds': seconds},
                     sequence=sequence, request_sha256=digest)

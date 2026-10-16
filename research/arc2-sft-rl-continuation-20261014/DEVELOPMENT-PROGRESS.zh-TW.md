@@ -26,9 +26,11 @@ context 修復已發布為 `a5c3da425aeeb31cb8b45d20684aec558fd0db84`，本地�
 native 檔案身分修復已發布為 `9fdc96325fd3f425b54fa99508d3181230f77f3e`，本地真實重取成功。
 wrapper／header 窄修已發布為 `4309b890d5c19dddd29b1fb87a26fa916df22cf1`；真實 wrapper replay 通過，header 首次失敗。
 header 去敏 stage／code 修復已發布為 `65543cbb4c3547fe038c3e0f42bb73ea770d3e92`；真實續接停於
-`checkpoint_before`／`unexpected_error`，尚未呼叫 checkpoint output，header 仍未取得。
+`checkpoint_before`／`unexpected_error`，當次未呼叫 checkpoint output。後續診斷來源
+`a3e9c8d99bf70c52afb8b6323ef03fe2ffdbbc23` 的單次真實觀察已成功取得 HTTP header，前兩次原因仍未知。
 training-only successor 已發布為 `03022f2a9e716d953f22f5245b56ffa688060862`，20 檔逐檔遠端回讀一致；
-本地正在準備真實 proposal／reviews，尚未確認新 code 或 RUN。
+本地 preflight 在 provider 前被原 edd 未閉合 session 拒絕，尚無新 code 或 RUN。完整 operator 的
+launcher／transport／collector source pins 已在本次完整 operator 一併整合，不能只替換三個 publication overlays。
 本頁與下一次窄修同一 commit 保存，交付 SHA 由接收時 HEAD／遠端 readback 核對。歷史 fix refs、
 f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.com/Danwuoo/IRIS-X/blob/84a5a1f870c42899f3bea79996d1b9360c4bfee9/research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)
 保存 lease 失敗與修復前的精確證據，不在本頁重複累積。
@@ -130,14 +132,55 @@ publication／collector 獨立審查亦 PASS：43 項 targeted、18 個拒絕負
 header before bracket 的來源檢查未發現可支持的相容性修復；header mode 並未改寫 kernel／status 路由。
 新的最小診斷以 provider wrapper 標記前後各三次呼叫與返回驗證、固定 exception category，
 保留原 observer bytes、原 RPC 次數與成功收據；不輸出原 exception 文字或任意 class name。
-這是下一次失敗定位能力，不能倒推前兩次原因；原 HTTP／長度仍未知。
+這是下一次失敗定位能力，不能倒推前兩次原因；前兩次 HTTP／長度仍未知。
 作者與獨立 reviewer 各161 normal／161 `-O` 通過（header63／retrieve69／observer29）；
 獨立對照65543的7種成功與非 header failure 路徑，兩模式逐 bytes 相同。作者原 stdout 未落盤，
-差分 JSON 另已保存；測試與差分均為 CPU 合成驗證，沒有新 native 或 provider 動作。
+差分 JSON 另已保存；這些測試與差分均為 CPU 合成驗證。其後本地 a3e9 單次真觀察在
+2026-10-16 01:30:57.303／01:31:00.250 UTC 取得 v43／code22 的 COMPLETE／COMPLETE bracket，
+HTTP200、Content-Length 1,546,535,710、新 Job0 與完整 nonce／request／worker 鏈成立；
+body consumed0／未 materialize。新 result 3,647 bytes／SHA256
+`90d0f0b3f636b634fb9912effea26eeb0f975826cf6cc590e1812d4f54acefd9`。
+這補齊 header 觀察，不證明 tensor bytes、舊 edd closure 或正式 consumer admission。
 
 本地只讀已確認原兩份 closed assembly inventory、259-member source proposal 與原 solver descriptor
 完整；不缺料、不讀 evaluator bodies。新完整 private candidate／fresh predecessor observation、
 proposal→獨立 reviews→final、numeric mount／inactive／JIT／唯一 RUN 仍尚未執行。
+
+### 原唯讀 session 的獨立續接依據
+
+03022 的本地 preflight 在 provider 前拒絕 `recovery_later_session_unknown`；原 edd session 的
+seq97 `kernel` 已 accepted、mutation false、closure false，匿名 pipes 已無可重連端點。
+較早兩次 WSL selector mismatch 仍為各自當次事實；01:41:20 UTC 已只讀確認目前 selector 回到
+原 reviewed hash，不能再將 mismatch 當成持續阻礙，也不能據此宣稱舊程序已閉合。
+
+第一筆 presence 查詢在 SID／CIM 前初始化失敗，保留 INCONCLUSIVE；後續一次修正只明確載入
+已存在的官方 PowerShell modules。2026-10-16 02:04:08.1116572–02:04:09.2319704 UTC，
+兩個原 executable 的 `python.exe` basename 都在同一完整 CIM enumeration 範圍；candidate0、
+所有缺欄／未知 SID／不完整計數0。原 controller 在同一 publisher flock 內同步完成前快照、查詢、
+後快照；3,511 個原 STATE bytes、196 個 edd events 與 refresh metadata 全未變。
+RESULT 2,759 bytes／SHA256 `419b60845f9e6778b0c9495c65b19f98e2def2ff84162b169856a326554e1e23`。
+query 全文獨立重組後為 15,232 bytes／`d07f3cce2e3e4338e5ae3f676088ae48d3082f36b2706fc015d1005b8a8bba7b`；
+controller 為私人路徑去敏後的語義審查，原 bytes/hash 由本地核對。原 JIT／owner 的單一同步流程
+與 seq14／OWNER-START 亦已核對；這是來源與既有 launch 證據，不是所有 WSL 程序的 census。
+
+這個已發生的 cut 只用於證明原 edd worker 無法再執行舊 pipe 的 provider 請求；它不是 Job0，
+不覆寫 closure=false、UNKNOWN、原時計或 f5 的覆蓋範圍。原 claim／journal、全部196事件、
+refresh 與新 runtime 的實際鎖持有仍需在續接時檢查；任何後來新增的不確定狀態照常拒絕。
+歷史檢查與目前 host／source／runtime admission 各自保留，不新增永久 same-boot 條件。
+
+本次 frozen context／bridge／common 已完成獨立審查：27 項 focused 加6項獨立 adverse cases，
+normal／`-O` 均通過，測試前後來源 hashes 相同；review SHA256
+`76590f9c0950f5d938dff03aed0f9115b955ed8f739b501945f803c1fdd76097`。
+完整 operator 仍22件、8件既有 body 更新；23條 dependency pins、numeric overlays 與 launcher
+已整合。作者63項 focused（packaging25、source closure6、collector bootstrap21、capture11）
+每模式通過；獨立 reviewer 另驗 capture13項及實際 source closure6項，每模式通過。
+最終 source-closure receipt SHA256
+`0837d0892106b0e3bb76797216ac70e32a324b3f728bd451d481e73bdda63240`。
+固定 v43 capture helper SHA256
+`305bcb645e183b017fe6588044fb49e4ec0fdbb22af07929928371a5c69df223`，在真實新 close 後才產生
+observation；它不進入22件 operator 集合或 runtime archive。科學 source `69bf39dd…`／archive
+`085a64b4…`、native7 與 SDK 未改，未重跑未變範圍；以上均為離線工程驗證，尚未取代本地真實
+M／caller 原件核對、action／monitor reviews、fresh predecessor 或新 RUN admission。
 
 ## 三、任務、依賴與下一步
 
@@ -145,7 +188,7 @@ proposal→獨立 reviews→final、numeric mount／inactive／JIT／唯一 RUN 
 | --- | --- | --- |
 | 兩 caller／guard 契約／collector schema 修復 | 0af 已發布；作者與獨立 reviewer 各 613 normal／613 `-O` 通過（46 準備、9 組裝、558 bridge） | 科學 runtime／archive 與 native 七件來源在本次 bookkeeping 修復中沿用，不重做未變驗收 |
 | 多輪 publication／collector 續接 | 0d3524 的作者／獨立review每模式599項PASS維持歷史證據；本次最終bridge每模式600項、獨立context每模式70項PASS，精確hash見VALIDATION | 本地真實 history／fresh readback 已通過並接受 v43；保留原件，已驗證且未變元件不重做 |
-| 原 A/B/C v43 取證 | 9fdc 真實取檔完成；4309 wrapper v2 原檔 replay PASS，22／6 observations、差集2，完整 subset 仍 false。兩次 header 實測均失敗；65543 停於 checkpoint_before／unexpected_error，HTTP／長度未知 | 保留原拒絕、全部 closure 與 failed header receipts；先查 before bracket 來源，不據此推定 auth 或回填首次原因。tensor bodies、原 collector context 與整體 admission 仍未成立 |
+| 原 A/B/C v43 取證 | 9fdc 真實取檔完成；4309 wrapper v2 原檔 replay PASS，22／6 observations、差集2，完整 subset 仍 false；a3e9 header 真實 HTTP200／長度驗證與新 Job0 通過 | 保留原拒絕、兩次 failed header receipts，不回填其原因。tensor bodies、原 collector context 與整體 admission 仍未成立 |
 | v41 官方 log／inventory | 現有 bridge 尚未支援；SDK 0.1.37 可送 numeric version_label，但 response 無 version/source echo | 另作最小唯讀支援，不阻擋已確定的啟動修復；完整分頁與 numeric bodies／log attribution 分開，不能靠 latest CLI 補稱 exact41 |
 | 數值診斷與下一輪 | actor 為 eval／inference cached 增量解碼；replay 為 train／autograd checkpointed 全因果 teacher-forcing。相同 token／DFA 上仍有 gap | 既有 calibration 差分已完成；下一輪固定 training-only 診斷 mode／checkpoint、teacher／prefix 及 cached 路徑，teacher／prefix 仍合併 hidden 與 head shape 因素。不得猜 kernel 根因、放寬門檻或依 PUBLIC 答案改模型 |
 
@@ -243,7 +286,8 @@ helper 43,162 bytes／SHA256 `793e3e1d10e6f0d0dd2a0ec43ca9d78ce8f3a81336fba60332
 test 46,888 bytes／SHA256 `1d1c30b8aa3527685770473755203d67e80b40bc0dfe3c0e59519cfce9062804`。
 作者與獨立 reviewer 各 154 normal／154 `-O` PASS（header56＋retrieval69＋observer29）；
 另有獨立 43 種 parent envelope 與 18 種 worker exception 負例。獨立 review SHA256
-`fb5091eb81671e60a6b7d3dc960e176e7c7bf56844ccdbf0d73ac17da4cffaf4`。尚未以此修復重試 native header。
+`fb5091eb81671e60a6b7d3dc960e176e7c7bf56844ccdbf0d73ac17da4cffaf4`。此版本後續真實重試仍失敗，
+再後的 a3e9 單次 header 觀察成功，精確結果見本頁目前證據；不改寫這兩次失敗。
 
 ### v43 nested-wrapper observation 契約修復
 

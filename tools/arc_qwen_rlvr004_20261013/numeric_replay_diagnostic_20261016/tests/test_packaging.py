@@ -355,9 +355,42 @@ class PublicationSpecializationTests(unittest.TestCase):
         exec(compile(ast.Module(body=[node],type_ignores=[]),'CPU-owner-scope','exec',dont_inherit=True,optimize=sys.flags.optimize),ns)
         ns['diagnostic_owner_scope'](owner)
 
-    def test_exact_original_transport_and_wire_unchanged(self):
-        self.assertEqual(a.sha((self.baseline/'rl_transport.py').read_bytes()),a.BASE_TRANSPORT_SHA)
-        self.assertEqual(a.sha((self.baseline/'verify_active_wire.py').read_bytes()),a.BASE_ACTIVE_WIRE_SHA)
+    def test_exact_published_numeric_helper_baselines(self):
+        helpers = a.publication_helpers(self.wire.SOURCE, self.wire.ARCHIVE)
+        normalized, count = re.subn(rb"(?m)^COMMON_SOURCE_SHA256 = '[0-9a-f]{64}'$",
+            ("COMMON_SOURCE_SHA256 = '" + a.PUBLISHED_COMMON_SHA + "'").encode(), helpers['rl_transport.py'])
+        self.assertEqual(count, 1)
+        self.assertEqual(a.sha(normalized), a.PUBLISHED_TRANSPORT_SHA)
+        self.assertEqual(a.sha(helpers['verify_active_wire.py']), a.PUBLISHED_ACTIVE_WIRE_SHA)
+
+    def test_publication_helpers_reject_drift_stale_or_duplicate_common_pin(self):
+        original = a.read
+        transport = (HERE / 'publication/rl_transport.py').read_bytes()
+        wire = (HERE / 'publication/verify_active_wire.py').read_bytes()
+        common_pattern = rb"(?m)^COMMON_SOURCE_SHA256 = '[0-9a-f]{64}'$"
+        stale = re.sub(common_pattern, b"COMMON_SOURCE_SHA256 = '" + b'0' * 64 + b"'", transport)
+        cases = [('rl_transport.py', transport + b'\n# unreviewed behavior drift\n'),
+                 ('rl_transport.py', stale),
+                 ('rl_transport.py', transport + b"\nCOMMON_SOURCE_SHA256 = '" + b'0' * 64 + b"'\n"),
+                 ('verify_active_wire.py', wire + b'\n# drift\n')]
+        for name, changed in cases:
+            def changed_read(path, *args, **kwargs):
+                if Path(path).name == name and Path(path).parent in (HERE / 'publication', self.baseline):
+                    return changed
+                return original(path, *args, **kwargs)
+            with self.subTest(name=name, sha=a.sha(changed)), patch.object(a, 'read', side_effect=changed_read):
+                with self.assertRaises(ValueError):
+                    a.publication_helpers(self.wire.SOURCE, self.wire.ARCHIVE)
+
+    def test_publication_helpers_require_same_checkout_operator_bytes(self):
+        original = a.read
+        def changed_read(path, *args, **kwargs):
+            if Path(path) == self.baseline / 'rl_transport.py':
+                return b'# stale operator body\n'
+            return original(path, *args, **kwargs)
+        with patch.object(a, 'read', side_effect=changed_read):
+            with self.assertRaisesRegex(ValueError, 'integrated operator helper differs'):
+                a.publication_helpers(self.wire.SOURCE, self.wire.ARCHIVE)
 
     def test_real_runtime_hashes_match_fixed_wire_and_helper_bindings(self):
         original,environment = consumed_runtime()
@@ -384,32 +417,24 @@ class PublicationSpecializationTests(unittest.TestCase):
             bad=dict(owner,rl_optimizer_commit_authorized=True);p.write_bytes(a.encoded(bad))
             with self.assertRaises(ValueError):a.owner_inputs(p,a.sha(p.read_bytes()))
 
-    def test_all_unrelated_transport_functions_and_imports_retained(self):
-        old = ast.parse((self.baseline/'rl_transport.py').read_bytes())
-        old_f={n.name:n for n in old.body if isinstance(n,(ast.FunctionDef,ast.ClassDef))}
-        new_f={n.name:n for n in self.transport_tree.body if isinstance(n,(ast.FunctionDef,ast.ClassDef))}
-        self.assertEqual(set(new_f)-set(old_f),{'diagnostic_owner_scope'})
-        changed={n for n in old_f if ast.dump(old_f[n])!=ast.dump(new_f[n])}
-        self.assertEqual(changed,{'current_predecessor_proof','contract'})
-        old_imports=[ast.dump(n) for n in old.body if isinstance(n,(ast.Import,ast.ImportFrom))]
-        new_imports=[ast.dump(n) for n in self.transport_tree.body if isinstance(n,(ast.Import,ast.ImportFrom))]
-        self.assertEqual(old_imports,new_imports)
-        for name in ('configure_local','publication_guard','publication_preflight','review_gate','load_contract',
-                     'finalized_documents','submit','monitor_gate'):
-            if name in old_f:self.assertEqual(ast.dump(old_f[name]),ast.dump(new_f[name]))
-        text=(HERE/'publication/rl_transport.py').read_text()
-        self.assertIn("COMMON_SOURCE_SHA256 = '88faa050b8cd7564e2d46552091773df4025b0589bd37771f79ea8648f2c053a'",text)
-        self.assertIn("CONFIG.scratch_root/'state-run008'",text)
-        self.assertIn("CONFIG.scratch_root/'evidence-run008'",text)
-        self.assertNotIn('/kaggle/working/irisx-qwen14b-rlvr-20261013-run008',text)
+    def test_transport_only_changes_published_common_dependency_pin(self):
+        raw = (HERE / 'publication/rl_transport.py').read_bytes()
+        normalized, count = re.subn(rb"(?m)^COMMON_SOURCE_SHA256 = '[0-9a-f]{64}'$",
+            ("COMMON_SOURCE_SHA256 = '" + a.PUBLISHED_COMMON_SHA + "'").encode(), raw)
+        self.assertEqual(count, 1)
+        self.assertEqual(a.sha(normalized), a.PUBLISHED_TRANSPORT_SHA)
+        common_sha = a.sha((self.baseline / 'operator_common.py').read_bytes())
+        self.assertIn(("COMMON_SOURCE_SHA256 = '" + common_sha + "'").encode(), raw)
+        text = raw.decode()
+        self.assertIn("CONFIG.scratch_root/'state-run008'", text)
+        self.assertIn("CONFIG.scratch_root/'evidence-run008'", text)
+        self.assertNotIn('/kaggle/working/irisx-qwen14b-rlvr-20261013-run008', text)
 
     def test_wire_retains_all_other_guards_and_legacy_schema(self):
-        old=ast.parse((self.baseline/'verify_active_wire.py').read_bytes())
-        new=ast.parse((HERE/'publication/verify_active_wire.py').read_bytes())
-        old_f={n.name:n for n in old.body if isinstance(n,ast.FunctionDef)}
+        raw = (HERE/'publication/verify_active_wire.py').read_bytes()
+        self.assertEqual(a.sha(raw), a.PUBLISHED_ACTIVE_WIRE_SHA)
+        new=ast.parse(raw)
         new_f={n.name:n for n in new.body if isinstance(n,ast.FunctionDef)}
-        self.assertEqual(set(old_f),set(new_f))
-        self.assertEqual({n for n in old_f if ast.dump(old_f[n])!=ast.dump(new_f[n])},{'verify'})
         self.assertEqual(self.wire.RUN,a.RUN);self.assertEqual(self.wire.SOURCE_ROOT,a.SOURCE)
         self.assertEqual(self.wire.RUN_PURPOSE,a.RUN_PURPOSE)
         self.assertEqual(a.FORMAT,'irisx/qwen14b-rlvr-run008-publication-contract-v1')

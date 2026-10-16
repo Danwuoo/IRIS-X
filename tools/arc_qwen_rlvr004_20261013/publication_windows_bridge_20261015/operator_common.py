@@ -10,8 +10,9 @@ from urllib.parse import urlparse, urljoin
 
 BASE = WORK = STATE = STOP = CONFIG = CONFIG_PATH = MANIFEST_PATH = ACTION_REVIEW = None
 PUBLICATION_STATE = PUBLICATION_EVIDENCE = None
+_PUBLISHER_OWNER = None
 CONFIG_SOURCE_SHA256 = '65d40a128e0e6a313df1d3b37071638cba76d0914cb27c6339cf5652f36554f0'
-BRIDGE_CLIENT_SHA256 = '0c51c44fda476e4d3aa290082fa2178ce930966466dcd153302d49adc578b6a4'
+BRIDGE_CLIENT_SHA256 = 'af6887d937db3e43e1dc00988c77968c2c33829d1449e77a664856d54cbd1330'
 PUBLICATION_STATE_SHA256 = '85101ee677e9c768cc8a5583cbf8df222a9198338040e0f0260bd87a96e9ea77'
 REF = 'danielwuu/iris-x-learning-agent-20261011'
 DREF = 'danielwuu/iris-x-learning-agent-code-20261011'
@@ -78,6 +79,39 @@ def material_lineage_descriptor():
     need(type(lineage)is dict and set(lineage)=={'path','bytes','sha256'},'candidate_lineage_descriptor_schema')
     verified(lineage['path'],lineage['sha256'],lineage['bytes'],4*1024**2)
     return dict(lineage)
+
+def readonly_frontier_descriptor():
+    """One independently reviewed historical cut; never an arbitrary allowlist."""
+    need(ACTION_REVIEW is not None,'admitted_action_review_required')
+    row=ACTION_REVIEW
+    review=json.loads(verified(row['path'],row['sha256'],row['bytes'],4*1024**2))
+    need(review.get('status')=='PASS'
+         and review.get('local_config_sha256')==configured().document_sha256
+         and review.get('publication_manifest_sha256')==configured().publication_manifest_sha256,
+         'admitted_action_review_changed')
+    frontier=review.get('readonly_frontier')
+    if frontier is None:return None
+    need(type(frontier)is dict and set(frontier)=={'path','bytes','sha256'},
+         'readonly_frontier_descriptor_schema')
+    need(type(frontier['bytes'])is int and 0<frontier['bytes']<=4*1024**2
+         and type(frontier['sha256'])is str and re.fullmatch('[0-9a-f]{64}',frontier['sha256']),
+         'readonly_frontier_descriptor_bound')
+    verified(frontier['path'],frontier['sha256'],frontier['bytes'],4*1024**2)
+    return dict(frontier)
+
+def readonly_caller_descriptors():
+    """Original caller sources/launch records from the same admitted review."""
+    need(ACTION_REVIEW is not None,'admitted_action_review_required')
+    row=ACTION_REVIEW
+    review=json.loads(verified(row['path'],row['sha256'],row['bytes'],4*1024**2))
+    need(review.get('status')=='PASS'
+         and review.get('local_config_sha256')==configured().document_sha256
+         and review.get('publication_manifest_sha256')==configured().publication_manifest_sha256,
+         'admitted_action_review_changed')
+    rows=review.get('readonly_caller')
+    need(type(rows)is dict and set(rows)=={'jit','owner','seq14','owner_start'},
+         'readonly_caller_descriptors_required')
+    return rows
 
 def credential_guard():
     config_=configured()
@@ -237,6 +271,7 @@ def publication_journal(name, value):
 
 @contextlib.contextmanager
 def lock(name='operator'):
+    global _PUBLISHER_OWNER
     config_=configured()
     need(type(name)is str and re.fullmatch('[a-z][a-z0-9-]{0,63}',name) is not None,'operator_lock_role')
     config_.scratch_root.mkdir(parents=True,exist_ok=True)
@@ -244,8 +279,41 @@ def lock(name='operator'):
     with p.open('a+b') as f:
         try: fcntl.flock(f, fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError: raise GuardError('operator_already_running:'+name)
+        info=os.fstat(f.fileno())
+        _PUBLISHER_OWNER=(f,os.getpid(),threading.get_ident(),info.st_dev,info.st_ino)
         try: yield
-        finally: fcntl.flock(f,fcntl.LOCK_UN)
+        finally:
+            _PUBLISHER_OWNER=None
+            fcntl.flock(f,fcntl.LOCK_UN)
+
+def publisher_lock_owner():
+    """Verify the existing live FD's kernel flock; do not acquire another lock."""
+    owner=_PUBLISHER_OWNER
+    need(owner is not None,'publisher_lock_not_held')
+    stream,pid,thread,device,inode=owner
+    need(not stream.closed and pid==os.getpid() and thread==threading.get_ident(),
+         'publisher_lock_owner_changed')
+    fd=stream.fileno()
+    path=secure_path(configured().scratch_root/'publisher.lock')
+    def identity(info):return (info.st_dev,info.st_ino,info.st_mode,info.st_nlink)
+    info=os.fstat(fd);current=path.lstat()
+    need(stat.S_ISREG(info.st_mode) and info.st_nlink==1
+         and identity(info)==identity(current) and (info.st_dev,info.st_ino)==(device,inode),
+         'publisher_lock_file_changed')
+    try:
+        with open('/proc/self/fdinfo/'+str(fd),'rb') as source:raw=source.read(16385)
+        need(len(raw)<=16384,'publisher_lock_metadata_bound')
+        rows=[line for line in raw.decode('ascii').splitlines() if line.startswith('lock:')]
+        pattern=r'lock:\s+[0-9]{1,20}:\s+FLOCK\s+ADVISORY\s+WRITE\s+([0-9]{1,20})\s+([0-9a-fA-F]{1,16}):([0-9a-fA-F]{1,16}):([0-9]{1,20})\s+0\s+EOF'
+        match=re.fullmatch(pattern,rows[0]) if len(rows)==1 else None
+        need(match is not None and tuple(int(match[i],16 if i in (2,3) else 10)
+             for i in range(1,5))==(pid,os.major(device),os.minor(device),inode),
+             'publisher_kernel_flock_required')
+    except (OSError,UnicodeError):raise GuardError('publisher_lock_metadata_unavailable') from None
+    need(_PUBLISHER_OWNER is owner and not stream.closed
+         and identity(os.fstat(fd))==identity(info)==identity(path.lstat()),
+         'publisher_lock_owner_changed')
+    return {'fd':fd,'pid':pid,'device':device,'inode':inode}
 
 def no_gpu_stop():
     configured()

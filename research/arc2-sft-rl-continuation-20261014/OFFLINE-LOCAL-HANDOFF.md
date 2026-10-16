@@ -313,7 +313,7 @@ output pending或missing；terminal、hash成功或新Job-zero都不證明遠端
 
 ### v43 checkpoint 的單次 header-only 觀察
 
-只補尚缺的 numeric43 checkpoint HTTP header 證據，沿同一 `retrieve.py` 的明確
+此項已由 a3e9 單次真實觀察完成；下列保留原取證契約，不是再次執行指令。沿同一 `retrieve.py` 的明確
 `--checkpoint-header` 模式；checkpoint body 不加入 selected 白名單。同一原 runtime、config、
 metadata、manifest、clock 與 observer bytes 不變。以上 supervisor 命令的 `--name` 改為
 `irisx-qwen14b-rlvr-20261013-run008/checkpoints.zip`，另加：
@@ -342,10 +342,10 @@ Location redirect，可能預先讀 body 的 JSON-body URL redirect 誠實拒絕
 `worker_failure_stage:checkpoint_before`／`worker_error_code:unexpected_error`，尚未呼叫 checkpoint
 output；header null、finalized false、新 Job0、body consumed0、未 materialize，原3,511件 STATE 不變。
 本次 result SHA256 `b9dae444cf7ee6ca61654d910c5f98782333a9b5d07044b7970cdf582f7fdca1`。
-先檢查 before bracket 的來源相容性；原因未定位前不重試，不推斷 auth／HTTP，也不回填4309原因。
-其餘 header 契約與原 deadline 保留；這項不阻擋已審查的 training-only successor 準備。
+來源檢查未定位可支持的相容性修復；前兩次原因仍未知，不推斷 auth／HTTP 或回填4309原因。
+其餘 header 契約與原 deadline 保留。
 
-下一筆若仍需同輪 header 取證，只換新 helper SHA256
+後續已使用新 helper SHA256
 `d42102d5754845bb15cc9ff591cc4d4773e0037a68984bad5445167fcbfe60c2`，在另一個 fresh output
 沿同一命令和所有原件執行一次；不重取 terminal／archive。新增固定 `checkpoint_before_*`／
 `checkpoint_after_*` 呼叫／返回驗證 stage、`worker_exception_category` 與兩個既有 metadata cap codes。
@@ -353,7 +353,14 @@ output；header null、finalized false、新 Job0、body consumed0、未 materia
 原 `observe.py`、非 header 路徑與 RPC 次數不變；相同合成 request bindings 下，成功 worker／parent
 收據 schema／content 逐 bytes 相同，真實新 helper／request hashes 自然不同。failure 欄位經原 nonce／
 request／worker hash、format 及固定 enum 綁定後傳遞，另保留實際 closure；failure 診斷本身不要求
-或證明 Job closure 成立。此時仍無新 native 收據，不能宣稱修好實際失敗。
+或證明 Job closure 成立。
+
+a3e9 的本地真實單次觀察已成功：2026-10-16 01:30:57.303／01:31:00.250 UTC 兩側均為
+v43／code22 COMPLETE，HTTP200、Content-Length 1,546,535,710 bytes，新 Job0、atomic／kill-on-close
+true、breakaway false，body consumed0／未 materialize。result 3,647 bytes／SHA256
+`90d0f0b3f636b634fb9912effea26eeb0f975826cf6cc590e1812d4f54acefd9`；nonce／request／worker 鏈通過。
+不必重取已驗 header、terminal 或 archive；tensor bodies、舊 edd closure、trusted collector context
+及正式 consumer admission 仍未成立。
 
 ### v43 nested-wrapper 的唯讀 successor 驗證
 
@@ -382,27 +389,55 @@ worker、runtime worker 必須有外層相同 triple；內層額外觀察須在�
 forward 後強制無 RL commit；不執行其餘192／C／dev／held／PUBLIC。原方法與門檻、資料隔離、
 現有資源與43,200秒上限不變。完整研究解讀與 shadow 因素限制見[進度](DEVELOPMENT-PROGRESS.zh-TW.md#下一輪固定-training-only-數值診斷)。
 
-1. 取得本次固定 commit 與逐檔 readback；新程式只在
-   `tools/arc_qwen_rlvr004_20261013/numeric_replay_diagnostic_20261016/`。本地已核對的原件不重建：
+1. 取得本次固定 commit 與逐檔 readback；數值 source 在
+   `tools/arc_qwen_rlvr004_20261013/numeric_replay_diagnostic_20261016/`，完整 operator 仍在既有
+   `publication_windows_bridge_20261015/` 路徑，不能只搬三個 overlays 或沿用舊 launcher pins。
+   本地已核對的原件不重建：
    source proposal inventory `fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd`、
    base inventory `de519816720ceb3bf07e0bf015c888b7e4bd9fdb344c2dbe355281230920ee88`，以及 base 根目錄的
    父目錄下 `source-rebuild/review-only/solver-descriptor.json`；後者需與 base material review 的
    `dataset_file_sha256` 相等。這是實際父目錄，不是名為 `parent` 的子目錄。不要讀 evaluator escrow bodies。
-2. 由本地取得真正當下 predecessor observation，保留原 numeric版本／source／settings／terminal／
-   Dataset bytes；建立與已授權 training-only 範圍相符的 owner direction，格式和欄位以
+2. 先以本次 `assembly/observe_predecessor.py --review <new-readonly-review> --review-sha <sha256>`
+   取得真正當下 predecessor。它只觀察固定 code22／v43，先驗本次完整22件 operator 與原
+   v43 manifest／material／新當前路徑 config，然後在同一 publisher lock 內執行原五次唯讀呼叫
+   dataset→kernel→status→kernel→dataset、保存六件 DTO／source，並等待這個新 native session
+   真正 clean close。它不呼叫不適用於舊 manifest 的 numeric `load_contract`，也不授予 mutation。
+   新 observation review 的 `observer` 僅含 `purpose`（`fixed-code22-v43-predecessor-capture-v1`）、
+   `script`、`output_root`、`manifest`、`material`、`local_config`；除 purpose／output_root 外為
+   標準 path／bytes／sha256 descriptor。allowed_actions 僅 `reconcile-read-only`，且需真實
+   non-synthetic provider admission；不能改寫舊 review 或用 self-written PASS 代替審查。
+   `output_root` 是 configured scratch 下的新目錄，與 STATE／candidate 分離。
+   此次及後續 action／monitor reviews 另帶 `readonly_frontier`，指向原 2,759-byte RESULT
+   `419b60845f9e6778b0c9495c65b19f98e2def2ff84162b169856a326554e1e23`；`readonly_caller`
+   含 jit／owner／seq14／owner_start 四個原件 descriptor。實際路徑由既有私有材料取得，
+   不另做 presence 查詢或改造歷史 closure。已驗 native7／SDK 不重建。
+   再由既有 `admission_run008/seal_inputs.py` 封裝這次六件真 bytes，格式改為 assembler 已接受的
+   current-predecessor observation；此步不做 provider 呼叫，不更新時間或來源。保留原 numeric
+   版本／source／settings／terminal／Dataset DTO bytes；建立與已授權 training-only 範圍相符的
+   owner direction，格式和欄位以
    [owner_inputs](../../tools/arc_qwen_rlvr004_20261013/numeric_replay_diagnostic_20261016/assemble.py)為準。
    原 broad owner receipt 不代替較窄 purpose；request_id／instruction 來自真實授權，不使用測試fixture。
+   固定 helper 為12,331 bytes／SHA256
+   `305bcb645e183b017fe6588044fb49e4ec0fdbb22af07929928371a5c69df223`。
+   sealer 以 `--repository-root <repo> --observation-root <fresh-capture-root>`、
+   `--observation-sha <raw-OBSERVATION-sha256> --output-root <fresh-sealed-root>` 呼叫；輸出必須
+   位於 `<repo>/.irisx/run008-admission/`，不是下一步 numeric proposal 的目錄。
+   sealer 仍為 SHA256 `4f8507e8c1b549a5bc558fbfea652850a349de02025b792cfc2bf42d7f4ef7a0`；
+   下一步 `--observation-sha` 使用 sealed `OBSERVATION.json` 的真 hash，不沿用 raw hash。
 3. 新 assembler `--mode proposal`，明確提供 `--repository-root`、`--source-proposal-root`、`--base-root`、
    `--observation-root`／`--observation-sha`、`--owner-direction-path`／`--owner-direction-sha`、
    `--collector-path`／`--collector-sha`、`--output-root`。輸出必須在該 repo 的
    `.irisx/numeric-diagnostic-20261016/` 下的新目錄。collector 指向本次新 `publication/rl_collect.py`，
    不是原 ABC collector。proposal 尚未授予 provider mutation，也不分配 epoch。
 4. 用真正 reviewer 核對此份 `ADMISSION-PROPOSAL.json`、兩個 solver path substitutions／reverse byte
-   equality、source/archive／namespace／purpose／17檔來源與 helper bindings；再提供 assembler 所列
+   equality、source/archive／namespace／purpose／實際來源與 helper bindings；再提供 assembler 所列
    `--proposal-*`、`--solver-review-*`、`--runtime-review-*`、`--material-review-*`，以 `--mode final`
    寫另一個新目錄。既有雲端 CPU review 可作已驗範圍依據，不能直接冒充這份本地 proposal 的收據。
-5. 沿原已驗 bridge/operator 組裝，只替換本次 new `publication/{rl_transport.py,rl_collect.py,verify_active_wire.py}`；
-   其餘 exact source、native7、SDK、config／recovery contracts 沿用，不重建或重測未變元件。
+5. 使用本次完整 source closure：context→bridge→common→numeric transport，以及 recovery entry、
+   launcher 和 collector／wire 的全部衍生 pins；action／monitor reviews 都綁實際22件 operator。
+   assembler 僅允許 published numeric transport 的單一 common dependency pin 變更，其餘 body
+   與 active wire 全 bytes 固定，且同目錄 operator 必須等於 numeric overlays。原 native7、SDK、
+   config／recovery contracts 沿用，不重建或重測未變元件。
    collector bootstrap 仍需要同目錄、經 action review 綁定的原 `operator_common.py`／transport。
    原 `state-run008`／`evidence-run008` 是 wire family 名稱，實際每輪用原 per-code publication isolation；
    所有歷史 STATE、UNKNOWN、claim／journal 保留。真正 gate 阻礙回報，不套舊 closure 或重送。

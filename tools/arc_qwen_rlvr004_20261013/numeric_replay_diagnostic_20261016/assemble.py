@@ -70,6 +70,11 @@ RUN_PURPOSE = 'training-only-numeric-diagnostic-v1'
 BASE_WRAPPER_SHA = 'c3aa3b40cfba89a969dd171e758e3d9c4875686b259cfcabf80dec1da486d6bb'
 BASE_TRANSPORT_SHA = '7a5a766baa4ab2654037deeab9d39e98bbd2be7b5c7eb9c341d861f86eb6cda0'
 BASE_ACTIVE_WIRE_SHA = '2ab7be25726d38863379a7b63d682f86abd33d52b91116c73734cc9e647da301'
+# Published numeric successor authenticates all behavior. Only its exact common
+# dependency pin may change as the same-checkout operator is rebound.
+PUBLISHED_TRANSPORT_SHA = '2796df82a98295804b366b04c40e9132175178c7052aeaf8c55695f7006eabc9'
+PUBLISHED_ACTIVE_WIRE_SHA = 'b71386bf1b3b7cfe3693b67036d6f85f3888dbc556fe1ea8bbedc6fddf331b40'
+PUBLISHED_COMMON_SHA = '88faa050b8cd7564e2d46552091773df4025b0589bd37771f79ea8648f2c053a'
 BASE_PARENT_ENTRY_SHA = '91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3'
 RUNTIME_TARGETS = frozenset(('rl_session/runtime.py', 'rl_session/numeric_shadow.py',
     'experiment_flow/flow.py', 'experiment_flow/metering.py', 'owned_runtime/worker.py',
@@ -340,12 +345,20 @@ def diagnostic_wrapper():
 
 def publication_helpers(source_sha, archive_sha):
     """Bind the fixed transport/wire successor; stale runtime pins stop assembly."""
-    baseline = TOOL / 'publication_windows_bridge_20261015'
-    pinned(baseline / 'rl_transport.py', BASE_TRANSPORT_SHA)
-    pinned(baseline / 'verify_active_wire.py', BASE_ACTIVE_WIRE_SHA)
+    operator = TOOL / 'publication_windows_bridge_20261015'
     result = {name: read(HERE / 'publication' / name) for name in ('rl_transport.py', 'verify_active_wire.py')}
+    # Do not demand historical run008 bytes at the current operator path. The
+    # published diagnostic body itself is the fixed behavioral baseline; only
+    # one common dependency literal is normalized for that identity check.
+    normalized, count = re.subn(rb"(?m)^COMMON_SOURCE_SHA256 = '[0-9a-f]{64}'$",
+        ("COMMON_SOURCE_SHA256 = '" + PUBLISHED_COMMON_SHA + "'").encode(), result['rl_transport.py'])
+    need(count == 1 and sha(normalized) == PUBLISHED_TRANSPORT_SHA,
+         'published numeric transport behavior changed')
+    need(sha(result['verify_active_wire.py']) == PUBLISHED_ACTIVE_WIRE_SHA,
+         'published numeric active wire changed')
     expected = {'rl_transport.py': {'RUN_PATH': RUN, 'SOURCE_PATH': SOURCE, 'ENVIRONMENT_PATH': ENV,
-                                  'RUN_PURPOSE': RUN_PURPOSE, 'FORMAT': FORMAT},
+                                  'RUN_PURPOSE': RUN_PURPOSE, 'FORMAT': FORMAT,
+                                  'COMMON_SOURCE_SHA256': sha(read(operator / 'operator_common.py'))},
         'verify_active_wire.py': {'SOURCE': source_sha, 'ARCHIVE': archive_sha,
                                  'RUN': RUN, 'SOURCE_ROOT': SOURCE, 'RUN_PURPOSE': RUN_PURPOSE}}
     for name, raw in result.items():
@@ -355,6 +368,7 @@ def publication_helpers(source_sha, archive_sha):
                 and any(isinstance(t, ast.Name) and t.id == key for t in n.targets)]
             need(len(assignments) == 1 and ast.literal_eval(assignments[0].value) == value,
                  'fixed publication helper pin differs: ' + name + ':' + key)
+        need(read(operator / name) == raw, 'integrated operator helper differs: ' + name)
         compile(raw, name, 'exec', dont_inherit=True, optimize=sys.flags.optimize)
     return result
 

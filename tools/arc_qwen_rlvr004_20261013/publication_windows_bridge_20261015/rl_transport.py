@@ -1,4 +1,4 @@
-"""Local run008 publication successor of the reviewed run006 reconstruction.
+"""Source-fixed training numeric diagnostic publication, using the legacy run008 wire schema.
 
 The consumed run006 transport and every earlier publication remain unchanged.
 These local successor bytes retain the source-only, official-auth action gates.
@@ -9,7 +9,7 @@ import argparse, ast, contextlib, hashlib, json, math, os, stat, subprocess, sys
 from pathlib import Path
 
 # Acyclic local dependency pin. Compile source before any authentication or RPC.
-COMMON_SOURCE_SHA256 = '88faa050b8cd7564e2d46552091773df4025b0589bd37771f79ea8648f2c053a'
+COMMON_SOURCE_SHA256 = '833d6d1dfcd78224a0f7a214d611e6143383f9d3b0b38ae4d4b4c891f388950e'
 _common_path=Path(__file__).absolute().with_name('operator_common.py')
 if any(p.is_symlink() for p in (_common_path,*_common_path.parents)) or not stat.S_ISREG(_common_path.stat().st_mode):
     raise ValueError('unsafe_local_common_source')
@@ -21,6 +21,7 @@ exec(compile(_common_raw,str(_common_path),'exec',dont_inherit=True,optimize=sys
 globals().update({k:v for k,v in _common.__dict__.items() if not k.startswith('_')})
 
 FORMAT='irisx/qwen14b-rlvr-run008-publication-contract-v1'
+RUN_PURPOSE='training-only-numeric-diagnostic-v1'
 V37_SAVED_SOURCE='dd849708ac6c13ccaba5341427b3f700b05123dd857999f41c24e192a7f7ea65'
 V35_SAVED_SOURCE='778c014ccea8b0f376d06afeeeceb318e50b3bce926ef13a6da068c9b3d5d917'
 OLD_SOURCE=None
@@ -39,9 +40,9 @@ OPERATOR_SOURCE_NAMES = ('config.py', 'native_auth.py', 'sdk-lock.json',
 # Allocation comes from the independently hash-bound live local configuration.
 # Historical code18/v35 evidence is validated separately and never relabelled.
 CODE_PREDECESSOR=CODE_VERSION=NOTEBOOK_PREDECESSOR=INACTIVE_VERSION=ACTIVE_VERSION=None
-RUN_PATH='/kaggle/working/irisx-qwen14b-rlvr-20261013-run008'
-SOURCE_PATH='/kaggle/working/irisx-qwen14b-rlvr-20261013-source008'
-ENVIRONMENT_PATH='/tmp/irisx-qwen14b-rlvr-20261013-environment008'
+RUN_PATH='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-run001'
+SOURCE_PATH='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source001'
+ENVIRONMENT_PATH='/tmp/irisx-qwen14b-numeric-diagnostic-20261016-environment001'
 FROZEN_TRANSPORT_SHA256='990f272eed0f243c9fff1a3d61f96a280c875e6bc8e31e5dfdb1aa4690b32eed'
 RUN006_LINEAGE_HELPER_SHA='0e1dae66529831ae719da5bc0d36bf300a11bdc07734416bb9ff8490d1d77cfe'
 V35_LINEAGE_HELPER_SHA='f3cc35d60fd5f5aaa173feeb824120ff6ed18fea6a8aaba0f3368a973215e2b8'
@@ -170,10 +171,27 @@ def current_predecessor_proof(m,root):
         need(cfg['SESSION_SECONDS']==43200 and cfg['EXECUTION_CUTOFF_SECONDS']==42000 and cfg['OUTER_CUTOFF_SECONDS']==42180 and cfg['PROVIDER_RUNTIME_SECONDS']==42300,'current_original_v37_limits')
     a=m['owner_session_stop_attestation'];relative(a['path'])
     owner=strict_object(verified(root/a['path'],a['sha256'],a['bytes'],65536))
-    need(owner['format']=='irisx/run008-native-owner-direction-v1' and owner['owner_id']=='danielwuu','current_owner_direction_identity')
-    need(owner['one_accepted_run_per_distinct_reviewed_candidate'] is True and owner['continuous_monitoring_authorized'] is True and owner['result_retrieval_authorized'] is True,'current_owner_one_submit_scope')
-    need(owner['gpu_quota_query_authorized'] is False and owner['new_resource_or_paid_provisioning_authorized'] is False and owner['session_limit_seconds']==43200 and owner['public_task_count']==120 and owner['public_query_denominator']==167 and owner['runtime_or_scientific_success_claim'] is False,'current_owner_resource_science_scope')
+    diagnostic_owner_scope(owner)
     return proof
+
+
+def diagnostic_owner_scope(owner):
+    """One immutable training-only purpose; original scorer counts are reference only."""
+    need(owner.get('format') == 'irisx/numeric-diagnostic-owner-direction-v1'
+         and owner.get('owner_id') == 'danielwuu', 'current_owner_direction_identity')
+    need(owner.get('run_purpose') == RUN_PURPOSE and owner.get('training_only') is True
+         and owner.get('rl_optimizer_commit_authorized') is False
+         and owner.get('later_B_C_dev_holdout_PUBLIC_authorized') is False, 'fixed_diagnostic_owner_scope')
+    need(owner.get('one_accepted_run_per_distinct_reviewed_candidate') is True
+         and owner.get('continuous_monitoring_authorized') is True
+         and owner.get('result_retrieval_authorized') is True, 'current_owner_one_submit_scope')
+    need(owner.get('session_limit_seconds') == 43200 and owner.get('original_public_task_count') == 120
+         and owner.get('original_public_query_denominator') == 167, 'original_clock_reference_scorer_scope')
+    for key in ('gpu_quota_query_authorized', 'new_resource_or_paid_provisioning_authorized',
+                'official_competition_submission_authorized', 'legal_agreement_acceptance_authorized',
+                'credential_or_permission_changes_authorized_by_this_file', 'runtime_or_scientific_success_claim'):
+        need(owner.get(key) is False, 'current_owner_resource_science_scope: ' + key)
+
 
 def descriptor_at(root,d,cap=128*1024**2):
     relative(d['path']);return verified(root/d['path'],d['sha256'],d['bytes'],cap)
@@ -181,6 +199,7 @@ def descriptor_at(root,d,cap=128*1024**2):
 def contract(manifest, allow_preview=False):
     m=obj(manifest);root=Path(manifest).resolve().parent
     need(m['format']==FORMAT,'manifest_format')
+    need(m.get('run_purpose')==RUN_PURPOSE,'fixed_diagnostic_manifest_purpose')
     need(allow_preview or m['source_review_only'] is False and m.get('run_authorized') is True and m.get('release_runtime_finalized') is True,'unapproved_preview')
     need(m['candidate_git_published'] is False and m['git_gate_required'] is False and m['owner_published_stable_commit']==SNAPSHOT_COMMIT,'git_provenance')
     scope=m.get('local_reconstruction',{})

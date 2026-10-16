@@ -22,6 +22,11 @@ the sealed completion time. Fresh live admission is checked separately: a
 later clock adjustment or boot cannot undo that historical termination boundary.
 This does not establish current same-boot identity or global process absence.
 A pre-worker disposition never borrows the historical recovery's coverage.
+One separately pinned accepted read-only frontier can also remain unclosed after
+its real, source-bound native-absence cut. This is independent noninterference,
+not recovery coverage or Job-zero proof. Its original records remain immutable;
+a kernel-backed publisher owner and per-command/auth-ACK rechecks gate each new
+session, while the original native mutex and all current admission gates remain.
 """
 from __future__ import annotations
 
@@ -303,6 +308,314 @@ def _events(root):
     return result
 
 
+# One reviewed, real temporal cut. These are original private artifact hashes,
+# never hashes of projections or a generic authorization for future UNKNOWNs.
+READONLY_NONCE = 'edd2178a2018c21c9e8d5a9b64231a15930efa555bebe874644131401303e253'
+READONLY_RESULT = (2759, '419b60845f9e6778b0c9495c65b19f98e2def2ff84162b169856a326554e1e23')
+READONLY_ARTIFACTS = {
+    'query': ('../query_processes_v2.ps1', 15232, 'd07f3cce2e3e4338e5ae3f676088ae48d3082f36b2706fc015d1005b8a8bba7b'),
+    'controller': ('../hold_lock_and_query_v2.py', 12625, '5cd894522400adf3edc2afc76dc2103a3fd3e887e1d2328f730b531a11170b54'),
+    'raw_stdout': ('QUERY-STDOUT.raw', 2666, 'c0d821305f8892353267eb0b39796a3400e53c61cb6d2d36e02011db83698bdf'),
+    'raw_stderr': ('QUERY-STDERR.raw', 0, 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'),
+    'before_snapshot': ('before/SNAPSHOT.json', 812823, '3113534d25c89375bd0b3bdacee225d1dd5b17d6679768001bd7099dd6ce9e6b'),
+    'after_snapshot': ('after/SNAPSHOT.json', 812823, 'e223409f602a431d24c84a6d59b7913024aa8c2ac3cc6c52ceaa9b5eeb170e9b'),
+}
+READONLY_CLAIM = (615, '7ea1cfe05ed126e7c5c9cb2eeaf48231f2d62a475ec27fc4889e3f56e42172d1')
+READONLY_JOURNAL = (489, '396cb624c8c2cac02f9a0ab594253071055f55fe3c6160639c012ac1a5b4af11')
+READONLY_CALLER = {
+    'jit': (4677, '5720fab593246b99084f549286949e1943d86614a434636c42c2cb11eefb7b66'),
+    'owner': (6271, 'b110b0a4d33a848411fd94c169464bc90e422e3da06f2407002d5f0a76fc393a'),
+    'seq14': (378, '426ef13f3cbc2018ce905b22907ef0f6513330cf7b682d9bbb4abdc540d459fb'),
+    'owner_start': (7766, 'b74ef1a7015c27440fa0fcf496fc8361207f274f4e138aa6f2334c302f670ebf'),
+}
+READONLY_SID_SHA256 = 'cfeb24bac7fb88809b0621ff922c8baacb022600a890ce1ba25f42ddd6e67da6'
+READONLY_STATE_SHA256 = 'f82758d953e63e77722e286f6fa777910c89653d7eb63929c365b1810246aa33'
+NATIVE_PREFIXES = ('native-bridge-', 'native-auth-refresh-', 'recovery-epoch-')
+
+
+def _metadata(raw):
+    return {'bytes': len(raw), 'sha256': _digest(raw)}
+
+
+def _readonly_verified(row):
+    if row.get('bytes') != 0:
+        return _verified(row)
+    _need(set(row) == {'path', 'bytes', 'sha256'} and row['sha256'] == _digest(b''),
+          'context_presence_empty_descriptor')
+    path = _path(row['path'])
+    with _directory(path.parent) as directory:
+        before = os.stat(path.name, dir_fd=directory, follow_symlinks=False)
+        _need(stat.S_ISREG(before.st_mode) and before.st_nlink == 1 and before.st_size == 0,
+              'context_presence_stderr_not_empty')
+        fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
+                     dir_fd=directory)
+        with os.fdopen(fd, 'rb') as stream:
+            _need(_identity(os.fstat(fd)) == _identity(before) and stream.read(1) == b''
+                  and _identity(os.fstat(fd)) == _identity(before)
+                  == _identity(os.stat(path.name, dir_fd=directory, follow_symlinks=False)),
+                  'context_presence_stderr_changed')
+    return b''
+
+
+def _native_roots(root):
+    result, total = {}, 0
+    with _directory(root) as fd:
+        before = os.fstat(fd)
+        names = sorted(os.listdir(fd))
+        _need(len(names) <= FILE_COUNT_CAP, 'context_root_record_count')
+        for name in names:
+            if name.startswith(NATIVE_PREFIXES):
+                raw = _read_at(fd, name)
+                total += len(raw)
+                _need(total <= 64 * 1024**2, 'context_native_root_bytes')
+                result[name] = raw
+        _need(names == sorted(os.listdir(fd)) and _identity(before) == _identity(os.fstat(fd)),
+              'context_native_root_race')
+    return result
+
+
+def _readonly_events(root):
+    result = {}
+    with _directory(root / 'events') as fd:
+        names = sorted(os.listdir(fd))
+        _need(len(names) <= 100000, 'context_event_count')
+        selected = [name for name in names if '-native-bridge-' + READONLY_NONCE + '-' in name]
+        _need(len(selected) == 196, 'context_readonly_event_frontier')
+        for name in selected:
+            _need(re.fullmatch(r'[0-9]+-native-bridge-' + READONLY_NONCE + r'-[0-9a-f]{8}\.json', name),
+                  'context_readonly_event_name')
+            result['events/' + name] = _read_at(fd, name)
+        # Other sessions may append events; this exact old nonce may not.
+        _need(selected == [name for name in sorted(os.listdir(fd))
+              if '-native-bridge-' + READONLY_NONCE + '-' in name], 'context_readonly_event_race')
+    return result
+
+
+def _readonly_history(claim_raw, journal_raw, events):
+    _need((len(claim_raw), _digest(claim_raw)) == READONLY_CLAIM
+          and (len(journal_raw), _digest(journal_raw)) == READONLY_JOURNAL,
+          'context_readonly_exact_frontier')
+    claim, journal = _json(claim_raw), _json(journal_raw)
+    base = {'format': 'irisx/windows-bridge-session-journal-v1', 'nonce': READONLY_NONCE,
+        'claim_sha256': _digest(claim_raw), 'synthetic_test_only': False,
+        'native_process_closure_verified': False, 'mutation_attempted': False}
+    _need(claim['nonce'] == READONLY_NONCE and claim['synthetic_test_only'] is False,
+          'context_readonly_claim')
+    rows = [_json(raw) for _, raw in sorted(events.items())]
+    _need(len(rows) == 196 and rows[0] == {**base, 'stage': 'launch_intent'},
+          'context_readonly_launch_history')
+    index = 1
+    for sequence in range(1, 98):
+        intent, accepted = rows[index:index + 2]
+        _need(set(intent) == set(base) | {'stage', 'sequence', 'operation', 'request_sha256', 'deadline_epoch'}
+              and all(intent.get(key) == value for key, value in base.items())
+              and intent['stage'] == 'operation_intent' and type(intent['sequence']) is int
+              and intent['sequence'] == sequence and _sha(intent['request_sha256'])
+              and type(intent['deadline_epoch']) in (float, int)
+              and 0 < intent['deadline_epoch'] <= claim['deadline_epoch']
+              and intent['operation'] in (('open',) if sequence == 1 else
+                  ('dataset', 'kernel', 'status', 'list_files', 'output', 'dataset_download', 'binary_metadata'))
+              and accepted == {**intent, 'stage': 'operation_accepted'},
+              'context_readonly_operation_history')
+        index += 2
+        if sequence == 1:
+            _need(rows[index] == {**accepted, 'stage': 'authenticated'},
+                  'context_readonly_authenticated_history')
+            index += 1
+    _need(rows[-1] == journal and journal['operation'] == 'kernel', 'context_readonly_final_history')
+    # Per-command max_seconds/raw frames were not persisted. We verify the
+    # durable source-bound intent/accepted pairs, not an invented preimage.
+
+
+def _presence_documents(result, stdout, before, after):
+    _need(result['format'] == 'irisx/readonly-native-process-presence-summary-v1'
+          and result['status'] == 'QUERY_COMPLETED' and result['query_exit_code'] == 0
+          and result['query_parse_error'] is None, 'context_presence_query_failed')
+    for key in ('STATE_bytes_unchanged', 'lock_held_through_both_snapshots',
+                'original_accepted97_frontier_unchanged', 'refresh_metadata_unchanged',
+                'publisher_lock_bytes_unchanged', 'source_and_config_bytes_unchanged',
+                'native_source_7_after_equal_config', 'no_new_STATE_intent_UNKNOWN_or_refresh'):
+        _need(result[key] is True, 'context_presence_cut_incomplete')
+    _need(all(type(result[key]) is int and result[key] == 0 for key in
+              ('Job', 'STATE_writes', 'auth', 'old_pipe', 'process_control', 'provider'))
+          and all(result[key] is False for key in
+              ('admission_created', 'historical_Job_zero_proven', 'old_closure_modified')),
+          'context_presence_readonly_required')
+    _need(stdout['format'] == 'irisx/readonly-cim-native-process-presence-v1'
+          and stdout['classification'] == 'ABSENT' and stdout['candidates'] == []
+          and stdout['issues'] == [] and stdout['queried_basenames'] == ['python.exe']
+          and stdout['original_job_zero_proven'] is False and stdout['historical_closure_changed'] is False
+          and _digest(stdout['executor_sid'].encode()) == READONLY_SID_SHA256,
+          'context_presence_absence_required')
+    for key in ('enumeration_complete', 'executor_sid_equal_config', 'configuration_sha256_equal',
+                'query_source_sha256_equal', 'native_sources_equal_config', 'native_executables_equal_config'):
+        _need(stdout[key] is True, 'context_presence_incomplete')
+    for key in ('candidate_count', 'enumerated_candidate_count', 'same_sid_count', 'other_sid_count',
+                'unknown_sid_count', 'same_or_unknown_sid_incomplete_count', 'missing_field_count'):
+        _need(type(stdout[key]) is int and stdout[key] == 0, 'context_presence_ambiguity')
+    _need(type(stdout['enumeration_query_count']) is int and stdout['enumeration_query_count'] == 1
+          and stdout['role_counts'] == {'other_edd_nonce_python': 0, 'sdk_worker': 0, 'win_supervisor': 0}
+          and all(stdout.get(key) == value for key, value in result['observation'].items()),
+          'context_presence_summary_binding')
+    for value in (before, after):
+        _need(set(value) == {'format', 'observed_epoch', 'files', 'file_count', 'edd_event_count',
+              'edd_event_inventory', 'refresh_inventory', 'original_accepted97_frontier_unchanged', 'snapshot_scope'}
+              and value['format'] == 'irisx/readonly-presence-state-snapshot-v1'
+              and value['original_accepted97_frontier_unchanged'] is True
+              and value['file_count'] == len(value['files']) == 3511
+              and value['edd_event_count'] == len(value['edd_event_inventory']) == 196
+              and len(value['refresh_inventory']) == 4, 'context_presence_inventory_schema')
+        for name, row in value['files'].items():
+            _need(type(name) is str and len(name) <= 4096 and not name.startswith('/')
+                  and all(part not in ('', '.', '..') for part in name.split('/'))
+                  and not any(ord(ch) < 32 for ch in name) and type(row) is dict
+                  and set(row) == {'bytes', 'sha256'} and type(row['bytes']) is int
+                  and 0 <= row['bytes'] <= 2**63 - 1 and _sha(row['sha256']),
+                  'context_presence_inventory_row')
+        for key in ('edd_event_inventory', 'refresh_inventory'):
+            _need(all(value['files'].get(name) == row for name, row in value[key].items()),
+                  'context_presence_inventory_subset')
+    _need(all(before[key] == after[key] for key in ('files', 'edd_event_inventory', 'refresh_inventory'))
+          and result['started_epoch'] <= before['observed_epoch'] <= after['observed_epoch'] <= result['finished_epoch'],
+          'context_presence_postcut_inventory')
+    # Native and WSL clocks are distinct. The fixed controller source proves
+    # before -> synchronous query completion -> after, under the same flock.
+
+
+def _readonly_guard(c, root, baseline, events, refresh_events, evidence):
+    def guard(own_nonce=None, in_flight_refresh=None):
+        c['publisher_lock_owner']()
+        _need(own_nonce is None or (_sha(own_nonce) and own_nonce != READONLY_NONCE),
+              'context_readonly_successor_nonce')
+        for row, raw in evidence:
+            _need(_readonly_verified(row) == raw, 'context_readonly_evidence_changed')
+        current = _native_roots(root)
+        _need(all(current.get(name) == raw for name, raw in baseline.items()),
+              'context_readonly_old_root_changed')
+        additions = set(current) - set(baseline)
+        own_prefix = 'native-bridge-' + own_nonce if own_nonce else ''
+        own_names = {own_prefix + '.claim.json', own_prefix + '-journal.json'} if own_nonce else set()
+        if additions & own_names:
+            _need(own_names <= additions, 'context_readonly_successor_pair')
+            claim = _json(current[own_prefix + '.claim.json'])
+            journal = _json(current[own_prefix + '-journal.json'])
+            _need(claim.get('nonce') == journal.get('nonce') == own_nonce
+                  and journal.get('claim_sha256') == _digest(current[own_prefix + '.claim.json'])
+                  and claim.get('synthetic_test_only') is False
+                  and journal.get('synthetic_test_only') is False
+                  and journal.get('native_process_closure_verified') is False
+                  and journal.get('stage') in ('launch_intent', 'operation_intent', 'operation_accepted', 'authenticated'),
+                  'context_readonly_successor_binding')
+            additions -= own_names
+        for name in sorted(additions):
+            if name.endswith('-journal.json'):
+                continue
+            _need(re.fullmatch(r'native-auth-refresh-[0-9a-f]{24}\.claim\.json', name),
+                  'context_readonly_new_root')
+            journal_name = name[:-len('.claim.json')] + '-journal.json'
+            _need(journal_name in additions, 'context_readonly_refresh_pair')
+            claim, journal = _json(current[name]), _json(current[journal_name])
+            _need(own_nonce is not None and claim.get('bridge_nonce') == journal.get('bridge_nonce') == own_nonce
+                  and journal.get('claim_sha256') == _digest(current[name])
+                  and claim.get('synthetic_test_only') is False
+                  and (in_flight_refresh is None or in_flight_refresh.get('name') != name[:-len('.claim.json')]
+                       or in_flight_refresh.get('proof') == journal)
+                  and ((journal.get('stage') == 'refresh_accepted' and journal.get('new_grant_created') is False)
+                       or (type(in_flight_refresh) is dict and in_flight_refresh.get('name') == name[:-len('.claim.json')]
+                           and in_flight_refresh.get('proof') == journal
+                           and journal.get('stage') == 'refresh_intent' and claim.get('existing_grant_only') is True)),
+                  'context_readonly_new_refresh_unknown')
+        _need(all(name.endswith('.claim.json') or name[:-len('-journal.json')] + '.claim.json' in additions
+                  for name in additions), 'context_readonly_orphan_journal')
+        _need(_readonly_events(root) == events, 'context_readonly_event_changed')
+        for name, raw in refresh_events.items():
+            _need(_read(root / name) == raw, 'context_readonly_refresh_event_changed')
+        _need(_native_roots(root) == current, 'context_readonly_roots_changed_during_check')
+        c['publisher_lock_owner']()
+    return guard
+
+
+def _classify_readonly(c, root, roots, pending_claims, actual):
+    prefix = 'native-bridge-' + READONLY_NONCE
+    names = {prefix + '.claim.json', prefix + '-journal.json'}
+    if not names & roots.keys():
+        return None
+    _need(names <= roots.keys(), 'context_readonly_pair_required')
+    callback = c.get('readonly_frontier_descriptor')
+    _need(callable(callback) and callable(c.get('publisher_lock_owner')),
+          'context_readonly_review_and_owner_required')
+    c['publisher_lock_owner']()
+    _need(_digest(str(root).encode()) == READONLY_STATE_SHA256, 'context_readonly_original_namespace')
+    row = callback()
+    _need(type(row) is dict and (row.get('bytes'), row.get('sha256')) == READONLY_RESULT,
+          'context_readonly_fixed_cut_required')
+    result_raw = _verified(row)
+    result, evidence = _json(result_raw), [(row, result_raw)]
+    caller_callback = c.get('readonly_caller_descriptors')
+    _need(callable(caller_callback), 'context_readonly_caller_required')
+    caller = caller_callback()
+    _need(type(caller) is dict and set(caller) == set(READONLY_CALLER), 'context_readonly_caller_schema')
+    for key, expected in READONLY_CALLER.items():
+        item = caller[key]
+        _need(type(item) is dict and (item.get('bytes'), item.get('sha256')) == expected,
+              'context_readonly_caller_pin')
+        evidence.append((item, _verified(item)))
+    work = _path(caller['seq14']['path']).parent
+    _need(_path(caller['seq14']['path']).name == '0014.json'
+          and _path(caller['jit']['path']) == work.parent / 'jit_original_sequence.py'
+          and _path(caller['owner']['path']) == work.parent / 'owner.py'
+          and _path(caller['owner_start']['path']).name == 'OWNER-START.json',
+          'context_readonly_caller_relationship')
+    parent = _path(row['path']).parent
+    documents = {}
+    for key, (relative, size, digest) in READONLY_ARTIFACTS.items():
+        _need(result[key] == {'bytes': size, 'sha256': digest}, 'context_readonly_cut_artifact')
+        parts = relative.split('/')
+        path = parent.parent / parts[1] if parts[0] == '..' else parent.joinpath(*parts)
+        descriptor = {'path': str(path), 'bytes': size, 'sha256': digest}
+        raw = _readonly_verified(descriptor)
+        evidence.append((descriptor, raw))
+        if key in ('raw_stdout', 'before_snapshot', 'after_snapshot'):
+            documents[key] = _json(raw)
+    _presence_documents(result, documents['raw_stdout'], documents['before_snapshot'], documents['after_snapshot'])
+    _need(result['original_WSL_config_sha256'] ==
+          '0801edb1af103298efac50380c84ab2e248def1bf5bcf6c6769263f5a6aa97ed'
+          and result['original_native_config_sha256'] ==
+          'ec32867044bd6de4f8cead0cc6d9f73a45419c1a091dbe3cdbdfadaf669fe0f9',
+          'context_readonly_original_configuration')
+    native_row = actual['windows_bridge']['configuration']
+    native_raw = _read(native_row['wsl_path'])
+    _need(_digest(native_raw) == native_row['sha256']
+          and _json(native_raw)['identity']['sid'] == documents['raw_stdout']['executor_sid'],
+          'context_readonly_current_native_sid')
+    evidence.append(({'path': native_row['wsl_path'], **_metadata(native_raw)}, native_raw))
+    snapshot = documents['after_snapshot']
+    baseline = _native_roots(root)
+    for name in set(baseline) - set(snapshot['files']):
+        if name.startswith(('native-bridge-', 'native-auth-refresh-')):
+            match = re.fullmatch(r'(native-bridge-[0-9a-f]{64}|native-auth-refresh-[0-9a-f]{24})(\.claim\.json|-journal\.json)', name)
+            _need(match is not None and match[1] + '.claim.json' in baseline
+                  and match[1] + '-journal.json' in baseline, 'context_readonly_new_root_pair')
+    _need(all(_metadata(baseline.get(name, b'')) == value for name, value in snapshot['files'].items()
+              if '/' not in name and name.startswith(NATIVE_PREFIXES)), 'context_readonly_snapshot_roots_changed')
+    events = _readonly_events(root)
+    _need({name: _metadata(raw) for name, raw in events.items()} == snapshot['edd_event_inventory'],
+          'context_readonly_snapshot_events_changed')
+    _readonly_history(baseline[prefix + '.claim.json'], baseline[prefix + '-journal.json'], events)
+    refresh_events = {}
+    for name, value in snapshot['refresh_inventory'].items():
+        raw = _read(root / name)
+        _need(_metadata(raw) == value, 'context_readonly_snapshot_refresh_changed')
+        if '/' in name:
+            refresh_events[name] = raw
+    pair = {key: {'path': str(root / name), **_metadata(baseline[name])}
+            for key, name in (('claim', prefix + '.claim.json'), ('journal', prefix + '-journal.json'))}
+    _need(pending_claims.count(pair) == 1, 'context_readonly_pending_pair')
+    guard = _readonly_guard(c, root, baseline, events, refresh_events, evidence)
+    guard()
+    return pair, names, guard
+
+
 def validate_context(c, current_config, pending_claims, *, current_boot_descriptor=None, now_epoch=None):
     """Return exact historical coverage; never admit a runtime or execute work.
 
@@ -405,6 +718,15 @@ def validate_context(c, current_config, pending_claims, *, current_boot_descript
                 return {name: raw for name, raw in complete.items() if name not in excluded}
             historical._root_records = historical_roots
             pending_claims = [row for row in pending_claims if row not in classified]
+        readonly = _classify_readonly(c, root, roots, pending_claims, actual)
+        if readonly is not None:
+            pair, readonly_names, readonly_guard = readonly
+            prior_reader = historical._root_records
+            def without_readonly(path):
+                readonly_guard()
+                return {name: raw for name, raw in prior_reader(path).items() if name not in readonly_names}
+            historical._root_records = without_readonly
+            pending_claims = [item for item in pending_claims if item != pair]
         identity = types.SimpleNamespace(state_root=root, document_sha256=original_row['sha256'])
         # Recompute the sealed historical disposition at its actual completion,
         # using its authentic after-Restart observation. These are historical
@@ -472,6 +794,11 @@ def validate_context(c, current_config, pending_claims, *, current_boot_descript
             _need(_digest(_read(Path(__file__).absolute().with_name('preworker_disposition.py')))
                   == PREWORKER_SOURCE_SHA256, 'context_current_helper_source_pin')
             result.update({item['session']: item['claim_sha256'] for item in preworker})
+        if readonly is not None:
+            readonly_guard()
+            receiver = c.get('receive_readonly_frontier_guard')
+            _need(callable(receiver), 'context_readonly_guard_receiver_required')
+            receiver(readonly_guard)
         return result
     except (KeyError, TypeError, AttributeError, RecursionError):
         raise ContextError('context_invalid_chain_or_configuration') from None
