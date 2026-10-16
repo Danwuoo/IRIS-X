@@ -4,6 +4,34 @@
 本頁只有一條接手流程：固定來源與材料 → 本地驗收 → 唯一 publisher 提交與監看 → 真實結果回交。
 命令與 schema 以各工具 README 為準；舊版本的特殊恢復步驟只保留固定歷史連結。
 
+## 當前僅準備 source003／run003（2026-10-16）
+
+最新使用者指示是「準備下一輪 run」。目前只允許離線準備，以下歷史執行流程不是本次
+provider／QuickSave／RUN 授權。公開基底為 `016b43013d652a2102c867a29dace41f5aecb28a`；
+本輪身份重綁另附精確檔案／source manifest，尚未公開。先固定基底及完整 overlay，不只複製 runtime。
+
+1. 檢查 source-only bundle 的 bytes／SHA 與全部260件 source。
+   canonical source 為 `42062ef934a7c5495f8d22b6a68faa715301b47b9875eef829f0988056877c75`；
+   archive 為 `a425250bb0541981a04b9814f6edf00695b9c574ccb207035c6fd4a61980f78e`，15,820,672 bytes。
+   使用新的 run003／source003／environment003；保留所有舊 checkout、final、STATE、claims和時鐘。
+2. 原 source proposal inventory `fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd`
+   與 base inventory `de519816720ceb3bf07e0bf015c888b7e4bd9fdb344c2dbe355281230920ee88`
+   仍是組裝輸入。它們只在原本地存在；此公開 source-only 包不含私人 solver／evaluator／review。
+3. 當前禁止 provider 讀寫。numeric47 的官方403仍未解決；用戶 ZIP 不是新的官方 metadata。
+   原 observe_predecessor.py 明確固定 code23／v45，保留為歷史工具，不得直接執行它代表 v47。
+   未取得真實當前 predecessor 與必要授權前，停止於離線封包，不生成假 OBSERVATION 或猜新版本。
+4. 真實官方存取與執行授權具備後，仍由原本地唯一 publisher 先核對未決寫入，
+   再以同一既有 pipeline 封存真 observation、產生新 proposal → 三份真 review → 新 final。
+   版本只依該 observation 推導；source003 bundle 中版本和 epoch 必須保持 null。
+   當前 assembler 的 owner gate 要求 RUN／監看／取回授權，這項準備指示不足以填 true。
+5. 只在未來完成 code numeric 回讀、真 mount、inactive 回讀與原動態 review後，
+   才能在原 JIT入口量取該新 session 的真 predispatch epoch。不可用 v47的1792136130或現在時間
+   製造 finalized active notebook；不得變更 v47 已消耗 save_calls 或把負向讀取當重送許可。
+
+固定診斷仍為 A256＋首批64＋固定兩座標共最多8個 shadow forwards／120秒、零RLcommit；
+不執行其他192、C、dev、held或PUBLIC。沿用已發布的 training-only 時間預算與placeholder修正，
+保留原數值／記憶體／hard-deadline gates。既有25項修復測試不重跑，這次只核身份重綁受影響部分。
+
 ## 交付範圍
 
 使用者已授權沿既有 run007／run008 notebook 模式，持續「開發 → Kaggle 執行 → terminal／結果分析 →

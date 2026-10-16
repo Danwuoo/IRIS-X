@@ -22,9 +22,9 @@ import types
 
 FORMAT = 'irisx/run008-windows-bridge-active-review-static-pins-v1'
 CONFIG_FORMAT = 'irisx/run008-windows-bridge-operator-config-v1'
-SOURCE = '048e9d3ee8b588cbb2075ae785b3f09fa10e3846a3269001e0c7a5f102865fda'
+SOURCE = '42062ef934a7c5495f8d22b6a68faa715301b47b9875eef829f0988056877c75'
 RUN_PURPOSE = 'training-only-numeric-diagnostic-v1'
-ARCHIVE = '23281295453c2d31bf125afd26f84851e2a11ff9373f711961c21082b7e37e84'
+ARCHIVE = 'a425250bb0541981a04b9814f6edf00695b9c574ccb207035c6fd4a61980f78e'
 REF = 'danielwuu/iris-x-learning-agent-20261011'
 DREF = 'danielwuu/iris-x-learning-agent-code-20261011'
 VERSION_FIELDS = {'code_predecessor', 'code', 'inactive_predecessor', 'inactive', 'active'}
@@ -37,8 +37,8 @@ NON_CODE_PINS = [
     'danielwuu/iris-arc-next-cpython312-offline/2',
     'danielwuu/iris-arc-granite42-run003-adapter-20261009/1',
 ]
-RUN = '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-run002'
-SOURCE_ROOT = '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source002'
+RUN = '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-run003'
+SOURCE_ROOT = '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source003'
 DOCS = {'active-finalized.ipynb', 'original-request.json', 'operator.json', 'parent-private-scorer.json'}
 
 

@@ -244,8 +244,8 @@ class ArchiveTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup);self.root=Path(self.tmp.name)
         self.m=load();m=self.m;m.DOWNLOADS=self.root/'downloads';m.DOWNLOADS.mkdir()
-        self.prefix='irisx-qwen14b-numeric-diagnostic-20261016-run002';self.outer=self.prefix+'-launcher'
-        self.remote='/kaggle/working/'+self.prefix;self.source='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source002'
+        self.prefix='irisx-qwen14b-numeric-diagnostic-20261016-run003';self.outer=self.prefix+'-launcher'
+        self.remote='/kaggle/working/'+self.prefix;self.source='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source003'
         self.pub=self.root/'publication';self.pub.mkdir();m.publication_root=lambda:self.pub
         self.launch={'saved_source':{'sha256':'b'*64}}
         (self.pub/'notebook-rlvr004-receipt.json').write_bytes(canonical(self.launch))

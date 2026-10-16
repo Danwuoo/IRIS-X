@@ -40,9 +40,9 @@ OPERATOR_SOURCE_NAMES = ('config.py', 'native_auth.py', 'sdk-lock.json',
 # Allocation comes from the independently hash-bound live local configuration.
 # Historical code18/v35 evidence is validated separately and never relabelled.
 CODE_PREDECESSOR=CODE_VERSION=NOTEBOOK_PREDECESSOR=INACTIVE_VERSION=ACTIVE_VERSION=None
-RUN_PATH='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-run002'
-SOURCE_PATH='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source002'
-ENVIRONMENT_PATH='/tmp/irisx-qwen14b-numeric-diagnostic-20261016-environment002'
+RUN_PATH='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-run003'
+SOURCE_PATH='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source003'
+ENVIRONMENT_PATH='/tmp/irisx-qwen14b-numeric-diagnostic-20261016-environment003'
 FROZEN_TRANSPORT_SHA256='990f272eed0f243c9fff1a3d61f96a280c875e6bc8e31e5dfdb1aa4690b32eed'
 RUN006_LINEAGE_HELPER_SHA='0e1dae66529831ae719da5bc0d36bf300a11bdc07734416bb9ff8490d1d77cfe'
 V35_LINEAGE_HELPER_SHA='f3cc35d60fd5f5aaa173feeb824120ff6ed18fea6a8aaba0f3368a973215e2b8'

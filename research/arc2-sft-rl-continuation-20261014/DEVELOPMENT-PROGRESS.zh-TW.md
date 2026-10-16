@@ -3,16 +3,37 @@
 更新：2026-10-16 UTC。本頁只維護目前狀態、阻礙與下一步；研究問題與固定設計見
 [研究主頁](README.md)，歷史 E0–E52、來源指紋及更新時間線見[工程歷史](archive/engineering-history.zh-TW.md)。
 
-**使用者提供的 v47 evidence ZIP 已獨立驗證：A完成SFT256，首批B因沿用完整A/B/C時間預留而未獲准，沒有新的replay／shadow數值結果。診斷專用預算窄修與受影響CPU測試／獨立審查已完成；尚未發布或提交。**
+**使用者提供的 v47 evidence ZIP 已獨立驗證：A完成SFT256，首批B因沿用完整A/B/C時間預留而未獲准，沒有新的replay／shadow數值結果。診斷專用預算窄修已發布為 016b430；目前依使用者新指示準備 source003／run003 離線 successor，尚未發布本輪身份重綁或提交。**
 官方 numeric47 讀取仍曾回 HTTP403，唯一 activate 的接受狀態未 reconcile；使用者提供的封存
 來源與原 code24／source002 相符，不替代官方 Save 接受收據。原 claim／epoch 保留，沒有重送。
 最後完成數值 replay／shadow 的仍是 v45：原數值 gate 拒絕，RL commit 為0。
 v43 的原 A/B/C 輸出與 PUBLIC 原 scorer 0/167 保留；v45 沒有重跑評分。
 正式 consumer admission 尚未成立；來源評分不是官方或獨立重評結果。原研究優先事項仍是
-unchanged-policy 數值落差與已定位的證據契約，研究方法與門檻不變；目前只作已授權的離線修復與測試。
+unchanged-policy 數值落差與已定位的證據契約，研究方法與門檻不變；目前只作已授權的下一輪離線準備，不執行 Kaggle。
 使用者先前授權依既有 run007／run008 離線 notebook 模式持續開發、Kaggle 執行、分析 terminal／結果，
 再按既有研究條件進入下一輪；這項歷史授權不解除本次 HTTP403 後的停止條件。
 本地端維持唯一 publisher，code 與 weights／wheels／資料 Dataset 分離鎖版；UNKNOWN 與各次 admission 不因此豁免。
+
+## 下一輪 source003 離線準備（2026-10-16）
+
+- 基底為已公開 `016b43013d652a2102c867a29dace41f5aecb28a`。僅重綁既有組裝器、
+  mount／wrapper、transport／active-wire 及其完整 operator pins；修好的 flow.py 和其餘科學 runtime 不變。
+- 新 namespace 固定 `numeric-diagnostic-20261016-run003`／`source003`／`environment003`。
+  仍是260件 source；canonical source
+  `42062ef934a7c5495f8d22b6a68faa715301b47b9875eef829f0988056877c75`，
+  source.zip 15,820,672 bytes／`a425250bb0541981a04b9814f6edf00695b9c574ccb207035c6fd4a61980f78e`。
+- 沿用 A SFT256、首批64條原 DDIS replay、固定兩座標各四個 shadow forward，總上限8／120秒；
+  原 max0.20／p95 0.05／coverage1.0、零 RL commit、12小時硬限不變。
+  其餘192／C／dev／held／PUBLIC 未請求，沒有新科學結果。
+- 這是 source-only 離線包，不是完成私人 proposal／final／publication manifest。
+  code／inactive／active 數字版本、predispatch epoch 均為 null，未產生 provider claim。
+  舊 v47／run002 來源、失敗、UNKNOWN、claim 和原 epoch 不回寫。
+- 提交前阻礙：官方 v47 HTTP403 尚未解除；新 predecessor 官方來源／設定未核實，
+  原固定 code23／v45 capture 不能用來代表當前狀態。未來仍需真正新觀察、私人材料 review
+  及提交授權；本次準備不自行查詢或重送。具體接手見既有交接頁。
+- 本輪身份重綁尚未公開。原 016b430 的25項 normal／-O測試與獨立審查保留；
+  本輪組裝26項＋mount／collector路徑／operator pin整合65項，normal與`-O`各91項通過、無skip；
+  不重驗不變 native／SDK／模型。獨立review完成後以交付收據列其精確範圍。
 
 ## 一、文件責任與更新規則
 
@@ -52,7 +73,7 @@ f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.
 | 已發布的啟動修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；v43 已實際越過啟動邊界 |
 | 多輪續接 | 0d3524 已隔離每輪 publication／collector 目錄，native STATE 與全域鎖共用；本地18:03 fresh no-auth 停於舊f5永久 same-boot 字串 gate | 原1,686檔完全不變，未新建 native claim／canonical／run、未 provider。CIM boot值變1.802125秒，host／Windows／source／runtime相同；符合校時漂移但未證明 same boot，不拿猜測當PASS |
 | 歷史／即時 context 修復 | 原封存Restart＋reconciliation在原completion time重驗；fresh host／source／runtime／closure另核對，封存events及live STATE前後綁定 | 只支援現有f5原件的12.629秒歷史間隔，保留原120秒限制；later UNKNOWN／refresh／publication變更仍阻擋，不加BootID框架、容差或重啟 |
-| Repository／CI | b0d3e0b 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
+| Repository／CI | 016b430 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
 | 真實研究結果 | A SFT256；B 64/256 attempts、reward15/64、RL commit0；C 額外 SFT203。固定 dev 平手規則選 A；PUBLIC 原 scorer 完整 120 tasks／167 queries 為 0/167 | 以下是取回封存輸出的觀察，正式 consumer 尚拒絕；不代表 RL 更新有效或無效，也不是官方／獨立重評分數 |
 
 ### v43 模型與評分觀察

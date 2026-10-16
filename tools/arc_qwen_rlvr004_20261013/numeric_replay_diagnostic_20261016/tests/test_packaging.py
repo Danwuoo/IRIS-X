@@ -56,9 +56,9 @@ class PackagingTests(unittest.TestCase):
         self.assertEqual(a.sha(a.canonical(sorted((n, a.sha(b)) for n, b in guarded.items()))), a.SOURCE_SHA)
 
     def test_distinct_tail_namespace_preserves_consumed_259_inputs(self):
-        self.assertEqual(a.RUN, '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-run002')
-        self.assertEqual(a.SOURCE, '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source002')
-        self.assertEqual(a.ENV, '/tmp/irisx-qwen14b-numeric-diagnostic-20261016-environment002')
+        self.assertEqual(a.RUN, '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-run003')
+        self.assertEqual(a.SOURCE, '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source003')
+        self.assertEqual(a.ENV, '/tmp/irisx-qwen14b-numeric-diagnostic-20261016-environment003')
         self.assertEqual(a.RUN_PURPOSE, 'training-only-numeric-diagnostic-v1')
         self.assertEqual(a.PROPOSAL_INVENTORY_SHA,
                          'fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd')
@@ -409,10 +409,22 @@ class PublicationSpecializationTests(unittest.TestCase):
         projected = a.projected_environment(environment)
         source,archive,normalized = a.diagnostic_runtime(original,environment,projected,a.runtime_overlay())
         self.assertEqual(a.sha(projected),
-                         '1491a329410d5aec3b81bb8849f1167295cca27527a76f05e8e82393f129fe47')
+                         'a32cdd2cdda5aa4a0bdeded6a0ac535f1b7e5335dd32dbb7166c4c003bc8b1f5')
         self.assertEqual(normalized,
-                         '26bdc9e717c6bda46e2891159afb7365886dccd94e90e5bff9dd6aa7188a904f')
+                         '5b9dc643222839111793c1b4c86b0f7b2dcf4ecd2221d2c88cd08468293d63ad')
         source_sha = a.sha(a.canonical(sorted((n,a.sha(b)) for n,b in source.items())))
+        self.assertEqual(source_sha,
+                         '42062ef934a7c5495f8d22b6a68faa715301b47b9875eef829f0988056877c75')
+        self.assertEqual(a.sha(archive),
+                         'a425250bb0541981a04b9814f6edf00695b9c574ccb207035c6fd4a61980f78e')
+        self.assertEqual(len(archive), 15820672)
+        self.assertEqual((len(original), len(source)), (259, 260))
+        self.assertEqual(sum(n.startswith('baseline/') for n in source), 200)
+        self.assertTrue(all(source[n] == original[n] for n in original if n.startswith('baseline/')))
+        self.assertEqual(a.sha(source['experiment_flow/flow.py']),
+                         '9fdec4f2ff37544ffb09008d04c9ae9d4cc170140b79238cd19dcdf060f62f7f')
+        self.assertEqual((source, archive, normalized),
+                         a.diagnostic_runtime(original, environment, projected, a.runtime_overlay()))
         self.assertEqual(self.wire.SOURCE,source_sha)
         self.assertEqual(self.wire.ARCHIVE,a.sha(archive))
         helpers = a.publication_helpers(source_sha,a.sha(archive))
