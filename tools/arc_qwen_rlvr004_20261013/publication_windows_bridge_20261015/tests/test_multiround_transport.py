@@ -168,6 +168,9 @@ class MultiRoundTransportTests(unittest.TestCase):
         upload = put(candidate / 'synthetic-upload.bin', provider.payload)
         upload['path'] = 'synthetic-upload.bin'
         manifest = {'notebooks': notebooks, 'jit': {'entry': {'sha256': 'e' * 64}},
+            # Explicit historical continuous scope; fixture grants no live authority.
+            'local_reconstruction': {'stop_after_submit_readback': False,
+                'provider_monitoring_authorized': True, 'exact_output_retrieval_authorized': True},
             'datasets': [{'transport_archive': upload, 'version_notes': 'Synthetic test only',
                 'expected_readback_layouts': {'extracted-root': [
                 {'path': 'NOTICE.txt', 'bytes': len(provider.payload), 'sha256': digest(provider.payload)}]}}]}

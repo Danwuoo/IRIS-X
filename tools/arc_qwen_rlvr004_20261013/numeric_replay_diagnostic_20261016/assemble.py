@@ -72,8 +72,8 @@ BASE_TRANSPORT_SHA = '7a5a766baa4ab2654037deeab9d39e98bbd2be7b5c7eb9c341d861f86e
 BASE_ACTIVE_WIRE_SHA = '2ab7be25726d38863379a7b63d682f86abd33d52b91116c73734cc9e647da301'
 # Fixed numeric successor authenticates all behavior. Only its exact common
 # dependency pin may change as the same-checkout operator is rebound.
-PUBLISHED_TRANSPORT_SHA = '5d6aa52c1ef6d21385269a21a4d1b35bd39aa749fcbb025b99e36697cd2567f5'
-PUBLISHED_ACTIVE_WIRE_SHA = '1406364bdd8172fc5132f3084d355fb6f70658f28fbb2467db599caadef42b6c'
+PUBLISHED_TRANSPORT_SHA = 'a3f6ba3233e2e8554fd05b8dfaca6f8f598e6cdbbf979606a0ae7184037effb5'
+PUBLISHED_ACTIVE_WIRE_SHA = '96c8be8686cc7dd9ae53d74110e493c07d759044a70346c3cbbb8742c754121a'
 PUBLISHED_COMMON_SHA = '88faa050b8cd7564e2d46552091773df4025b0589bd37771f79ea8648f2c053a'
 BASE_PARENT_ENTRY_SHA = '91f9e9996ee67d699660f9473ca27138c9b357e3e5eb5ca66d48413022a164a3'
 RUNTIME_TARGETS = frozenset(('rl_session/runtime.py', 'rl_session/numeric_shadow.py',
@@ -162,6 +162,20 @@ def observation_inputs(root, digest):
     return observation, {'current-predecessor/' + n: b for n, b in files.items()}
 
 
+
+def owner_publication_scope(owner):
+    """Explicit one-readback STOP or the retained continuous owner direction."""
+    need(owner.get('one_accepted_run_per_distinct_reviewed_candidate') is True,
+         'one accepted run per reviewed candidate')
+    stop = owner.get('stop_after_submit_readback', False)
+    single = owner.get('single_post_submit_readback_authorized', False)
+    need(type(stop) is bool and type(single) is bool, 'strict owner readback scope')
+    need(single is stop and owner.get('continuous_monitoring_authorized') is (not stop)
+         and owner.get('result_retrieval_authorized') is (not stop), 'explicit owner publication scope')
+    return {'stop_after_submit_readback': stop, 'single_post_submit_readback_authorized': single,
+            'provider_monitoring_authorized': not stop, 'exact_output_retrieval_authorized': not stop}
+
+
 def owner_inputs(path, digest):
     raw = pinned(path, digest)
     owner = obj(raw)
@@ -169,9 +183,7 @@ def owner_inputs(path, digest):
          and owner.get('owner_id') == 'danielwuu', 'fresh diagnostic owner direction')
     need(owner.get('run_purpose') == RUN_PURPOSE and owner.get('training_only') is True,
          'fixed training-only diagnostic authorization')
-    for key in ('one_accepted_run_per_distinct_reviewed_candidate', 'continuous_monitoring_authorized',
-                'result_retrieval_authorized'):
-        need(owner.get(key) is True, 'diagnostic continuation scope: ' + key)
+    owner_publication_scope(owner)
     for key in ('rl_optimizer_commit_authorized', 'later_B_C_dev_holdout_PUBLIC_authorized',
                 'gpu_quota_query_authorized', 'new_resource_or_paid_provisioning_authorized',
                 'official_competition_submission_authorized', 'legal_agreement_acceptance_authorized',
@@ -562,7 +574,7 @@ def assemble(*, repository_root, source_proposal_root, base_root, observation_ro
         no_model_mount_acceptance_helper=descriptor(files['assembly/accept_downloaded_mount.py'], 'assembly/accept_downloaded_mount.py'),
         local_reconstruction={'status': 'NATIVE_NUMERIC_DIAGNOSTIC_REVIEWED' if approved else 'NATIVE_NUMERIC_DIAGNOSTIC_REVIEW_REQUIRED',
             'assembler_source_sha256': proposal['assembler_source_sha256'], 'versions': versions,
-            'stop_after_submit_readback': False, 'provider_monitoring_authorized': True, 'exact_output_retrieval_authorized': True,
+            **owner_publication_scope(owner),
             'additional_gpu_runs_authorized': False},
         admission_proposal_sha256=sha(encoded(proposal)), dispatch_ready=False, provider_publication_completed=False)
     publication['jit']['entry'] = descriptor(files['assembly/finalize.py'], 'assembly/finalize.py')

@@ -15,6 +15,8 @@ PATH = Path(__file__).resolve().parents[1] / 'assembly/observe_predecessor.py'
 spec = importlib.util.spec_from_file_location('fixed_predecessor_capture_tests', PATH)
 observer = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(observer)
+VERSIONS = {'code_predecessor':23, 'code':24, 'inactive_predecessor':45, 'inactive':46, 'active':47}
+EXPECTED = {'code_version':24, 'notebook_version':47}
 
 
 def descriptor(path):
@@ -47,12 +49,13 @@ class PreparationTests(OfflineTests):
         material = write(self.root / 'material.json', {'status': 'APPROVED',
             'scope': {'publication_manifest': {'sha256': manifest['sha256']}},
             'approved_notebooks': self.manifest['notebooks']})
-        config = write(self.root / 'config.json', {'publication_manifest_sha256': manifest['sha256']})
+        config = write(self.root / 'config.json', {'publication_manifest_sha256': manifest['sha256'],
+                                                     'versions': dict(VERSIONS)})
         self.review = {'status': 'PASS', 'synthetic_test_only': False,
             'provider_execution_admitted': True, 'allowed_actions': ['reconcile-read-only'],
             'observer': {'purpose': observer.PURPOSE, 'script': descriptor(PATH),
                 'output_root': str(self.root / 'new-output'), 'manifest': manifest,
-                'material': material, 'local_config': config}}
+                'material': material, 'local_config': config, 'expected_predecessor': dict(EXPECTED)}}
         self.review_path = self.root / 'synthetic-review.json'
         self.events = []
         self.configured = types.SimpleNamespace(scratch_root=self.root,
@@ -61,7 +64,7 @@ class PreparationTests(OfflineTests):
             configured=lambda: self.configured,
             bind_action_review=lambda *args: self.events.append('bind_action_review'),
             publication_guard=lambda: self.events.append('publication_guard'))
-        self.transport = types.SimpleNamespace(CONFIG=types.SimpleNamespace(versions=dict(observer.VERSIONS)),
+        self.transport = types.SimpleNamespace(CONFIG=types.SimpleNamespace(versions=dict(VERSIONS)),
             SCRIPT=observer.OPERATOR / 'rl_transport.py', _common=self.common,
             configure_local=lambda args: self.events.append('configure_local'),
             review_gate=lambda *args: self.events.append('review_gate'),
@@ -77,24 +80,13 @@ class PreparationTests(OfflineTests):
 
     def prepare(self):
         row = write(self.review_path, self.review)
-        # Only the missing private manifest is substituted, in memory, to test
-        # orchestration. Production literals are independently asserted below.
-        manifest = self.review['observer']['manifest']
-        with patch.object(observer, 'MANIFEST_SHA256', manifest['sha256']), \
-             patch.object(observer, 'MANIFEST_BYTES', manifest['bytes']), \
-             patch.object(observer, 'load_collector', return_value=self.collector):
+        with patch.object(observer, 'load_collector', return_value=self.collector):
             return observer.prepare(self.review_path, row['sha256'])
 
-    def test_fixed_published_literals_and_collector_bootstrap_load(self):
-        self.assertEqual(observer.MANIFEST_BYTES, 135137)
-        self.assertEqual(observer.SAVED_SOURCE_BYTES, 22913)
-        self.assertEqual(observer.PURPOSE, 'fixed-code23-v45-predecessor-capture-v1')
-        self.assertEqual(observer.MANIFEST_SHA256,
-            '15f340149a8eff74e6c1d56f3cd34b8836d349dfa6818ef14bd142dcb600161a')
-        self.assertEqual(observer.SAVED_SOURCE_SHA256,
-            '5f884856484087033f6569335f5c65f752c4868c823276efaffed3c3e96eaeff')
-        self.assertEqual(observer.VERSIONS, {'code_predecessor': 22, 'code': 23,
-            'inactive_predecessor': 43, 'inactive': 44, 'active': 45})
+    def test_reviewed_capture_purpose_and_collector_bootstrap_load(self):
+        self.assertEqual(observer.PURPOSE, 'review-bound-current-predecessor-capture-v1')
+        self.assertFalse(hasattr(observer, 'MANIFEST_SHA256'))
+        self.assertFalse(hasattr(observer, 'SAVED_SOURCE_SHA256'))
         self.assertTrue(callable(observer.load_collector().bootstrap))
         self.assertIsNone(observer.load_collector().transport)
 
@@ -102,7 +94,7 @@ class PreparationTests(OfflineTests):
         result = self.prepare()
         self.assertEqual(self.events, ['bootstrap', 'configure_local', 'review_gate',
                                       'execution_gate', 'bind_action_review', 'publication_guard'])
-        self.assertEqual(result, (self.transport, self.common, self.manifest, self.root / 'new-output'))
+        self.assertEqual(result, (self.transport, self.common, self.manifest, self.root / 'new-output', EXPECTED))
         self.assertFalse((self.root / 'new-output').exists())
 
     def test_source_review_and_scope_mutations_reject_before_bootstrap(self):
@@ -112,6 +104,9 @@ class PreparationTests(OfflineTests):
             dict(original, allowed_actions=['reconcile-read-only', 'activate']),
             dict(original, allowed_actions=['reconcile-read-only', 'reconcile-read-only'])]
         for key, value in (('purpose', 'generic'), ('extra', True),
+                           ('expected_predecessor', {'code_version': 24, 'notebook_version': 45}),
+                           ('expected_predecessor', {'code_version': True, 'notebook_version': 47}),
+                           ('expected_predecessor', {'code_version': 24, 'notebook_version': 47, 'extra': 0}),
                            ('script', {**original['observer']['script'], 'sha256': '0' * 64})):
             variants.append({**original, 'observer': {**original['observer'], key: value}})
         for review in variants:
@@ -136,9 +131,9 @@ class PreparationTests(OfflineTests):
 
     def test_stale_versions_output_overwrite_and_retained_overlap_reject(self):
         self.transport.CONFIG.versions['active'] = 44
-        with self.assertRaisesRegex(ValueError, 'fixed_accepted_versions'):
+        with self.assertRaisesRegex(ValueError, 'expected_predecessor_configuration_binding'):
             self.prepare()
-        self.transport.CONFIG.versions = dict(observer.VERSIONS)
+        self.transport.CONFIG.versions = dict(VERSIONS)
         output = self.root / 'new-output'
         output.mkdir()
         with self.assertRaisesRegex(ValueError, 'fresh_output_required'):
@@ -156,7 +151,10 @@ class PreparationTests(OfflineTests):
 
 class DTO(types.SimpleNamespace):
     def to_dict(self):
-        return dict(vars(self))
+        def camel(name):
+            first, *rest = name.split('_')
+            return first + ''.join(part[:1].upper() + part[1:] for part in rest)
+        return {camel(key): value for key, value in vars(self).items()}
 
 
 class CaptureTests(OfflineTests):
@@ -165,10 +163,11 @@ class CaptureTests(OfflineTests):
         self.events, self.locked = [], False
         self.raw = b'{"synthetic_only":true}'
         self.dataset = DTO(id=12504696, ref='danielwuu/iris-x-learning-agent-code-20261011',
-            owner_ref='danielwuu', is_private=True, current_version_number=23)
+            owner_ref='danielwuu', is_private=True, current_version_number=24)
         metadata = DTO(id=138123872, ref='danielwuu/iris-x-learning-agent-20261011',
-            current_version_number=45, is_private=True, enable_gpu=True, enable_tpu=False,
-            enable_internet=False, title='Synthetic expected title')
+            current_version_number=47, is_private=True, enable_gpu=True, enable_tpu=False,
+            enable_internet=False, title='Synthetic expected title',
+            kernel_type='notebook', language='python', machine_shape='NvidiaRtxPro6000')
         self.kernels = [DTO(metadata=metadata, blob=DTO(source=self.raw.decode())),
                         DTO(metadata=copy.deepcopy(metadata), blob=DTO(source=self.raw.decode()))]
         self.status = types.SimpleNamespace(status=types.SimpleNamespace(name='COMPLETE'), failure_message='',
@@ -186,6 +185,7 @@ class CaptureTests(OfflineTests):
             classify=lambda *args: ('OTHER', ''), STOP=self.root / 'GPU_STOP', write_new=self.write_new)
         self.settings_calls = 0
         self.transport = types.SimpleNamespace(DREF=self.dataset.ref, settings=self.settings,
+            CONFIG=types.SimpleNamespace(versions=dict(VERSIONS)),
             row=lambda manifest, role: {'title': 'Synthetic expected title'})
         self.output = self.root / 'output'
 
@@ -236,9 +236,7 @@ class CaptureTests(OfflineTests):
         observer.need(metadata.title == row['title'], 'full_settings')
 
     def capture(self):
-        with patch.object(observer, 'SAVED_SOURCE_SHA256', observer.sha(self.raw)), \
-             patch.object(observer, 'SAVED_SOURCE_BYTES', len(self.raw)):
-            return observer.capture(self.transport, self.common, {}, self.output)
+        return observer.capture(self.transport, self.common, {}, self.output, dict(EXPECTED))
 
     def test_five_reads_six_raw_files_close_then_observation_under_lock(self):
         result = self.capture()
@@ -252,21 +250,72 @@ class CaptureTests(OfflineTests):
             ('status.json', 'status_sha256'), ('metadata-after.json', 'metadata_after_sha256'),
             ('saved_source.ipynb', 'saved_source_sha256'), ('dataset-after.json', 'dataset_after_sha256')):
             self.assertEqual(observer.sha((self.output / name).read_bytes()), observation[key])
-        self.assertEqual((result['code_version'], result['notebook_version']), (23, 45))
-        self.assertEqual((observation['code_version'], observation['notebook_version']), (23, 45))
+        self.assertEqual((result['code_version'], result['notebook_version']), (24, 47))
+        self.assertEqual((observation['code_version'], observation['notebook_version']), (24, 47))
         self.assertFalse(result['numeric_publication_contract_admitted'])
         self.assertFalse(observation['runtime_closure_verified'])
         self.assertFalse(observation['scientific_result_verified'])
         with self.assertRaisesRegex(ValueError, 'fresh_output_required'):
             self.capture()
 
-    def test_fixed_saved_source_length_is_required_even_with_matching_digest(self):
-        with patch.object(observer, 'SAVED_SOURCE_SHA256', observer.sha(self.raw)), \
-             patch.object(observer, 'SAVED_SOURCE_BYTES', len(self.raw) + 1):
-            with self.assertRaisesRegex(ValueError, 'fixed_v45_source_bracket'):
-                observer.capture(self.transport, self.common, {}, self.output)
-        self.assertFalse((self.output / 'OBSERVATION.json').exists())
-        self.assertEqual(self.events[-2:], ['close', 'unlock'])
+    def test_new_actual_source_is_observed_without_acceptance_claim(self):
+        raw = b'{"source": "different actual predecessor source"}'
+        for kernel in self.kernels: kernel.blob.source = raw.decode()
+        result = self.capture()
+        observation = json.loads((self.output / 'OBSERVATION.json').read_bytes())
+        self.assertEqual((self.output / 'saved_source.ipynb').read_bytes(), raw)
+        self.assertEqual(observation['saved_source_sha256'], observer.sha(raw))
+        self.assertIn('not proof of earlier Save acceptance', observation['scope'])
+        self.assertFalse(result['numeric_publication_contract_admitted'])
+
+    def test_expected_binding_is_rechecked_before_provider(self):
+        self.transport.CONFIG.versions['active'] = 45
+        with self.assertRaisesRegex(ValueError, 'expected_predecessor_configuration_binding'):
+            self.capture()
+        self.assertEqual(self.events, [])
+        self.assertFalse(self.output.exists())
+
+    def test_supported_terminal_status_is_recorded_without_upgrade(self):
+        for value in ('ERROR', 'CANCEL_ACKNOWLEDGED'):
+            with self.subTest(status=value):
+                fixture = CaptureTests('test_supported_terminal_status_is_recorded_without_upgrade')
+                fixture.setUp()
+                try:
+                    fixture.status.status.name = value
+                    result = fixture.capture()
+                    observation = json.loads((fixture.output / 'OBSERVATION.json').read_bytes())
+                    self.assertEqual(result['provider_status'], value)
+                    self.assertEqual(observation['provider_status'], value)
+                    self.assertFalse(observation['runtime_closure_verified'])
+                finally: fixture.doCleanups()
+
+    def test_actual_capture_schema_seals_without_new_calls_or_status_upgrade(self):
+        from tools.arc_qwen_rlvr004_20261013.admission_run008 import seal_inputs
+        for status in ('COMPLETE', 'ERROR', 'CANCEL_ACKNOWLEDGED'):
+            with self.subTest(status=status):
+                fixture = CaptureTests('test_actual_capture_schema_seals_without_new_calls_or_status_upgrade')
+                fixture.setUp()
+                try:
+                    fixture.status.status.name = status
+                    result = fixture.capture()
+                    events = list(fixture.events)
+                    repository = fixture.root / 'repository'
+                    repository.mkdir()
+                    output = repository / '.irisx/run008-admission/synthetic-only-sealed'
+                    sealed = seal_inputs.seal(repository_root=repository,
+                        observation_root=fixture.output,
+                        observation_sha=result['observation']['sha256'], output_root=output)
+                    value = json.loads((output / 'OBSERVATION.json').read_bytes())
+                    self.assertEqual(value['provider_status'], status)
+                    self.assertEqual((value['code_version'], value['notebook_version']), (24, 47))
+                    self.assertEqual(value['saved_source_sha256'], observer.sha(fixture.raw))
+                    self.assertEqual(sealed['provider_calls'], 0)
+                    self.assertEqual(fixture.events, events)
+                    self.assertFalse(value['runtime_closure_verified'])
+                    for name in ('dataset.json', 'metadata-before.json', 'status.json',
+                                 'metadata-after.json', 'saved_source.ipynb', 'dataset-after.json'):
+                        self.assertEqual((output / name).read_bytes(), (fixture.output / name).read_bytes())
+                finally: fixture.doCleanups()
 
     def test_failed_call_closes_inside_lock_and_never_emits_observation(self):
         self.fail_call = 'status'
@@ -291,24 +340,30 @@ class CaptureTests(OfflineTests):
     def test_fixed_versions_source_types_settings_and_status_fail_closed(self):
         variants = ('dataset_float', 'dataset_version', 'dataset_predecessor', 'dataset_owner',
                     'notebook_version', 'notebook_predecessor', 'notebook_future',
-                    'gpu_int', 'settings', 'metadata', 'source', 'status')
+                    'gpu_int', 'settings', 'metadata', 'source', 'source_empty', 'source_type',
+                    'source_oversize', 'status')
         for name in variants:
             with self.subTest(name=name):
                 # Each temporary fixture keeps failed work separate.
                 fixture = CaptureTests('test_fixed_versions_source_types_settings_and_status_fail_closed')
                 fixture.setUp()
                 try:
-                    if name == 'dataset_float': fixture.dataset.current_version_number = 23.0
-                    elif name == 'dataset_version': fixture.dataset.current_version_number = 24
-                    elif name == 'dataset_predecessor': fixture.dataset.current_version_number = 22
+                    if name == 'dataset_float': fixture.dataset.current_version_number = 24.0
+                    elif name == 'dataset_version': fixture.dataset.current_version_number = 25
+                    elif name == 'dataset_predecessor': fixture.dataset.current_version_number = 23
                     elif name == 'notebook_predecessor': fixture.kernels[1].metadata.current_version_number = 43
-                    elif name == 'notebook_future': fixture.kernels[1].metadata.current_version_number = 46
+                    elif name == 'notebook_future': fixture.kernels[1].metadata.current_version_number = 48
                     elif name == 'dataset_owner': fixture.dataset.owner_ref = 'other'
                     elif name == 'notebook_version': fixture.kernels[1].metadata.current_version_number = 44
                     elif name == 'gpu_int': fixture.kernels[0].metadata.enable_gpu = 1
                     elif name == 'settings': fixture.kernels[1].metadata.title = 'changed'
                     elif name == 'metadata': fixture.kernels[1].metadata.extra_field = True
                     elif name == 'source': fixture.kernels[1].blob.source = 'different'
+                    elif name == 'source_empty':
+                        for k in fixture.kernels: k.blob.source = ''
+                    elif name == 'source_type': fixture.kernels[0].blob.source = b'bytes-not-text'
+                    elif name == 'source_oversize':
+                        for k in fixture.kernels: k.blob.source = 'x' * (observer.CAP + 1)
                     else: fixture.status.status.name = 'RUNNING'
                     with self.assertRaises(ValueError): fixture.capture()
                     self.assertFalse((fixture.output / 'OBSERVATION.json').exists())

@@ -2,7 +2,8 @@
 
 The consumed run006 transport and every earlier publication remain unchanged.
 These local successor bytes retain the source-only, official-auth action gates.
-Official local SDK calls remain bounded, write-once and review-gated. Decision0075 admits terminal monitoring and exact selected-output retrieval.
+Official local SDK calls remain bounded, write-once and review-gated. Exact owner
+direction selects either continuous retrieval or one post-submit readback and STOP.
 No automatic relaunch is supported.
 """
 import argparse, ast, contextlib, hashlib, json, math, os, stat, subprocess, sys, time, types, zipfile
@@ -171,7 +172,7 @@ def current_predecessor_proof(m,root):
         need(cfg['SESSION_SECONDS']==43200 and cfg['EXECUTION_CUTOFF_SECONDS']==42000 and cfg['OUTER_CUTOFF_SECONDS']==42180 and cfg['PROVIDER_RUNTIME_SECONDS']==42300,'current_original_v37_limits')
     a=m['owner_session_stop_attestation'];relative(a['path'])
     owner=strict_object(verified(root/a['path'],a['sha256'],a['bytes'],65536))
-    diagnostic_owner_scope(owner)
+    need(diagnostic_owner_scope(owner) == publication_scope(m), 'owner_manifest_publication_scope')
     return proof
 
 
@@ -182,15 +183,47 @@ def diagnostic_owner_scope(owner):
     need(owner.get('run_purpose') == RUN_PURPOSE and owner.get('training_only') is True
          and owner.get('rl_optimizer_commit_authorized') is False
          and owner.get('later_B_C_dev_holdout_PUBLIC_authorized') is False, 'fixed_diagnostic_owner_scope')
-    need(owner.get('one_accepted_run_per_distinct_reviewed_candidate') is True
-         and owner.get('continuous_monitoring_authorized') is True
-         and owner.get('result_retrieval_authorized') is True, 'current_owner_one_submit_scope')
+    need(owner.get('one_accepted_run_per_distinct_reviewed_candidate') is True, 'current_owner_one_submit_scope')
+    stop = owner.get('stop_after_submit_readback', False)
+    single = owner.get('single_post_submit_readback_authorized', False)
+    need(type(stop) is bool and type(single) is bool, 'strict_owner_readback_scope')
+    need(single is stop and owner.get('continuous_monitoring_authorized') is (not stop)
+         and owner.get('result_retrieval_authorized') is (not stop), 'explicit_owner_publication_scope')
     need(owner.get('session_limit_seconds') == 43200 and owner.get('original_public_task_count') == 120
          and owner.get('original_public_query_denominator') == 167, 'original_clock_reference_scorer_scope')
     for key in ('gpu_quota_query_authorized', 'new_resource_or_paid_provisioning_authorized',
                 'official_competition_submission_authorized', 'legal_agreement_acceptance_authorized',
                 'credential_or_permission_changes_authorized_by_this_file', 'runtime_or_scientific_success_claim'):
         need(owner.get(key) is False, 'current_owner_resource_science_scope: ' + key)
+    return {'stop_after_submit_readback': stop, 'single_post_submit_readback_authorized': single,
+            'provider_monitoring_authorized': not stop, 'exact_output_retrieval_authorized': not stop}
+
+
+
+def publication_scope(m):
+    scope = m.get('local_reconstruction', {})
+    stop = scope.get('stop_after_submit_readback')
+    single = scope.get('single_post_submit_readback_authorized', False)
+    need(type(stop) is bool and type(single) is bool and single is stop
+         and scope.get('provider_monitoring_authorized') is (not stop)
+         and scope.get('exact_output_retrieval_authorized') is (not stop), 'owner_stop_after_submit_scope')
+    return {'stop_after_submit_readback': stop, 'single_post_submit_readback_authorized': single,
+            'provider_monitoring_authorized': not stop, 'exact_output_retrieval_authorized': not stop}
+
+
+
+def unused_stop_readback():
+    """Fail closed on any existing evidence that the one bracket was consumed."""
+    root=publication_root()
+    need(not (root/'active-readback.claim.json').exists()
+         and not (root/'notebook-rlvr004-receipt.json').exists(), 'single_post_submit_readback_already_consumed')
+    path=root/'notebook-rlvr004-journal.json'
+    if path.exists():
+        journal=obj(path)
+        attempts=journal.get('post_submit_readback_attempts', 0)
+        need(type(attempts) is int and attempts == 0
+             and journal.get('single_post_submit_readback', False) is False,
+             'single_post_submit_readback_already_consumed')
 
 
 def descriptor_at(root,d,cap=128*1024**2):
@@ -202,8 +235,7 @@ def contract(manifest, allow_preview=False):
     need(m.get('run_purpose')==RUN_PURPOSE,'fixed_diagnostic_manifest_purpose')
     need(allow_preview or m['source_review_only'] is False and m.get('run_authorized') is True and m.get('release_runtime_finalized') is True,'unapproved_preview')
     need(m['candidate_git_published'] is False and m['git_gate_required'] is False and m['owner_published_stable_commit']==SNAPSHOT_COMMIT,'git_provenance')
-    scope=m.get('local_reconstruction',{})
-    need(scope.get('stop_after_submit_readback') is False and scope.get('provider_monitoring_authorized') is True,'owner_stop_after_submit_scope')
+    publication_scope(m)
     verified(root/'SOURCE-FREEZE.json',m['source_freeze_sha256']);predecessor_proof(m,root)
     current_predecessor_proof(m,root);original_v35_dispatch_proof(m,root);original_v37_dispatch_proof(m,root)
     descriptor_at(root,m['parent_wrapper_verifier'])
@@ -575,6 +607,11 @@ def execution_gate(args, *, monitor=False):
     need(review.get('synthetic_test_only') is False,'synthetic_review_cannot_admit_provider_execution')
     need(type(actions)is list and all(type(action)is str for action in actions) and len(actions)==len(set(actions)) and set(actions)<=permitted,'invalid_review_action_scope')
     need(args.action in actions,'provider_action_not_reviewed')
+    scope=publication_scope(strict_object(verified(args.manifest,args.manifest_sha)))
+    need(not monitor or scope['provider_monitoring_authorized'] and scope['exact_output_retrieval_authorized'],
+         'owner_stop_scope_forbids_monitoring_and_retrieval')
+    if scope['stop_after_submit_readback']:
+        unused_stop_readback()
     if args.action in ('update-code','save-inactive','activate'):
         git_publication_gate(args,review)
     return review
@@ -595,13 +632,15 @@ def kernel_wire(n,raw):
     return {'id':138123872,'slug':REF,'new_title':n['title'],'text':raw.decode(),'language':'python','kernel_type':'notebook','dataset_data_sources':PINS,'model_data_sources':[MODEL],'competition_data_sources':['arc-prize-2026-arc-agi-3'],'kernel_data_sources':[],'is_private':True,'enable_gpu':n['enable_gpu'],'enable_tpu':False,'enable_internet':False,'docker_image':DOCKER,'kernel_execution_type':n['save_version_value'],'session_timeout_seconds':n['session_timeout_seconds'],'machine_shape':n['machine_shape']}
 
 def save(provider,m,args,role):
+    scope=publication_scope(m)
+    if scope['stop_after_submit_readback']:unused_stop_readback()
     no_gpu_stop();n=row(m,role);active=role=='rlvr004'
     review=json.loads(verified(args.review,args.review_sha))
     git_commit=git_publication_gate(args,review);git_verified=True
     code=obj(code_state('-receipt.json'));need(code['dataset_id']==12504696 and code['version']==CODE_VERSION and code['is_private'] is True and code['manifest_sha256']==args.manifest_sha and code['exact_byte_roundtrip'] is True,'verified_code_required');dataset_check(provider,CODE_VERSION)
     gates=run_prerequisites(m,args) if active else {}
     pre=predecessor(provider,m,role);no_gpu_stop();name='notebook-'+role
-    j={'role':role,'reference':REF,'kernel_id':138123872,'expected_version':n['expected_version'],'manifest_sha256':args.manifest_sha,'material_approval_sha256':args.material_sha,'transport_review_sha256':args.review_sha,'save_calls':0,'stage':'claimed','predecessor':pre,'git_publication_completed':git_verified,'git_commit':git_commit if git_verified else None,'stop_after_submit_readback':False,'provider_monitoring_authorized':True,**gates}
+    j={'role':role,'reference':REF,'kernel_id':138123872,'expected_version':n['expected_version'],'manifest_sha256':args.manifest_sha,'material_approval_sha256':args.material_sha,'transport_review_sha256':args.review_sha,'save_calls':0,'stage':'claimed','predecessor':pre,'git_publication_completed':git_verified,'git_commit':git_commit if git_verified else None,**scope,'single_post_submit_readback':False,**gates}
     c=publication_claim(name,j);j['claim_sha256']=c['sha256'];publication_journal(name,j)
     raw=verified(Path(args.manifest).resolve().parent/n['path'],n['sha256'],n['bytes'])
     if active:
@@ -640,6 +679,9 @@ def active_review_gate(m,args):
     need(review.get('format')=='irisx/run008-active-wire-review-v1' and review.get('status')=='PASS' and review.get('synthetic_test_only') is False,'active_wire_review_admission')
     bindings={'publication_manifest_sha256':args.manifest_sha,'material_approval_sha256':args.material_sha,'transport_review_sha256':args.review_sha,'local_config_sha256':args.local_config_sha,'wire_sha256':file_sha(publication_root()/'notebook-rlvr004-wire.json'),'finalization_sha256':file_sha(publication_root()/'finalization.json'),'finalized_source_sha256':file_sha(publication_root()/'active-finalized.ipynb'),'prepared_journal_sha256':file_sha(journal_path),'predispatch_epoch':f['predispatch_epoch'],'numeric_notebook_version':ACTIVE_VERSION}
     need(all(review.get(k)==v for k,v in bindings.items()),'active_review_exact_bindings')
+    scope=publication_scope(m)
+    if scope['stop_after_submit_readback']:unused_stop_readback()
+    need(all(j.get(k, v if not scope['stop_after_submit_readback'] and k in ('single_post_submit_readback_authorized','exact_output_retrieval_authorized') else None) is v for k,v in scope.items()), 'prepared_owner_scope')
     need(j['stage']=='wire_prepared' and j['save_calls']==0 and j['expected_version']==ACTIVE_VERSION and j['manifest_sha256']==args.manifest_sha and j['claim_sha256']==file_sha(publication_root()/'notebook-rlvr004.claim.json'),'prepared_run_claim')
     check_finalization(m,args,f)
     need(wire==kernel_wire(row(m,'rlvr004'),read(publication_root()/'active-finalized.ipynb')) and j['source_sha256']==bindings['finalized_source_sha256'] and j['wire_sha256']==bindings['wire_sha256'] and j['finalization_sha256']==bindings['finalization_sha256'],'prepared_run_exact_wire')
@@ -666,12 +708,9 @@ def activate(provider,m,args):
 
 def verify_notebook(provider,m,args,role):
     name='notebook-'+role;n=row(m,role);j=obj(publication_root()/(name+'-journal.json'))
-    # One initial read intent; later reconciliation references it without another RUN.
-    if role=='rlvr004':
-        intent={'manifest_sha256':args.manifest_sha,'numeric_notebook_version':ACTIVE_VERSION,'launch_claim_sha256':file_sha(publication_root()/'notebook-rlvr004.claim.json'),'action':'initial_post_submit_readback'}
-        path=publication_root()/'active-readback.claim.json'
-        if path.exists():need(obj(path)==intent,'initial_readback_claim_changed')
-        else:publication_claim('active-readback',intent)
+    scope=publication_scope(m)
+    if scope['stop_after_submit_readback']:unused_stop_readback()
+    need(all(j.get(k, v if not scope['stop_after_submit_readback'] and k in ('single_post_submit_readback_authorized','exact_output_retrieval_authorized') else None) is v for k,v in scope.items()), 'launch_owner_scope')
     need(j['expected_version']==n['expected_version'] and j['manifest_sha256']==args.manifest_sha and j['save_calls']==1 and j['claim_sha256']==file_sha(publication_root()/(name+'.claim.json')),'launch_journal_binding')
     raw=read(publication_root()/'active-finalized.ipynb') if role=='rlvr004' else read(Path(args.manifest).resolve().parent/n['path'])
     need(sha(raw)==j['source_sha256'],'submitted_source_binding')
@@ -679,13 +718,30 @@ def verify_notebook(provider,m,args,role):
         f=obj(publication_root()/'finalization.json');need(file_sha(publication_root()/'finalization.json')==j['finalization_sha256'] and f['finalized_sha256']==sha(raw) and f['manifest_sha256']==args.manifest_sha,'finalization_binding')
         check_finalization(m,args,f)
         need(all(j.get(k)==v for k,v in clock(f['predispatch_epoch']).items() if k!='dispatch_epoch') and 0<=j['dispatch_epoch']-f['predispatch_epoch']<=60,'launch_clock_binding')
+    if role=='rlvr004':
+        # This existing write-once intent is consumed before the only allowed
+        # post-submit bracket. Failure cannot authorize another status/source read.
+        intent={'manifest_sha256':args.manifest_sha,'numeric_notebook_version':ACTIVE_VERSION,'launch_claim_sha256':file_sha(publication_root()/'notebook-rlvr004.claim.json'),'action':'initial_post_submit_readback'}
+        path=publication_root()/'active-readback.claim.json'
+        if scope['stop_after_submit_readback']:
+            unused_stop_readback()
+            publication_claim('active-readback',intent)
+            j.update(post_submit_readback_attempts=1, single_post_submit_readback=False,
+                     active_readback_claim_sha256=file_sha(path))
+            publication_journal(name,j)
+        elif path.exists():need(obj(path)==intent,'initial_readback_claim_changed')
+        else:publication_claim('active-readback',intent)
     snap,saved,meta=bracket(provider,n['expected_version'],n=n)
     need(source_normalize(saved)==source_normalize(raw),'provider_source_normalization')
     if role=='inactive':need(snap['status']=='COMPLETE','inactive_not_complete')
     source_path=publication_root()/(name+'-saved.ipynb')
     if source_path.exists():need(read(source_path)==saved,'saved_source_changed_after_receipt')
     else:write_new(source_path,saved)
-    result={'manifest_sha256':args.manifest_sha,'reference':REF,'kernel_id':138123872,'version':n['expected_version'],'status':snap['status'],'role':role,'submitted_source_sha256':sha(raw),'saved_source':descriptor(source_path),'normalized_source_exact':True,'provider_acceptance_reconciled':j.get('stage')=='save_intent','single_post_submit_readback':False,'model_sources_returned':meta.model_data_sources,'dataset_sources_returned':meta.dataset_data_sources,'settings':meta.to_dict(),'launch_journal_sha256':file_sha(publication_root()/(name+'-journal.json')),'finalization_sha256':file_sha(publication_root()/'finalization.json') if role=='rlvr004' else None,'predecessor':j['predecessor'],'snapshot':snap,'git_publication_completed':j['git_publication_completed'],'git_commit':j['git_commit'],'stop_after_submit_readback':False,'provider_monitoring_authorized':True}
+    single=role=='rlvr004' and scope['stop_after_submit_readback']
+    if single:
+        j['single_post_submit_readback']=True
+        publication_journal(name,j)
+    result={'manifest_sha256':args.manifest_sha,'reference':REF,'kernel_id':138123872,'version':n['expected_version'],'status':snap['status'],'role':role,'submitted_source_sha256':sha(raw),'saved_source':descriptor(source_path),'normalized_source_exact':True,'provider_acceptance_reconciled':j.get('stage')=='save_intent','single_post_submit_readback':single,'model_sources_returned':meta.model_data_sources,'dataset_sources_returned':meta.dataset_data_sources,'settings':meta.to_dict(),'launch_journal_sha256':file_sha(publication_root()/(name+'-journal.json')),'finalization_sha256':file_sha(publication_root()/'finalization.json') if role=='rlvr004' else None,'predecessor':j['predecessor'],'snapshot':snap,'git_publication_completed':j['git_publication_completed'],'git_commit':j['git_commit'],**scope}
     dest=publication_root()/(name+'-receipt.json')
     if dest.exists():
         prior=obj(dest);need(prior['saved_source']==result['saved_source'] and prior['launch_journal_sha256']==result['launch_journal_sha256'],'receipt_reconciliation_changed');event(name+'-observation',result)
@@ -710,6 +766,7 @@ def main():
         if a.action=='activate':active_review_gate(m,a)
         if a.action in ('update-code','save-inactive','activate'):no_gpu_stop()
         with lock():
+            if publication_scope(m)['stop_after_submit_readback']:unused_stop_readback()
             provider=Provider()
             if a.action=='readiness':result={'dataset':dataset_check(provider,CODE_PREDECESSOR,metadata_only=True),'predecessor':predecessor(provider,m,'inactive')}
             elif a.action=='update-code':result=update_code(provider,m,a)

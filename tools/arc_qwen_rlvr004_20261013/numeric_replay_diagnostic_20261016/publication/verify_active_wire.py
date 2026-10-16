@@ -161,6 +161,32 @@ def publication_root(configuration, native_state, allocation):
     return path(str(native_state / 'publications' / ('code-v' + str(allocation['code']))))
 
 
+
+def publication_scope(manifest, root):
+    """Independently bind owner authority to manifest; review grants no new scope."""
+    descriptor = manifest['owner_session_stop_attestation']
+    need(type(descriptor) is dict and set(descriptor) == {'path', 'bytes', 'sha256'}, 'owner direction descriptor')
+    relative = Path(descriptor['path'])
+    need(not relative.is_absolute() and '..' not in relative.parts, 'relative owner direction path')
+    raw = read(str(root / relative), descriptor['sha256'], cap=65536)
+    need(len(raw) == descriptor['bytes'], 'owner direction bytes')
+    owner = obj(raw)
+    need(owner.get('format') == 'irisx/numeric-diagnostic-owner-direction-v1'
+         and owner.get('owner_id') == 'danielwuu' and owner.get('run_purpose') == RUN_PURPOSE
+         and owner.get('one_accepted_run_per_distinct_reviewed_candidate') is True, 'exact diagnostic owner authority')
+    stop = owner.get('stop_after_submit_readback', False)
+    single = owner.get('single_post_submit_readback_authorized', False)
+    need(type(stop) is bool and type(single) is bool and single is stop
+         and owner.get('continuous_monitoring_authorized') is (not stop)
+         and owner.get('result_retrieval_authorized') is (not stop), 'explicit owner publication scope')
+    expected = {'stop_after_submit_readback': stop, 'single_post_submit_readback_authorized': single,
+                'provider_monitoring_authorized': not stop, 'exact_output_retrieval_authorized': not stop}
+    scope = manifest.get('local_reconstruction', {})
+    need(all(scope.get(k, False if k == 'single_post_submit_readback_authorized' else None) is value
+             for k, value in expected.items()), 'owner manifest publication scope')
+    return expected
+
+
 def verify(pins_path, pins_sha):
     pins = obj(read(pins_path, pins_sha))
     need(pins.get('format') == FORMAT and pins.get('status') == 'SOURCE_AND_PRELAUNCH_READBACKS_REVIEWED'
@@ -175,6 +201,7 @@ def verify(pins_path, pins_sha):
          and manifest['run_authorized'] is True and manifest['runtime_source_sha256'] == SOURCE,
          'reviewed training numeric diagnostic publication manifest')
     need(manifest['consumer_contract']['source_archive']['sha256'] == ARCHIVE, 'original reviewed archive identity')
+    scope = publication_scope(manifest, root)
     rows = manifest_versions(manifest, allocation)
     for name, descriptor in pins['prelaunch_files'].items():
         need(type(name) is str and type(descriptor) is dict and set(descriptor) == {'path', 'sha256', 'bytes'}, 'prelaunch descriptor')
@@ -293,8 +320,13 @@ def verify(pins_path, pins_sha):
              and document['persisted_audit_sha256'] == pins['persisted_audit_sha256']
              and document['code_receipt_sha256'] == pins['code_receipt_sha256']
              and document['inactive_receipt_sha256'] == pins['inactive_receipt_sha256'], 'claim exact prelaunch receipts')
-        need(document['stop_after_submit_readback'] is False and document['provider_monitoring_authorized'] is True,
-             'current monitoring scope')
+        need(all(document.get(k, value if not scope['stop_after_submit_readback'] and k in
+                 ('single_post_submit_readback_authorized', 'exact_output_retrieval_authorized') else None) is value
+                 for k, value in scope.items()), 'current owner publication scope')
+        if scope['stop_after_submit_readback']:
+            attempts = document.get('post_submit_readback_attempts', 0)
+            need(type(attempts) is int and attempts == 0
+                 and document.get('single_post_submit_readback', False) is False, 'unsent readback scope')
     need(all(type(journal.get(k)) is int and journal[k] == v for k, v in clocks.items()), 'prepared original clock cannot reset')
     need(journal['source_sha256'] == sha(actual['active-finalized.ipynb']) and journal['wire_sha256'] == sha(wire_raw)
          and journal['finalization_sha256'] == sha(final_raw), 'prepared exact byte chain')

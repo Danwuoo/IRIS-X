@@ -1,41 +1,55 @@
 # ARC-AGI-2 本地執行與結果回交
 
 先讀[研究問題與凍結 A/B/C](README.md)，再讀[當前進度](DEVELOPMENT-PROGRESS.zh-TW.md)。
-本頁只有一條接手流程：固定來源與材料 → 本地驗收 → 唯一 publisher 提交與監看 → 真實結果回交。
+本頁只有一條接手流程：固定來源與材料 → 本地驗收 → 唯一 publisher 依當次授權提交及讀回。
+目前在首次必要讀回後停止；後面的歷史監看／取結果流程需有相應新指示才執行。
 命令與 schema 以各工具 README 為準；舊版本的特殊恢復步驟只保留固定歷史連結。
 
-## 當前僅準備 source003／run003（2026-10-16）
+## 當前 source003 單次 RUN／必要讀回後停止（2026-10-16）
 
-最新使用者指示是「準備下一輪 run」。目前只允許離線準備，以下歷史執行流程不是本次
-provider／QuickSave／RUN 授權。公開基底為 `016b43013d652a2102c867a29dace41f5aecb28a`；
-本輪身份重綁另附精確檔案／source manifest，尚未公開。先固定基底及完整 overlay，不只複製 runtime。
+source003身份重綁已公開為 `dc9eb083ac9016691d86f48d30bf48a06d7b2f1b`。
+使用者現授權一次 ≤12小時 RUN；完成必要的初次來源／設定／狀態讀回後立即停止，
+不watch、不持續poll、不下載結果。本地尚未provider，這次只補已定位的capture與授權接線。
+新窄修的精確commit／檔案與pins由交付收據固定；不要只替換transport而留下stale launcher。
 
-1. 檢查 source-only bundle 的 bytes／SHA 與全部260件 source。
-   canonical source 為 `42062ef934a7c5495f8d22b6a68faa715301b47b9875eef829f0988056877c75`；
-   archive 為 `a425250bb0541981a04b9814f6edf00695b9c574ccb207035c6fd4a61980f78e`，15,820,672 bytes。
-   使用新的 run003／source003／environment003；保留所有舊 checkout、final、STATE、claims和時鐘。
-2. 原 source proposal inventory `fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd`
-   與 base inventory `de519816720ceb3bf07e0bf015c888b7e4bd9fdb344c2dbe355281230920ee88`
-   仍是組裝輸入。它們只在原本地存在；此公開 source-only 包不含私人 solver／evaluator／review。
-3. 當前禁止 provider 讀寫。numeric47 的官方403仍未解決；用戶 ZIP 不是新的官方 metadata。
-   原 observe_predecessor.py 明確固定 code23／v45，保留為歷史工具，不得直接執行它代表 v47。
-   未取得真實當前 predecessor 與必要授權前，停止於離線封包，不生成假 OBSERVATION 或猜新版本。
-4. 真實官方存取與執行授權具備後，仍由原本地唯一 publisher 先核對未決寫入，
-   再以同一既有 pipeline 封存真 observation、產生新 proposal → 三份真 review → 新 final。
-   版本只依該 observation 推導；source003 bundle 中版本和 epoch 必須保持 null。
-   當前 assembler 的 owner gate 要求 RUN／監看／取回授權，這項準備指示不足以填 true。
-5. 只在未來完成 code numeric 回讀、真 mount、inactive 回讀與原動態 review後，
-   才能在原 JIT入口量取該新 session 的真 predispatch epoch。不可用 v47的1792136130或現在時間
-   製造 finalized active notebook；不得變更 v47 已消耗 save_calls 或把負向讀取當重送許可。
+1. source003／run003／environment003保持；canonical source
+   `42062ef934a7c5495f8d22b6a68faa715301b47b9875eef829f0988056877c75`，archive
+   `a425250bb0541981a04b9814f6edf00695b9c574ccb207035c6fd4a61980f78e`、15,820,672 bytes／260件不變。
+   不重跑已核不變runtime／native／SDK，不改舊v47來源、final、STATE、claims、時鐘。
+2. 以原v47 candidate manifest/material、code24/active47預期值及真當前caller環境建立新唯讀review；
+   候選配置不是遠端已接受證據，舊WSL context不可直接重用。
+   新observer purpose `review-bound-current-predecessor-capture-v1`，observer多一個
+   `expected_predecessor: {code_version: 24, notebook_version: 47}`，須與reviewed config完全相等。
+   原manifest/material/config/script descriptors及22件operator hash仍必須實際核對。
+3. 新helper仍只有原五讀bracket；實際saved source前後必須同bytes、metadata/settings一致、
+   版本須等於獨立review的預期值，且已是ERROR／COMPLETE／CANCEL_ACKNOWLEDGED。
+   native clean close之後才寫OBSERVATION。若403、版本／來源／設定差異或closure失敗就停，
+   不換endpoint/account/browser，也不將觀察改寫成舊activate接受或GPU證明。
+4. 沿原seal_inputs.py封存六件真raw artifacts。assembler用sealed OBSERVATION真hash；
+   原source proposal inventory `fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd`
+   與base inventory `de519816720ceb3bf07e0bf015c888b7e4bd9fdb344c2dbe355281230920ee88`不變。
+   不讀evaluator escrow，不拿v47 final當base。
+5. 真OWNER-DIRECTION依最新使用者指示保存one_accepted_run_per_distinct_reviewed_candidate=true、
+   stop_after_submit_readback=true、single_post_submit_readback_authorized=true、
+   continuous_monitoring_authorized=false、result_retrieval_authorized=false。其他科學／資源禁項仍false。
+   新proposal→三份真review→final；action及static consumer/source review也只列實際允許actions，
+   不用假監看授權通過原gate。預期版本只從本輪真observation推導。
+6. 原流程code發布／逐檔回讀→真mount→inactive／讀回→動態前置review→prepare-active／JIT
+   →真active-wire獨立review→一次activate；最後兩步仍須在原60秒freshness內。
+   activate 內部已執行唯一初次active讀回，成功後不得再呼叫verify-run。只有尚未開始／消耗
+   初次讀回、且原claim允許reconcile時，verify-run才可執行這唯一讀回；它不授權重新activate。
+   初次active讀回在任何遠端讀前消耗，失敗也保留消耗而停；成功寫真receipt後立即停止。
+   不啟動原watch步驟／定時器／collector。再次狀態查詢或結果取回須等使用者新指示。
+7. 新session epoch只在原JIT入口、真dispatch前量取，保留60秒freshness與
+   42000／42180／42300／43200秒邊界。不得重用v47的1792136130、改save_calls或藉本次重設舊時鐘。
 
-固定診斷仍為 A256＋首批64＋固定兩座標共最多8個 shadow forwards／120秒、零RLcommit；
-不執行其他192、C、dev、held或PUBLIC。沿用已發布的 training-only 時間預算與placeholder修正，
-保留原數值／記憶體／hard-deadline gates。既有25項修復測試不重跑，這次只核身份重綁受影響部分。
+研究仍為A256＋首批64＋固定兩座標最多8個shadow forwards／120秒、零RLcommit，
+不執行其他192、C、dev、held或PUBLIC。所有本地純測試／官方接受／GPU／科學結果分開報告。
 
 ## 交付範圍
 
 使用者已授權沿既有 run007／run008 notebook 模式，持續「開發 → Kaggle 執行 → terminal／結果分析 →
-依證據決定下一輪」的研究循環；在這個範圍內的例行續接不逐輪重新詢問。研究開發端先交付經測試、
+依證據決定下一輪」的研究循環；本次執行以頁首最新單次 RUN／初次讀回後停止範圍為準。研究開發端先交付經測試、
 獨立審查的精確來源、變更與缺件；本地端仍須逐次通過原材料與全部 admission。文件、Git 保存或
 CPU 通過本身不代替這些必要條件。新增費用、資源、權限或超出研究範圍的變更仍需另行確認。
 本地端是當次 Kaggle mutation 的唯一 publisher；研究開發端不代登入、不持有 credentials。
