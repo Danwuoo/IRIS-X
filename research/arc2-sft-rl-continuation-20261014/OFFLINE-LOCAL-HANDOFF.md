@@ -456,9 +456,11 @@ forward 後強制無 RL commit；不執行其餘192／C／dev／held／PUBLIC。
    review 綁新入口真 hash。code publication／numeric readback 後才執行真 mount，後續
    persisted-readback／static review 再綁真正完成的新 `MOUNT-RECEIPT.json`，不能套用原259的
    runner pin，也不能在發布前要求或補造尚未存在的 mount receipt。
-   固定新入口為5,074 bytes／SHA256
-   `e473ae0e2772432b5b04b726153415df84b89b664a02bff18e8d521895f374fc`；原259 runner 為
+   固定新入口為5,240 bytes／SHA256
+   `0337a772a9275cb5714367d781650fa5d8a2e38dffd766641783c43227e27a96`；原259 runner 為
    `d84e2aa27edc5cef4fe557a9c327a5b4bffebbadf638d80948927677f1bd70b9`，兩件都需完整保留。
+   59d04 的同長度／timestamp collision 失敗證據保留；新版本只加 bounded byte consistency。
+   本地只重驗受影響 source reader 與260差分，不重跑已通過的 capture／assembly／native／runtime。
 
 新工程完成須有 `owned-numeric-diagnostic-complete-no-update`、原64 replay、shadow／rollback、
 實際閉合 capability／raw closure 與完整 diagnostic archive。collector 寫 `NUMERIC_DIAGNOSTIC_COMPLETE`

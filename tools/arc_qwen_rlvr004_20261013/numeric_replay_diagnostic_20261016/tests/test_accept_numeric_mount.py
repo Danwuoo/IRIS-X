@@ -265,6 +265,29 @@ class SourceAndParityTests(FixtureCase):
         with patch.object(os, 'fstat', side_effect=fstat), self.assertRaisesRegex(ValueError, 'source changed'):
             mount.source_bytes(source)
 
+    def test_same_length_mutation_with_identical_stat_keys_rejects(self):
+        source = self.put('ordinary.py', b'first\n')
+        before = source.lstat()
+        original_lstat, original_pread = Path.lstat, os.pread
+        calls, samples = [], []
+        def fstat(fd):
+            calls.append(fd)
+            if len(calls) == 2:
+                source.write_bytes(b'other\n')
+            return before
+        def lstat(path, *args, **kwargs):
+            return before if path == source else original_lstat(path, *args, **kwargs)
+        def pread(fd, size, offset):
+            raw = original_pread(fd, size, offset)
+            samples.append((size, offset, raw))
+            return raw
+        with patch.object(os, 'fstat', side_effect=fstat), patch.object(Path, 'lstat', new=lstat), \
+                patch.object(os, 'pread', side_effect=pread), \
+                self.assertRaisesRegex(ValueError, 'source changed'):
+            mount.source_bytes(source)
+        self.assertEqual(samples, [(1024**2 + 1, 0, b'other\n')])
+        self.assertEqual(source.read_bytes(), b'other\n')
+
     def test_entry_or_base_change_after_import_rejects(self):
         original = mount.source_bytes
         for target in (mount.ENTRY, mount.BASE):

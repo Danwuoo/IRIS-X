@@ -22,7 +22,7 @@ BASE = ENTRY.parents[2] / 'admission_run008/accept_numeric_mount.py'
 
 
 def source_bytes(path):
-    """Read one bounded ordinary source, rejecting replacement or mutation."""
+    """Read a bounded ordinary source with metadata and repeated-byte checks."""
     path = Path(os.path.abspath(path))
     if any(p.is_symlink() for p in (path, *path.parents)):
         raise ValueError('ordinary mount runner source required')
@@ -36,7 +36,10 @@ def source_bytes(path):
             raise ValueError('mount runner source replaced')
         raw = stream.read(1024**2 + 1)
         after = os.fstat(stream.fileno())
-    if key(before) != key(after) or key(after) != key(path.lstat()) or len(raw) != before.st_size:
+        repeated = os.pread(stream.fileno(), 1024**2 + 1, 0)
+        final = os.fstat(stream.fileno())
+    if (raw != repeated or key(before) != key(after) or key(after) != key(final)
+            or key(final) != key(path.lstat()) or len(raw) != before.st_size):
         raise ValueError('mount runner source changed')
     return raw
 

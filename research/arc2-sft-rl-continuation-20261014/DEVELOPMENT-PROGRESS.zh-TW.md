@@ -48,7 +48,7 @@ f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.
 | 已發布的啟動修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；v43 已實際越過啟動邊界 |
 | 多輪續接 | 0d3524 已隔離每輪 publication／collector 目錄，native STATE 與全域鎖共用；本地18:03 fresh no-auth 停於舊f5永久 same-boot 字串 gate | 原1,686檔完全不變，未新建 native claim／canonical／run、未 provider。CIM boot值變1.802125秒，host／Windows／source／runtime相同；符合校時漂移但未證明 same boot，不拿猜測當PASS |
 | 歷史／即時 context 修復 | 原封存Restart＋reconciliation在原completion time重驗；fresh host／source／runtime／closure另核對，封存events及live STATE前後綁定 | 只支援現有f5原件的12.629秒歷史間隔，保留原120秒限制；later UNKNOWN／refresh／publication變更仍阻擋，不加BootID框架、容差或重啟 |
-| Repository／CI | 1da916 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
+| Repository／CI | 59d04 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
 | 真實研究結果 | A SFT256；B 64/256 attempts、reward15/64、RL commit0；C 額外 SFT203。固定 dev 平手規則選 A；PUBLIC 原 scorer 完整 120 tasks／167 queries 為 0/167 | 以下是取回封存輸出的觀察，正式 consumer 尚拒絕；不代表 RL 更新有效或無效，也不是官方／獨立重評分數 |
 
 ### v43 模型與評分觀察
@@ -160,7 +160,7 @@ SHA256 `374b55a6fafcf7ce7294ece465a24827481802ebee5c8972ea4221f67aec626b`，fina
 沒有新 epoch／GPU／RUN；capture 後共3,530件 STATE 在本次檢查中未變。
 原 receipt、259 runner 與 final bytes 保留；修復限額外固定 numeric260 外層入口，不重生
 candidate／manifest、科學 source／archive 或已完成的 predecessor capture。
-新入口為5,074 bytes／SHA256
+已發布 `59d04f8c89f6a7436c00d2905a3065fb05b4f34f` 的入口為5,074 bytes／SHA256
 `e473ae0e2772432b5b04b726153415df84b89b664a02bff18e8d521895f374fc`，精確載入未改的原259
 runner（`d84e2aa27edc5cef4fe557a9c327a5b4bffebbadf638d80948927677f1bd70b9`），保留原流程與
 七參數，只增加固定 purpose／source／archive 檢查及260 count，另在 receipt 自身來源讀取時
@@ -168,6 +168,22 @@ runner（`d84e2aa27edc5cef4fe557a9c327a5b4bffebbadf638d80948927677f1bd70b9`）�
 測試綁 frozen sources，384件既有 RLVR files 未改。獨立 final report SHA256
 `9e1c82e60766be53b24ac464e34819e716ae38112dd24e80a68f7ccd8d966ba0`。
 此為 CPU 工程驗證；尚無真正 numeric readback mount receipt，不將其當 GPU 或 runtime admission。
+
+本地後續重現了該新入口 `source_bytes` 的有限讀取缺口：第一讀為 `first\n`，第二個 `os.fstat`
+前同 inode 寫入同長度 `other\n`，真 OS 回傳的全部比較 metadata 仍相同，單次 reader 未拒絕。
+測例只在 fstat 前插入真寫入，不偽造 stat 或設定 timestamps；在 WSL home 普通檔重現，
+檔案系統型別未量測，不能稱已驗 ext4。normal／`-O` 補驗各兩次均重現，並非 `-O` 特有。
+本地 report 10,353 bytes／SHA256
+`2540f0e3b16448f0e0e78773bee0a5258460290fb97bb4f4067a8f26c4a6f78b`。
+這不是完整 mount 誤 admission 證據；編譯的 BASE bytes 仍先通過固定 SHA，原前後 source rechecks
+與 receipt attribution 亦保留。修補只在這個新增 reader 以同 FD 的 bounded `os.pread` 再取一次
+bytes、要求兩次相等並再核 metadata；不靠 buffered seek 或放寬 gate，也不保證任意未來／ABA寫入。
+新入口5,240 bytes／SHA256 `0337a772a9275cb5714367d781650fa5d8a2e38dffd766641783c43227e27a96`；
+固定260、原259 runner、helper、candidate／operator／runtime 全未改。新增回歸以合成相同 stat
+值搭配真內容變動，明確區分於本地原 OS 證據；作者與獨立 reviewer 各26項 focused normal／`-O`
+通過，另5項獨立 adverse tests 每模式通過。獨立 review SHA256
+`dda72a64c68af79a873c1f3bb09ce3e221787f3c97377a04990a7cd21dbc5ede`，逆向最小 entry 差分精確
+回到59d04的 `e473ae…`；未重驗未變元件，尚未宣稱本地新版 mount 完成。
 
 ### 原唯讀 session 的獨立續接依據
 
