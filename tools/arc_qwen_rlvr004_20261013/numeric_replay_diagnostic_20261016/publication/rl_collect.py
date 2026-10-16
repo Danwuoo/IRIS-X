@@ -452,6 +452,137 @@ NUMERIC_COMPLETE = 'owned-numeric-diagnostic-complete-no-update'
 NUMERIC_INCOMPLETE = 'owned-numeric-diagnostic-incomplete'
 
 
+TAIL_TARGETS = ((6,2,66),(0,7,77))
+TAIL_SELECTION = {
+    'targets':[{'parent_ordinal':p,'slot':s,'offset':o} for p,s,o in TAIL_TARGETS],
+    'substitution':False,'dynamic_worst_selection':False,
+    'outcome_selected_from_prior_training_diagnostic':True,'independent_qualification':False,
+    'prior_training_diagnostic':{'notebook_version':45,'code_version':23,'source_audit_bytes':4969665,
+        'source_audit_sha256':'12280cab41ec53be1b735bffd94ebc45e5f1ed427c5d15486b42b746b5b0f9ce',
+        'nonforced_pairs':9365,'max_abs_gap':0.24956846237182617,
+        'max_trajectory_p95':0.09070346951484677,
+        'purpose':'historical-training-outcome-selection-provenance-only'}}
+
+
+def numeric_tail_shadow(shadow,update,parent_ids):
+    """Check source-recorded diagnostic consistency, not model or MAC authority."""
+    need(shadow.get('schema')=='numeric-shadow-training-tail-v2' and shadow.get('complete') is True
+         and shadow.get('status')=='complete' and shadow.get('state_preserved') is True
+         and shadow.get('optimizer_commit_allowed') is False and shadow.get('gate_inputs_replaced') is False
+         and type(shadow.get('model_forward_calls')) is int and shadow['model_forward_calls']==8
+         and type(shadow.get('head_projection_calls')) is int and shadow['head_projection_calls']==0,
+         'numeric_bounded_complete_tail_shadow')
+    need(canonical(shadow.get('selection'))==canonical(TAIL_SELECTION), 'numeric_tail_fixed_selection')
+    need(type(shadow.get('batch_index')) is int and shadow['batch_index']==0
+         and type(shadow.get('update_batch_id')) is str and shadow['update_batch_id']
+         and shadow['update_batch_id']==update.get('update_batch_id'), 'numeric_tail_batch_binding')
+    interpretation=shadow.get('interpretation') or {}
+    need(all(interpretation.get(k) is False for k in ('repeat_is_gate_input','observed_hidden_identity',
+             'cuda_or_head_kernel_cause_established','head_shape_causality_isolated')),
+         'numeric_tail_inference_limits')
+    rows=shadow.get('rows');events=shadow.get('physical_event_ids')
+    need(type(rows) is list and len(rows)==2 and type(events) is list
+         and all(type(e) is int and e>=0 for e in events) and len(set(events))==len(events),
+         'numeric_tail_rows_events')
+    def shape_matches(value,expected):
+        return type(value) is list and len(value)==len(expected) and all(type(x) is int for x in value) and value==expected
+    replay_by_id={r['trajectory_id']:r for r in update['replays']}
+    used_events=[];used_trajectories=[]
+    gaps={'train_vs_actor_gap':('train_log_pi','actor_log_mu'),
+          'train_vs_eval_gap':('train_log_pi','eval_multirow_log_pi'),
+          'softmax_row_shape_gap':('eval_multirow_log_pi','same_logits_single_row_log_pi'),
+          'same_logits_2d_vs_1d_gap':('same_logits_single_row_log_pi','same_logits_vector_log_pi'),
+          'same_reduction_teacher_vs_fullinput_m1_gap':('same_logits_single_row_log_pi','fullinput_m1_log_pi'),
+          'fullinput_m1_repeat_gap':('fullinput_m1_repeat_log_pi','fullinput_m1_log_pi'),
+          'fullinput_m1_vs_prefix_m1_gap':('fullinput_m1_log_pi','prefix_m1_log_pi'),
+          'prefix_2d_vs_1d_gap':('prefix_m1_log_pi','prefix_vector_log_pi'),
+          'prefix_vector_vs_actor_gap':('prefix_vector_log_pi','actor_log_mu')}
+    scalars=set(gaps)|{k for pair in gaps.values() for k in pair}
+    for row,(ordinal,slot,offset) in zip(rows,TAIL_TARGETS):
+        need(type(row) is dict and row.get('status')=='complete'
+             and type(row.get('parent_ordinal')) is int and row['parent_ordinal']==ordinal
+             and type(row.get('slot')) is int and row['slot']==slot
+             and row.get('parent_id')==parent_ids[ordinal]
+             and row.get('trajectory_id') in replay_by_id, 'numeric_tail_target_row')
+        replay=replay_by_id[row['trajectory_id']];used_trajectories.append(row['trajectory_id'])
+        length=row.get('original_generated_length');prompt=row.get('original_prompt_length')
+        need(type(length) is int and offset<length==len(replay['log_pi'])
+             and type(prompt) is int and prompt>0 and replay['parent_id']==row['parent_id']
+             and replay.get('update_batch_id')==shadow['update_batch_id']
+             and row.get('original_replay_event_id')==replay.get('replay_event_id'),
+             'numeric_tail_original_replay_binding')
+        points=row.get('points');need(type(points) is list and len(points)==1,'numeric_tail_one_fixed_point')
+        point=points[0];position=prompt-1+offset;teacher_tokens=prompt+length-1
+        need(type(point) is dict and point.get('status')=='complete'
+             and type(point.get('offset')) is int and point['offset']==offset
+             and type(point.get('position')) is int and point['position']==position
+             and type(point.get('support_size')) is int and 1<point['support_size']<=27,
+             'numeric_tail_nonforced_fixed_point')
+        need(all(type(point.get(k)) in (int,float) and math.isfinite(point[k]) for k in scalars)
+             and all(point[k]<=1e-6 for k in scalars-set(gaps))
+             and point['train_log_pi']==replay['log_pi'][offset]
+             and point['actor_log_mu']==replay['log_mu'][offset], 'numeric_tail_original_finite_scalars')
+        need(all(math.isclose(point[k],point[a]-point[b],rel_tol=0.,abs_tol=1e-12)
+                 for k,(a,b) in gaps.items()), 'numeric_tail_scalar_arithmetic')
+        shape=row.get('teacher_logits_shape')
+        need(type(shape) is list and len(shape)==3 and all(type(x) is int and x>0 for x in shape)
+             and shape[:2]==[1,length], 'numeric_tail_teacher_shape')
+        vocab=shape[2]
+        need(shape_matches(row.get('teacher_input_shape'),[1,teacher_tokens])
+             and canonical(row.get('teacher_position_range'))==canonical({'start':prompt-1,'stop_exclusive':teacher_tokens,'count':length})
+             and shape_matches(point.get('same_logits_single_row_shape'),[1,vocab])
+             and shape_matches(point.get('same_logits_vector_shape'),[vocab])
+             and shape_matches(point.get('prefix_single_row_shape'),[1,vocab])
+             and shape_matches(point.get('prefix_vector_shape'),[vocab])
+             and shape_matches(point.get('prefix_logits_shape'),[1,1,vocab])
+             and shape_matches(point.get('prefix_input_shape'),[1,position+1])
+             and type(point.get('prefix_input_tokens')) is int and point['prefix_input_tokens']==position+1
+             and type(point.get('prefix_position')) is int and point['prefix_position']==position
+             and type(point.get('prefix_logits_to_keep')) is int and point['prefix_logits_to_keep']==1,
+             'numeric_tail_causal_shapes')
+        for label in ('fullinput_m1','fullinput_m1_repeat'):
+            need(shape_matches(point.get(label+'_logits_shape'),[1,1,vocab])
+                 and shape_matches(point.get(label+'_input_shape'),[1,teacher_tokens])
+                 and shape_matches(point.get(label+'_positions'),[position]), 'numeric_tail_same_input_head_row')
+        forward_events=[row.get('teacher_event_id')]+[point.get(k+'_event_id') for k in
+            ('fullinput_m1','fullinput_m1_repeat','prefix')]
+        need(all(type(e) is int and e in events for e in forward_events), 'numeric_tail_forward_event_binding')
+        used_events.extend(forward_events)
+    need(len(set(used_events))==8 and len(set(used_trajectories))==2, 'numeric_tail_distinct_owned_work')
+
+
+def numeric_tail_audit_targets(record,shadow):
+    """Bind the two reported coordinates to the retained first-batch rows."""
+    if shadow.get('complete') is not True:
+        return
+    batch=record.get('batch')
+    need(type(batch) is dict and batch.get('id')==shadow.get('update_batch_id')
+         and type(batch.get('rows')) is list and len(batch['rows'])==64
+         and batch.get('parent_ids')==record.get('parent_ids'),
+         'numeric_tail_raw_batch')
+    for reported,(ordinal,slot,offset) in zip(shadow.get('rows',[]),TAIL_TARGETS):
+        parents=record.get('parent_ids')
+        need(type(parents) is list and len(parents)==8, 'numeric_tail_raw_parents')
+        selected=[r for r in batch['rows'] if type(r) is dict and r.get('parent_id')==parents[ordinal]
+                  and type(r.get('slot')) is int and r['slot']==slot]
+        need(len(selected)==1 and selected[0].get('eligible') is True
+             and selected[0].get('status')=='eligible'
+             and reported.get('parent_id')==parents[ordinal]==selected[0].get('parent_id'),
+             'numeric_tail_raw_selected_slot')
+        trajectory=selected[0].get('trajectory')
+        need(type(trajectory) is dict and trajectory.get('trajectory_id')==reported.get('trajectory_id')
+             and trajectory.get('parent_id')==reported.get('parent_id')
+             and len(trajectory.get('prompt_ids',[]))==reported.get('original_prompt_length')
+             and len(trajectory.get('generated_ids',[]))==reported.get('original_generated_length')
+             and type(trajectory.get('steps')) is list
+             and offset<len(trajectory['steps'])==reported.get('original_generated_length'),
+             'numeric_tail_raw_trajectory')
+        point=reported['points'][0];step=trajectory['steps'][offset]
+        need(type(step) is dict and step.get('position')==point.get('position')
+             and type(step.get('support')) is list and len(step['support'])==point.get('support_size')
+             and step.get('log_mu')==point.get('actor_log_mu'), 'numeric_tail_raw_step')
+
+
 def numeric_completion(owned,flow,update,shadow,outer,wrappers):
     """Validate the bounded source-reported outcome, not an independent GPU replay."""
     if owned.get('status') != NUMERIC_COMPLETE:
@@ -522,15 +653,11 @@ def numeric_completion(owned,flow,update,shadow,outer,wrappers):
              and 0<=metrics['unclipped_fraction']<=1
              and type(metrics.get('clipped_tokens')) is int and 0<=metrics['clipped_tokens']<=count,
              'numeric_original_metrics_schema')
-    need(shadow.get('schema')=='numeric-shadow-training-only-v1' and shadow.get('complete') is True and shadow.get('status')=='complete' and shadow.get('state_preserved') is True
-         and shadow.get('optimizer_commit_allowed') is False and shadow.get('gate_inputs_replaced') is False
-         and type(shadow.get('model_forward_calls')) is int and 0<shadow['model_forward_calls']<=8
-         and type(shadow.get('head_projection_calls')) is int and shadow['head_projection_calls']==0,
-         'numeric_bounded_complete_shadow')
+    numeric_tail_shadow(shadow,update,gate['per_parent_ids'])
     return True
 
 
-def numeric_audits(flow,referenced):
+def numeric_audits(flow,referenced,shadow):
     """Bind all four original panel slots; later batches must remain unrequested."""
     audits=flow.get('audit_sweeps');schedule=flow.get('batch_schedule')
     need(type(audits) is list and len(audits)==4 and flow.get('audit_batches')==audits
@@ -546,6 +673,7 @@ def numeric_audits(flow,referenced):
              and record.get('parent_ids')==schedule[index] and record.get('summary')==ref.get('summary')
              and record.get('status')==ref.get('status'),'numeric_raw_audit_projection')
         if index==0:
+            numeric_tail_audit_targets(record,shadow)
             first=record.get('update')
             need(ref.get('update_status')==(None if first is None else first.get('status')),'numeric_first_update_status')
             continue
@@ -645,7 +773,7 @@ def numeric_session_diagnostic(m,args,f,receipt,terminal,present,prefix,outer,wr
                  and flow.get('run_purpose')==NUMERIC_PURPOSE, 'numeric_fixed_flow_result')
             if flow.get('numeric_shadow_ref') is not None:
                 shadow=referenced(flow['numeric_shadow_ref'],'experiment/numeric-shadow.json',256*1024)
-                update=numeric_audits(flow,referenced)
+                update=numeric_audits(flow,referenced,shadow)
                 need(type(update) is dict and update.get('numeric_shadow_ref')==flow['numeric_shadow_ref'],
                      'numeric_shadow_update_binding')
         gpu_diagnostic=(archive_json('child-driver-resolution.json',65536)

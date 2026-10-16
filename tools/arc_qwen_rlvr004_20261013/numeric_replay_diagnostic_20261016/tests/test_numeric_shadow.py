@@ -42,6 +42,9 @@ class FakeModel(torch.nn.Module):
         self.fail_at = None
         self.nonfinite_at = None
         self.effect = None
+        self.perturbations = {}
+        self.returned_logits = []
+        self.teacher_batch_size = 1
 
     def get_base_model(self):
         return self
@@ -71,6 +74,11 @@ class FakeModel(torch.nn.Module):
         logits = hidden * self.base[None, None, :] + len(indices) * self.base.square()[None, None, :] * .003
         if len(self.calls) == self.nonfinite_at:
             logits[0, 0, 0] = float('nan')
+        if len(self.calls) in self.perturbations:
+            logits[0, 0, 1] += self.perturbations[len(self.calls)]
+        if len(indices) > 1 and self.teacher_batch_size != 1:
+            logits = logits.repeat(self.teacher_batch_size, 1, 1)
+        self.returned_logits.append(logits.clone())
         return SimpleNamespace(logits=logits, past_key_values=None)
 
 
@@ -91,7 +99,7 @@ class FakeTrainer:
 
 
 class FakeActor:
-    def __init__(self, directory, *, length=4, forced=()):
+    def __init__(self, directory, *, length=80, forced=()):
         self.model = FakeModel()
         self.model.lora.grad = torch.tensor(.125)
         self.trainer = FakeTrainer(self.model)
@@ -124,7 +132,7 @@ class FakeActor:
                 self._owned[identifier] = canonical(trajectory)
                 self.batch['rows'].append({'parent_id': parent, 'slot': slot, 'trajectory': trajectory,
                                           'eligible': True, 'status': 'eligible'})
-                if ordinal in (0, 7) and slot == 0:
+                if (ordinal, slot) in ((6, 2), (0, 7)):
                     with self.ledger.work('causal-replay', self._phase_deadline) as event:
                         event.update(trajectory_id=identifier, update_batch_id=self.batch['id'], dispatched=True)
                     self.replays.append({'trajectory_id': identifier, 'parent_id': parent,
@@ -196,28 +204,56 @@ class NumericShadowTests(unittest.TestCase):
         self.actor = FakeActor(self.temporary.name, **kwargs)
         return self.actor
 
-    def test_complete_two_fixed_trajectories_eight_original_forwards(self):
+    def test_complete_two_fixed_targets_eight_original_forwards(self):
         a = self.actor_with()
         before, rng = shadow._state(a), tree_sha(a.trainer._get_rng())
         old = deepcopy(a.replays)
         result = a.run()
         self.assertTrue(result['complete'], result)
+        self.assertEqual(result['schema'], 'numeric-shadow-training-tail-v2')
         self.assertTrue(result['state_preserved'])
         self.assertEqual(shadow._state(a), before)
         self.assertEqual(tree_sha(a.trainer._get_rng()), rng)
         self.assertEqual(a.replays, old)
         self.assertEqual(result['model_forward_calls'], 8)
         self.assertEqual(result['head_projection_calls'], 0)
-        self.assertEqual([r['parent_ordinal'] for r in result['rows']], [0, 7])
-        self.assertEqual([[p['offset'] for p in r['points']] for r in result['rows']], [[0, 1, 3]] * 2)
+        self.assertEqual([(r['parent_ordinal'], r['slot'], r['points'][0]['offset'])
+                          for r in result['rows']], [(6, 2, 66), (0, 7, 77)])
         self.assertFalse(result['interpretation']['head_shape_causality_isolated'])
-        self.assertEqual([c['input_ids'].shape[1] for c in a.model.calls], [5, 2, 3, 5] * 2)
-        for index in (0, 4):
-            self.assertTrue(torch.equal(a.model.calls[index]['logits_to_keep'], torch.tensor([1, 2, 3, 4])))
+        self.assertFalse(result['source_binding']['observed_hidden_identity'])
+        self.assertTrue(result['selection']['outcome_selected_from_prior_training_diagnostic'])
+        self.assertFalse(result['selection']['independent_qualification'])
+        self.assertEqual(result['selection']['prior_training_diagnostic']['source_audit_sha256'],
+                         '12280cab41ec53be1b735bffd94ebc45e5f1ed427c5d15486b42b746b5b0f9ce')
+        self.assertEqual([c['input_ids'].shape[1] for c in a.model.calls], [81, 81, 81, 68, 81, 81, 81, 79])
+        for offset, position in ((0, 67), (4, 78)):
+            calls = a.model.calls[offset:offset+4]
+            self.assertTrue(torch.equal(calls[0]['logits_to_keep'], torch.arange(1, 81)))
+            self.assertTrue(torch.equal(calls[1]['logits_to_keep'], torch.tensor([position])))
+            self.assertTrue(torch.equal(calls[2]['logits_to_keep'], torch.tensor([position])))
+            self.assertEqual(calls[3]['logits_to_keep'], 1)
+            for key in calls[1]:
+                if torch.is_tensor(calls[1][key]):
+                    self.assertTrue(torch.equal(calls[1][key], calls[2][key]), key)
+                else:
+                    self.assertEqual(calls[1][key], calls[2][key], key)
+            self.assertTrue(torch.equal(calls[0]['input_ids'], calls[1]['input_ids']))
+            self.assertTrue(torch.equal(calls[0]['input_ids'][:, :position+1], calls[3]['input_ids']))
         for row in result['rows']:
-            for point in row['points']:
-                gap_sum = point['train_vs_eval_gap'] + point['teacher_vs_prefix_gap'] + point['prefix_vs_actor_gap']
-                self.assertAlmostEqual(gap_sum, point['train_log_pi'] - point['actor_log_mu'], places=12)
+            point = row['points'][0]
+            self.assertEqual(row['original_prompt_length'], 2)
+            self.assertEqual(row['original_generated_length'], 80)
+            self.assertEqual(row['teacher_position_range'], {'start': 1, 'stop_exclusive': 81, 'count': 80})
+            chain = ('train_vs_eval_gap', 'softmax_row_shape_gap',
+                     'same_reduction_teacher_vs_fullinput_m1_gap', 'fullinput_m1_vs_prefix_m1_gap',
+                     'prefix_2d_vs_1d_gap', 'prefix_vector_vs_actor_gap')
+            self.assertAlmostEqual(sum(point[k] for k in chain), point['train_vs_actor_gap'], places=12)
+            self.assertNotEqual(point['same_reduction_teacher_vs_fullinput_m1_gap'], 0.)
+            self.assertNotEqual(point['fullinput_m1_vs_prefix_m1_gap'], 0.)
+            self.assertEqual(point['fullinput_m1_logits_shape'], [1, 1, 8])
+            self.assertEqual(point['fullinput_m1_repeat_logits_shape'], [1, 1, 8])
+            self.assertEqual(point['fullinput_m1_input_shape'], [1, 81])
+            self.assertEqual(point['fullinput_m1_repeat_input_shape'], [1, 81])
         payload = json.dumps(result)
         self.assertNotIn('generated_ids', payload)
         self.assertNotIn('support":', payload)
@@ -226,59 +262,172 @@ class NumericShadowTests(unittest.TestCase):
         self.assertEqual(len(recorded), 8)
         self.assertTrue(all(e['status'] == 'complete' and e['dispatched'] for e in recorded))
         self.assertTrue(all(e['actual_cost']['forward_calls'] == 1 for e in recorded))
-        self.assertEqual(sum(e['input_tokens'] for e in recorded), 30)
+        self.assertEqual(sum(e['input_tokens'] for e in recorded), 633)
         self.assertTrue(all(e['input_tokens'] == e['actual_cost']['input_tokens'] ==
                             e['reserved_cost']['input_tokens'] for e in recorded))
-        self.assertEqual(result['rows'][0]['inferred_teacher_head_input_shape'], [1, 4, 1])
+        self.assertEqual(result['rows'][0]['inferred_teacher_head_input_shape'], [1, 80, 1])
         self.assertEqual(result['rows'][0]['points'][0]['inferred_prefix_head_input_shape'], [1, 1, 1])
         self.assertEqual(set(result['physical_event_ids']), {e['event_id'] for e in a.ledger.events[2:]})
         self.assertTrue(a.ledger.summary()['integrity_ok'])
 
-    def test_offsets_are_deduplicated(self):
-        a = self.actor_with(length=2)
+    def test_vector_reductions_really_use_1d_actor_math(self):
+        a = self.actor_with()
+        original = shadow.rl_math.masked_log_probs
+        seen = []
+        def observed(logits, allowed, **kwargs):
+            seen.append((logits.ndim, tuple(logits.shape), tuple(allowed.shape)))
+            return original(logits, allowed, **kwargs)
+        with patch.object(shadow.rl_math, 'masked_log_probs', side_effect=observed):
+            result = a.run()
+        self.assertTrue(result['complete'], result)
+        self.assertEqual([shape for ndim, shape, _ in seen if ndim == 1], [(8,)] * 4)
+        self.assertEqual(len([1 for ndim, _, _ in seen if ndim == 2]), 10)
+        self.assertTrue(all(shape == allowed for _, shape, allowed in seen))
+        mask = torch.zeros(8, dtype=torch.bool)
+        mask[[1, 2, 3]] = True
+        for index, row in enumerate(result['rows']):
+            point = row['points'][0]
+            logits = a.model.returned_logits[4*index][0, point['offset']]
+            prefix = a.model.returned_logits[4*index+3][0, 0]
+            self.assertEqual(point['same_logits_vector_log_pi'], float(original(logits, mask)[1]))
+            self.assertEqual(point['prefix_vector_log_pi'], float(original(prefix, mask)[1]))
+            self.assertEqual(point['same_logits_vector_shape'], [8])
+            self.assertEqual(point['same_logits_single_row_shape'], [1, 8])
+            self.assertEqual(point['prefix_vector_shape'], [8])
+            self.assertEqual(point['prefix_single_row_shape'], [1, 8])
+
+    def test_rank_sensitive_reducer_results_are_not_conflated(self):
+        a = self.actor_with()
+        original = shadow.rl_math.masked_log_probs
+        def instrumented(logits, allowed, **kwargs):
+            output = original(logits, allowed, **kwargs)
+            return output + .125 if logits.ndim == 1 else output
+        with patch.object(shadow.rl_math, 'masked_log_probs', side_effect=instrumented):
+            result = a.run()
+        self.assertTrue(result['complete'], result)
+        for row in result['rows']:
+            point = row['points'][0]
+            self.assertEqual(point['same_logits_2d_vs_1d_gap'], -.125)
+            self.assertEqual(point['prefix_2d_vs_1d_gap'], -.125)
+
+    def test_nonzero_repeat_difference_is_retained_without_gate_claim(self):
+        a = self.actor_with()
+        a.model.perturbations = {3: .5, 7: -.25}
         result = a.run()
         self.assertTrue(result['complete'], result)
-        self.assertEqual(result['model_forward_calls'], 6)
-        self.assertEqual([p['offset'] for p in result['rows'][0]['points']], [0, 1])
+        self.assertFalse(result['interpretation']['repeat_is_gate_input'])
+        self.assertFalse(result['gate_inputs_replaced'])
+        self.assertFalse(result['optimizer_commit_allowed'])
+        for row in result['rows']:
+            point = row['points'][0]
+            self.assertNotEqual(point['fullinput_m1_repeat_gap'], 0.)
+            self.assertEqual(point['fullinput_m1_repeat_gap'],
+                             point['fullinput_m1_repeat_log_pi'] - point['fullinput_m1_log_pi'])
 
-    def test_forced_selected_point_has_no_substitution(self):
-        a = self.actor_with(forced=(1,))
+    def test_ninth_forward_is_rejected_before_reservation(self):
+        a = self.actor_with()
         result = a.run()
         self.assertTrue(result['complete'], result)
-        self.assertEqual(result['model_forward_calls'], 6)
-        self.assertEqual(result['rows'][0]['points'][1]['status'], 'forced-no-substitution')
-        self.assertEqual([p['offset'] for p in result['rows'][0]['points']], [0, 1, 3])
+        events = len(a.ledger.events)
+        with self.assertRaisesRegex(ValueError, 'forward ceiling'):
+            shadow._forward(a, result, {}, [1], 1, a._phase_deadline, lambda: None)
+        self.assertEqual(len(a.model.calls), 8)
+        self.assertEqual(len(a.ledger.events), events)
 
-    def test_all_forced_points_need_no_extra_forward(self):
-        a = self.actor_with(forced=(0, 1, 3))
-        result = a.run()
-        self.assertTrue(result['complete'], result)
-        self.assertEqual(result['model_forward_calls'], 0)
-        self.assertEqual(result['rows'][0]['status'], 'all-selected-points-forced')
-
-    def test_missing_offset_is_incomplete_without_replacement(self):
-        a = self.actor_with(length=1)
+    def test_teacher_extra_batch_dimension_is_rejected_before_row_indexing(self):
+        a = self.actor_with()
+        a.model.teacher_batch_size = 2
+        before, rng = shadow._state(a), tree_sha(a.trainer._get_rng())
         result = a.run()
         self.assertFalse(result['complete'])
-        self.assertEqual(result['model_forward_calls'], 0)
-        self.assertEqual(result['rows'][0]['points'][1]['status'], 'missing-offset')
+        self.assertIn('exact original generated causal head row layout', result['reason'])
+        self.assertEqual(result['model_forward_calls'], 1)
+        self.assertEqual(tuple(a.model.returned_logits[0].shape), (2, 80, 8))
+        self.assertNotIn('eval_multirow_log_pi', result['rows'][0]['points'][0])
+        self.assertTrue(result['state_preserved'])
+        self.assertEqual(shadow._state(a), before)
+        self.assertEqual(tree_sha(a.trainer._get_rng()), rng)
 
-    def test_missing_parent_is_incomplete_without_other_parent(self):
+    def test_dynamic_worst_gap_does_not_change_fixed_targets(self):
         a = self.actor_with()
-        a.batch['parent_ids'] = a.batch['parent_ids'][:7]
+        for old in a.replays:
+            old['log_pi'][0] = -999.
+        result = a.run()
+        self.assertTrue(result['complete'], result)
+        self.assertEqual([r['points'][0]['offset'] for r in result['rows']], [66, 77])
+        self.assertFalse(result['selection']['dynamic_worst_selection'])
+
+    def test_malformed_target_position_is_rejected_before_forward(self):
+        a = self.actor_with()
+        row = next(r['trajectory'] for r in a.batch['rows']
+                   if r['parent_id'] == 'parent-6' and r['slot'] == 2)
+        row['steps'][66]['position'] += 1
+        a._owned[row['trajectory_id']] = canonical(row)
         a.rebind_batch()
         result = a.run()
         self.assertFalse(result['complete'])
+        self.assertIn('causal position', result['reason'])
         self.assertEqual(result['model_forward_calls'], 0)
-        self.assertEqual(result['rows'][1]['status'], 'missing')
 
-    def test_missing_replay_is_incomplete_before_dispatch(self):
+    def test_forced_target_is_incomplete_without_substitution(self):
+        a = self.actor_with(forced=(66,))
+        result = a.run()
+        self.assertFalse(result['complete'])
+        self.assertTrue(result['state_preserved'])
+        self.assertEqual(result['model_forward_calls'], 4)
+        self.assertEqual(result['rows'][0]['points'][0]['status'], 'forced-no-substitution')
+        self.assertEqual(result['rows'][1]['points'][0]['offset'], 77)
+        self.assertEqual(result['rows'][1]['points'][0]['status'], 'complete')
+
+    def test_both_forced_targets_are_incomplete_without_forward(self):
+        a = self.actor_with(forced=(66, 77))
+        result = a.run()
+        self.assertFalse(result['complete'])
+        self.assertEqual(result['model_forward_calls'], 0)
+        self.assertEqual([r['status'] for r in result['rows']], ['forced-no-substitution'] * 2)
+
+    def test_missing_offset_preserves_other_target_without_replacement(self):
+        a = self.actor_with(length=70)
+        result = a.run()
+        self.assertFalse(result['complete'])
+        self.assertEqual(result['model_forward_calls'], 4)
+        self.assertEqual(result['rows'][0]['points'][0]['status'], 'complete')
+        self.assertEqual(result['rows'][1]['points'][0]['status'], 'missing-offset')
+        self.assertEqual(result['rows'][1]['points'][0]['offset'], 77)
+
+    def test_both_missing_offsets_need_no_forward(self):
+        a = self.actor_with(length=4)
+        result = a.run()
+        self.assertFalse(result['complete'])
+        self.assertEqual(result['model_forward_calls'], 0)
+        self.assertEqual([r['status'] for r in result['rows']], ['missing-offset'] * 2)
+
+    def test_missing_parent_is_incomplete_without_other_parent(self):
+        a = self.actor_with()
+        a.batch['parent_ids'] = a.batch['parent_ids'][:6]
+        a.rebind_batch()
+        result = a.run()
+        self.assertFalse(result['complete'])
+        self.assertEqual(result['model_forward_calls'], 4)
+        self.assertEqual(result['rows'][0]['status'], 'missing')
+        self.assertEqual(result['rows'][1]['status'], 'complete')
+
+    def test_missing_slot_never_uses_another_slot(self):
+        a = self.actor_with()
+        a.batch['rows'] = [r for r in a.batch['rows'] if not (r['parent_id'] == 'parent-6' and r['slot'] == 2)]
+        a.rebind_batch()
+        result = a.run()
+        self.assertFalse(result['complete'])
+        self.assertEqual(result['model_forward_calls'], 4)
+        self.assertEqual(result['rows'][0]['status'], 'missing')
+
+    def test_missing_replay_is_incomplete_without_replacement(self):
         a = self.actor_with()
         a.replays.pop()
         result = a.run()
         self.assertFalse(result['complete'])
-        self.assertEqual(result['model_forward_calls'], 0)
-        self.assertEqual(result['rows'][1]['status'], 'missing-original-replay')
+        self.assertEqual(result['model_forward_calls'], 4)
+        self.assertEqual(result['rows'][0]['status'], 'missing-original-replay')
 
     def test_malformed_original_replay_event_is_rejected(self):
         a = self.actor_with()
@@ -289,7 +438,7 @@ class NumericShadowTests(unittest.TestCase):
 
     def test_mutated_original_trajectory_is_rejected(self):
         a = self.actor_with()
-        a.batch['rows'][0]['trajectory']['generated_ids'][0] = 7
+        a.batch['rows'][7]['trajectory']['generated_ids'][0] = 7
         a.rebind_batch()
         result = a.run()
         self.assertFalse(result['complete'])
@@ -337,13 +486,48 @@ class NumericShadowTests(unittest.TestCase):
         self.assertFalse(result['complete'])
         self.assertTrue(result['state_preserved'])
         self.assertEqual(result['model_forward_calls'], 3)
-        self.assertEqual(result['rows'][0]['points'][0]['status'], 'complete')
+        self.assertEqual(result['rows'][0]['points'][0]['status'], 'fullinput-reduced')
+        self.assertIn('fullinput_m1_log_pi', result['rows'][0]['points'][0])
+        self.assertNotIn('fullinput_m1_repeat_log_pi', result['rows'][0]['points'][0])
         self.assertEqual(shadow._state(a), before)
         failed = [e for e in a.ledger.events if e['phase'] == 'numeric-shadow-forward' and e['status'] == 'failed']
         self.assertEqual(len(failed), 1)
         self.assertTrue(failed[0]['dispatched'])
         self.assertEqual(failed[0]['reserved_cost']['forward_calls'], 1)
-        self.assertEqual(failed[0]['input_tokens'], 3)
+        self.assertEqual(failed[0]['input_tokens'], 81)
+
+    def test_second_target_failure_retains_first_complete_point(self):
+        a = self.actor_with()
+        a.model.fail_at = 7
+        before = shadow._state(a)
+        result = a.run()
+        self.assertFalse(result['complete'])
+        self.assertTrue(result['state_preserved'])
+        self.assertEqual(result['model_forward_calls'], 7)
+        self.assertEqual(result['rows'][0]['status'], 'complete')
+        self.assertEqual(result['rows'][1]['points'][0]['status'], 'fullinput-reduced')
+        self.assertEqual(shadow._state(a), before)
+
+    def test_dispatched_forward_deadline_restores_state_and_retains_partials(self):
+        a = self.actor_with()
+        before, rng = shadow._state(a), tree_sha(a.trainer._get_rng())
+        original = a._deadline
+        def deadline_after_second_call(deadline):
+            original(deadline)
+            if len(a.model.calls) >= 2:
+                raise TimeoutError('fixture dispatched forward deadline')
+        with patch.object(a, '_deadline', side_effect=deadline_after_second_call):
+            result = a.run()
+        self.assertFalse(result['complete'])
+        self.assertTrue(result['state_preserved'])
+        self.assertEqual(result['error_type'], 'TimeoutError')
+        self.assertEqual(result['model_forward_calls'], 2)
+        self.assertEqual(result['rows'][0]['points'][0]['status'], 'teacher-reduced')
+        self.assertEqual(shadow._state(a), before)
+        self.assertEqual(tree_sha(a.trainer._get_rng()), rng)
+        failed = [e for e in a.ledger.events if e['phase'] == 'numeric-shadow-forward' and e['status'] == 'failed']
+        self.assertEqual(len(failed), 1)
+        self.assertTrue(failed[0]['dispatched'])
 
     def test_nonfinite_new_logits_end_incomplete_without_retry(self):
         a = self.actor_with()

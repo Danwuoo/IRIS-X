@@ -10,8 +10,11 @@ PUBLIC120 觀察為 0/167，334 個視圖均有效，但正式 consumer admissio
 
 v43 的 wrapper successor 已在原檔完整通過；checkpoint header-only 在保留兩次失敗後，
 a3e9 真實觀察已取得 HTTP200／Content-Length 1,546,535,710，未讀取 tensor bodies。
-下一輪是已授權的 training-only 數值診斷：A256＋首批64，
-最多8次額外 forward，強制無 RL commit，不執行 C／dev／held／PUBLIC。這個獨立診斷不產生 A/B/C 比較或 PUBLIC 分數；原門檻保留，尚未提交。
+v45／code23 的第一輪 training-only 診斷也已完成並取回：A256、首批64 replay／8次
+backward、8次 shadow forward，沒有 dispatch／commit RL optimizer，來源回報 rollback 已恢復。
+原數值 gate 仍拒絕；六個固定點沒有覆蓋最差誤差，不能據此認定 kernel 或 head shape 根因。
+下一輪針對 v45 訓練 audit 中兩個已定位的失敗點，仍保留 A256、首批64、原門檻及零 RL commit，
+不執行 C／dev／held／PUBLIC；完整結果與限定見[進度](DEVELOPMENT-PROGRESS.zh-TW.md#v45第一輪-training-only-診斷結果)。
 
 ## 一、研究假設與可反駁的結果
 

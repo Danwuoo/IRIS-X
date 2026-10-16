@@ -55,6 +55,18 @@ class PackagingTests(unittest.TestCase):
         self.assertEqual(a.sha(archive), a.ARCHIVE_SHA)
         self.assertEqual(a.sha(a.canonical(sorted((n, a.sha(b)) for n, b in guarded.items()))), a.SOURCE_SHA)
 
+    def test_distinct_tail_namespace_preserves_consumed_259_inputs(self):
+        self.assertEqual(a.RUN, '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-run002')
+        self.assertEqual(a.SOURCE, '/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source002')
+        self.assertEqual(a.ENV, '/tmp/irisx-qwen14b-numeric-diagnostic-20261016-environment002')
+        self.assertEqual(a.RUN_PURPOSE, 'training-only-numeric-diagnostic-v1')
+        self.assertEqual(a.PROPOSAL_INVENTORY_SHA,
+                         'fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd')
+        self.assertEqual(a.s.BASE_INVENTORY,
+                         'de519816720ceb3bf07e0bf015c888b7e4bd9fdb344c2dbe355281230920ee88')
+        self.assertEqual(len(self.original), 259)
+        self.assertNotIn('rl_session/numeric_shadow.py', self.original)
+
     def synthetic_overlay(self):
         # Inert bodies only test deterministic packaging, not numeric correctness.
         return {n: b'"""Synthetic packaging-only body; never a runtime candidate."""\n'
@@ -355,7 +367,7 @@ class PublicationSpecializationTests(unittest.TestCase):
         exec(compile(ast.Module(body=[node],type_ignores=[]),'CPU-owner-scope','exec',dont_inherit=True,optimize=sys.flags.optimize),ns)
         ns['diagnostic_owner_scope'](owner)
 
-    def test_exact_published_numeric_helper_baselines(self):
+    def test_exact_reviewed_numeric_helper_baselines(self):
         helpers = a.publication_helpers(self.wire.SOURCE, self.wire.ARCHIVE)
         normalized, count = re.subn(rb"(?m)^COMMON_SOURCE_SHA256 = '[0-9a-f]{64}'$",
             ("COMMON_SOURCE_SHA256 = '" + a.PUBLISHED_COMMON_SHA + "'").encode(), helpers['rl_transport.py'])
@@ -394,7 +406,12 @@ class PublicationSpecializationTests(unittest.TestCase):
 
     def test_real_runtime_hashes_match_fixed_wire_and_helper_bindings(self):
         original,environment = consumed_runtime()
-        source,archive,_ = a.diagnostic_runtime(original,environment,a.projected_environment(environment),a.runtime_overlay())
+        projected = a.projected_environment(environment)
+        source,archive,normalized = a.diagnostic_runtime(original,environment,projected,a.runtime_overlay())
+        self.assertEqual(a.sha(projected),
+                         '1491a329410d5aec3b81bb8849f1167295cca27527a76f05e8e82393f129fe47')
+        self.assertEqual(normalized,
+                         '26bdc9e717c6bda46e2891159afb7365886dccd94e90e5bff9dd6aa7188a904f')
         source_sha = a.sha(a.canonical(sorted((n,a.sha(b)) for n,b in source.items())))
         self.assertEqual(self.wire.SOURCE,source_sha)
         self.assertEqual(self.wire.ARCHIVE,a.sha(archive))
@@ -417,7 +434,7 @@ class PublicationSpecializationTests(unittest.TestCase):
             bad=dict(owner,rl_optimizer_commit_authorized=True);p.write_bytes(a.encoded(bad))
             with self.assertRaises(ValueError):a.owner_inputs(p,a.sha(p.read_bytes()))
 
-    def test_transport_only_changes_published_common_dependency_pin(self):
+    def test_transport_normalizes_only_existing_common_dependency_pin(self):
         raw = (HERE / 'publication/rl_transport.py').read_bytes()
         normalized, count = re.subn(rb"(?m)^COMMON_SOURCE_SHA256 = '[0-9a-f]{64}'$",
             ("COMMON_SOURCE_SHA256 = '" + a.PUBLISHED_COMMON_SHA + "'").encode(), raw)

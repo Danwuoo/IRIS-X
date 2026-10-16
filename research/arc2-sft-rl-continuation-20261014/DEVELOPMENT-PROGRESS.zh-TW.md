@@ -3,7 +3,8 @@
 更新：2026-10-16 UTC。本頁只維護目前狀態、阻礙與下一步；研究問題與固定設計見
 [研究主頁](README.md)，歷史 E0–E52、來源指紋及更新時間線見[工程歷史](archive/engineering-history.zh-TW.md)。
 
-**v43 已完成並取回真實輸出；B 沒有提交 RL 更新，原 scorer 的 PUBLIC 觀察為 0/167。**
+**v45 training-only 診斷已完成並取回，原數值 gate 仍拒絕，RL commit 為0。**
+v43 的原 A/B/C 輸出與 PUBLIC 原 scorer 0/167 保留；v45 沒有重跑評分。
 正式 consumer admission 尚未成立；來源評分不是官方或獨立重評結果。現在先釐清 unchanged-policy
 數值落差並修復已定位的證據契約，研究方法與門檻不變。
 使用者已授權依既有 run007／run008 離線 notebook 模式持續開發、Kaggle 執行、分析 terminal／結果，
@@ -29,7 +30,7 @@ header 去敏 stage／code 修復已發布為 `65543cbb4c3547fe038c3e0f42bb73ea7
 `checkpoint_before`／`unexpected_error`，當次未呼叫 checkpoint output。後續診斷來源
 `a3e9c8d99bf70c52afb8b6323ef03fe2ffdbbc23` 的單次真實觀察已成功取得 HTTP header，前兩次原因仍未知。
 training-only successor 已發布為 `03022f2a9e716d953f22f5245b56ffa688060862`，20 檔逐檔遠端回讀一致；
-本地 preflight 在 provider 前被原 edd 未閉合 session 拒絕，尚無新 code 或 RUN。完整 operator 的
+該版初次本地 preflight 在 provider 前被原 edd 未閉合 session 拒絕。完整 operator 的
 launcher／transport／collector source pins 已在 `1da916d39ad3e84be9f66c4beed9a97c7aebc50d` 的完整
 operator 一併整合，19 檔逐 bytes／Git blob 遠端回讀一致，不能只替換三個 publication overlays。
 本頁與下一次窄修同一 commit 保存，交付 SHA 由接收時 HEAD／遠端 readback 核對。歷史 fix refs、
@@ -41,14 +42,14 @@ f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.
 | Stage 0／Stage 1 | 離線計畫、report analysis、training audit adapter 與 upstream 逐軌跡 loss 已交付 | [Stage 0](offline-continuation-review.md)、[Stage 1](stage1-independent-review.md)；無模型 hook 或 ARC 分數 |
 | AF3 真正元件 | `TrainingSample`、`DDISLoss`、`MeanMetricState` 實際 CPU 呼叫及合成 loss／gradient parity 成立 | [整合與 proof](agent-factory3/integration.zh-TW.md)；真實 Qwen／LoRA／GPU 效益仍未知 |
 | 84a5 本地與發布 | 本地 native10、WSL caller-death、pre-auth、真實 90 檔 disposition、canonical admission 通過；code Dataset v21 的 269 檔／15,849,580 bytes numeric readback 相符 | inactive40 → active41 真正提交；所有 9 個 native sessions closed，原 995／ddd UNKNOWN 原件不變 |
-| v43 當前實證 | code22／inactive42 真收據與 manifest 相符；10-15 19:33:50.121 UTC 接受 active43，23:27:59.209 首次 COMPLETE；後續新取檔收據與來源／設定一致 | 26 必要＋5 選用檔案共 130,955,581 bytes；另 5 選用 404。新 Job0 成立，原 3,511 件 STATE 不變、舊 native closure 未證 |
+| v43 封存實證 | code22／inactive42 真收據與 manifest 相符；10-15 19:33:50.121 UTC 接受 active43，23:27:59.209 首次 COMPLETE；後續新取檔收據與來源／設定一致 | 26 必要＋5 選用檔案共 130,955,581 bytes；另 5 選用 404。新 Job0 成立，原 3,511 件 STATE 不變、舊 native closure 未證 |
 | v41 真實終態 | 2026-10-15 15:58:28 UTC 首次觀察 ERROR；Internet OFF、RTX Pro 6000、private | [原 notebook](https://www.kaggle.com/code/danielwuu/iris-x-learning-agent-20261011)，kernel ID 138123872 不是 scriptVersionId；native closure 不證明遠端 VM teardown |
 | 啟動原因 | notebook 的 ambient interpreter 在離線環境建立前查固定 cuDNN，distribution 存在但 version 不等 9.10.2.21；停於 parent-environment-policy | ambient 實際版本與 backend 是否載入未知；prepare caller 同排序風險尚未執行。`preparation_failure:null` 另使 collector 拒絕 schema |
 | 已取回證據 | 五份 numeric41 outputs 各有 HTTP200、bytes／SHA receipt：startup diagnostic、preparation request、original request、operator、outer notebook | 五份不是全 inventory；outer notebook 無 execution outputs，不能當官方 execution log。模型／audit／score／cost 其他檔存在性未知 |
 | 已發布的啟動修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；v43 已實際越過啟動邊界 |
 | 多輪續接 | 0d3524 已隔離每輪 publication／collector 目錄，native STATE 與全域鎖共用；本地18:03 fresh no-auth 停於舊f5永久 same-boot 字串 gate | 原1,686檔完全不變，未新建 native claim／canonical／run、未 provider。CIM boot值變1.802125秒，host／Windows／source／runtime相同；符合校時漂移但未證明 same boot，不拿猜測當PASS |
 | 歷史／即時 context 修復 | 原封存Restart＋reconciliation在原completion time重驗；fresh host／source／runtime／closure另核對，封存events及live STATE前後綁定 | 只支援現有f5原件的12.629秒歷史間隔，保留原120秒限制；later UNKNOWN／refresh／publication變更仍阻擋，不加BootID框架、容差或重啟 |
-| Repository／CI | 59d04 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
+| Repository／CI | 0a346 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
 | 真實研究結果 | A SFT256；B 64/256 attempts、reward15/64、RL commit0；C 額外 SFT203。固定 dev 平手規則選 A；PUBLIC 原 scorer 完整 120 tasks／167 queries 為 0/167 | 以下是取回封存輸出的觀察，正式 consumer 尚拒絕；不代表 RL 更新有效或無效，也不是官方／獨立重評分數 |
 
 ### v43 模型與評分觀察
@@ -82,53 +83,91 @@ CPU 另以真正 pinned offline guard 重現子程序增加 6 個固定環境鍵
 現有 competition metadata association 沿用較早版本；材料仍是固定 training/1 與 PUBLIC120/1，
 沒有把研究改成 ARC-AGI-3，也不為這項既有掛載新增修改。
 
-### 下一輪：固定 training-only 數值診斷
+### v45：第一輪 training-only 診斷結果
 
-新增來源在 [numeric diagnostic successor](../../tools/arc_qwen_rlvr004_20261013/numeric_replay_diagnostic_20261016/assemble.py)，
-用途固定為 `training-only-numeric-diagnostic-v1`；不是可開關的另一套訓練方法。
+本地已沿原 run007／run008 路徑完成 code23、inactive44、唯一 active45 與 selected retrieval。
+0a346 的新版 mount 真收據為1,712 bytes／SHA256
+`e7d6001bb1476f087e8332eeab9a96f17d24df6b530665211b0e810b46f5f3f3`；code23 完整270檔回讀、
+source normalization 與真實 dynamic review 通過。原 epoch `1792125027`（04:30:27 UTC），
+dispatch 為 `1792125040.0939875`，global deadline 為16:30:27 UTC；首次 COMPLETE 05:01:21，
+取檔後05:02:54仍 COMPLETE。原 JIT／watch exit0，六個新 native sessions closed；
+原3,511件歷史 STATE、196件 edd events 與4件 refresh metadata bytes 不變，舊 edd closure 未改寫。
 
-- 保留同 session A256、原首批 8 parents×8 samples、reward、64 條 replay／原 DDIS backward 與
-  max0.20／p95 0.05／unclipped1.0、30 秒逐條／600 秒整批、72／80 GiB 原門檻。
-  原 gate 的 PASS／FAIL 另外保留；兩種結果都不 dispatch／commit RL optimizer。
-- 固定看 parent ordinal0、7 的 slot0；各 offset0、1、last 去重。缺件／forced 明列，不能換樣或
-  挑本輪最差例。每條新增一次 eval／full-teacher 原多 row head 與至多三次 eval／full-prefix M1，
-  總計最多8個 full-model forward；不捕捉 hidden、不新增 hook、不額外 head projection。
-- 記錄 train→eval 的 mode／autograd／checkpoint 合併差、teacher→prefix 的 hidden／head-shape
-  合併差、prefix→原 cached actor 差。另用同一 logits 比較多 row／單 row masked-softmax。
-  不能把 teacher／prefix 差稱為已隔離 head 因果，也不能單指 attention kernel。
-- 額外同步 wall 最多120秒，單 forward 有獨立25秒 soft／30秒 hard watchdog，仍受原 batch／phase／
-  global 更早期限與 memory caps 限制。成功、失敗、host／同步工作及 forward input tokens 都留在
-  physical ledger；不重設 peak，不宣稱帳單已驗。
-- shadow 後清梯度並恢復**原 replay 前快照**，包含當時 RL optimizer／scheduler、post-sampling RNG
-  與邏輯計數；A adapter 必須相等。這不是把整段 A 訓練或實際工作／generation epoch 倒帶。
-  後三批192 slots 為 `not-requested-by-diagnostic`；C／dev／held／PUBLIC 全不執行，scoring 保留 null。
+| 項目 | 真實取回的來源觀察 | 判讀界線 |
+| --- | --- | --- |
+| A／首批 B | SFT256；64/64有效 attempts、reward15/64、64 replay、8 backward；optimizer 未 dispatch／commit，rollback restored | 來源 A/B adapter SHA 相同；未下載或獨立檢查 tensor bodies，不能當 RL 成效 |
+| 原數值 gate | 9,365 nonforced pairs；max0.24956846237182617，最大 trajectory p95 0.09070346951484677；12條 ratio-gap 拒絕 | pooled p95 為0.022115129232406536，不能用較小 pooled 值取代原逐 trajectory gate；門檻未變 |
+| 六點 shadow | 8個 forward，8.888657824秒，state preserved；train→eval及同 logits 多列／單列2D reduction 差均0 | 只限預先固定六點，非全批／full-logits／gradient 等價；尚未比較 actor [V] 與 shadow [1,V] reduction |
+| 其餘六點差 | teacher→prefix 最大絕對差0.0007356181740760803；prefix→actor 最大0.008906558156013489 | 六點未覆蓋真正最大 gap；teacher／prefix 合併 hidden 與 head-row shape，不據此指定 kernel 根因 |
+| 成本與終態 | A整階段700.955374268秒，B診斷561.248857801秒；replay/backward53.849507873秒，含 shadow／restore 整批64.020976263秒 | source-recorded synchronized wall，不是 kernel time、帳單或 C 等成本比較；C／dev／held／PUBLIC 未請求 |
 
-成功工程狀態為 `owned-numeric-diagnostic-complete-no-update`；原64 replay、完整 shadow、真實
-rollback、原 deadline 與 live closed-model capability／raw safe closure 均須成立。任何缺件或原首批
-無 mixed signal 而未 replay，明列 `owned-numeric-diagnostic-incomplete`，不補抽樣／評分。
-仍使用原 process-termination diagnostic exporter，所以 terminal `status:diagnostic`、
-`model_closed:false` 不改；獨立工程分類不能冒充原 ABC consumer、comparison 或科學 admission。
-collector 核對原 container／source／JIT／closure 與4份 raw audit，後192 slots 必須確為未請求空格。
+31個 selected outputs 共55,712,870 bytes，皆 numeric45／HTTP200；另5個 optional404。
+evidence ZIP 為54,393,720 bytes、82 members，SHA256
+`73152f063573353a5a5d2abf936f455371b30f4def1705f255428069c6fbb3e4`。
+terminal checkpoint SHA256 `65fd59442df9d10fe10566e44c05e2b5f61feee476a6cfe81341ddbf46facc93`；
+本地完整安全摘要34,428 bytes／SHA256
+`99806b0ba2e293a930091f4a7bd93ca25048cfad0f31f22d71a9bb8a6383922f`，六段回傳重組後 bytes／SHA 相符。
+工程分類為 `NUMERIC_DIAGNOSTIC_COMPLETE`；source-bound safe closure 與外層 process closure 有證據，
+原 terminal exporter 的 `model_closed:false` 保留。獨立 model-owner MAC、完整 provider inventory、
+正式 consumer、GPU stop／帳單與方法成效仍未驗證，不將工程完成升格為科學 admission。
 
-新 namespace 為 `irisx-qwen14b-numeric-diagnostic-20261016-run001`／`source001`／`environment001`；
-原 publication format／角色名稱只作 wire compatibility，另綁固定 purpose 與較窄 owner direction。
-per-code publication isolation、原 mutex、UNKNOWN／auth-refresh 與 exact-byte gates 沿用。
-新 runtime 260 members，其中251個 consumed source members、全部200個 consumed baseline members
-不變；199是更早原 baseline 的歷史計數，另1個已存在 installer repair 並未在這輪重改。
-source SHA256 `69bf39ddee56278197eb4f1a46119d569dba45f51621a92588a56dd7d6f1e292`；
-archive SHA256 `085a64b4dbe9c35db40d81ef0ae28dcce445eaa78f5da0e85518900bab035061`；
-normalized contract `804598522bf81b54ddbfdb585ea21ee925905dc8ac87ddc9b717ea988aff4c4f`。
+### 下一輪：固定 training-tail 數值診斷
 
-作者整合80 normal／80 `-O` PASS：probe21、runtime16、packaging23、collector20。
-使用既有 Torch2.9 CPU、受控完整形狀 flow、真正 durable ledger 與原 ZIP／terminal helpers；
-沒有安裝或執行原 Qwen／Transformers／PEFT／GPU。`--tiny-proof` 的小 fixture 不符合固定64／ordinal7，
-不宣稱完整 factory proof。獨立 runtime review 的55項當時測試與8個額外對抗案例各模式均通過；
-review SHA256 `3aae4cba52e0a3e9ddf9475416e7efdd1819d6b187614190bf19d87cfebd6b72`。
-審查抓到新增 token 計量與 collector 後三批語義缺口，已補真 event 計量與 raw audit 負例；
-publication／collector 獨立審查亦 PASS：43 項 targeted、18 個拒絕負例與1個誠實 incomplete、
-9 個重新綁全套 hash 的 raw-audit 負例，各 normal／`-O` 均通過。review SHA256
-`5ebdb47ec5fa09b60d351b8c90548fae7d89e51340f6acf3b838eaf2c7b437a0`。
-以上只綁定來源；本地 exact proposal 的 solver／runtime／material reviews 仍須另核對，不能沿用未對應的 review。
+只修改既有 [numeric shadow](../../tools/arc_qwen_rlvr004_20261013/numeric_replay_diagnostic_20261016/runtime/rl_session/numeric_shadow.py)
+與其確切封包／收集綁定，不改原 actor、replay、DDIS、精度、cache、門檻或 optimizer 流程。
+用途維持 `training-only-numeric-diagnostic-v1`，新的 shadow schema 與 namespace 區分 v45；
+原 v45 程式、收據、時鐘與輸出保留，下一次 run 尚未提交。
+
+- A256＋原首批8 parents×8 samples、reward、64 replay／8 backward與零 RL optimizer commit不變。
+  max0.20／p95 0.05／unclipped1.0、30秒逐條／600秒整批、72／80 GiB門檻照舊，gate PASS／FAIL
+  都保留全部64條，不用挑出的兩點代替正式檢查。
+- 依已存在 v45 training audit 預先固定 `(parent ordinal, slot, offset)` 為 `(6,2,66)`、`(0,7,77)`。
+  前者是 v45 全批最大 gap 點 −0.24956846237182617；後者是最大 trajectory p95 那條的最差點
+  −0.12339496612548828。這是歷史 training 結果選出的診斷座標，不是獨立 qualification，
+  不宣稱在下一輪仍最差。缺件／forced 明列 incomplete，不換點、不補抽樣。
+- 每點最多4次原 forward：完整 teacher input／全部 generated head rows、同完整 input／目標單列、
+  目標單列完全重複、該點完整 prefix／單列。額外用同一 logits 比較多列2D、單列2D與actor式1D
+  masked reduction，不新增 forward。總計最多8次、120秒，保留原更早 batch／phase／global deadline。
+- 記錄 train→eval、同 input head-row-selection、input縮短、1D／2D reduction與prefix→actor差，
+  重複差非零也如實保存。沒有 hidden capture、persistent hook、額外 head projection或精度切換；
+  [固定上游 forward](https://github.com/huggingface/transformers/blob/v5.8.1/src/transformers/models/qwen3/modeling_qwen3.py#L450-L462)
+  只支持 `logits_to_keep` 在 backbone 後選 row 的來源語義，不證明觀察到 hidden／CUDA kernel 因果。
+- state／RNG／train-mode與原 replay前快照 rollback、全成本計量照舊；後192 slots、C／dev／held／PUBLIC
+  維持未請求，score為null。成功工程狀態與 incomplete誠實區分，不替代原 A/B/C consumer。
+
+選點來源為原 `experiment/audit/sweep-0.json`，4,969,665 bytes／SHA256
+`12280cab41ec53be1b735bffd94ebc45e5f1ed427c5d15486b42b746b5b0f9ce`；私有 token、prompt、
+parent IDs與答案不公開。v45的runtime source/archive仍為 `69bf39dd…`／`085a64b4…`。
+下一輪固定 namespace 為 run002／source002／environment002；260 members中只改 numeric_shadow body及
+衍生 release／environment身份，原 consumed259與其餘六份runtime overlays不變。
+新 source SHA256 `048e9d3ee8b588cbb2075ae785b3f09fa10e3846a3269001e0c7a5f102865fda`；
+archive `23281295453c2d31bf125afd26f84851e2a11ff9373f711961c21082b7e37e84`（15,818,615 bytes）；
+normalized `26bdc9e717c6bda46e2891159afb7365886dccd94e90e5bff9dd6aa7188a904f`；
+environment `1491a329410d5aec3b81bb8849f1167295cca27527a76f05e8e82393f129fe47`。
+
+獨立 runtime 審查找到原 teacher shape只檢查第0列的繼承缺口：CPU合成 `[2,N,V]` 原可通過；
+窄修先檢查完整 `[1,N,V]` 後才索引。精確 red→green與原失敗保留，不倒推為v45實際模型故障。
+最終 runtime SHA256 `71a5bcd7998e7184962620c431a700cbe764fe8bc29a5fd50e09137fabea4265`；
+作者31項及獨立31＋15項normal／`-O`均通過，來源前後不變。獨立report SHA256
+`185251e360e5f191f3fd4b8b10090edc5c74a6a74be386e0fc84d6bcd0f425e7`。
+Collector另外核對固定座標、原 replay scalar、原batch實際parent/slot/trajectory、完整steps長度、
+shape及差值算術；1e-12只用於已記錄scalar相減的一致性，不是改原模型數值gate。
+原schema六點報告不能冒充v2完成；repeat非零可誠實完成診斷，不因此允許更新。
+獨立 collector 審查另找到重綁所有外層 hashes 後仍可漏驗的 raw parent 座標／順序與截短 steps；
+已窄修原 batch parent order、選定 parent／trajectory 及 generated／steps 長度的關聯檢查。
+三個反例先 red 後 green，失敗記錄保留。最終 collector SHA256
+`df7f54f9f09709a423f68b01c40b3b8b79aae16e8c98639ecf03e76b864ede54`；作者32項、獨立32＋17項，
+以及真 CPU tensor report→collector roundtrip，在 normal／`-O` 均通過。獨立 report SHA256
+`25ac03a60dcf9c2b0910db025aa8062df18207313d5bcfd0c1489529fcf6db09`。
+完整22件 operator、23條來源相依 pins 與 v45 predecessor capture 一起重綁；沒有只換三件 overlays。
+最終 packaging26／capture12／mount27／operator6 共71項，以及獨立4項相依來源反例，
+在 normal／`-O` 各75項通過；49件 code／dependency 來源在測試前後相同。獨立 report SHA256
+`7b8db57335d51c96903e0aa40d20deb68fad2e92e4b416961d2878aa58bc5929`。
+捕捉既有 v45 的 config 不接受未來版本配置；錯 manifest、同長度改弱 transport guard，及重算 runtime
+後仍沿用 stale wire pin 的反例均拒絕。完整22件 operator inventory SHA256
+`e82048f41d7d259cf89d5d6c2d3b72f03fac428c200f85351431421eb3f4bb5e`。
+本次固定程式／測試與既有三份文件同一 commit 交付；精確 commit／tree 及逐檔 Git 回讀由交付收據記錄。
+上述皆為 source／CPU 驗證，尚未建立本地新 candidate、provider admission 或新 RUN。
 
 header before bracket 的來源檢查未發現可支持的相容性修復；header mode 並未改寫 kernel／status 路由。
 新的最小診斷以 provider wrapper 標記前後各三次呼叫與返回驗證、固定 exception category，
@@ -145,19 +184,19 @@ body consumed0／未 materialize。新 result 3,647 bytes／SHA256
 
 本地只讀已確認原兩份 closed assembly inventory、259-member source proposal 與原 solver descriptor
 完整；不缺料、不讀 evaluator bodies。其後本地已產生 numeric final，真實 manifest／ZIP／producer
-source 均為260件；新 code／inactive／JIT／RUN 尚未發生。原外層
+source 均為260件；當時尚未發布新 code／inactive／JIT／RUN。原外層
 `admission_run008/accept_numeric_mount.py` 的 `check_helper` 仍要求259，正常／`-O` 皆對本輪
 count 子條件拒絕 `exact complete source259 acceptance`。本地 receipt 8,493 bytes／SHA256
 `c5977e739a9ffaf548bb30ca2786307401e2cdd6653399cc315ab4838d92ff33` 只證明 CPU count gate
 不相容，不是完整 production numeric mount／CLI 失敗，也不是 provider readback。
 後續本地兩次真正原 no-model helper 與 owned closure 都 PASS，原外層 `check_helper` 在兩種
 Python mode 仍拒絕；summary 2,605 bytes／SHA256
-`909ca3564e8aae2f578b446e3b3b92ef979f594d5e93bb4b6a1e61d37461cc3f`。這不取代尚未發生的
+`909ca3564e8aae2f578b446e3b3b92ef979f594d5e93bb4b6a1e61d37461cc3f`。這些當時的 CPU 證據不代替後來真正的
 code publication／numeric download。fresh predecessor 的五讀／零mutation、code22／v43 COMPLETE
 與新 native clean close 已通過，proposal／三份真 reviews／final／config 亦完成；sealed observation
 SHA256 `374b55a6fafcf7ce7294ece465a24827481802ebee5c8972ea4221f67aec626b`，final manifest SHA256
-`15f340149a8eff74e6c1d56f3cd34b8836d349dfa6818ef14bd142dcb600161a`。外層執行批准尚未簽署，
-沒有新 epoch／GPU／RUN；capture 後共3,530件 STATE 在本次檢查中未變。
+`15f340149a8eff74e6c1d56f3cd34b8836d349dfa6818ef14bd142dcb600161a`。該次檢查時外層執行批准未簽署，
+尚無新 epoch／GPU／RUN；capture 後共3,530件 STATE 在該次檢查中未變。
 原 receipt、259 runner 與 final bytes 保留；修復限額外固定 numeric260 外層入口，不重生
 candidate／manifest、科學 source／archive 或已完成的 predecessor capture。
 已發布 `59d04f8c89f6a7436c00d2905a3065fb05b4f34f` 的入口為5,074 bytes／SHA256
@@ -167,7 +206,7 @@ runner（`d84e2aa27edc5cef4fe557a9c327a5b4bffebbadf638d80948927677f1bd70b9`）�
 重驗兩件 runner bytes。作者25項與獨立25＋9項 adverse tests，各 normal／`-O` 均通過；
 測試綁 frozen sources，384件既有 RLVR files 未改。獨立 final report SHA256
 `9e1c82e60766be53b24ac464e34819e716ae38112dd24e80a68f7ccd8d966ba0`。
-此為 CPU 工程驗證；尚無真正 numeric readback mount receipt，不將其當 GPU 或 runtime admission。
+此為當時 CPU 工程驗證；後來真實 numeric mount／v45 結果另列於上，不回寫成這份測試的證據。
 
 本地後續重現了該新入口 `source_bytes` 的有限讀取缺口：第一讀為 `first\n`，第二個 `os.fstat`
 前同 inode 寫入同長度 `other\n`，真 OS 回傳的全部比較 metadata 仍相同，單次 reader 未拒絕。
@@ -183,7 +222,7 @@ bytes、要求兩次相等並再核 metadata；不靠 buffered seek 或放寬 ga
 值搭配真內容變動，明確區分於本地原 OS 證據；作者與獨立 reviewer 各26項 focused normal／`-O`
 通過，另5項獨立 adverse tests 每模式通過。獨立 review SHA256
 `dda72a64c68af79a873c1f3bb09ce3e221787f3c97377a04990a7cd21dbc5ede`，逆向最小 entry 差分精確
-回到59d04的 `e473ae…`；未重驗未變元件，尚未宣稱本地新版 mount 完成。
+回到59d04的 `e473ae…`；未重驗未變元件。該修復於0a346公開後，已在本地越過 reader／真260 mount並完成v45。
 
 ### 原唯讀 session 的獨立續接依據
 
@@ -218,8 +257,8 @@ normal／`-O` 均通過，測試前後來源 hashes 相同；review SHA256
 固定 v43 capture helper SHA256
 `305bcb645e183b017fe6588044fb49e4ec0fdbb22af07929928371a5c69df223`，在真實新 close 後才產生
 observation；它不進入22件 operator 集合或 runtime archive。科學 source `69bf39dd…`／archive
-`085a64b4…`、native7 與 SDK 未改，未重跑未變範圍；以上均為離線工程驗證，尚未取代本地真實
-M／caller 原件核對、action／monitor reviews、fresh predecessor 或新 RUN admission。
+`085a64b4…`、native7 與 SDK 未改，未重跑未變範圍；以上是離線工程驗證。之後本地已另完成真實
+M／caller、action／monitor reviews、fresh predecessor與v45 admission，不把兩種證據混為一份。
 
 ## 三、任務、依賴與下一步
 
@@ -229,7 +268,7 @@ M／caller 原件核對、action／monitor reviews、fresh predecessor 或新 RU
 | 多輪 publication／collector 續接 | 0d3524 的作者／獨立review每模式599項PASS維持歷史證據；本次最終bridge每模式600項、獨立context每模式70項PASS，精確hash見VALIDATION | 本地真實 history／fresh readback 已通過並接受 v43；保留原件，已驗證且未變元件不重做 |
 | 原 A/B/C v43 取證 | 9fdc 真實取檔完成；4309 wrapper v2 原檔 replay PASS，22／6 observations、差集2，完整 subset 仍 false；a3e9 header 真實 HTTP200／長度驗證與新 Job0 通過 | 保留原拒絕、兩次 failed header receipts，不回填其原因。tensor bodies、原 collector context 與整體 admission 仍未成立 |
 | v41 官方 log／inventory | 現有 bridge 尚未支援；SDK 0.1.37 可送 numeric version_label，但 response 無 version/source echo | 另作最小唯讀支援，不阻擋已確定的啟動修復；完整分頁與 numeric bodies／log attribution 分開，不能靠 latest CLI 補稱 exact41 |
-| 數值診斷與下一輪 | actor 為 eval／inference cached 增量解碼；replay 為 train／autograd checkpointed 全因果 teacher-forcing。相同 token／DFA 上仍有 gap | 既有 calibration 差分已完成；下一輪固定 training-only 診斷 mode／checkpoint、teacher／prefix 及 cached 路徑，teacher／prefix 仍合併 hidden 與 head shape 因素。不得猜 kernel 根因、放寬門檻或依 PUBLIC 答案改模型 |
+| 數值診斷與下一輪 | v45完整工程診斷已取回；原gate仍拒絕、0 RL commit，六個固定點未覆蓋失敗tail | 對v45已定位兩個training點做固定bounded分解；source-bound結果不冒充獨立模型重播，不換方法或放寬門檻 |
 
 研究設計仍為 SFT256 A、固定互斥 64-slot RL batches B、匹配完整 B model-phase wall 的 extra-SFT C；
 no-TTT、dev 選擇與 PUBLIC120／167 不變。AF3 companion 在原 audit 產生後分析；

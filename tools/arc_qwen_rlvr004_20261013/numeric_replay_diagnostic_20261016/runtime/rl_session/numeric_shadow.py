@@ -19,13 +19,21 @@ import torch
 from .common import canonical, digest, need, rl_math, tensor_signature, tree_sha
 
 
-SCHEMA = 'numeric-shadow-training-only-v1'
+SCHEMA = 'numeric-shadow-training-tail-v2'
 MAX_SECONDS = 120.
 MAX_FORWARD_SECONDS = 30.
 MAX_ALLOCATED = 72 * 1024**3
 MAX_RESERVED = 80 * 1024**3
 MAX_REPORT_BYTES = 65536
-PARENT_ORDINALS = (0, 7)
+TARGETS = ((6, 2, 66), (0, 7, 77))
+PRIOR_DIAGNOSTIC = {
+    'notebook_version': 45, 'code_version': 23,
+    'source_audit_bytes': 4969665,
+    'source_audit_sha256': '12280cab41ec53be1b735bffd94ebc45e5f1ed427c5d15486b42b746b5b0f9ce',
+    'nonforced_pairs': 9365, 'max_abs_gap': 0.24956846237182617,
+    'max_trajectory_p95': 0.09070346951484677,
+    'purpose': 'historical-training-outcome-selection-provenance-only',
+}
 
 
 def _source_binding(actor):
@@ -53,7 +61,12 @@ def _source_binding(actor):
             'original_cache_mode': actor.cache_mode,
             'original_head_dtype': str(actor.model.get_output_embeddings().weight.dtype),
             'original_head_shape': list(actor.model.get_output_embeddings().weight.shape),
-            'decomposition_limit': 'teacher-versus-prefix combines hidden-state and head-row-shape differences'}
+            'qwen3_selection_source': {
+                'url': 'https://raw.githubusercontent.com/huggingface/transformers/v5.8.1/src/transformers/models/qwen3/modeling_qwen3.py',
+                'lines': [450, 462], 'selection_after_backbone': True,
+                'basis': 'pinned-source-order-not-observed-hidden-identity'},
+            'observed_hidden_identity': False, 'cuda_or_head_kernel_cause_established': False,
+            'decomposition_limit': 'separate-forward contrasts do not establish hidden identity or a CUDA/head kernel cause'}
 
 
 def _memory(actor):
@@ -118,13 +131,14 @@ def _select(actor, batch, replay_reports, report):
         need(identifier not in by_id, 'duplicate original replay report')
         by_id[identifier] = replay
     selected = []
-    for ordinal in PARENT_ORDINALS:
-        result = {'parent_ordinal': ordinal, 'slot': 0, 'status': 'missing', 'points': []}
+    for ordinal, slot, offset in TARGETS:
+        point = {'offset': offset, 'status': 'missing-target'}
+        result = {'parent_ordinal': ordinal, 'slot': slot, 'status': 'missing', 'points': [point]}
         report['rows'].append(result)
         if ordinal >= len(batch['parent_ids']):
             continue
         parent = batch['parent_ids'][ordinal]
-        candidates = [r for r in batch['rows'] if r['parent_id'] == parent and r['slot'] == 0]
+        candidates = [r for r in batch['rows'] if r['parent_id'] == parent and r['slot'] == slot]
         if len(candidates) != 1 or not candidates[0].get('trajectory'):
             continue
         row = candidates[0]['trajectory']
@@ -135,6 +149,7 @@ def _select(actor, batch, replay_reports, report):
         actor._admit(row)
         length = len(row['generated_ids'])
         need(len(row['steps']) == length and length > 0, 'complete original token-step layout required')
+        result.update(original_prompt_length=len(row['prompt_ids']), original_generated_length=length)
         old = by_id.get(row['trajectory_id'])
         if old is None:
             result['status'] = 'missing-original-replay'
@@ -154,20 +169,26 @@ def _select(actor, batch, replay_reports, report):
              events[event_id].get('trajectory_id') == row['trajectory_id'] and
              events[event_id].get('update_batch_id') == batch['id'],
              'original replay needs a completed owned physical event')
-        offsets = list(dict.fromkeys((0, 1, length - 1)))
-        for offset in offsets:
-            if offset >= length:
-                result['points'].append({'offset': offset, 'status': 'missing-offset'})
-                continue
-            support = row['steps'][offset]['support']
-            result['points'].append({'offset': offset, 'support_size': len(support),
-                                     'status': 'forced-no-substitution' if len(support) == 1 else 'pending'})
         result.update(status='selected', original_replay_event_id=event_id,
                       original_generated_length=length)
+        if offset >= length:
+            point['status'] = result['status'] = 'missing-offset'
+            continue
+        step = row['steps'][offset]
+        position = len(row['prompt_ids']) - 1 + offset
+        need(step['position'] == position and row['original_ids'] == row['prompt_ids'] + row['generated_ids'],
+             'exact original target causal position required')
+        support = step['support']
+        need(len(support) > 0 and row['generated_ids'][offset] in support,
+             'original chosen target needs nonempty legal support')
+        point.update(position=position, support_size=len(support),
+                     train_log_pi=_scalar(old['log_pi'][offset]), actor_log_mu=_scalar(old['log_mu'][offset]),
+                     train_vs_actor_gap=_scalar(old['log_pi'][offset] - old['log_mu'][offset]),
+                     status='forced-no-substitution' if len(support) == 1 else 'pending')
+        if len(support) == 1:
+            result['status'] = 'forced-no-substitution'
+            continue
         selected.append((row, old, result))
-    need(len(selected) == 2, 'fixed shadow selection or original replay missing')
-    need(not any(p['status'] == 'missing-offset' for r in report['rows'] for p in r['points']),
-         'fixed shadow offset missing')
     return selected
 
 
@@ -199,18 +220,20 @@ def _scalar(value):
 
 
 def _diagnose_row(actor, row, old, result, report, deadline, check_state):
-    points = [p for p in result['points'] if p['status'] == 'pending']
-    if not points:
-        result['status'] = 'all-selected-points-forced'
-        return
+    # One predeclared target per trajectory. No dynamic worst-token selection.
+    point = result['points'][0]
+    i, position = point['offset'], point['position']
     tokens = row['original_ids'][:-1]
-    positions = torch.arange(len(row['prompt_ids']) - 1, len(tokens), device=actor.device)
+    start = len(row['prompt_ids']) - 1
+    positions = torch.arange(start, len(tokens), device=actor.device)
     out, teacher_event = _forward(actor, report, row, tokens, positions, deadline, check_state)
-    logits = out.logits[0]
-    need(logits.shape == (len(row['generated_ids']), actor.native.vocab_size),
+    need(out.logits.shape == (1, len(row['generated_ids']), actor.native.vocab_size),
          'exact original generated causal head row layout required')
+    logits = out.logits[0]
     result.update(teacher_event_id=teacher_event, teacher_logits_shape=list(out.logits.shape),
                   teacher_input_shape=[1, len(tokens)], logits_dtype=str(logits.dtype),
+                  teacher_position_range={'start': start, 'stop_exclusive': len(tokens),
+                                          'count': len(positions)},
                   inferred_teacher_head_input_shape=[1, len(row['generated_ids']),
                                                     actor.model.get_output_embeddings().weight.shape[1]],
                   hidden_shape_provenance='inferred-from-original-head-and-selected-row-count; no-hidden-capture',
@@ -219,39 +242,65 @@ def _diagnose_row(actor, row, old, result, report, deadline, check_state):
     with _work(actor, report, 'numeric-shadow-reduce', deadline, {'host_operations': 1},
                trajectory_id=row['trajectory_id']):
         allowed = torch.zeros_like(logits, dtype=torch.bool)
-        for i, step in enumerate(row['steps']):
-            allowed[i, step['support']] = True
+        for index, step in enumerate(row['steps']):
+            allowed[index, step['support']] = True
         chosen = torch.tensor(row['generated_ids'], device=actor.device, dtype=torch.long)
         multi = rl_math.selected_log_probs(logits, allowed, chosen)
-        # Preserve original M=N, and isolate reduction-shape effects by reducing
-        # one row of those identical logits. This is not an M=1 head projection.
-        for point in points:
-            i = point['offset']
-            single = rl_math.selected_log_probs(logits[i:i+1], allowed[i:i+1], chosen[i:i+1])[0]
-            point.update(train_log_pi=_scalar(old['log_pi'][i]), actor_log_mu=_scalar(old['log_mu'][i]),
-                         eval_multirow_log_pi=_scalar(multi[i]), same_logits_single_row_log_pi=_scalar(single),
-                         train_vs_eval_gap=_scalar(old['log_pi'][i] - multi[i].double()),
-                         softmax_row_shape_gap=_scalar(multi[i].double() - single.double()))
-    # The full logits matrix is no longer needed. Retain only bounded scalars and
-    # per-point legal masks while each original full-prefix forward is evaluated.
-    del out, logits, multi
-    for point in points:
-        i = point['offset']
-        position = row['steps'][i]['position']
-        prefix, prefix_event = _forward(actor, report, row, row['original_ids'][:position+1],
-                                        1, deadline, check_state)
+        single = rl_math.selected_log_probs(logits[i:i+1], allowed[i:i+1], chosen[i:i+1])[0]
+        # Exact actor reduction: a one-dimensional vector, not a (1,V) matrix.
+        vector = rl_math.masked_log_probs(logits[i], allowed[i])[chosen[i]]
+        point.update(eval_multirow_log_pi=_scalar(multi[i]),
+                     same_logits_single_row_log_pi=_scalar(single),
+                     same_logits_vector_log_pi=_scalar(vector),
+                     same_logits_single_row_shape=list(logits[i:i+1].shape),
+                     same_logits_vector_shape=list(logits[i].shape),
+                     train_vs_eval_gap=_scalar(old['log_pi'][i] - multi[i].double()),
+                     softmax_row_shape_gap=_scalar(multi[i].double() - single.double()),
+                     same_logits_2d_vs_1d_gap=_scalar(single.double() - vector.double()),
+                     status='teacher-reduced')
+        allowed_one, chosen_one = allowed[i:i+1].clone(), chosen[i:i+1].clone()
+    # No full logits or hidden capture survives into another model forward.
+    del out, logits, multi, single, vector, allowed, chosen
+    target_position = torch.tensor([position], device=actor.device, dtype=torch.long)
+    for repeat in (False, True):
+        full, event_id = _forward(actor, report, row, tokens, target_position, deadline, check_state)
         with _work(actor, report, 'numeric-shadow-reduce', deadline, {'host_operations': 1},
                    trajectory_id=row['trajectory_id']):
-            need(prefix.logits.shape == (1, 1, actor.native.vocab_size), 'exact prefix M1 head shape required')
-            pi = rl_math.selected_log_probs(prefix.logits[0], allowed[i:i+1], chosen[i:i+1])[0]
-            point.update(prefix_event_id=prefix_event, prefix_m1_log_pi=_scalar(pi),
-                         teacher_vs_prefix_gap=_scalar(point['eval_multirow_log_pi'] - pi.double()),
-                         single_reduction_teacher_vs_prefix_gap=_scalar(point['same_logits_single_row_log_pi'] - pi.double()),
-                         prefix_vs_actor_gap=_scalar(pi.double() - old['log_mu'][i]),
-                         prefix_logits_shape=list(prefix.logits.shape), prefix_logits_dtype=str(prefix.logits.dtype),
-                         inferred_prefix_head_input_shape=[1, 1, actor.model.get_output_embeddings().weight.shape[1]],
-                         prefix_input_tokens=position+1, status='complete')
-        del prefix, pi
+            need(full.logits.shape == (1, 1, actor.native.vocab_size),
+                 'exact fullinput M1 head shape required')
+            pi = rl_math.selected_log_probs(full.logits[0], allowed_one, chosen_one)[0]
+            name = 'fullinput_m1_repeat' if repeat else 'fullinput_m1'
+            point.update({name + '_event_id': event_id, name + '_log_pi': _scalar(pi),
+                          name + '_logits_shape': list(full.logits.shape),
+                          name + '_logits_dtype': str(full.logits.dtype),
+                          name + '_input_shape': [1, len(tokens)],
+                          name + '_positions': [position]})
+            if repeat:
+                point.update(fullinput_m1_repeat_gap=_scalar(pi.double() - point['fullinput_m1_log_pi']),
+                             status='fullinput-repeat-reduced')
+            else:
+                point.update(same_reduction_teacher_vs_fullinput_m1_gap=_scalar(
+                    point['same_logits_single_row_log_pi'] - pi.double()), status='fullinput-reduced')
+        del full, pi
+    prefix, prefix_event = _forward(actor, report, row, row['original_ids'][:position+1],
+                                    1, deadline, check_state)
+    with _work(actor, report, 'numeric-shadow-reduce', deadline, {'host_operations': 1},
+               trajectory_id=row['trajectory_id']):
+        need(prefix.logits.shape == (1, 1, actor.native.vocab_size), 'exact prefix M1 head shape required')
+        pi = rl_math.selected_log_probs(prefix.logits[0], allowed_one, chosen_one)[0]
+        vector = rl_math.masked_log_probs(prefix.logits[0, 0], allowed_one[0])[chosen_one[0]]
+        point.update(prefix_event_id=prefix_event, prefix_m1_log_pi=_scalar(pi),
+                     prefix_vector_log_pi=_scalar(vector),
+                     fullinput_m1_vs_prefix_m1_gap=_scalar(point['fullinput_m1_log_pi'] - pi.double()),
+                     prefix_2d_vs_1d_gap=_scalar(pi.double() - vector.double()),
+                     prefix_vector_vs_actor_gap=_scalar(vector.double() - old['log_mu'][i]),
+                     prefix_logits_shape=list(prefix.logits.shape), prefix_logits_dtype=str(prefix.logits.dtype),
+                     prefix_single_row_shape=list(prefix.logits[0].shape),
+                     prefix_vector_shape=list(prefix.logits[0, 0].shape),
+                     inferred_prefix_head_input_shape=[1, 1, actor.model.get_output_embeddings().weight.shape[1]],
+                     prefix_input_shape=[1, position+1], prefix_input_tokens=position+1,
+                     prefix_logits_to_keep=1, prefix_position=position, status='complete')
+    del prefix, pi, vector
     result['status'] = 'complete'
 
 
@@ -263,8 +312,11 @@ def run_numeric_shadow(actor, batch, replay_reports, *, deadline):
     """
     report = {'schema': SCHEMA, 'complete': False, 'status': 'incomplete',
               'update_batch_id': batch.get('id'), 'batch_index': batch.get('batch_index'),
-              'selection': {'parent_ordinals': list(PARENT_ORDINALS), 'slot': 0,
-                            'offsets': ['0', '1', 'last'], 'substitution': False},
+              'selection': {'targets': [{'parent_ordinal': p, 'slot': s, 'offset': o} for p, s, o in TARGETS],
+                            'substitution': False, 'dynamic_worst_selection': False,
+                            'outcome_selected_from_prior_training_diagnostic': True,
+                            'independent_qualification': False,
+                            'prior_training_diagnostic': deepcopy(PRIOR_DIAGNOSTIC)},
               'rows': [], 'physical_event_ids': [], 'model_forward_calls': 0,
               'head_projection_calls': 0, 'state_preserved': False,
               'optimizer_commit_allowed': False, 'gate_inputs_replaced': False,
@@ -272,8 +324,16 @@ def run_numeric_shadow(actor, batch, replay_reports, *, deadline):
                          'forward_seconds': MAX_FORWARD_SECONDS,
                          'allocated_bytes': MAX_ALLOCATED, 'reserved_bytes': MAX_RESERVED},
               'interpretation': {'train_vs_eval': 'mode-autograd-checkpointing-combined',
-                                 'teacher_vs_prefix': 'hidden-state-and-head-row-shape-combined',
-                                 'prefix_vs_actor': 'full-prefix-versus-original-actor-same-M1',
+                                 'same_logits_2d_vs_1d': 'same-values-different-reduction-rank',
+                                 'teacher_vs_fullinput_m1': 'same-full-input-separate-forwards-different-selected-head-row-count',
+                                 'fullinput_m1_vs_prefix_m1': 'same-selected-head-row-count-different-input-length',
+                                 'prefix_vector_vs_actor': 'prefix-1D-reduction-versus-original-actor',
+                                 'repeat_gap_sign': 'repeat-minus-first',
+                                 'repeat_is_gate_input': False,
+                                 'current_targets_need_not_reproduce_prior_gaps': True,
+                                 'original_full_batch_gate_is_caller_responsibility': True,
+                                 'observed_hidden_identity': False,
+                                 'cuda_or_head_kernel_cause_established': False,
                                  'head_shape_causality_isolated': False}}
     started = time.monotonic()
     end = min(deadline, actor._phase_deadline, actor.global_deadline, started + MAX_SECONDS)
@@ -297,6 +357,8 @@ def run_numeric_shadow(actor, batch, replay_reports, *, deadline):
                 with actor._mode(False), torch.inference_mode():
                     for row, old, result in selected:
                         _diagnose_row(actor, row, old, result, report, end, check_state)
+                need(all(row['status'] == 'complete' for row in report['rows']),
+                     'fixed shadow target missing, excluded or forced; no substitution')
                 report.update(complete=True, status='complete')
             finally:
                 # Always restore the caller's RNG and exact mixed training modes.

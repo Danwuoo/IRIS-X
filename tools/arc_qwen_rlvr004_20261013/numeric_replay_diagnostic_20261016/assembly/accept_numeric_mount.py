@@ -15,8 +15,8 @@ import types
 
 BASE_SHA = 'd84e2aa27edc5cef4fe557a9c327a5b4bffebbadf638d80948927677f1bd70b9'
 RUN_PURPOSE = 'training-only-numeric-diagnostic-v1'
-SOURCE_SHA = '69bf39ddee56278197eb4f1a46119d569dba45f51621a92588a56dd7d6f1e292'
-ARCHIVE_SHA = '085a64b4dbe9c35db40d81ef0ae28dcce445eaa78f5da0e85518900bab035061'
+SOURCE_SHA = '048e9d3ee8b588cbb2075ae785b3f09fa10e3846a3269001e0c7a5f102865fda'
+ARCHIVE_SHA = '23281295453c2d31bf125afd26f84851e2a11ff9373f711961c21082b7e37e84'
 ENTRY = Path(os.path.abspath(__file__))
 BASE = ENTRY.parents[2] / 'admission_run008/accept_numeric_mount.py'
 

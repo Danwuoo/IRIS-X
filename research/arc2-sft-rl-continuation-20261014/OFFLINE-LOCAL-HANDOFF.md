@@ -74,7 +74,7 @@ normal／`-O`、失敗／timeout／cleanup、來源不變與獨立 review 均依
 完整 suite／CI 的既有失敗與缺 fixtures 保留；沒有重跑的範圍明列未重跑。
 歷史 native PASS 不自動適用變更過的 supervisor／worker；新版本必須有自己的適用性證據。
 
-## 6. 本地執行與研究回交程序（預設不執行）
+## 6. 本地執行與研究回交程序（依已授權循環驗收後執行）
 
 ### 6.1 接收順序與確切缺件
 
@@ -385,9 +385,15 @@ worker、runtime worker 必須有外層相同 triple；內層額外觀察須在�
 
 ### 固定 training-only numeric successor 的提交準備
 
+v45／code23 已完成並取回。原final／capture／收據與時鐘保留，不重提該 run；下一輪只依
+[進度頁](DEVELOPMENT-PROGRESS.zh-TW.md#下一輪固定-training-tail-數值診斷)的兩個既有training-tail座標，
+更新受影響的 shadow／封包身份與完整operator pins。原259 consumed proposal/base、native7／SDK、
+M與caller證據不重建；以真正accepted code23／v45作新的固定fresh predecessor。新來源尚未交付前，
+不拿本段歷史命令或舊v43 capture來提交。
+
 本輪只跑原 A256 與第一64 training batch 的原 replay／DDIS backward，加最多8個 bounded shadow
 forward 後強制無 RL commit；不執行其餘192／C／dev／held／PUBLIC。原方法與門檻、資料隔離、
-現有資源與43,200秒上限不變。完整研究解讀與 shadow 因素限制見[進度](DEVELOPMENT-PROGRESS.zh-TW.md#下一輪固定-training-only-數值診斷)。
+現有資源與43,200秒上限不變。完整研究解讀與 shadow 因素限制見[進度](DEVELOPMENT-PROGRESS.zh-TW.md#下一輪固定-training-tail-數值診斷)。
 
 1. 取得本次固定 commit 與逐檔 readback；數值 source 在
    `tools/arc_qwen_rlvr004_20261013/numeric_replay_diagnostic_20261016/`，完整 operator 仍在既有
@@ -398,11 +404,11 @@ forward 後強制無 RL commit；不執行其餘192／C／dev／held／PUBLIC。
    父目錄下 `source-rebuild/review-only/solver-descriptor.json`；後者需與 base material review 的
    `dataset_file_sha256` 相等。這是實際父目錄，不是名為 `parent` 的子目錄。不要讀 evaluator escrow bodies。
 2. 先以本次 `assembly/observe_predecessor.py --review <new-readonly-review> --review-sha <sha256>`
-   取得真正當下 predecessor。它只觀察固定 code22／v43，先驗本次完整22件 operator 與原
-   v43 manifest／material／新當前路徑 config，然後在同一 publisher lock 內執行原五次唯讀呼叫
+   取得真正當下 predecessor。它只觀察固定 code23／v45，先驗本次完整22件 operator 與已接受
+   v45 manifest／material／新當前路徑 config，然後在同一 publisher lock 內執行原五次唯讀呼叫
    dataset→kernel→status→kernel→dataset、保存六件 DTO／source，並等待這個新 native session
    真正 clean close。它不呼叫不適用於舊 manifest 的 numeric `load_contract`，也不授予 mutation。
-   新 observation review 的 `observer` 僅含 `purpose`（`fixed-code22-v43-predecessor-capture-v1`）、
+   新 observation review 的 `observer` 僅含 `purpose`（`fixed-code23-v45-predecessor-capture-v1`）、
    `script`、`output_root`、`manifest`、`material`、`local_config`；除 purpose／output_root 外為
    標準 path／bytes／sha256 descriptor。allowed_actions 僅 `reconcile-read-only`，且需真實
    non-synthetic provider admission；不能改寫舊 review 或用 self-written PASS 代替審查。
@@ -417,8 +423,11 @@ forward 後強制無 RL commit；不執行其餘192／C／dev／held／PUBLIC。
    owner direction，格式和欄位以
    [owner_inputs](../../tools/arc_qwen_rlvr004_20261013/numeric_replay_diagnostic_20261016/assemble.py)為準。
    原 broad owner receipt 不代替較窄 purpose；request_id／instruction 來自真實授權，不使用測試fixture。
-   固定 helper 為12,331 bytes／SHA256
-   `305bcb645e183b017fe6588044fb49e4ec0fdbb22af07929928371a5c69df223`。
+   固定 capture 綁 v45 manifest 135,137 bytes／SHA256
+   `15f340149a8eff74e6c1d56f3cd34b8836d349dfa6818ef14bd142dcb600161a`，以及 active45 saved source
+   22,913 bytes／SHA256 `5f884856484087033f6569335f5c65f752c4868c823276efaffed3c3e96eaeff`。
+   capture config 的已接受 versions 為 code predecessor22／code23／inactive predecessor43／inactive44／active45，
+   不能先換成未提交 successor 的 allocation。helper bytes/hash 以本次固定 commit 的逐檔交付收據為準。
    sealer 以 `--repository-root <repo> --observation-root <fresh-capture-root>`、
    `--observation-sha <raw-OBSERVATION-sha256> --output-root <fresh-sealed-root>` 呼叫；輸出必須
    位於 `<repo>/.irisx/run008-admission/`，不是下一步 numeric proposal 的目錄。
@@ -435,12 +444,14 @@ forward 後強制無 RL commit；不執行其餘192／C／dev／held／PUBLIC。
    寫另一個新目錄。既有雲端 CPU review 可作已驗範圍依據，不能直接冒充這份本地 proposal 的收據。
 5. 使用本次完整 source closure：context→bridge→common→numeric transport，以及 recovery entry、
    launcher 和 collector／wire 的全部衍生 pins；action／monitor reviews 都綁實際22件 operator。
-   assembler 僅允許 published numeric transport 的單一 common dependency pin 變更，其餘 body
+   assembler 僅允許 reviewed numeric transport 的單一 common dependency pin 變更，其餘 body
    與 active wire 全 bytes 固定，且同目錄 operator 必須等於 numeric overlays。原 native7、SDK、
    config／recovery contracts 沿用，不重建或重測未變元件。
    collector bootstrap 仍需要同目錄、經 action review 綁定的原 `operator_common.py`／transport。
    原 `state-run008`／`evidence-run008` 是 wire family 名稱，實際每輪用原 per-code publication isolation；
+   config 的 publication history 另納入已完成 code-v23 及它原本的 manifest descriptor，舊輪次原址保留。
    所有歷史 STATE、UNKNOWN、claim／journal 保留。真正 gate 阻礙回報，不套舊 closure 或重送。
+   新 run/source/environment namespace 為 run002／source002／environment002，舊 run001不改名或覆寫。
 6. 只有 final source、local review、numeric code readback／mount、inactive readback／獨立 active-wire 與
    JIT freshness 均成立後，由原唯一 publisher 接受一個 RUN，沿既有模式監看到終態並取 exact outputs。
    版本取當下真回讀，不在此預填 code／active version；fresh epoch 只屬這個尚未接受的 successor。
@@ -452,15 +463,16 @@ forward 後強制無 RL commit；不執行其餘192／C／dev／held／PUBLIC。
    它只接受固定 training-only purpose／source／archive 與260件來源，原 helper／guard、真實
    numeric receipt、完整下載閉集／ZIP bytes、source-only import 和 unforced owned closure 都保留。
    輸出仍為 repo `.irisx/` 下的新目錄；先前 CPU count-gate 證據不是可傳入的 numeric receipt。
-   新外層 runner 不進入 candidate／payload，已批准 final 無需重組；發布前的 runner／source
-   review 綁新入口真 hash。code publication／numeric readback 後才執行真 mount，後續
+   外層 runner 不進入 candidate／payload；它單獨改動不改 candidate，但本輪 shadow runtime 已變，
+   必須依步驟3–4正規產生新的 proposal／reviews／final，不能沿用 v45 final。發布前 runner／source
+   review 綁本輪入口真 hash。code publication／numeric readback 後才執行真 mount，後續
    persisted-readback／static review 再綁真正完成的新 `MOUNT-RECEIPT.json`，不能套用原259的
    runner pin，也不能在發布前要求或補造尚未存在的 mount receipt。
-   固定新入口為5,240 bytes／SHA256
-   `0337a772a9275cb5714367d781650fa5d8a2e38dffd766641783c43227e27a96`；原259 runner 為
-   `d84e2aa27edc5cef4fe557a9c327a5b4bffebbadf638d80948927677f1bd70b9`，兩件都需完整保留。
-   59d04 的同長度／timestamp collision 失敗證據保留；新版本只加 bounded byte consistency。
-   本地只重驗受影響 source reader 與260差分，不重跑已通過的 capture／assembly／native／runtime。
+   本輪新入口只隨新 source/archive 重綁；固定260與0a346的 bounded byte-consistency reader保持。
+   精確 entry hash 見本次交付收據；原259 runner仍為
+   `d84e2aa27edc5cef4fe557a9c327a5b4bffebbadf638d80948927677f1bd70b9`。
+   59d04 的同長度／timestamp collision失敗保留。只核本輪受影響的 shadow／collector／封包pins，
+   不重驗未變 reader、native7或SDK；本輪自己的真fresh capture、proposal/final與numeric mount仍需成立。
 
 新工程完成須有 `owned-numeric-diagnostic-complete-no-update`、原64 replay、shadow／rollback、
 實際閉合 capability／raw closure 與完整 diagnostic archive。collector 寫 `NUMERIC_DIAGNOSTIC_COMPLETE`

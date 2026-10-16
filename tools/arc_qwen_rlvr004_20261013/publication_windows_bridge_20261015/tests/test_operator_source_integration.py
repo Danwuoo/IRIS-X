@@ -53,13 +53,26 @@ class OperatorSourceIntegrationTests(unittest.TestCase):
                 side_effect=AssertionError('offline source tests forbid external execution')))
 
     def test_bottom_up_source_pins(self):
+        names = literal(ROOT / 'rl_transport.py', 'OPERATOR_SOURCE_NAMES')
+        self.assertEqual(len(names), 22)
+        self.assertEqual(len(set(names)), 22)
         for owner, constant, target in (
+            ('context_continuation.py', 'SOURCE_PINS_SHA256', 'context-source-pins.json'),
+            ('context_continuation.py', 'PUBLICATION_STATE_SHA256', 'publication_state.py'),
+            ('context_continuation.py', 'PREWORKER_SOURCE_SHA256', 'preworker_disposition.py'),
+            ('bridge_client.py', 'SDK_LOCK_SHA256', 'sdk-lock.json'),
             ('bridge_client.py', 'CONTEXT_SOURCE_SHA256', 'context_continuation.py'),
             ('bridge_client.py', 'PROTOCOL_SOURCE_SHA256', 'protocol.py'),
             ('operator_common.py', 'BRIDGE_CLIENT_SHA256', 'bridge_client.py'),
             ('operator_common.py', 'CONFIG_SOURCE_SHA256', 'config.py'),
             ('operator_common.py', 'PUBLICATION_STATE_SHA256', 'publication_state.py'),
             ('rl_transport.py', 'COMMON_SOURCE_SHA256', 'operator_common.py'),
+            ('native_auth.py', 'LOCK_SHA256', 'sdk-lock.json'),
+            ('sdk_worker.py', 'WIN_RUNTIME_SHA256', 'win_runtime.py'),
+            ('sdk_worker.py', 'NATIVE_CONFIG_SHA256', 'native_config.py'),
+            ('win_supervisor.py', 'WIN_RUNTIME_SHA256', 'win_runtime.py'),
+            ('win_supervisor.py', 'NATIVE_CONFIG_SHA256', 'native_config.py'),
+            ('preworker_disposition.py', 'SOURCE_PINS_SHA256', 'context-source-pins.json'),
             ('recovery_entry.py', 'TRANSPORT_SHA256', 'rl_transport.py'),
             ('recovery_entry.py', 'CLIENT_SHA256', 'bridge_client.py'),
             ('recovery_entry.py', 'CORE_SHA256', 'recovery_epoch.py'),
@@ -67,7 +80,9 @@ class OperatorSourceIntegrationTests(unittest.TestCase):
         ):
             with self.subTest(owner=owner, target=target):
                 self.assertEqual(literal(ROOT / owner, constant), sha((ROOT / target).read_bytes()))
-        for name, digest in literal(ROOT / 'launch.py', 'ENTRY_SHA256').items():
+        entries = literal(ROOT / 'launch.py', 'ENTRY_SHA256')
+        self.assertEqual(set(entries), {'rl_transport.py', 'rl_collect.py', 'recovery_entry.py'})
+        for name, digest in entries.items():
             self.assertEqual(digest, sha((ROOT / name).read_bytes()))
 
     def test_operator_uses_exact_numeric_overlays_and_original_path(self):

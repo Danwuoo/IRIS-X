@@ -11,7 +11,7 @@ CAP=4*1024**2
 IDENTITY={'pid','birth','session','state'}
 PROOF={'format','root_identity','scope','ownership_complete','closed','owned_identities','remaining','returncode','worker_returncode','forced','reaped_identities','errors'}
 SCOPE='dedicated-subreaper-tree'
-ENV='/tmp/irisx-qwen14b-numeric-diagnostic-20261016-environment001'
+ENV='/tmp/irisx-qwen14b-numeric-diagnostic-20261016-environment002'
 INTERPRETER_MANIFEST='20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e'
 INTERPRETER_ARCHIVE='f937814031eab4698ca6d07ec606ede1825768f3f3e99af76d9db3900bee03c5'
 
@@ -226,7 +226,7 @@ def verify_wrappers(launcher_root,*,expected_jit,notebook_release,reviewed_envir
     prep=obj(root/'preparation-request.json');parent=obj(root/'installed-parent-request.json');receipt=obj(root/'preparation-receipt.json');result=obj(root/'result.json')
     closed(prep,{'format','ready','release','finalized','notebook_python_executable','output_root','input_root','epoch','launcher_root','environment_root'},'irisx/rlvr-parent-preparation-request-v1')
     closed(parent,{'format','source_root','output_root','config','paths','result_path','source_sha256'},'irisx/rlvr-installed-parent-request-v1')
-    output='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-run001';source='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source001/runtime';launcher=output+'-launcher';deployment=str(Path(source).parent/'deployment')
+    output='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-run002';source='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source002/runtime';launcher=output+'-launcher';deployment=str(Path(source).parent/'deployment')
     need(prep['release']==r and prep['finalized']=={'owner_request':owner,'operator':operator},'reviewed release/JIT request binding')
     need(prep['epoch']==epoch and prep['output_root']==parent['output_root']==output and prep['input_root']=='/kaggle/input' and prep['launcher_root']==launcher and prep['environment_root']==ENV,'exact original preparation paths/epoch')
     ready=prep['ready'];need(ready['source_root']==source and parent['source_root']==source and parent['source_sha256']==ready['source_sha256']==r['source_sha256'],'complete source identity')

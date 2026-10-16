@@ -41,6 +41,61 @@ def load():
     return m
 
 
+def tail_shadow_fixture(m,replays):
+    """Source-shaped synthetic scalar evidence; no model or provider authority."""
+    shadow={'schema':'numeric-shadow-training-tail-v2','complete':True,'status':'complete','state_preserved':True,
+            'optimizer_commit_allowed':False,'gate_inputs_replaced':False,'model_forward_calls':8,
+            'head_projection_calls':0,'batch_index':0,'update_batch_id':'batch-tail-fixture',
+            'selection':deepcopy(m.TAIL_SELECTION),'physical_event_ids':list(range(100,108)),
+            'interpretation':{k:False for k in ('repeat_is_gate_input','observed_hidden_identity',
+                'cuda_or_head_kernel_cause_established','head_shape_causality_isolated')},'rows':[]}
+    gaps={'train_vs_actor_gap':('train_log_pi','actor_log_mu'),
+          'train_vs_eval_gap':('train_log_pi','eval_multirow_log_pi'),
+          'softmax_row_shape_gap':('eval_multirow_log_pi','same_logits_single_row_log_pi'),
+          'same_logits_2d_vs_1d_gap':('same_logits_single_row_log_pi','same_logits_vector_log_pi'),
+          'same_reduction_teacher_vs_fullinput_m1_gap':('same_logits_single_row_log_pi','fullinput_m1_log_pi'),
+          'fullinput_m1_repeat_gap':('fullinput_m1_repeat_log_pi','fullinput_m1_log_pi'),
+          'fullinput_m1_vs_prefix_m1_gap':('fullinput_m1_log_pi','prefix_m1_log_pi'),
+          'prefix_2d_vs_1d_gap':('prefix_m1_log_pi','prefix_vector_log_pi'),
+          'prefix_vector_vs_actor_gap':('prefix_vector_log_pi','actor_log_mu')}
+    for index,(ordinal,slot,offset) in enumerate(m.TAIL_TARGETS):
+        replay=replays[ordinal*8+slot];length=len(replay['log_pi']);prompt=5;position=prompt-1+offset
+        teacher_tokens=prompt+length-1;event=100+index*4
+        point={'offset':offset,'position':position,'support_size':2,'status':'complete',
+            'train_log_pi':replay['log_pi'][offset],'actor_log_mu':replay['log_mu'][offset],
+            'eval_multirow_log_pi':-.99,'same_logits_single_row_log_pi':-.985,
+            'same_logits_vector_log_pi':-.984,'fullinput_m1_log_pi':-.98,'fullinput_m1_repeat_log_pi':-.979,
+            'prefix_m1_log_pi':-.97,'prefix_vector_log_pi':-.969,
+            'same_logits_single_row_shape':[1,8],'same_logits_vector_shape':[8],
+            'prefix_single_row_shape':[1,8],'prefix_vector_shape':[8],'prefix_logits_shape':[1,1,8],
+            'prefix_input_shape':[1,position+1],'prefix_input_tokens':position+1,
+            'prefix_position':position,'prefix_logits_to_keep':1,'prefix_event_id':event+3}
+        for delta,(a,b) in gaps.items():point[delta]=point[a]-point[b]
+        for step,label in enumerate(('fullinput_m1','fullinput_m1_repeat'),1):
+            point.update({label+'_event_id':event+step,label+'_logits_shape':[1,1,8],
+                          label+'_input_shape':[1,teacher_tokens],label+'_positions':[position]})
+        shadow['rows'].append({'parent_ordinal':ordinal,'slot':slot,'parent_id':replay['parent_id'],
+            'trajectory_id':replay['trajectory_id'],'status':'complete','points':[point],
+            'original_prompt_length':prompt,'original_generated_length':length,
+            'original_replay_event_id':replay['replay_event_id'],'teacher_event_id':event,
+            'teacher_input_shape':[1,teacher_tokens],'teacher_logits_shape':[1,length,8],
+            'teacher_position_range':{'start':prompt-1,'stop_exclusive':teacher_tokens,'count':length}})
+    return shadow
+
+
+def tail_raw_batch(parents,update):
+    rows=[]
+    for index,replay in enumerate(update['replays']):
+        generated=[1]*len(replay['log_pi']);prompt=[4]*5
+        trajectory={'parent_id':replay['parent_id'],'trajectory_id':replay['trajectory_id'],
+            'prompt_ids':prompt,'generated_ids':generated,
+            'steps':[{'position':len(prompt)-1+i,'support':[1,2],'log_mu':mu}
+                     for i,mu in enumerate(replay['log_mu'])]}
+        rows.append({'parent_id':parents[index//8],'slot':index%8,'trajectory':trajectory,
+                     'reward':0.,'eligible':True,'status':'eligible'})
+    return {'id':'batch-tail-fixture','planned_attempts':64,'parent_ids':parents,'rows':rows}
+
+
 def complete_documents(m):
     model={k:True for k in ('closed','future_operations_blocked','model_references_released','device_synchronized','model_stopped','ledger_settled')}
     model['fatal_native_state']=None
@@ -60,19 +115,19 @@ def complete_documents(m):
           'arms':{'A':deepcopy(arm),'B':deepcopy(arm)},
           'stage_status':{k:'not-requested-by-diagnostic' for k in ('C','dev','holdout','PUBLIC')}}
     replays=[{'parent_id':'p'+str(i//8),'trajectory_id':'trajectory'+str(i),
-        'original_token_replay':True,'training_mode':True,'log_pi':[-1.],'log_mu':[-1.1],
-        'nonforced_tokens':{'tokens':1,'max_abs_gap':.1,'p95_abs_gap':.1,'unclipped_fraction':1.,'clipped_tokens':0}}
+        'original_token_replay':True,'training_mode':True,'log_pi':[-1.]*90,'log_mu':[-1.1]*90,
+        'update_batch_id':'batch-tail-fixture','replay_event_id':i,
+        'nonforced_tokens':{'tokens':90,'max_abs_gap':.1,'p95_abs_gap':.1,'unclipped_fraction':1.,'clipped_tokens':0}}
         for i in range(64)]
     gate={'admitted':False,'failures':['original-gap'],'gate':{
         'maximum_absolute_gap':.20,'minimum_unclipped_fraction':1.,'maximum_replay_seconds':30.,
         'maximum_peak_bytes':72*1024**3,'fixture_only':False,'maximum_p95_gap':.05,
         'maximum_reserved_bytes':80*1024**3,'maximum_batch_replay_backward_seconds':600.},
         'per_trajectory':deepcopy(replays),'per_parent_ids':['p'+str(i) for i in range(8)]}
-    update={'status':'intentionally-no-update','optimizer_dispatched':False,'optimizer_committed':False,
+    update={'update_batch_id':'batch-tail-fixture','status':'intentionally-no-update','optimizer_dispatched':False,'optimizer_committed':False,
             'rollback':{'restored':True},'within_original_batch_deadline':True,'numeric_shadow_complete':True,
             'replays':replays,'original_numeric_gate':deepcopy(gate),'numerical_gate':deepcopy(gate)}
-    shadow={'schema':'numeric-shadow-training-only-v1','complete':True,'status':'complete','state_preserved':True,
-            'optimizer_commit_allowed':False,'gate_inputs_replaced':False,'model_forward_calls':8,'head_projection_calls':0}
+    shadow=tail_shadow_fixture(m,replays)
     wrappers={'closure_valid':True,'operational':True,'runtime_tree_link_checked':True,
               'terminal_status':'diagnostic','model_closure_verified_by_this_helper':False}
     return owned,flow,update,shadow,outer,wrappers
@@ -127,13 +182,70 @@ class CompletionTests(unittest.TestCase):
         owned=self.docs[0];owned['status']=self.m.NUMERIC_INCOMPLETE;owned['diagnostic_complete']=False
         self.assertFalse(self.m.numeric_completion(owned,None,None,None,{},{}))
 
+    def test_v1_fixed_six_point_report_cannot_qualify_tail_completion(self):
+        self.docs[3]['schema']='numeric-shadow-training-only-v1'
+        with self.assertRaisesRegex(ValueError,'complete_tail_shadow'):self.m.numeric_completion(*self.docs)
+
+    def test_tail_selection_and_old_evidence_are_exact(self):
+        changes=[('substitution',True),('dynamic_worst_selection',True),
+                 ('outcome_selected_from_prior_training_diagnostic',False),('independent_qualification',True),
+                 ('targets',[{'parent_ordinal':0,'slot':0,'offset':0}]),
+                 ('prior_training_diagnostic',{'notebook_version':45})]
+        for key,value in changes:
+            docs=deepcopy(self.docs);docs[3]['selection'][key]=value
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'fixed_selection'):
+                self.m.numeric_completion(*docs)
+
+    def test_tail_scalar_chain_is_verified_but_repeat_need_not_be_zero(self):
+        self.assertNotEqual(self.docs[3]['rows'][0]['points'][0]['fullinput_m1_repeat_gap'],0.)
+        self.assertTrue(self.m.numeric_completion(*self.docs))
+        for key in ('train_vs_actor_gap','train_vs_eval_gap','softmax_row_shape_gap','same_logits_2d_vs_1d_gap',
+                    'same_reduction_teacher_vs_fullinput_m1_gap','fullinput_m1_repeat_gap',
+                    'fullinput_m1_vs_prefix_m1_gap','prefix_2d_vs_1d_gap','prefix_vector_vs_actor_gap'):
+            docs=deepcopy(self.docs);docs[3]['rows'][0]['points'][0][key]+=.1
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'scalar_arithmetic'):
+                self.m.numeric_completion(*docs)
+
+    def test_tail_missing_forced_or_substituted_point_rejected(self):
+        for key,value in [('offset',65),('position',12),('support_size',1),('status','forced-no-substitution')]:
+            docs=deepcopy(self.docs);docs[3]['rows'][0]['points'][0][key]=value
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'nonforced_fixed_point'):
+                self.m.numeric_completion(*docs)
+        for value in ([],[deepcopy(self.docs[3]['rows'][0])]*2):
+            docs=deepcopy(self.docs);docs[3]['rows']=value
+            with self.subTest(rows=value),self.assertRaises(ValueError):self.m.numeric_completion(*docs)
+
+    def test_tail_original_log_probability_and_shape_binding(self):
+        changes=[('train_log_pi',-.4),('actor_log_mu',-.4),('prefix_input_tokens',10000),
+                 ('fullinput_m1_positions',[0]),('fullinput_m1_repeat_input_shape',[1,3]),
+                 ('same_logits_vector_shape',[1,8]),('prefix_logits_to_keep',True),
+                 ('fullinput_m1_logits_shape',[True,1,8]),('prefix_input_tokens',71.)]
+        for key,value in changes:
+            docs=deepcopy(self.docs);docs[3]['rows'][0]['points'][0][key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):self.m.numeric_completion(*docs)
+
+    def test_tail_nonfinite_and_duplicate_work_rejected(self):
+        for value in (float('nan'),float('inf'),True):
+            docs=deepcopy(self.docs);docs[3]['rows'][0]['points'][0]['prefix_vector_log_pi']=value
+            with self.subTest(value=value),self.assertRaisesRegex(ValueError,'finite_scalars'):
+                self.m.numeric_completion(*docs)
+        docs=deepcopy(self.docs);docs[3]['rows'][0]['points'][0]['prefix_event_id']=docs[3]['rows'][0]['teacher_event_id']
+        with self.assertRaisesRegex(ValueError,'distinct_owned_work'):self.m.numeric_completion(*docs)
+
+    def test_tail_inference_authority_is_not_promoted(self):
+        for key in self.docs[3]['interpretation']:
+            docs=deepcopy(self.docs);docs[3]['interpretation'][key]=True
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'inference_limits'):
+                self.m.numeric_completion(*docs)
+
+
 
 class ArchiveTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup);self.root=Path(self.tmp.name)
         self.m=load();m=self.m;m.DOWNLOADS=self.root/'downloads';m.DOWNLOADS.mkdir()
-        self.prefix='irisx-qwen14b-numeric-diagnostic-20261016-run001';self.outer=self.prefix+'-launcher'
-        self.remote='/kaggle/working/'+self.prefix;self.source='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source001'
+        self.prefix='irisx-qwen14b-numeric-diagnostic-20261016-run002';self.outer=self.prefix+'-launcher'
+        self.remote='/kaggle/working/'+self.prefix;self.source='/kaggle/working/irisx-qwen14b-numeric-diagnostic-20261016-source002'
         self.pub=self.root/'publication';self.pub.mkdir();m.publication_root=lambda:self.pub
         self.launch={'saved_source':{'sha256':'b'*64}}
         (self.pub/'notebook-rlvr004-receipt.json').write_bytes(canonical(self.launch))
@@ -172,6 +284,7 @@ class ArchiveTests(unittest.TestCase):
             batch={'planned_attempts':64,'parent_ids':parents,'rows':[
                 {'parent_id':parent,'slot':slot,'trajectory':None,'reward':None,'eligible':False,
                  'status':'not-reached','reason':'not-requested-by-diagnostic'} for parent in parents for slot in range(8)]}
+            if index==0:batch=tail_raw_batch(parents,update)
             summary={'planned_attempts':64,'not_reached':0 if index==0 else 64}
             audit={'batch_index':index,'parent_ids':parents,'batch':batch,'summary':summary,
                    'update':update if index==0 else None,'status':status}
@@ -298,6 +411,49 @@ class ArchiveTests(unittest.TestCase):
         self.members[name]=canonical(audit);flow=json.loads(self.members['experiment/result.json'])
         flow['audit_sweeps'][3]['file_sha256']=sha(self.members[name]);flow['audit_batches']=deepcopy(flow['audit_sweeps']);self.replace_flow(flow)
         with self.assertRaisesRegex(ValueError,'unrequested_slot_has_no_work'):self.verify()
+
+    def replace_first_audit(self,audit):
+        name='experiment/audit/sweep-0.json';self.members[name]=canonical(audit)
+        flow=json.loads(self.members['experiment/result.json'])
+        flow['audit_sweeps'][0]['file_sha256']=sha(self.members[name])
+        flow['audit_batches']=deepcopy(flow['audit_sweeps']);self.replace_flow(flow)
+
+    def test_tail_raw_slot_mismatch_rejected_after_all_container_hashes_rebound(self):
+        audit=json.loads(self.members['experiment/audit/sweep-0.json'])
+        audit['batch']['rows'][6*8+2]['slot']=3
+        self.replace_first_audit(audit)
+        with self.assertRaisesRegex(ValueError,'raw_selected_slot'):self.verify()
+
+    def test_tail_raw_step_mismatch_rejected_after_all_container_hashes_rebound(self):
+        audit=json.loads(self.members['experiment/audit/sweep-0.json'])
+        audit['batch']['rows'][6*8+2]['trajectory']['steps'][66]['log_mu']=-.4
+        self.replace_first_audit(audit)
+        with self.assertRaisesRegex(ValueError,'raw_step'):self.verify()
+
+    def test_tail_raw_parent_coordinate_cannot_drift_after_full_rebinding(self):
+        audit=json.loads(self.members['experiment/audit/sweep-0.json'])
+        audit['parent_ids'][5],audit['parent_ids'][6]=audit['parent_ids'][6],audit['parent_ids'][5]
+        audit['batch']['parent_ids']=audit['parent_ids'][:]
+        for row in audit['batch']['rows']:
+            if row['parent_id']=='p5':row['parent_id']='p6'
+            elif row['parent_id']=='p6':row['parent_id']='p5'
+        name='experiment/audit/sweep-0.json';self.members[name]=canonical(audit)
+        flow=json.loads(self.members['experiment/result.json']);flow['batch_schedule'][0]=audit['parent_ids'][:]
+        flow['audit_sweeps'][0].update(parent_ids=audit['parent_ids'][:],file_sha256=sha(self.members[name]))
+        flow['audit_batches']=deepcopy(flow['audit_sweeps']);self.replace_flow(flow)
+        with self.assertRaisesRegex(ValueError,'raw_selected_slot'):self.verify()
+
+    def test_tail_raw_batch_parent_order_is_bound(self):
+        audit=json.loads(self.members['experiment/audit/sweep-0.json'])
+        audit['batch']['parent_ids'][5],audit['batch']['parent_ids'][6]=audit['batch']['parent_ids'][6],audit['batch']['parent_ids'][5]
+        self.replace_first_audit(audit)
+        with self.assertRaisesRegex(ValueError,'raw_batch'):self.verify()
+
+    def test_tail_raw_steps_must_cover_complete_original_trajectory(self):
+        audit=json.loads(self.members['experiment/audit/sweep-0.json'])
+        audit['batch']['rows'][50]['trajectory']['steps']=audit['batch']['rows'][50]['trajectory']['steps'][:67]
+        self.replace_first_audit(audit)
+        with self.assertRaisesRegex(ValueError,'raw_trajectory'):self.verify()
 
     def test_no_science_consumer_call_is_reachable_from_diagnostic_branch(self):
         tree=ast.parse(PATH.read_bytes());node=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='collect')

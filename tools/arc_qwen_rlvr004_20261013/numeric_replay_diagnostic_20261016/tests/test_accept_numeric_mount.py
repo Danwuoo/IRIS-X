@@ -174,6 +174,22 @@ class FixtureCase(unittest.TestCase):
 
 
 class SourceAndParityTests(FixtureCase):
+    def test_exact_source_archive_match_active_wire_and_consumed_pins_reject(self):
+        wire = load(mount.ENTRY.parents[1] / 'publication/verify_active_wire.py')
+        self.assertEqual((mount.SOURCE_SHA, mount.ARCHIVE_SHA), (wire.SOURCE, wire.ARCHIVE))
+        self.assertEqual(mount.RUN_PURPOSE, wire.RUN_PURPOSE)
+        consumed = ('69bf39ddee56278197eb4f1a46119d569dba45f51621a92588a56dd7d6f1e292',
+                    '085a64b4dbe9c35db40d81ef0ae28dcce445eaa78f5da0e85518900bab035061')
+        self.assertNotEqual(mount.SOURCE_SHA, consumed[0])
+        self.assertNotEqual(mount.ARCHIVE_SHA, consumed[1])
+        for index in (0, 1):
+            def change(manifest):
+                if index == 0: manifest['runtime_source_sha256'] = consumed[0]
+                else: manifest['consumer_contract']['source_archive']['sha256'] = consumed[1]
+            self.candidate(change)
+            with self.subTest(index=index), self.assertRaisesRegex(ValueError, 'exact training-only numeric diagnostic'):
+                mount.candidate_inputs(self.root / 'candidate')
+
     def test_base_source_pin_dependency_context_and_original_functions(self):
         self.assertEqual(mount.base.sha(mount.BASE.read_bytes()), mount.BASE_SHA)
         self.assertEqual(mount.base.HERE, mount.BASE.parent)

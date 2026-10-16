@@ -1,4 +1,4 @@
-"""Capture the fixed accepted code22/v43 predecessor before numeric assembly.
+"""Capture the fixed accepted code23/v45 predecessor before numeric assembly.
 
 This reviewed read-only caller uses the existing operator API and its native
 guards. It does not admit the numeric publication contract or allocate a run.
@@ -14,13 +14,14 @@ import sys
 import time
 import types
 
-COLLECTOR_SHA256 = '2262bcbec8e26572ea88c83b3caf7fbe748788b27fa8d5ab0b336cef6d68068f'
-MANIFEST_SHA256 = '619dc66bb9b4c1697c0753475ab3e68123d77edbc1d9b0737ba3cbd238db7442'
-MANIFEST_BYTES = 134508
-SAVED_SOURCE_SHA256 = 'e834dd924eef286e830f3d3d2a73dc0e0547f4ee756b8ebd60f793d97f8f644d'
-VERSIONS = {'code_predecessor': 21, 'code': 22, 'inactive_predecessor': 41,
-            'inactive': 42, 'active': 43}
-PURPOSE = 'fixed-code22-v43-predecessor-capture-v1'
+COLLECTOR_SHA256 = 'df7f54f9f09709a423f68b01c40b3b8b79aae16e8c98639ecf03e76b864ede54'
+MANIFEST_SHA256 = '15f340149a8eff74e6c1d56f3cd34b8836d349dfa6818ef14bd142dcb600161a'
+MANIFEST_BYTES = 135137
+SAVED_SOURCE_SHA256 = '5f884856484087033f6569335f5c65f752c4868c823276efaffed3c3e96eaeff'
+SAVED_SOURCE_BYTES = 22913
+VERSIONS = {'code_predecessor': 22, 'code': 23, 'inactive_predecessor': 43,
+            'inactive': 44, 'active': 45}
+PURPOSE = 'fixed-code23-v45-predecessor-capture-v1'
 OPERATOR = Path(__file__).absolute().parents[2] / 'publication_windows_bridge_20261015'
 CAP = 4 * 1024**2
 
@@ -87,7 +88,7 @@ def descriptor_input(row):
 def load_collector():
     path = OPERATOR / 'rl_collect.py'
     raw = read_pinned(path, COLLECTOR_SHA256)
-    module = types.ModuleType('reviewed_fixed_v43_capture_collector')
+    module = types.ModuleType('reviewed_fixed_v45_capture_collector')
     module.__file__, module.__package__ = str(path), ''
     exec(compile(raw, str(path), 'exec', dont_inherit=True, optimize=sys.flags.optimize), vars(module))
     return module
@@ -108,7 +109,7 @@ def prepare(review_path, review_sha):
     descriptor_input(observer['script'])
     documents = {name: descriptor_input(observer[name]) for name in ('manifest', 'material', 'local_config')}
     need(len(documents['manifest']) == MANIFEST_BYTES and sha(documents['manifest']) == MANIFEST_SHA256,
-         'fixed_accepted_v43_manifest')
+         'fixed_accepted_v45_manifest')
     manifest, material = strict(documents['manifest']), strict(documents['material'])
     need(material.get('status') == 'APPROVED'
          and material.get('scope', {}).get('publication_manifest', {}).get('sha256') == MANIFEST_SHA256,
@@ -175,18 +176,18 @@ def capture(transport, common, manifest, output):
                  and dataset.ref == dataset_after.ref == transport.DREF
                  and dataset.owner_ref == dataset_after.owner_ref == 'danielwuu'
                  and dataset.is_private is True and dataset_after.is_private is True
-                 and dataset.current_version_number == dataset_after.current_version_number == 22,
-                 'fixed_code22_dataset_bracket')
+                 and dataset.current_version_number == dataset_after.current_version_number == 23,
+                 'fixed_code23_dataset_bracket')
             for metadata in (before.metadata, after.metadata):
                 need(type(metadata.id) is int and type(metadata.current_version_number) is int
                      and metadata.is_private is True and metadata.enable_gpu is True
                      and metadata.enable_tpu is False and metadata.enable_internet is False,
                      'fixed_notebook_identity_types')
-            need(before.metadata.current_version_number == after.metadata.current_version_number == 43,
-                 'fixed_v43_notebook_bracket')
+            need(before.metadata.current_version_number == after.metadata.current_version_number == 45,
+                 'fixed_v45_notebook_bracket')
             raw = before.blob.source.encode('utf-8')
-            need(raw == after.blob.source.encode('utf-8') and len(raw) <= 1024**2
-                 and sha(raw) == SAVED_SOURCE_SHA256, 'fixed_v43_source_bracket')
+            need(raw == after.blob.source.encode('utf-8') and len(raw) == SAVED_SOURCE_BYTES
+                 and sha(raw) == SAVED_SOURCE_SHA256, 'fixed_v45_source_bracket')
             for metadata in (before.metadata, after.metadata):
                 transport.settings(metadata, transport.row(manifest, 'rlvr004'))
             need(before.metadata.to_dict() == after.metadata.to_dict(), 'full_metadata_bracket_changed')
@@ -196,7 +197,7 @@ def capture(transport, common, manifest, output):
                 common.write_new(common.STOP, {'classification': classification, 'message': message,
                                                'observed_epoch': time.time()})
             need(classification != 'GPU_UNAVAILABLE_STOP' and status.status.name == 'COMPLETE',
-                 'fixed_v43_terminal_complete_required')
+                 'fixed_v45_terminal_complete_required')
             hashes = {'dataset_metadata_sha256': put('dataset.json', dataset.to_dict()),
                 'metadata_before_sha256': put('metadata-before.json', before.metadata.to_dict()),
                 'status_sha256': put('status.json', status.to_dict()),
@@ -210,7 +211,7 @@ def capture(transport, common, manifest, output):
         need(provider is not None and provider.bridge.closed is True
              and provider.bridge.closure_verified is True, 'native_clean_close_required')
         observation = {'format': 'irisx/run008-live-predecessor-observation-v1',
-            'code_version': 22, 'notebook_version': 43, 'provider_status': 'COMPLETE',
+            'code_version': 23, 'notebook_version': 45, 'provider_status': 'COMPLETE',
             'observed_epoch': time.time(), 'gpu_unavailable_stop': False, **hashes,
             **{key: False for key in ('runtime_closure_verified', 'manual_editor_session_mapping_verified',
                 'manual_failure_root_cause_verified', 'physical_costs_known', 'scientific_result_verified')},
@@ -219,7 +220,7 @@ def capture(transport, common, manifest, output):
         digest = put('OBSERVATION.json', observation)
     return {'status': 'ACTUAL_READ_ONLY_PREDECESSOR_OBSERVED', 'observation': {
         'path': str(output / 'OBSERVATION.json'), 'bytes': len(encoded(observation)), 'sha256': digest},
-        'code_version': 22, 'notebook_version': 43, 'provider_status': 'COMPLETE',
+        'code_version': 23, 'notebook_version': 45, 'provider_status': 'COMPLETE',
         'provider_read_calls': 5, 'provider_mutations': 0, 'native_process_closure_verified': True,
         'numeric_publication_contract_admitted': False}
 

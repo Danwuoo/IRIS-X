@@ -86,13 +86,15 @@ class PreparationTests(OfflineTests):
             return observer.prepare(self.review_path, row['sha256'])
 
     def test_fixed_published_literals_and_collector_bootstrap_load(self):
-        self.assertEqual(observer.MANIFEST_BYTES, 134508)
+        self.assertEqual(observer.MANIFEST_BYTES, 135137)
+        self.assertEqual(observer.SAVED_SOURCE_BYTES, 22913)
+        self.assertEqual(observer.PURPOSE, 'fixed-code23-v45-predecessor-capture-v1')
         self.assertEqual(observer.MANIFEST_SHA256,
-            '619dc66bb9b4c1697c0753475ab3e68123d77edbc1d9b0737ba3cbd238db7442')
+            '15f340149a8eff74e6c1d56f3cd34b8836d349dfa6818ef14bd142dcb600161a')
         self.assertEqual(observer.SAVED_SOURCE_SHA256,
-            'e834dd924eef286e830f3d3d2a73dc0e0547f4ee756b8ebd60f793d97f8f644d')
-        self.assertEqual(observer.VERSIONS, {'code_predecessor': 21, 'code': 22,
-            'inactive_predecessor': 41, 'inactive': 42, 'active': 43})
+            '5f884856484087033f6569335f5c65f752c4868c823276efaffed3c3e96eaeff')
+        self.assertEqual(observer.VERSIONS, {'code_predecessor': 22, 'code': 23,
+            'inactive_predecessor': 43, 'inactive': 44, 'active': 45})
         self.assertTrue(callable(observer.load_collector().bootstrap))
         self.assertIsNone(observer.load_collector().transport)
 
@@ -163,9 +165,9 @@ class CaptureTests(OfflineTests):
         self.events, self.locked = [], False
         self.raw = b'{"synthetic_only":true}'
         self.dataset = DTO(id=12504696, ref='danielwuu/iris-x-learning-agent-code-20261011',
-            owner_ref='danielwuu', is_private=True, current_version_number=22)
+            owner_ref='danielwuu', is_private=True, current_version_number=23)
         metadata = DTO(id=138123872, ref='danielwuu/iris-x-learning-agent-20261011',
-            current_version_number=43, is_private=True, enable_gpu=True, enable_tpu=False,
+            current_version_number=45, is_private=True, enable_gpu=True, enable_tpu=False,
             enable_internet=False, title='Synthetic expected title')
         self.kernels = [DTO(metadata=metadata, blob=DTO(source=self.raw.decode())),
                         DTO(metadata=copy.deepcopy(metadata), blob=DTO(source=self.raw.decode()))]
@@ -234,7 +236,8 @@ class CaptureTests(OfflineTests):
         observer.need(metadata.title == row['title'], 'full_settings')
 
     def capture(self):
-        with patch.object(observer, 'SAVED_SOURCE_SHA256', observer.sha(self.raw)):
+        with patch.object(observer, 'SAVED_SOURCE_SHA256', observer.sha(self.raw)), \
+             patch.object(observer, 'SAVED_SOURCE_BYTES', len(self.raw)):
             return observer.capture(self.transport, self.common, {}, self.output)
 
     def test_five_reads_six_raw_files_close_then_observation_under_lock(self):
@@ -249,11 +252,21 @@ class CaptureTests(OfflineTests):
             ('status.json', 'status_sha256'), ('metadata-after.json', 'metadata_after_sha256'),
             ('saved_source.ipynb', 'saved_source_sha256'), ('dataset-after.json', 'dataset_after_sha256')):
             self.assertEqual(observer.sha((self.output / name).read_bytes()), observation[key])
+        self.assertEqual((result['code_version'], result['notebook_version']), (23, 45))
+        self.assertEqual((observation['code_version'], observation['notebook_version']), (23, 45))
         self.assertFalse(result['numeric_publication_contract_admitted'])
         self.assertFalse(observation['runtime_closure_verified'])
         self.assertFalse(observation['scientific_result_verified'])
         with self.assertRaisesRegex(ValueError, 'fresh_output_required'):
             self.capture()
+
+    def test_fixed_saved_source_length_is_required_even_with_matching_digest(self):
+        with patch.object(observer, 'SAVED_SOURCE_SHA256', observer.sha(self.raw)), \
+             patch.object(observer, 'SAVED_SOURCE_BYTES', len(self.raw) + 1):
+            with self.assertRaisesRegex(ValueError, 'fixed_v45_source_bracket'):
+                observer.capture(self.transport, self.common, {}, self.output)
+        self.assertFalse((self.output / 'OBSERVATION.json').exists())
+        self.assertEqual(self.events[-2:], ['close', 'unlock'])
 
     def test_failed_call_closes_inside_lock_and_never_emits_observation(self):
         self.fail_call = 'status'
@@ -276,7 +289,8 @@ class CaptureTests(OfflineTests):
         self.assertFalse((self.output / 'OBSERVATION.json').exists())
 
     def test_fixed_versions_source_types_settings_and_status_fail_closed(self):
-        variants = ('dataset_float', 'dataset_version', 'dataset_owner', 'notebook_version',
+        variants = ('dataset_float', 'dataset_version', 'dataset_predecessor', 'dataset_owner',
+                    'notebook_version', 'notebook_predecessor', 'notebook_future',
                     'gpu_int', 'settings', 'metadata', 'source', 'status')
         for name in variants:
             with self.subTest(name=name):
@@ -284,8 +298,11 @@ class CaptureTests(OfflineTests):
                 fixture = CaptureTests('test_fixed_versions_source_types_settings_and_status_fail_closed')
                 fixture.setUp()
                 try:
-                    if name == 'dataset_float': fixture.dataset.current_version_number = 22.0
-                    elif name == 'dataset_version': fixture.dataset.current_version_number = 23
+                    if name == 'dataset_float': fixture.dataset.current_version_number = 23.0
+                    elif name == 'dataset_version': fixture.dataset.current_version_number = 24
+                    elif name == 'dataset_predecessor': fixture.dataset.current_version_number = 22
+                    elif name == 'notebook_predecessor': fixture.kernels[1].metadata.current_version_number = 43
+                    elif name == 'notebook_future': fixture.kernels[1].metadata.current_version_number = 46
                     elif name == 'dataset_owner': fixture.dataset.owner_ref = 'other'
                     elif name == 'notebook_version': fixture.kernels[1].metadata.current_version_number = 44
                     elif name == 'gpu_int': fixture.kernels[0].metadata.enable_gpu = 1
