@@ -3,13 +3,16 @@
 更新：2026-10-16 UTC。本頁只維護目前狀態、阻礙與下一步；研究問題與固定設計見
 [研究主頁](README.md)，歷史 E0–E52、來源指紋及更新時間線見[工程歷史](archive/engineering-history.zh-TW.md)。
 
-**v45 training-only 診斷已完成並取回，原數值 gate 仍拒絕，RL commit 為0。**
+**使用者提供的 v47 evidence ZIP 已獨立驗證：A完成SFT256，首批B因沿用完整A/B/C時間預留而未獲准，沒有新的replay／shadow數值結果。診斷專用預算窄修與受影響CPU測試／獨立審查已完成；尚未發布或提交。**
+官方 numeric47 讀取仍曾回 HTTP403，唯一 activate 的接受狀態未 reconcile；使用者提供的封存
+來源與原 code24／source002 相符，不替代官方 Save 接受收據。原 claim／epoch 保留，沒有重送。
+最後完成數值 replay／shadow 的仍是 v45：原數值 gate 拒絕，RL commit 為0。
 v43 的原 A/B/C 輸出與 PUBLIC 原 scorer 0/167 保留；v45 沒有重跑評分。
-正式 consumer admission 尚未成立；來源評分不是官方或獨立重評結果。現在先釐清 unchanged-policy
-數值落差並修復已定位的證據契約，研究方法與門檻不變。
-使用者已授權依既有 run007／run008 離線 notebook 模式持續開發、Kaggle 執行、分析 terminal／結果，
-再按既有研究條件進入下一輪；本地端維持唯一 publisher，code 與 weights／wheels／資料 Dataset 分離鎖版。
-同範圍例行續接不逐輪重新詢問，但現有 UNKNOWN 與各次 admission 不因此豁免。
+正式 consumer admission 尚未成立；來源評分不是官方或獨立重評結果。原研究優先事項仍是
+unchanged-policy 數值落差與已定位的證據契約，研究方法與門檻不變；目前只作已授權的離線修復與測試。
+使用者先前授權依既有 run007／run008 離線 notebook 模式持續開發、Kaggle 執行、分析 terminal／結果，
+再按既有研究條件進入下一輪；這項歷史授權不解除本次 HTTP403 後的停止條件。
+本地端維持唯一 publisher，code 與 weights／wheels／資料 Dataset 分離鎖版；UNKNOWN 與各次 admission 不因此豁免。
 
 ## 一、文件責任與更新規則
 
@@ -49,7 +52,7 @@ f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.
 | 已發布的啟動修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；v43 已實際越過啟動邊界 |
 | 多輪續接 | 0d3524 已隔離每輪 publication／collector 目錄，native STATE 與全域鎖共用；本地18:03 fresh no-auth 停於舊f5永久 same-boot 字串 gate | 原1,686檔完全不變，未新建 native claim／canonical／run、未 provider。CIM boot值變1.802125秒，host／Windows／source／runtime相同；符合校時漂移但未證明 same boot，不拿猜測當PASS |
 | 歷史／即時 context 修復 | 原封存Restart＋reconciliation在原completion time重驗；fresh host／source／runtime／closure另核對，封存events及live STATE前後綁定 | 只支援現有f5原件的12.629秒歷史間隔，保留原120秒限制；later UNKNOWN／refresh／publication變更仍阻擋，不加BootID框架、容差或重啟 |
-| Repository／CI | 0a346 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
+| Repository／CI | b0d3e0b 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
 | 真實研究結果 | A SFT256；B 64/256 attempts、reward15/64、RL commit0；C 額外 SFT203。固定 dev 平手規則選 A；PUBLIC 原 scorer 完整 120 tasks／167 queries 為 0/167 | 以下是取回封存輸出的觀察，正式 consumer 尚拒絕；不代表 RL 更新有效或無效，也不是官方／獨立重評分數 |
 
 ### v43 模型與評分觀察
@@ -83,6 +86,126 @@ CPU 另以真正 pinned offline guard 重現子程序增加 6 個固定環境鍵
 現有 competition metadata association 沿用較早版本；材料仍是固定 training/1 與 PUBLIC120/1，
 沒有把研究改成 ARC-AGI-3，也不為這項既有掛載新增修改。
 
+### v47 使用者封存：時間 admission 拒絕與離線窄修
+
+使用者自行提供完整 evidence ZIP，48,758,797 bytes／SHA256
+`d2fb6ba090e5c08e08163a5dd3e3a78987e67c4579c63f93503b6ca9b176c3cb`。
+離線核對79/79 member集合、長度、SHA及CRC，與使用者提供的launcher result一致；
+內嵌source archive的260件亦逐檔符合 `048e9d3ee8b588cbb2075ae785b3f09fa10e3846a3269001e0c7a5f102865fda`。
+沒有執行封存程式；dev／held evaluator targets僅作member hash核對，未解析、輸出或使用內容。
+hash核對不等於獨立模型／tensor驗證。
+
+- `experiment/result.json`為427,120 bytes／SHA256
+  `a23cc21ccfdece15c5671b22939a216e2e390207302d5d09b3d9e82dfbe7bc8b`；
+  `worker.stderr.log`為5,626 bytes／SHA256
+  `9dd750153dec8c107f63a057ff234543145fb9ad61c8f5bcb4e092606401861c`。
+  兩者一致指向 `training-only numeric diagnostic incomplete: not-admitted`，不是外層Papermill字串所能單獨定位的原因。
+- 原epoch為07:35:30 UTC；runtime clock觀察為11:42:09.283667 UTC，原時計已經過14,799.283667秒。
+  A整階段696.622902817秒，physical events包含256次anchor forward/backward與256次anchor optimizer commit；
+  B整階段7.502033304秒只有進入／保存等工作，rollout、replay、RL backward及shadow均未開始。
+  B模型ledger的physical attempted batches與RL updates為0，A/B adapter摘要相同。未下載tensor bodies，沒有新數值或效能結論。
+- 唯一首批admission：disk PASS，但時間需求30,039.967711秒大於剩餘26,148.326455秒。
+  原training-only函數仍保留paired ABC 4,200秒、PUBLIC 18,000秒、persistence margin2,400秒、closure600秒，
+  並額外預留C 2,480.709305秒。C配對半窗另把B剩餘窗壓到412.501699秒，小於單批加保存2,359.258406秒；
+  兩個時間條件均拒絕。planned-B7,080秒、arm7,200秒與disk條件通過。
+- `diagnostic_complete=false`，C／dev／held／PUBLIC未請求、分數為null。內層報告closed/model_stopped，
+  但worker以1退出使原outer `safe_closure`／`model_stopped`仍為false；保留兩層語義，不能升格正式consumer admission。
+  原outer process wrapper的非強制退出與diagnostic archive完成也不證明VM teardown或帳單終止。
+- 另確認報表缺陷：三個 `not-requested-by-diagnostic` placeholder被舊summarizer誤計成
+  `physical_attempted_batches=3`，但完整256個row的actual dispatch全為0。原封存不改寫；這不是時間拒絕主因。
+
+修復只限training-only controller的預算投影：保留2,400秒保守餘裕、600秒closure、300秒保存，
+另明列既有shadow最多120秒；不為未請求的C／paired ABC／PUBLIC預留時間。
+B deadline、required與work deadline使用同一投影，保留原42,000／42,180／42,300／43,200秒時計鏈、
+7,080／7,200秒限制、disk與全部數值／記憶體／操作期限。v47標量重放的新需求為5,479.258406秒，
+這只表示預算可容納，不保證真實完成。原A/B/C函數的29,624 bytes與共用audit原件保持完全相同。
+placeholder修正只投影診斷結果的attempted計數，不改256分母、未請求狀態、partial attempts或optimizer計數。
+
+受影響25項distinct CPU測試在normal／`-O`均通過、零skip；optimized作者log因重列一項ABC不變性
+測例共執行26次，仍只計25項。測試涵蓋v47標量窗口、同原時計延後啟動、預算不足、過期、非有限輸入、
+shadow120秒計費、三處deadline、原ABC bytes、診斷不評分／不commit、placeholder與真正partial attempts。
+實際production admission→disk→break→collect的來源片段以合成storage/backend另驗五組time/disk及disk例外，
+任何拒絕／例外均未collect；獨立reviewer對此最後增量normal／`-O`各1項通過，靜態審查無阻擋問題。
+這些是CPU控制流程證據，未執行GPU。未變tensor/replay implementation未重驗；初次整module檢查因本環境
+沒有torch而有4項skip，不能將後來focused零skip說成完整tensor suite通過。既有全repo CI狀態不變。
+
+本輪只作離線code/test/progress修改；不沿用run002組裝新提交，也不改其epoch、claim或任何失敗證據。
+後續公開發布需要這次精確檔案範圍的新授權；新source/run namespace、完整組裝與真正predispatch起點
+須另在獲准的successor準備中固定，不能以這份離線預算測試授權provider操作或重送v47。
+
+### code24／inactive46：原 training-tail 的提交阻礙
+
+本地固定 `b0d3e0b562034ab00643323c6924b73861032edf`，研究程式 tracked clean。
+新 code24 的270檔／15,902,600 bytes逐檔回讀相符；真 owned mount、prelaunch audit與
+actual-wire審查已通過，inactive46已接受並驗證。唯一一次預期 active47 的 activate 嘗試於
+2026-10-16 07:35:41.811844 UTC 回傳 `PROVIDER_ERROR`；後續原 `verify-run`
+因 `saved_version_changed` 拒絕。截至該次官方查詢，該路徑沒有取得accepted-RUN、watch、training-tail runtime或新terminal證據。
+
+07:43:40.418113 UTC 的官方 kernel／status／kernel前後回讀均為v46／COMPLETE，
+GPU／TPU／Internet關閉；saved source為21,314 bytes／SHA256
+`5a7b4e0615add4bd6da6d6f7f6d06a437b50c4cc26076c9c2aaa93f4202a214a`，與已保存inactive一致。
+只讀診斷3,712 bytes／SHA256 `d10d708a7b7f5fb03900ac339b8dce7d3d3100ab0ed7105ad3d0fea7c76f69bd`；
+本地獨立實測review 9,245 bytes／SHA256
+`03ca6cfc6743bd58644e65fc7c2806c398cc02c439ad11f91322cc3d04eb515a`。
+提交與該次只讀診斷的native sessions有有效closure；這不證明遠端GPU未執行、沒有成本或
+原save已被server確定拒絕。最新可見版本仍為46也不能單獨解除一次不確定寫入。
+
+原epoch為07:35:30 UTC；execution／outer／provider／global deadlines為
+19:15:30／19:18:30／19:20:30／19:35:30 UTC。Journal保留 `save_intent`／`save_calls=1`；
+原activate要求 `wire_prepared`／`save_calls=0`及≤60秒freshness已不符合，不重新prepare或重送。
+既有 `safe_semantic` 已去除任意provider錯誤文字，現在不能推斷配額、權限或其他根因。
+既有原件的離線投影確認：save sequence7已到 `operation_accepted`，close sequence8正常
+accepted→closed，該nonce沒有UNKNOWN事件。固定來源據此可區分為typed Save response帶非空
+error的路徑，而非本次HTTP／SDK例外造成的mutating UNKNOWN；仍沒有保存HTTP status，不能
+推定HTTP200或RUN接受。Failure原件180 bytes／SHA256
+`510da79500e9234e3170c96404e54fb24a80732bb53c26b82b3c780e46a7f718`；
+closed journal473 bytes／SHA256
+`bcaef90987758feb81c86d3571d14b10aa5dae88adb8ba8f27fc663ddc87a379`。
+原Save DTO與raw supervisor receipt bytes皆未持久化；前者的原錯誤字串及回傳version等欄位
+不可恢復，後者僅有當時驗證後留下的closed journal，不以重建收據代替。
+固定numeric47的單次唯讀probe於08:47:33.642277–08:47:33.860966 UTC執行，
+在bootstrap以 `unexpected_error`／`guard_error`、exit2結束。未建立output directory或
+launch／worker／supervisor／DTO收據；固定流程尚未到worker／GetKernel，沒有新Job0或遠端觀察。
+原CAPTURE為1,924 bytes／SHA256
+`24fe63f9e0a0fe7d3ba0df321c9c3d7571950539f9c1b189c5eb61e223422730`。
+WSL新測試正常／-O各32項通過；Windows原測試29項通過、1 failure、2 errors完整保留，
+不能以WSL結果代稱native通過。7,050檔／69,958,140 bytes的STATE前後map完全相同。
+該次bootstrap失敗後，當時先安排釐清Windows測試失敗、窄修與獨立審查，沒有直接重發probe。
+當時方案僅在正向saved source／可見settings觀察後才交原verify-run；此方案已由下述
+09:17的HTTP403停止條件取代。負向／fallback或讀取失敗一向不授權重送或改寫原claim／時鐘。
+
+後續既有CAPTURE確認source參數為 `.ipynb`；原pinned native reader的副檔名集合不含它，
+在任何native API前會拒絕，而helper安全診斷漏列 `windows_source_extension_invalid`。
+此路徑已用原來源純CPU重現；原catch沒有保存例外，故不是恢復出的實測trace。
+三個Windows測試原trace亦已確認：drive-less fixture的absolute path不一致、未模擬平台的
+非Windows測試，以及需要symlink權限的fixture。窄修保留原native reader／SDK不變，
+使用原notebook bytes／SHA的全新 `.json` 暫存副本，補固定bootstrap stage／安全錯誤碼，
+並修正三個可攜測試；原失敗、`.ipynb`原件、STATE與所有時鐘保留。
+修正版受影響CPU測試正常／-O各39項、零skip；獨立審查通過，最後23個固定診斷碼的增量
+另做正常／-O驗證，其餘production AST相同。其後原Windows真測試正常／-O也各39項通過、
+零skip，純bootstrap PASS，原source bytes／SHA的 `.json` 副本核對相符。
+
+修復後唯一numeric47 GetKernel於09:17:37.586909–09:17:39.710747 UTC執行，實際HTTP403，
+`get_kernel_calls=1`、`failure_stage=get_kernel`／`error_code=http_error`、exit2／INCONCLUSIVE。
+新Job的active processes=0、atomic assignment／kill-on-close=true、breakaway=false；
+nonce／request／worker／helper／clock綁定相符。Supervisor收據1,683 bytes／SHA256
+`1b5ed5a16033a9f0e9bd5d8ab32f49e6327767bdc62414afdfe132bd17860cdd`；
+CAPTURE為1,968 bytes／SHA256
+`5a311b83451f5771d824ce1385e54d75940e0b4c855a75177ccf4109dc3054b9`。
+沒有returned DTO或實際遠端version／source觀察；47及submitted SHA只是請求／本地綁定，
+403不證明版本不存在、save確定拒絕或GPU未執行，也不能推斷配額、OAuth或帳號問題。
+7,050檔STATE前後map完全相同；舊helper／tests／ZIP／收據31檔已按原bytes保留。
+Owner2 idle／next32；原epoch／global deadline與UNKNOWN均未改寫。
+
+當時阻礙為該次讀取的存取拒絕。已停止provider查詢、save、refresh、verify-run與新的epoch，
+不改瀏覽器／endpoint／帳號繞過403。後續只待使用者在自己原已登入的Kaggle介面確認此notebook
+是否可見、目前版本及實際存取／保存錯誤；不要求按Save／Run或提供憑證。現有數值候選與
+原code24封包保留，不再重跑未變測試或新增診斷框架。修復僅私有交付，尚未公開推送。
+
+本地既有owner續接保留原offline-final seq17 UNKNOWN；新owner未授予舊closure。
+上述HTTP403階段尚無模型／audit輸出；後續使用者提供封存ZIP後的離線核對另見v47節。
+它不恢復遺失的Save DTO，也不消除官方讀取／接受狀態的限制。
+
 ### v45：第一輪 training-only 診斷結果
 
 本地已沿原 run007／run008 路徑完成 code23、inactive44、唯一 active45 與 selected retrieval。
@@ -111,12 +234,12 @@ terminal checkpoint SHA256 `65fd59442df9d10fe10566e44c05e2b5f61feee476a6cfe81341
 原 terminal exporter 的 `model_closed:false` 保留。獨立 model-owner MAC、完整 provider inventory、
 正式 consumer、GPU stop／帳單與方法成效仍未驗證，不將工程完成升格為科學 admission。
 
-### 下一輪：固定 training-tail 數值診斷
+### v47 已封存的固定 training-tail 診斷設計
 
 只修改既有 [numeric shadow](../../tools/arc_qwen_rlvr004_20261013/numeric_replay_diagnostic_20261016/runtime/rl_session/numeric_shadow.py)
 與其確切封包／收集綁定，不改原 actor、replay、DDIS、精度、cache、門檻或 optimizer 流程。
 用途維持 `training-only-numeric-diagnostic-v1`，新的 shadow schema 與 namespace 區分 v45；
-原 v45 程式、收據、時鐘與輸出保留，下一次 run 尚未提交。
+原 v45 程式、收據、時鐘與輸出保留；本輪 code24／inactive46 已完成，active47 的一次 activate 嘗試結果見上節。
 
 - A256＋原首批8 parents×8 samples、reward、64 replay／8 backward與零 RL optimizer commit不變。
   max0.20／p95 0.05／unclipped1.0、30秒逐條／600秒整批、72／80 GiB門檻照舊，gate PASS／FAIL
@@ -138,7 +261,7 @@ terminal checkpoint SHA256 `65fd59442df9d10fe10566e44c05e2b5f61feee476a6cfe81341
 選點來源為原 `experiment/audit/sweep-0.json`，4,969,665 bytes／SHA256
 `12280cab41ec53be1b735bffd94ebc45e5f1ed427c5d15486b42b746b5b0f9ce`；私有 token、prompt、
 parent IDs與答案不公開。v45的runtime source/archive仍為 `69bf39dd…`／`085a64b4…`。
-下一輪固定 namespace 為 run002／source002／environment002；260 members中只改 numeric_shadow body及
+該輪固定 namespace 為 run002／source002／environment002；260 members中只改 numeric_shadow body及
 衍生 release／environment身份，原 consumed259與其餘六份runtime overlays不變。
 新 source SHA256 `048e9d3ee8b588cbb2075ae785b3f09fa10e3846a3269001e0c7a5f102865fda`；
 archive `23281295453c2d31bf125afd26f84851e2a11ff9373f711961c21082b7e37e84`（15,818,615 bytes）；
@@ -167,7 +290,7 @@ shape及差值算術；1e-12只用於已記錄scalar相減的一致性，不是�
 後仍沿用 stale wire pin 的反例均拒絕。完整22件 operator inventory SHA256
 `e82048f41d7d259cf89d5d6c2d3b72f03fac428c200f85351431421eb3f4bb5e`。
 本次固定程式／測試與既有三份文件同一 commit 交付；精確 commit／tree 及逐檔 Git 回讀由交付收據記錄。
-上述皆為 source／CPU 驗證，尚未建立本地新 candidate、provider admission 或新 RUN。
+上述為發布前 source／CPU 驗證；其後本地已完成新 candidate 與 code24／inactive46，active47 尚無接受證據，見上節。
 
 header before bracket 的來源檢查未發現可支持的相容性修復；header mode 並未改寫 kernel／status 路由。
 新的最小診斷以 provider wrapper 標記前後各三次呼叫與返回驗證、固定 exception category，
@@ -268,7 +391,7 @@ M／caller、action／monitor reviews、fresh predecessor與v45 admission，不�
 | 多輪 publication／collector 續接 | 0d3524 的作者／獨立review每模式599項PASS維持歷史證據；本次最終bridge每模式600項、獨立context每模式70項PASS，精確hash見VALIDATION | 本地真實 history／fresh readback 已通過並接受 v43；保留原件，已驗證且未變元件不重做 |
 | 原 A/B/C v43 取證 | 9fdc 真實取檔完成；4309 wrapper v2 原檔 replay PASS，22／6 observations、差集2，完整 subset 仍 false；a3e9 header 真實 HTTP200／長度驗證與新 Job0 通過 | 保留原拒絕、兩次 failed header receipts，不回填其原因。tensor bodies、原 collector context 與整體 admission 仍未成立 |
 | v41 官方 log／inventory | 現有 bridge 尚未支援；SDK 0.1.37 可送 numeric version_label，但 response 無 version/source echo | 另作最小唯讀支援，不阻擋已確定的啟動修復；完整分頁與 numeric bodies／log attribution 分開，不能靠 latest CLI 補稱 exact41 |
-| 數值診斷與下一輪 | v45完整工程診斷已取回；原gate仍拒絕、0 RL commit，六個固定點未覆蓋失敗tail | 對v45已定位兩個training點做固定bounded分解；source-bound結果不冒充獨立模型重播，不換方法或放寬門檻 |
+| 數值診斷與下一輪 | v47 ZIP核對通過；A256完成、首批B被完整ABC預算拒絕，沒有新tail結果。診斷預算／placeholder窄修與25項focused normal／`-O`、獨立review完成 | 僅離線patch，尚未發布或run-ready；新發布和successor準備另需明確授權。原數值方法與門檻不變 |
 
 研究設計仍為 SFT256 A、固定互斥 64-slot RL batches B、匹配完整 B model-phase wall 的 extra-SFT C；
 no-TTT、dev 選擇與 PUBLIC120／167 不變。AF3 companion 在原 audit 產生後分析；

@@ -69,12 +69,14 @@ class DiagnosticAdapter(BatchedAdapter):
 
 
 class FlowTests(unittest.TestCase):
-    def run_case(self,branch='mixed'):
+    def run_case(self,branch='mixed',*,forecast=None,initial_elapsed=0.,measured=False):
         temporary=tempfile.TemporaryDirectory();self.addCleanup(temporary.cleanup)
         clock=Clock();shape=FixtureShape(anchor_updates=256,parents=32,group_size=8,dev_cases=16,
             holdout_cases=32,max_sweeps=4,max_control_updates=8192,batch_parents=8)
-        forecast=Forecast('f'*64,'controlled-fixture',1.,1.,1.,1.,1.,1.,1.,1.)
-        plan=ExperimentPlan(source_freeze(),forecast,clock(),GATE,shape=shape,output_cap=1024)
+        forecast=forecast or Forecast('f'*64,'controlled-fixture',1.,1.,1.,1.,1.,1.,1.,1.)
+        from owned_runtime.policy import POLICY_SHA256
+        plan=ExperimentPlan(source_freeze(),forecast,clock()-initial_elapsed,GATE,shape=shape,output_cap=1024,
+                            policy_sha256=POLICY_SHA256 if measured else None)
         backend=DiagnosticAdapter(clock,branch,generation_seconds=.01,save_cost=.01)
         dataset=Dataset(shape);panel=Panel(shape);panel.plan_sha256="d"*64
         result=flow.run_training_numeric_diagnostic(backend,dataset,panel,plan,Path(temporary.name)/'run',clock=clock)
@@ -130,6 +132,154 @@ class FlowTests(unittest.TestCase):
         result,_,_=self.run_case('bad-close')
         self.assertEqual(result['status'],flow.NUMERIC_DIAGNOSTIC_INCOMPLETE)
         self.assertFalse(result['diagnostic_complete'])
+
+    def test_delayed_original_clock_uses_measured_training_only_budget(self):
+        # Sanitized scalar regression from v47; controlled model durations only.
+        forecast=Forecast('f'*64,'controlled-fixture',1800.,2059.258406007664,4.,300.,4200.,18000.,2400.,600.)
+        result,backend,dataset=self.run_case(forecast=forecast,initial_elapsed=14799.2836668,measured=True)
+        self.assertTrue(result['diagnostic_complete'],result.get('error'))
+        self.assertEqual(len(backend.batches),1);self.assertEqual(backend.update_calls,1)
+        self.assertEqual(backend.predictions,0);self.assertEqual(dataset.opened,[])
+        admission=result['admissions'][0]
+        self.assertTrue(admission['admitted']);self.assertTrue(all(admission['time_checks'].values()))
+        self.assertEqual(admission['protected_seconds'],3000.)
+        self.assertEqual(admission['projected_C_growth_seconds'],0.)
+        self.assertEqual(admission['numeric_shadow_seconds'],120.)
+        self.assertEqual(admission['excluded_reserves_seconds'],{'paired_ABC':4200.,'PUBLIC':18000.})
+        self.assertAlmostEqual(admission['required_seconds'],5479.258406007664)
+        self.assertEqual(result['arms']['B']['updates']['rl_updates'],0)
+        self.assertEqual(result['arms']['B']['updates']['control_updates'],0)
+
+    def test_insufficient_training_budget_does_not_enter_or_fabricate_shadow(self):
+        forecast=Forecast('f'*64,'controlled-fixture',1800.,2059.258406007664,4.,300.,4200.,18000.,2400.,600.)
+        result,backend,dataset=self.run_case(forecast=forecast,initial_elapsed=37000.,measured=True)
+        self.assertEqual(result['status'],flow.NUMERIC_DIAGNOSTIC_INCOMPLETE)
+        self.assertEqual(result['diagnostic_stop_reason'],'not-admitted')
+        self.assertFalse(result['admissions'][0]['admitted'])
+        self.assertEqual(len(backend.batches),0);self.assertEqual(backend.update_calls,0)
+        self.assertEqual(dataset.opened,[]);self.assertNotIn('numeric_shadow_ref',result)
+        self.assertEqual(result['full_panel_audit']['physical_attempted_batches'],0)
+
+    def test_expired_original_clock_does_not_start_anchor(self):
+        result,backend,dataset=self.run_case(initial_elapsed=42000.)
+        self.assertEqual(result['status'],flow.NUMERIC_DIAGNOSTIC_INCOMPLETE)
+        self.assertIn('original session inner deadline expired',result['error']['message'])
+        self.assertEqual(backend.counts()['anchor_updates'],0)
+        self.assertEqual(len(backend.batches),0);self.assertEqual(dataset.opened,[])
+
+
+class BudgetProjectionTests(unittest.TestCase):
+    def setUp(self):
+        self.forecast=Forecast('f'*64,'controlled-fixture',1800.,2059.258406007664,4.,300.,4200.,18000.,2400.,600.)
+        self.plan=ExperimentPlan(source_freeze(),self.forecast,-14157.890950916137,GATE)
+        self.start=1690.459547101
+        self.now=self.start+3.3218847989999176
+
+    def budget(self,**changes):
+        args={'b_started':self.start,'observed':self.now,'batch_seconds':self.forecast.sweep_seconds,
+              'planned_ceiling':7080.}
+        args.update(changes)
+        return flow.numeric_diagnostic_budget(self.plan,**args)
+
+    def test_v47_scalar_window_changes_only_requested_work_projection(self):
+        original_sha=self.plan.sha256;original_gate=self.plan.numerical_gate_json
+        budget=self.budget()
+        old_increment=self.forecast.sweep_seconds+self.forecast.persist_reload_seconds
+        old_projected=self.now-self.start+old_increment
+        old_required=old_increment+min(7200.,old_projected+flow.tolerance(old_projected))+self.forecast.protected
+        old_deadline=2106.2842934874297  # Actual v47 reading, just after phase entry.
+        old_deadline_at_entry=min(self.plan.deadline-self.forecast.protected,self.start+7200.,
+                                 self.start+(self.plan.deadline-self.start-self.forecast.protected-120.)/2.)
+        self.assertAlmostEqual(old_required,30039.96771135466)
+        self.assertLessEqual(old_deadline,old_deadline_at_entry)
+        self.assertGreater(old_required,self.plan.deadline-self.now)
+        self.assertGreater(self.now+old_increment,old_deadline)
+        self.assertTrue(budget['admitted'])
+        self.assertAlmostEqual(budget['required_seconds'],5479.258406007664)
+        self.assertEqual(budget['phase_deadline'],self.start+7200.)
+        self.assertEqual(budget['work_deadline'],budget['phase_deadline']-300.)
+        self.assertLessEqual(budget['phase_deadline'],self.plan.deadline-3000.)
+        self.assertEqual(self.plan.sha256,original_sha);self.assertEqual(self.plan.numerical_gate_json,original_gate)
+        self.assertEqual(self.forecast.protected,25200.)
+        self.assertEqual((self.plan.inner_seconds,self.plan.outer_seconds,self.plan.provider_seconds,self.plan.global_seconds),
+                         (42000.,42180.,42300.,43200.))
+
+    def test_budget_boundary_and_expired_original_clock_fail_closed(self):
+        from dataclasses import replace
+        required=self.budget()['required_seconds']
+        self.plan=replace(self.plan,global_started=self.now+required-42000.)
+        self.assertTrue(self.budget()['admitted'])
+        self.assertFalse(self.budget(observed=self.now+.001)['admitted'])
+        expired=self.budget(observed=self.plan.deadline)
+        self.assertFalse(expired['admitted']);self.assertFalse(expired['time_checks']['original_clock_unexpired'])
+
+    def test_shadow_cost_and_hard_phase_ceiling_are_not_free(self):
+        budget=self.budget()
+        self.assertAlmostEqual(budget['projected_B_seconds'],3.3218847989999176+2059.258406007664+120.+300.)
+        blocked=self.budget(batch_seconds=7000.)
+        self.assertFalse(blocked['admitted']);self.assertFalse(blocked['time_checks']['planned_B_ceiling'])
+        self.assertFalse(blocked['time_checks']['conservative_arm_ceiling'])
+        self.assertFalse(blocked['time_checks']['batch_fits_phase'])
+        late=self.budget(observed=self.start+7200.)
+        self.assertFalse(late['admitted']);self.assertFalse(late['time_checks']['phase_window_open'])
+
+    def test_invalid_projection_is_rejected(self):
+        for changes in ({'batch_seconds':float('nan')},{'batch_seconds':float('inf')},
+                        {'batch_seconds':-1.},{'batch_seconds':0.},{'planned_ceiling':7201.},
+                        {'planned_ceiling':0.},{'observed':self.start-1.},{'observed':True}):
+            with self.subTest(changes=changes),self.assertRaises(ValueError):self.budget(**changes)
+
+    def test_shadow_allowance_matches_fixed_runtime_limit(self):
+        tree=ast.parse((PACKAGE/'runtime/rl_session/numeric_shadow.py').read_text())
+        value=next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign) and
+                   any(isinstance(t,ast.Name) and t.id=='MAX_SECONDS' for t in n.targets))
+        self.assertEqual(self.budget()['numeric_shadow_seconds'],value)
+
+    def test_actual_batch_admission_stops_on_time_disk_or_disk_exception(self):
+        # Execute the actual loop prefix through its first collect, with synthetic
+        # storage/backend only; this is no native/model admission evidence.
+        tree=ast.parse((PACKAGE/'runtime/experiment_flow/flow.py').read_text())
+        fn=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='run_training_numeric_diagnostic')
+        loop=next(n for n in ast.walk(fn) if isinstance(n,ast.For) and
+                  ast.unparse(n.target)=='(sweep, parents)')
+        prefix=[]
+        for node in loop.body:
+            if isinstance(node,ast.Try):
+                prefix.append(node.body[0])  # Original backend.collect call.
+                break
+            prefix.append(node)
+        actual_loop=deepcopy(loop);actual_loop.body=prefix;actual_loop.orelse=[]
+        code=compile(ast.Module(body=[actual_loop],type_ignores=[]),'<actual-diagnostic-admission-prefix>','exec')
+        for time_ok,disk_ok,disk_error in ((True,False,False),(False,True,False),
+                                          (False,False,False),(True,True,False),(True,True,True)):
+            with self.subTest(time_ok=time_ok,disk_ok=disk_ok,disk_error=disk_error):
+                calls=[];disk_calls=[]
+                module=types.ModuleType('owned_runtime.storage')
+                def before_batch(path,*,fixture):
+                    disk_calls.append((path,fixture))
+                    if disk_error:raise OSError('synthetic disk probe failure')
+                    return {'admitted':disk_ok,'actual_disk_checked':True}
+                module.before_batch=before_batch
+                backend=types.SimpleNamespace(scope='owned-native-production',identity=lambda:{},
+                    snapshot=lambda label:None,
+                    collect=lambda *args,**kwargs:calls.append(kwargs))
+                ns={'backend':backend,'root':Path('/synthetic/run/experiment'),'plan':self.plan,
+                    'b_start':self.start,'clock':lambda:self.now if time_ok else self.start+7200.,
+                    'ceiling':7080.,'numeric_diagnostic_budget':flow.numeric_diagnostic_budget,
+                    'measured':False,'parent_batches':[tuple(range(8))],'admissions':[],
+                    'sweeps':[],'deepcopy':deepcopy,'reward_panel':object()}
+                with patch.dict(sys.modules,{'owned_runtime.storage':module}):
+                    if disk_error:
+                        with self.assertRaisesRegex(OSError,'synthetic disk'):exec(code,ns)
+                    else:exec(code,ns)
+                self.assertEqual(disk_calls,[(ns['root'].parent,False)])
+                self.assertEqual(len(calls),int(time_ok and disk_ok and not disk_error))
+                if disk_error:
+                    self.assertEqual(ns['admissions'],[])
+                else:
+                    self.assertEqual(ns['admissions'][0]['admitted'],time_ok and disk_ok)
+                    self.assertEqual(all(ns['admissions'][0]['time_checks'].values()),time_ok)
+                    if not (time_ok and disk_ok):self.assertEqual(ns['b_status'],'not-admitted')
 
 
 class SourceBoundaryTests(unittest.TestCase):

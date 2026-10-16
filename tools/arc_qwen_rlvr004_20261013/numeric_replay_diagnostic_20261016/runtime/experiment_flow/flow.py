@@ -445,12 +445,53 @@ NUMERIC_DIAGNOSTIC_COMPLETE = 'owned-numeric-diagnostic-complete-no-update'
 NUMERIC_DIAGNOSTIC_INCOMPLETE = 'owned-numeric-diagnostic-incomplete'
 
 
+def numeric_diagnostic_budget(plan, *, b_started, observed, batch_seconds, planned_ceiling):
+    """Project only requested work; the frozen ABC plan and clock stay intact."""
+    from .contracts import finite_nonnegative
+    require(type(plan) is ExperimentPlan, 'typed frozen diagnostic plan')
+    for name, value in (('B start', b_started), ('observation', observed),
+                        ('batch forecast', batch_seconds), ('planned ceiling', planned_ceiling)):
+        finite_nonnegative(value, name)
+    require(observed >= b_started and batch_seconds > 0 and
+            0 < planned_ceiling <= plan.arm_cap_seconds, 'bounded diagnostic projection')
+    # Retain the full conservative persistence margin and closure reserve.
+    # C and evaluation are absent from this source-fixed entrypoint, not deferred.
+    protected = plan.forecast.failure_margin_seconds + plan.forecast.closure_seconds
+    shadow_seconds = 120.  # Same fixed maximum as rl_session.numeric_shadow.MAX_SECONDS.
+    increment = batch_seconds + shadow_seconds + plan.forecast.persist_reload_seconds
+    spent = observed - b_started
+    projected_b = spent + increment
+    phase_deadline = min(plan.deadline - protected, b_started + plan.arm_cap_seconds)
+    required = increment + protected
+    remaining = plan.deadline - observed
+    checks = {'original_clock_unexpired': observed < plan.deadline,
+              'phase_window_open': observed < phase_deadline,
+              'planned_B_ceiling': projected_b <= planned_ceiling,
+              'conservative_arm_ceiling': projected_b + tolerance(projected_b) <= plan.arm_cap_seconds,
+              'whole_remaining_window': required <= remaining,
+              'batch_fits_phase': observed + increment <= phase_deadline}
+    return {'budget_scope': NUMERIC_DIAGNOSTIC_PURPOSE, 'admitted': all(checks.values()),
+            'time_checks': checks, 'remaining_seconds': remaining,
+            'projected_B_seconds': projected_b, 'projected_C_growth_seconds': 0.,
+            'required_seconds': required, 'protected_seconds': protected,
+            'retained_reserves_seconds': {'persistence_margin': plan.forecast.failure_margin_seconds,
+                                         'closure': plan.forecast.closure_seconds},
+            'excluded_reserves_seconds': {'paired_ABC': plan.forecast.evaluation_seconds,
+                                         'PUBLIC': plan.forecast.public_seconds},
+            'numeric_shadow_seconds': shadow_seconds,
+            'persist_reload_seconds': plan.forecast.persist_reload_seconds,
+            'phase_deadline': phase_deadline,
+            'work_deadline': phase_deadline - plan.forecast.persist_reload_seconds,
+            'whole_B_spent_seconds': spent}
+
+
 def run_training_numeric_diagnostic(backend, dataset, reward_panel, plan, output, *, clock=time.monotonic):
     """Source-fixed training-only successor: original A and first64, never evaluation.
 
-    The inherited full plan remains a conservative cap/reference. Only its first
-    batch is requested; later192 slots and all comparison/evaluation stages are
-    explicitly outside this diagnostic. This entrypoint has no runtime mode.
+    The inherited full plan remains the immutable cap/reference. Its budget is
+    projected onto the requested first batch plus bounded shadow and cleanup;
+    later192 slots and all comparison/evaluation stages are outside this
+    diagnostic. This entrypoint has no runtime mode.
     """
     require(type(plan) is ExperimentPlan, 'typed frozen experiment plan')
     if backend.scope=='owned-native-production':
@@ -555,32 +596,21 @@ def run_training_numeric_diagnostic(backend, dataset, reward_panel, plan, output
         with ledger.phase('B'):
             result['stage_status']['B']='started'
             b_start=ledger.active['started']
-            b_deadline=min(plan.deadline-plan.forecast.protected,b_start+plan.arm_cap_seconds)
-            if measured:
-                # Even an unexpected slow batch leaves C its whole-B target plus
-                # maximum120s tolerance, and the unchanged downstream reserves.
-                b_deadline=min(b_deadline,b_start+(remaining()-plan.forecast.protected-120.)/2.)
+            ceiling=measured_policy['rl']['planned_B_ceiling_seconds'] if measured else plan.arm_cap_seconds
+            b_deadline=numeric_diagnostic_budget(plan,b_started=b_start,observed=clock(),
+                batch_seconds=plan.forecast.sweep_seconds,planned_ceiling=ceiling)['phase_deadline']
             require(clock()<b_deadline,'B entry lacks protected phase window')
             if hasattr(backend,'set_phase_deadline'): backend.set_phase_deadline(b_deadline)
             backend.reload(arms['A']['checkpoint_path'], deadline=b_deadline)
             backend.begin('rl', deadline=b_deadline)
             for sweep, parents in enumerate(parent_batches[:1]):
-                spent = ledger.elapsed()
                 cost=measured_batch_forecast(backend.physical_events()) if measured else {'seconds':plan.forecast.sweep_seconds}
                 if measured:require(len(cost['observations'])==64*sweep,'only complete fixed prior batches may enter cost admission')
-                increment = cost['seconds'] + plan.forecast.persist_reload_seconds
-                projected_b = spent + increment
-                projected_c=min(plan.arm_cap_seconds,projected_b+tolerance(projected_b))
-                need = increment + projected_c + plan.forecast.protected
-                ceiling=measured_policy['rl']['planned_B_ceiling_seconds'] if measured else plan.arm_cap_seconds
-                admitted = (projected_b <= ceiling and projected_b+tolerance(projected_b)<=plan.arm_cap_seconds and
-                            need <= remaining() and clock()+increment<=b_deadline)
-                admission = {'phase': 'B', 'sweep': sweep, 'batch_index':sweep, 'parent_ids':list(parents),
-                             'admitted': admitted, 'remaining_seconds': remaining(),
-                             'projected_B_seconds': projected_b, 'projected_C_growth_seconds': projected_c,
-                             'required_seconds': need, 'protected_seconds': plan.forecast.protected,
-                             'forecast_sha256': plan.forecast.evidence_sha256, 'cost_forecast':cost,
-                             'phase_deadline':b_deadline, 'whole_B_spent_seconds':spent}
+                admission = numeric_diagnostic_budget(plan,b_started=b_start,observed=clock(),
+                    batch_seconds=cost['seconds'],planned_ceiling=ceiling)
+                admission.update(phase='B',sweep=sweep,batch_index=sweep,parent_ids=list(parents),
+                    forecast_sha256=plan.forecast.evidence_sha256,cost_forecast=cost)
+                admitted = admission['admitted']
                 if backend.scope=='owned-native-production':
                     from owned_runtime.storage import before_batch
                     admission['disk_admission']=before_batch(root.parent,fixture=False)
@@ -590,8 +620,7 @@ def run_training_numeric_diagnostic(backend, dataset, reward_panel, plan, output
                 if not admitted:
                     b_status='not-admitted' if not sweeps else 'cost-prefix-stop'
                     break
-                work_deadline=min(b_deadline-plan.forecast.persist_reload_seconds,
-                                  plan.deadline-plan.forecast.protected-projected_c-plan.forecast.persist_reload_seconds)
+                work_deadline=admission['work_deadline']
                 before_identity=deepcopy(backend.identity())
                 boundary = backend.snapshot('B-before-batch-' + str(sweep))
                 batch = None; update=None; entry=None
@@ -740,6 +769,10 @@ def run_training_numeric_diagnostic(backend, dataset, reward_panel, plan, output
         if plan.shape.batch_parents:
             from .audit import full_panel_summary
             result['full_panel_audit']=full_panel_summary(sweeps,reward_panel.parent_ids,plan.shape.group_size)
+            # Diagnostic-only unrequested placeholders are not physical attempts.
+            # Keep the inherited ABC summary and every fixed-denominator row intact.
+            result['full_panel_audit']['physical_attempted_batches']=sum(
+                entry['status'] not in ('not-reached','not-requested-by-diagnostic') for entry in sweeps)
             write_json(root/'full-panel-audit.json',result['full_panel_audit'])
         if result['status'] != NUMERIC_DIAGNOSTIC_COMPLETE:
             result['diagnostic_complete']=False
