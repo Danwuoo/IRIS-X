@@ -2,6 +2,8 @@
 
 One explicitly selected file per bounded native Job. Use only the reviewed
 supervisor entry. The published status observer and accepted run stay unchanged.
+--checkpoint-header observes only the fixed checkpoint response headers; it
+accepts Location redirects and refuses JSON-body URL redirects without reading.
 """
 import argparse
 import hashlib
@@ -22,6 +24,13 @@ MANIFEST_SHA256 = '619dc66bb9b4c1697c0753475ab3e68123d77edbc1d9b0737ba3cbd238db7
 PREFIX = 'irisx-qwen14b-rlvr-20261013-run008'
 TERMINAL_PATH = PREFIX + '.evidence.zip.terminal.json'
 EVIDENCE_PATH = PREFIX + '.evidence.zip'
+CHECKPOINT_PATH = PREFIX + '/checkpoints.zip'
+# Only this reviewed predecessor and its actual completed terminal chain may
+# supply the new header capability. This is not general old-helper admission.
+HEADER_PREDECESSORS = frozenset({'1bdadfd56c68f53528babf64390295bb53965884bb9eacaff5f20a207e53d615'})
+HEADER_TERMINAL_RECEIPT_SHA256 = 'c7aed6c2ea053b4dde32fdb280b36e6694f9da282b9db872abde53185082c697'
+HEADER_TERMINAL_FILE = {'bytes': 119652, 'sha256': 'a95c964a8e29d5b27e067ac1a6ee66af7efe345cd55684f88ab11a0cf32092a7'}
+CHECKPOINT_SOURCE = {'bytes': 1546535710, 'source_sha256': 'b0dee6ae07d742afb4b8b242bb9e82f7be862a3de6c015fbca96d801c1bfabd4'}
 RESERVE = 4 * 1024**3
 MAX_SECONDS = 300
 SUPERVISOR_ERROR_CODES = frozenset({
@@ -30,6 +39,7 @@ SUPERVISOR_ERROR_CODES = frozenset({
     'download_cap_type', 'bounded_download_file', 'download_file_changed', 'download_cap',
     'original_retrieval_deadline', 'closed_download_hash_changed', 'final_output_exists',
     'linked_path_forbidden',
+    'checkpoint_header_result', 'checkpoint_body_forbidden', 'checkpoint_launch_binding',
 })
 
 
@@ -88,6 +98,14 @@ def selected_caps(manifest):
     return caps
 
 
+def checkpoint_cap(manifest):
+    need(manifest['terminal_contract']['checkpoint_path'] == CHECKPOINT_PATH,
+         'fixed_checkpoint_path')
+    cap = manifest['terminal_contract']['archive_caps']['checkpoint_archive_bytes']
+    need(type(cap) is int and cap == 4 * 1024**3, 'reviewed_checkpoint_cap')
+    return cap
+
+
 def bootstrap(args):
     base = load_observer()
     base.read_pinned(__file__, args.helper_sha)
@@ -101,7 +119,11 @@ def bootstrap(args):
     need(len(raw) == 134508 and base.sha(raw) == MANIFEST_SHA256, 'original_manifest_bytes')
     manifest = base.strict_json(raw)
     caps = selected_caps(manifest)
-    need(args.name in caps, 'unreviewed_output_path')
+    if args.checkpoint_header:
+        need(args.name == CHECKPOINT_PATH, 'fixed_checkpoint_path')
+        checkpoint_cap(manifest)
+    else:
+        need(args.name in caps, 'unreviewed_output_path')
     return base, root, win, runtime, expected, manifest, caps
 
 
@@ -165,18 +187,23 @@ def terminal_brackets(base, before, after):
          'terminal_bracket_changed')
 
 
-def prior_terminal(base, args, cap, deadline):
+def prior_terminal(base, args, cap, deadline, *, checkpoint_cap=None):
     """Bind archive expectations to an actual completed separate retrieval receipt."""
     need(args.terminal_receipt is not None and args.terminal_receipt_sha is not None,
          'prior_terminal_retrieval_required')
     raw = base.read_pinned(args.terminal_receipt, args.terminal_receipt_sha)
     receipt = base.strict_json(raw)
+    prior_helper = receipt.get('helper_sha256')
+    if checkpoint_cap is not None:
+        need(args.terminal_receipt_sha == HEADER_TERMINAL_RECEIPT_SHA256
+             and prior_helper in HEADER_PREDECESSORS, 'reviewed_header_predecessor_required')
+    else:
+        need(prior_helper == args.helper_sha, 'prior_terminal_receipt_binding')
     need(receipt.get('format') == 'irisx/v43-selected-retrieval-v1' and receipt.get('ok') is True
          and type(receipt.get('numeric_version')) is int and receipt['numeric_version'] == 43
          and receipt.get('reason') == 'worker_exit' and receipt.get('provider_path') == TERMINAL_PATH
          and receipt.get('manifest_sha256') == MANIFEST_SHA256
          and receipt.get('observer_sha256') == OBSERVER_SHA256
-         and receipt.get('helper_sha256') == args.helper_sha
          and receipt.get('saved_source_sha256') == base.SOURCE_SHA256
          and receipt.get('native_config_sha256') == base.CONFIG_SHA256
          and receipt.get('clock') == base.CLOCK and receipt.get('download_finalized') is True,
@@ -188,7 +215,7 @@ def prior_terminal(base, args, cap, deadline):
     need(launch.get('format') == 'irisx/v43-selected-launch-v1'
          and launch.get('nonce') == receipt.get('nonce')
          and type(launch.get('nonce')) is str and re.fullmatch('[0-9a-f]{64}', launch['nonce'])
-         and launch.get('helper_sha256') == args.helper_sha
+         and launch.get('helper_sha256') == prior_helper
          and launch.get('observer_sha256') == OBSERVER_SHA256
          and launch.get('native_config_sha256') == base.CONFIG_SHA256
          and launch.get('accepted_metadata_sha256') == base.METADATA_SHA256
@@ -221,6 +248,8 @@ def prior_terminal(base, args, cap, deadline):
          and 0 < row['bytes'] <= 16 * 1024**2, 'prior_terminal_file_descriptor')
     raw = base.read_pinned(directory / 'payload.bin', row['sha256'], 16 * 1024**2)
     need(len(raw) == row['bytes'] and time.monotonic() < deadline, 'prior_terminal_download_changed')
+    if checkpoint_cap is not None:
+        need(row == HEADER_TERMINAL_FILE, 'reviewed_header_terminal_required')
     terminal = base.strict_json(raw)
     need(terminal.get('format') == 'owned-rl-evidence-terminal-v1'
          and terminal.get('status') in ('complete', 'diagnostic')
@@ -232,7 +261,32 @@ def prior_terminal(base, args, cap, deadline):
          and type(archive.get('bytes')) is int and 0 < archive['bytes'] <= cap
          and type(archive.get('sha256')) is str and re.fullmatch('[0-9a-f]{64}', archive['sha256']),
          'terminal_archive_descriptor')
-    return {'bytes': archive['bytes'], 'sha256': archive['sha256']}
+    if checkpoint_cap is None:
+        return {'bytes': archive['bytes'], 'sha256': archive['sha256']}
+    local = terminal.get('checkpoint_archive_observation')
+    external = terminal.get('external_bodies', {}).get('checkpoints.zip')
+    need(type(local) is dict and local.get('filename') == 'checkpoints.zip'
+         and local.get('present') is True and type(local.get('byte_length')) is int
+         and 0 < local['byte_length'] <= checkpoint_cap
+         and local.get('transport_observation') == 'DECLARED_LOCAL_ARCHIVE_PRESENT'
+         and local.get('body_materialized') is False
+         and local.get('independently_sha256_verified') is False
+         and local.get('observed_sha256') is None, 'checkpoint_source_declaration')
+    need(type(external) is dict and external.get('reason') == 'separate-checkpoint-archive-body'
+         and external.get('descriptor') == 'checkpoint-zip-descriptor.json'
+         and type(external.get('original_bytes')) is int
+         and type(external.get('local_observed_bytes')) is int
+         and external['original_bytes'] == external['local_observed_bytes'] == local['byte_length']
+         and external.get('local_presence_observed') is True
+         and external.get('local_sha256_verified') is True
+         and external.get('original_sha256') == external.get('local_observed_sha256')
+         and external.get('archive_body_included') is False
+         and external.get('external_body_materialized') is False
+         and external.get('external_sha256_independently_verified') is False
+         and external.get('external_observed_sha256') is None, 'checkpoint_source_descriptor')
+    source = {'bytes': local['byte_length'], 'source_sha256': external['original_sha256']}
+    need(source == CHECKPOINT_SOURCE, 'fixed_checkpoint_source_descriptor')
+    return source
 
 
 class DownloadOnly:
@@ -245,20 +299,46 @@ class DownloadOnly:
     def chunks(self, response, cap):
         return self.storage.chunks(response, cap)
 
+    def header(self, response, cap):
+        return self.storage.download(response, cap, metadata=True)
+
     def put(self, *unused, **unused_kwargs):
         raise ValueError('upload_forbidden')
 
 
-def bind_readonly(base, sdk, client, auth, deadline):
+def checkpoint_rpc_headers(response):
+    # The pinned SDK eagerly consumes JSON RPC bodies. Header-only observation
+    # accepts Location redirects, but intentionally declines JSON-body URLs.
+    need('json' not in response.headers.get('Content-Type', '').lower()
+         or 300 <= response.status_code < 400 and response.headers.get('Location'),
+         'checkpoint_json_body_forbidden')
+
+
+def bind_readonly(base, sdk, client, auth, deadline, *, checkpoint_header=False):
+    session = client.http_client()._session
+    output_urls = frozenset(host + '/v1/kernels.KernelsApiService/DownloadKernelOutput'
+                           for host in ('https://api.kaggle.com', 'https://api.kaggle.com:443'))
+    if checkpoint_header:
+        raw_send = session.send
+        def header_send(request, **kwargs):
+            response = raw_send(request, **kwargs)
+            if request.url in output_urls:
+                try:
+                    checkpoint_rpc_headers(response)
+                except BaseException:
+                    response.close()
+                    raise
+            return response
+        session.send = header_send
     boundary = sdk.HttpBoundary()
     boundary.bind(client, auth)
-    session = client.http_client()._session
     bounded = session.send
-    urls = base.RPC_URLS | frozenset(host + '/v1/kernels.KernelsApiService/DownloadKernelOutput'
-            for host in ('https://api.kaggle.com', 'https://api.kaggle.com:443'))
+    urls = base.RPC_URLS | output_urls
     def send(request, **kwargs):
         need(time.monotonic() < deadline, 'retrieval_deadline')
         need(request.method == 'POST' and request.url in urls, 'readonly_retrieval_rpc_required')
+        if checkpoint_header and request.url in output_urls:
+            kwargs['stream'] = True
         return bounded(request, **kwargs)
     session.send = send
 
@@ -300,6 +380,44 @@ def retrieve_one(base, provider, storage, expected, name, cap, directory, deadli
     return {'before': before, 'after': after, 'file': row}
 
 
+def header_observation(size):
+    return {'filename': 'checkpoints.zip', 'present': True, 'byte_length': size,
+            'transport_observation': 'HTTP200_CONTENT_LENGTH_VERIFIED', 'http_status': 200,
+            'body_consumed_bytes': 0, 'body_materialized': False,
+            'independently_sha256_verified': False, 'observed_sha256': None}
+
+
+def require_deadline(base, deadline):
+    need(time.monotonic() < deadline and time.time() < base.CLOCK['global_deadline'],
+         'original_retrieval_deadline')
+
+
+def observe_checkpoint_header(base, provider, storage, expected, cap, source, deadline):
+    require_deadline(base, deadline)
+    before = base.observe(provider, expected)
+    need(before['terminal'] is True, 'provider_not_terminal')
+    require_deadline(base, deadline)
+    response = provider.output(CHECKPOINT_PATH, 43)
+    try:
+        checkpoint_rpc_headers(response)
+        with storage.header(response, cap) as response:
+            require_deadline(base, deadline)
+            need(response.status_code == 200, 'checkpoint_header_status')
+            length = response.headers.get('Content-Length')
+            need(type(length) is str and re.fullmatch('[0-9]+', length)
+                 and 0 < int(length) == source['bytes'] <= cap, 'checkpoint_header_length')
+            need(response.headers.get('Content-Encoding', 'identity') in ('', 'identity'),
+                 'checkpoint_header_encoding')
+            observation = header_observation(int(length))
+    finally:
+        response.close()
+    require_deadline(base, deadline)
+    after = base.observe(provider, expected)
+    terminal_brackets(base, before, after)
+    require_deadline(base, deadline)
+    return {'before': before, 'after': after, 'checkpoint': observation}
+
+
 def worker(args):
     base, root, win, runtime, expected, manifest, caps = bootstrap(args)
     win.require_worker_job(args.nonce)
@@ -312,14 +430,39 @@ def worker(args):
     need(launch.get('nonce') == args.nonce and launch.get('provider_path') == args.name,
          'worker_launch_binding')
     expected_file = prior_terminal(base, args, caps[args.name], deadline) if args.name == EVIDENCE_PATH else None
+    source = None
+    if args.checkpoint_header:
+        cap = checkpoint_cap(manifest)
+        source = prior_terminal(base, args, caps[EVIDENCE_PATH], deadline, checkpoint_cap=cap)
+        need(launch.get('format') == 'irisx/v43-checkpoint-header-launch-v1'
+             and launch.get('helper_sha256') == args.helper_sha
+             and launch.get('observer_sha256') == OBSERVER_SHA256
+             and launch.get('manifest_sha256') == MANIFEST_SHA256
+             and launch.get('native_config_sha256') == base.CONFIG_SHA256
+             and launch.get('accepted_metadata_sha256') == base.METADATA_SHA256
+             and type(launch.get('numeric_version')) is int and launch['numeric_version'] == 43
+             and launch.get('clock') == base.CLOCK
+             and launch.get('terminal_receipt_sha256') == args.terminal_receipt_sha
+             and launch.get('expected_checkpoint_source') == source
+             and type(launch.get('cap')) is int and launch['cap'] == cap
+             and launch.get('deadline_epoch') == args.deadline_epoch
+             and type(launch.get('max_seconds')) is int and launch['max_seconds'] == MAX_SECONDS
+             and launch.get('scope') == 'checkpoint-header-only-no-refresh-no-admission',
+             'checkpoint_launch_binding')
+        require_deadline(base, deadline)
     sdk = base.pinned_module('retrieval_sdk_worker', root / 'sdk_worker.py', base.PINS['sdk_worker.py'])
     auth_module = base.pinned_module('retrieval_native_auth', root / 'native_auth.py', base.PINS['native_auth.py'])
     facade = base.ReadonlyRuntime(runtime)
     auth = auth_module.OfficialSession(facade, base.NoRefresh(),
-        lambda client, session: bind_readonly(base, sdk, client, session, deadline),
+        lambda client, session: bind_readonly(base, sdk, client, session, deadline,
+                                            checkpoint_header=args.checkpoint_header),
         lock_path=root / 'sdk-lock.json')
     result = {'format': 'irisx/v43-selected-worker-v1', 'nonce': args.nonce,
               'request_sha256': args.request_sha, 'ok': False, 'download': None}
+    if args.checkpoint_header:
+        result['format'] = 'irisx/v43-checkpoint-header-worker-v1'
+        del result['download']
+        result['header'] = None
     with auth_module.isolate_sdk_output() as (_, writer):
         try:
             auth.prepare()
@@ -327,8 +470,12 @@ def worker(args):
             auth.open()
             storage = DownloadOnly(sdk.StorageHttp())
             provider = sdk.WorkerProvider(auth, runtime.versions, storage=storage)
-            result['download'] = retrieve_one(base, provider, storage, expected, args.name,
-                caps[args.name], directory, deadline, expected_file)
+            if args.checkpoint_header:
+                result['header'] = observe_checkpoint_header(base, provider, storage,
+                    expected, cap, source, deadline)
+            else:
+                result['download'] = retrieve_one(base, provider, storage, expected, args.name,
+                    caps[args.name], directory, deadline, expected_file)
             result['ok'] = True
         except auth_module.AuthRefreshUnknown:
             result.update(error='AUTH_REFRESH_UNKNOWN', mutation_uncertain=True,
@@ -361,6 +508,13 @@ def supervise(args, argv):
     deadline = min(started + MAX_SECONDS, time.monotonic() + deadline_epoch - now)
     # Archive admission validates a completed prior numeric-terminal receipt.
     expected_file = prior_terminal(base, args, caps[args.name], deadline) if args.name == EVIDENCE_PATH else None
+    source = None
+    if args.checkpoint_header:
+        cap = checkpoint_cap(manifest)
+        source = prior_terminal(base, args, caps[EVIDENCE_PATH], deadline, checkpoint_cap=cap)
+        require_deadline(base, deadline)
+    else:
+        cap = caps[args.name]
     output = base.observation_output(args.output, root)
     nonce = secrets.token_hex(32)
     request = {'format': 'irisx/v43-selected-launch-v1', 'nonce': nonce,
@@ -369,7 +523,12 @@ def supervise(args, argv):
                'manifest_sha256': MANIFEST_SHA256, 'provider_path': args.name, 'numeric_version': 43,
                'clock': base.CLOCK, 'deadline_epoch': deadline_epoch, 'max_seconds': MAX_SECONDS,
                'terminal_receipt_sha256': args.terminal_receipt_sha, 'expected_file': expected_file,
-               'cap': caps[args.name], 'scope': 'single-selected-output-no-refresh-no-admission'}
+               'cap': cap, 'scope': 'single-selected-output-no-refresh-no-admission'}
+    if args.checkpoint_header:
+        request.update(format='irisx/v43-checkpoint-header-launch-v1',
+                       expected_checkpoint_source=source,
+                       scope='checkpoint-header-only-no-refresh-no-admission')
+        del request['expected_file']
     request_sha = base.write_new(output / 'launch.json', request)
     receipt = {'format': 'irisx/v43-selected-retrieval-v1', 'nonce': nonce,
                'request_sha256': request_sha, 'ok': False, 'closure': None,
@@ -381,6 +540,15 @@ def supervise(args, argv):
                'inventory_scope': 'selected_outputs_only', 'whole_provider_inventory_verified': False,
                'collection_aggregate_verified': False, 'consumer_admitted': False,
                'scientific_success_verified': False, 'old_native_session_closure_verified': False}
+    if args.checkpoint_header:
+        receipt.update(format='irisx/v43-checkpoint-header-v1', header_observation_finalized=False,
+                       terminal_receipt_sha256=args.terminal_receipt_sha,
+                       source_checkpoint_descriptor=source, body_materialized=False,
+                       independently_sha256_verified=False, observed_sha256=None,
+                       body_consumed_bytes=0,
+                       redirect_policy='location-only-json-body-redirects-refused',
+                       scope='independent-header-observation-no-collector-admission')
+        del receipt['download_finalized']
     input_fd, hold_open = os.pipe()
     code = 2
     stage, closed = 'supervise', False
@@ -400,12 +568,30 @@ def supervise(args, argv):
         need(0 < len(raw) <= base.MAX_RESULT, 'worker_result_bound')
         value = base.strict_json(raw)
         need(value.get('nonce') == nonce and value.get('request_sha256') == request_sha
-             and value.get('format') == 'irisx/v43-selected-worker-v1', 'worker_result_binding')
+             and value.get('format') == ('irisx/v43-checkpoint-header-worker-v1' if args.checkpoint_header
+                                        else 'irisx/v43-selected-worker-v1'), 'worker_result_binding')
         receipt['worker_result_sha256'] = base.sha(raw)
         if result.code == 0 and value.get('ok') is True:
             stage = 'new_job_closure'
             new_job_closure(result.closure)
             closed = True
+            if args.checkpoint_header:
+                stage = 'checkpoint_header'
+                need(set(value) == {'format', 'nonce', 'request_sha256', 'ok', 'header'}
+                     and result.reason == 'worker_exit', 'checkpoint_header_result')
+                header = value['header']
+                need(type(header) is dict and set(header) == {'before', 'after', 'checkpoint'}
+                     and base.canonical(header['checkpoint']) == base.canonical(header_observation(source['bytes'])),
+                     'checkpoint_header_result')
+                terminal_brackets(base, header['before'], header['after'])
+                need(deadline_epoch - MAX_SECONDS <= header['before']['started_epoch']
+                     <= header['after']['observed_epoch'] <= deadline_epoch, 'terminal_bracket_clock')
+                need(not any(os.path.lexists(output / name) for name in ('payload.part', 'payload.bin')),
+                     'checkpoint_body_forbidden')
+                require_deadline(base, deadline)
+                receipt.update(ok=True, header_observation_finalized=True, **header)
+                code = 0
+                return code
             stage = 'terminal_brackets'
             terminal_brackets(base, value['download']['before'], value['download']['after'])
             stage = 'digest_file'
@@ -436,7 +622,12 @@ def supervise(args, argv):
     finally:
         os.close(hold_open)
         os.close(input_fd)
-        base.write_new(output / 'retrieval-result.json', receipt)
+        base.write_new(output / ('checkpoint-header-result.json' if args.checkpoint_header
+                                 else 'retrieval-result.json'), receipt)
+        if args.checkpoint_header:
+            print(json.dumps(receipt, sort_keys=True), flush=True)
+    if args.checkpoint_header:
+        return code
     print(json.dumps(receipt, sort_keys=True), flush=True)
     return code
 
@@ -450,6 +641,8 @@ def arguments(argv):
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--terminal-receipt')
     parser.add_argument('--terminal-receipt-sha')
+    parser.add_argument('--checkpoint-header', action='store_true',
+                        help='Fixed checkpoint headers only; JSON-body URL redirects are refused.')
     parser.add_argument('--worker', action='store_true')
     parser.add_argument('--nonce')
     parser.add_argument('--request-sha')
@@ -458,7 +651,9 @@ def arguments(argv):
     for name in ('helper_sha', 'config_sha', 'accepted_metadata_sha', 'manifest_sha'):
         need(re.fullmatch('[0-9a-f]{64}', getattr(args, name)) is not None, 'argument_sha256')
     need((args.terminal_receipt is None) == (args.terminal_receipt_sha is None), 'terminal_receipt_pair')
-    if args.name == EVIDENCE_PATH:
+    if args.checkpoint_header:
+        need(args.name == CHECKPOINT_PATH, 'fixed_checkpoint_path')
+    if args.name == EVIDENCE_PATH or args.checkpoint_header:
         need(args.terminal_receipt is not None and re.fullmatch('[0-9a-f]{64}', args.terminal_receipt_sha),
              'terminal_receipt_required')
     else:

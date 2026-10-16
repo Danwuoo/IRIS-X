@@ -3,9 +3,10 @@
 這條研究線要回答：**在同一個離線 Qwen3-14B 起點與有限算力下，可驗證 reward 的學習，
 能否比既有 SFT 與同成本的額外 SFT，更有效地解決 ARC-AGI-2 的新規則任務？**
 
-目前還沒有本輪有效的 A/B/C 比較或新的 PUBLIC120 分數。已完成的是離線工具、
-Agent Factory 3 真正上游元件的 CPU 整合，以及執行材料與傳輸的部分驗收；
-它們讓研究可重現，尚不能回答方法是否有效。[當前狀態與下一步](DEVELOPMENT-PROGRESS.zh-TW.md)
+v43 已完成並取回真實輸出：A 完成 SFT256；B 首批 64 條中 12 條未通過原數值檢查，
+沒有提交 RL 更新；C 在匹配 B 整段成本下額外 SFT203。固定規則選 A，原 scorer 的完整
+PUBLIC120 觀察為 0/167，334 個視圖均有效，但正式 consumer admission 仍有缺件。
+這不是有效 RL 更新的比較，也不是官方或獨立重評分數。[證據與下一步](DEVELOPMENT-PROGRESS.zh-TW.md)
 
 ## 一、研究假設與可反駁的結果
 
@@ -64,13 +65,13 @@ save／reload／verification 全部額外模型階段耗時，不能只配 optim
 | --- | --- | --- |
 | 凍結來源與離線支援 | inert plan、collector 報告解讀、完整 batch audit adapter、逐軌跡 reduction 與失敗測試 | 原模型執行、真實 audit provenance 或新分數 |
 | **Agent Factory 3 實際整合** | 真正執行上游 `TrainingSample`、`DDISLoss`、`MeanMetricState`；合成 CPU loss／raw-logit gradient parity | 已接入 Qwen／LoRA graph、GPU 更新或 ARC-AGI-2 效益 |
-| 本地材料與執行邊界 | 部分 canonical 重建、no-auth 與官方唯讀觀察有實際收據 | 已上傳、accepted RUN、模型成功或 A/B/C 完整 |
-| 真實研究結果 | 本輪仍待取得 reward、replay、更新、成本、closure 與完整評分 | 不能把 UNKNOWN 當 0 分、無效方法或成功 baseline |
+| 本地材料與執行邊界 | code22／active43 真實接受與 COMPLETE；獨立唯讀取回 31 個必要／選用檔案，原 evidence archive 通過容器驗證 | 舊 native session closure、正式 collector context 與 checkpoint tensor 驗證仍不能由新取檔收據代替 |
+| 真實研究結果 | 封存輸出有 reward15/64、RL commit0、B/C 整段耗時匹配、A 的完整 PUBLIC pool 全錯觀察 | 數值 gate 失敗不證明 RL 方法無效；來源評分尚未正式 admission，不是官方分數或未曝光確認集結果 |
 
 AF3 是重要 RL 來源，也是已實際採用的上游元件。固定來源、Apache-2.0、實際呼叫、
 CPU proof 與模型接線缺口集中在[AF3 整合研究](agent-factory3/integration.zh-TW.md)。
 目前 frozen runtime 仍使用原本本地 DDIS 公式；CPU companion 不成為首次原 A/B/C 的新增啟動門檻。
-真實 audit 由通過原 admission 的原 A/B/C 產生，回收後才作離線分析。
+真實 audit 由原 A/B/C runtime 產生，回收後離線分析；v43 正式 consumer admission 尚未成立。
 
 歷史 native TTT、uncapped 候選搜尋與 v39 失敗各自有不同來源、曝光和分母；
 它們可協助定位問題，不能換算為本輪 PUBLIC120 效果。

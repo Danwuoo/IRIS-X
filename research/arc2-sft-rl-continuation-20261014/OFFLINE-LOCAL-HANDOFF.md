@@ -290,7 +290,8 @@ provider path、兩側 source/status brackets、原 clocks、request／worker ha
 
 首次 native terminal JSON 的 worker／Job-zero 通過，但 parent 在跨 API ctime 比較時拒絕；
 原 `payload.part` 與 failed receipt 必須保留。使用本次修復的固定 helper，在另一個 fresh 目錄
-重新取相同 numeric43 terminal JSON；不得手動改名舊 partial 或修改舊 receipt。Windows 的
+重新取相同 numeric43 terminal JSON 的步驟已由 9fdc 真收據完成，archive 及 selected outputs 也已取回；
+不得手動改名舊 partial 或修改舊 receipt，不因後續 header 能力新增而重取已驗檔案。Windows 的
 Path.stat 與 fstat 分開保留完整前後身分（含 ctime）檢查，跨 API 比較共同的 dev／inode／size／
 mtime／nlink；POSIX 仍比較全部欄位。post-close 失敗另記固定 `failure_stage`／`error_code`，
 並保留 `supervisor_reason`；不傳遞任意 exception text。只有新實際成功 receipt 才能作 archive 輸入。
@@ -309,6 +310,52 @@ provider path 去重；保留partial的實際磁碟用量，不能把重複下�
 aggregate 尚未驗證；原 evidence cap＋256 MiB aggregate、ZIP 安全、owner／wrapper／inventory、
 checkpoint／scorer 與科學 admission 仍須由原 offline contracts 獨立成立。404 只代表該 selected
 output pending或missing；terminal、hash成功或新Job-zero都不證明遠端模型收束或科學成功。
+
+### v43 checkpoint 的單次 header-only 觀察
+
+只補尚缺的 numeric43 checkpoint HTTP header 證據，沿同一 `retrieve.py` 的明確
+`--checkpoint-header` 模式；checkpoint body 不加入 selected 白名單。同一原 runtime、config、
+metadata、manifest、clock 與 observer bytes 不變。以上 supervisor 命令的 `--name` 改為
+`irisx-qwen14b-rlvr-20261013-run008/checkpoints.zip`，另加：
+
+```text
+--checkpoint-header --terminal-receipt <9fdc-terminal-0001/retrieval-result.json> --terminal-receipt-sha c7aed6c2ea053b4dde32fdb280b36e6694f9da282b9db872abde53185082c697
+```
+
+`--helper-sha` 使用新來源經審查的精確 SHA，`--output` 必須是另一個 fresh 非 STATE 目錄。
+入口完整重驗原 9fdc terminal launch／worker／新 Job0／119,652-byte payload 鏈，並只接受固定
+predecessor helper 與上述實際 receipt；不是任意舊 helper 的通用放行。
+
+checkpoint 的來源宣告為 1,546,535,710 bytes；只有實際 HTTP200、identity encoding、嚴格
+Content-Length 全等且未超原 4 GiB cap 才成立。原 SDK 保留，請求強制 stream；只允許
+Location redirect，可能預先讀 body 的 JSON-body URL redirect 誠實拒絕。不讀 `.content`、chunks
+或 tensor bodies，不把來源宣告 SHA 稱為獨立取得的遠端 SHA。
+
+成功後是獨立 `checkpoint-header-result.json` 的 `header_observation_finalized:true`，包含兩側
+相同 terminal／source／metadata、新 nonce／request／worker 與 Job0，`body_consumed_bytes:0`、
+`body_materialized:false`、`independently_sha256_verified:false`。它不是 `download_finalized`，
+不能用作 prior-terminal receipt 或原 collector admission。no-refresh／原 mutex／300 秒與原 global
+期限不變；遇到 token、mutex、HTTP 或來源阻礙即保存實際失敗，不登入、接管或重新 RUN。
+
+### v43 nested-wrapper 的唯讀 successor 驗證
+
+使用獨立 [successor verifier](../../tools/arc_qwen_rlvr004_20261013/wrapper_observation_repair/verify_parent_wrappers.py)
+的 `verify_wrappers`，沿原已驗證下載檔、同四件 JIT bytes、notebook release、reviewed environment 及三份
+runtime raw documents 呼叫；介面不變，輸出是新 `irisx/rlvr-parent-wrapper-verification-v2`。
+原 manifest 指向的 verifier（24,468 bytes／SHA256
+`4dd228f6559ccad58d421d9b1e90f6aea9339b32c15e4df4f32855731a77d3f8`）、原完整 subset 拒絕、
+raw receipts 及 source／clock 全部保留。新結果寫到 fresh 分析輸出，不換掉原 descriptor 或 consumer pins。
+
+guard 的 `owned_identities` 是各階段實際觀察集合，不能假定每個短命子程序都同時被外層取樣。
+successor 保留原 `verify_stage` 全部 bytes、各階段原 supervisor union、來源／JIT／時鐘／terminal
+檢查，只以保守條件取代跨階段完整 subset：共同 pid/birth 的 session 不能衝突，內層 supervisor、
+worker、runtime worker 必須有外層相同 triple；內層額外觀察須在其已綁 bytes/SHA 的 supervisor
+原收據中，且兩階段均有原 clean closure。另嚴格驗證 runtime incarnation 的 int 欄位與 PID 一致。
+
+本地原檔只讀已證實所需三個 anchor 與兩個額外觀察的 supervisor membership 全 true；這是開始
+完整 successor replay 的前提，尚不是 replay 已通過。保留兩套原 inventory 與新明列差集，不合併或
+補造程序 exit/reaped/closure。新 wrapper 結果不證明舊 Windows native session 已閉合，也不賦予
+正式 collector `CollectionContext`、tensor 驗證、scorer 或整體科學 admission。
 
 ### 6.4 本地修復邊界與研究決策
 
