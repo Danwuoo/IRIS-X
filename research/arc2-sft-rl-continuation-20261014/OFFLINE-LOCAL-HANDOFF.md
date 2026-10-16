@@ -445,6 +445,21 @@ forward 後強制無 RL commit；不執行其餘192／C／dev／held／PUBLIC。
    JIT freshness 均成立後，由原唯一 publisher 接受一個 RUN，沿既有模式監看到終態並取 exact outputs。
    版本取當下真回讀，不在此預填 code／active version；fresh epoch 只屬這個尚未接受的 successor。
 
+   numeric mount 使用本輪 `numeric_replay_diagnostic_20261016/assembly/accept_numeric_mount.py`，
+   原 `admission_run008/accept_numeric_mount.py` 固定259的入口保留供原來源，不直接用於260件
+   successor。新入口沿用七個 required flags：`--candidate-root`、`--code-root`、
+   `--code-receipt-path`、`--code-receipt-sha`、`--output-root`、`--manifest-sha`、`--inventory-sha`。
+   它只接受固定 training-only purpose／source／archive 與260件來源，原 helper／guard、真實
+   numeric receipt、完整下載閉集／ZIP bytes、source-only import 和 unforced owned closure 都保留。
+   輸出仍為 repo `.irisx/` 下的新目錄；先前 CPU count-gate 證據不是可傳入的 numeric receipt。
+   新外層 runner 不進入 candidate／payload，已批准 final 無需重組；發布前的 runner／source
+   review 綁新入口真 hash。code publication／numeric readback 後才執行真 mount，後續
+   persisted-readback／static review 再綁真正完成的新 `MOUNT-RECEIPT.json`，不能套用原259的
+   runner pin，也不能在發布前要求或補造尚未存在的 mount receipt。
+   固定新入口為5,074 bytes／SHA256
+   `e473ae0e2772432b5b04b726153415df84b89b664a02bff18e8d521895f374fc`；原259 runner 為
+   `d84e2aa27edc5cef4fe557a9c327a5b4bffebbadf638d80948927677f1bd70b9`，兩件都需完整保留。
+
 新工程完成須有 `owned-numeric-diagnostic-complete-no-update`、原64 replay、shadow／rollback、
 實際閉合 capability／raw closure 與完整 diagnostic archive。collector 寫 `NUMERIC_DIAGNOSTIC_COMPLETE`
 或誠實的 `NUMERIC_DIAGNOSTIC_INCOMPLETE`；`consumer_admitted`、comparison／PUBLIC／goal 全 false，

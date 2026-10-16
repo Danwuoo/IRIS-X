@@ -30,7 +30,8 @@ header 去敏 stage／code 修復已發布為 `65543cbb4c3547fe038c3e0f42bb73ea7
 `a3e9c8d99bf70c52afb8b6323ef03fe2ffdbbc23` 的單次真實觀察已成功取得 HTTP header，前兩次原因仍未知。
 training-only successor 已發布為 `03022f2a9e716d953f22f5245b56ffa688060862`，20 檔逐檔遠端回讀一致；
 本地 preflight 在 provider 前被原 edd 未閉合 session 拒絕，尚無新 code 或 RUN。完整 operator 的
-launcher／transport／collector source pins 已在本次完整 operator 一併整合，不能只替換三個 publication overlays。
+launcher／transport／collector source pins 已在 `1da916d39ad3e84be9f66c4beed9a97c7aebc50d` 的完整
+operator 一併整合，19 檔逐 bytes／Git blob 遠端回讀一致，不能只替換三個 publication overlays。
 本頁與下一次窄修同一 commit 保存，交付 SHA 由接收時 HEAD／遠端 readback 核對。歷史 fix refs、
 f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.com/Danwuoo/IRIS-X/blob/84a5a1f870c42899f3bea79996d1b9360c4bfee9/research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)
 保存 lease 失敗與修復前的精確證據，不在本頁重複累積。
@@ -47,7 +48,7 @@ f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.
 | 已發布的啟動修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；v43 已實際越過啟動邊界 |
 | 多輪續接 | 0d3524 已隔離每輪 publication／collector 目錄，native STATE 與全域鎖共用；本地18:03 fresh no-auth 停於舊f5永久 same-boot 字串 gate | 原1,686檔完全不變，未新建 native claim／canonical／run、未 provider。CIM boot值變1.802125秒，host／Windows／source／runtime相同；符合校時漂移但未證明 same boot，不拿猜測當PASS |
 | 歷史／即時 context 修復 | 原封存Restart＋reconciliation在原completion time重驗；fresh host／source／runtime／closure另核對，封存events及live STATE前後綁定 | 只支援現有f5原件的12.629秒歷史間隔，保留原120秒限制；later UNKNOWN／refresh／publication變更仍阻擋，不加BootID框架、容差或重啟 |
-| Repository／CI | 03022f2 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
+| Repository／CI | 1da916 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
 | 真實研究結果 | A SFT256；B 64/256 attempts、reward15/64、RL commit0；C 額外 SFT203。固定 dev 平手規則選 A；PUBLIC 原 scorer 完整 120 tasks／167 queries 為 0/167 | 以下是取回封存輸出的觀察，正式 consumer 尚拒絕；不代表 RL 更新有效或無效，也不是官方／獨立重評分數 |
 
 ### v43 模型與評分觀察
@@ -143,8 +144,30 @@ body consumed0／未 materialize。新 result 3,647 bytes／SHA256
 這補齊 header 觀察，不證明 tensor bytes、舊 edd closure 或正式 consumer admission。
 
 本地只讀已確認原兩份 closed assembly inventory、259-member source proposal 與原 solver descriptor
-完整；不缺料、不讀 evaluator bodies。新完整 private candidate／fresh predecessor observation、
-proposal→獨立 reviews→final、numeric mount／inactive／JIT／唯一 RUN 仍尚未執行。
+完整；不缺料、不讀 evaluator bodies。其後本地已產生 numeric final，真實 manifest／ZIP／producer
+source 均為260件；新 code／inactive／JIT／RUN 尚未發生。原外層
+`admission_run008/accept_numeric_mount.py` 的 `check_helper` 仍要求259，正常／`-O` 皆對本輪
+count 子條件拒絕 `exact complete source259 acceptance`。本地 receipt 8,493 bytes／SHA256
+`c5977e739a9ffaf548bb30ca2786307401e2cdd6653399cc315ab4838d92ff33` 只證明 CPU count gate
+不相容，不是完整 production numeric mount／CLI 失敗，也不是 provider readback。
+後續本地兩次真正原 no-model helper 與 owned closure 都 PASS，原外層 `check_helper` 在兩種
+Python mode 仍拒絕；summary 2,605 bytes／SHA256
+`909ca3564e8aae2f578b446e3b3b92ef979f594d5e93bb4b6a1e61d37461cc3f`。這不取代尚未發生的
+code publication／numeric download。fresh predecessor 的五讀／零mutation、code22／v43 COMPLETE
+與新 native clean close 已通過，proposal／三份真 reviews／final／config 亦完成；sealed observation
+SHA256 `374b55a6fafcf7ce7294ece465a24827481802ebee5c8972ea4221f67aec626b`，final manifest SHA256
+`15f340149a8eff74e6c1d56f3cd34b8836d349dfa6818ef14bd142dcb600161a`。外層執行批准尚未簽署，
+沒有新 epoch／GPU／RUN；capture 後共3,530件 STATE 在本次檢查中未變。
+原 receipt、259 runner 與 final bytes 保留；修復限額外固定 numeric260 外層入口，不重生
+candidate／manifest、科學 source／archive 或已完成的 predecessor capture。
+新入口為5,074 bytes／SHA256
+`e473ae0e2772432b5b04b726153415df84b89b664a02bff18e8d521895f374fc`，精確載入未改的原259
+runner（`d84e2aa27edc5cef4fe557a9c327a5b4bffebbadf638d80948927677f1bd70b9`），保留原流程與
+七參數，只增加固定 purpose／source／archive 檢查及260 count，另在 receipt 自身來源讀取時
+重驗兩件 runner bytes。作者25項與獨立25＋9項 adverse tests，各 normal／`-O` 均通過；
+測試綁 frozen sources，384件既有 RLVR files 未改。獨立 final report SHA256
+`9e1c82e60766be53b24ac464e34819e716ae38112dd24e80a68f7ccd8d966ba0`。
+此為 CPU 工程驗證；尚無真正 numeric readback mount receipt，不將其當 GPU 或 runtime admission。
 
 ### 原唯讀 session 的獨立續接依據
 
