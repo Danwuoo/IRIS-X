@@ -27,6 +27,8 @@ native 檔案身分修復已發布為 `9fdc96325fd3f425b54fa99508d3181230f77f3e`
 wrapper／header 窄修已發布為 `4309b890d5c19dddd29b1fb87a26fa916df22cf1`；真實 wrapper replay 通過，header 首次失敗。
 header 去敏 stage／code 修復已發布為 `65543cbb4c3547fe038c3e0f42bb73ea770d3e92`；真實續接停於
 `checkpoint_before`／`unexpected_error`，尚未呼叫 checkpoint output，header 仍未取得。
+training-only successor 已發布為 `03022f2a9e716d953f22f5245b56ffa688060862`，20 檔逐檔遠端回讀一致；
+本地正在準備真實 proposal／reviews，尚未確認新 code 或 RUN。
 本頁與下一次窄修同一 commit 保存，交付 SHA 由接收時 HEAD／遠端 readback 核對。歷史 fix refs、
 f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.com/Danwuoo/IRIS-X/blob/84a5a1f870c42899f3bea79996d1b9360c4bfee9/research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)
 保存 lease 失敗與修復前的精確證據，不在本頁重複累積。
@@ -43,7 +45,7 @@ f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.
 | 已發布的啟動修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；v43 已實際越過啟動邊界 |
 | 多輪續接 | 0d3524 已隔離每輪 publication／collector 目錄，native STATE 與全域鎖共用；本地18:03 fresh no-auth 停於舊f5永久 same-boot 字串 gate | 原1,686檔完全不變，未新建 native claim／canonical／run、未 provider。CIM boot值變1.802125秒，host／Windows／source／runtime相同；符合校時漂移但未證明 same boot，不拿猜測當PASS |
 | 歷史／即時 context 修復 | 原封存Restart＋reconciliation在原completion time重驗；fresh host／source／runtime／closure另核對，封存events及live STATE前後綁定 | 只支援現有f5原件的12.629秒歷史間隔，保留原120秒限制；later UNKNOWN／refresh／publication變更仍阻擋，不加BootID框架、容差或重啟 |
-| Repository／CI | 65543cb 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
+| Repository／CI | 03022f2 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
 | 真實研究結果 | A SFT256；B 64/256 attempts、reward15/64、RL commit0；C 額外 SFT203。固定 dev 平手規則選 A；PUBLIC 原 scorer 完整 120 tasks／167 queries 為 0/167 | 以下是取回封存輸出的觀察，正式 consumer 尚拒絕；不代表 RL 更新有效或無效，也不是官方／獨立重評分數 |
 
 ### v43 模型與評分觀察
@@ -124,6 +126,14 @@ publication／collector 獨立審查亦 PASS：43 項 targeted、18 個拒絕負
 9 個重新綁全套 hash 的 raw-audit 負例，各 normal／`-O` 均通過。review SHA256
 `5ebdb47ec5fa09b60d351b8c90548fae7d89e51340f6acf3b838eaf2c7b437a0`。
 以上只綁定來源；本地 exact proposal 的 solver／runtime／material reviews 仍須另核對，不能沿用未對應的 review。
+
+header before bracket 的來源檢查未發現可支持的相容性修復；header mode 並未改寫 kernel／status 路由。
+新的最小診斷以 provider wrapper 標記前後各三次呼叫與返回驗證、固定 exception category，
+保留原 observer bytes、原 RPC 次數與成功收據；不輸出原 exception 文字或任意 class name。
+這是下一次失敗定位能力，不能倒推前兩次原因；原 HTTP／長度仍未知。
+作者與獨立 reviewer 各161 normal／161 `-O` 通過（header63／retrieve69／observer29）；
+獨立對照65543的7種成功與非 header failure 路徑，兩模式逐 bytes 相同。作者原 stdout 未落盤，
+差分 JSON 另已保存；測試與差分均為 CPU 合成驗證，沒有新 native 或 provider 動作。
 
 本地只讀已確認原兩份 closed assembly inventory、259-member source proposal 與原 solver descriptor
 完整；不缺料、不讀 evaluator bodies。新完整 private candidate／fresh predecessor observation、

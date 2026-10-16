@@ -345,6 +345,16 @@ output；header null、finalized false、新 Job0、body consumed0、未 materia
 先檢查 before bracket 的來源相容性；原因未定位前不重試，不推斷 auth／HTTP，也不回填4309原因。
 其餘 header 契約與原 deadline 保留；這項不阻擋已審查的 training-only successor 準備。
 
+下一筆若仍需同輪 header 取證，只換新 helper SHA256
+`d42102d5754845bb15cc9ff591cc4d4773e0037a68984bad5445167fcbfe60c2`，在另一個 fresh output
+沿同一命令和所有原件執行一次；不重取 terminal／archive。新增固定 `checkpoint_before_*`／
+`checkpoint_after_*` 呼叫／返回驗證 stage、`worker_exception_category` 與兩個既有 metadata cap codes。
+任何未知例外仍只輸出 `unknown`／`unexpected_error`，不帶原 message、任意 class name、URL 或 headers。
+原 `observe.py`、非 header 路徑與 RPC 次數不變；相同合成 request bindings 下，成功 worker／parent
+收據 schema／content 逐 bytes 相同，真實新 helper／request hashes 自然不同。failure 欄位經原 nonce／
+request／worker hash、format 及固定 enum 綁定後傳遞，另保留實際 closure；failure 診斷本身不要求
+或證明 Job closure 成立。此時仍無新 native 收據，不能宣稱修好實際失敗。
+
 ### v43 nested-wrapper 的唯讀 successor 驗證
 
 使用獨立 [successor verifier](../../tools/arc_qwen_rlvr004_20261013/wrapper_observation_repair/verify_parent_wrappers.py)

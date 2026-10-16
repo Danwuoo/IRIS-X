@@ -94,10 +94,66 @@ class HeaderTransportTests(old.ClockedTests):
             Session=lambda: self.session, Request=Request)))
         self.storage.chunks = Mock(side_effect=AssertionError('checkpoint chunks read'))
 
-    def run_header(self, provider=None):
+    def run_header(self, provider=None, *, progress=None):
         return retrieve.observe_checkpoint_header(self.base,
             provider or old.FakeProvider(TensorResponse()), self.storage,
-            old.metadata(), CAP, retrieve.CHECKPOINT_SOURCE, old.DEADLINE)
+            old.metadata(), CAP, retrieve.CHECKPOINT_SOURCE, old.DEADLINE, progress=progress)
+
+    def test_success_bytes_equal_unwrapped_observer_results(self):
+        expected = {'before': self.base.observe(old.FakeProvider(), old.metadata()),
+                    'after': self.base.observe(old.FakeProvider(), old.metadata()),
+                    'checkpoint': retrieve.header_observation(SIZE)}
+        progress = {}
+        self.assertEqual(observer.canonical(self.run_header(progress=progress)), observer.canonical(expected))
+        self.assertEqual(progress, {'stage': 'checkpoint_terminal_brackets'})
+
+    def test_each_bracket_provider_call_has_fixed_failure_stage(self):
+        for phase_index, phase in enumerate(('checkpoint_before', 'checkpoint_after')):
+            for index, method in ((0, 'kernel'), (2, 'status'), (4, 'kernel')):
+                provider = old.FakeProvider(TensorResponse())
+                original = getattr(provider, method)
+                target = phase_index if method == 'status' else phase_index * 2 + (index == 4)
+                calls = []
+                def fail_call():
+                    calls.append(None)
+                    if len(calls) - 1 == target:
+                        raise AttributeError('https://private.invalid/?token=SECRET')
+                    return original()
+                setattr(provider, method, fail_call)
+                progress = {}
+                with self.subTest(phase=phase, method=method, index=index), self.assertRaises(AttributeError) as caught:
+                    self.run_header(provider, progress=progress)
+                diagnostic = retrieve.header_failure(caught.exception, progress)
+                self.assertEqual(diagnostic, {'failure_stage': retrieve.HEADER_BRACKET_STAGES[phase][index],
+                    'error_code': 'unexpected_error', 'exception_category': 'attribute_error'})
+                self.assertNotIn('SECRET', observer.canonical(diagnostic).decode())
+                if phase_index == 0:
+                    self.assertFalse(any(isinstance(call, tuple) for call in provider.calls))
+                else:
+                    self.assertTrue(provider.response.closed)
+
+    def test_each_bracket_return_has_fixed_validation_failure_stage(self):
+        for phase_index, phase in enumerate(('checkpoint_before', 'checkpoint_after')):
+            for index in (1, 3, 5):
+                kernels = [old.kernel() for _ in range(4)]
+                statuses = ['ERROR', 'ERROR']
+                if index == 3:
+                    statuses[phase_index] = 'invalid'
+                    code = 'bounded_status_required'
+                else:
+                    kernels[phase_index * 2 + (index == 5)]['blob']['source'] += 'changed'
+                    code = 'v43_source_changed'
+                provider = old.FakeProvider(TensorResponse(), kernels=kernels, statuses=statuses)
+                progress = {}
+                with self.subTest(phase=phase, index=index), self.assertRaises(observer.ObserverError) as caught:
+                    self.run_header(provider, progress=progress)
+                self.assertEqual(retrieve.header_failure(caught.exception, progress), {
+                    'failure_stage': retrieve.HEADER_BRACKET_STAGES[phase][index],
+                    'error_code': code, 'exception_category': 'unknown'})
+                if phase_index == 0:
+                    self.assertFalse(any(isinstance(call, tuple) for call in provider.calls))
+                else:
+                    self.assertTrue(provider.response.closed)
 
     def test_direct_response_is_header_only_and_source_bracketed(self):
         response = TensorResponse()
@@ -282,6 +338,25 @@ class HeaderBoundaryTests(old.ClockedTests):
             session.send(SimpleNamespace(method='POST', url=URL))
         raw_send.assert_not_called()
 
+    def test_metadata_routes_are_byte_equivalent_with_header_mode_on_or_off(self):
+        for operation in ('GetKernel', 'GetKernelSessionStatus'):
+            for stream in (False, True):
+                modes = []
+                for header in (False, True):
+                    response = old.FakeResponse(body=b'{"synthetic":true}',
+                        headers={'Content-Type': 'application/json'})
+                    raw_send = Mock(return_value=response)
+                    session = SimpleNamespace(send=raw_send, mount=Mock())
+                    client = SimpleNamespace(http_client=lambda: SimpleNamespace(_session=session))
+                    auth = SimpleNamespace(check=Mock())
+                    retrieve.bind_readonly(observer, sdk, client, auth, old.DEADLINE, checkpoint_header=header)
+                    self.assertIs(session.send(SimpleNamespace(method='POST',
+                        url=URL.replace('DownloadKernelOutput', operation)), stream=stream), response)
+                    modes.append((raw_send.call_args.kwargs, response._content,
+                        response._content_consumed, response.closed, auth.check.call_count))
+                with self.subTest(operation=operation, stream=stream):
+                    self.assertEqual(modes[0], modes[1])
+
 
 class HeaderPriorTests(unittest.TestCase):
     def setUp(self):
@@ -443,6 +518,7 @@ class HeaderSupervisorTests(old.ClockedTests):
         self.assertEqual(receipt['format'], 'irisx/v43-checkpoint-header-v1')
         self.assertEqual(receipt['source_checkpoint_descriptor'], retrieve.CHECKPOINT_SOURCE)
         self.assertEqual(receipt['checkpoint'], retrieve.header_observation(SIZE))
+        self.assertNotIn('worker_exception_category', receipt)
         launch = observer.strict_json((self.directory/'launch.json').read_bytes())
         self.assertEqual(launch['expected_checkpoint_source'], retrieve.CHECKPOINT_SOURCE)
         self.assertNotIn('expected_file', launch)
@@ -510,19 +586,20 @@ class HeaderSupervisorTests(old.ClockedTests):
     def test_worker_failure_is_not_header_success(self):
         self.native_result.code = 2
         self.mutate = lambda result: result.update(ok=False, header=None, error='AUTH_REFRESH_UNKNOWN',
-            failure_stage='auth_open', error_code='auth_refresh_unknown')
+            failure_stage='auth_open', error_code='auth_refresh_unknown', exception_category='unknown')
         code, receipt = self.run_supervisor()
         self.assertEqual(code, 2)
         self.assertFalse(receipt['header_observation_finalized'])
         self.assertEqual(receipt['worker_error'], 'AUTH_REFRESH_UNKNOWN')
         self.assertEqual(receipt['worker_failure_stage'], 'auth_open')
         self.assertEqual(receipt['worker_error_code'], 'auth_refresh_unknown')
+        self.assertEqual(receipt['worker_exception_category'], 'unknown')
 
     def test_failed_header_diagnostics_survive_parent_without_success_claims(self):
         self.native_result.code = 2
         self.mutate = lambda result: result.update(ok=False, header=None,
             error='selected_retrieval_failed', failure_stage='checkpoint_rpc_headers',
-            error_code='checkpoint_json_body_forbidden')
+            error_code='checkpoint_json_body_forbidden', exception_category='value_error')
         code, receipt = self.run_supervisor()
         self.assertEqual(code, 2)
         self.assertIs(receipt['ok'], False)
@@ -530,6 +607,7 @@ class HeaderSupervisorTests(old.ClockedTests):
         self.assertEqual(receipt['worker_error'], 'selected_retrieval_failed')
         self.assertEqual(receipt['worker_failure_stage'], 'checkpoint_rpc_headers')
         self.assertEqual(receipt['worker_error_code'], 'checkpoint_json_body_forbidden')
+        self.assertEqual(receipt['worker_exception_category'], 'value_error')
         self.assertEqual(receipt['closure'], old.closure())
         self.assertEqual(receipt['body_consumed_bytes'], 0)
         for key in ('checkpoint', 'before', 'after', 'http_status', 'byte_length'):
@@ -563,14 +641,46 @@ class HeaderSupervisorTests(old.ClockedTests):
         self.assertNotIn('checkpoint', receipt)
         self.assertEqual(receipt['body_consumed_bytes'], 0)
 
+    def test_actual_bracket_failure_substage_and_category_reach_parent(self):
+        def closed_worker(child, **kwargs):
+            fixture = HeaderWorkerTests('test_before_guard_is_classified_without_output')
+            fixture.setUp()
+            try:
+                fixture.args = retrieve.arguments(child[4:])
+                fixture.args.output = str(fixture.directory)
+                fixture.launch = observer.strict_json((self.directory / 'launch.json').read_bytes())
+                fixture.save_launch()
+                fixture.base.observe = observer.observe
+                fixture.provider.kernel = Mock(side_effect=AttributeError('https://private.invalid/?token=SECRET'))
+                self.native_result.code = retrieve.worker(fixture.args)
+                raw = fixture.writer.getvalue()
+                self.assertNotIn(b'SECRET', raw)
+                self.assertIsNone(observer.strict_json(raw)['header'])
+                self.assertEqual(fixture.provider.calls, [])
+                os.write(kwargs['output_fd'], raw)
+            finally:
+                fixture.doCleanups()
+            return self.native_result
+        self.supervisor.supervise.side_effect = closed_worker
+        code, receipt = self.run_supervisor()
+        self.assertEqual(code, 2)
+        self.assertIs(receipt['ok'], False)
+        self.assertIs(receipt['header_observation_finalized'], False)
+        self.assertEqual(receipt['worker_failure_stage'], 'checkpoint_before_kernel1')
+        self.assertEqual(receipt['worker_error_code'], 'unexpected_error')
+        self.assertEqual(receipt['worker_exception_category'], 'attribute_error')
+        self.assertEqual(receipt['body_consumed_bytes'], 0)
+        for key in ('checkpoint', 'before', 'after'):
+            self.assertNotIn(key, receipt)
+
     def test_unknown_worker_diagnostic_is_not_interpolated_or_promoted(self):
         self.native_result.code = 2
         secret = 'https://private.invalid/?token=SECRET /private/config.json'
-        for field in ('error', 'failure_stage', 'error_code', 'header', 'ok'):
+        for field in ('error', 'failure_stage', 'error_code', 'exception_category', 'header', 'ok'):
             for bad in (secret, [secret], {'secret': secret}, None, True):
                 def mutate(result):
                     result.update(ok=False, header=None, error='selected_retrieval_failed',
-                        failure_stage='checkpoint_output', error_code='unexpected_error')
+                        failure_stage='checkpoint_output', error_code='unexpected_error', exception_category='unknown')
                     result[field] = bad
                 # None is the required failed header value, so it is not a malformed case.
                 if field == 'header' and bad is None:
@@ -592,7 +702,8 @@ class HeaderSupervisorTests(old.ClockedTests):
     def test_failed_worker_binding_is_checked_before_diagnostics(self):
         self.native_result.code = 2
         self.mutate = lambda result: result.update(ok=False, header=None, nonce='wrong',
-            error='selected_retrieval_failed', failure_stage='checkpoint_output', error_code='unexpected_error')
+            error='selected_retrieval_failed', failure_stage='checkpoint_output', error_code='unexpected_error',
+            exception_category='unknown')
         code, receipt = self.run_supervisor()
         self.assertEqual(code, 2)
         self.assertEqual(receipt['error_code'], 'worker_result_binding')
@@ -706,6 +817,7 @@ class HeaderWorkerTests(old.ClockedTests):
         self.assertEqual(value['error_code'], error_code)
         self.assertIn(value['failure_stage'], retrieve.HEADER_WORKER_STAGES)
         self.assertIn(value['error_code'], retrieve.HEADER_WORKER_ERROR_CODES)
+        self.assertIn(value['exception_category'], retrieve.HEADER_EXCEPTION_CATEGORIES)
         for key in ('checkpoint', 'http_status', 'byte_length', 'body_materialized', 'download'):
             self.assertNotIn(key, value)
         self.assertNotIn(b'SECRET', raw)
@@ -740,6 +852,33 @@ class HeaderWorkerTests(old.ClockedTests):
             self.auth.open.side_effect = error
             with self.subTest(error_type=type(error).__name__):
                 self.failed_worker('auth_open', 'unexpected_error')
+        self.assertEqual(self.provider.calls, [])
+
+    def test_exception_categories_use_exact_builtin_types_only(self):
+        class PrivateAttributeError(AttributeError):
+            def __str__(self):
+                raise AssertionError('must not render SECRET')
+        # An arbitrary class name, even a familiar built-in name, is never admitted.
+        renamed = type('AttributeError', (Exception,), {})
+        cases = [(kind('SECRET'), category) for kind, category in retrieve.HEADER_EXCEPTION_TYPES.items()]
+        cases += [(PrivateAttributeError('SECRET'), 'unknown'), (renamed('SECRET'), 'unknown')]
+        for error, category in cases:
+            self.writer.seek(0)
+            self.writer.truncate()
+            self.base.observe.side_effect = error
+            with self.subTest(category=category):
+                value = self.failed_worker('checkpoint_before', 'unexpected_error')
+                self.assertEqual(value['exception_category'], category)
+        self.assertEqual(self.provider.calls, [])
+
+    def test_safe_metadata_cap_codes_are_preserved_without_details(self):
+        for code in ('metadata_declared_cap', 'metadata_stream_cap'):
+            self.writer.seek(0)
+            self.writer.truncate()
+            self.base.observe.side_effect = sdk.WorkerGuardError(code)
+            with self.subTest(code=code):
+                value = self.failed_worker('checkpoint_before', code)
+                self.assertEqual(value['exception_category'], 'unknown')
         self.assertEqual(self.provider.calls, [])
 
     def test_provider_setup_exception_is_sanitized(self):

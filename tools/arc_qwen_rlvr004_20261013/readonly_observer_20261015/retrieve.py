@@ -48,6 +48,21 @@ HEADER_WORKER_STAGES = frozenset({
     'checkpoint_storage_headers', 'checkpoint_validate_headers', 'checkpoint_after',
     'checkpoint_terminal_brackets', 'unexpected_stage',
 })
+HEADER_BRACKET_STAGES = {
+    'checkpoint_before': ('checkpoint_before_kernel1', 'checkpoint_before_kernel1_validate',
+        'checkpoint_before_status', 'checkpoint_before_status_validate',
+        'checkpoint_before_kernel2', 'checkpoint_before_kernel2_validate'),
+    'checkpoint_after': ('checkpoint_after_kernel1', 'checkpoint_after_kernel1_validate',
+        'checkpoint_after_status', 'checkpoint_after_status_validate',
+        'checkpoint_after_kernel2', 'checkpoint_after_kernel2_validate'),
+}
+HEADER_WORKER_STAGES |= frozenset(stage for stages in HEADER_BRACKET_STAGES.values() for stage in stages)
+HEADER_EXCEPTION_TYPES = {
+    AttributeError: 'attribute_error', TypeError: 'type_error', KeyError: 'key_error',
+    IndexError: 'index_error', ValueError: 'value_error', RuntimeError: 'runtime_error',
+    OSError: 'os_error', TimeoutError: 'timeout_error', ImportError: 'import_error',
+}
+HEADER_EXCEPTION_CATEGORIES = frozenset(HEADER_EXCEPTION_TYPES.values()) | {'unknown'}
 HEADER_WORKER_ERRORS = frozenset({
     'AUTH_REFRESH_UNKNOWN', 'SELECTED_OUTPUT_PENDING_OR_MISSING',
     'PROVIDER_NOT_TERMINAL', 'selected_retrieval_failed',
@@ -77,6 +92,7 @@ HEADER_WORKER_ERROR_CODES = frozenset({
     'storage_url_type', 'unsafe_storage_url', 'storage_host_not_allowed',
     'credential_forwarding', 'redirect_location_missing', 'redirect_limit',
     'download_status', 'download_declared_cap',
+    'metadata_declared_cap', 'metadata_stream_cap',
 })
 
 
@@ -91,7 +107,30 @@ def header_failure(error, progress, status=None):
         code = 'http_error' if type(status) is int and 400 <= status <= 599 else 'unexpected_error'
     stage = progress.get('stage')
     return {'failure_stage': stage if type(stage) is str and stage in HEADER_WORKER_STAGES
-            else 'unexpected_stage', 'error_code': code}
+            else 'unexpected_stage', 'error_code': code,
+            'exception_category': HEADER_EXCEPTION_TYPES.get(type(error), 'unknown')}
+
+
+class HeaderBracketProvider:
+    """Label calls and return-side validation without changing the pinned observer."""
+    def __init__(self, provider, progress, phase):
+        self.provider, self.progress = provider, progress
+        self.stages = HEADER_BRACKET_STAGES[phase]
+        self.kernel_calls = 0
+
+    def kernel(self):
+        index = 0 if self.kernel_calls == 0 else 4
+        self.kernel_calls += 1
+        header_stage(self.progress, self.stages[index])
+        value = self.provider.kernel()
+        header_stage(self.progress, self.stages[index + 1])
+        return value
+
+    def status(self):
+        header_stage(self.progress, self.stages[2])
+        value = self.provider.status()
+        header_stage(self.progress, self.stages[3])
+        return value
 
 
 def need(value, code):
@@ -446,7 +485,8 @@ def require_deadline(base, deadline):
 def observe_checkpoint_header(base, provider, storage, expected, cap, source, deadline, *, progress=None):
     header_stage(progress, 'checkpoint_before')
     require_deadline(base, deadline)
-    before = base.observe(provider, expected)
+    before = base.observe(HeaderBracketProvider(provider, progress, 'checkpoint_before'), expected)
+    header_stage(progress, 'checkpoint_before')
     need(before['terminal'] is True, 'provider_not_terminal')
     require_deadline(base, deadline)
     header_stage(progress, 'checkpoint_output')
@@ -469,7 +509,7 @@ def observe_checkpoint_header(base, provider, storage, expected, cap, source, de
         response.close()
     header_stage(progress, 'checkpoint_after')
     require_deadline(base, deadline)
-    after = base.observe(provider, expected)
+    after = base.observe(HeaderBracketProvider(provider, progress, 'checkpoint_after'), expected)
     header_stage(progress, 'checkpoint_terminal_brackets')
     terminal_brackets(base, before, after)
     require_deadline(base, deadline)
@@ -540,11 +580,11 @@ def worker(args):
                 result['download'] = retrieve_one(base, provider, storage, expected, args.name,
                     caps[args.name], directory, deadline, expected_file)
             result['ok'] = True
-        except auth_module.AuthRefreshUnknown:
+        except auth_module.AuthRefreshUnknown as error:
             result.update(error='AUTH_REFRESH_UNKNOWN', mutation_uncertain=True,
                           refresh_denied_before_write_guard=facade.refresh_denied_before_write_guard)
             if args.checkpoint_header:
-                result.update(header_failure(ValueError('auth_refresh_unknown'), progress))
+                result.update(header_failure(error, progress), error_code='auth_refresh_unknown')
         except BaseException as error:
             status = getattr(getattr(error, 'response', None), 'status_code', None)
             reason = 'SELECTED_OUTPUT_PENDING_OR_MISSING' if status == 404 else 'selected_retrieval_failed'
@@ -681,10 +721,12 @@ def supervise(args, argv):
                  and all(type(value.get(key)) is str and value[key] in allowed
                          for key, allowed in (('error', HEADER_WORKER_ERRORS),
                              ('failure_stage', HEADER_WORKER_STAGES),
-                             ('error_code', HEADER_WORKER_ERROR_CODES))),
+                             ('error_code', HEADER_WORKER_ERROR_CODES),
+                             ('exception_category', HEADER_EXCEPTION_CATEGORIES))),
                  'checkpoint_header_worker_result')
             receipt.update(worker_error=value['error'], worker_failure_stage=value['failure_stage'],
-                           worker_error_code=value['error_code'])
+                           worker_error_code=value['error_code'],
+                           worker_exception_category=value['exception_category'])
     except BaseException as error:
         # Only fixed local codes may leave this process; exception text can
         # contain private paths, provider bodies or credentials.
