@@ -40,7 +40,58 @@ SUPERVISOR_ERROR_CODES = frozenset({
     'original_retrieval_deadline', 'closed_download_hash_changed', 'final_output_exists',
     'linked_path_forbidden',
     'checkpoint_header_result', 'checkpoint_body_forbidden', 'checkpoint_launch_binding',
+    'checkpoint_header_worker_result',
 })
+HEADER_WORKER_STAGES = frozenset({
+    'auth_prepare', 'auth_protocol_ready', 'auth_open', 'provider_setup',
+    'checkpoint_before', 'checkpoint_output', 'checkpoint_rpc_headers',
+    'checkpoint_storage_headers', 'checkpoint_validate_headers', 'checkpoint_after',
+    'checkpoint_terminal_brackets', 'unexpected_stage',
+})
+HEADER_WORKER_ERRORS = frozenset({
+    'AUTH_REFRESH_UNKNOWN', 'SELECTED_OUTPUT_PENDING_OR_MISSING',
+    'PROVIDER_NOT_TERMINAL', 'selected_retrieval_failed',
+})
+# Deliberately fixed diagnostic vocabulary. Never serialize exception text,
+# response objects, headers, signed URLs, credential/config values or paths.
+HEADER_WORKER_ERROR_CODES = frozenset({
+    'unexpected_error', 'auth_refresh_unknown', 'http_error',
+    'checkpoint_json_body_forbidden', 'checkpoint_header_status',
+    'checkpoint_header_length', 'checkpoint_header_encoding', 'provider_not_terminal',
+    'original_retrieval_deadline', 'retrieval_deadline', 'readonly_retrieval_rpc_required',
+    'terminal_source_bracket_required', 'terminal_bracket_clock', 'terminal_bracket_changed',
+    'v43_metadata_changed', 'v43_source_changed', 'bounded_status_required', 'original_clock_bound',
+    'existing_credential_requires_refresh', 'refresh_forbidden', 'alternate_auth_environment',
+    'auth_already_prepared', 'source_verification_before_protocol_ready', 'protocol_ready_before_sdk_auth',
+    'official_sdk_sysconfig_root', 'original_sdk_lock_changed', 'sdk_lock_duplicate_key',
+    'sdk_lock_nonfinite', 'sdk_lock_schema', 'sdk_lock_distributions', 'sdk_source_count',
+    'official_api_must_not_be_preimported', 'official_sdk_source_closure', 'sdk_distribution_version',
+    'sdk_distribution_outside_bound_root',
+    'official_sdk_import_missing', 'official_sdk_import_outside_bound_root',
+    'official_sdk_unpinned_import', 'official_sdk_import_hash', 'native_auth_account',
+    'native_api_account', 'native_official_oauth_required', 'new_oauth_login_not_authorized',
+    'native_oauth_renew_failed', 'reviewed_version_schema', 'reviewed_version_sequence',
+    'reviewed_numeric_output_version_required', 'worker_latched',
+    'dto_string', 'dto_integer', 'dto_boolean', 'dto_list', 'dto_status',
+    'official_rpc_route_required', 'unreviewed_rpc_operation', 'tls_verification_required',
+    'storage_url_type', 'unsafe_storage_url', 'storage_host_not_allowed',
+    'credential_forwarding', 'redirect_location_missing', 'redirect_limit',
+    'download_status', 'download_declared_cap',
+})
+
+
+def header_stage(progress, stage):
+    if progress is not None:
+        progress['stage'] = stage
+
+
+def header_failure(error, progress, status=None):
+    code = error.args[0] if len(error.args) == 1 and type(error.args[0]) is str else None
+    if code not in HEADER_WORKER_ERROR_CODES:
+        code = 'http_error' if type(status) is int and 400 <= status <= 599 else 'unexpected_error'
+    stage = progress.get('stage')
+    return {'failure_stage': stage if type(stage) is str and stage in HEADER_WORKER_STAGES
+            else 'unexpected_stage', 'error_code': code}
 
 
 def need(value, code):
@@ -392,15 +443,20 @@ def require_deadline(base, deadline):
          'original_retrieval_deadline')
 
 
-def observe_checkpoint_header(base, provider, storage, expected, cap, source, deadline):
+def observe_checkpoint_header(base, provider, storage, expected, cap, source, deadline, *, progress=None):
+    header_stage(progress, 'checkpoint_before')
     require_deadline(base, deadline)
     before = base.observe(provider, expected)
     need(before['terminal'] is True, 'provider_not_terminal')
     require_deadline(base, deadline)
+    header_stage(progress, 'checkpoint_output')
     response = provider.output(CHECKPOINT_PATH, 43)
     try:
+        header_stage(progress, 'checkpoint_rpc_headers')
         checkpoint_rpc_headers(response)
+        header_stage(progress, 'checkpoint_storage_headers')
         with storage.header(response, cap) as response:
+            header_stage(progress, 'checkpoint_validate_headers')
             require_deadline(base, deadline)
             need(response.status_code == 200, 'checkpoint_header_status')
             length = response.headers.get('Content-Length')
@@ -411,8 +467,10 @@ def observe_checkpoint_header(base, provider, storage, expected, cap, source, de
             observation = header_observation(int(length))
     finally:
         response.close()
+    header_stage(progress, 'checkpoint_after')
     require_deadline(base, deadline)
     after = base.observe(provider, expected)
+    header_stage(progress, 'checkpoint_terminal_brackets')
     terminal_brackets(base, before, after)
     require_deadline(base, deadline)
     return {'before': before, 'after': after, 'checkpoint': observation}
@@ -463,16 +521,21 @@ def worker(args):
         result['format'] = 'irisx/v43-checkpoint-header-worker-v1'
         del result['download']
         result['header'] = None
+    progress = {}
     with auth_module.isolate_sdk_output() as (_, writer):
         try:
+            header_stage(progress, 'auth_prepare')
             auth.prepare()
+            header_stage(progress, 'auth_protocol_ready')
             auth.protocol_ready()
+            header_stage(progress, 'auth_open')
             auth.open()
+            header_stage(progress, 'provider_setup')
             storage = DownloadOnly(sdk.StorageHttp())
             provider = sdk.WorkerProvider(auth, runtime.versions, storage=storage)
             if args.checkpoint_header:
                 result['header'] = observe_checkpoint_header(base, provider, storage,
-                    expected, cap, source, deadline)
+                    expected, cap, source, deadline, progress=progress)
             else:
                 result['download'] = retrieve_one(base, provider, storage, expected, args.name,
                     caps[args.name], directory, deadline, expected_file)
@@ -480,12 +543,16 @@ def worker(args):
         except auth_module.AuthRefreshUnknown:
             result.update(error='AUTH_REFRESH_UNKNOWN', mutation_uncertain=True,
                           refresh_denied_before_write_guard=facade.refresh_denied_before_write_guard)
+            if args.checkpoint_header:
+                result.update(header_failure(ValueError('auth_refresh_unknown'), progress))
         except BaseException as error:
             status = getattr(getattr(error, 'response', None), 'status_code', None)
             reason = 'SELECTED_OUTPUT_PENDING_OR_MISSING' if status == 404 else 'selected_retrieval_failed'
-            if str(error) == 'provider_not_terminal':
+            if len(error.args) == 1 and type(error.args[0]) is str and error.args[0] == 'provider_not_terminal':
                 reason = 'PROVIDER_NOT_TERMINAL'
             result.update(error=reason, mutation_uncertain=False)
+            if args.checkpoint_header:
+                result.update(header_failure(error, progress, status))
         finally:
             auth.close()
         raw = base.canonical(result)
@@ -608,6 +675,16 @@ def supervise(args, argv):
             receipt.update(ok=True, download_finalized=True, file=row,
                            before=value['download']['before'], after=value['download']['after'])
             code = 0
+        elif args.checkpoint_header:
+            stage = 'checkpoint_header_worker'
+            need(value.get('ok') is False and value.get('header') is None
+                 and all(type(value.get(key)) is str and value[key] in allowed
+                         for key, allowed in (('error', HEADER_WORKER_ERRORS),
+                             ('failure_stage', HEADER_WORKER_STAGES),
+                             ('error_code', HEADER_WORKER_ERROR_CODES))),
+                 'checkpoint_header_worker_result')
+            receipt.update(worker_error=value['error'], worker_failure_stage=value['failure_stage'],
+                           worker_error_code=value['error_code'])
     except BaseException as error:
         # Only fixed local codes may leave this process; exception text can
         # contain private paths, provider bodies or credentials.

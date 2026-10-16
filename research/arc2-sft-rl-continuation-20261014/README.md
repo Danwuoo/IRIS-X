@@ -8,6 +8,10 @@ v43 已完成並取回真實輸出：A 完成 SFT256；B 首批 64 條中 12 條
 PUBLIC120 觀察為 0/167，334 個視圖均有效，但正式 consumer admission 仍有缺件。
 這不是有效 RL 更新的比較，也不是官方或獨立重評分數。[證據與下一步](DEVELOPMENT-PROGRESS.zh-TW.md)
 
+v43 的 wrapper successor 已在原檔完整通過；checkpoint header-only 首次實測失敗，
+HTTP／Content-Length 尚未知。下一輪是已授權的 training-only 數值診斷：A256＋首批64，
+最多8次額外 forward，強制無 RL commit，不執行 C／dev／held／PUBLIC。來源仍在窄測試與獨立審查，尚未提交。
+
 ## 一、研究假設與可反駁的結果
 
 1. **訊號假設：** 固定 training parents 的 demonstration-LOO exact reward，能產生 mixed groups，

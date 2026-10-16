@@ -24,6 +24,7 @@
 多輪發布修復已發布為 `0d3524caba46a4d3944d2f1686dd388f0833dc61`。歷史／即時
 context 修復已發布為 `a5c3da425aeeb31cb8b45d20684aec558fd0db84`，本地已驗收並提交 v43。
 native 檔案身分修復已發布為 `9fdc96325fd3f425b54fa99508d3181230f77f3e`，本地真實重取成功。
+wrapper／header 窄修已發布為 `4309b890d5c19dddd29b1fb87a26fa916df22cf1`；真實 wrapper replay 通過，header 首次失敗。
 本頁與下一次窄修同一 commit 保存，交付 SHA 由接收時 HEAD／遠端 readback 核對。歷史 fix refs、
 f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.com/Danwuoo/IRIS-X/blob/84a5a1f870c42899f3bea79996d1b9360c4bfee9/research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md)
 保存 lease 失敗與修復前的精確證據，不在本頁重複累積。
@@ -40,7 +41,7 @@ f5／a724／e491 checkout 與原 UNKNOWN 保留；[前輪進度](https://github.
 | 已發布的啟動修復 | 兩個 deployment-only callers 改用無模型準備環境；真正 installed parent／worker exact-byte gates 保留。collector 只多接受原 schema 加 null 欄位 | [修復範圍與 CPU 測試](../../tools/arc_qwen_rlvr004_20261013/preparation_environment_repair/README.md)；新增 runtime policy 一檔及衍生 self-pin 一檔，其餘 257／259 與 A/B/C 不變；v43 已實際越過啟動邊界 |
 | 多輪續接 | 0d3524 已隔離每輪 publication／collector 目錄，native STATE 與全域鎖共用；本地18:03 fresh no-auth 停於舊f5永久 same-boot 字串 gate | 原1,686檔完全不變，未新建 native claim／canonical／run、未 provider。CIM boot值變1.802125秒，host／Windows／source／runtime相同；符合校時漂移但未證明 same boot，不拿猜測當PASS |
 | 歷史／即時 context 修復 | 原封存Restart＋reconciliation在原completion time重驗；fresh host／source／runtime／closure另核對，封存events及live STATE前後綁定 | 只支援現有f5原件的12.629秒歷史間隔，保留原120秒限制；later UNKNOWN／refresh／publication變更仍阻擋，不加BootID框架、容差或重啟 |
-| Repository／CI | 9fdc963 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍；新遠端 CI 依最終 commit 另核對，未重跑不變完整 suite |
+| Repository／CI | 4309b89 精確 CI 仍失敗：同 6 項既有 README invariants 缺詞，unit／packaging skipped | focused 驗證只支持其實際範圍。額外誤啟的 repository aggregate 未成為驗收：一筆中止，已結束者 1,621 tests／6 failures／41 errors／74 skips；不以此修無關元件或宣稱全綠 |
 | 真實研究結果 | A SFT256；B 64/256 attempts、reward15/64、RL commit0；C 額外 SFT203。固定 dev 平手規則選 A；PUBLIC 原 scorer 完整 120 tasks／167 queries 為 0/167 | 以下是取回封存輸出的觀察，正式 consumer 尚拒絕；不代表 RL 更新有效或無效，也不是官方／獨立重評分數 |
 
 ### v43 模型與評分觀察
@@ -80,9 +81,9 @@ CPU 另以真正 pinned offline guard 重現子程序增加 6 個固定環境鍵
 | --- | --- | --- |
 | 兩 caller／guard 契約／collector schema 修復 | 0af 已發布；作者與獨立 reviewer 各 613 normal／613 `-O` 通過（46 準備、9 組裝、558 bridge） | 科學 runtime／archive 與 native 七件來源在本次 bookkeeping 修復中沿用，不重做未變驗收 |
 | 多輪 publication／collector 續接 | 0d3524 的作者／獨立review每模式599項PASS維持歷史證據；本次最終bridge每模式600項、獨立context每模式70項PASS，精確hash見VALIDATION | 本地真實 history／fresh readback 已通過並接受 v43；保留原件，已驗證且未變元件不重做 |
-| 原 A/B/C v43 取證 | 9fdc 真實 terminal／archive／selected 取檔已完成；原 wrapper verifier 因兩個內層觀察身份不在外層完整 inventory 拒絕 | 窄審查 nested inventory 語義；保留兩份真 closure、原拒絕與來源。補真實 checkpoint header-only HTTP200／Content-Length，仍不下載 tensor bodies或冒充原 collector context |
+| 原 A/B/C v43 取證 | 9fdc 真實取檔完成；4309 wrapper v2 原檔 replay PASS，22／6 observations、差集2，完整 subset 仍 false。header 首次實測失敗、HTTP／長度未知 | 保留原拒絕、全部 closure 與 failed header receipt；補 bounded worker stage／code 後只續做同 numeric43 header。tensor bodies、原 collector context 與整體 admission 仍未成立 |
 | v41 官方 log／inventory | 現有 bridge 尚未支援；SDK 0.1.37 可送 numeric version_label，但 response 無 version/source echo | 另作最小唯讀支援，不阻擋已確定的啟動修復；完整分頁與 numeric bodies／log attribution 分開，不能靠 latest CLI 補稱 exact41 |
-| 數值診斷與下一輪 | actor 為 eval／inference cached 增量解碼；replay 為 train／autograd checkpointed 全因果 teacher-forcing。相同 token／DFA 上仍有 gap | 先離線比較既有 calibration 的同 support logits；再以受審查的 training-only 診斷區分 head row shape、hidden/cache 與 mode 路徑。不得猜 kernel 根因、放寬門檻或依 PUBLIC 答案改模型 |
+| 數值診斷與下一輪 | actor 為 eval／inference cached 增量解碼；replay 為 train／autograd checkpointed 全因果 teacher-forcing。相同 token／DFA 上仍有 gap | 既有 calibration 差分已完成；下一輪固定 training-only 診斷 mode／checkpoint、teacher／prefix 及 cached 路徑，teacher／prefix 仍合併 hidden 與 head shape 因素。不得猜 kernel 根因、放寬門檻或依 PUBLIC 答案改模型 |
 
 研究設計仍為 SFT256 A、固定互斥 64-slot RL batches B、匹配完整 B model-phase wall 的 extra-SFT C；
 no-TTT、dev 選擇與 PUBLIC120／167 不變。AF3 companion 在原 audit 產生後分析；
@@ -166,7 +167,19 @@ PASS。helper SHA256 `62c2fddd50525af7d37e20368412a5d424f8aa19281932eb6ef897b761
 
 入口驗證固定 9fdc 真 terminal receipt 全鏈，要求實際 HTTP200／identity encoding／Content-Length
 與 1,546,535,710-byte 來源宣告一致，再以新 Job0 後的獨立 header receipt 保存。沒有 body、遠端 SHA
-或 collector admission 宣稱。以上是 CPU／source 範圍；真實 numeric43 HTTP header 尚待本地驗收。
+或 collector admission 宣稱。4309 的首次本地實測沒有完成：`selected_retrieval_failed`、
+header null、HTTP status 未知、Content-Length 未驗；新 Job0 成立且 body consumed0／materializedfalse。
+原失敗收據 1,891 bytes／SHA256 `d1dc741cbb075135e1ed971a4ca22b8e7f9380452d799629f4916a11286c35ce`
+保留；不能從來源宣告或 body0 推斷已取得實際 HTTP header。
+
+本次只增加固定 allowlist 的 `worker_failure_stage`／`worker_error_code`，經原 nonce／hash／format
+驗證後寫入失敗 parent receipt；不傳 raw exception、URL、headers 或私人路徑。成功 worker bytes／
+parent receipt 的 baseline 差分相等，請求、no-refresh／mutex／Job0 與讀取／重試行為不變。
+helper 43,162 bytes／SHA256 `793e3e1d10e6f0d0dd2a0ec43ca9d78ce8f3a81336fba60332de4441901fcda0`；
+test 46,888 bytes／SHA256 `1d1c30b8aa3527685770473755203d67e80b40bc0dfe3c0e59519cfce9062804`。
+作者與獨立 reviewer 各 154 normal／154 `-O` PASS（header56＋retrieval69＋observer29）；
+另有獨立 43 種 parent envelope 與 18 種 worker exception 負例。獨立 review SHA256
+`fb5091eb81671e60a6b7d3dc960e176e7c7bf56844ccdbf0d73ac17da4cffaf4`。尚未以此修復重試 native header。
 
 ### v43 nested-wrapper observation 契約修復
 
@@ -185,4 +198,8 @@ test SHA256 `8d2e3f29e8f5eae3b12a4eb0c95f4c99a09dd0277a4c011f199c91411214dd20`�
 作者與獨立 reviewer 各 29 normal／29 `-O` PASS，另有獨立六種 rebound runtime identity 負例。
 審查發現並補上原先缺少的 incarnation.pid／worker_pid 一致與嚴格 int 檢查；所有原 checks 仍保留。
 真正 CPU counterexample 有兩筆缺內層 supervisor witness，因此 successor 仍拒絕；未修改它換取 PASS。
-原 source、manifest、wrapper 拒絕與 native UNKNOWN 不改，真實 v43 全流程 successor replay 尚待本地。
+原 source、manifest、wrapper 拒絕與 native UNKNOWN 不改。4309 本地原檔完整 successor replay 已 PASS：
+closure_valid／operational／runtime_tree_link true，prep22／inner6／diff2；完整 subset false、
+model_closure_verified_by_this_helper false 如實保留。新結果 9,522 bytes／SHA256
+`e72b7c8363746cfd01903b37103899b44428a9e216e209d35ea4b7d599c27101`。
+這沒有補齊舊 native closure、trusted collector context 或正式科學 admission。

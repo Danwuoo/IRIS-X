@@ -337,6 +337,12 @@ Location redirect，可能預先讀 body 的 JSON-body URL redirect 誠實拒絕
 不能用作 prior-terminal receipt 或原 collector admission。no-refresh／原 mutex／300 秒與原 global
 期限不變；遇到 token、mutex、HTTP 或來源阻礙即保存實際失敗，不登入、接管或重新 RUN。
 
+4309 的首筆 header 已失敗並保留，不能當 header observation。此次只換固定 helper SHA256
+`793e3e1d10e6f0d0dd2a0ec43ca9d78ce8f3a81336fba60332de4441901fcda0`，在另一個 fresh output
+執行同一 numeric43 header 請求；原所有輸入 bytes 與 deadline 不變，不重取 terminal／archive。
+若仍失敗，回交 allowlisted `worker_failure_stage`／`worker_error_code`、header null 與新 Job0
+實際狀態；保留 failed worker／launch／parent receipts，不把失敗改稱 HTTP／長度已驗。
+
 ### v43 nested-wrapper 的唯讀 successor 驗證
 
 使用獨立 [successor verifier](../../tools/arc_qwen_rlvr004_20261013/wrapper_observation_repair/verify_parent_wrappers.py)
@@ -352,8 +358,9 @@ successor 保留原 `verify_stage` 全部 bytes、各階段原 supervisor union�
 worker、runtime worker 必須有外層相同 triple；內層額外觀察須在其已綁 bytes/SHA 的 supervisor
 原收據中，且兩階段均有原 clean closure。另嚴格驗證 runtime incarnation 的 int 欄位與 PID 一致。
 
-本地原檔只讀已證實所需三個 anchor 與兩個額外觀察的 supervisor membership 全 true；這是開始
-完整 successor replay 的前提，尚不是 replay 已通過。保留兩套原 inventory 與新明列差集，不合併或
+本地原檔完整 4309 successor replay 已 PASS；新結果 SHA256
+`e72b7c8363746cfd01903b37103899b44428a9e216e209d35ea4b7d599c27101`。不必重跑已通過的相同來源。
+保留 prep22／inner6 的兩套原 inventory 與差集2，完整 subset false、helper model closure false；不合併或
 補造程序 exit/reaped/closure。新 wrapper 結果不證明舊 Windows native session 已閉合，也不賦予
 正式 collector `CollectionContext`、tensor 驗證、scorer 或整體科學 admission。
 

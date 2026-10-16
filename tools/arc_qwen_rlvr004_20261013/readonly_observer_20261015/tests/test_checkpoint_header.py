@@ -509,10 +509,105 @@ class HeaderSupervisorTests(old.ClockedTests):
 
     def test_worker_failure_is_not_header_success(self):
         self.native_result.code = 2
-        self.mutate = lambda result: result.update(ok=False, header=None, error='AUTH_REFRESH_UNKNOWN')
+        self.mutate = lambda result: result.update(ok=False, header=None, error='AUTH_REFRESH_UNKNOWN',
+            failure_stage='auth_open', error_code='auth_refresh_unknown')
         code, receipt = self.run_supervisor()
         self.assertEqual(code, 2)
         self.assertFalse(receipt['header_observation_finalized'])
+        self.assertEqual(receipt['worker_error'], 'AUTH_REFRESH_UNKNOWN')
+        self.assertEqual(receipt['worker_failure_stage'], 'auth_open')
+        self.assertEqual(receipt['worker_error_code'], 'auth_refresh_unknown')
+
+    def test_failed_header_diagnostics_survive_parent_without_success_claims(self):
+        self.native_result.code = 2
+        self.mutate = lambda result: result.update(ok=False, header=None,
+            error='selected_retrieval_failed', failure_stage='checkpoint_rpc_headers',
+            error_code='checkpoint_json_body_forbidden')
+        code, receipt = self.run_supervisor()
+        self.assertEqual(code, 2)
+        self.assertIs(receipt['ok'], False)
+        self.assertEqual(receipt['reason'], 'worker_exit')
+        self.assertEqual(receipt['worker_error'], 'selected_retrieval_failed')
+        self.assertEqual(receipt['worker_failure_stage'], 'checkpoint_rpc_headers')
+        self.assertEqual(receipt['worker_error_code'], 'checkpoint_json_body_forbidden')
+        self.assertEqual(receipt['closure'], old.closure())
+        self.assertEqual(receipt['body_consumed_bytes'], 0)
+        for key in ('checkpoint', 'before', 'after', 'http_status', 'byte_length'):
+            self.assertNotIn(key, receipt)
+
+    def test_actual_worker_failure_bytes_reach_parent_classification(self):
+        def closed_worker(child, **kwargs):
+            fixture = HeaderWorkerTests('test_json_body_rejection_keeps_guard_code_without_body_read')
+            fixture.setUp()
+            try:
+                fixture.args = retrieve.arguments(child[4:])
+                fixture.args.output = str(fixture.directory)
+                fixture.launch = observer.strict_json((self.directory / 'launch.json').read_bytes())
+                fixture.save_launch()
+                fixture.provider.response.headers['Content-Type'] = 'application/json'
+                self.native_result.code = retrieve.worker(fixture.args)
+                raw = fixture.writer.getvalue()
+                self.assertIsNone(observer.strict_json(raw)['header'])
+                os.write(kwargs['output_fd'], raw)
+            finally:
+                fixture.doCleanups()
+            return self.native_result
+        self.supervisor.supervise.side_effect = closed_worker
+        code, receipt = self.run_supervisor()
+        self.assertEqual(code, 2)
+        self.assertIs(receipt['ok'], False)
+        self.assertIs(receipt['header_observation_finalized'], False)
+        self.assertEqual(receipt['worker_error'], 'selected_retrieval_failed')
+        self.assertEqual(receipt['worker_failure_stage'], 'checkpoint_rpc_headers')
+        self.assertEqual(receipt['worker_error_code'], 'checkpoint_json_body_forbidden')
+        self.assertNotIn('checkpoint', receipt)
+        self.assertEqual(receipt['body_consumed_bytes'], 0)
+
+    def test_unknown_worker_diagnostic_is_not_interpolated_or_promoted(self):
+        self.native_result.code = 2
+        secret = 'https://private.invalid/?token=SECRET /private/config.json'
+        for field in ('error', 'failure_stage', 'error_code', 'header', 'ok'):
+            for bad in (secret, [secret], {'secret': secret}, None, True):
+                def mutate(result):
+                    result.update(ok=False, header=None, error='selected_retrieval_failed',
+                        failure_stage='checkpoint_output', error_code='unexpected_error')
+                    result[field] = bad
+                # None is the required failed header value, so it is not a malformed case.
+                if field == 'header' and bad is None:
+                    continue
+                self.mutate = mutate
+                with self.subTest(field=field, bad=bad):
+                    code, receipt = self.run_supervisor()
+                    self.assertEqual(code, 2)
+                    self.assertIs(receipt['ok'], False)
+                    self.assertIs(receipt['header_observation_finalized'], False)
+                    self.assertEqual(receipt['failure_stage'], 'checkpoint_header_worker')
+                    self.assertEqual(receipt['error_code'], 'checkpoint_header_worker_result')
+                    self.assertNotIn('worker_error', receipt)
+                    self.assertNotIn(secret, json.dumps(receipt))
+                    self.assertNotIn('checkpoint', receipt)
+                for name in ('launch.json', 'worker-result.json', 'checkpoint-header-result.json'):
+                    (self.directory/name).unlink()
+
+    def test_failed_worker_binding_is_checked_before_diagnostics(self):
+        self.native_result.code = 2
+        self.mutate = lambda result: result.update(ok=False, header=None, nonce='wrong',
+            error='selected_retrieval_failed', failure_stage='checkpoint_output', error_code='unexpected_error')
+        code, receipt = self.run_supervisor()
+        self.assertEqual(code, 2)
+        self.assertEqual(receipt['error_code'], 'worker_result_binding')
+        self.assertNotIn('worker_error', receipt)
+
+    def test_unexpected_parent_exception_remains_sanitized(self):
+        self.supervisor.supervise.side_effect = RuntimeError({'token': 'SECRET', 'url': 'https://private.invalid'})
+        code, receipt = self.run_supervisor()
+        self.assertEqual(code, 2)
+        self.assertEqual(receipt['reason'], 'retrieval_supervision_failed')
+        self.assertEqual(receipt['failure_stage'], 'supervise')
+        self.assertEqual(receipt['error_code'], 'unexpected_error')
+        self.assertNotIn('SECRET', json.dumps(receipt))
+        self.assertNotIn('private.invalid', json.dumps(receipt))
+        self.assertNotIn('checkpoint', receipt)
 
 
 class HeaderWorkerTests(old.ClockedTests):
@@ -561,6 +656,7 @@ class HeaderWorkerTests(old.ClockedTests):
         self.assertEqual(retrieve.worker(self.args), 0)
         value = observer.strict_json(self.writer.getvalue())
         self.assertEqual(value['format'], 'irisx/v43-checkpoint-header-worker-v1')
+        self.assertEqual(set(value), {'format', 'nonce', 'request_sha256', 'ok', 'header'})
         self.assertEqual(value['header']['checkpoint'], retrieve.header_observation(SIZE))
         self.assertNotIn('download', value)
         self.win.require_worker_job.assert_called_once_with(self.args.nonce)
@@ -582,6 +678,8 @@ class HeaderWorkerTests(old.ClockedTests):
         self.assertIs(value['ok'], False)
         self.assertIsNone(value['header'])
         self.assertEqual(value['error'], 'AUTH_REFRESH_UNKNOWN')
+        self.assertEqual(value['failure_stage'], 'auth_open')
+        self.assertEqual(value['error_code'], 'auth_refresh_unknown')
         self.assertEqual(self.provider.calls, [])
         self.auth.close.assert_called_once()
         self.assertNotIn(b'private refresh detail', self.writer.getvalue())
@@ -591,9 +689,104 @@ class HeaderWorkerTests(old.ClockedTests):
         self.assertEqual(retrieve.worker(self.args), 2)
         value = observer.strict_json(self.writer.getvalue())
         self.assertEqual(value['error'], 'SELECTED_OUTPUT_PENDING_OR_MISSING')
+        self.assertEqual(value['failure_stage'], 'checkpoint_storage_headers')
+        self.assertEqual(value['error_code'], 'http_error')
         self.assertIsNone(value['header'])
         self.assertTrue(self.provider.response.closed)
         self.assertNotIn(b'private URL', self.writer.getvalue())
+
+    def failed_worker(self, stage, error_code, *, reason='selected_retrieval_failed'):
+        self.assertEqual(retrieve.worker(self.args), 2)
+        raw = self.writer.getvalue()
+        value = observer.strict_json(raw)
+        self.assertIs(value['ok'], False)
+        self.assertIsNone(value['header'])
+        self.assertEqual(value['error'], reason)
+        self.assertEqual(value['failure_stage'], stage)
+        self.assertEqual(value['error_code'], error_code)
+        self.assertIn(value['failure_stage'], retrieve.HEADER_WORKER_STAGES)
+        self.assertIn(value['error_code'], retrieve.HEADER_WORKER_ERROR_CODES)
+        for key in ('checkpoint', 'http_status', 'byte_length', 'body_materialized', 'download'):
+            self.assertNotIn(key, value)
+        self.assertNotIn(b'SECRET', raw)
+        self.assertNotIn(b'private.invalid', raw)
+        self.assertFalse(any((self.directory/name).exists() for name in ('payload.part', 'payload.bin')))
+        return value
+
+    def test_each_auth_stage_preserves_only_safe_classification(self):
+        for method, stage in (('prepare', 'auth_prepare'), ('protocol_ready', 'auth_protocol_ready'),
+                              ('open', 'auth_open')):
+            self.writer.seek(0)
+            self.writer.truncate()
+            with self.subTest(stage=stage), patch.object(self.auth, method,
+                    Mock(side_effect=RuntimeError('https://private.invalid/?token=SECRET'))):
+                self.failed_worker(stage, 'unexpected_error')
+            self.assertEqual(self.provider.calls, [])
+
+    def test_known_auth_guard_code_is_preserved(self):
+        self.auth.prepare.side_effect = observer.ObserverError('official_sdk_source_closure')
+        self.failed_worker('auth_prepare', 'official_sdk_source_closure')
+        self.assertEqual(self.provider.calls, [])
+
+    def test_unknown_exception_does_not_call_str_or_echo_nonstring_arguments(self):
+        class PrivateException(Exception):
+            def __str__(self):
+                raise AssertionError('must not render SECRET exception')
+        for error in (PrivateException('SECRET'), ValueError(['SECRET']),
+                      RuntimeError({'url': 'https://private.invalid/?token=SECRET'}),
+                      ValueError('checkpoint_header_length', 'SECRET')):
+            self.writer.seek(0)
+            self.writer.truncate()
+            self.auth.open.side_effect = error
+            with self.subTest(error_type=type(error).__name__):
+                self.failed_worker('auth_open', 'unexpected_error')
+        self.assertEqual(self.provider.calls, [])
+
+    def test_provider_setup_exception_is_sanitized(self):
+        self.fake_sdk.WorkerProvider.side_effect = TypeError('SECRET constructor config')
+        self.failed_worker('provider_setup', 'unexpected_error')
+        self.assertEqual(self.provider.calls, [])
+
+    def test_before_guard_is_classified_without_output(self):
+        self.base.observe.side_effect = observer.ObserverError('v43_source_changed')
+        self.failed_worker('checkpoint_before', 'v43_source_changed')
+        self.assertEqual(self.provider.calls, [])
+
+    def test_nonterminal_classification_survives_without_output(self):
+        self.base.observe.side_effect = [old.snapshot('RUNNING')]
+        self.failed_worker('checkpoint_before', 'provider_not_terminal', reason='PROVIDER_NOT_TERMINAL')
+        self.assertEqual(self.provider.calls, [])
+
+    def test_output_exception_does_not_leak_response_or_signed_url(self):
+        self.provider.output = Mock(side_effect=HTTPError('https://private.invalid/?token=SECRET',
+            response=SimpleNamespace(status_code=403, headers={'Authorization': 'SECRET'})))
+        self.failed_worker('checkpoint_output', 'http_error')
+        self.provider.output.assert_called_once_with(retrieve.CHECKPOINT_PATH, 43)
+        self.base.observe.assert_called_once()
+
+    def test_json_body_rejection_keeps_guard_code_without_body_read(self):
+        self.provider.response.headers['Content-Type'] = 'application/json'
+        self.failed_worker('checkpoint_rpc_headers', 'checkpoint_json_body_forbidden')
+        self.assertTrue(self.provider.response.closed)
+        self.assertEqual(self.provider.calls, [('output', retrieve.CHECKPOINT_PATH, 43)])
+        self.base.observe.assert_called_once()
+
+    def test_header_length_rejection_has_no_partial_header_success(self):
+        self.provider.response.headers['Content-Length'] = str(SIZE-1)
+        self.failed_worker('checkpoint_validate_headers', 'checkpoint_header_length')
+        self.assertTrue(self.provider.response.closed)
+        self.base.observe.assert_called_once()
+
+    def test_after_guard_failure_discards_provisional_header_success(self):
+        self.base.observe.side_effect = [old.snapshot(), observer.ObserverError('v43_metadata_changed')]
+        self.failed_worker('checkpoint_after', 'v43_metadata_changed')
+        self.assertTrue(self.provider.response.closed)
+        self.assertEqual(self.base.observe.call_count, 2)
+
+    def test_bracket_failure_discards_provisional_header_success(self):
+        self.base.observe.side_effect = [old.snapshot(), old.snapshot('COMPLETE')]
+        self.failed_worker('checkpoint_terminal_brackets', 'terminal_bracket_changed')
+        self.assertTrue(self.provider.response.closed)
 
     def test_job_membership_and_expired_worker_lease_stop_before_auth(self):
         self.win.require_worker_job.side_effect = ValueError('worker_job_missing')
