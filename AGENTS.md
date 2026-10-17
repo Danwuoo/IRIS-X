@@ -1,5 +1,16 @@
 # IRIS-X Repository Governance
 
+## Current reviewed-source wrap-up (2026-10-17 UTC)
+
+This checkpoint consolidates completed, reviewed source, tests and technical
+documentation. It does not authorize a new GPU run, notebook update or automatic
+watcher restart. Further external execution requires a new owner direction;
+the sustained-run instructions below remain historical context, not permission
+to restart work after this wrap-up. Preserve all original identities, evidence
+and production-versus-prototype distinctions. See
+`research/arc2-sft-rl-continuation-20261014/REVIEWED-SOURCE-CHECKPOINT-20261017.md`
+for the bounded technical inventory and validation limits.
+
 ## Active goal-directed AF3 successor (2026-10-17 UTC)
 
 The owner's latest direction authorizes sustained research on branch

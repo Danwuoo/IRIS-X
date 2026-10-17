@@ -1,7 +1,9 @@
 # Capacity expansion: bounded comparison proposal
 
-This is a proposal, not a changed model or launched experiment. The original
-official 2B/4B pipeline remains first. Parameter expansion adds capacity, not
+This is an experiment proposal, not a change to the running model or a launched
+GPU experiment. A separate local initialization prototype is documented in
+`CAPACITY-PROTOTYPE.md`; the official 2B/4B pipeline remains first.
+Parameter expansion adds capacity, not
 learned knowledge at initialization; additional data/optimization must make that
 capacity useful within the same compute budget.
 
