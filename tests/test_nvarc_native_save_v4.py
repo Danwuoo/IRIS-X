@@ -3,6 +3,7 @@ import copy
 import tempfile
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 from tools import save_nvarc_native_multitask as save
 from tools import stage_nvarc_native_multitask as stage
@@ -39,36 +40,48 @@ class NativeSaveV4Tests(unittest.TestCase):
                          save.SAVE_ONLY_ADMISSION_FORMAT)
 
     def test_scope_bindings_and_fabricated_resource_facts_rejected(self):
-        base=admission()
-        changes={
-            'run_id':'nvarc-original-qwen3-native-multitask-011','reviewed_run_id':save.RESOURCE_EXCEPTION_REVIEW_RUN,
-            'reviewed_plan_digest':'sha256:'+'0'*64,'reviewed_notebook_sha256':'0'*64,
-            'source_commit':save.REVIEW_COMMIT,'control_review_sha256':'0'*64,
-            'maximum_paid_usd':1,'local_resource_admission':True,'private':False,'internet':True,
-            'quick_save_authorized':False,'maximum_quick_saves':2,'agent_execution_authorized':True,
-            'owner_clearance_ref':'older approval','resource_information_status':'available',
-            'resource_information_unavailable':list(save.UNAVAILABLE_QUOTA_FIELDS),
-            'owner_resource_exception_ref':save.RESOURCE_EXCEPTION_REF,
-            'owner_resource_exception_sha256':'0'*64,
-            'reserved_quota_hours':2.5,'quota_observed_at':'2026-10-04T23:00:00+08:00',
-            'l4_quota_multiplier':2,'quota_reservation_id':'invented',
-            'prior_sessions_reconciled':True,'owner_editor_sessions_closed':True,
-        }
-        for key,value in changes.items():
-            with self.subTest(key=key):
-                changed=copy.deepcopy(base);changed[key]=value
-                with self.assertRaises(RuntimeError):save.validate_export_save_admission(changed,save.EXPORT_SAVE_RUN)
-        with self.assertRaises(RuntimeError):save.validate_export_save_admission(base,'nvarc-original-qwen3-native-multitask-011')
+        # Unit-check invalid fields without asserting retained review provenance.
+        real_sha = save.sha
+        with patch.object(save, 'sha', side_effect=lambda path:
+                save.REVIEW_SHA if path == save.REVIEW_FILE else real_sha(path)), \
+             patch.object(stage, 'preflight', side_effect=AssertionError(
+                 'invalid admission must fail before retained-package preflight')):
+            base=admission()
+            changes={
+                'run_id':'nvarc-original-qwen3-native-multitask-011','reviewed_run_id':save.RESOURCE_EXCEPTION_REVIEW_RUN,
+                'reviewed_plan_digest':'sha256:'+'0'*64,'reviewed_notebook_sha256':'0'*64,
+                'source_commit':save.REVIEW_COMMIT,'control_review_sha256':'0'*64,
+                'maximum_paid_usd':1,'local_resource_admission':True,'private':False,'internet':True,
+                'quick_save_authorized':False,'maximum_quick_saves':2,'agent_execution_authorized':True,
+                'owner_clearance_ref':'older approval','resource_information_status':'available',
+                'resource_information_unavailable':list(save.UNAVAILABLE_QUOTA_FIELDS),
+                'owner_resource_exception_ref':save.RESOURCE_EXCEPTION_REF,
+                'owner_resource_exception_sha256':'0'*64,
+                'reserved_quota_hours':2.5,'quota_observed_at':'2026-10-04T23:00:00+08:00',
+                'l4_quota_multiplier':2,'quota_reservation_id':'invented',
+                'prior_sessions_reconciled':True,'owner_editor_sessions_closed':True,
+            }
+            for key,value in changes.items():
+                with self.subTest(key=key):
+                    changed=copy.deepcopy(base);changed[key]=value
+                    with self.assertRaisesRegex(RuntimeError, 'only exact owner-authorized'):save.validate_export_save_admission(changed,save.EXPORT_SAVE_RUN)
+            with self.assertRaises(RuntimeError):save.validate_export_save_admission(base,'nvarc-original-qwen3-native-multitask-011')
 
     def test_format_field_closure_and_unavailable_list_order_required(self):
-        for change in ('extra','missing','format','order'):
-            value=admission()
-            if change=='extra':value['resource_sufficient']=True
-            elif change=='missing':del value['owner_editor_sessions_closed']
-            elif change=='format':value['format']=save.SAVE_ONLY_ADMISSION_FORMAT
-            else:value['resource_information_unavailable'].reverse()
-            with self.subTest(change=change),self.assertRaises(RuntimeError):
-                save.validate_export_save_admission(value,save.EXPORT_SAVE_RUN)
+        # Unit-check invalid fields without asserting retained review provenance.
+        real_sha = save.sha
+        with patch.object(save, 'sha', side_effect=lambda path:
+                save.REVIEW_SHA if path == save.REVIEW_FILE else real_sha(path)), \
+             patch.object(stage, 'preflight', side_effect=AssertionError(
+                 'invalid admission must fail before retained-package preflight')):
+            for change in ('extra','missing','format','order'):
+                value=admission()
+                if change=='extra':value['resource_sufficient']=True
+                elif change=='missing':del value['owner_editor_sessions_closed']
+                elif change=='format':value['format']=save.SAVE_ONLY_ADMISSION_FORMAT
+                else:value['resource_information_unavailable'].reverse()
+                with self.subTest(change=change),self.assertRaisesRegex(RuntimeError, 'only exact owner-authorized'):
+                    save.validate_export_save_admission(value,save.EXPORT_SAVE_RUN)
 
 
 if __name__=='__main__':unittest.main()

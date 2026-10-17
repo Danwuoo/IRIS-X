@@ -14,7 +14,6 @@ PACKAGE = ROOT / ".irisx/arc-agi-2/qwen35-nvarc/m2-m3/compact-abc-editor-003-sub
 class ABCTuningBoundaries(unittest.TestCase):
     def test_control_treatments_and_total_ceiling(self):
         plan = read(PLAN)
-        self.assertEqual(make_plan(), plan)
         self.assertEqual(ARMS, tuple(arm["id"] for arm in plan["arms"]))
         self.assertEqual([0, 0, 1, 2, 1],
                          [arm["ttt_steps_per_task"] for arm in plan["arms"]])
@@ -26,6 +25,9 @@ class ABCTuningBoundaries(unittest.TestCase):
         self.assertEqual(12, plan["limits"]["maximum_total_ttt_steps"])
         self.assertEqual(3072, plan["limits"]["maximum_total_ttt_training_tokens"])
         self.assertEqual(["arc-prize-2026-arc-agi-2"], metadata(plan)["competition_sources"])
+
+    def test_retained_plan_and_save_projection(self):
+        self.assertEqual(make_plan(), read(PLAN))
         self.assertEqual("QUICK_SAVE", save_fields(PACKAGE, retained_review=True)["kernel_execution_type"])
 
 

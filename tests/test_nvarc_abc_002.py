@@ -50,7 +50,7 @@ class ABCRepairTests(unittest.TestCase):
                 _verify_file_inventory(root, [entry], None,
                                        allowed_extra_files={"dataset-metadata.json"})
 
-    def test_worker_sidecar_detection_and_exact_plan(self):
+    def test_worker_sidecar_detection(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             base, sft = root / "base", root / "sft"
@@ -73,12 +73,15 @@ class ABCRepairTests(unittest.TestCase):
                                  verify.call_args_list[0].kwargs["allowed_extra_files"])
                 self.assertEqual(None, verify.call_args_list[1].kwargs["allowed_extra_files"])
 
+    def test_tracked_plan_contract(self):
         plan = read(PLAN)
-        self.assertEqual(make_plan(), plan)
         self.assertEqual("nvarc-compact-abc-editor-002", plan["run_id"])
         self.assertEqual("four-distinct-bf16-l4-verified/one-active-worker-v1",
                          plan["hardware_profile"])
         self.assertEqual(["arc-prize-2026-arc-agi-2"], metadata(plan)["competition_sources"])
+
+    def test_retained_plan_and_save_projection(self):
+        self.assertEqual(make_plan(), read(PLAN))
         self.assertEqual("QUICK_SAVE", save_fields(PACKAGE, retained_review=True)["kernel_execution_type"])
         self.assertTrue(preflight(PACKAGE, retained_review=True)["retained_wheel_verified"])
 

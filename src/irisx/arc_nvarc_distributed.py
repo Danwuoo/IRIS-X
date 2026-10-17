@@ -186,6 +186,13 @@ def _authorized_real_run(path: Path | None, identity: str, config: Mapping[str, 
         raise ValidationError("real DDP SFT authorization does not match limits")
 
 
+def _free_loopback_port() -> int:
+    """Select an actual port before static rendezvous publishes it to ranks."""
+    from torch.distributed.elastic.utils.distributed import get_free_port
+
+    return get_free_port()
+
+
 def supervise(*, config_path: Path, data_root: Path, output: Path,
               world_size: int, session_wall_seconds: int, maximum_total_wall_seconds: int,
               fixture: bool = False, model_root: Path | None = None,
@@ -229,8 +236,10 @@ def supervise(*, config_path: Path, data_root: Path, output: Path,
     ledger["sessions"].append(session)
     ledger["charged_wall_seconds"] += session_wall_seconds
     atomic_json(ledger_path, ledger)
+    # Static rendezvous forwards its requested port to workers unchanged, so
+    # port 0 leaves them trying to connect to 0 instead of TCPStore's bound port.
     argv = [sys.executable, "-m", "torch.distributed.run", "--rdzv-backend=static",
-            "--master-addr=127.0.0.1", "--master-port=0",
+            "--master-addr=127.0.0.1", f"--master-port={_free_loopback_port()}",
             f"--nproc-per-node={world_size}", "-m", "irisx.arc_nvarc_distributed", "worker",
             "--config", str(config_path), "--data-root", str(data_root),
             "--output", str(output)]

@@ -47,7 +47,10 @@ class PrefixContractTests(unittest.TestCase):
         self.assertGreater(e12.scalar_reference()[64], 0)
 
     def test_scalar_fixture_matches_pinned_reference_within_original_four_ulp(self):
-        plan = json.loads(Path('research/stage4-e11/inert-dfs-floor-plan.json').read_text())
+        raw = (Path(__file__).parent / 'fixtures/e12/frozen-inert-001-plan.json').read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         'f8000ab7db2a40795e93ff7482ad17ffa7fc817057207da7a9aadd6266739349')
+        plan = json.loads(raw)
         # Historical reference is checked without modifying or executing its profile.
         def find(value):
             if isinstance(value, dict):

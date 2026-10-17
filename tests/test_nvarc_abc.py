@@ -24,15 +24,18 @@ PACKAGE = ROOT / ".irisx/arc-agi-2/qwen35-nvarc/m2-m3/compact-abc-editor-001-sub
 class ABCBoundaryTests(unittest.TestCase):
     def test_fixed_material_representation_and_budgets(self):
         plan = read(PLAN)
-        self.assertEqual(make_plan(), plan)
         self.assertEqual(("A", "B", "C"), tuple(x["id"] for x in plan["arms"]))
         self.assertEqual([0, 0, 1], [x["ttt_steps_per_task"] for x in plan["arms"]])
         self.assertEqual(18, plan["limits"]["maximum_total_generation_calls"])
         self.assertEqual(36, plan["limits"]["maximum_total_returned_sequences"])
         self.assertEqual(3, plan["limits"]["maximum_total_ttt_steps"])
         self.assertEqual(set(), set(TASKS) & set(plan["sft_train_parent_ids"]))
-        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE, retained_review=True)["kernel_execution_type"])
         self.assertEqual([], metadata(plan)["competition_sources"])
+
+    def test_retained_plan_and_save_projection(self):
+        # Historical material provenance is separate from the tracked contract.
+        self.assertEqual(make_plan(), read(PLAN))
+        self.assertEqual("QUICK_SAVE", save_fields(PACKAGE, retained_review=True)["kernel_execution_type"])
 
     def test_public_shape_and_palette_fail_closed_without_truth(self):
         visible = read(PACKAGE / "visible.json")

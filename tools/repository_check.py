@@ -885,6 +885,32 @@ def run_all_checks(root: Path) -> int:
     return 0
 
 
+def run_public_checks(root: Path) -> int:
+    """Public checkout validation, explicitly not complete historical acceptance."""
+    failed = False
+    print("== public-checkout validator self-tests ==", flush=True)
+    failed |= run_self_tests() != 0
+    print("\n== repository invariants ==", flush=True)
+    failed |= run_repository_check(root) != 0
+    scratch = root / ".irisx" / "public-ci" / "tmp"
+    scratch.mkdir(parents=True, exist_ok=True)
+    # Start a fresh interpreter: changing PYTHONHASHSEED in this process would
+    # not establish the original source hash-seed contract.
+    environment = dict(os.environ, PYTHONHASHSEED="0", TMPDIR=str(scratch),
+                       HF_HUB_OFFLINE="1", HF_DATASETS_OFFLINE="1",
+                       TRANSFORMERS_OFFLINE="1", OMP_NUM_THREADS="1")
+    for label, command in (
+        ("public-checkout tests (retained evidence explicitly unverified)",
+         [sys.executable, "-m", "tools.run_public_tests"]),
+        ("diff whitespace", ["git", "diff", "--check"]),
+    ):
+        print(f"\n== {label} ==", flush=True)
+        failed |= subprocess.run(command, cwd=root, env=environment, check=False).returncode != 0
+    print("\nIRIS-X public-checkout validation: " + ("FAIL" if failed else "PASS"))
+    print("Full retained-evidence/Stage 4 acceptance: NOT ESTABLISHED by this lane.")
+    return 1 if failed else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
@@ -894,6 +920,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="run repository checks, unit tests, and diff validation",
     )
+    mode.add_argument(
+        "--public",
+        action="store_true",
+        help="run public-checkout checks; explicitly report retained-evidence integrations as unverified",
+    )
     args = parser.parse_args(argv)
     if args.self_test:
         return run_self_tests()
@@ -901,6 +932,8 @@ def main(argv: list[str] | None = None) -> int:
     root = Path(__file__).resolve().parents[1]
     if args.all:
         return run_all_checks(root)
+    if args.public:
+        return run_public_checks(root)
     return run_repository_check(root)
 
 

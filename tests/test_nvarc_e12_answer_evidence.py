@@ -23,29 +23,7 @@ from tools import nvarc_e10_answer_evidence as frozen
 from tools import nvarc_native_multitask as native
 from tools import nvarc_native_solve_runtime as source
 from tools.nvarc_public_eval import PhaseTelemetry
-from tests.test_nvarc_e10_paired_schedule import LiteralEngine, fixture as old_fixture
-from tests.test_nvarc_e10_end_to_end import Array,FakeTensor
-
-
-PROFILE = dict(profile_id='native-prefix-stop-v10', run_id='stage4-e12-probe-prefix-20261007-001',
-    generation_seconds=120, verification_reserve_seconds=30, per_test_seconds=150,
-    forward_observer_required=True)
-
-
-def fixture(root):
-    """Use the real strict E12 profile with literal public CPU fixtures."""
-    plan = old_fixture(root)
-    plan.update(format='irisx/stage4-e12-prefix-probe-v1', run_id=PROFILE['run_id'],
-        screen_id=PROFILE['run_id'], generation_budget_profile=PROFILE['profile_id'],
-        resource_budget_profile=runtime.BUDGET_PROFILE,**runtime.TIMING,**runtime.CAPS,
-        per_arm_caps=dict(runtime.PER_ARM_CAPS),retained_model_layout=dict(runtime.MODEL_LAYOUT),
-        e12_process_policy=dict(runtime.PROCESS_POLICY),cleanup_reserve_seconds=310,
-        arm_order=runtime.counterbalanced_order(runtime.TASK_COUNTS),maximum_training_forwards=768,
-        maximum_training_backwards=768,optimizer_steps=768,per_worker_training_steps=192,
-        maximum_control_forwards=28,per_worker_forwards=7,expected_notebook_version=11,expected_previous_version=10,
-        verification_schedule='interleaved', verification_schedules=['interleaved'],
-        arm_contracts={arm:runtime.arm_contract(arm) for arm in runtime.ARMS})
-    return plan
+from tests.nvarc_e12_cpu_fixture import Array, FakeTensor, LiteralEngine, fixture
 
 
 class EvidenceTests(unittest.TestCase):
@@ -322,7 +300,9 @@ class FrozenSourceReplayTests(unittest.TestCase):
                 width=max(map(len,rows))
                 adapter(input_ids=FakeTensor([r+[13]*(width-len(r)) for r in rows]),use_cache=False)
                 engine.clock+=.5
-                return [float(len(tokenizer.encode(a))) for a in answers]
+                # The literal model emits 16 equal logits, so every token's
+                # negative log probability is log(16), not a native-model score.
+                return [len(tokenizer.encode(a))*math.log(16.) for a in answers]
             engine.solver=NS(inference_turbo_dfs=generate,calc_scores=verify,turbo_dfs=None)
             token_adapter=NS(encode=lambda text:NS(ids=engine.tokenizer.encode(text)),decode=engine.tokenizer.decode)
             tokenizer_module=NS(Tokenizer=NS(from_file=lambda _path:token_adapter))

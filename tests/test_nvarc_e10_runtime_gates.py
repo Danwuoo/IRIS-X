@@ -107,7 +107,9 @@ class RuntimeGateTests(unittest.TestCase):
         ch={'a':{'train':[{'input':[[1]],'output':[[2]]}],'test':[{'input':[[3]]}]}}
         evidence=[{'task_id':'a','provenance':'native-model','receipt':{'status':'complete','launched':True,'returncode':0},
                    'checkpoint':{'tests':[{'attempts':[]}]}}]
-        with patch.object(calibration,'load_sources',return_value=(SimpleNamespace(),None,None)), \
+        # This tests unconditional gate dispatch, not NumPy or native loading.
+        with patch.dict(sys.modules, {'numpy': SimpleNamespace()}), \
+             patch.object(calibration,'load_sources',return_value=(SimpleNamespace(),None,None)), \
              patch.object(calibration,'verify_native_training_gate',side_effect=RuntimeError('mandatory epoch')) as gate:
             with self.assertRaisesRegex(RuntimeError,'mandatory epoch'):
                 calibration.require_task_gates('.',{},ch,evidence,None,['a'])

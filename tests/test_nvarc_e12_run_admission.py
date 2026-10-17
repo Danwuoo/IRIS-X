@@ -10,10 +10,12 @@ from datetime import datetime, timedelta, timezone
 import hashlib
 import io
 from pathlib import Path
+import sys
 import tempfile
 import time
+from types import ModuleType
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from tools import nvarc_e12_admission as admission
 from tools import nvarc_e12_entry as entry
@@ -224,6 +226,10 @@ class NotebookTests(unittest.TestCase):
 
     def test_actual_admission_failure_reaches_prelaunch_diagnostic_finalizer(self):
         runtime = stage.runtime_api(); seen = []
+        # Notebook rendering is not an IPython dependency of this CPU control test.
+        display = ModuleType('IPython.display')
+        display.display = Mock()
+        display.FileLink = Mock()
         def finalized(root, observation, plan_sha256):
             seen.append((root, observation, plan_sha256))
             return dict(coordinator_diagnostic_excerpt='', final_archive_created=False,
@@ -233,7 +239,7 @@ class NotebookTests(unittest.TestCase):
             with patch.object(sys_path := __import__('sys'), 'path', list(sys_path.path)), \
                  patch.object(admission, 'write_run_start', side_effect=RuntimeError('admission-tripwire')), \
                  patch.object(runtime, 'finalize', side_effect=finalized), \
-                 patch('IPython.display.display'), patch('sys.stdout', new=io.StringIO()), \
+                 patch.dict(sys.modules, {'IPython.display': display}), patch('sys.stdout', new=io.StringIO()), \
                  self.assertRaisesRegex(RuntimeError, 'E12 calibration incomplete'):
                 exec(compile(body, 'actual-run003-admission-failure', 'exec'), {})
             self.assertEqual(len(seen), 1)

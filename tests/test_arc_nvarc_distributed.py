@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 from irisx.arc_nvarc_data import freeze_shards, visible_task
 from irisx.arc_nvarc_distributed import supervise, tiny_torch_model
@@ -13,6 +14,31 @@ from irisx.canonical import canonical_bytes, digest_value
 
 
 class NvarcDistributedTests(unittest.TestCase):
+    def test_static_launcher_publishes_selected_loopback_port(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            config_path = root / "config.json"
+            # CUDA selects the torchrun path even on Windows; the mocked
+            # launcher never imports torch or starts a worker.
+            config_path.write_bytes(canonical_bytes({"seed": 7, "device": "cuda"}, newline=True))
+            with mock.patch("irisx.arc_nvarc_distributed.FrozenSequenceStore") as store, \
+                    mock.patch("irisx.arc_nvarc_distributed._free_loopback_port",
+                               return_value=43127) as free_port, \
+                    mock.patch("irisx.arc_nvarc_distributed.subprocess.Popen") as popen:
+                store.return_value.data_digest = digest_value({"fixture": True})
+                popen.return_value.wait.return_value = 0
+                report = supervise(config_path=config_path, data_root=root / "frozen",
+                                   output=root / "output", world_size=2,
+                                   session_wall_seconds=45, maximum_total_wall_seconds=120,
+                                   fixture=True)
+            self.assertEqual("returned", report["status"])
+            free_port.assert_called_once_with()
+            argv = popen.call_args.args[0]
+            self.assertIn("--rdzv-backend=static", argv)
+            self.assertIn("--master-addr=127.0.0.1", argv)
+            self.assertIn("--master-port=43127", argv)
+            self.assertNotIn("--master-port=0", argv)
+
     def test_two_rank_cpu_collective_resume_and_failure(self) -> None:
         try:
             import torch

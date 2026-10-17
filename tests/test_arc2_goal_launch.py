@@ -23,9 +23,25 @@ class GoalLauncherTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
+        # Pure synthetic metadata fixture, never a claimed provider observation.
+        self.original_metadata = {"id_no": 138123872, "id": "danielwuu/iris-x-learning-agent-20261011",
+            "is_private": True, "machine_shape": "NvidiaRtxPro6000", "enable_gpu": True,
+            "enable_internet": False, "keywords": ["gpu", "synthetic-test"],
+            "dataset_sources": [B.REFERENCES["public"], "danielwuu/historical-fixture/1"],
+            "model_sources": [B.REFERENCES["model"]], "competition_sources": ["synthetic-preserved-association"]}
+        self.metadata_path = self.root / "synthetic-kernel-metadata.json"
+        self.metadata_path.write_text(json.dumps(self.original_metadata))
 
     def tearDown(self):
         self.tmp.cleanup()
+
+    def make_symlink(self, link, target, *, directory=False):
+        try:
+            link.symlink_to(target, target_is_directory=directory)
+        except OSError:
+            if os.name == "nt":
+                self.skipTest("Windows symlink creation privilege unavailable")
+            raise
 
     def inventory(self):
         root = self.root / "dataset"
@@ -62,7 +78,7 @@ class GoalLauncherTests(unittest.TestCase):
         root, pin = self.inventory()
         (root / "clean.json").unlink()
         (self.root / "external.json").write_text('{}')
-        (root / "clean.json").symlink_to(self.root / "external.json")
+        self.make_symlink(root / "clean.json", self.root / "external.json")
         with self.assertRaisesRegex(ValueError, "symlink"):
             L.verify_inventory(root, pin)
 
@@ -71,15 +87,16 @@ class GoalLauncherTests(unittest.TestCase):
         hidden.mkdir(parents=True)
         with self.assertRaisesRegex(ValueError, "intersects"):
             L.check_allowlist([self.root / "input"], [], [hidden])
-        with self.assertRaisesRegex(ValueError, "root filesystem"):
-            L.check_allowlist(["/"], [], [hidden])
+        if os.name == "posix":
+            with self.assertRaisesRegex(ValueError, "root filesystem"):
+                L.check_allowlist(["/"], [], [hidden])
         L.check_allowlist([self.root / "input/public/solver"], [self.root / "output"], [hidden])
 
     def test_allowlist_rejects_symlink_alias(self):
         hidden = self.root / "evaluator"
         hidden.mkdir()
         alias = self.root / "pretend-code"
-        alias.symlink_to(hidden, target_is_directory=True)
+        self.make_symlink(alias, hidden, directory=True)
         with self.assertRaisesRegex(ValueError, "intersects"):
             L.check_allowlist([alias], [], [hidden])
 
@@ -125,7 +142,7 @@ class GoalLauncherTests(unittest.TestCase):
             B.resolve_dataset(root, "owner/slug/1")
 
     def test_preflight_notebook_is_inert_model_free_offline(self):
-        original = json.loads(P.DEFAULT_METADATA.read_bytes())
+        original = json.loads(self.metadata_path.read_bytes())
         metadata = P.metadata(original, "preflight.ipynb")
         self.assertFalse(metadata["enable_gpu"])
         self.assertFalse(metadata["enable_internet"])
@@ -147,7 +164,7 @@ class GoalLauncherTests(unittest.TestCase):
         self.assertNotIn("kaggle.api", source)
 
     def test_new_source_distinct_and_notebook_preserved(self):
-        original = json.loads(P.DEFAULT_METADATA.read_bytes())
+        original = json.loads(self.metadata_path.read_bytes())
         result = P.metadata(original, "new.ipynb", source_dataset="danielwuu/irisx-new-private-source/1", enable_gpu=True)
         self.assertIn("danielwuu/irisx-new-private-source/1", result["dataset_sources"])
         self.assertEqual(len(result["dataset_sources"]), 5)
@@ -157,7 +174,7 @@ class GoalLauncherTests(unittest.TestCase):
         self.assertFalse(result["enable_internet"])
         self.assertEqual(result["machine_shape"], "NvidiaRtxPro6000")
         self.assertEqual(result["competition_sources"], original["competition_sources"])
-        self.assertEqual(original, json.loads(P.DEFAULT_METADATA.read_bytes()))
+        self.assertEqual(original, json.loads(self.metadata_path.read_bytes()))
 
     def test_source_allowlist_excludes_json_notebooks_outputs_and_secrets(self):
         (self.root / "tools").mkdir()
@@ -195,6 +212,7 @@ class GoalLauncherTests(unittest.TestCase):
             L.seal_predictions(output, self.root / "sealed", {"closed": False}, "0" * 64)
         self.assertFalse((self.root / "sealed").exists())
 
+    @unittest.skipUnless(sys.platform == "linux" and hasattr(os, "pidfd_open"), "real Linux pidfd/subreaper lifecycle required")
     def test_real_subtree_closure_before_seal(self):
         from tools.arc_learning_agent_20261011.process_guard import OwnedProcessGuard, verify_closed_proof
         output = self.root / "output"
@@ -215,6 +233,7 @@ class GoalLauncherTests(unittest.TestCase):
         self.assertEqual(seal["pools_sha256"], L.sha(output / "pools.json"))
         self.assertFalse(seal["generation_may_resume"])
 
+    @unittest.skipUnless(sys.platform == "linux" and hasattr(os, "pidfd_open"), "real Linux pidfd/subreaper lifecycle required")
     def test_score_refuses_tamper_before_evaluator_open(self):
         from tools.arc_learning_agent_20261011.process_guard import OwnedProcessGuard
         output = self.root / "output"
@@ -231,6 +250,7 @@ class GoalLauncherTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "predictions changed"):
                 L.score_sealed(self.root / "sealed", self.root / "evaluator", self.root / "public", ROOT)
 
+    @unittest.skipUnless(sys.platform == "linux" and hasattr(os, "pidfd_open"), "real Linux pidfd/subreaper lifecycle required")
     def test_full_synthetic_120_167_scoring_goal_and_source_integrity(self):
         from tools.arc_learning_agent_20261011.process_guard import OwnedProcessGuard
         from tools.arc_offline_evaluation import POOL_FORMAT
@@ -315,7 +335,7 @@ class GoalLauncherTests(unittest.TestCase):
         self.assertFalse(diagnostic["model_capability_result"])
 
     def test_separated_metadata_never_mounts_original_public(self):
-        original = json.loads(P.DEFAULT_METADATA.read_bytes())
+        original = json.loads(self.metadata_path.read_bytes())
         data = P.metadata(original, "run.ipynb", source_dataset="danielwuu/new-source/1",
                           solver_dataset="danielwuu/new-solver-projection/1", enable_gpu=True)
         self.assertIn("danielwuu/new-solver-projection/1", data["dataset_sources"])
@@ -395,8 +415,8 @@ class GoalLauncherTests(unittest.TestCase):
         arguments = ("fixture-run", "danielwuu/new-source/1", "a" * 64, "danielwuu/new-solver/1", epoch)
         cpu = self.root / "cpu"
         gpu = self.root / "gpu"
-        P.build_notebook_only(cpu, *arguments, source_payload_sha256="b" * 64, prepare_only=True)
-        P.build_notebook_only(gpu, *arguments, source_payload_sha256="b" * 64)
+        P.build_notebook_only(cpu, *arguments, source_payload_sha256="b" * 64, prepare_only=True, original_metadata=self.metadata_path)
+        P.build_notebook_only(gpu, *arguments, source_payload_sha256="b" * 64, original_metadata=self.metadata_path)
         metadata = json.loads((cpu / "kernel-metadata.json").read_bytes())
         request = json.loads((cpu / "dispatch-request.json").read_bytes())
         self.assertFalse(metadata["enable_gpu"])
@@ -473,7 +493,7 @@ class GoalLauncherTests(unittest.TestCase):
         request = {"source_dataset": "danielwuu/new-source/1", "source_manifest_sha256": fingerprint,
                    "source_payload_sha256": manifest["transport"]["sha256"],
                    "session_deadline_epoch": time.time() + 600, "working_root": str(self.root / "working")}
-        code = P.notebook_source(request).replace("/kaggle/input", str(inputs))
+        code = P.notebook_source(request).replace("/kaggle/input", inputs.as_posix())
         with mock.patch.object(subprocess, "run") as called:
             exec(compile(code, "transport-loader", "exec"), {})
         called.assert_called_once()
@@ -483,7 +503,7 @@ class GoalLauncherTests(unittest.TestCase):
         request["working_root"] = str(self.root / "another-working")
         with mock.patch.object(subprocess, "run") as called:
             with self.assertRaisesRegex(ValueError, "transport differs"):
-                exec(compile(P.notebook_source(request).replace("/kaggle/input", str(inputs)), "tampered-loader", "exec"), {})
+                exec(compile(P.notebook_source(request).replace("/kaggle/input", inputs.as_posix()), "tampered-loader", "exec"), {})
         called.assert_not_called()
 
     def test_flat_solver_projection_and_ambiguity(self):

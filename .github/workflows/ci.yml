@@ -18,10 +18,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install --no-build-isolation -e .
-      - run: python tools/repository_check.py --self-test
-      - run: python tools/repository_check.py
-      - run: python -m unittest discover -s tests -v
+      - run: python -m pip install --no-build-isolation -e . packaging==26.3 numpy==2.3.5
+      # A public checkout cannot contain the ignored historical run evidence.
+      # Strict --all remains a separate local acceptance lane and is unchanged.
+      - run: python tools/repository_check.py --public
       - run: irisx fixture prepare --output .irisx/ci/fixture
       - run: irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run
       - run: irisx package build --run .irisx/ci/run --output .irisx/ci/package

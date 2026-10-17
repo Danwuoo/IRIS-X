@@ -25,9 +25,8 @@ class ABCPairedBoundaries(unittest.TestCase):
         with self.assertRaises(ValidationError):
             material_for_arm("C0")
 
-    def test_exact_plan_and_quick_save_projection(self):
+    def test_tracked_plan_contract(self):
         plan = read(PLAN)
-        self.assertEqual(make_plan(), plan)
         self.assertEqual([0, 1, 0, 1], [arm["ttt_steps_per_task"] for arm in plan["arms"]])
         self.assertEqual(["base", "base", "sft", "sft"],
                          [arm["checkpoint"] for arm in plan["arms"]])
@@ -35,6 +34,9 @@ class ABCPairedBoundaries(unittest.TestCase):
         self.assertEqual(48, plan["limits"]["maximum_total_returned_sequences"])
         self.assertEqual(6, plan["limits"]["maximum_total_ttt_steps"])
         self.assertEqual(["arc-prize-2026-arc-agi-2"], metadata(plan)["competition_sources"])
+
+    def test_retained_plan_and_save_projection(self):
+        self.assertEqual(make_plan(), read(PLAN))
         self.assertEqual("QUICK_SAVE", save_fields(PACKAGE, retained_review=True)["kernel_execution_type"])
         # Historical success must never claim compatibility with changed main.
         with self.assertRaisesRegex(ValidationError, 'installed wheel source differs'):

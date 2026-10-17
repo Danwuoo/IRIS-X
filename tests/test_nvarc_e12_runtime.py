@@ -12,15 +12,15 @@ import unittest
 from unittest.mock import patch
 
 from tools import nvarc_e12_runtime as runtime
+from tools import nvarc_e12_admission as admission
 from tools import nvarc_e12_answer_evidence as evidence
 from tools import nvarc_e12_cleanup as cleanup
 from tools.nvarc_native_multitask import digest,write
 from tools.nvarc_e12_output_lifecycle import GenerationStore
-from tests.test_nvarc_e12_answer_evidence import fixture
+from tests.nvarc_e12_cpu_fixture import fixture
 from tests import test_nvarc_e12_training as hooks_fixture
 from tests.test_nvarc_e12_training import Engine as HookEngine
 from tests.test_nvarc_e10_ttt_probe import Engine as InventoryEngine,Trainer as OldTrainer,guard,schedule_fixture
-from tests.test_nvarc_e10_end_to_end import Engine as OldWorkerEngine
 
 
 class ReplayTests(unittest.TestCase):
@@ -93,6 +93,7 @@ class WorkerSequenceTests(unittest.TestCase):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name);self.plan=fixture(self.root)
         self.plan.update(original_training_arguments={'synthetic':True},dependency_readproof_digest=digest('synthetic'))
         self.plan['native_source_learning_rates']=runtime.prefix.scalar_reference()
+        self.plan['owner_editor_admission']=admission.admission(self.plan)
         self.materials={key:json.loads((self.root/'materials'/f'{key}.json').read_bytes()) for key in runtime.TASK_COUNTS}
         (self.root/'workers/0').mkdir(parents=True);self.engines=[];self.trainers=[];self.inference=[]
     def tearDown(self):self.temp.cleanup()
@@ -137,7 +138,8 @@ class WorkerSequenceTests(unittest.TestCase):
             patch.object(runtime,'verify_model_metadata'),patch.object(runtime,'unchanged_model_layout'),\
             patch.object(runtime.native_epoch,'inference_transition'),patch.object(runtime.prefix,'validate_pair'),\
             patch.object(evidence,'solve_task',side_effect=solve):
-            return runtime.worker(self.root,self.root,self.root,0,time.time()+2500,os.getpid(),runtime_api=api)
+            return runtime.worker(self.root,self.root,self.root,0,time.time()+2500,os.getpid(),runtime_api=api,
+                expected_plan_sha256=digest(self.plan).removeprefix('sha256:'))
     def test_resident_single_engine_independent_trainers192updates_seven_controls(self):
         self.assertEqual(self.run_worker(),0)
         self.assertEqual(len(self.engines),1);self.assertEqual(len(self.trainers),2)
@@ -164,6 +166,8 @@ class CoordinatorTests(unittest.TestCase):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name);self.plan=fixture(self.root)
         write(self.root/'plan.json',self.plan);write(self.root/'screen.json',self.plan)
         write(self.root/runtime.RECEIPT_FILE,{'synthetic':True})
+        # Synthetic unit-test declaration only, never a retained owner receipt.
+        admission.write_confirmation(self.root,self.plan,True,time.monotonic())
     def tearDown(self):self.temp.cleanup()
     def test_latest900second_startup_retains_all2160seconds_of_work(self):
         for spawned in (0.,100.,899.):
@@ -220,7 +224,8 @@ class CoordinatorTests(unittest.TestCase):
             patch.object(runtime,'prepare',return_value=(self.root,[{'uuid':'fake'+str(i)} for i in range(4)])),\
             patch.object(runtime.subprocess,'Popen',side_effect=launch),patch.object(cleanup,'cleanup_workers',side_effect=stop),\
             patch.object(runtime.signal,'signal'),patch('builtins.print'):
-            result=runtime.execute(self.root,self.root,time.monotonic(),runtime_api=api)
+            result=runtime.execute(self.root,self.root,time.monotonic(),runtime_api=api,
+                expected_plan_sha256=digest(self.plan).removeprefix('sha256:'))
         self.assertEqual(result,1);self.assertEqual(len(launches),1);self.assertEqual(len(stopped),2)
         reserve=json.loads((self.root/'workers/0/launch-reservation.json').read_bytes())
         self.assertEqual(reserve['training_updates'],192);self.assertEqual(reserve['control_forwards'],7)
