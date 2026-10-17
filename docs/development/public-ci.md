@@ -140,3 +140,12 @@ passed. That matrix was not all green: Windows exposed unrelated default-code-pa
 notebook writes, Git newline conversion of pinned notices, and synthetic quota
 timestamp rounding. Their fixes retain UTF-8 script bytes, exact notice hashes,
 and strict future/stale quota rejection; no additional platform exclusions apply.
+
+Retirement-specific CPU fixtures separate actual child startup/exit admission
+from the retirement budget under test. They still create real owned processes,
+wait for actual exit with a bounded real timeout, and retain their original
+logical work/terminal limits. An injected active-elapsed clock excludes only
+that explicit fixture admission wait; production accounting is unchanged.
+Late-validator tests use release events and join the actual retirement thread
+before comparing the frozen result. Separate real-clock startup, readiness,
+work-deadline, timeout, and descendant-cleanup tests keep their original path.

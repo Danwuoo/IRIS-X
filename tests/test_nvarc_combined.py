@@ -1,6 +1,7 @@
 """Offline process, hardware and inert-package regressions, without ML mocks."""
 
 import copy
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
@@ -38,6 +39,42 @@ def fixture_validator(root):
     if value.get("kind") != "synthetic-process-fixture" or value.get("counters") != {"fixture_calls": 1}:
         raise ValidationError("synthetic fixture result differs")
     return value["counters"]
+
+
+class RetirementFixtureClock:
+    """Exclude only bounded fixture admission, never retirement or callbacks.
+
+    These tests exercise retirement, not interpreter startup throughput. Keep
+    real monotonic time running everywhere except an actual, bounded child-exit
+    handshake. Replacing only runtime.time also leaves subprocess wait timeouts
+    and the other tests' deadline/readiness clocks real.
+    """
+
+    def __init__(self):
+        self._real_monotonic = time.monotonic
+        self.sleep = time.sleep
+        self._lock = threading.Lock()
+        self._paused_at = None
+        self.excluded_seconds = 0
+        self.processes = []
+
+    def monotonic(self):
+        with self._lock:
+            now = self._real_monotonic() if self._paused_at is None else self._paused_at
+            return now - self.excluded_seconds
+
+    def wait_for_exit(self, process, timeout):
+        with self._lock:
+            if self._paused_at is not None:
+                raise RuntimeError("nested retirement fixture admission")
+            self._paused_at = self._real_monotonic()
+        try:
+            # This is the original Popen, not a fabricated successful poll.
+            process.wait(timeout=timeout)
+        finally:
+            with self._lock:
+                self.excluded_seconds += self._real_monotonic() - self._paused_at
+                self._paused_at = None
 
 
 class AtomicLedgerTests(unittest.TestCase):
@@ -86,9 +123,45 @@ class AtomicLedgerTests(unittest.TestCase):
 
 
 class CombinedProcessTests(unittest.TestCase):
+    @contextmanager
+    def retirement_fixture(self, *, admission_seconds=5):
+        import irisx.arc_nvarc_combined as runtime
+        clock = RetirementFixtureClock()
+        original = runtime._launch_worker
+
+        def admit(command, **kwargs):
+            mode = command[command.index("--mode") + 1]
+            if mode not in {"success", "pre-ready-fail"}:
+                raise RuntimeError("retirement admission requires a tiny no-descendant fixture")
+            # Launcher setup/error cleanup retains a running clock. Only the
+            # returned child's bounded wait excludes cold startup and teardown.
+            process, job = original(command, **kwargs)
+            clock.processes.append(process)
+            try:
+                clock.wait_for_exit(process, admission_seconds)
+            except BaseException as primary:
+                # wait_for_exit resumed time before any cleanup deadline loop.
+                try:
+                    runtime._reap(process, job, .3, .3)
+                except BaseException as cleanup:
+                    primary.add_note("fixture admission cleanup failed: " + str(cleanup))
+                    for note in runtime._force_reap(process, job, .3):
+                        primary.add_note("fixture admission fallback failed: " + note)
+                finally:
+                    for pipe in (process.stdout, process.stderr):
+                        pipe.close()
+                if isinstance(primary, subprocess.TimeoutExpired):
+                    raise RuntimeError("retirement fixture exit admission exceeded real timeout") from primary
+                raise
+            return process, job
+
+        with patch.object(runtime, "time", clock), \
+                patch.object(runtime, "_launch_worker", side_effect=admit):
+            yield clock
+
     def launch(self, modes, *, work_seconds=3, readiness=0.6, setup=None,
                startup_delays=(0, 0), work_delays=(0.1, 0.1), admit_faults=False, terminal_reserve=2,
-               diagnostics=None):
+               diagnostics=None, fixture_clock=None):
         root = Path(self.temp.name) / ("out-" + str(self.serial))
         self.serial += 1
         hardware = select_devices(devices(4))
@@ -98,7 +171,8 @@ class CombinedProcessTests(unittest.TestCase):
             "--device", json.dumps(hardware["assignments"][b])]} for i, b in enumerate(("m2", "m3"))}
         for branch, callback in (diagnostics or {}).items():
             children[branch]["diagnostics"] = callback
-        now = time.monotonic()
+        monotonic = time.monotonic if fixture_clock is None else fixture_clock.monotonic
+        now = monotonic()
         def run():
             return supervise(children, root, run_id="fixture-combined", plan_digest="fixture-plan",
                 deadline=now + work_seconds, terminal_deadline=now + work_seconds + terminal_reserve,
@@ -128,10 +202,55 @@ class CombinedProcessTests(unittest.TestCase):
         else:
             report = run()
         self.assertEqual(report, read(root / "aggregate-terminal.json"))
-        self.assertLess(time.monotonic() - now, work_seconds + 2)
+        self.assertLess(monotonic() - now, work_seconds + 2)
         self.assertEqual(0, report["retries"])
         self.assertTrue(all(r["launch_count"] <= 1 for r in report["branches"].values()))
         return root, report
+
+    def test_retirement_fixture_excludes_only_bounded_real_child_admission(self):
+        real_started = time.monotonic()
+        with self.retirement_fixture() as clock:
+            started = clock.monotonic()
+            _, report = self.launch(["success", "success"], work_seconds=.35,
+                                    terminal_reserve=.2, startup_delays=(.6, .6),
+                                    fixture_clock=clock)
+            self.assertLess(clock.monotonic() - started, .7)
+            self.assertGreaterEqual(clock.excluded_seconds, 1.2)
+            self.assertEqual("complete", report["outcome"])
+            for result in report["branches"].values():
+                self.assertEqual(0, result["exit_code_before_stop"])
+                self.assertLess(result["disposition_observed_seconds"], .35)
+                self.assertTrue(result["process_exit_confirmed"])
+                self.assertTrue(result["log_drain_confirmed"])
+            self.assertTrue(all(p.poll() is not None and p.stdout.closed and p.stderr.closed
+                                for p in clock.processes))
+        self.assertGreaterEqual(time.monotonic() - real_started, 1.2)
+
+    def test_retirement_fixture_admission_timeout_keeps_real_cleanup_bounded(self):
+        import irisx.arc_nvarc_combined as runtime
+        original_reap = runtime._reap
+        cleanups = []
+
+        def observe_cleanup(process, *args):
+            observation = original_reap(process, *args)
+            cleanups.append((process, observation))
+            return observation
+
+        with patch.object(runtime, "_reap", side_effect=observe_cleanup), \
+                self.retirement_fixture(admission_seconds=.05) as clock:
+            _, report = self.launch(["success", "success"], startup_delays=(60, 0),
+                                    fixture_clock=clock)
+            self.assertEqual("failed", report["branches"]["m2"]["outcome"])
+            self.assertIn("retirement fixture exit admission exceeded real timeout",
+                          report["branches"]["m2"]["error"])
+            self.assertIsNone(clock._paused_at)
+            self.assertEqual(2, len(clock.processes))
+            self.assertTrue(all(p.poll() is not None and p.stdout.closed and p.stderr.closed
+                                for p in clock.processes))
+            owned_cleanup = [value for process, value in cleanups if process is clock.processes[0]]
+            self.assertEqual(1, len(owned_cleanup))
+            if os.name == "nt" or sys.platform.startswith("linux"):
+                self.assertEqual(0, owned_cleanup[0]["active_processes_after_termination"])
 
     def setUp(self):
         self.temp = SimpleNamespace(name=tempfile.mkdtemp(dir=ROOT / ".irisx", prefix="combined-cpu-"))
@@ -529,20 +648,50 @@ class CombinedProcessTests(unittest.TestCase):
 
     def test_expired_retirement_cannot_later_mutate_published_manifest_or_become_complete(self):
         original = fixture_validator
+        entered = threading.Event()
+        release = threading.Event()
+        returned = threading.Event()
+        retirement_threads = []
 
         def blocked_validator(root):
             if root.name == "m2":
-                time.sleep(.8)
+                retirement_threads.append(threading.current_thread())
+                entered.set()
+                # Publication, not elapsed fixture startup time, releases this
+                # callback. A real watchdog longer than admission also catches
+                # a regression invoking finalization synchronously in parent.
+                if not release.wait(10):
+                    raise AssertionError("overdue validator was not released after publication")
+                try:
+                    return original(root)
+                finally:
+                    returned.set()
             return original(root)
 
-        with patch.dict(globals(), fixture_validator=blocked_validator):
-            root, report = self.launch(["success", "success"], work_seconds=.4,
-                                       terminal_reserve=.3, admit_faults=True)
-            frozen = copy.deepcopy(report)
-            self.assertEqual("failed", report["branches"]["m2"]["outcome"])
-            self.assertFalse(report["branches"]["m2"]["retirement_completed"])
-            self.assertEqual("complete", report["branches"]["m3"]["outcome"])
-            time.sleep(.5)  # Let the overdue validator return without new work.
+        with self.retirement_fixture() as clock, \
+                patch.dict(globals(), fixture_validator=blocked_validator):
+            try:
+                root, report = self.launch(["success", "success"], work_seconds=.4,
+                                           terminal_reserve=.3, fixture_clock=clock)
+                frozen = copy.deepcopy(report)
+                self.assertTrue(entered.is_set())
+                self.assertFalse(returned.is_set())
+                self.assertEqual("failed", report["branches"]["m2"]["outcome"])
+                self.assertFalse(report["branches"]["m2"]["retirement_completed"])
+                self.assertEqual("worker retirement did not terminate",
+                                 report["branches"]["m2"]["finalization_error"])
+                self.assertEqual("complete", report["branches"]["m3"]["outcome"])
+                for result in report["branches"].values():
+                    self.assertEqual(0, result["exit_code_before_stop"])
+                    self.assertLess(result["disposition_observed_seconds"], .4)
+            finally:
+                release.set()
+                # Validator return is not retirement completion: join its actual
+                # thread before restoring the clock or removing its artifacts.
+                for thread in retirement_threads:
+                    thread.join(timeout=5)
+            self.assertTrue(returned.is_set())
+            self.assertTrue(all(not thread.is_alive() for thread in retirement_threads))
         self.assertEqual(frozen, report)
         self.assertEqual(frozen, read(root / "aggregate-terminal.json"))
 
@@ -761,16 +910,25 @@ class CombinedProcessTests(unittest.TestCase):
             time.sleep(1)
             return {"counter_evidence": "synthetic slow diagnostic"}
 
-        started = time.monotonic()
-        with patch.object(runtime.threading.Thread, "start", new=refuse_once):
+        with self.retirement_fixture() as clock, \
+                patch.object(runtime.threading.Thread, "start", new=refuse_once):
+            started = clock.monotonic()
             _, report = self.launch(["pre-ready-fail", "success"], work_seconds=.35,
-                                    terminal_reserve=.2, diagnostics={"m2": slow_partial})
-        self.assertLess(time.monotonic() - started, .7)
+                                    terminal_reserve=.2, diagnostics={"m2": slow_partial},
+                                    fixture_clock=clock)
+            # Cold fixture admission is excluded, but an erroneously invoked
+            # one-second parent callback still consumes this unchanged bound.
+            self.assertLess(clock.monotonic() - started, .7)
+            self.assertTrue(all(p.poll() is not None and p.stdout.closed and p.stderr.closed
+                                for p in clock.processes))
         self.assertTrue(refused)
         self.assertEqual([], callback_threads)
+        self.assertEqual("failed", report["branches"]["m2"]["outcome"])
         self.assertTrue(report["branches"]["m2"]["partial_diagnostics_skipped"])
         self.assertIsNone(report["branches"]["m2"]["actual_counters"])
         self.assertEqual("complete", report["branches"]["m3"]["outcome"])
+        self.assertEqual(0, report["branches"]["m3"]["exit_code_before_stop"])
+        self.assertLess(report["branches"]["m3"]["disposition_observed_seconds"], .35)
 
     def test_second_exit_poll_error_cannot_drop_ownership_or_cancel_sibling(self):
         import irisx.arc_nvarc_combined as runtime
