@@ -1,5 +1,9 @@
 # ARC-AGI-2：SFT、可驗證 reward 與等成本學習比較
 
+2026-10-17 新的目標導向工作已開啟：[AF3 完整學習與評分 successor](GOAL-SPRINT-20261017.md)。
+它允許重新設計新實驗，優先真正 AF3 model loss 接線、廣泛 SFT／RL／TTT，並完成完整評分。
+下方 frozen A/B/C 與既有結果保留為歷史比較，不能當作新 successor 已執行或已達標。
+
 這條研究線要回答：**在同一個離線 Qwen3-14B 起點與有限算力下，可驗證 reward 的學習，
 能否比既有 SFT 與同成本的額外 SFT，更有效地解決 ARC-AGI-2 的新規則任務？**
 

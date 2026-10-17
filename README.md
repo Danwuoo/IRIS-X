@@ -42,8 +42,8 @@ Repository 包含 provider-neutral contracts、deterministic offline reference f
 | 目前 ARC2 研究線 | [研究主頁](research/arc2-sft-rl-continuation-20261014/README.md)、[當前進度](research/arc2-sft-rl-continuation-20261014/DEVELOPMENT-PROGRESS.zh-TW.md) | ARC-AGI-2 問題、SFT／RL／等成本比較、方法證據與下一步。 |
 | 離線工程基礎 | [src/irisx/](src/irisx/)、[tests/](tests/README.md) | P1 contracts、reference flow、package verification 與對應測試。 |
 | 歷史 code18 固定來源 | [快照紀錄](docs/plan/2026-10-13-code18-run005-repository-snapshot.md)、[RUN005 binding](tools/arc_qwen_rlvr004_20261013/driver_path_repair/RUN005-BINDING.json)、[REBUILD](tools/arc_qwen_rlvr004_20261013/driver_path_repair/REBUILD.md) | 精確來源、封裝指紋、重建命令和缺失的外部證據。 |
-| 歷史實驗 | [trials/](trials/README.md)、[research/](research/README.md) | 各 trial／研究版本的問題、實作及結果；不得跨版本移植分數。 |
-| 決策與開發 | [決策索引](docs/decisions/README.md)、[開發文件](docs/development/README.md) | 設計取捨、資料及執行邊界。較早的執行授權依固定紀錄視為歷史。 |
+| 歷史實驗 | [Engineering Trials](trials/README.md)、[research/](research/README.md) | 各 trial／研究版本的問題、實作及結果；不得跨版本移植分數。 |
+| 決策與開發 | [決策索引](docs/decisions/README.md)、[開發文件](docs/development/README.md)、[Decision 0010](docs/decisions/0010-adopt-lightweight-risk-based-development.md) | 設計取捨、風險分級開發流程、資料及執行邊界。較早的執行授權依固定紀錄視為歷史。 |
 | 早期版本 | [archive/](archive/README.md) | Pre-product repository 的唯讀目錄，不是現行產品狀態。 |
 
 初次閱讀可先看產品目標；ARC2 續接開發從目前研究進度進入，P1 使用者可看離線流程，
@@ -75,7 +75,7 @@ python tools/repository_check.py --all
 
 ## 結果與驗證範圍
 
-早期 [Trial 001](trials/first-real-domain/README.md) 結束為 `inconclusive-no-promotion`，沒有完整 measurement、selection 或 Domain Package；[Trial 002](trials/arc-agi-2-baseline/README.md) 的有界 smoke 保留四個 valid grids、local exact-match 0/4，不能外推成 public-evaluation 表現，也不是 code18 的結果。
+早期 [Trial 001 status page](trials/first-real-domain/README.md) 及 [Decision 0012](docs/decisions/0012-close-arc-agi-2-trial-001-inconclusive.md) 保存 `inconclusive-no-promotion` 的結案狀態，沒有完整 measurement、selection 或 Domain Package。[Trial 002](trials/arc-agi-2-baseline/README.md) 的有界 smoke 保留四個 valid grids、local exact-match 0/4，不能外推成 public-evaluation 表現，也不是 code18 的結果。其原始與修復 smoke 邊界分別見 [Decision 0014](docs/decisions/0014-authorize-arc-agi-2-trial-002-baseline-smoke.md) 和 [Decision 0015](docs/decisions/0015-authorize-trial-002-repair-smoke.md)；這些執行授權已消耗，不授權重跑或啟動目前研究線的新實驗。
 
 Code18 快照紀錄保存 focused driver、assembler、operator 與 CPU simulation 檢查，但沒有完成真實鎖定環境的端到端 GPU launcher 驗證。固定前的 [完整 CI run](https://github.com/Danwuoo/IRIS-X/actions/runs/38353809559) 記錄 1,578 tests、5 failures、96 errors、110 skips，其他三個 jobs cancelled。Repository checks 的通過與部分 CPU tests 的通過，不能替代 full CI 或實際模型成功；本次文件修改沒有修復或豁免這些失敗。
 

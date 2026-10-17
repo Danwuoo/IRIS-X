@@ -1,5 +1,36 @@
 # IRIS-X Repository Governance
 
+## Active goal-directed AF3 successor (2026-10-17 UTC)
+
+The owner's latest direction authorizes sustained research on branch
+`feat/arc2-sft-rl-continuation-20261014` toward valid PUBLIC120 micro pass@2
+strictly above 93 percent (at least 156/167). Prioritize actual Agent Factory 3
+loss integration, then RL/SFT/TTT/hybrids, before agent-framework redesign.
+New experiment design may replace earlier frozen A/B/C requirements for its own
+distinct source/run identities; never rewrite historical artifacts or results.
+The current successor is in `tools/arc2_goal_sprint_20261017/`, with its design
+and evidence in the current research directory's `GOAL-SPRINT-20261017.md`.
+
+Routine research-branch source publication, private Kaggle notebook execution,
+terminal monitoring, retrieval, diagnosis and subsequent iterations are within
+the current scope. No default-branch merge, official competition submission,
+new paid compute or new persistent grants are included. Use the existing
+account/resource; do not impose quota-hour gates or stop at the first attempt.
+Stop only at the goal, owner stop, a genuine major blocker, or actual provider
+GPU-quota exhaustion. Within each platform session, phase scheduling must leave
+time for complete prediction, scoring and closure before the platform deadline.
+
+Keep PUBLIC answers evaluator-only, training/development parent separation,
+complete 120-task/167-query denominators, immutable prediction seals and honest
+public-development qualifications. A real upstream DDIS call, CPU pass,
+notebook acceptance or provider COMPLETE does not establish model effectiveness.
+Use one IRIS publisher and reconcile uncertain remote writes before retrying.
+The historical predecessor is notebook 138123872 version 47 ERROR; the new
+CPU-only isolation preflight version 48 is verified COMPLETE without model/GPU
+execution or score. Later run identities belong in the successor evidence.
+Historical stop/one-shot instructions below
+describe consumed tasks and do not limit this newly authorized successor.
+
 ## Active native research continuation (2026-10-13 UTC)
 
 The owner's new instruction reopens ongoing native-cloud research from verified
