@@ -24,3 +24,7 @@ tools/nvarc_combined_notebook_editor_005.py.tmpl -text whitespace=cr-at-eol
 # Exact offline asset/provider evidence binds original bytes, including CRLF.
 research/arc-next-line/offline-wheels-dataset-v1/* -text whitespace=cr-at-eol
 research/arc-next-line/offline-notebook-v2/* -text whitespace=cr-at-eol
+
+# The native license/notice/provenance closure pins the committed bytes exactly.
+# Do not rewrite these assets during Windows checkout (core.autocrlf=true).
+research/stage4-e10/native-notices/* -text

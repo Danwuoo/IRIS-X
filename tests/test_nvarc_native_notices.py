@@ -2,6 +2,8 @@
 import copy
 import hashlib
 from pathlib import Path
+import subprocess
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -29,6 +31,26 @@ class NoticeTests(unittest.TestCase):
         self.assertEqual(set(stage.material_files(self.contract)),set(stage.EXTERNAL_FILES)|set(self.external))
         for name,body in self.external.items():
             self.assertEqual(hashlib.sha256(body).hexdigest(),stage.NOTICE_FILES_SHA256[name.removeprefix('notices/')])
+
+    def test_windows_autocrlf_checkout_preserves_exact_notice_bytes(self):
+        # Exercise Git's real checkout filter, not newline-normalized reads or
+        # weakened digest assertions. No repository history or remotes change.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(['git', 'init', '--quiet', str(root)], check=True, capture_output=True)
+            (root / '.gitattributes').write_bytes((ROOT / '.gitattributes').read_bytes())
+            notices = root / 'research/stage4-e10/native-notices'
+            notices.mkdir(parents=True)
+            for name in stage.NOTICE_FILES_SHA256:
+                (notices / name).write_bytes(self.external['notices/' + name])
+            subprocess.run(['git', '-c', 'core.autocrlf=false', 'add', '.'],
+                cwd=root, check=True, capture_output=True)
+            for name in stage.NOTICE_FILES_SHA256:
+                (notices / name).unlink()
+            subprocess.run(['git', '-c', 'core.autocrlf=true', 'checkout-index', '-a', '-f'],
+                cwd=root, check=True, capture_output=True)
+            for name, expected in stage.NOTICE_FILES_SHA256.items():
+                self.assertEqual(hashlib.sha256((notices / name).read_bytes()).hexdigest(), expected, name)
     def test_missing_tampered_or_unbound_notice_members_reject(self):
         for name in self.external:
             absent=dict(self.external);absent.pop(name)

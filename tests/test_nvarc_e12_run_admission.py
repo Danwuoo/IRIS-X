@@ -31,7 +31,10 @@ def _load_linux_runtime():
     from tools import stage_nvarc_e12_prefix_probe as stage
 
 def snapshot(remaining=6000, *, now=None):
-    now = time.time() if now is None else now
+    # datetime rounds to microseconds. A coarse clock can stay on the same tick
+    # after serialization, so round default synthetic observations down instead
+    # of accidentally putting them in the future. Explicit test epochs stay exact.
+    now = int(time.time()) if now is None else now
     stamp = datetime.fromtimestamp(now, timezone.utc)
     return dict(format='irisx/stage4-quota-observation-v1', provider='kaggle', account='danielwuu',
         observed_at=stamp.isoformat(), refresh_at=(stamp + timedelta(days=1)).isoformat(),
@@ -90,6 +93,32 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(plan['optimizer_steps'], 768)
         self.assertEqual(plan['test_executions'], 12)
         self.assertEqual(plan['maximum_notebook_wall_seconds'], 3600)
+
+    def test_default_snapshot_is_not_future_when_clock_does_not_advance(self):
+        plan = fixture()
+        # This float rounds upward when converted to a microsecond timestamp.
+        frozen_epoch = 1700000000.1234567
+        with patch.object(time, 'time', return_value=frozen_epoch) as frozen_clock:
+            value = snapshot(14400)
+            observed = datetime.fromisoformat(value['observed_at']).timestamp()
+            self.assertLessEqual(observed, frozen_epoch)
+            self.assertLess(frozen_epoch - observed, 1)
+            admitted = admission.run_admission(plan, value, admission.AUTHORIZATION_REF,
+                now=frozen_clock)
+        self.assertEqual(frozen_clock.call_count, 2)
+        self.assertEqual(admitted['resource_snapshot'], value)
+
+    def test_explicit_snapshot_freshness_boundaries_remain_strict(self):
+        epoch = 1700000000
+        value = snapshot(now=epoch)
+        admission.validate_resource_snapshot(value, now=lambda: epoch)
+        admission.validate_resource_snapshot(value, now=lambda: epoch + 900)
+        for observed_epoch in (epoch - 901, epoch + 1):
+            with self.subTest(observed_epoch=observed_epoch), self.assertRaisesRegex(RuntimeError, '900'):
+                admission.validate_resource_snapshot(snapshot(now=observed_epoch), now=lambda: epoch)
+        expired = dict(value, refresh_at=datetime.fromtimestamp(epoch + 900, timezone.utc).isoformat())
+        with self.assertRaisesRegex(RuntimeError, 'current window'):
+            admission.validate_resource_snapshot(expired, now=lambda: epoch + 900)
 
     def test_snapshot_projection_and_freshness_reject_unsafe_facts(self):
         for field, bad in [('account', 'someoneelse'), ('pay_to_scale_enabled', True),

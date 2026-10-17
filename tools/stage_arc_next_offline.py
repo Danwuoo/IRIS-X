@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -170,8 +171,11 @@ def stage_notebook(destination, pins):
     for cell in nb['cells']:
         if cell['cell_type']=='code':ast.parse(''.join(cell['source']))
     with tempfile.TemporaryDirectory() as d:
-        script=Path(d)/'inert.py'; script.write_text('\n'.join(''.join(c['source']) for c in nb['cells'] if c['cell_type']=='code'))
-        subprocess.run(['python',str(script)],cwd=d,check=True,capture_output=True)
+        script=Path(d)/'inert.py'
+        script.write_bytes('\n'.join(''.join(c['source']) for c in nb['cells'] if c['cell_type']=='code').encode('utf-8'))
+        # Notebook source and its non-ASCII inert status output are UTF-8,
+        # independent of the host's default Windows code page.
+        subprocess.run([sys.executable,'-X','utf8',str(script)],cwd=d,check=True,capture_output=True)
         if set(Path(d).iterdir())!={script}:raise ValueError('Default offline notebook wrote files')
     write(destination/'notebook.ipynb',nb)
     write(destination/'kernel-metadata.json',{'id':REF,'title':SLUG,'code_file':'notebook.ipynb','language':'python','kernel_type':'notebook',

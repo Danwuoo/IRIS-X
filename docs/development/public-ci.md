@@ -132,3 +132,11 @@ still makes the branch fail. Stop/query failures retain errors and use
 kill-on-close without inventing measured cleanup proof. Synthetic WinAPI tests
 and Linux process regressions do not substitute for the real Windows Job test.
 This legacy supervisor is outside the immutable AF3 goal-source package.
+
+The real owned-descendant retirement-start-failure regression passed on both
+Windows/Python 3.11 and 3.14 in [run 39003998472](https://github.com/Danwuoo/IRIS-X/actions/runs/39003998472)
+at commit `51e575778b3a54d59692a5f9b428a51cbcc61a04`. Both Linux jobs also
+passed. That matrix was not all green: Windows exposed unrelated default-code-page
+notebook writes, Git newline conversion of pinned notices, and synthetic quota
+timestamp rounding. Their fixes retain UTF-8 script bytes, exact notice hashes,
+and strict future/stale quota rejection; no additional platform exclusions apply.

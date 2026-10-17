@@ -103,6 +103,16 @@ class OfflineBundleTests(unittest.TestCase):
                 if cell['cell_type']=='code':self.assertNotIn('arc-prize-2026-arc-agi-3',''.join(cell['source']))
             self.assertTrue(result['all_defaults_inert'])
 
+    def test_notebook_source_and_inert_process_do_not_use_host_code_page(self):
+        run = subprocess.run
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(
+                Path, 'write_text', side_effect=AssertionError('implicit text encoding')), \
+                mock.patch.object(stage.subprocess, 'run', wraps=run) as launch:
+            result = stage.stage_notebook(Path(d)/'package', pins())
+        self.assertTrue(result['all_defaults_inert'])
+        self.assertEqual(launch.call_args.args[0][:3], [sys.executable, '-X', 'utf8'])
+        self.assertTrue(launch.call_args.kwargs['check'])
+
     @requires_linux("offline runtime imports Linux SIGKILL process-group dispatch stages")
     def test_disabled_driver_performs_no_work(self):
         from tools import arc_next_offline_runtime as runtime
@@ -122,7 +132,7 @@ class OfflineBundleTests(unittest.TestCase):
             references=pins();references['runtime']['manifest_sha256']=bundle.sha_file(root/'bundle-manifest.json')
             nb=stage.notebook(references);cells=[''.join(c['source']) for c in nb['cells'] if c['cell_type']=='code']
             script=base/'bootstrap.py'
-            script.write_text(cells[0]+'\nVERIFY_OFFLINE_INPUTS=True\nRUNTIME_ROOT='+repr(str(root))+'\nMODEL_ROOT='+repr(str(base))+'\nWHEELS_ROOT='+repr(str(base))+'\n'+cells[1])
+            script.write_bytes((cells[0]+'\nVERIFY_OFFLINE_INPUTS=True\nRUNTIME_ROOT='+repr(str(root))+'\nMODEL_ROOT='+repr(str(base))+'\nWHEELS_ROOT='+repr(str(base))+'\n'+cells[1]).encode('utf-8'))
             result=subprocess.run([sys.executable,str(script)],cwd=base,capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr)
             self.assertFalse(list(root.rglob('__pycache__')))
