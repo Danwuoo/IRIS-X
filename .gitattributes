@@ -28,3 +28,7 @@ research/arc-next-line/offline-notebook-v2/* -text whitespace=cr-at-eol
 # The native license/notice/provenance closure pins the committed bytes exactly.
 # Do not rewrite these assets during Windows checkout (core.autocrlf=true).
 research/stage4-e10/native-notices/* -text
+
+# Preserve the exact byte-pinned AF3 vendor license and notice.
+tools/arc2_agent_factory3_bridge_20261014/vendor/LICENSE -text
+tools/arc2_agent_factory3_bridge_20261014/vendor/NOTICE -text

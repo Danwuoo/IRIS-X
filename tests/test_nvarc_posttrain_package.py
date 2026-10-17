@@ -17,6 +17,7 @@ import zipfile
 from tools.nvarc_posttrain_20261017 import bootstrap, package, score
 from tools.arc2_goal_sprint_20261017.launch import sha, write_new
 from tests.test_nvarc_posttrain_controller import public_fixture, pools, model_identity
+from tests.platform_requirements import requires_linux
 
 
 def closure():
@@ -58,6 +59,34 @@ def synthetic_seal(root):
 
 
 class SourcePackageTests(unittest.TestCase):
+    def test_pinned_vendor_assets_survive_autocrlf_checkout(self):
+        # Exercise Git's real checkout conversion without changing this checkout.
+        # Pinned source bytes must not be normalized or excused by the packager.
+        paths = ["tools/arc2_agent_factory3_bridge_20261014/vendor/" + name
+                 for name in ("LICENSE", "NOTICE")]
+        committed = {name: subprocess.run(["git", "show", "HEAD:" + name], cwd=package.ROOT,
+            check=True, capture_output=True, timeout=30).stdout for name in paths}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+
+            def git(*args):
+                return subprocess.run(["git", *args], cwd=root, check=True,
+                                      capture_output=True, timeout=30)
+
+            git("init", "--quiet")
+            (root / ".gitattributes").write_bytes((package.ROOT / ".gitattributes").read_bytes())
+            for name, content in committed.items():
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(content)
+            git("-c", "core.autocrlf=false", "add", ".gitattributes", *paths)
+            for name in paths:
+                (root / name).unlink()
+            git("-c", "core.autocrlf=true", "checkout-index", "--force", "--", *paths)
+            for name, content in committed.items():
+                with self.subTest(path=name):
+                    self.assertEqual((root / name).read_bytes(), content)
+
     def test_exact_source_transport_and_import_closure(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -141,6 +170,7 @@ class ExposureSealTests(unittest.TestCase):
                 score.admission_paths(value, "a" * 64)
 
     @unittest.skipUnless(sys.platform == "linux" and hasattr(os, "pidfd_open"), "Linux owned-tree implementation required")
+    @requires_linux("Real outer controller requires Linux pidfd/procfs owned-process closure")
     def test_real_outer_controller_closes_before_sealing(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -168,6 +198,7 @@ save('isolation.json',{'mechanism':'dataset-separated-provider-execution','evalu
             self.assertEqual(receipt["closure"]["worker_returncode"], 0)
             self.assertFalse(terminal["provider_terminal_verified"])
 
+    @requires_linux("Synthetic seal fixture imports the Linux-owned process closure verifier")
     def test_exact_provider_version_and_every_sealed_byte_are_bound(self):
         with tempfile.TemporaryDirectory() as directory:
             sealed, evidence = synthetic_seal(Path(directory))
@@ -178,6 +209,7 @@ save('isolation.json',{'mechanism':'dataset-separated-provider-execution','evalu
             with self.assertRaisesRegex(ValueError, "sealed evidence changed"):
                 score.verify_terminal(sealed, evidence, notebook_id=123456, version=1)
 
+    @requires_linux("Synthetic seal fixture imports the Linux-owned process closure verifier")
     def test_even_perfect_numeric_score_never_claims_clean_goal(self):
         from tools import arc_offline_evaluation as original
         with tempfile.TemporaryDirectory() as directory:
@@ -197,6 +229,7 @@ save('isolation.json',{'mechanism':'dataset-separated-provider-execution','evalu
             self.assertTrue(result["inherited_exposure_qualified"])
             self.assertIsNone(result["official_score"])
 
+    @requires_linux("Synthetic seal fixture imports the Linux-owned process closure verifier")
     def test_bad_terminal_blocks_before_any_evaluator_access(self):
         with tempfile.TemporaryDirectory() as directory:
             sealed, evidence = synthetic_seal(Path(directory))
@@ -207,6 +240,7 @@ save('isolation.json',{'mechanism':'dataset-separated-provider-execution','evalu
                                 notebook_id=123456, version=1)
             inventory.assert_not_called()
 
+    @requires_linux("Seal integration imports the Linux-owned process closure verifier")
     def test_unclosed_solver_cannot_seal(self):
         with tempfile.TemporaryDirectory() as directory, \
                 patch("tools.arc_learning_agent_20261011.process_guard.verify_closed_proof", side_effect=ValueError("live tree")):
@@ -214,6 +248,7 @@ save('isolation.json',{'mechanism':'dataset-separated-provider-execution','evalu
                 score.seal(Path(directory) / "missing", Path(directory) / "sealed", closure(), "a" * 64)
             self.assertFalse((Path(directory) / "sealed").exists())
 
+    @requires_linux("Failure preservation imports the Linux-owned process closure verifier")
     def test_closed_failure_retains_all_missing_queries_without_model_claim(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -232,6 +267,7 @@ save('isolation.json',{'mechanism':'dataset-separated-provider-execution','evalu
             self.assertEqual(summary["solver_status"], "failed")
             self.assertFalse(summary["model_success_claimed"])
 
+    @requires_linux("Failure preservation and seal import the Linux-owned process closure verifier")
     def test_crash_before_merge_preserves_closed_specialist_and_remains_scoreable(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -258,6 +294,7 @@ save('isolation.json',{'mechanism':'dataset-separated-provider-execution','evalu
             self.assertTrue(all(t["ranked_grids"] == [[[3]]] for r in combined["records"] for t in r["tests"]))
             self.assertEqual(json.loads((root / "sealed/run-summary.json").read_bytes())["solver_status"], "failed")
 
+    @requires_linux("Failure preservation and seal import the Linux-owned process closure verifier")
     def test_identity_rejected_raw_public_pool_is_not_reintroduced_by_fallback_or_seal(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
