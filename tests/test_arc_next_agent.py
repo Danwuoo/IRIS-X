@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import sys
 import time
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -262,17 +263,26 @@ class HarnessTests(unittest.TestCase):
 
     def test_verification_late_candidate_is_rejected(self):
         original = agent._feedback
-        def late(*args, **kwargs):
-            result = original(*args, **kwargs)
-            time.sleep(0.02)
-            return result
-        with patch.object(agent, "_feedback", side_effect=late):
-            result, model = self.run_arm("repair", [{"kind": "program", "source": RECOLOR}],
-                                         max_wall_seconds=0.01, max_calls=1)
-        self.assertEqual(result["terminal_reason"], "wall_deadline")
-        self.assertEqual(result["candidates"], [])
-        self.assertEqual(result["calls"][0]["candidate_rejected"], "verification_deadline")
-        self.assertGreater(result["usage"]["program_steps"], 0)
+        # Target the post-verification boundary, not host scheduling before the
+        # model call. Real tokenizer/dispatch deadline tests keep their clocks.
+        for elapsed in (0.01, 0.02):
+            with self.subTest(verification_elapsed=elapsed):
+                now = [0.0]
+                def late(*args, **kwargs):
+                    result = original(*args, **kwargs)
+                    now[0] = elapsed
+                    return result
+                with patch.object(agent, "time", SimpleNamespace(monotonic=lambda: now[0])), \
+                        patch.object(agent, "_feedback", side_effect=late):
+                    result, model = self.run_arm("repair", [{"kind": "program", "source": RECOLOR}],
+                                                 max_wall_seconds=0.01, max_calls=1)
+                self.assertEqual(len(model.requests), 1)
+                self.assertEqual(len(result["calls"]), 1)
+                self.assertEqual(result["terminal_reason"], "wall_deadline")
+                self.assertEqual(result["candidates"], [])
+                self.assertEqual(result["calls"][0]["candidate_rejected"], "verification_deadline")
+                self.assertEqual(result["usage"]["generated_tokens"], 10)
+                self.assertGreater(result["usage"]["program_steps"], 0)
 
     def test_slow_tokenizer_prevents_model_dispatch(self):
         def slow_count(messages):
