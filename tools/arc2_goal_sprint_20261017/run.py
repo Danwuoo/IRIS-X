@@ -504,6 +504,68 @@ def solve_query_views(engine, task, query, cfg, audit, *, task_id, query_index, 
             "ranked_grids": [candidates[i]["grid"] for i in order[:2]], "status": status}, full
 
 
+def adapt_public_task(engine, task, cfg, audit, *, task_id, rng, deadline, loss_mode):
+    """Keep earlier accepted TTT steps when a later transaction must abort.
+
+    Only demonstration-derived examples enter this function. A failed or late
+    step restores its own pre-step adapter, not the task's selected checkpoint.
+    Optimizer state is discarded on exit; no failed step is retried and no
+    deadline is extended. Physical optimizer counters are never rolled back.
+    """
+    started = time.time()
+    before_steps, before_attempts = engine.optimizer_steps, engine.optimizer_attempts
+    optimizer = make_optimizer(engine.model, 5e-5)
+    retained, attempts, stop_reason, step_before = 0, 0, "step_limit", None
+    try:
+        for step in range(cfg["ttt_steps"]):
+            if time.time() >= deadline:
+                stop_reason = "deadline_before_step"
+                break
+            attempts += 1
+            step_before, report, failure = None, None, None
+            try:
+                example, _ = encoded_loo(engine, task, rng, cfg, loss_mode=loss_mode)
+                step_before = adapter_state(engine.model)
+                report = engine.sft_step(example, optimizer, deadline=deadline)
+                # A real optimizer step can cross the deadline. Retain its
+                # physical charge, but do not accept its late parameter change.
+                check_deadline(deadline)
+            except (PhaseDeadline, torch.cuda.OutOfMemoryError, FloatingPointError, ValueError) as error:
+                failure = type(error).__name__
+            # Leave the exception handler before restoration/cache cleanup so
+            # the failed forward's traceback cannot own GPU tensors at inference.
+            if failure is not None:
+                if step_before is not None:
+                    restore_state(engine.model, step_before)
+                    if state_digest(adapter_state(engine.model)) != state_digest(step_before):
+                        raise RuntimeError("failed TTT step did not restore previous committed adapter")
+                optimizer.zero_grad(set_to_none=True)
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                audit("ttt_rollback", task_id=task_id, failure=failure, steps=retained,
+                      failed_step=step, rollback_scope="failed_step_only",
+                      earlier_committed_steps_preserved=True,
+                      snapshot_restored=step_before is not None,
+                      optimizer_discarded=True, retried=False)
+                stop_reason = failure
+                break
+            retained += int(report["updated"])
+            audit("ttt_step", task_id=task_id, step=step, **report)
+            step_before = None
+    finally:
+        optimizer.zero_grad(set_to_none=True)
+        step_before = None
+        del optimizer
+    result = {"steps": retained, "attempts": attempts, "stop_reason": stop_reason,
+              "physical_optimizer_steps": engine.optimizer_steps - before_steps,
+              "physical_optimizer_attempts": engine.optimizer_attempts - before_attempts,
+              "state_sha256": state_digest(adapter_state(engine.model)),
+              "wall_seconds": time.time() - started, "rollback_scope": "failed_step_only",
+              "post_commit_deadline_checked": True}
+    audit("ttt_phase_complete", task_id=task_id, **result)
+    return result
+
+
 def solve_public(engine, public, selected_state, cfg, audit, output, *, deadline):
     options = continuation_options(cfg)
     expanded = (options["candidate_views"] != 2 or options["candidate_ranker"] != "first"
@@ -527,32 +589,12 @@ def solve_public(engine, public, selected_state, cfg, audit, output, *, deadline
         reset_hash = state_digest(adapter_state(engine.model))
         if reset_hash != selected_hash:
             raise RuntimeError("PUBLIC task adapter reset differs")
-        ttt_start = time.time()
-        ttt_steps = 0
-        physical_ttt_steps = 0
-        optimizer = make_optimizer(engine.model, 5e-5)
         rng = random.Random(cfg["seed"] + task_number)
         # Protect at least two thirds of each task's remaining interval for queries.
         ttt_deadline = task_start + (task_deadline - task_start) / 3
-        try:
-            for step in range(cfg["ttt_steps"]):
-                if time.time() >= ttt_deadline:
-                    break
-                example, _ = encoded_loo(engine, task, rng, cfg, loss_mode=options["ttt_loss_mode"])
-                report = engine.sft_step(example, optimizer, deadline=ttt_deadline)
-                ttt_steps += int(report["updated"])
-                physical_ttt_steps += int(report["updated"])
-                audit("ttt_step", task_id=key, step=step, **report)
-        except (PhaseDeadline, torch.cuda.OutOfMemoryError, FloatingPointError, ValueError) as error:
-            restore_state(engine.model, selected_state)
-            if state_digest(adapter_state(engine.model)) != selected_hash:
-                raise RuntimeError("PUBLIC TTT rollback differs") from error
-            optimizer.zero_grad(set_to_none=True)
-            audit("ttt_rollback", task_id=key, failure=type(error).__name__, steps=ttt_steps)
-            ttt_steps = 0
-        finally:
-            del optimizer
-        ttt_wall = time.time() - ttt_start
+        ttt = adapt_public_task(engine, task, cfg, audit, task_id=key, rng=rng,
+                               deadline=ttt_deadline, loss_mode=options["ttt_loss_mode"])
+        ttt_wall = ttt["wall_seconds"]
         tests = []
         generation_started = time.time()
         for query_index, query in enumerate(task["test"]):
@@ -601,8 +643,10 @@ def solve_public(engine, public, selected_state, cfg, audit, output, *, deadline
         atomic_json(output / "pools.json", pools)
         if expanded:
             atomic_json(output / "full-candidate-pools.json", full_pool)
-        audit("public_task_complete", task_id=key, task_number=task_number + 1, ttt_steps=ttt_steps,
-              physical_ttt_optimizer_steps=physical_ttt_steps,
+        audit("public_task_complete", task_id=key, task_number=task_number + 1, ttt_steps=ttt["steps"],
+              physical_ttt_optimizer_steps=ttt["physical_optimizer_steps"],
+              physical_ttt_optimizer_attempts=ttt["physical_optimizer_attempts"],
+              ttt_retained_state_sha256=ttt["state_sha256"], ttt_stop_reason=ttt["stop_reason"],
               queries=len(tests), nonempty_queries=sum(bool(t["ranked_grids"]) for t in tests),
               reset_sha256=reset_hash, elapsed_seconds=time.time() - task_start)
     return pools
