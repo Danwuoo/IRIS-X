@@ -15,7 +15,7 @@ import types
 
 CONFIG_SOURCE_SHA256 = '65d40a128e0e6a313df1d3b37071638cba76d0914cb27c6339cf5652f36554f0'
 # Parent propagates final transport/collector source pins after binding review.
-ENTRY_SHA256 = {'rl_transport.py': '6b098c1af13edb2ef124598305d6ed87a4d3129d919597fcccb7f22946f99372', 'rl_collect.py': 'df7f54f9f09709a423f68b01c40b3b8b79aae16e8c98639ecf03e76b864ede54', 'recovery_entry.py': '3f2a30520d74d7b4ed46e89ccc6ffcf5cfaed2c2532e7ab59201dcc4c9334352'}
+ENTRY_SHA256 = {'rl_transport.py': 'f9a8a9cc0b43fb5f035452588832999e3de209324ff5a19abe20f46b6f77d721', 'rl_collect.py': 'df7f54f9f09709a423f68b01c40b3b8b79aae16e8c98639ecf03e76b864ede54', 'recovery_entry.py': 'c656ceae4ab0ee6d7fd5c1123de4a955f5416e3c21c2234b1d92d7b7b720e29b'}
 
 
 def pinned_source(path, digest):

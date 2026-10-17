@@ -3,18 +3,25 @@
 更新：2026-10-16 UTC。本頁只維護目前狀態、阻礙與下一步；研究問題與固定設計見
 [研究主頁](README.md)，歷史 E0–E52、來源指紋及更新時間線見[工程歷史](archive/engineering-history.zh-TW.md)。
 
-**使用者提供的 v47 evidence ZIP 已獨立驗證：A完成SFT256，首批B因沿用完整A/B/C時間預留而未獲准，沒有新的replay／shadow數值結果。診斷專用預算窄修已發布為 016b430；source003／run003 身份重綁已發布為 dc9eb08。使用者現授權單次 RUN＋一次必要讀回後停止；本地在 provider 前發現舊 capture／監看 scope 硬鎖，正在窄修，尚未提交。**
-官方 numeric47 讀取仍曾回 HTTP403，唯一 activate 的接受狀態未 reconcile；使用者提供的封存
-來源與原 code24／source002 相符，不替代官方 Save 接受收據。原 claim／epoch 保留，沒有重送。
-最後完成數值 replay／shadow 的仍是 v45：原數值 gate 拒絕，RL commit 為0。
-v43 的原 A/B/C 輸出與 PUBLIC 原 scorer 0/167 保留；v45 沒有重跑評分。
-正式 consumer admission 尚未成立；來源評分不是官方或獨立重評結果。原研究優先事項仍是
-unchanged-policy 數值落差與已定位的證據契約，研究方法與門檻不變；本輪提交範圍以最新「單次 RUN，必要讀回後停止」為準，不授權 watch／持續 polling／結果下載。
-使用者先前授權依既有 run007／run008 離線 notebook 模式持續開發、Kaggle 執行、分析 terminal／結果，
-再按既有研究條件進入下一輪；這項歷史授權不解除本次 HTTP403 後的停止條件。
-本地端維持唯一 publisher，code 與 weights／wheels／資料 Dataset 分離鎖版；UNKNOWN 與各次 admission 不因此豁免。
+**source003 的新五讀官方 capture 已成功：2026-10-16 16:46:48–16:47:01 UTC 觀察 code24／v47 ERROR，來源與設定前後一致，新 native session clean-close。尚未新發布 code／notebook、RUN 或 epoch；本地在 provider 前被歷史 code24 缺 active receipt 擋下。「已觀察終態的前置邊界」窄修已完成受影響 CPU 測試；真實歷史原件仍待本地驗收，不補造原 Save 接受收據。**
 
-## source003 單次提交接線修復（2026-10-16）
+原 v47 activate 的 journal 仍是 save_intent／save_calls1，原接受回應未保存；active receipt 與
+saved notebook 均缺。新的 saved source 與原 wire 在既有正規化下仍不相等：只見四個新增 cell id
+和 nbformat_minor 5→4；這不是原 normalized_source_exact=true。兩個原 normalizer 保持不變。
+真實當前 terminal observation 與舊 Save 的因果／接受狀態分開，原 STATE／UNKNOWN／clock 不回寫。
+
+使用者已在確認正常登入與操作的條件下，重新授權 Astra 沿既有研究持續開發、監看與分析。
+本地仍是唯一 publisher；正常官方存取已觀察，但新 RUN 接受尚未發生。既有 continuous 模式
+須在新 candidate 前由真 owner direction／reviews 綁定，任何 UNKNOWN／403／不確定寫入仍停止，
+不盲重送，不以新的授權改寫已封存 once-mode claim。每個 session 仍不超過12小時。
+
+使用者提供的 v47 evidence ZIP 已獨立驗證：A完成SFT256，B因舊A/B/C預算預留未獲准，沒有新的
+replay／shadow結果。預算修復016b430、source003身份dc9eb08、capture／單次授權接線500502f均已公開。
+最後完成數值 replay／shadow 的仍是 v45：原數值 gate 拒絕，RL commit為0。
+v43 原A/B/C與PUBLIC原scorer0/167保留；正式consumer admission尚未成立，沒有新官方分數。
+研究仍以unchanged-policy數值落差與已定位的證據契約為主，方法、數值門檻和答案隔離不變。
+
+## 已完成的 source003 接線修復（2026-10-16）
 
 - source003 身份準備以已公開 `016b43013d652a2102c867a29dace41f5aecb28a` 為基底，僅重綁既有組裝器、
   mount／wrapper、transport／active-wire 及其完整 operator pins；修好的 flow.py 和其餘科學 runtime 不變。
@@ -25,21 +32,21 @@ unchanged-policy 數值落差與已定位的證據契約，研究方法與門檻
 - 沿用 A SFT256、首批64條原 DDIS replay、固定兩座標各四個 shadow forward，總上限8／120秒；
   原 max0.20／p95 0.05／coverage1.0、零 RL commit、12小時硬限不變。
   其餘192／C／dev／held／PUBLIC 未請求，沒有新科學結果。
-- 這是 source-only 離線包，不是完成私人 proposal／final／publication manifest。
-  code／inactive／active 數字版本、predispatch epoch 均為 null，未產生 provider claim。
+- 當時交付是 source-only 離線包，尚無私人 proposal／final／publication manifest；
+  當時 code／inactive／active 數字版本、predispatch epoch 均為 null，未產生 provider claim。
+  後續本地已建立真 final，精確現況見下方歷史前置邊界。
   舊 v47／run002 來源、失敗、UNKNOWN、claim 和原 epoch 不回寫。
-- 最新單次 RUN／初次讀回授權已取得；官方 v47 曾回 HTTP403，新 predecessor 的實際來源／設定
-  仍待本地一次新 capture 核實。若再次拒絕或版本／設定不合就停，不能靠候選 manifest 宣稱
-  遠端接受。私人材料及完整 publication review 仍須實際成立；具體接手見既有交接頁。
+- 當時單次 RUN／初次讀回授權已取得；原v47 HTTP403之後，500502f的本地新capture已實際
+  取得來源／設定與ERROR終態。這仍不證原Save接受；最新持續授權及剩餘history blocker見頁首。
 - 身份重綁已公開為 `dc9eb083ac9016691d86f48d30bf48a06d7b2f1b`。原 016b430 的25項 normal／-O測試與獨立審查保留；
   該身份重綁的組裝26項＋mount／collector路徑／operator pin整合65項，normal與`-O`各91項通過、無skip；
   不重驗不變 native／SDK／模型。獨立review完成後以交付收據列其精確範圍。
 
-### 本地尚未 provider 的兩個實際整合阻礙
+### 500502f 修復的兩個接線阻礙
 
-本地已核對 source003260件／archive15,820,672 bytes，沒有 query、write、version claim 或新 epoch。
-既有 capture 寫死 code23／v45；assembler、transport與active-wire要求監看／下載=true，
-與最新單次提交後停止授權不符。不得用假 true 經過 gate。
+該次本地先核對source003260件／archive15,820,672bytes，在provider前發現capture寫死code23／v45；
+assembler、transport與active-wire要求監看／下載=true，與當時單次提交後停止授權不符。
+500502f已修兩者；不以假true通過gate。
 
 本次窄修以 dc9eb08 為基底，沿原程式：capture 由獨立review的 expected_predecessor 綁定同config的code／active版本，
 原manifest／material／config與完整operator來源、五讀bracket、全部settings、fresh output、flock、
@@ -52,10 +59,36 @@ continuous_monitoring_authorized=false、result_retrieval_authorized=false；原
 本次不改source003科學runtime、預算、數值門檻、namespace或260-member archive；
 只修capture與publication授權接線。原v47 claim／epoch／UNKNOWN與失敗原件不改。
 舊WSL caller context失效，接收端須用真實當前runtime／路徑產生新的review-bound config，
-不能重用舊WSL證明、假造環境或重建未變native／SDK。此修復尚未公開，Kaggle實作仍未執行。
+不能重用舊WSL證明、假造環境或重建未變native／SDK。該接線修復已公開為 `500502f174608c5eb42085f05e9efd2480b31b6f`；新capture已完成，尚未新mutation。
 本次capture15、授權11、packaging26、operator整合33項，normal／`-O`各85項全過；
 另multiround為9/10，剩餘full-wire fixture缺training-purpose的錯誤已在本次基底重播，
 不算新回歸或全綠。獨立review另驗單次讀回消耗、鎖內重驗及原continuous模式。
+
+### 觀察式歷史前置邊界（離線修復，待本地真證據驗收）
+
+本地 source003 已有三份真review和外層review；final manifest
+`7c86896b297b7094b3131c0715820bee263bf3d43e32941a1b34f506d1f39c30`，
+source／archive仍為42062ef9／a425250b。validate-publication在Provider之前拒絕
+`publication_state_previous_mutation_unresolved`；code21–23與code24的code／inactive收據存在，
+僅code24 active receipt／saved缺失，原7,050件STATE不變。
+
+既有guard只承認accepted/read-back歷史；本次窄修另外表示固定真實code24→新candidate的
+「terminal已觀察」邊界。它必須重驗原claim／journal／wire／finalization與新final已綁定的
+sealed observation／六份raw原件，保留所有其他歷史、native、refresh與新mutation前檢查。
+只支持本次固定證據；不新增ignore旗標、不改source正規化、不創建舊receipt、不宣稱原Save已接受。
+後續輪需沿相鄰已審查manifest重驗相同邊界，不能只對最新history臨時略過。
+
+本次修改僅publication_state、其一個新測試、完整外部operator的衍生hash pins及兩份既有文件。
+24項新邊界測試＋52項既有publication/history測試＋19項source/context/recovery整合，
+normal與`-O`各95項通過，無skip；獨立review另跑新邊界24項兩模式通過。
+涵蓋code26再次續接、相鄰manifest、缺件／半份receipt、逐原件與metadata改動、
+外部原件同bytes換檔／換目錄、clock次序、嚴格source不相等及STATE不變。
+CPU合成fixture不是真實私人檔案驗收；必須在原本地固定新operator/reviews後，
+對既有final與原history實際執行無Provider的guard，通過才接原發布流程。
+未改科學runtime／source003 archive、private final、native／SDK或兩個normalizer；
+原capture和科學reviews不重做，只重綁本次外部operator的真action/config/source review。
+500502f CI為repository_check failure、unit／packaging skipped；精確新CI log尚未取得，
+較早dc9eb的6項README缺詞基線保留，不以本次focused通過宣稱全CI綠。
 
 ## 一、文件責任與更新規則
 

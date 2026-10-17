@@ -43,7 +43,7 @@ import types
 
 HISTORICAL_COMMIT = 'f5f780cb5823579288385158ce6da70a1ca33899'
 SOURCE_PINS_SHA256 = '09e51f695d1dfd216f162b8451cd34331f35f9d137da749bc35e4fde8f6882a7'
-PUBLICATION_STATE_SHA256 = '85101ee677e9c768cc8a5583cbf8df222a9198338040e0f0260bd87a96e9ea77'
+PUBLICATION_STATE_SHA256 = 'ee1b129c9e230968b7ae49e47fd16765fef2e5ab003ba29d7e7610fdb1fb9c35'
 PREWORKER_SOURCE_SHA256 = '8624ebfbaf3c620a995723cb5dde23cb52b07b2f03afef406879f1fc0829e9b9'
 SOURCE_NAMES = frozenset(('bridge_client.py', 'config.py', 'launch.py', 'native_auth.py',
     'native_config.py', 'native_probe.py', 'operator_common.py', 'protocol.py',

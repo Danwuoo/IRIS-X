@@ -10,7 +10,7 @@ import argparse, ast, contextlib, hashlib, json, math, os, stat, subprocess, sys
 from pathlib import Path
 
 # Acyclic local dependency pin. Compile source before any authentication or RPC.
-COMMON_SOURCE_SHA256 = '833d6d1dfcd78224a0f7a214d611e6143383f9d3b0b38ae4d4b4c891f388950e'
+COMMON_SOURCE_SHA256 = '0636c0bb228bce1d0ec4841f8804965167b526484ce7d653bd578b06d26cb60e'
 _common_path=Path(__file__).absolute().with_name('operator_common.py')
 if any(p.is_symlink() for p in (_common_path,*_common_path.parents)) or not stat.S_ISREG(_common_path.stat().st_mode):
     raise ValueError('unsafe_local_common_source')

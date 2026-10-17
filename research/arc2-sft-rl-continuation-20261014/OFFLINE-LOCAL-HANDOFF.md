@@ -2,54 +2,53 @@
 
 先讀[研究問題與凍結 A/B/C](README.md)，再讀[當前進度](DEVELOPMENT-PROGRESS.zh-TW.md)。
 本頁只有一條接手流程：固定來源與材料 → 本地驗收 → 唯一 publisher 依當次授權提交及讀回。
-目前在首次必要讀回後停止；後面的歷史監看／取結果流程需有相應新指示才執行。
+目前以最新條件式持續授權及本輪真owner scope為準；觀察、接受、監看與結果不可互相冒充。
 命令與 schema 以各工具 README 為準；舊版本的特殊恢復步驟只保留固定歷史連結。
 
-## 當前 source003 單次 RUN／必要讀回後停止（2026-10-16）
+## 當前 source003：保留真 final，修歷史觀察邊界（2026-10-16）
 
-source003身份重綁已公開為 `dc9eb083ac9016691d86f48d30bf48a06d7b2f1b`。
-使用者現授權一次 ≤12小時 RUN；完成必要的初次來源／設定／狀態讀回後立即停止，
-不watch、不持續poll、不下載結果。本地尚未provider，這次只補已定位的capture與授權接線。
-新窄修的精確commit／檔案與pins由交付收據固定；不要只替換transport而留下stale launcher。
+已公開 `500502f174608c5eb42085f05e9efd2480b31b6f` 完成 capture／owner scope 接線。
+本地五讀官方capture已觀察code24／v47 ERROR，source／settings前後相同，新native clean-close。
+source003三份真review及外層review已完成，但validate-publication在Provider前拒絕歷史code24
+缺active receipt。本次修復的normal／-O各95項focused測試通過，真history驗收尚待本地。
+尚無新code／inactive／RUN／epoch。不要重跑capture或重建科學封包。
 
-1. source003／run003／environment003保持；canonical source
-   `42062ef934a7c5495f8d22b6a68faa715301b47b9875eef829f0988056877c75`，archive
-   `a425250bb0541981a04b9814f6edf00695b9c574ccb207035c6fd4a61980f78e`、15,820,672 bytes／260件不變。
-   不重跑已核不變runtime／native／SDK，不改舊v47來源、final、STATE、claims、時鐘。
-2. 以原v47 candidate manifest/material、code24/active47預期值及真當前caller環境建立新唯讀review；
-   候選配置不是遠端已接受證據，舊WSL context不可直接重用。
-   新observer purpose `review-bound-current-predecessor-capture-v1`，observer多一個
-   `expected_predecessor: {code_version: 24, notebook_version: 47}`，須與reviewed config完全相等。
-   原manifest/material/config/script descriptors及22件operator hash仍必須實際核對。
-3. 新helper仍只有原五讀bracket；實際saved source前後必須同bytes、metadata/settings一致、
-   版本須等於獨立review的預期值，且已是ERROR／COMPLETE／CANCEL_ACKNOWLEDGED。
-   native clean close之後才寫OBSERVATION。若403、版本／來源／設定差異或closure失敗就停，
-   不換endpoint/account/browser，也不將觀察改寫成舊activate接受或GPU證明。
-4. 沿原seal_inputs.py封存六件真raw artifacts。assembler用sealed OBSERVATION真hash；
-   原source proposal inventory `fc32f98bef4188761fd51275bb05dd26c6fbd237afb8b8403b492f61442055cd`
-   與base inventory `de519816720ceb3bf07e0bf015c888b7e4bd9fdb344c2dbe355281230920ee88`不變。
-   不讀evaluator escrow，不拿v47 final當base。
-5. 真OWNER-DIRECTION依最新使用者指示保存one_accepted_run_per_distinct_reviewed_candidate=true、
-   stop_after_submit_readback=true、single_post_submit_readback_authorized=true、
-   continuous_monitoring_authorized=false、result_retrieval_authorized=false。其他科學／資源禁項仍false。
-   新proposal→三份真review→final；action及static consumer/source review也只列實際允許actions，
-   不用假監看授權通過原gate。預期版本只從本輪真observation推導。
-6. 原流程code發布／逐檔回讀→真mount→inactive／讀回→動態前置review→prepare-active／JIT
-   →真active-wire獨立review→一次activate；最後兩步仍須在原60秒freshness內。
-   activate 內部已執行唯一初次active讀回，成功後不得再呼叫verify-run。只有尚未開始／消耗
-   初次讀回、且原claim允許reconcile時，verify-run才可執行這唯一讀回；它不授權重新activate。
-   初次active讀回在任何遠端讀前消耗，失敗也保留消耗而停；成功寫真receipt後立即停止。
-   不啟動原watch步驟／定時器／collector。再次狀態查詢或結果取回須等使用者新指示。
-7. 新session epoch只在原JIT入口、真dispatch前量取，保留60秒freshness與
-   42000／42180／42300／43200秒邊界。不得重用v47的1792136130、改save_calls或藉本次重設舊時鐘。
-
-研究仍為A256＋首批64＋固定兩座標最多8個shadow forwards／120秒、零RLcommit，
-不執行其他192、C、dev、held或PUBLIC。所有本地純測試／官方接受／GPU／科學結果分開報告。
+1. 保留真final manifest
+   `7c86896b297b7094b3131c0715820bee263bf3d43e32941a1b34f506d1f39c30`、原proposal／reviews與sealed
+   observation `a3202c931e019c54bd43a1d53454938bbd603c10f00e292b0b8512335ae0e1fe`。
+   原source003260件、canonical `42062ef934a7c5495f8d22b6a68faa715301b47b9875eef829f0988056877c75`，
+   archive15,820,672bytes／`a425250bb0541981a04b9814f6edf00695b9c574ccb207035c6fd4a61980f78e`不變。
+2. 本次修復是外部operator的固定觀察式disposition，僅處理原code24／v47：舊manifest、
+   claim／journal／wire／finalization、新final及已有raw觀察皆須逐hash成立。
+   只在active receipt與saved同時缺失、save_intent／save_calls1原件未變時使用；
+   code／inactive／retention與native／refresh仍照舊fail-closed。
+3. 固定新的完整commit／operator22及dependency pins後，更新真外層operator/config/action/source
+   reviews，明確核准外部依賴重綁。保留private final原bytes，不重新assembly、三份科學review或
+   改其archived review-only helper。不宣稱舊private final整棵樹與新operator相同。
+   只跑受影響測試與該真history proof驗收；未變native／SDK／模型不重建。
+4. guard會以新final內的sealed observation核對六份raw、terminal、完整metadata與settings、sourcehash，
+   只建立「目前前置版本已觀察為終態」邊界，不補原Save接受或normalized_source_exact。
+   observed source與原wire只差四個cell id與nbformat_minor，原兩個strictnormalizer不變。
+   原7,050件STATE、缺receipt、UNKNOWN、save_calls與v47epoch1792136130全部保留。
+5. 目前使用者重新授權：正常登入與操作的條件成立時，Astra依既有研究持續開發／監看。
+   保留既有final內已綁定的真owner mode；新action reviews須如實綁同一scope。continuous需stop=false、
+   single_post_submit_readback_authorized=false、monitor/retrieval=true；once模式則消耗後仍STOP。
+   不事後修改已封存scope或claim解鎖；任何403／UNKNOWN／不確定寫入仍停止、不盲重送。
+6. 真history窄驗收與更新外層reviews成立後，接現有final沿原流程：code發布／逐檔回讀→真mount
+   →inactive／讀回→動態前置review→prepare-active／JIT→真active-wire獨立review→一次activate。
+   最後review／dispatch仍須在原60秒freshness內；activate內已做初次來源／設定／狀態讀回。
+   正常接受與讀回後，才依本輪真continuous scope啟watch／既有結果取回；once不得再verify-run。
+7. 所有新mutation前仍要即時核對dataset及精確前置source／terminal。封存觀察不是遠端保留名額；
+   若版本、來源、設定或狀態變動就停。後續輪由相鄰已審查manifest重驗同一code24邊界，
+   不回寫舊history，也不接受其他未審查的缺receipt情況。
+8. 新session epoch只在原JIT、真dispatch前量取，保留42000／42180／42300／43200秒邊界。
+   A256＋首批64＋固定兩座標最多8個shadow／120秒，零RLcommit；其餘192／C／dev／held／PUBLIC未請求。
+   CPU、native、官方接受、GPU與科學結果分開回報，維持唯一publisher與答案隔離。
 
 ## 交付範圍
 
 使用者已授權沿既有 run007／run008 notebook 模式，持續「開發 → Kaggle 執行 → terminal／結果分析 →
-依證據決定下一輪」的研究循環；本次執行以頁首最新單次 RUN／初次讀回後停止範圍為準。研究開發端先交付經測試、
+依證據決定下一輪」的研究循環；本次執行以頁首最新條件式指示及真owner scope為準。研究開發端先交付經測試、
 獨立審查的精確來源、變更與缺件；本地端仍須逐次通過原材料與全部 admission。文件、Git 保存或
 CPU 通過本身不代替這些必要條件。新增費用、資源、權限或超出研究範圍的變更仍需另行確認。
 本地端是當次 Kaggle mutation 的唯一 publisher；研究開發端不代登入、不持有 credentials。

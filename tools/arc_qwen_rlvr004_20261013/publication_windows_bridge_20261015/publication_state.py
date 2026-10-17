@@ -33,6 +33,31 @@ JIT_NAMES = frozenset(('active-finalized.ipynb', 'original-request.json',
                        'operator.json', 'parent-private-scorer.json'))
 HISTORY_PREFIXES = ('native-bridge-', 'native-auth-refresh-', 'recovery-epoch-')
 
+# One reviewed observed-terminal boundary, not a receipt or Save-acceptance
+# disposition. These are original evidence bytes, not configurable allowlists.
+# In particular, the saved source differs from the original submitted notebook.
+OBSERVED_TERMINAL_V47 = MappingProxyType({
+    'manifest': (135137, 'd012cc72837b9a7d8b057ee04dbfed37b6be556786e9d246e0ab64f009897b7e'),
+    'admitting_manifest_sha256': '7c86896b297b7094b3131c0715820bee263bf3d43e32941a1b34f506d1f39c30',
+    'sealed_sha256': 'a3202c931e019c54bd43a1d53454938bbd603c10f00e292b0b8512335ae0e1fe',
+    'original_files': MappingProxyType({
+        'notebook-rlvr004.claim.json': (1402, '076a5c06d98093e137db710f25d9276f3b28e5f72c3a9134abafbf08311e1387'),
+        'notebook-rlvr004-journal.json': (2113, '333d463ce3ac71ca2d55beeaa54971a8e5bbd9b9f9c82552131e1bff7e425fd2'),
+        'notebook-rlvr004-wire.json': (28197, '585075942a3ce4d0d0fc969dda063ceb9671ea77a4d63f5905b7e047adaacea2'),
+        'finalization.json': (1650, '2936336756f51b3739b768d559d458243aa3e1469b1c6e905331358c8fe86db0'),
+        'active-finalized.ipynb': (25268, 'e7de6cff3ae4da5b08e3c6d05959e99013b1c4acd8911989db493cc34b0c4509'),
+    }),
+    'raw_files': MappingProxyType({
+        'publisher-observation.json': (1207, 'c959ac46aca747dba02e7f2d37a6bf36455f2d4a6ef90ea94edcf10ea9e0ebf5'),
+        'dataset.json': (670, '758b5cb75b5ebed2f977bb4779de256769336f4bf8644dc0978c1cf0f390bee6'),
+        'dataset-after.json': (670, '758b5cb75b5ebed2f977bb4779de256769336f4bf8644dc0978c1cf0f390bee6'),
+        'metadata-before.json': (1047, 'bf088a0f613424062ccfab279c7e04adf9ba6cfae55ac155f79a586ee0116d4e'),
+        'metadata-after.json': (1047, 'bf088a0f613424062ccfab279c7e04adf9ba6cfae55ac155f79a586ee0116d4e'),
+        'saved_source.ipynb': (24429, 'f6ef2670fb44a550247b17f3d0f9033e813ef85ed6764bef33fc8b9e65fe1e6d'),
+        'status.json': (48, 'd7bdb5372bb47debbcf1d641464de374289e647b25da75698ec11e9eb1fdea89'),
+    }),
+})
+
 
 class PublicationStateError(ValueError):
     """Fixed, non-secret fail-closed diagnostic."""
@@ -394,7 +419,7 @@ def _publication_records(files, root, descriptor, versions, manifest):
 
 
 def _round_snapshot(root, descriptor, versions, historical, frontier, *,
-                    excluded_directories=(), publication_only=False, resolved=False):
+                    excluded_directories=(), publication_only=False, resolved=False, adjacent=None):
     manifest, versions, layouts, manifest_identity = _manifest(descriptor, versions)
     root = _path(root)
     _need(not _path(descriptor['path']).is_relative_to(root), 'publication_state_manifest_inside_state')
@@ -517,9 +542,10 @@ def _round_snapshot(root, descriptor, versions, historical, frontier, *,
         if readback in names:
             _need(code_stem + '.claim.json' in parsed and code_stem + '-journal.json' in parsed,
                   'publication_state_readback_claim_required')
+        resolution = None
         if resolved:
             _need(readback in names, 'publication_state_historical_readback_required')
-            _resolved_publication(publication, parsed, root, versions, manifest)
+            resolution = _resolved_publication(publication, parsed, root, versions, manifest, descriptor, adjacent)
         for name, row in baseline.items():
             historical._relative(name)
             _need(type(row) is dict and set(row) == {'bytes', 'sha256'}
@@ -535,7 +561,7 @@ def _round_snapshot(root, descriptor, versions, historical, frontier, *,
             _need(record[:2] == (row['bytes'], row['sha256']), 'publication_state_frontier_changed')
         _need(names == sorted(os.listdir(directory)) and _identity(before) == _identity(os.fstat(directory)),
               'publication_state_root_race')
-    return roots, fingerprint, manifest_identity, parsed
+    return roots, fingerprint, manifest_identity, parsed, resolution
 
 
 def _versions_from_manifest(descriptor):
@@ -564,15 +590,146 @@ def _normalized_notebook(raw):
     return notebook
 
 
-def _resolved_publication(files, parsed, root, versions, manifest):
-    """Accepted/read-back history only; no runtime closure or scientific claim."""
+def _observed_terminal_boundary(files, parsed, versions, descriptor, adjacent):
+    """One exact current-v47 observation; the original Save remains unknown."""
+    fixed = OBSERVED_TERMINAL_V47
+    _need(versions == {'code_predecessor': 23, 'code': 24,
+                      'inactive_predecessor': 45, 'inactive': 46, 'active': 47}
+          and (descriptor['bytes'], descriptor['sha256']) == fixed['manifest']
+          and type(adjacent) is dict
+          and adjacent.get('sha256') == fixed['admitting_manifest_sha256'],
+          'publication_state_observed_boundary_disposition')
+    for name, expected in fixed['original_files'].items():
+        _need(name in files and (len(files[name]), _digest(files[name])) == expected,
+              'publication_state_observed_original_changed')
+    journal, wire, final = (parsed[name] for name in
+        ('notebook-rlvr004-journal.json', 'notebook-rlvr004-wire.json', 'finalization.json'))
+    source = wire['text'].encode('utf-8')
+    _need(journal.get('stage') == 'save_intent' and type(journal.get('save_calls')) is int
+          and journal['save_calls'] == 1 and journal.get('save_accepted') is None
+          and journal.get('response_version') is None
+          and journal.get('claim_sha256') == _digest(files['notebook-rlvr004.claim.json'])
+          and journal.get('wire_sha256') == _digest(files['notebook-rlvr004-wire.json'])
+          and journal.get('source_sha256') == final.get('finalized_sha256') == _digest(source)
+          and source == files['active-finalized.ipynb']
+          and journal.get('finalization_sha256') == _digest(files['finalization.json']),
+          'publication_state_observed_original_binding')
+    dispatch = journal.get('dispatch_epoch')
+    _need(type(dispatch) in (int, float) and math.isfinite(dispatch) and dispatch > 0,
+          'publication_state_observed_dispatch_epoch')
+    admitting, allocated, _, admitting_identity = _manifest(adjacent, _versions_from_manifest(adjacent))
+    _need(allocated == {'code_predecessor': 24, 'code': 25,
+                        'inactive_predecessor': 47, 'inactive': 48, 'active': 49},
+          'publication_state_observed_admitting_versions')
+    desc = admitting['current_predecessor_observation']
+    _need(type(desc) is dict and set(desc) == {'path', 'bytes', 'sha256'}
+          and desc['path'] == 'current-predecessor/OBSERVATION.json'
+          and type(desc['bytes']) is int and 0 < desc['bytes'] <= DOC_CAP
+          and desc['sha256'] == fixed['sealed_sha256'],
+          'publication_state_observed_sealed_descriptor')
+    base = _path(adjacent['path']).parent / 'current-predecessor'
+    expected_raw = dict(fixed['raw_files'])
+    external = {str(_path(adjacent['path'])): admitting_identity}
+    raw = {}
+    with _directory(base) as directory:
+        before = os.fstat(directory)
+        names = sorted(os.listdir(directory))
+        _need(set(names) == set(expected_raw) | {'OBSERVATION.json'},
+              'publication_state_observed_closed_directory')
+        external[str(base) + '/'] = (0, None, _identity(before))
+        for name in names:
+            body, identity = _read_at(directory, name, DOC_CAP)
+            expected = (desc['bytes'], desc['sha256']) if name == 'OBSERVATION.json' else expected_raw[name]
+            _need(identity[:2] == expected, 'publication_state_observed_evidence_changed')
+            raw[name] = body
+            external[str(base / name)] = identity
+        _need(names == sorted(os.listdir(directory)) and _identity(before) == _identity(os.fstat(directory)),
+              'publication_state_observed_directory_race')
+    sealed, observed = (_json(raw[name]) for name in ('OBSERVATION.json', 'publisher-observation.json'))
+    roles = {'saved_source': ('saved_source.ipynb', 'saved_source_sha256'),
+             'notebook_before': ('metadata-before.json', 'metadata_before_sha256'),
+             'notebook_after': ('metadata-after.json', 'metadata_after_sha256'),
+             'notebook_status': ('status.json', 'status_sha256'),
+             'dataset_before': ('dataset.json', 'dataset_metadata_sha256'),
+             'dataset_after': ('dataset-after.json', 'dataset_after_sha256')}
+    closed = {name: {'bytes': size, 'sha256': digest} for name, (size, digest) in expected_raw.items()}
+    evidence = {role: {'path': name, **closed[name]} for role, (name, _) in roles.items()}
+    evidence['original_observation'] = {'path': 'publisher-observation.json', **closed['publisher-observation.json']}
+    _need(sealed == {**observed, 'format': 'irisx/run008-native-current-predecessor-observation-v1',
+        'closed_files': closed, 'evidence': evidence,
+        'original_observation_sha256': expected_raw['publisher-observation.json'][1],
+        'provider_calls_by_sealer': 0,
+        'scope': 'Exact existing official bracket; local sealing is not a new provider observation or runtime/scientific evidence.'},
+        'publication_state_observed_seal_binding')
+    _need(observed.get('format') == 'irisx/run008-live-predecessor-observation-v1'
+          and type(observed.get('code_version')) is int and observed['code_version'] == 24
+          and type(observed.get('notebook_version')) is int and observed['notebook_version'] == 47
+          and observed.get('provider_status') == 'ERROR'
+          and observed.get('native_process_closure_verified') is True
+          and all(observed.get(key) is False for key in ('gpu_unavailable_stop',
+              'runtime_closure_verified', 'manual_editor_session_mapping_verified',
+              'manual_failure_root_cause_verified', 'physical_costs_known', 'scientific_result_verified')),
+          'publication_state_observed_terminal_identity')
+    epoch = observed.get('observed_epoch')
+    _need(type(epoch) in (int, float) and math.isfinite(epoch) and epoch > dispatch,
+          'publication_state_observed_chronology')
+    for name, key in roles.values():
+        _need(observed.get(key) == expected_raw[name][1], 'publication_state_observed_raw_binding')
+    _need(_json(raw['status.json']).get('status') == observed['provider_status'],
+          'publication_state_observed_raw_status')
+    # Full metadata brackets are preserved, not just a selected settings summary.
+    before, after = (_json(raw[name]) for name in ('metadata-before.json', 'metadata-after.json'))
+    dataset, dataset_after = (_json(raw[name]) for name in ('dataset.json', 'dataset-after.json'))
+    _need(before == after and dataset == dataset_after, 'publication_state_observed_bracket_changed')
+    _need(type(dataset.get('id')) is int and dataset['id'] == 12504696
+          and dataset.get('ref') == DREF and dataset.get('ownerRef') == 'danielwuu'
+          and dataset.get('isPrivate') is True and type(dataset.get('currentVersionNumber')) is int
+          and dataset['currentVersionNumber'] == 24, 'publication_state_observed_dataset_identity')
+    _need(type(before.get('id')) is int and before['id'] == 138123872
+          and before.get('ref') == REF and type(before.get('currentVersionNumber')) is int
+          and before['currentVersionNumber'] == 47, 'publication_state_observed_notebook_identity')
+    for returned, submitted, expected in (('isPrivate', 'is_private', True),
+            ('enableGpu', 'enable_gpu', True), ('enableTpu', 'enable_tpu', False),
+            ('enableInternet', 'enable_internet', False)):
+        _need(before.get(returned) is wire.get(submitted) is expected,
+              'publication_state_observed_settings')
+    for returned, submitted, expected in (('kernelType', 'kernel_type', 'notebook'),
+            ('language', 'language', 'python'), ('machineShape', 'machine_shape', 'NvidiaRtxPro6000')):
+        _need(before.get(returned) == wire.get(submitted) == expected, 'publication_state_observed_settings')
+    _need(before.get('title') == wire['new_title'] and before.get('dockerImage') == wire['docker_image']
+          and before.get('competitionDataSources') == wire['competition_data_sources']
+          and before.get('kernelDataSources') in (None, []) and wire.get('kernel_data_sources') == [],
+          'publication_state_observed_mount_settings')
+    pins, returned = wire['dataset_data_sources'], before.get('datasetDataSources')
+    _need(type(pins) is list and all(type(item) is str for item in pins)
+          and type(returned) is list and all(type(item) is str for item in returned)
+          and DREF + '/24' in pins and sorted(returned) == sorted('/'.join(item.split('/')[:2]) for item in pins),
+          'publication_state_observed_dataset_mounts')
+    model = 'qwen-lm/qwen-3/transformers/14b/1'
+    _need(wire.get('model_data_sources') == [model]
+          and before.get('modelDataSources') in ([model], ['qwen-lm/qwen-3/Transformers/14b/1']),
+          'publication_state_observed_model_mount')
+    saved_hash = _digest(raw['saved_source.ipynb'])
+    _normalized_notebook(raw['saved_source.ipynb'])  # Validate only; no equality to old wire is asserted.
+    expected = next(row for row in admitting['notebooks'] if row['role'] == 'inactive')
+    _need(expected.get('predecessor_source_sha256') == saved_hash,
+          'publication_state_predecessor_source')
+    return {'source_sha256': saved_hash, 'provenance': 'fixed-v47-observed-terminal-save-unknown',
+            'external_records': external}
+
+
+def _resolved_publication(files, parsed, root, versions, manifest, manifest_descriptor=None, adjacent=None):
+    """Strict receipts, or the single fixed observed-terminal boundary below."""
+    observed = ('notebook-rlvr004-receipt.json' not in files
+                and 'notebook-rlvr004-saved.ipynb' not in files)
     required_retention = {'historical-code-v' + str(number) + '-inventory.json'
                           for number in range(8, max(7, versions['code_predecessor'] - 9) + 1)}
     _need(required_retention <= set(parsed), 'publication_state_previous_retention_missing')
     _need('active-readback.claim.json' in parsed, 'publication_state_previous_readback_claim_missing')
     code = 'dataset-code-v' + str(versions['code'])
     for stem in (code, 'notebook-inactive', 'notebook-rlvr004'):
-        _need(all(stem + suffix in parsed for suffix in ('.claim.json', '-journal.json', '-receipt.json')),
+        suffixes = ('.claim.json', '-journal.json') if observed and stem == 'notebook-rlvr004' else ('.claim.json', '-journal.json', '-receipt.json')
+        _need(all(stem + suffix in parsed for suffix in suffixes),
               'publication_state_previous_mutation_unresolved')
     receipt, journal = parsed[code + '-receipt.json'], parsed[code + '-journal.json']
     _need(receipt.get('exact_byte_roundtrip') is True and type(journal.get('version_calls')) is int
@@ -580,6 +737,8 @@ def _resolved_publication(files, parsed, root, versions, manifest):
           'publication_state_previous_code_unresolved')
     for role in ('inactive', 'rlvr004'):
         stem = 'notebook-' + role
+        if observed and role == 'rlvr004':
+            return _observed_terminal_boundary(files, parsed, versions, manifest_descriptor, adjacent)
         receipt, journal = parsed[stem + '-receipt.json'], parsed[stem + '-journal.json']
         _need(type(journal.get('save_calls')) is int and journal['save_calls'] == 1
               and receipt.get('normalized_source_exact') is True
@@ -612,13 +771,16 @@ def _resolved_publication(files, parsed, root, versions, manifest):
                   and final.get('finalized_sha256') == receipt.get('submitted_source_sha256') ==
                   _digest(files['active-finalized.ipynb']), 'publication_state_previous_finalization_binding')
 
+    return {'source_sha256': parsed['notebook-rlvr004-receipt.json']['saved_source']['sha256'],
+            'provenance': 'accepted-receipt', 'external_records': {}}
+
 
 def _snapshot(root, descriptor, versions, historical, frontier, publication_root=None, publication_history=()):
     root = _path(root)
     selected = root if publication_root is None else _path(publication_root)
     if selected == root:
         _need(not publication_history, 'publication_state_legacy_history_conflict')
-        roots, fingerprint, manifest_identity, _ = _round_snapshot(root, descriptor, versions, historical, frontier)
+        roots, fingerprint, manifest_identity, _, _ = _round_snapshot(root, descriptor, versions, historical, frontier)
         return roots, fingerprint, manifest_identity
     _need(selected == root / 'publications' / ('code-v' + str(versions['code'])),
           'publication_state_selected_round_root')
@@ -660,18 +822,20 @@ def _snapshot(root, descriptor, versions, historical, frontier, publication_root
             _need(inode not in inodes, 'publication_state_inode_alias')
             inodes[inode] = absolute
             fingerprint[absolute] = record
-    # The legacy mixed root is parsed against its OWN accepted manifest.
-    for location, bound, allocated in rounds:
-        records, marks, identity, parsed = _round_snapshot(location, bound, allocated, historical,
+    # The legacy mixed root is parsed against its OWN manifest.
+    for index, (location, bound, allocated) in enumerate(rounds):
+        adjacent = rounds[index + 1][1] if index + 1 < len(rounds) else descriptor
+        records, marks, identity, parsed, resolution = _round_snapshot(location, bound, allocated, historical,
             frontier if location == root else None, excluded_directories=('publications',) if location == root else (),
-            publication_only=location != root, resolved=True)
+            publication_only=location != root, resolved=True, adjacent=adjacent)
         merge(location, marks); identities[str(location)] = identity
+        merge(Path('/'), resolution['external_records'])
         if location == root:
             roots = records
         if location == latest[0]:
             expected = next(row for row in current_manifest['notebooks'] if row['role'] == 'inactive')
             _need(expected.get('predecessor_source_sha256') ==
-                  parsed['notebook-rlvr004-receipt.json']['saved_source']['sha256'],
+                  resolution['source_sha256'],
                   'publication_state_predecessor_source')
     parent = root / 'publications'
     registered = {location.name for location, _, _ in rounds if location != root}
@@ -686,7 +850,7 @@ def _snapshot(root, descriptor, versions, historical, frontier, publication_root
                 _need(stat.S_ISDIR(os.stat(name, dir_fd=directory, follow_symlinks=False).st_mode),
                       'publication_state_round_directory_type')
             if selected.name in names:
-                _, marks, identity, _ = _round_snapshot(selected, descriptor, versions, historical, None,
+                _, marks, identity, _, _ = _round_snapshot(selected, descriptor, versions, historical, None,
                                                        publication_only=True)
                 merge(selected, marks); identities[str(selected)] = identity
             else:
