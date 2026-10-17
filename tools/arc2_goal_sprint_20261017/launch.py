@@ -51,6 +51,37 @@ def write_new(path, value):
     return hashlib.sha256(raw).hexdigest()
 
 
+def relay_solver_log(reader, *, max_bytes=64 * 1024):
+    """Relay bounded already-written solver diagnostics, never prediction files.
+
+    The complete private log remains authoritative. Notebook stdout is only an
+    observation channel: a disconnected consumer must not terminate learning.
+    Reading uses a separate descriptor so the child's append position is intact.
+    """
+    require(type(max_bytes) is int and 0 < max_bytes <= 1024 * 1024,
+            "bounded positive log relay size required")
+    raw = reader.read(max_bytes)
+    if raw:
+        descriptor, blocking = None, None
+        try:
+            descriptor = sys.stdout.fileno()
+            blocking = os.get_blocking(descriptor)
+            os.set_blocking(descriptor, False)
+            # A slow or disconnected notebook observer must never stall the
+            # process-owner deadline loop. Short writes are deliberately not
+            # retried; the original complete private log remains on disk.
+            os.write(descriptor, raw.decode("utf-8", errors="replace").encode("utf-8"))
+        except (AttributeError, OSError, TypeError, ValueError):
+            pass
+        finally:
+            if descriptor is not None and blocking is not None:
+                try:
+                    os.set_blocking(descriptor, blocking)
+                except (AttributeError, OSError, TypeError, ValueError):
+                    pass
+    return len(raw)
+
+
 def regular(path):
     path = Path(path).absolute()
     require(not any(p.is_symlink() for p in (path, *path.parents)), "symlink material forbidden: " + str(path))
@@ -232,6 +263,65 @@ def runtime_allowlist(source, environment, model_roots, training, public, output
     return sorted({str(p.absolute()) for p in paths}), [str(p) for p in writes]
 
 
+def candidate_audit(path, pools, *, require_complete=True):
+    """Validate private ranking provenance without consulting any answer bytes.
+
+    Only the already selected two grids in pools.json are scored. The larger
+    pool is retained to audit how those two were chosen, never for post-score
+    candidate selection or an expanded pass@k claim.
+    """
+    path = regular(path)
+    require(path.stat().st_size <= 64 * 1024**2, "bounded candidate audit required")
+    def nonfinite(value):
+        raise ValueError("nonfinite candidate audit value: " + value)
+    def finite_float(value):
+        result = float(value)
+        require(math.isfinite(result), "nonfinite candidate audit number")
+        return result
+    require(type(require_complete) is bool, "Boolean audit completeness requirement needed")
+    audit = json.loads(path.read_bytes(), parse_constant=nonfinite, parse_float=finite_float)
+    require(isinstance(audit, dict) and audit.get("format") == "irisx/private-full-candidates-v1"
+            and audit.get("run_id") == pools.get("run_id"), "candidate audit identity differs")
+    records = audit.get("records")
+    require(isinstance(records, list) and len(records) <= 167, "bounded candidate records required")
+    expected = {}
+    for task in pools.get("records", []):
+        for test in task.get("tests", []):
+            require(isinstance(task["task_id"], str) and type(test["test_index"]) is int
+                    and test["test_index"] >= 0, "exact selected query identity required")
+            key = (task["task_id"], test["test_index"])
+            require(key not in expected, "duplicate selected query")
+            expected[key] = test
+    seen = set()
+    for record in records:
+        require(isinstance(record, dict), "candidate query record required")
+        require(isinstance(record.get("task_id"), str) and type(record.get("test_index")) is int
+                and record["test_index"] >= 0, "exact candidate query identity required")
+        key = (record.get("task_id"), record.get("test_index"))
+        require(key in expected and key not in seen, "candidate query coverage differs")
+        seen.add(key)
+        candidates, order = record.get("candidates"), record.get("ranked_candidate_indices")
+        require(isinstance(candidates, list) and len(candidates) <= 16, "bounded candidate list required")
+        require(isinstance(order, list) and all(type(i) is int for i in order)
+                and sorted(order) == list(range(len(candidates))), "candidate rank must be a permutation")
+        require(all(isinstance(row, dict) and "grid" in row for row in candidates), "candidate grid record required")
+        for row in candidates:
+            grid = row["grid"]
+            require(isinstance(grid, list) and 1 <= len(grid) <= 30
+                    and isinstance(grid[0], list) and 1 <= len(grid[0]) <= 30
+                    and all(isinstance(line, list) and len(line) == len(grid[0])
+                            and all(type(cell) is int and 0 <= cell <= 9 for cell in line) for line in grid),
+                    "exact bounded integer candidate grid required")
+        require(record.get("input_digest") == expected[key].get("input_digest")
+                and [candidates[i]["grid"] for i in order[:2]] == expected[key].get("ranked_grids"),
+                "candidate top two differ from sealed predictions")
+    require(not require_complete or seen == set(expected), "candidate audit is incomplete for selected queries")
+    return {"sha256": sha(path), "bytes": path.stat().st_size, "queries": len(records),
+            "expected_queries": len(expected), "missing_queries": len(set(expected) - seen),
+            "complete_coverage": seen == set(expected), "complete_required": require_complete,
+            "used_for_scoring": False, "scored_file": "pools.json", "scored_max_candidates": 2}
+
+
 def seal_predictions(output, seal_root, closure, source_sha256):
     from tools.arc_learning_agent_20261011.process_guard import verify_closed_proof
     verify_closed_proof(closure)
@@ -261,6 +351,23 @@ def seal_predictions(output, seal_root, closure, source_sha256):
         require(sha(summary_path) == sha(copied), "solver summary changed while sealing")
         os.chmod(copied, 0o400)
         solver_summary = {"present": True, "sha256": sha(copied), "solver_status": summary.get("solver_status")}
+    full_pool_path = Path(output) / "full-candidate-pools.json"
+    full_pool_receipt = None
+    complete_solver = closure["worker_returncode"] == 0 and solver_summary["solver_status"] == "complete"
+    policy = summary.get("continuation_policy", {}) if solver_summary["present"] else {}
+    expanded = policy.get("candidate_views", 2) != 2 or policy.get("candidate_ranker", "first") != "first"
+    require(not (complete_solver and expanded) or full_pool_path.is_file(),
+            "completed expanded inference requires private candidate audit")
+    if full_pool_path.exists() or full_pool_path.is_symlink():
+        full_pool_receipt = candidate_audit(full_pool_path, json.loads(target.read_bytes()), require_complete=complete_solver)
+        copied = seal_root / "full-candidate-pools.json"
+        with full_pool_path.open("rb") as stream, copied.open("xb") as dest:
+            shutil.copyfileobj(stream, dest)
+            dest.flush()
+            os.fsync(dest.fileno())
+        require(sha(copied) == full_pool_receipt["sha256"] == sha(full_pool_path),
+                "candidate audit changed while sealing")
+        os.chmod(copied, 0o400)
     seal = {"format": "irisx/goal-prediction-seal-v1", "pools_sha256": sha(target),
             "source_manifest_sha256": source_sha256, "solver_manifest_sha256": SOLVER_MANIFEST_SHA256,
             "evaluator_manifest_sha256": EVALUATOR_MANIFEST_SHA256,
@@ -268,6 +375,8 @@ def seal_predictions(output, seal_root, closure, source_sha256):
             "closure": closure, "solver_summary": solver_summary, "tasks": 120, "queries": 167, "sealed_epoch": time.time(),
             "isolation": json.loads(regular(Path(output) / "isolation.json").read_bytes())
                          if (Path(output) / "isolation.json").is_file() else {"mechanism": "synthetic-test-fixture"}}
+    if full_pool_receipt is not None:
+        seal["private_candidate_audit"] = full_pool_receipt
     write_new(seal_root / "prediction-seal.json", seal)
     os.chmod(seal_root / "prediction-seal.json", 0o400)
     return seal
@@ -338,6 +447,11 @@ def score_sealed(seal_root, evaluator_root, public_path, source_root, *, externa
     require(sha(regular(Path(source_root) / "tools/arc_offline_evaluation.py")) == SCORER_SHA256 == seal["scorer_sha256"],
             "unchanged original scorer required")
     require(sha(regular(seal_root / "pools.json")) == seal["pools_sha256"], "sealed predictions changed")
+    if "private_candidate_audit" in seal:
+        require(candidate_audit(seal_root / "full-candidate-pools.json",
+                                json.loads((seal_root / "pools.json").read_bytes()),
+                                require_complete=seal["private_candidate_audit"]["complete_required"]) == seal["private_candidate_audit"],
+                "sealed private candidate audit changed")
     solver_summary = seal.get("solver_summary", {})
     if solver_summary.get("present"):
         require(sha(regular(seal_root / "run-summary.json")) == solver_summary["sha256"], "sealed solver summary changed")
@@ -426,15 +540,22 @@ def launch(request):
            "CUDA_CACHE_PATH": str(output / "cache/cuda"), "PYTHONDONTWRITEBYTECODE": "1"}
     guard = None
     try:
-        with (control / "solver.log").open("xb") as log, open(os.devnull, "rb") as null:
+        with (control / "solver.log").open("xb") as log, \
+                (control / "solver.log").open("rb") as relay, open(os.devnull, "rb") as null:
             guard = OwnedProcessGuard.spawn([request["python"], "-I", "-B", str(source / "tools/arc2_goal_sprint_20261017/launch.py"),
                                             "--isolated-worker", str(spec_path)], evidence_dir=control / "owned-tree",
                                            cwd=output, env=env, stdin=null, stdout=log, stderr=log)
             while guard.poll() is None and time.time() < deadline:
+                relay_solver_log(relay)
                 time.sleep(min(2.0, max(0.01, deadline - time.time())))
             closure = guard.stop(timeout=30) if guard.poll() is None else guard.closed_proof()
             verify_closed_proof(closure)
             write_new(control / "owner-closure.json", closure)
+            # Bound console draining even if a faulty worker emitted excessive
+            # diagnostics; retain the full original file for terminal retrieval.
+            for _ in range(16):
+                if relay_solver_log(relay) == 0:
+                    break
     finally:
         if guard is not None and guard.poll() is None:
             guard.stop(timeout=30)

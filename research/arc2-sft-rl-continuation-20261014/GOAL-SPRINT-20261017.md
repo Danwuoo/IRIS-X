@@ -83,7 +83,7 @@ generalization、官方 competition 分數或尚未驗證的模型曝光保證�
   這不是全 CI 綠燈；不刪除或弱化舊檢查來製造成功。
 - 新流程 focused suite 在 normal 與 `python -O` 各 67 tests：65 PASS、2 SKIP
   （CPU 環境沒有 CUDA 與 Landlock）。封裝／hash 驗證不可因 optimized Python 移除。
-  Opaque source package 已完成本機 roundtrip／import；pinned offline CPU READY 尚待遠端驗證。
+  Opaque source package 已完成本機 roundtrip／import；pinned offline CPU READY 後續已於 v49 驗證，詳見下節。
   所有 CPU 結果都不能冒充真實 GPU throughput、學習收益或 PUBLIC 分數。
 
 私有 solver-only Dataset `danielwuu/irisx-goal-public-inputs-20261017/1` 已 ready，
@@ -91,3 +91,82 @@ generalization、官方 competition 分數或尚未驗證的模型曝光保證�
 每個 directory ZIP 的外層路徑，因此 source 使用 notebook-pinned opaque payload transport，
 不可直接把各 source directory 交給 `--dir-mode zip`。GPU dispatch 另以明確 accelerator
 參數要求現有 RTX PRO 6000，並在 14B 載入前記錄實際 GPU／memory，拒絕小記憶體 fallback。
+
+
+## 已確認的 source 與 run 身分（2026-10-17 UTC）
+
+- Source Git commit `b2e93b2f225f8ef929f321cbe7ab02dc7919fa8d`，tree
+  `d412cbbfe63c3874bd31a487c999c6f8a773fd4f`；private Dataset
+  `danielwuu/irisx-goal-af3-source-20261017-001/1` 的 opaque payload 與 manifest
+  下載後逐 byte 核對。Source manifest SHA-256
+  `6cdeb729db777f1d11c510a4d6fb4f72b8ebf41db8dc3ee1e3716e5a54e8c869`。
+- Notebook 138123872／v49 是 CPU-only 完整離線材料準備，已於 03:14 UTC 前後雙向確認
+  COMPLETE 與精確 source cells。CPython 3.12.15、torch 2.8.0+cu128、transformers
+  5.8.1、peft 0.21.0、pydantic 2.11.7 的 hash-pinned 安裝、pip check、實際 imports、
+  1,003 個 training manifest 檔案、59 個 source 檔案、solver-only projection 與 model
+  material contract 均通過。實際 model load／training／inference／GPU execution 仍為 false。
+  Provider source SHA-256：
+  `16130404413c173a0877b07b93bc2f79d2f23715c66321237fcca9af4651d85a`。
+- 首次 GPU push 因實際兩個 batch GPU slots 已佔用而被拒，回傳 body 明列拒絕，
+  SDK 確認仍是 v49，沒有建立新 RUN。既有 NTL inference 被 provider 確認 COMPLETE 後，
+  使用新 dispatch clock 重試；v50 於 03:21 UTC 被 SDK 確認 RUNNING、private、offline、
+  source cells 完全相符，要求 NvidiaRtxPro6000。Provider source SHA-256：
+  `f4adf8a483dbdab319650e3e683beebd7084d57aab045ffb487fe3fe2e077a8d`。
+  Run ID 為 `irisx-goal-af3-20261017-001`。此觀察不是實際硬體、optimizer update 或分數證據。
+  原 dispatch 時鐘的 12 小時 deadline 為 2026-10-17 15:19:06 UTC；不因稍後觀察而重置。
+- v50 固定保留 200 dev parents，但 A/B/C selection 實際預定使用其中 SHA 排序的 24-parent
+  panel，不把保留 partition 大小當成實際 selection 樣本數。
+- 後續 public-clean-checkout 修復在乾淨環境得到 1,739 tests：1,606 PASS／133 SKIP，
+  其中 27 是明列未執行的 retained-evidence integration。Strict `--all` 仍因真正缺少
+  歷史私有材料而有 1 failure／13 errors，不宣稱完整歷史接受。GitHub run 38998183416
+  的 Windows 3.11 job 又揭露 POSIX-only tests 與一個 Windows Job cleanup lifecycle
+  問題；其餘 jobs 被 fail-fast 取消，不能算 PASS。Portable Windows lane 與修復另案驗證，
+  不改變正在執行的 v50 source bytes。
+
+
+## 未改動 v50 的下一輪實作與觀察界線
+
+截至 2026-10-17 04:41:56 UTC，最後成功取得的 v50 provider metadata 仍為
+RUNNING，source cells 與已提交版本一致。隨後同一合法讀取路徑與普通 status endpoint
+都回覆 `kernels.get` permission denied；其他獨立 notebook 亦出現同樣拒絕，原因未確認。
+不把 denied read 解讀成 notebook 完成、失敗、GPU slot 釋放或配額耗盡，也不重啟 run、
+更改 credentials 或繞過拒絕。Provider 終態、實際硬體、optimizer update 與分數仍待恢復
+存取後驗證。持續本機準備不能取代真正的終態／seal／輸出驗證。
+
+下列選項只屬未來新 source/run identity，全部預設關閉，不回寫 v50 protocol：
+
+- 可從經終態與 seal 確認的 pre-PUBLIC selected adapter 繼續；以獨立 model material
+  contract、完整 LoRA config／tensor inventory／state digest 綁定。Optimizer 與 RNG 不續接。
+  既有 run 的 PUBLIC task-specific TTT adapter 不是允許的 resume 來源。
+- SFT 與 demonstration-only TTT 可用 Fast tokenizer offsets 對所有已有因果示例的 output
+  tokens 訓練；第一個保留 demo、所有 inputs、跨 boundary token 都不計 loss。
+  Dev NLL 仍只用最後答案，AF3 原 trajectory completion mask 不變。
+- 可用固定 8／16 transformed views，逆變換與去重後，以固定 vote 或完整跨-view
+  likelihood panel 排序。Likelihood panel 若未完整計算則回退 vote，不用不等算力的局部
+  scores 選答案。最終仍只交 top two、全 120 tasks／167 queries，不報更大的 pass@k。
+- Private full candidate pools 與選定 top two 綁定並另外 seal；只作 provenance audit，
+  不可看答案後重新選候選。有限長度、nonblocking／best-effort solver log relay 只是觀察通道，不替代完整私有 log。
+- Clean RE-ARC corpus 僅來自已准入的 training parents；parent-uniform sampling 後，
+  有 corpus 的 parent 以 original/generated 各半，僅用於 A/C SFT。
+  詳見 [CLEAN-CURRICULUM-20261017.md](CLEAN-CURRICULUM-20261017.md)。
+
+這些實作已做 tiny-Qwen 真正 autograd、resume rollback、完整 denominator、實際 pinned
+Qwen tokenizer 合成網格至 30×30 的 CPU 測試與獨立審查；仍不是 14B CUDA throughput、
+ARC2 收益或接近 93% 的證據。後續 package/bootstrap 材料 pinning 整合另外驗證，完成後
+才可用新 source identity 發布。新資料與更大 candidate pool 本身不保證達標。
+
+### 下一輪 source 的本機整合驗證
+
+2026-10-17 的目前工作樹在 normal 與 optimized Python 各執行 170 個 goal tests，
+168 PASS／2 明列 SKIP；已提供 hash-pinned 真實 Qwen tokenizer 與 pinned RE-ARC
+source，沒有以 mock 取代該兩項檢查。剩餘 skips 是 CUDA 與 Landlock 在目前環境不可用，
+不是模型效果證據。
+獨立 review 另驗證 private candidate audit 被修改時，必須在第一次 evaluator access 前
+拒絕；失敗 run 的不完整 audit 與成功 run 的完整 coverage 分開記錄。
+
+Optional materials 固定放在 source 的 `materials/adapter-resume/` 與
+`materials/curriculum/`，由 `continuation-materials.json` 與外層 source manifest
+雙重 byte pin。Notebook-only 建構與參數驗證只需 stdlib；安裝完成後才對照真正 runtime
+API 並作 CPU tensor／lineage readback，實際 PEFT key/config/shape 載入仍在 GPU solver
+內再次檢查。Model path 與 base identity 只由成功驗證的 `prepare_model` 注入，不能由
+request、tuning map 或 adapter manifest 自行指定。這些本機結果沒有 dispatch 新 run。

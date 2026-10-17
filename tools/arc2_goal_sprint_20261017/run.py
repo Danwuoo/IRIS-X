@@ -17,10 +17,11 @@ import traceback
 
 import torch
 
-from tools.arc2_goal_sprint_20261017.data import (IDENTITY, SECOND_VIEW, canonical, digest,
-    encode_example, load_data, loo_example, parse_grid, transform)
+from tools.arc2_goal_sprint_20261017.data import (IDENTITY, SECOND_VIEW, answer_text, canonical, digest,
+    encode_example, inference_views, load_data, loo_example, parse_grid, sample_sft_parent,
+    transform, view_inputs)
 from tools.arc2_goal_sprint_20261017.model import (Engine, PhaseDeadline, adapter_state,
-    check_deadline, make_optimizer, restore_state, state_digest)
+    check_deadline, load_adapter_resume, make_optimizer, restore_state, state_digest)
 
 
 def atomic_json(path, value):
@@ -63,31 +64,34 @@ def reward_components(predicted, target):
     return {"exact": exact, "pixel": pixel, "reward": exact + .2 * pixel}
 
 
-def encoded_loo(engine, task, rng, cfg, *, augment=True, held_index=None):
+def encoded_loo(engine, task, rng, cfg, *, augment=True, held_index=None, loss_mode="final"):
     demos, query, target = loo_example(task, rng, augment=augment, held_index=held_index)
     example = encode_example(engine.tokenizer, demos, query, target,
-                             context=cfg["context_tokens"], generation=cfg["generation_tokens"])
+                             context=cfg["context_tokens"], generation=cfg["generation_tokens"], loss_mode=loss_mode)
     return example, target
 
 
-def sft_phase(engine, tasks, cfg, audit, *, phase, rng, deadline, steps=None, lr=1e-4):
+def sft_phase(engine, tasks, cfg, audit, *, phase, rng, deadline, steps=None, lr=1e-4, bundles_by_parent=None):
     started = time.time()
     optimizer = make_optimizer(engine.model, lr)
-    keys = sorted(tasks)
+    if bundles_by_parent and (phase not in {"A", "C"} or not set(bundles_by_parent) <= set(tasks)):
+        raise ValueError("curriculum is restricted to admitted A/C SFT parents")
     successes, attempts, failures = 0, 0, 0
+    sources = {"original": 0, "curriculum": 0}
     while time.time() < deadline and (steps is None or successes < steps):
         attempts += 1
-        key = rng.choice(keys)
+        key, task, source = sample_sft_parent(tasks, rng, bundles_by_parent)
+        sources[source["source"]] += 1
         step_before = None
         try:
-            example, _ = encoded_loo(engine, tasks[key], rng, cfg)
+            example, _ = encoded_loo(engine, task, rng, cfg, loss_mode=cfg.get("sft_loss_mode", "final"))
             # Optimizer allocation/step can fail after partial parameter mutation.
             # Retain the small adapter, not the 14B base; reset optimizer on abort.
             step_before = adapter_state(engine.model)
-            report = engine.sft_step(example, optimizer)
+            report = engine.sft_step(example, optimizer, deadline=deadline)
             successes += int(report["updated"])
-            audit("sft_step", phase=phase, parent_id=key, attempt=attempts, step=successes, **report)
-        except (torch.cuda.OutOfMemoryError, FloatingPointError) as error:
+            audit("sft_step", phase=phase, parent_id=key, attempt=attempts, step=successes, **source, **report)
+        except (PhaseDeadline, torch.cuda.OutOfMemoryError, FloatingPointError) as error:
             if step_before is not None:
                 restore_state(engine.model, step_before)
                 if state_digest(adapter_state(engine.model)) != state_digest(step_before):
@@ -104,6 +108,8 @@ def sft_phase(engine, tasks, cfg, audit, *, phase, rng, deadline, steps=None, lr
             audit("sft_step_aborted", phase=phase, parent_id=key, failure=type(error).__name__,
                   previous_context=previous, new_context=cfg["context_tokens"], failed_attempts=failures,
                   adapter_restored=True, optimizer_reset=True, committed=False)
+            if isinstance(error, PhaseDeadline):
+                break
             if failures >= 5:
                 raise RuntimeError("repeated SFT numerical/memory failures despite rollback")
         except ValueError as error:
@@ -117,7 +123,8 @@ def sft_phase(engine, tasks, cfg, audit, *, phase, rng, deadline, steps=None, lr
     del optimizer
     audit("sft_phase_complete", phase=phase, steps=successes, attempts=attempts,
           wall_seconds=elapsed, failures=failures, deadline_reached=time.time() >= deadline)
-    return {"steps": successes, "attempts": attempts, "wall_seconds": elapsed, "failures": failures}
+    return {"steps": successes, "attempts": attempts, "wall_seconds": elapsed, "failures": failures,
+            "source_attempts": sources}
 
 
 def rl_phase(engine, tasks, cfg, audit, *, rng, deadline):
@@ -223,7 +230,150 @@ def select_arm(engine, states, dev, cfg, audit, deadline):
     return selected, scores
 
 
+def continuation_options(cfg):
+    """Validate optional methods without changing the legacy two-view defaults."""
+    values = {"sft_loss_mode": cfg.get("sft_loss_mode", "final"),
+              "ttt_loss_mode": cfg.get("ttt_loss_mode", "final"),
+              "candidate_views": cfg.get("candidate_views", 2),
+              "candidate_ranker": cfg.get("candidate_ranker", "first"),
+              "candidate_pool_limit": cfg.get("candidate_pool_limit", 16),
+              "likelihood_normalization": cfg.get("likelihood_normalization", "sum"),
+              "rerank_fraction": cfg.get("rerank_fraction", .25)}
+    if any(values[k] not in {"final", "causal_outputs"} for k in ("sft_loss_mode", "ttt_loss_mode")):
+        raise ValueError("invalid supervised loss mode")
+    if type(values["candidate_views"]) is not int or values["candidate_views"] not in (2, 8, 16):
+        raise ValueError("candidate_views must be 2, 8, or 16")
+    if values["candidate_ranker"] not in {"first", "vote", "cross_view_likelihood"}:
+        raise ValueError("invalid candidate ranker")
+    if (type(values["candidate_pool_limit"]) is not int
+            or not values["candidate_views"] <= values["candidate_pool_limit"] <= 16):
+        raise ValueError("bounded full pool must retain every possible unique view candidate")
+    if values["likelihood_normalization"] not in {"sum", "token_mean"}:
+        raise ValueError("invalid likelihood normalization")
+    fraction = values["rerank_fraction"]
+    if type(fraction) not in (int, float) or not math.isfinite(fraction) or not 0 < fraction < 1:
+        raise ValueError("strict generation/rerank deadline allocation required")
+    return values
+
+
+def rank_candidate_pool(engine, candidates, task, query, views, cfg, *, deadline):
+    """No answers: full-panel likelihood, or predeclared deterministic vote fallback.
+
+    Partial scores are retained for audit only. A likelihood ranking requires ALL
+    candidates on ALL configured views; interruption cannot select an unequal or
+    favorable subset of the frozen panel. Each view uses identical prompt IDs
+    across candidates, reserving the longest completion before dropping demos.
+    """
+    options = continuation_options(cfg)
+    mode = options["candidate_ranker"]
+    votes = sorted(range(len(candidates)), key=lambda i: (-candidates[i]["votes"], i))
+    receipt = {"requested_ranker": mode, "used_ranker": mode, "normalization": options["likelihood_normalization"],
+               "complete_views": 0, "planned_views": len(views), "scores": [], "partial_scores": [],
+               "fallback": None}
+    if mode == "first" or not candidates:
+        return list(range(len(candidates))), receipt
+    if mode == "vote":
+        return votes, receipt
+    panel = []
+    try:
+        for view_index, view in enumerate(views):
+            check_deadline(deadline)
+            demos, transformed_query = view_inputs(task, query, view)
+            completions = []
+            for row in candidates:
+                target = transform(row["grid"], **view["transform"])
+                tokens = engine.tokenizer.encode(answer_text(target), add_special_tokens=False)
+                if engine.tokenizer.eos_token_id is not None:
+                    tokens.append(engine.tokenizer.eos_token_id)
+                completions.append(tokens)
+            prompt = encode_example(engine.tokenizer, demos, transformed_query,
+                                    context=cfg["context_tokens"], generation=max(map(len, completions)))
+            partial = []
+            for index, tokens in enumerate(completions):
+                check_deadline(deadline)
+                value = engine.candidate_log_likelihood({**prompt, "completion_ids": tokens},
+                            normalization=options["likelihood_normalization"], deadline=deadline)
+                if not math.isfinite(value):
+                    raise FloatingPointError("nonfinite candidate likelihood")
+                partial.append({"candidate": index, "log_likelihood": value, "completion_tokens": len(tokens)})
+                receipt["partial_scores"] = [{"view": view_index, **v} for v in partial]
+            panel.append(partial)
+            receipt["complete_views"] += 1
+            receipt["scores"].append({"view": view_index, "candidates": partial,
+                                       "prompt_digest": digest(prompt["prompt_ids"]),
+                                       "demos_dropped": prompt["demos_dropped"]})
+            receipt["partial_scores"] = []
+        totals = [math.fsum(view[i]["log_likelihood"] for view in panel) for i in range(len(candidates))]
+        receipt["aggregate_log_likelihood"] = totals
+        return sorted(range(len(candidates)), key=lambda i: (-totals[i], -candidates[i]["votes"], i)), receipt
+    except (PhaseDeadline, torch.cuda.OutOfMemoryError, FloatingPointError, ValueError) as error:
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        receipt.update(used_ranker="vote", fallback=type(error).__name__)
+        return votes, receipt
+
+
+def solve_query_views(engine, task, query, cfg, audit, *, task_id, query_index, deadline):
+    options = continuation_options(cfg)
+    views = inference_views(options["candidate_views"], seed=cfg["seed"], task_id=task_id,
+                            demo_count=len(task["train"]))
+    started = time.time()
+    fraction = options["rerank_fraction"] if options["candidate_ranker"] == "cross_view_likelihood" else 0
+    generation_deadline = deadline if fraction == 0 else started + max(0, deadline - started) * (1 - fraction)
+    candidates, receipts = [], []
+    completed = 0
+    for index, view in enumerate(views):
+        now = time.time()
+        view_deadline = min(generation_deadline, now + max(0, generation_deadline - now) / (len(views) - index))
+        receipt = {"view": index, **view, "status": "failed"}
+        try:
+            check_deadline(view_deadline)
+            demos, transformed_query = view_inputs(task, query, view)
+            example = encode_example(engine.tokenizer, demos, transformed_query,
+                                     context=cfg["context_tokens"], generation=cfg["generation_tokens"])
+            generated = engine.generate(example["prompt_ids"], max_new_tokens=cfg["generation_tokens"],
+                                        sample=False, deadline=view_deadline)[0]
+            completed += 1
+            grid = parse_grid(generated["text"])
+            receipt.update(status="complete", valid=grid is not None,
+                           completion_tokens=generated["completion_tokens"], stop=generated["stop"],
+                           demos_dropped=example["demos_dropped"], raw_text_digest=digest(generated["text"]))
+            if grid is not None:
+                original = transform(grid, **view["transform"], inverse=True)
+                found = next((i for i, row in enumerate(candidates) if row["grid"] == original), None)
+                if found is None:
+                    if len(candidates) >= options["candidate_pool_limit"]:
+                        raise RuntimeError("full candidate bound unexpectedly exceeded")
+                    found = len(candidates)
+                    candidates.append({"grid": original, "votes": 0, "views": []})
+                candidates[found]["votes"] += 1
+                candidates[found]["views"].append(index)
+                receipt["candidate"] = found
+        except (PhaseDeadline, torch.cuda.OutOfMemoryError, FloatingPointError, ValueError) as error:
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            receipt["failure"] = type(error).__name__
+        receipts.append(receipt)
+        audit("public_candidate_view", task_id=task_id, test_index=query_index,
+              **{k: v for k, v in receipt.items() if k not in {"transform", "demo_order"}})
+    order, ranking = rank_candidate_pool(engine, candidates, task, query, views, cfg, deadline=deadline)
+    status = "complete" if completed == len(views) else "partial" if candidates else "failed"
+    # Finite durations, not Infinity epochs, keep synthetic CPU audits canonical.
+    full = {"task_id": task_id, "test_index": query_index, "input_digest": digest(query),
+            "candidates": candidates, "ranked_candidate_indices": order, "views": receipts,
+            "ranking": ranking, "generation_budget_fraction": 1 - fraction,
+            "rerank_budget_fraction": fraction, "wall_seconds": time.time() - started}
+    audit("public_candidates_ranked", task_id=task_id, test_index=query_index, candidates=len(candidates),
+          complete_views=completed, used_ranker=ranking["used_ranker"], fallback=ranking["fallback"])
+    return {"test_index": query_index, "input_digest": digest(query),
+            "ranked_grids": [candidates[i]["grid"] for i in order[:2]], "status": status}, full
+
+
 def solve_public(engine, public, selected_state, cfg, audit, output, *, deadline):
+    options = continuation_options(cfg)
+    expanded = options["candidate_views"] != 2 or options["candidate_ranker"] != "first"
+    full_pool = {"format": "irisx/private-full-candidates-v1", "run_id": cfg["run_id"],
+                 "policy": options, "policy_digest": digest(options), "records": []}
     pools = {"format": "irisx/arc-offline-pools-v1", "run_id": cfg["run_id"],
              "method": "Qwen3-14B LoRA SFT + upstream AF3 DDIS + dev selection + demonstration-only TTT",
              "challenges_digest": digest(public), "records": [], "parent_wall_seconds": None}
@@ -243,6 +393,7 @@ def solve_public(engine, public, selected_state, cfg, audit, output, *, deadline
             raise RuntimeError("PUBLIC task adapter reset differs")
         ttt_start = time.time()
         ttt_steps = 0
+        physical_ttt_steps = 0
         optimizer = make_optimizer(engine.model, 5e-5)
         rng = random.Random(cfg["seed"] + task_number)
         # Protect at least two thirds of each task's remaining interval for queries.
@@ -251,12 +402,16 @@ def solve_public(engine, public, selected_state, cfg, audit, output, *, deadline
             for step in range(cfg["ttt_steps"]):
                 if time.time() >= ttt_deadline:
                     break
-                example, _ = encoded_loo(engine, task, rng, cfg)
-                report = engine.sft_step(example, optimizer)
+                example, _ = encoded_loo(engine, task, rng, cfg, loss_mode=options["ttt_loss_mode"])
+                report = engine.sft_step(example, optimizer, deadline=ttt_deadline)
                 ttt_steps += int(report["updated"])
+                physical_ttt_steps += int(report["updated"])
                 audit("ttt_step", task_id=key, step=step, **report)
-        except (torch.cuda.OutOfMemoryError, FloatingPointError, ValueError) as error:
+        except (PhaseDeadline, torch.cuda.OutOfMemoryError, FloatingPointError, ValueError) as error:
             restore_state(engine.model, selected_state)
+            if state_digest(adapter_state(engine.model)) != selected_hash:
+                raise RuntimeError("PUBLIC TTT rollback differs") from error
+            optimizer.zero_grad(set_to_none=True)
             audit("ttt_rollback", task_id=key, failure=type(error).__name__, steps=ttt_steps)
             ttt_steps = 0
         finally:
@@ -265,6 +420,14 @@ def solve_public(engine, public, selected_state, cfg, audit, output, *, deadline
         tests = []
         generation_started = time.time()
         for query_index, query in enumerate(task["test"]):
+            if expanded:
+                now = time.time()
+                query_deadline = min(task_deadline, now + max(0, task_deadline - now) / (len(task["test"]) - query_index))
+                test, full = solve_query_views(engine, task, query["input"], cfg, audit,
+                    task_id=key, query_index=query_index, deadline=query_deadline)
+                tests.append(test)
+                full_pool["records"].append(full)
+                continue
             candidates = []
             attempted_views = 0
             for view_index, spec in enumerate((IDENTITY, SECOND_VIEW)):
@@ -300,7 +463,10 @@ def solve_public(engine, public, selected_state, cfg, audit, output, *, deadline
         pools["records"].append(record)
         pools["parent_wall_seconds"] = time.time() - started
         atomic_json(output / "pools.json", pools)
+        if expanded:
+            atomic_json(output / "full-candidate-pools.json", full_pool)
         audit("public_task_complete", task_id=key, task_number=task_number + 1, ttt_steps=ttt_steps,
+              physical_ttt_optimizer_steps=physical_ttt_steps,
               queries=len(tests), nonempty_queries=sum(bool(t["ranked_grids"]) for t in tests),
               reset_sha256=reset_hash, elapsed_seconds=time.time() - task_start)
     return pools
@@ -348,11 +514,16 @@ def execute(cfg):
                 "context_tokens": 8192, "generation_tokens": 2048, "dev_tasks": 24}
     for key, value in defaults.items():
         cfg.setdefault(key, value)
+    options = continuation_options(cfg)
     output = Path(cfg["output_dir"])
     output.mkdir(parents=True, exist_ok=True)
     if (output / "audit.jsonl").exists():
         raise ValueError("fresh run output required")
     audit = Audit(output / "audit.jsonl")
+    audit("continuation_policy_frozen", **options, policy_digest=digest(options),
+          adapter_resume_enabled=cfg.get("adapter_resume") is not None,
+          curriculum_enabled=cfg.get("curriculum") is not None,
+          dev_loss_mode="final", af3_mask="original_completion_only", likelihood_incomplete_fallback="vote")
     started = time.time()
     final_deadline = float(cfg["session_deadline_epoch"]) - 300
     check_deadline(final_deadline)
@@ -363,6 +534,18 @@ def execute(cfg):
     training, dev, public, receipt = load_data(cfg["training_root"], cfg["training_manifest_path"], cfg["public_path"],
         expected_manifest_sha256=cfg.get("training_manifest_sha256"))
     audit("data_admitted", **receipt)
+    bundles, curriculum_receipt = None, None
+    if cfg.get("curriculum") is not None:
+        from tools.arc2_goal_sprint_20261017.curriculum import Admission, load_curriculum
+        spec = cfg["curriculum"]
+        if (not isinstance(spec, dict) or not {"root", "manifest_sha256"} <= set(spec)
+                or not set(spec) <= {"root", "manifest_sha256", "producer_hashes"}):
+            raise ValueError("strict curriculum configuration required")
+        admission = Admission.from_load_data(training, dev, public, receipt)
+        bundles, curriculum_receipt = load_curriculum(spec["root"], admission=admission,
+            expected_manifest_sha256=spec["manifest_sha256"], expected_producer_hashes=spec.get("producer_hashes"))
+        audit("curriculum_admitted", **curriculum_receipt, sampling="uniform_parent_then_half_original_half_bundle",
+              phases=["A", "C"], dev_used=False, public_used=False, rl_used=False, ttt_used=False)
     atomic_json(output / "effective-config.json", cfg)
     # If a later model/training failure occurs, retain explicit empty predictions
     # with the complete input identity, not a shortened denominator or invented
@@ -373,6 +556,10 @@ def execute(cfg):
     resource = admit_resource()
     audit("gpu_allocation_admitted", **resource)
     engine = Engine.load(cfg["model_path"])
+    resume_receipt = None
+    if cfg.get("adapter_resume") is not None:
+        resume_receipt = load_adapter_resume(engine, cfg["adapter_resume"], base_identity=cfg.get("model_base_identity"))
+        audit("adapter_resume_verified", **resume_receipt)
     audit("model_loaded", model_class=type(engine.model).__name__, torch_version=torch.__version__,
           cuda_version=torch.version.cuda, gpu=torch.cuda.get_device_name(),
           gpu_bytes=torch.cuda.get_device_properties(0).total_memory,
@@ -384,7 +571,8 @@ def execute(cfg):
     sft_deadline = train_start + max(0, training_deadline - train_start) * .55
     rng = random.Random(cfg["seed"])
     baseline = adapter_state(engine.model)
-    a_report = sft_phase(engine, training, cfg, audit, phase="A", rng=rng, deadline=sft_deadline, steps=cfg["sft_steps"])
+    a_report = sft_phase(engine, training, cfg, audit, phase="A", rng=rng, deadline=sft_deadline, steps=cfg["sft_steps"],
+                         bundles_by_parent=bundles)
     if a_report["steps"] == 0:
         raise RuntimeError("no SFT update completed")
     states = {"A": adapter_state(engine.model)}
@@ -403,7 +591,7 @@ def execute(cfg):
     restore_state(engine.model, states["A"])
     c_deadline = min(c_started + b_report["wall_seconds"], training_deadline)
     c_report = sft_phase(engine, training, cfg, audit, phase="C", rng=random.Random(cfg["seed"] + 1),
-                         deadline=c_deadline, steps=None)
+                         deadline=c_deadline, steps=None, bundles_by_parent=bundles)
     states["C"] = adapter_state(engine.model)
     c_report["inner_wall_seconds"] = c_report["wall_seconds"]
     c_report["wall_seconds"] = time.time() - c_started
@@ -417,7 +605,8 @@ def execute(cfg):
     del states
     selection = {"selected_arm": selected, "dev_scores": scores, "selected_state_sha256": selected_hash,
                  "A": a_report, "B": b_report, "C": c_report, "control_cost_matched": matched,
-                 "data": receipt, "public_labels_used": False}
+                 "data": receipt, "public_labels_used": False, "continuation_policy": options,
+                 "adapter_resume": resume_receipt, "curriculum": curriculum_receipt}
     atomic_json(output / "selection.json", selection)
     pools = solve_public(engine, public, selected_state, cfg, audit, output, deadline=final_deadline)
     engine.sync()
@@ -425,7 +614,8 @@ def execute(cfg):
                "public_tasks": len(pools["records"]), "public_queries": sum(len(r["tests"]) for r in pools["records"]),
                "public_nonempty_queries": sum(bool(t["ranked_grids"]) for r in pools["records"] for t in r["tests"]),
                "forward_calls": engine.forward_calls, "sampled_tokens": engine.sampled_tokens,
-               "optimizer_steps": engine.optimizer_steps, "wall_seconds": time.time() - started,
+               "optimizer_steps": engine.optimizer_steps, "physical_optimizer_attempts": engine.optimizer_attempts,
+               "wall_seconds": time.time() - started,
                "score": None, "score_reason": "parent-only evaluator after solver process closure"}
     atomic_json(output / "run-summary.json", summary)
     audit("solver_complete", public_tasks=summary["public_tasks"], public_queries=summary["public_queries"],

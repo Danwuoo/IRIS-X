@@ -20,7 +20,7 @@ import subprocess
 import time
 import zipfile
 
-from . import launch
+from . import launch, materials
 from .bootstrap import REFERENCES
 from .launch import require, regular, sha, write_new
 
@@ -130,7 +130,9 @@ def source_paths(root, entry_modules=ENTRY_MODULES):
     return sorted(paths)
 
 
-def build_source(root, destination, extra_wheelhouse, run_id):
+def build_source(root, destination, extra_wheelhouse, run_id, *, adapter_resume_root=None,
+                 adapter_resume_manifest_sha256=None, curriculum_root=None, curriculum_manifest_sha256=None,
+                 curriculum_producer_hashes=None, training_root=None, training_manifest_path=None, public_path=None):
     destination = Path(destination)
     from tools.arc2_agent_factory3_bridge_20261014.provenance import verify_vendor
     verify_vendor()
@@ -143,11 +145,23 @@ def build_source(root, destination, extra_wheelhouse, run_id):
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, target)
     # Exact published material identities; no local training/evaluator data.
-    materials = destination / "materials/qwen14b"
-    materials.mkdir(parents=True)
+    qwen_materials = destination / "materials/qwen14b"
+    qwen_materials.mkdir(parents=True)
     origin = Path(root) / "research/qwen14b-materials"
-    shutil.copyfile(regular(origin / "material-contract.json"), materials / "material-contract.json")
-    shutil.copytree(origin / "hf-overlay", materials / "hf-overlay", symlinks=False)
+    contract_path = regular(origin / "material-contract.json")
+    require(sha(contract_path) == materials.MODEL_CONTRACT_SHA256, "production Qwen contract differs")
+    contract = json.loads(contract_path.read_bytes())
+    overlay_rows = {name: {"bytes": row["size_bytes"], "sha256": row["sha256"]}
+                    for name, row in contract["overlay_files"].items()}
+    materials.exact_inventory(origin / "hf-overlay", overlay_rows, total_limit=32 * 1024**2)
+    shutil.copyfile(contract_path, qwen_materials / "material-contract.json")
+    (qwen_materials / "hf-overlay").mkdir()
+    for name in overlay_rows:
+        shutil.copyfile(regular(origin / "hf-overlay" / name), qwen_materials / "hf-overlay" / name)
+    materials.package_materials(destination, adapter_resume_root=adapter_resume_root,
+        adapter_resume_manifest_sha256=adapter_resume_manifest_sha256, curriculum_root=curriculum_root,
+        curriculum_manifest_sha256=curriculum_manifest_sha256, curriculum_producer_hashes=curriculum_producer_hashes,
+        training_root=training_root, training_manifest_path=training_manifest_path, public_path=public_path)
     lock = wheel_lock(extra_wheelhouse)
     extra = destination / "extra-wheels"
     extra.mkdir()
@@ -333,7 +347,11 @@ def metadata(original, filename, *, source_dataset=None, solver_dataset=None, en
     return result
 
 
-def build(output, run_id, source_dataset, started_epoch, extra_wheelhouse, original_metadata=DEFAULT_METADATA, solver_dataset=None):
+def build(output, run_id, source_dataset, started_epoch, extra_wheelhouse, original_metadata=DEFAULT_METADATA, solver_dataset=None,
+          *, solver_parameters=None, adapter_resume_root=None, adapter_resume_manifest_sha256=None,
+          curriculum_root=None, curriculum_manifest_sha256=None, curriculum_producer_hashes=None,
+          training_root=None, training_manifest_path=None, public_path=None):
+    solver_parameters = materials.validate_solver_parameters(solver_parameters)
     output = Path(output).absolute()
     require(not output.exists(), "fresh local package identity required")
     require(re.fullmatch(r"[a-z0-9][a-z0-9-]{3,95}", run_id), "fresh portable run identity required")
@@ -344,7 +362,10 @@ def build(output, run_id, source_dataset, started_epoch, extra_wheelhouse, origi
     output.mkdir(parents=True)
     source = output / "source-dataset"
     review = output / "source-review"
-    build_source(ROOT, review, extra_wheelhouse, run_id)
+    build_source(ROOT, review, extra_wheelhouse, run_id, adapter_resume_root=adapter_resume_root,
+        adapter_resume_manifest_sha256=adapter_resume_manifest_sha256, curriculum_root=curriculum_root,
+        curriculum_manifest_sha256=curriculum_manifest_sha256, curriculum_producer_hashes=curriculum_producer_hashes,
+        training_root=training_root, training_manifest_path=training_manifest_path, public_path=public_path)
     fingerprint = source_transport(review, source)
     payload_sha256 = sha(source / "source-payload.zip.bin")
     owner, slug, _ = source_dataset.split("/")
@@ -356,6 +377,10 @@ def build(output, run_id, source_dataset, started_epoch, extra_wheelhouse, origi
                "started_epoch": started_epoch, "session_deadline_epoch": started_epoch + 43200,
                "runtime_root": "/kaggle/temp/" + run_id,
                "evaluation_mode": "external-cpu" if solver_dataset else "landlock-local"}
+    if solver_parameters:
+        request["solver_parameters"] = solver_parameters
+    if (review / materials.INDEX).is_file():
+        request["continuation_materials_sha256"] = sha(review / materials.INDEX)
     if solver_dataset:
         require(re.fullmatch(r"danielwuu/[a-z0-9][a-z0-9-]+/1", solver_dataset), "distinct pinned solver-only Dataset version1 required")
         request["solver_dataset"] = solver_dataset
@@ -386,8 +411,16 @@ def build(output, run_id, source_dataset, started_epoch, extra_wheelhouse, origi
 
 
 def build_notebook_only(destination, run_id, source_dataset, source_manifest_sha256, solver_dataset, started_epoch,
-                        *, source_payload_sha256=None, prepare_only=False, original_metadata=DEFAULT_METADATA):
-    """Use already-published immutable source with a NEW actual dispatch epoch."""
+                        *, source_payload_sha256=None, prepare_only=False, original_metadata=DEFAULT_METADATA,
+                        solver_parameters=None, continuation_materials_sha256=None):
+    """Use already-published immutable source with a NEW actual dispatch epoch.
+
+    Optional material roots never come from this request. The pinned source
+    index alone supplies them; material changes require a new source identity.
+    """
+    solver_parameters = materials.validate_solver_parameters(solver_parameters)
+    require(continuation_materials_sha256 is None or materials.valid_sha(continuation_materials_sha256),
+            "verified continuation material index SHA required")
     require(re.fullmatch(r"[a-z0-9][a-z0-9-]{3,95}", run_id), "portable fresh run identity required")
     require(re.fullmatch(r"[a-f0-9]{64}", source_manifest_sha256 or ""), "verified immutable source manifest pin required")
     require(re.fullmatch(r"[a-f0-9]{64}", source_payload_sha256 or ""), "verified immutable source payload pin required")
@@ -403,6 +436,10 @@ def build_notebook_only(destination, run_id, source_dataset, source_manifest_sha
                "input_root": "/kaggle/input", "working_root": "/kaggle/working/" + run_id,
                "runtime_root": "/kaggle/temp/" + run_id, "started_epoch": started_epoch,
                "session_deadline_epoch": started_epoch + 43200}
+    if solver_parameters:
+        request["solver_parameters"] = solver_parameters
+    if continuation_materials_sha256 is not None:
+        request["continuation_materials_sha256"] = continuation_materials_sha256
     filename = "iris-x-goal-sprint-20261017.ipynb"
     write_new(destination / filename, notebook([notebook_source(request)], run_id))
     write_new(destination / "kernel-metadata.json", metadata(json.loads(regular(original_metadata).read_bytes()), filename,
@@ -450,11 +487,34 @@ def main():
     parser.add_argument("--extra-wheelhouse")
     parser.add_argument("--metadata", default=str(DEFAULT_METADATA))
     parser.add_argument("--preflight-only", action="store_true")
+    parser.add_argument("--solver-parameters", help="JSON file with only allowlisted numerical/algorithm tuning")
+    parser.add_argument("--continuation-materials-sha256", help="existing source index pin, notebook-only")
+    parser.add_argument("--adapter-resume-root")
+    parser.add_argument("--adapter-resume-manifest-sha256")
+    parser.add_argument("--curriculum-root")
+    parser.add_argument("--curriculum-manifest-sha256")
+    parser.add_argument("--curriculum-producer-hashes", help="explicit external JSON producer SHA map")
+    parser.add_argument("--training-root")
+    parser.add_argument("--training-manifest-path")
+    parser.add_argument("--public-path", help="solver-only PUBLIC challenges for actual load_data admission")
     args = parser.parse_args()
+    solver_parameters = None if args.solver_parameters is None else json.loads(regular(args.solver_parameters).read_bytes())
+    material_inputs = dict(adapter_resume_root=args.adapter_resume_root,
+        adapter_resume_manifest_sha256=args.adapter_resume_manifest_sha256, curriculum_root=args.curriculum_root,
+        curriculum_manifest_sha256=args.curriculum_manifest_sha256,
+        curriculum_producer_hashes=None if args.curriculum_producer_hashes is None else json.loads(regular(args.curriculum_producer_hashes).read_bytes()),
+        training_root=args.training_root, training_manifest_path=args.training_manifest_path, public_path=args.public_path)
+    if args.notebook_only or args.solver_only_from or args.preflight_only:
+        require(not any(v is not None for v in material_inputs.values()), "new materials require a new source build")
+    if not args.notebook_only:
+        require(args.continuation_materials_sha256 is None, "existing continuation index pin is notebook-only")
+    if args.solver_only_from or args.preflight_only:
+        require(solver_parameters is None, "solver tuning requires a source or notebook build")
     if args.notebook_only:
         print(json.dumps(build_notebook_only(args.output, args.run_id, args.source_dataset, args.source_manifest_sha256,
             args.solver_dataset, args.started_epoch, source_payload_sha256=args.source_payload_sha256,
-            prepare_only=args.prepare_only, original_metadata=args.metadata), sort_keys=True))
+            prepare_only=args.prepare_only, original_metadata=args.metadata, solver_parameters=solver_parameters,
+            continuation_materials_sha256=args.continuation_materials_sha256), sort_keys=True))
         return
     if args.solver_only_from:
         print(json.dumps(build_solver_projection(args.solver_only_from, args.output, args.solver_dataset), sort_keys=True))
@@ -468,7 +528,8 @@ def main():
         print(json.dumps({"preflight_directory": str(destination), "enable_gpu": False, "enable_internet": False}))
         return
     require(args.source_dataset and args.started_epoch and args.extra_wheelhouse, "source dataset, epoch and extra wheels required")
-    print(json.dumps(build(args.output, args.run_id, args.source_dataset, args.started_epoch, args.extra_wheelhouse, args.metadata, solver_dataset=args.solver_dataset), sort_keys=True))
+    print(json.dumps(build(args.output, args.run_id, args.source_dataset, args.started_epoch, args.extra_wheelhouse, args.metadata, solver_dataset=args.solver_dataset,
+        solver_parameters=solver_parameters, **material_inputs), sort_keys=True))
 
 
 if __name__ == "__main__":

@@ -23,6 +23,8 @@ sys.path[:0] = [str(SOURCE), str(SOURCE / "src")]
 from tools.arc2_goal_sprint_20261017.launch import (require, regular, sha, write_new, verify_inventory,
     SOLVER_MANIFEST_SHA256, TRAINING_MANIFEST_SHA256)
 
+from tools.arc2_goal_sprint_20261017 import materials
+
 WHEEL_MANIFEST_SHA256 = "2b082a3c36534b5602b8a9f738beec2c01b3d2df11b5438f1c352a84c118b052"
 INTERPRETER_MANIFEST_SHA256 = "20a52944f1ee2abf6f47a2e3beafce44951993439fede39335e660cea143495e"
 MODEL_CONTRACT_SHA256 = "8d26b2f04a91147bbb5e11231f614552d36e2862af9b8d2d2b05b273805b69b0"
@@ -220,17 +222,48 @@ def prepare_model(input_root, work, *, request=None):
         if row["role"] in {"base-weight", "weight-index"}:
             (model / name).symlink_to(mount / name)
     overlay = contract_path.parent / "hf-overlay"
+    exact_files(overlay, contract["overlay_files"])
     for name, row in contract["overlay_files"].items():
         path = regular(overlay / name)
         require(path.stat().st_size == row["size_bytes"] and sha(path) == row["sha256"], "model overlay differs")
         shutil.copyfile(path, model / name)
+    require({name for name, row in contract["provider_files"].items() if row["role"] in {"base-weight", "weight-index"}}
+            <= verified.keys(), "full base weight/index hashes must be verified")
+    require(REFERENCES["model"] == materials.MODEL_SOURCE and MODEL_CONTRACT_SHA256 == materials.MODEL_CONTRACT_SHA256,
+            "protected production base identity differs")
     write_new(work / "model-receipt.json", {"reference": REFERENCES["model"], "provider_mount": str(mount),
         "contract_sha256": MODEL_CONTRACT_SHA256, "verified_sha256": verified,
-        "loader": "pinned provider shards and index; pinned official HF config/tokenizer overlay"})
+        "loader": "pinned provider shards and index; pinned official HF config/tokenizer overlay",
+        "model_base_identity": materials.base_identity(), "model_path": str(model), "model_loaded": False})
     return model, mount
 
 
+def prepare_continuation(request, specs, parameters, python, env, runtime, training, public_solver):
+    """Validate CPU material bytes/lineage with pinned installed dependencies."""
+    if not specs and not parameters:
+        return None
+    inputs = {"specs": specs, "parameters": parameters, "training_root": str(training / "data/training"),
+              "training_manifest_path": str(training / "manifest.json"),
+              "public_path": str(public_solver / "public-challenges.json")}
+    path = runtime / "continuation-check.json"
+    write_new(path, inputs)
+    code = "import sys; sys.path[:0]=" + repr([str(SOURCE), str(SOURCE / "src")]) + "\n" + '''
+import json
+from tools.arc2_goal_sprint_20261017.materials import validate_runtime_materials
+with open(sys.argv[1]) as stream: inputs = json.load(stream)
+print(json.dumps(validate_runtime_materials(**inputs), sort_keys=True))
+'''
+    result = subprocess.run([python, "-I", "-B", "-c", code, str(path)], check=True,
+        capture_output=True, text=True, env=env, timeout=min(600, remaining(request)))
+    receipt = json.loads(result.stdout.splitlines()[-1])
+    require(receipt["model_loaded"] is False and receipt["adapter_loaded"] is False
+            and receipt["training_executed"] is False, "CPU material validation must not claim model execution")
+    write_new(runtime / "continuation-receipt.json", receipt)
+    return receipt
+
+
 def bootstrap(request):
+    parameters = materials.validate_request_options(request)
     start = request["started_epoch"]
     require(type(start) in {int, float} and math.isfinite(start) and 0 < start <= time.time(), "actual pre-dispatch epoch required")
     require(request["session_deadline_epoch"] == start + 43200, "unchanged 12-hour platform deadline required")
@@ -241,6 +274,8 @@ def bootstrap(request):
         require(not Path(name).is_absolute() and ".." not in Path(name).parts, "unsafe source file path")
         path = regular(SOURCE / name)
         require(path.stat().st_size == row["bytes"] and sha(path) == row["sha256"], "source file identity differs: " + name)
+    optional_materials = materials.resolve_materials(SOURCE, request.get("continuation_materials_sha256"),
+                                                    source_files=manifest["files"])
     root = Path(request["working_root"]).absolute()
     root.mkdir(parents=True, exist_ok=False)
     write_new(root / "request.json", request)
@@ -266,6 +301,11 @@ def bootstrap(request):
     runtime.mkdir(parents=True, exist_ok=False)
     python, environment, env = install(request, roots, runtime)
     model, mount = prepare_model(request["input_root"], runtime, request=request)
+    # These values originate only in successfully verified preparation, never
+    # from a request, adapter metadata or a tunable config dictionary.
+    verified_base_identity = materials.base_identity()
+    continuation_receipt = prepare_continuation(request, optional_materials, parameters, python, env,
+                                               runtime, roots["training"], public_solver)
     allowed_input_roots = [str(p) for p in roots.values()] + [str(mount),
         str(source_mount)]
     if mode == "external-cpu":
@@ -285,6 +325,8 @@ def bootstrap(request):
             "source_inventory_verified_files": len(manifest["files"]), "solver_inventory_verified": True,
             "model_loaded": False, "training_executed": False, "inference_executed": False,
             "gpu_execution_performed": False, "evaluator_answer_bytes_read": False, "completed_epoch": time.time()}
+        if continuation_receipt is not None:
+            receipt["continuation_materials"] = continuation_receipt
         write_new(root / "prepare-ready.json", receipt)
         print(json.dumps(receipt, sort_keys=True), flush=True)
         return receipt
@@ -294,10 +336,11 @@ def bootstrap(request):
         "seed": 20261017, "session_deadline_epoch": request["session_deadline_epoch"],
         "training_seconds": 24000, "sft_steps": 3072, "rl_batches": 12, "rl_group_size": 8,
         "rl_parents_per_batch": 8, "ttt_steps": 8, "context_tokens": 8192, "generation_tokens": 2048, "dev_tasks": 24}
-    config.update(request.get("solver_parameters", {}))
-    # Dataset/clock paths must never be overridden by a tuning dictionary.
-    require(set(request.get("solver_parameters", {})) <= {"training_seconds", "sft_steps", "rl_batches", "rl_group_size",
-        "rl_parents_per_batch", "ttt_steps", "context_tokens", "generation_tokens", "dev_tasks", "seed"}, "unknown solver tuning parameter")
+    config.update(parameters)
+    config.update(optional_materials)
+    config["model_path"] = str(model)
+    config["model_base_identity"] = verified_base_identity
+    config["training_manifest_sha256"] = TRAINING_MANIFEST_SHA256
     launch_request = {"source_root": str(SOURCE), "source_manifest_sha256": request["source_manifest_sha256"],
         "control_root": str(root / "control"), "evaluator_root": str(roots["public"] / "evaluator"),
         "environment_root": str(runtime), "model_roots": [str(model), str(mount)],
@@ -326,7 +369,7 @@ def preserve_runtime_evidence(request):
         return
     destination = root / "runtime-evidence"
     destination.mkdir(exist_ok=True)
-    for name in ("install.log", "runtime-receipt.json", "model-receipt.json", "requirements.lock", "pip-report.json"):
+    for name in ("install.log", "runtime-receipt.json", "model-receipt.json", "requirements.lock", "pip-report.json", "continuation-receipt.json"):
         source = runtime / name
         if source.is_file():
             require(source.stat().st_size <= 16 * 1024**2, "bounded runtime receipt exceeded: " + name)

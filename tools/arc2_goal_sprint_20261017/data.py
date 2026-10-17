@@ -87,35 +87,119 @@ def parse_grid(text):
     return rows if valid_grid(rows) else None
 
 
-def render_prompt(demos, query):
+def render_prompt_spans(demos, query):
+    """Return the unchanged prompt and exact character spans of demo outputs."""
     parts = ["Infer the grid transformation from the examples. Apply the same rule to the final input. "
              "Return only the output grid in <grid> and </grid> tags, with one row per line and digits separated by spaces."]
+    spans = []
     for i, pair in enumerate(demos):
-        parts.extend([f"Example {i + 1} input:\n" + grid_text(pair["input"]),
-                      "Output:\n" + answer_text(pair["output"])])
+        parts.append(f"Example {i + 1} input:\n" + grid_text(pair["input"]))
+        start = len("\n\n".join(parts)) + len("\n\nOutput:\n")
+        answer = answer_text(pair["output"])
+        spans.append((start, start + len(answer)))
+        parts.append("Output:\n" + answer)
     parts.append("Final input:\n" + grid_text(query) + "\nOutput:")
-    return "\n\n".join(parts)
+    return "\n\n".join(parts), spans
 
 
-def encode_example(tokenizer, demos, query, target=None, *, context=8192, generation=2048):
+def render_prompt(demos, query):
+    return render_prompt_spans(demos, query)[0]
+
+
+def causal_output_mask(tokenizer, text, content, spans, ids, completion):
+    """Supervise only whole tokens inside answer spans after the first answer.
+
+    Chat rendering must embed the exact content once. Fast-tokenizer offsets
+    must agree with the actual model IDs. Boundary-crossing tokens are excluded,
+    never approximated by tokenizing a substring or silently using another mask.
+    """
+    if not getattr(tokenizer, "is_fast", False):
+        raise ValueError("causal_outputs requires a Fast tokenizer with offsets")
+    if not spans:
+        raise ValueError("causal_outputs requires a retained causal demonstration; exceeds context")
+    if text.count(content) != 1:
+        raise ValueError("chat template must preserve the exact prompt content once")
+    shift = text.index(content)
+    ranges = [(a + shift, b + shift) for a, b in spans[1:]]
+    encoded = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)
+    offsets = encoded["offset_mapping"]
+    if encoded["input_ids"] != ids or len(offsets) != len(ids):
+        raise ValueError("tokenizer offset IDs differ from actual prompt IDs")
+    previous_start = 0
+    mask = []
+    for index, pair in enumerate(offsets):
+        if (len(pair) != 2 or any(type(v) is not int for v in pair)
+                or not 0 <= pair[0] <= pair[1] <= len(text)
+                or pair[0] < previous_start):
+            raise ValueError("invalid tokenizer character offsets")
+        a, b = pair
+        previous_start = a
+        mask.append(int(index > 0 and a < b and any(left <= a < b <= right for left, right in ranges)))
+    return mask + [1] * len(completion)
+
+
+def encode_example(tokenizer, demos, query, target=None, *, context=8192, generation=2048, loss_mode="final"):
     """Drop whole demonstrations only; never truncate a query or target grid."""
+    if loss_mode not in {"final", "causal_outputs"} or (target is None and loss_mode != "final"):
+        raise ValueError("invalid supervised loss mode")
     kept = list(demos)
     completion = [] if target is None else tokenizer.encode(answer_text(target), add_special_tokens=False)
     if target is not None and tokenizer.eos_token_id is not None:
         completion.append(tokenizer.eos_token_id)
     reserve = len(completion) if target is not None else generation
     while True:
-        text = tokenizer.apply_chat_template([{"role": "user", "content": render_prompt(kept, query)}],
+        content, spans = render_prompt_spans(kept, query)
+        text = tokenizer.apply_chat_template([{"role": "user", "content": content}],
                                             tokenize=False, add_generation_prompt=True, enable_thinking=False)
         ids = tokenizer.encode(text, add_special_tokens=False)
         if len(ids) + reserve <= context:
-            return {"prompt_ids": ids, "completion_ids": completion, "demos_used": len(kept),
-                    "demos_dropped": len(demos) - len(kept)}
+            result = {"prompt_ids": ids, "completion_ids": completion, "demos_used": len(kept),
+                      "demos_dropped": len(demos) - len(kept)}
+            if loss_mode == "causal_outputs":
+                result["loss_mask"] = causal_output_mask(tokenizer, text, content, spans, ids, completion)
+                result["loss_mode"] = loss_mode
+            return result
         if not kept:
             raise ValueError("complete query/target exceeds context; truncation forbidden")
         # Preserve as many examples as possible by dropping the largest one.
         index = max(range(len(kept)), key=lambda i: sum(len(grid_text(v)) for v in kept[i].values()))
         kept.pop(index)
+
+
+def inference_views(count, *, seed, task_id, demo_count):
+    """Frozen D4/color/demo-order views; independent of global RNG and answers."""
+    if type(count) is not int or count not in (2, 8, 16):
+        raise ValueError("candidate_views must be 2, 8, or 16")
+    order = list(range(demo_count))
+    if count == 2:
+        return [{"transform": spec, "demo_order": list(order)} for spec in (IDENTITY, SECOND_VIEW)]
+    views = []
+    for index in range(count):
+        rng = random.Random(hashlib.sha256(canonical([seed, task_id, index, "candidate-views-v1"])).digest())
+        colors, shuffled = list(range(10)), list(order)
+        if index:
+            rng.shuffle(colors)
+            rng.shuffle(shuffled)
+        views.append({"transform": {"rotation": index % 4, "transpose": bool((index // 4) % 2),
+                                     "colors": colors}, "demo_order": shuffled})
+    return views
+
+
+def view_inputs(task, query, view):
+    spec = view["transform"]
+    demos = [{k: transform(task["train"][i][k], **spec) for k in ("input", "output")}
+             for i in view["demo_order"]]
+    return demos, transform(query, **spec)
+
+
+def sample_sft_parent(tasks, rng, bundles_by_parent=None):
+    """Uniform original parents, then 50/50 original/generated when available."""
+    key = rng.choice(sorted(tasks))
+    bundles = (bundles_by_parent or {}).get(key, [])
+    if bundles and rng.random() < .5:
+        bundle = rng.choice(bundles)
+        return key, bundle, {"source": "curriculum", "bundle_id": bundle["task_id"]}
+    return key, tasks[key], {"source": "original", "bundle_id": None}
 
 
 def loo_example(task, rng, *, augment=True, held_index=None):
