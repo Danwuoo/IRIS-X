@@ -3,6 +3,7 @@
 The fixture is the verified immutable INERT001 plan (f8000ab7...). Tests derive
 synthetic RUN admission observations and never authenticate them or run a model.
 """
+from tests.platform_requirements import requires_linux
 import ast
 import builtins
 import copy
@@ -19,13 +20,15 @@ from unittest.mock import Mock, patch
 
 from tools import nvarc_e13_admission as admission
 from tools import nvarc_e13_entry as entry
-from tools import nvarc_e13_cleanup as cleanup
 from tools import nvarc_e13_delivery_envelope as delivery
-from tools import stage_nvarc_e13_search_budget as stage
 
 FIXTURE = Path(__file__).parent / 'fixtures/e12/frozen-inert-001-plan.json'
 FIXTURE_SHA256 = 'f8000ab7db2a40795e93ff7482ad17ffa7fc817057207da7a9aadd6266739349'
 
+
+def _load_linux_runtime():
+    global stage
+    from tools import stage_nvarc_e13_search_budget as stage
 
 def snapshot(remaining=6000, *, now=None):
     now = time.time() if now is None else now
@@ -36,6 +39,40 @@ def snapshot(remaining=6000, *, now=None):
         used_seconds=36000 - remaining, reserved_seconds=0, total_seconds=36000,
         remaining_free_seconds=remaining, pay_to_scale_enabled=False,
         duration_units='provider charged quota seconds', permission_granted=False)
+
+
+def synthetic_runtime_projection():
+    """Literal test configuration, not runtime or historical execution evidence.
+
+    Keep pure admission checks independent of the Linux runtime import. The
+    Linux alignment test below checks every field against the real exports.
+    """
+    return dict(format='irisx/stage4-e13-search-budget-v1',
+        generation_budget_profile='native-paired-search-budget-v12',
+        generation_seconds=240, verification_reserve_seconds=30, per_test_seconds=270,
+        startup_seconds=900, maximum_training_seconds=1200, inference_reserve_seconds=840,
+        reset_reserve_seconds=180, finalization_reserve_seconds=300, maximum_worker_seconds=3120,
+        maximum_notebook_wall_seconds=3600,
+        maximum_generation_forwards=49152, maximum_verification_forwards=1536,
+        maximum_inference_input_tokens=62914560, maximum_processed_sequences_total=768,
+        arm_contracts={
+            'search120': dict(experiment='paired-search-budget-v12', arm_id='search120',
+                training_updates=128, generation_seconds=120, per_test_seconds=150,
+                verification_reserve_seconds=30, schedule='interleaved',
+                dfs_probability_floor=.2, dfs_max_score=1.6094379124341003),
+            'search240': dict(experiment='paired-search-budget-v12', arm_id='search240',
+                training_updates=128, generation_seconds=240, per_test_seconds=270,
+                verification_reserve_seconds=30, schedule='interleaved',
+                dfs_probability_floor=.2, dfs_max_score=1.6094379124341003)},
+        arm_order={'a47bf94d': ['search120', 'search240'],
+            'aa4ec2a5': ['search240', 'search120'],
+            '195c6913': ['search120', 'search240'],
+            'a25697e4': ['search240', 'search120']},
+        per_arm_caps=dict(maximum_generation_forwards=24576, maximum_verification_forwards=768,
+            maximum_inference_input_tokens=31457280, maximum_processed_sequences_total=384),
+        e13_process_policy=dict(term_seconds=3290, kill_seconds=3299.8, stop_seconds=3300,
+            final_seconds=3600, worker_cleanup_deadline_seconds=3299.8,
+            requires_owned_group_absence=True))
 
 
 def fixture(*, automatic=True, remaining=6000):
@@ -50,12 +87,7 @@ def fixture(*, automatic=True, remaining=6000):
         resource_budget_profile=admission.RUN_BUDGET_PROFILE if automatic else admission.BUDGET_PROFILE,
         owner_editor_only=not automatic, owner_editor_admission=None, resource_admission=None,
         **{key: automatic and key in admission.RUN_TRUE_FIELDS for key in admission.FALSE_FIELDS})
-    from tools import nvarc_e13_runtime as runtime
-    plan.update(format=runtime.FORMAT, generation_budget_profile=runtime.PROFILE,
-        **runtime.TIMING, **runtime.CAPS,
-        arm_contracts={arm: runtime.arm_contract(arm) for arm in runtime.ARMS},
-        arm_order=runtime.counterbalanced_order(runtime.TASK_COUNTS),
-        per_arm_caps=dict(runtime.PER_ARM_CAPS), e13_process_policy=dict(runtime.PROCESS_POLICY))
+    plan.update(synthetic_runtime_projection())
     if automatic:
         plan['resource_admission'] = admission.run_admission(plan, snapshot(remaining),
             admission.AUTHORIZATION_REF, quota_policy=admission.WAIVER_POLICY)
@@ -65,6 +97,7 @@ def fixture(*, automatic=True, remaining=6000):
 
 
 def payload(plan):
+    _load_linux_runtime()
     raw = {name: (stage.ROOT / name).read_bytes() for name in stage.NEW_FILES}
     hashes = {name: hashlib.sha256(body).hexdigest() for name, body in raw.items()}
     plan['source_files_sha256'] = hashes.copy()
@@ -81,6 +114,16 @@ def write_runtime(root, plan):
 
 
 class AdmissionTests(unittest.TestCase):
+    @requires_linux('Alignment with the real E13 runtime imports POSIX resource and Linux process controls')
+    def test_synthetic_configuration_matches_complete_runtime_projection(self):
+        from tools import nvarc_e13_runtime as runtime
+        expected = dict(format=runtime.FORMAT, generation_budget_profile=runtime.PROFILE,
+            **runtime.TIMING, **runtime.CAPS,
+            arm_contracts={arm: runtime.arm_contract(arm) for arm in runtime.ARMS},
+            arm_order=runtime.counterbalanced_order(runtime.TASK_COUNTS),
+            per_arm_caps=dict(runtime.PER_ARM_CAPS), e13_process_policy=dict(runtime.PROCESS_POLICY))
+        self.assertEqual(admission.canonical(synthetic_runtime_projection()), admission.canonical(expected))
+
     def test_default_conservative_policy_and_explicit_small_quota_waiver(self):
         plan = fixture()
         with self.assertRaisesRegex(RuntimeError, 'four-GPU-hour'):
@@ -123,6 +166,7 @@ class AdmissionTests(unittest.TestCase):
         with self.assertRaises(RuntimeError): admission.write_run_start('/unused', fixture(automatic=False), time.monotonic())
         with self.assertRaises(RuntimeError): admission.declarations(original)
 
+    @requires_linux('Real immutable run-start receipt creation requires mandatory O_NOFOLLOW')
     def test_receipt_has_actual_clocks_without_invented_owner_or_runtime_quota(self):
         plan = fixture()
         with tempfile.TemporaryDirectory() as temporary:
@@ -141,6 +185,7 @@ class AdmissionTests(unittest.TestCase):
             with self.assertRaises(ValueError): delivery.verify_start_value(changed, plan, current=False)
             self.assertEqual(delivery.verify_start_value(value, plan, current=False), value)
 
+    @requires_linux('Real immutable run-start receipt creation requires mandatory O_NOFOLLOW')
     def test_runtime_uses_historical_submission_observation_after_queue(self):
         plan = fixture(); resource = plan['resource_admission']
         resource['resource_snapshot'] = snapshot(now=time.time() - 7200)
@@ -153,7 +198,12 @@ class AdmissionTests(unittest.TestCase):
             admission.verify_execution(temporary, plan)
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class EntryAndOutputTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def test_tampered_runtime_never_imports_before_source_gate(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary); plan = fixture(); write_runtime(root, plan)
@@ -208,7 +258,12 @@ class EntryAndOutputTests(unittest.TestCase):
             with self.assertRaises(RuntimeError): GenerationStore(root, 'e13-search-budget-pilot', dict(bindings, plan_digest='sha256:' + 'b' * 64))
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class NotebookTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def setUp(self):
         self.plan = fixture(); self.raw = payload(self.plan)
         self.notebook = stage.render(self.plan, self.raw)
@@ -232,6 +287,7 @@ class NotebookTests(unittest.TestCase):
         self.assertIs(environment[admission.CONFIG_NAME], False)
         self.assertNotIn('START', environment)
 
+    @requires_linux('Actual generated cell imports the Linux owned-process cleanup/finalizer')
     def test_actual_admission_failure_reaches_prelaunch_diagnostic_finalizer(self):
         runtime = stage.runtime_api(); seen = []
         # Notebook rendering is not an IPython dependency of this CPU control test.

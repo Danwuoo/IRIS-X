@@ -1,4 +1,5 @@
 """Literal CPU subprocess fixtures for probe diagnostics, never native imports."""
+from tests.platform_requirements import requires_linux
 import hashlib
 import json
 import os
@@ -17,6 +18,7 @@ from tools.nvarc_process_supervisor import supervise
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@requires_linux('Real bootstrap children require Linux process groups, procfs ownership and killpg cleanup')
 class ProbeBootstrapTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()

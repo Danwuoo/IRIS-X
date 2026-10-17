@@ -1,4 +1,5 @@
 """Offline standalone archive/CLI controls; no native imports or provider actions."""
+from tests.platform_requirements import requires_linux
 import ast
 import builtins
 import contextlib
@@ -53,11 +54,13 @@ class DownloadCellTests(unittest.TestCase):
         with patch.dict(sys.modules,{'IPython':ModuleType('IPython'),'IPython.display':ui}),contextlib.redirect_stdout(io.StringIO()):
             exec(compile(source,'independent-download-cell','exec'),namespace)
         return namespace
+    @requires_linux('Real notebook download cell requires O_NONBLOCK/O_NOFOLLOW descriptor safety; unsafe-node tests also require symlinks/FIFOs')
     def test_failed_run_download_is_independent_readonly_and_stdlib_until_ui(self):
         self.archive();before=self.path.read_bytes();found=self.execute()
         self.assertEqual(self.links,[str(self.path)]);self.assertEqual(before,self.path.read_bytes())
         self.assertNotIn('screen',found);self.assertNotIn('work',found);self.assertNotIn('PACKED',found)
         self.assertEqual(self.imports[-1],'IPython.display')
+    @requires_linux('Real notebook download cell requires O_NONBLOCK/O_NOFOLLOW descriptor safety; unsafe-node tests also require symlinks/FIFOs')
     def test_missing_temp_truncated_corrupt_crc_and_wrong_identity_refuse_before_ui(self):
         for kind in ('missing','temp','truncated','crc','wrong-run','wrong-plan','trailing'):
             with self.subTest(kind=kind):
@@ -74,6 +77,7 @@ class DownloadCellTests(unittest.TestCase):
                 if kind=='trailing':self.path.write_bytes(self.path.read_bytes()+b'tail')
                 with self.assertRaises((OSError,RuntimeError,zipfile.BadZipFile,struct.error)):self.execute(path=target)
                 self.assertFalse(self.links);self.assertNotIn('IPython.display',self.imports);self.imports=[]
+    @requires_linux('Real notebook download cell requires O_NONBLOCK/O_NOFOLLOW descriptor safety; unsafe-node tests also require symlinks/FIFOs')
     def test_unsafe_member_metadata_and_duplicate_identity_refuse(self):
         names=['../escape','/absolute','bad\\name','bad:name','folder//entry','folder/./entry','bad\x01name','screen.json']
         for name in names:
@@ -86,6 +90,7 @@ class DownloadCellTests(unittest.TestCase):
             self.archive(extra=[(info,b'unsafe')])
             with self.assertRaises(RuntimeError):self.execute()
             self.assertFalse(self.links)
+    @requires_linux('Real notebook download cell requires O_NONBLOCK/O_NOFOLLOW descriptor safety; unsafe-node tests also require symlinks/FIFOs')
     def test_archive_symlink_parent_symlink_and_fifo_refuse_without_read_hang(self):
         self.archive();link=self.root/'other.zip';link.symlink_to(self.path)
         # Keep the expected final name while resolving through a symlink parent.
@@ -96,12 +101,14 @@ class DownloadCellTests(unittest.TestCase):
         self.path.unlink();os.mkfifo(self.path)
         with self.assertRaises(RuntimeError):self.execute()
         self.assertFalse(self.links)
+    @requires_linux('Real notebook download cell requires O_NONBLOCK/O_NOFOLLOW descriptor safety; unsafe-node tests also require symlinks/FIFOs')
     def test_member_and_central_directory_bounds_refuse_before_ui(self):
         self.archive(extra=[('large',b'x'*4096)])
         with self.assertRaisesRegex(RuntimeError,'uncompressed'):self.execute()
         self.archive();body=bytearray(self.path.read_bytes());struct.pack_into('<L',body,len(body)-10,17*1024**2);self.path.write_bytes(body)
         with self.assertRaisesRegex(RuntimeError,'directory'):self.execute()
         self.assertFalse(self.links)
+    @requires_linux('Real notebook download cell requires O_NONBLOCK/O_NOFOLLOW descriptor safety; unsafe-node tests also require symlinks/FIFOs')
     def test_zip64_end_records_are_supported_without_large_fixture(self):
         self.archive();body=self.path.read_bytes();end=struct.unpack('<4s4H2LH',body[-22:]);offset=len(body)-22
         large=struct.pack('<4sQ2H2L4Q',b'PK\x06\x06',44,45,45,0,0,end[4],end[4],end[5],end[6])
@@ -110,6 +117,7 @@ class DownloadCellTests(unittest.TestCase):
         for closed_end in (final,body[-22:]):
             self.path.write_bytes(body[:-22]+large+locator+closed_end);self.execute()
         self.assertEqual(len(self.links),2)
+    @requires_linux('Real notebook download cell requires O_NONBLOCK/O_NOFOLLOW descriptor safety; unsafe-node tests also require symlinks/FIFOs')
     def test_output_complete_deflate_without_compressed_eof_is_refused(self):
         self.archive()
         with zipfile.ZipFile(self.path,'a',compression=zipfile.ZIP_DEFLATED) as archive:archive.writestr('diagnostic',b'abc')
@@ -131,6 +139,7 @@ class DownloadCellTests(unittest.TestCase):
         with zipfile.ZipFile(self.path) as archive:self.assertEqual(archive.read('diagnostic'),b'abc')
         with self.assertRaisesRegex(RuntimeError,'compressed'):self.execute()
         self.assertFalse(self.links)
+    @requires_linux('Real notebook download cell requires O_NONBLOCK/O_NOFOLLOW descriptor safety; unsafe-node tests also require symlinks/FIFOs')
     def test_stored_member_with_unread_trailing_byte_is_refused(self):
         self.archive(extra=[('diagnostic',b'abc')]);body=bytearray(self.path.read_bytes())
         with zipfile.ZipFile(self.path) as archive:info=archive.getinfo('diagnostic')

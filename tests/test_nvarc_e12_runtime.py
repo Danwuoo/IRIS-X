@@ -1,4 +1,5 @@
 """Finite CPU checks for E12 worker/coordinator integration and strict replay."""
+from tests.platform_requirements import requires_linux
 import copy
 import contextlib
 import os
@@ -11,10 +12,8 @@ from types import SimpleNamespace as NS
 import unittest
 from unittest.mock import patch
 
-from tools import nvarc_e12_runtime as runtime
 from tools import nvarc_e12_admission as admission
 from tools import nvarc_e12_answer_evidence as evidence
-from tools import nvarc_e12_cleanup as cleanup
 from tools.nvarc_native_multitask import digest,write
 from tools.nvarc_e12_output_lifecycle import GenerationStore
 from tests.nvarc_e12_cpu_fixture import fixture
@@ -23,9 +22,17 @@ from tests.test_nvarc_e12_training import Engine as HookEngine
 from tests.test_nvarc_e10_ttt_probe import Engine as InventoryEngine,Trainer as OldTrainer,guard,schedule_fixture
 
 
+def _load_linux_runtime():
+    global runtime, cleanup
+    from tools import nvarc_e12_cleanup as cleanup
+    from tools import nvarc_e12_runtime as runtime
+    hooks_fixture._load_linux_runtime()
+
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class ReplayTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        _load_linux_runtime()
         cls.hooks=hooks_fixture.HookTests();cls.hooks.setUp()
         # Use the original 506-tensor synthetic inventory for strict byte/count
         # replay; actual installed hooks still run on the 506 fake parameters.
@@ -88,7 +95,12 @@ class ReplayTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):self.verify()
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class WorkerSequenceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name);self.plan=fixture(self.root)
         self.plan.update(original_training_arguments={'synthetic':True},dependency_readproof_digest=digest('synthetic'))
@@ -161,7 +173,12 @@ class WorkerSequenceTests(unittest.TestCase):
         self.assertIsNone(self.trainers[0].optimizer);self.assertFalse(self.engines[0].model.changed)
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class CoordinatorTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name);self.plan=fixture(self.root)
         write(self.root/'plan.json',self.plan);write(self.root/'screen.json',self.plan)

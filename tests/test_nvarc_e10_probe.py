@@ -1,4 +1,5 @@
 """Synthetic probe packaging/counts only; zero model or provider invocations."""
+from tests.platform_requirements import requires_linux
 import json
 import copy
 import contextlib
@@ -14,14 +15,17 @@ from unittest.mock import patch
 import zipfile
 from tests.test_nvarc_e10_screen import fixture
 from tools import stage_nvarc_e10_probe as stage
-from tools.nvarc_e10_probe import verify_observations
-from tools.nvarc_e10_probe import control_adapter
-from tools import nvarc_e10_probe as probe
 from tools.nvarc_native_multitask import canonical,digest,write
 from tools.nvarc_native_solve_runtime import cache_controls
 from tools import nvarc_resource_attachment as mounts
 from tools.stage_nvarc_e10_screen import CONFIG_FIELDS,EXTERNAL_FILES
 
+
+def _load_linux_runtime():
+    global verify_observations, control_adapter, probe
+    from tools.nvarc_e10_probe import verify_observations
+    from tools.nvarc_e10_probe import control_adapter
+    from tools import nvarc_e10_probe as probe
 
 def probe_fixture():
     screen,plans,payload=fixture();plan=plans['interleaved-r1']
@@ -85,7 +89,12 @@ class Process:
     def poll(self):return self.code
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class ProbeRuntimeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def setUp(self):
         self.temporary=tempfile.TemporaryDirectory();self.root=Path(self.temporary.name)/'root';self.root.mkdir()
         self.plan,raw=probe_fixture()
@@ -255,7 +264,9 @@ class ResourceAttachmentTests(unittest.TestCase):
 
 
 class ProbeTests(unittest.TestCase):
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_actual_source_adapter_positive_contract_with_closed_control_scope(self):
+        _load_linux_runtime()
         from types import SimpleNamespace
         from tools.nvarc_public_eval import PhaseTelemetry
         adapter=control_adapter(SimpleNamespace(device='synthetic-cpu'),SimpleNamespace(),lambda *_args,**_kwargs:None,PhaseTelemetry())
@@ -280,7 +291,9 @@ class ProbeTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'admitted'):
                 stage.verify_runtime(Path(tmp)/'package/runtime',require_approved=True)
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_source_cache_and_reset_token_ceilings(self):
+        _load_linux_runtime()
         events=[]
         for index,width in enumerate((9,1,1,1,11,10,9),1):
             events.extend([{'event':'forward_reserved','call_id':index,'phase':'control','physical_input_tokens':4*width},

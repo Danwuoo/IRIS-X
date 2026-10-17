@@ -14,7 +14,7 @@ import unittest
 from tools import nvarc_e12_prefix_contract as e12
 from tools.nvarc_e12_prefix_fixture import FakeTrainer, fixture_inputs, paired_fixture, rng_observation
 from tools.nvarc_native_ttt_schedule import ulp_distance
-from tools.nvarc_e10_ttt_probe import training_accounting
+from tests.platform_requirements import requires_linux
 
 
 class PrefixContractTests(unittest.TestCase):
@@ -176,7 +176,9 @@ class PrefixContractTests(unittest.TestCase):
         good.run()
         self.assertEqual(good.actual_optimizer_calls, 128)
 
+    @requires_linux("frozen E10 probe imports POSIX resource and process-group supervision")
     def test_frozen_e10_complete_epoch_verifier_still_rejects_64(self):
+        from tools.nvarc_e10_ttt_probe import training_accounting
         ledger = dict(forwards=[dict(completed=True, input_tokens=3, supervised_tokens=2)] * 64,
                       training_steps=[dict(completed=True)] * 64, optimizer_steps=[dict(completed=True)] * 64,
                       optimizer_constructions=[dict(completed=True)], generation_calls=0, teacher_calls=0)

@@ -1,4 +1,5 @@
 """CPU-only streaming, immutable publication, and real owned-process tests."""
+from tests.platform_requirements import requires_linux
 import errno
 import hashlib
 import json
@@ -17,6 +18,7 @@ import zipfile
 from tools import nvarc_uncapped_artifacts as artifacts
 
 
+@requires_linux('Descriptor-relative no-follow artifact storage and directory fsync')
 class ArtifactTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

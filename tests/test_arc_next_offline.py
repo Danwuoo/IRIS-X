@@ -10,8 +10,8 @@ import sys
 import unittest
 from unittest import mock
 from tools import arc_next_offline_bundle as bundle
-from tools import arc_next_offline_runtime as runtime
 from tools import stage_arc_next_offline as stage
+from tests.platform_requirements import requires_linux
 
 
 def pins():
@@ -44,7 +44,13 @@ class OfflineBundleTests(unittest.TestCase):
 
     def test_symlink_directory_rejected(self):
         with tempfile.TemporaryDirectory() as d:
-            root=Path(d);digest=small_runtime(root);(root/'alias').symlink_to(root/'runtime',target_is_directory=True)
+            root=Path(d);digest=small_runtime(root)
+            try:
+                (root/'alias').symlink_to(root/'runtime',target_is_directory=True)
+            except OSError as error:
+                if os.name == 'nt' and getattr(error, 'winerror', None) == 1314:
+                    self.skipTest('Windows symlink creation privilege unavailable')
+                raise
             with self.assertRaisesRegex(ValueError,'symlinks'):bundle.verify_runtime(root,digest)
 
     def test_safe_member_rejects_escape(self):
@@ -97,7 +103,9 @@ class OfflineBundleTests(unittest.TestCase):
                 if cell['cell_type']=='code':self.assertNotIn('arc-prize-2026-arc-agi-3',''.join(cell['source']))
             self.assertTrue(result['all_defaults_inert'])
 
+    @requires_linux("offline runtime imports Linux SIGKILL process-group dispatch stages")
     def test_disabled_driver_performs_no_work(self):
+        from tools import arc_next_offline_runtime as runtime
         with mock.patch('subprocess.run',side_effect=AssertionError('process')):
             self.assertEqual(runtime.launch_phase('anything',{},enabled=False)['status'],'disabled')
         with self.assertRaises(ValueError):runtime.launch_phase('anything',{},enabled='true')
@@ -120,6 +128,7 @@ class OfflineBundleTests(unittest.TestCase):
             self.assertFalse(list(root.rglob('__pycache__')))
             bundle.verify_runtime(root,references['runtime']['manifest_sha256'])
 
+    @requires_linux("mock target imports arc_next_training and its POSIX resource dependency")
     def test_runtime_training_check_does_not_open_evaluator_answers(self):
         task={'train':[{'input':[[0]],'output':[[1]]},{'input':[[1]],'output':[[2]]}]}
         selection={'training_ids':['train'],'development_ids':['dev'],'source_files':{'train':{'git_blob_sha1':'a','bytes':1},'dev':{'git_blob_sha1':'b','bytes':2}}}
@@ -135,7 +144,9 @@ class OfflineBundleTests(unittest.TestCase):
             self.assertFalse(result['evaluator_answers_parsed'])
 
     @unittest.skipUnless(sys.version_info[:2]==(3,12) and sys.platform=='linux','Selected Linux CPython3.12 required')
+    @requires_linux("requires the selected Linux CPython environment and SIGKILL runtime")
     def test_installed_receipt_fixed_command_and_tamper_rejected(self):
+        from tools import arc_next_offline_runtime as runtime
         from tests.test_arc_next_offline_environment import Wheelhouse
         from tools.arc_next_offline_environment import install_offline, NETWORK_GUARD_HOOK_RELATIVE
         with tempfile.TemporaryDirectory() as d:
@@ -161,17 +172,23 @@ class OfflineBundleTests(unittest.TestCase):
                 (env/'offline-run.py').write_text('print("changed launcher")')
                 with self.assertRaisesRegex(ValueError,'launcher'):runtime._runtime_environment(config)
 
+    @requires_linux("offline runtime imports Linux SIGKILL process-group dispatch stages")
     def test_cpu_guard_probe_requires_marker_before_attempt(self):
+        from tools import arc_next_offline_runtime as runtime
         import socket
         with mock.patch.object(socket,'_irisx_offline_guard',False,create=True),mock.patch.object(socket,'socket',side_effect=AssertionError('unguarded probe attempted')):
             with self.assertRaisesRegex(RuntimeError,'guard is not active'):runtime.cpu_import_check({}, {})
 
+    @requires_linux("offline runtime imports Linux SIGKILL process-group dispatch stages")
     def test_cpu_guard_probe_does_not_accept_os_sandbox_denial(self):
+        from tools import arc_next_offline_runtime as runtime
         import socket
         with mock.patch.object(socket,'_irisx_offline_guard',True,create=True),mock.patch.object(socket,'socket',side_effect=PermissionError('OS restriction')):
             with self.assertRaisesRegex(PermissionError,'OS restriction'):runtime.cpu_import_check({}, {})
 
+    @requires_linux("offline runtime imports Linux SIGKILL process-group dispatch stages")
     def test_repeat_model_phase_checks_exact_manifest_pin_before_imports(self):
+        from tools import arc_next_offline_runtime as runtime
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);(root/'irisx-model-material.json').write_text('{}')
             config={'model_root':str(root),'pins':{'model':{'manifest_sha256':'0'*64}}}
@@ -179,7 +196,9 @@ class OfflineBundleTests(unittest.TestCase):
                 for phase in ('CHECK_CPU_IMPORTS','RUN_CALIBRATION','RUN_ARCHITECTURE_PILOT'):
                     with self.assertRaisesRegex(ValueError,'pinned Dataset'):runtime.execute_phase(phase,config)
 
+    @requires_linux("offline runtime imports Linux SIGKILL process-group dispatch stages")
     def test_output_and_environment_cannot_mutate_mounted_inputs(self):
+        from tools import arc_next_offline_runtime as runtime
         with tempfile.TemporaryDirectory() as d:
             root=Path(d)
             config=dict(runtime_root=str(root/'runtime'),model_root=str(root/'model'),wheels_root=str(root/'wheels'),environment_dir=str(root/'env'),output_root=str(root/'out'),pins=pins(),run_tag='test-001',training_profile='smoke2',enable_training_pilot=False,max_wall_seconds=10,approved_max_cost_usd=None,estimated_hourly_cost_usd=None,adapter_path=None)

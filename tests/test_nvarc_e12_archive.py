@@ -1,4 +1,5 @@
 """CPU-only E12 archive finalization; synthetic files, no native/provider work."""
+from tests.platform_requirements import requires_linux
 import copy
 import hashlib
 import os
@@ -15,6 +16,10 @@ from tests import test_nvarc_e12_delivery_envelope as delivery_tests
 
 class ArchiveTests(unittest.TestCase):
     def setUp(self):
+        if self._testMethodName == 'test_actual_cleanup_prelaunch_helper_interoperates_with_finalizer':
+            # Load default clock arguments before the delivery fixture patches
+            # the shared time module. Cold imports must not retain fake clocks.
+            from tools import nvarc_e12_cleanup
         self.fixture = delivery_tests.DeliveryEnvelopeTests('test_missing_evidence_remains_unknown')
         self.fixture.setUp(); f = self.fixture
         f.archive_path.unlink()
@@ -52,6 +57,7 @@ class ArchiveTests(unittest.TestCase):
                     self.files[f'workers/{rank}/arms/{arm}/{name}'] = b'{}\n'
         self.files['terminal.json'] = delivery.canonical(terminal); self.flush()
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_full_fake_completion_delivers_exact_post_write_result(self):
         self.full_complete(); result = self.finalize()
         self.assertTrue(result['final_archive_created'], result)
@@ -68,6 +74,7 @@ class ArchiveTests(unittest.TestCase):
             self.assertNotIn('delivery_bundle_sha256', evidence)
         self.assertEqual(stat.S_IMODE(raw.stat().st_mode), 0o400)
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_native_failed_result_keeps_full_evidence_without_native_success(self):
         result = self.finalize()
         self.assertTrue(result['final_archive_created'], result)
@@ -75,6 +82,7 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(self.verify()['completion']['runtime_outcome'], 'failed')
         self.assertEqual(self.verify()['completion']['runtime_qualification'], 'not_assessed')
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_unknown_python_or_json_is_diagnostic_only(self):
         (self.root/'unknown.py').write_text('no execution')
         result = self.finalize()
@@ -84,6 +92,7 @@ class ArchiveTests(unittest.TestCase):
         with zipfile.ZipFile(self.parent/(self.root.name+'.zip')) as value:
             self.assertNotIn('unknown.py', value.namelist())
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_hash_mutation_is_diagnostic_and_cannot_be_full(self):
         (self.root/'tools/returned-code.py').write_bytes(b'mutated')
         result = self.finalize()
@@ -97,6 +106,7 @@ class ArchiveTests(unittest.TestCase):
         self.assertFalse(result['final_archive_created']); self.assertFalse(result['delivery_bundle_created'])
         self.assertIn('outer stop', result['diagnostic_errors'][0])
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_worker_cleanup_failure_does_not_archive_any_source(self):
         terminal = copy.deepcopy(self.fixture.terminal); terminal['cleanup']['workers'][0]['group_absent'] = False
         (self.root/'terminal.json').write_bytes(delivery.canonical(terminal))
@@ -105,6 +115,7 @@ class ArchiveTests(unittest.TestCase):
         self.assertFalse(result['final_archive_created']); self.assertFalse(result['diagnostic_only_archive_created'])
         self.assertFalse((self.parent/(self.root.name+'.zip')).exists())
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_proven_early_launch_failure_emits_bounded_diagnostic(self):
         import shutil
         shutil.rmtree(self.root/'workers'); (self.root/'terminal.json').unlink()
@@ -122,6 +133,7 @@ class ArchiveTests(unittest.TestCase):
         self.assertFalse(result['finalization_qualified']); self.assertFalse(result['delivery_bundle_created'])
         self.assertFalse((self.parent/(self.root.name+'.zip')).exists())
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_runtime_destination_race_preserves_foreign_inode(self):
         original = os.link; target = self.parent/(self.root.name+'.zip')
         def race(source, destination, **kw):
@@ -130,12 +142,14 @@ class ArchiveTests(unittest.TestCase):
         with patch.object(archive.os, 'link', side_effect=race): result = self.finalize()
         self.assertEqual(target.read_bytes(), b'competitor'); self.assertFalse(result['finalization_qualified'])
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_source_symlink_downgrades_to_safe_diagnostic(self):
         target = self.root/'tools/returned-code.py'; target.unlink(); target.symlink_to('/etc/hostname')
         result = self.finalize()
         self.assertTrue(result['diagnostic_only_archive_created'], result)
         self.assertFalse(result['finalization_qualified'])
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_exact_cache_excluded_but_nested_symlink_rejected(self):
         cache = self.root/'workers/0/unsloth_compiled_cache'; cache.mkdir()
         (cache/'generated.py').write_text('not archive code')
@@ -144,6 +158,7 @@ class ArchiveTests(unittest.TestCase):
         (cache/'bad').symlink_to('/tmp')
         with self.assertRaisesRegex(ValueError, 'symlink'): archive.validate_members(self.root)
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_cache_size_and_traversal_caps_are_enforced(self):
         cache = self.root/'workers/0/triton-cache'; cache.mkdir()
         (cache/'large').write_bytes(b'123456')
@@ -157,17 +172,20 @@ class ArchiveTests(unittest.TestCase):
                      'workers/0/arms/s64/result.json', 'workers/0/arms/ttt64/unknown.json'):
             with self.subTest(name=name), self.assertRaises(ValueError): delivery.member_kind(name, self.plan)
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_partial_json_and_ledger_tail_retained_but_truth_rejected(self):
         path = self.root/'workers/0/result.json.tmp'; path.write_bytes(b'{"outcome":')
         self.assertIn(path, archive.validate_members(self.root))
         path.write_bytes(b'{"official_score":')
         with self.assertRaisesRegex(ValueError, 'evaluator'): archive.validate_members(self.root)
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_cross_run_plan_hash_rejected(self):
         result = self.finalize(sha='0'*64)
         self.assertFalse(result['final_archive_created']); self.assertFalse(result['delivery_bundle_created'])
         self.assertIn('exact canonical', result['diagnostic_errors'][0])
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_cannot_replace_anonymous_temporary_inode(self):
         original = os.link
         def check(source, destination, **kw):
@@ -177,12 +195,14 @@ class ArchiveTests(unittest.TestCase):
         with patch.object(archive.os, 'link', side_effect=check): result = self.finalize()
         self.assertTrue(result['delivery_bundle_created'], result)
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_original_archive_is_never_rewritten(self):
         path = self.parent/(self.root.name+'.zip'); path.write_bytes(b'old evidence')
         result = self.finalize()
         self.assertTrue(result['existing_archive_preserved']); self.assertEqual(path.read_bytes(), b'old evidence')
         self.assertFalse(result['delivery_bundle_created'])
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_late_publication_preserves_bytes_but_cannot_claim_completion(self):
         original_link = os.link; original_sync = os.fsync; published = []
         def link(source, destination, **kw):
@@ -198,18 +218,21 @@ class ArchiveTests(unittest.TestCase):
         self.assertFalse(result['finalization_qualified']); self.assertFalse(result['delivery_bundle_created'])
         self.assertTrue((self.parent/(self.root.name+'.zip')).is_file())
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_empty_unregistered_worker_directory_blocks_all_archives(self):
         (self.root/'workers/1').mkdir()
         result = self.finalize()
         self.assertFalse(result['final_archive_created']); self.assertFalse(result['diagnostic_only_archive_created'])
         self.assertIn('registered worker', result['diagnostic_errors'][0])
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_missing_complete_arm_evidence_is_diagnostic(self):
         self.full_complete(); (self.root/'workers/0/arms/ttt64/prefix-trace.json').unlink()
         result = self.finalize()
         self.assertFalse(result['final_archive_created']); self.assertTrue(result['diagnostic_only_archive_created'], result)
         self.assertTrue(result['delivery_bundle_created'], result)
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_inventory_inode_replacement_is_rejected(self):
         actual = archive._read; target = self.root/'coordinator-output.log'; raced = []
         def read(fd, name, limit, deadline, **kw):
@@ -219,6 +242,7 @@ class ArchiveTests(unittest.TestCase):
         with patch.object(archive, '_read', side_effect=read), self.assertRaisesRegex(ValueError, 'inode changed'):
             archive.validate_members(self.root)
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_launched_pre_admission_failure_preserves_capture_and_original_bootstrap(self):
         import shutil
         shutil.rmtree(self.root/'workers'); (self.root/'terminal.json').unlink()
@@ -233,6 +257,7 @@ class ArchiveTests(unittest.TestCase):
             self.assertEqual(value.read('bootstrap-failure.json'), original)
             self.assertEqual(value.read('coordinator-output.log'), b'mock')
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_missing_terminal_after_admission_never_fabricates_worker_cleanup(self):
         import shutil
         shutil.rmtree(self.root/'workers'); (self.root/'terminal.json').unlink()
@@ -241,6 +266,7 @@ class ArchiveTests(unittest.TestCase):
         result = self.finalize()
         self.assertFalse(result['diagnostic_only_archive_created']); self.assertFalse(result['final_archive_created'])
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_uncommitted_generation_tail_is_indexed_but_selected_corruption_rejected(self):
         directory = self.root/'.output-generations'/('a'*32); directory.mkdir(parents=True)
         (directory/'ttt64-answers.json').write_bytes(b'{"answer":')
@@ -253,6 +279,7 @@ class ArchiveTests(unittest.TestCase):
         (self.root/'output-commit.json').write_bytes(delivery.canonical(dict(generation='a'*32)))
         with self.assertRaisesRegex(ValueError, 'committed JSON'): archive.validate_members(self.root)
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_anonymous_temporary_support_absence_fails_closed(self):
         actual = archive.os.open
         def unsupported(path, flags, *args, **kwargs):
@@ -262,6 +289,7 @@ class ArchiveTests(unittest.TestCase):
         self.assertFalse(result['final_archive_created']); self.assertFalse(result['delivery_bundle_created'])
         self.assertFalse((self.parent/(self.root.name+'.zip')).exists())
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_late_receipt_write_cannot_be_upgraded_by_immutable_sidecar(self):
         original_link = os.link; original_sync = os.fsync; published = []
         def link(source, destination, **kw):
@@ -276,6 +304,7 @@ class ArchiveTests(unittest.TestCase):
         self.assertFalse(sidecar['receipt_written']); self.assertFalse(sidecar['finalization_qualified'])
         self.assertFalse(result['finalization_qualified']); self.assertFalse(result['delivery_bundle_created'])
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_unattempted_preflight_failure_never_fabricates_a_launch(self):
         import shutil
         shutil.rmtree(self.root/'workers'); (self.root/'terminal.json').unlink()
@@ -291,6 +320,7 @@ class ArchiveTests(unittest.TestCase):
             observation = delivery.parse(bundle.read('stop-evidence.json'))['observation']
             self.assertFalse(observation['launch_attempted']); self.assertFalse(observation['launch_failed'])
 
+    @requires_linux('Linux descriptor-relative archive storage, anonymous inodes and owned process cleanup')
     def test_actual_cleanup_prelaunch_helper_interoperates_with_finalizer(self):
         import shutil
         from tools.nvarc_e12_cleanup import prelaunch_failure

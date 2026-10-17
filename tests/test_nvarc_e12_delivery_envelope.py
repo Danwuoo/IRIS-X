@@ -1,4 +1,5 @@
 """CPU-only transport counterexamples; no model/runtime modules are imported."""
+from tests.platform_requirements import requires_linux
 import ast
 import copy
 import hashlib
@@ -107,6 +108,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
     def verify(self):
         return delivery.verify_envelope(self.root, run_id=self.run, plan_sha256=self.sha)
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_full_post_write_result_is_bound_and_original_bytes_unchanged(self):
         result = self.build(sidecar=True, result=True)
         manifest = self.verify()
@@ -125,6 +127,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), result['sha256'])
         self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o400)
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_sidecar_only_never_reconstructed_as_after_write_success(self):
         result = self.build(sidecar=True)
         observed = result['manifest']['completion']
@@ -133,11 +136,13 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         self.assertIsNone(observed['observed_finalization_qualified'])
         self.assertEqual(self.verify()['completion'], observed)
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_missing_evidence_remains_unknown(self):
         observed = self.build()['manifest']['completion']
         self.assertEqual(observed['evidence_kind'], 'unknown')
         self.assertIsNone(observed['observed_finalization_qualified'])
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_failed_and_incomplete_results_retained_without_promotion(self):
         self.receipt.update(finalization_qualified=False, receipt_written=False, archive_sha256=None, stages={})
         self.receipt.pop('receipt_write_finished_monotonic')
@@ -148,6 +153,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         self.assertEqual(result['manifest']['completion']['archive_binding'], 'unknown')
         self.assertFalse(result['manifest']['completion']['observed_finalization_qualified'])
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_diagnostic_fallback_keeps_stopped_workers_without_full_runtime_files(self):
         self.files.pop('workers/0/process-launch.json')
         self.files['diagnostic-only.json'] = delivery.canonical(dict(format='irisx/ttt-probe-diagnostic-only-v1',
@@ -158,6 +164,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         self.receipt['finalization_qualified'] = False
         self.assertFalse(self.build(result=True)['manifest']['completion']['observed_finalization_qualified'])
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_diagnostic_archive_cannot_claim_success_even_with_rehashed_receipt(self):
         self.files['diagnostic-only.json'] = delivery.canonical(dict(format='irisx/ttt-probe-diagnostic-only-v1',
             complete_runtime_evidence=False, correctness_scored=False, promotion=False))
@@ -165,6 +172,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'full finalizer'):
             self.build(result=True)
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_diagnostic_omitted_launch_still_requires_exact_task_model_binding(self):
         self.files.pop('workers/0/process-launch.json')
         self.files['diagnostic-only.json'] = delivery.canonical(dict(format='irisx/ttt-probe-diagnostic-only-v1',
@@ -176,6 +184,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaisesRegex(ValueError, 'launch plan binding'):
                 self.build(stop_evidence=delivery.canonical(proof))
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_proven_prelaunch_failure_is_retained_as_diagnostic(self):
         self.observation.update(launched=False, launch_failed=True, returncode=None,
             coordinator_pid=None, coordinator_process_group_id=None, coordinator_start_new_session=None)
@@ -208,6 +217,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     self.build(stop_evidence=delivery.canonical(proof))
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_wrong_archive_run_or_plan_rejected(self):
         self.files['screen.json'] = delivery.canonical(dict(self.plan, run_id='different'))
         self.write_runtime()
@@ -215,6 +225,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
             self.build()
         self.assertFalse((self.root / (self.run + '-delivery.zip')).exists())
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_receipt_wrong_plan_archive_size_and_hash_rejected(self):
         for key, value in (('plan_sha256', '0' * 64), ('archive_sha256', '0' * 64), ('archive_size', 1)):
             sidecar = dict(self.sidecar); sidecar[key] = value
@@ -236,6 +247,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         self.proof['observation']['confirmed_stopped'] = 1
         with self.assertRaises(ValueError): self.build()
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_after_close_stage_order_and_hard_deadline_cannot_be_fabricated(self):
         for mutate in ('missing', 'reverse', 'late', 'written', 'sidecar'):
             saved = copy.deepcopy(self.result)
@@ -248,11 +260,13 @@ class DeliveryEnvelopeTests(unittest.TestCase):
                 self.build(sidecar=mutate == 'sidecar', result=True)
             self.result = saved; self.receipt = self.result['finalization_timing']
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_conflicting_sidecar_rejected(self):
         self.sidecar['stages'] = {}
         with self.assertRaisesRegex(ValueError, 'disagree'):
             self.build(sidecar=True, result=True)
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_creation_rejects_future_receipt_observations_but_offline_verification_does_not_replay_clock(self):
         self.receipt['receipt_write_finished_monotonic'] = 1750.
         with self.assertRaisesRegex(ValueError, 'future'):
@@ -266,6 +280,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         with patch.object(delivery.time, 'monotonic', return_value=10.):
             self.assertTrue(self.verify()['completion']['observed_finalization_qualified'])
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_input_symlink_parent_symlink_and_fifo_rejected(self):
         moved = self.root / 'real.zip'; self.archive_path.rename(moved)
         self.archive_path.symlink_to(moved)
@@ -278,6 +293,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         self.archive_path.unlink(); os.mkfifo(self.archive_path)
         with self.assertRaisesRegex(ValueError, 'regular'): self.build()
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_existing_delivery_and_symlink_destination_are_preserved(self):
         result = self.build(); path = Path(result['path']); original = path.read_bytes()
         with self.assertRaisesRegex(ValueError, 'already exists'): self.build()
@@ -286,6 +302,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'already exists'): self.build()
         self.assertEqual(self.archive_path.read_bytes(), self.original)
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_duplicate_traversal_and_symlink_archive_members_rejected(self):
         for invalid in ('../escape', '/absolute', 'a\\b', 'screen.json', 'SCREEN.JSON', 'symlink'):
             self.write_runtime()
@@ -300,6 +317,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
             with self.subTest(invalid=invalid), self.assertRaisesRegex(ValueError, 'unsafe'):
                 self.build()
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_archive_file_directory_prefix_collisions_rejected(self):
         for name in ('workers', 'WORKERS/0', 'screen.json/nested'):
             self.write_runtime()
@@ -308,6 +326,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'prefix collision'):
                 self.build()
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_archived_receipts_cannot_replace_boolean_with_equal_integer(self):
         for name, value, field in (
                 ('outer-supervision.json', self.observation, 'confirmed_stopped'),
@@ -325,6 +344,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
                 self.build(result=True)
             self.files[name] = original
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_corrupted_runtime_crc_rejected(self):
         # ZIP_STORED makes the corruption independent of deflate behavior.
         with zipfile.ZipFile(self.archive_path, 'w', compression=zipfile.ZIP_STORED) as archive:
@@ -333,6 +353,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         self.archive_path.write_bytes(raw.replace(b'returned code must never execute', b'Returned code must never execute'))
         with self.assertRaises(zipfile.BadZipFile): self.build()
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_size_member_metadata_and_time_bounds_fail_closed(self):
         with patch.object(delivery, 'MAX_ARCHIVE_BYTES', 10):
             with self.assertRaisesRegex(ValueError, 'bounded regular'): self.build()
@@ -347,6 +368,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
              patch.object(delivery.os, 'open', side_effect=AssertionError('no I/O')):
             with self.assertRaisesRegex(ValueError, 'already have been observed'): self.build()
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_deadline_expires_mid_copy_leaves_no_partial_delivery(self):
         actual = delivery.stream_digest
         def consume(stream, deadline, limit, target=None):
@@ -358,6 +380,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'time budget'): self.build()
         self.assertEqual(sorted(p.name for p in self.root.iterdir()), [self.run + '.zip'])
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_destination_race_cannot_overwrite_existing_bytes(self):
         original_link = delivery.os.link
         path = self.root / (self.run + '-delivery.zip')
@@ -369,6 +392,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         self.assertEqual(path.read_bytes(), b'existing competitor delivery')
         self.assertFalse(list(self.root.glob('.*.tmp')))
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_publication_uses_verified_anonymous_inode_without_substitutable_temp_path(self):
         original_link = delivery.os.link
         def checked_link(source, destination, **kwargs):
@@ -382,6 +406,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
             self.build(result=True)
         self.assertTrue(self.verify()['completion']['observed_finalization_qualified'])
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_slow_publication_cannot_return_in_budget_success_or_overwrite(self):
         original_fsync = delivery.os.fsync
         def slow_directory_sync(fd):
@@ -395,6 +420,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         self.assertEqual(self.verify()['completion']['evidence_kind'], 'unknown')
         self.assertFalse(list(self.root.glob('.*.tmp')))
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_source_mutation_during_copy_rejected(self):
         actual = delivery.stream_digest
         def mutate(stream, deadline, limit, target=None):
@@ -414,6 +440,7 @@ class DeliveryEnvelopeTests(unittest.TestCase):
         with zipfile.ZipFile(path, 'w', compression=zipfile.ZIP_STORED) as archive:
             for name, body in bodies.items(): archive.writestr(name, body)
 
+    @requires_linux('Linux O_TMPFILE, descriptor-relative no-follow reads and anonymous-inode publication')
     def test_envelope_payload_tampering_and_rehashed_status_promotion_rejected(self):
         self.build(sidecar=True)
         self.rewrite_envelope(lambda data: data.update({'runtime.zip': data['runtime.zip'] + b'tamper'}))

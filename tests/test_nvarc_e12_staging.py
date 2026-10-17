@@ -1,4 +1,5 @@
 """CPU-only E12 owner admission, inert notebook and immutable parent checks."""
+from tests.platform_requirements import requires_linux
 import ast
 import base64
 import copy
@@ -16,10 +17,16 @@ import zlib
 
 from tools import nvarc_e12_admission as owner
 from tools import nvarc_e12_entry as entry
-from tools import nvarc_e12_cleanup as cleanup
-from tools import stage_nvarc_e12_prefix_probe as stage
 from tools.nvarc_native_multitask import canonical
 
+
+def _load_linux_runtime():
+    global stage
+    from tools import stage_nvarc_e12_prefix_probe as stage
+
+def _load_linux_cleanup():
+    global cleanup
+    from tools import nvarc_e12_cleanup as cleanup
 
 def fixture(root):
     frozen = (Path(__file__).parent / 'fixtures/e12/frozen-inert-001-plan.json').read_bytes()
@@ -43,7 +50,7 @@ def fixture(root):
             for arm, steps in (('ttt64', 64), ('ttt128', 128))},
         arm_order={key: (['ttt64', 'ttt128'] if key in ('195c6913', 'a47bf94d') else ['ttt128', 'ttt64'])
             for key in plan['task_order']},
-        **{key: False for key in stage.FALSE_FIELDS})
+        **{key: False for key in owner.FALSE_FIELDS})
     plan['owner_editor_admission'] = owner.admission(plan)
     return plan
 
@@ -118,7 +125,9 @@ class AdmissionTests(unittest.TestCase):
             with self.assertRaises((ValueError, RuntimeError)):
                 self.verify()
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_required_admission_fails_before_runtime_when_confirmation_is_absent(self):
+        _load_linux_runtime()
         with patch.object(stage, 'runtime_api', return_value=SimpleNamespace(profile_for_plan=mock_profile)):
             stage.validate_admission(self.plan)
         with patch.object(stage, 'runtime_api', side_effect=AssertionError('no runtime import before confirmation')):
@@ -139,14 +148,19 @@ class AdmissionTests(unittest.TestCase):
 
     def test_admission_and_entry_have_only_standard_library_imports_before_gate(self):
         for filename in ('tools/nvarc_e12_admission.py', 'tools/nvarc_e12_entry.py'):
-            tree = ast.parse((stage.ROOT / filename).read_bytes())
+            tree = ast.parse((Path(__file__).resolve().parents[1] / filename).read_bytes())
             names = {node.module.split('.')[0] for node in tree.body if isinstance(node, ast.ImportFrom)}
             names |= {alias.name.split('.')[0] for node in tree.body
                 if isinstance(node, ast.Import) for alias in node.names}
             self.assertFalse(names & {'torch', 'numpy', 'tokenizers', 'unsloth', 'transformers', 'peft', 'tools'})
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class NotebookTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.root = Path(self.temp.name)
         self.plan = fixture(self.root)
@@ -236,7 +250,9 @@ class NotebookTests(unittest.TestCase):
         self.assertEqual(body.count(hook), 1)
         return body.replace(hook, 'work = Path(' + repr(str(self.root)) + ')', 1)
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_actual_execution_cell_retains_dependency_discovery_failure_before_launch(self):
+        _load_linux_cleanup()
         runtime = stage.runtime_api(); seen = []
         def finalized(root, observation, plan_sha256):
             seen.append((root, observation, plan_sha256))
@@ -263,7 +279,9 @@ class NotebookTests(unittest.TestCase):
         self.assertIn('one exact original offline dependency notebook mount required',
             (root / 'coordinator-output.log').read_text())
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_dispatched_supervisor_error_is_never_relabelled_as_no_launch(self):
+        _load_linux_cleanup()
         runtime = stage.runtime_api(); original_is_file = Path.is_file
         mount = '/kaggle/usr/lib/notebooks/literal-test-dependency'
         def is_file(path):
@@ -301,7 +319,12 @@ class NotebookTests(unittest.TestCase):
         self.assertIsNone(handoff['publication_authorization_ref'])
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class FrozenTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def test_unpinned_parent_is_rejected_before_using_its_payload_paths(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

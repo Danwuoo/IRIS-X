@@ -1,4 +1,5 @@
 """Offline manual-v2 identity/admission tests; no SDK, credentials or provider IO."""
+from tests.platform_requirements import requires_linux
 import copy
 import json
 from pathlib import Path
@@ -174,6 +175,7 @@ class OwnerEditorAdmissionTests(unittest.TestCase):
             rehash(package,plan)
             with self.assertRaisesRegex(RuntimeError,'invent'):stage.preflight(package)
 
+    @requires_linux('Actual Linux owned-process cleanup uses killpg/procfs or imports the resource-bound runtime')
     def test_automatic_admission_freshness_remains_strict(self):
         from tests.test_nvarc_e10_probe import CurrentResourceAdmissionTests
         admission=CurrentResourceAdmissionTests().admission();plan={'screen_id':admission['probe_id']}

@@ -8,6 +8,7 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.11", "3.14"]
@@ -21,7 +22,12 @@ jobs:
       - run: python -m pip install --no-build-isolation -e . packaging==26.3 numpy==2.3.5
       # A public checkout cannot contain the ignored historical run evidence.
       # Strict --all remains a separate local acceptance lane and is unchanged.
-      - run: python tools/repository_check.py --public
+      - name: Complete Linux public validation
+        if: runner.os == 'Linux'
+        run: python tools/repository_check.py --public
+      - name: Windows-portable public subset (not full Linux acceptance)
+        if: runner.os == 'Windows'
+        run: python tools/repository_check.py --public-portable
       - run: irisx fixture prepare --output .irisx/ci/fixture
       - run: irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run
       - run: irisx package build --run .irisx/ci/run --output .irisx/ci/package

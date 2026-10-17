@@ -1,4 +1,5 @@
 """E13 shared-training closure and publication boundaries; no native/provider work."""
+from tests.platform_requirements import requires_linux
 import ast
 import copy
 import hashlib
@@ -14,10 +15,13 @@ import unittest
 from unittest.mock import patch
 
 from tools import nvarc_e13_admission as owner
-from tools import nvarc_e13_cleanup as cleanup
 from tools import nvarc_e13_delivery_envelope as delivery
 from tools import nvarc_e13_output_lifecycle as lifecycle
 
+
+def _load_linux_runtime():
+    global cleanup
+    from tools import nvarc_e13_cleanup as cleanup
 
 def inert_plan():
     raw = (Path(__file__).parent / 'fixtures/e12/frozen-inert-001-plan.json').read_bytes()
@@ -129,6 +133,7 @@ class SharedTrainingClosureTests(unittest.TestCase):
             self.assertEqual(ast.dump(expected), ast.dump(observed), name)
 
 
+@requires_linux('Shared GenerationStore fixture requires mandatory O_NOFOLLOW/O_NONBLOCK plan reads')
 class E13OutputGenerationTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
@@ -199,7 +204,12 @@ class E13OutputGenerationTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'hash differs'): self.store.publish(self.values)
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class E13CleanupTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def test_shutdown_cutoffs_are_unchanged_and_e13_receipts_distinct(self):
         self.assertEqual((cleanup.TERM_SECONDS, cleanup.KILL_SECONDS, cleanup.STOP_SECONDS,
                           cleanup.FINAL_SECONDS), (3290, 3299.8, 3300, 3600))

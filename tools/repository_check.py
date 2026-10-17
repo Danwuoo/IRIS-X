@@ -885,7 +885,7 @@ def run_all_checks(root: Path) -> int:
     return 0
 
 
-def run_public_checks(root: Path) -> int:
+def run_public_checks(root: Path, *, portable: bool = False) -> int:
     """Public checkout validation, explicitly not complete historical acceptance."""
     failed = False
     print("== public-checkout validator self-tests ==", flush=True)
@@ -901,12 +901,12 @@ def run_public_checks(root: Path) -> int:
                        TRANSFORMERS_OFFLINE="1", OMP_NUM_THREADS="1")
     for label, command in (
         ("public-checkout tests (retained evidence explicitly unverified)",
-         [sys.executable, "-m", "tools.run_public_tests"]),
+         [sys.executable, "-m", "tools.run_public_tests"] + (["--portable"] if portable else [])),
         ("diff whitespace", ["git", "diff", "--check"]),
     ):
         print(f"\n== {label} ==", flush=True)
         failed |= subprocess.run(command, cwd=root, env=environment, check=False).returncode != 0
-    print("\nIRIS-X public-checkout validation: " + ("FAIL" if failed else "PASS"))
+    print("\nIRIS-X " + ("public-portable subset" if portable else "complete Linux public-checkout") + " validation: " + ("FAIL" if failed else "PASS"))
     print("Full retained-evidence/Stage 4 acceptance: NOT ESTABLISHED by this lane.")
     return 1 if failed else 0
 
@@ -925,6 +925,8 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="run public-checkout checks; explicitly report retained-evidence integrations as unverified",
     )
+    mode.add_argument("--public-portable", action="store_true",
+                      help="explicit Windows-portable public subset; not full Linux acceptance")
     args = parser.parse_args(argv)
     if args.self_test:
         return run_self_tests()
@@ -932,8 +934,8 @@ def main(argv: list[str] | None = None) -> int:
     root = Path(__file__).resolve().parents[1]
     if args.all:
         return run_all_checks(root)
-    if args.public:
-        return run_public_checks(root)
+    if args.public or args.public_portable:
+        return run_public_checks(root, portable=args.public_portable)
     return run_repository_check(root)
 
 

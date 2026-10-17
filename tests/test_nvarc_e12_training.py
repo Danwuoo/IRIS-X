@@ -3,6 +3,7 @@
 No Torch is installed or imported. These tests establish adapter sequencing and
 failure handling, not CUDA/numerical/native runtime qualification.
 """
+from tests.platform_requirements import requires_linux
 import copy
 import contextlib
 from pathlib import Path
@@ -11,7 +12,6 @@ from types import ModuleType,SimpleNamespace as NS
 import unittest
 from unittest.mock import patch
 
-from tools import nvarc_e12_training as native
 from tools import nvarc_e12_prefix_contract as contract
 from tools.nvarc_e12_prefix_fixture import trainer_args
 from tools.nvarc_native_multitask import digest
@@ -19,6 +19,10 @@ from tools.nvarc_native_solve_runtime import discard_optimizer_state
 from tests.test_nvarc_e10_ttt_probe import FakeModel,Number,AdamW,Torch,schedule_fixture
 from tests.test_nvarc_e10_probe import FakeTensor
 
+
+def _load_linux_runtime():
+    global native
+    from tools import nvarc_e12_training as native
 
 class RandomSampler:
     def __init__(self,data):self.data_source=data;self.num_samples=len(data);self.replacement=False
@@ -94,7 +98,12 @@ SOURCE='''def __iter__(self):
 '''
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class HookTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name)
         for path in ('torch/utils/data/sampler.py','accelerate/data_loader.py'):

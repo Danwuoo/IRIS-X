@@ -1,5 +1,6 @@
 """CPU-only integrity, denial, lifecycle and unchanged-scorer regression checks."""
 from __future__ import annotations
+from tests.platform_requirements import requires_linux
 
 import errno
 import json
@@ -38,8 +39,8 @@ class GoalLauncherTests(unittest.TestCase):
     def make_symlink(self, link, target, *, directory=False):
         try:
             link.symlink_to(target, target_is_directory=directory)
-        except OSError:
-            if os.name == "nt":
+        except OSError as error:
+            if os.name == "nt" and getattr(error, "winerror", None) == 1314:
                 self.skipTest("Windows symlink creation privilege unavailable")
             raise
 
@@ -100,6 +101,7 @@ class GoalLauncherTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "intersects"):
             L.check_allowlist([alias], [], [hidden])
 
+    @requires_linux('Linux descriptor permission probe requires O_CLOEXEC and owner denial semantics')
     def test_probe_never_reads_body_and_rejects_readable_original(self):
         path = self.root / "manifest.json"
         path.write_text('secret body not read')
@@ -107,6 +109,7 @@ class GoalLauncherTests(unittest.TestCase):
             with self.assertRaisesRegex(L.IsolationUnavailable, "readable"):
                 L.assert_denied([path])
 
+    @requires_linux('Linux descriptor permission probe requires O_CLOEXEC and owner denial semantics')
     def test_probe_requires_actual_permission_denial(self):
         with mock.patch.object(os, "open", side_effect=PermissionError(errno.EACCES, "denied")):
             self.assertEqual(L.assert_denied(["/original/evaluator"]), ["/original/evaluator"])
@@ -119,6 +122,7 @@ class GoalLauncherTests(unittest.TestCase):
             with self.assertRaises(L.IsolationUnavailable):
                 L.apply_landlock(["/usr"], [])
 
+    @requires_linux('Linux allowlist includes procfs self identity and cgroup paths')
     def test_runtime_allowlist_never_grants_input_or_working_parent(self):
         reads, writes = L.runtime_allowlist(self.root / "source", self.root / "runtime",
             [self.root / "model"], self.root / "training", self.root / "public/solver", self.root / "output")
@@ -204,6 +208,7 @@ class GoalLauncherTests(unittest.TestCase):
                          {"pydantic", "pydantic-core", "annotated-types", "typing-inspection"})
         self.assertTrue(all(v["source"].startswith("https://pypi.org/") for v in lock["files"].values()))
 
+    @requires_linux('Actual process-guard module requires Linux SIGKILL/procfs identity semantics')
     def test_seal_refuses_unclosed_solver(self):
         output = self.root / "output"
         output.mkdir()
@@ -382,6 +387,7 @@ class GoalLauncherTests(unittest.TestCase):
                     "source_manifest_sha256": "a" * 64}
         return sealed, seal, evidence
 
+    @requires_linux('Actual process-guard module requires Linux SIGKILL/procfs identity semantics')
     def test_external_closure_does_not_claim_local_proc_verification(self):
         sealed, seal, evidence = self.external_fixture()
         with mock.patch("tools.arc_learning_agent_20261011.process_guard._read_process", side_effect=AssertionError("foreign PID checked locally")):

@@ -1,4 +1,5 @@
 """Offline new-notebook QUICK_SAVE transport and exact official SDK wire tests."""
+from tests.platform_requirements import requires_linux
 import copy
 import importlib.util
 import json
@@ -179,6 +180,7 @@ class NewQuickSaveTests(unittest.TestCase):
                     with self.assertRaises(RuntimeError):p.request_fields(self.package)
                 finally:self.meta=old
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_success_one_save_and_source_only_readback(self):
         self.initialize();result,calls=self.publish()
         self.assertEqual(calls,[p.SOURCE_URL,p.SAVE_URL,p.SOURCE_URL])
@@ -191,6 +193,7 @@ class NewQuickSaveTests(unittest.TestCase):
         self.assertEqual(ledger['events'][0]['sends'],1)
         with self.assertRaisesRegex(RuntimeError,'already reserved'):self.publish()
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_403_is_not_404_and_existing_slug_never_updates(self):
         for status,reason in [(403,'403 forbidden'),(200,'already exists'),(401,'not return 404'),(500,'not return 404')]:
             with self.subTest(status=status), tempfile.TemporaryDirectory() as folder:
@@ -203,6 +206,7 @@ class NewQuickSaveTests(unittest.TestCase):
                     self.assertEqual(p.read(self.journal/'pre-send-source.http.json')['http_status'],status)
                 finally:self.journal=old
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_ambiguous_rejected_malformed_and_mutated_save_freezes_identity(self):
         kinds=('old-id','wrong-version','wrong-slug','wrong-url','invalid-mount','error','timeout','interrupt',
             'oversize','http400','changed-wire','wrong-endpoint','added-id','added-timeout','duplicate-key','double-send')
@@ -220,6 +224,7 @@ class NewQuickSaveTests(unittest.TestCase):
                     with self.assertRaisesRegex(RuntimeError,'already reserved'):self.publish()
                 finally:self.journal=old
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_readback_failure_preserves_acceptance_and_forbids_resave(self):
         self.initialize()
         with self.assertRaisesRegex(RuntimeError,'SOURCE verification read failed'):self.publish('readback-http403')
@@ -230,6 +235,7 @@ class NewQuickSaveTests(unittest.TestCase):
         with patch.object(p,'official_client',return_value=client):result=p.verify_source(self.package,self.journal)
         self.assertEqual(calls,[p.SOURCE_URL]);self.assertTrue(result['source_only_verified'])
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_actual_wire_review_and_package_hashes_rechecked_before_auth(self):
         self.initialize();review=p.read(self.review);review['unreviewed']=True;p.write(self.review,review)
         with patch.object(p,'official_client',side_effect=AssertionError('auth forbidden')):
@@ -239,11 +245,13 @@ class NewQuickSaveTests(unittest.TestCase):
         with patch.object(p,'official_client',side_effect=AssertionError('auth forbidden')):
             with self.assertRaisesRegex(RuntimeError,'binding changed'):p.publish(self.package,self.journal,self.review)
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_prepared_bytes_binding_is_exact_not_merely_json_equivalent(self):
         self.initialize();path=self.journal/'prepared-request.body';path.write_bytes(path.read_bytes()+b' ')
         with patch.object(p,'official_client',side_effect=AssertionError('auth forbidden')):
             with self.assertRaisesRegex(RuntimeError,'binding changed'):p.publish(self.package,self.journal,self.review)
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_global_claim_blocks_new_journal_and_is_write_once(self):
         self.initialize();p.write(p.claim_path(),{'frozen':True},exclusive=True)
         with self.assertRaises(FileExistsError):p.write(p.claim_path(),{'frozen':False},exclusive=True)
@@ -280,6 +288,7 @@ class NewQuickSaveTests(unittest.TestCase):
             ('versionNumber',True),('versionNumber',2),('unknown',True)]:
             with self.subTest(key=key,value=value),self.assertRaises(RuntimeError):p.receipt_is_accepted(dict(raw,**{key:value}),typed)
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_accepted_receipt_cannot_be_replaced_before_source_read(self):
         self.initialize();self.publish()
         receipt=self.journal/'save-receipt.raw.json'
@@ -321,6 +330,7 @@ class NewQuickSaveTests(unittest.TestCase):
         if not token:wire['page']=1
         return Request(wire)
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_complete_own_list_tracks_every_cursor_and_private_identity(self):
         anchor=dict(id=137327571,ref=p.OWNER+'/stage4-e10-probe-20261006-001',isPrivate=True)
         pages=[dict(kernels=[anchor],nextPageToken='opaque-2'),dict(kernels=[dict(id=2,ref=p.OWNER+'/another',isPrivate=False)])]
@@ -336,6 +346,7 @@ class NewQuickSaveTests(unittest.TestCase):
         self.assertFalse(proof['quicksave_draft_coverage_attested'])
         self.assertFalse(proof['create_only_semantics_verified'])
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_own_list_refuses_denials_incompleteness_and_foreign_or_existing_identity(self):
         anchor=dict(id=137327571,ref=p.OWNER+'/stage4-e10-probe-20261006-001',isPrivate=True)
         cases=[([dict(kernels=[anchor])],[403]),([dict(kernels=[anchor])],[401]),
@@ -351,6 +362,7 @@ class NewQuickSaveTests(unittest.TestCase):
                 client,_=self.listing_client(pages,statuses)
                 with self.assertRaises(RuntimeError):p.confirm_absent_from_own_list(client,self.root/f'inventory-{index}')
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_real_sparse_profile_projection_with_91_refs_verifies_separate_private_anchor(self):
         rows=[dict(ref=p.OWNER+f'/synthetic-{index:03d}',title=f'Synthetic {index}',
             author='Owner',lastRunTime='2026-10-08T00:53:49.567Z') for index in range(90)]
@@ -365,6 +377,7 @@ class NewQuickSaveTests(unittest.TestCase):
         self.assertFalse(proof['numeric_id_inventory_complete']);self.assertEqual(proof['enumerated_kernel_ids'],[])
         self.assertEqual(proof['private_namespace_anchor_ids'],[137327571])
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_exact_provider_redactions_are_counted_with_incomplete_reference_coverage(self):
         rows=[dict(ref=p.OWNER+f'/synthetic-{index:03d}',title=f'Synthetic {index}',
             author='Owner',lastRunTime='2026-10-08T00:53:49.567Z') for index in range(91)]
@@ -381,6 +394,7 @@ class NewQuickSaveTests(unittest.TestCase):
         self.assertTrue(proof['visible_reference_noncollision']);self.assertFalse(proof['numeric_id_inventory_complete'])
         self.assertFalse(proof['atomic_namespace_absence_guaranteed'])
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_nonexact_redacted_or_other_ref_less_rows_are_rejected(self):
         bad_rows=[dict(title='[Private Notebook]'),dict(p.REDACTED_OWN_LIST_ROW,extra=True),
             dict(p.REDACTED_OWN_LIST_ROW,lastRunTime='2010-04-01T00:00:01Z'),
@@ -392,6 +406,7 @@ class NewQuickSaveTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError,'exact owned notebook ref'):
                     p.confirm_absent_from_own_list(client,self.root/f'bad-redaction-{index}')
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_sparse_inventory_needs_successful_exact_private_anchor_source(self):
         rows=[dict(ref=p.PRIVATE_ANCHOR_REF,title='Anchor',author='Owner',lastRunTime='2026-10-08T00:53:49.567Z')]
         cases=[(403,None),(401,None),(200,dict(id=1,ref=p.PRIVATE_ANCHOR_REF,isPrivate=True)),
@@ -408,6 +423,7 @@ class NewQuickSaveTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'predefined exact SOURCE'):
             p.source_response(None,self.root/'forbidden-source.json',ref=p.OWNER+'/unrelated')
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_own_list_page_ceiling_is_incomplete_and_never_absence(self):
         anchor=dict(id=137327571,ref=p.OWNER+'/stage4-e10-probe-20261006-001',isPrivate=True)
         client,_=self.listing_client([dict(kernels=[anchor],nextPageToken='still-more')])
@@ -429,6 +445,7 @@ class NewQuickSaveTests(unittest.TestCase):
                 with self.assertRaises(p.CapturedRequest):client.kernels.kernels_api_client.list_kernels(p.own_list_request(token))
                 self.assertEqual(captured,[self.list_request(token).to_dict()])
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_explicit_complete_own_list_mode_never_reads_denied_source_before_save(self):
         self.initialize('complete-own-list')
         with patch.object(p,'own_list_request',side_effect=self.list_request):
@@ -441,6 +458,7 @@ class NewQuickSaveTests(unittest.TestCase):
         self.assertFalse(proof['create_only_semantics_verified'])
         self.assertFalse(proof['quicksave_draft_coverage_attested'])
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_returned_id_must_be_absent_from_complete_own_inventory(self):
         self.initialize('complete-own-list')
         with patch.object(p,'own_list_request',side_effect=self.list_request):
@@ -450,6 +468,7 @@ class NewQuickSaveTests(unittest.TestCase):
         self.assertIn(400000001,ledger['events'][0]['absence']['enumerated_kernel_ids'])
         with self.assertRaisesRegex(RuntimeError,'already reserved'):self.publish()
 
+    @requires_linux('Durable transport evidence requires O_DIRECTORY, directory fsync and fcntl locking')
     def test_newness_mode_requires_exact_independent_review(self):
         self.initialize('complete-own-list')
         ledger=p.read(self.journal/'ledger.json')

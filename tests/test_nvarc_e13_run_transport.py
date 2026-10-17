@@ -1,4 +1,5 @@
 """Offline controller tests: deterministic provider doubles, never credentials."""
+from tests.platform_requirements import requires_linux
 from datetime import datetime, timedelta, timezone
 import copy
 import importlib.util
@@ -27,6 +28,7 @@ class Response:
     def __exit__(self, *_): self.close()
 
 
+@requires_linux('Fixture and transport require directory fsync/O_DIRECTORY and POSIX locking')
 class E13RunTransportTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.root = Path(self.temp.name)

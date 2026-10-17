@@ -1,4 +1,5 @@
 """Independent gate regressions with synthetic data and owned CPU children."""
+from tests.platform_requirements import requires_linux
 import copy
 import json
 import math
@@ -20,6 +21,7 @@ from tools.nvarc_process_supervisor import supervise
 
 
 class RuntimeGateTests(unittest.TestCase):
+    @requires_linux('Actual Linux owned-process cleanup uses killpg/procfs or imports the resource-bound runtime')
     def test_outer_supervisor_bounds_silent_child_without_reading_stdout(self):
         started=time.monotonic()
         result=supervise([sys.executable,'-c','import time;time.sleep(10)'],env=os.environ.copy(),cwd='.',

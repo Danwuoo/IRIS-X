@@ -1,4 +1,5 @@
 """Synthetic/mocked Linux tests only; these do NOT prove native Windows behavior."""
+from tests.platform_requirements import requires_linux
 import copy
 import hashlib
 import importlib.util
@@ -366,6 +367,7 @@ class OwnedQueryTests(unittest.TestCase):
 
 
 class CliTests(unittest.TestCase):
+    @requires_linux('Specifically tests the Linux CLI failure branch, not the Windows recovery implementation')
     def test_linux_cli_is_fixed_failure_with_no_traceback(self):
         result = subprocess.run([sys.executable, '-I', '-B', str(SCRIPT), '--challenge', CHALLENGE,
             '--probe-sha256', SOURCES['recovery_boot_probe.py'], '--runtime-sha256', SOURCES['win_runtime.py'],

@@ -1,4 +1,5 @@
 """Literal finite fake-CPU checks. No ML import, model, GPU or provider call."""
+from tests.platform_requirements import requires_linux
 import contextlib
 import copy
 import hashlib
@@ -15,13 +16,16 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-from tools import nvarc_e10_ttt_probe as probe
 from tools import stage_nvarc_e10_ttt_probe as stage
 from tools.nvarc_native_multitask import canonical,digest,write
 from tools.nvarc_native_solve_runtime import cache_controls
 from tools.nvarc_native_ttt_budget import EpochBudget
 from tests.test_nvarc_e10_probe import FakeTensor,FakeTorch
 
+
+def _load_linux_runtime():
+    global probe
+    from tools import nvarc_e10_ttt_probe as probe
 
 class Number:
     def __init__(self,value=0.001,elements=1):
@@ -167,7 +171,8 @@ def fixture(root):
 
 
 def schedule_fixture(rates):
-    return {'rates':rates,'source_sha256':probe.SOURCES,'function_sha256':probe.FUNCTIONS,
+    from tools.nvarc_native_ttt_schedule import SOURCES, FUNCTIONS
+    return {'rates':rates,'source_sha256':SOURCES,'function_sha256':FUNCTIONS,
         'warmup_steps':13,'epoch_steps':128,'reference_rates_sha256':hashlib.sha256(
             json.dumps(rates,separators=(',',':')).encode()).hexdigest(),
         'reference_ulp_distances':[0]*129,'maximum_reference_ulp_distance':0,
@@ -175,7 +180,12 @@ def schedule_fixture(rates):
         'policy':'optimizer rate must exactly equal same-platform pinned scalar replay; reference differs by at most four ULPs'}
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class TrainingProbeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)/stage.RUN_ID;self.root.mkdir()
         self.plan,self.materials=fixture(self.root);Engine.instances=[];Engine.bad_preparation=False;Trainer.fail_at=None

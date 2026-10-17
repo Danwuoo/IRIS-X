@@ -1,4 +1,5 @@
 """E13 worker sequencing and full128 evidence replay with literal CPU boundaries."""
+from tests.platform_requirements import requires_linux
 import copy
 import contextlib
 import json
@@ -9,10 +10,8 @@ import time
 from types import SimpleNamespace as NS
 import unittest
 from unittest.mock import patch
-from tools import nvarc_e13_runtime as runtime
 from tools import nvarc_e13_answer_evidence as evidence
 from tools import nvarc_e13_admission as admission
-from tools import nvarc_e13_cleanup as cleanup
 from tools.nvarc_native_multitask import digest,write
 from tests.nvarc_e13_cpu_fixture import fixture,LiteralEngine
 from tests import test_nvarc_e12_training as hooks_fixture
@@ -20,13 +19,21 @@ from tests.test_nvarc_e12_training import Engine as HookEngine
 from tests.test_nvarc_e10_ttt_probe import Engine as InventoryEngine,Trainer as OldTrainer,guard,schedule_fixture
 
 
+def _load_linux_runtime():
+    global runtime, cleanup
+    from tools import nvarc_e13_cleanup as cleanup
+    from tools import nvarc_e13_runtime as runtime
+    hooks_fixture._load_linux_runtime()
+
 def rng(value):
     return dict(python=digest(['p',value]),numpy=digest(['n',value]),torch_cpu=digest(['t',value]),torch_cuda=[digest(['c',value])])
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class ReplayTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        _load_linux_runtime()
         cls.hooks=hooks_fixture.HookTests();cls.hooks.setUp()
         with patch.object(HookEngine,'inventory',InventoryEngine.inventory):
             cls.engine,cls.trainer,cls.budget,cls.moments,cls.trace=cls.hooks.run_arm('ttt128')
@@ -84,7 +91,12 @@ class ReplayTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'ledger'):self.verify()
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class WorkerTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name);self.plan=fixture(self.root)
         self.plan.update(original_training_arguments={'synthetic':True},dependency_readproof_digest=digest('synthetic'))
@@ -186,7 +198,12 @@ class WorkerTests(unittest.TestCase):
         self.assertEqual(result['controls']['completed_forwards'],7);self.assertEqual(self.engines[0].restores,1)
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class CoordinatorTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def test_last_startup_launch_retains_full_original_envelope(self):
         with tempfile.TemporaryDirectory() as folder:
             plan=fixture(Path(folder))

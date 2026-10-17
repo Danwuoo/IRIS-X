@@ -3,6 +3,7 @@
 Use the real E13 admission wrapper, native solve_test and PhaseTelemetry.
 Literal empty source views avoid model/vendor imports or numerical claims.
 """
+from tests.platform_requirements import requires_linux
 import copy
 import contextlib
 import json
@@ -15,7 +16,6 @@ import unittest
 from unittest.mock import patch
 
 from tools import nvarc_e13_answer_evidence as evidence
-from tools import nvarc_e13_runtime as runtime
 from tools import nvarc_native_multitask as native
 from tools.nvarc_public_eval import PhaseTelemetry
 
@@ -23,6 +23,10 @@ from tools.nvarc_public_eval import PhaseTelemetry
 CHALLENGES={'synthetic':{'train':[{'input':[[1]],'output':[[1]]}],
     'test':[{'input':[[1]]},{'input':[[2]]}]}}
 
+
+def _load_linux_runtime():
+    global runtime
+    from tools import nvarc_e13_runtime as runtime
 
 def solve_literal(collector,arm_id,index,*,fail=False):
     bound=dict(run_id=runtime.RUN_ID,task_id='synthetic',
@@ -42,7 +46,12 @@ def solve_literal(collector,arm_id,index,*,fail=False):
             test_allocation=allocation,arm_id=arm_id)
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class ArmTelemetryTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def run_pair(self,order):
         snapshots={};answers={};collectors=[]
         for arm_id in order:

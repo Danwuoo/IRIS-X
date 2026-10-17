@@ -1,7 +1,8 @@
 """Explicit public-checkout test lane; never substitutes private run evidence.
 
-Ordinary unittest discovery and repository_check --all remain strict. Only the
-exact integration tests listed below are reported as not run in this lane.
+Ordinary unittest discovery and repository_check --all remain strict. The public
+lane excludes only the exact retained integrations below. The separately named
+portable subset also reports explicit Linux-capability annotations as unverified.
 Missing public fixtures, import failures and unclassified failures still fail.
 """
 
@@ -15,6 +16,8 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "src")]
+
+from tests.platform_requirements import linux_requirement
 
 
 RETAINED_TESTS = {
@@ -97,7 +100,14 @@ class RetainedEvidenceNotRun(unittest.TestCase):
         self.skipTest("UNVERIFIED retained-evidence integration: " + self.requirement)
 
 
-def select_suite(suite, *, retained_only=False, manifest=None):
+class LinuxCapabilityNotRun(RetainedEvidenceNotRun):
+    def runTest(self):
+        self.skipTest("UNVERIFIED Linux-only capability in public-portable lane: " + self.requirement)
+
+
+def select_suite(suite, *, retained_only=False, portable=False, manifest=None):
+    if retained_only and portable:
+        raise ValueError("retained acceptance cannot be combined with a portable subset")
     manifest = RETAINED_TESTS if manifest is None else manifest
     discovered = list(cases(suite))
     missing = set(manifest) - {test.id() for test in discovered}
@@ -110,19 +120,30 @@ def select_suite(suite, *, retained_only=False, manifest=None):
             if requirement is not None:
                 selected.addTest(test)
         else:
-            selected.addTest(test if requirement is None else RetainedEvidenceNotRun(test.id(), requirement))
+            if requirement is not None:
+                selected.addTest(RetainedEvidenceNotRun(test.id(), requirement))
+            elif portable and (capability := linux_requirement(test)):
+                selected.addTest(LinuxCapabilityNotRun(test.id(), capability))
+            else:
+                selected.addTest(test)
     return selected
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--retained", action="store_true", help="run the actual retained-evidence tests, fail if evidence is absent")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--portable", action="store_true", help="explicit Windows-portable subset; Linux capability checks remain unverified")
+    mode.add_argument("--retained", action="store_true", help="run the actual retained-evidence tests, fail if evidence is absent")
     args = parser.parse_args(argv)
     suite = unittest.defaultTestLoader.discover(str(ROOT / "tests"))
-    suite = select_suite(suite, retained_only=args.retained)
+    suite = select_suite(suite, retained_only=args.retained, portable=args.portable)
     if args.retained:
         print("Retained-evidence integration: genuine local inputs required; no replacement fixtures.", flush=True)
     else:
+        print("Public-portable subset: Linux capability checks are explicitly UNVERIFIED." if args.portable else "Complete Linux public lane; no Linux capability exclusions.", flush=True)
+        if args.portable:
+            count = sum(isinstance(test, LinuxCapabilityNotRun) for test in cases(suite))
+            print(f"Linux-capability tests explicitly UNVERIFIED: {count}.", flush=True)
         print(f"Public-checkout lane: {len(RETAINED_TESTS)} retained-evidence tests explicitly UNVERIFIED.", flush=True)
         print("This is not full Stage 4, GPU, model-quality or historical acceptance.", flush=True)
     result = unittest.TextTestRunner(verbosity=2).run(suite)

@@ -10,7 +10,6 @@ import math
 from types import SimpleNamespace as NS
 
 from tools import nvarc_e12_admission as admission
-from tools import nvarc_e12_runtime as runtime
 from tools.nvarc_native_multitask import digest, write
 from tests.test_nvarc_e10_probe import FakeTensor as BaseTensor, FakeTorch as BaseTorch
 from tests.test_nvarc_e10_ttt_probe import fixture as training_fixture
@@ -19,6 +18,7 @@ from tests.test_nvarc_e12_run_admission import fixture as admission_fixture
 
 def fixture(root):
     """Current strict INERT profile with fresh, explicitly synthetic inputs."""
+    from tools import nvarc_e12_runtime as runtime
     training_plan, _ = training_fixture(root)
     plan = admission_fixture(automatic=False)
     plan.update(task_specs=training_plan['task_specs'],

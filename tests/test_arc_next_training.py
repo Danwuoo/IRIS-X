@@ -16,7 +16,7 @@ import unittest
 from unittest.mock import patch
 
 from tools import arc_next_models as models
-from tools import arc_next_training as training
+from tests.platform_requirements import requires_linux
 
 
 def demo_tasks():
@@ -58,7 +58,13 @@ def token_row(i=0, input_tokens=8, supervised_tokens=3):
             "input_ids": list(range(input_tokens)), "labels": [-100] * (input_tokens - supervised_tokens) + [1] * supervised_tokens}
 
 
+@requires_linux("arc_next_training imports POSIX resource and Linux process supervision")
 class TrainingMaterialTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        global training
+        from tools import arc_next_training as training
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
@@ -222,7 +228,13 @@ class TrainingMaterialTests(unittest.TestCase):
             training.tokenize_rows(rows, MergingTokenizer(), 4096)
 
 
+@requires_linux("arc_next_training imports POSIX resource and Linux process supervision")
 class BudgetAndGuardTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        global training
+        from tools import arc_next_training as training
+
     def test_default_run_is_inert_and_does_not_write_or_import_models(self):
         with patch.object(training.multiprocessing, "get_context", side_effect=AssertionError("must not spawn")):
             result = training.run_calibration()
@@ -518,8 +530,14 @@ class ModelMaterialTests(unittest.TestCase):
             self.assertTrue(all(sha in serialized for sha in shards))
 
 
+@requires_linux("arc_next_training imports POSIX resource and Linux process supervision")
 class ExportRoundTripTests(unittest.TestCase):
     """Literal in-memory adapter/save/reload doubles, not actual HF/torch evidence."""
+    @classmethod
+    def setUpClass(cls):
+        global training
+        from tools import arc_next_training as training
+
     def test_export_restores_and_reloads_exact_adapter_and_tokenizer(self):
         class Tensor:
             shape, dtype = (1,), "fake-float32"

@@ -1,4 +1,5 @@
 """Real E13 inference admission/adapter/event replay on literal CPU sources."""
+from tests.platform_requirements import requires_linux
 import copy
 import json
 import math
@@ -8,7 +9,6 @@ from types import SimpleNamespace as NS
 import unittest
 from unittest.mock import patch
 from tools import nvarc_e13_answer_evidence as evidence
-from tools import nvarc_e13_runtime as runtime
 from tools import nvarc_e12_answer_evidence as historical
 from tools import nvarc_native_multitask as native
 from tools import nvarc_native_solve_runtime as source
@@ -16,7 +16,16 @@ from tools.nvarc_public_eval import PhaseTelemetry
 from tests.nvarc_e13_cpu_fixture import fixture,LiteralEngine
 
 
+def _load_linux_runtime():
+    global runtime
+    from tools import nvarc_e13_runtime as runtime
+
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class EvidenceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name);self.plan=fixture(self.root)
         self.engine=LiteralEngine();self.addCleanup(self.temp.cleanup)

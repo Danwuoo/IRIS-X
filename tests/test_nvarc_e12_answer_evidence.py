@@ -4,6 +4,7 @@ The literal view/decoder fixtures test evidence boundaries, not native-source
 qualification. Retained source integration may separately run the unchanged
 formatter, inverse transforms and score_kgmon through verify_source_provenance.
 """
+from tests.platform_requirements import requires_linux
 import copy
 import json
 import math
@@ -18,7 +19,6 @@ from unittest.mock import patch
 import sys
 
 from tools import nvarc_e12_answer_evidence as evidence
-from tools import nvarc_e12_runtime as runtime
 from tools import nvarc_e10_answer_evidence as frozen
 from tools import nvarc_native_multitask as native
 from tools import nvarc_native_solve_runtime as source
@@ -26,7 +26,16 @@ from tools.nvarc_public_eval import PhaseTelemetry
 from tests.nvarc_e12_cpu_fixture import Array, FakeTensor, LiteralEngine, fixture
 
 
+def _load_linux_runtime():
+    global runtime
+    from tools import nvarc_e12_runtime as runtime
+
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class EvidenceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
@@ -278,7 +287,12 @@ class CompactTokens:
 
 @unittest.skipUnless(os.environ.get('IRISX_E12_NATIVE_FIXTURE'),
     'set IRISX_E12_NATIVE_FIXTURE to retained hash-bound source/tokenizer directory')
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class FrozenSourceReplayTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def test_original_formatter_inverse_and_ranker_with_synthetic_model(self):
         """Frozen source is real; model/DFS/tokenizer substitutes are explicit."""
         import numpy as np

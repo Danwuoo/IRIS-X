@@ -1,4 +1,5 @@
 """Only synthetic opaque bytes and our own stdlib inventory code execute here."""
+from tests.platform_requirements import requires_linux
 import ast
 from dataclasses import replace
 import hashlib
@@ -80,6 +81,7 @@ class InventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(inventory.InventoryError, code):
             self.observe(limits)
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_exact_synthetic_hashes_no_execution_or_mount_claim(self):
         first = self.observe()
         self.assertEqual(inventory.canonical(first), inventory.canonical(self.observe()))
@@ -97,6 +99,7 @@ class InventoryTests(unittest.TestCase):
             self.assertIs(first[field], False)
         self.assertEqual(first['discovered_files_imported_or_executed'], 0)
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_current_identity_keeps_historical_reference_separate(self):
         def amend(receipt):
             receipt['version_number'] = 3
@@ -106,6 +109,7 @@ class InventoryTests(unittest.TestCase):
         self.amend(amend)
         self.assertFalse(self.observe()['historical_reference']['matches_observed_identity'])
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_identity_schema_listing_and_download_bindings_fail_closed(self):
         checks = [('receipt-identity', lambda r: r.update(ref='someone/other')),
                   ('receipt-schema', lambda r: r.update(credentials='not allowed')),
@@ -122,6 +126,7 @@ class InventoryTests(unittest.TestCase):
                 self.amend(amend)
                 self.assertBlocked(code)
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_duplicate_paths_and_json_keys(self):
         def amend(receipt):
             receipt['files'].append(receipt['files'][0])
@@ -142,6 +147,7 @@ class InventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(inventory.InventoryError, 'unsafe-path'):
             inventory.path_parts('x'*1025, inventory.MAXIMUM)
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_file_count_single_total_metadata_and_directory_caps(self):
         self.assertBlocked('file-count-cap', replace(inventory.MAXIMUM, file_count=1))
         self.assertBlocked('single-file-byte-cap', replace(inventory.MAXIMUM, single_file_bytes=1))
@@ -152,6 +158,7 @@ class InventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(inventory.InventoryError, 'limits-range'):
             self.observe(replace(inventory.MAXIMUM, file_count=inventory.MAXIMUM.file_count+1))
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_digest_size_evidence_and_listing_order_tamper(self):
         original = self.receipt.read_bytes()
         self.amend(lambda r: r['files'][0].update(sha256='0'*64))
@@ -166,6 +173,7 @@ class InventoryTests(unittest.TestCase):
         (self.evidence/'identity-response.json').write_bytes(b'{}')
         self.assertBlocked('provider-evidence-digest')
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_unlisted_file_and_empty_directory_are_rejected(self):
         extra = self.target/'unlisted.py'
         extra.write_bytes(b'not executed')
@@ -174,6 +182,7 @@ class InventoryTests(unittest.TestCase):
         (self.target/'unlisted-empty-directory').mkdir()
         self.assertBlocked('unlisted-directory')
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_symlink_hardlink_fifo_and_symlink_root_are_rejected(self):
         path = self.target/'qwen3.patch'
         path.unlink()
@@ -190,6 +199,7 @@ class InventoryTests(unittest.TestCase):
         with self.assertRaises(OSError):
             inventory.inventory(linked_root, self.receipt, self.evidence)
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_file_mutation_during_read_is_rejected(self):
         original = inventory.os.read
         changed = False
@@ -204,6 +214,7 @@ class InventoryTests(unittest.TestCase):
             self.assertBlocked('file-changed')
         self.assertTrue(changed)
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_new_output_and_output_cap_are_enforced(self):
         output = self.folder/'report.json'
         with self.assertRaisesRegex(inventory.InventoryError, 'output-byte-cap'):
@@ -214,6 +225,7 @@ class InventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(inventory.InventoryError, 'new-output-identity-required'):
             inventory.write_new(output, b'new', 4)
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_wall_alarm_interrupts_pending_work(self):
         old = inventory.arm_wall(0.03)
         try:
@@ -222,6 +234,7 @@ class InventoryTests(unittest.TestCase):
         finally:
             inventory.disarm_wall(old)
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_cli_isolated_startup_ignores_synthetic_dependency_path(self):
         marker = self.folder/'forbidden-startup-marker'
         body = ('from pathlib import Path\nPath('+repr(str(marker))+').write_text("executed")\n').encode()
@@ -245,6 +258,7 @@ class InventoryTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn(b'python-I-S-required', result.stderr)
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_cli_bad_digest_leaves_no_report(self):
         self.amend(lambda r: r['files'][0].update(sha256='0'*64))
         output = self.folder/'no-report.json'
@@ -255,6 +269,7 @@ class InventoryTests(unittest.TestCase):
         self.assertFalse(output.exists())
         self.assertFalse(output.with_name(output.name+'.pending').exists())
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_inert_package_closed_deterministic_exact_member_pins(self):
         one = self.folder/'package-one.zip'
         two = self.folder/'package-two.zip'
@@ -296,6 +311,7 @@ class InventoryTests(unittest.TestCase):
         path.write_bytes(inventory.canonical(listing))
         return path
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_exact_byte_proposal_requires_disk_reserve_without_authorizing_fetch(self):
         space = type('Space', (), {'f_bavail': 24*1024**3, 'f_frsize': 1})()
         with patch.object(inventory.os, 'fstatvfs', return_value=space):
@@ -316,6 +332,7 @@ class InventoryTests(unittest.TestCase):
             self.assertEqual(inventory.prepare_acquisition_proposal(self.listing(), self.evidence,
                              self.target, list(self.fixtures))['disk_check']['available_bytes'], required)
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_proposal_missing_current_script_identity_is_blocked(self):
         listing_path = self.listing()
         listing = json.loads(listing_path.read_bytes())
@@ -324,6 +341,7 @@ class InventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(inventory.InventoryError, 'incomplete-provider-listing'):
             inventory.prepare_acquisition_proposal(listing_path, self.evidence, self.target, list(self.fixtures))
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_proposal_requires_explicit_selection_and_preserves_partial_scope(self):
         listing = self.listing()
         for selection in (None, [], ['missing'], ['qwen3.patch', 'qwen3.patch']):
@@ -339,6 +357,7 @@ class InventoryTests(unittest.TestCase):
         self.assertEqual(proposal['proposed_files'], [{'path': 'qwen3.patch',
                                                     'bytes': len(self.fixtures['qwen3.patch'])}])
 
+    @requires_linux('Inventory platform_valid requires POSIX descriptor APIs, setitimer and filesystem reserve observations')
     def test_selected_local_copy_does_not_claim_complete_provider_inventory(self):
         for name in self.fixtures:
             if name != 'qwen3.patch':

@@ -4,6 +4,7 @@ The NumPy tensor/model below is explicitly synthetic. Exact-source tests need
 IRIS_NATIVE_CODE_ONLY_DIR (or IRISX_E12_NATIVE_FIXTURE) pointing at retained pinned
 source. They never replace missing historical experiment evidence with mocks.
 """
+from tests.platform_requirements import requires_linux
 import ast
 from contextlib import nullcontext
 import copy
@@ -95,6 +96,7 @@ class Model:
 
 
 class AdapterTests(unittest.TestCase):
+    @requires_linux('Real streamed evidence writer requires O_DIRECTORY and directory fsync')
     def test_more_than_4096_forwards_all_counted_observed_and_streamed(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary)/'events.jsonl'; bound = {'fixture': 'synthetic-cpu-only'}
@@ -187,6 +189,7 @@ class AdapterTests(unittest.TestCase):
             with self.subTest(tokens=tokens[:10]), self.assertRaises(RuntimeError):
                 inference.validate_sequence(score, tokens)
 
+    @requires_linux('Real streamed evidence writer requires O_DIRECTORY and directory fsync')
     def test_chain_over_8mib_and_single_event_over_1mib_without_truncation(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary)/'large.jsonl'; binding = {'fixture': 'large-complete-stream'}

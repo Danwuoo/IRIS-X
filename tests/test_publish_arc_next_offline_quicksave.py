@@ -1,4 +1,5 @@
 """All identities/evidence below are synthetic offline fixtures, never readiness evidence."""
+from tests.platform_requirements import requires_linux
 import copy
 import importlib.util
 from pathlib import Path
@@ -14,6 +15,7 @@ from tools import stage_arc_next_notebook as previous_stage
 HAS_SDK = importlib.util.find_spec('kagglesdk') is not None
 
 
+@requires_linux('Common fixture requires durable O_DIRECTORY/directory-fsync transport writes before every method')
 class OfflineQuickSaveTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='synthetic-offlinev2-test-')

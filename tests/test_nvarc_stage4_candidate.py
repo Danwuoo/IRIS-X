@@ -1,15 +1,19 @@
+from tests.platform_requirements import requires_linux
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 
 from tools import stage_nvarc_stage4_candidate as builder
-from tools import nvarc_stage4_parent as parent
 from tools.arc_kaggle_submission import parse_json
 from tools.nvarc_native_multitask import canonical
 from tools.nvarc_output_lifecycle import GenerationStore
-from tools.rehearse_stage4_output_resources import run as resource_run
 
+
+def _load_linux_runtime():
+    global parent, resource_run
+    from tools import nvarc_stage4_parent as parent
+    from tools.rehearse_stage4_output_resources import run as resource_run
 
 def challenges():
     return {'changed-a': {'train': [{'input': [[1]], 'output': [[2]]}],
@@ -34,7 +38,12 @@ class FakeClock:
     def advance(self, value): self.value += value
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class PostPreparationAdmissionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def test_clock_after_materials_and_dependency_preparation(self):
         clock = FakeClock(); calls = []
         def material(): calls.append('material'); clock.advance(100); return materials(challenges())
@@ -86,7 +95,12 @@ class PostPreparationAdmissionTests(unittest.TestCase):
             self.assertFalse((Path(directory)/'plan.json').exists())
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class FullInputProcessBoundaryTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def test_complete_fake_processes_keep_actual_denominator_and_frozen_receipt(self):
         class Done:
             pid = 12345
@@ -215,7 +229,12 @@ class ActualPreparationSourceProofTests(unittest.TestCase):
                 self.assertFalse((root/'source-verification-prepare.json').exists())
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class ProductionResourceObservationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def test_owned_cpu_export_observer_measures_child_rss_and_phase_disk(self):
         import os
         import sys
@@ -509,7 +528,9 @@ class ExactPackageTests(unittest.TestCase):
 
 
 class IndependentTerminalAndResourceTests(unittest.TestCase):
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_output_valid_does_not_imply_success_qualification_or_promotion(self):
+        _load_linux_runtime()
         store = unittest.mock.Mock(); store.verify_projection.return_value = {}
         with tempfile.TemporaryDirectory() as directory:
             error = RuntimeError('cleanup failed after committed output')
@@ -518,7 +539,9 @@ class IndependentTerminalAndResourceTests(unittest.TestCase):
             self.assertEqual(terminal['notebook_exit'], 'failure'); self.assertTrue(terminal['evidence_qualified'])
             self.assertFalse(terminal['promotion'])
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_strict_export_requires_every_actual_task_without_pool_selection(self):
+        _load_linux_runtime()
         command = parent.strict_export_command(Path('/root-fixture'), Path('/model-fixture'), 'a'*64, ['new-b', 'changed-a'])
         values = [value.split('=', 1)[1] for value in command if value.startswith('--require-task-gates=')]
         self.assertEqual(values, ['new-b', 'changed-a'])
@@ -530,7 +553,9 @@ class IndependentTerminalAndResourceTests(unittest.TestCase):
         self.assertEqual(command[command.index('--owner-pid')+1], str(__import__('os').getpid()))
         with self.assertRaises(RuntimeError): parent.strict_export_command(Path('.'), Path('.'), 'a'*64, [])
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_missing_partial_or_bad_mandatory_gates_cannot_qualify_empty_pools(self):
+        _load_linux_runtime()
         from copy import deepcopy
         proof = {'training': {'full_task_epoch_verified': True, 'model_material_digest': 'model-pin',
             'preparation_digest': 'sha256:'+'a'*64, 'training_ledger_digest': 'sha256:'+'b'*64,
@@ -562,7 +587,9 @@ class IndependentTerminalAndResourceTests(unittest.TestCase):
                 calibration.require_task_gates('.', {}, data, evidence, None, ['a'])
             gate.assert_called_once()
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_final_projection_failure_cannot_return_success_exit(self):
+        _load_linux_runtime()
         store = unittest.mock.Mock(); store.verify_projection.side_effect = ValueError('mixed projections')
         with tempfile.TemporaryDirectory() as directory:
             terminal, error = parent.finalize_terminal(Path(directory), 'stage4-test', store, True, None)
@@ -571,14 +598,18 @@ class IndependentTerminalAndResourceTests(unittest.TestCase):
             self.assertFalse(terminal['promotion'])
             self.assertEqual(terminal['rss_observation_boundary'], 'after working publication and final projection verification')
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_terminal_storage_failure_retains_valid_generation_and_fails_exit(self):
+        _load_linux_runtime()
         store = unittest.mock.Mock()
         def fail(*_): raise OSError('disk full')
         terminal, error = parent.finalize_terminal(Path('/unused'), 'stage4-test', store, False, None, save=fail)
         self.assertTrue(terminal['output_valid']); self.assertEqual(terminal['notebook_exit'], 'failure')
         self.assertFalse(terminal['evidence_qualified']); self.assertFalse(terminal['promotion']); self.assertIsInstance(error, OSError)
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_empty_pools_or_legal_output_cannot_bypass_epoch_reset_completion(self):
+        _load_linux_runtime()
         coverage = {'tasks_launched': 2, 'task_count': 2, 'full_epochs': 2,
                     'tests_started': 3, 'test_count': 3, 'all_resets_verified': True}
         receipts = [{'launched': True, 'status': 'complete', 'returncode': 0} for _ in range(2)]
@@ -591,7 +622,9 @@ class IndependentTerminalAndResourceTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'rehearsal incomplete'):
             parent.require_complete_rehearsal(coverage, receipts)
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_atomic_root_projection_recovery_reuses_same_commit(self):
+        _load_linux_runtime()
         from tools.nvarc_output_lifecycle import sha
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory); data = challenges()
@@ -612,7 +645,9 @@ class IndependentTerminalAndResourceTests(unittest.TestCase):
             self.assertEqual(before['generation'], after['generation'])
             self.assertFalse(after['outcomes']['promotion']); self.assertEqual(after['outcomes']['notebook_exit'], 'unknown')
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_small_resource_fixture_runs_actual_lifecycle_and_stays_unqualified(self):
+        _load_linux_runtime()
         with tempfile.TemporaryDirectory() as directory:
             result = resource_run(Path(directory)/'resource', evidence_bytes=1024*1024, maximum_seconds=30)
             self.assertTrue(result['same_committed_generation_recovered']); self.assertEqual(result['counts']['test_output_count'], 3)

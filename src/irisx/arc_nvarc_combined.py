@@ -239,6 +239,7 @@ def _windows_job(process):
                     ("pids", ctypes.c_size_t * 64)]
 
     closed = False
+    termination_observation = None
 
     def close():
         nonlocal closed
@@ -247,19 +248,30 @@ def _windows_job(process):
                 raise ctypes.WinError(ctypes.get_last_error())
             closed = True
 
+    def request_termination():
+        # Stop owned work promptly, but retain the handle for deferred measured
+        # cleanup when starting a retirement thread is impossible. Closing here
+        # would destroy the only authoritative descendant accounting handle.
+        nonlocal termination_observation
+        require(not closed, "owned worker job already closed before cleanup observation")
+        if termination_observation is None:
+            members = Processes()
+            if not kernel.QueryInformationJobObject(handle, 3, ctypes.byref(members), ctypes.sizeof(members), None):
+                raise ctypes.WinError(ctypes.get_last_error())
+            termination_observation = {
+                "kind": "owned-windows-job", "initial_process_ids": list(members.pids)[:members.listed],
+                "active_processes_after_termination": None}
+        if not kernel.TerminateJobObject(handle, 1):
+            raise ctypes.WinError(ctypes.get_last_error())
+
     def terminate(timeout):
         # Closing a job starts asynchronous teardown. A bootstrap's successful
         # exit does not establish that descendants released inherited log pipes.
         # Keep the owned job queryable until every associated process is gone.
         deadline = time.monotonic() + max(0, timeout)
         try:
-            members = Processes()
-            if not kernel.QueryInformationJobObject(handle, 3, ctypes.byref(members), ctypes.sizeof(members), None):
-                raise ctypes.WinError(ctypes.get_last_error())
-            observation = {"kind": "owned-windows-job", "initial_process_ids": list(members.pids)[:members.listed],
-                           "active_processes_after_termination": None}
-            if not kernel.TerminateJobObject(handle, 1):
-                raise ctypes.WinError(ctypes.get_last_error())
+            request_termination()
+            observation = copy.deepcopy(termination_observation)
             while True:
                 accounting = Accounting()
                 if not kernel.QueryInformationJobObject(handle, 1, ctypes.byref(accounting),
@@ -282,6 +294,7 @@ def _windows_job(process):
                 primary.add_note("owned worker job close failed: " + str(secondary)[:2000])
 
     close.terminate = terminate
+    close.request_termination = request_termination
     return close
 
 
@@ -359,7 +372,7 @@ def _reap(process, close_job, term_seconds, kill_seconds):
     return tree_cleanup
 
 
-def _force_reap(process, close_job, timeout):
+def _force_reap(process, close_job, timeout, *, defer_job_close=False):
     """Attempt every owned resource after a normal cleanup operation fails."""
     errors = []
     if os.name == "posix":
@@ -371,9 +384,19 @@ def _force_reap(process, close_job, timeout):
             errors.append(str(error)[:2000])
     if close_job is not None:
         try:
-            close_job()
+            request = getattr(close_job, "request_termination", None)
+            if defer_job_close and request is not None:
+                request()
+            else:
+                close_job()
         except Exception as error:
             errors.append(str(error)[:2000])
+            # A failed stop request cannot leave the job running. Kill-on-close
+            # remains the fail-closed fallback, without claiming measured proof.
+            try:
+                close_job()
+            except Exception as secondary:
+                errors.append(str(secondary)[:2000])
     try:
         if process.poll() is None:
             process.kill()
@@ -749,7 +772,8 @@ def supervise(children: dict, output: Path, *, run_id: str, plan_digest: str,
         except Exception as exception:
             retiring.pop(branch, None)
             worker["retirement_start_errors"] = ["worker retirement thread startup failed: " + str(exception)[:2000]]
-            worker["retirement_start_errors"].extend(_force_reap(worker["process"], worker["job"], 0))
+            worker["retirement_start_errors"].extend(_force_reap(worker["process"], worker["job"], 0,
+                                                                  defer_job_close=True))
             # Stop owned work now, but defer log joins/hashing until no active
             # sibling needs admission or watchdog observation. No new thread
             # is needed to recover from a thread-creation refusal.

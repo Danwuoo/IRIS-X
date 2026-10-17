@@ -1,4 +1,5 @@
 """Independent E13 CPU protocol/fault checks; no credentials, provider or model calls."""
+from tests.platform_requirements import requires_linux
 import ast
 import copy
 from datetime import datetime, timedelta, timezone
@@ -11,13 +12,16 @@ import unittest
 from unittest.mock import patch
 
 from tools import nvarc_e13_admission as admission
-from tools import nvarc_e13_runtime as runtime
 from tools import nvarc_e13_answer_evidence as evidence
-from tools import stage_nvarc_e13_search_budget as stage
 from tools import nvarc_e13_entry as entry
 
 ROOT = Path(__file__).resolve().parents[1]
 
+
+def _load_linux_runtime():
+    global runtime, stage
+    from tools import stage_nvarc_e13_search_budget as stage
+    from tools import nvarc_e13_runtime as runtime
 
 def snapshot(now=100000., remaining=6139.2461):
     stamp = datetime.fromtimestamp(now, timezone.utc)
@@ -53,7 +57,12 @@ def plan_fixture(automatic=True):
     return p
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class IndependentProtocolTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def test_only_time_differs_between_search_contracts(self):
         short=runtime.arm_contract('search120');long=runtime.arm_contract('search240')
         self.assertEqual({k for k in short if short[k]!=long[k]},
@@ -184,7 +193,12 @@ class IndependentProtocolTests(unittest.TestCase):
         self.assertNotIn('START',env);self.assertNotIn('PACKED',env)
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class IndependentIsolationFaultTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def test_worker_has_one_training_site_and_no_reset_within_arm_loop(self):
         tree=ast.parse((ROOT/'tools/nvarc_e13_runtime.py').read_text())
         worker=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='worker')

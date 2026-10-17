@@ -1,4 +1,5 @@
 """CPU-only inert notebook/admission checks for the separate uncapped package."""
+from tests.platform_requirements import requires_linux
 import ast
 import copy
 import hashlib
@@ -9,9 +10,12 @@ import unittest
 from unittest.mock import patch
 
 from tools import stage_nvarc_uncapped_notebook as builder
-from tools import nvarc_uncapped_runtime as runtime
 from tools.nvarc_native_multitask import canonical, digest
 
+
+def _load_linux_runtime():
+    global runtime
+    from tools import nvarc_uncapped_runtime as runtime
 
 def minimal_plan():
     return dict(format=runtime.FORMAT,run_id=runtime.RUN_ID,screen_id=runtime.RUN_ID,
@@ -25,7 +29,9 @@ def minimal_plan():
 
 
 class UncappedRuntimeTests(unittest.TestCase):
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_caps_none_but_scientific_bounds_remain(self):
+        _load_linux_runtime()
         plan=minimal_plan();self.assertIs(runtime.verify_plan(plan),plan)
         for key in builder.RESOURCE_CAPS:
             changed=copy.deepcopy(plan);changed[key]=999999999
@@ -34,7 +40,9 @@ class UncappedRuntimeTests(unittest.TestCase):
             changed=copy.deepcopy(plan);changed['scientific_contract'][key]+=1
             with self.assertRaises(RuntimeError):runtime.verify_plan(changed)
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_default_notebook_cells_do_no_setup(self):
+        _load_linux_runtime()
         plan=minimal_plan();raw={'plan.json':canonical(plan),'screen.json':canonical(plan)}
         notebook=builder.render(plan,raw);namespace={}
         with patch('subprocess.Popen',side_effect=AssertionError('must remain inert')):
@@ -52,11 +60,15 @@ class UncappedRuntimeTests(unittest.TestCase):
         for observation in (dict(returncode=0,success=False,errors=[]),dict(returncode=0,success=True,errors=['capture'])):
             with self.assertRaises(RuntimeError):exec(compile(ast.Module(body=[guard],type_ignores=[]),'final-guard','exec'),dict(observation=observation))
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_notebook_payload_rendering_is_order_independent(self):
+        _load_linux_runtime()
         plan=minimal_plan();raw={'plan.json':canonical(plan),'screen.json':canonical(plan),'a.py':b'pass'}
         self.assertEqual(builder.render(plan,raw),builder.render(plan,dict(reversed(list(raw.items())))))
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_confirmed_execution_rejects_pending_science_and_tampered_payload(self):
+        _load_linux_runtime()
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary);plan=minimal_plan();raw=canonical(plan)
             (root/'plan.json').write_bytes(raw);(root/'screen.json').write_bytes(raw)
@@ -69,7 +81,7 @@ class UncappedRuntimeTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):runtime.write_confirmation(root,plan,False)
 
     def test_no_watchdog_or_subprocess_timeout_in_active_runtime(self):
-        source=Path(runtime.__file__).read_text();tree=ast.parse(source)
+        source=Path('tools/nvarc_uncapped_runtime.py').read_text();tree=ast.parse(source)
         for node in ast.walk(tree):
             if isinstance(node,ast.Call):
                 self.assertNotIn('timeout',{kw.arg for kw in node.keywords})
@@ -78,7 +90,9 @@ class UncappedRuntimeTests(unittest.TestCase):
         self.assertIn('budget.installed()',source)
         self.assertNotIn('training_deadline(',source)
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_retained_control_replay_reaches_complete_seventh_call(self):
+        _load_linux_runtime()
         from tools.nvarc_uncapped_artifacts import StreamEvents,atomic_json
         bound=dict(rank=0,probe_id=runtime.RUN_ID)
         vector=[[float(i) for i in range(16)] for _ in range(4)]
@@ -100,7 +114,9 @@ class UncappedRuntimeTests(unittest.TestCase):
             counts=dict(reserved_forwards=7,completed_forwards=7,reserved_physical_input_tokens=168)
             self.assertEqual(runtime.verify_controls(directory,dict(controls=counts,post_reset_control=reset),bound),counts)
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_partial_training_counts_completed_updates_without_claiming_epoch(self):
+        _load_linux_runtime()
         from types import SimpleNamespace
         self.assertEqual(runtime.completed_training_updates(None),0)
         budget=SimpleNamespace(state={'optimizer_steps':[{'completed':True} for _ in range(7)]+[{'completed':False}]})
@@ -108,12 +124,14 @@ class UncappedRuntimeTests(unittest.TestCase):
         budget.state['optimizer_steps']=[{'completed':True} for _ in range(128)]
         self.assertEqual(runtime.completed_training_updates(budget),128)
 
+    @requires_linux('Native Trainer hook module imports POSIX resource-bound epoch runtime')
     def test_training_derivative_changes_only_message_slice_and_retains_full_error(self):
         from tools import nvarc_uncapped_training as full
         from tests import test_nvarc_e12_training as fixture
         original=Path('tools/nvarc_e12_training.py').read_text()
         self.assertEqual(ast.dump(ast.parse(Path(full.__file__).read_text())),
             ast.dump(ast.parse(original.replace('str(error)[:1000]','str(error)'))))
+        fixture._load_linux_runtime()
         hooks=fixture.HookTests();hooks.setUp()
         try:
             with patch.object(fixture,'native',full):
@@ -129,7 +147,9 @@ class UncappedRuntimeTests(unittest.TestCase):
                 self.assertTrue(trace['complete'])
         finally:hooks.tearDown()
 
+    @requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
     def test_transition_failure_retains_full_message_and_traceback(self):
+        _load_linux_runtime()
         from types import SimpleNamespace
         from tools.nvarc_uncapped_artifacts import read_json
         message='transition-'+('y'*9000)

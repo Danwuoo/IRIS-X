@@ -3,6 +3,7 @@
 The fixture is the verified immutable INERT001 plan (f8000ab7...). Tests derive
 synthetic RUN admission observations and never authenticate them or run a model.
 """
+from tests.platform_requirements import requires_linux
 import ast
 import builtins
 import copy
@@ -19,13 +20,15 @@ from unittest.mock import Mock, patch
 
 from tools import nvarc_e12_admission as admission
 from tools import nvarc_e12_entry as entry
-from tools import nvarc_e12_cleanup as cleanup
 from tools import nvarc_e12_delivery_envelope as delivery
-from tools import stage_nvarc_e12_prefix_probe as stage
 
 FIXTURE = Path(__file__).parent / 'fixtures/e12/frozen-inert-001-plan.json'
 FIXTURE_SHA256 = 'f8000ab7db2a40795e93ff7482ad17ffa7fc817057207da7a9aadd6266739349'
 
+
+def _load_linux_runtime():
+    global stage
+    from tools import stage_nvarc_e12_prefix_probe as stage
 
 def snapshot(remaining=6000, *, now=None):
     now = time.time() if now is None else now
@@ -57,6 +60,7 @@ def fixture(*, automatic=True, remaining=6000):
 
 
 def payload(plan):
+    _load_linux_runtime()
     raw = {name: (stage.ROOT / name).read_bytes() for name in stage.NEW_FILES}
     hashes = {name: hashlib.sha256(body).hexdigest() for name, body in raw.items()}
     plan['source_files_sha256'] = hashes.copy()
@@ -115,6 +119,7 @@ class AdmissionTests(unittest.TestCase):
         with self.assertRaises(RuntimeError): admission.write_run_start('/unused', fixture(automatic=False), time.monotonic())
         with self.assertRaises(RuntimeError): admission.declarations(original)
 
+    @requires_linux('Real immutable run-start receipt creation requires mandatory O_NOFOLLOW')
     def test_receipt_has_actual_clocks_without_invented_owner_or_runtime_quota(self):
         plan = fixture()
         with tempfile.TemporaryDirectory() as temporary:
@@ -133,6 +138,7 @@ class AdmissionTests(unittest.TestCase):
             with self.assertRaises(ValueError): delivery.verify_start_value(changed, plan, current=False)
             self.assertEqual(delivery.verify_start_value(value, plan, current=False), value)
 
+    @requires_linux('Real immutable run-start receipt creation requires mandatory O_NOFOLLOW')
     def test_runtime_uses_historical_submission_observation_after_queue(self):
         plan = fixture(); resource = plan['resource_admission']
         resource['resource_snapshot'] = snapshot(now=time.time() - 7200)
@@ -145,7 +151,12 @@ class AdmissionTests(unittest.TestCase):
             admission.verify_execution(temporary, plan)
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class EntryAndOutputTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def test_tampered_runtime_never_imports_before_source_gate(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary); plan = fixture(); write_runtime(root, plan)
@@ -200,7 +211,12 @@ class EntryAndOutputTests(unittest.TestCase):
             with self.assertRaises(RuntimeError): GenerationStore(root, 'e12-prefix-pilot', dict(bindings, plan_digest='sha256:' + 'b' * 64))
 
 
+@requires_linux('Real native runtime imports POSIX resource accounting and Linux owned-process controls')
 class NotebookTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _load_linux_runtime()
+
     def setUp(self):
         self.plan = fixture(); self.raw = payload(self.plan)
         self.notebook = stage.render(self.plan, self.raw)
@@ -224,6 +240,7 @@ class NotebookTests(unittest.TestCase):
         self.assertIs(environment[admission.CONFIG_NAME], False)
         self.assertNotIn('START', environment)
 
+    @requires_linux('Actual generated cell imports the Linux owned-process cleanup/finalizer')
     def test_actual_admission_failure_reaches_prelaunch_diagnostic_finalizer(self):
         runtime = stage.runtime_api(); seen = []
         # Notebook rendering is not an IPython dependency of this CPU control test.

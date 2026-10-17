@@ -10,8 +10,7 @@ from unittest.mock import patch
 import zipfile
 
 from tools import arc_next_models as models
-from tools import arc_next_offline_runtime as runtime
-from tools import arc_next_training as training
+from tests.platform_requirements import requires_linux
 
 
 class LoadingInfoTests(unittest.TestCase):
@@ -111,7 +110,14 @@ def completed():
             'worker_alive_after_cleanup': False, 'group_still_observable_after_kill': False}}
 
 
+@requires_linux("workflow runtime imports Linux SIGKILL stages and training imports POSIX resource")
 class WorkflowDiagnosticTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        global runtime, training
+        from tools import arc_next_offline_runtime as runtime
+        from tools import arc_next_training as training
+
     def _native(self, root, receipt):
         settings = config(root)
         def phase(name, *_args, **_kwargs):

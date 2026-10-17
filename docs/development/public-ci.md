@@ -5,7 +5,7 @@ native model/tokenizer material, private review receipts, or returned run ZIPs.
 A public CI pass cannot attest to those inputs, historical execution, GPU
 behavior, a model score, or complete Stage 4 acceptance.
 
-## Reproducible public lane
+## Complete Linux public lane
 
 From a clean checkout in a fresh Python environment:
 
@@ -18,8 +18,10 @@ The package has no mandatory third-party dependencies. CI explicitly installs
 `packaging==26.3` for the real wheel-platform/ABI compatibility tests and
 `numpy==2.3.5` for the synthetic tensor/uncapped-inference tests, rather than
 skipping them or relying on a developer environment's incidental install.
-The workflow checks
-Python 3.11 and 3.14 on Linux and Windows. It runs repository invariants,
+The workflow checks Python 3.11 and 3.14 on Linux and Windows, with
+`fail-fast: false` so one failure cannot conceal the other matrix outcomes.
+Linux executes the complete public lane above; Windows executes the explicitly
+smaller portable lane below. Both run repository invariants,
 validator self-tests, the public test suite, whitespace validation, and the
 existing CLI fixture/trial/package/admission smoke checks.
 
@@ -53,6 +55,36 @@ admission rejection, repository/source integrity, and other self-contained
 tests remain active. The malformed-admission unit tests explicitly mock only
 the historical review digest lookup and assert rejection before package
 preflight; they do not establish that the original review exists or is valid.
+
+## Explicit Windows-portable subset
+
+```sh
+python tools/repository_check.py --public-portable
+```
+
+This named lane is a portable subset, **not complete Linux public acceptance**.
+The native Kaggle/Linux tooling uses real `resource` accounting, process groups,
+procfs, directory descriptors/fsync, no-follow paths, `fcntl` locks, interval
+signals and anonymous-inode publication. Those contracts are not emulated or
+weakened for Windows. Annotated tests report **UNVERIFIED Linux-only capability**
+with their original test IDs and concrete requirements.
+
+`tests/platform_requirements.py` provides metadata-only `@requires_linux`
+annotations. Only `--public-portable` interprets them. Neither ordinary unittest
+nor `--all`, `--public`, or `--retained` changes execution because of this metadata.
+A class annotation is used only where its common fixture/runtime import requires
+Linux; mixed modules annotate individual methods. Deferred test imports preserve
+independent model, bundle, JSON, admission, source, receipt, and schema checks.
+No module-name exclusion, import-error suppression, fake OS constant, or blanket
+skip of an independently portable module is used. Unclassified failures and
+import errors still fail. The retained-evidence exclusions remain separately
+identified, and retained acceptance cannot be combined with the portable subset.
+
+The portable selector can also run on Linux for boundary regression testing.
+Capability-negative discovery can demonstrate that unavailable POSIX imports do
+not mask portable tests, but it is not an actual Windows execution result. Only
+the Windows CI jobs establish that platform's behavior. Windows-supported tests,
+including the combined supervisor's owned Windows Job cleanup, remain enabled.
 
 ## Strict acceptance remains separate
 
@@ -91,3 +123,12 @@ PyTorch static rendezvous. The original two-rank test and 45-second limits are
 retained. A sandbox that prohibits Gloo network-device initialization cannot
 establish real collective/resume/failure behavior; a mock launcher test or a
 dependency-free public CI pass must not be presented as that validation.
+
+The combined supervisor repair keeps the owned Windows Job query handle open
+after a retirement-thread startup failure. It requests termination immediately,
+then deferred finalization measures zero active descendants before closing the
+handle. The first observed membership is retained, while the startup failure
+still makes the branch fail. Stop/query failures retain errors and use
+kill-on-close without inventing measured cleanup proof. Synthetic WinAPI tests
+and Linux process regressions do not substitute for the real Windows Job test.
+This legacy supervisor is outside the immutable AF3 goal-source package.

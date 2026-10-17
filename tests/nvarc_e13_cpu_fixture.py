@@ -3,13 +3,13 @@ import copy
 import math
 from types import SimpleNamespace as NS
 from tools import nvarc_e13_admission as admission
-from tools import nvarc_e13_runtime as runtime
 from tools.nvarc_native_multitask import digest,write
 from tests.test_nvarc_e13_run_admission import fixture as admission_fixture
 from tests.test_nvarc_e10_probe import FakeTensor as BaseTensor,FakeTorch
 
 
 def fixture(root):
+    from tools import nvarc_e13_runtime as runtime
     plan=admission_fixture(automatic=False)
     (root/'materials').mkdir(exist_ok=True)
     challenges={k:{'train':[{'input':[[1]],'output':[[1]]}],

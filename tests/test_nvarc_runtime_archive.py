@@ -1,4 +1,5 @@
 """Literal, non-executed cache fixtures for the probe-002 archive failure."""
+from tests.platform_requirements import requires_linux
 import hashlib
 import json
 import os
@@ -120,6 +121,7 @@ class WorkerCacheArchiveTests(unittest.TestCase):
         with patch.object(members,'MAX_PATH_CHARACTERS',30),\
                 self.assertRaisesRegex(RuntimeError,'safe runtime archive path'):members.validate_members(self.root)
 
+    @requires_linux('POSIX filenames with backslash, colon and newline cannot be represented equivalently on Windows')
     def test_cache_paths_remain_safe(self):
         for name in ('bad\\name.py','bad:name.py','bad\nname.py'):
             with self.subTest(name=name):

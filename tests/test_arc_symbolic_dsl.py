@@ -1,4 +1,5 @@
 """Bounds, truth isolation and neutral interoperability on invented fixtures."""
+from tests.platform_requirements import requires_linux
 import copy
 from dataclasses import asdict
 import json
@@ -140,6 +141,7 @@ class SymbolicBoundTests(unittest.TestCase):
             self.assertEqual(timed["status"], "wall_limit")
             self.assertIsNone(timed["result"])
 
+    @requires_linux('Spawn-failure case requires supported POSIX resource memory enforcement before launch')
     def test_spawn_failure_is_fixed_fault_without_candidates(self):
         with patch("irisx.arc_symbolic_runner.subprocess.Popen", side_effect=OSError("injected")):
             result = solve_isolated(task())

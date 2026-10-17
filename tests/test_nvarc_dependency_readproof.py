@@ -1,4 +1,5 @@
 """Independent tiny opaque fixtures only; never imports dependency/model code."""
+from tests.platform_requirements import requires_linux
 import copy
 import contextlib
 import hashlib
@@ -12,7 +13,6 @@ import unittest
 from unittest.mock import patch
 
 from tools import nvarc_dependency_readproof as gate
-from tools import nvarc_e10_probe as probe
 from tools import stage_nvarc_e10_probe as stage
 from tools.nvarc_native_multitask import canonical, digest, write
 from tools.nvarc_runtime_archive import validate_members
@@ -45,6 +45,7 @@ class ReadProofTests(unittest.TestCase):
         return gate.verify_selected(self.dependency, self.proof, receipt_path=self.receipt,
             plan_digest='sha256:'+'4'*64, deadline=kwargs.pop('deadline',time.monotonic()+30),
             working_root=self.root, **kwargs)
+    @requires_linux('Selected-byte readproof uses POSIX descriptor identity, disk accounting and resource-bound native runtime')
     def test_streaming_exact_five_files_and_no_discovery(self):
         original = os.read; sizes = []
         def read(fd,size): sizes.append(size); return original(fd,size)
@@ -55,6 +56,7 @@ class ReadProofTests(unittest.TestCase):
         self.assertEqual(value['selected_files'],self.proof['selected_files']); self.assertLessEqual(max(sizes),7)
         self.assertEqual(value['file_bytes_read'],sum(v['bytes'] for v in self.proof['selected_files'].values()))
         self.assertEqual(value['limitations'],gate.LIMITATIONS); self.assertEqual(value['discovered_code_executions'],0)
+    @requires_linux('Selected-byte readproof uses POSIX descriptor identity, disk accounting and resource-bound native runtime')
     def test_mismatch_or_missing_retains_failed_receipt(self):
         path = self.dependency/'qwen3.patch'; body = path.read_bytes()
         for mutation in (body[:-1],b'x'+body[1:],None):
@@ -63,6 +65,7 @@ class ReadProofTests(unittest.TestCase):
             with self.assertRaises((RuntimeError,FileNotFoundError)):self.verify()
             value = json.loads(self.receipt.read_bytes()); self.assertEqual(value['outcome'],'failed')
             self.assertIsNotNone(value['error']); path.write_bytes(body)
+    @requires_linux('Selected-byte readproof uses POSIX descriptor identity, disk accounting and resource-bound native runtime')
     def test_symlink_parent_file_root_hardlink_and_fifo_rejected(self):
         path = self.dependency/'qwen3.patch'; body = path.read_bytes()
         target = Path(self.tmp.name)/'opaque'; target.write_bytes(body)
@@ -82,6 +85,7 @@ class ReadProofTests(unittest.TestCase):
         with self.assertRaises(OSError):gate.verify_selected(linked,self.proof,receipt_path=self.receipt,
             plan_digest='sha256:'+'4'*64,deadline=time.monotonic()+30,working_root=self.root)
         self.assertEqual(json.loads(self.receipt.read_bytes())['outcome'],'failed')
+    @requires_linux('Selected-byte readproof uses POSIX descriptor identity, disk accounting and resource-bound native runtime')
     def test_deadline_disk_and_invalid_caps_retain_failure(self):
         for deadline in (0,float('nan'),float('inf'),time.monotonic()-1):
             with self.assertRaisesRegex(RuntimeError,'deadline'):self.verify(deadline=deadline)
@@ -94,6 +98,7 @@ class ReadProofTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'caps'):self.verify()
             self.assertEqual(json.loads(self.receipt.read_bytes())['outcome'],'failed')
             self.proof['read_limits'][field]=original
+    @requires_linux('Selected-byte readproof uses POSIX descriptor identity, disk accounting and resource-bound native runtime')
     def test_deadline_during_chunk_read_and_changed_file_rejected(self):
         original = os.read; clock = [100.]
         def read(fd,size):
@@ -109,6 +114,7 @@ class ReadProofTests(unittest.TestCase):
             return result
         with patch.object(gate.os,'read',side_effect=mutate),self.assertRaisesRegex(RuntimeError,'changed'):
             self.verify()
+    @requires_linux('Selected-byte readproof uses POSIX descriptor identity, disk accounting and resource-bound native runtime')
     def test_expired_post_read_deadline_counts_returned_chunk_bytes(self):
         original=os.read;clock=[100.];self.proof['read_limits']['maximum_chunk_bytes']=11
         def read(fd,size):
@@ -118,6 +124,7 @@ class ReadProofTests(unittest.TestCase):
         receipt=json.loads(self.receipt.read_bytes())
         self.assertEqual(receipt['outcome'],'failed');self.assertEqual(receipt['selected_files'],{})
         self.assertEqual(receipt['file_bytes_read'],11);self.assertEqual(receipt['read_bytes_including_eof_checks'],11)
+    @requires_linux('Selected-byte readproof uses POSIX descriptor identity, disk accounting and resource-bound native runtime')
     def test_expired_post_eof_read_deadline_counts_returned_extra_byte(self):
         original=os.read;clock=[100.];name=sorted(gate.SELECTED_PATHS)[0]
         expected=self.proof['selected_files'][name]['bytes'];path=self.dependency/name
@@ -140,6 +147,7 @@ class ReadProofTests(unittest.TestCase):
         for path in ('../qwen3.patch','/qwen3.patch','unselected'):
             bad = copy.deepcopy(self.proof); bad['selected_files'][path]=bad['selected_files'].pop('qwen3.patch')
             with self.assertRaisesRegex(RuntimeError,'five selected'):gate.validate_contract(bad)
+    @requires_linux('Selected-byte readproof uses POSIX descriptor identity, disk accounting and resource-bound native runtime')
     def test_failed_receipt_cannot_be_overwritten_by_retry(self):
         path=self.dependency/'qwen3.patch'; body=path.read_bytes(); path.write_bytes(b'x'*len(body))
         with self.assertRaises(RuntimeError):self.verify()
@@ -155,7 +163,9 @@ class ReadProofTests(unittest.TestCase):
         for name,body in raw.items():
             path=self.root/name; path.parent.mkdir(parents=True,exist_ok=True); path.write_bytes(body)
         return plan
+    @requires_linux('Selected-byte readproof uses POSIX descriptor identity, disk accounting and resource-bound native runtime')
     def test_real_gate_prevents_prepare_and_retains_archivable_failure(self):
+        from tools import nvarc_e10_probe as probe
         plan = self.plan(); path = self.dependency/'qwen3.patch'; path.write_bytes(b'x'*path.stat().st_size)
         with patch.object(stage,'verify_runtime',return_value=plan),patch.object(probe,'prepare') as prepare, \
              patch.object(probe,'verify_mount') as mount,patch.object(probe.subprocess,'Popen') as launch, \
@@ -166,7 +176,9 @@ class ReadProofTests(unittest.TestCase):
         names={path.relative_to(self.root).as_posix() for path in validate_members(self.root)}
         self.assertIn(gate.PROOF_FILE,names); self.assertIn(gate.RECEIPT_FILE,names)
         self.assertNotIn('flash_attn_2_cuda.cpython-311-x86_64-linux-gnu.so',names)
+    @requires_linux('Selected-byte readproof uses POSIX descriptor identity, disk accounting and resource-bound native runtime')
     def test_gate_success_reaches_only_injected_preparation_sentinel(self):
+        from tools import nvarc_e10_probe as probe
         plan = self.plan()
         with patch.object(stage,'verify_runtime',return_value=plan), \
              patch.object(probe,'verify_mount',return_value={'competition_files_opened':0}), \
@@ -175,7 +187,9 @@ class ReadProofTests(unittest.TestCase):
             self.assertEqual(probe.execute(self.root,self.dependency,time.monotonic()),1)
         prepare.assert_called_once(); self.assertEqual(json.loads(self.receipt.read_bytes())['outcome'],'verified-selected-bytes')
         self.assertIn('independent-preparation-sentinel',json.loads((self.root/'terminal.json').read_bytes())['errors'][0]['message'])
+    @requires_linux('Selected-byte readproof uses POSIX descriptor identity, disk accounting and resource-bound native runtime')
     def test_worker_requires_hash_bound_gate_receipt_before_engine(self):
+        from tools import nvarc_e10_probe as probe
         plan = self.plan(); value = gate.verify_before_prepare(self.root,plan,self.dependency,time.monotonic())
         pin = hashlib.sha256(self.receipt.read_bytes()).hexdigest()
         self.assertEqual(gate.require_worker_receipt(self.root,plan,self.dependency,pin),value)
