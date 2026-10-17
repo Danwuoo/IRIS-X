@@ -195,13 +195,16 @@ class PrivateCandidateAuditTests(unittest.TestCase):
     def test_completed_expanded_solver_requires_audit_at_seal(self):
         root = self.path.parent
         (root / "pools.json").write_text(json.dumps(self.pools))
-        (root / "run-summary.json").write_text(json.dumps({"run_id": "synthetic", "solver_status": "complete",
-            "continuation_policy": {"candidate_views": 8, "candidate_ranker": "vote"}}))
         proof = {"closed": True, "ownership_complete": True, "worker_returncode": 0}
-        with mock.patch("tools.arc_learning_agent_20261011.process_guard.verify_closed_proof"), \
+        for index, policy in enumerate(({"candidate_views": 8, "candidate_ranker": "vote"},
+                                        {"candidate_views": 2, "candidate_ranker": "first", "candidate_batch_size": 2})):
+            (root / "run-summary.json").write_text(json.dumps({"run_id": "synthetic", "solver_status": "complete",
+                                                              "continuation_policy": policy}))
+            with self.subTest(policy=policy), \
+                mock.patch("tools.arc_learning_agent_20261011.process_guard.verify_closed_proof"), \
                 mock.patch.object(launch.os, "chmod"), \
                 self.assertRaisesRegex(ValueError, "requires private candidate audit"):
-            launch.seal_predictions(root, root / "sealed", proof, "a" * 64)
+                launch.seal_predictions(root, root / f"sealed-{index}", proof, "a" * 64)
 
     @requires_linux("seal integration imports the Linux-owned process closure verifier")
     def test_failed_solver_seals_partial_audit_without_enlarging_predictions(self):

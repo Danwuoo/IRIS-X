@@ -378,6 +378,82 @@ class Engine:
         finally:
             del cache
 
+    @torch.no_grad()
+    def generate_prompts(self, prompts, *, max_new_tokens=2048, deadline=math.inf):
+        """Greedy heterogeneous prompt batch, only for opt-in PUBLIC views.
+
+        Left padding is invisible to each row's attention and rotary positions.
+        This does not replace the original RL sampler or its probability measure.
+        A failed/late batch returns no candidates; the caller owns bounded retry
+        and retains its physical work. No GPU speedup or bitwise CUDA parity is
+        implied by this implementation.
+        """
+        vocab = self.model.config.vocab_size
+        if (not isinstance(prompts, (list, tuple)) or not 1 <= len(prompts) <= 8
+                or any(not isinstance(p, (list, tuple)) or not p
+                       or any(type(t) is not int or not 0 <= t < vocab for t in p) for p in prompts)
+                or type(max_new_tokens) is not int or max_new_tokens < 1):
+            raise ValueError("bounded nonempty original prompt token lists required")
+        prompts = [list(p) for p in prompts]
+        check_deadline(deadline)
+        self.model.eval()
+        eos = self.tokenizer.eos_token_id
+        pad = getattr(self.tokenizer, "pad_token_id", None)
+        pad = pad if pad is not None else eos if eos is not None else 0
+        if type(pad) is not int or not 0 <= pad < vocab:
+            raise ValueError("valid in-vocabulary padding token required")
+        count, width = len(prompts), max(map(len, prompts))
+        lengths = [len(p) for p in prompts]
+        tokens = torch.tensor([[pad] * (width - len(p)) + p for p in prompts], device=self.device)
+        attention = torch.tensor([[0] * (width - len(p)) + [1] * len(p) for p in prompts], device=self.device)
+        positions = (attention.cumsum(-1) - 1).clamp(min=0)
+        cache = out = logits = selected = None
+        generated, logps = [[] for _ in prompts], [[] for _ in prompts]
+        finished = [False] * count
+        configured = getattr(self.model.generation_config, "eos_token_id", None)
+        endings = set([configured] if isinstance(configured, int) else configured or [])
+        if eos is not None:
+            endings.add(eos)
+        stop_ids = self.tokenizer.encode("</grid>", add_special_tokens=False)
+        try:
+            for step in range(max_new_tokens):
+                check_deadline(deadline)
+                with self.autocast():
+                    out = self.model(input_ids=tokens, attention_mask=attention, position_ids=positions,
+                                     past_key_values=cache, use_cache=True, logits_to_keep=1)
+                self.forward_calls += 1
+                cache = out.past_key_values
+                logits = out.logits[:, -1, :].float()
+                if not bool(torch.isfinite(logits).all()):
+                    raise FloatingPointError("nonfinite batched view logits")
+                selected = logits.argmax(-1, keepdim=True)
+                selected_list = selected[:, 0].tolist()
+                chosen_logps = (logits.gather(1, selected).squeeze(1) - torch.logsumexp(logits, -1)).tolist()
+                # Charge tokens before checking time: rejected late work was real.
+                self.sampled_tokens += sum(not done for done in finished)
+                check_deadline(deadline)
+                for i, token in enumerate(selected_list):
+                    if not finished[i]:
+                        generated[i].append(token)
+                        logps[i].append(chosen_logps[i])
+                        if token in endings or (stop_ids and generated[i][-len(stop_ids):] == stop_ids):
+                            finished[i] = True
+                if all(finished):
+                    break
+                tokens = selected
+                attention = torch.cat((attention, attention.new_ones((count, 1))), dim=1)
+                positions = torch.tensor([[length + step] for length in lengths], device=self.device)
+            result = [{"input_ids": prompts[i] + generated[i], "prompt_length": lengths[i],
+                       "behavior_log_probs": [0.0] * lengths[i] + logps[i],
+                       "text": self.tokenizer.decode(generated[i], skip_special_tokens=True),
+                       "completion_tokens": len(generated[i]),
+                       "stop": "completed" if finished[i] else "length"} for i in range(count)]
+            check_deadline(deadline)
+            return result
+        finally:
+            # Release GPU owners even while an OOM traceback is being audited.
+            cache = out = logits = selected = tokens = attention = positions = None
+
     def af3_update(self, rows, optimizer, *, expected_groups, group_size, deadline=math.inf):
         """Plan complete groups then stream actual upstream DDIS graphs one at a time.
 

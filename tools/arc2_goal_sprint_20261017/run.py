@@ -235,6 +235,7 @@ def continuation_options(cfg):
     values = {"sft_loss_mode": cfg.get("sft_loss_mode", "final"),
               "ttt_loss_mode": cfg.get("ttt_loss_mode", "final"),
               "candidate_views": cfg.get("candidate_views", 2),
+              "candidate_batch_size": cfg.get("candidate_batch_size", 1),
               "candidate_ranker": cfg.get("candidate_ranker", "first"),
               "candidate_pool_limit": cfg.get("candidate_pool_limit", 16),
               "likelihood_normalization": cfg.get("likelihood_normalization", "sum"),
@@ -243,6 +244,8 @@ def continuation_options(cfg):
         raise ValueError("invalid supervised loss mode")
     if type(values["candidate_views"]) is not int or values["candidate_views"] not in (2, 8, 16):
         raise ValueError("candidate_views must be 2, 8, or 16")
+    if type(values["candidate_batch_size"]) is not int or values["candidate_batch_size"] not in (1, 2, 4, 8):
+        raise ValueError("candidate_batch_size must be 1, 2, 4, or 8")
     if values["candidate_ranker"] not in {"first", "vote", "cross_view_likelihood"}:
         raise ValueError("invalid candidate ranker")
     if (type(values["candidate_pool_limit"]) is not int
@@ -313,8 +316,140 @@ def rank_candidate_pool(engine, candidates, task, query, views, cfg, *, deadline
         return votes, receipt
 
 
+def solve_query_views_batched(engine, task, query, cfg, audit, *, task_id, query_index, deadline):
+    """Fixed view order with bounded batching; OOM costs and retries stay visible.
+
+    One failed batch may be retried once per member as singletons, within the
+    ORIGINAL group deadline. Remaining groups in this query then stay singleton.
+    Other failures do not silently resample. No partial/malformed batch can vote.
+    """
+    options = continuation_options(cfg)
+    views = inference_views(options["candidate_views"], seed=cfg["seed"], task_id=task_id,
+                            demo_count=len(task["train"]))
+    started = time.time()
+    fraction = options["rerank_fraction"] if options["candidate_ranker"] == "cross_view_likelihood" else 0
+    generation_deadline = deadline if fraction == 0 else started + max(0, deadline - started) * (1 - fraction)
+    receipts = [{"view": i, **view, "status": "failed", "attempts": []} for i, view in enumerate(views)]
+    attempts, generated_views, candidates = [], {}, []
+    oom_demoted = False
+
+    def attempt(entries, until, mode):
+        began = time.time()
+        before = (engine.forward_calls, engine.sampled_tokens)
+        row = {"attempt": len(attempts), "mode": mode, "views": [i for i, _ in entries],
+               "batch_size": len(entries), "status": "failed", "generation_invoked": False,
+               "prompt_tokens": sum(len(e["prompt_ids"]) for _, e in entries),
+               "padded_prompt_tokens": len(entries) * max(len(e["prompt_ids"]) for _, e in entries),
+               "budget_seconds": max(0, until - began) if math.isfinite(until) else None}
+        result, failure = None, None
+        try:
+            check_deadline(until)
+            row["generation_invoked"] = True
+            result = engine.generate_prompts([example["prompt_ids"] for _, example in entries],
+                        max_new_tokens=cfg["generation_tokens"], deadline=until)
+            check_deadline(until)
+            if (not isinstance(result, list) or len(result) != len(entries)
+                    or any(not isinstance(r, dict) or not isinstance(r.get("text"), str)
+                           or type(r.get("completion_tokens")) is not int
+                           or not 0 <= r["completion_tokens"] <= cfg["generation_tokens"]
+                           or not isinstance(r.get("stop"), str)
+                           or r.get("stop") not in {"completed", "length"} for r in result)):
+                raise ValueError("complete bounded batched view result required")
+            row["status"] = "complete"
+        except (PhaseDeadline, torch.cuda.OutOfMemoryError, FloatingPointError, ValueError) as error:
+            failure = type(error).__name__
+            result = None
+            row["failure"] = failure
+        # No exception/traceback owner survives into a fallback invocation.
+        if failure is not None and torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        row.update(wall_seconds=time.time() - began, forward_calls=engine.forward_calls - before[0],
+                   generated_token_work=engine.sampled_tokens - before[1])
+        attempts.append(row)
+        for index, _ in entries:
+            receipts[index]["attempts"].append(row["attempt"])
+            if failure:
+                receipts[index]["failure"] = failure
+        audit("public_generation_batch", task_id=task_id, test_index=query_index, **row)
+        return result, failure
+
+    size = options["candidate_batch_size"]
+    for start in range(0, len(views), size):
+        end = min(start + size, len(views))
+        now = time.time()
+        group_deadline = min(generation_deadline, now + max(0, generation_deadline - now) * (end - start) / (len(views) - start))
+        entries = []
+        for index in range(start, end):
+            try:
+                check_deadline(group_deadline)
+                demos, transformed_query = view_inputs(task, query, views[index])
+                example = encode_example(engine.tokenizer, demos, transformed_query,
+                            context=cfg["context_tokens"], generation=cfg["generation_tokens"])
+                check_deadline(group_deadline)
+                receipts[index]["demos_dropped"] = example["demos_dropped"]
+                entries.append((index, example))
+            except (PhaseDeadline, ValueError) as error:
+                receipts[index]["failure"] = type(error).__name__
+        if not entries:
+            continue
+        if not oom_demoted:
+            result, failure = attempt(entries, group_deadline, "batch")
+            if result is not None:
+                generated_views.update((index, r) for (index, _), r in zip(entries, result))
+                continue
+            if failure != "OutOfMemoryError":
+                continue
+            oom_demoted = True
+            mode = "singleton_oom_fallback"
+        else:
+            mode = "singleton_after_oom"
+        for offset, entry in enumerate(entries):
+            now = time.time()
+            until = min(group_deadline, now + max(0, group_deadline - now) / (len(entries) - offset))
+            result, _ = attempt([entry], until, mode)
+            if result is not None:
+                generated_views[entry[0]] = result[0]
+
+    # Commit candidates only in fixed view order, never completion-time order.
+    for index, receipt in enumerate(receipts):
+        if index in generated_views:
+            generated = generated_views[index]
+            grid = parse_grid(generated["text"])
+            receipt.update(status="complete", valid=grid is not None,
+                           completion_tokens=generated["completion_tokens"], stop=generated["stop"],
+                           raw_text_digest=digest(generated["text"]))
+            if grid is not None:
+                original = transform(grid, **views[index]["transform"], inverse=True)
+                found = next((i for i, row in enumerate(candidates) if row["grid"] == original), None)
+                if found is None:
+                    if len(candidates) >= options["candidate_pool_limit"]:
+                        raise RuntimeError("full candidate bound unexpectedly exceeded")
+                    found = len(candidates)
+                    candidates.append({"grid": original, "votes": 0, "views": []})
+                candidates[found]["votes"] += 1
+                candidates[found]["views"].append(index)
+                receipt["candidate"] = found
+        audit("public_candidate_view", task_id=task_id, test_index=query_index,
+              **{k: v for k, v in receipt.items() if k not in {"transform", "demo_order"}})
+    order, ranking = rank_candidate_pool(engine, candidates, task, query, views, cfg, deadline=deadline)
+    completed = len(generated_views)
+    status = "complete" if completed == len(views) else "partial" if candidates else "failed"
+    full = {"task_id": task_id, "test_index": query_index, "input_digest": digest(query),
+            "candidates": candidates, "ranked_candidate_indices": order, "views": receipts,
+            "generation_attempts": attempts, "oom_demoted_to_singletons": oom_demoted,
+            "ranking": ranking, "generation_budget_fraction": 1 - fraction,
+            "rerank_budget_fraction": fraction, "wall_seconds": time.time() - started}
+    audit("public_candidates_ranked", task_id=task_id, test_index=query_index, candidates=len(candidates),
+          complete_views=completed, used_ranker=ranking["used_ranker"], fallback=ranking["fallback"])
+    return {"test_index": query_index, "input_digest": digest(query),
+            "ranked_grids": [candidates[i]["grid"] for i in order[:2]], "status": status}, full
+
+
 def solve_query_views(engine, task, query, cfg, audit, *, task_id, query_index, deadline):
     options = continuation_options(cfg)
+    if options["candidate_batch_size"] > 1:
+        return solve_query_views_batched(engine, task, query, cfg, audit,
+                                        task_id=task_id, query_index=query_index, deadline=deadline)
     views = inference_views(options["candidate_views"], seed=cfg["seed"], task_id=task_id,
                             demo_count=len(task["train"]))
     started = time.time()
@@ -371,7 +506,8 @@ def solve_query_views(engine, task, query, cfg, audit, *, task_id, query_index, 
 
 def solve_public(engine, public, selected_state, cfg, audit, output, *, deadline):
     options = continuation_options(cfg)
-    expanded = options["candidate_views"] != 2 or options["candidate_ranker"] != "first"
+    expanded = (options["candidate_views"] != 2 or options["candidate_ranker"] != "first"
+                or options["candidate_batch_size"] != 1)
     full_pool = {"format": "irisx/private-full-candidates-v1", "run_id": cfg["run_id"],
                  "policy": options, "policy_digest": digest(options), "records": []}
     pools = {"format": "irisx/arc-offline-pools-v1", "run_id": cfg["run_id"],

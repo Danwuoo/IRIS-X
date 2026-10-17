@@ -355,7 +355,8 @@ def seal_predictions(output, seal_root, closure, source_sha256):
     full_pool_receipt = None
     complete_solver = closure["worker_returncode"] == 0 and solver_summary["solver_status"] == "complete"
     policy = summary.get("continuation_policy", {}) if solver_summary["present"] else {}
-    expanded = policy.get("candidate_views", 2) != 2 or policy.get("candidate_ranker", "first") != "first"
+    expanded = (policy.get("candidate_views", 2) != 2 or policy.get("candidate_ranker", "first") != "first"
+                or policy.get("candidate_batch_size", 1) != 1)
     require(not (complete_solver and expanded) or full_pool_path.is_file(),
             "completed expanded inference requires private candidate audit")
     if full_pool_path.exists() or full_pool_path.is_symlink():

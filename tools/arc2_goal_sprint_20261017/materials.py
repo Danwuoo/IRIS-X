@@ -25,7 +25,7 @@ SHA_RE = re.compile(r"[a-f0-9]{64}\Z")
 PRODUCER_PATHS = frozenset(("tools/arc2_goal_sprint_20261017/curriculum.py",
     "tools/arc2_goal_sprint_20261017/data.py", "src/irisx/arc_nvarc_data.py",
     "src/irisx/canonical.py", "src/irisx/errors.py"))
-ALGORITHM_KEYS = frozenset(("sft_loss_mode", "ttt_loss_mode", "candidate_views", "candidate_ranker",
+ALGORITHM_KEYS = frozenset(("sft_loss_mode", "ttt_loss_mode", "candidate_views", "candidate_batch_size", "candidate_ranker",
                           "candidate_pool_limit", "likelihood_normalization", "rerank_fraction"))
 LEGACY_KEYS = frozenset(("training_seconds", "sft_steps", "rl_batches", "rl_group_size",
     "rl_parents_per_batch", "ttt_steps", "context_tokens", "generation_tokens", "dev_tasks", "seed"))
@@ -59,6 +59,7 @@ def validate_solver_parameters(parameters=None, *, runtime=False):
     options = {"sft_loss_mode": parameters.get("sft_loss_mode", "final"),
         "ttt_loss_mode": parameters.get("ttt_loss_mode", "final"),
         "candidate_views": parameters.get("candidate_views", 2),
+        "candidate_batch_size": parameters.get("candidate_batch_size", 1),
         "candidate_ranker": parameters.get("candidate_ranker", "first"),
         "candidate_pool_limit": parameters.get("candidate_pool_limit", 16),
         "likelihood_normalization": parameters.get("likelihood_normalization", "sum"),
@@ -67,6 +68,8 @@ def validate_solver_parameters(parameters=None, *, runtime=False):
                 for k in ("sft_loss_mode", "ttt_loss_mode")), "invalid supervised loss mode")
     require(type(options["candidate_views"]) is int and options["candidate_views"] in (2, 8, 16),
             "candidate_views must be 2, 8, or 16")
+    require(type(options["candidate_batch_size"]) is int and options["candidate_batch_size"] in (1, 2, 4, 8),
+            "candidate_batch_size must be 1, 2, 4, or 8")
     require(type(options["candidate_pool_limit"]) is int and
             options["candidate_views"] <= options["candidate_pool_limit"] <= 16, "bounded full candidate pool required")
     require(type(options["candidate_ranker"]) is str and options["candidate_ranker"] in
