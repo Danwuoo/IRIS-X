@@ -21,6 +21,8 @@ from tests.platform_requirements import linux_requirement
 
 
 RETAINED_TESTS = {
+    "test_repository_check.RepositoryCheckTests.test_retained_archive_objects_are_valid":
+        "original annotated archive/pre-product-transition-2026-09-17 tag (not published on the public remote) and its exact recovery objects",
     "test_nvarc_abc.ABCBoundaryTests.test_retained_plan_and_save_projection":
         ".irisx/arc-agi-2/qwen35-nvarc/m2-m3/ retained SFT evidence and ABC001 package",
     "test_nvarc_abc.ABCBoundaryTests.test_public_shape_and_palette_fail_closed_without_truth":

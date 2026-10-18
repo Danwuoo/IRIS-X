@@ -5,6 +5,19 @@ native model/tokenizer material, private review receipts, or returned run ZIPs.
 A public CI pass cannot attest to those inputs, historical execution, GPU
 behavior, a model score, or complete Stage 4 acceptance.
 
+The annotated `archive/pre-product-transition-2026-09-17` tag is absent from the
+public remote. Some historical commits are reachable through public branch
+ancestry, but `fetch-depth: 0` cannot retrieve a tag that was not published.
+The public lane verifies the
+exact committed archive manifest and path-index bytes against fixed SHA-256
+pins, but reports tagged-tree/blob recovery as **UNVERIFIED**. The separate
+`test_retained_archive_objects_are_valid` integration performs the unchanged
+annotated-tag, commit/tree, path-index and representative-blob recovery checks.
+Ordinary discovery, `--all`, and `--retained` execute that real body and fail
+when the original objects are unavailable. No historical tag is synthesized
+or published merely to pass public CI; public catalog validation is not proof
+that the catalogued objects can be recovered.
+
 ## Complete Linux public lane
 
 From a clean checkout in a fresh Python environment:
@@ -41,6 +54,8 @@ test failure fails the public lane.
 
 The separated historical checks cover:
 
+- Exact annotated archive tag/tree/blob recovery, while frozen public catalog
+  bytes and all active repository checks remain enabled.
 - ABC001–005 exact package/SFT provenance, private visible-task replay and
   predecessor result archives.
 - Native exporter replay using the retained tokenizer/source material and
@@ -85,6 +100,13 @@ Capability-negative discovery can demonstrate that unavailable POSIX imports do
 not mask portable tests, but it is not an actual Windows execution result. Only
 the Windows CI jobs establish that platform's behavior. Windows-supported tests,
 including the combined supervisor's owned Windows Job cleanup, remain enabled.
+
+The convergence-controller test defers its Linux process-proof import until
+the owned-closure fixture actually executes; its pure control-plane tests stay
+portable even without `signal.SIGKILL`. Diagnostic paired denominators, resets,
+fresh optimizers and selection guards also remain portable. Only the separate
+owner-only POSIX `0600` file-mode assertion requires Linux capabilities; a
+Windows file-mode result does not establish that permission contract.
 
 ## Strict acceptance remains separate
 

@@ -10,6 +10,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from tests.platform_requirements import requires_linux
 from tools.arc2_goal_sprint_20261017 import diagnostic as d
 from tools.arc2_goal_sprint_20261017.data import SECOND_VIEW, answer_text, transform
 
@@ -256,6 +257,11 @@ class HarnessTests(unittest.TestCase):
             self.assertEqual(summary["partitions"]["train"]["arms"]["A0"]["expected"], 1)
             self.assertNotIn("dev0", json.dumps(summary))
             self.assertNotIn("prediction", json.dumps(summary))
+
+    @requires_linux("POSIX mode bits enforce owner-only 0600 diagnostic artifact permissions")
+    def test_private_diagnostic_artifact_has_owner_only_permissions(self):
+        with tempfile.TemporaryDirectory() as root:
+            self.run_fake(root)
             self.assertEqual((Path(root) / "result/diagnostic.private.json").stat().st_mode & 0o777, 0o600)
 
     def test_exact_second_view_inverse_and_target_free_ranking(self):

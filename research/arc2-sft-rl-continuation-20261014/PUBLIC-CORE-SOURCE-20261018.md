@@ -16,3 +16,21 @@ The release overlays 38 reviewed source/test paths and this note onto the prior 
 - Focused actual tiny-model CPU integration: 176 tests passed with zero skips across the eleven changed test modules, using PyTorch 2.8.0+cpu, Transformers 5.8.1 and PEFT 0.21.0.
 
 These local results are not native Windows execution proof or full historical retained-evidence acceptance. The separate CI matrix must be read for its own exact commit.
+
+## Bounded width and CI follow-up
+
+A separate follow-up adds six reviewed width component, test and technical-report
+paths. Only the expansion, model integration, CPU probe and model unit tests are
+public; the full three-arm provider workflow and operational integration tests
+remain private. The reported 53-test and official-weight component checks refer
+to that separate implementation, not to a full GPU run of this public subset.
+
+The CI follow-up preserves strict historical archive validation. The public lane
+checks the exact published archive catalogs and reports the unavailable annotated
+archive tag and recovery proof as unverified. It also defers a Linux-only proof
+import and separates a POSIX permission assertion from portable scientific tests.
+No scientific runtime, numerical threshold or pinned archive byte is changed.
+
+The preceding initial-release test counts above remain historical. Final local
+and hosted CI results belong to their exact follow-up commit and do not replace
+strict retained-evidence acceptance.

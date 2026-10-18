@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 from pathlib import Path
+import shutil
+import tempfile
 import unittest
+from contextlib import redirect_stdout
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,7 +22,67 @@ SPEC.loader.exec_module(REPOSITORY_CHECK)
 
 class RepositoryCheckTests(unittest.TestCase):
     def test_active_repository_is_valid(self) -> None:
-        self.assertEqual(REPOSITORY_CHECK.validate(ROOT), [])
+        self.assertEqual(REPOSITORY_CHECK.validate(ROOT, public=True), [])
+
+    def test_retained_archive_objects_are_valid(self) -> None:
+        issues = []
+        REPOSITORY_CHECK.validate_archive(ROOT, issues)
+        self.assertEqual(issues, [])
+
+    def test_unavailable_archive_ref_does_not_hide_active_or_catalog_checks(self) -> None:
+        original_git = REPOSITORY_CHECK.git
+
+        def without_archive(root, *args):
+            if any(REPOSITORY_CHECK.ARCHIVE_TAG in arg for arg in args):
+                raise RuntimeError("retained archive ref unavailable in this checkout")
+            return original_git(root, *args)
+
+        with patch.object(REPOSITORY_CHECK, "git", side_effect=without_archive), \
+                patch.object(REPOSITORY_CHECK, "validate_active_surface", wraps=REPOSITORY_CHECK.validate_active_surface) as active, \
+                patch.object(REPOSITORY_CHECK, "validate_archive_catalog", wraps=REPOSITORY_CHECK.validate_archive_catalog) as catalog:
+            self.assertEqual(REPOSITORY_CHECK.validate(ROOT, public=True), [])
+            active.assert_called_once()
+            catalog.assert_called_once()
+            self.assertIn("retained archive ref unavailable in this checkout", REPOSITORY_CHECK.validate(ROOT))
+            with redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(REPOSITORY_CHECK.run_repository_check(ROOT, public=True), 0)
+            self.assertIn("tag/tree/blob recovery: UNVERIFIED", output.getvalue())
+            self.assertNotIn("representative recovery checks:", output.getvalue())
+
+    def test_public_archive_catalog_missing_or_changed_bytes_fail(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "archive").mkdir()
+            for relative in REPOSITORY_CHECK.ARCHIVE_CATALOG_SHA256:
+                shutil.copyfile(ROOT / relative, root / relative)
+            issues = []
+            REPOSITORY_CHECK.validate_archive_catalog(root, issues)
+            self.assertEqual(issues, [])
+            for relative in REPOSITORY_CHECK.ARCHIVE_CATALOG_SHA256:
+                with self.subTest(path=relative):
+                    path = root / relative
+                    original = path.read_bytes()
+                    path.write_bytes(original + b" ")
+                    issues = []
+                    REPOSITORY_CHECK.validate_archive_catalog(root, issues)
+                    self.assertEqual(issues, [f"public archive catalog SHA-256 mismatch: {relative}"])
+                    path.unlink()
+                    issues = []
+                    REPOSITORY_CHECK.validate_archive_catalog(root, issues)
+                    self.assertEqual(len(issues), 1)
+                    self.assertIn(f"cannot read public archive catalog {relative}", issues[0])
+                    path.write_bytes(original)
+
+    def test_all_checks_still_select_strict_repository_validation(self) -> None:
+        with patch.object(REPOSITORY_CHECK, "run_self_tests", return_value=0), \
+                patch.object(REPOSITORY_CHECK, "run_repository_check", return_value=1) as repository, \
+                patch.object(REPOSITORY_CHECK.subprocess, "run") as external, \
+                redirect_stdout(io.StringIO()):
+            external.return_value.returncode = 0
+            self.assertEqual(REPOSITORY_CHECK.run_all_checks(ROOT), 1)
+            repository.assert_called_once_with(ROOT)
+            self.assertEqual(external.call_args_list[0].args[0][1:],
+                             ["-m", "unittest", "discover", "-s", "tests", "-v"])
 
     def test_policy_set_preserves_product_boundaries(self) -> None:
         paths = (

@@ -20,6 +20,12 @@ TAG_OBJECT = "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d"
 SOURCE_COMMIT = "83207e48cc44ce26d0bcb0c98006facfc4f01844"
 ROOT_TREE = "623066ca75243af5e68f53d8674508d4470ce2cd"
 THESIS_SHA256 = "373105e33a500c821ea7ca1f5d45a077ec2d6f381250cf79859cbfa6a83d7a63"
+# These pin only the already-public catalog bytes, not the retained Git objects
+# or their recoverability. The historical tag is absent from the public remote.
+ARCHIVE_CATALOG_SHA256 = {
+    "archive/manifest.json": "c27ddbbadc791f2e01f2a293ccb426b2fc4eb280c9b1f74d1ee2fe0eb5fa97ee",
+    "archive/path-index.tsv": "0b0fa411bc9adb915c67b547d1e72f1d6e69d29dc4f7ab5905d31104826274dc",
+}
 
 ARCHIVED_ROOTS = (
     "corpus",
@@ -793,11 +799,25 @@ def validate_archive(root: Path, issues: list[str]) -> None:
     add(len(manifest.get("recovery_commands", [])) == 4, "archive recovery command catalog mismatch", issues)
 
 
-def validate(root: Path) -> list[str]:
+def validate_archive_catalog(root: Path, issues: list[str]) -> None:
+    """Check frozen public catalog bytes without claiming historical recovery."""
+    for relative, expected in ARCHIVE_CATALOG_SHA256.items():
+        try:
+            actual = (root / relative).read_bytes()
+        except OSError as exc:
+            issues.append(f"cannot read public archive catalog {relative}: {exc}")
+            continue
+        add(sha256(actual) == expected, f"public archive catalog SHA-256 mismatch: {relative}", issues)
+
+
+def validate(root: Path, *, public: bool = False) -> list[str]:
     issues: list[str] = []
     tracked = validate_active_surface(root, issues)
     validate_links(root, tracked, issues)
-    validate_archive(root, issues)
+    if public:
+        validate_archive_catalog(root, issues)
+    else:
+        validate_archive(root, issues)
     try:
         sys.path.insert(0, str(root / "src"))
         from irisx.admission import validate_admission_file
@@ -837,8 +857,8 @@ def run_self_tests() -> int:
     return 0 if result.wasSuccessful() else 1
 
 
-def run_repository_check(root: Path) -> int:
-    issues = validate(root)
+def run_repository_check(root: Path, *, public: bool = False) -> int:
+    issues = validate(root, public=public)
     if issues:
         print("IRIS-X repository check: FAIL")
         for issue in issues:
@@ -848,11 +868,16 @@ def run_repository_check(root: Path) -> int:
     manifest = json.loads((root / "archive/manifest.json").read_text(encoding="utf-8"))
     print("IRIS-X repository check: PASS")
     print(f"- thesis SHA-256: {THESIS_SHA256}")
-    print(f"- archive tag: {ARCHIVE_TAG}")
-    print(f"- source commit: {SOURCE_COMMIT}")
-    print(f"- root tree: {ROOT_TREE}")
-    print(f"- indexed historical paths: {manifest['path_index']['tracked_path_count']}")
-    print(f"- representative recovery checks: {len(manifest['representative_recovery'])}")
+    if public:
+        print("- frozen public archive catalog bytes: verified")
+        print(f"- retained archive tag/tree/blob recovery: UNVERIFIED ({ARCHIVE_TAG})")
+        print("- original annotated archive tag is not published on the public remote")
+    else:
+        print(f"- archive tag: {ARCHIVE_TAG}")
+        print(f"- source commit: {SOURCE_COMMIT}")
+        print(f"- root tree: {ROOT_TREE}")
+        print(f"- indexed historical paths: {manifest['path_index']['tracked_path_count']}")
+        print(f"- representative recovery checks: {len(manifest['representative_recovery'])}")
     return 0
 
 
@@ -891,7 +916,7 @@ def run_public_checks(root: Path, *, portable: bool = False) -> int:
     print("== public-checkout validator self-tests ==", flush=True)
     failed |= run_self_tests() != 0
     print("\n== repository invariants ==", flush=True)
-    failed |= run_repository_check(root) != 0
+    failed |= run_repository_check(root, public=True) != 0
     scratch = root / ".irisx" / "public-ci" / "tmp"
     scratch.mkdir(parents=True, exist_ok=True)
     # Start a fresh interpreter: changing PYTHONHASHSEED in this process would

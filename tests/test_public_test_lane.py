@@ -137,6 +137,32 @@ class PublicTestLaneTests(unittest.TestCase):
         self.assertEqual(len(portable.skipped), 1)
         self.assertTrue(portable.wasSuccessful())
 
+    def test_diagnostic_permission_split_keeps_factorial_body_portable(self):
+        from tests.test_arc2_goal_diagnostic import HarnessTests
+        factorial = HarnessTests("test_factorial_resets_fresh_optimizers_full_paired_denominators")
+        permission = HarnessTests("test_private_diagnostic_artifact_has_owner_only_permissions")
+        selected = list(lane.cases(lane.select_suite(
+            unittest.TestSuite([factorial, permission]), portable=True, manifest={})))
+        self.assertIs(selected[0], factorial)
+        self.assertIsInstance(selected[1], lane.LinuxCapabilityNotRun)
+        self.assertEqual(selected[1].id(), permission.id())
+
+    def test_archive_recovery_is_exact_retained_body_not_active_surface(self):
+        from tests.test_repository_check import RepositoryCheckTests
+        retained = RepositoryCheckTests("test_retained_archive_objects_are_valid")
+        active = RepositoryCheckTests("test_active_repository_is_valid")
+        manifest_id = retained.id().removeprefix("tests.")
+        self.assertIn(manifest_id, lane.RETAINED_TESTS)
+        self.assertNotIn(active.id().removeprefix("tests."), lane.RETAINED_TESTS)
+        manifest = {retained.id(): lane.RETAINED_TESTS[manifest_id]}
+        selected = list(lane.cases(lane.select_suite(
+            unittest.TestSuite([active, retained]), manifest=manifest)))
+        self.assertIs(selected[0], active)
+        self.assertIsInstance(selected[1], lane.RetainedEvidenceNotRun)
+        strict = list(lane.cases(lane.select_suite(
+            unittest.TestSuite([active, retained]), retained_only=True, manifest=manifest)))
+        self.assertEqual(strict, [retained])
+
 
 if __name__ == "__main__":
     unittest.main()

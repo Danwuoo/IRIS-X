@@ -22,8 +22,8 @@ import unittest
 from tools.arc2_goal_sprint_20261017.data import canonical
 from tools.nvarc_posttrain_20261017 import convergence_controller as ctl
 from tools.nvarc_posttrain_20261017.concurrency import run_wave
-from tools.arc_learning_agent_20261011.process_guard import verify_closed_proof
 from tools.nvarc_posttrain_20261017.score import closure_structure
+from tests.platform_requirements import requires_linux
 
 MISSING = [name for name in ('torch', 'transformers', 'peft', 'pydantic', 'tokenizers', 'safetensors')
            if importlib.util.find_spec(name) is None]
@@ -69,6 +69,24 @@ def fixture_worker(path):
 
 
 class PureControllerTests(unittest.TestCase):
+    def test_discovery_does_not_import_linux_process_guard(self):
+        code = """
+import signal, sys, unittest
+if hasattr(signal, 'SIGKILL'):
+    del signal.SIGKILL
+name = 'tools.arc_learning_agent_20261011.process_guard'
+sys.modules[name] = None
+from tests import test_nvarc_convergence_controller as module
+names = unittest.defaultTestLoader.getTestCaseNames(module.PureControllerTests)
+names.remove('test_discovery_does_not_import_linux_process_guard')
+assert len(names) == 4, names
+suite = unittest.TestSuite(module.PureControllerTests(name) for name in names)
+assert unittest.TextTestRunner().run(suite).wasSuccessful()
+assert sys.modules[name] is None
+"""
+        result = subprocess.run([sys.executable, '-B', '-c', code], cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_control_plane_imports_without_ml(self):
         code = "import sys; from tools.nvarc_posttrain_20261017 import convergence_controller; assert not any(n in sys.modules for n in ('torch','transformers','peft'))"
         result = subprocess.run([sys.executable, '-B', '-c', code], cwd=ROOT, capture_output=True, text=True)
@@ -109,6 +127,7 @@ class PureControllerTests(unittest.TestCase):
         self.assertEqual(ctl._bounds(ctl.DEFAULT_CONFIG)['training_trajectory_slots'], 832)
 
 
+@requires_linux('Actual owned-process closure needs Linux pidfd signals, procfs and a dedicated subreaper')
 @unittest.skipIf(bool(MISSING) or sys.platform != 'linux', 'Actual closed tiny CPU fixture needs Linux and optional ML dependencies: '+','.join(MISSING))
 class ClosedArtifactTests(unittest.TestCase):
     @classmethod
@@ -181,6 +200,7 @@ class ClosedArtifactTests(unittest.TestCase):
         return window
 
     def test_actual_owned_closed_fixture_reconstructs_every_window_export_and_paired_view(self):
+        from tools.arc_learning_agent_20261011.process_guard import verify_closed_proof
         row = self.wave['jobs'][0]
         self.assertTrue(row['closure_verified']); self.assertTrue(ctl.shared._normal_closure(row))
         closure_structure(row['closure']); self.assertTrue(verify_closed_proof(row['closure']))
