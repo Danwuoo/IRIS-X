@@ -31,7 +31,7 @@ from . import matched_controls as mc
 from .codec import parse_completion
 from .engine import CompactEngine, FatalUpdateError
 from .probability_probe import probe
-from .precision_contract import FP32_HEAD_POLICY, stable_probe_admission
+from .precision_contract import FP32_HEAD_POLICY, FP32_BACKBONE_POLICY, probability_tolerance, stable_probe_admission
 
 FORMAT = 'irisx/compact-convergence-training-v1'
 ARMS = (*mc.ARMS, 'finite_hybrid')
@@ -99,7 +99,7 @@ def _preflight(engine, prompt, cfg, *, deadline, policy_sha, hash_cost):
     raw = probe(engine, prompt, count=cfg['microbatch'], max_new_tokens=cfg['generation_tokens'],
                 deadline=deadline, seed=cfg['seed'])
     after = mc.full_policy_sha256(engine, hash_cost)
-    tolerance = .05 if engine.base_dtype == torch.bfloat16 else 1e-5
+    tolerance = probability_tolerance(engine)
     gaps = [raw.get(key) for key in ('cached_max_abs_logp_gap', 'full_max_abs_logp_gap')]
     cached = raw.get('cached_replay') or {}
     passed = (raw['status'] == 'completed' and policy_sha == after and not engine._fatal_update
@@ -110,7 +110,7 @@ def _preflight(engine, prompt, cfg, *, deadline, policy_sha, hash_cost):
         and raw['training_authorized'] is False
         and all(type(v) in (int, float) and math.isfinite(v) and 0 <= v <= tolerance for v in gaps))
     additional, admission_error = None, None
-    if engine.probability_policy == FP32_HEAD_POLICY:
+    if engine.probability_policy in (FP32_HEAD_POLICY, FP32_BACKBONE_POLICY):
         try:
             additional, extra_passed = stable_probe_admission(raw, tolerance=tolerance, count=cfg['microbatch'])
             passed = passed and extra_passed
@@ -196,7 +196,7 @@ def collect_window(engine, training, admission, *, expected_admission_sha256, co
                             engine=engine, hash_cost=hash_cost)
         mc._need(engine.optimizer_attempts == before['optimizer_attempts']
             and engine.optimizer_steps == before['optimizer_steps'], 'frozen window attempted an optimizer update')
-        verify = result['verification']; tolerance = .05 if engine.base_dtype == torch.bfloat16 else 1e-5
+        verify = result['verification']; tolerance = probability_tolerance(engine)
         with torch.no_grad():
             for group in capture['groups']:
                 for row in group['rows']:
@@ -288,7 +288,8 @@ def run_training(engine, training, admission, *, expected_admission_sha256, dead
     mc._need(type(deadline) in (int, float) and math.isfinite(deadline), 'finite original deadline required')
     if engine.contract['variant'] != 'tiny':
         mc._need(cfg == DEFAULT_CONFIG and engine.contract['variant'] in ('2b', '2b-depth32'), 'fixed official2B convergence settings required')
-        mc._need(getattr(engine, 'probability_policy', None) == 'fp32-compact-head-v1', 'separately admitted stable compact output-head policy required')
+        expected_policy = FP32_HEAD_POLICY if engine.contract['variant'] == '2b-depth32' else FP32_BACKBONE_POLICY
+        mc._need(getattr(engine, 'probability_policy', None) == expected_policy, 'separately admitted baseline/capacity computation policy required')
     mc.admit_panel(training, admission, expected_admission_sha256=expected_admission_sha256)
     training, admission = copy.deepcopy(training), copy.deepcopy(admission)
     engine._checkpoint_admission()

@@ -101,6 +101,10 @@ class SourcePackageTests(unittest.TestCase):
                 source_dataset="danielwuu/iris-x-nvarc-synthetic/1", extra_wheelhouse=wheels)
             dataset = root / "capsule/source-dataset"
             manifest = json.loads((dataset / "source-manifest.json").read_bytes())
+            metadata = json.loads((dataset / "dataset-metadata.json").read_bytes())
+            self.assertEqual(metadata["licenses"], [{"name": "other"}])
+            self.assertTrue(metadata["isPrivate"])
+            self.assertIn("does not grant a new blanket open-source license", metadata["description"])
             self.assertFalse(result["published"])
             self.assertFalse(manifest["contains_model_weights"])
             self.assertFalse(manifest["contains_evaluator_data"])
@@ -133,6 +137,9 @@ class SourcePackageTests(unittest.TestCase):
             notebook = json.loads((output / metadata["code_file"]).read_bytes())
         self.assertFalse(result["published"])
         self.assertTrue(metadata["is_private"])
+        # This fixed ASCII title must match the approved slug. Kaggle warns that
+        # a different title can change the destination during create/update.
+        self.assertEqual(metadata["title"].lower().replace(" ", "-"), metadata["id"].split("/")[-1])
         self.assertFalse(metadata["enable_internet"])
         self.assertEqual(len(metadata["model_sources"]), 2)
         self.assertTrue(all(value.startswith("sorokin/") for value in metadata["model_sources"]))
@@ -151,6 +158,38 @@ class SourcePackageTests(unittest.TestCase):
                 (path / "config.json").write_text("{}")
             with self.assertRaisesRegex(ValueError, "one exact"):
                 bootstrap.resolve_model(root, "2b")
+
+
+class DiagnosticExitTests(unittest.TestCase):
+    def test_scientific_failure_is_not_coordinator_success(self):
+        for workflow in ("paired-ttt-stability-v1", "compact-matched-controls-v1"):
+            for terminal in (None, {}, {"completed": False}, {"completed": 1}):
+                with self.subTest(workflow=workflow, terminal=terminal):
+                    with self.assertRaisesRegex(RuntimeError, "diagnostic incomplete"):
+                        bootstrap.require_completed_diagnostic({"workflow": workflow}, terminal)
+            bootstrap.require_completed_diagnostic({"workflow": workflow}, {"completed": True})
+
+    def test_external_scoring_contract_is_unchanged(self):
+        bootstrap.require_completed_diagnostic({"workflow": "dual-posttrain-v1"},
+            {"status": "SEALED_AWAITING_EXTERNAL_EVALUATOR", "public_score": None})
+
+    def test_main_keeps_closed_evidence_and_preserves_runtime_on_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request = {"workflow": "compact-matched-controls-v1"}
+            path = root / "request.json"; path.write_text(json.dumps(request), encoding="utf-8")
+            sealed = root / "terminal.json"
+            def closed(_request):
+                terminal = {"completed": False, "status": "CLOSED_DIAGNOSTIC"}
+                sealed.write_text(json.dumps(terminal), encoding="utf-8")
+                return terminal
+            with patch.object(sys, "argv", ["bootstrap", "--request", str(path)]), \
+                    patch.object(bootstrap, "bootstrap", side_effect=closed), \
+                    patch.object(bootstrap.offline, "preserve_runtime_evidence") as preserve:
+                with self.assertRaisesRegex(RuntimeError, "diagnostic incomplete"):
+                    bootstrap.main()
+                preserve.assert_called_once_with(request)
+                self.assertEqual(json.loads(sealed.read_bytes()), {"completed": False, "status": "CLOSED_DIAGNOSTIC"})
 
 
 class ExposureSealTests(unittest.TestCase):

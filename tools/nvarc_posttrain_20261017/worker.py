@@ -23,7 +23,7 @@ from tools.arc2_goal_sprint_20261017.model import adapter_state, check_deadline,
 from tools.arc2_goal_sprint_20261017.run import Audit, atomic_json
 from .codec import encode_example
 from .engine import CompactEngine
-from .precision_contract import LEGACY_POLICY, FP32_HEAD_POLICY
+from .precision_contract import LEGACY_POLICY, FP32_HEAD_POLICY, FP32_BACKBONE_POLICY
 from .experiment import adapt_task, evaluate_panel, infer_query, panel_ids, train_arm
 from .materials import verify_model
 
@@ -231,7 +231,8 @@ def run(cfg):
                                             expected_manifest_sha256=TRAINING_MANIFEST_SHA256)
     engine = CompactEngine.load(cfg["model_root"], base_identity=identity, variant=cfg["variant"], seed=cfg["seed"],
                                 adapter_seed=cfg.get("adapter_seed", 731 if cfg["variant"] == "2b" else 739),
-                                probability_policy=FP32_HEAD_POLICY if cfg["mode"] in {"matched", "convergence"} else LEGACY_POLICY)
+                                probability_policy=(FP32_BACKBONE_POLICY if cfg["mode"] == "convergence"
+                                    else FP32_HEAD_POLICY if cfg["mode"] == "matched" else LEGACY_POLICY))
     resumed = None
     if cfg.get("checkpoint") is not None:
         resumed = engine.load_checkpoint(cfg["checkpoint"])
@@ -239,6 +240,10 @@ def run(cfg):
              "base_identity": identity, "trainables": engine.trainable_inventory,
              "allocator_fraction": fraction, "allocator_is_hardware_partition": False,
              "load_seconds": time.time() - started, "resumed": resumed}
+    if cfg["mode"] == "convergence":
+        ready["probability_execution_policy"] = engine.probability_execution_receipt()
+        ready["source_checkpoint_dtype"] = str(engine.source_base_dtype)
+        ready["resident_parameter_bytes"] = sum(p.numel()*p.element_size() for p in engine.model.parameters())
     atomic_json(Path(cfg["ready_path"]), ready)
     wait_release(cfg)
     active = time.time()
@@ -334,8 +339,16 @@ def main():
     try:
         run(cfg)
     except BaseException as error:
-        atomic_json(Path(cfg["output_dir"]) / "failure.json", {"job_id": cfg["job_id"],
-            "error_type": type(error).__name__, "completed": False, "epoch": time.time()})
+        failure = {"job_id": cfg["job_id"], "error_type": type(error).__name__,
+            "completed": False, "epoch": time.time()}
+        if cfg.get("mode") == "convergence" and torch.cuda.is_initialized():
+            try:
+                failure.update(peak_allocated_bytes=torch.cuda.max_memory_allocated(0),
+                    peak_reserved_bytes=torch.cuda.max_memory_reserved(0),
+                    gpu_name=torch.cuda.get_device_name(0), memory_metrics_available=True)
+            except Exception as memory_error:
+                failure.update(memory_metrics_available=False, memory_metrics_error=type(memory_error).__name__)
+        atomic_json(Path(cfg["output_dir"]) / "failure.json", failure)
         traceback.print_exc()
         raise
 

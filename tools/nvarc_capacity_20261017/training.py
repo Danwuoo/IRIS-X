@@ -7,6 +7,7 @@ checkpoint promotion, or accuracy claim exists here.
 """
 from __future__ import annotations
 
+from contextlib import nullcontext
 import copy
 import math
 
@@ -211,7 +212,11 @@ class DepthFixtureEngine(Engine):
     # Reuse compact token validation, literal EOS15/full16 sampling and finite
     # rollback numerics, not the incompatible PEFT constructor/export contract.
     _tokens = CompactEngine._tokens
-    autocast = CompactEngine.autocast
+    def autocast(self):
+        # This separate CPU fixture has no compact PEFT computation policy.
+        # Preserve its original explicit BF16/FP32 arithmetic instead of
+        # implicitly inheriting a newly added production backend policy.
+        return torch.autocast('cpu', dtype=torch.bfloat16) if self.base_dtype == torch.bfloat16 else nullcontext()
     _generate_batch = CompactEngine._generate_batch
     generate = CompactEngine.generate
     generate_prompts = CompactEngine.generate_prompts

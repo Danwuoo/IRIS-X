@@ -31,7 +31,8 @@ from . import matched_controller as shared
 from .codec import encode_example, parse_completion
 from .concurrency import run_wave
 from .controller import model_bound, progress
-from .precision_contract import FP32_HEAD_POLICY, stable_probe_admission
+from .precision_contract import (FP32_HEAD_POLICY, FP32_BACKBONE_POLICY, stable_probe_admission,
+    output_head_contract, full_precision_execution_contract)
 from .probability_trace import validate_rows, validate_trace
 
 WORKFLOW = WORKLOAD = 'compact-convergence-screen-v1'
@@ -60,6 +61,9 @@ MAX_ACTIVE_SECONDS = 7200
 OUTER_CLOSURE_SECONDS, STOP_SECONDS, FINALIZATION_SECONDS = 180, 15, 30
 LOAD_SECONDS, EVALUATION_RESERVE_SECONDS = 600, 3600
 GIB = 1024 ** 3
+# A conservative unmeasured envelope for FP32 math attention, not a quota gate.
+# A full 8192-token 2-row/16-head FP32 attention matrix alone is8GiB.
+MIN_FP32_FREE_BYTES = 40 * GIB
 _json, _artifact, _regular = shared._json, shared._artifact, shared._regular
 _sha256, _finite = shared._sha256, shared._finite
 
@@ -94,8 +98,17 @@ class _Contracts:
 
 def _official_contracts():
     return _Contracts(TRAINING_MANIFEST_SHA256, shared._official_model_contract(),
-        {**shared._official_trainable_contract(), 'probability_policy': FP32_HEAD_POLICY},
+        {**shared._official_trainable_contract(), 'frozen_dtype': 'torch.float32',
+         'probability_policy': FP32_BACKBONE_POLICY},
         shared._official_tokenizer_admission(), DEFAULT_CONFIG, DEFAULT_EVALUATION, .05)
+
+
+
+def _topology(topology):
+    shared._topology(topology)
+    require(topology['free_bytes'] >= MIN_FP32_FREE_BYTES
+        and topology['total_bytes'] * 4 // 5 >= MIN_FP32_FREE_BYTES,
+        'unmeasured FP32/math recipe requires40GiB free within the80percent allocator envelope')
 
 
 def phase_plan(config, now):
@@ -192,7 +205,7 @@ def _panels(root, artifacts, protocol, contracts, training_root, training_manife
         and source_protocol.get('development_parent_ids') == ids
         and source_protocol.get('admission_sha256') == _h(admission)
         and source_protocol.get('held_demo_index') == 0 and source_protocol.get('views') == 2
-        and source_protocol.get('probability_policy') == FP32_HEAD_POLICY,
+        and source_protocol.get('probability_policy') == contracts.trainables['probability_policy'],
         'bound source-panel protocol differs')
     excluded = admission['excluded']
     require(set(excluded['parent_ids']) == set(partitions['dev'] + partitions['public'])
@@ -278,13 +291,16 @@ def _probe(gate, lineage, cfg, tolerance, *, prompt, deadline, contracts, model_
         'probe seed/count/generation/original deadline differs')
     context = raw.get('context')
     if context is not None:
-        require(context.get('probability_policy') == FP32_HEAD_POLICY and context.get('base_identity') == model_identity
+        require(context.get('probability_policy') == contracts.trainables['probability_policy'] and context.get('base_identity') == model_identity
             and context.get('model_contract') == contracts.model
             and context.get('base_dtype') == contracts.trainables['frozen_dtype']
-            and context.get('output_head_contract') == {'policy': FP32_HEAD_POLICY, 'head_class': 'FP32CompactHead',
-                'weight_dtype': 'torch.float32', 'output_dtype': 'torch.float32',
-                'backbone_autocast_changed': False, 'old_behavior_relabeling_permitted': False},
+            and context.get('output_head_contract') == output_head_contract(contracts.trainables['probability_policy']),
             'probe original model/precision policy context differs')
+        if contracts.trainables['probability_policy'] == FP32_BACKBONE_POLICY:
+            expected = full_precision_execution_contract()
+            require(context.get('execution_policy') == expected, 'active FP32/math context differs')
+            require(all(item.get('execution_policy') == expected for item in raw.get('logit_evidence', [])),
+                    'actual forward computation escaped FP32/math policy')
     else:
         require(raw.get('status') != 'completed', 'completed probe lacks original model context')
     if trace.get('status') == 'completed':
@@ -686,7 +702,7 @@ def _validate_report(report, root, *, source_identity, model_identity, contracts
         and protocol.get('evaluation') == contracts.evaluation and protocol.get('paired_treatments') == list(TREATMENTS)
         and protocol.get('full_requested_denominator') == 16 and protocol.get('requested_view_generations') == 320
         and protocol.get('maximum_ttt_optimizer_attempts') == 80*contracts.evaluation['ttt_steps']
-        and protocol.get('probability_policy') == FP32_HEAD_POLICY and protocol.get('capacity_treatment') is None
+        and protocol.get('probability_policy') == contracts.trainables['probability_policy'] and protocol.get('capacity_treatment') is None
         and all(protocol.get(k) is False for k in ('public_feedback_used', 'initial_weight_cleanliness_claimed', 'efficacy_claimed', 'equal_compute_claimed')),
         'exact stable baseline-only finite protocol required')
     training, development, admission = _panels(root, artifacts, protocol, contracts, training_root, training_manifest_path)
@@ -783,7 +799,7 @@ def run(config):
     env = {**os.environ, **config['runtime_env'], 'OMP_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'}
     observed = subprocess.run([config['python'], '-B', '-m', 'tools.nvarc_posttrain_20261017.worker', '--topology'],
         cwd=source, env=env, check=True, capture_output=True, text=True, timeout=120)
-    topology = shared._decode(observed.stdout.splitlines()[-1]); shared._topology(topology)
+    topology = shared._decode(observed.stdout.splitlines()[-1]); _topology(topology)
     write_new(output/'topology.json', topology)
     plan = phase_plan(config, time.time()); write_new(output/'phase-plan.json', plan)
     job = {'job_id': JOB_ID, 'variant': '2b', 'arm': 'S', 'mode': 'convergence',
@@ -856,7 +872,7 @@ def close_diagnostic(config, control, proof):
             'closed finite baseline-only screen summary differs')
         plan = _json(output/'phase-plan.json')
         require(plan == phase_plan(config, plan.get('admitted_epoch')) == summary.get('phase_plan'), 'closed original/active phase plan differs')
-        wave = _json(output/'convergence-2b-wave.json'); topology = _json(output/'topology.json'); shared._topology(topology)
+        wave = _json(output/'convergence-2b-wave.json'); topology = _json(output/'topology.json'); _topology(topology)
         require(summary.get('workers') == wave.get('jobs') and type(wave.get('jobs')) is list
             and len(wave['jobs']) == 1 and wave['jobs'][0].get('job_id') == JOB_ID, 'closed worker inventory differs')
         row = wave['jobs'][0]; root = output/'convergence-2b'/JOB_ID

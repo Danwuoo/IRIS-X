@@ -21,6 +21,7 @@ entry trainables and verify the FULL policy. Poisoned engines remain poisoned.
 from __future__ import annotations
 
 from collections import Counter
+from contextlib import nullcontext
 import copy
 import hashlib
 import math
@@ -36,6 +37,7 @@ from tools.arc2_goal_sprint_20261017.model import (
     PhaseDeadline, adapter_state, check_deadline, make_optimizer, restore_state, state_digest,
 )
 from .codec import encode_example, grid_tokens, parse_completion
+from .precision_contract import FP32_BACKBONE_POLICY
 from .engine import (CompactEngine, FatalUpdateError, model_contract,
                      validate_tokenizer, validate_trainables)
 
@@ -410,7 +412,8 @@ def _ce_update(engine, weighted, optimizer, deadline, *, positive=False):
             if not bool(torch.isfinite(loss)):
                 raise FloatingPointError("nonfinite target-only CE")
             total += loss.item()
-            loss.backward()
+            with engine.autocast() if engine.probability_policy == FP32_BACKBONE_POLICY else nullcontext():
+                loss.backward()
             del loss, values
         check_deadline(deadline)
         return {**engine.commit(optimizer), "loss": total, "backward_trajectories": len(weighted)}

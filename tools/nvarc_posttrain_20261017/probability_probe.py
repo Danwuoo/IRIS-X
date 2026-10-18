@@ -25,8 +25,8 @@ from tools.arc2_goal_sprint_20261017.model import PhaseDeadline, check_deadline
 from .engine import CompactEngine
 from .probability_trace import (EOS_ID, MAX_CONTEXT, MAX_GENERATION, PAD_ID, MAX_BATCH,
                                _sha, validate_trace, validate_rows as _validate_rows)
-from .precision import active_head, validate_policy
-from .precision_contract import FP32_HEAD_POLICY
+from .precision import active_head, validate_policy, execution_receipt
+from .precision_contract import FP32_HEAD_POLICY, FP32_BACKBONE_POLICY, probability_tolerance
 
 FORMAT = "irisx/nvarc-probability-probe-v1"
 _COUNTERS = ("forward_calls", "sampled_tokens", "optimizer_steps", "optimizer_attempts",
@@ -72,6 +72,10 @@ class _HeadEvidence:
             'head_training': bool(module.training), 'actual_requires_grad': bool(output.requires_grad),
             'actual_logits': output.detach().float().cpu().tolist(),
             'fp32_same_hidden_logits': None, 'legacy_same_hidden_logits': None,
+            'execution_policy': ({**execution_receipt(self.engine.model, self.engine.probability_policy, self.engine.device.type),
+                'source_base_dtype': str(self.engine.source_base_dtype),
+                'resident_base_dtype': str(self.engine.base_dtype)}
+                if self.engine.probability_policy == FP32_BACKBONE_POLICY else None),
             'extra_projection_calls': 0, 'projection_attempts': 0,
             'projection_successes': 0, 'error': None}
         self.result['logit_evidence'].append(item)
@@ -81,7 +85,9 @@ class _HeadEvidence:
             for label in ('fp32_same_hidden_logits', 'legacy_same_hidden_logits'):
                 item['projection_attempts'] += 1
                 self.result['extra_projection_attempts'] += 1
-                context = torch.autocast(inputs.device.type, enabled=False) if label.startswith('fp32') else self.engine.autocast()
+                context = (torch.autocast(inputs.device.type, enabled=False) if label.startswith('fp32')
+                    else torch.autocast(inputs.device.type, dtype=torch.bfloat16)
+                    if self.engine.probability_policy == FP32_BACKBONE_POLICY else self.engine.autocast())
                 with torch.no_grad(), context:
                     value = torch.nn.functional.linear(inputs.detach().float() if label.startswith('fp32') else inputs.detach(),
                                                        module.weight.detach(), None)
@@ -199,12 +205,17 @@ def _context(engine):
         except importlib.metadata.PackageNotFoundError:
             versions[name] = None
     cuda = engine.device.type == "cuda"
+    execution = None
+    if engine.probability_policy == FP32_BACKBONE_POLICY:
+        with engine.autocast():
+            execution = engine.probability_execution_receipt()
     return {"versions": versions, "device": str(engine.device), "base_dtype": str(engine.base_dtype),
             "parameter_dtypes": dict(Counter(str(p.dtype) for p in engine.model.parameters())),
             "model_class": type(engine.model.get_base_model()).__name__,
             "model_config": copy.deepcopy(engine.model.config.to_dict()),
             "model_contract": copy.deepcopy(engine.contract), "base_identity": copy.deepcopy(engine.base_identity),
             "probability_policy": engine.probability_policy,
+            "execution_policy": execution,
             "output_head_contract": validate_policy(engine.model, engine.probability_policy),
             "attention_implementation": getattr(engine.model.config, "_attn_implementation", None),
             "gradient_checkpointing": bool(engine.model.is_gradient_checkpointing),
@@ -344,7 +355,7 @@ def probe(engine, prompt_ids, *, count=2, max_new_tokens=MAX_GENERATION, deadlin
         result["context"] = _context(engine)
         # Optional only for the distinct repaired policy, leaving historical
         # legacy probe work and numerical execution unchanged.
-        if engine.probability_policy == FP32_HEAD_POLICY:
+        if engine.probability_policy in (FP32_HEAD_POLICY, FP32_BACKBONE_POLICY):
             head_evidence = _HeadEvidence(engine, result)
         with torch.random.fork_rng(devices=devices):
             generator = torch.Generator(device=engine.device).manual_seed(seed)
@@ -412,7 +423,7 @@ def probe(engine, prompt_ids, *, count=2, max_new_tokens=MAX_GENERATION, deadlin
                     check_deadline(deadline)
             finally:
                 result["work"]["full_replay"]["wall_seconds"] = time.monotonic() - stage_started
-            if engine.probability_policy == FP32_HEAD_POLICY:
+            if engine.probability_policy in (FP32_HEAD_POLICY, FP32_BACKBONE_POLICY):
                 for mode in ('eval_nograd', 'train_grad'):
                     stage = 'full_' + mode
                     result['stage'] = stage
@@ -430,12 +441,12 @@ def probe(engine, prompt_ids, *, count=2, max_new_tokens=MAX_GENERATION, deadlin
                         raise PhaseDeadline('additional full replay deadline')
                     _need(extra['status'] == 'completed', 'additional full replay failed')
             result["stage"], result["status"] = "completed", "completed"
-            if engine.probability_policy == FP32_HEAD_POLICY:
+            if engine.probability_policy in (FP32_HEAD_POLICY, FP32_BACKBONE_POLICY):
                 from .precision_contract import stable_probe_admission
                 # Schema/provenance failures also retain all diagnostic vectors.
                 # A numerical gap alone is returned for the caller's strict gate.
                 result['extra_projection_calls'] = sum(r['extra_projection_calls'] for r in result['logit_evidence'])
-                stable_probe_admission(result, tolerance=0.05 if engine.base_dtype == torch.bfloat16 else 1e-5,
+                stable_probe_admission(result, tolerance=probability_tolerance(engine),
                                        count=count)
     except BaseException as error:
         result["status"] = "deadline" if isinstance(error, PhaseDeadline) else "failed"

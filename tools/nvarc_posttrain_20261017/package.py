@@ -88,7 +88,7 @@ def build_notebook(destination, *, run_id, source_dataset, solver_dataset, sourc
         "session_deadline_epoch": started_epoch + 43200, "parameters": parameters or {}}
     filename = "iris-x-nvarc-dual-posttrain.ipynb"
     write_new(destination / filename, predecessor.notebook([loader(request)], run_id))
-    metadata = {"id": "danielwuu/iris-x-nvarc-dual-posttrain-20261017", "title": "IRIS-X NVARC dual posttraining 20261017",
+    metadata = {"id": "danielwuu/iris-x-nvarc-dual-posttrain-20261017", "title": "IRIS-X NVARC dual posttrain 20261017",
         "code_file": filename, "language": "python", "kernel_type": "notebook", "is_private": True,
         "enable_gpu": True, "enable_tpu": False, "enable_internet": False, "machine_shape": "NvidiaRtxPro6000",
         "dataset_sources": [REFERENCES[k] for k in ("wheels", "interpreter", "training")] + [solver_dataset, source_dataset],
@@ -108,7 +108,11 @@ def build_capsule(destination, *, run_id, source_dataset, extra_wheelhouse, root
     manifest_sha = predecessor.source_transport(review, transport)
     manifest = json.loads((transport / "source-manifest.json").read_bytes())
     write_new(transport / "dataset-metadata.json", {"id": source_dataset.rsplit("/", 1)[0],
-        "title": run_id, "licenses": [{"name": "Apache 2.0"}], "isPrivate": True})
+        "title": run_id, "licenses": [{"name": "other"}], "isPrivate": True,
+        "description": "Private IRIS-X research source package. First-party project terms and each "
+            "third-party component's original license and notices remain applicable. Packaging does not "
+            "grant a new blanket open-source license or change any component's terms. "
+            "No model weights, credentials, protected evaluator data or private run outputs are included."})
     result = {"format": "irisx/nvarc-local-capsule-v1", "run_id": run_id, "source_dataset": source_dataset,
         "source_manifest_sha256": manifest_sha, "source_payload_sha256": manifest["transport"]["sha256"],
         "source_files": len(manifest["files"]), "published": False, "run_launched": False}

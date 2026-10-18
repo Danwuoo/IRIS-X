@@ -473,8 +473,8 @@ class MatchedWorkflowTests(unittest.TestCase):
     def test_real_convergence_shared_worker_dispatch_preserves_owned_paths(self):
         from tools.nvarc_posttrain_20261017 import worker, convergence_workflow as cw
         from tests.test_nvarc_convergence import configuration
-        from tools.nvarc_posttrain_20261017.precision_contract import FP32_HEAD_POLICY
-        engine = tiny_engine(dtype=torch.bfloat16, probability_policy=FP32_HEAD_POLICY)
+        from tools.nvarc_posttrain_20261017.precision_contract import FP32_BACKBONE_POLICY
+        engine = tiny_engine(dtype=torch.bfloat16, probability_policy=FP32_BACKBONE_POLICY)
         now = time.time(); actual = cw.run_workflow; actual_prepare = cw.prepare_panels
         def prepare(*args, **kwargs):
             return actual_prepare(*args, **kwargs, expected_training_manifest_sha256=self.args[4]['expected_training_manifest_sha256'])
@@ -501,7 +501,7 @@ class MatchedWorkflowTests(unittest.TestCase):
                     patch.object(cw,'run_workflow',side_effect=small), patch.object(worker,'run_public') as public:
                 result = worker.run(cfg)
             public.assert_not_called()
-            self.assertEqual(load.call_args.kwargs['probability_policy'], FP32_HEAD_POLICY)
+            self.assertEqual(load.call_args.kwargs['probability_policy'], FP32_BACKBONE_POLICY)
             self.assertTrue(result['completed']); self.assertTrue(result['convergence']['complete'])
             self.assertEqual(result['convergence_report']['path'], 'convergence/report.json')
             self.assertEqual(result['convergence_report']['sha256'],

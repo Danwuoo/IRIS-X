@@ -50,8 +50,8 @@ def fixture_worker(path):
     torch.set_num_threads(1)
     cfg = json.loads(path.read_bytes()); source = Path(cfg['fixture_source']); source.mkdir()
     args = corpus(source)
-    prepared = workflow.prepare_panels(*args[:4], **args[4], probability_policy=ctl.FP32_HEAD_POLICY)
-    engine = tiny_engine(dtype=torch.bfloat16, probability_policy=ctl.FP32_HEAD_POLICY)
+    prepared = workflow.prepare_panels(*args[:4], **args[4], probability_policy=ctl.FP32_BACKBONE_POLICY)
+    engine = tiny_engine(dtype=torch.bfloat16, probability_policy=ctl.FP32_BACKBONE_POLICY)
     output = Path(cfg['output_dir'])
     save(Path(cfg['ready_path']), {'job_id': ctl.JOB_ID, 'ready': True})
     while not Path(cfg['release_path']).exists():
@@ -87,6 +87,17 @@ class PureControllerTests(unittest.TestCase):
                 ctl.phase_plan(bad, now)
         with self.assertRaises(ValueError):
             ctl.phase_plan(cfg, cfg['deadline_epoch']-100)
+
+    def test_full_precision_official_gate_and_memory_envelope_are_explicit(self):
+        contracts=ctl._official_contracts()
+        self.assertEqual(contracts.probability_tolerance,.05)
+        self.assertEqual(contracts.trainables['frozen_dtype'],'torch.float32')
+        self.assertEqual(contracts.trainables['probability_policy'],ctl.FP32_BACKBONE_POLICY)
+        topology={'measured':True,'device_count':1,'device_identity':'fixture-device',
+            'hardware_partition_claimed':False,'total_bytes':96*ctl.GIB,'free_bytes':80*ctl.GIB}
+        ctl._topology(topology)
+        with self.assertRaisesRegex(ValueError,'40GiB'):
+            ctl._topology({**topology,'free_bytes':32*ctl.GIB})
 
     def test_production_rejects_fixture_depth_and_other_model_before_execution(self):
         for changes in ({'model_roots': {'2b': 'x', '4b': 'y'}}, {'capacity': 'identity-depth32'}, {'parameters': {'ttt_steps': 1}}, {'resume': 'x'}):
@@ -124,11 +135,11 @@ class ClosedArtifactTests(unittest.TestCase):
         cls.result = json.loads((cls.worker_root/'result.json').read_bytes())
         # Independently construct the tiny numerical contract, never derive the
         # expected tensor inventory/model schema from the untrusted export.
-        engine = tiny_engine(dtype=torch.bfloat16, probability_policy=ctl.FP32_HEAD_POLICY)
+        engine = tiny_engine(dtype=torch.bfloat16, probability_policy=ctl.FP32_BACKBONE_POLICY)
         cls.contracts = ctl._Contracts(hashlib.sha256((cls.source/'manifest.json').read_bytes()).hexdigest(),
             copy.deepcopy(engine.contract), copy.deepcopy(engine.trainable_inventory),
             copy.deepcopy(engine.tokenizer_admission), configuration(),
-            {**workflow.DEFAULT_EVALUATION, 'ttt_steps': 1}, .05)
+            {**workflow.DEFAULT_EVALUATION, 'ttt_steps': 1}, 1e-5)
         cls.model_identity = copy.deepcopy(engine.base_identity)
         del engine
 
@@ -250,6 +261,15 @@ class ClosedArtifactTests(unittest.TestCase):
             item['actual_logits'][0][0][0] += 1.
         self.change_window(0, mutate)
         with self.assertRaisesRegex(ValueError, 'stable probe admission'):
+            self.validate()
+
+    def test_actual_forward_backend_receipt_cannot_be_replaced_by_scoped_context(self):
+        def mutate(window):
+            raw=window['preflight']['probe']
+            self.assertEqual(raw['context']['execution_policy'],ctl.full_precision_execution_contract())
+            raw['logit_evidence'][0]['execution_policy']['sdpa_backends']['flash']=True
+        self.change_window(0,mutate)
+        with self.assertRaisesRegex(ValueError,'actual forward computation escaped'):
             self.validate()
 
     def test_later_arm_slot_cannot_reuse_shared_old_pool(self):

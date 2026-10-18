@@ -28,7 +28,7 @@ from .codec import encode_example
 from .engine import CompactEngine, FatalUpdateError
 from .experiment import adapt_task, infer_query
 from .materials import verify_model
-from .precision_contract import LEGACY_POLICY, FP32_HEAD_POLICY
+from .precision_contract import LEGACY_POLICY, FP32_HEAD_POLICY, FP32_BACKBONE_POLICY
 from .stability import RESET_PROBE_ATOL, RESET_PROBE_RTOL, verify_prediction
 
 PROTOCOL = 'compact-convergence-screen-v1'
@@ -306,21 +306,22 @@ def main(argv=None):
     require(args.deadline_epoch-time.time()<=7200,'bounded at-most7200s remaining local session required')
     require(args.deadline_epoch-args.training_deadline_epoch>=600,'at-least600s heldout/export/closure reserve required')
     free,total=torch.cuda.mem_get_info(0)
-    minimum=20*1024**3 if args.capacity=='baseline' else 24*1024**3
+    minimum=40*1024**3 if args.capacity=='baseline' else 24*1024**3
     require(free>=minimum,'conservative free-memory admission unavailable; actual peak remains unverified')
     verify_inventory(args.public_challenges.parent,SOLVER_MANIFEST_SHA256)
     train,dev,public,split=load_data(args.training_root,args.training_manifest,args.public_challenges,
         expected_manifest_sha256=TRAINING_MANIFEST_SHA256)
+    policy=FP32_BACKBONE_POLICY if args.capacity=='baseline' else FP32_HEAD_POLICY
     prepared=prepare_panels(train,dev,public,split,training_root=args.training_root,training_manifest_path=args.training_manifest,
-        probability_policy=FP32_HEAD_POLICY)
+        probability_policy=policy)
     if args.capacity=='baseline':
         identity=verify_model(args.model_root,'2b')
         engine=CompactEngine.load(args.model_root,base_identity=identity,variant='2b',seed=0,adapter_seed=731,
-                                  probability_policy='fp32-compact-head-v1')
+                                  probability_policy=policy)
     else:
         from tools.nvarc_capacity_20261017.factory import load_depth_engine
         engine=load_depth_engine(args.model_root,device='cuda',seed=0,adapter_seed=731,
-                                probability_policy='fp32-compact-head-v1')
+                                probability_policy=policy)
     report=run_workflow(engine,prepared,deadline=args.deadline_epoch,training_deadline=args.training_deadline_epoch,
         output=args.output,source_identity=args.source_sha256)
     print(json.dumps({'status':report['status'],'complete':report['complete'],'candidate_selected':report['candidate_selected'],

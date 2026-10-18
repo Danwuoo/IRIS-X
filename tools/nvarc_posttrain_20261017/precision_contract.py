@@ -1,4 +1,4 @@
-"""Torch-free identities for compact output-head numerical execution.
+"""Torch-free identities for compact numerical execution policies.
 
 The policy changes computation, not pretrained tensor provenance. A new policy
 requires fresh sampled behavior; old probabilities must never be relabeled.
@@ -6,12 +6,53 @@ requires fresh sampled behavior; old probabilities must never be relabeled.
 
 LEGACY_POLICY = "outer-autocast-compact-head-v1"
 FP32_HEAD_POLICY = "fp32-compact-head-v1"
+FP32_BACKBONE_POLICY = "fp32-backbone-math-v1"
 
 
 def admit_policy(value):
-    if type(value) is not str or value not in (LEGACY_POLICY, FP32_HEAD_POLICY):
+    if type(value) is not str or value not in (LEGACY_POLICY, FP32_HEAD_POLICY, FP32_BACKBONE_POLICY):
         raise ValueError("explicit admitted compact probability policy required")
     return value
+
+
+def probability_tolerance(engine):
+    """Fixed historical official gate, not a tolerance estimated from failures.
+
+    The new official arithmetic policy preserves the original 0.05 admission
+    ceiling despite its FP32 residence. Tiny fixtures retain the stricter 1e-5
+    check. Historical policies retain their exact dtype-based behavior.
+    """
+    policy = admit_policy(engine.probability_policy)
+    if policy == FP32_BACKBONE_POLICY:
+        return 1e-5 if engine.contract['variant'] == 'tiny' else .05
+    return .05 if str(engine.base_dtype) == 'torch.bfloat16' else 1e-5
+
+
+def output_head_contract(policy):
+    """Torch-free expected contract; runtime separately validates actual modules."""
+    admit_policy(policy)
+    result = {'policy': policy,
+        'head_class': 'Linear' if policy == LEGACY_POLICY else 'FP32CompactHead',
+        'weight_dtype': 'torch.float32',
+        'output_dtype': 'outer-autocast-dependent' if policy == LEGACY_POLICY else 'torch.float32',
+        'backbone_autocast_changed': policy == FP32_BACKBONE_POLICY,
+        'old_behavior_relabeling_permitted': False}
+    if policy == FP32_BACKBONE_POLICY:
+        result.update(resident_parameter_dtype='torch.float32', autocast_enabled=False,
+                      attention_backend='math', tf32_allowed=False,
+                      checkpoint_recompute_policy=FP32_BACKBONE_POLICY)
+    return result
+
+
+def full_precision_execution_contract():
+    """Exact expected scoped receipt, consumable without importing Torch."""
+    return {'policy': FP32_BACKBONE_POLICY, 'autocast_enabled': False,
+        'float32_matmul_precision': 'highest', 'cuda_matmul_allow_tf32': False,
+        'cudnn_allow_tf32': False,
+        'sdpa_backends': {'math': True, 'flash': False, 'memory_efficient': False, 'cudnn': False},
+        'resident_parameter_dtypes': ['torch.float32'],
+        'output_head_contract': output_head_contract(FP32_BACKBONE_POLICY),
+        'source_base_dtype': 'torch.bfloat16', 'resident_base_dtype': 'torch.float32'}
 
 
 def bind_trainable_contract(contract, policy):

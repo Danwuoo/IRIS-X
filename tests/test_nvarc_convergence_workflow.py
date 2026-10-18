@@ -131,6 +131,34 @@ class ConvergenceWorkflowTests(unittest.TestCase):
             self.assertIn('noTTT',protocol['selection_rule'])
             self.assertFalse(report['equal_compute_claimed']); self.assertFalse(report['efficacy_claimed'])
 
+    def test_new_policy_real_five_arm_updates_ttt_and_fresh_checkpoint_load(self):
+        policy='fp32-backbone-math-v1'
+        engine=tiny_engine(dtype=torch.bfloat16,probability_policy=policy)
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);(root/'source').mkdir();args=corpus(root/'source')
+            prepared=cw.prepare_panels(*args[:4],**args[4],probability_policy=policy)
+            now=time.time()
+            with patch('torch.multinomial',side_effect=scripted_groups([[1,0]*4]*26)):
+                report=cw.run_workflow(engine,prepared,output=root/'result',source_identity='a'*64,
+                    deadline=now+180,training_deadline=now+120,config=configuration(),
+                    evaluation={**cw.DEFAULT_EVALUATION,'ttt_steps':1})
+            self.assertTrue(report['complete'])
+            self.assertEqual(report['training']['physical']['optimizer_steps'],16)
+            self.assertEqual(report['physical']['optimizer_steps'],96)
+            for arm in cv.ARMS:
+                self.assertTrue(all(cell['complete'] for cell in report['evaluation'][arm].values()))
+                saved=report['exports'][arm]['checkpoint']
+                fresh=tiny_engine(dtype=torch.bfloat16,probability_policy=policy)
+                fresh.load_checkpoint({'root':saved['root'],'manifest_sha256':saved['manifest_sha256']})
+                self.assertEqual(state_digest(adapter_state(fresh.model)),saved['state_sha256'])
+            for window in report['training']['windows']:
+                raw=json.loads((root/'result'/window['artifact']['path']).read_bytes())
+                self.assertEqual(raw['preflight']['tolerance'],1e-5)
+                self.assertTrue(raw['preflight']['passed'])
+                self.assertTrue(all(item['execution_policy']['sdpa_backends']==
+                    {'math':True,'flash':False,'memory_efficient':False,'cudnn':False}
+                    for item in raw['preflight']['probe']['logit_evidence']))
+
     def test_preflight_failure_retains_all_unknown_development_rows_and_evidence(self):
         engine=tiny_engine(); real=engine.completion_logps
         def mismatch(ids,n):

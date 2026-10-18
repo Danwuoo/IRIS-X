@@ -30,8 +30,9 @@ from tools.arc2_goal_sprint_20261017.model import (
 
 from .probability_trace import (VOCAB_SIZE, EOS_ID, PAD_ID, MAX_GENERATION, MAX_CONTEXT,
                                 TRACE_FORMAT, TRACE_CONVENTIONS)
-from .precision_contract import LEGACY_POLICY, admit_policy, bind_trainable_contract
-from .precision import install_policy, validate_policy
+from .precision_contract import LEGACY_POLICY, FP32_BACKBONE_POLICY, admit_policy, bind_trainable_contract
+from .precision import (install_policy, validate_policy, full_precision_compute,
+                        install_checkpoint_policy, validate_checkpoint_policy, execution_receipt)
 PROJECTIONS = ("q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj")
 VOCAB = {**{str(i): i for i in range(10)}, "Ċ": 10, "user": 11,
          "assistant": 12, "<|endoftext|>": 13, "<|im_start|>": 14, "<|im_end|>": 15}
@@ -196,7 +197,7 @@ def validate_trainables(model, *, rank, alpha, base_dtype):
 class CompactEngine(Engine):
     def __init__(self, model, tokenizer, *, base_identity, variant=None, device=None,
                  seed=0, rank=64, alpha=16, base_dtype=torch.bfloat16, test_fixture=False,
-                 probability_policy=LEGACY_POLICY, capacity_receipt=None):
+                 probability_policy=LEGACY_POLICY, capacity_receipt=None, source_base_dtype=None):
         super().__init__(model, tokenizer, device=device)
         # Resolve cuda without an index to the actual resident parameter device.
         self.device = next(model.parameters()).device
@@ -214,9 +215,14 @@ class CompactEngine(Engine):
         self.tokenizer_admission = validate_tokenizer(tokenizer)
         self._probability_policy = admit_policy(probability_policy)
         validate_policy(model, self.probability_policy)
+        validate_checkpoint_policy(model, self.probability_policy)
         self.trainable_inventory = bind_trainable_contract(
             validate_trainables(model, rank=rank, alpha=alpha, base_dtype=base_dtype), self.probability_policy)
         self.base_dtype = base_dtype
+        self.source_base_dtype = base_dtype if source_base_dtype is None else source_base_dtype
+        if self.probability_policy == FP32_BACKBONE_POLICY and (
+                self.base_dtype != torch.float32 or self.source_base_dtype != torch.bfloat16):
+            raise ValueError('FP32 policy requires BF16 source and FP32 resident base')
         self.generator = torch.Generator(device=self.device).manual_seed(seed)
         self._fatal_update = False
         self._checkpoint_loaded = False
@@ -246,6 +252,8 @@ class CompactEngine(Engine):
             raise ValueError("official continuation requires rank64/alpha16 and BF16 frozen base")
         if base_dtype not in (torch.float32, torch.bfloat16):
             raise ValueError("only FP32 fixture or BF16 base supported")
+        if probability_policy == FP32_BACKBONE_POLICY and base_dtype != torch.bfloat16:
+            raise ValueError('FP32 policy must initialize the original BF16 base and adapters before promotion')
         if model.__class__.__name__ != "Qwen3ForCausalLM":
             raise ValueError("actual Qwen3ForCausalLM required")
         if capacity_receipt is None:
@@ -280,9 +288,12 @@ class CompactEngine(Engine):
                 parameter.data = parameter.data.float()
         install_policy(model, probability_policy)
         model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+        install_checkpoint_policy(model, probability_policy)
         model.enable_input_require_grads()
         engine = cls(model, tokenizer, base_identity=base_identity, variant=variant, device=device,
-                     seed=seed, rank=rank, alpha=alpha, base_dtype=base_dtype, test_fixture=test_fixture,
+                     seed=seed, rank=rank, alpha=alpha,
+                     base_dtype=torch.float32 if probability_policy == FP32_BACKBONE_POLICY else base_dtype,
+                     source_base_dtype=base_dtype, test_fixture=test_fixture,
                      probability_policy=probability_policy, capacity_receipt=capacity_receipt)
         engine.adapter_seed = adapter_seed
         return engine
@@ -315,7 +326,15 @@ class CompactEngine(Engine):
             raise FatalUpdateError("engine is poisoned after failed update; abort worker, no optimizer reset/reuse")
 
     def autocast(self):
+        if self.probability_policy == FP32_BACKBONE_POLICY:
+            return full_precision_compute(self.device.type)
         return torch.autocast(self.device.type, dtype=torch.bfloat16) if self.base_dtype == torch.bfloat16 else nullcontext()
+
+    def probability_execution_receipt(self):
+        with self.autocast():
+            receipt = execution_receipt(self.model, self.probability_policy, self.device.type)
+        return {**receipt, 'source_base_dtype': str(self.source_base_dtype),
+                'resident_base_dtype': str(self.base_dtype)}
 
     def _tokens(self, ids):
         if (not isinstance(ids, (list, tuple)) or not ids or len(ids) > MAX_CONTEXT
@@ -334,8 +353,14 @@ class CompactEngine(Engine):
 
     def af3_update(self, rows, optimizer, *, expected_groups, group_size, deadline=math.inf):
         self._healthy()
-        return super().af3_update(rows, optimizer, expected_groups=expected_groups,
-                                  group_size=group_size, deadline=deadline)
+        with self.autocast() if self.probability_policy == FP32_BACKBONE_POLICY else nullcontext():
+            return super().af3_update(rows, optimizer, expected_groups=expected_groups,
+                                      group_size=group_size, deadline=deadline)
+
+    def sft_step(self, example, optimizer, *, deadline=math.inf):
+        self._healthy()
+        with self.autocast() if self.probability_policy == FP32_BACKBONE_POLICY else nullcontext():
+            return super().sft_step(example, optimizer, deadline=deadline)
 
     def commit(self, optimizer):
         """Restore parameters on failed mutation, poison engine, abort worker.
@@ -497,6 +522,10 @@ class CompactEngine(Engine):
     def _structure_admission(self, *, check_values=False):
         """Validate structure even during rollback; does not clear poison."""
         validate_policy(self.model, self.probability_policy)
+        validate_checkpoint_policy(self.model, self.probability_policy)
+        if self.probability_policy == FP32_BACKBONE_POLICY and (
+                self.base_dtype != torch.float32 or self.source_base_dtype != torch.bfloat16):
+            raise ValueError('FP32 policy source/resident dtype contract changed')
         if self.capacity_receipt is None:
             current_contract = model_contract(self.model.config, variant=self.contract["variant"],
                                               test_fixture=self.contract["variant"] == "tiny")
