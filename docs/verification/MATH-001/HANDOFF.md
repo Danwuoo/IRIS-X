@@ -2,8 +2,8 @@
 
 State is supplied by the task record. This is author self-check, not independent
 acceptance. Base is develop `9389f433a1fbe41d25f8ce1248fde07f7ce9250d`;
-branch is `feat/math-proof-agent-20261018`. Source code checkpoint is bound in
-the final metadata delivery. No self-containing delivery hash is embedded here.
+branch is `feat/math-proof-agent-20261018`. Source code checkpoint is
+`06965ac5e85b208f67c3a64bb6431bcf3962766d`. No self-containing delivery hash is embedded here.
 
 ## Delivered
 
@@ -48,3 +48,28 @@ verifier pilot, not proof-agent efficacy or universal checker soundness. Future
 model/Lean/TPU verification and shared WSF-R5 independent acceptance remain open.
 Full repository tests, formal wheel and new-head CI are not inferred from these
 standalone results; report remote readback separately when available.
+
+## Delivery identity checks
+
+Research and source-bound pilot reports were prepared and executed before the
+Git code checkpoint was created; they were included in that checkpoint. The
+following delivery changes only task state, generated BOARD and this binding.
+This is not a claim that the earlier executions ran inside a checkout at a
+then-nonexistent commit.
+
+Remote experiment blob `c5b361a2c1ba5db54230a396fcaa254c003e2c4f` and protocol
+blob `b09ed2d645a5cc3f24d81e369da80c24fbc4b4b2` match the local executed files.
+Raw normal/optimized reports match blobs
+`ba95697e9a95d09dd7dd596770befc4fefbfa036` /
+`119bb09d063205bae03bf42a72b4c0112b08406c`. The compact catalog matches
+`f20dc4660f01ffd717ff68662e87052ef561edfd`, preserves all 73 original document
+records and four legacy indexes semantically, and adds 17 Math entries. The
+MATH row was generated with the unchanged original management renderer; all
+five historical WSF rows are retained. This bounded check is not a full
+management/CI run. JSON, Python AST, Markdown whitespace/fence and new local
+catalog-target checks passed.
+
+The base-to-code remote diff contains only the 24 planned research, routing,
+metadata and evidence files. No original src, tools, tests, workflow, thesis,
+trial, archive or existing research file changed. No independent acceptance
+is supplied by this author; MATH-001 remains review_ready.

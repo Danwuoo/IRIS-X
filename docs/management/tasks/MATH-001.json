@@ -3,7 +3,7 @@
   "id": "MATH-001",
   "title": "Math proof-agent direction and first certificate audit",
   "workstream": "line-b",
-  "state": "in_progress",
+  "state": "review_ready",
   "depends_on": [],
   "owner_role": "math-researcher",
   "plan_ref": "math-001-01",
@@ -22,7 +22,7 @@
   "base_branch": "develop",
   "head_branch": "feat/math-proof-agent-20261018",
   "base_commit": "9389f433a1fbe41d25f8ce1248fde07f7ce9250d",
-  "implementation_commit": null,
+  "implementation_commit": "06965ac5e85b208f67c3a64bb6431bcf3962766d",
   "acceptance": [
     "M1-DIRECTION",
     "M1-SOURCES",
