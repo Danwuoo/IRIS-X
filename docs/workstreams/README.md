@@ -25,12 +25,25 @@ New generated outputs belong under ignored `.irisx/core/<task>/`,
 reconstruction paths unchanged. Git worktrees do not isolate shared provider
 accounts, notebooks, GPUs or credentials.
 
-The [local plan](../plan/2026-10-14-workstream-pr2-pr4-local-development.md)
-defines the provisional stack: PR 2 targets the foundation branch, PR 3 targets
-PR 2, and PR 4 targets PR 3. Each next stage starts from its predecessor's
-delivery commit, including its handoff. PR #5 and the three delivery PRs stay
-Draft; main and run008 remain separate preserved branches. No merge, main push,
-auto-merge, force push, reset, branch deletion or tag move follows from this work.
+As of the owner's 2026-10-18 branch consolidation, **`develop` is the sole
+active shared engineering baseline**, descended from PR9 delivery
+`5190def7ccefba964a4e5cbf55e59743ae37d033`. The
+[core branch register](core/STATUS.md#branch-register) records retained and retired
+roles. `main` is unchanged; live ARC work stays on
+`feat/arc2-sft-rl-continuation-20261014`. No ARC merge or research-source migration
+is implied. Future math work starts from `develop`, not from ARC/run008.
+
+Use a short-lived task branch from a recorded `develop` SHA for shared work,
+with `develop` as its Draft PR base. Do not create another permanent common
+baseline for each PR or date. Integration and independent acceptance remain
+explicit actions; this routing does not authorize any PR merge or main push.
+
+The [PR 2–4 plan](../plan/2026-10-14-workstream-pr2-pr4-local-development.md) and
+task base/head fields retain their historical stack identities. PRs #5–9 are
+retired as superseded comparisons, not accepted/merged work. Only the five
+engineering refs listed in the core register are cleanup candidates, after
+exact-head/containment and open-PR checks. Research refs, local worktrees,
+uncommitted files and tags are not cleanup targets.
 
 Shared contracts, engine and package implementations remain single-sourced.
 Shared CLI imports the parser-only ARC facade and routes a selected ARC command;
@@ -65,8 +78,10 @@ board. Suite selection reads the [static inventory](../../tests/inventory.json)
 before importing tests and produces named reports in fresh ignored roots. See
 [test guidance](../../tests/README.md) for the public smoke surface, broader
 `arc-unit-audit`, distribution checks and blocked reconstruction/native suites.
-The retained complete entry is `python tools/repository_check.py --all`.
-Public smoke success, a red legacy audit and blocked authentic inputs remain
+The retained complete entry is `python tools/repository_check.py --all`, but it
+and `arc-unit-audit` remain outside the current no-training scope. Their shared
+baseline workflows stop before import regardless of branch name; changing a
+branch name must not reopen execution. Public smoke success, a red legacy audit and blocked authentic inputs remain
 separate outcomes; CI matrix and independent acceptance need their own evidence.
 
 Developer handoffs and implementing subagent checks establish self-review.

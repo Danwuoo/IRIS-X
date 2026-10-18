@@ -33,12 +33,23 @@ virtual environments, agent sessions and ignored output roots. Do not edit the
 same shared file concurrently across lines. See the workstream guide for the
 integration sequence; no automatic merge, provider call or run follows.
 
-Owner direction on 2026-10-14: keep restructuring on independent branches; do
-not merge or push to main, merge PRs, enable auto-merge, delete branches or move
-tags. PR #5 stays Draft. Follow the
-[PR 2–4 local plan](docs/plan/2026-10-14-workstream-pr2-pr4-local-development.md)
-for stacked bases, unified document/task management and commit-bound independent
-verification. Developer self-review does not establish independent acceptance.
+Owner branch consolidation, 2026-10-18: `develop` is the sole active shared
+engineering baseline. Its source parent is PR9 delivery
+`5190def7ccefba964a4e5cbf55e59743ae37d033`; branch designation is not independent
+acceptance of WSF-R5. Keep `main` and the active ARC branch
+`feat/arc2-sft-rl-continuation-20261014` unchanged. New shared tasks and the future
+math line start from a recorded `develop` commit in separate worktrees, not from
+old foundation/PR2/PR3/PR4/fix branch names.
+
+The [core branch register](docs/workstreams/core/STATUS.md#branch-register)
+names the five redundant engineering refs eligible for retirement only after
+exact-head/ancestry and open-PR checks. PRs #5–9 may be closed as superseded,
+without merging or changing their review outcomes. This supersedes only the
+older instructions to keep those five branches and Draft PRs open. Do not delete
+research refs, update main/ARC, rewrite history, move tags or auto-merge. Historical
+task branch fields and the [PR 2–4 plan](docs/plan/2026-10-14-workstream-pr2-pr4-local-development.md)
+remain provenance, not current branch routing. Developer self-review does not
+establish independent acceptance.
 
 Preserve adopted thesis bytes, public contracts, acceptance thresholds and frozen
 source/notebook/scorer/manifest identities. Do not rename, reformat or replace a
@@ -86,7 +97,11 @@ catalog and annotated historical tag retain their original meaning and bytes.
 Use [tests/README.md](tests/README.md) for dependency classes and honest result
 reporting. Navigation-only checks need Python and this checkout, not a package,
 model, private fixture, login or archive download. The full handoff entry remains
-`python tools/repository_check.py --all`; focused success is not full CI success.
+`python tools/repository_check.py --all`, but it and `arc-unit-audit` are not
+permitted by this branch-consolidation scope. Their workflows stop before test
+imports on this shared baseline and its descendants, independently of branch
+name. Only separately reviewed scope may reopen them. Focused success is not
+full CI success.
 Missing historical inputs remain visible failures/blockers. Never manufacture
 old approval, observations or fixtures, delete tests, or edit frozen evidence to
 make a check green. CPU results are not GPU validation or scientific efficacy.

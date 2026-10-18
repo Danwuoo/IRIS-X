@@ -13,9 +13,10 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.11", "3.14"]
     steps:
-      - name: Historical aggregate deferred by bounded repair scope
-        if: github.head_ref == 'fix/workstream-review-r1-r4-20261014' || github.ref_name == 'fix/workstream-review-r1-r4-20261014'
-        run: python -c "raise SystemExit('BLOCKED by owner repair scope; historical aggregate was not executed. Prior red receipts remain unchanged.')"
+      - name: Historical aggregate deferred by shared engineering no-training scope
+        # No-training scope follows this shared baseline, not a temporary ref.
+        # Reopen only through an explicitly reviewed execution-scope change.
+        run: python -c "raise SystemExit('BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.')"
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0

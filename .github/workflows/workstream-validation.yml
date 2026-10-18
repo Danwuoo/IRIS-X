@@ -69,9 +69,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Original ARC audit deferred by bounded repair scope
-        if: github.head_ref == 'fix/workstream-review-r1-r4-20261014' || github.ref_name == 'fix/workstream-review-r1-r4-20261014'
-        run: python -c "raise SystemExit('BLOCKED by owner repair scope; original ARC audit was not executed. This is not a passing audit.')"
+      - name: Original ARC audit deferred by shared engineering no-training scope
+        # No-training scope follows this shared baseline, not a temporary ref.
+        # Reopen only through an explicitly reviewed execution-scope change.
+        run: python -c "raise SystemExit('BLOCKED by shared engineering no-training scope; original ARC audit was not executed. This is not a passing audit.')"
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
