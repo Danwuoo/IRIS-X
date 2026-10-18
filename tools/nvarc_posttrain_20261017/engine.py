@@ -28,7 +28,10 @@ from tools.arc2_goal_sprint_20261017.model import (
     state_digest, tensor_inventory,
 )
 
-VOCAB_SIZE, EOS_ID, PAD_ID, MAX_GENERATION, MAX_CONTEXT = 16, 15, 13, 931, 8192
+from .probability_trace import (VOCAB_SIZE, EOS_ID, PAD_ID, MAX_GENERATION, MAX_CONTEXT,
+                                TRACE_FORMAT, TRACE_CONVENTIONS)
+from .precision_contract import LEGACY_POLICY, admit_policy, bind_trainable_contract
+from .precision import install_policy, validate_policy
 PROJECTIONS = ("q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj")
 VOCAB = {**{str(i): i for i in range(10)}, "Ċ": 10, "user": 11,
          "assistant": 12, "<|endoftext|>": 13, "<|im_start|>": 14, "<|im_end|>": 15}
@@ -39,6 +42,7 @@ OFFICIAL_SHAPES = {
                num_key_value_heads=8, head_dim=128, intermediate_size=9728),
 }
 FORMAT = "irisx/nvarc-compact-trainable-v1"
+
 
 
 class FatalUpdateError(RuntimeError):
@@ -191,23 +195,48 @@ def validate_trainables(model, *, rank, alpha, base_dtype):
 
 class CompactEngine(Engine):
     def __init__(self, model, tokenizer, *, base_identity, variant=None, device=None,
-                 seed=0, rank=64, alpha=16, base_dtype=torch.bfloat16, test_fixture=False):
+                 seed=0, rank=64, alpha=16, base_dtype=torch.bfloat16, test_fixture=False,
+                 probability_policy=LEGACY_POLICY, capacity_receipt=None):
         super().__init__(model, tokenizer, device=device)
         # Resolve cuda without an index to the actual resident parameter device.
         self.device = next(model.parameters()).device
         self.base_identity = _identity(base_identity)
-        self.contract = model_contract(model.config, variant=variant, test_fixture=test_fixture)
+        self.capacity_receipt = copy.deepcopy(capacity_receipt)
+        if capacity_receipt is not None:
+            capacity_variant = capacity_receipt.get('base_model_contract', {}).get('variant')
+            if variant not in (None, capacity_variant) or test_fixture != (capacity_variant == 'tiny'):
+                raise ValueError('explicit capacity variant/fixture discipline differs')
+        if capacity_receipt is None:
+            self.contract = model_contract(model.config, variant=variant, test_fixture=test_fixture)
+        else:
+            from tools.nvarc_capacity_20261017.factory import capacity_model_contract
+            self.contract = capacity_model_contract(model.config, capacity_receipt)
         self.tokenizer_admission = validate_tokenizer(tokenizer)
-        self.trainable_inventory = validate_trainables(model, rank=rank, alpha=alpha, base_dtype=base_dtype)
+        self._probability_policy = admit_policy(probability_policy)
+        validate_policy(model, self.probability_policy)
+        self.trainable_inventory = bind_trainable_contract(
+            validate_trainables(model, rank=rank, alpha=alpha, base_dtype=base_dtype), self.probability_policy)
         self.base_dtype = base_dtype
         self.generator = torch.Generator(device=self.device).manual_seed(seed)
         self._fatal_update = False
         self._checkpoint_loaded = False
+        # Submitted generation work, including failed forwards and finished or
+        # padded rows. These are token/row slots, not measured GPU FLOPs.
+        self.generation_forward_attempts = 0
+        self.generation_input_tokens = 0
+        self.generation_row_token_slots = 0
+        self.generation_finished_row_token_slots = 0
+        self.generation_padding_tokens = 0
+        if self.capacity_receipt is not None:
+            from tools.nvarc_capacity_20261017.factory import validate_capacity_engine
+            validate_capacity_engine(self, check_values=True)
 
     @classmethod
     def from_base(cls, model, tokenizer, *, base_identity, variant=None, rank=64, alpha=16,
-                  device=None, seed=0, adapter_seed=None, base_dtype=torch.bfloat16, test_fixture=False):
+                  device=None, seed=0, adapter_seed=None, base_dtype=torch.bfloat16, test_fixture=False,
+                  probability_policy=LEGACY_POLICY, capacity_receipt=None):
         from peft import LoraConfig, get_peft_model
+        admit_policy(probability_policy)
         adapter_seed = seed if adapter_seed is None else adapter_seed
         if any(type(value) is not int or not 0 <= value < 2**63 for value in (seed, adapter_seed)):
             raise ValueError("rollout and adapter seeds must be integers in 0..2**63-1")
@@ -219,7 +248,14 @@ class CompactEngine(Engine):
             raise ValueError("only FP32 fixture or BF16 base supported")
         if model.__class__.__name__ != "Qwen3ForCausalLM":
             raise ValueError("actual Qwen3ForCausalLM required")
-        model_contract(model.config, variant=variant, test_fixture=test_fixture)
+        if capacity_receipt is None:
+            model_contract(model.config, variant=variant, test_fixture=test_fixture)
+        else:
+            capacity_variant = capacity_receipt.get('base_model_contract', {}).get('variant')
+            if variant not in (None, capacity_variant) or test_fixture != (capacity_variant == 'tiny'):
+                raise ValueError('explicit capacity variant/fixture discipline differs')
+            from tools.nvarc_capacity_20261017.factory import validate_capacity_base
+            validate_capacity_base(model, capacity_receipt)
         validate_tokenizer(tokenizer)
         _identity(base_identity)
         if model.get_input_embeddings().weight.data_ptr() == model.get_output_embeddings().weight.data_ptr():
@@ -242,15 +278,18 @@ class CompactEngine(Engine):
         for parameter in model.parameters():
             if parameter.requires_grad:
                 parameter.data = parameter.data.float()
+        install_policy(model, probability_policy)
         model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
         model.enable_input_require_grads()
         engine = cls(model, tokenizer, base_identity=base_identity, variant=variant, device=device,
-                     seed=seed, rank=rank, alpha=alpha, base_dtype=base_dtype, test_fixture=test_fixture)
+                     seed=seed, rank=rank, alpha=alpha, base_dtype=base_dtype, test_fixture=test_fixture,
+                     probability_policy=probability_policy, capacity_receipt=capacity_receipt)
         engine.adapter_seed = adapter_seed
         return engine
 
     @classmethod
-    def load(cls, path, *, base_identity, variant=None, rank=64, alpha=16, device="cuda", seed=0, adapter_seed=None):
+    def load(cls, path, *, base_identity, variant=None, rank=64, alpha=16, device="cuda", seed=0, adapter_seed=None,
+             probability_policy=LEGACY_POLICY):
         from transformers import AutoConfig, Qwen3ForCausalLM
         path = Path(path)
         raw = json.loads((path / "config.json").read_text())
@@ -264,7 +303,12 @@ class CompactEngine(Engine):
                     trust_remote_code=False, dtype=torch.bfloat16,
                     attn_implementation="sdpa", device_map={"": device})
         return cls.from_base(model, tokenizer, base_identity=base_identity, variant=variant,
-                             rank=rank, alpha=alpha, device=device, seed=seed, adapter_seed=adapter_seed)
+                             rank=rank, alpha=alpha, device=device, seed=seed, adapter_seed=adapter_seed,
+                             probability_policy=probability_policy)
+
+    @property
+    def probability_policy(self):
+        return self._probability_policy
 
     def _healthy(self):
         if self._fatal_update:
@@ -333,42 +377,64 @@ class CompactEngine(Engine):
 
     @torch.no_grad()
     def generate(self, prompt_ids, *, count=1, max_new_tokens=MAX_GENERATION,
-                 sample=False, deadline=math.inf, generator=None):
+                 sample=False, deadline=math.inf, generator=None, trace=None):
         if type(count) is not int or not 1 <= count <= 64:
             raise ValueError("count must be an integer in 1..64")
         return self._generate_batch([prompt_ids] * count, max_new_tokens=max_new_tokens,
-                                    sample=sample, deadline=deadline, generator=generator)
+                                    sample=sample, deadline=deadline, generator=generator, trace=trace)
 
     @torch.no_grad()
-    def generate_prompts(self, prompts, *, max_new_tokens=MAX_GENERATION, deadline=math.inf):
+    def generate_prompts(self, prompts, *, max_new_tokens=MAX_GENERATION, deadline=math.inf, trace=None):
         if not isinstance(prompts, (list, tuple)) or not 1 <= len(prompts) <= 8:
             raise ValueError("one to eight heterogeneous prompts required")
-        return self._generate_batch(prompts, max_new_tokens=max_new_tokens, sample=False, deadline=deadline)
+        return self._generate_batch(prompts, max_new_tokens=max_new_tokens, sample=False, deadline=deadline, trace=trace)
 
-    def _generate_batch(self, prompts, *, max_new_tokens, sample, deadline, generator=None):
+    def _generate_batch(self, prompts, *, max_new_tokens, sample, deadline, generator=None, trace=None):
+        """Optionally retain a sealed, bounded all-row trace, never alter policy.
+
+        Post-EOS filler still participates in each original cached batch but is
+        deliberately absent from returned trajectories. A trace retains it for
+        exact forced-token replay. Failed calls keep their partial trace too.
+        """
         self._healthy()
+        if trace is not None and (type(trace) is not dict or trace):
+            raise ValueError("trace must be a fresh empty dictionary")
         if type(max_new_tokens) is not int or not 1 <= max_new_tokens <= MAX_GENERATION or type(sample) is not bool:
             raise ValueError("generation bound must be 1..931 with boolean sample")
         for prompt in prompts:
             self._tokens(prompt)
             if len(prompt) + max_new_tokens > MAX_CONTEXT:
                 raise ValueError("prompt plus generation reservation exceeds context")
-        check_deadline(deadline)
         prompts = [list(prompt) for prompt in prompts]
-        self.model.eval()
-        generator = generator if generator is not None else self.generator
-        if not isinstance(generator, torch.Generator) or torch.device(generator.device) != self.device:
-            raise ValueError("explicit generator must be on the engine device")
         count, width = len(prompts), max(map(len, prompts))
         lengths = list(map(len, prompts))
-        tokens = torch.tensor([[PAD_ID] * (width - len(p)) + p for p in prompts], device=self.device)
-        attention = torch.tensor([[0] * (width - len(p)) + [1] * len(p) for p in prompts], device=self.device)
-        positions = (attention.cumsum(-1) - 1).clamp(min=0)
-        cache = out = logits = selected = None
+        cache = out = logits = selected = tokens = attention = positions = None
         generated, logps, finished = [[] for _ in prompts], [[] for _ in prompts], [False] * count
+        counters = ("generation_forward_attempts", "generation_input_tokens", "generation_row_token_slots",
+                    "generation_finished_row_token_slots", "generation_padding_tokens", "forward_calls", "sampled_tokens")
+        before = {key: getattr(self, key) for key in counters} if trace is not None else None
+        if trace is not None:
+            trace.update(format=TRACE_FORMAT, prompts=copy.deepcopy(prompts), prompt_lengths=lengths[:],
+                         batch_size=count, padding_width=width, max_new_tokens=max_new_tokens, sample=sample,
+                         conventions=copy.deepcopy(TRACE_CONVENTIONS), steps=[], status="running", error=None)
+            trace["conventions"]["grad_enabled"] = torch.is_grad_enabled()
         try:
+            check_deadline(deadline)
+            self.model.eval()
+            generator = generator if generator is not None else self.generator
+            if not isinstance(generator, torch.Generator) or torch.device(generator.device) != self.device:
+                raise ValueError("explicit generator must be on the engine device")
+            tokens = torch.tensor([[PAD_ID] * (width - len(p)) + p for p in prompts], device=self.device)
+            attention = torch.tensor([[0] * (width - len(p)) + [1] * len(p) for p in prompts], device=self.device)
+            positions = (attention.cumsum(-1) - 1).clamp(min=0)
             for step in range(max_new_tokens):
                 check_deadline(deadline)
+                self.generation_forward_attempts += 1
+                self.generation_input_tokens += tokens.numel()
+                self.generation_row_token_slots += count
+                self.generation_finished_row_token_slots += sum(finished)
+                if step == 0:
+                    self.generation_padding_tokens += count * width - sum(lengths)
                 with self.autocast():
                     out = self.model(input_ids=tokens, attention_mask=attention, position_ids=positions,
                                      past_key_values=cache, use_cache=True, logits_to_keep=1)
@@ -380,35 +446,68 @@ class CompactEngine(Engine):
                 # The complete 16-way distribution is the RL behavior policy.
                 selected = torch.multinomial(F.softmax(logits, dim=-1), 1, generator=generator) if sample else logits.argmax(-1, keepdim=True)
                 chosen_logps = (logits.gather(1, selected).squeeze(1) - torch.logsumexp(logits, -1)).tolist()
+                selected_ids = selected[:, 0].tolist()
+                if trace is not None:
+                    trace["steps"].append({"step": step, "selected_ids": selected_ids[:],
+                        "selected_log_probs": chosen_logps[:], "retained": [not done for done in finished],
+                        "committed": False})
                 self.sampled_tokens += sum(not done for done in finished)
                 check_deadline(deadline)
-                for i, token in enumerate(selected[:, 0].tolist()):
+                for i, token in enumerate(selected_ids):
                     if not finished[i]:
                         generated[i].append(token)
                         logps[i].append(chosen_logps[i])
                         finished[i] = token == EOS_ID  # Never stop on ID13 or generation_config extras.
+                if trace is not None:
+                    trace["steps"][-1]["committed"] = True
                 if all(finished):
                     break
                 tokens = selected
                 attention = torch.cat((attention, attention.new_ones((count, 1))), dim=1)
                 positions = torch.tensor([[length + step] for length in lengths], device=self.device)
             check_deadline(deadline)
-            return [{"input_ids": prompts[i] + generated[i], "prompt_length": lengths[i],
+            rows = [{"input_ids": prompts[i] + generated[i], "prompt_length": lengths[i],
                      "completion_ids": generated[i], "behavior_log_probs": [0.0] * lengths[i] + logps[i],
                      "text": self.tokenizer.decode(generated[i], skip_special_tokens=False,
                                                    clean_up_tokenization_spaces=False),
                      "completion_tokens": len(generated[i]), "stop": "completed" if finished[i] else "length"}
                     for i in range(count)]
+            if trace is not None:
+                trace["status"] = "completed"
+            return rows
+        except BaseException as error:
+            if trace is not None:
+                trace["status"] = "failed"
+                trace["error"] = {"type": type(error).__name__, "message": str(error)[:1024]}
+            raise
         finally:
+            if trace is not None:
+                trace["completion_ids"] = copy.deepcopy(generated)
+                trace["completion_log_probs"] = copy.deepcopy(logps)
+                trace["stops"] = ["completed" if done else "length" if trace["status"] == "completed"
+                                  else "interrupted" for done in finished]
+                trace["work"] = {key: getattr(self, key) - before[key] for key in counters}
+                trace["sha256"] = hashlib.sha256(_canonical(trace)).hexdigest()
             cache = out = logits = selected = tokens = attention = positions = None
 
     def _checkpoint_admission(self):
         self._healthy()
-        if (model_contract(self.model.config, variant=self.contract["variant"],
-                           test_fixture=self.contract["variant"] == "tiny") != self.contract
+        self._structure_admission(check_values=True)
+
+    def _structure_admission(self, *, check_values=False):
+        """Validate structure even during rollback; does not clear poison."""
+        validate_policy(self.model, self.probability_policy)
+        if self.capacity_receipt is None:
+            current_contract = model_contract(self.model.config, variant=self.contract["variant"],
+                                              test_fixture=self.contract["variant"] == "tiny")
+        else:
+            from tools.nvarc_capacity_20261017.factory import capacity_model_contract, validate_capacity_engine
+            current_contract = capacity_model_contract(self.model.config, self.capacity_receipt)
+            validate_capacity_engine(self, check_values=check_values)
+        if (current_contract != self.contract
                 or validate_tokenizer(self.tokenizer) != self.tokenizer_admission
-                or validate_trainables(self.model, rank=self.trainable_inventory["rank"],
-                                       alpha=self.trainable_inventory["alpha"], base_dtype=self.base_dtype)
+                or bind_trainable_contract(validate_trainables(self.model, rank=self.trainable_inventory["rank"],
+                                       alpha=self.trainable_inventory["alpha"], base_dtype=self.base_dtype), self.probability_policy)
                     != self.trainable_inventory):
             raise ValueError("model/tokenizer/trainable contract changed after admission")
 

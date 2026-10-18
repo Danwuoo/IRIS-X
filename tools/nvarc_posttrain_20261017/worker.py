@@ -23,6 +23,7 @@ from tools.arc2_goal_sprint_20261017.model import adapter_state, check_deadline,
 from tools.arc2_goal_sprint_20261017.run import Audit, atomic_json
 from .codec import encode_example
 from .engine import CompactEngine
+from .precision_contract import LEGACY_POLICY, FP32_HEAD_POLICY
 from .experiment import adapt_task, evaluate_panel, infer_query, panel_ids, train_arm
 from .materials import verify_model
 
@@ -54,9 +55,12 @@ def settings(cfg):
         "rl_groups": 64, "dev_parents": 24, "learning_rate": 2e-5,
         "ttt_lr": 5e-5, "ttt_steps": 32, "public_views": 8}
     override = cfg.get("parameters", {})
-    if not isinstance(override, dict) or set(override) - set(defaults):
+    if not isinstance(override, dict) or set(override) - (set(defaults) | {"inference_batch_size"}):
         raise ValueError("unknown or protected experiment parameter")
     result = {**defaults, **override, "job_id": cfg["job_id"], "arm": cfg["arm"], "seed": cfg["seed"]}
+    if "inference_batch_size" in result:
+        from .batched_inference import protocol_identity
+        protocol_identity(result)
     for key in ("context_tokens", "generation_tokens", "group_size", "rollout_microbatch", "dev_parents", "public_views"):
         if type(result[key]) is not int or result[key] < 1:
             raise ValueError("positive integer experiment parameter required: " + key)
@@ -145,8 +149,9 @@ def run_public(engine, public, cfg, *, deadline, audit, output):
     full = {"format": "irisx/private-full-candidates-v1", "run_id": cfg["job_id"], "records": []}
     # Initialize ALL queries before any model work; failed/missing results stay.
     for key in sorted(public):
-        pools["records"].append({"task_id": key, "tests": [{"test_index": i, "input_digest": digest(q["input"]),
-            "ranked_grids": [], "status": "not_attempted"} for i, q in enumerate(public[key]["test"])]})
+        pools["records"].append({"task_id": key, "task_digest": digest(public[key]), "timings": {},
+            "tests": [{"test_index": i, "input_digest": digest(q["input"]),
+            "ranked_grids": [], "status": "not_executed"} for i, q in enumerate(public[key]["test"])]})
     atomic_json(output / "pools.json", pools)
     started = time.time()
     completed = True
@@ -175,10 +180,11 @@ def run_public(engine, public, cfg, *, deadline, audit, output):
                                                    status="complete" if result["complete"] else "partial")
                     completed = completed and result["complete"]
                     full["records"].append({"task_id": key, "test_index": index, "input_digest": digest(query["input"]),
-                        **{k: result[k] for k in ("candidates", "ranked_candidate_indices", "views", "ranking")}})
+                        **{k: result[k] for k in ("candidates", "ranked_candidate_indices", "views", "ranking",
+                           "inference_protocol", "generation_attempts", "generation_work", "oom_demoted_to_singletons") if k in result}})
                 except PhaseDeadline:
                     completed = False
-                    record["tests"][index]["status"] = "deadline"
+                    record["tests"][index]["status"] = "failed"
                 atomic_json(output / "pools.json", pools)
                 atomic_json(output / "full-candidate-pools.json", full)
     except PhaseDeadline:
@@ -203,6 +209,11 @@ def run(cfg):
     started = time.time()
     output = Path(cfg["output_dir"])
     params = settings(cfg)
+    if cfg["mode"] in {"matched", "convergence"}:
+        expected_workload = "compact-matched-controls-v1" if cfg["mode"] == "matched" else "compact-convergence-screen-v1"
+        if (cfg["variant"] != "2b" or cfg.get("checkpoint") is not None
+                or cfg.get("parameters", {}) != {} or cfg.get("workload_identity") != expected_workload):
+            raise ValueError("compact screen requires one fresh official2B and fixed settings")
     audit = Audit(output / "audit.jsonl")
     torch.set_num_threads(max(1, int(cfg.get("cpu_threads", 1))))
     device = topology()
@@ -219,7 +230,8 @@ def run(cfg):
         train, dev, public, split = load_data(cfg["training_root"], cfg["training_manifest_path"], cfg["public_path"],
                                             expected_manifest_sha256=TRAINING_MANIFEST_SHA256)
     engine = CompactEngine.load(cfg["model_root"], base_identity=identity, variant=cfg["variant"], seed=cfg["seed"],
-                                adapter_seed=cfg.get("adapter_seed", 731 if cfg["variant"] == "2b" else 739))
+                                adapter_seed=cfg.get("adapter_seed", 731 if cfg["variant"] == "2b" else 739),
+                                probability_policy=FP32_HEAD_POLICY if cfg["mode"] in {"matched", "convergence"} else LEGACY_POLICY)
     resumed = None
     if cfg.get("checkpoint") is not None:
         resumed = engine.load_checkpoint(cfg["checkpoint"])
@@ -256,6 +268,39 @@ def run(cfg):
         final = evaluate_panel(engine, dev, params, deadline=deadline, audit=audit)
         result.update(baseline=baseline, dev=final, training=training, baseline_checkpoint=base_checkpoint,
                       checkpoint=checkpoint, completed=baseline["complete"] and final["complete"])
+    elif cfg["mode"] == "matched":
+        from .matched_workflow import prepare_panels, run_workflow
+        prepared = prepare_panels(train, dev, public, split, training_root=cfg["training_root"],
+            training_manifest_path=cfg["training_manifest_path"], probability_policy=engine.probability_policy)
+        report = run_workflow(engine, prepared, deadline=deadline,
+            screen_deadline=cfg["training_deadline_epoch"], output=output, audit=audit,
+            source_identity=cfg["source_identity"], job_id=cfg["job_id"])
+        report_path = output / "matched-report.json"
+        result.update(matched=report, matched_report={"path": report_path.name,
+            "bytes": report_path.stat().st_size, "sha256": hashlib.sha256(report_path.read_bytes()).hexdigest()},
+            completed=report["complete"])
+    elif cfg["mode"] == "convergence":
+        from .convergence_workflow import prepare_panels, run_workflow
+        prepared = prepare_panels(train, dev, public, split, training_root=cfg["training_root"],
+            training_manifest_path=cfg["training_manifest_path"], probability_policy=engine.probability_policy)
+        report = run_workflow(engine, prepared, deadline=deadline,
+            training_deadline=cfg["training_deadline_epoch"], output=output / "convergence", audit=audit,
+            source_identity=cfg["source_identity"])
+        report_path = output / "convergence" / "report.json"
+        result.update(convergence=report, convergence_report={"path": "convergence/report.json",
+            "bytes": report_path.stat().st_size, "sha256": hashlib.sha256(report_path.read_bytes()).hexdigest()},
+            completed=report["complete"])
+    elif cfg["mode"] == "stability":
+        from .stability import run_stability
+        if resumed is not None:
+            raise ValueError("stability v1 starts from the official unmodified specialist")
+        records_path = output / "stability-records.json"
+        report = run_stability(engine, dev, params, deadline=deadline, audit=audit,
+            persist=lambda rows: atomic_json(records_path, rows))
+        report.pop("records")
+        report["private_records"] = {"path": records_path.name, "bytes": records_path.stat().st_size,
+            "sha256": hashlib.sha256(records_path.read_bytes()).hexdigest()}
+        result.update(stability=report, completed=report["complete"])
     elif cfg["mode"] == "public":
         if resumed is None:
             raise ValueError("PUBLIC requires independently selected pre-public checkpoint")

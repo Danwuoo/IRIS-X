@@ -39,7 +39,8 @@ def tokenizer_fixture():
                                   eos_token="<|im_end|>", pad_token="<|endoftext|>")
 
 
-def tiny_engine(*, model_seed=123, sample_seed=7, adapter_seed=7, dtype=None, rank=4, identity=None):
+def tiny_engine(*, model_seed=123, sample_seed=7, adapter_seed=7, dtype=None, rank=4, identity=None,
+                probability_policy="outer-autocast-compact-head-v1"):
     with torch.random.fork_rng():
         torch.manual_seed(model_seed)
         config = Qwen3Config(vocab_size=16, hidden_size=32, intermediate_size=64,
@@ -50,7 +51,8 @@ def tiny_engine(*, model_seed=123, sample_seed=7, adapter_seed=7, dtype=None, ra
         return CompactEngine.from_base(Qwen3ForCausalLM(config), tokenizer_fixture(),
             base_identity=identity or {"fixture": "tiny-123", "weight_sha256": "a" * 64},
             device="cpu", test_fixture=True, rank=rank, alpha=16,
-            seed=sample_seed, adapter_seed=adapter_seed, base_dtype=dtype or torch.float32)
+            seed=sample_seed, adapter_seed=adapter_seed, base_dtype=dtype or torch.float32,
+            probability_policy=probability_policy)
 
 
 def example():

@@ -94,6 +94,16 @@ def protected_launch(config, control, env):
     finally:
         if guard is not None and guard.poll() is None:
             guard.stop(timeout=30)
+    if config.get("workflow") in {"paired-ttt-stability-v1", "compact-matched-controls-v1", "compact-convergence-screen-v1"}:
+        if config["workflow"] == "compact-convergence-screen-v1":
+            from tools.nvarc_posttrain_20261017.convergence_controller import close_diagnostic
+        elif config["workflow"] == "compact-matched-controls-v1":
+            from tools.nvarc_posttrain_20261017.matched_controller import close_diagnostic
+        else:
+            from tools.nvarc_posttrain_20261017.stability_controller import close_diagnostic
+        terminal = close_diagnostic(config, control, proof)
+        print(json.dumps({k: v for k, v in terminal.items() if k != "files"}, sort_keys=True), flush=True)
+        return terminal
     preserve_failed_denominator(config, proof)
     receipt = seal(config["output_root"], control / "sealed", proof, config["source_identity"])
     terminal = {"status": "SEALED_AWAITING_EXTERNAL_EVALUATOR", "run_id": config["run_id"],
@@ -186,12 +196,19 @@ def preserve_failed_denominator(config, proof):
 
 
 def bootstrap(request):
+    workflow = request.get("workflow", "dual-posttrain-v1")
+    require(workflow in {"dual-posttrain-v1", "paired-ttt-stability-v1", "compact-matched-controls-v1", "compact-convergence-screen-v1"}, "known explicit workflow required")
     start = request["started_epoch"]
     require(type(start) in (int, float) and math.isfinite(start) and 0 < start <= time.time(), "actual pre-dispatch start required")
     require(request["session_deadline_epoch"] == start + 43200, "original 12-hour platform deadline required")
     require(request.get("evaluation_mode") == "external-cpu", "only evaluator-absent provider execution supported")
     offline.remaining(request)
     manifest = verify_source(request)
+    variants = ("2b",) if workflow in {"compact-matched-controls-v1", "compact-convergence-screen-v1"} else ("2b", "4b")
+    if workflow in {"compact-matched-controls-v1", "compact-convergence-screen-v1"}:
+        require(manifest.get("workflow") == workflow
+                and manifest.get("model_sources") == [model_pin("2b")["model_source"]],
+                "matched source capsule must bind exact2B-only workflow")
     root = Path(request["working_root"])
     root.mkdir(parents=True, exist_ok=False)
     write_new(root / "request.json", request)
@@ -205,7 +222,7 @@ def bootstrap(request):
     expected = {manifest["transport"]["filename"]} if "transport" in manifest else set(manifest["files"])
     offline.exact_files(source_mount, expected | {"source-manifest.json"}, optional=("dataset-metadata.json",))
     models, identities = {}, {}
-    for variant in ("2b", "4b"):
+    for variant in variants:
         models[variant], identities[variant] = resolve_model(request["input_root"], variant)
     allowed = [str(p) for p in roots.values()] + [str(source_mount)] + [str(p) for p in models.values()]
     check_dataset_separation(request["input_root"], allowed)
@@ -221,8 +238,20 @@ def bootstrap(request):
         "training_root": str(roots["training"] / "data/training"), "training_manifest_path": str(roots["training"] / "manifest.json"),
         "public_path": str(public / "public-challenges.json"), "input_root": request["input_root"],
         "allowed_input_roots": allowed, "source_identity": request["source_manifest_sha256"],
-        "parameters": request.get("parameters", {})}
+        "parameters": request.get("parameters", {}), "workflow": workflow}
     return protected_launch(config, root / "control", retained_env)
+
+
+def require_completed_diagnostic(request, terminal):
+    """Fail the notebook only AFTER owned closure and evidence preservation.
+
+    A successful Python coordinator exit is not a successful scientific screen.
+    Dual-specialist runs still use their separate sealed external-evaluation
+    contract; this check concerns only the explicitly diagnostic workflows.
+    """
+    if request.get("workflow") in {"paired-ttt-stability-v1", "compact-matched-controls-v1", "compact-convergence-screen-v1"}:
+        if not isinstance(terminal, dict) or terminal.get("completed") is not True:
+            raise RuntimeError("scientific diagnostic incomplete; closed private evidence retained; no successful comparison")
 
 
 def main():
@@ -231,12 +260,22 @@ def main():
     parser.add_argument("--controller")
     args = parser.parse_args()
     if args.controller:
-        from tools.nvarc_posttrain_20261017.controller import run
-        run(json.loads(regular(args.controller).read_bytes()))
+        config = json.loads(regular(args.controller).read_bytes())
+        if config.get("workflow") == "compact-convergence-screen-v1":
+            from tools.nvarc_posttrain_20261017.convergence_controller import run
+        elif config.get("workflow") == "compact-matched-controls-v1":
+            from tools.nvarc_posttrain_20261017.matched_controller import run
+        elif config.get("workflow") == "paired-ttt-stability-v1":
+            from tools.nvarc_posttrain_20261017.stability_controller import run
+        else:
+            require(config.get("workflow", "dual-posttrain-v1") == "dual-posttrain-v1", "unknown workflow")
+            from tools.nvarc_posttrain_20261017.controller import run
+        run(config)
         return
     request = json.loads(regular(args.request).read_bytes())
     try:
-        bootstrap(request)
+        terminal = bootstrap(request)
+        require_completed_diagnostic(request, terminal)
     finally:
         offline.preserve_runtime_evidence(request)
 

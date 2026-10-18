@@ -12,7 +12,8 @@ from unittest.mock import patch
 
 from tools.nvarc_posttrain_20261017 import controller as ctl
 def public_fixture():
-    result = {f"task{i:03}": {"test": [{"input": [[5]]}]} for i in range(120)}
+    result = {f"task{i:03}": {"train": [{"input": [[1]], "output": [[2]]}],
+                             "test": [{"input": [[5]]}]} for i in range(120)}
     for i in range(47):
         result[f"task{i:03}"]["test"].append({"input": [[6]]})
     return result
@@ -141,6 +142,31 @@ class CoordinatorContractTests(unittest.TestCase):
         result = ctl.ensemble_pools(public, {"2b": pools(public, [[[1]], [[3]]]),
                     "4b": pools(public, [[[1]], [[4]]])}, run_id="fixture")
         self.assertEqual(result["records"][0]["tests"][0]["ranked_grids"], [[[1]], [[4]]])
+
+    def test_export_is_accepted_by_unchanged_scorer_without_metadata_recovery(self):
+        from tools.arc_offline_evaluation import evaluate, validate_pools
+        public = public_fixture()
+        result = ctl.ensemble_pools(public, {"2b": pools(public, [[[2]], [[3]]]),
+                                   "4b": pools(public, [[[1]], [[4]]])}, run_id="fixture")
+        validate_pools(public, result)
+        self.assertIsNone(result["parent_wall_seconds"])
+        self.assertTrue(all(r["task_digest"] == ctl.digest(public[r["task_id"]])
+                            and r["timings"] == {} for r in result["records"]))
+        # Synthetic targets only: the actual evaluator is unchanged and no
+        # external benchmark material is used by this integration regression.
+        targets = {key: [[[2]]] * len(task["test"]) for key, task in public.items()}
+        metrics = evaluate(public, targets, result)["development_metrics"]
+        self.assertEqual(metrics["metrics"]["pass_at_2"]["numerator"], 167)
+        self.assertEqual(metrics["metrics"]["pass_at_1"]["numerator"], 0)
+        self.assertEqual(metrics["tests"], 167)
+
+    def test_empty_specialists_remain_full_denominator_scorer_inputs(self):
+        from tools.arc_offline_evaluation import evaluate
+        public = public_fixture()
+        result = ctl.ensemble_pools(public, {"2b": pools(public, []), "4b": pools(public, [])}, run_id="fixture")
+        targets = {key: [[[2]]] * len(task["test"]) for key, task in public.items()}
+        metric = evaluate(public, targets, result)["development_metrics"]["metrics"]["pass_at_2"]
+        self.assertEqual((metric["numerator"], metric["denominator"]), (0, 167))
 
     def test_reject_duplicate_missing_extra_or_wrong_input_queries(self):
         public = public_fixture()

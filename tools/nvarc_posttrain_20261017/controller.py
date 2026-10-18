@@ -175,7 +175,7 @@ def ensemble_pools(public, pools_by_variant, *, run_id):
         raise ValueError("both selected specialists required, including explicit missing results")
     result = {"format": "irisx/arc-offline-pools-v1", "run_id": run_id,
         "method": "one top candidate per official NVARC specialist, duplicate-fill, total pass@2",
-        "challenges_digest": digest(public), "records": []}
+        "challenges_digest": digest(public), "records": [], "parent_wall_seconds": None}
     for task_id in sorted(public):
         tests = []
         for i, query in enumerate(public[task_id]["test"]):
@@ -194,7 +194,12 @@ def ensemble_pools(public, pools_by_variant, *, run_id):
                     break
             tests.append({"test_index": i, "input_digest": digest(query["input"]), "ranked_grids": grids,
                           "status": "complete" if all(r["status"] == "complete" for r in rows) else "partial"})
-        result["records"].append({"task_id": task_id, "tests": tests})
+        # Exact scorer interchange metadata, derived only from solver inputs.
+        # Do not invent elapsed timing by summing potentially concurrent workers.
+        result["records"].append({"task_id": task_id, "task_digest": digest(public[task_id]),
+                                  "tests": tests, "timings": {}})
+    from tools.arc_offline_evaluation import validate_pools
+    validate_pools(public, result)
     return result
 
 

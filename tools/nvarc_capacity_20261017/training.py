@@ -135,6 +135,13 @@ class DepthFixtureEngine(Engine):
         model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={'use_reentrant': False})
         model.enable_input_require_grads()
         super().__init__(model, tokenizer, device='cpu')
+        # The fixture reuses the actual sampler, including its physical-work
+        # accounting. This is not a production loader or capacity promotion.
+        self.generation_forward_attempts = 0
+        self.generation_input_tokens = 0
+        self.generation_row_token_slots = 0
+        self.generation_finished_row_token_slots = 0
+        self.generation_padding_tokens = 0
         self.base_dtype = base_dtype
         self.generator = torch.Generator(device='cpu').manual_seed(seed)
         self._fatal_update = False

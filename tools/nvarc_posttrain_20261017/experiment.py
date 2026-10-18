@@ -30,6 +30,9 @@ def encoded_loo(task, rng, cfg, *, augment=True, held_index=None):
 
 def infer_query(engine, task, query, cfg, *, task_id, views, deadline):
     """Fixed target-free transformed views, inverse mapping, vote/likelihood tie."""
+    if "inference_batch_size" in cfg:
+        from .batched_inference import infer_query_batched
+        return infer_query_batched(engine, task, query, cfg, task_id=task_id, views=views, deadline=deadline)
     candidates, receipts = [], []
     # Independent training seeds must not silently change the selection test.
     specs = inference_views(views, seed=cfg.get("evaluation_seed", 20261017), task_id=task_id, demo_count=len(task["train"]))
@@ -45,6 +48,11 @@ def infer_query(engine, task, query, cfg, *, task_id, views, deadline):
         grid = parse_completion(row["input_ids"][row["prompt_length"]:])
         record = {"view": index, "valid": grid is not None, "tokens": row["completion_tokens"],
                   "stop": row["stop"], "demos_dropped": example["demos_dropped"]}
+        if cfg.get("retain_token_evidence", False):
+            record["token_evidence"] = {"prompt_ids": list(row["input_ids"][:row["prompt_length"]]),
+                "completion_ids": list(row["input_ids"][row["prompt_length"]:]),
+                "completion_log_probs": list(row["behavior_log_probs"][row["prompt_length"]:]),
+                "view_spec": view}
         if grid is not None:
             original = transform(grid, **view["transform"], inverse=True)
             nll = -sum(row["behavior_log_probs"][row["prompt_length"]:]) / row["completion_tokens"]
@@ -141,6 +149,10 @@ def evaluate_panel(engine, tasks, cfg, *, deadline, audit, ttt_steps=0, views=2,
                 "ttt_steps": ttt_steps, "context_tokens": cfg["context_tokens"],
                 "generation_tokens": cfg["generation_tokens"], "held_demo_index": 0,
                 "version": "compact-generated-dev-v1"}
+    if "inference_batch_size" in cfg:
+        from .batched_inference import protocol_identity
+        protocol["inference_protocol"] = protocol_identity(cfg)
+        protocol["version"] = "compact-generated-dev-batched-v1"
     return {"panel_sha256": hashlib.sha256(canonical(protocol)).hexdigest(), "evaluation_protocol": protocol, "queries": len(ids),
             "completed_queries": sum(r["query_complete"] for r in records),
             "complete": len(records) == len(ids) and all(r["query_complete"] and

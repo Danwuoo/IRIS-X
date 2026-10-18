@@ -3,7 +3,9 @@
 import json
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 import zipfile
 
 from irisx.arc_nvarc_datasets import (inventory_archive, synthetic_parents, exposure,
@@ -36,13 +38,36 @@ class DatasetAuditTests(unittest.TestCase):
             with zipfile.ZipFile(archive, "w") as stream:
                 stream.writestr("source/data.json", b'{"value":3}')
             original = archive.read_bytes()
-            report = inventory_archive(archive, root / "inventory.json", extract=root / "extracted")
+            # This eleven-byte fixture tests extraction/integrity, not the free
+            # space of the host that happens to execute the unit test. Exercise
+            # the exact production reserve boundary with an observed-space stub.
+            required = len(b'{"value":3}') + 5 * 1024**3
+            with patch("irisx.arc_nvarc_datasets.shutil.disk_usage",
+                       return_value=SimpleNamespace(free=required)) as space:
+                report = inventory_archive(archive, root / "inventory.json", extract=root / "extracted")
+            space.assert_called_once_with(root)
             self.assertEqual(original, archive.read_bytes())
             self.assertEqual(b'{"value":3}', (root / "extracted/source/data.json").read_bytes())
             self.assertTrue(report["crc_verified"])
             self.assertEqual(1, report["member_count"])
             with self.assertRaises(ValidationError):
                 inventory_archive(archive, root / "inventory.json")
+
+    def test_extraction_rejects_one_byte_below_reserve_before_writing(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); archive = root / "input.zip"
+            body = b'{"value":3}'
+            with zipfile.ZipFile(archive, "w") as stream:
+                stream.writestr("source/data.json", body)
+            original = archive.read_bytes()
+            with patch("irisx.arc_nvarc_datasets.shutil.disk_usage",
+                       return_value=SimpleNamespace(free=len(body) + 5 * 1024**3 - 1)) as space:
+                with self.assertRaisesRegex(ValidationError, "available disk reserve"):
+                    inventory_archive(archive, root / "inventory.json", extract=root / "extracted")
+            space.assert_called_once_with(root)
+            self.assertFalse((root / "extracted").exists())
+            self.assertFalse((root / "inventory.json").exists())
+            self.assertEqual(archive.read_bytes(), original)
 
     def test_multi_parent_exclusion_checks_second_ancestor_and_unknown(self):
         train, evaluation, excluded = {"11111111", "22222222"}, {"33333333"}, {"22222222"}
