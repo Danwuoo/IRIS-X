@@ -1,0 +1,17 @@
+test_all_known_false_claims_have_exact_counterexamples (__main__.Controls.test_all_known_false_claims_have_exact_counterexamples) ... ok
+test_checker_read_only (__main__.Controls.test_checker_read_only) ... ok
+test_claim_truth_does_not_validate_an_invalid_certificate (__main__.Controls.test_claim_truth_does_not_validate_an_invalid_certificate) ... ok
+test_exact_algebra_against_independent_power_sum (__main__.Controls.test_exact_algebra_against_independent_power_sum) ... ok
+test_float_and_code_strings_rejected (__main__.Controls.test_float_and_code_strings_rejected) ... ok
+test_lower_bound_alone_is_not_minimum (__main__.Controls.test_lower_bound_alone_is_not_minimum) ... ok
+test_protocol_counts (__main__.Controls.test_protocol_counts) ... ok
+test_supported_certificate_completes_joint_answer_and_proof (__main__.Controls.test_supported_certificate_completes_joint_answer_and_proof) ... ok
+test_unique_bound_targets (__main__.Controls.test_unique_bound_targets) ... ok
+test_unknown_does_not_become_false (__main__.Controls.test_unknown_does_not_become_false) ... ok
+test_witness_domain_checked (__main__.Controls.test_witness_domain_checked) ... ok
+test_wrong_answer_rejected (__main__.Controls.test_wrong_answer_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.021s
+
+OK

@@ -13,7 +13,7 @@
     },
     {
       "id": "line-b",
-      "role": "unassigned",
+      "role": "domain",
       "status_path": "docs/workstreams/line-b/STATUS.md"
     }
   ]

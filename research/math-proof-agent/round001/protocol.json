@@ -1,0 +1,16 @@
+{
+  "format": "irisx.math.pilot-protocol.v1",
+  "recorded_before_execution": true,
+  "external_preregistration": false,
+  "question": "Can finite numerical success or a plausible verdict be mistaken for a statement-bound proof of an attained polynomial minimum?",
+  "panel": "32 authored candidates: 12 valid, 8 mathematically false, 8 true claims with invalid certificates/bindings, 4 true claims with unsupported evidence",
+  "comparison": "Deliberately unsafe finite-probe promotion versus exact nonnegative-decomposition plus attainment checks; NOT an LLM agent comparison",
+  "design": "Non-blinded constructive adversaries; gold labels/counterexamples never passed to the checker",
+  "primary": "Accepted false mathematical claims out of 8, expected decision mismatches, abstention count",
+  "secondary": "Retain 12 valid certificates and reject 8 malformed or wrong-target proof artifacts",
+  "fixed_probe_grid": {"real": [-2, -1, 0, 1, 2], "nonnegative-real": [0, 1, 2]},
+  "trust": "Exact Python Fraction arithmetic and explicit mathematical rule, not Lean kernel",
+  "not_measured": ["model answer accuracy", "agent improvement", "IMO score", "Putnam score", "TPU throughput", "general prover soundness"],
+  "execution": "CPU stdlib; no network, weights, training, external tools or benchmark answer acquisition",
+  "success_rule": "Zero expected-decision mismatches for this finite panel only; never claim universal implementation soundness"
+}

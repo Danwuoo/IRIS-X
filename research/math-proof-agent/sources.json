@@ -1,0 +1,112 @@
+{
+  "format": "irisx.math.sources.v1",
+  "review_date": "2026-10-18",
+  "scope": "primary-source research; external empirical results are attributed, not reproduced",
+  "sources": [
+    {
+      "id": "S01",
+      "title": "DeepSeek-Prover-V2",
+      "url": "https://arxiv.org/html/2504.21801v2",
+      "version_and_read_scope": "paper HTML; v2",
+      "supports_and_limits": "Subgoal decomposition, cold-start data, RL; not a local reproduced score."
+    },
+    {
+      "id": "S02",
+      "title": "Goedel-Prover-V2",
+      "url": "https://arxiv.org/abs/2508.03613",
+      "version_and_read_scope": "paper abstract; HTML fetch unavailable",
+      "supports_and_limits": "Scaffolded synthesis, verifier-guided correction, model averaging; differing card/abstract numbers not reconciled."
+    },
+    {
+      "id": "S03",
+      "title": "Goedel-Prover-V2-8B model card",
+      "url": "https://huggingface.co/Goedel-LM/Goedel-Prover-V2-8B",
+      "version_and_read_scope": "mutable model card read; execution revision not selected",
+      "supports_and_limits": "Formal-prover candidate; no weights downloaded and TPU compatibility unverified."
+    },
+    {
+      "id": "S04",
+      "title": "LeanDojo original paper",
+      "url": "https://arxiv.org/abs/2306.15626",
+      "version_and_read_scope": "paper abstract and author project page",
+      "supports_and_limits": "Premise selection and novel-premise evaluation; no recommendation to install an obsolete API."
+    },
+    {
+      "id": "S05",
+      "title": "AIMO Proof Pilot winners",
+      "url": "https://aimoprize.com/updates/2026-07-07-aimo-proof-pilot-winners-announced",
+      "version_and_read_scope": "organizer announcement 2026-07-07",
+      "supports_and_limits": "Yi-Chia Chen 29/42 first place; historical attribution, not current prize target."
+    },
+    {
+      "id": "S06",
+      "title": "Pochi IMO26 inference README",
+      "url": "https://github.com/fieldsmodelorg/pochi-imo26/blob/4b74d98ef1f31363c53f0dd0b2d7fbeed42bffc8/README.md",
+      "version_and_read_scope": "commit 4b74d98ef1f31363c53f0dd0b2d7fbeed42bffc8; blob 8f4b2e5f203edc4150edd87de53bb480f8e5e6ac",
+      "supports_and_limits": "Later IMO26 system, 8 H200/B200 topology, not automatically identical to Proof Pilot winning submission."
+    },
+    {
+      "id": "S07",
+      "title": "Pochi training README",
+      "url": "https://github.com/fieldsmodelorg/pochi-imo26/blob/4b74d98ef1f31363c53f0dd0b2d7fbeed42bffc8/training/README.md",
+      "version_and_read_scope": "commit 4b74d98ef1f31363c53f0dd0b2d7fbeed42bffc8; blob 4ec6dc423bb9ef8b24b6ede12492764950ad21ad",
+      "supports_and_limits": "Public maintainers attribute pipeline to Yi-Chia and distinguish later 64xB200 continuation; no private provenance attestation."
+    },
+    {
+      "id": "S08",
+      "title": "OPD V2 algorithm",
+      "url": "https://github.com/fieldsmodelorg/pochi-imo26/blob/4b74d98ef1f31363c53f0dd0b2d7fbeed42bffc8/training/docs/OPD_V2_ALGORITHM.md",
+      "version_and_read_scope": "commit 4b74d98ef1f31363c53f0dd0b2d7fbeed42bffc8; blob a8b5567dc422f1dab84f20ad230cf47a7d6e3825",
+      "supports_and_limits": "On-policy teacher distillation is not reward RL; artifact pool and role curriculum are references, not copied code."
+    },
+    {
+      "id": "S09",
+      "title": "Lean reference: Axioms",
+      "url": "https://lean-lang.org/doc/reference/latest/Axioms",
+      "version_and_read_scope": "official search excerpt; direct fetch unavailable",
+      "supports_and_limits": "sorryAx can prove anything; native evaluation enlarges trust base. Pin exact Lean behavior before execution."
+    },
+    {
+      "id": "S10",
+      "title": "PutnamBench README",
+      "url": "https://github.com/trishullab/PutnamBench/blob/main/README.md",
+      "version_and_read_scope": "mutable main; observed blob 5ccddadac04d87d2ebbef3e42db293d26a1c49db",
+      "supports_and_limits": "Answer-given vs answer-and-proof; contamination guidance; 1724 across languages, Lean 672; no benchmark proofs generated."
+    },
+    {
+      "id": "S11",
+      "title": "Google Cloud TPU v5e",
+      "url": "https://docs.cloud.google.com/tpu/docs/v5e",
+      "version_and_read_scope": "official documentation read 2026-10-18",
+      "supports_and_limits": "16 GB/chip; cloud host specs are not Kaggle guarantees."
+    },
+    {
+      "id": "S12",
+      "title": "Kaggle v5e-8 staff announcement",
+      "url": "https://www.kaggle.com/product-announcements/607202",
+      "version_and_read_scope": "official staff announcement; not account/session readback",
+      "supports_and_limits": "Kaggle v5e-8 option; availability/quota/host limits remain unverified."
+    },
+    {
+      "id": "S13",
+      "title": "Tunix README",
+      "url": "https://github.com/google/tunix/blob/main/README.md",
+      "version_and_read_scope": "mutable main; observed blob c9ba40571cc078cca60743dae41d6d061971f763",
+      "supports_and_limits": "JAX TPU/post-training/rollout integration and Qwen family support; exact checkpoint/runtime remains unqualified."
+    },
+    {
+      "id": "S14",
+      "title": "JAX distributed arrays and sharding",
+      "url": "https://docs.jax.dev/en/latest/201/sharding.html",
+      "version_and_read_scope": "official documentation read 2026-10-18",
+      "supports_and_limits": "Sharding describes distributed layout; not a throughput or single-device memory guarantee."
+    },
+    {
+      "id": "S15",
+      "title": "Qwen3-4B official model card",
+      "url": "https://huggingface.co/Qwen/Qwen3-4B",
+      "version_and_read_scope": "official mutable card; execution revision not selected",
+      "supports_and_limits": "4B runtime candidate, 4.0B reported parameters; no claim this is latest/best or TPU-qualified."
+    }
+  ]
+}

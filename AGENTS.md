@@ -11,7 +11,7 @@ navigation index, not an execution configuration or an authorization token.
 | --- | --- |
 | Shared contracts, packaging, CLI, repository tooling | [Core](docs/workstreams/core/STATUS.md) |
 | ARC-AGI-2 source, trials, research and run-specific tools | [ARC-AGI-2](docs/workstreams/arc-agi-2/STATUS.md) |
-| Second line, not yet assigned a domain | [line-b](docs/workstreams/line-b/STATUS.md) |
+| Math proof-agent research; retained line-b fixture | [line-b](docs/workstreams/line-b/STATUS.md) |
 
 These routes apply to the existing flat source and tool paths too. A guide under
 `docs/` is not an automatically inherited code-directory instruction. Read any
@@ -37,8 +37,8 @@ Owner branch consolidation, 2026-10-18: `develop` is the sole active shared
 engineering baseline. Its source parent is PR9 delivery
 `5190def7ccefba964a4e5cbf55e59743ae37d033`; branch designation is not independent
 acceptance of WSF-R5. Keep `main` and the active ARC branch
-`feat/arc2-sft-rl-continuation-20261014` unchanged. New shared tasks and the future
-math line start from a recorded `develop` commit in separate worktrees, not from
+`feat/arc2-sft-rl-continuation-20261014` unchanged. New shared tasks and
+math-line branches start from a recorded `develop` commit in separate worktrees, not from
 old foundation/PR2/PR3/PR4/fix branch names.
 
 The [core branch register](docs/workstreams/core/STATUS.md#branch-register)
@@ -72,6 +72,15 @@ Before future authorized ARC execution, preserve single-publisher reconciliation
 exact source/version/readback and process/data/scorer gates. Consult the pinned
 ARC handoff, rebind the destination environment, and never blindly retry an
 uncertain remote write. This foundation does not reopen a consumed run.
+
+## Math research direction
+
+Owner direction 2026-10-18 assigns line-b to proof-oriented tool-augmented math
+research, not prize acquisition. Read [Math RESEARCH](docs/workstreams/line-b/RESEARCH.md)
+and [MATH-001](docs/management/tasks/MATH-001.json). The first round permits public
+source study and the authored stdlib certificate audit only; it does not qualify
+Lean, models or TPU execution. Keep the original line-b lookup fixture separate
+from mathematical capability. No collaborator contact is part of this task.
 
 ## Historical boundaries (index, not a task queue)
 
