@@ -1,0 +1,21 @@
+{
+  "format": "irisx.task.v1",
+  "id": "MATH-002",
+  "title": "Bounded TPU proof-agent sampling versus feedback repair",
+  "workstream": "line-b",
+  "state": "in_progress",
+  "depends_on": ["MATH-001"],
+  "owner_role": "math-researcher",
+  "plan_ref": "math-002-plan",
+  "scope_paths": ["research/math-proof-agent/round002/**", "research/math-proof-agent/ROUND002-RESULTS.zh-TW.md", "research/math-proof-agent/README.md", "docs/plan/2026-10-19-math-proof-agent-round02.md", "docs/verification/MATH-002/**", "docs/management/tasks/MATH-002.json", "docs/management/documents.json", "docs/management/BOARD.md", "docs/workstreams/line-b/**"],
+  "base_branch": "feat/math-proof-agent-20261018",
+  "head_branch": "feat/math-proof-agent-20261018",
+  "base_commit": "0deff2254d2e3b63b88c2eefc4c4f73856663047",
+  "implementation_commit": null,
+  "acceptance": ["M2-BASELINE", "M2-ENGINE", "M2-TRUST", "M2-SMOKE", "M2-PANEL", "M2-REMOTE", "M2-DELIVERY"],
+  "blockers": [],
+  "handoff_ref": null,
+  "verification_refs": [],
+  "review_refs": [],
+  "concurrency_group": null
+}

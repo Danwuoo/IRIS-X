@@ -1,0 +1,266 @@
+{
+  "format": "irisx.math.model-candidates.v1",
+  "task": "MATH-002",
+  "retrieved_date": "2026-10-19",
+  "purpose": "non-scoring technical feasibility only; no formal model selection yet",
+  "candidates": [
+    {
+      "key": "qwen3-4b",
+      "repo_id": "Qwen/Qwen3-4B",
+      "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+      "tokenizer_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+      "license": "Apache-2.0",
+      "gated": false,
+      "architecture": "Qwen3ForCausalLM",
+      "config": {
+        "architectures": [
+          "Qwen3ForCausalLM"
+        ],
+        "attention_bias": false,
+        "attention_dropout": 0.0,
+        "bos_token_id": 151643,
+        "eos_token_id": 151645,
+        "head_dim": 128,
+        "hidden_act": "silu",
+        "hidden_size": 2560,
+        "initializer_range": 0.02,
+        "intermediate_size": 9728,
+        "max_position_embeddings": 40960,
+        "max_window_layers": 36,
+        "model_type": "qwen3",
+        "num_attention_heads": 32,
+        "num_hidden_layers": 36,
+        "num_key_value_heads": 8,
+        "rms_norm_eps": 1e-06,
+        "rope_scaling": null,
+        "rope_theta": 1000000,
+        "sliding_window": null,
+        "tie_word_embeddings": true,
+        "torch_dtype": "bfloat16",
+        "transformers_version": "4.51.0",
+        "use_cache": true,
+        "use_sliding_window": false,
+        "vocab_size": 151936
+      },
+      "chat_template_sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+      "files": [
+        {
+          "path": "config.json",
+          "bytes": 726,
+          "sha256": "8ba006f74fecfaaeb392872a60f4a480e7ec9860153d2e1b769ec81f9a147f8a"
+        },
+        {
+          "path": "generation_config.json",
+          "bytes": 239,
+          "sha256": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2"
+        },
+        {
+          "path": "model-00001-of-00003.safetensors",
+          "bytes": 3957900840,
+          "sha256": "328a91d3122359d5547f9d79521205bc0a46e1f79a792dfe650e99fc2d651223"
+        },
+        {
+          "path": "model-00002-of-00003.safetensors",
+          "bytes": 3987450520,
+          "sha256": "6cd087b316306a68c562436b5492edbcf6e16c6dba3a1308279caa5a58e21ca5"
+        },
+        {
+          "path": "model-00003-of-00003.safetensors",
+          "bytes": 99630640,
+          "sha256": "e4bf436957184f4eeb86a80e9db394503f1f56446b2e6b7edeac5b81470f4ca1"
+        },
+        {
+          "path": "model.safetensors.index.json",
+          "bytes": 32819,
+          "sha256": "6dc0981b8829fead746441f68f38f24c5ca4a3a66351f652c26c6df0efc43ab2"
+        },
+        {
+          "path": "tokenizer.json",
+          "bytes": 11422654,
+          "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+        },
+        {
+          "path": "tokenizer_config.json",
+          "bytes": 9732,
+          "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+        }
+      ],
+      "source_api_url": "https://huggingface.co/api/models/Qwen/Qwen3-4B/revision/1cfa9a7208912126459214e8b04321603b3df60c?blobs=true",
+      "status": "candidate_unqualified"
+    },
+    {
+      "key": "goedel-v2-8b",
+      "repo_id": "Goedel-LM/Goedel-Prover-V2-8B",
+      "revision": "dfd02e6271a58375dfbf3ece0175277cf6b6a89a",
+      "tokenizer_revision": "dfd02e6271a58375dfbf3ece0175277cf6b6a89a",
+      "license": "Apache-2.0",
+      "gated": false,
+      "architecture": "Qwen3ForCausalLM",
+      "config": {
+        "architectures": [
+          "Qwen3ForCausalLM"
+        ],
+        "attention_bias": false,
+        "attention_dropout": 0.0,
+        "bos_token_id": 151643,
+        "eos_token_id": 151645,
+        "head_dim": 128,
+        "hidden_act": "silu",
+        "hidden_size": 4096,
+        "initializer_range": 0.02,
+        "intermediate_size": 12288,
+        "max_position_embeddings": 40960,
+        "max_window_layers": 36,
+        "model_type": "qwen3",
+        "num_attention_heads": 32,
+        "num_hidden_layers": 36,
+        "num_key_value_heads": 8,
+        "rms_norm_eps": 1e-06,
+        "rope_scaling": null,
+        "rope_theta": 1000000,
+        "sliding_window": null,
+        "tie_word_embeddings": false,
+        "torch_dtype": "bfloat16",
+        "transformers_version": "4.51.3",
+        "use_cache": false,
+        "use_sliding_window": false,
+        "vocab_size": 151936
+      },
+      "chat_template_sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+      "files": [
+        {
+          "path": "config.json",
+          "bytes": 730,
+          "sha256": "6d4190d4c7ae77cba38a83cce1152ead961929795a7a95d4814b3fb65ab878a3"
+        },
+        {
+          "path": "generation_config.json",
+          "bytes": 214,
+          "sha256": "81051cd3f6e77013827148d0b8a6ead93f8ac390d5ab805f849199f0af6a08db"
+        },
+        {
+          "path": "model-00001-of-00004.safetensors",
+          "bytes": 4902257696,
+          "sha256": "72c82e0977a9627569f2e562ed86eaa2bade1a00b8cd09bbc3522954c2318950"
+        },
+        {
+          "path": "model-00002-of-00004.safetensors",
+          "bytes": 4915960368,
+          "sha256": "ef80cce6b59ee8be7504ab5bf2cf1b40da0dd37d1cdf322874c09a4d071478bc"
+        },
+        {
+          "path": "model-00003-of-00004.safetensors",
+          "bytes": 4983068496,
+          "sha256": "052321b8825a7266b7c8e3b81977dd4e96fc8d1e04a01030042a651dcea5fb6f"
+        },
+        {
+          "path": "model-00004-of-00004.safetensors",
+          "bytes": 1580230264,
+          "sha256": "b13cdd833655cd9a968ac1bd053eb36f8f963e9ae6372bcaab9b3d49a7b3f5ae"
+        },
+        {
+          "path": "model.safetensors.index.json",
+          "bytes": 32878,
+          "sha256": "3649bb967710edc0f995e3839a363a069482a1688216f87745248966751d0221"
+        },
+        {
+          "path": "tokenizer.json",
+          "bytes": 11422654,
+          "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+        },
+        {
+          "path": "tokenizer_config.json",
+          "bytes": 9789,
+          "sha256": "5d27a191a7ba6f93bcc2a8e78bc633764bbaaee263e9f3d9225e2c8621a5dd72"
+        }
+      ],
+      "source_api_url": "https://huggingface.co/api/models/Goedel-LM/Goedel-Prover-V2-8B/revision/dfd02e6271a58375dfbf3ece0175277cf6b6a89a?blobs=true",
+      "status": "candidate_unqualified"
+    }
+  ],
+  "runtime": {
+    "python_supported": [
+      "3.11",
+      "3.12",
+      "3.13"
+    ],
+    "packages": {
+      "jax": "0.6.2",
+      "jaxlib": "0.6.2",
+      "libtpu": "0.0.17",
+      "transformers": "4.51.3",
+      "torch": "2.6.0+cpu",
+      "numpy": "2.2.5",
+      "ml-dtypes": "0.5.1",
+      "scipy": "1.15.2",
+      "opt_einsum": "3.4.0",
+      "huggingface-hub": "0.30.2",
+      "tokenizers": "0.21.1",
+      "safetensors": "0.5.3",
+      "filelock": "3.18.0",
+      "packaging": "25.0",
+      "PyYAML": "6.0.2",
+      "regex": "2024.11.6",
+      "requests": "2.32.3",
+      "tqdm": "4.67.1",
+      "fsspec": "2025.3.2",
+      "typing-extensions": "4.13.2",
+      "charset-normalizer": "3.4.1",
+      "idna": "3.10",
+      "urllib3": "2.4.0",
+      "certifi": "2025.1.31",
+      "networkx": "3.4.2",
+      "Jinja2": "3.1.6",
+      "MarkupSafe": "3.0.2",
+      "sympy": "1.13.1",
+      "mpmath": "1.3.0",
+      "setuptools": "78.1.0"
+    },
+    "dtype": "bfloat16",
+    "mesh": {
+      "mp": 8
+    },
+    "parameter_layout": "Q/K/V heads, attention output contracting heads, MLP intermediate dimension and vocabulary partitioned over mp=8; layer dimension and norms replicated",
+    "kv_layout": "[layer, context, kv_head/mp, head_dim]",
+    "max_context_tokens": 8192,
+    "max_completion_tokens": 4096,
+    "template": "checkpoint tokenizer chat_template; add_generation_prompt=True; enable_thinking=False",
+    "sampling": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "rng": "NumPy PCG64 seeded per attempt; stable sort nucleus includes first threshold-crossing token"
+    },
+    "cpu_reference_threads": 2
+  },
+  "qualification": {
+    "technical_messages": [
+      {
+        "role": "user",
+        "content": "Repeat these letters in lowercase, separated by spaces: A B C."
+      }
+    ],
+    "short_output_tokens": 8,
+    "greedy_tokens_must_match": true,
+    "all_logits_must_be_finite": true,
+    "max_absolute_logit_error": 0.5,
+    "relative_l2_logit_error": 0.03,
+    "tolerance_reason": "BF16 TPU and CPU matmul/reduction order can differ. Both bounded full-logit errors AND every greedy continuation token must agree; failure leaves the conversion unqualified. These limits are fixed before execution.",
+    "warm_repeat_tokens_must_match": true,
+    "scoring_allowed": false,
+    "selection_rule": "Prefer qualified Goedel 8B for formal specialization only if technical cost fits frozen panel budget; otherwise qualified Qwen3 4B may be selected before panel outputs. No target-model scoring until exact final protocol/panel/model freeze."
+  },
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/huggingface/transformers/v4.51.3/src/transformers/models/qwen3/modeling_qwen3.py",
+      "use": "Architecture/RMSNorm/GQA/RoPE reference; reference forward executed by pinned Transformers."
+    },
+    {
+      "url": "https://pypi.org/pypi/jax/0.6.2/json",
+      "use": "JAX 0.6.2 pins compatible jaxlib 0.6.2 and libtpu 0.0.17.* for TPU."
+    },
+    {
+      "url": "https://docs.jax.dev/en/latest/201/sharding.html",
+      "use": "NamedSharding/PartitionSpec layout; source review is not hardware qualification."
+    }
+  ]
+}

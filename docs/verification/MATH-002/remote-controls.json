@@ -1,0 +1,94 @@
+{
+  "format": "irisx.math.remote-controls.v1",
+  "scope": "Offline constant-only implementation self-tests. All remote receipts mocked; no Kaggle/model/Lean execution and no independent verification.",
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "head_commit": "0deff2254d2e3b63b88c2eefc4c4f73856663047",
+  "working_sources_sha256_before": {
+    "research/math-proof-agent/round002/sdk_readback.py": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964",
+    "research/math-proof-agent/round002/kaggle_run.py": "f516f1396ab9b1e4466cd4e1048716d05f32ede06d402513834eda5f18ba6cfb",
+    "research/math-proof-agent/round002/common.py": "b149f8f0afbdd7efc181a36499550ce5ad5bbd34b426979a8b3d8570778e4aab",
+    "research/math-proof-agent/round002/test_remote_controls.py": "a5661d50f3a34961432e75b78e51b859ce697175faf9df29a3b46b63c13486ba"
+  },
+  "commands": [
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "research/math-proof-agent/round002/test_remote_controls.py"
+      ],
+      "optimize": 0,
+      "exit_code": 0,
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "wall_seconds": 1.187,
+      "raw_log": ".irisx/line-b/MATH-002/remote-controls-normal.txt",
+      "raw_log_sha256": "9d41e86e526344b79fb2e9f8b3f9f20669258e0bcee918217129bfd208a8d9d8"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "-O",
+        "research/math-proof-agent/round002/test_remote_controls.py"
+      ],
+      "optimize": 1,
+      "exit_code": 0,
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "wall_seconds": 2.313,
+      "raw_log": ".irisx/line-b/MATH-002/remote-controls-optimized.txt",
+      "raw_log_sha256": "ee3290829d008f495e0d13a2e00cded8b0d5d9b6d250c2e51c51e8779ab2d4db"
+    }
+  ],
+  "working_sources_sha256_after": {
+    "research/math-proof-agent/round002/sdk_readback.py": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964",
+    "research/math-proof-agent/round002/kaggle_run.py": "f516f1396ab9b1e4466cd4e1048716d05f32ede06d402513834eda5f18ba6cfb",
+    "research/math-proof-agent/round002/common.py": "b149f8f0afbdd7efc181a36499550ce5ad5bbd34b426979a8b3d8570778e4aab",
+    "research/math-proof-agent/round002/test_remote_controls.py": "a5661d50f3a34961432e75b78e51b859ce697175faf9df29a3b46b63c13486ba"
+  },
+  "source_unchanged": true,
+  "status": "passed",
+  "total_test_executions": 52,
+  "limitations": [
+    "No SDK network response is inferred from mocked receipts.",
+    "Direct file self-tests bind working bytes; code commit follows these checks.",
+    "Baseline WSF-R5/MATH-001 independent acceptance remains unchanged."
+  ],
+  "final_rerun": {
+    "normal": {
+      "tests": 28,
+      "exit_code": 0,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "optimized": {
+      "tests": 28,
+      "exit_code": 0,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "source_sha256": {
+      "kaggle_run.py": "99820390b19cee9527a55eea1f6aa8332f062a95e767fcbc596d84e60bd55401",
+      "sdk_readback.py": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964",
+      "test_remote_controls.py": "1b83dd9e7482e52a1dfba99764767f60fc33240c7c9ec800408d5a43b4ba326e"
+    },
+    "retained_intermediate_failure": {
+      "tests": 26,
+      "failures": 5,
+      "errors": 1,
+      "reason": "New mandatory fresh-slug gate rejected legacy same-slug mocked attempts; fixtures updated to distinct task slugs and added gate negatives",
+      "log": ".irisx/line-b/MATH-002/final-test_remote_controls.py-normal.txt"
+    }
+  }
+}

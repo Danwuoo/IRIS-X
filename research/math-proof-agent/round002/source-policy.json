@@ -1,0 +1,77 @@
+{
+  "format": "irisx.math.source-policy.v1",
+  "task": "MATH-002",
+  "review_date": "2026-10-19",
+  "scope": "Public source/dependency metadata review. This file is not a legal opinion, statement-fidelity approval, execution authorization or evidence of model efficacy.",
+  "readbacks": [
+    {
+      "id": "minif2f-lean4-readme",
+      "url": "https://raw.githubusercontent.com/yangky11/miniF2F-lean4/5746b7d6c47855ce1294bed87329618ff7f1bc31/README.md",
+      "sha256": "54535be97c0efe690b85a86d2f65ddfb815cf3191325a5b0873305a6db75262d",
+      "bytes": 473,
+      "finding": "Lean 4 port; README warns that the repository is not regularly maintained. No item-level fidelity guarantee is inferred."
+    },
+    {
+      "id": "minif2f-lean4-license",
+      "url": "https://raw.githubusercontent.com/yangky11/miniF2F-lean4/5746b7d6c47855ce1294bed87329618ff7f1bc31/LICENSE",
+      "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93",
+      "bytes": 1088,
+      "finding": "Root LICENSE states MIT, Meta copyright. Preserve this notice and separately inspect original Lean content's Apache provenance before redistributing extracted statements."
+    },
+    {
+      "id": "minif2f-lean4-toolchain",
+      "url": "https://raw.githubusercontent.com/yangky11/miniF2F-lean4/5746b7d6c47855ce1294bed87329618ff7f1bc31/lean-toolchain",
+      "sha256": "42779d67b81608af8a12aa4328d2ab47ca201925b3b2bd68369587b5340bb434",
+      "bytes": 25,
+      "finding": "leanprover/lean4:v4.24.0; metadata observed, not locally executed."
+    },
+    {
+      "id": "minif2f-lean4-manifest",
+      "url": "https://raw.githubusercontent.com/yangky11/miniF2F-lean4/5746b7d6c47855ce1294bed87329618ff7f1bc31/lake-manifest.json",
+      "sha256": "299e9b28e4bb2b581e2652e346a71c1594930070cd5d0139aa6d1aaa847c25ee",
+      "bytes": 3105,
+      "finding": "Mathlib revision f897ebcf72cd16f89ab4577d0c826cd14afaafc7; metadata observed, not a dependency download or trusted execution."
+    },
+    {
+      "id": "putnambench-readme",
+      "url": "https://raw.githubusercontent.com/trishullab/PutnamBench/a635813f5edf297d928f9bd5ef8324a26bdde09c/README.md",
+      "sha256": "6a157e86321ea08a11766c18e20d28b6204a73cd5a96285fffc918120c976758",
+      "bytes": 3930,
+      "finding": "Lean/Isabelle source is Apache 2.0; informal statements have MAA permission. Maintainers request discussion before subset proof writing and prohibit public proofs. Excluded because this task does not permit researcher contact."
+    }
+  ],
+  "additional_primary_source": {
+    "url": "https://github.com/facebookresearch/miniF2F",
+    "read_scope": "README policy and structure only, via public web read",
+    "observed_main_revision_via_ls_remote": "e4f113090ad82d64f8ce064d2f55b613a9b6bded",
+    "readback_binding": "Web README text was not independently bound to this observed revision; do not treat it as an execution pin",
+    "finding": "Original Lean material is described as Apache licensed. Formal and informal files may include example proofs, so bulk cloning/fetching benchmark content is not admitted by this task's no-public-solutions constraint."
+  },
+  "solver_input_allowlist": [
+    "Frozen problem identifiers and human-checked formal statements",
+    "Fixed imports, definitions, hypotheses and mathematical domain",
+    "Pinned general-purpose Lean/mathlib library context explicitly allowed by the protocol",
+    "The current candidate body and bounded compiler/axiom-policy diagnostics for that candidate"
+  ],
+  "solver_input_denylist": [
+    "Gold answers for answer-discovery items",
+    "Benchmark reference proofs, evaluator-only solutions and scoring rubrics",
+    "Other arms' candidates or success/failure outcomes",
+    "Internet search for problem answers during solving",
+    "Credentials, cookies, account state and provider receipts",
+    "Original migration packages blocked by safety checks"
+  ],
+  "acquisition_rules": [
+    "Prefer reviewed statement-only artifacts; do not download benchmark solution collections and then call their removal isolation",
+    "Bind every acquired artifact to a full source revision and content hash before packaging",
+    "Reject source ambiguity or lack of permission before scored generation",
+    "Keep retained sensitive receipts and any non-public proofs under ignored task storage; commit only permitted summaries",
+    "Do not use agent self-review as human statement fidelity or independent task verification"
+  ],
+  "observed_actions": {
+    "benchmark_solution_downloads": 0,
+    "benchmark_proofs_generated": 0,
+    "researcher_contacts": 0,
+    "statement_panel_qualified": false
+  }
+}

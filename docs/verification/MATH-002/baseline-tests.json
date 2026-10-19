@@ -1,0 +1,406 @@
+{
+  "format": "irisx.math.baseline-tests.v1",
+  "task": "MATH-002",
+  "scope": "Developer self-test of bounded existing source/startup/safety regressions and R001. Not independent WSF-R5 or MATH-001 acceptance; no model, Lean, TPU or efficacy evidence.",
+  "code_sha": "0deff2254d2e3b63b88c2eefc4c4f73856663047",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "python_executable": ".irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+  "bound_working_files_sha256_before": {
+    "tests/test_interpreter_startup.py": "ccd27a52307abe8213d5a469010003accf0718cd47533fd60c7d610d3b7f3016",
+    "tests/test_source_identity.py": "b4eb7edbfe49fd067c2c9ab9a957911934b705b283a3c89598ce5685f237e329",
+    "tests/test_suite_runner.py": "c6a16b267e044401807d3b113e8a33547a20720d43265b80da41515ca1dee7b9",
+    "tests/test_workstream_gate.py": "4a97cc8d6c10ba9e537dc8bfd9472d75f8d7b4dcfb5ecdc0f4bbb75fa2d1162b",
+    "tests/test_no_training.py": "dd016e14b549837b0ea88c51c5d049a2079fc4f6ced425070555aa669570b22e",
+    "tools/suite_runner.py": "eb57fba23fcd43884288176d86f34be5463238e3fc345d37e7c9dba9ce198109",
+    "tools/source_identity.py": "5ca978ba81e3185d4896e6bb6e4a4fe207dbd550bd6f6de7c4e5e9ae99f16b3c",
+    "tools/workstream_gate.py": "7154281ef21179db334ee4dcbc3415c1175d90cc1211e9931ec171e63a503522",
+    "tools/no_training.py": "bf203e7b303725933f9f0f0e3c15a774a5b98943d05ad2937d6d56b7258878af",
+    "tools/workstream_management.py": "ee624552ae485c6ae2bce0f0fa8fc882f460e91f54c44f3bed1539c13be31d9b",
+    "research/math-proof-agent/round001/experiment.py": "0c6d155ee75161ed93b9356984223a4e852fd5f87738570b96f621ec09b1cde0",
+    "research/math-proof-agent/round001/protocol.json": "56605652c900f89b690940df4a181f1ba812fb4d19178ba3d902ac86e341f363"
+  },
+  "commands": [
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "tests/test_interpreter_startup.py"
+      ],
+      "kind": "unittest",
+      "optimize": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 8.416382,
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/test_interpreter_startup-normal.txt",
+      "raw_log_sha256": "a50b286ac0b231091bb84f129c9cc12cd7b87279a4bdb856cf1208869a36d5fb"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "tests/test_source_identity.py"
+      ],
+      "kind": "unittest",
+      "optimize": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 47.815627,
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/test_source_identity-normal.txt",
+      "raw_log_sha256": "940d5fa4c9ad6dc24922675e18c6b504b03ae8962d507f6a0344fbffac0fa546"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "tests/test_suite_runner.py"
+      ],
+      "kind": "unittest",
+      "optimize": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 12.952113,
+      "tests": 28,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/test_suite_runner-normal.txt",
+      "raw_log_sha256": "b49a15330c55c5c41b25f68e226f23c9514ec68b2c1cbf5d0333f4271cab10f2"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "tests/test_workstream_gate.py"
+      ],
+      "kind": "unittest",
+      "optimize": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 108.803009,
+      "tests": 27,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/test_workstream_gate-normal.txt",
+      "raw_log_sha256": "df0193f20ca1500a7e59ca0b37293da8b2a77b44f0afd5b0fa2d71ea02a1f1e8"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "tests/test_no_training.py"
+      ],
+      "kind": "unittest",
+      "optimize": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 3.052199,
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/test_no_training-normal.txt",
+      "raw_log_sha256": "560e5422d12e5adf10124d8ce1b94798ab834123ab5e550e816245ddcf1675b7"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "research/math-proof-agent/round001/experiment.py",
+        "--self-test"
+      ],
+      "kind": "unittest",
+      "optimize": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.76659,
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/r001_controls-normal.txt",
+      "raw_log_sha256": "f4fec7ceb3f3fdf54fe4e82afd8fcd032181de01c86e7bd89beb4f06ed1d14f4"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "research/math-proof-agent/round001/experiment.py",
+        "--output",
+        "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\baseline-20261019\\r001-normal.json"
+      ],
+      "kind": "certificate_cases",
+      "optimize": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.889337,
+      "tests": null,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/r001_cases-normal.txt",
+      "raw_log_sha256": "5a02033dfb180a0f1afc80e55e1bc2a53ba3c5039da0a9213c50ebb017f18290",
+      "case_summary": {
+        "cases": 32,
+        "certificate_verified": 12,
+        "rejected": 16,
+        "unknown": 4,
+        "expected_decision_mismatches": 0,
+        "false_mathematical_claims": 8,
+        "false_claims_promoted_by_finite_probes": 4,
+        "false_claims_accepted_by_certificates": 0
+      },
+      "source_fingerprints": {
+        "script_sha256": "0c6d155ee75161ed93b9356984223a4e852fd5f87738570b96f621ec09b1cde0",
+        "protocol_sha256": "e88ede66a095b3aff783e8816ea10271b62c36f63162180e1553d0f1b2b807dc",
+        "panel_sha256": "4bd55e7bd90d0da0c874c6dabb2b7e79fc1799ffbb83d481a747d281873d3530"
+      }
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "-O",
+        "tests/test_interpreter_startup.py"
+      ],
+      "kind": "unittest",
+      "optimize": 1,
+      "exit_code": 0,
+      "elapsed_seconds": 15.993963,
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/test_interpreter_startup-optimized.txt",
+      "raw_log_sha256": "e9ae232ca6c7e011e42cc2b321d97ae0b5f502b9a7387f9be8db56c18a24b555"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "-O",
+        "tests/test_source_identity.py"
+      ],
+      "kind": "unittest",
+      "optimize": 1,
+      "exit_code": 0,
+      "elapsed_seconds": 53.719911,
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/test_source_identity-optimized.txt",
+      "raw_log_sha256": "402e9bc5a7241913b4d230c5331cbc8099ac7c167de1214c798bc553645eafa6"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "-O",
+        "tests/test_suite_runner.py"
+      ],
+      "kind": "unittest",
+      "optimize": 1,
+      "exit_code": 0,
+      "elapsed_seconds": 20.910849,
+      "tests": 28,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/test_suite_runner-optimized.txt",
+      "raw_log_sha256": "ecfe3d08b02b579925623d5619860e474e8ed0b9b58034ff985218fc30fa9cc3"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "-O",
+        "tests/test_workstream_gate.py"
+      ],
+      "kind": "unittest",
+      "optimize": 1,
+      "exit_code": 0,
+      "elapsed_seconds": 102.640658,
+      "tests": 27,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/test_workstream_gate-optimized.txt",
+      "raw_log_sha256": "1d8acd5361d2c4d0b0b519a273d400968a576deffb6d0feaca235b7962cfe07a"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "-O",
+        "tests/test_no_training.py"
+      ],
+      "kind": "unittest",
+      "optimize": 1,
+      "exit_code": 0,
+      "elapsed_seconds": 3.217814,
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/test_no_training-optimized.txt",
+      "raw_log_sha256": "0ba23a134192e0388005985b0d7249691631d053cb1c90cea8411c8bf39fa880"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "-O",
+        "research/math-proof-agent/round001/experiment.py",
+        "--self-test"
+      ],
+      "kind": "unittest",
+      "optimize": 1,
+      "exit_code": 0,
+      "elapsed_seconds": 1.239044,
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/r001_controls-optimized.txt",
+      "raw_log_sha256": "e96ee8b2c6d6b1ffd8b5be60519ad517486f32ab0a25cbf1f97967d7aa30a783"
+    },
+    {
+      "command": [
+        "<task-venv-python>",
+        "-P",
+        "-s",
+        "-B",
+        "-O",
+        "research/math-proof-agent/round001/experiment.py",
+        "--output",
+        "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\baseline-20261019\\r001-optimized.json"
+      ],
+      "kind": "certificate_cases",
+      "optimize": 1,
+      "exit_code": 0,
+      "elapsed_seconds": 1.389326,
+      "tests": null,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "raw_log": ".irisx/line-b/MATH-002/baseline-20261019/r001_cases-optimized.txt",
+      "raw_log_sha256": "5a02033dfb180a0f1afc80e55e1bc2a53ba3c5039da0a9213c50ebb017f18290",
+      "case_summary": {
+        "cases": 32,
+        "certificate_verified": 12,
+        "rejected": 16,
+        "unknown": 4,
+        "expected_decision_mismatches": 0,
+        "false_mathematical_claims": 8,
+        "false_claims_promoted_by_finite_probes": 4,
+        "false_claims_accepted_by_certificates": 0
+      },
+      "source_fingerprints": {
+        "script_sha256": "0c6d155ee75161ed93b9356984223a4e852fd5f87738570b96f621ec09b1cde0",
+        "protocol_sha256": "e88ede66a095b3aff783e8816ea10271b62c36f63162180e1553d0f1b2b807dc",
+        "panel_sha256": "4bd55e7bd90d0da0c874c6dabb2b7e79fc1799ffbb83d481a747d281873d3530"
+      }
+    }
+  ],
+  "bound_working_files_sha256_after": {
+    "tests/test_interpreter_startup.py": "ccd27a52307abe8213d5a469010003accf0718cd47533fd60c7d610d3b7f3016",
+    "tests/test_source_identity.py": "b4eb7edbfe49fd067c2c9ab9a957911934b705b283a3c89598ce5685f237e329",
+    "tests/test_suite_runner.py": "c6a16b267e044401807d3b113e8a33547a20720d43265b80da41515ca1dee7b9",
+    "tests/test_workstream_gate.py": "4a97cc8d6c10ba9e537dc8bfd9472d75f8d7b4dcfb5ecdc0f4bbb75fa2d1162b",
+    "tests/test_no_training.py": "dd016e14b549837b0ea88c51c5d049a2079fc4f6ced425070555aa669570b22e",
+    "tools/suite_runner.py": "eb57fba23fcd43884288176d86f34be5463238e3fc345d37e7c9dba9ce198109",
+    "tools/source_identity.py": "5ca978ba81e3185d4896e6bb6e4a4fe207dbd550bd6f6de7c4e5e9ae99f16b3c",
+    "tools/workstream_gate.py": "7154281ef21179db334ee4dcbc3415c1175d90cc1211e9931ec171e63a503522",
+    "tools/no_training.py": "bf203e7b303725933f9f0f0e3c15a774a5b98943d05ad2937d6d56b7258878af",
+    "tools/workstream_management.py": "ee624552ae485c6ae2bce0f0fa8fc882f460e91f54c44f3bed1539c13be31d9b",
+    "research/math-proof-agent/round001/experiment.py": "0c6d155ee75161ed93b9356984223a4e852fd5f87738570b96f621ec09b1cde0",
+    "research/math-proof-agent/round001/protocol.json": "56605652c900f89b690940df4a181f1ba812fb4d19178ba3d902ac86e341f363"
+  },
+  "bound_source_unchanged": true,
+  "status": "passed",
+  "totals": {
+    "test_executions": 208,
+    "certificate_cases": 64
+  },
+  "limitations": [
+    "Direct file checks bind recorded working-file bytes, not a full committed-source suite attestation.",
+    "Original aggregate, arc-unit-audit, training and model/provider bodies were not executed.",
+    "No previous independent review outcome or historical evidence was changed."
+  ],
+  "checkout_path": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math",
+  "controlled_child_environment": {
+    "PYTHONHASHSEED": "0",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "HF_DATASETS_OFFLINE": "1",
+    "ARC_LEARNING_NEURAL_TESTS": "0"
+  },
+  "controlled_startup_evidence": {
+    "test_module": "tests/test_interpreter_startup.py",
+    "tests_per_mode": 12,
+    "description": "Real fresh children compare hashes against independent same-executable seed0 references and verify effective flags; normal/-O/-OO and polluted PYTHON settings are covered. Never use -I/-E to claim effective seed0.",
+    "expected_flags": {
+      "safe_path": true,
+      "no_user_site": 1,
+      "dont_write_bytecode": 1,
+      "ignore_environment": 0,
+      "isolated": 0,
+      "hash_randomization": 0
+    }
+  },
+  "r001_comparison": {
+    "normal_optimized_decisions_equal": true,
+    "normal_optimized_summaries_equal": true,
+    "normal_optimized_fingerprints_equal": true,
+    "matches_MATH_001_recorded_fingerprints": true
+  },
+  "test_totals_by_mode": {
+    "normal": {
+      "safety_tests": 92,
+      "R001_controls": 12,
+      "certificate_cases": 32,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "optimized": {
+      "safety_tests": 92,
+      "R001_controls": 12,
+      "certificate_cases": 32,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  },
+  "sanitization": "Only allowlisted startup settings, local task paths, hashes, counts and commands are recorded. Raw logs remain in ignored task storage."
+}

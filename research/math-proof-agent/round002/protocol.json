@@ -1,0 +1,46 @@
+{
+  "format": "irisx.math.round002.protocol.v1",
+  "status": "draft_not_scoring_authorized",
+  "question": "Equal-ceiling independent sampling versus verifier-guided repair",
+  "arms": {
+    "M-DIRECT": 1,
+    "M-SAMPLE": 4,
+    "M-REPAIR": 4
+  },
+  "max_completion_tokens": 4096,
+  "max_tool_calls_per_arm": 4,
+  "arm_wall_seconds": 600,
+  "wall_ceiling_status": "provisional_requires_technical_smoke_before_freeze",
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "first_seed": 0,
+  "replication_seeds": [
+    1,
+    2
+  ],
+  "context_length": 8192,
+  "feedback_max_chars": 4000,
+  "system_prompt": "Prove exactly the supplied immutable Lean statement. Return one JSON object with exactly answer (string or null) and proof_body (string). Do not change assumptions, variables, definitions, quantifiers, imports or goal. For proof-only tasks set answer to null. The proof_body must start with by on its own line followed by indented allowed tactic lines. Only the pinned restricted grammar is accepted; no declarations, metaprograms or arbitrary expressions. No external retrieval is available. Allowed tactics: rfl, assumption, constructor, left, right, trivial, contradiction, omega, ring, ring_nf, norm_num, simp, simp_all, decide; intro/intros/revert followed by identifiers; exact/apply followed by one identifier; symm at followed by one identifier; simp/simp_all/norm_num with an optional only and a bracketed comma-space-separated list of identifiers. Bullets may prefix a tactic. Each line uses spaces, no tabs. No sorry, native evaluation, nested terms, declarations, quotations or custom tactics.",
+  "gold_access": "evaluator_only_after_selection",
+  "retrieval": "none; installed fixed theorem library only",
+  "stop_on_success": true,
+  "answer_modes": [
+    "proof_only",
+    "answer_given",
+    "find_answer"
+  ],
+  "proof_success": "fixed statement binding and kernel_verified and axiom policy passed",
+  "joint_success": "find_answer tasks only; evaluator-correct answer and proof_success",
+  "missing_results": "retain in planned denominator as not_completed",
+  "statistics": "problem-level paired gains/losses; seeds repeated, families clustered; descriptive pilot",
+  "worker_count": 1,
+  "model_selection": "technical non-scoring smoke only; no scoring output before freeze",
+  "required_before_freeze": [
+    "model_qualified",
+    "trusted_lean_controls",
+    "measured_isolation",
+    "human_statement_review",
+    "lawful_sources",
+    "runtime_budget"
+  ]
+}
