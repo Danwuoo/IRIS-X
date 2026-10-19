@@ -13,6 +13,8 @@
 | [EVALUATION.zh-TW.md](EVALUATION.zh-TW.md) | 答案／證明雙軸、資料隔離、等成本對照與錯誤分類 |
 | [TPU-PLAN.zh-TW.md](TPU-PLAN.zh-TW.md) | Kaggle TPU v5e-8 的可行性與尚待實測項目 |
 | [ROUND001-RESULTS.zh-TW.md](ROUND001-RESULTS.zh-TW.md) | 已執行的證書與數值檢查反例實驗；不是模型成績 |
+| [ROUND002-RESULTS.zh-TW.md](ROUND002-RESULTS.zh-TW.md) | MATH-002 實作、真實本地 Lean／數值控制與 Kaggle 提交阻塞；尚無模型比較 |
+| [round002/](round002/) | 固定模型 adapter、受限 Lean worker、有界 controller、監看與預算狀態入口 |
 | [sources.json](sources.json) | 原始來源、讀取範圍、版本／blob 與限制 |
 | [round001/](round001/) | 可重跑的標準函式庫實驗與預先記錄的 protocol |
 | [實作計畫](../../docs/plan/2026-10-18-math-proof-agent-round01.md) | MATH-001 驗收及下一輪實作邊界 |

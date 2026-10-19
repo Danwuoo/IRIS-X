@@ -1,0 +1,144 @@
+{
+  "format": "irisx.math002.run-summary.v1",
+  "task": "MATH-002",
+  "code_sha": "ae051a79359c4e0be9658d89452c05793d64d831",
+  "delivery_sha_policy": "containing delivery SHA is returned in final message and PR; no self-containing hash",
+  "run_id": "m002-smoke-20261019-a7f91c",
+  "notebook_id": "danielwuu/irisx-math-m002-20261019-a7f91c",
+  "notebook_version": null,
+  "state": "submission_unknown",
+  "push_command": [
+    "kaggle",
+    "kernels",
+    "push",
+    "-p",
+    ".irisx/line-b/MATH-002/staging",
+    "--accelerator",
+    "TpuV5E8",
+    "--timeout",
+    "1800"
+  ],
+  "cli_version": "2.2.4",
+  "kagglesdk_version": "0.1.37",
+  "push_exit_code": 0,
+  "push_response": "Kernel push error: Maximum batch TPU session count of 1 reached.",
+  "readback": {
+    "http_status": 403,
+    "exact_version": null,
+    "source_verified": false,
+    "search_result": "private notebook placeholder without ref/version; no task identity established"
+  },
+  "budget": {
+    "submissions_reserved": 1,
+    "submissions_limit": 4,
+    "reserved_timeout_seconds": 1800,
+    "total_limit_seconds": 21600,
+    "remaining_ceiling_seconds": 19800,
+    "actual_tpu_seconds": null,
+    "unknown_reservation_not_refunded": true
+  },
+  "fingerprints": {
+    "source_sha256": "984ec856c441da75001fa0b25264c310bebebbae57daa8063e91198bc7ade937",
+    "protocol_sha256": "c261c0ca8899f0395fde355ea1718341f343ceeb73803adaa4f4098f502bcfab",
+    "panel_sha256": "b3241b94b3a193644e1b2a322f8d43e67287cc88bcba1596558d4d57fa35df5a",
+    "model_sha256": "54ce12f740cc2c9725ec90c53e4b9bbfe49d6d189004dbd4c48dfd9255cf4562",
+    "notebook_sha256": "d07468b53fb6e4215d705fb96fcb30848ea285c621150432c484f4990927dfef"
+  },
+  "model_revision_candidates": {
+    "Qwen/Qwen3-4B": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "Goedel-LM/Goedel-Prover-V2-8B": "dfd02e6271a58375dfbf3ece0175277cf6b6a89a"
+  },
+  "research": {
+    "frozen_scoring_panel": false,
+    "human_reviewed_selected_questions": 0,
+    "observed_model_outputs": 0,
+    "observed_tpu_devices": null,
+    "proof_rate": null,
+    "joint_success_rate": null,
+    "repair_minus_sample": null,
+    "conclusion": "not_estimable; no target-model comparison executed or retrieved"
+  },
+  "costs": {
+    "prompt_tokens": null,
+    "output_tokens": null,
+    "compile_seconds": null,
+    "inference_seconds": null,
+    "lean_remote_seconds": null,
+    "note": "No bound remote output; unknown values are not zero-cost claims"
+  },
+  "monitor": {
+    "mode": "bounded read-only reconciliation/status-only",
+    "running": false,
+    "background_process_claimed": false,
+    "stop_reason": "submission_unknown and HTTP403 prevent binding any target version",
+    "checkpoint_retrieved": false
+  },
+  "raw_receipts_ignored": ".irisx/line-b/MATH-002/receipts/",
+  "receipts": [
+    {
+      "filename": "1792381669365920600-9ba602.json",
+      "sha256": "f73185fc4f64236750e544d08a0d20cc5c62a16f675a42c41fac6764cea7bd59",
+      "command_kind": "kaggle kernels list",
+      "exit_code": 0,
+      "seconds": 3.54700000000048
+    },
+    {
+      "filename": "1792381672931077800-ca273c.json",
+      "sha256": "a5579fe0ebb12132b96337de7e626672b0aa2dc59a7beb2e1dcfbdfa002df173",
+      "command_kind": "kaggle kernels push",
+      "exit_code": 0,
+      "seconds": 4.686999999999898
+    },
+    {
+      "filename": "1792381700197998300-202376.json",
+      "sha256": "db7c0f5eb4be296d8bf4c96af1e253cc36544f0cb980c074464088f6e2e3c28c",
+      "command_kind": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe -P -s",
+      "exit_code": 2,
+      "seconds": 2.8589999999985594
+    },
+    {
+      "filename": "1792381735718783400-3168c9.json",
+      "sha256": "f0e5cae14529d27762646f2745a4cea2bd7596f14be8c37ce0e0585765b0e129",
+      "command_kind": "kaggle kernels list",
+      "exit_code": 0,
+      "seconds": 3.610000000000582
+    },
+    {
+      "filename": "1792382011840794800-f76b9e.json",
+      "sha256": "e247975bf13d08bca09975326591630db5913df9216d0d589f906c4395878b7a",
+      "command_kind": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe -P -s",
+      "exit_code": 2,
+      "seconds": 3.17200000000048
+    }
+  ],
+  "blockers": [
+    "Kaggle account batch TPU session capacity reached; do not disturb existing work",
+    "Exact submitted notebook/version cannot be established (HTTP403); no further dispatch",
+    "Human-checked formal panel absent",
+    "Mathlib and Kaggle Lean/isolation/target-model parity not qualified"
+  ],
+  "no_training": true,
+  "no_paid_api": true,
+  "no_other_task_resource_operation": true,
+  "self_review_only": true,
+  "final_read_only_reconciliation": "Still submission_unknown; no target version established; no retry.",
+  "preservation": {
+    "base_sha": "0deff2254d2e3b63b88c2eefc4c4f73856663047",
+    "unchanged_protected_paths": [
+      "src",
+      "tools",
+      "tests",
+      ".github",
+      "research/math-proof-agent/round001",
+      "docs/verification/MATH-001",
+      "docs/verification/WSF-R5",
+      "docs/management/tasks/MATH-001.json",
+      "docs/management/tasks/WSF-R5.json"
+    ],
+    "git_diff_exit_code": 0,
+    "full_ci_claimed": false,
+    "management_check": "PASS",
+    "render_check": "PASS",
+    "diff_check": "PASS"
+  }
+}

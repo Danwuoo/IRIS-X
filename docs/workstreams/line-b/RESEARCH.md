@@ -11,6 +11,7 @@
 | 答案／證明／成本的評估 | [EVALUATION](../../../research/math-proof-agent/EVALUATION.zh-TW.md) |
 | 預定TPU限制 | [TPU-PLAN](../../../research/math-proof-agent/TPU-PLAN.zh-TW.md) |
 | 第一輪已執行結果 | [ROUND001-RESULTS](../../../research/math-proof-agent/ROUND001-RESULTS.zh-TW.md) |
+| 第二輪實作與執行阻塞 | [ROUND002-RESULTS](../../../research/math-proof-agent/ROUND002-RESULTS.zh-TW.md) → [MATH-002 HANDOFF](../../verification/MATH-002/HANDOFF.md) |
 | 任務與交接 | [MATH-001](../../management/tasks/MATH-001.json) → [HANDOFF](../../verification/MATH-001/HANDOFF.md) |
 
 方法優先順序：固定現成模型＋數學工具＋verify/repair；基線成立後再按瓶頸選SFT／蒸餾、RL或TTT。不能把學姊相關公開OPD方法改稱RL，也不能把LLM verifier分數當成形式化證明。

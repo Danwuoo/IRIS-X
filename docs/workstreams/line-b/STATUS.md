@@ -1,6 +1,6 @@
 # Math proof-agent STATUS (compatibility workstream: line-b)
 
-Updated: 2026-10-18. Task state: [generated board](../../management/BOARD.md).
+Updated: 2026-10-19. Task state: [generated board](../../management/BOARD.md).
 Research entry: [RESEARCH.md](RESEARCH.md).
 
 ## Scope
@@ -23,24 +23,38 @@ a TPU feasibility plan, and an executed 32-case exact-certificate audit. It is
 an authored CPU verifier pilot, not an LLM/Lean/TPU or IMO/Putnam benchmark.
 See the source-bound handoff for actual commands, outcomes and limitations.
 
+MATH-002 adds one pinned TPU model adapter, restricted Lean worker, bounded
+sampling/repair controller and task-owned monitor. Local safety/CPU numerical
+controls and actual WSL Lean core/isolation controls ran; these are engineering
+evidence. The first private TPU push returned a batch-session-capacity error
+despite CLI exit0. Exact task readback returned HTTP403; version remains unknown.
+See [R002 results](../../../research/math-proof-agent/ROUND002-RESULTS.zh-TW.md).
+
 ## Blockers
 
-No target model, Lean installation, actual TPU capability or representative
-model-evaluation panel has been executed/qualified. Shared WSF-R5 independent
+No actual TPU target model or representative human-reviewed evaluation panel
+has been qualified. Local Lean core controls passed; mathlib and Kaggle Lean/
+isolation remain unqualified. The unresolved submission retains one attempt
+and 1800 seconds of the 4-attempt/21600-second ceiling and blocks further push.
+Shared WSF-R5 independent
 acceptance remains unresolved; this research does not change existing reviews.
 The inherited management/suite IDs are not renamed in this documentation task.
 
 ## Next
 
-Read the research direction and MATH-001 report. Next bounded implementation is
-one Lean verifier and one TPU model adapter, then a fixed-model paired independent-
-sampling versus verifier-guided-repair pilot. Pin data/compute conditions before
-viewing outcomes. Do not treat the certificate audit as agent improvement.
+Read the MATH-002 handoff; reconcile the unknown submission read-only, without
+disturbing other account work. Resolve human statement fidelity and actual
+runtime qualification before freezing any scoring panel. Only then can a
+fixed-model paired sampling/repair pilot answer the research question. No model
+gain, zero gain or negative effect is inferred from a provider rejection.
 
 ## Boundaries
 
 Keep main, develop, active ARC and historical research refs untouched. Use
-separate worktrees and ignored `.irisx/line-b/<task>/` outputs. Initial execution
-is stdlib CPU only: no training, Kaggle/provider run, model/evaluator/transfer
-acquisition or external contact. Future model experiments need explicit pinned
-resource/data scope. Do not publish PutnamBench proofs or hidden evaluator data.
+separate worktrees and ignored `.irisx/line-b/<task>/` outputs. MATH-001's initial
+stdlib-only scope remains historical. The owner's 2026-10-19 MATH-002 scope
+permits bounded private Kaggle inference/verification and compatible public
+dependencies/models, as recorded in its single plan. No training, paid API,
+ARC resource operation, blocked transfer archive, public benchmark solution
+acquisition or external contact is authorized. Do not publish PutnamBench
+proofs or hidden evaluator data. This exception does not broaden other tasks.
