@@ -8,6 +8,7 @@ The pinned trusted libraries and Lean kernel remain part of the trust base.
 from __future__ import annotations
 
 import dataclasses
+import copy
 import hashlib
 import json
 import os
@@ -26,6 +27,7 @@ from typing import Any
 POLICY_VERSION = "math002-restricted-lean-v1"
 ALLOWED_AXIOMS = frozenset({"propext", "Quot.sound", "Classical.choice"})
 THEOREM_NAME = "irisx_final"
+ANSWER_BINDING_KIND = "closed_exists_nat_v1"
 IDENT = r"[A-Za-z_][A-Za-z0-9_']*(?:\.[A-Za-z_][A-Za-z0-9_']*)*"
 SIMPLE_TACTICS = frozenset({"rfl", "assumption", "constructor", "left", "right",
                            "trivial", "contradiction", "omega", "ring", "ring_nf",
@@ -65,6 +67,47 @@ def statement_digest(statement: dict[str, Any]) -> str:
     """Only immutable statement fields enter this digest; no answer/proof field."""
     return canonical_sha256({key: statement[key] for key in
                              ("id", "imports", "declaration", "fidelity")})
+
+
+def normalize_nat_answer(answer: str) -> str:
+    """Accept a canonical decimal numeral only; never parse an arbitrary term."""
+    if not isinstance(answer, str) or re.fullmatch(r"(?:0|[1-9][0-9]{0,59})", answer) is None:
+        raise ValueError("answer_must_be_canonical_Nat_numeral_at_most_60_digits")
+    return answer
+
+
+def normalized_answer_sha256(answer: str) -> str:
+    return hashlib.sha256(normalize_nat_answer(answer).encode("utf-8")).hexdigest()
+
+
+def answer_candidate_digest(answer: str, proof_body: str) -> str:
+    if not isinstance(proof_body, str):
+        raise ValueError("proof_body_must_be_text")
+    return canonical_sha256({"answer": normalize_nat_answer(answer), "proof_body": proof_body})
+
+
+def answer_binding_digest(spec: dict[str, Any]) -> str:
+    """Validate the versioned binding shape, not the truth of review metadata."""
+    if not isinstance(spec, dict) or set(spec) != {
+            "kind", "statement_sha256", "review_ref", "answer_mode"}:
+        raise ValueError("answer_binding_spec_shape_invalid")
+    if (spec["kind"] != ANSWER_BINDING_KIND or spec["answer_mode"] != "find_answer"
+            or not isinstance(spec["statement_sha256"], str)
+            or re.fullmatch(r"[0-9a-f]{64}", spec["statement_sha256"]) is None
+            or not isinstance(spec["review_ref"], str)
+            or not spec["review_ref"].strip() or len(spec["review_ref"]) > 1024):
+        raise ValueError("answer_binding_spec_values_invalid")
+    return canonical_sha256(spec)
+
+
+def _validate_closed_exists_nat(declaration: str) -> None:
+    # A conservative admission grammar, not a replacement for Lean elaboration.
+    # The exact original declaration is retained. Its body is a trusted frozen
+    # statement, not a predicate translated or supplied by the candidate.
+    match = re.fullmatch(r"\s*:\s*∃\s+[A-Za-z_][A-Za-z0-9_']*\s*:\s*"
+                         r"(?:_root_\.)?Nat\s*,\s*(.+)", declaration, re.DOTALL)
+    if not match or re.search(r"∃|\bExists(?:Unique)?\b", match.group(1)):
+        raise ValueError("answer_binding_requires_single_closed_Nat_existential")
 
 
 def parse_proof_body(body: str) -> str:
@@ -306,6 +349,7 @@ class LeanConfig:
     work_root: str | None = None
     limits: Limits = dataclasses.field(default_factory=Limits)
     statement_sha256s: dict[str, str] = dataclasses.field(default_factory=dict)
+    answer_bindings: dict[str, dict[str, Any]] = dataclasses.field(default_factory=dict)
     engineering_controls_only: bool = False
 
 
@@ -316,7 +360,11 @@ class LeanWorker:
             if isinstance(fields.get("limits"), dict):
                 fields["limits"] = Limits(**fields["limits"])
             config = LeanConfig(**fields)
-        self.config = config
+        # Detach caller-owned maps; admission must not change as a side effect of
+        # mutating the dictionaries used to construct this worker.
+        self.config = dataclasses.replace(config,
+            statement_sha256s=copy.deepcopy(config.statement_sha256s),
+            answer_bindings=copy.deepcopy(config.answer_bindings))
         self._preflight: dict[str, Any] | None = None
 
     def identity(self) -> str:
@@ -334,8 +382,13 @@ class LeanWorker:
             "mathlib_revision": config.mathlib_revision,
             "lean_paths": config.lean_paths, "limits": dataclasses.asdict(config.limits),
             "statements": config.statement_sha256s,
+            "answer_bindings": config.answer_bindings,
             "engineering_controls_only": config.engineering_controls_only,
         })
+
+    def answer_binding_spec(self, statement_id: str) -> dict[str, Any] | None:
+        """Return a detached registration; this does not qualify its provenance."""
+        return copy.deepcopy(self.config.answer_bindings.get(statement_id))
 
     def preflight(self) -> dict[str, Any]:
         config = self.config
@@ -352,7 +405,7 @@ class LeanWorker:
             if not config.expected_runtime_sha256 or actual != config.expected_runtime_sha256:
                 raise ValueError("runtime_fingerprint_mismatch")
             # Version runs in the same sandbox as proofs, never using an ambient elan proxy.
-            execution = self._run_source(None, ["/lean/bin/lean", "--version"])
+            execution = self._run_source(None, ["/lean/bin/lean", "-j1", "--version"])
             evidence["lean_version_execution"] = execution
             if execution["exit_code"] or config.expected_lean_version != execution["output"].strip():
                 raise ValueError("lean_version_mismatch")
@@ -402,11 +455,31 @@ class LeanWorker:
 
     def verify(self, statement: dict[str, Any], proof_body: str,
                deadline: float | None = None) -> dict[str, Any]:
+        return self._verify(statement, proof_body, deadline=deadline)
+
+    def verify_answer(self, statement: dict[str, Any], answer: str, proof_body: str,
+                      deadline: float | None = None) -> dict[str, Any]:
+        """Prove the unchanged existential with the candidate as a fixed witness.
+
+        The nested tactic body receives only the residual goal for that numeral.
+        The final theorem's transitive axiom audit also covers this nested proof.
+        No separate predicate template or model-controlled theorem is introduced.
+        """
+        return self._verify(statement, proof_body, deadline=deadline,
+                            answer_route=True, answer=answer)
+
+    def _verify(self, statement: dict[str, Any], proof_body: str,
+                deadline: float | None = None, *, answer_route: bool = False,
+                answer: str | None = None) -> dict[str, Any]:
         result: dict[str, Any] = {"policy": POLICY_VERSION, "status": "infrastructure_blocked",
                                  "proof_status": "unsupported", "accepted": False,
-                                 "trust_policy_passed": False,
-                                 "candidate_sha256": hashlib.sha256(proof_body.encode()).hexdigest()}
+                                 "trust_policy_passed": False}
+        binding_receipt = None
         try:
+            if not isinstance(proof_body, str):
+                raise ValueError("proof_body_must_be_text")
+            result["candidate_sha256"] = (answer_candidate_digest(answer, proof_body)
+                if answer_route else hashlib.sha256(proof_body.encode()).hexdigest())
             digest = statement_digest(statement)
             result["statement_sha256"] = digest
             expected_fidelity = "authored_engineering_control" if self.config.engineering_controls_only else "human_checked"
@@ -424,6 +497,27 @@ class LeanWorker:
             if not isinstance(declaration, str) or len(declaration) > 16384:
                 raise ValueError("invalid_pinned_statement")
             body = parse_proof_body(proof_body)
+            spec = self.answer_binding_spec(statement["id"])
+            if not answer_route and statement["id"] in self.config.answer_bindings:
+                raise ValueError("registered_answer_binding_requires_verify_answer")
+            if answer_route:
+                spec_digest = answer_binding_digest(spec)
+                if spec["statement_sha256"] != digest:
+                    raise ValueError("answer_binding_statement_digest_mismatch")
+                engineering_ref = spec["review_ref"].startswith("engineering:")
+                if engineering_ref != self.config.engineering_controls_only:
+                    raise ValueError("answer_binding_review_scope_mismatch")
+                _validate_closed_exists_nat(declaration)
+                # Only a canonical numeral enters the trusted constructor.
+                # The original theorem type is unchanged, so the kernel checks
+                # P(answer). The enclosed tactics cannot replace that witness.
+                body = ("  _root_.Exists.intro (" + normalize_nat_answer(answer) +
+                        " : _root_.Nat) (by\n" +
+                        "\n".join("  " + line for line in body.splitlines()[1:]) + "\n  )")
+                binding_receipt = {"kind": ANSWER_BINDING_KIND, "status": "kernel_verified",
+                    "statement_sha256": digest, "spec_sha256": spec_digest,
+                    "normalized_answer_sha256": normalized_answer_sha256(answer),
+                    "candidate_sha256": result["candidate_sha256"]}
         except (KeyError, TypeError, ValueError) as exc:
             return result | {"status": "invalid_format", "reason": str(exc)}
         if self._preflight is None:
@@ -455,6 +549,8 @@ class LeanWorker:
         if execution["exit_code"] < 0 or 128 <= execution["exit_code"] <= 255:
             return result | {"status": "infrastructure_error", "reason": "Lean_terminated_by_signal"}
         if execution["exit_code"] != 0:
+            if "failed to create thread" in execution["output"]:
+                return result | {"status": "infrastructure_error", "reason": "Lean_thread_creation_failed"}
             return result | {"status": "rejected", "proof_status": "incomplete"}
         output = execution["output"]
         patterns = [r"'irisx_final' depends on axioms: \[([^\]]*)\]",
@@ -468,6 +564,8 @@ class LeanWorker:
         result["axiom_audit"] = "Lean #print axioms of final theorem, including transitive dependencies"
         if not set(axioms).issubset(ALLOWED_AXIOMS):
             return result | {"status": "trust_rejected", "reason": "axiom_policy_failed"}
+        if binding_receipt is not None:
+            result["answer_binding"] = binding_receipt
         return result | {"status": "accepted", "proof_status": "kernel_verified", "accepted": True,
                          "trust_policy_passed": True,
                          "trust_base": "pinned Lean kernel/libraries + restricted tactic grammar + measured Linux isolation"}

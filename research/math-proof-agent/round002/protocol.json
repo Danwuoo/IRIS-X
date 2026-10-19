@@ -1,5 +1,5 @@
 {
-  "format": "irisx.math.round002.protocol.v2",
+  "format": "irisx.math.round002.protocol.v3",
   "status": "draft_not_scoring_authorized",
   "question": "Equal-ceiling independent sampling versus verifier-guided repair",
   "arms": {
@@ -21,7 +21,7 @@
   "context_length": 8192,
   "context_qualification": "UNQUALIFIED: 4096 previous output tokens plus base/feedback plus 4096 new tokens cannot fit 8192. Before freeze measure a larger supported context or preregister a smaller equal completion ceiling. Do not silently truncate or change one arm.",
   "feedback_max_chars": 4000,
-  "system_prompt": "Prove exactly the supplied immutable Lean statement. Return one JSON object with exactly answer (string or null) and proof_body (string). Do not change assumptions, variables, definitions, quantifiers, imports or goal. For proof-only tasks set answer to null. The proof_body must start with by on its own line followed by indented allowed tactic lines. Only the pinned restricted grammar is accepted; no declarations, metaprograms or arbitrary expressions. No external retrieval is available. Allowed tactics: rfl, assumption, constructor, left, right, trivial, contradiction, omega, ring, ring_nf, norm_num, simp, simp_all, decide; intro/intros/revert followed by identifiers; exact/apply followed by one identifier; symm at followed by one identifier; simp/simp_all/norm_num with an optional only and a bracketed comma-space-separated list of identifiers. Bullets may prefix a tactic. Each line uses spaces, no tabs. No sorry, native evaluation, nested terms, declarations, quotations or custom tactics.",
+  "system_prompt": "Prove exactly the supplied immutable Lean statement. Return one JSON object with exactly answer (string or null) and proof_body (string). Do not change assumptions, variables, definitions, quantifiers, imports or goal. For proof-only tasks set answer to null. The proof_body must start with by on its own line followed by indented allowed tactic lines. Only the pinned restricted grammar is accepted; no declarations, metaprograms or arbitrary expressions. No external retrieval is available. Allowed tactics: rfl, assumption, constructor, left, right, trivial, contradiction, omega, ring, ring_nf, norm_num, simp, simp_all, decide; intro/intros/revert followed by identifiers; exact/apply followed by one identifier; symm at followed by one identifier; simp/simp_all/norm_num with an optional only and a bracketed comma-space-separated list of identifiers. Bullets may prefix a tactic. Each line uses spaces, no tabs. No sorry, native evaluation, nested terms, declarations, quotations or custom tactics. For an admitted find_answer task, answer must be a canonical nonnegative decimal integer string (at most 60 digits, no leading zero except 0). The trusted wrapper selects that integer as the witness of the unchanged single Nat existential. Your proof_body must prove the remaining property for that exact integer, not introduce another witness. Unsupported answer types are not admitted.",
   "gold_access": "evaluator_only_after_selection",
   "retrieval": "none; installed fixed theorem library only",
   "stop_on_success": true,
@@ -31,7 +31,16 @@
     "find_answer"
   ],
   "proof_success": "fixed statement binding and kernel_verified and axiom policy passed",
-  "joint_success": "UNQUALIFIED: requires a reviewed kernel-checked binding of the discovered answer to the fixed original proposition; independent answer correctness plus an unrelated/existential proof does not suffice. Current controller blocks find_answer before generation and analyzer returns null joint_rate.",
+  "joint_success": "Only admitted closed_exists_nat_v1 find_answer tasks: kernel verifies the immutable original existential theorem using the exact proposed canonical Nat as its witness, with candidate/spec/statement fingerprints and axiom policy. A separate correct answer or unrelated proof does not suffice. Unsupported or unreviewed tasks block before generation. No real source or scored panel is admitted yet.",
+  "answer_binding_policy": {
+    "kind": "closed_exists_nat_v1",
+    "domain": "Nat",
+    "candidate_format": "canonical decimal string: 0 or nonzero digit followed by up to59 digits",
+    "proof_goal": "The trusted Exists.intro wrapper fixes the candidate witness; model proof_body proves the remaining property under the unchanged original final theorem",
+    "scope": "closed single Nat existential only; no outer parameters, arbitrary terms, rational witnesses, unique-existence or find-all reinterpretation",
+    "fidelity": "The human-reviewed original existential must already express the complete source problem; never weaken a stronger problem to fit this route",
+    "answer_key": "Not required for a kernel-bound witness; optional private exact keys only check consistency after selection. Disagreement blocks a joint conclusion."
+  },
   "scoring_identity_format": "irisx.math.scoring-identity.v1; code_sha and source_sha256 from the committed execution manifest; explicit protocol_semantic_sha256, panel_semantic_sha256, model_spec_sha256 and verifier_spec_sha256. The smoke uses raw-file hashes and is not a scoring manifest.",
   "cost_reporting": "Sum observed prompt/output/compile and generation cost, tool count/wall, verifier setup and arm wall separately. Missing or partial receipts remain explicit; observed model sums are lower bounds when incomplete.",
   "missing_results": "retain in planned denominator as not_completed",

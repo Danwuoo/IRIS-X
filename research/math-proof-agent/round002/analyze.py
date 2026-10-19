@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import Counter
 import math
 from common import digest, validate_scoring_identity
+from evaluator import bound_answer_matches, supported_answer_problem
 
 
 def generation_observed(row):
@@ -44,6 +45,8 @@ def analyze(panel, records, seeds, expected_identities=None):
             if (tool.get("proof_status") != "kernel_verified" or tool.get("trust_policy_passed") is not True
                     or tool.get("statement_sha256") != problem["statement_sha256"]):
                 raise ValueError("proof success lacks matching trusted verifier receipt")
+            if supported_answer_problem(problem) and not bound_answer_matches(selected[0], problem):
+                raise ValueError("joint-task proof lacks exact candidate witness binding")
     summary = {}
     for arm in arms:
         counts = Counter()
@@ -56,10 +59,15 @@ def analyze(panel, records, seeds, expected_identities=None):
                 counts[row.get("status", "not_completed")] += 1
                 if p["answer_mode"] == "find_answer":
                     counts["joint_denominator"] += 1
-                    # No answer-proof binding is qualified. Never promote a
-                    # caller-supplied success flag into a joint result.
-                    counts["joint_unqualified"] += 1
+                    counts["joint_unqualified"] += int(not supported_answer_problem(p))
+                    counts["joint_generation_observed_rows"] += int(generation_observed(row))
                     counts["answer_correct"] += int(row.get("answer_status") == "correct")
+                    selected = next((event for event in row.get("events", []) if event.get("status") == "accepted"), {})
+                    counts["joint_success"] += int(row.get("status") == "proof_accepted"
+                                                   and row.get("joint_status") == "kernel_verified"
+                                                   and row.get("answer_status") == "correct"
+                                                   and bound_answer_matches(selected, p))
+                    counts["evaluator_key_disagreements"] += int(row.get("joint_status") == "blocked_key_disagreement")
                 for key in ("verifier_setup_seconds", "wall_seconds"):
                     value = row.get(key)
                     if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value >= 0:
@@ -88,17 +96,46 @@ def analyze(panel, records, seeds, expected_identities=None):
                                           and costs["tool_wall_missing_calls"] == 0),
                         "proof_rate": counts["proof_accepted"] / n if n and counts["generation_observed_rows"] else None,
                         "proof_rate_scope": "known successes over planned denominator; missing items retained; null when no generation observed",
-                        "joint_rate": None,
-                        "joint_status": "unqualified_answer_proof_binding" if counts["joint_denominator"] else "not_applicable"}
+                        "joint_rate": (counts["joint_success"] / counts["joint_denominator"]
+                                       if counts["joint_denominator"] and not counts["joint_unqualified"]
+                                       and counts["joint_generation_observed_rows"] and not counts["evaluator_key_disagreements"] else None),
+                        "joint_status": ("not_applicable" if not counts["joint_denominator"] else
+                                         "unqualified_answer_proof_binding" if counts["joint_unqualified"] else
+                                         "blocked_key_disagreement" if counts["evaluator_key_disagreements"] else
+                                         "not_estimable" if not counts["joint_generation_observed_rows"] else "kernel_bound_witness")}
     paired = Counter()
     for p in panel:
         for seed in seeds:
-            a = lookup.get((p["id"], seed, "M-SAMPLE"), {}).get("status")
-            b = lookup.get((p["id"], seed, "M-REPAIR"), {}).get("status")
-            if a is None or b is None:
+            rows = [lookup.get((p["id"], seed, arm)) for arm in ("M-SAMPLE", "M-REPAIR")]
+            if any(row is None for row in rows):
                 paired["incomplete_pair"] += 1
+            elif not all(generation_observed(row) for row in rows):
+                paired["no_generation_pair"] += 1
             else:
+                a, b = (row.get("status") for row in rows)
                 paired["gain" if b == "proof_accepted" and a != b else
                        "loss" if a == "proof_accepted" and b != a else "tie"] += 1
-    return {"arms": summary, "paired": dict(paired), "unit": "problem; seeds are repeated measures",
+    paired_joint = Counter()
+    for p in panel:
+        if p["answer_mode"] != "find_answer":
+            continue
+        for seed in seeds:
+            rows = [lookup.get((p["id"], seed, arm)) for arm in ("M-SAMPLE", "M-REPAIR")]
+            if not supported_answer_problem(p) or any(row is None for row in rows):
+                paired_joint["incomplete_or_unqualified_pair"] += 1
+                continue
+            if not all(generation_observed(row) for row in rows):
+                paired_joint["no_generation_pair"] += 1
+                continue
+            if any(row.get("joint_status") == "blocked_key_disagreement" for row in rows):
+                paired_joint["blocked_key_disagreement"] += 1
+                continue
+            success = []
+            for row in rows:
+                selected = next((event for event in row.get("events", []) if event.get("status") == "accepted"), {})
+                success.append(row.get("status") == "proof_accepted" and row.get("joint_status") == "kernel_verified"
+                               and row.get("answer_status") == "correct" and bound_answer_matches(selected, p))
+            a, b = success
+            paired_joint["gain" if b and not a else "loss" if a and not b else "tie"] += 1
+    return {"arms": summary, "paired": dict(paired), "paired_joint": dict(paired_joint), "unit": "problem; seeds are repeated measures",
             "conclusion": "descriptive_pilot_only" if any(generation_observed(row) for row in records) else "not_estimable"}

@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import atomic_json, digest, file_digest, validate_scoring_identity
 from lean_worker import statement_digest
 from model_adapter import ContextBudgetError
+from evaluator import bound_answer_matches, supported_answer_problem
 
 ARMS = {"M-DIRECT": 1, "M-SAMPLE": 4, "M-REPAIR": 4}
 RUNTIME_SOURCES = frozenset({"common.py", "controller.py", "lean_worker.py", "model_adapter.py",
@@ -24,11 +25,15 @@ def solver_view(problem):
             or not isinstance(statement.get("imports"), list)
             or any(not isinstance(item, str) for item in statement["imports"])):
         raise ValueError("solver fields must be scalar text or import names")
-    return {"id": problem["id"], "natural_language": problem["natural_language"],
+    result = {"id": problem["id"], "natural_language": problem["natural_language"],
             "answer_mode": problem["answer_mode"],
             "statement": {"id": statement["id"], "imports": list(statement["imports"]),
                           "declaration": statement["declaration"], "fidelity": statement["fidelity"],
                           "sha256": statement["sha256"]}}
+    if problem["answer_mode"] == "find_answer":
+        # Only a fixed mode label; never copy review metadata or arbitrary spec fields.
+        result["answer_binding"] = {"kind": "closed_exists_nat_v1", "domain": "Nat"}
+    return result
 
 
 def parse_candidate(text):
@@ -46,10 +51,13 @@ def parse_candidate(text):
     return value
 
 
-def accepted(result, problem):
-    return (result.get("proof_status") == "kernel_verified"
+def accepted(result, problem, candidate=None):
+    proof_ok = (result.get("proof_status") == "kernel_verified"
             and result.get("statement_sha256") == problem["statement_sha256"]
             and result.get("trust_policy_passed") is True)
+    if not proof_ok or problem.get("answer_mode") != "find_answer":
+        return proof_ok
+    return bound_answer_matches({"status": "accepted", "candidate": candidate, "tool": result}, problem)
 
 
 def validate_binding(problem, model, verifier, protocol, identities, panel, source_files, execution_manifest):
@@ -127,12 +135,17 @@ def execute_arm(problem, arm, seed, model, verifier, protocol, output, identitie
         state.update(status="infrastructure_blocked", wall_seconds=0.0)
         atomic_json(output / "checkpoint.json", state)
         return state
-    # No reviewed witness/answer binding is implemented yet. Do not spend
-    # proposals on a joint task that this verifier cannot certify.
     if problem["answer_mode"] == "find_answer":
-        state.update(status="infrastructure_blocked", reason="answer_proof_binding_unqualified", wall_seconds=0.0)
-        atomic_json(output / "checkpoint.json", state)
-        return state
+        try:
+            binding_ok = (supported_answer_problem(problem)
+                          and verifier.answer_binding_spec(problem["statement"]["id"]) == problem["answer_binding"])
+        except (AttributeError, KeyError, TypeError, ValueError):
+            binding_ok = False
+        if not binding_ok:
+            state.update(status="infrastructure_blocked", reason="answer_proof_binding_unqualified", wall_seconds=0.0)
+            atomic_json(output / "checkpoint.json", state)
+            return state
+        state["joint_status"] = "not_completed"
     started = time.monotonic()
     deadline = started + protocol["arm_wall_seconds"]
     state["status"] = "running"
@@ -180,11 +193,18 @@ def execute_arm(problem, arm, seed, model, verifier, protocol, output, identitie
             tool_start = time.monotonic()
             event["tool_attempted"] = True
             try:
-                result = verifier.verify(problem["statement"], candidate["proof_body"], deadline=deadline)
+                if problem["answer_mode"] == "find_answer":
+                    result = verifier.verify_answer(problem["statement"], candidate["answer"],
+                                                    candidate["proof_body"], deadline=deadline)
+                else:
+                    result = verifier.verify(problem["statement"], candidate["proof_body"], deadline=deadline)
             finally:
                 event["tool_wall_seconds"] = time.monotonic() - tool_start
             event.update(tool=result, feedback=result.get("execution", {}).get("output", result.get("reason", "")))
-            event["status"] = "accepted" if accepted(result, problem) else result.get("status", "unknown")
+            qualifies = accepted(result, problem, candidate)
+            event["status"] = "accepted" if qualifies else result.get("status", "unknown")
+            if event["status"] == "accepted" and not qualifies:
+                event.update(status="trust_rejected", feedback="verifier receipt binding failed")
             if time.monotonic() > deadline:
                 event["status"] = "timeout"
         except ContextBudgetError:
@@ -204,6 +224,8 @@ def execute_arm(problem, arm, seed, model, verifier, protocol, output, identitie
         atomic_json(output / "checkpoint.json", state)
         if event["status"] == "accepted":
             state["status"] = "proof_accepted"
+            if problem["answer_mode"] == "find_answer":
+                state.update(answer_status="correct", joint_status="kernel_verified", answer_evidence="kernel_witness")
             break
         if event["status"] in {"infrastructure_error", "infrastructure_blocked", "context_budget_exceeded"}:
             state["status"] = event["status"]

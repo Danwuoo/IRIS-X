@@ -215,3 +215,78 @@ This qualifies only these imports and authored local controls. It does not claim
 full Mathlib coverage, human statement review, an independent proof checker,
 model success, or Kaggle isolation. The original unresolved Kaggle submission
 and the absent human-reviewed frozen panel still block a scored comparison.
+
+## Nat answer binding follow-up after delivery 8ba60f78
+
+`LeanWorker.verify_answer(statement, answer, proof_body, deadline=None)` adds one
+limited answer-and-proof route. It supports a closed original declaration of the
+form `: ∃ n : Nat, P n`, with a single existential and no outer binders. The answer
+must be a canonical decimal string matching `0|[1-9][0-9]{0,59}`. It is never read
+as an arbitrary Lean term. Rat/Int witnesses, uniqueness, nested existentials,
+given answers and other shapes are explicitly unsupported.
+
+The worker retains the exact frozen theorem declaration and constructs
+`_root_.Exists.intro (candidate : _root_.Nat) (by ...restricted tactics...)`.
+The candidate tactics must prove the residual property for that fixed numeral;
+they cannot replace the outer witness. The final theorem's transitive axiom
+audit includes this nested proof. This avoids a separately translated property
+template, and no new theorem or changed goal is substituted for the original.
+
+Each statement needs a configured `answer_bindings` entry with exactly `kind`,
+`statement_sha256`, `review_ref`, and `answer_mode`. The kind is
+`closed_exists_nat_v1` and mode is `find_answer`. This map enters the verifier
+identity; the worker copies caller maps and returns detached specifications.
+The proof-only `verify()` route refuses registered answer bindings. Engineering
+controls require an `engineering:` review reference and their existing explicit
+engineering fidelity. Production excludes that prefix and still requires the
+separately reviewed statement/panel. A nonempty review reference alone does not
+prove that a human review occurred.
+
+Only an accepted kernel proof with the allowed transitive axioms produces an
+`answer_binding` receipt. It binds kind, statement hash, specification hash, the
+SHA-256 of canonical answer UTF-8 bytes, and the candidate hash. The candidate
+hash is canonical JSON SHA-256 of `{answer: canonical decimal, proof_body: exact
+original body}`. Changing either answer or proof therefore invalidates the
+receipt. `answer_binding_digest`, `answer_candidate_digest`, and
+`normalized_answer_sha256` expose the exact same computations to the controller
+and analyzer. Source identity also binds this new route; the earlier policy
+label and immutable historical reports were not rewritten.
+
+The following invocation ran locally, sequentially, using the existing runtime:
+
+```bash
+PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean/answer_controls.py --config .irisx/line-b/MATH-002/lean-config-local.json --output .irisx/line-b/MATH-002/answer-binding/controls-final-nullguard.json
+```
+
+Use a fresh output filename to reproduce. The final worker SHA-256 was
+`9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a`.
+There were 44/44 verification/admission controls, including six actual Lean
+candidate executions; 7/7 pure helper controls; one separate synthetic process
+receipt control; and 19/19 measured isolation controls. The six real candidates
+covered a correct witness, wrong witness, zero, a 60-digit numeral, attempting to
+substitute another existential theorem for the residual proof, and a transitive
+hidden axiom. The last is rejected despite Lean exit 0. Final wall cost was
+6.336 seconds, including 5.344 seconds of preflight. No model generated these
+engineering controls and they are not an evaluation panel.
+
+Final-source sequential regressions passed the original core 7/7, parser 13/13,
+Mathlib 10/10 and the Mathlib script's separate six synthetic exit controls.
+One earlier concurrent core/Mathlib regression failed with thread-creation
+errors; both raw receipts remain. Its core 4/7 status-match count is not semantic
+qualification, and the Mathlib version probe failed before any candidate.
+Sequential reproduction passed. The worker now records the observed nonzero
+thread-creation failure as `infrastructure_error`, and its Lean version probe
+also uses `-j1`. Linux process limits can be shared across a user's concurrent
+threads/processes, so qualification and inference must keep one worker active.
+No resource limit was relaxed to hide these failures.
+The last source revision additionally ensures even a malformed `null`
+registration blocks the proof-only route; all final sequential regressions were
+repeated on that revision with fresh `-nullguard.json` receipt names.
+
+The complete sanitized commands, exit codes, attempt hashes, costs and scope
+are in [`answer-binding-tests.json`](../../../../docs/verification/MATH-002/answer-binding-tests.json).
+The older core and Mathlib reports remain unchanged. This work acquired no new
+dependency, ran no model or benchmark question, and made no Kaggle call. It
+qualifies a narrow local engineering mechanism; actual source fidelity,
+representative panel admission, TPU model execution and paired efficacy remain
+unqualified.

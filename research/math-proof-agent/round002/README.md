@@ -22,21 +22,35 @@ existing smoke manifest contains raw-file hashes and cannot authorize scoring.
 `execute_arm` additionally requires `panel`, `source_files` and
 `execution_manifest` keyword arguments. No scoring manifest/runner is qualified.
 
-Two scientific gates remain intentionally closed. A separately correct answer
-and proof do not certify the same answer: the current controller blocks
-`find_answer`, and the analyzer reports `joint_rate: null` until a reviewed
-answer-to-proof binding exists. Also, context 8192 cannot accommodate a previous
-4096-token candidate plus instructions/feedback and another 4096 tokens. A
-feasible common completion/context policy must be measured and preregistered
+An admitted `closed_exists_nat_v1` task can now bind a canonical natural-number
+answer to the unchanged original existential theorem. The trusted Lean wrapper
+chooses that exact witness and checks the model's restricted proof of its
+remaining property, then audits the final theorem's transitive axioms. The
+controller/evaluator/analyzer recheck statement, specification, answer and proof
+hashes. Optional private answer keys only check consistency after selection;
+disagreement blocks the joint conclusion. Unsupported tasks still stop before
+generation. Authored controls qualify this narrow engineering path, not any real
+source or scoring panel. Original-statement fidelity and provenance remain gates.
+
+Context 8192 cannot accommodate a previous 4096-token candidate plus
+instructions/feedback and another 4096 tokens. Exact pinned-tokenizer controls
+in `context_controls.py` confirm this; 2048 is only a candidate common ceiling,
+with very little slack in one authored case, not an adopted or universal policy.
+A feasible common completion/context policy must be measured and preregistered
 before freezing; `context_budget_exceeded` is retained without futile retries.
 Timeouts outrank truncated-JSON parse failures. Missing/partial cost receipts
-remain visible; reported model-cost sums are observed lower bounds.
+remain visible; reported model-cost sums are observed lower bounds. A pair with
+either arm lacking generation is reported separately, never as a tie/gain/loss.
 
 [Source feasibility notes](source-feasibility-notes.json) correct an earlier
 overly strict source assessment: attributable upstream human review can satisfy
 statement fidelity without requiring the owner to repeat that review. The
 source/runtime/acquisition and joint-binding requirements still apply. No
 benchmark is admitted by metadata review alone.
+The [third source audit](source-feasibility-audit-03.json) records the unresolved
+proof-field acquisition assurance, answer-slot semantics and runtime pin. It
+also discloses an incidental methodology-paper example exposure to the audit
+agent; no answer value is reproduced or sent to a solver, and no panel was changed.
 
 `controls.py` uses scripted outputs solely for controller/budget negatives;
 `test_model_adapter.py` uses tiny random weights solely for numerical conversion
