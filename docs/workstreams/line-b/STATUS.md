@@ -25,7 +25,7 @@ See the source-bound handoff for actual commands, outcomes and limitations.
 
 MATH-002 adds one pinned TPU model adapter, restricted Lean worker, bounded
 sampling/repair controller and task-owned monitor. Local safety/CPU numerical
-controls and actual WSL Lean core/isolation controls ran; these are engineering
+controls and actual WSL Lean core/mathlib import-closure/isolation controls ran; these are engineering
 evidence. The first private TPU push returned a batch-session-capacity error
 despite CLI exit0. Exact task readback returned HTTP403; version remains unknown.
 See [R002 results](../../../research/math-proof-agent/ROUND002-RESULTS.zh-TW.md).
@@ -33,8 +33,10 @@ See [R002 results](../../../research/math-proof-agent/ROUND002-RESULTS.zh-TW.md)
 ## Blockers
 
 No actual TPU target model or representative human-reviewed evaluation panel
-has been qualified. Local Lean core controls passed; mathlib and Kaggle Lean/
-isolation remain unqualified. The unresolved submission retains one attempt
+has been qualified. Local Lean core and pinned mathlib Ring/NormNum controls passed;
+full mathlib and Kaggle Lean/isolation remain unqualified. Upstream human-reviewed
+source candidates exist; safe per-item acquisition/runtime admission, reviewed
+answer-proof binding and feasible repair context remain open. The unresolved submission retains one attempt
 and 1800 seconds of the 4-attempt/21600-second ceiling and blocks further push.
 Shared WSF-R5 independent
 acceptance remains unresolved; this research does not change existing reviews.
@@ -43,7 +45,7 @@ The inherited management/suite IDs are not renamed in this documentation task.
 ## Next
 
 Read the MATH-002 handoff; reconcile the unknown submission read-only, without
-disturbing other account work. Resolve human statement fidelity and actual
+disturbing other account work. Bind available upstream human-review evidence and actual
 runtime qualification before freezing any scoring panel. Only then can a
 fixed-model paired sampling/repair pilot answer the research question. No model
 gain, zero gain or negative effect is inferred from a provider rejection.

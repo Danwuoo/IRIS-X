@@ -41,7 +41,9 @@ smoke <=1800 秒。平台更低限制優先。未知提交只讀回查、不重�
 - **M2-PANEL**：24題仍為提案。需合法來源與人工形式忠實性核對，技術成本
   通過後在目標評分前凍結實際面板、來源/family/exposure/answer visibility、
   seed0、模型完整 revision 和預算；seed1/2 僅預算允許再做。缺少人工核對
-  紀錄即 blocked，不由實作者代簽。純證明與答案已給定題不可計 joint discovery。
+  紀錄即 blocked，不由實作者代簽；可採精確上游版本的可歸屬人工核對，不必
+  要求 owner 重做。純證明與答案已給定題不可計 joint discovery，找答案須額外
+  證明回傳答案與固定命題之 kernel 綁定，不能只並列答案比對與任意證明。
 - **M2-REMOTE**：單一 `.irisx/line-b/MATH-002/` state/lock；預設只讀監看，
   60秒輪詢、錯誤最多300秒退避且有界。CLI 2.2.4 status/logs/output 實作忽略
   version，故 exact-version 與 latest source readback 一致且唯一 task writer
@@ -53,6 +55,9 @@ smoke <=1800 秒。平台更低限制優先。未知提交只讀回查、不重�
 ## 已知前置限制
 
 既有 R001 是 authored CPU certificate audit，並非 model/Lean/TPU 成績。
-目前 repository 未附人工核對 formal panel；正式評分須補來源證據。
+目前 repository 未凍結 formal panel；來源補查已找到上游人工核對候選，詳見
+round002/source-feasibility-notes.json，尚待安全取得欄位與相符runtime。
+8192 context 無法容納4096-token舊候選、提示與另4096輸出；正式freeze前必須
+由實測選定可行的共同context/輸出上限。現在joint answer-proof binding也未資格化。
 Kaggle CLI 2.2.4 和既有帳號讀權已核對，TPU 可用性與 Lean 信任條件待實測。
 所有不可公開 proofs／原始收據只放 ignored task root。

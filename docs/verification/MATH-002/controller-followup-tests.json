@@ -1,0 +1,221 @@
+{
+  "format": "irisx.math.controller-followup-tests.v1",
+  "task": "MATH-002",
+  "scope": "Offline scripted implementation self-tests. No model/Lean/TPU execution, no benchmark results, no actual human statement review, no independent verification.",
+  "attempts": [
+    {
+      "started_at_utc": "20261019T041913898384Z",
+      "code_sha": "3fcb8410a4bf8dacb374e3cb3d42e7b881314af2",
+      "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python_executable": ".irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+      "working_sources_sha256_before": {
+        "research/math-proof-agent/round002/controls.py": "314148a1a2d8fa9f23911615938065e2bf15da1bfa17c163f450f7fc0d42bcae",
+        "research/math-proof-agent/round002/common.py": "04895e449839ca44c4a5abb9ea5170edcd1f11f6281e751a6969e98bfe206ad8",
+        "research/math-proof-agent/round002/controller.py": "5c5cb7f328641fefa2bb1229db7026ff124a80580f79f6a2d6a5eb744d815c85",
+        "research/math-proof-agent/round002/analyze.py": "8e13ed02121919b93bd66abd2d937e7db1a0f19ac79a051c339a258e477a1ec6",
+        "research/math-proof-agent/round002/evaluator.py": "5cec7d7a3f8d7bf2786a0fd659c09a174ac2e4bf26420d477b97a40a068a0570",
+        "research/math-proof-agent/round002/model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8",
+        "research/math-proof-agent/round002/lean_worker.py": "6f648a79b598c245b197a6314cd6c5c040612db161b3a8e6b33ba349d5a79c3b",
+        "research/math-proof-agent/round002/kaggle_run.py": "99820390b19cee9527a55eea1f6aa8332f062a95e767fcbc596d84e60bd55401",
+        "research/math-proof-agent/round002/sdk_readback.py": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964",
+        "research/math-proof-agent/round002/protocol.json": "1def5589b901369d986effce21daef6ceebcc79be0739d21f05a951ae134f9fe"
+      },
+      "commands": [
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "research/math-proof-agent/round002/controls.py"
+          ],
+          "controlled_startup": {
+            "PYTHONHASHSEED": "0",
+            "ignore_environment": 0,
+            "isolated": 0,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": 1,
+            "optimize": 0,
+            "effective_hash_probe": 7537361685259944414
+          },
+          "exit_code": 0,
+          "tests": 45,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "wall_seconds": 1.266,
+          "raw_log": ".irisx/line-b/MATH-002/controller-followup-20261019T041913898384Z/normal.txt",
+          "raw_log_sha256": "9f55172c22478db1c41ef843a15fbe2686e5d1be4e4fc74046628216f3797606",
+          "source_unchanged_during_command": true
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "research/math-proof-agent/round002/controls.py"
+          ],
+          "controlled_startup": {
+            "PYTHONHASHSEED": "0",
+            "ignore_environment": 0,
+            "isolated": 0,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": 1,
+            "optimize": 1,
+            "effective_hash_probe": 7537361685259944414
+          },
+          "exit_code": 0,
+          "tests": 45,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "wall_seconds": 1.938,
+          "raw_log": ".irisx/line-b/MATH-002/controller-followup-20261019T041913898384Z/optimized.txt",
+          "raw_log_sha256": "081afcac835a34d78003d43ffdfa684ec5ecb5ec3e8c95c1f2251ce17d493446",
+          "source_unchanged_during_command": true
+        }
+      ],
+      "working_sources_sha256_after": {
+        "research/math-proof-agent/round002/controls.py": "314148a1a2d8fa9f23911615938065e2bf15da1bfa17c163f450f7fc0d42bcae",
+        "research/math-proof-agent/round002/common.py": "04895e449839ca44c4a5abb9ea5170edcd1f11f6281e751a6969e98bfe206ad8",
+        "research/math-proof-agent/round002/controller.py": "5c5cb7f328641fefa2bb1229db7026ff124a80580f79f6a2d6a5eb744d815c85",
+        "research/math-proof-agent/round002/analyze.py": "8e13ed02121919b93bd66abd2d937e7db1a0f19ac79a051c339a258e477a1ec6",
+        "research/math-proof-agent/round002/evaluator.py": "5cec7d7a3f8d7bf2786a0fd659c09a174ac2e4bf26420d477b97a40a068a0570",
+        "research/math-proof-agent/round002/model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8",
+        "research/math-proof-agent/round002/lean_worker.py": "6f648a79b598c245b197a6314cd6c5c040612db161b3a8e6b33ba349d5a79c3b",
+        "research/math-proof-agent/round002/kaggle_run.py": "99820390b19cee9527a55eea1f6aa8332f062a95e767fcbc596d84e60bd55401",
+        "research/math-proof-agent/round002/sdk_readback.py": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964",
+        "research/math-proof-agent/round002/protocol.json": "1def5589b901369d986effce21daef6ceebcc79be0739d21f05a951ae134f9fe"
+      },
+      "source_unchanged": true,
+      "effective_seed_probes_match": true,
+      "status": "passed",
+      "total_test_executions": 90
+    }
+  ],
+  "limitations": [
+    "Scripted model and verifier receipts exercise controller contracts only.",
+    "Execution manifest is a trusted-packager fixture; this does not qualify a scoring packager or historical commit provenance.",
+    "Working source hashes, not preexisting HEAD alone, identify the tested uncommitted implementation.",
+    "No R001/WSF-R5 or prior run evidence is overwritten."
+  ],
+  "latest_status": "passed",
+  "latest_test_executions": 90,
+  "previous_attempts": [
+    {
+      "started_at_utc": "20261019T041758064702Z",
+      "code_sha": "3fcb8410a4bf8dacb374e3cb3d42e7b881314af2",
+      "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python_executable": ".irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+      "working_sources_sha256_before": {
+        "research/math-proof-agent/round002/controls.py": "d455632bcd011af9367293c6e39db9576b628c8fc6a5e53f41f3047037e8b841",
+        "research/math-proof-agent/round002/common.py": "04895e449839ca44c4a5abb9ea5170edcd1f11f6281e751a6969e98bfe206ad8",
+        "research/math-proof-agent/round002/controller.py": "5c5cb7f328641fefa2bb1229db7026ff124a80580f79f6a2d6a5eb744d815c85",
+        "research/math-proof-agent/round002/analyze.py": "815cb41054bd376aa348a01f17e345d4e866e0246cee6881abb8ad7d2d89f61a",
+        "research/math-proof-agent/round002/evaluator.py": "5cec7d7a3f8d7bf2786a0fd659c09a174ac2e4bf26420d477b97a40a068a0570",
+        "research/math-proof-agent/round002/model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8",
+        "research/math-proof-agent/round002/lean_worker.py": "6f648a79b598c245b197a6314cd6c5c040612db161b3a8e6b33ba349d5a79c3b",
+        "research/math-proof-agent/round002/kaggle_run.py": "99820390b19cee9527a55eea1f6aa8332f062a95e767fcbc596d84e60bd55401",
+        "research/math-proof-agent/round002/sdk_readback.py": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964",
+        "research/math-proof-agent/round002/protocol.json": "1def5589b901369d986effce21daef6ceebcc79be0739d21f05a951ae134f9fe"
+      },
+      "commands": [
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "research/math-proof-agent/round002/controls.py"
+          ],
+          "controlled_startup": {
+            "PYTHONHASHSEED": "0",
+            "ignore_environment": 0,
+            "isolated": 0,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": 1,
+            "optimize": 0,
+            "effective_hash_probe": 7537361685259944414
+          },
+          "exit_code": 0,
+          "tests": 42,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "wall_seconds": 1.453,
+          "raw_log": ".irisx/line-b/MATH-002/controller-followup-20261019T041758064702Z/normal.txt",
+          "raw_log_sha256": "16f2fd4bfbe42a3ed43cd45688e614bca328a60e92790d4bb1796fab5add820c",
+          "source_unchanged_during_command": true
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "research/math-proof-agent/round002/controls.py"
+          ],
+          "controlled_startup": {
+            "PYTHONHASHSEED": "0",
+            "ignore_environment": 0,
+            "isolated": 0,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": 1,
+            "optimize": 1,
+            "effective_hash_probe": 7537361685259944414
+          },
+          "exit_code": 0,
+          "tests": 42,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "wall_seconds": 1.75,
+          "raw_log": ".irisx/line-b/MATH-002/controller-followup-20261019T041758064702Z/optimized.txt",
+          "raw_log_sha256": "08e1a11666b990a82a4cc0ed3b2265de300d5c45990214c78620e82d52a709b4",
+          "source_unchanged_during_command": true
+        }
+      ],
+      "working_sources_sha256_after": {
+        "research/math-proof-agent/round002/controls.py": "d455632bcd011af9367293c6e39db9576b628c8fc6a5e53f41f3047037e8b841",
+        "research/math-proof-agent/round002/common.py": "04895e449839ca44c4a5abb9ea5170edcd1f11f6281e751a6969e98bfe206ad8",
+        "research/math-proof-agent/round002/controller.py": "5c5cb7f328641fefa2bb1229db7026ff124a80580f79f6a2d6a5eb744d815c85",
+        "research/math-proof-agent/round002/analyze.py": "815cb41054bd376aa348a01f17e345d4e866e0246cee6881abb8ad7d2d89f61a",
+        "research/math-proof-agent/round002/evaluator.py": "5cec7d7a3f8d7bf2786a0fd659c09a174ac2e4bf26420d477b97a40a068a0570",
+        "research/math-proof-agent/round002/model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8",
+        "research/math-proof-agent/round002/lean_worker.py": "6f648a79b598c245b197a6314cd6c5c040612db161b3a8e6b33ba349d5a79c3b",
+        "research/math-proof-agent/round002/kaggle_run.py": "99820390b19cee9527a55eea1f6aa8332f062a95e767fcbc596d84e60bd55401",
+        "research/math-proof-agent/round002/sdk_readback.py": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964",
+        "research/math-proof-agent/round002/protocol.json": "1def5589b901369d986effce21daef6ceebcc79be0739d21f05a951ae134f9fe"
+      },
+      "source_unchanged": true,
+      "effective_seed_probes_match": true,
+      "status": "passed",
+      "total_test_executions": 84
+    }
+  ],
+  "final_working_sources_sha256": {
+    "research/math-proof-agent/round002/controls.py": "314148a1a2d8fa9f23911615938065e2bf15da1bfa17c163f450f7fc0d42bcae",
+    "research/math-proof-agent/round002/common.py": "04895e449839ca44c4a5abb9ea5170edcd1f11f6281e751a6969e98bfe206ad8",
+    "research/math-proof-agent/round002/controller.py": "5c5cb7f328641fefa2bb1229db7026ff124a80580f79f6a2d6a5eb744d815c85",
+    "research/math-proof-agent/round002/analyze.py": "8e13ed02121919b93bd66abd2d937e7db1a0f19ac79a051c339a258e477a1ec6",
+    "research/math-proof-agent/round002/evaluator.py": "5cec7d7a3f8d7bf2786a0fd659c09a174ac2e4bf26420d477b97a40a068a0570",
+    "research/math-proof-agent/round002/model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8",
+    "research/math-proof-agent/round002/lean_worker.py": "6f648a79b598c245b197a6314cd6c5c040612db161b3a8e6b33ba349d5a79c3b",
+    "research/math-proof-agent/round002/kaggle_run.py": "99820390b19cee9527a55eea1f6aa8332f062a95e767fcbc596d84e60bd55401",
+    "research/math-proof-agent/round002/sdk_readback.py": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964",
+    "research/math-proof-agent/round002/protocol.json": "1def5589b901369d986effce21daef6ceebcc79be0739d21f05a951ae134f9fe"
+  },
+  "followup_reason": "New analyzer observation gate: blocked/context-only attempts retain counts and costs but do not imply a model proof rate; consumed-prompt timeout receipts establish only limited observed generation.",
+  "delivered_code_sha": "6eb0c1e242fda087f46024307f505aaee74cede4",
+  "delivery_sha_policy": "Containing delivery SHA is provided by final response and Draft PR #10; no self-containing hash.",
+  "execution_commit_scope": "Tests ran on exact recorded dirty working bytes based on 3fcb8410a4bf8dacb374e3cb3d42e7b881314af2; delivered source matches after CRLF/LF normalization. Not a claim of rerunning at a future commit."
+}

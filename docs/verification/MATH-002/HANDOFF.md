@@ -6,7 +6,9 @@ Return this handoff to the original ChatGPT conversation.
 
 - Branch: `feat/math-proof-agent-20261018`; Draft PR: https://github.com/Danwuoo/IRIS-X/pull/10 (base `develop`).
 - Starting SHA: `0deff2254d2e3b63b88c2eefc4c4f73856663047`.
-- Code / packaged runtime SHA: `ae051a79359c4e0be9658d89452c05793d64d831`.
+- First smoke packaged runtime SHA: `ae051a79359c4e0be9658d89452c05793d64d831`.
+- First delivery SHA: `3fcb8410a4bf8dacb374e3cb3d42e7b881314af2`; later offline corrections do not alter that submitted snapshot.
+- Current offline code SHA: `6eb0c1e242fda087f46024307f505aaee74cede4`; not submitted to Kaggle.
 - Delivery SHA: supplied by the final response and PR after this document's commit; no self-containing SHA is embedded.
 - Actual desktop checkout: `C:\Users\wurre\Desktop\IRIS-X-Math`.
 - Windows task venv: `.irisx/line-b/MATH-002/venv/`; optional numerical-control venv: `adapter-venv/` under the same task root.
@@ -36,14 +38,33 @@ Lean worker fixes statement fields and final theorem, parses restricted proof
 bodies, measures Linux isolation, limits resources and checks final transitive
 axioms against `{propext, Quot.sound, Classical.choice}`. `sorryAx`, arbitrary
 axioms and unqualified/native trust expansion are rejected. Compile exit0 alone
-does not accept. Local qualification is Lean core only; mathlib is unresolved.
+does not accept. Local qualification now includes Lean core and the pinned
+Mathlib v4.19.0 Ring/NormNum transitive import closure, within a separate 4 GiB
+worker configuration. It does not cover all Mathlib, other benchmark versions,
+the Kaggle host or arbitrary Lean code.
 
 Controller permits 1/4/4 generations, <=4096 completion tokens each, common
 SAMPLE/REPAIR ceilings, stop on success, exact statement binding and limited
 compiler feedback. Actual prompt/output/tool/compile/wall costs are retained.
-No model-facing object contains evaluator keys. Missing/timeout/error cases
+The follow-up audit closed nested statement metadata leakage by reconstructing
+every solver-facing field, and added actual source/model/verifier/panel binding.
+Scoring identities use explicitly named semantic hashes; the first smoke's
+raw-file hashes remain historical and cannot be used as a scoring identity.
+The trusted committed-source execution manifest must match code/source identity.
+No scoring manifest or scoring runner has yet been qualified.
+Missing/timeout/error cases
 remain planned denominator entries. Automatic partial-generation resume is
 disabled until explicit snapshot/identity/budget reconciliation.
+
+The first controller/evaluator could combine an independently correct answer
+with an unrelated proof. This was found before any target-model scoring.
+`find_answer` now stops before generation and `joint_rate` is null pending a
+reviewed kernel-checked answer/witness binding. This is an unfinished capability,
+not an efficacy failure. Context 8192 also cannot fit a 4096-token prior candidate,
+base/feedback and 4096 new tokens: the common output/context budget needs measured
+qualification before freeze. No arm receives silent truncation or a special cap.
+No-generation blocked records retain their planned denominator with null proof
+rate and `not_estimable`; completed model failures must not be removed.
 
 ## Actual checks
 
@@ -54,6 +75,9 @@ disabled until explicit snapshot/identity/budget reconciliation.
 | [remote-controls.json](remote-controls.json) | `test_remote_controls.py`, normal/-O | final28 each, exit0; all mocked/no provider calls |
 | [adapter-tests.json](adapter-tests.json) | optional CPU venv `test_model_adapter.py`; fixed tiny random tensors | 9/9, exit0; short greedy tokens and bounded logits match pinned Transformers |
 | [lean-tests.json](lean-tests.json) | WSL Ubuntu24.04/Python3.12.3, Lean4.19.0, Lake5.0.0-6caaee8, bubblewrap0.9.0 | parser13/13, isolation19/19, actual Lean7/7; final exit0 |
+| [adapter-followup-tests.json](adapter-followup-tests.json) | same CPU venv, model-byte/spec/context/partial-cost controls plus numerical parity | 16/16, exit0; no pretrained model/TPU execution |
+| [controller-followup-tests.json](controller-followup-tests.json) | controlled normal/-O; exact final source hashes in report | final45 each, exit0; identity/leak/timeout/cost/joint/denominator regression; original19 report and intermediate42 preserved |
+| [mathlib-tests.json](mathlib-tests.json) | WSL Lean4.19.0, mathlib `c44e0c8ee63ca166450922a373c7409c5d26b00b`, 4 GiB | 10/10 controls (7 Lean processes, 3 pre-execution rejections), isolation19/19; separate synthetic exit6/6; exit0 |
 
 Reports retain commands, exact source file hashes, necessary environment
 allowlists, costs and limitations. Local checks ran on working bytes before
@@ -67,6 +91,18 @@ mock expectations fail (5 failures/1 error); fixtures and explicit new gate
 controls produced final28/28. Original reports/logs remain in ignored storage.
 The original aggregate, ARC audit/training/native/reconstruction, full CI/OS
 matrix and independent WSF-R5 acceptance were not run or promoted.
+
+Mathlib's first 2 GiB attempt produced seven wrapped child exits139 with empty
+diagnostics. Those are infrastructure failures, not mathematical negative
+controls. The separately recorded 4 GiB attempt passed; final control wall was
+22.442 seconds, including 14.350-second preflight and 8.042-second candidate
+Lean cost. Worker now classifies both negative signals and bubblewrap's
+128+signal exits as infrastructure_error. General-purpose upstream mathlib
+source archive included non-runtime Archive directories; these were not opened
+as benchmark proofs. Only the explicit Mathlib/Cache/config allowlist and
+locked dependencies enter the worker, with Ring/NormNum cache closure. See the
+receipt's precise source-scope note; this is not a claim that every upstream
+archive byte is a statement-only benchmark artifact.
 
 ## Actual Kaggle submission and stop
 
@@ -108,15 +144,22 @@ notebook, datasets, outputs or Git. Raw receipts remain ignored.
 [ROUND002-RESULTS](../../../research/math-proof-agent/ROUND002-RESULTS.zh-TW.md)
 reports **not estimable**, not zero gain. There are no bound target-model
 observations and no frozen scoring panel. The 24-question proposal remains a
-proposal; human-reviewed formal statements are absent. The question was raised
-to the user while implementation continued, with no review source received at
-handoff. Agent-authored controls were never substituted or called human-reviewed.
+proposal. Follow-up metadata research found attributable upstream human fidelity
+reviews for miniF2F-v2c and ProofNet-Verified. The earlier assumption that the
+owner must personally supply/review statements was too strong. Source admission
+still needs exact statement-only acquisition, per-item review/provenance,
+exposure/answer classification and the compatible runtime. ProofNet's Lean4.28
+cannot inherit Lean4.19 qualification. Agent-authored controls were never
+substituted or called human-reviewed. See [source feasibility notes](../../../research/math-proof-agent/round002/source-feasibility-notes.json).
 Pure-proof tasks use not_applicable; answer-given tasks cannot count discovery.
-PutnamBench is excluded under its source policy and this task's no-contact rule.
+PutnamBench remains conservatively excluded in favor of alternatives; its
+no-public-proof request is explicit, whereas a universal requirement to contact
+authors before private automated evaluation was our prior interpretation.
 
-Remaining blockers are the batch TPU slot/403/unknown submission, human statement
-review, pinned/qualified mathlib, actual Kaggle isolation/Lean controls, actual
-v5e-8 model parity/performance, panel/model freeze and paired experiment. No
+Remaining blockers are the batch TPU slot/403/unknown submission, exact reviewed
+source admission and compatible runtime, qualified answer-proof binding and
+repair context, actual Kaggle isolation/Lean controls, actual v5e-8 model
+parity/performance, panel/model freeze and paired experiment. No
 SFT/RL/TTT/LoRA/distillation/synthetic SGD or paid/model API call occurred.
 
 ## Safe recovery

@@ -1,0 +1,480 @@
+{
+  "schema": "irisx.math002.mathlib-self-test.v1",
+  "task": "MATH-002",
+  "classification": "implementer_self_test_not_independent_verification",
+  "source_base_sha": "3fcb8410a4bf8dacb374e3cb3d42e7b881314af2",
+  "source_state": "Continuation changes before parent delivery commit; exact tested source file hashes bind this evidence",
+  "source_files": {
+    "mathlib_controls.py": "50313dc6c28b1c6e0f2320c6aa45209eb6f03079ce43c0216ca6f1c50988e6a5",
+    "lean_worker.py": "6f648a79b598c245b197a6314cd6c5c040612db161b3a8e6b33ba349d5a79c3b"
+  },
+  "source_unchanged_during_run": true,
+  "environment": {
+    "os": "Ubuntu 24.04 / WSL2",
+    "kernel": "Linux 6.6.87.2-microsoft-standard-WSL2",
+    "python": "3.12.3",
+    "lean": "Lean (version 4.19.0, x86_64-unknown-linux-gnu, commit 6caaee842e94, Release)",
+    "lake": "Lake version 5.0.0-6caaee8 (Lean version 4.19.0)",
+    "bwrap": "0.9.0 (Ubuntu 0.9.0-1ubuntu0.3)",
+    "notebook_id": null,
+    "notebook_version": null
+  },
+  "mathlib": {
+    "repository": "https://github.com/leanprover-community/mathlib4",
+    "tag": "v4.19.0",
+    "revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+    "license": "Apache-2.0",
+    "archive_url": "https://codeload.github.com/leanprover-community/mathlib4/tar.gz/c44e0c8ee63ca166450922a373c7409c5d26b00b",
+    "archive_sha256": "9fce64f31ba5612df46871eee8b4581c81c120604deb08cc35fa9f0fb543a425",
+    "project_sha256": "d0bb542569dd4742f2b883fea29caf41be39694a3d776c47a5a70d013c8faf79",
+    "manifest_sha256": "5c6421b650bc87a2427a892a39e5522dc44543ca4ac1bd6e9f08d536c044a752",
+    "toolchain_sha256": "55e97be96000b5e9e290c9e74482e5e317861499a5540353ce845471bded8cea",
+    "license_sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+    "imports": [
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.NormNum"
+    ],
+    "scope": "Only Ring/NormNum transitive compiled import closure qualified; not all Mathlib"
+  },
+  "dependencies": [
+    {
+      "name": "plausible",
+      "url": "https://github.com/leanprover-community/plausible",
+      "revision": "77e08eddc486491d7b9e470926b3dbe50319451a",
+      "git_tree": "33f27619392fbdf74a85cf115b883147fff50a56",
+      "source_clean": true,
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      ],
+      "declared_license": "Apache-2.0"
+    },
+    {
+      "name": "LeanSearchClient",
+      "url": "https://github.com/leanprover-community/LeanSearchClient",
+      "revision": "25078369972d295301f5a1e53c3e5850cf6d9d4c",
+      "git_tree": "00b733cc771248fa3b96811dbcd408afd279159c",
+      "source_clean": true,
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      ],
+      "declared_license": "Apache-2.0"
+    },
+    {
+      "name": "importGraph",
+      "url": "https://github.com/leanprover-community/import-graph",
+      "revision": "e6a9f0f5ee3ccf7443a0070f92b62f8db12ae82b",
+      "git_tree": "e6308cd2309d7badbe4a12d89f310e277be74ab8",
+      "source_clean": true,
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      ],
+      "declared_license": "Apache-2.0"
+    },
+    {
+      "name": "proofwidgets",
+      "url": "https://github.com/leanprover-community/ProofWidgets4",
+      "revision": "c4919189477c3221e6a204008998b0d724f49904",
+      "git_tree": "c87451594cc8e5830bac9d77df50a274df9eef4c",
+      "source_clean": true,
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      ],
+      "declared_license": "Apache-2.0"
+    },
+    {
+      "name": "aesop",
+      "url": "https://github.com/leanprover-community/aesop",
+      "revision": "5d50b08dedd7d69b3d9b3176e0d58a23af228884",
+      "git_tree": "657ad4d5654de7de26c46f15fcb80b98fc5f0c6f",
+      "source_clean": true,
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      ],
+      "declared_license": "Apache-2.0"
+    },
+    {
+      "name": "Qq",
+      "url": "https://github.com/leanprover-community/quote4",
+      "revision": "fa4f7f15d97591a9cf3aa7724ba371c7fc6dda02",
+      "git_tree": "e0965c3bbcfdeca1230da786000fda4eae740a6a",
+      "source_clean": true,
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      ],
+      "declared_license": "Apache-2.0"
+    },
+    {
+      "name": "batteries",
+      "url": "https://github.com/leanprover-community/batteries",
+      "revision": "f5d04a9c4973d401c8c92500711518f7c656f034",
+      "git_tree": "c60f46d36502c93ed47d6a265551a5ee78374e0e",
+      "source_clean": true,
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      ],
+      "declared_license": "Apache-2.0"
+    },
+    {
+      "name": "Cli",
+      "url": "https://github.com/leanprover/lean4-cli",
+      "revision": "02dbd02bc00ec4916e99b04b2245b30200e200d0",
+      "git_tree": "fd98422fd9d93c634c8e0945af7f7efef8fba871",
+      "source_clean": true,
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha256": "f7e95706807e931782b6efd9a9d2789508a52423ad67b56ee7e5e324362d4aac"
+        }
+      ],
+      "declared_license": "MIT"
+    }
+  ],
+  "cache": {
+    "source": "https://lakecache.blob.core.windows.net/mathlib4",
+    "files": 691,
+    "compressed_bytes": 29365191,
+    "fingerprint": "33baebe77f94253328a6e8814f750b35cf6717a2454751d2ad4fc7b33f61ac87",
+    "requested_module_build_comment_commit": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+    "lookup_exit_code": 0,
+    "leantar_version": "0.1.15",
+    "leantar_source": "https://github.com/digama0/leangz/releases/tag/v0.1.15",
+    "leantar_sha256": "c3294bf820d5d1d7cc59bc3ce9bdc244b3f45cab37ea9dd649e1a388c20dbe3c",
+    "manifest_path": ".irisx/line-b/MATH-002/mathlib/cache-file-manifest.json"
+  },
+  "workspace_mapping": {
+    "repository_windows": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math",
+    "task_owned_scratch": "/home/wurre/irisx-math-m002-lean-20261019",
+    "project_root": "/home/wurre/irisx-math-m002-lean-20261019/mathlib-project-c44e0c8ee63ca166450922a373c7409c5d26b00b",
+    "config_path": ".irisx/line-b/MATH-002/lean-config-mathlib-4g-local.json"
+  },
+  "lean_runtime_unchanged": true,
+  "lean_runtime_sha256": "2f0099538d4ccc23173829faa440c7dccfca1e790807336a24a75cba18c6038a",
+  "commands": [
+    {
+      "exit_code": 0,
+      "wall_seconds": 41.917964662,
+      "command": [
+        "/home/wurre/irisx-math-m002-lean-20261019/deps/lean-4.19.0-linux/bin/lake",
+        "exe",
+        "cache",
+        "--help"
+      ],
+      "project": "/home/wurre/irisx-math-m002-lean-20261019/mathlib-project-c44e0c8ee63ca166450922a373c7409c5d26b00b"
+    },
+    {
+      "command": [
+        "/home/wurre/irisx-math-m002-lean-20261019/deps/lean-4.19.0-linux/bin/lake",
+        "exe",
+        "cache",
+        "get",
+        "Mathlib.Tactic.Ring",
+        "Mathlib.Tactic.NormNum"
+      ],
+      "cwd": "/home/wurre/irisx-math-m002-lean-20261019/mathlib-project-c44e0c8ee63ca166450922a373c7409c5d26b00b",
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 41.719081999
+    },
+    {
+      "command": "PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean/mathlib_controls.py --config .irisx/line-b/MATH-002/lean-config-mathlib-local.json --output .irisx/line-b/MATH-002/mathlib/controls-attempt01.json",
+      "observed_outer_exit_code": 1,
+      "qualified": false,
+      "wall_seconds": 151.702042838,
+      "note": "2 GiB address-space limit: seven actual Lean child processes exit139; original status-matching count 6/10 is not semantic-control success"
+    },
+    {
+      "command": "PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean/mathlib_controls.py --config .irisx/line-b/MATH-002/lean-config-mathlib-4g-local.json --output .irisx/line-b/MATH-002/mathlib/controls-attempt02.json",
+      "observed_outer_exit_code": 0,
+      "qualified": true,
+      "tests": 10,
+      "passed": 10,
+      "wall_seconds": 22.442665652000017
+    },
+    {
+      "command": "PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean/mathlib_controls.py --config .irisx/line-b/MATH-002/lean-config-mathlib-4g-local.json --output .irisx/line-b/MATH-002/mathlib/controls-final.json",
+      "observed_outer_exit_code": 0,
+      "qualified": true,
+      "actual_control_tests": 10,
+      "passed": 10,
+      "synthetic_exit_tests": 6,
+      "synthetic_exit_passed": 6,
+      "wall_seconds": 22.44191040299995
+    }
+  ],
+  "seed_startup": {
+    "requested": "0",
+    "ignore_environment": 0,
+    "hash_randomization": 0,
+    "safe_path": true,
+    "no_user_site": 1,
+    "dont_write_bytecode": true,
+    "probe_hash": -6887401537953173364
+  },
+  "limits": {
+    "output_bytes": 65536,
+    "cpu_seconds": 20,
+    "open_files": 64,
+    "wall_seconds": 30,
+    "memory_bytes": 4294967296,
+    "process_count": 64
+  },
+  "isolation": {
+    "qualified_local_only": true,
+    "checks": {
+      "credential_sentinel_hidden": true,
+      "environment_cleared": true,
+      "file_size_limit_enforced": true,
+      "home_hidden": true,
+      "host_loopback_unreachable": true,
+      "input_readonly": true,
+      "isolated_mnt": true,
+      "isolated_net": true,
+      "isolated_pid": true,
+      "isolated_user": true,
+      "limit_core": true,
+      "limit_cpu": true,
+      "limit_file_size": true,
+      "limit_memory": true,
+      "limit_open_files": true,
+      "limit_processes": true,
+      "memory_limit_enforced": true,
+      "no_network_routes": true,
+      "process_limit_enforced": true
+    },
+    "count": 19,
+    "execution_exit_code": 0,
+    "wall_seconds": 0.07281793100003142,
+    "bwrap_sha256": "e318903862396f96de3df57264e0158682b952fd3fb53ac23d876413e7b30f71",
+    "remote_kaggle": "not_measured_by_this_record"
+  },
+  "actual_controls": [
+    {
+      "id": "mathlib_ring_identity",
+      "expected_status": "accepted",
+      "matched": true,
+      "status": "accepted",
+      "accepted": true,
+      "exit_code": 0,
+      "wall_seconds": 1.3363294950000864,
+      "statement_sha256": "efde0563db17a607e47c270aa7cc2621ea64841124021f27bf005e79643e4397",
+      "axioms": [
+        "propext"
+      ]
+    },
+    {
+      "id": "mathlib_ring_false",
+      "expected_status": "rejected",
+      "matched": true,
+      "status": "rejected",
+      "accepted": false,
+      "exit_code": 1,
+      "wall_seconds": 1.177974850000055,
+      "statement_sha256": "f6d54ca75c488023373e652f549b2122b35b58af8f44bf5a79b117c4e665fc17",
+      "axioms": null
+    },
+    {
+      "id": "mathlib_norm_num_true",
+      "expected_status": "accepted",
+      "matched": true,
+      "status": "accepted",
+      "accepted": true,
+      "exit_code": 0,
+      "wall_seconds": 1.1854822809999632,
+      "statement_sha256": "c5d05a90267af337ec3490c100a76b545e38d621ba52eb777697ddce18a8a67f",
+      "axioms": [
+        "propext"
+      ]
+    },
+    {
+      "id": "mathlib_norm_num_false",
+      "expected_status": "rejected",
+      "matched": true,
+      "status": "rejected",
+      "accepted": false,
+      "exit_code": 1,
+      "wall_seconds": 1.197027387999924,
+      "statement_sha256": "c9912c740e91aeceef2adee0dd476326daf719c245eb57fe240aacbd4d664e2a",
+      "axioms": null
+    },
+    {
+      "id": "mathlib_omega_true",
+      "expected_status": "accepted",
+      "matched": true,
+      "status": "accepted",
+      "accepted": true,
+      "exit_code": 0,
+      "wall_seconds": 1.1363925360000167,
+      "statement_sha256": "df5ea058083848b5fa10fd43aa5bb291f69b7cb4e2a0a8fb9fcad18b41b56e4d",
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "id": "mathlib_omega_false",
+      "expected_status": "rejected",
+      "matched": true,
+      "status": "rejected",
+      "accepted": false,
+      "exit_code": 1,
+      "wall_seconds": 1.0326164080000808,
+      "statement_sha256": "e1a884c82b7a7fa6b8e40c382e9bc432d5703c549f0a547394b226bb13c7fb60",
+      "axioms": null
+    },
+    {
+      "id": "mathlib_forbidden_native",
+      "expected_status": "invalid_format",
+      "matched": true,
+      "status": "invalid_format",
+      "accepted": false,
+      "exit_code": null,
+      "wall_seconds": null,
+      "statement_sha256": "4b5b53a638a98568f25b5b871e3ee7b0f6651f1e51e3eb44d83ff5b67bd6c706",
+      "axioms": null
+    },
+    {
+      "id": "mathlib_forbidden_command",
+      "expected_status": "invalid_format",
+      "matched": true,
+      "status": "invalid_format",
+      "accepted": false,
+      "exit_code": null,
+      "wall_seconds": null,
+      "statement_sha256": "35896266d8fa6258791655b315bf9bda67a0cf505785b77952c9705c4344cb34",
+      "axioms": null
+    },
+    {
+      "id": "mathlib_hidden_axiom",
+      "expected_status": "trust_rejected",
+      "matched": true,
+      "status": "trust_rejected",
+      "accepted": false,
+      "exit_code": 0,
+      "wall_seconds": 0.9765938009999218,
+      "statement_sha256": "c04de5a30b6d3ec7735fc409dc1386cc3606f89432a403b9496db51de5382c39",
+      "axioms": [
+        "irisx_mathlib_bad"
+      ]
+    },
+    {
+      "id": "statement_binding_mutation",
+      "expected_status": "invalid_format",
+      "matched": true,
+      "status": "invalid_format",
+      "accepted": false,
+      "exit_code": null,
+      "wall_seconds": null,
+      "statement_sha256": "027c67f87bc74415c020f9223392ba963b89d6f07a742b28a2c942e2ad24a1af",
+      "axioms": null
+    }
+  ],
+  "synthetic_exit_controls": {
+    "kind": "synthetic_process_receipt_branch_controls",
+    "actual_Lean_executions": 0,
+    "checks": [
+      {
+        "exit_code": 128,
+        "expected_status": "infrastructure_error",
+        "actual_status": "infrastructure_error",
+        "matched": true
+      },
+      {
+        "exit_code": 139,
+        "expected_status": "infrastructure_error",
+        "actual_status": "infrastructure_error",
+        "matched": true
+      },
+      {
+        "exit_code": 152,
+        "expected_status": "infrastructure_error",
+        "actual_status": "infrastructure_error",
+        "matched": true
+      },
+      {
+        "exit_code": -11,
+        "expected_status": "infrastructure_error",
+        "actual_status": "infrastructure_error",
+        "matched": true
+      },
+      {
+        "exit_code": 1,
+        "expected_status": "rejected",
+        "actual_status": "rejected",
+        "matched": true
+      },
+      {
+        "exit_code": 0,
+        "expected_status": "trust_rejected",
+        "actual_status": "trust_rejected",
+        "matched": true
+      }
+    ],
+    "test_count": 6,
+    "passed_count": 6,
+    "qualified": true
+  },
+  "cost": {
+    "scoring_model_calls": 0,
+    "tpu_runs": 0,
+    "actual_Lean_processes_final": 7,
+    "preflight_wall_seconds_final": 14.34959878199993,
+    "Lean_candidate_wall_seconds_final": 8.042416759000048,
+    "total_wall_seconds_final": 22.44191040299995,
+    "cache_get_wall_seconds": 41.719081999,
+    "cache_help_build_wall_seconds": 41.917964662
+  },
+  "failures_preserved": [
+    {
+      "attempt": "controls-attempt01",
+      "cause": "2 GiB RLIMIT_AS unsuitable for this Mathlib closure; seven inner child exits139 with empty diagnostics",
+      "mathematical_negative_controls_qualified": false,
+      "fix": "Separate 4 GiB config; bubblewrap 128..255 statuses now infrastructure_error; negative controls require exit1 plus Lean error diagnostics"
+    }
+  ],
+  "raw_receipt_hashes": {
+    "acquisition-receipt.json": "ac5924b7898650ddda74e907c48fe355e74c042d29f6fd63c8b1c3b7fff1676a",
+    "cache-file-manifest.json": "bc847b5b82aa70542269140e2d3ee8cc44b5d31a8f386ebedd116d1a99fdd25e",
+    "cache-help-attempt01.log": "736a3967a66d0f1419acf8310458a68c27e0591ef6d764edbe42fe415c5ebf70",
+    "cache-get-attempt01.log": "affc84568a54f71e6d4dc03a94c71f13a8cc034d6b97433e98fec809b4e7590c",
+    "cache-lookup.log": "cb52bc2f17fa25b4171340bac16cc9d44668095433d887dd3f82f36e8a8f8714",
+    "controls-attempt01.json": "51492bd0881f5ae77f4581124c3db900c90c35fcebf58024fff8167560e6abd2",
+    "controls-attempt02.json": "7a1d3179bc7970111b777cab5276c3c3fa725fe8dbc87e52d348bd16b12d0d26",
+    "controls-final.json": "bc7ef1c7b505bf9719cfa15fd8e2bf22539cde9ecbcf128132634714af0430d6"
+  },
+  "blocked": [
+    "Human-reviewed frozen scoring panel absent",
+    "Actual Kaggle TPU model parity/performance and Kaggle Lean/isolation not qualified",
+    "Original Kaggle submission remains unknown under parent monitor; this continuation made zero Kaggle calls"
+  ],
+  "unknown": [
+    "M-SAMPLE versus M-REPAIR efficacy",
+    "Full Mathlib import closure memory/cost",
+    "Independent proof-checker confirmation of upstream cached dependencies"
+  ],
+  "source_scope_note": "Official upstream source archive bundled non-runtime directories, including Archive. They were not opened as benchmark proofs or used as evaluation/retrieval data. The worker project was created from an explicit Mathlib/Cache/config allowlist; Archive, Counterexamples and MathlibTest were excluded. The compiled cache request was limited to Ring and NormNum transitive imports. No benchmark dataset or reference proof entered the solver or Git.",
+  "qualification_limit": "This establishes local authored engineering controls for the pinned restricted worker and imported library closure, not human statement review, model efficacy, full Mathlib coverage, independent verification or remote sandbox qualification.",
+  "delivered_code_sha": "6eb0c1e242fda087f46024307f505aaee74cede4",
+  "delivery_sha_policy": "Containing delivery SHA is provided by final response and Draft PR #10; no self-containing hash.",
+  "execution_commit_scope": "Tests ran on exact recorded dirty working bytes based on 3fcb8410a4bf8dacb374e3cb3d42e7b881314af2; delivered source matches after CRLF/LF normalization. Not a claim of rerunning at a future commit."
+}

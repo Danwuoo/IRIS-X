@@ -123,7 +123,12 @@
     {"id":"math-002-handoff","path":"docs/verification/MATH-002/HANDOFF.md","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
     {"id":"math-002-results","path":"research/math-proof-agent/ROUND002-RESULTS.zh-TW.md","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
     {"id":"math-002-run-summary","path":"docs/verification/MATH-002/run-summary.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
-    {"id":"math-002-smoke-manifest","path":"research/math-proof-agent/round002/run-manifest-smoke001.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]}
+    {"id":"math-002-smoke-manifest","path":"research/math-proof-agent/round002/run-manifest-smoke001.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
+    {"id":"math-002-source-feasibility","path":"research/math-proof-agent/round002/source-feasibility-notes.json","kind":"reference","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
+    {"id":"math-002-mathlib-controls","path":"research/math-proof-agent/round002/lean/mathlib_controls.py","kind":"reference","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
+    {"id":"math-002-mathlib-tests","path":"docs/verification/MATH-002/mathlib-tests.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
+    {"id":"math-002-adapter-followup-tests","path":"docs/verification/MATH-002/adapter-followup-tests.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
+    {"id":"math-002-controller-followup-tests","path":"docs/verification/MATH-002/controller-followup-tests.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]}
   ],
   "legacy_indexes": [
     {"id":"legacy-development-index","url":"https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/README.md","scope":["docs/decisions/**","docs/plan/**","docs/development/**"]},

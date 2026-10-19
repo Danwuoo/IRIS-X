@@ -2,6 +2,19 @@
   "format": "irisx.math002.run-summary.v1",
   "task": "MATH-002",
   "code_sha": "ae051a79359c4e0be9658d89452c05793d64d831",
+  "offline_followup_code_sha": "6eb0c1e242fda087f46024307f505aaee74cede4",
+  "offline_followup": {
+    "new_remote_submissions": 0,
+    "readback": "Read-only goal continuation again returned exact source HTTP403; submission_unknown unchanged",
+    "readback_receipt": ".irisx/line-b/MATH-002/continuation-02-readback.json",
+    "local_mathlib_scope": "Pinned v4.19.0 Ring/NormNum transitive closure only; 10 controls, 7 actual Lean processes, 19 isolation checks; separate6 synthetic exit checks",
+    "mathlib_report": "mathlib-tests.json",
+    "controller_report": "controller-followup-tests.json; final45 normal and45 optimized passed; prior42 each retained",
+    "adapter_report": "adapter-followup-tests.json;16 CPU controls passed",
+    "source_correction": "Attributable upstream human review is available; no requirement for the owner personally to re-review each problem. Exact statement-only acquisition/runtime admission still pending.",
+    "science_gates": "Joint answer-proof binding and feasible common repair context not qualified; controller blocks find_answer and analyzer emits null for no-generation/joint metrics. No efficacy claim.",
+    "first_smoke_identity_unchanged": true
+  },
   "delivery_sha_policy": "containing delivery SHA is returned in final message and PR; no self-containing hash",
   "run_id": "m002-smoke-20261019-a7f91c",
   "notebook_id": "danielwuu/irisx-math-m002-20261019-a7f91c",
@@ -114,8 +127,9 @@
   "blockers": [
     "Kaggle account batch TPU session capacity reached; do not disturb existing work",
     "Exact submitted notebook/version cannot be established (HTTP403); no further dispatch",
-    "Human-checked formal panel absent",
-    "Mathlib and Kaggle Lean/isolation/target-model parity not qualified"
+    "Frozen formal panel absent; upstream human-review evidence found but exact safe acquisition/runtime admission pending",
+    "Kaggle Lean/isolation/target-model parity not qualified; only local pinned Mathlib Ring/NormNum closure passed",
+    "Reviewed answer-proof binding and feasible common repair context remain unqualified"
   ],
   "no_training": true,
   "no_paid_api": true,

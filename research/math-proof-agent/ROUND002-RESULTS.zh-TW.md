@@ -1,7 +1,10 @@
-# R002 結果：工程驗證完成，TPU 提交無法確認
+# R002 結果：工程控制與缺陷修正，TPU 提交無法確認
 
 日期：2026-10-19。Task：MATH-002；branch：`feat/math-proof-agent-20261018`。
-受驗程式 code SHA：`ae051a79359c4e0be9658d89452c05793d64d831`。
+首次遠端封裝 code SHA：`ae051a79359c4e0be9658d89452c05793d64d831`。
+其交付 SHA：`3fcb8410a4bf8dacb374e3cb3d42e7b881314af2`；本次離線修正的
+code SHA 為`6eb0c1e242fda087f46024307f505aaee74cede4`。
+原 smoke manifest 保持原樣，未重送修正版。
 後續 delivery SHA 由本次最終回覆與 Draft PR #10 提供；文件不嵌入自身 commit。
 完整命令、環境與機器可讀紀錄見 [HANDOFF](../../docs/verification/MATH-002/HANDOFF.md)
 及 [run-summary](../../docs/verification/MATH-002/run-summary.json)。
@@ -46,6 +49,32 @@ Lean 第一個控制執行因不支援的 `-T` 參數失敗，移除後的新嘗
 slug，改為獨立嘗試並新增防線控制後，最終28/28通過。失敗raw logs與摘要保留。
 兩個紀錄都沒有改標成一開始就成功。所有測試是實作者／子代理自測。
 
+後續唯讀回查仍為HTTP403／submission_unknown，沒有新增提交。離線稽核發現
+第一版工程控制尚未涵蓋的缺陷，因此補上以下修正；原19個controller測試、
+9個adapter測試及原Lean core報告留存，不回寫成較強資格：
+
+- solver view改為逐層欄位白名單，防止statement內的額外gold/reference/rubric
+  隨整個dict進入prompt；執行須核對來源bytes、完整身分、固定面板成員與
+  adapter/verifier身分。canonical評分指紋與smoke原始檔案指紋明確分開。
+- 超時截斷JSON先記timeout；context不足和工具故障分開記錄。工具、setup、
+  整體wall及缺漏／部分模型成本收據均列出，缺資料不補零當完整總成本。
+- 單獨答對答案加上一個證明，不能證明該答案受到驗證。目前缺少經核對的
+  answer-proof binding，所以find_answer在生成前停止，joint_rate回傳null。
+  這是未完成能力，不能宣稱共同成功率分析器已可用於正式研究。
+- 8192 context容納不了4096-token舊候選、提示及另4096輸出。共同輸出／context
+  上限仍需TPU成本實測後預登記，不截斷某一臂或事後調整。
+
+新版controller一般與-O模式各45項測試通過（共90次；中間各42項通過紀錄保留），
+新版adapter的16/16 CPU工程測試通過。固定mathlib
+`c44e0c8ee63ca166450922a373c7409c5d26b00b` 的Ring/NormNum傳遞閉包，
+在WSL／4GiB限制下10/10控制通過（7次真正Lean編譯，3次格式／綁定拒絕），
+另有19/19隔離與6/6合成process-exit分類控制。總wall22.442秒，Lean候選
+合計8.042秒。2GiB首次7個編譯均exit139的故障保留；該嘗試不算語意負控制
+成功。bubblewrap編碼的128+signal現在記infrastructure_error。
+詳見新增的[mathlib報告](../../docs/verification/MATH-002/mathlib-tests.json)、
+[adapter補驗](../../docs/verification/MATH-002/adapter-followup-tests.json)與
+[controller補驗](../../docs/verification/MATH-002/controller-followup-tests.json)。
+
 ## 唯一一次遠端提交
 
 命令是本地實際 CLI 2.2.4 支援的：
@@ -79,15 +108,21 @@ prompt/output tokens、編譯、推論、遠端Lean與wall成本均未知。
 
 ## 尚未完成的科學驗收
 
-沒有人工核對 formal panel 的來源紀錄。24題仍為提案，selected problems=0；
-沒有把作者控制題挑成成功面板。miniF2F僅作來源可行性評估，公開暴露、答案
-已給定題不能計為找答案。PutnamBench按來源政策排除，沒有產生／公開其proofs。
-Gold/reference/rubric沒有進入solver，沒有為模型補答案。
+24題仍為提案，selected problems=0；沒有把作者控制題挑成成功面板。來源補查
+發現miniF2F-v2c與ProofNet-Verified具有可歸屬的上游人工核對證據，**不必要求
+owner親自重做核對**。仍需安全取得精確statement與相符runtime，不能由metadata
+直接宣告面板合格。ProofNet版本需要Lean4.28；目前4.19控制不能移用其資格。
+公開暴露、答案已給定題不能計為找答案。PutnamBench暫選其他來源避開政策
+歧義；「任何私下自動評估都先要聯絡」是先前過強推論，禁止公開proofs則明確。
+詳見[來源修正](round002/source-feasibility-notes.json)。未產生目標模型答案，
+未讓benchmark gold/reference/rubric進入solver；新防漏控制僅用合成sentinel。
 
-Mathlib尚未取得與資格化，Kaggle隔離／Lean正負控制、實際v5e-8、冷編譯、
+本地僅固定mathlib的受測import閉包資格化，並非完整mathlib或上述題庫runtime。
+Kaggle隔離／Lean正負控制、實際v5e-8、冷編譯、
 熱推論、公開模型短輸出parity、正式三臂比較及seed複驗均未完成。
 R001、MATH-001與WSF-R5的歷史範圍及獨立驗證狀態維持原樣。
 
 本次交付停在 `review_ready`，Goal科學部分未達成。恢復需先由目前研究task
-唯讀釐清未知提交／帳號權限與TPU可用性，再補人工命題紀錄、固定Lean/mathlib
-與技術smoke；不能以重複push或換帳號解決，也不能直接跑未凍結面板。
+唯讀釐清未知提交／帳號權限與TPU可用性，再完成來源准入、answer-proof binding、
+共同context可行性與相符runtime技術smoke；不能以重複push或換帳號解決，也
+不能直接跑未凍結面板。

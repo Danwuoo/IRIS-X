@@ -23,7 +23,7 @@
   "base_branch": "feat/math-proof-agent-20261018",
   "head_branch": "feat/math-proof-agent-20261018",
   "base_commit": "0deff2254d2e3b63b88c2eefc4c4f73856663047",
-  "implementation_commit": "ae051a79359c4e0be9658d89452c05793d64d831",
+  "implementation_commit": "6eb0c1e242fda087f46024307f505aaee74cede4",
   "acceptance": [
     "M2-BASELINE",
     "M2-ENGINE",
@@ -35,7 +35,7 @@
   ],
   "blockers": [
     "Kaggle first push reports batch TPU session capacity=1; exact task source HTTP403, version unknown; submission_unknown retains 1 submit/1800 seconds and blocks new dispatch.",
-    "No human-reviewed frozen formal panel; mathlib, Kaggle isolation/Lean and actual TPU model parity/performance remain unqualified.",
+    "No frozen scoring panel. Upstream human-reviewed source candidates exist but exact statement acquisition/compatible runtime, answer-proof binding and feasible common repair context remain unqualified. Local pinned mathlib Ring/NormNum controls passed; Kaggle Lean/isolation and actual TPU model parity/performance remain unqualified.",
     "No target-model paired comparison obtained; proof/joint gain is not estimable. Implementer self-tests do not establish independent acceptance."
   ],
   "handoff_ref": "math-002-handoff",
@@ -45,7 +45,10 @@
     "math-002-remote-controls",
     "math-002-adapter-tests",
     "math-002-lean-tests",
-    "math-002-run-summary"
+    "math-002-run-summary",
+    "math-002-controller-followup-tests",
+    "math-002-adapter-followup-tests",
+    "math-002-mathlib-tests"
   ],
   "review_refs": [],
   "concurrency_group": null
