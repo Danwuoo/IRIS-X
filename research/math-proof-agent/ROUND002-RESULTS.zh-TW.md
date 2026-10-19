@@ -3,7 +3,7 @@
 日期：2026-10-19。Task：MATH-002；branch：`feat/math-proof-agent-20261018`。
 首次遠端封裝 code SHA：`ae051a79359c4e0be9658d89452c05793d64d831`。
 其交付 SHA：`3fcb8410a4bf8dacb374e3cb3d42e7b881314af2`；本次離線修正的
-code SHA 為`6eb0c1e242fda087f46024307f505aaee74cede4`。
+code SHA 為`d6e4309607936b66d34573350b9697e5fddc7b0f`。
 原 smoke manifest 保持原樣，未重送修正版。
 後續 delivery SHA 由本次最終回覆與 Draft PR #10 提供；文件不嵌入自身 commit。
 完整命令、環境與機器可讀紀錄見 [HANDOFF](../../docs/verification/MATH-002/HANDOFF.md)
@@ -58,9 +58,9 @@ slug，改為獨立嘗試並新增防線控制後，最終28/28通過。失敗ra
   adapter/verifier身分。canonical評分指紋與smoke原始檔案指紋明確分開。
 - 超時截斷JSON先記timeout；context不足和工具故障分開記錄。工具、setup、
   整體wall及缺漏／部分模型成本收據均列出，缺資料不補零當完整總成本。
-- 單獨答對答案加上一個證明，不能證明該答案受到驗證。目前缺少經核對的
-  answer-proof binding，所以find_answer在生成前停止，joint_rate回傳null。
-  這是未完成能力，不能宣稱共同成功率分析器已可用於正式研究。
+- 單獨答對答案加上一個證明，不能證明該答案受到驗證。第一個離線修正版
+  因缺少answer-proof binding，把find_answer在生成前擋住、joint_rate回傳null。
+  下述第三次續作以自製控制補上窄範圍Nat binding；正式來源與面板仍未准入。
 - 8192 context容納不了4096-token舊候選、提示及另4096輸出。共同輸出／context
   上限仍需TPU成本實測後預登記，不截斷某一臂或事後調整。
 
@@ -74,6 +74,31 @@ slug，改為獨立嘗試並新增防線控制後，最終28/28通過。失敗ra
 詳見新增的[mathlib報告](../../docs/verification/MATH-002/mathlib-tests.json)、
 [adapter補驗](../../docs/verification/MATH-002/adapter-followup-tests.json)與
 [controller補驗](../../docs/verification/MATH-002/controller-followup-tests.json)。
+
+第三次續作補上 `closed_exists_nat_v1`：受信任wrapper把候選回傳的canonical
+Nat固定為**原始存在命題**的witness，模型proof body證明該數值的剩餘性質。
+命題沒有改寫，最終定理仍經kernel與遞移axiom檢查；controller、evaluator及
+analyzer核對answer/proof、statement、binding spec各自的hash。不能把較強的
+原問題弱化成存在題來使用此介面。不同類型、外層參數、巢狀存在或未登錄題目
+均不准入；private key只在選擇後做一致性檢查，衝突會阻擋共同成功結論。
+另外修正「工具status寫accepted蓋過信任失敗」、null binding登錄繞過，以及
+未生成配對被誤列平手的問題；planned分母保持，缺觀察改列no_generation_pair。
+
+[答案綁定實測](../../docs/verification/MATH-002/answer-binding-tests.json)最終
+44/44控制通過，其中6次真正Lean執行；helper7/7、isolation19/19、core7/7、
+parser13/13與mathlib10/10均通過，合成process分類另列。自製題目不代表正式
+benchmark成績。並行core/mathlib回歸曾出現thread建立失敗（候選exit1、版本
+探測exit134），原始收據保留；修正分類及版本探測-j1後循序重跑。最後答案
+控制wall6.336秒，mathlib13.519秒。[答案流程控制](../../docs/verification/MATH-002/answer-pipeline-tests.json)
+包含normal/-O各20項新測試及原45項相容回歸，共130次全數通過；先前124與126次
+收據留存，未把scripted收據驗證算成真實Lean或模型成績。
+
+[固定tokenizer測量](../../docs/verification/MATH-002/context-tests.json)23項控制、
+34筆觀察通過，兩候選prompt編碼相同；僅取得22,866,285 bytes的tokenizer/config，
+沒有模型權重或推論。最短4096舊稿＋4096新輸出案例需要9209 tokens；2048方案
+在64組參數題＋512-token回饋時為7011，但4000字元回饋時達8136，只剩56。
+2048仍只是候選，未改正式上限或凍結protocol。需逐題精確token容量、預登記
+回饋／overflow規則及實際TPU成本；不能把此測量當成整套研究已可執行。
 
 ## 唯一一次遠端提交
 
@@ -94,6 +119,8 @@ Kernel push error: Maximum batch TPU session count of 1 reached.
 沒有把 exit0 當成成功。後續僅唯讀回查：exact source HTTP403；搜尋得到
 沒有 ref/version 的 private placeholder。未確認本次版本或終止快照，狀態
 保留 `submission_unknown`，不重送、不刪 notebook、不終止其他工作。
+第三次Goal續作再次reconcile仍為版本null；wrapper exit0、底層SDK exit2／HTTPError。
+該helper沒有回報新HTTP狀態碼，上述403是先前捕獲的證據。
 
 預留 **1/4次、1800/21600秒**（整套v5e-8），未退還未知預留。剩餘數值上限
 為3次／19800秒，但 dispatch 被阻塞，並非可直接使用的新授權。實際TPU秒數、
@@ -117,12 +144,19 @@ owner親自重做核對**。仍需安全取得精確statement與相符runtime，
 詳見[來源修正](round002/source-feasibility-notes.json)。未產生目標模型答案，
 未讓benchmark gold/reference/rubric進入solver；新防漏控制僅用合成sentinel。
 
+[第三次來源稽核](round002/source-feasibility-audit-03.json)發現miniF2F-v2c欄位中
+含內容未確認的formal_proof/informal_proof，尚無可核實的statement-only投影。
+部分答案slot也不是單純固定存在命題的proof body；不得默默重寫來符合Nat介面。
+未取得整份dataset或reference-proof archive。方法論論文搜尋意外展開圖例，
+稽核子代理看見`amc12b_2021_p3`的範例答案；已記錄曝光、停止延伸搜尋，不抄錄
+答案值、不傳給solver，也沒有據此挑選或更動面板。
+
 本地僅固定mathlib的受測import閉包資格化，並非完整mathlib或上述題庫runtime。
 Kaggle隔離／Lean正負控制、實際v5e-8、冷編譯、
 熱推論、公開模型短輸出parity、正式三臂比較及seed複驗均未完成。
 R001、MATH-001與WSF-R5的歷史範圍及獨立驗證狀態維持原樣。
 
 本次交付停在 `review_ready`，Goal科學部分未達成。恢復需先由目前研究task
-唯讀釐清未知提交／帳號權限與TPU可用性，再完成來源准入、answer-proof binding、
+唯讀釐清未知提交／帳號權限與TPU可用性，再完成來源准入、真實題目的answer binding、
 共同context可行性與相符runtime技術smoke；不能以重複push或換帳號解決，也
 不能直接跑未凍結面板。

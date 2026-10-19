@@ -58,6 +58,10 @@ smoke <=1800 秒。平台更低限制優先。未知提交只讀回查、不重�
 目前 repository 未凍結 formal panel；來源補查已找到上游人工核對候選，詳見
 round002/source-feasibility-notes.json，尚待安全取得欄位與相符runtime。
 8192 context 無法容納4096-token舊候選、提示與另4096輸出；正式freeze前必須
-由實測選定可行的共同context/輸出上限。現在joint answer-proof binding也未資格化。
+由實測選定可行的共同context/輸出上限。固定tokenizer測量確認4096+4096超限；
+2048僅為待預登記的共同上限候選，仍需逐題精確容量檢查與TPU成本實測。
+closed_exists_nat_v1已以自製控制實測：固定wrapper把回傳Nat綁為原始存在命題的
+witness，核心與遞移axiom檢查通過才接收。但沒有真實來源題目獲准使用此路徑；
+miniF2F-v2c的安全statement-only取得、原始答案slot語意與runtime仍有缺口。
 Kaggle CLI 2.2.4 和既有帳號讀權已核對，TPU 可用性與 Lean 信任條件待實測。
 所有不可公開 proofs／原始收據只放 ignored task root。

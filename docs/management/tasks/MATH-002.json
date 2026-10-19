@@ -23,7 +23,7 @@
   "base_branch": "feat/math-proof-agent-20261018",
   "head_branch": "feat/math-proof-agent-20261018",
   "base_commit": "0deff2254d2e3b63b88c2eefc4c4f73856663047",
-  "implementation_commit": "6eb0c1e242fda087f46024307f505aaee74cede4",
+  "implementation_commit": "d6e4309607936b66d34573350b9697e5fddc7b0f",
   "acceptance": [
     "M2-BASELINE",
     "M2-ENGINE",
@@ -34,8 +34,9 @@
     "M2-DELIVERY"
   ],
   "blockers": [
-    "Kaggle first push reports batch TPU session capacity=1; exact task source HTTP403, version unknown; submission_unknown retains 1 submit/1800 seconds and blocks new dispatch.",
-    "No frozen scoring panel. Upstream human-reviewed source candidates exist but exact statement acquisition/compatible runtime, answer-proof binding and feasible common repair context remain unqualified. Local pinned mathlib Ring/NormNum controls passed; Kaggle Lean/isolation and actual TPU model parity/performance remain unqualified.",
+    "Kaggle only push reports batch TPU capacity=1; exact task source previously HTTP403 and latest readback HTTPError, version remains unknown. submission_unknown retains 1 submit/1800 seconds and blocks new dispatch.",
+    "No frozen scoring panel. Generic closed Nat witness binding passed authored Lean controls, but exact statement-only acquisition, original answer-slot fidelity and source-compatible runtime remain unqualified for actual sources.",
+    "Pinned tokenizer measurements confirm 4096+4096 exceeds context8192. A smaller equal ceiling is only a candidate; exact panel prompt/feedback policy and actual TPU model parity, prefill cost and Kaggle isolation remain unqualified.",
     "No target-model paired comparison obtained; proof/joint gain is not estimable. Implementer self-tests do not establish independent acceptance."
   ],
   "handoff_ref": "math-002-handoff",
@@ -48,7 +49,10 @@
     "math-002-run-summary",
     "math-002-controller-followup-tests",
     "math-002-adapter-followup-tests",
-    "math-002-mathlib-tests"
+    "math-002-mathlib-tests",
+    "math-002-answer-binding-tests",
+    "math-002-answer-pipeline-tests",
+    "math-002-context-tests"
   ],
   "review_refs": [],
   "concurrency_group": null

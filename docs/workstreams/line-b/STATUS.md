@@ -35,8 +35,11 @@ See [R002 results](../../../research/math-proof-agent/ROUND002-RESULTS.zh-TW.md)
 No actual TPU target model or representative human-reviewed evaluation panel
 has been qualified. Local Lean core and pinned mathlib Ring/NormNum controls passed;
 full mathlib and Kaggle Lean/isolation remain unqualified. Upstream human-reviewed
-source candidates exist; safe per-item acquisition/runtime admission, reviewed
-answer-proof binding and feasible repair context remain open. The unresolved submission retains one attempt
+source candidates exist; safe per-item acquisition/runtime admission and feasible
+repair context remain open. A narrow Nat-witness binding now passed authored
+Lean controls; no real source statement has been admitted to it. Exact tokenizer
+checks confirm the 4096+4096 repair context conflict; a smaller common ceiling
+is still only a candidate. The unresolved submission retains one attempt
 and 1800 seconds of the 4-attempt/21600-second ceiling and blocks further push.
 Shared WSF-R5 independent
 acceptance remains unresolved; this research does not change existing reviews.

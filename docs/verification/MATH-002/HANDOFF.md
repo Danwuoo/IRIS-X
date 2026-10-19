@@ -8,7 +8,8 @@ Return this handoff to the original ChatGPT conversation.
 - Starting SHA: `0deff2254d2e3b63b88c2eefc4c4f73856663047`.
 - First smoke packaged runtime SHA: `ae051a79359c4e0be9658d89452c05793d64d831`.
 - First delivery SHA: `3fcb8410a4bf8dacb374e3cb3d42e7b881314af2`; later offline corrections do not alter that submitted snapshot.
-- Current offline code SHA: `6eb0c1e242fda087f46024307f505aaee74cede4`; not submitted to Kaggle.
+- Previous offline delivery SHA: `8ba60f78cd96a7fedda0d05d730dd3d62027f4a0`; its reports remain historical.
+- Current offline code SHA: `d6e4309607936b66d34573350b9697e5fddc7b0f`; not submitted to Kaggle.
 - Delivery SHA: supplied by the final response and PR after this document's commit; no self-containing SHA is embedded.
 - Actual desktop checkout: `C:\Users\wurre\Desktop\IRIS-X-Math`.
 - Windows task venv: `.irisx/line-b/MATH-002/venv/`; optional numerical-control venv: `adapter-venv/` under the same task root.
@@ -57,12 +58,29 @@ remain planned denominator entries. Automatic partial-generation resume is
 disabled until explicit snapshot/identity/budget reconciliation.
 
 The first controller/evaluator could combine an independently correct answer
-with an unrelated proof. This was found before any target-model scoring.
-`find_answer` now stops before generation and `joint_rate` is null pending a
-reviewed kernel-checked answer/witness binding. This is an unfinished capability,
-not an efficacy failure. Context 8192 also cannot fit a 4096-token prior candidate,
-base/feedback and 4096 new tokens: the common output/context budget needs measured
-qualification before freeze. No arm receives silent truncation or a special cap.
+with an unrelated proof. This was found before any target-model scoring; the
+first offline correction blocked all `find_answer` execution. The latest version
+adds a narrow `closed_exists_nat_v1` route: a fixed `_root_.Exists.intro` wrapper
+selects the reported canonical Nat as witness of the unchanged original theorem.
+Restricted proof body proves its remaining property, and final transitive axiom
+audit includes that proof. Controller, evaluator and analyzer recheck exact
+candidate/proof, statement, binding spec and normalized answer hashes. Optional
+private keys only check consistency after selection; disagreement blocks a joint
+conclusion. Unsupported declarations/types still block before generation. The
+source's original proposition must express the complete task; no weakening is
+allowed to fit this interface. Authored Lean controls establish the engineering
+path only; no actual source statement or scoring panel has been admitted.
+
+A failed trust/binding check can no longer inherit `accepted` from a tool's
+status field. Registered null binding cannot fall through to the proof-only
+route. A pair with either arm lacking generation is explicitly a
+`no_generation_pair`, never a measured tie/gain/loss.
+Context 8192 cannot fit a 4096-token prior candidate, base/feedback and 4096 new
+tokens: pinned-tokenizer measurements confirm 9209 tokens even for the shortest
+authored repair case. A 2048 common ceiling is a candidate, not an adopted policy;
+one 64-parameter/4000-character-feedback case leaves only 56 tokens. Exact prompt
+capacity, a registered feedback/overflow rule and actual TPU prefill cost still
+need qualification before freeze. No arm receives silent truncation or a special cap.
 No-generation blocked records retain their planned denominator with null proof
 rate and `not_estimable`; completed model failures must not be removed.
 
@@ -78,6 +96,9 @@ rate and `not_estimable`; completed model failures must not be removed.
 | [adapter-followup-tests.json](adapter-followup-tests.json) | same CPU venv, model-byte/spec/context/partial-cost controls plus numerical parity | 16/16, exit0; no pretrained model/TPU execution |
 | [controller-followup-tests.json](controller-followup-tests.json) | controlled normal/-O; exact final source hashes in report | final45 each, exit0; identity/leak/timeout/cost/joint/denominator regression; original19 report and intermediate42 preserved |
 | [mathlib-tests.json](mathlib-tests.json) | WSL Lean4.19.0, mathlib `c44e0c8ee63ca166450922a373c7409c5d26b00b`, 4 GiB | 10/10 controls (7 Lean processes, 3 pre-execution rejections), isolation19/19; separate synthetic exit6/6; exit0 |
+| [answer-binding-tests.json](answer-binding-tests.json) | same WSL Lean and measured isolation; authored closed Nat witnesses | final44/44 admission/verification controls (6 actual Lean), helper7/7, isolation19/19; core7/7, parser13/13, mathlib10/10; exit0 |
+| [answer-pipeline-tests.json](answer-pipeline-tests.json) | controlled Windows normal/-O; new20 answer-flow tests plus unchanged45 | 130 executions passed, exit0; scripted receipts only, including altered bindings and no-generation pairs; earlier124/126 retained |
+| [context-tests.json](context-tests.json) | both exact pinned public tokenizers/configs, CPU only | 23 controls / 34 observations, exit0; no weights, generation or TPU |
 
 Reports retain commands, exact source file hashes, necessary environment
 allowlists, costs and limitations. Local checks ran on working bytes before
@@ -104,6 +125,17 @@ locked dependencies enter the worker, with Ring/NormNum cache closure. See the
 receipt's precise source-scope note; this is not a claim that every upstream
 archive byte is a statement-only benchmark artifact.
 
+During the answer-binding regression, accidentally concurrent core/mathlib
+checks exhausted thread creation: five candidate exits1 and a version probe
+exit134 are retained as infrastructure failures. Their apparent negative
+matches are not semantic-control passes. The worker now recognizes the observed
+thread failure and runs the version query with `-j1`; final Lean checks ran
+sequentially. Final answer controls used 6.336 seconds wall / 5.344 seconds
+preflight; final mathlib regression used 13.519 seconds. New reports preserve
+intermediate successes as well as failures. Pinned tokenizer/config acquisition
+was 22,866,285 bytes / 21.344 seconds; latest cache-only context run was 3.203
+seconds. These are local costs, not target-model inference or TPU consumption.
+
 ## Actual Kaggle submission and stop
 
 CLI `2.2.4`; existing authentication successfully listed owned notebooks;
@@ -126,6 +158,9 @@ Exact task source returned **HTTP403**. Read-only owner search returned a privat
 placeholder without ref/version, so neither source nor session can be bound.
 State remains **submission_unknown**, not successful, not confirmed_not_started.
 No second push, other notebook operation or attempted quota bypass occurred.
+The third goal continuation again ran `reconcile`: wrapper exit0, underlying
+SDK readback exit2/HTTPError, version still null. This helper does not expose a
+new HTTP status, so HTTP403 above refers to the earlier captured response.
 
 [Sanitized run summary](run-summary.json) and [expected source manifest](../../../research/math-proof-agent/round002/run-manifest-smoke001.json)
 contain all fingerprints. Reservation remains **1/4 submits, 1800/21600 seconds**
@@ -156,8 +191,17 @@ PutnamBench remains conservatively excluded in favor of alternatives; its
 no-public-proof request is explicit, whereas a universal requirement to contact
 authors before private automated evaluation was our prior interpretation.
 
+The [third source audit](../../../research/math-proof-agent/round002/source-feasibility-audit-03.json)
+found proof-named fields with unknown contents and no verified statement-only
+projection for miniF2F-v2c. Some source answer slots also differ from a fixed
+existential proof-body interface. No bulk dataset or reference-proof archive
+was acquired. A methodology-paper search incidentally exposed an example answer
+for `amc12b_2021_p3` to the audit agent; its value is not reproduced or sent to
+any solver, and no panel was selected or changed. This is recorded exposure,
+not a claim that the audit saw no answer content.
+
 Remaining blockers are the batch TPU slot/403/unknown submission, exact reviewed
-source admission and compatible runtime, qualified answer-proof binding and
+source admission and compatible runtime, real-panel answer binding and feasible
 repair context, actual Kaggle isolation/Lean controls, actual v5e-8 model
 parity/performance, panel/model freeze and paired experiment. No
 SFT/RL/TTT/LoRA/distillation/synthetic SGD or paid/model API call occurred.
