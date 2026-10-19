@@ -117,3 +117,101 @@ The absence of arbitrary metaprogramming and the measured local boundary are
 intentional. This is not a claim that unrestricted hostile Lean code has been
 qualified. Public system runtime directories must remain free of credentials;
 if a destination cannot establish that boundary, stop before model proof execution.
+
+## Mathlib follow-up after delivery 3fcb8410
+
+The initial core-only record above is preserved. A subsequent offline continuation
+qualified a **local Mathlib import subset** on the same Lean runtime. It made no
+Kaggle call and did not qualify a scoring panel or a remote verifier.
+
+The official `v4.19.0` tag resolved to
+`c44e0c8ee63ca166450922a373c7409c5d26b00b`; its `lean-toolchain` is
+`leanprover/lean4:v4.19.0`. Source and cache identities are:
+
+- Official source archive:
+  <https://codeload.github.com/leanprover-community/mathlib4/tar.gz/c44e0c8ee63ca166450922a373c7409c5d26b00b>.
+- Archive SHA-256:
+  `9fce64f31ba5612df46871eee8b4581c81c120604deb08cc35fa9f0fb543a425`.
+- Unchanged upstream `lake-manifest.json` SHA-256:
+  `5c6421b650bc87a2427a892a39e5522dc44543ca4ac1bd6e9f08d536c044a752`.
+- Frozen local project tree:
+  `d0bb542569dd4742f2b883fea29caf41be39694a3d776c47a5a70d013c8faf79`.
+- Compiled-cache manifest fingerprint:
+  `33baebe77f94253328a6e8814f750b35cf6717a2454751d2ad4fc7b33f61ac87`.
+
+The dedicated project is
+`/home/wurre/irisx-math-m002-lean-20261019/mathlib-project-c44e0c8ee63ca166450922a373c7409c5d26b00b`.
+It was materialized from an explicit allowlist: `Mathlib/`, `Cache/`,
+`Mathlib.lean`, `lakefile.lean`, `lake-manifest.json`, `lean-toolchain`, and
+`LICENSE`. The official source archive also bundled non-runtime directories;
+`Archive`, `Counterexamples`, and `MathlibTest` were not inspected for proofs,
+used as task/evaluator data, or included in this worker project. No benchmark
+reference proof entered prompts or Git.
+
+`lake exe cache --help` built the upstream cache tool and obtained eight
+dependencies at the original manifest's exact commits. All eight checked-out
+HEADs and clean source states were read back; their commits, Git trees and
+license-file hashes are in
+[`mathlib-tests.json`](../../../../docs/verification/MATH-002/mathlib-tests.json).
+Mathlib and seven dependencies declare Apache-2.0; `Cli` declares MIT.
+No `lake update`, global install, toolchain upgrade, or package-source edit ran.
+
+The exact cache request was:
+
+```text
+<existing-Lean-root>/bin/lake exe cache get Mathlib.Tactic.Ring Mathlib.Tactic.NormNum
+```
+
+Run it from the dedicated project, with the existing Lean `bin` first in the
+child process PATH and `MATHLIB_CACHE_DIR` set to the task-owned
+`/home/wurre/irisx-math-m002-lean-20261019/mathlib-cache`. Acquisition used a
+clean child environment, task-owned HOME and no credentials. The official tool
+downloaded 691 transitive cache files, 29,365,191 compressed bytes, from
+`https://lakecache.blob.core.windows.net/mathlib4`. Its pinned helper was
+[`leantar` 0.1.15](https://github.com/digama0/leangz/releases/tag/v0.1.15),
+executable SHA-256
+`c3294bf820d5d1d7cc59bc3ce9bdc244b3f45cab37ea9dd649e1a388c20dbe3c`.
+`cache lookup` read back the exact Mathlib commit above in the Ring and NormNum
+archive comments. Existing local caches should be reused; `get!` is unnecessary.
+
+The unchanged `lean_worker.py` execution policy still requires measured isolation,
+immutable statement bindings and final-theorem transitive axiom checks. The
+parent added process-exit classification so a wrapped signal (128–255) is an
+infrastructure error. The new `mathlib_controls.py` also requires negative Lean
+controls to return exit 1 with actual Lean error diagnostics; a crash cannot count
+as a correctly rejected mathematical statement.
+
+The first 2 GiB address-space run failed: all seven actual Lean processes exited
+139 with empty output while importing this closure. That raw receipt remains at
+`.irisx/line-b/MATH-002/mathlib/controls-attempt01.json`. Its original 6/10
+status-matching count is **not semantic-control qualification**. A separate
+4 GiB configuration then passed, with the runtime/library bytes unchanged.
+This is a virtual-address-space limit, not a claim that Lean needs 4 GiB resident
+memory. Other limits remain 30 wall seconds, 20 CPU seconds, 64 processes,
+64 open files, 64 KiB output and zero core dumps.
+
+The final invocation was:
+
+```bash
+PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean/mathlib_controls.py --config .irisx/line-b/MATH-002/lean-config-mathlib-4g-local.json --output .irisx/line-b/MATH-002/mathlib/controls-final.json
+```
+
+Use a fresh output filename to reproduce. The ignored config extends the original
+core config with `project_root`, the project tree hash above, full
+`mathlib_revision`, relative Lean library paths under `.lake/build/lib/lean` and
+each pinned package, and `limits.memory_bytes=4294967296`.
+
+Final results: 10/10 authored controls, 19/19 measured local isolation checks,
+and **separately** 6/6 synthetic process-receipt branch tests. There were seven
+actual Lean executions: Ring/NormNum/Omega each accepted a true control and
+rejected a false control; a hidden arbitrary axiom was rejected despite exit 0.
+The other three actual controls rejected native evaluation, command injection
+and a statement-binding mutation before Lean execution. The synthetic branch
+tests executed no Lean process. Final wall cost was 22.442 seconds, including
+14.350 seconds of preflight; actual Lean candidate wall cost was 8.042 seconds.
+Startup flags and source hashes were recorded and unchanged during the run.
+
+This qualifies only these imports and authored local controls. It does not claim
+full Mathlib coverage, human statement review, an independent proof checker,
+model success, or Kaggle isolation. The original unresolved Kaggle submission
+and the absent human-reviewed frozen panel still block a scored comparison.

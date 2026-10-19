@@ -1,7 +1,9 @@
 {
   "format": "irisx.math.panel-proposal.v1",
   "task": "MATH-002",
-  "proposal_version": "round002-p0",
+  "proposal_version": "round002-p1-source-correction",
+  "previous_snapshot": "round002-p0 is preserved in code commit ae051a79359c4e0be9658d89452c05793d64d831 and smoke001 manifest; no scored output was observed before this revision.",
+  "source_feasibility_update": "source-feasibility-notes.json records attributable upstream human review for miniF2F-v2c and ProofNet-Verified. A separate owner-performed review is not intrinsically required. No source is admitted until exact statements, legal acquisition, runtime and answer-proof binding are qualified.",
   "created_on": "2026-10-19",
   "status": "not_frozen",
   "scored_model_outputs_observed": 0,
@@ -36,7 +38,7 @@
       "source_id": "putnambench",
       "revision": "a635813f5edf297d928f9bd5ef8324a26bdde09c",
       "intended_role": "excluded from this round",
-      "reason_not_frozen": "Maintainers request prior discussion before writing subset proofs and prohibit public proof posting. This task does not authorize contacting researchers."
+      "reason_not_frozen": "Conservatively excluded in favor of alternative sources. No public generated proofs is explicit; construing all private automated evaluation as requiring prior contact was an earlier interpretation, not a license prohibition. See source-feasibility-notes.json. No contact is authorized."
     },
     {
       "source_id": "authored_integration_controls",

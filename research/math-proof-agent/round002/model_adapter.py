@@ -21,6 +21,20 @@ class PreflightError(RuntimeError):
     """A condition that prevents model execution or scientific qualification."""
 
 
+class ContextBudgetError(ValueError):
+    """The fixed prompt plus completion allowance cannot fit the qualified cache."""
+
+
+class GenerationTimeout(TimeoutError):
+    """Deadline interruption with a measured partial cost receipt, never zero fill."""
+
+    def __init__(self, message: str, *, cost: dict, phase: str):
+        super().__init__(message)
+        self.cost = dict(cost)
+        self.phase = phase
+        self.stop_reason = "deadline"
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -32,6 +46,46 @@ def sha256_file(path: Path) -> str:
 def canonical_hash(value) -> str:
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
                                      ensure_ascii=False).encode()).hexdigest()
+
+
+def verify_candidate_files(model_dir: Path, candidate: dict) -> list[dict]:
+    """Bind local bytes to the public checkpoint allowlist without downloading."""
+    if not re.fullmatch(r"[0-9a-f]{40}", candidate.get("revision", "")):
+        raise PreflightError("Model revision must be a full immutable commit")
+    if not re.fullmatch(r"[0-9a-f]{40}", candidate.get("tokenizer_revision", "")):
+        raise PreflightError("Tokenizer revision must be a full immutable commit")
+    files = candidate.get("files")
+    if not isinstance(files, list) or not files:
+        raise PreflightError("Missing checkpoint file fingerprints")
+    verified, seen = [], set()
+    for item in files:
+        name = item["path"]
+        if (not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9_.-]+", name)
+                or Path(name).suffix not in {".json", ".safetensors"} or name in seen):
+            raise PreflightError("Invalid or duplicate checkpoint file")
+        if not re.fullmatch(r"[0-9a-f]{64}", item.get("sha256", "")):
+            raise PreflightError("Invalid checkpoint file digest")
+        path = model_dir / name
+        # HF snapshot symlinks are allowed; the final resolved bytes are hashed.
+        if (not path.is_file() or path.stat().st_size != item["bytes"]
+                or sha256_file(path) != item["sha256"]):
+            raise PreflightError("Local checkpoint fingerprint mismatch: " + name)
+        verified.append({"path": name, "bytes": path.stat().st_size, "sha256": item["sha256"]})
+        seen.add(name)
+    required = {"config.json", "tokenizer.json", "tokenizer_config.json", "model.safetensors.index.json"}
+    if not required.issubset(seen):
+        raise PreflightError("Incomplete checkpoint file allowlist")
+    index = json.loads((model_dir / "model.safetensors.index.json").read_text())
+    if not isinstance(index.get("weight_map"), dict) or not index["weight_map"]:
+        raise PreflightError("Missing checkpoint weight map")
+    if not set(index["weight_map"].values()).issubset(seen):
+        raise PreflightError("Weight index references an unverified file")
+    # Tokenizer/AutoConfig must not discover extra ambient configuration/code.
+    allowed = set(seen)
+    for path in model_dir.iterdir():
+        if path.is_file() and path.suffix in {".json", ".py", ".safetensors"} and path.name not in allowed:
+            raise PreflightError("Unpinned local checkpoint file: " + path.name)
+    return sorted(verified, key=lambda item: item["path"])
 
 
 def tpu_preflight() -> dict:
@@ -130,9 +184,11 @@ class JaxQwen3Adapter:
         from transformers import AutoTokenizer
 
         self.jax, self.jnp, self.np = jax, jnp, np
-        self.path, self.candidate = Path(model_dir), candidate
+        self.path = Path(model_dir)
+        self.candidate = json.loads(json.dumps(candidate))
         if jax.default_backend() != "tpu" or len(jax.devices()) != 8:
             raise PreflightError("Adapter requires qualified TPU; CPU model execution forbidden")
+        self._verified_model_files = verify_candidate_files(self.path, self.candidate)
         self.config = json.loads((self.path / "config.json").read_text())
         validate_config(self.config)
         if not 16 <= context_length <= 8192:
@@ -191,6 +247,48 @@ class JaxQwen3Adapter:
         self._step = jax.jit(self._forward, donate_argnums=(5, 6))
         self.first_compile_seconds = None
         self.qualification = None
+        self._runtime_identity = self._measure_runtime_identity()
+
+    def _measure_runtime_identity(self) -> dict:
+        """Stable runtime facts only; no memory counters, secrets, or paths."""
+        packages = {}
+        for dist in importlib.metadata.distributions():
+            name = re.sub(r"[-_.]+", "-", dist.metadata["Name"]).lower()
+            version = dist.version
+            if name in packages and packages[name] != version:
+                raise PreflightError("Ambiguous installed runtime package version: " + name)
+            packages[name] = version
+        devices = self.jax.devices()
+        return {"python": platform.python_version(), "system": platform.system(),
+                "packages": packages, "backend": self.jax.default_backend(),
+                "device_count": len(devices), "local_device_count": self.jax.local_device_count(),
+                "device_kinds": [device.device_kind for device in devices]}
+
+    def spec(self) -> dict:
+        """Exact model/runtime contract; qualification is a separate evidence gate.
+
+        The result is a detached JSON value. It deliberately excludes mutable
+        costs and qualification status so repeated generations keep one identity.
+        """
+        value = {
+            "format": "irisx.math.model-spec.v1", "adapter_policy": "qwen3-jax-inference-v2",
+            "candidate": self.candidate, "verified_files": self._verified_model_files,
+            "loaded_config": self.config, "context_length": self.context_length,
+            "template": {"add_generation_prompt": True, "enable_thinking": False,
+                         "chat_template_sha256": hashlib.sha256(self.tokenizer.chat_template.encode()).hexdigest()},
+            "dtype": "bfloat16", "mesh": {"mp": len(self.jax.devices())},
+            "sharding_policy": {
+                "qkv": "attention_head", "attention_output": "contracting_head",
+                "mlp": "intermediate_dimension", "embedding_and_lm_head": "vocabulary",
+                "kv_cache": ["layer", "context", "kv_head/mp", "head_dim"],
+                "layer_and_norms": "replicated"},
+            "sampling_policy": "NumPy-PCG64/stable-nucleus-including-threshold-token/v1",
+            "runtime": self._runtime_identity,
+        }
+        return json.loads(json.dumps(value))
+
+    def identity(self) -> str:
+        return canonical_hash(self.spec())
 
     def _forward(self, weights, embedding, final_norm, lm_head, token, keys, values, position):
         jax, jnp, cfg = self.jax, self.jnp, self.config
@@ -270,26 +368,43 @@ class JaxQwen3Adapter:
             raise PreflightError("Model is not qualified by reference parity")
         if not 1 <= max_new_tokens <= 4096 or not 0 <= seed < 2**64:
             raise ValueError("Invalid completion/seed limit")
+        attempt_start = time.monotonic()
         tokens = self.encode(messages)
         if not tokens or len(tokens) + max_new_tokens > self.context_length:
-            raise ValueError("Prompt plus completion exceeds the fixed cache/context ceiling")
-        if deadline is not None and time.monotonic() >= deadline:
-            raise TimeoutError("Deadline before generation")
+            raise ContextBudgetError("Prompt plus completion exceeds the fixed cache/context ceiling")
+        compile_seconds_this_call = allocation_seconds = 0.0
+        consumed_prompt_tokens = 0
+        prefill_start = None
+
+        def check_deadline(phase):
+            now = time.monotonic()
+            if deadline is not None and now >= deadline:
+                raise GenerationTimeout("Deadline during " + phase, phase=phase, cost={
+                    "prompt_tokens": len(tokens), "consumed_prompt_tokens": consumed_prompt_tokens,
+                    "output_tokens": 0, "partial": True, "wall_seconds": now - attempt_start,
+                    "cold_compile_seconds": compile_seconds_this_call,
+                    "cache_allocation_seconds": allocation_seconds,
+                    "prefill_seconds": 0.0 if prefill_start is None else now - prefill_start,
+                    "decode_seconds": 0.0,
+                })
+
+        check_deadline("before_compile")
         was_compiled = self.first_compile_seconds is not None
         if not qualification_mode and not was_compiled:
             raise PreflightError("Scoring requires compilation during qualified preflight")
         self.compile()
         compile_seconds_this_call = 0.0 if was_compiled else self.first_compile_seconds
+        check_deadline("before_cache_allocation")
         start = time.monotonic()
         keys, values = self.empty_cache()
         self.jax.block_until_ready((keys, values))
         allocation_seconds = time.monotonic() - start
+        check_deadline("cache_allocation")
         rng = self.np.random.Generator(self.np.random.PCG64(seed))
         position, output, logit_traces = 0, [], []
         prefill_start = time.monotonic()
         for token in tokens:
-            if deadline is not None and time.monotonic() >= deadline:
-                raise TimeoutError("Deadline during prefill")
+            check_deadline("prefill")
             logits, keys, values = self._compiled(
                 self.weights, self.embedding, self.final_norm, self.lm_head,
                 self.jnp.asarray(token, dtype=self.jnp.int32), keys, values,
@@ -297,6 +412,8 @@ class JaxQwen3Adapter:
             # Bound outstanding device work; no hidden backlog beyond deadline.
             logits.block_until_ready()
             position += 1
+            consumed_prompt_tokens += 1
+            check_deadline("prefill")
         prefill_seconds = time.monotonic() - prefill_start
         decode_start = time.monotonic()
         stop_reason = "max_tokens"
@@ -320,6 +437,8 @@ class JaxQwen3Adapter:
                 logits.block_until_ready()
                 position += 1
         decode_seconds = time.monotonic() - decode_start
+        if deadline is not None and time.monotonic() >= deadline:
+            stop_reason = "deadline"
         result = {
             "text": self.tokenizer.decode(output, skip_special_tokens=True),
             "prompt_token_ids": tokens, "output_token_ids": output,
@@ -335,7 +454,9 @@ class JaxQwen3Adapter:
         }
         result["cost"] = {
             "prompt_tokens": result["prompt_tokens"], "output_tokens": result["output_tokens"],
-            "wall_seconds": result["generation_wall_seconds"] + compile_seconds_this_call,
+            "consumed_prompt_tokens": consumed_prompt_tokens, "partial": stop_reason == "deadline",
+            "wall_seconds": time.monotonic() - attempt_start,
+            "cache_allocation_seconds": allocation_seconds,
             "prefill_seconds": prefill_seconds, "decode_seconds": decode_seconds,
             "cold_compile_seconds": compile_seconds_this_call,
         }

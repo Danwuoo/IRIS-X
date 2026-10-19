@@ -25,8 +25,13 @@ def evaluate_selected(records, private_key):
         mode = record["answer_mode"]
         if mode == "proof_only":
             record["answer_status"] = "not_applicable"
+            record["joint_status"] = "not_applicable"
             continue
         record["answer_status"] = "unknown"
+        # A correct separate string and a proof of a fixed existential/other
+        # theorem do not establish that the proof certifies this answer.
+        # No reviewed answer-binding implementation is qualified in this round.
+        record["joint_status"] = "unqualified" if mode == "find_answer" else "not_applicable"
         if mode != "find_answer":
             continue
         # The controller selects first qualifying proof, not an answer-key oracle.

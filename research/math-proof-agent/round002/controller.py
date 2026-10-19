@@ -1,24 +1,39 @@
-"""Bounded paired inference. Solver views are explicit allowlists, never panel dicts."""
+"""Bounded paired inference with explicit solver and execution-identity boundaries."""
 from __future__ import annotations
+import copy
 import json
 from pathlib import Path
 import sys
 import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import atomic_json, digest
+from common import atomic_json, digest, file_digest, validate_scoring_identity
 from lean_worker import statement_digest
+from model_adapter import ContextBudgetError
 
 ARMS = {"M-DIRECT": 1, "M-SAMPLE": 4, "M-REPAIR": 4}
-SOLVER_KEYS = ("id", "statement", "natural_language", "answer_mode")
+RUNTIME_SOURCES = frozenset({"common.py", "controller.py", "lean_worker.py", "model_adapter.py",
+                             "evaluator.py", "analyze.py"})
 
 
 def solver_view(problem):
-    return {key: problem[key] for key in SOLVER_KEYS}
+    # Reconstruct nested objects too: statement_digest deliberately ignores
+    # evaluator metadata, so copying the whole statement would leak that data.
+    statement = problem["statement"]
+    if (any(not isinstance(problem.get(key), str) for key in ("id", "natural_language", "answer_mode"))
+            or any(not isinstance(statement.get(key), str) for key in ("id", "declaration", "fidelity", "sha256"))
+            or not isinstance(statement.get("imports"), list)
+            or any(not isinstance(item, str) for item in statement["imports"])):
+        raise ValueError("solver fields must be scalar text or import names")
+    return {"id": problem["id"], "natural_language": problem["natural_language"],
+            "answer_mode": problem["answer_mode"],
+            "statement": {"id": statement["id"], "imports": list(statement["imports"]),
+                          "declaration": statement["declaration"], "fidelity": statement["fidelity"],
+                          "sha256": statement["sha256"]}}
 
 
 def parse_candidate(text):
-    if len(text.encode()) > 65536:
-        raise ValueError("candidate exceeds byte limit")
+    if not isinstance(text, str) or len(text.encode()) > 65536:
+        raise ValueError("candidate must be text within byte limit")
     if text.startswith("```json\n") and text.rstrip().endswith("```"):
         text = text[8:].rstrip()[:-3]
     value = json.loads(text)
@@ -37,80 +52,150 @@ def accepted(result, problem):
             and result.get("trust_policy_passed") is True)
 
 
-def execute_arm(problem, arm, seed, model, verifier, protocol, output, identities):
-    """Each call is bounded by adapter/worker deadlines and whole notebook timeout.
+def validate_binding(problem, model, verifier, protocol, identities, panel, source_files, execution_manifest):
+    validate_scoring_identity(identities)
+    if (not isinstance(execution_manifest, dict) or execution_manifest.get("scoring") is not True
+            or execution_manifest.get("code_sha") != identities["code_sha"]
+            or execution_manifest.get("source_sha256") != identities["source_sha256"]
+            or execution_manifest.get("source_files") != source_files):
+        raise ValueError("identity differs from committed execution manifest")
+    if identities["protocol_semantic_sha256"] != digest(protocol):
+        raise ValueError("protocol identity mismatch")
+    if not isinstance(panel, list) or identities["panel_semantic_sha256"] != digest(panel):
+        raise ValueError("panel identity mismatch")
+    ids = [p["id"] for p in panel]
+    if len(ids) != len(set(ids)) or sum(p == problem for p in panel) != 1:
+        raise ValueError("problem must belong exactly once to frozen panel")
+    if model.identity() != identities["model_spec_sha256"]:
+        raise ValueError("model/tokenizer/runtime identity mismatch")
+    if verifier.identity() != identities["verifier_spec_sha256"]:
+        raise ValueError("verifier identity mismatch")
+    if not isinstance(source_files, dict) or not RUNTIME_SOURCES.issubset(source_files):
+        raise ValueError("complete source manifest required")
+    if digest(source_files) != identities["source_sha256"]:
+        raise ValueError("source manifest identity mismatch")
+    root = Path(__file__).resolve().parent
+    for name, expected in source_files.items():
+        path = (root / name).resolve()
+        if not path.is_relative_to(root) or path.is_symlink() or file_digest(path) != expected:
+            raise ValueError("source bytes mismatch")
 
-    No replay of partial candidates: interrupted snapshots remain unknown and
-    require explicit identity/budget reconciliation before any future dispatch.
+
+def execute_arm(problem, arm, seed, model, verifier, protocol, output, identities, *, panel, source_files, execution_manifest):
+    """Fresh execution only; no automatic partial resume or answer-key selection.
+
+    panel is the exact frozen list (including provenance); source_files hashes
+    the executing local source. execution_manifest must come from the trusted
+    committed-source packager, not solver data; source hashes are checked here.
+    Semantic scoring identities are not the smoke manifest's raw-file hashes.
+    No scoring runner has yet been qualified, and smoke manifests fail closed.
     """
     output = Path(output)
     if output.exists():
         raise ValueError("fresh result directory required; automatic resume disabled")
     if arm not in ARMS or protocol.get("status") != "frozen":
         raise ValueError("unknown arm or protocol not frozen")
+    if protocol.get("arms") != ARMS or not 1 <= protocol.get("max_completion_tokens", 0) <= 4096:
+        raise ValueError("invalid frozen proposal ceilings")
+    if (not isinstance(seed, int) or isinstance(seed, bool)
+            or seed not in [protocol["first_seed"], *protocol["replication_seeds"]]
+            or problem.get("answer_mode") not in {"proof_only", "answer_given", "find_answer"}
+            or not 0 < protocol["arm_wall_seconds"] <= 10800):
+        raise ValueError("unplanned seed, answer mode or wall ceiling")
+    solver_view(problem)
     if problem.get("human_review", {}).get("status") != "approved":
-        raise ValueError("formal statement lacks human review")
+        raise ValueError("formal statement lacks attributable human review")
     if statement_digest(problem["statement"]) != problem["statement_sha256"]:
         raise ValueError("statement drift")
-    if identities.get("protocol_sha256") != digest(protocol):
-        raise ValueError("protocol identity mismatch")
-    setup_start = time.monotonic()
-    preflight = verifier.preflight()
-    setup_seconds = time.monotonic() - setup_start
-    if preflight.get("status") != "passed":
-        raise ValueError("verifier not qualified")
+    validate_binding(problem, model, verifier, protocol, identities, panel, source_files, execution_manifest)
     output.mkdir(parents=True)
-    started = time.monotonic()
     events = []
+    state = {"problem_id": problem["id"], "arm": arm, "seed": seed,
+             "identities": copy.deepcopy(identities), "status": "preflight", "events": events,
+             "statement_sha256": problem["statement_sha256"],
+             "answer_mode": problem["answer_mode"], "planned": True,
+             "answer_status": "not_applicable" if problem["answer_mode"] == "proof_only" else "unknown",
+             "joint_status": "unqualified" if problem["answer_mode"] == "find_answer" else "not_applicable"}
+    atomic_json(output / "checkpoint.json", state)
+    setup_start = time.monotonic()
+    try:
+        preflight = verifier.preflight()
+    except Exception as exc:
+        preflight = {"status": "blocked", "reason": type(exc).__name__}
+    state.update(verifier_preflight=preflight, verifier_setup_seconds=time.monotonic() - setup_start)
+    if preflight.get("status") != "passed":
+        state.update(status="infrastructure_blocked", wall_seconds=0.0)
+        atomic_json(output / "checkpoint.json", state)
+        return state
+    # No reviewed witness/answer binding is implemented yet. Do not spend
+    # proposals on a joint task that this verifier cannot certify.
+    if problem["answer_mode"] == "find_answer":
+        state.update(status="infrastructure_blocked", reason="answer_proof_binding_unqualified", wall_seconds=0.0)
+        atomic_json(output / "checkpoint.json", state)
+        return state
+    started = time.monotonic()
+    deadline = started + protocol["arm_wall_seconds"]
+    state["status"] = "running"
     base = [{"role": "system", "content": protocol["system_prompt"]},
             {"role": "user", "content": json.dumps(solver_view(problem), ensure_ascii=False)}]
     last = None
-    state = {"problem_id": problem["id"], "arm": arm, "seed": seed,
-             "identities": identities, "status": "running", "events": events,
-             "answer_mode": problem["answer_mode"], "planned": True,
-             "verifier_preflight": preflight, "verifier_setup_seconds": setup_seconds}
     atomic_json(output / "checkpoint.json", state)
     for index in range(ARMS[arm]):
-        remaining = protocol["arm_wall_seconds"] - (time.monotonic() - started)
-        if remaining <= 0:
+        if time.monotonic() >= deadline:
             state["status"] = "budget_exhausted"
             break
         prompt = list(base)
         if arm == "M-REPAIR" and last is not None:
-            # Only the last candidate and bounded compiler diagnostics; no gold.
             prompt += [{"role": "assistant", "content": last["model_text"]},
                        {"role": "user", "content": "Repair the same statement using this tool feedback:\n" +
                         last.get("feedback", "unavailable")[:protocol["feedback_max_chars"]]}]
         event = {"index": index, "parent": index - 1 if arm == "M-REPAIR" and index else None,
-                 "prompt_sha256": digest(prompt), "status": "generating", "wall_started": time.time()}
+                 "prompt_sha256": digest(prompt), "status": "generating", "wall_started": time.time(),
+                 "model_cost_complete": False, "tool_attempted": False}
         events.append(event)
         atomic_json(output / "checkpoint.json", state)
         call_start = time.monotonic()
+        phase = "generation"
         try:
-            # Same first seed across arms, separate deterministic proposal seeds.
             generation_seed = int(digest([seed, problem["id"], index])[:8], 16)
             response = model.generate(prompt, seed=generation_seed,
                                       max_new_tokens=protocol["max_completion_tokens"],
                                       temperature=protocol["temperature"], top_p=protocol["top_p"],
-                                      deadline=time.monotonic() + remaining)
-            event.update(model_text=response["text"], model_cost=response.get("cost", {}))
+                                      deadline=deadline)
+            cost = response.get("cost", {})
+            event.update(model_text=response["text"], model_cost=cost, stop_reason=response.get("stop_reason"))
+            event["model_cost_complete"] = (all(key in cost for key in ("prompt_tokens", "output_tokens", "wall_seconds"))
+                                             and not cost.get("partial", False))
             event["status"] = "generated"
             atomic_json(output / f"candidate-{index}.json", event)
+            # Deadline outranks parse failure for truncated/late output.
+            if response.get("stop_reason") == "deadline" or time.monotonic() >= deadline:
+                raise TimeoutError("arm wall exhausted during generation")
+            phase = "parse"
             candidate = parse_candidate(response["text"])
-            if time.monotonic() - started >= protocol["arm_wall_seconds"]:
-                raise TimeoutError("arm wall exhausted before verifier")
+            if problem["answer_mode"] == "proof_only" and candidate["answer"] is not None:
+                raise ValueError("proof-only answer must be null")
+            event["candidate"] = candidate
+            phase = "verification"
             tool_start = time.monotonic()
-            result = verifier.verify(problem["statement"], candidate["proof_body"],
-                                     deadline=started + protocol["arm_wall_seconds"])
-            event.update(tool=result, tool_wall_seconds=time.monotonic() - tool_start,
-                         candidate=candidate, feedback=result.get("execution", {}).get("output", result.get("reason", "")))
+            event["tool_attempted"] = True
+            try:
+                result = verifier.verify(problem["statement"], candidate["proof_body"], deadline=deadline)
+            finally:
+                event["tool_wall_seconds"] = time.monotonic() - tool_start
+            event.update(tool=result, feedback=result.get("execution", {}).get("output", result.get("reason", "")))
             event["status"] = "accepted" if accepted(result, problem) else result.get("status", "unknown")
-            if time.monotonic() - started > protocol["arm_wall_seconds"]:
+            if time.monotonic() > deadline:
                 event["status"] = "timeout"
-        except (ValueError, json.JSONDecodeError) as exc:
-            event.update(status="invalid_format", feedback=str(exc))
-        except TimeoutError:
+        except ContextBudgetError:
+            event.update(status="context_budget_exceeded", feedback="fixed prompt/completion context ceiling exceeded")
+        except TimeoutError as exc:
             event.update(status="timeout", feedback="resource timeout")
+            if isinstance(getattr(exc, "cost", None), dict):
+                event["model_cost"] = exc.cost
+        except ValueError as exc:
+            event.update(status="invalid_format" if phase == "parse" else "infrastructure_error",
+                         feedback=str(exc) if phase == "parse" else type(exc).__name__)
         except Exception as exc:
             event.update(status="infrastructure_error", feedback=type(exc).__name__)
         event["wall_seconds"] = time.monotonic() - call_start
@@ -120,13 +205,11 @@ def execute_arm(problem, arm, seed, model, verifier, protocol, output, identitie
         if event["status"] == "accepted":
             state["status"] = "proof_accepted"
             break
-        if event["status"] in {"infrastructure_error", "infrastructure_blocked"}:
+        if event["status"] in {"infrastructure_error", "infrastructure_blocked", "context_budget_exceeded"}:
             state["status"] = event["status"]
             break
     if state["status"] == "running":
         state["status"] = "budget_exhausted"
     state["wall_seconds"] = time.monotonic() - started
-    # Answer correctness is evaluator-only; never inferred from proof-only success.
-    state["answer_status"] = "not_applicable" if problem["answer_mode"] == "proof_only" else "unknown"
     atomic_json(output / "checkpoint.json", state)
     return state

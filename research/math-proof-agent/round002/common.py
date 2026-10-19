@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import time
 
 
@@ -13,6 +14,20 @@ def digest(value):
 
 def file_digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+SCORING_HASH_KEYS = ("source_sha256", "protocol_semantic_sha256", "panel_semantic_sha256",
+                     "model_spec_sha256", "verifier_spec_sha256")
+
+
+def validate_scoring_identity(identity):
+    """Scoring semantic hashes are distinct from the smoke's raw file manifest."""
+    if not isinstance(identity, dict) or identity.get("format") != "irisx.math.scoring-identity.v1":
+        raise ValueError("complete scoring identity required")
+    for key, length in [("code_sha", 40), *((key, 64) for key in SCORING_HASH_KEYS)]:
+        if not isinstance(identity.get(key), str) or not re.fullmatch("[0-9a-f]{%d}" % length, identity[key]):
+            raise ValueError("missing or malformed scoring identity: " + key)
+    return identity
 
 
 def atomic_json(path, value):

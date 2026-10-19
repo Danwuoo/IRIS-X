@@ -9,11 +9,148 @@ from __future__ import annotations
 import json
 import os
 import sys
+import hashlib
+import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest import mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from model_adapter import JaxQwen3Adapter, PreflightError, sample_token, validate_config
+from model_adapter import (ContextBudgetError, GenerationTimeout, JaxQwen3Adapter,
+                           PreflightError, canonical_hash, sample_token,
+                           validate_config, verify_candidate_files)
+
+
+class AdapterBoundaryControls(unittest.TestCase):
+    """Authored interface fixtures test receipts and identities, not model quality."""
+
+    def adapter(self, clock):
+        import numpy as np
+        adapter = object.__new__(JaxQwen3Adapter)
+        adapter.qualification = "passed"
+        adapter.context_length = 16
+        adapter.first_compile_seconds = .25
+        adapter.encode = lambda messages: [1, 2, 3]
+        adapter.compile = mock.Mock(return_value=.25)
+        adapter.empty_cache = mock.Mock(return_value=(None, None))
+        adapter.jax = SimpleNamespace(block_until_ready=lambda value: value,
+                                      devices=lambda: [SimpleNamespace(device_kind="cpu")])
+        adapter.jnp = SimpleNamespace(asarray=lambda value, dtype: value, int32="int32")
+        adapter.np = np
+        adapter.weights = adapter.embedding = adapter.final_norm = adapter.lm_head = None
+        adapter.candidate = {"revision": "a" * 40, "tokenizer_revision": "a" * 40,
+                             "files": [{"path": "fixture.safetensors", "sha256": "b" * 64}]}
+        adapter._verified_model_files = [{"path": "fixture.safetensors", "sha256": "b" * 64}]
+        adapter.config = {"fixture": "authored_interface_only"}
+        adapter.tokenizer = SimpleNamespace(chat_template="authored fixture")
+        adapter._runtime_identity = {"backend": "cpu", "packages": {"jax": "fixture"}}
+
+        def step(*args):
+            clock[0] += 2.0
+            return SimpleNamespace(block_until_ready=lambda: None), None, None
+        adapter._compiled = step
+        return adapter
+
+    def test_context_budget_has_distinct_error(self):
+        adapter = self.adapter([0.0])
+        adapter.context_length = 4
+        with self.assertRaises(ContextBudgetError):
+            adapter.generate([], seed=0, max_new_tokens=2)
+        adapter.compile.assert_not_called()
+
+    def test_prefill_timeout_retains_consumption_and_cost(self):
+        clock = [0.0]
+        adapter = self.adapter(clock)
+        with mock.patch("model_adapter.time.monotonic", side_effect=lambda: clock[0]):
+            with self.assertRaises(GenerationTimeout) as caught:
+                adapter.generate([], seed=0, max_new_tokens=1, deadline=1)
+        receipt = caught.exception.cost
+        self.assertEqual(caught.exception.phase, "prefill")
+        self.assertEqual(receipt["prompt_tokens"], 3)
+        self.assertEqual(receipt["consumed_prompt_tokens"], 1)
+        self.assertEqual(receipt["output_tokens"], 0)
+        self.assertEqual(receipt["wall_seconds"], 2.0)
+        self.assertEqual(receipt["cold_compile_seconds"], 0.0)
+        self.assertIs(receipt["partial"], True)
+
+    def test_allocation_timeout_retains_elapsed_without_prefill(self):
+        clock = [0.0]
+        adapter = self.adapter(clock)
+
+        def allocate():
+            clock[0] = 2.0
+            return None, None
+        adapter.empty_cache = mock.Mock(side_effect=allocate)
+        with mock.patch("model_adapter.time.monotonic", side_effect=lambda: clock[0]):
+            with self.assertRaises(GenerationTimeout) as caught:
+                adapter.generate([], seed=0, max_new_tokens=1, deadline=1)
+        self.assertEqual(caught.exception.phase, "cache_allocation")
+        self.assertEqual(caught.exception.cost["consumed_prompt_tokens"], 0)
+        self.assertEqual(caught.exception.cost["cache_allocation_seconds"], 2.0)
+
+    def test_expired_deadline_does_not_allocate_or_compile(self):
+        adapter = self.adapter([0.0])
+        with mock.patch("model_adapter.time.monotonic", return_value=0.0):
+            with self.assertRaises(GenerationTimeout) as caught:
+                adapter.generate([], seed=0, max_new_tokens=1, deadline=-1)
+        adapter.empty_cache.assert_not_called()
+        adapter.compile.assert_not_called()
+        self.assertEqual(caught.exception.cost["consumed_prompt_tokens"], 0)
+
+    def test_compile_timeout_records_only_new_compilation(self):
+        clock = [0.0]
+        adapter = self.adapter(clock)
+        adapter.first_compile_seconds = None
+
+        def compile_kernel():
+            adapter.first_compile_seconds = 2.0
+            clock[0] = 2.0
+            return 2.0
+        adapter.compile = mock.Mock(side_effect=compile_kernel)
+        with mock.patch("model_adapter.time.monotonic", side_effect=lambda: clock[0]):
+            with self.assertRaises(GenerationTimeout) as caught:
+                adapter.generate([], seed=0, max_new_tokens=1, deadline=1, qualification_mode=True)
+        self.assertEqual(caught.exception.cost["cold_compile_seconds"], 2.0)
+        self.assertEqual(caught.exception.cost["wall_seconds"], 2.0)
+        adapter.empty_cache.assert_not_called()
+
+    def test_spec_is_detached_and_identity_binds_configuration(self):
+        adapter = self.adapter([0.0])
+        expected = adapter.identity()
+        self.assertEqual(expected, canonical_hash(adapter.spec()))
+        detached = adapter.spec()
+        detached["candidate"]["revision"] = "c" * 40
+        self.assertEqual(adapter.identity(), expected)
+        for field, value in (("context_length", 17), ("config", {"fixture": "changed"}),
+                             ("_runtime_identity", {"backend": "changed"})):
+            with self.subTest(field=field):
+                changed = self.adapter([0.0])
+                setattr(changed, field, value)
+                self.assertNotEqual(changed.identity(), expected)
+        adapter.candidate["revision"] = "c" * 40
+        self.assertNotEqual(adapter.identity(), expected)
+
+    def test_checkpoint_local_bytes_and_ambient_files_are_verified(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            payload = {"config.json": b"{}", "tokenizer.json": b"{}",
+                       "tokenizer_config.json": b"{}", "weights.safetensors": b"authored-test-bytes",
+                       "model.safetensors.index.json": json.dumps({"weight_map": {"w": "weights.safetensors"}}).encode()}
+            for name, content in payload.items():
+                (root / name).write_bytes(content)
+            candidate = {"revision": "a" * 40, "tokenizer_revision": "a" * 40,
+                         "files": [{"path": name, "bytes": len(content),
+                                    "sha256": hashlib.sha256(content).hexdigest()}
+                                   for name, content in payload.items()]}
+            self.assertEqual(len(verify_candidate_files(root, candidate)), 5)
+            (root / "weights.safetensors").write_bytes(b"changed")
+            with self.assertRaises(PreflightError):
+                verify_candidate_files(root, candidate)
+            (root / "weights.safetensors").write_bytes(payload["weights.safetensors"])
+            (root / "special_tokens_map.json").write_text("{}")
+            with self.assertRaises(PreflightError):
+                verify_candidate_files(root, candidate)
 
 
 class ModelAdapterControls(unittest.TestCase):

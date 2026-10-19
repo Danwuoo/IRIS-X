@@ -2,6 +2,7 @@
   "format": "irisx.math.source-policy.v1",
   "task": "MATH-002",
   "review_date": "2026-10-19",
+  "followup_correction": "See source-feasibility-notes.json for exact upstream human-review evidence and the corrected distinction between PutnamBench public-proof policy and our conservative exclusion. Earlier readbacks below remain dated provenance, not a requirement that the owner personally review each statement or contact researchers.",
   "scope": "Public source/dependency metadata review. This file is not a legal opinion, statement-fidelity approval, execution authorization or evidence of model efficacy.",
   "readbacks": [
     {

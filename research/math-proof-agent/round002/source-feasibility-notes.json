@@ -1,0 +1,117 @@
+{
+  "format": "irisx.math.source-feasibility-notes.v1",
+  "task": "MATH-002",
+  "reviewed_on": "2026-10-19",
+  "status": "metadata_review_only_not_panel_admission",
+  "scope": "Primary repository metadata, licenses, dataset cards and paper methodology/policy excerpts. No benchmark dataset files, reference-proof archives or answer collections were acquired; no problem was selected, rewritten, solved, labeled or frozen.",
+  "correction_to_prior_assessment": {
+    "finding": "The absence of a local owner-performed fidelity review is not by itself a source blocker. Published, attributable upstream human review of the exact formal statements can satisfy the requested already-human-checked source criterion. Agent self-review cannot substitute for that evidence.",
+    "prior_files": ["source-policy.json", "panel-proposal.json"],
+    "change_control": "These notes supplement the earlier assessment without changing its recorded snapshot or admitting a panel. A later protocol/panel version must explicitly bind any adopted statements and evidence.",
+    "owner_clarification_required_for_source_research": false,
+    "remaining_prerequisites": [
+      "Qualify the fixed Lean/mathlib runtime and trusted worker for the selected source.",
+      "Establish a statement-only acquisition route before fetching dataset bodies.",
+      "Preserve the reviewed formal statement exactly; bind per-item provenance, imports, exposure and answer visibility.",
+      "For answer discovery, define and validate answer extraction against the fixed proposition without importing a gold answer.",
+      "Freeze the deterministic selection and shared budgets before scored model generation."
+    ]
+  },
+  "candidates": [
+    {
+      "source_id": "minif2f-v2c",
+      "repository": "https://github.com/roozbeh-mohit/miniF2F_v2",
+      "revision": "905eca84f37cf38a49ec54f0f03e7bf99b510168",
+      "legacy_repository_redirect": "https://github.com/roozbeh-yz/miniF2F_v2",
+      "license": "Apache-2.0",
+      "license_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "readme_url": "https://github.com/roozbeh-mohit/miniF2F_v2/blob/905eca84f37cf38a49ec54f0f03e7bf99b510168/README.md",
+      "readme_sha256": "726e7ec8c13d73a3787a8cd083d964feb0d043d04f045e70305a6e5e283ccb63",
+      "primary_paper": "https://arxiv.org/abs/2511.03108v1",
+      "primary_methodology_excerpt_source": "https://openreview.net/pdf/dac291045a82bf9d17ddb270006def064bc96457.pdf",
+      "upstream_review_evidence": "The authors report manual correspondence checks of all informal/formal statements. Competition variant v2c preserves original find-and-prove demands and all multiple-choice options. It withholds the solution when the original asks participants to find it. Variant v2s deliberately supplies solutions and is unsuitable for claiming answer discovery.",
+      "official_hf_repository": "https://huggingface.co/datasets/roozbeh-yz/miniF2F_v2",
+      "official_hf_revision": "065cb8057ccfc6e70f4afdd4d8542306c0f7cdb2",
+      "official_hf_card_url": "https://huggingface.co/datasets/roozbeh-yz/miniF2F_v2/blob/065cb8057ccfc6e70f4afdd4d8542306c0f7cdb2/README.md",
+      "official_hf_card_sha256": "939b7639efe53e890f4bc1b397e71cc3aa2063dba9f25f02645ecb078b9e0a3f",
+      "card_release_note": "The pinned author card says formal and informal proofs will be released later. This is evidence for a potential statement-only route, not a verified schema guarantee.",
+      "candidate_file_metadata_only": {
+        "path": "datasets/miniF2F_v2c.jsonl",
+        "git_blob_sha1": "9df7ea761861ad0281013b6d94179136d87ecd17",
+        "bytes": 296726,
+        "body_acquired": false
+      },
+      "metadata_limitations": [
+        "No lean-toolchain or lake manifest appears in the inspected repository tree; actual compatible runtime remains unknown.",
+        "Hugging Face /info returned failed config-info and no fields; /croissant failed. /splits exposes only a default train split and does not establish original test/validation boundaries.",
+        "Dataset bodies were not read. A metadata/card claim does not certify every field is answer-free.",
+        "Joint-success eligibility requires per-item mode classification and a faithful answer/proof binding; a generic proof of a disjunction alone must not silently count as an explicit answer."
+      ],
+      "assessment": "Promising source for both proof-only and find-answer-plus-proof tasks without researcher contact. Not admitted or frozen; runtime and safe acquisition remain to qualify.",
+      "exposure": "Public competition benchmark and published prover evaluations; no claim of unseen problems or uncontaminated model training."
+    },
+    {
+      "source_id": "proofnet-verified",
+      "repository": "https://github.com/marcusm117/ProofNet-Verified",
+      "revision": "160414332dc196583f6c37c310b420d2a3b07c58",
+      "license": "Apache-2.0",
+      "license_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "readme_url": "https://github.com/marcusm117/ProofNet-Verified/blob/160414332dc196583f6c37c310b420d2a3b07c58/README.md",
+      "readme_sha256": "3699602a59d52f203b44c5635a16f581d7c8bf17644d2a5d9bded3db406129ea",
+      "primary_papers": ["https://openreview.net/forum?id=5c0RSYyIWW", "https://openreview.net/forum?id=NjgaeXNit3"],
+      "upstream_review_evidence": "The corrected benchmark reports human-reviewer and AI consensus on faithfulness, with all 367 formalizations proved upstream. Its theorem-proving directory contains one statement ending in sorry per file. The four non-proof tasks were removed.",
+      "statement_only_directory_metadata": {
+        "path": "proofnet-verified",
+        "git_tree_sha1": "394620c77ebfc275c4cd4e740a2d7c0926b2d8a5",
+        "file_count": 367,
+        "bodies_acquired": false
+      },
+      "avoid_acquisition_paths": [
+        "data/proofnet-verified.jsonl contains informal_proof",
+        "data/proofnet-verified_gt.zip contains formal reference proofs",
+        "error_taxonomy contains proof/counterproof material",
+        "Full repository clone or dataset viewer rows can acquire disallowed reference material"
+      ],
+      "lean_toolchain": "leanprover/lean4:v4.28.0",
+      "lean_toolchain_sha256": "26df5f74b79af0cd9e298b6583993699a54938d047ba1919428da80d3ae80c6e",
+      "mathlib_revision": "8f9d9cff6bd728b17a24e163c9402775d9e6a365",
+      "lake_manifest_sha256": "669d3644cd187154b5381d5a223de688c1336faf9c8304301ec8b32bd33d0f5e",
+      "runtime_limitations": "The published environment differs from the current Lean 4.19.0 engineering qualification and also pins SMT/Canonical dependencies. It cannot inherit that qualification or be silently backported.",
+      "assessment": "Attributable reviewed source and clear statement-only path for proof-only evaluation; does not provide the requested answer-discovery denominator. Exact imports and dependencies still need admission.",
+      "exposure": "Public undergraduate textbook-derived benchmark with public upstream reference proofs; solver access to those proofs remains prohibited."
+    },
+    {
+      "source_id": "putnambench",
+      "repository": "https://github.com/trishullab/PutnamBench",
+      "revision": "a635813f5edf297d928f9bd5ef8324a26bdde09c",
+      "readme_url": "https://github.com/trishullab/PutnamBench/blob/a635813f5edf297d928f9bd5ef8324a26bdde09c/README.md",
+      "readme_sha256": "6a157e86321ea08a11766c18e20d28b6204a73cd5a96285fffc918120c976758",
+      "primary_paper": "https://arxiv.org/abs/2407.11214",
+      "license_and_purpose": "README identifies Lean/Isabelle as Apache-2.0, informal statements as shared with MAA permission, and the benchmark's purpose as automated theorem-prover evaluation. It supports both answer-given proving and finding a factored numerical answer plus proof.",
+      "source_policy_quote": "Do not include proofs as confirmation in any public setting.",
+      "other_source_request_paraphrase": "Maintainers also ask readers not to write formal proofs to reduce contamination and to discuss planned subset proof writing with them first.",
+      "distinction": "The no-public-proof rule and user no-contact instruction apply. The prior assertion that all private automated evaluation necessarily requires researcher contact was an interpretation, not an Apache license restriction or an explicit private-evaluation prohibition. The broad proof-writing request remains ambiguous alongside the stated evaluation purpose.",
+      "operational_choice": "Do not contact researchers or publish proofs. Choosing other sources avoids this ambiguity without requiring owner clarification or treating Putnam policy as a global MATH-002 blocker. These notes do not admit PutnamBench.",
+      "lean_toolchain": "leanprover/lean4:v4.33.1",
+      "lean_toolchain_sha256": "7bc3447cbd72d5618fae8359a8f2eb94d86b4ad25dde7ce79df2a283247262e3",
+      "mathlib_revision": "0df444a360eaa60ab8c11dca51a86af692955474",
+      "lake_manifest_sha256": "86f328eaf63c87c7133c5fb4a480e1b368d1141631efb6f89f84ee71163cba0a",
+      "runtime_limitations": "Latest pinned source is not compatible by assumption with the qualified Lean 4.19.0 engineering environment. No benchmark files were acquired."
+    }
+  ],
+  "older_sources": {
+    "minif2f_lean4": "The earlier yangky11 port metadata remains useful provenance, but the revised v2 source supplies stronger explicit human fidelity evidence. Source-name familiarity alone is insufficient; prefer exact reviewed revision over a silent port.",
+    "original_proofnet": "Original ProofNet pairs Lean 3 statements with natural-language proofs. Its later audited derivative gives a clearer statement-only route. Do not bulk-download the original answer/proof-bearing dataset.",
+    "qualification": "These comparisons concern source feasibility, not measured model performance."
+  },
+  "actions": {
+    "benchmark_data_files_downloaded": 0,
+    "reference_proof_archives_downloaded": 0,
+    "benchmark_proofs_generated": 0,
+    "researcher_contacts": 0,
+    "selected_problem_count": 0,
+    "panel_or_protocol_changed": false,
+    "scored_model_executions": 0,
+    "independent_verification": false
+  }
+}

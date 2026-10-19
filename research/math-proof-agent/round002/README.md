@@ -13,6 +13,31 @@ event is atomically saved. Incomplete planned items remain in denominators.
 Model weights are never updated. Formal statements are separately fingerprinted
 and immutable. The conservative tactic grammar is a known capability constraint.
 
+Follow-up audit fixed nested statement metadata leakage and requires complete
+scoring identity plus exact frozen panel membership, measured adapter identity,
+verifier configuration and executing source bytes. The committed execution
+manifest is trusted launcher input, never solver input. Its code SHA must match
+the scoring identity. Scoring uses explicit canonical semantic hashes; the
+existing smoke manifest contains raw-file hashes and cannot authorize scoring.
+`execute_arm` additionally requires `panel`, `source_files` and
+`execution_manifest` keyword arguments. No scoring manifest/runner is qualified.
+
+Two scientific gates remain intentionally closed. A separately correct answer
+and proof do not certify the same answer: the current controller blocks
+`find_answer`, and the analyzer reports `joint_rate: null` until a reviewed
+answer-to-proof binding exists. Also, context 8192 cannot accommodate a previous
+4096-token candidate plus instructions/feedback and another 4096 tokens. A
+feasible common completion/context policy must be measured and preregistered
+before freezing; `context_budget_exceeded` is retained without futile retries.
+Timeouts outrank truncated-JSON parse failures. Missing/partial cost receipts
+remain visible; reported model-cost sums are observed lower bounds.
+
+[Source feasibility notes](source-feasibility-notes.json) correct an earlier
+overly strict source assessment: attributable upstream human review can satisfy
+statement fidelity without requiring the owner to repeat that review. The
+source/runtime/acquisition and joint-binding requirements still apply. No
+benchmark is admitted by metadata review alone.
+
 `controls.py` uses scripted outputs solely for controller/budget negatives;
 `test_model_adapter.py` uses tiny random weights solely for numerical conversion
 checks. Neither is target-model research. The [Lean guide](lean/README.md)

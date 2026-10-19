@@ -319,6 +319,24 @@ class LeanWorker:
         self.config = config
         self._preflight: dict[str, Any] | None = None
 
+    def identity(self) -> str:
+        """Pinned verifier policy/config, independent of host installation paths.
+
+        preflight must separately measure the runtime/project/bwrap bytes. A
+        declared fingerprint alone never qualifies execution.
+        """
+        config = self.config
+        return canonical_sha256({
+            "policy": POLICY_VERSION, "allowed_axioms": sorted(ALLOWED_AXIOMS),
+            "runtime_sha256": config.expected_runtime_sha256,
+            "lean_version": config.expected_lean_version,
+            "project_sha256": config.expected_project_sha256,
+            "mathlib_revision": config.mathlib_revision,
+            "lean_paths": config.lean_paths, "limits": dataclasses.asdict(config.limits),
+            "statements": config.statement_sha256s,
+            "engineering_controls_only": config.engineering_controls_only,
+        })
+
     def preflight(self) -> dict[str, Any]:
         config = self.config
         evidence = probe_isolation(config.bwrap_path, config.work_root)
@@ -432,7 +450,9 @@ class LeanWorker:
         result["execution"] = execution
         if execution["timed_out"]:
             return result | {"status": "timeout", "proof_status": "incomplete"}
-        if execution["exit_code"] < 0:
+        # bubblewrap may encode its child signal as 128+signal instead of a
+        # negative Popen return code. Neither form is a mathematical rejection.
+        if execution["exit_code"] < 0 or 128 <= execution["exit_code"] <= 255:
             return result | {"status": "infrastructure_error", "reason": "Lean_terminated_by_signal"}
         if execution["exit_code"] != 0:
             return result | {"status": "rejected", "proof_status": "incomplete"}
