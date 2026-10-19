@@ -2,8 +2,9 @@
 
 日期：2026-10-19。Task：MATH-002；branch：`feat/math-proof-agent-20261018`。
 首次遠端封裝 code SHA：`ae051a79359c4e0be9658d89452c05793d64d831`。
-其交付 SHA：`3fcb8410a4bf8dacb374e3cb3d42e7b881314af2`；本次離線修正的
-code SHA 為`d6e4309607936b66d34573350b9697e5fddc7b0f`。
+其交付 SHA：`3fcb8410a4bf8dacb374e3cb3d42e7b881314af2`；前次受審 code
+`d6e4309607936b66d34573350b9697e5fddc7b0f`、delivery `fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa`。
+本次工程修正 code SHA：`fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d`。
 原 smoke manifest 保持原樣，未重送修正版。
 後續 delivery SHA 由本次最終回覆與 Draft PR #10 提供；文件不嵌入自身 commit。
 完整命令、環境與機器可讀紀錄見 [HANDOFF](../../docs/verification/MATH-002/HANDOFF.md)
@@ -12,6 +13,28 @@ code SHA 為`d6e4309607936b66d34573350b9697e5fddc7b0f`。
 **本輪尚不能回答回饋修復是否優於獨立採樣。** 沒有取得可綁定版本的 TPU
 模型輸出，正式面板也未凍結。證明率、找答案且證明共同成功率、配對增益與
 區間皆為 `not_estimable`，不是零分、零增益或負面模型結果。
+
+## 獨立 review 後的工程修正
+
+PR10 review5567278465 的 normal/-O 各48項、38通過/10失敗原樣保留，沒有改成
+修正版通過。新工程自測修復全模式 proof receipt 綁定、成本 schema 與 analyzer
+獨立重驗、遠端歷史 terminal 與當前派送資格分離，以及 research executable 的窄
+納管。R1 20+20、R2含回歸84+84、R3 47+47均通過；新 line-b 整合163+163通過。
+shared runner31+31、gate30+30通過；本地repository18+18各留1項歷史tag缺失。
+新SHA的遠端CI target與結果見交接的CI讀回收據，不以本地局部通過推定全CI成功。
+PR workstream run39209591512 的34 jobs為28成功/6失敗；四個line-b各163通過，
+四個integrity各18項/1失敗，gate亦失敗。實際comparison target
+`a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812`與新code tree相同。
+artifact只提供failure ID、沒有assertion trace；本地直接診斷與遠端tag404
+支持歷史archive tag缺失的解釋，但遠端完整issue清單仍未直接觀察，不稱全CI綠。
+
+已有Lean僅重跑既有受限常數：7/7、實際5次candidate Lean、isolation19/19；
+Windows mock/stdlib與WSL kernel證據分開。原R001、MATH-001、WSF-R5及舊收據
+未改寫。本修正零Kaggle操作，原ledger/heartbeat/stop/manifest hash不變，
+submission_unknown/version null及1/4、1800/21600秒預留維持。沒有新模型、
+新面板、推論或科學實驗；研究仍not_estimable，工程只到review_ready。
+完整正負控制、環境、命令、hash、舊失敗與新CI見
+[本次工程交接](../../docs/verification/MATH-002/HANDOFF.md#current-delivery-independent-review-repairs-2026-10-19)。
 
 ## 實際完成的工程工作
 
@@ -47,7 +70,7 @@ adapter 的受測轉換，不是這兩個公開 checkpoint 的實測成績。未
 Lean 第一個控制執行因不支援的 `-T` 參數失敗，移除後的新嘗試才通過。
 監看加入每次新 slug 防線後，中間26測試有5 failure/1 error；舊mock仍重用
 slug，改為獨立嘗試並新增防線控制後，最終28/28通過。失敗raw logs與摘要保留。
-兩個紀錄都沒有改標成一開始就成功。所有測試是實作者／子代理自測。
+兩個紀錄都沒有改標成一開始就成功。上述本地工程測試是實作者／子代理自測。
 
 後續唯讀回查仍為HTTP403／submission_unknown，沒有新增提交。離線稽核發現
 第一版工程控制尚未涵蓋的缺陷，因此補上以下修正；原19個controller測試、
@@ -156,7 +179,8 @@ Kaggle隔離／Lean正負控制、實際v5e-8、冷編譯、
 熱推論、公開模型短輸出parity、正式三臂比較及seed複驗均未完成。
 R001、MATH-001與WSF-R5的歷史範圍及獨立驗證狀態維持原樣。
 
-本次交付停在 `review_ready`，Goal科學部分未達成。恢復需先由目前研究task
-唯讀釐清未知提交／帳號權限與TPU可用性，再完成來源准入、真實題目的answer binding、
+本次交付停在 `review_ready`，Goal科學部分未達成。本修正scope不授權Kaggle操作。
+平台／權限有實際變更後，原研究task才依原scope另行記錄唯讀回查，釐清未知提交／
+帳號權限與TPU可用性，再完成來源准入、真實題目的answer binding、
 共同context可行性與相符runtime技術smoke；不能以重複push或換帳號解決，也
 不能直接跑未凍結面板。

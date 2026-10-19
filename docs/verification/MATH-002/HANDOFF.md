@@ -1,15 +1,101 @@
 # MATH-002 developer/research handoff
 
-State is `review_ready`, with scientific and remote blockers. This is implementer
-self-review, including implementing subagents; no independent verification.
-Return this handoff to the original ChatGPT conversation.
+## Current delivery: independent-review repairs, 2026-10-19
+
+**MATH-002 remains unfinished; research is `not_estimable`. Engineering is
+`review_ready`, not independently verified.** Repair code is `fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d`,
+based on delivery `fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa` and reviewed code `d6e4309607936b66d34573350b9697e5fddc7b0f`.
+Delivery SHA is supplied in the final response and PR10. This code was not sent
+to Kaggle. Plan/task scope and acceptance controls are fixed in the code commit;
+the following delivery records evidence and updates metadata only.
+
+The [independent review](independent-review.json) preserves the published original
+review and its negative outcome: Linux CPython3.13.5 normal/-O each 48 tests,
+38 passes/10 failures. Its API state is COMMENTED; the body requests engineering
+changes. The original reviewer private tests were not obtained. New developer
+reproductions and corrected controls are separate records, never overwritten
+versions of that independent failure.
+
+| Finding | Repair and positive/negative controls | Current local self-test result |
+| --- | --- | --- |
+| M002-R1 | Reparse model text; all modes bind exact proof UTF-8 bytes, immutable statement and coherent accepted/status/proof/trust receipt. Keep find-answer answer/spec/witness binding. Matched receipts pass; stale hashes, altered body/text/statement, contradictory flags and answer bindings fail in controller and analyzer. | [R1 receipt](review-repair-r1-tests.json): 20 normal + 20 optimized, all pass, exit0. |
+| M002-R2 | Shared schema; mandatory count is non-bool nonnegative int, time finite/nonnegative. Analyzer revalidates raw values independently of both complete flag and cached validation. Missing/NaN/negative/bool/partial/timeout/overflow stay incomplete; valid components remain lower bounds. | [R2 receipt](review-repair-r2-tests.json): 19 new + 45 controller + 20 answer tests per mode; 168 executions pass, exit0. Pre-fix five failures remain recorded. |
+| M002-R3 | Preserve historical terminal/output evidence; source/version/status failure sets a sticky current-dispatch guard. reserve refuses uncertainty; only complete matching readback clears it. Includes retrieve failure, legacy observation_error, malformed versions/status and terminal contradictions. | [R3 receipt](review-repair-r3-tests.json): 47 normal + 47 optimized pass, exit0; all provider calls mocked, state temporary, real state protected by audit hook. |
+| M002-CI1 | Admit only Python within exact round001/round002 directories; keep AST/archive/other executable restrictions. Inventory and commit gate require math test coverage. Five stdlib/mock files join public line-b; native adapter stays protected before import. | [CI1 local receipt](review-repair-ci-tests.json): line-b 163 per mode, all pass; runner31 and gate30 per mode pass. Repository18 per mode retains one missing-archive-tag failure per mode. |
+
+Counts are test-method executions, include parameterized positive/negative
+controls, and overlap between focused tests and the full line-b suite. They are
+not unique scientific cases. Windows11/Python3.12.10 used controlled `-P -s -B`
+startup (plus `-O` for optimized); effective PYTHONHASHSEED=0 was observed.
+Local suite snapshots are development/attestable=false/target_commit=null;
+their exact byte hashes are retained. [Source/preservation binding](review-repair-preservation.json)
+maps working bytes to the code commit without changing old receipts.
+
+The only real Lean recheck used existing restricted constants: WSL Ubuntu24.04,
+Python3.12.3, Lean4.19.0; 7/7 controls, **5 actual candidate Lean processes**,
+isolation19/19, host exit0. Worker/config/runtime/bwrap hashes and the five child
+exit codes are separately recorded in the R1 receipt. No extra Mathlib, source
+panel, model or unrestricted Lean program ran. This is local kernel evidence
+for those controls only; scripted receipts are not kernel evidence.
+
+The old integrity failure is retained, not relabeled: PR run39201053930,
+job117893912538, comparison target e92f5c748d24af7c8ca8ae2cf11a41f50df2f199,
+15 tests/1 failure. Local validation no longer reports the original twenty-two
+math executable admission issues; the local checkout still lacks
+archive/pre-product-transition-2026-09-17 and
+therefore preserves one repository failure. No tag was fetched/created/moved,
+no integrity assertion disabled. See [new exact-target CI readback](review-repair-ci-readback.json)
+for actual new run/job/target results; a whole workflow failure is not hidden
+when the protected audit step stops. Audit/aggregate bodies remain unexecuted.
+
+New PR workstream run **39209591512** finished: all 34 jobs were retrieved,
+28 success / 6 failure. All four line-b jobs pass **163 tests** each; all four
+integrity jobs report **18 tests / 1 failure / exit1**. The failing test remains
+`test_repository_check.RepositoryCheckTests.test_active_repository_is_valid`.
+In total, 24 public jobs and four formal jobs pass; gate117921764493 fails on
+the four integrity reports, and the audit job stops before checkout/import.
+Navigation39209591576 passes; offline39209591532 stops the protected aggregate.
+The actual comparison target is **a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812**;
+its tree **7fcf40bbb885219fcc1f1bd5b6141ebc5dc4ac17** equals the code tree.
+This temporary PR comparison commit is not a merge performed by this task.
+
+Integrity artifact12166709338 (ZIP SHA256
+`5aad3ab24e181393d5ca4c5211dde40ddc03c12d9e30e273ba4c141d7846e70d`)
+confirms the single failure ID and unchanged source, but does not contain the
+assertion traceback. The exact remote archive-tag API returns404; together
+with the local direct diagnosis this supports the missing-tag explanation.
+The CI assertion's full issue list was not observed, so that explanation is
+an inference, not a fully captured remote traceback. Integrity and gate remain
+failed; no historical prerequisite was bypassed to make them pass.
+
+**This repair performed zero Kaggle operations.** The original state, heartbeat,
+stopped-monitor record and smoke manifest have identical before/after hashes.
+Only attempt m002-smoke-20261019-a7f91c remains submission_unknown/version null,
+notebook danielwuu/irisx-math-m002-20261019-a7f91c, reserved **1/4 and
+1800/21600 seconds**. No new ledger, refund, push, cancel or reconcile occurred.
+Historical batch-capacity/403/HTTPError observations below were not freshly
+retested. No monitor is running. Platform/permission changes must be handled by
+the owner; a later read-only reconcile belongs to the original research scope
+and needs its own receipt. Unknown identity still forbids dispatch. Preserve the
+reservation; recover exact private source/version/status and verified outputs
+before considering any later run within the original budget.
+
+Independent review must recheck the exact new code plus delivery, R1/R2/R3
+counterexamples and CI1 admission/inventory/gate changes; kernel trust and
+isolation on Kaggle, target v5e-8/model parity/cost, faithful source/panel admission,
+context policy/freeze and paired efficacy remain unverified. R001, MATH-001,
+WSF-R5, prior JSON evidence, ARC/product source and workflow bytes are unchanged.
+
+## Prior implementation and evidence (retained history)
+
+Return this handoff to the original ChatGPT conversation for independent review.
 
 - Branch: `feat/math-proof-agent-20261018`; Draft PR: https://github.com/Danwuoo/IRIS-X/pull/10 (base `develop`).
 - Starting SHA: `0deff2254d2e3b63b88c2eefc4c4f73856663047`.
 - First smoke packaged runtime SHA: `ae051a79359c4e0be9658d89452c05793d64d831`.
 - First delivery SHA: `3fcb8410a4bf8dacb374e3cb3d42e7b881314af2`; later offline corrections do not alter that submitted snapshot.
 - Previous offline delivery SHA: `8ba60f78cd96a7fedda0d05d730dd3d62027f4a0`; its reports remain historical.
-- Current offline code SHA: `d6e4309607936b66d34573350b9697e5fddc7b0f`; not submitted to Kaggle.
+- Prior independently reviewed offline code SHA: `d6e4309607936b66d34573350b9697e5fddc7b0f`; not submitted to Kaggle.
 - Delivery SHA: supplied by the final response and PR after this document's commit; no self-containing SHA is embedded.
 - Actual desktop checkout: `C:\Users\wurre\Desktop\IRIS-X-Math`.
 - Windows task venv: `.irisx/line-b/MATH-002/venv/`; optional numerical-control venv: `adapter-venv/` under the same task root.
@@ -206,7 +292,11 @@ repair context, actual Kaggle isolation/Lean controls, actual v5e-8 model
 parity/performance, panel/model freeze and paired experiment. No
 SFT/RL/TTT/LoRA/distillation/synthetic SGD or paid/model API call occurred.
 
-## Safe recovery
+## Safe recovery under the original research task
+
+The current engineering repair does not authorize these Kaggle commands. Resume
+only under the original task scope after an actual platform/permission change;
+record the new readback separately and preserve unknown reservations.
 
 First read the task state and raw push receipt; do not reset the ledger or
 re-submit. From the desktop checkout, use the existing task venv:

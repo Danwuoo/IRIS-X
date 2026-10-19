@@ -30,6 +30,13 @@ evidence. The first private TPU push returned a batch-session-capacity error
 despite CLI exit0. Exact task readback returned HTTP403; version remains unknown.
 See [R002 results](../../../research/math-proof-agent/ROUND002-RESULTS.zh-TW.md).
 
+PR10 independent review5567278465 requested changes on d6e4309/fb5cc66.
+The current repair closes the reported receipt/cost/dispatch contracts in
+developer controls and integrates math tests into the existing CI inventory;
+new code remains review_ready, awaiting independent re-verification. Original
+negative review, old receipts and historical acceptance remain intact. This
+repair made zero Kaggle calls and leaves the original ledger unchanged.
+
 ## Blockers
 
 No actual TPU target model or representative human-reviewed evaluation panel
@@ -47,7 +54,9 @@ The inherited management/suite IDs are not renamed in this documentation task.
 
 ## Next
 
-Read the MATH-002 handoff; reconcile the unknown submission read-only, without
+Read the MATH-002 repair handoff and independently review the new code/delivery.
+The repair scope permits no Kaggle operation. Only after a platform/permission
+change, under the original research task, reconcile the unknown submission read-only, without
 disturbing other account work. Bind available upstream human-review evidence and actual
 runtime qualification before freezing any scoring panel. Only then can a
 fixed-model paired sampling/repair pilot answer the research question. No model

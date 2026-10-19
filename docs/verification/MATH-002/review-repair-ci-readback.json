@@ -1,0 +1,2375 @@
+{
+  "format": "irisx.math002.review-repair-ci-readback.v1",
+  "task": "MATH-002",
+  "review_items": [
+    "M002-CI1",
+    "M002-R1",
+    "M002-R2",
+    "M002-R3"
+  ],
+  "readback_completed_at": "2026-10-19T06:33:35.532120+00:00",
+  "scope": "Implementer read-only GitHub CI readback. No CI rerun/dispatch, repository/ref mutation, model/Lean/Kaggle call or independent verification.",
+  "review_state": "review_ready",
+  "independent_verification": false,
+  "code_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+  "delivery_sha": "External final delivery reference; this document does not embed its own future commit SHA.",
+  "pr": {
+    "number": 10,
+    "url": "https://github.com/Danwuoo/IRIS-X/pull/10",
+    "state": "open",
+    "draft": true,
+    "head_ref": "feat/math-proof-agent-20261018",
+    "head_sha_observed": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+    "base_ref": "develop",
+    "base_sha_observed": "9389f433a1fbe41d25f8ce1248fde07f7ce9250d"
+  },
+  "tested_source": {
+    "run_head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+    "actual_target_commit_from_logs_and_artifacts": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+    "actual_target_role": "GitHub pull-request synthetic merge, not the branch HEAD SHA",
+    "code_tree": "7fcf40bbb885219fcc1f1bd5b6141ebc5dc4ac17",
+    "merge_tree": "7fcf40bbb885219fcc1f1bd5b6141ebc5dc4ac17",
+    "trees_match": true,
+    "merge_parents": [
+      "9389f433a1fbe41d25f8ce1248fde07f7ce9250d",
+      "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d"
+    ],
+    "all_eight_line_b_integrity_artifacts_match_target": true,
+    "all_eight_line_b_integrity_artifacts_match_tree": true,
+    "all_eight_source_manifest_hashes": [
+      "5b2a36274a7227218a0cc41367db8f0d2d5a4ccc8968462404866d5238b339c2"
+    ],
+    "code_metadata": {
+      "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/code_commit.json",
+      "sha256": "02379d0d208b9db8c6cfc611f37d71260f97f4d73d75e3a1b82bc9019c2bebf2"
+    },
+    "merge_metadata": {
+      "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/merge_commit.json",
+      "sha256": "33e419d4c8cf25d20fde4fcc4c5e93f50d47532bdf2a8058a404cf108c3ba304"
+    }
+  },
+  "workstream_run": {
+    "id": 39209591512,
+    "url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobs_endpoint": "https://api.github.com/repos/Danwuoo/IRIS-X/actions/runs/39209591512/jobs?per_page=100",
+    "api_total_count": 34,
+    "returned_count": 34,
+    "all_terminal": true,
+    "conclusion_counts": {
+      "success": 28,
+      "failure": 6
+    },
+    "public_matrix": {
+      "jobs": 28,
+      "success": 24,
+      "failure": 4
+    },
+    "formal_distribution_success": 4,
+    "jobs": [
+      {
+        "id": 117919792029,
+        "name": "formal-distribution (windows-latest, 3.14)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792029",
+        "started_at": "2026-10-19T06:23:17Z",
+        "completed_at": "2026-10-19T06:23:49Z"
+      },
+      {
+        "id": 117919792226,
+        "name": "public-suites (windows-latest, 3.11, line-b)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792226",
+        "started_at": "2026-10-19T06:23:47Z",
+        "completed_at": "2026-10-19T06:25:20Z"
+      },
+      {
+        "id": 117919792279,
+        "name": "public-suites (windows-latest, 3.14, navigation)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792279",
+        "started_at": "2026-10-19T06:24:07Z",
+        "completed_at": "2026-10-19T06:24:52Z"
+      },
+      {
+        "id": 117919792293,
+        "name": "public-suites (ubuntu-latest, 3.11, navigation)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792293",
+        "started_at": "2026-10-19T06:24:04Z",
+        "completed_at": "2026-10-19T06:24:23Z"
+      },
+      {
+        "id": 117919792294,
+        "name": "public-suites (windows-latest, 3.11, distribution)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792294",
+        "started_at": "2026-10-19T06:24:07Z",
+        "completed_at": "2026-10-19T06:25:01Z"
+      },
+      {
+        "id": 117919792312,
+        "name": "formal-distribution (windows-latest, 3.11)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792312",
+        "started_at": "2026-10-19T06:24:12Z",
+        "completed_at": "2026-10-19T06:25:00Z"
+      },
+      {
+        "id": 117919792322,
+        "name": "public-suites (windows-latest, 3.14, integrity)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792322",
+        "started_at": "2026-10-19T06:24:23Z",
+        "completed_at": "2026-10-19T06:25:21Z"
+      },
+      {
+        "id": 117919792336,
+        "name": "public-suites (ubuntu-latest, 3.14, line-b)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792336",
+        "started_at": "2026-10-19T06:23:58Z",
+        "completed_at": "2026-10-19T06:24:39Z"
+      },
+      {
+        "id": 117919792351,
+        "name": "public-suites (windows-latest, 3.14, arc-unit)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792351",
+        "started_at": "2026-10-19T06:24:35Z",
+        "completed_at": "2026-10-19T06:27:05Z"
+      },
+      {
+        "id": 117919792362,
+        "name": "public-suites (ubuntu-latest, 3.14, navigation)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792362",
+        "started_at": "2026-10-19T06:23:58Z",
+        "completed_at": "2026-10-19T06:24:21Z"
+      },
+      {
+        "id": 117919792368,
+        "name": "public-suites (windows-latest, 3.14, management)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792368",
+        "started_at": "2026-10-19T06:24:28Z",
+        "completed_at": "2026-10-19T06:28:29Z"
+      },
+      {
+        "id": 117919792374,
+        "name": "formal-distribution (ubuntu-latest, 3.11)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792374",
+        "started_at": "2026-10-19T06:24:52Z",
+        "completed_at": "2026-10-19T06:25:14Z"
+      },
+      {
+        "id": 117919792391,
+        "name": "public-suites (windows-latest, 3.11, core)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792391",
+        "started_at": "2026-10-19T06:24:51Z",
+        "completed_at": "2026-10-19T06:25:41Z"
+      },
+      {
+        "id": 117919792401,
+        "name": "public-suites (ubuntu-latest, 3.14, integrity)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792401",
+        "started_at": "2026-10-19T06:25:04Z",
+        "completed_at": "2026-10-19T06:25:31Z"
+      },
+      {
+        "id": 117919792422,
+        "name": "formal-distribution (ubuntu-latest, 3.14)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792422",
+        "started_at": "2026-10-19T06:24:54Z",
+        "completed_at": "2026-10-19T06:25:09Z"
+      },
+      {
+        "id": 117919792427,
+        "name": "public-suites (windows-latest, 3.14, core)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792427",
+        "started_at": "2026-10-19T06:25:02Z",
+        "completed_at": "2026-10-19T06:26:06Z"
+      },
+      {
+        "id": 117919792444,
+        "name": "public-suites (windows-latest, 3.11, arc-unit)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792444",
+        "started_at": "2026-10-19T06:24:58Z",
+        "completed_at": "2026-10-19T06:27:50Z"
+      },
+      {
+        "id": 117919792462,
+        "name": "public-suites (windows-latest, 3.11, integrity)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792462",
+        "started_at": "2026-10-19T06:25:23Z",
+        "completed_at": "2026-10-19T06:26:13Z"
+      },
+      {
+        "id": 117919792468,
+        "name": "public-suites (ubuntu-latest, 3.14, management)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792468",
+        "started_at": "2026-10-19T06:24:54Z",
+        "completed_at": "2026-10-19T06:26:04Z"
+      },
+      {
+        "id": 117919792472,
+        "name": "public-suites (windows-latest, 3.11, navigation)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792472",
+        "started_at": "2026-10-19T06:24:49Z",
+        "completed_at": "2026-10-19T06:25:48Z"
+      },
+      {
+        "id": 117919792477,
+        "name": "public-suites (windows-latest, 3.11, management)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792477",
+        "started_at": "2026-10-19T06:25:33Z",
+        "completed_at": "2026-10-19T06:29:45Z"
+      },
+      {
+        "id": 117919792505,
+        "name": "arc-public-audit",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792505",
+        "started_at": "2026-10-19T06:25:16Z",
+        "completed_at": "2026-10-19T06:25:21Z"
+      },
+      {
+        "id": 117919792523,
+        "name": "public-suites (windows-latest, 3.14, distribution)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792523",
+        "started_at": "2026-10-19T06:25:02Z",
+        "completed_at": "2026-10-19T06:25:52Z"
+      },
+      {
+        "id": 117919792573,
+        "name": "public-suites (ubuntu-latest, 3.11, line-b)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792573",
+        "started_at": "2026-10-19T06:25:22Z",
+        "completed_at": "2026-10-19T06:25:57Z"
+      },
+      {
+        "id": 117919792574,
+        "name": "public-suites (ubuntu-latest, 3.14, distribution)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792574",
+        "started_at": "2026-10-19T06:25:05Z",
+        "completed_at": "2026-10-19T06:25:21Z"
+      },
+      {
+        "id": 117919792611,
+        "name": "public-suites (windows-latest, 3.14, line-b)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792611",
+        "started_at": "2026-10-19T06:25:33Z",
+        "completed_at": "2026-10-19T06:27:02Z"
+      },
+      {
+        "id": 117919792615,
+        "name": "public-suites (ubuntu-latest, 3.11, integrity)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792615",
+        "started_at": "2026-10-19T06:25:09Z",
+        "completed_at": "2026-10-19T06:25:32Z"
+      },
+      {
+        "id": 117919792625,
+        "name": "public-suites (ubuntu-latest, 3.11, distribution)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792625",
+        "started_at": "2026-10-19T06:25:11Z",
+        "completed_at": "2026-10-19T06:25:31Z"
+      },
+      {
+        "id": 117919792633,
+        "name": "public-suites (ubuntu-latest, 3.14, core)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792633",
+        "started_at": "2026-10-19T06:25:21Z",
+        "completed_at": "2026-10-19T06:25:55Z"
+      },
+      {
+        "id": 117919792647,
+        "name": "public-suites (ubuntu-latest, 3.11, arc-unit)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792647",
+        "started_at": "2026-10-19T06:25:23Z",
+        "completed_at": "2026-10-19T06:26:18Z"
+      },
+      {
+        "id": 117919792651,
+        "name": "public-suites (ubuntu-latest, 3.11, core)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792651",
+        "started_at": "2026-10-19T06:25:33Z",
+        "completed_at": "2026-10-19T06:26:03Z"
+      },
+      {
+        "id": 117919792679,
+        "name": "public-suites (ubuntu-latest, 3.11, management)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792679",
+        "started_at": "2026-10-19T06:25:23Z",
+        "completed_at": "2026-10-19T06:26:25Z"
+      },
+      {
+        "id": 117919792924,
+        "name": "public-suites (ubuntu-latest, 3.14, arc-unit)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792924",
+        "started_at": "2026-10-19T06:25:35Z",
+        "completed_at": "2026-10-19T06:26:41Z"
+      },
+      {
+        "id": 117921764493,
+        "name": "workstream-gate",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117921764493",
+        "started_at": "2026-10-19T06:29:48Z",
+        "completed_at": "2026-10-19T06:29:57Z"
+      }
+    ],
+    "raw_jobs": {
+      "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/jobs_final.json",
+      "sha256": "042808e63ff81a3caf6779ebc8ca361f7302430301703a3d89d15d6fdb527a0a"
+    },
+    "raw_run": {
+      "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/pr_run_final.json",
+      "sha256": "1c10c81531c608d9e0a45599efc9b03f1ee3f9c4b88f1871f92d11f23a6f9cc2"
+    }
+  },
+  "line_b_and_integrity": [
+    {
+      "job": {
+        "id": 117919792226,
+        "name": "public-suites (windows-latest, 3.11, line-b)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792226",
+        "started_at": "2026-10-19T06:23:47Z",
+        "completed_at": "2026-10-19T06:25:20Z"
+      },
+      "artifact": {
+        "id": 12167231935,
+        "name": "public-line-b-windows-latest-3.11",
+        "api_url": "https://api.github.com/repos/Danwuoo/IRIS-X/actions/artifacts/12167231935",
+        "expected_digest": "sha256:a92c7c5122dae9fbf19020f3e759531d35de4ba8d630af6bb0f0ad516c48c051",
+        "downloaded_zip": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-line-b-windows-latest-3.11.zip",
+          "sha256": "a92c7c5122dae9fbf19020f3e759531d35de4ba8d630af6bb0f0ad516c48c051"
+        },
+        "digest_matches": true,
+        "report": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-line-b-windows-latest-3.11-report.json",
+          "sha256": "1359e42e0f1ef8e77233e6c3e9855e8b5bc94945aee0cde75905d62f75ab452e"
+        }
+      },
+      "report": {
+        "tests": 163,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "exit_code": 0,
+        "status": "passed",
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "head_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "inventory_blob": "0051c88ca35d51903d89a9187dbb4f01efcdb365",
+        "runner_blob": "9f2e5888a6be1d4f2d8e7ec8d78fabbedd2c2f2f",
+        "source_identity": {
+          "format": "irisx.source-identity.v1",
+          "commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "tree": "7fcf40bbb885219fcc1f1bd5b6141ebc5dc4ac17",
+          "manifest_sha256": "5b2a36274a7227218a0cc41367db8f0d2d5a4ccc8968462404866d5238b339c2"
+        },
+        "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+        "platform": "Windows-10-10.0.26100-SP0",
+        "source_changes": []
+      },
+      "modules": [
+        {
+          "path": "research/math-proof-agent/round002/controls.py",
+          "tests": 45,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_answer_pipeline.py",
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_cost_schema.py",
+          "tests": 19,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_receipt_binding.py",
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_remote_controls.py",
+          "tests": 47,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "tests/line_b/test_flow.py",
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        }
+      ],
+      "all_child_source_identities_match_parent": true,
+      "all_child_inventory_runner_and_target_match_parent": true,
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792226.log",
+          "sha256": "03cf07fc16fbe77b7d956ea6e9bd9c971d627b1caa51b5761ffe6e2d4fa40f15"
+        },
+        "excerpts": [
+          "2026-10-19T06:25:15.6203541Z line-b: passed; tests=163 failures=0 errors=0 skips=0 blocked=0",
+          "2026-10-19T06:25:15.6204529Z evidence: commit; attestable=True; target_commit=a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812"
+        ]
+      }
+    },
+    {
+      "job": {
+        "id": 117919792322,
+        "name": "public-suites (windows-latest, 3.14, integrity)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792322",
+        "started_at": "2026-10-19T06:24:23Z",
+        "completed_at": "2026-10-19T06:25:21Z"
+      },
+      "artifact": {
+        "id": 12167585509,
+        "name": "public-integrity-windows-latest-3.14",
+        "api_url": "https://api.github.com/repos/Danwuoo/IRIS-X/actions/artifacts/12167585509",
+        "expected_digest": "sha256:cc9791993edaa8e0d12342e5e0f596530cd6095aee9ca2790d4809b887c114fd",
+        "downloaded_zip": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-integrity-windows-latest-3.14.zip",
+          "sha256": "cc9791993edaa8e0d12342e5e0f596530cd6095aee9ca2790d4809b887c114fd"
+        },
+        "digest_matches": true,
+        "report": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-integrity-windows-latest-3.14-report.json",
+          "sha256": "c882be081d498c41cd9b855d9ec3ff4af61c9c8df63701e4fa7fb76d1b5b4213"
+        }
+      },
+      "report": {
+        "tests": 18,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "exit_code": 1,
+        "status": "failed",
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "head_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "inventory_blob": "0051c88ca35d51903d89a9187dbb4f01efcdb365",
+        "runner_blob": "9f2e5888a6be1d4f2d8e7ec8d78fabbedd2c2f2f",
+        "source_identity": {
+          "format": "irisx.source-identity.v1",
+          "commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "tree": "7fcf40bbb885219fcc1f1bd5b6141ebc5dc4ac17",
+          "manifest_sha256": "5b2a36274a7227218a0cc41367db8f0d2d5a4ccc8968462404866d5238b339c2"
+        },
+        "python": "3.14.8 (tags/v3.14.8:8e6e75d, Sep 30 2026, 18:19:33) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-2025Server-10.0.26100-SP0",
+        "source_changes": []
+      },
+      "modules": [
+        {
+          "path": "tests/test_repository_check.py",
+          "tests": 18,
+          "failures": 1,
+          "errors": 0,
+          "skips": 0,
+          "status": "failed",
+          "exit_code": 1,
+          "failure_ids": [
+            "test_repository_check.RepositoryCheckTests.test_active_repository_is_valid"
+          ],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        }
+      ],
+      "all_child_source_identities_match_parent": true,
+      "all_child_inventory_runner_and_target_match_parent": true,
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792322.log",
+          "sha256": "6cdff8fb5b2957ba04f8e2027b689abe34b846e95ff9340037ce8703b683a665"
+        },
+        "excerpts": [
+          "2026-10-19T06:25:16.2457123Z integrity: failed; tests=18 failures=1 errors=0 skips=0 blocked=0",
+          "2026-10-19T06:25:16.2458421Z evidence: commit; attestable=True; target_commit=a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "2026-10-19T06:25:16.3544570Z ##[error]Process completed with exit code 1."
+        ]
+      }
+    },
+    {
+      "job": {
+        "id": 117919792336,
+        "name": "public-suites (ubuntu-latest, 3.14, line-b)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792336",
+        "started_at": "2026-10-19T06:23:58Z",
+        "completed_at": "2026-10-19T06:24:39Z"
+      },
+      "artifact": {
+        "id": 12166429119,
+        "name": "public-line-b-ubuntu-latest-3.14",
+        "api_url": "https://api.github.com/repos/Danwuoo/IRIS-X/actions/artifacts/12166429119",
+        "expected_digest": "sha256:8dda74d403c46c183ec7dd0be2f8b877ff633f0b4c2efd5cac60bb071e739c6f",
+        "downloaded_zip": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-line-b-ubuntu-latest-3.14.zip",
+          "sha256": "8dda74d403c46c183ec7dd0be2f8b877ff633f0b4c2efd5cac60bb071e739c6f"
+        },
+        "digest_matches": true,
+        "report": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-line-b-ubuntu-latest-3.14-report.json",
+          "sha256": "92aa03758c86ac67f1f8f0734fc59be5945b795cd54061ad7ccde68b69be2a44"
+        }
+      },
+      "report": {
+        "tests": 163,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "exit_code": 0,
+        "status": "passed",
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "head_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "inventory_blob": "0051c88ca35d51903d89a9187dbb4f01efcdb365",
+        "runner_blob": "9f2e5888a6be1d4f2d8e7ec8d78fabbedd2c2f2f",
+        "source_identity": {
+          "format": "irisx.source-identity.v1",
+          "commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "tree": "7fcf40bbb885219fcc1f1bd5b6141ebc5dc4ac17",
+          "manifest_sha256": "5b2a36274a7227218a0cc41367db8f0d2d5a4ccc8968462404866d5238b339c2"
+        },
+        "python": "3.14.8 (main, Oct  1 2026, 02:38:33) [GCC 13.3.0]",
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "source_changes": []
+      },
+      "modules": [
+        {
+          "path": "research/math-proof-agent/round002/controls.py",
+          "tests": 45,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_answer_pipeline.py",
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_cost_schema.py",
+          "tests": 19,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_receipt_binding.py",
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_remote_controls.py",
+          "tests": 47,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "tests/line_b/test_flow.py",
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        }
+      ],
+      "all_child_source_identities_match_parent": true,
+      "all_child_inventory_runner_and_target_match_parent": true,
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792336.log",
+          "sha256": "5f3694cb9149675031f2640d5d1663eeac798db11268dd9885337f2f697c7d90"
+        },
+        "excerpts": [
+          "2026-10-19T06:24:35.2114903Z line-b: passed; tests=163 failures=0 errors=0 skips=0 blocked=0",
+          "2026-10-19T06:24:35.2117165Z evidence: commit; attestable=True; target_commit=a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812"
+        ]
+      }
+    },
+    {
+      "job": {
+        "id": 117919792401,
+        "name": "public-suites (ubuntu-latest, 3.14, integrity)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792401",
+        "started_at": "2026-10-19T06:25:04Z",
+        "completed_at": "2026-10-19T06:25:31Z"
+      },
+      "artifact": {
+        "id": 12166739303,
+        "name": "public-integrity-ubuntu-latest-3.14",
+        "api_url": "https://api.github.com/repos/Danwuoo/IRIS-X/actions/artifacts/12166739303",
+        "expected_digest": "sha256:75fe0b215e773c7bd8cca5c4fcf8ecc7da87e198fb8a20c41c8dee648e659726",
+        "downloaded_zip": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-integrity-ubuntu-latest-3.14.zip",
+          "sha256": "75fe0b215e773c7bd8cca5c4fcf8ecc7da87e198fb8a20c41c8dee648e659726"
+        },
+        "digest_matches": true,
+        "report": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-integrity-ubuntu-latest-3.14-report.json",
+          "sha256": "b417626d72d9b19774d7789b24619d46283c173f398ecd5574116b2612657b91"
+        }
+      },
+      "report": {
+        "tests": 18,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "exit_code": 1,
+        "status": "failed",
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "head_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "inventory_blob": "0051c88ca35d51903d89a9187dbb4f01efcdb365",
+        "runner_blob": "9f2e5888a6be1d4f2d8e7ec8d78fabbedd2c2f2f",
+        "source_identity": {
+          "format": "irisx.source-identity.v1",
+          "commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "tree": "7fcf40bbb885219fcc1f1bd5b6141ebc5dc4ac17",
+          "manifest_sha256": "5b2a36274a7227218a0cc41367db8f0d2d5a4ccc8968462404866d5238b339c2"
+        },
+        "python": "3.14.8 (main, Oct  1 2026, 02:38:33) [GCC 13.3.0]",
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "source_changes": []
+      },
+      "modules": [
+        {
+          "path": "tests/test_repository_check.py",
+          "tests": 18,
+          "failures": 1,
+          "errors": 0,
+          "skips": 0,
+          "status": "failed",
+          "exit_code": 1,
+          "failure_ids": [
+            "test_repository_check.RepositoryCheckTests.test_active_repository_is_valid"
+          ],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        }
+      ],
+      "all_child_source_identities_match_parent": true,
+      "all_child_inventory_runner_and_target_match_parent": true,
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792401.log",
+          "sha256": "55ff63766c617fb5585a518b06512de6efdcf03f4394aa4318102eb5bccb661d"
+        },
+        "excerpts": [
+          "2026-10-19T06:25:29.1274657Z integrity: failed; tests=18 failures=1 errors=0 skips=0 blocked=0",
+          "2026-10-19T06:25:29.1276808Z evidence: commit; attestable=True; target_commit=a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "2026-10-19T06:25:29.1411887Z ##[error]Process completed with exit code 1."
+        ]
+      }
+    },
+    {
+      "job": {
+        "id": 117919792462,
+        "name": "public-suites (windows-latest, 3.11, integrity)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792462",
+        "started_at": "2026-10-19T06:25:23Z",
+        "completed_at": "2026-10-19T06:26:13Z"
+      },
+      "artifact": {
+        "id": 12167515935,
+        "name": "public-integrity-windows-latest-3.11",
+        "api_url": "https://api.github.com/repos/Danwuoo/IRIS-X/actions/artifacts/12167515935",
+        "expected_digest": "sha256:ca8c3a336591b168b6342ab229778efa816efd4cbedef80dbd2cbc807b6f04a8",
+        "downloaded_zip": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-integrity-windows-latest-3.11.zip",
+          "sha256": "ca8c3a336591b168b6342ab229778efa816efd4cbedef80dbd2cbc807b6f04a8"
+        },
+        "digest_matches": true,
+        "report": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-integrity-windows-latest-3.11-report.json",
+          "sha256": "f6f625c49fa27e077905c8c84b33852b8a43f61be1f0d083d3dac47b90f6d04e"
+        }
+      },
+      "report": {
+        "tests": 18,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "exit_code": 1,
+        "status": "failed",
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "head_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "inventory_blob": "0051c88ca35d51903d89a9187dbb4f01efcdb365",
+        "runner_blob": "9f2e5888a6be1d4f2d8e7ec8d78fabbedd2c2f2f",
+        "source_identity": {
+          "format": "irisx.source-identity.v1",
+          "commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "tree": "7fcf40bbb885219fcc1f1bd5b6141ebc5dc4ac17",
+          "manifest_sha256": "5b2a36274a7227218a0cc41367db8f0d2d5a4ccc8968462404866d5238b339c2"
+        },
+        "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+        "platform": "Windows-10-10.0.26100-SP0",
+        "source_changes": []
+      },
+      "modules": [
+        {
+          "path": "tests/test_repository_check.py",
+          "tests": 18,
+          "failures": 1,
+          "errors": 0,
+          "skips": 0,
+          "status": "failed",
+          "exit_code": 1,
+          "failure_ids": [
+            "test_repository_check.RepositoryCheckTests.test_active_repository_is_valid"
+          ],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        }
+      ],
+      "all_child_source_identities_match_parent": true,
+      "all_child_inventory_runner_and_target_match_parent": true,
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792462.log",
+          "sha256": "d21824f68257ab52b20b4e3007b3d7c28101c3b4534ee2ad61d0662b49666d60"
+        },
+        "excerpts": [
+          "2026-10-19T06:26:10.1062322Z integrity: failed; tests=18 failures=1 errors=0 skips=0 blocked=0",
+          "2026-10-19T06:26:10.1063009Z evidence: commit; attestable=True; target_commit=a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "2026-10-19T06:26:10.1936021Z ##[error]Process completed with exit code 1."
+        ]
+      }
+    },
+    {
+      "job": {
+        "id": 117919792573,
+        "name": "public-suites (ubuntu-latest, 3.11, line-b)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792573",
+        "started_at": "2026-10-19T06:25:22Z",
+        "completed_at": "2026-10-19T06:25:57Z"
+      },
+      "artifact": {
+        "id": 12167137351,
+        "name": "public-line-b-ubuntu-latest-3.11",
+        "api_url": "https://api.github.com/repos/Danwuoo/IRIS-X/actions/artifacts/12167137351",
+        "expected_digest": "sha256:99debf45a25dd7bc70dce9b42fb6094afed9cbd31986203a3a5de1297cd64351",
+        "downloaded_zip": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-line-b-ubuntu-latest-3.11.zip",
+          "sha256": "99debf45a25dd7bc70dce9b42fb6094afed9cbd31986203a3a5de1297cd64351"
+        },
+        "digest_matches": true,
+        "report": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-line-b-ubuntu-latest-3.11-report.json",
+          "sha256": "32df3e753be0e1416ac959b94c270caa41dab7b1acd8287d4907e61f33f92cf9"
+        }
+      },
+      "report": {
+        "tests": 163,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "exit_code": 0,
+        "status": "passed",
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "head_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "inventory_blob": "0051c88ca35d51903d89a9187dbb4f01efcdb365",
+        "runner_blob": "9f2e5888a6be1d4f2d8e7ec8d78fabbedd2c2f2f",
+        "source_identity": {
+          "format": "irisx.source-identity.v1",
+          "commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "tree": "7fcf40bbb885219fcc1f1bd5b6141ebc5dc4ac17",
+          "manifest_sha256": "5b2a36274a7227218a0cc41367db8f0d2d5a4ccc8968462404866d5238b339c2"
+        },
+        "python": "3.11.17 (main, Oct  1 2026, 14:32:31) [GCC 13.3.0]",
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "source_changes": []
+      },
+      "modules": [
+        {
+          "path": "research/math-proof-agent/round002/controls.py",
+          "tests": 45,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_answer_pipeline.py",
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_cost_schema.py",
+          "tests": 19,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_receipt_binding.py",
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_remote_controls.py",
+          "tests": 47,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "tests/line_b/test_flow.py",
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        }
+      ],
+      "all_child_source_identities_match_parent": true,
+      "all_child_inventory_runner_and_target_match_parent": true,
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792573.log",
+          "sha256": "38417af576a9830abc7f976afd01ac446cc5b197c736959b2e9662c8c93868cd"
+        },
+        "excerpts": [
+          "2026-10-19T06:25:55.0981826Z line-b: passed; tests=163 failures=0 errors=0 skips=0 blocked=0",
+          "2026-10-19T06:25:55.0984050Z evidence: commit; attestable=True; target_commit=a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812"
+        ]
+      }
+    },
+    {
+      "job": {
+        "id": 117919792611,
+        "name": "public-suites (windows-latest, 3.14, line-b)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792611",
+        "started_at": "2026-10-19T06:25:33Z",
+        "completed_at": "2026-10-19T06:27:02Z"
+      },
+      "artifact": {
+        "id": 12167127636,
+        "name": "public-line-b-windows-latest-3.14",
+        "api_url": "https://api.github.com/repos/Danwuoo/IRIS-X/actions/artifacts/12167127636",
+        "expected_digest": "sha256:91294209dc1e029db8b81f5bdc38c689597004fa73a8aefe84e9e51753e75a89",
+        "downloaded_zip": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-line-b-windows-latest-3.14.zip",
+          "sha256": "91294209dc1e029db8b81f5bdc38c689597004fa73a8aefe84e9e51753e75a89"
+        },
+        "digest_matches": true,
+        "report": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/public-line-b-windows-latest-3.14-report.json",
+          "sha256": "5e227b09e97b599b8c873eca35f6b849c9f2a2c1ba3981134898b8c28896aa71"
+        }
+      },
+      "report": {
+        "tests": 163,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "exit_code": 0,
+        "status": "passed",
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "head_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "inventory_blob": "0051c88ca35d51903d89a9187dbb4f01efcdb365",
+        "runner_blob": "9f2e5888a6be1d4f2d8e7ec8d78fabbedd2c2f2f",
+        "source_identity": {
+          "format": "irisx.source-identity.v1",
+          "commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "tree": "7fcf40bbb885219fcc1f1bd5b6141ebc5dc4ac17",
+          "manifest_sha256": "5b2a36274a7227218a0cc41367db8f0d2d5a4ccc8968462404866d5238b339c2"
+        },
+        "python": "3.14.8 (tags/v3.14.8:8e6e75d, Sep 30 2026, 18:19:33) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-2025Server-10.0.26100-SP0",
+        "source_changes": []
+      },
+      "modules": [
+        {
+          "path": "research/math-proof-agent/round002/controls.py",
+          "tests": 45,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_answer_pipeline.py",
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_cost_schema.py",
+          "tests": 19,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_receipt_binding.py",
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "research/math-proof-agent/round002/test_remote_controls.py",
+          "tests": 47,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        },
+        {
+          "path": "tests/line_b/test_flow.py",
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "status": "passed",
+          "exit_code": 0,
+          "failure_ids": [],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        }
+      ],
+      "all_child_source_identities_match_parent": true,
+      "all_child_inventory_runner_and_target_match_parent": true,
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792611.log",
+          "sha256": "a2064f4f7c865c023b1199af55c94a5c0085509a0542538a241737f4cbe76fc7"
+        },
+        "excerpts": [
+          "2026-10-19T06:26:57.4201403Z line-b: passed; tests=163 failures=0 errors=0 skips=0 blocked=0",
+          "2026-10-19T06:26:57.4202703Z evidence: commit; attestable=True; target_commit=a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812"
+        ]
+      }
+    },
+    {
+      "job": {
+        "id": 117919792615,
+        "name": "public-suites (ubuntu-latest, 3.11, integrity)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792615",
+        "started_at": "2026-10-19T06:25:09Z",
+        "completed_at": "2026-10-19T06:25:32Z"
+      },
+      "artifact": {
+        "id": 12166709338,
+        "name": "public-integrity-ubuntu-latest-3.11",
+        "api_url": "https://api.github.com/repos/Danwuoo/IRIS-X/actions/artifacts/12166709338",
+        "expected_digest": "sha256:5aad3ab24e181393d5ca4c5211dde40ddc03c12d9e30e273ba4c141d7846e70d",
+        "downloaded_zip": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/integrity-ubuntu311.zip",
+          "sha256": "5aad3ab24e181393d5ca4c5211dde40ddc03c12d9e30e273ba4c141d7846e70d"
+        },
+        "digest_matches": true,
+        "report": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/integrity-ubuntu311-report.json",
+          "sha256": "4f44db1d8d6c1c40535671af116b67cb531c640683c7d9019ebb83c527cdefb8"
+        }
+      },
+      "report": {
+        "tests": 18,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "exit_code": 1,
+        "status": "failed",
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "head_commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+        "inventory_blob": "0051c88ca35d51903d89a9187dbb4f01efcdb365",
+        "runner_blob": "9f2e5888a6be1d4f2d8e7ec8d78fabbedd2c2f2f",
+        "source_identity": {
+          "format": "irisx.source-identity.v1",
+          "commit": "a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "tree": "7fcf40bbb885219fcc1f1bd5b6141ebc5dc4ac17",
+          "manifest_sha256": "5b2a36274a7227218a0cc41367db8f0d2d5a4ccc8968462404866d5238b339c2"
+        },
+        "python": "3.11.17 (main, Oct  1 2026, 14:32:31) [GCC 13.3.0]",
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "source_changes": []
+      },
+      "modules": [
+        {
+          "path": "tests/test_repository_check.py",
+          "tests": 18,
+          "failures": 1,
+          "errors": 0,
+          "skips": 0,
+          "status": "failed",
+          "exit_code": 1,
+          "failure_ids": [
+            "test_repository_check.RepositoryCheckTests.test_active_repository_is_valid"
+          ],
+          "error_ids": [],
+          "collection_errors": 0,
+          "interpreter_startup": {
+            "flags": {
+              "optimize": 0,
+              "safe_path": true,
+              "no_user_site": 1,
+              "dont_write_bytecode": 1,
+              "ignore_environment": 0,
+              "isolated": 0,
+              "hash_randomization": 0
+            },
+            "python_environment": {
+              "PYTHONHASHSEED": "0",
+              "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          }
+        }
+      ],
+      "all_child_source_identities_match_parent": true,
+      "all_child_inventory_runner_and_target_match_parent": true,
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792615.log",
+          "sha256": "2466d43515388c914e42931879536aa54df697aaad08ba7e1062fc25b98fb1ca"
+        },
+        "excerpts": [
+          "2026-10-19T06:25:29.0194118Z integrity: failed; tests=18 failures=1 errors=0 skips=0 blocked=0",
+          "2026-10-19T06:25:29.0196068Z evidence: commit; attestable=True; target_commit=a5b2795fb91ea8b5ab6a7ce5efbe6623a3496812",
+          "2026-10-19T06:25:29.0297551Z ##[error]Process completed with exit code 1."
+        ]
+      }
+    }
+  ],
+  "workstream_gate": {
+    "job": {
+      "id": 117921764493,
+      "name": "workstream-gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+      "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117921764493",
+      "started_at": "2026-10-19T06:29:48Z",
+      "completed_at": "2026-10-19T06:29:57Z"
+    },
+    "exit_code": 1,
+    "logs": {
+      "raw_log": {
+        "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117921764493.log",
+        "sha256": "4e4e83e3fa95b8722c399f6e3d4b24265b9eddaa7db2831c035693cabf13b489"
+      },
+      "excerpts": [
+        "2026-10-19T06:29:54.9292604Z missing/cancelled/non-success job: public-suites",
+        "2026-10-19T06:29:54.9293476Z non-attestable/failed report identity or counts: integrity/ubuntu-latest/3.11",
+        "2026-10-19T06:29:54.9294766Z failed/non-attestable module: integrity/ubuntu-latest/3.11/tests/test_repository_check.py",
+        "2026-10-19T06:29:54.9295813Z non-attestable/failed report identity or counts: integrity/ubuntu-latest/3.14",
+        "2026-10-19T06:29:54.9296632Z failed/non-attestable module: integrity/ubuntu-latest/3.14/tests/test_repository_check.py",
+        "2026-10-19T06:29:54.9297466Z non-attestable/failed report identity or counts: integrity/windows-latest/3.11",
+        "2026-10-19T06:29:54.9298255Z failed/non-attestable module: integrity/windows-latest/3.11/tests/test_repository_check.py",
+        "2026-10-19T06:29:54.9299053Z non-attestable/failed report identity or counts: integrity/windows-latest/3.14",
+        "2026-10-19T06:29:54.9299833Z failed/non-attestable module: integrity/windows-latest/3.14/tests/test_repository_check.py",
+        "2026-10-19T06:29:54.9516772Z ##[error]Process completed with exit code 1."
+      ]
+    },
+    "interpretation": "Gate retained failure for the four integrity reports and non-success public matrix. Its combined failed/non-attestable wording is not a claim that the downloaded artifacts lacked attestation; all eight inspected artifacts have attestable=true and matching identities."
+  },
+  "protected_stops": [
+    {
+      "job": {
+        "id": 117919792505,
+        "name": "arc-public-audit",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591512/job/117919792505",
+        "started_at": "2026-10-19T06:25:16Z",
+        "completed_at": "2026-10-19T06:25:21Z"
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Original ARC audit deferred by shared engineering no-training scope",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 2
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4
+        },
+        {
+          "name": "Run python -m pip install -r tests/requirements-audit.txt",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Run python tools/dev.py verify --require-committed --suite arc-unit-audit --output .irisx/arc-agi-2/ci/public-audit",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 7
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        }
+      ],
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792505.log",
+          "sha256": "daeba24612dcc6d0c9dffc92887562980bcee36fab146965d69b784086092712"
+        },
+        "excerpts": [
+          "2026-10-19T06:25:18.8113227Z ##[group]Run python -c \"raise SystemExit('BLOCKED by shared engineering no-training scope; original ARC audit was not executed. This is not a passing audit.')\"",
+          "2026-10-19T06:25:18.8115152Z \u001b[36;1mpython -c \"raise SystemExit('BLOCKED by shared engineering no-training scope; original ARC audit was not executed. This is not a passing audit.')\"\u001b[0m",
+          "2026-10-19T06:25:18.8567459Z BLOCKED by shared engineering no-training scope; original ARC audit was not executed. This is not a passing audit.",
+          "2026-10-19T06:25:18.8595180Z ##[error]Process completed with exit code 1."
+        ]
+      },
+      "scope": "Explicit non-success stop before original audit/aggregate; not a passing audit."
+    },
+    {
+      "job": {
+        "id": 117919792052,
+        "name": "test (ubuntu-latest, 3.11)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591532/job/117919792052",
+        "started_at": "2026-10-19T06:23:12Z",
+        "completed_at": "2026-10-19T06:23:15Z"
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Historical aggregate deferred by shared engineering no-training scope",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 2
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4
+        },
+        {
+          "name": "Run python -m pip install --no-build-isolation -e .",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Run python -m pip install -r tests/requirements-audit.txt",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6
+        },
+        {
+          "name": "Prepare bounded workspace scratch",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7
+        },
+        {
+          "name": "Retained complete aggregate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8
+        },
+        {
+          "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9
+        },
+        {
+          "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11
+        },
+        {
+          "name": "Run irisx package verify .irisx/ci/package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12
+        },
+        {
+          "name": "Run irisx admission validate trials/p2-admission/admission.json",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        }
+      ],
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792052.log",
+          "sha256": "64322c78e767a38957703397b46a4498bce9991b3dc7be68857ec9eb31c6a041"
+        },
+        "excerpts": [
+          "2026-10-19T06:23:14.3469981Z ##[group]Run python -c \"raise SystemExit('BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.')\"",
+          "2026-10-19T06:23:14.3472335Z \u001b[36;1mpython -c \"raise SystemExit('BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.')\"\u001b[0m",
+          "2026-10-19T06:23:14.4031233Z BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.",
+          "2026-10-19T06:23:14.4063373Z ##[error]Process completed with exit code 1."
+        ]
+      },
+      "scope": "Explicit non-success stop before original audit/aggregate; not a passing audit."
+    },
+    {
+      "job": {
+        "id": 117919792339,
+        "name": "test (windows-latest, 3.14)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591532/job/117919792339",
+        "started_at": "2026-10-19T06:23:32Z",
+        "completed_at": "2026-10-19T06:23:36Z"
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Historical aggregate deferred by shared engineering no-training scope",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 2
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4
+        },
+        {
+          "name": "Run python -m pip install --no-build-isolation -e .",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Run python -m pip install -r tests/requirements-audit.txt",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6
+        },
+        {
+          "name": "Prepare bounded workspace scratch",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7
+        },
+        {
+          "name": "Retained complete aggregate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8
+        },
+        {
+          "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9
+        },
+        {
+          "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11
+        },
+        {
+          "name": "Run irisx package verify .irisx/ci/package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12
+        },
+        {
+          "name": "Run irisx admission validate trials/p2-admission/admission.json",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        }
+      ],
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792339.log",
+          "sha256": "2e9a218f10298e276b7aeb0ef072adce8bd063e130247bb130bff99b52753190"
+        },
+        "excerpts": [
+          "2026-10-19T06:23:33.7188466Z ##[group]Run python -c \"raise SystemExit('BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.')\"",
+          "2026-10-19T06:23:33.7190652Z \u001b[36;1mpython -c \"raise SystemExit('BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.')\"\u001b[0m",
+          "2026-10-19T06:23:34.9885245Z BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.",
+          "2026-10-19T06:23:35.1203786Z ##[error]Process completed with exit code 1."
+        ]
+      },
+      "scope": "Explicit non-success stop before original audit/aggregate; not a passing audit."
+    },
+    {
+      "job": {
+        "id": 117919792428,
+        "name": "test (ubuntu-latest, 3.14)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591532/job/117919792428",
+        "started_at": "2026-10-19T06:23:32Z",
+        "completed_at": "2026-10-19T06:23:34Z"
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Historical aggregate deferred by shared engineering no-training scope",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 2
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4
+        },
+        {
+          "name": "Run python -m pip install --no-build-isolation -e .",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Run python -m pip install -r tests/requirements-audit.txt",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6
+        },
+        {
+          "name": "Prepare bounded workspace scratch",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7
+        },
+        {
+          "name": "Retained complete aggregate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8
+        },
+        {
+          "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9
+        },
+        {
+          "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11
+        },
+        {
+          "name": "Run irisx package verify .irisx/ci/package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12
+        },
+        {
+          "name": "Run irisx admission validate trials/p2-admission/admission.json",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        }
+      ],
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792428.log",
+          "sha256": "fca91f5e488b53517d5afeb92a53be856707f4faa67d6588d2f6254ba2cf8634"
+        },
+        "excerpts": [
+          "2026-10-19T06:23:33.6859453Z ##[group]Run python -c \"raise SystemExit('BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.')\"",
+          "2026-10-19T06:23:33.6862246Z \u001b[36;1mpython -c \"raise SystemExit('BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.')\"\u001b[0m",
+          "2026-10-19T06:23:33.7377749Z BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.",
+          "2026-10-19T06:23:33.7409932Z ##[error]Process completed with exit code 1."
+        ]
+      },
+      "scope": "Explicit non-success stop before original audit/aggregate; not a passing audit."
+    },
+    {
+      "job": {
+        "id": 117919792438,
+        "name": "test (windows-latest, 3.11)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591532/job/117919792438",
+        "started_at": "2026-10-19T06:23:39Z",
+        "completed_at": "2026-10-19T06:23:44Z"
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Historical aggregate deferred by shared engineering no-training scope",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 2
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4
+        },
+        {
+          "name": "Run python -m pip install --no-build-isolation -e .",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Run python -m pip install -r tests/requirements-audit.txt",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6
+        },
+        {
+          "name": "Prepare bounded workspace scratch",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7
+        },
+        {
+          "name": "Retained complete aggregate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8
+        },
+        {
+          "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9
+        },
+        {
+          "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11
+        },
+        {
+          "name": "Run irisx package verify .irisx/ci/package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12
+        },
+        {
+          "name": "Run irisx admission validate trials/p2-admission/admission.json",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        }
+      ],
+      "logs": {
+        "raw_log": {
+          "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/job-117919792438.log",
+          "sha256": "c522cfe4c01f56f54739d276b5a47b01b65d9380a10ce30c8ab38c88ce97cba1"
+        },
+        "excerpts": [
+          "2026-10-19T06:23:41.4339995Z ##[group]Run python -c \"raise SystemExit('BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.')\"",
+          "2026-10-19T06:23:41.4342822Z \u001b[36;1mpython -c \"raise SystemExit('BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.')\"\u001b[0m",
+          "2026-10-19T06:23:42.5763426Z BLOCKED by shared engineering no-training scope; historical aggregate was not executed. Prior red receipts remain unchanged.",
+          "2026-10-19T06:23:42.7096048Z ##[error]Process completed with exit code 1."
+        ]
+      },
+      "scope": "Explicit non-success stop before original audit/aggregate; not a passing audit."
+    }
+  ],
+  "navigation_run": {
+    "id": 39209591576,
+    "url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591576",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 117919792693,
+        "name": "navigation (windows-latest, 3.14)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591576/job/117919792693",
+        "started_at": "2026-10-19T06:23:15Z",
+        "completed_at": "2026-10-19T06:23:29Z"
+      },
+      {
+        "id": 117919792900,
+        "name": "navigation (ubuntu-latest, 3.14)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591576/job/117919792900",
+        "started_at": "2026-10-19T06:23:53Z",
+        "completed_at": "2026-10-19T06:24:02Z"
+      },
+      {
+        "id": 117919792952,
+        "name": "navigation (ubuntu-latest, 3.11)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591576/job/117919792952",
+        "started_at": "2026-10-19T06:23:55Z",
+        "completed_at": "2026-10-19T06:24:03Z"
+      },
+      {
+        "id": 117919792996,
+        "name": "navigation (windows-latest, 3.11)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+        "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591576/job/117919792996",
+        "started_at": "2026-10-19T06:23:47Z",
+        "completed_at": "2026-10-19T06:24:04Z"
+      }
+    ]
+  },
+  "offline_run": {
+    "id": 39209591532,
+    "url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209591532",
+    "status": "completed",
+    "conclusion": "failure",
+    "note": "Four explicit stop failures; historical aggregate not executed, never relabeled as success."
+  },
+  "secondary_push_run": {
+    "id": 39209587510,
+    "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39209587510",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d"
+  },
+  "preserved_previous_failure": {
+    "run_id": 39201053930,
+    "run_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39201053930",
+    "job_id": 117893912538,
+    "tests": 15,
+    "failures": 1,
+    "provenance": "Previously read original review/job receipt; not replaced by the new-head result. Existing raw record remains unchanged.",
+    "existing_raw_record": {
+      "path": ".irisx/line-b/MATH-002/review-repair-20261019/original-integrity-job-117893912538.json",
+      "sha256": "854c6a4ec6d30f4c3c6bc3a6d54518b54e77c0eec65f3d7828e0916ae196f8c1"
+    }
+  },
+  "remaining_failure_and_limits": {
+    "directly_observed_ci": "All four integrity artifacts list exactly test_repository_check.RepositoryCheckTests.test_active_repository_is_valid as their sole failure. Each ran 18 tests with one failure, zero errors/skips, exit1. ZIP artifacts contain report.json only; no assertion-issue list or child traceback was published.",
+    "new_path_controls": "The three added narrow path-admission tests are among the other 17 tests with no failure/error/skip IDs. Local source-bound diagnostic receipt separately shows all research executable-path issues removed while archive-tag absence remains.",
+    "local_receipt": "docs/verification/MATH-002/review-repair-ci-tests.json",
+    "remote_archive_tag": {
+      "url": "https://api.github.com/repos/Danwuoo/IRIS-X/git/ref/tags/archive/pre-product-transition-2026-09-17",
+      "http_status": 404,
+      "error_code": "NOT_FOUND",
+      "raw_readback": {
+        "path": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0/archive_tag_readback.json",
+        "sha256": "013ace2c50fdbbec02e9a1f219aedba96fa0519f001ed4de3f7b517bb768b28c"
+      }
+    },
+    "inference_only": "The unchanged missing historical tag is a plausible residual CI cause, supported by local validator output and remote 404. CI assertion details were not directly observed, so exact remaining CI root cause is not claimed as proven.",
+    "unresolved": "Full integrity/public matrix/gate remain red. This readback is not full-green CI, independent acceptance or mathematical/model efficacy.",
+    "no_ref_repair": "No tag was fetched, created, moved or bypassed, and no main/develop/ARC ref changed."
+  },
+  "raw_root": ".irisx/line-b/MATH-002/review-repair-20261019/ci-readback-fedf3a0",
+  "sensitive_data_policy": "Only stable GitHub URLs, artifact IDs and digests are included. Signed download URLs/reusable-file capabilities are excluded. Raw logs/artifacts remain ignored."
+}

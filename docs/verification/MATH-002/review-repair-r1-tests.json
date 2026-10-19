@@ -1,0 +1,526 @@
+{
+  "format": "irisx.math.review-repair-r1-tests.v1",
+  "task": "MATH-002",
+  "finding": "M002-R1",
+  "classification": "implementer_self_test_not_independent_verification",
+  "state": "review_ready",
+  "source_base_sha": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+  "source_state": "Pre-commit working bytes are bound by final source hashes; parent delivery records the resulting code/delivery commits.",
+  "review_reference": "https://github.com/Danwuoo/IRIS-X/pull/10#pullrequestreview-5567278465",
+  "original_independent_review": {
+    "source": "https://github.com/Danwuoo/IRIS-X/pull/10#pullrequestreview-5567278465",
+    "outcome": "changes_requested",
+    "environment_reported_by_reviewer": "Linux / CPython 3.13.5",
+    "normal": {
+      "tests": 48,
+      "passed": 38,
+      "failed": 10,
+      "errors": 0,
+      "skips": 0
+    },
+    "optimized": {
+      "tests": 48,
+      "passed": 38,
+      "failed": 10,
+      "errors": 0,
+      "skips": 0
+    },
+    "R1_contract_failures_per_mode": 4,
+    "provenance_limit": "Historical independent reviewer statement, not new implementer tests. Original reviewer raw receipts were not acquired or relabeled here."
+  },
+  "new_implementer_pre_fix_reproduction": {
+    "kind": "scripted_pre_fix_reproduction_not_model_or_proof_evidence",
+    "source_base_sha": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+    "original_git_blob_sha256": {
+      "research/math-proof-agent/round002/controller.py": "a03138ddbf9a46a29bd26698027156fe7c8a515e125bfba0a446e2ee3fc3c0d5",
+      "research/math-proof-agent/round002/analyze.py": "6e684f020df05f164acca6e98df71f86cc6968f4e2e9ed3e0dfc5a5e8d37202f"
+    },
+    "controls": [
+      {
+        "mode": "proof_only",
+        "mutation": "none",
+        "old_controller_accepted": true,
+        "old_analyzer_proof_rate": 1.0
+      },
+      {
+        "mode": "proof_only",
+        "mutation": "candidate_and_model_text",
+        "old_controller_accepted": true,
+        "old_analyzer_proof_rate": 1.0
+      },
+      {
+        "mode": "proof_only",
+        "mutation": "model_text_only",
+        "old_controller_accepted": true,
+        "old_analyzer_proof_rate": 1.0
+      },
+      {
+        "mode": "proof_only",
+        "mutation": "accepted_false",
+        "old_controller_accepted": true,
+        "old_analyzer_proof_rate": 1.0
+      },
+      {
+        "mode": "proof_only",
+        "mutation": "status_rejected",
+        "old_controller_accepted": true,
+        "old_analyzer_proof_rate": 1.0
+      },
+      {
+        "mode": "answer_given",
+        "mutation": "none",
+        "old_controller_accepted": true,
+        "old_analyzer_proof_rate": 1.0
+      },
+      {
+        "mode": "answer_given",
+        "mutation": "candidate_and_model_text",
+        "old_controller_accepted": true,
+        "old_analyzer_proof_rate": 1.0
+      },
+      {
+        "mode": "answer_given",
+        "mutation": "model_text_only",
+        "old_controller_accepted": true,
+        "old_analyzer_proof_rate": 1.0
+      },
+      {
+        "mode": "answer_given",
+        "mutation": "accepted_false",
+        "old_controller_accepted": true,
+        "old_analyzer_proof_rate": 1.0
+      },
+      {
+        "mode": "answer_given",
+        "mutation": "status_rejected",
+        "old_controller_accepted": true,
+        "old_analyzer_proof_rate": 1.0
+      }
+    ],
+    "confirmed_bad_acceptance_cases": 8,
+    "read_only_Git_source": true,
+    "new_model_or_provider_or_Lean_calls": 0,
+    "command": ".irisx/line-b/MATH-002/venv/Scripts/python.exe -P -s -B .irisx/line-b/MATH-002/review-repair-20261019/reproduce_r1_baseline.py",
+    "exit_code": 0,
+    "raw_receipt_path": ".irisx/line-b/MATH-002/review-repair-20261019/baseline-reproduction.json",
+    "raw_receipt_sha256": "e579175ca391a17396db81789febbdcd30e8ffe4ffbe016e90bb911d258ae5c2",
+    "note": "Eight bad acceptances across two proof modes are a NEW scripted implementer reproduction using exact old controller/analyze Git blobs plus current helper imports. They are not the original 48x2 reviewer receipts or actual model false scores."
+  },
+  "repair_contract": {
+    "shared_validator": "evaluator.verified_receipt_matches(result, problem, candidate, *, model_text)",
+    "event_validator": "evaluator.verified_event_matches(event, problem)",
+    "independent_call_sites": [
+      "controller.accepted",
+      "analyze proof_accepted admission"
+    ],
+    "all_modes": [
+      "proof_only",
+      "answer_given",
+      "find_answer"
+    ],
+    "coherent_success_fields": {
+      "status": "accepted",
+      "accepted": true,
+      "proof_status": "kernel_verified",
+      "trust_policy_passed": true
+    },
+    "statement_binding": "Recompute immutable statement_digest; match statement.sha256, problem.statement_sha256 and receipt.statement_sha256.",
+    "proof_modes_candidate_hash": "SHA256 of exact original proof_body UTF-8 bytes, without stripping, newline conversion or tactic normalization.",
+    "find_answer": "Preserve answer+proof candidate hash and kind/status/statement/spec/normalized-answer witness receipt checks.",
+    "model_text_binding": "Reparse existing plain/fenced JSON candidate envelope and require equality with recorded candidate; JSON envelope whitespace is allowed but raw proof bytes must match.",
+    "authenticity_limit": "Hashes detect receipt mixing; trusted committed worker and source-verified artifacts remain required. This is not cryptographic authentication of arbitrary receipts."
+  },
+  "attempts": [
+    {
+      "kind": "M002-R1_receipt_validator_scripted_controls",
+      "source_base_sha": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+      "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "source_files_before": {
+        "research/math-proof-agent/round002/test_receipt_binding.py": "47c2494bf6e8dc51ff7a49ac124e652cc7a1537d0f818dcdcdc3f053ef0e51fa",
+        "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+        "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a"
+      },
+      "commands": [
+        {
+          "mode": "normal",
+          "command": [
+            "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "research\\math-proof-agent\\round002\\test_receipt_binding.py"
+          ],
+          "exit_code": 0,
+          "wall_seconds": 0.5149999999994179,
+          "log": ".irisx/line-b/MATH-002/review-repair-20261019/receipt-normal-attempt01.log",
+          "log_sha256": "4a600f11362462cceebb2109e31a3905687951360770ca35673a97e73b4db4b9",
+          "requested_startup": {
+            "PYTHONHASHSEED": "0",
+            "flags": [
+              "-P",
+              "-s",
+              "-B"
+            ]
+          },
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "mode": "optimized",
+          "command": [
+            "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "research\\math-proof-agent\\round002\\test_receipt_binding.py"
+          ],
+          "exit_code": 0,
+          "wall_seconds": 3.6559999999990396,
+          "log": ".irisx/line-b/MATH-002/review-repair-20261019/receipt-optimized-attempt01.log",
+          "log_sha256": "6c665269413d1036f6da1f9e109e312aa1067b4dbe978f7fcb3d6dd800633331",
+          "requested_startup": {
+            "PYTHONHASHSEED": "0",
+            "flags": [
+              "-P",
+              "-s",
+              "-B",
+              "-O"
+            ]
+          },
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        }
+      ],
+      "model_calls": 0,
+      "provider_calls": 0,
+      "Lean_calls": 0,
+      "source_files_after": {
+        "research/math-proof-agent/round002/test_receipt_binding.py": "47c2494bf6e8dc51ff7a49ac124e652cc7a1537d0f818dcdcdc3f053ef0e51fa",
+        "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+        "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a"
+      },
+      "source_unchanged": true,
+      "attempt": "01",
+      "scope": "Shared validator only before independent controller/analyzer checks were added.",
+      "raw_receipt_path": ".irisx/line-b/MATH-002/review-repair-20261019/receipt-tests-attempt01.json",
+      "raw_receipt_sha256": "40c0a470402a71b22f9c4265d0476d6720c8c288be138865b67d9246887f3a11"
+    },
+    {
+      "kind": "M002-R1_receipt_validator_scripted_controls",
+      "source_base_sha": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+      "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "source_files_before": {
+        "research/math-proof-agent/round002/test_receipt_binding.py": "f5cbcceaeba938c978bada00de4d3bbec4d89744cbca9ba62c7b5139cf758887",
+        "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+        "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+        "research/math-proof-agent/round002/controller.py": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+        "research/math-proof-agent/round002/analyze.py": "c49676a93d2c65fcdcbfeba61eda474b74e54ca0d2b84399d3b61ce27a27680c",
+        "research/math-proof-agent/round002/common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+        "research/math-proof-agent/round002/model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8"
+      },
+      "commands": [
+        {
+          "mode": "normal",
+          "command": [
+            "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "research\\math-proof-agent\\round002\\test_receipt_binding.py"
+          ],
+          "exit_code": 0,
+          "wall_seconds": 0.5779999999977008,
+          "log": ".irisx/line-b/MATH-002/review-repair-20261019/receipt-normal-attempt02.log",
+          "log_sha256": "21986ad2d246861e22126bd0adebec0fdfe26cf60daadd535a72ac8eb82b09e3",
+          "requested_startup": {
+            "PYTHONHASHSEED": "0",
+            "flags": [
+              "-P",
+              "-s",
+              "-B"
+            ]
+          },
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "observed_startup": {
+            "PYTHONHASHSEED": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": true,
+            "optimize": 0,
+            "effective_hash_probe": -6887401537953173364
+          }
+        },
+        {
+          "mode": "optimized",
+          "command": [
+            "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "research\\math-proof-agent\\round002\\test_receipt_binding.py"
+          ],
+          "exit_code": 0,
+          "wall_seconds": 1.889999999999418,
+          "log": ".irisx/line-b/MATH-002/review-repair-20261019/receipt-optimized-attempt02.log",
+          "log_sha256": "d6682319983180aa1e1f06d5b52e63ad7a33d1afcd1c8de2ef93b4fb3322128d",
+          "requested_startup": {
+            "PYTHONHASHSEED": "0",
+            "flags": [
+              "-P",
+              "-s",
+              "-B",
+              "-O"
+            ]
+          },
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "observed_startup": {
+            "PYTHONHASHSEED": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": true,
+            "optimize": 1,
+            "effective_hash_probe": -6887401537953173364
+          }
+        }
+      ],
+      "model_calls": 0,
+      "provider_calls": 0,
+      "Lean_calls": 0,
+      "source_files_after": {
+        "research/math-proof-agent/round002/test_receipt_binding.py": "f5cbcceaeba938c978bada00de4d3bbec4d89744cbca9ba62c7b5139cf758887",
+        "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+        "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+        "research/math-proof-agent/round002/controller.py": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+        "research/math-proof-agent/round002/analyze.py": "c49676a93d2c65fcdcbfeba61eda474b74e54ca0d2b84399d3b61ce27a27680c",
+        "research/math-proof-agent/round002/common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+        "research/math-proof-agent/round002/model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8"
+      },
+      "source_unchanged": true,
+      "attempt": "02",
+      "scope": "Shared validator, controller.accepted and analyzer admission each checked independently.",
+      "raw_receipt_path": ".irisx/line-b/MATH-002/review-repair-20261019/receipt-tests-attempt02.json",
+      "raw_receipt_sha256": "cac77fa46a617855c123836250f613d0b3ba94221d7d3003ef21893ceacd9d2a"
+    },
+    {
+      "kind": "M002-R1_receipt_validator_scripted_controls",
+      "source_base_sha": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+      "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "source_files_before": {
+        "research/math-proof-agent/round002/test_receipt_binding.py": "f5cbcceaeba938c978bada00de4d3bbec4d89744cbca9ba62c7b5139cf758887",
+        "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+        "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+        "research/math-proof-agent/round002/controller.py": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+        "research/math-proof-agent/round002/analyze.py": "2e312152109e1d4f26fe78ac7a10ff0683b2bf6ee789ebc0107caff566297b93",
+        "research/math-proof-agent/round002/common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+        "research/math-proof-agent/round002/model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8"
+      },
+      "commands": [
+        {
+          "mode": "normal",
+          "command": [
+            "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "research\\math-proof-agent\\round002\\test_receipt_binding.py"
+          ],
+          "exit_code": 0,
+          "wall_seconds": 0.43699999999807915,
+          "log": ".irisx/line-b/MATH-002/review-repair-20261019/receipt-normal-attempt03.log",
+          "log_sha256": "2316522a8c1c57ebe915a67fa5cc67936cb136c3118fc507fe1a548c00626fa5",
+          "requested_startup": {
+            "PYTHONHASHSEED": "0",
+            "flags": [
+              "-P",
+              "-s",
+              "-B"
+            ]
+          },
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "observed_startup": {
+            "PYTHONHASHSEED": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": true,
+            "optimize": 0,
+            "effective_hash_probe": -6887401537953173364
+          }
+        },
+        {
+          "mode": "optimized",
+          "command": [
+            "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "research\\math-proof-agent\\round002\\test_receipt_binding.py"
+          ],
+          "exit_code": 0,
+          "wall_seconds": 0.7809999999990396,
+          "log": ".irisx/line-b/MATH-002/review-repair-20261019/receipt-optimized-attempt03.log",
+          "log_sha256": "fd95e30cba64e098be2a70839be5b5aada6db58bf4b5f0a7c4b82b57f6df5ad9",
+          "requested_startup": {
+            "PYTHONHASHSEED": "0",
+            "flags": [
+              "-P",
+              "-s",
+              "-B",
+              "-O"
+            ]
+          },
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "observed_startup": {
+            "PYTHONHASHSEED": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "safe_path": true,
+            "no_user_site": 1,
+            "dont_write_bytecode": true,
+            "optimize": 1,
+            "effective_hash_probe": -6887401537953173364
+          }
+        }
+      ],
+      "model_calls": 0,
+      "provider_calls": 0,
+      "Lean_calls": 0,
+      "source_files_after": {
+        "research/math-proof-agent/round002/test_receipt_binding.py": "f5cbcceaeba938c978bada00de4d3bbec4d89744cbca9ba62c7b5139cf758887",
+        "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+        "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+        "research/math-proof-agent/round002/controller.py": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+        "research/math-proof-agent/round002/analyze.py": "2e312152109e1d4f26fe78ac7a10ff0683b2bf6ee789ebc0107caff566297b93",
+        "research/math-proof-agent/round002/common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+        "research/math-proof-agent/round002/model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8"
+      },
+      "source_unchanged": true,
+      "attempt": "03",
+      "scope": "Shared validator, controller.accepted and analyzer admission each checked independently.",
+      "raw_receipt_path": ".irisx/line-b/MATH-002/review-repair-20261019/receipt-tests-attempt03.json",
+      "raw_receipt_sha256": "9f67b9e70f44593722a3f73e507d6b4e3edc5089efdc35cb8e960cf00c7e5261"
+    }
+  ],
+  "final_result": {
+    "normal_tests": 20,
+    "optimized_tests": 20,
+    "total_test_method_executions": 40,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "normal_exit_code": 0,
+    "optimized_exit_code": 0,
+    "source_files": {
+      "research/math-proof-agent/round002/test_receipt_binding.py": "f5cbcceaeba938c978bada00de4d3bbec4d89744cbca9ba62c7b5139cf758887",
+      "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+      "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+      "research/math-proof-agent/round002/controller.py": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+      "research/math-proof-agent/round002/analyze.py": "2e312152109e1d4f26fe78ac7a10ff0683b2bf6ee789ebc0107caff566297b93",
+      "research/math-proof-agent/round002/common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+      "research/math-proof-agent/round002/model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8"
+    },
+    "source_unchanged_during_run": true,
+    "coverage": [
+      "Correct matched receipts for all three modes",
+      "Proof/candidate plus model-text mutation with stale receipt",
+      "Model-text-only and candidate-only mutation",
+      "Raw UTF-8/newline/indentation bytes",
+      "Missing/wrong candidate hashes and immutable statement drift",
+      "Missing/false/inconsistent accepted/status/proof/trust flags",
+      "Accepted event state",
+      "Invalid JSON/candidate shape/mode",
+      "Find-answer answer/spec/witness mutation",
+      "Proof modes do not become joint discovery",
+      "Validator does not mutate inputs"
+    ]
+  },
+  "existing_Lean_controls_single_recheck": {
+    "classification": "Existing authored restricted constants only; separate local engineering evidence",
+    "command": "wsl -d Ubuntu-24.04 -- bash -lc 'cd /mnt/c/Users/wurre/Desktop/IRIS-X-Math && PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean_controls.py --config .irisx/line-b/MATH-002/lean-config-local.json --output .irisx/line-b/MATH-002/review-repair-20261019/lean-core-existing-controls.json'",
+    "observed_host_exit_code": 0,
+    "attempt_count": 1,
+    "tests": 7,
+    "passed": 7,
+    "qualified": true,
+    "actual_Lean_candidate_executions": 5,
+    "candidate_exit_codes": [
+      0,
+      1,
+      1,
+      0,
+      0
+    ],
+    "candidate_wall_seconds": 1.2591830400000017,
+    "total_wall_seconds": null,
+    "isolation_checks": 19,
+    "isolation_passed": 19,
+    "environment": {
+      "os": "Ubuntu 24.04 / WSL2",
+      "observed_kernel": "Linux 6.6.87.2-microsoft-standard-WSL2",
+      "observed_python": "3.12.3",
+      "lean": "Lean (version 4.19.0, x86_64-unknown-linux-gnu, commit 6caaee842e94, Release)",
+      "lean_runtime_sha256": "2f0099538d4ccc23173829faa440c7dccfca1e790807336a24a75cba18c6038a",
+      "bubblewrap_sha256": "e318903862396f96de3df57264e0158682b952fd3fb53ac23d876413e7b30f71",
+      "imports": [
+        "Init"
+      ],
+      "scratch": "/home/wurre/irisx-math-m002-lean-20261019"
+    },
+    "source_files": {
+      "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+      "research/math-proof-agent/round002/lean_controls.py": "346bd1a9f912ad8b7509cccca22ede0a746b2b552023493b1cd840819412dabd"
+    },
+    "source_differs_from_base": false,
+    "config_sha256": "b8916a0e2e87484636f89ae778f4f3c4454437261698c2338c3c67f932e78622",
+    "raw_receipt_path": ".irisx/line-b/MATH-002/review-repair-20261019/lean-core-existing-controls.json",
+    "raw_receipt_sha256": "ef7357d0f40eab45bd9238580ce5b26945ea36d385a626ae6833c6a618ef3e74",
+    "note": "No new Lean source, panel, dependency or unrestricted code was executed. No extra Mathlib/answer controls rerun. Overall wall time was not separately instrumented; candidate process wall times are retained."
+  },
+  "preservation": {
+    "old_test_reports_overwritten": false,
+    "raw_root": ".irisx/line-b/MATH-002/review-repair-20261019/",
+    "Kaggle_state_or_ledger_modified_by_this_work": false,
+    "new_ledger_created": false,
+    "new_Kaggle_operations": 0,
+    "new_dependency_or_model_downloads": 0,
+    "model_calls": 0,
+    "raw_receipts_are_ignored": true
+  },
+  "limitations": [
+    "Implementer and implementing subagent checks are self-tests, not independent verification.",
+    "Scripted receipts test interface acceptance, not actual theorem validity or model efficacy.",
+    "The separate existing Lean recheck qualifies only its prior local restricted controls; no remote isolation/TPU claim.",
+    "R1 fixes receipt mixing, not a demonstrated kernel bypass or an allegation of observed false model scores.",
+    "Scientific result remains not_estimable; source/panel/model/TPU blockers and historical remote reservation remain unchanged."
+  ],
+  "delivered_code_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+  "delivery_sha_reference": "Final response and PR10; delivery commit cannot embed its own SHA.",
+  "delivery_binding_note": "Original execution source hashes/commands/attempts are retained. Local working-byte tests are not retrospectively labeled as committed-source CI; separate CI readback names its actual target."
+}

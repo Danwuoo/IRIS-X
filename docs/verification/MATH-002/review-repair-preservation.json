@@ -1,0 +1,248 @@
+{
+  "format": "irisx.math.review-repair-preservation.v1",
+  "task": "MATH-002",
+  "source_base_sha": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+  "code_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+  "state": "review_ready",
+  "code_commit_paths": [
+    "docs/management/tasks/MATH-002.json",
+    "docs/plan/2026-10-19-math-proof-agent-round02.md",
+    "research/math-proof-agent/round002/analyze.py",
+    "research/math-proof-agent/round002/common.py",
+    "research/math-proof-agent/round002/controller.py",
+    "research/math-proof-agent/round002/controls.py",
+    "research/math-proof-agent/round002/evaluator.py",
+    "research/math-proof-agent/round002/kaggle_run.py",
+    "research/math-proof-agent/round002/test_answer_pipeline.py",
+    "research/math-proof-agent/round002/test_cost_schema.py",
+    "research/math-proof-agent/round002/test_receipt_binding.py",
+    "research/math-proof-agent/round002/test_remote_controls.py",
+    "tests/README.md",
+    "tests/inventory.json",
+    "tests/test_repository_check.py",
+    "tests/test_suite_runner.py",
+    "tests/test_workstream_gate.py",
+    "tools/repository_check.py",
+    "tools/suite_runner.py",
+    "tools/workstream_gate.py"
+  ],
+  "working_to_committed_source": [
+    {
+      "path": "research/math-proof-agent/round002/analyze.py",
+      "working_sha256": "2e312152109e1d4f26fe78ac7a10ff0683b2bf6ee789ebc0107caff566297b93",
+      "git_blob_sha256": "2e312152109e1d4f26fe78ac7a10ff0683b2bf6ee789ebc0107caff566297b93",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "research/math-proof-agent/round002/common.py",
+      "working_sha256": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+      "git_blob_sha256": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "research/math-proof-agent/round002/controller.py",
+      "working_sha256": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+      "git_blob_sha256": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "research/math-proof-agent/round002/controls.py",
+      "working_sha256": "20bafb72d9a30616fc6f25716f019992ee0e599789763a326914f8ce7864eaaa",
+      "git_blob_sha256": "80292c473a8d368b11b4e6cb04ac97f4ed1c4a993c02c2b64a0cd1f429d160b7",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "research/math-proof-agent/round002/evaluator.py",
+      "working_sha256": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+      "git_blob_sha256": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "research/math-proof-agent/round002/kaggle_run.py",
+      "working_sha256": "c9cf424edf45d6ecfb4df4b878cbd778770f6d40591b9a71982cd36801c6a5b3",
+      "git_blob_sha256": "c9cf424edf45d6ecfb4df4b878cbd778770f6d40591b9a71982cd36801c6a5b3",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "research/math-proof-agent/round002/test_answer_pipeline.py",
+      "working_sha256": "c0c63d848b243c7ade96542544fd71cdf42b7d68041c9268a19852f47dda9bfc",
+      "git_blob_sha256": "c0c63d848b243c7ade96542544fd71cdf42b7d68041c9268a19852f47dda9bfc",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "research/math-proof-agent/round002/test_cost_schema.py",
+      "working_sha256": "e10b2fea7501193c7dff234cdbb0de970c385bbe58f6b888412eda9bd2374916",
+      "git_blob_sha256": "e10b2fea7501193c7dff234cdbb0de970c385bbe58f6b888412eda9bd2374916",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "research/math-proof-agent/round002/test_receipt_binding.py",
+      "working_sha256": "f5cbcceaeba938c978bada00de4d3bbec4d89744cbca9ba62c7b5139cf758887",
+      "git_blob_sha256": "f5cbcceaeba938c978bada00de4d3bbec4d89744cbca9ba62c7b5139cf758887",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "research/math-proof-agent/round002/test_remote_controls.py",
+      "working_sha256": "d6ea2040aab7ebd119515d3c2875a4c48bc7c377124ccaa112aac36cbac2a05f",
+      "git_blob_sha256": "d6ea2040aab7ebd119515d3c2875a4c48bc7c377124ccaa112aac36cbac2a05f",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "tests/README.md",
+      "working_sha256": "547d23470fd86b39fde46804866fa62052ee8d83ba41dc718466c93f99b69ebb",
+      "git_blob_sha256": "547d23470fd86b39fde46804866fa62052ee8d83ba41dc718466c93f99b69ebb",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "tests/inventory.json",
+      "working_sha256": "29ad11f6068cc584de53dd66041d2317a233c05aa9897ba69771320e084b977c",
+      "git_blob_sha256": "8cac789c1edc16e96b00fa7bf526a938ebb98ceeadae1e9183232d89b680d78b",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "tests/test_repository_check.py",
+      "working_sha256": "c6d02370b8fb8bcea0882a95270a796a8ec744f852af414293f95f1f00bb3d51",
+      "git_blob_sha256": "c6d02370b8fb8bcea0882a95270a796a8ec744f852af414293f95f1f00bb3d51",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "tests/test_suite_runner.py",
+      "working_sha256": "d3f18f97dc8fdafb56e969685cb7c7c8308c099bc37a221f340d1897903379f8",
+      "git_blob_sha256": "d3f18f97dc8fdafb56e969685cb7c7c8308c099bc37a221f340d1897903379f8",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "tests/test_workstream_gate.py",
+      "working_sha256": "43059fd4e1b91bf43af50235bef32c594920cd65218945035f2f283560d2f7fb",
+      "git_blob_sha256": "43059fd4e1b91bf43af50235bef32c594920cd65218945035f2f283560d2f7fb",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "tools/repository_check.py",
+      "working_sha256": "9302e3437a5e1931787dc7931af258570d30765314153c040f93fa9764daab15",
+      "git_blob_sha256": "9302e3437a5e1931787dc7931af258570d30765314153c040f93fa9764daab15",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "tools/suite_runner.py",
+      "working_sha256": "63b8e103bf530cfff461201fa9a591d6ac2049b9e5bc7c683e2c4668dc3a94e1",
+      "git_blob_sha256": "63b8e103bf530cfff461201fa9a591d6ac2049b9e5bc7c683e2c4668dc3a94e1",
+      "LF_normalized_equal": true
+    },
+    {
+      "path": "tools/workstream_gate.py",
+      "working_sha256": "4681fc52f61d3aa283ea2f28432e9df8bfaa94fd3df90b55c2a30e2615d6f769",
+      "git_blob_sha256": "4681fc52f61d3aa283ea2f28432e9df8bfaa94fd3df90b55c2a30e2615d6f769",
+      "LF_normalized_equal": true
+    }
+  ],
+  "protected_task_files": [
+    {
+      "path": ".irisx/line-b/MATH-002/state.json",
+      "sha256": "84a8d616a3e4d27134d1203357b10a2260cbae03dcebacd8db7c468385451892",
+      "sha256_after": "84a8d616a3e4d27134d1203357b10a2260cbae03dcebacd8db7c468385451892",
+      "unchanged": true
+    },
+    {
+      "path": ".irisx/line-b/MATH-002/heartbeat.json",
+      "sha256": "0344de7f15280db5e7b67e14bc396e8ec0aed44dd2d5fdc754f272be29e96de4",
+      "sha256_after": "0344de7f15280db5e7b67e14bc396e8ec0aed44dd2d5fdc754f272be29e96de4",
+      "unchanged": true
+    },
+    {
+      "path": ".irisx/line-b/MATH-002/monitor-stopped.json",
+      "sha256": "7a023ca482f515a7a4d4a3180ad71f09180c21f7564373a8d41497a439a37918",
+      "sha256_after": "7a023ca482f515a7a4d4a3180ad71f09180c21f7564373a8d41497a439a37918",
+      "unchanged": true
+    },
+    {
+      "path": "research/math-proof-agent/round002/run-manifest-smoke001.json",
+      "sha256": "650bf66469674da1594da9bd3a6dc7e4411b63c529ef54ffa3b35da9b5c46cb3",
+      "sha256_after": "650bf66469674da1594da9bd3a6dc7e4411b63c529ef54ffa3b35da9b5c46cb3",
+      "unchanged": true
+    }
+  ],
+  "protected_paths": [
+    "research/math-proof-agent/round001",
+    "research/math-proof-agent/ROUND001-RESULTS.zh-TW.md",
+    "docs/verification/MATH-001",
+    "docs/verification/WSF-R5",
+    "docs/management/tasks/MATH-001.json",
+    "docs/management/tasks/WSF-R5.json",
+    "src",
+    "trials",
+    "archive",
+    ".github/workflows",
+    "tools/source_identity.py",
+    "docs/workstreams/arc-agi-2"
+  ],
+  "changed_protected_paths": [],
+  "unchanged_prior_report_paths": [
+    "docs/verification/MATH-002/adapter-followup-tests.json",
+    "docs/verification/MATH-002/adapter-tests.json",
+    "docs/verification/MATH-002/answer-binding-tests.json",
+    "docs/verification/MATH-002/answer-pipeline-tests.json",
+    "docs/verification/MATH-002/baseline-tests.json",
+    "docs/verification/MATH-002/context-tests.json",
+    "docs/verification/MATH-002/controller-followup-tests.json",
+    "docs/verification/MATH-002/controller-tests.json",
+    "docs/verification/MATH-002/lean-tests.json",
+    "docs/verification/MATH-002/mathlib-tests.json",
+    "docs/verification/MATH-002/remote-controls.json",
+    "docs/verification/MATH-002/run-summary.json"
+  ],
+  "changed_prior_reports": [],
+  "new_Kaggle_operations": 0,
+  "new_ledger": false,
+  "model_or_benchmark_downloads": 0,
+  "remote_state": {
+    "run_id": "m002-smoke-20261019-a7f91c",
+    "notebook_id": "danielwuu/irisx-math-m002-20261019-a7f91c",
+    "version": null,
+    "state": "submission_unknown",
+    "reserved_submissions": 1,
+    "max_submissions": 4,
+    "reserved_timeout_seconds": 1800,
+    "max_timeout_seconds": 21600
+  },
+  "independent_verification": false,
+  "note": "Read-only file hash checks; original state/heartbeat/stop/manifest bytes unchanged. Shared tools/tests changes are explicitly authorized and are not claimed unchanged.",
+  "metadata_validation_attempts": [
+    {
+      "attempt": 1,
+      "command": "python tools/dev.py check",
+      "exit_code": 1,
+      "observed_issues": [
+        "invalid pinned legacy index",
+        "'scope'"
+      ],
+      "diagnosis": "New document entries initially placed in legacy_indexes by a local writer; corrected to documents without altering original legacy indexes."
+    },
+    {
+      "attempt": 2,
+      "command": "python tools/dev.py check",
+      "exit_code": 1,
+      "observed_issues": [
+        "missing document: docs/verification/MATH-002/review-repair-ci-readback.json"
+      ],
+      "diagnosis": "Reserved catalog entry pending actual remote CI readback artifact; not a passing check."
+    },
+    {
+      "attempt": 3,
+      "commands": [
+        "python tools/dev.py render",
+        "python tools/dev.py check",
+        "python tools/dev.py render --check",
+        "git diff --check"
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": "passed",
+      "note": "Structure and generated BOARD only; not independent acceptance."
+    }
+  ]
+}

@@ -92,3 +92,19 @@ and axiom policy can qualify a proof.
 There is no automatic resume of interrupted candidate generation. Preserve the
 unknown event, reconcile complete snapshots and all identities, and charge any
 future run against the original task budget before explicit continuation.
+
+## Review repairs
+
+All answer modes now rebind exact proof bytes, fixed statement and model-text
+candidate to a coherent trusted worker receipt in both controller and analyzer.
+Cost receipts share strict integer/time schema validation; analysis independently
+rechecks raw costs and retains invalid/partial receipts plus valid lower bounds.
+Historical terminal/retrieval records no longer retain current dispatch authority
+after a failed readback: a sticky guard requires exact/latest/status/latest
+matching readback. Retrieval alone cannot clear it. These are offline repairs;
+the original unknown submission and reserved budget have not been changed.
+
+The current owner scope authorizes no Kaggle operation, including reconcile.
+The commands above document recovery for the original research task after an
+actual platform/permission change. See the MATH-002 handoff for independently
+reported failures, new normal/-O self-tests and remaining unverified work.
