@@ -18,7 +18,15 @@
     "docs/management/tasks/MATH-002.json",
     "docs/management/documents.json",
     "docs/management/BOARD.md",
-    "docs/workstreams/line-b/**"
+    "docs/workstreams/line-b/**",
+    "tools/repository_check.py",
+    "tools/suite_runner.py",
+    "tools/workstream_gate.py",
+    "tests/test_repository_check.py",
+    "tests/test_suite_runner.py",
+    "tests/test_workstream_gate.py",
+    "tests/inventory.json",
+    "tests/README.md"
   ],
   "base_branch": "feat/math-proof-agent-20261018",
   "head_branch": "feat/math-proof-agent-20261018",
@@ -31,7 +39,11 @@
     "M2-SMOKE",
     "M2-PANEL",
     "M2-REMOTE",
-    "M2-DELIVERY"
+    "M2-DELIVERY",
+    "M002-R1",
+    "M002-R2",
+    "M002-R3",
+    "M002-CI1"
   ],
   "blockers": [
     "Kaggle only push reports batch TPU capacity=1; exact task source previously HTTP403 and latest readback HTTPError, version remains unknown. submission_unknown retains 1 submit/1800 seconds and blocks new dispatch.",

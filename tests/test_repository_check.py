@@ -16,6 +16,35 @@ SPEC.loader.exec_module(REPOSITORY_CHECK)
 
 
 class RepositoryCheckTests(unittest.TestCase):
+    def test_only_scoped_math_round_python_sources_are_admitted(self) -> None:
+        for path in (
+            "research/math-proof-agent/round001/experiment.py",
+            "research/math-proof-agent/round002/controller.py",
+            "research/math-proof-agent/round002/lean/answer_controls.py",
+            "src/irisx/cli.py", "tests/test_repository_check.py", "tools/dev.py",
+        ):
+            with self.subTest(path=path):
+                self.assertTrue(REPOSITORY_CHECK.allowed_active_executable(path))
+
+    def test_other_research_and_similar_round_prefixes_stay_rejected(self) -> None:
+        for path in (
+            "research/other/test_control.py",
+            "research/math-proof-agent/test_control.py",
+            "research/math-proof-agent/round003/test_control.py",
+            "research/math-proof-agent/round002-extra/test_control.py",
+            "research/math-proof-agent/round0010/test_control.py",
+            "research/math-proof-agent/round002/../outside.py",
+            "research/math-proof-agent/round002//test_control.py",
+        ):
+            with self.subTest(path=path):
+                self.assertFalse(REPOSITORY_CHECK.allowed_active_executable(path))
+
+    def test_math_source_admission_does_not_allow_shell_or_binary_files(self) -> None:
+        for suffix in (".ps1", ".sh", ".bat", ".cmd", ".exe", ".PY"):
+            with self.subTest(suffix=suffix):
+                self.assertFalse(REPOSITORY_CHECK.allowed_active_executable(
+                    "research/math-proof-agent/round002/run" + suffix))
+
     def test_active_repository_is_valid(self) -> None:
         self.assertEqual(REPOSITORY_CHECK.validate(ROOT), [])
 

@@ -6,10 +6,10 @@ from pathlib import Path
 import sys
 import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import atomic_json, digest, file_digest, validate_scoring_identity
+from common import atomic_json, digest, file_digest, validate_scoring_identity, validate_model_cost
 from lean_worker import statement_digest
 from model_adapter import ContextBudgetError
-from evaluator import bound_answer_matches, supported_answer_problem
+from evaluator import supported_answer_problem, verified_receipt_matches
 
 ARMS = {"M-DIRECT": 1, "M-SAMPLE": 4, "M-REPAIR": 4}
 RUNTIME_SOURCES = frozenset({"common.py", "controller.py", "lean_worker.py", "model_adapter.py",
@@ -51,13 +51,8 @@ def parse_candidate(text):
     return value
 
 
-def accepted(result, problem, candidate=None):
-    proof_ok = (result.get("proof_status") == "kernel_verified"
-            and result.get("statement_sha256") == problem["statement_sha256"]
-            and result.get("trust_policy_passed") is True)
-    if not proof_ok or problem.get("answer_mode") != "find_answer":
-        return proof_ok
-    return bound_answer_matches({"status": "accepted", "candidate": candidate, "tool": result}, problem)
+def accepted(result, problem, candidate=None, *, model_text=None):
+    return verified_receipt_matches(result, problem, candidate, model_text=model_text)
 
 
 def validate_binding(problem, model, verifier, protocol, identities, panel, source_files, execution_manifest):
@@ -177,8 +172,9 @@ def execute_arm(problem, arm, seed, model, verifier, protocol, output, identitie
                                       deadline=deadline)
             cost = response.get("cost", {})
             event.update(model_text=response["text"], model_cost=cost, stop_reason=response.get("stop_reason"))
-            event["model_cost_complete"] = (all(key in cost for key in ("prompt_tokens", "output_tokens", "wall_seconds"))
-                                             and not cost.get("partial", False))
+            event["model_cost_validation"] = validate_model_cost(cost,
+                force_partial=response.get("stop_reason") == "deadline")
+            event["model_cost_complete"] = event["model_cost_validation"]["complete"]
             event["status"] = "generated"
             atomic_json(output / f"candidate-{index}.json", event)
             # Deadline outranks parse failure for truncated/late output.
@@ -201,7 +197,7 @@ def execute_arm(problem, arm, seed, model, verifier, protocol, output, identitie
             finally:
                 event["tool_wall_seconds"] = time.monotonic() - tool_start
             event.update(tool=result, feedback=result.get("execution", {}).get("output", result.get("reason", "")))
-            qualifies = accepted(result, problem, candidate)
+            qualifies = accepted(result, problem, candidate, model_text=event["model_text"])
             event["status"] = "accepted" if qualifies else result.get("status", "unknown")
             if event["status"] == "accepted" and not qualifies:
                 event.update(status="trust_rejected", feedback="verifier receipt binding failed")
@@ -211,13 +207,16 @@ def execute_arm(problem, arm, seed, model, verifier, protocol, output, identitie
             event.update(status="context_budget_exceeded", feedback="fixed prompt/completion context ceiling exceeded")
         except TimeoutError as exc:
             event.update(status="timeout", feedback="resource timeout")
-            if isinstance(getattr(exc, "cost", None), dict):
+            if hasattr(exc, "cost"):
                 event["model_cost"] = exc.cost
         except ValueError as exc:
             event.update(status="invalid_format" if phase == "parse" else "infrastructure_error",
                          feedback=str(exc) if phase == "parse" else type(exc).__name__)
         except Exception as exc:
             event.update(status="infrastructure_error", feedback=type(exc).__name__)
+        event["model_cost_validation"] = validate_model_cost(event.get("model_cost"),
+            force_partial=event.get("stop_reason") == "deadline" or event["status"] == "timeout")
+        event["model_cost_complete"] = event["model_cost_validation"]["complete"]
         event["wall_seconds"] = time.monotonic() - call_start
         last = event if "model_text" in event else None
         atomic_json(output / f"candidate-{index}.json", event)

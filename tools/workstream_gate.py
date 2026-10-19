@@ -24,6 +24,8 @@ ENTRY_FIELDS = {"path", "workstream", "dependency_class", "suite", "role", "depe
 OPTIONAL_ENTRY_FIELDS = {"import_roots", "module_name"}
 DEPENDENCIES = {"stdlib", "small-python", "historical", "operational", "native", "training", "unclassified-public"}
 PROTECTED = {"historical", "operational", "native", "training"}
+MATH_TEST_ROOTS = ("research/math-proof-agent/round001", "research/math-proof-agent/round002")
+MATH_NAMED_TESTS = {"research/math-proof-agent/round002/controls.py"}
 
 
 def _git(root: Path, *arguments: str) -> bytes:
@@ -107,7 +109,9 @@ def _authoritative(root: Path, commit: str) -> dict:
                 or set(entry) - ENTRY_FIELDS - OPTIONAL_ENTRY_FIELDS):
             raise ValueError("unknown/missing authoritative inventory entry fields")
         path = entry["path"]
-        if (not _relative_path(path) or path.split("/")[0] not in {"tests", "tools"}
+        if (not _relative_path(path)
+                or not (path.split("/")[0] in {"tests", "tools"}
+                        or any(path.startswith(directory + "/") for directory in MATH_TEST_ROOTS))
                 or not path.endswith(".py") or path not in files or path.casefold() in entries):
             raise ValueError("missing/duplicate/unsafe authoritative module path: " + str(path))
         dependency = entry["dependency_class"]
@@ -145,6 +149,10 @@ def _authoritative(root: Path, commit: str) -> dict:
     required = {path.casefold() for path in files if path.startswith("tests/") and path.endswith(".py")}
     required.update(path.casefold() for path in files if path.startswith("tools/")
                     and PurePosixPath(path).name.startswith("test_") and path.endswith(".py"))
+    required.update(path.casefold() for path in files
+                    if any(path.startswith(directory + "/") for directory in MATH_TEST_ROOTS)
+                    and PurePosixPath(path).name.startswith("test_") and path.endswith(".py"))
+    required.update(path.casefold() for path in MATH_NAMED_TESTS if path in files)
     if required - entries.keys():
         raise ValueError("unclassified authoritative test paths")
     if any(not paths for paths in expected.values()):

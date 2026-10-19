@@ -1,6 +1,7 @@
 """Scripted engineering controls; no model, Lean, TPU or human-review evidence."""
 from __future__ import annotations
 import copy
+import hashlib
 import itertools
 import json
 from pathlib import Path
@@ -63,7 +64,9 @@ class ScriptedVerifier:
             raise self.result
         if self.result is not None:
             return copy.deepcopy(self.result)
-        return {"proof_status": "kernel_verified", "trust_policy_passed": True,
+        return {"status": "accepted", "accepted": True,
+                "proof_status": "kernel_verified", "trust_policy_passed": True,
+                "candidate_sha256": hashlib.sha256(body.encode("utf-8")).hexdigest(),
                 "statement_sha256": statement_digest(statement)}
 
 
@@ -122,8 +125,11 @@ class Controls(unittest.TestCase):
         self.assertEqual(model.prompts, [])
 
     def selected_event(self, **kwargs):
-        return dict({"status": "accepted", "candidate": {"answer": None, "proof_body": "by trivial"},
-                     "tool": {"proof_status": "kernel_verified", "trust_policy_passed": True,
+        candidate = kwargs.pop("candidate", {"answer": None, "proof_body": "by trivial"})
+        return dict({"status": "accepted", "candidate": candidate, "model_text": json.dumps(candidate),
+                     "tool": {"status": "accepted", "accepted": True,
+                              "proof_status": "kernel_verified", "trust_policy_passed": True,
+                              "candidate_sha256": hashlib.sha256(candidate["proof_body"].encode()).hexdigest(),
                               "statement_sha256": self.problem["statement_sha256"]}}, **kwargs)
 
     def row(self, **kwargs):
@@ -399,10 +405,10 @@ class Controls(unittest.TestCase):
         evaluated = evaluate_selected([row], {"control": "1/2"})
         self.assertEqual(evaluated[0]["answer_status"], "correct")
         self.assertEqual(evaluated[0]["joint_status"], "unqualified")
-        summary = analyze([problem], evaluated, [0], identity)["arms"]["M-DIRECT"]
-        self.assertIsNone(summary["joint_rate"])
-        self.assertEqual(summary["counts"]["joint_unqualified"], 1)
-        self.assertEqual(summary["joint_status"], "unqualified_answer_proof_binding")
+        # R1 strengthens analysis admission too: an unsupported find-answer
+        # success cannot keep a pure-proof receipt and enter any success count.
+        with self.assertRaises(ValueError):
+            analyze([problem], evaluated, [0], identity)
 
     def test_unrelated_verifier_receipt_cannot_establish_proof_success(self):
         event = self.selected_event()

@@ -36,9 +36,124 @@
     },
     "arc-training": {
       "public": false
+    },
+    "math-native": {
+      "public": false
     }
   },
   "entries": [
+    {
+      "path": "research/math-proof-agent/round002/controls.py",
+      "workstream": "line-b",
+      "dependency_class": "stdlib",
+      "suite": "line-b",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source"
+      ],
+      "collector": "unittest",
+      "reason": "Authored controller, source/seed/budget and analyzer safety controls using scripted model/verifier doubles; no actual model, Lean, provider or training execution.",
+      "expected_skips": [],
+      "import_roots": [
+        "research/math-proof-agent/round002"
+      ],
+      "module_name": "controls"
+    },
+    {
+      "path": "research/math-proof-agent/round002/test_answer_pipeline.py",
+      "workstream": "line-b",
+      "dependency_class": "stdlib",
+      "suite": "line-b",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source"
+      ],
+      "collector": "unittest",
+      "reason": "Authored end-to-end answer/proof binding controls with scripted model/verifier receipts; no actual model, Lean, benchmark answers or provider calls.",
+      "expected_skips": [],
+      "import_roots": [
+        "research/math-proof-agent/round002"
+      ],
+      "module_name": "test_answer_pipeline"
+    },
+    {
+      "path": "research/math-proof-agent/round002/test_cost_schema.py",
+      "workstream": "line-b",
+      "dependency_class": "stdlib",
+      "suite": "line-b",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source"
+      ],
+      "collector": "unittest",
+      "reason": "M002-R2 constant-only cost schema, failure propagation and denominator controls; no model, Lean or provider calls.",
+      "expected_skips": [],
+      "import_roots": [
+        "research/math-proof-agent/round002"
+      ],
+      "module_name": "test_cost_schema"
+    },
+    {
+      "path": "research/math-proof-agent/round002/test_model_adapter.py",
+      "workstream": "line-b",
+      "dependency_class": "native",
+      "suite": "math-native",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "numpy",
+        "jax",
+        "transformers",
+        "torch",
+        "repository-source"
+      ],
+      "collector": "unittest",
+      "reason": "Optional numerical/adapter controls require native NumPy/JAX/Transformers dependencies; explicitly blocked before import and excluded from public CI. No model/provider or TPU qualification follows.",
+      "expected_skips": [],
+      "import_roots": [
+        "research/math-proof-agent/round002"
+      ],
+      "module_name": "test_model_adapter"
+    },
+    {
+      "path": "research/math-proof-agent/round002/test_receipt_binding.py",
+      "workstream": "line-b",
+      "dependency_class": "stdlib",
+      "suite": "line-b",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source"
+      ],
+      "collector": "unittest",
+      "reason": "M002-R1 constant-only receipt-integrity controls for controller/evaluator/analyzer; no model, Lean or provider calls.",
+      "expected_skips": [],
+      "import_roots": [
+        "research/math-proof-agent/round002"
+      ],
+      "module_name": "test_receipt_binding"
+    },
+    {
+      "path": "research/math-proof-agent/round002/test_remote_controls.py",
+      "workstream": "line-b",
+      "dependency_class": "stdlib",
+      "suite": "line-b",
+      "role": "test",
+      "dependencies": [
+        "python>=3.11",
+        "repository-source"
+      ],
+      "collector": "unittest",
+      "reason": "Mocked readback, reservation and result retrieval safety controls; no Kaggle SDK authentication, CLI execution or remote calls.",
+      "expected_skips": [],
+      "import_roots": [
+        "research/math-proof-agent/round002"
+      ],
+      "module_name": "test_remote_controls"
+    },
     {
       "path": "tests/arc_agi_2/__init__.py",
       "workstream": "arc-agi-2",

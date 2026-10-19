@@ -21,6 +21,71 @@ from sdk_readback import notebook_source_identity
 ROOT = Path(__file__).resolve().parents[3]
 STATE_ROOT = ROOT / ".irisx/line-b/MATH-002"
 TERMINAL = {"complete", "error", "cancelacknowledged", "canceled"}
+OBSERVABLE = TERMINAL | {"queued", "running", "submitted"}
+
+
+def dispatch_needs_reconcile(run):
+    """Historical completion/output evidence is not current dispatch authority.
+
+    Legacy observation errors must fail closed even before the first observation
+    writes the separate dispatch fields. No budget or terminal evidence changes.
+    """
+    return (run.get("dispatch_state") in {"needs_reconcile", "identity_unknown"}
+            or run.get("identity_status") in {"needs_reconcile", "identity_unknown"}
+            or run.get("needs_reconcile") is True
+            or str(run.get("last_event", "")).startswith("observation_error"))
+
+
+def _observation_error(state, run, reason, observed=None):
+    run.update(dispatch_state="needs_reconcile", identity_status="identity_unknown",
+               last_event="observation_error: " + reason)
+    # run.state, old readbacks, and retrieval.verified remain historical evidence.
+    run.setdefault("observation_history", []).append({
+        "event": "observation_error", "time": time.time(), "reason": reason,
+        "historical_state": run["state"], "observed_status": observed})
+    state["monitor_errors"] = state.get("monitor_errors", 0) + 1
+
+
+def _observe_bound_run(root, state, run, collect_logs=False):
+    """Only a full exact/latest/status/latest read transaction clears the guard."""
+    observed = None
+    if (not run.get("observation_history")
+            and str(run.get("last_event", "")).startswith("observation_error")):
+        run.setdefault("observation_history", []).append({
+            "event": "legacy_observation_error", "last_event": run["last_event"],
+            "historical_state": run["state"]})
+    try:
+        if type(run.get("version")) is not int or run["version"] <= 0:
+            raise RuntimeError("bound positive integer version required")
+        pinned = source_readback(root, run, True)
+        source_readback(root, run, False)
+        result = receipt(root, ["kaggle", "kernels", "status", run["notebook_id"] + "/" + str(run["version"])])
+        if result["exit_code"] != 0:
+            raise RuntimeError("status unavailable")
+        matches = re.findall(r'has status "([^"]*)"', result["stdout"])
+        match = re.fullmatch(r"(?:KernelWorkerStatus\.)?([A-Za-z]+)", matches[0]) if len(matches) == 1 else None
+        if match is None or match[1].lower() not in OBSERVABLE:
+            raise RuntimeError("unrecognized or ambiguous status")
+        observed = match[1].lower()
+        if collect_logs:
+            logs = receipt(root, ["kaggle", "kernels", "logs", run["notebook_id"]])
+            if logs["exit_code"] != 0:
+                raise RuntimeError("logs unavailable")
+        latest = source_readback(root, run, False)
+        if run["state"] in TERMINAL and observed != run["state"]:
+            raise RuntimeError("current status contradicts historical terminal evidence")
+        checked_at = time.time()
+        run.update(pinned_readback=pinned, latest_readback=latest, state=observed,
+                   dispatch_state="matched", identity_status="matched", needs_reconcile=False,
+                   dispatch_identity={key: run[key] for key in ("run_id", "notebook_id", "version", "notebook_sha256")},
+                   observed_status=observed, observed_at=checked_at,
+                   monitor_mode="snapshot_logs" if collect_logs else "status-only",
+                   last_event="exact version and latest status enclosed by matching source readbacks")
+        run.setdefault("observation_history", []).append({
+            "event": "matched_observation", "time": checked_at, "state": observed,
+            "identity": dict(run["dispatch_identity"])})
+    except Exception as exc:
+        _observation_error(state, run, str(exc), observed)
 
 
 def read_state(root):
@@ -49,6 +114,8 @@ def notebook_identity(path):
 
 
 def source_readback(root, run, versioned):
+    if type(run.get("version")) is not int or run["version"] <= 0:
+        raise RuntimeError("bound positive integer version required")
     ref = run["notebook_id"] + ("/" + str(run["version"]) if versioned else "")
     destination = root / "readbacks" / f"{run['run_id']}-{time.time_ns()}"
     result = receipt(root, ["kaggle", "kernels", "pull", ref, "-p", str(destination), "-m"])
@@ -67,7 +134,8 @@ def source_readback(root, run, versioned):
     if probe["exit_code"] != 0:
         raise RuntimeError("SDK version readback failed")
     identity = json.loads(probe["stdout"])
-    if (identity["current_version_number"] != run["version"] or
+    if (type(identity.get("current_version_number")) is not int or
+            identity["current_version_number"] != run["version"] or
             identity["notebook_sha256"] != run["notebook_sha256"] or
             identity["ref"] != run["notebook_id"] or identity["is_private"] is not True):
         raise RuntimeError("remote exact version/source/privacy mismatch")
@@ -87,6 +155,14 @@ def reserve(state, manifest):
         raise ValueError("submission budget exhausted")
     if any(r["state"] not in TERMINAL | {"confirmed_not_started"} for r in runs):
         raise ValueError("previous submission unresolved or active")
+    if any(dispatch_needs_reconcile(r) for r in runs):
+        raise ValueError("current source/status identity requires reconciliation before dispatch")
+    for run in runs:
+        if "dispatch_state" in run and (run["dispatch_state"] != "matched"
+                or run.get("observed_status") != run["state"]
+                or run.get("dispatch_identity") != {
+                    key: run.get(key) for key in ("run_id", "notebook_id", "version", "notebook_sha256")}):
+            raise ValueError("current dispatch identity is missing or mismatched")
     if any(r["state"] == "complete" and not r.get("retrieval", {}).get("verified") for r in runs):
         raise ValueError("completed status requires retrieved run-bound artifacts before another dispatch")
     if manifest.get("notebook_id") and any(r.get("notebook_id") == manifest["notebook_id"] for r in runs):
@@ -99,6 +175,7 @@ def reserve(state, manifest):
     if any(r["run_id"] == manifest["run_id"] for r in runs):
         raise ValueError("run identity reused")
     runs.append({**manifest, "state": "submission_unknown", "version": None,
+                 "dispatch_state": "identity_unknown", "identity_status": "identity_unknown",
                  "reserved_at": time.time(), "last_event": "reserved before push"})
     return runs[-1]
 
@@ -154,51 +231,47 @@ def observe_once(root, collect_logs=False):
         if not state["runs"]:
             return {"state": "no_submissions"}
         run = state["runs"][-1]
-        if run["version"] is None:
-            return {"state": "submission_unknown", "reason": "read-only manual reconciliation required; no retry"}
-        try:
-            run["latest_readback"] = source_readback(root, run, False)
-            result = receipt(root, ["kaggle", "kernels", "status", run["notebook_id"] + "/" + str(run["version"])])
-            if result["exit_code"] != 0:
-                raise RuntimeError("status unavailable")
-            match = re.search(r'has status "(?:KernelWorkerStatus\.)?([^".]+)"', result["stdout"])
-            if not match:
-                raise RuntimeError("unrecognized status")
-            observed = match.group(1).lower()
-            if collect_logs:
-                receipt(root, ["kaggle", "kernels", "logs", run["notebook_id"]])
-                run["monitor_mode"] = "snapshot_logs"
-            else:
-                run["monitor_mode"] = "status-only"
-            run["latest_readback"] = source_readback(root, run, False)
-            run["state"] = observed
-            run["last_event"] = "latest status enclosed by matching source readbacks"
-            run["observed_at"] = time.time()
-        except Exception as exc:
-            run["last_event"] = "observation_error: " + str(exc)
-            state["monitor_errors"] = state.get("monitor_errors", 0) + 1
+        _observe_bound_run(root, state, run, collect_logs)
         atomic_json(root / "state.json", state)
-        return {k: run.get(k) for k in ("run_id", "notebook_id", "version", "state", "last_event", "monitor_mode")}
+        return {k: run.get(k) for k in ("run_id", "notebook_id", "version", "state", "dispatch_state", "identity_status", "last_event", "monitor_mode")}
 
 
 def reconcile(root):
-    """Resolve an uncertain push by reading the unique submitted source only."""
+    """Read-only recovery of an uncertain push or withdrawn dispatch identity."""
     with Lock(root / "task.lock"):
         state = read_state(root)
         run = state["runs"][-1]
-        if run["state"] != "submission_unknown":
-            raise ValueError("reconciliation is only for an uncertain submission")
-        probe = receipt(root, [sys.executable, "-P", "-s", "-B", str(Path(__file__).with_name("sdk_readback.py")), run["notebook_id"]])
-        if probe["exit_code"] == 0:
-            identity = json.loads(probe["stdout"])
-            if (identity.get("ref") == run["notebook_id"] and identity.get("is_private") is True
-                    and identity.get("notebook_sha256") == run["notebook_sha256"]):
+        if run["state"] != "submission_unknown" and not dispatch_needs_reconcile(run):
+            raise ValueError("reconciliation requires uncertain submission or current identity")
+        try:
+            if run["state"] == "submission_unknown" and run.get("version") is None:
+                probe = receipt(root, [sys.executable, "-P", "-s", "-B", str(Path(__file__).with_name("sdk_readback.py")), run["notebook_id"]])
+                if probe["exit_code"] != 0:
+                    raise RuntimeError("SDK version reconciliation failed")
+                identity = json.loads(probe["stdout"])
+                if (identity.get("ref") != run["notebook_id"] or identity.get("is_private") is not True
+                        or identity.get("notebook_sha256") != run["notebook_sha256"]
+                        or type(identity.get("current_version_number")) is not int
+                        or identity["current_version_number"] <= 0):
+                    raise RuntimeError("uncertain submission identity is not matched")
                 run["version"] = identity["current_version_number"]
-                run["pinned_readback"] = source_readback(root, run, True)
-                run["latest_readback"] = source_readback(root, run, False)
-                run.update(state="submitted", last_event="uncertain push reconciled by unique source and version readback")
+            _observe_bound_run(root, state, run)
+        except Exception as exc:
+            _observation_error(state, run, str(exc))
         atomic_json(root / "state.json", state)
-        return {k: run.get(k) for k in ("run_id", "notebook_id", "version", "state", "last_event")}
+        return {k: run.get(k) for k in ("run_id", "notebook_id", "version", "state", "dispatch_state", "identity_status", "last_event")}
+
+
+def _retrieval_readback(root, state, run, versioned):
+    # Retrieval is also a reader: a newly observed identity failure must not
+    # leave historical verified outputs able to authorize a later reservation.
+    # Successful output reads alone do not clear a sticky status/source guard.
+    try:
+        return source_readback(root, run, versioned)
+    except Exception as exc:
+        _observation_error(state, run, str(exc))
+        atomic_json(root / "state.json", state)
+        raise
 
 
 def retrieve(root):
@@ -207,12 +280,12 @@ def retrieve(root):
         run = state["runs"][-1]
         if run["state"] not in TERMINAL or not run.get("version"):
             raise ValueError("not a bound terminal run")
-        source_readback(root, run, True)
-        source_readback(root, run, False)
+        _retrieval_readback(root, state, run, True)
+        _retrieval_readback(root, state, run, False)
         destination = root / "outputs" / f"{run['run_id']}-v{run['version']}-{time.time_ns()}"
         ref = run["notebook_id"] + "/" + str(run["version"])
         result = receipt(root, ["kaggle", "kernels", "output", ref, "-p", str(destination)])
-        source_readback(root, run, False)
+        _retrieval_readback(root, state, run, False)
         run["retrieval"] = {"path": str(destination), "exit_code": result["exit_code"],
                             "api_limitation": "CLI output uses latest, enclosed by source identity checks",
                             "verified": False}

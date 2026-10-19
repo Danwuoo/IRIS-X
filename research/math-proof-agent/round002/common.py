@@ -2,6 +2,7 @@
 from __future__ import annotations
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -18,6 +19,65 @@ def file_digest(path):
 
 SCORING_HASH_KEYS = ("source_sha256", "protocol_semantic_sha256", "panel_semantic_sha256",
                      "model_spec_sha256", "verifier_spec_sha256")
+
+MODEL_COST_COUNTS = frozenset({"prompt_tokens", "output_tokens", "consumed_prompt_tokens"})
+MODEL_COST_TIMES = frozenset({"wall_seconds", "cold_compile_seconds", "cache_allocation_seconds",
+                              "prefill_seconds", "decode_seconds"})
+MODEL_COST_REQUIRED = frozenset({"prompt_tokens", "output_tokens", "wall_seconds"})
+
+
+def nonnegative_count(value):
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def nonnegative_seconds(value):
+    if not isinstance(value, (int, float)) or isinstance(value, bool) or value < 0:
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
+
+def validate_model_cost(cost, *, force_partial=False):
+    """Validate raw receipts independently at ingestion and analysis.
+
+    Never coerce invalid values or replace missing fields with zero. The caller
+    retains the original receipt; valid, recognized fields alone form a measured
+    lower bound. Optional fields, when present, must satisfy the same schema.
+    Unknown fields need an explicit schema update, not silent aggregation.
+    """
+    issues, observed = [], {}
+    if not isinstance(cost, dict):
+        issues.append({"field": "<receipt>", "reason": "not_an_object"})
+        cost = {}
+    for name in sorted(MODEL_COST_REQUIRED - cost.keys()):
+        issues.append({"field": name, "reason": "missing"})
+    for name, value in cost.items():
+        if name in MODEL_COST_COUNTS:
+            valid = nonnegative_count(value)
+            reason = "requires_nonbool_nonnegative_integer"
+        elif name in MODEL_COST_TIMES:
+            valid = nonnegative_seconds(value)
+            reason = "requires_finite_nonbool_nonnegative_number"
+        elif name == "partial":
+            if not isinstance(value, bool):
+                issues.append({"field": name, "reason": "requires_boolean"})
+            continue
+        else:
+            issues.append({"field": str(name), "reason": "unknown_field"})
+            continue
+        if valid:
+            observed[name] = value
+        else:
+            issues.append({"field": name, "reason": reason})
+    if ("consumed_prompt_tokens" in observed and "prompt_tokens" in observed
+            and observed["consumed_prompt_tokens"] > observed["prompt_tokens"]):
+        issues.append({"field": "consumed_prompt_tokens", "reason": "exceeds_prompt_tokens"})
+        del observed["consumed_prompt_tokens"]
+    partial = cost.get("partial") is True or force_partial
+    return {"format": "irisx.math.model-cost-check.v1", "complete": not issues and not partial,
+            "partial": partial, "issues": issues, "observed_lower_bound": observed}
 
 
 def validate_scoring_identity(identity):

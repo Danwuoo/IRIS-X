@@ -65,3 +65,38 @@ witness，核心與遞移axiom檢查通過才接收。但沒有真實來源題�
 miniF2F-v2c的安全statement-only取得、原始答案slot語意與runtime仍有缺口。
 Kaggle CLI 2.2.4 和既有帳號讀權已核對，TPU 可用性與 Lean 信任條件待實測。
 所有不可公開 proofs／原始收據只放 ignored task root。
+
+## 獨立 review 後的受限工程修正（2026-10-19）
+
+本次 owner 指示只修 M002-R1/R2/R3 與 M002-CI1，不開始新科學實驗。
+專用桌面現場起點為 delivery `fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa`，
+對應受審 code `d6e4309607936b66d34573350b9697e5fddc7b0f`；origin、分支、
+worktree、乾淨狀態與 ancestry 已核對，只對數學分支 fetch/ff-only，沒有增量。
+依據 [PR10 獨立 review](https://github.com/Danwuoo/IRIS-X/pull/10#pullrequestreview-5567278465)
+修正以下契約；原 review 的失敗與舊 developer receipts 保留。
+
+- M002-R1：所有模式綁定原始 proof UTF-8 bytes、固定 statement、model text 與
+  一致的 trusted worker receipt；controller 與 analyzer 各自拒絕不相符紀錄。
+  原 find_answer answer/spec/witness 綁定保留。
+- M002-R2：共用成本 schema，count 是非 bool 非負 int，時間有限且非負；
+  analyzer 從原 receipt 重驗，缺值、非法值與 partial 不可被 producer 旗標掩蓋。
+  原始失敗保留，合法部分只能報 observed lower bound。
+- M002-R3：歷史 terminal/retrieval 與當前派送資格分開；來源、版本、status
+  回查失敗撤回資格，只有完整匹配的唯讀回查解除。所有新測試用 mock/temp state。
+- M002-CI1：只允許 round001/round002 目錄內 Python source，保留其他 active
+  executable/AST/archive 檢查；runner/inventory/commit gate 納管 math stdlib/mock
+  tests，native 模組仍在 import 前阻擋。既有 public matrix 不放寬；不執行原
+  audit/aggregate，也不要求歷史 failure 全綠。R001 source/results 不改寫。
+
+此工程修正明確允許 task scope 所列三個 shared tools、三個對應 test、
+tests/inventory.json 與 tests/README.md 的窄整合，不擴大其他 core/ARC 權限。
+plan 與 task 的 scope/acceptance controls 隨 code checkpoint 固定；後續 delivery
+只更新 implementation SHA、證據、review/catalog/BOARD/handoff metadata。
+normal/-O 定向正負控制分列；已有 Lean 僅重跑既有受限常數控制，kernel 證據
+與 mock 證據分開。本輪零 Kaggle 操作；不讀寫原 task ledger、不另造 ledger、
+不 push/cancel/reconcile、不取得模型或 benchmark 答案，不修改其他 refs。
+
+既有唯一 attempt 維持 submission_unknown/version null，預留 1/4 次與
+1800/21600 秒。日後平台或權限改變，唯讀 reconcile 必須由原研究 task 的範圍
+另行記錄；不明仍不得派送。工程交付只到 review_ready，研究保持 not_estimable；
+MATH-001/R001/WSF-R5 歷史獨立驗證狀態不變。

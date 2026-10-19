@@ -1,14 +1,18 @@
 """Analyze fixed planned denominators; absence is unknown, never exclusion."""
 from __future__ import annotations
 from collections import Counter
-import math
-from common import digest, validate_scoring_identity
-from evaluator import bound_answer_matches, supported_answer_problem
+from common import (digest, validate_scoring_identity, validate_model_cost, nonnegative_count,
+                    nonnegative_seconds, MODEL_COST_TIMES)
+from evaluator import bound_answer_matches, supported_answer_problem, verified_event_matches
 
 
 def generation_observed(row):
-    return any("model_text" in event or event.get("model_cost", {}).get("consumed_prompt_tokens", 0) > 0
-               for event in row.get("events", []))
+    for event in row.get("events", []):
+        cost = event.get("model_cost")
+        consumed = cost.get("consumed_prompt_tokens") if isinstance(cost, dict) else None
+        if "model_text" in event or nonnegative_count(consumed) and consumed > 0:
+            return True
+    return False
 
 
 def analyze(panel, records, seeds, expected_identities=None):
@@ -41,17 +45,14 @@ def analyze(panel, records, seeds, expected_identities=None):
             selected = [event for event in row.get("events", []) if event.get("status") == "accepted"]
             if len(selected) != 1:
                 raise ValueError("proof success requires one selected candidate")
-            tool = selected[0].get("tool", {})
-            if (tool.get("proof_status") != "kernel_verified" or tool.get("trust_policy_passed") is not True
-                    or tool.get("statement_sha256") != problem["statement_sha256"]):
+            if not verified_event_matches(selected[0], problem):
                 raise ValueError("proof success lacks matching trusted verifier receipt")
-            if supported_answer_problem(problem) and not bound_answer_matches(selected[0], problem):
-                raise ValueError("joint-task proof lacks exact candidate witness binding")
     summary = {}
     for arm in arms:
         counts = Counter()
         tokens = Counter()
         costs = Counter()
+        cost_issues = []
         for p in panel:
             for seed in seeds:
                 row = lookup.get((p["id"], seed, arm), {})
@@ -70,30 +71,46 @@ def analyze(panel, records, seeds, expected_identities=None):
                     counts["evaluator_key_disagreements"] += int(row.get("joint_status") == "blocked_key_disagreement")
                 for key in ("verifier_setup_seconds", "wall_seconds"):
                     value = row.get(key)
-                    if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value >= 0:
+                    if nonnegative_seconds(value):
                         costs[key] += value
                     else:
                         costs[key + "_missing_rows"] += 1
-                for event in row.get("events", []):
+                for event_index, event in enumerate(row.get("events", [])):
                     costs["generation_attempts"] += 1
-                    costs["incomplete_model_cost_receipts"] += int(event.get("model_cost_complete") is not True)
+                    # Recompute from raw data; neither producer flag nor its
+                    # cached validation object is authoritative at analysis.
+                    checked = validate_model_cost(event.get("model_cost"),
+                        force_partial=event.get("stop_reason") == "deadline" or event.get("status") == "timeout")
+                    costs["incomplete_model_cost_receipts"] += int(not checked["complete"])
+                    if not checked["complete"]:
+                        cost_issues.append({"problem_id": p["id"], "seed": seed, "event_index": event_index,
+                                            "partial": checked["partial"], "issues": checked["issues"]})
                     costs["tool_calls"] += int(event.get("tool_attempted") is True)
                     if event.get("tool_attempted") is True:
                         value = event.get("tool_wall_seconds")
-                        if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value >= 0:
+                        if nonnegative_seconds(value):
                             costs["tool_wall_seconds"] += value
                         else:
                             costs["tool_wall_missing_calls"] += 1
-                    for name, value in event.get("model_cost", {}).items():
-                        if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value >= 0:
-                            tokens[name] += value
+                    for name, value in checked["observed_lower_bound"].items():
+                        total = tokens[name] + value
+                        if name in MODEL_COST_TIMES and not nonnegative_seconds(total):
+                            costs["model_cost_aggregation_errors"] += 1
+                            cost_issues.append({"problem_id": p["id"], "seed": seed, "event_index": event_index,
+                                                "partial": True, "issues": [{"field": name, "reason": "sum_not_finite"}]})
+                        else:
+                            tokens[name] = total
         n = len(panel) * len(seeds)
         summary[arm] = {"planned": n, "counts": dict(counts), "observed_model_cost_lower_bound": dict(tokens),
+                        "model_cost_issues": cost_issues,
                         "observed_execution_cost": dict(costs),
                         "cost_complete": (counts["not_completed"] == 0 and costs["incomplete_model_cost_receipts"] == 0
                                           and costs["wall_seconds_missing_rows"] == 0
                                           and costs["verifier_setup_seconds_missing_rows"] == 0
-                                          and costs["tool_wall_missing_calls"] == 0),
+                                          and costs["tool_wall_missing_calls"] == 0
+                                          and costs["model_cost_aggregation_errors"] == 0
+                                          and all(nonnegative_seconds(costs[key]) for key in
+                                                  ("wall_seconds", "verifier_setup_seconds", "tool_wall_seconds"))),
                         "proof_rate": counts["proof_accepted"] / n if n and counts["generation_observed_rows"] else None,
                         "proof_rate_scope": "known successes over planned denominator; missing items retained; null when no generation observed",
                         "joint_rate": (counts["joint_success"] / counts["joint_denominator"]

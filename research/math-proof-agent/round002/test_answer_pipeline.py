@@ -38,10 +38,10 @@ def make_answer_receipt(statement, answer, proof_body, spec):
     except ValueError:
         return {"status": "invalid_format", "proof_status": "unsupported", "trust_policy_passed": False,
                 "statement_sha256": statement_digest(statement)}
-    result = {"status": "rejected", "proof_status": "incomplete", "trust_policy_passed": False,
+    result = {"status": "rejected", "accepted": False, "proof_status": "incomplete", "trust_policy_passed": False,
               "statement_sha256": statement_digest(statement), "candidate_sha256": candidate_sha}
     if answer == "2":
-        result.update(status="accepted", proof_status="kernel_verified", trust_policy_passed=True,
+        result.update(status="accepted", accepted=True, proof_status="kernel_verified", trust_policy_passed=True,
                       answer_binding={"kind": "closed_exists_nat_v1", "status": "kernel_verified",
                                       "statement_sha256": statement_digest(statement), "spec_sha256": spec_sha,
                                       "candidate_sha256": candidate_sha,

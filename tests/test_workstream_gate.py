@@ -196,6 +196,60 @@ class WorkstreamGateTests(unittest.TestCase):
         self.assertEqual(self.check(), [])
         self.assertEqual(before, {path.relative_to(self.root): path.read_bytes() for path in self.root.rglob("*.json")})
 
+    def add_research_entry(self, path: str, *, suite="line-b", dependency="stdlib") -> None:
+        target = self.repository / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("# Authored metadata-only gate fixture; never imported.\n", encoding="utf-8")
+        self.inventory["entries"].append({"path": path, "workstream": "line-b",
+            "dependency_class": dependency, "suite": suite, "role": "test",
+            "dependencies": [], "collector": "unittest", "reason": "Constant-only gate fixture",
+            "expected_skips": [], "import_roots": [str(Path(path).parent.as_posix())],
+            "module_name": Path(path).stem})
+
+    def commit_research_inventory(self) -> None:
+        self.write(self.repository / "tests/inventory.json", self.inventory)
+        self.git("add", "--", "tests/inventory.json", "research")
+        self.git("-c", "user.name=IRIS-X synthetic fixture", "-c", "user.email=fixture@example.invalid",
+                 "commit", "--quiet", "-m", "Authored scoped research inventory fixture")
+        self.commit = self.git("rev-parse", "HEAD").strip()
+        self.evidence = self.evidence_for(self.commit)
+        self.write_reports()
+
+    def test_scoped_math_module_is_required_by_authoritative_inventory(self) -> None:
+        path = "research/math-proof-agent/round002/controls.py"
+        self.add_research_entry(path)
+        self.inventory["suites"]["math-native"] = {"public": False}
+        self.add_research_entry("research/math-proof-agent/round002/test_native.py",
+                                suite="math-native", dependency="native")
+        self.commit_research_inventory()
+        self.assertEqual(self.check(), [])
+        report_path = self.public_path(suite="line-b")
+        report = self.read(report_path)
+        report["modules"] = [row for row in report["modules"] if row["path"] != path]
+        report["selected_paths"].remove(path)
+        report["tests"] -= 1
+        self.write(report_path, report)
+        self.assertTrue(self.check(), "a missing math module cannot pass the fixed gate")
+
+    def test_authoritative_inventory_rejects_other_research_rounds(self) -> None:
+        for path in ("research/other/test_control.py",
+                     "research/math-proof-agent/round003/test_control.py",
+                     "research/math-proof-agent/round002-extra/test_control.py"):
+            with self.subTest(path=path):
+                self.add_research_entry(path)
+                self.commit_research_inventory()
+                self.assertTrue(self.check())
+                self.inventory["entries"].pop()
+
+    def test_authoritative_math_test_coverage_cannot_be_omitted(self) -> None:
+        for path in ("research/math-proof-agent/round001/test_new.py",
+                     "research/math-proof-agent/round002/nested/test_new.py",
+                     "research/math-proof-agent/round002/controls.py"):
+            with self.subTest(path=path):
+                commit = self.commit_with_virtual_paths((path,))
+                with self.assertRaisesRegex(ValueError, "unclassified authoritative test paths"):
+                    gate._authoritative(self.repository, commit)
+
     def test_missing_public_or_formal_report_is_rejected(self) -> None:
         for path in (self.public_path(), self.formal_path()):
             with self.subTest(path=path):

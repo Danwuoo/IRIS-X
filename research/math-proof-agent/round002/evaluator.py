@@ -7,8 +7,10 @@ from __future__ import annotations
 import copy
 from fractions import Fraction
 import hashlib
+import json
 import re
-from lean_worker import answer_binding_digest, answer_candidate_digest, _validate_closed_exists_nat
+from lean_worker import (answer_binding_digest, answer_candidate_digest,
+                         normalized_answer_sha256, statement_digest, _validate_closed_exists_nat)
 
 
 def rational(text):
@@ -35,28 +37,71 @@ def supported_answer_problem(problem):
             and isinstance(spec.get("review_ref"), str) and bool(spec["review_ref"]))
 
 
-def bound_answer_matches(event, problem):
-    """Recheck the selected candidate against a trusted worker receipt, never gold.
+def _model_text_matches(candidate, model_text):
+    """Mirror the candidate JSON envelope without normalizing proof-body bytes."""
+    if (not isinstance(candidate, dict) or set(candidate) != {"answer", "proof_body"}
+            or not isinstance(candidate["proof_body"], str) or not candidate["proof_body"].strip()
+            or candidate["answer"] is not None and not isinstance(candidate["answer"], str)
+            or not isinstance(model_text, str) or len(model_text.encode("utf-8")) > 65536):
+        return False
+    if model_text.startswith("```json\n") and model_text.rstrip().endswith("```"):
+        model_text = model_text[8:].rstrip()[:-3]
+    return json.loads(model_text) == candidate
+
+
+def verified_receipt_matches(result, problem, candidate, *, model_text):
+    """Bind a coherent successful receipt to the exact selected candidate.
 
     Receipt authenticity comes from the committed worker and verified run
-    artifact; these hashes detect mixing, not signatures for arbitrary input.
+    artifact; hashes detect mixing, not signatures for arbitrary input. Both
+    controller selection and later analysis must call this validator. Model text
+    is re-parsed to prevent an edited candidate object from obscuring what was
+    generated. JSON envelope whitespace may differ, but proof text is never
+    stripped, reformatted, or replaced with the worker's parsed tactic body.
     """
-    if not supported_answer_problem(problem) or event.get("status") != "accepted":
-        return False
     try:
-        result, candidate = event["tool"], event["candidate"]
+        if (not isinstance(result, dict) or not isinstance(problem, dict)
+                or result.get("status") != "accepted" or result.get("accepted") is not True
+                or result.get("proof_status") != "kernel_verified"
+                or result.get("trust_policy_passed") is not True
+                or not _model_text_matches(candidate, model_text)):
+            return False
+        digest = statement_digest(problem["statement"])
+        if (problem["statement"].get("sha256") != digest or problem.get("statement_sha256") != digest
+                or result.get("statement_sha256") != digest):
+            return False
+        mode = problem.get("answer_mode")
+        if mode in {"proof_only", "answer_given"}:
+            if mode == "proof_only" and candidate["answer"] is not None:
+                return False
+            return result.get("candidate_sha256") == hashlib.sha256(
+                candidate["proof_body"].encode("utf-8")).hexdigest()
+        if mode != "find_answer" or not supported_answer_problem(problem):
+            return False
         binding = result["answer_binding"]
         candidate_sha = answer_candidate_digest(candidate["answer"], candidate["proof_body"])
-        return (result.get("proof_status") == "kernel_verified" and result.get("trust_policy_passed") is True
-                and result.get("statement_sha256") == problem["statement_sha256"]
-                and result.get("candidate_sha256") == candidate_sha
+        return (result.get("candidate_sha256") == candidate_sha
                 and binding.get("kind") == "closed_exists_nat_v1" and binding.get("status") == "kernel_verified"
                 and binding.get("statement_sha256") == problem["statement_sha256"]
                 and binding.get("spec_sha256") == answer_binding_digest(problem["answer_binding"])
                 and binding.get("candidate_sha256") == candidate_sha
-                and binding.get("normalized_answer_sha256") == hashlib.sha256(candidate["answer"].encode()).hexdigest())
+                and binding.get("normalized_answer_sha256") == normalized_answer_sha256(candidate["answer"]))
     except (KeyError, TypeError, ValueError, AttributeError):
         return False
+
+
+def verified_event_matches(event, problem):
+    """Require accepted event state as well as the mode-specific worker receipt."""
+    try:
+        return (event.get("status") == "accepted"
+                and verified_receipt_matches(event["tool"], problem, event["candidate"],
+                                             model_text=event["model_text"]))
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return False
+
+
+def bound_answer_matches(event, problem):
+    return problem.get("answer_mode") == "find_answer" and verified_event_matches(event, problem)
 
 
 def evaluate_selected(records, private_key=None, *, panel=None):
