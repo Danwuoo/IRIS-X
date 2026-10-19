@@ -185,8 +185,8 @@ def run_training(engine, prepared, *, deadline, config=None, persist=lambda resu
                  persist_group=lambda result: None, persist_probe=lambda result: None,
                  persist_gradient=lambda result: None):
     cfg = validate_config(config); validate_prepared(prepared)
-    require(type(engine) is CompactEngine and engine.probability_policy == FP32_BACKBONE_POLICY,
-            'actual admitted compact FP32-backbone engine required')
+    from .architecture import admit_engine
+    admit_engine(engine, require_fp32=True)
     require(type(deadline) in (int, float) and math.isfinite(deadline), 'finite original training deadline required')
     if engine.contract['variant'] != 'tiny':
         require(engine.contract['variant'] == '2b' and cfg == DEFAULT_CONFIG

@@ -19,7 +19,8 @@ import stat
 import subprocess
 import sys
 import time
-from .precision_contract import LEGACY_POLICY, FP32_HEAD_POLICY, admit_policy, bind_trainable_contract
+from .precision_contract import (LEGACY_POLICY, FP32_HEAD_POLICY, FP32_BACKBONE_POLICY,
+                                 admit_policy, bind_trainable_contract)
 
 from tools.arc2_goal_sprint_20261017.data import canonical, digest, valid_grid
 from tools.arc2_goal_sprint_20261017.launch import TRAINING_MANIFEST_SHA256, check_dataset_separation, require, sha, write_new
@@ -171,13 +172,17 @@ def _official_model_contract():
 
 
 def _official_trainable_contract(probability_policy=LEGACY_POLICY):
+    policy = admit_policy(probability_policy)
     tensors = _official_tensor_contract()
+    # This describes resident frozen parameters, not the unchanged BF16 source
+    # checkpoint. Head-only and legacy policies keep the backbone in BF16.
+    frozen_dtype = 'torch.float32' if policy == FP32_BACKBONE_POLICY else 'torch.bfloat16'
     return bind_trainable_contract({'tensors': tensors, 'tensor_count': len(tensors),
         'parameter_count': sum(math.prod(row['shape']) for row in tensors.values()),
-        'frozen_dtype': 'torch.bfloat16', 'trainable_dtype': 'torch.float32',
+        'frozen_dtype': frozen_dtype, 'trainable_dtype': 'torch.float32',
         'rank': 64, 'alpha': 16, 'use_rslora': True,
         'target_modules': ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj'],
-        'modules_to_save': ['embed_tokens', 'lm_head']}, probability_policy)
+        'modules_to_save': ['embed_tokens', 'lm_head']}, policy)
 
 
 def _official_tokenizer_admission():

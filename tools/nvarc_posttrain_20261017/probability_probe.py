@@ -238,10 +238,8 @@ def _context(engine):
 
 
 def _admit_engine(engine):
-    from transformers import Qwen3ForCausalLM
-    _need(type(engine) is CompactEngine and type(engine.model.get_base_model()) is Qwen3ForCausalLM,
-          "actual admitted CompactEngine with Qwen3ForCausalLM required")
-    engine._checkpoint_admission()
+    from tools.nvarc_efficient_fusion_20261018.architecture import admit_engine
+    return admit_engine(engine)
 
 
 @torch.no_grad()
