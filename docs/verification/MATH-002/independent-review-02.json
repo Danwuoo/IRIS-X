@@ -1,0 +1,104 @@
+{
+  "format": "irisx.review.v1",
+  "target_commit": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+  "reviewed_delivery": "104245acb7230fe78642d41531b79153684c489a",
+  "reviewer_role": "independent",
+  "outcome": "blocked",
+  "source": "https://github.com/Danwuoo/IRIS-X/pull/10#pullrequestreview-5568170709",
+  "limitations": [
+    "Bounded independent corrective re-review of fedf3a0a code / 104245ac delivery on Linux CPython3.13.5 (normal and -O); original M002-R1, M002-R2, and M002-R3 defects pass bounded independent regressions and M002-CI1 narrow executable admission is verified.",
+    "CI run 39210749319 remained blocked on four integrity jobs (test_active_repository_is_valid) and workstream-gate due to missing remote ref refs/tags/archive/pre-product-transition-2026-09-17 (subsequently restored under owner authorization on 2026-10-20).",
+    "No actual Lean/kernel/bubblewrap, tokenizer, real model weights, TPU v5e-8 or Kaggle operations were executed by the reviewer; MATH-002 scientific Goal remains blocked and not_estimable."
+  ],
+  "original_findings_corrected_within_bounded_scope": [
+    "M002-R1",
+    "M002-R2",
+    "M002-R3",
+    "M002-CI1"
+  ],
+  "independent_regressions": {
+    "environment": "Linux / CPython3.13.5",
+    "original_assertions_against_original_helpers": {
+      "normal": {
+        "tests": 48,
+        "passed": 38,
+        "failures": 10,
+        "errors": 0,
+        "skips": 0
+      },
+      "optimized": {
+        "tests": 48,
+        "passed": 38,
+        "failures": 10,
+        "errors": 0,
+        "skips": 0
+      }
+    },
+    "original_assertions_retargeted_to_new_helpers": {
+      "normal": {
+        "tests": 48,
+        "passed": 47,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0
+      },
+      "optimized": {
+        "tests": 48,
+        "passed": 47,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0
+      }
+    },
+    "adapted_contracts_explicit_model_text_and_raw_partial": {
+      "normal": {
+        "tests": 48,
+        "passed": 48,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      "optimized": {
+        "tests": 48,
+        "passed": 48,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      }
+    },
+    "additional_independent_positive_negative_contracts": {
+      "normal": {
+        "tests": 48,
+        "passed": 48,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      "optimized": {
+        "tests": 48,
+        "passed": 48,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      }
+    }
+  },
+  "reviewed_helper_blobs": {
+    "research/math-proof-agent/round002/common.py": "506886c30d4e717f80816df7af8065179f291139",
+    "research/math-proof-agent/round002/evaluator.py": "647750aaec0421f0bcfde019984fd5247574f764",
+    "research/math-proof-agent/round002/analyze.py": "52f5e7c9521090b8f89e70b53ee561dc1730bc04",
+    "research/math-proof-agent/round002/controller.py": "47c3fd3fd5bdd45489617a3e8e9b0346c902e23e",
+    "research/math-proof-agent/round002/kaggle_run.py": "0ee966a685407bbbcf640b7aacdb2e0c20e3c169",
+    "research/math-proof-agent/round002/lean_worker.py": "3f55728234a6d924e5bcbce2ee2401afa08756d7",
+    "research/math-proof-agent/round002/sdk_readback.py": "c5c542c10b3d2b36f4e4033e88585a15160fcc44"
+  },
+  "publication": {
+    "review_id": 5568170709,
+    "review_api_state": "COMMENTED",
+    "submitted_at": "2026-10-19T07:21:50Z",
+    "author": "Danwuoo",
+    "api_commit_id": "104245acb7230fe78642d41531b79153684c489a"
+  },
+  "published_review_body": "## Independent MATH-002 corrective re-review — R1–R3 pass within bounded scope; integration blocked\n\nReviewed code: `fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d`.\nDelivery: `104245acb7230fe78642d41531b79153684c489a`.\nBranch `feat/math-proof-agent-20261018`, base `develop`.\n\n**Disposition:** the original R1–R3 defects pass the bounded independent regressions below. CI1's narrow executable admission and test registration are implemented, but integrity/gate acceptance remains blocked. No newly demonstrated R4 is raised. MATH-002 remains unfinished and **not_estimable**, not zero/negative model gain. This COMMENT is not approval, task-state promotion, release or merge authorization; historical MATH-001/R001/WSF-R5 outcomes remain unchanged.\n\n### Source and evidence binding\n\nGit API confirms delivery directly descends from code. The code increment contains 20 changed paths; the delivery-only increment contains 14 documentation/report/metadata paths with no executable changes, for 33 unique paths overall. The fixed scientific protocol, Lean worker, model adapter, SDK readback, first smoke manifest, R001 and earlier report entries were not rewritten by these increments.\n\nSeven exact helper Git blobs were checked before execution: common `506886c30d4e717f80816df7af8065179f291139`; evaluator `647750aaec0421f0bcfde019984fd5247574f764`; analyze `52f5e7c9521090b8f89e70b53ee561dc1730bc04`; controller `47c3fd3fd5bdd45489617a3e8e9b0346c902e23e`; kaggle_run `0ee966a685407bbbcf640b7aacdb2e0c20e3c169`; unchanged lean_worker `3f55728234a6d924e5bcbce2ee2401afa08756d7`; unchanged sdk_readback `c5c542c10b3d2b36f4e4033e88585a15160fcc44`. Their SHA256 values match the recorded source maps; bytes remained unchanged during tests. Private desktop state and raw logs were not independently obtained or rehashed.\n\n### Actual independent replay, including the retained failure\n\nLinux / CPython3.13.5, normal and -O. Per mode:\n\n| Execution | Tests | Pass | Fail | Error/skip |\n|---|---:|---:|---:|---:|\n| Original assertions against original reviewed helpers | 48 | 38 | 10 | 0/0 |\n| Original assertions retargeted to new helper identities | 48 | 47 | 1 | 0/0 |\n| Prior contracts adapted to explicit model_text API and raw partial evidence | 48 | 48 | 0 | 0/0 |\n| Additional independent positive/negative contracts | 48 | 48 | 0 | 0/0 |\n\nThe one unadapted failure, `test_reported_partial_cost_is_incomplete`, changes only cached `model_cost_complete=False` while leaving raw costs valid without partial evidence. The requested correction makes raw costs authoritative instead of cached flags. The revised test sets raw `partial=true`; two controller checks also pass the new required model_text argument. Production code was not edited. Original 47/1 receipts and the small adaptation diff are preserved. Supplementary tests verify raw partial/deadline evidence stays incomplete and invalid raw data cannot be rescued by cached flags. Counts overlap and are not mathematical samples.\n\nThese tests use reviewer-authored constants, JSON, temporary directories, simulated Lean process output and mocked Kaggle I/O. Real subprocess/network entry points were denied and none was attempted. Only controller acceptance/projection is exercised, with an inert ContextBudgetError-only adapter stand-in; no real generation pipeline, model, Lean or provider executes.\n\n### Findings disposition\n\n**M002-R1 — PASS, bounded.** Matched proof_only/answer_given/find_answer receipts pass. Altered proof bytes, raw model text, candidate hash, statement and contradictory accepted/status/trust fields fail controller and analyzer admission. JSON-envelope whitespace does not normalize proof-body bytes. Find-answer retains answer/spec/witness binding. This checks receipt consistency, not a new actual Lean-kernel proof or real source-fidelity admission.\n\n**M002-R2 — PASS, bounded.** Shared schema plus independent analyzer reject missing/NaN/infinite/negative/bool/wrong-type counts and times, inconsistent consumed counts, unknown fields and overflow as complete evidence. Valid partial components remain lower bounds. Raw partial/timeouts remain incomplete; cached flags cannot validate invalid data. No-generation rates remain null/not_estimable with planned denominators retained.\n\n**M002-R3 — PASS, bounded.** Failed exact/latest/status/latest observations and retrieval-source failures preserve historical terminal/retrieval evidence but revoke present dispatch eligibility. Terminal contradictions and malformed/bool versions block. Only a complete matching transaction restores authority; source-only reads do not clear the guard, and identity changes block reserve. Unknown/null preserves one attempt and1800 seconds. Every remote interaction in these checks was mocked; no actual reconciliation or push occurred.\n\nSolver-view sentinels again exclude separately placed gold/reference/rubric/review fields. This does not certify unadmitted statement text or libraries as contamination-free. Unchanged Lean construction/axiom-policy simulated controls remain covered; actual Lean/bubblewrap, mathematical fidelity, tokenizers and target hardware were not independently replayed.\n\n### CI1: narrow integration repaired, final integrity remains blocked\n\nSource review confirms only Python under the exact existing round001/round002 paths is admitted. Archive/AST restrictions are retained. Inventory/runner/target-Git gate cover five Math stdlib/mock files; native adapter controls remain protected before import.\n\nDelivery run **39210749319** is now terminal: all34 jobs read across both pages, **28 success /6 failure**. This is 24/28 public successes, four failed integrity jobs, all four formal-distribution successes, failed gate117925183156, and pre-import scope-blocked ARC audit. Windows3.11 management is now successful, no longer pending. Navigation39210749380 succeeds; offline39210749310 remains non-success without an inferred new aggregate result.\n\nTwo JSON-only artifacts were independently ZIP-hashed and parsed:\n- Integrity Ubuntu3.11 **12167302440**, SHA256 `c6798eb2da851a2c41837b357025f0003c9592cfbef8f15c5f77340b3dd0ce4c`:18 tests/1 failure/0 errors/0 skips; failure `test_repository_check.RepositoryCheckTests.test_active_repository_is_valid`. Full assertion traceback absent.\n- line-b Ubuntu3.11 **12168055114**, SHA256 `9763c78bed624a44b1e0ebe7c35251b85cf788b7018c0508996b316b4fa879ed`:163/163 pass, modules controls45/answer20/cost19/receipt20/remote47/existing fixture12. Target/source/inventory/runner bindings match. Other line-b jobs were read as success; their individual artifacts were not independently replayed here.\n\nReport target `25beac91fc574845ce2b591ac7b8b5b9c22d359b` has reported tree `5a6c31c3f42027e311e87814c2da38ea5338ba7f`, matching delivery's Git API tree. This is a PR comparison commit, not an actual merge. Gate log117925183156 correctly refuses the four failed integrity reports; no new gate bug is demonstrated.\n\n### Archive diagnosis: missing ref, retained original objects\n\nIndependent read-only GitHub API checks:\n- `refs/tags/archive/pre-product-transition-2026-09-17`:404.\n- Original annotated tag object `658cdd6ccc33ffd32ced70e0834726c8e30d0a7d`:readable, correct tag name, points to `83207e48cc44ce26d0bcb0c98006facfc4f01844`.\n- That commit:readable, tree `623066ca75243af5e68f53d8674508d4470ce2cd`.\n\nThese match repository_check.py's fixed archival constants. The named ref is missing while the original tag object and target commit/tree metadata are retrievable. No attribution of who removed it or when is made. This strongly supports the developer's missing-tag diagnosis, but without full CI assertion details it does not prove this is the sole remaining failure; nor does object metadata alone verify all archive payloads.\n\nNext maintenance should capture direct integrity diagnostics and validate that archival identity chain. Restoration requires explicit owner scope and, if authorized, must point the missing ref to the **same original annotated tag object**—not create a different tag/lightweight substitute, edit constants, or skip integrity. Then validate manifest/path-index/protected identities and rerun focused integrity/public gate on a fresh checkout while preserving old failures and no-training stops. **No ref restoration, tag move, branch change or rerun was performed or authorized by this review.** R1–R3 do not need another redesign.\n\n### Remaining scope\n\nNo complete checkout or independent rerun of developer WSL Lean/native adapter/tokenizer/full project/wheel was obtained. Actual Kaggle isolation, v5e-8 model parity/cost, source/fidelity/answer admission, context qualification, scoring-panel freeze, three-arm efficacy and seed replications remain outstanding.\n\nActual-shaped Kaggle state stays attributed to retained evidence: notebook `danielwuu/irisx-math-m002-20261019-a7f91c`, submission_unknown/version null, reserved1/4 and1800/21600, actual cost unknown. Historical smoke code is `ae051a79359c4e0be9658d89452c05793d64d831`, not revised code. This review made zero Kaggle/model/training calls, retrieved no checkpoint and started no watcher. No task/branch/tag/history or verification state was changed. Keep PR10 Draft and separate archival/CI maintenance from scientific continuation.",
+  "published_body_utf8_sha256": "f6f6a5235730e2e429031934bc54bd8a0ba8946f1b78c9c4e86aefb2c901c40b"
+}

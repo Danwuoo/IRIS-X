@@ -30,12 +30,15 @@ evidence. The first private TPU push returned a batch-session-capacity error
 despite CLI exit0. Exact task readback returned HTTP403; version remains unknown.
 See [R002 results](../../../research/math-proof-agent/ROUND002-RESULTS.zh-TW.md).
 
-PR10 independent review5567278465 requested changes on d6e4309/fb5cc66.
-The current repair closes the reported receipt/cost/dispatch contracts in
-developer controls and integrates math tests into the existing CI inventory;
-new code remains review_ready, awaiting independent re-verification. Original
-negative review, old receipts and historical acceptance remain intact. This
-repair made zero Kaggle calls and leaves the original ledger unchanged.
+PR10 independent review5567278465 requested changes on d6e4309/fb5cc66, and
+follow-up independent review5568170709 on fedf3a0/104245a verified that R1–R3
+pass bounded regressions and CI1 executable admission is in place while archival
+tag integrity remained blocked. On 2026-10-20, under owner authorization,
+`refs/tags/archive/pre-product-transition-2026-09-17` was restored to original
+annotated tag object `658cdd6ccc33ffd32ced70e0834726c8e30d0a7d` and verified across
+all 7 public suites (602/602 tests on a fresh clone). Local CPU/WSL2 validation
+also verified pinned `Qwen/Qwen3-4B` (8.04 GB) + WSL2 `Lean 4.19.0` (`Mathlib v4.19.0` +
+`closed_exists_nat_v1`) while keeping `fedf3a0` code and Kaggle ledgers unchanged.
 
 ## Blockers
 

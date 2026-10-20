@@ -144,7 +144,10 @@
     {"id":"math-002-review-repair-preservation","path":"docs/verification/MATH-002/review-repair-preservation.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
     {"id":"math-002-independent-review-20261019","path":"docs/verification/MATH-002/independent-review.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"independent-reviewer","related_tasks":["MATH-002"],"supersedes":[]},
     {"id":"math-002-receipt-binding-controls","path":"research/math-proof-agent/round002/test_receipt_binding.py","kind":"reference","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
-    {"id":"math-002-cost-schema-controls","path":"research/math-proof-agent/round002/test_cost_schema.py","kind":"reference","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]}
+    {"id":"math-002-cost-schema-controls","path":"research/math-proof-agent/round002/test_cost_schema.py","kind":"reference","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
+    {"id":"math-002-independent-review-02-20261019","path":"docs/verification/MATH-002/independent-review-02.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"independent-reviewer","related_tasks":["MATH-002"],"supersedes":["math-002-independent-review-20261019"]},
+    {"id":"math-002-archive-ci-restoration","path":"docs/verification/MATH-002/archive-ci-restoration.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
+    {"id":"math-002-local-qwen3-4b-lean-validation","path":"docs/verification/MATH-002/local-qwen3-4b-lean-validation.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]}
   ],
   "legacy_indexes": [
     {"id":"legacy-development-index","url":"https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/README.md","scope":["docs/decisions/**","docs/plan/**","docs/development/**"]},

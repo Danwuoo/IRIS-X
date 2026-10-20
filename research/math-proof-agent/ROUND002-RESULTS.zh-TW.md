@@ -36,6 +36,25 @@ submission_unknown/version null及1/4、1800/21600秒預留維持。沒有新模
 完整正負控制、環境、命令、hash、舊失敗與新CI見
 [本次工程交接](../../docs/verification/MATH-002/HANDOFF.md#current-delivery-independent-review-repairs-2026-10-19)。
 
+2026-10-20 續作記錄（見 [第二次獨立審核](../../docs/verification/MATH-002/independent-review-02.json)、
+[Archive 修復與新 Checkout 全套件驗證](../../docs/verification/MATH-002/archive-ci-restoration.json) 及
+[本地 Qwen3-4B 真實權重與 WSL2 Lean 驗證](../../docs/verification/MATH-002/local-qwen3-4b-lean-validation.json)）：
+- 獨立重審 `5568170709` 確認 `fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d` 的 `M002-R1`、`M002-R2`、`M002-R3`
+  通過有界獨立回歸且 `M002-CI1` 目錄准入已補齊；本輪保持 `fedf3a0a` 程式碼零修改。
+- 經唯讀核對 `658cdd6ccc33ffd32ced70e0834726c8e30d0a7d` 原始 tag/commit/tree 位元組及 CI `39210749319`
+  全 34 jobs（28 成功／6 失敗，Windows 3.11 management 已通過 214/214）後，依 owner 授權將遠端與本地
+  `refs/tags/archive/pre-product-transition-2026-09-17` 恢復指向同一原始 annotated tag object，
+  並在全新 `git clone` 上驗證 `repository_check.py` 及 7 個公開套件（共 602 項測試）100% 通過（`attestable=true`）。
+- 在忽略目錄下完成 10 項本地 CPU/WSL2 端對端驗證與 `Qwen/Qwen3-4B`（`1cfa9a7208912126459214e8b04321603b3df60c`，
+  8.04 GB 真實權重）+ WSL2 `Lean 4.19.0`（`Mathlib v4.19.0` + `closed_exists_nat_v1`）實測：36 層 JAX 與
+  PyTorch BF16 greedy tokens 100% 一致（`[64, 293, 272, 151645]`，`"a b c"`）、`relative_l2_logit_error = 0.01750 <= 0.03`、
+  `max_absolute_logit_error = 0.58885`（峰值 logit `56.25` 下為 `2.36` 個 BF16 ULP）；自製 `find_answer` 題
+  `real_qwen3_find_nat_witness`（`: ∃ n : Nat, n * 19 = 437`）由真實 `Qwen/Qwen3-4B` 零樣本輸出
+  `{"answer": "23", "proof_body": "by\nnorm_num"}` 並通過 WSL2 `Lean 4.19.0` 核心驗證（`0.770s`，
+  `kernel_verified`，`verified_receipt_matches=true`）；兩筆 `proof_only` 的 `invalid_format` 觀察（提示詞
+  `\n` 跳脫截斷與單行 `"by ring_nf"` 換行限制）及 WSL2 冷啟動 `RLIMIT_NPROC=64` 觀察完整保留。
+  本地 CPU/WSL2 結果不替代 Kaggle TPU v5e-8 資格或正式面板科學結論。
+
 ## 實際完成的工程工作
 
 建立一個 BF16、八路 tensor sharding 的 Qwen3 JAX adapter、一個受限 Lean

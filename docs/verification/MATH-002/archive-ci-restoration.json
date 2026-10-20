@@ -1,0 +1,636 @@
+{
+  "format": "irisx.math.archive-ci-restoration.v1",
+  "recorded_at": "2026-10-20T07:37:00Z",
+  "target_code_commit": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+  "diagnosed_delivery_commit": "104245acb7230fe78642d41531b79153684c489a",
+  "pre_restoration_diagnosis": {
+    "direct_integrity_diagnosis": {
+      "controlled_env": {
+        "inherited_python_vars_removed": true,
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "GIT_LFS_SKIP_SMUDGE": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "HF_DATASETS_OFFLINE": "1",
+        "IRISX_OFFLINE": "1",
+        "NO_PROXY": "*",
+        "HTTP_PROXY": "http://127.0.0.1:9",
+        "HTTPS_PROXY": "http://127.0.0.1:9",
+        "ALL_PROXY": "http://127.0.0.1:9"
+      },
+      "commands": {
+        "repository_check_normal": {
+          "argv": [
+            "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+            "-P",
+            "-s",
+            "-B",
+            "tools/repository_check.py"
+          ],
+          "exit_code": 1,
+          "stdout": "Repository check failed:\n- git cat-file -t archive/pre-product-transition-2026-09-17 failed: fatal: Not a valid object name archive/pre-product-transition-2026-09-17\n",
+          "stderr": ""
+        },
+        "repository_check_optimized": {
+          "argv": [
+            "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+            "-O",
+            "-P",
+            "-s",
+            "-B",
+            "tools/repository_check.py"
+          ],
+          "exit_code": 1,
+          "stdout": "Repository check failed:\n- git cat-file -t archive/pre-product-transition-2026-09-17 failed: fatal: Not a valid object name archive/pre-product-transition-2026-09-17\n",
+          "stderr": ""
+        },
+        "repository_check_self_test_normal": {
+          "exit_code": 0,
+          "tests_run": 3,
+          "status": "OK"
+        },
+        "repository_check_self_test_optimized": {
+          "exit_code": 0,
+          "tests_run": 3,
+          "status": "OK"
+        },
+        "unittest_test_repository_check_normal": {
+          "exit_code": 1,
+          "tests_run": 18,
+          "failures": 1,
+          "failed_test": "test_active_repository_is_valid (tests.test_repository_check.RepositoryCheckTests.test_active_repository_is_valid)"
+        },
+        "unittest_test_repository_check_optimized": {
+          "exit_code": 1,
+          "tests_run": 18,
+          "failures": 1,
+          "failed_test": "test_active_repository_is_valid (tests.test_repository_check.RepositoryCheckTests.test_active_repository_is_valid)"
+        },
+        "dev_check_normal": {
+          "exit_code": 0,
+          "stdout": "Documentation check passed.\n"
+        },
+        "dev_render_check_normal": {
+          "exit_code": 0,
+          "stdout": "Generated views are up to date.\n"
+        }
+      },
+      "reported_issues": [
+        "git cat-file -t archive/pre-product-transition-2026-09-17 failed: fatal: Not a valid object name archive/pre-product-transition-2026-09-17"
+      ],
+      "executed_and_passed_in_run_checks": [
+        "validate_active_surface (lines 480-611): root required files, docs/workstreams/registry.json, docs/management/documents.json, workstream task files, generated views, forbidden root directories, active surface forbidden tokens",
+        "validate_links (lines 614-631): all Markdown local links across active docs/research/trials/archive surface",
+        "validate_admission_file (lines 634-715): trials/first-real-domain/admission.json schema and blocker invariants",
+        "validate_archive partial (lines 718-729): archive required files existence, archive/manifest.json JSON parsing, deterministic formatting check, and top-level archive block equality against EXPECTED_ARCHIVE_BLOCK"
+      ],
+      "unexecuted_due_to_early_return_at_line_732": [
+        "git cat-file -t archive/pre-product-transition-2026-09-17 == 'tag' (failed at line 730; triggered early return at line 732)",
+        "git rev-parse refs/tags/archive/pre-product-transition-2026-09-17 == 658cdd6ccc33ffd32ced70e0834726c8e30d0a7d (lines 736-739)",
+        "git rev-parse archive/pre-product-transition-2026-09-17^{commit} == 83207e48cc44ce26d0bcb0c98006facfc4f01844 (lines 740-743)",
+        "git rev-parse archive/pre-product-transition-2026-09-17^{tree} == 623066ca75243af5e68f53d8674508d4470ce2cd (lines 744-747)",
+        "git ls-tree -r --full-tree archive/pre-product-transition-2026-09-17 vs archive/path-index.tsv byte equality (lines 749-755)",
+        "archived_roots (8 entries): git rev-parse archive/pre-product-transition-2026-09-17:<path> and path_count vspath-index.tsv (lines 760-795)",
+        "archived_root_files (4 entries): git rev-parse archive/pre-product-transition-2026-09-17:<path> blob equality (lines 797-821)",
+        "representative_recovery (8 entries): git rev-parse archive/pre-product-transition-2026-09-17:<path> blob + git show SHA-256 equality (lines 823-857)",
+        "recovery_commands length == 4 (lines 859-861)"
+      ]
+    },
+    "archive_identity_chain": {
+      "remote_ref": {
+        "ref": "refs/tags/archive/pre-product-transition-2026-09-17",
+        "github_api_http_status": 404,
+        "github_matching_refs_tags_count": 0,
+        "git_ls_remote_exact_ref_stdout": "",
+        "git_ls_remote_all_tags_stdout": "",
+        "verification_level": "observed_missing_on_remote_and_local"
+      },
+      "annotated_tag_object": {
+        "expected_sha1": "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d",
+        "github_api_http_status": 200,
+        "local_main_checkout_present": false,
+        "isolated_scratch_fetched": true,
+        "isolated_scratch_repo": ".irisx/line-b/MATH-002/archive-ci-diagnosis-20261020T105800+0800/isolated-tag-scratch.git",
+        "cat_file_type": "tag",
+        "cat_file_size_bytes": 234,
+        "git_object_Computed_sha1": "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d",
+        "raw_payload_sha256": "61de1614e9b28b737afedeb11cbbb461c4102f07f0acf1a56050680674b836c7",
+        "parsed_headers": {
+          "object": "83207e48cc44ce26d0bcb0c98006facfc4f01844",
+          "type": "commit",
+          "tag": "archive/pre-product-transition-2026-09-17",
+          "tagger": "IRIS-X Maintainer <maintainer@iris-x.local> 1773755809 +0800"
+        },
+        "message": "Pre-product transition full snapshot before archiving legacy research tree\n",
+        "verification_level": "byte_level_git_object_verified_in_isolated_scratch"
+      },
+      "peeled_commit_object": {
+        "expected_sha1": "83207e48cc44ce26d0bcb0c98006facfc4f01844",
+        "github_api_http_status": 200,
+        "local_main_checkout_present": true,
+        "cat_file_type": "commit",
+        "cat_file_size_bytes": 327,
+        "git_object_computed_sha1": "83207e48cc44ce26d0bcb0c98006facfc4f01844",
+        "raw_payload_sha256": "dcfe3ef6caee9c7fa88cc1c675605a989e89a67d6998a26a0c8982ab3cb049dc",
+        "tree_sha1": "623066ca75243af5e68f53d8674508d4470ce2cd",
+        "parent_sha1": "940663d12c71436a6e0621e0a532989e640153cf",
+        "verification_level": "byte_level_git_object_verified_in_local_repo_and_remote_api"
+      },
+      "root_tree_object": {
+        "expected_sha1": "623066ca75243af5e68f53d8674508d4470ce2cd",
+        "github_api_http_status": 200,
+        "local_main_checkout_present": true,
+        "cat_file_type": "tree",
+        "cat_file_size_bytes": 626,
+        "git_object_computed_sha1": "623066ca75243af5e68f53d8674508d4470ce2cd",
+        "raw_payload_sha256": "c6f000b319c16c7b4be00d62ed1c06ba2c575c74dd557c16575f78892c3e050b",
+        "entries_count": 16,
+        "verification_level": "byte_level_git_object_verified_in_local_repo_and_remote_api"
+      },
+      "manifest_and_path_index_static_verification": {
+        "note": "Supplementary verification by immutable object IDs (623066ca75243af5e68f53d8674508d4470ce2cd / 83207e48cc44ce26d0bcb0c98006facfc4f01844 / 658cdd6ccc33ffd32ced70e0834726c8e30d0a7d). Does NOT replace unpatched repository_check.py named-tag verification, which remains blocked until the tag ref is restored.",
+        "named_tag_checks_status_in_unpatched_checker": "blocked",
+        "path_index_tsv_entries": 9537,
+        "path_index_tsv_bytes": 1553760,
+        "path_index_tsv_sha256": "0b0fa411bc9adb915c67b547d1e72f1d6e69d29dc4f7ab5905d31104826274dc",
+        "ls_tree_full_tree_matches_path_index_exactly": true,
+        "archived_roots_verified_count": 8,
+        "archived_roots_all_match_byte_level": true,
+        "archived_root_files_verified_count": 4,
+        "archived_root_files_all_match_byte_level": true,
+        "representative_recovery_verified_count": 8,
+        "representative_recovery_all_match_byte_level_and_sha256": true,
+        "recovery_commands_count": 4
+      }
+    },
+    "ci_readback_39210749319": {
+      "run_id": 39210749319,
+      "name": "workstream-validation",
+      "event": "pull_request",
+      "run_attempt": 1,
+      "has_newer_attempts_or_reruns": false,
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "104245acb7230fe78642d41531b79153684c489a",
+      "comparison_merge_commit": {
+        "sha": "25beac91fc574845ce2b591ac7b8b5b9c22d359b",
+        "tree_sha": "5a6c31c3f42027e311e87814c2da38ea5338ba7f",
+        "parents": [
+          "9389f433a1fbe41d25f8ce1248fde07f7ce9250d",
+          "104245acb7230fe78642d41531b79153684c489a"
+        ],
+        "tree_matches_delivery_104245a": true,
+        "is_pr_merged": false
+      },
+      "total_jobs": 34,
+      "succeeded_jobs_count": 28,
+      "failed_jobs_count": 6,
+      "previously_pending_windows_311_management": {
+        "job_id": 117923344350,
+        "name": "public-suites (windows-latest, 3.11, management)",
+        "status": "completed",
+        "conclusion": "success",
+        "completed_at": "2026-10-19T06:41:09Z",
+        "artifact_id": 12167677687,
+        "tests": 214,
+        "failures": 0,
+        "errors": 0
+      },
+      "line_b_jobs_summary": {
+        "jobs_count": 4,
+        "all_succeeded": true,
+        "tests_per_job": 163,
+        "failures_per_job": 0
+      },
+      "failed_jobs": [
+        {
+          "job_id": 117923344235,
+          "name": "public-suites (windows-latest, 3.14, integrity)",
+          "category": "missing_remote_ref",
+          "artifact_id": 12167990311,
+          "failure_ids": [
+            "test_repository_check.RepositoryCheckTests.test_active_repository_is_valid"
+          ],
+          "traceback_in_artifact": false
+        },
+        {
+          "job_id": 117923344492,
+          "name": "public-suites (ubuntu-latest, 3.11, integrity)",
+          "category": "missing_remote_ref",
+          "artifact_id": 12167302440,
+          "failure_ids": [
+            "test_repository_check.RepositoryCheckTests.test_active_repository_is_valid"
+          ],
+          "traceback_in_artifact": false
+        },
+        {
+          "job_id": 117923344555,
+          "name": "public-suites (ubuntu-latest, 3.14, integrity)",
+          "category": "missing_remote_ref",
+          "artifact_id": 12167631390,
+          "failure_ids": [
+            "test_repository_check.RepositoryCheckTests.test_active_repository_is_valid"
+          ],
+          "traceback_in_artifact": false
+        },
+        {
+          "job_id": 117923344652,
+          "name": "public-suites (windows-latest, 3.11, integrity)",
+          "category": "missing_remote_ref",
+          "artifact_id": 12167172948,
+          "failure_ids": [
+            "test_repository_check.RepositoryCheckTests.test_active_repository_is_valid"
+          ],
+          "traceback_in_artifact": false
+        },
+        {
+          "job_id": 117925183156,
+          "name": "workstream-gate",
+          "category": "downstream_gate_of_missing_remote_ref",
+          "reason": "Failed solely because the 4 integrity suite reports had status='failed' (tests=18, failures=1)."
+        },
+        {
+          "job_id": 117923344360,
+          "name": "arc-public-audit",
+          "category": "intentionally_stopped_protected_scope",
+          "reason": "Explicit SystemExit('BLOCKED by shared engineering no-training scope; original ARC audit was not executed. This is not a passing audit.') before checkout/imports."
+        }
+      ],
+      "companion_runs_on_same_head": [
+        {
+          "run_id": 39210749380,
+          "name": "workstream-navigation",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "run_id": 39210749310,
+          "name": "offline-validation",
+          "status": "completed",
+          "conclusion": "failure",
+          "category": "intentionally_stopped_protected_scope",
+          "reason": "Both repository-integrity-and-contracts and arc-unit-audit jobs intentionally exit via shared engineering no-training scope guard before checkout/imports."
+        }
+      ],
+      "observation_vs_inference": {
+        "directly_observed_from_ci": [
+          "All 4 integrity report.json artifacts record tests=18, failures=1, errors=0, skips=0, blocked=0, failure_ids=['test_repository_check.RepositoryCheckTests.test_active_repository_is_valid'].",
+          "None of the 4 integrity artifact ZIPs contains child assertion traceback text or module-000.log (suite_runner.py omits assertion tracebacks in report.json).",
+          "Job checkout logs for all 4 integrity jobs show `git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/* +25beac91fc574845ce2b591ac7b8b5b9c22d359b:refs/remotes/pull/10/merge` fetching 7 branches and 0 tags.",
+          "workstream-gate log reports only the 4 integrity suite failures and no other suite failures across the 32 public-suites matrix jobs."
+        ],
+        "inferred_with_local_reproduction": [
+          "The exact assertion failure inside CI's `test_active_repository_is_valid` is `AssertionError: ['git cat-file -t archive/pre-product-transition-2026-09-17 failed: fatal: Not a valid object name archive/pre-product-transition-2026-09-17'] != []`, inferred by combining the CI checkout log (0 tags fetched from origin) with identical local reproduction on the same tree 5a6c31c3f42027e311e87814c2da38ea5338ba7f."
+        ]
+      },
+      "classification_summary": {
+        "program_defects_in_delivery_104245a": 0,
+        "missing_remote_ref_or_object": 1,
+        "checkout_prerequisite_defects_in_workflow_or_runner": 0,
+        "intentionally_stopped_protected_tests": 2
+      }
+    },
+    "minimal_repair_proposal": {
+      "executed_in_this_task": false,
+      "requires_explicit_owner_authorization_for_remote_ref_write": true,
+      "root_cause": "The remote repository (origin) is missing the named ref `refs/tags/archive/pre-product-transition-2026-09-17`, while the original annotated tag object `658cdd6ccc33ffd32ced70e0834726c8e30d0a7d`, peeled commit `83207e48cc44ce26d0bcb0c98006facfc4f01844`, and root tree `623066ca75243af5e68f53d8674508d4470ce2cd` remain intact on GitHub and match all 9,537 archive manifest/path-index invariants byte-for-byte.",
+      "proposal_summary": "Restore `refs/tags/archive/pre-product-transition-2026-09-17` on `origin` (and local checkout when authorized) by pointing the exact ref name back to the original immutable annotated tag object `658cdd6ccc33ffd32ced70e0834726c8e30d0a7d`. Do not create a new annotated tag or lightweight tag, and do not modify `tools/repository_check.py` constants.",
+      "pre_execution_readback_checks": [
+        "Verify `git ls-remote origin refs/tags/archive/pre-product-transition-2026-09-17` is still empty (or HTTP 404 on `GET /repos/Danwuoo/IRIS-X/git/ref/tags/archive/pre-product-transition-2026-09-17`). If it already exists and equals `658cdd6ccc33ffd32ced70e0834726c8e30d0a7d`, skip remote write and only fetch tags locally; if it points to any other SHA, STOP and do not overwrite.",
+        "Verify `GET /repos/Danwuoo/IRIS-X/git/tags/658cdd6ccc33ffd32ced70e0834726c8e30d0a7d` returns HTTP 200 with `object.sha == 83207e48cc44ce26d0bcb0c98006facfc4f01844` and `object.type == commit`."
+      ],
+      "authorized_repair_options": {
+        "option_a_github_rest_api": "POST /repos/Danwuoo/IRIS-X/git/refs with JSON body {\"ref\": \"refs/tags/archive/pre-product-transition-2026-09-17\", \"sha\": \"658cdd6ccc33ffd32ced70e0834726c8e30d0a7d\"}",
+        "option_b_git_cli_from_verified_object": "git fetch origin 658cdd6ccc33ffd32ced70e0834726c8e30d0a7d && git update-ref refs/tags/archive/pre-product-transition-2026-09-17 658cdd6ccc33ffd32ced70e0834726c8e30d0a7d \"\" && git push origin refs/tags/archive/pre-product-transition-2026-09-17:refs/tags/archive/pre-product-transition-2026-09-17"
+      },
+      "post_repair_acceptance_steps": [
+        "Read back `git ls-remote origin refs/tags/archive/pre-product-transition-2026-09-17 refs/tags/archive/pre-product-transition-2026-09-17^{}` and confirm `658cdd6ccc33ffd32ced70e0834726c8e30d0a7d` and `83207e48cc44ce26d0bcb0c98006facfc4f01844`.",
+        "In a fresh checkout (or after authorized `git fetch --tags origin`), verify `git cat-file -t archive/pre-product-transition-2026-09-17` == `tag`, `git rev-parse refs/tags/archive/pre-product-transition-2026-09-17` == `658cdd6ccc33ffd32ced70e0834726c8e30d0a7d`, `^{commit}` == `83207e48cc44ce26d0bcb0c98006facfc4f01844`, and `^{tree}` == `623066ca75243af5e68f53d8674508d4470ce2cd`.",
+        "Run `python -P -s -B tools/repository_check.py` (normal and `-O`) and confirm exit code 0 (`Repository check passed.`).",
+        "Run `python -P -s -B tools/suite_runner.py --suite integrity --output-dir <dir>` and confirm all 18 tests pass with `attestable=true`.",
+        "Re-run `workstream-validation` in CI (when authorized) and confirm all 32 `public-suites` jobs and `workstream-gate` pass, while `arc-public-audit` and `offline-validation` remain intentionally stopped by the shared engineering no-training scope guard."
+      ]
+    }
+  },
+  "owner_authorized_archive_ref_restoration": {
+    "recorded_at": "2026-10-20T04:03:18.998820+00:00",
+    "head_sha": "104245acb7230fe78642d41531b79153684c489a",
+    "tag_ref": "refs/tags/archive/pre-product-transition-2026-09-17",
+    "tag_object": "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d",
+    "peeled_commit": "83207e48cc44ce26d0bcb0c98006facfc4f01844",
+    "root_tree": "623066ca75243af5e68f53d8674508d4470ce2cd",
+    "ls_remote": [
+      "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d\trefs/tags/archive/pre-product-transition-2026-09-17",
+      "83207e48cc44ce26d0bcb0c98006facfc4f01844\trefs/tags/archive/pre-product-transition-2026-09-17^{}"
+    ],
+    "results": {
+      "repo_check_normal": {
+        "exit_code": 0,
+        "stdout": "IRIS-X repository check: PASS\n- thesis SHA-256: 373105e33a500c821ea7ca1f5d45a077ec2d6f381250cf79859cbfa6a83d7a63\n- archive tag: archive/pre-product-transition-2026-09-17\n- source commit: 83207e48cc44ce26d0bcb0c98006facfc4f01844\n- root tree: 623066ca75243af5e68f53d8674508d4470ce2cd\n- indexed historical paths: 9537\n- representative recovery checks: 8\n",
+        "stderr": ""
+      },
+      "repo_check_opt": {
+        "exit_code": 0,
+        "stdout": "IRIS-X repository check: PASS\n- thesis SHA-256: 373105e33a500c821ea7ca1f5d45a077ec2d6f381250cf79859cbfa6a83d7a63\n- archive tag: archive/pre-product-transition-2026-09-17\n- source commit: 83207e48cc44ce26d0bcb0c98006facfc4f01844\n- root tree: 623066ca75243af5e68f53d8674508d4470ce2cd\n- indexed historical paths: 9537\n- representative recovery checks: 8\n",
+        "stderr": ""
+      },
+      "test_repo_check_normal": {
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "test_active_repository_is_valid (__main__.RepositoryCheckTests.test_active_repository_is_valid) ... ok\ntest_decision_0004_is_current_authority_without_run_authorization (__main__.RepositoryCheckTests.test_decision_0004_is_current_authority_without_run_authorization) ... ok\ntest_decision_0005_narrowly_binds_kaggle_and_qwen_without_run_authorization (__main__.RepositoryCheckTests.test_decision_0005_narrowly_binds_kaggle_and_qwen_without_run_authorization) ... ok\ntest_decision_0006_binds_the_direct_unpacked_model_without_run_authorization (__main__.RepositoryCheckTests.test_decision_0006_binds_the_direct_unpacked_model_without_run_authorization) ... ok\ntest_decision_0007_binds_the_extracted_trial_tree_without_run_authorization (__main__.RepositoryCheckTests.test_decision_0007_binds_the_extracted_trial_tree_without_run_authorization) ... ok\ntest_decision_0008_binds_the_offline_qwen35_runtime_without_run_authorization (__main__.RepositoryCheckTests.test_decision_0008_binds_the_offline_qwen35_runtime_without_run_authorization) ... ok\ntest_decision_0009_freezes_run_identity_and_gates_layout_normalization (__main__.RepositoryCheckTests.test_decision_0009_freezes_run_identity_and_gates_layout_normalization) ... ok\ntest_decision_0010_uses_risk_based_workflow_without_weakening_run_gate (__main__.RepositoryCheckTests.test_decision_0010_uses_risk_based_workflow_without_weakening_run_gate) ... ok\ntest_decision_0011_creates_checkpointing_run_002_without_execution_authority (__main__.RepositoryCheckTests.test_decision_0011_creates_checkpointing_run_002_without_execution_authority) ... ok\ntest_decision_0012_closes_trial_without_promoting_missing_results (__main__.RepositoryCheckTests.test_decision_0012_closes_trial_without_promoting_missing_results) ... ok\ntest_decision_0013_creates_exact_four_invocation_completion_benchmark (__main__.RepositoryCheckTests.test_decision_0013_creates_exact_four_invocation_completion_benchmark) ... ok\ntest_execution_policy_separates_offline_and_external_work (__main__.RepositoryCheckTests.test_execution_policy_separates_offline_and_external_work) ... ok\ntest_math_source_admission_does_not_allow_shell_or_binary_files (__main__.RepositoryCheckTests.test_math_source_admission_does_not_allow_shell_or_binary_files) ... ok\ntest_only_scoped_math_round_python_sources_are_admitted (__main__.RepositoryCheckTests.test_only_scoped_math_round_python_sources_are_admitted) ... ok\ntest_other_research_and_similar_round_prefixes_stay_rejected (__main__.RepositoryCheckTests.test_other_research_and_similar_round_prefixes_stay_rejected) ... ok\ntest_p0_archive_identities_are_unchanged (__main__.RepositoryCheckTests.test_p0_archive_identities_are_unchanged) ... ok\ntest_policy_set_preserves_product_boundaries (__main__.RepositoryCheckTests.test_policy_set_preserves_product_boundaries) ... ok\ntest_trial_001_readme_is_the_current_status_source (__main__.RepositoryCheckTests.test_trial_001_readme_is_the_current_status_source) ... ok\n\n----------------------------------------------------------------------\nRan 18 tests in 7.755s\n\nOK\n"
+      },
+      "test_repo_check_opt": {
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "test_active_repository_is_valid (__main__.RepositoryCheckTests.test_active_repository_is_valid) ... ok\ntest_decision_0004_is_current_authority_without_run_authorization (__main__.RepositoryCheckTests.test_decision_0004_is_current_authority_without_run_authorization) ... ok\ntest_decision_0005_narrowly_binds_kaggle_and_qwen_without_run_authorization (__main__.RepositoryCheckTests.test_decision_0005_narrowly_binds_kaggle_and_qwen_without_run_authorization) ... ok\ntest_decision_0006_binds_the_direct_unpacked_model_without_run_authorization (__main__.RepositoryCheckTests.test_decision_0006_binds_the_direct_unpacked_model_without_run_authorization) ... ok\ntest_decision_0007_binds_the_extracted_trial_tree_without_run_authorization (__main__.RepositoryCheckTests.test_decision_0007_binds_the_extracted_trial_tree_without_run_authorization) ... ok\ntest_decision_0008_binds_the_offline_qwen35_runtime_without_run_authorization (__main__.RepositoryCheckTests.test_decision_0008_binds_the_offline_qwen35_runtime_without_run_authorization) ... ok\ntest_decision_0009_freezes_run_identity_and_gates_layout_normalization (__main__.RepositoryCheckTests.test_decision_0009_freezes_run_identity_and_gates_layout_normalization) ... ok\ntest_decision_0010_uses_risk_based_workflow_without_weakening_run_gate (__main__.RepositoryCheckTests.test_decision_0010_uses_risk_based_workflow_without_weakening_run_gate) ... ok\ntest_decision_0011_creates_checkpointing_run_002_without_execution_authority (__main__.RepositoryCheckTests.test_decision_0011_creates_checkpointing_run_002_without_execution_authority) ... ok\ntest_decision_0012_closes_trial_without_promoting_missing_results (__main__.RepositoryCheckTests.test_decision_0012_closes_trial_without_promoting_missing_results) ... ok\ntest_decision_0013_creates_exact_four_invocation_completion_benchmark (__main__.RepositoryCheckTests.test_decision_0013_creates_exact_four_invocation_completion_benchmark) ... ok\ntest_execution_policy_separates_offline_and_external_work (__main__.RepositoryCheckTests.test_execution_policy_separates_offline_and_external_work) ... ok\ntest_math_source_admission_does_not_allow_shell_or_binary_files (__main__.RepositoryCheckTests.test_math_source_admission_does_not_allow_shell_or_binary_files) ... ok\ntest_only_scoped_math_round_python_sources_are_admitted (__main__.RepositoryCheckTests.test_only_scoped_math_round_python_sources_are_admitted) ... ok\ntest_other_research_and_similar_round_prefixes_stay_rejected (__main__.RepositoryCheckTests.test_other_research_and_similar_round_prefixes_stay_rejected) ... ok\ntest_p0_archive_identities_are_unchanged (__main__.RepositoryCheckTests.test_p0_archive_identities_are_unchanged) ... ok\ntest_policy_set_preserves_product_boundaries (__main__.RepositoryCheckTests.test_policy_set_preserves_product_boundaries) ... ok\ntest_trial_001_readme_is_the_current_status_source (__main__.RepositoryCheckTests.test_trial_001_readme_is_the_current_status_source) ... ok\n\n----------------------------------------------------------------------\nRan 18 tests in 9.753s\n\nOK\n"
+      },
+      "suite_integrity_commit": {
+        "exit_code": 0,
+        "report": {
+          "format": "irisx.suite-report.v1",
+          "suite": "integrity",
+          "status": "passed",
+          "tests": 18,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "expected_skips": 0,
+          "unexpected_skips": 0,
+          "blocked": 0,
+          "exit_code": 0,
+          "attestable": true,
+          "evidence_kind": "commit",
+          "target_commit": "104245acb7230fe78642d41531b79153684c489a",
+          "head_commit": "104245acb7230fe78642d41531b79153684c489a",
+          "inventory_blob": "0051c88ca35d51903d89a9187dbb4f01efcdb365",
+          "runner_blob": "9f2e5888a6be1d4f2d8e7ec8d78fabbedd2c2f2f",
+          "source_identity": {
+            "format": "irisx.source-identity.v1",
+            "commit": "104245acb7230fe78642d41531b79153684c489a",
+            "tree": "5a6c31c3f42027e311e87814c2da38ea5338ba7f",
+            "manifest_sha256": "834f8683e34bb6a2887ee799d550da71d139ca944fde1e35e42dae54a2f5d6fe"
+          },
+          "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+          "platform": "Windows-11-10.0.26200-SP0",
+          "cwd": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math",
+          "source_changes": [],
+          "execution_root": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\s-int\\source",
+          "selected_paths": [
+            "tests/test_repository_check.py"
+          ],
+          "child_python_environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          }
+        },
+        "stderr": ""
+      },
+      "suite_line_b_commit": {
+        "exit_code": 0,
+        "report": {
+          "format": "irisx.suite-report.v1",
+          "suite": "line-b",
+          "status": "passed",
+          "tests": 163,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "expected_skips": 0,
+          "unexpected_skips": 0,
+          "blocked": 0,
+          "exit_code": 0,
+          "attestable": true,
+          "evidence_kind": "commit",
+          "target_commit": "104245acb7230fe78642d41531b79153684c489a",
+          "head_commit": "104245acb7230fe78642d41531b79153684c489a",
+          "inventory_blob": "0051c88ca35d51903d89a9187dbb4f01efcdb365",
+          "runner_blob": "9f2e5888a6be1d4f2d8e7ec8d78fabbedd2c2f2f",
+          "source_identity": {
+            "format": "irisx.source-identity.v1",
+            "commit": "104245acb7230fe78642d41531b79153684c489a",
+            "tree": "5a6c31c3f42027e311e87814c2da38ea5338ba7f",
+            "manifest_sha256": "834f8683e34bb6a2887ee799d550da71d139ca944fde1e35e42dae54a2f5d6fe"
+          },
+          "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+          "platform": "Windows-11-10.0.26200-SP0",
+          "cwd": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math",
+          "source_changes": [],
+          "execution_root": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\s-lb\\source",
+          "selected_paths": [
+            "research/math-proof-agent/round002/controls.py",
+            "research/math-proof-agent/round002/test_answer_pipeline.py",
+            "research/math-proof-agent/round002/test_cost_schema.py",
+            "research/math-proof-agent/round002/test_receipt_binding.py",
+            "research/math-proof-agent/round002/test_remote_controls.py",
+            "tests/line_b/test_flow.py"
+          ],
+          "child_python_environment": {
+            "PYTHONHASHSEED": "0",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          }
+        },
+        "stderr": ""
+      }
+    }
+  },
+  "fresh_checkout_verification_on_104245ac": {
+    "head_sha": "104245acb7230fe78642d41531b79153684c489a",
+    "archive_tag_fetched_by_clone": {
+      "ref": "refs/tags/archive/pre-product-transition-2026-09-17",
+      "object": "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d",
+      "type": "tag",
+      "peeled_commit": "83207e48cc44ce26d0bcb0c98006facfc4f01844",
+      "root_tree": "623066ca75243af5e68f53d8674508d4470ce2cd"
+    },
+    "repository_check": {
+      "normal": {
+        "exit_code": 0,
+        "stdout": "IRIS-X repository check: PASS\n- thesis SHA-256: 373105e33a500c821ea7ca1f5d45a077ec2d6f381250cf79859cbfa6a83d7a63\n- archive tag: archive/pre-product-transition-2026-09-17\n- source commit: 83207e48cc44ce26d0bcb0c98006facfc4f01844\n- root tree: 623066ca75243af5e68f53d8674508d4470ce2cd\n- indexed historical paths: 9537\n- representative recovery checks: 8\n",
+        "stderr": ""
+      },
+      "optimized": {
+        "exit_code": 0,
+        "stdout": "IRIS-X repository check: PASS\n- thesis SHA-256: 373105e33a500c821ea7ca1f5d45a077ec2d6f381250cf79859cbfa6a83d7a63\n- archive tag: archive/pre-product-transition-2026-09-17\n- source commit: 83207e48cc44ce26d0bcb0c98006facfc4f01844\n- root tree: 623066ca75243af5e68f53d8674508d4470ce2cd\n- indexed historical paths: 9537\n- representative recovery checks: 8\n",
+        "stderr": ""
+      }
+    },
+    "test_repository_check": {
+      "normal": {
+        "exit_code": 0,
+        "stderr_tail": [
+          "Ran 18 tests in 7.411s",
+          "",
+          "OK"
+        ]
+      },
+      "optimized": {
+        "exit_code": 0,
+        "stderr_tail": [
+          "Ran 18 tests in 7.794s",
+          "",
+          "OK"
+        ]
+      }
+    },
+    "test_suite_runner": {
+      "normal": {
+        "exit_code": 0,
+        "stderr_tail": [
+          "Ran 31 tests in 3.953s",
+          "",
+          "OK"
+        ]
+      },
+      "optimized": {
+        "exit_code": 0,
+        "stderr_tail": [
+          "Ran 31 tests in 8.213s",
+          "",
+          "OK"
+        ]
+      }
+    },
+    "test_workstream_gate": {
+      "normal": {
+        "exit_code": 0,
+        "stderr_tail": [
+          "Ran 30 tests in 49.282s",
+          "",
+          "OK"
+        ]
+      },
+      "optimized": {
+        "exit_code": 0,
+        "stderr_tail": [
+          "Ran 30 tests in 49.440s",
+          "",
+          "OK"
+        ]
+      }
+    },
+    "committed_public_suites_summary": {
+      "core": {
+        "exit_code": 0,
+        "wall_seconds": 106.98399999999674,
+        "status": "passed",
+        "tests": 63,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "104245acb7230fe78642d41531b79153684c489a",
+        "report_path": ".irisx/line-b/MATH-002/archive-ref-restoration-20261020/fresh-clone-suites/core-report.json",
+        "report_sha256": "cb8c4dd3adceebdad08926349ea845a70dbc0099c91c5d62bf3072892cfbe3ae"
+      },
+      "distribution": {
+        "exit_code": 0,
+        "wall_seconds": 58.969000000011874,
+        "status": "passed",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skips": 1,
+        "expected_skips": 1,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "104245acb7230fe78642d41531b79153684c489a",
+        "report_path": ".irisx/line-b/MATH-002/archive-ref-restoration-20261020/fresh-clone-suites/distribution-report.json",
+        "report_sha256": "173455d14a00d4754d2c59eb96ffb50721debcf1db8296552235f49a0677a679"
+      },
+      "management": {
+        "exit_code": 0,
+        "wall_seconds": 250.04700000000594,
+        "status": "passed",
+        "tests": 214,
+        "failures": 0,
+        "errors": 0,
+        "skips": 1,
+        "expected_skips": 1,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "104245acb7230fe78642d41531b79153684c489a",
+        "report_path": ".irisx/line-b/MATH-002/archive-ref-restoration-20261020/fresh-clone-suites/management-report.json",
+        "report_sha256": "0debaea458a072f20e0c50780277438919be59738a88d182e07c5f0523163f60"
+      },
+      "navigation": {
+        "exit_code": 0,
+        "wall_seconds": 47.0,
+        "status": "passed",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "104245acb7230fe78642d41531b79153684c489a",
+        "report_path": ".irisx/line-b/MATH-002/archive-ref-restoration-20261020/fresh-clone-suites/navigation-report.json",
+        "report_sha256": "e7c4a7b20f8ddc6d4a143cbd7c14ec2adccbe4a71a4d592b2123b02548e0e686"
+      },
+      "integrity": {
+        "exit_code": 0,
+        "wall_seconds": 52.0,
+        "status": "passed",
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "104245acb7230fe78642d41531b79153684c489a",
+        "report_path": ".irisx/line-b/MATH-002/archive-ref-restoration-20261020/fresh-clone-suites/integrity-report.json",
+        "report_sha256": "db93dc91a9185baa7c4a9ee8b897a1b61e8731bf00d50d189a8811d2c545cd32"
+      },
+      "arc-unit": {
+        "exit_code": 0,
+        "wall_seconds": 184.46899999999732,
+        "status": "passed",
+        "tests": 125,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "104245acb7230fe78642d41531b79153684c489a",
+        "report_path": ".irisx/line-b/MATH-002/archive-ref-restoration-20261020/fresh-clone-suites/arc-unit-report.json",
+        "report_sha256": "c0014ef3eb7e7666cc8d952e76902535ee6c00f00a5df418c47c0e04fff8dd6d"
+      },
+      "line-b": {
+        "exit_code": 0,
+        "wall_seconds": 113.60899999999674,
+        "status": "passed",
+        "tests": 163,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "expected_skips": 0,
+        "unexpected_skips": 0,
+        "blocked": 0,
+        "attestable": true,
+        "evidence_kind": "commit",
+        "target_commit": "104245acb7230fe78642d41531b79153684c489a",
+        "report_path": ".irisx/line-b/MATH-002/archive-ref-restoration-20261020/fresh-clone-suites/line-b-report.json",
+        "report_sha256": "cf4eafb2b26667d4350d79c39b5ecefe17348543b5a1c9d5a0307057fd562985"
+      }
+    },
+    "total_public_suite_tests_passed": 602
+  }
+}
