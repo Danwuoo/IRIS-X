@@ -132,7 +132,13 @@ not establish a hostile-filesystem sandbox or absence of prior human exposure.
 
 ## Operational clock, process ownership, and immutable outputs
 
-Execution is explicitly Linux-only. The CLI takes a finite original pre-dispatch
+Execution is explicitly Linux-only. Its owned-process and directory-fsync tests
+carry the repository's `requires_linux` eligibility annotation. They still run
+in ordinary discovery and the complete Linux lane; only the named portable lane
+skips them. Pure grammar/geometry/palette tests remain portable. This annotation
+does not provide or claim a Windows execution backend.
+
+The CLI takes a finite original pre-dispatch
 `--started-epoch`, with its whole-process deadline equal to that epoch plus the
 planned budget in `(0,600]` seconds. A future start or already-consumed budget is
 rejected. No task, retry, worker restart, or result collection resets this clock.

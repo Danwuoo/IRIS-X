@@ -11,6 +11,7 @@ import tempfile
 import time
 import unittest
 from unittest.mock import patch
+from tests.platform_requirements import requires_linux
 
 from tools.public_cpu_arc_search.search import (BASES, TEMPLATES, Deadline, Inapplicable,
     Work, complexity, fit, geometry, key, loo, predict, rank_key, solve_task)
@@ -178,6 +179,7 @@ class SearchTests(unittest.TestCase):
         self.assertTrue(all(q["candidates"] == [] and q["status"] == "not_completed" for q in receipt["queries"]))
 
 
+@requires_linux("Linux-only owned worker and atomic directory-fsync evidence runtime")
 class RuntimeTests(unittest.TestCase):
     def setUp(self):
         (ROOT / ".irisx").mkdir(exist_ok=True)
