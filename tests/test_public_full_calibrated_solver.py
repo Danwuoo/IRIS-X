@@ -119,6 +119,46 @@ class FullCalibratedTests(unittest.TestCase):
                     budget_seconds=budget, context_cap=context, strategy=strategy, fallback="copy-input", _test_worker_prefix=prefix(mode))
         return result, files.load_json(self.base / "run/analysis.json")[0]
 
+    def execute_hung_generation(self):
+        # Killing the worker must retain auditable unknown cost. The real 2s
+        # clock need not also fit export/fsync into its 0.25s closure reserve.
+        # An expired closure is a failure, never a completed-run substitute.
+        root = self.base / "run"
+        failure = None
+        try:
+            result, _ = self.execute("generation-hang", budget=2.)
+        except TimeoutError as exc:
+            self.assertEqual(str(exc), "original whole clock expired during closure; no completed-run claim")
+            failure = files.load_json(root / "deadline_failure.json")[0]
+            self.assertGreaterEqual(failure["budget"]["elapsed_seconds"], 2.)
+            self.assertEqual(failure["budget"]["remaining_seconds"], 0.)
+            with self.assertRaises((OSError, ValueError)):
+                controller.verify(root, self.base / "output")
+        else:
+            self.assertTrue(result["whole_budget_met"])
+            controller.verify(root, self.base / "output")
+        dispatch = files.load_json(root / "dispatch.json")[0]
+        exited = files.load_json(root / "controller_exit.json")[0]
+        self.assertEqual(dispatch["budget_seconds"], 2.)
+        self.assertEqual(exited["stop_reason"], "global-work-deadline")
+        self.assertTrue(exited["worker_exited"])
+        self.assertIn(exited["returncode"], (-signal.SIGTERM, -signal.SIGKILL))
+        self.assertTrue(exited["cleanup"]["complete"])
+        self.assertEqual(exited["cleanup"]["remaining_owned_members"], {})
+        controller.validate_budget(exited["budget"], dispatch)
+        if failure is not None:
+            controller.validate_budget(failure["budget"], dispatch)
+        records = {p.name: files.load_json(p)[0] for p in (root / "worker/receipts").glob("*.json")}
+        analysis, _ = core.reconstruct(files.load_json(root / "plan.json")[0], records,
+            freeze=files.load_json(root / "worker/calibration_freeze.json")[0],
+            timing_bounds=(dispatch["start_monotonic"], dispatch["work_end_monotonic"],
+                           dispatch["start_monotonic"] + exited["budget"]["elapsed_seconds"]))
+        self.assertEqual(analysis["counts"]["generation"]["started"], 3)
+        self.assertEqual(analysis["counts"]["generation"]["returned"], 2)
+        self.assertEqual(analysis["fixed_query_denominator"], 3)
+        self.assertFalse(analysis["scientific_complete"])
+        return analysis
+
     def test_dynamic_plan_preserves_full_inventory(self):
         for n in (1, 2, 120):
             challenge = fixture(n)
@@ -231,11 +271,27 @@ class FullCalibratedTests(unittest.TestCase):
 
     @requires_linux("real process supervision")
     def test_hung_generation_killed_and_unknown_cost_retained(self):
-        _, analysis = self.execute("generation-hang", budget=2.)
+        analysis = self.execute_hung_generation()
         self.assertEqual(analysis["counts"]["generation"]["unknown"], 1)
         self.assertTrue(analysis["counts"]["generation"]["unknown_cost"])
-        self.assertEqual(analysis["controller_stop_reason"], "global-work-deadline")
-        self.assertTrue(files.load_json(self.base / "run/controller_exit.json")[0]["cleanup"]["complete"])
+
+    @requires_linux("real process deadline and late closure")
+    def test_hung_generation_late_closure_cannot_claim_completion(self):
+        original = core.publish
+        delayed = []
+        def late(path, *args, **kwargs):
+            result = original(path, *args, **kwargs)
+            if Path(path).name == "controller_exit.json":
+                delayed.append(True)
+                dispatch = files.load_json(Path(path).parent / "dispatch.json")[0]
+                time.sleep(max(0., dispatch["end_monotonic"] - time.monotonic()) + .05)
+            return result
+        with patch.object(core, "publish", side_effect=late):
+            analysis = self.execute_hung_generation()
+        self.assertEqual(delayed, [True])
+        self.assertTrue((self.base / "run/deadline_failure.json").exists())
+        self.assertFalse((self.base / "run/completion.json").exists())
+        self.assertEqual(analysis["counts"]["generation"]["unknown"], 1)
 
     @requires_linux("real process supervision")
     def test_mutation_blocks_candidates(self):
@@ -346,7 +402,7 @@ class FullCalibratedTests(unittest.TestCase):
 
     @requires_linux("real process supervision")
     def test_per_query_unknown_cost_and_status(self):
-        _, analysis = self.execute("generation-hang", budget=2.)
+        analysis = self.execute_hung_generation()
         row = analysis["queries"][2]
         self.assertEqual(row["views"][0]["status"], "unknown-interrupted")
         self.assertTrue(row["physical_cost"]["generation"]["unknown_cost"])
