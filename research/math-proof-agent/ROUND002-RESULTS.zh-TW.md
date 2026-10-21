@@ -14,7 +14,30 @@
 模型輸出，正式面板也未凍結。證明率、找答案且證明共同成功率、配對增益與
 區間皆為 `not_estimable`，不是零分、零增益或負面模型結果。
 
-## 獨立 review 後的工程修正
+## 2026-10-21 文件補正與最新 CI 讀回
+
+本次只整理既有證據與下一輪准入規格，沒有執行模型、Lean／WSL 或測試套件。
+新增 [CI 收據](../../docs/verification/MATH-002/delivery-ci-readback-20261021.json)
+綁定 delivery `9d986261ca71f3af3e81e88038c144cfb133ca13`：push 與 PR 的
+workstream run 各34 jobs，28個公開測試工作、4個formal-distribution工作與gate
+皆成功；唯一失敗為依既定範圍停止的ARC audit。Navigation成功，獨立的legacy
+aggregate亦在執行前停止。這是job/step metadata讀回，未重新取得artifact來源
+manifest或PR比較commit，不是完整CI全綠，也不涵蓋本次尚未提交的文件修改。
+
+[補充來源收據](../../docs/verification/MATH-002/local-validation-provenance-20261021.json)
+保留原始觀察，釐清三條不同路徑：Controller端對端使用ScriptedControlModel，
+其證明、模型成本與預期增益是腳本控制；JAX真權重是經CPU harness替代設定的
+四個technical tokens診斷；真實Qwen產生Nat witness則走另支PyTorch greedy
+harness再交給WSL Lean。三者不能合併宣稱正式JAX→Controller→Lean已合格。
+數值資格仍不通過：`max_abs=0.588851 > 0.5`；ULP解釋不更改既定門檻。
+原收據將「TPU smoke前全面禁止runtime修改」歸因獨立審核並不正確；適用範圍
+以owner指示為準，本輪僅准文件補正。ProofNet固定toolchain確認為`v4.28.0`。
+
+下一輪的[來源、context、runtime准入規格](../../docs/verification/MATH-002/NEXT-ADMISSION.zh-TW.md)
+保持未執行、未凍結面板。工程仍`review_ready`，科學結果仍`not_estimable`。
+下列各日期的結果保留為歷史觀察，不應當作當前checkout或重新執行的結果。
+
+## 獨立 review 後的工程修正（2026-10-19 歷史觀察）
 
 PR10 review5567278465 的 normal/-O 各48項、38通過/10失敗原樣保留，沒有改成
 修正版通過。新工程自測修復全模式 proof receipt 綁定、成本 schema 與 analyzer
@@ -69,9 +92,10 @@ worker、一個 DIRECT/SAMPLE/REPAIR controller、原子候選與工具事件、
 | Qwen/Qwen3-4B | `1cfa9a7208912126459214e8b04321603b3df60c` | 未取得 TPU qualification |
 | Goedel-LM/Goedel-Prover-V2-8B | `dfd02e6271a58375dfbf3ece0175277cf6b6a89a` | 未取得 TPU qualification |
 
-正式比較未選定模型。微型隨機權重與官方 Transformers 的數值回歸只能支持
-adapter 的受測轉換，不是這兩個公開 checkpoint 的實測成績。未下載本地模型
-權重；遠端是否啟動／耗用計算沒有可綁定證據，故成本保持 unknown。
+正式比較未選定模型。2026-10-19工程修正當時僅有微型隨機權重與官方
+Transformers的數值回歸，當時尚未下載本地模型權重。2026-10-20的Qwen3-4B
+真權重診斷另列於上方續作記錄與2026-10-21補充收據；沒有因此取得正式adapter
+資格。遠端是否啟動／耗用計算仍沒有可綁定證據，該遠端成本保持unknown。
 
 ## 真實測試與限制
 

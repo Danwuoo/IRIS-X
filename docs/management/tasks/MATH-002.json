@@ -47,10 +47,10 @@
   ],
   "blockers": [
     "Kaggle only push reports batch TPU capacity=1; exact task source previously HTTP403 and latest readback HTTPError, version remains unknown. submission_unknown retains 1 submit/1800 seconds and blocks new dispatch.",
-    "No frozen scoring panel. Generic closed Nat witness binding passed authored Lean controls and local real Qwen3-4B + WSL2 Lean 4.19.0 verification, but exact statement-only acquisition, original answer-slot fidelity and source-compatible runtime (e.g. Lean 4.28 for ProofNet-Verified) remain unqualified for actual sources.",
-    "Pinned tokenizer measurements confirm 4096+4096 exceeds context8192. Local CPU/WSL2 real-weight Qwen3-4B validation observed 100% greedy token parity and rel_l2=0.0175<=0.03 but max_abs=0.58885 (2.36 BF16 ULPs at peak logit 56.25 > 0.5) and single-line 'by ring_nf' formatting rejection; actual TPU v5e-8 parity, prefill cost and Kaggle isolation remain unqualified.",
+    "No frozen scoring panel. Authored Nat witness controls passed local Lean and separate PyTorch Qwen3-4B-to-WSL Lean 4.19.0 verification; scripted Controller E2E is distinct. Exact statement-only acquisition, original answer-slot fidelity and source-compatible runtime (ProofNet-Verified pins Lean 4.28.0) remain unqualified for actual sources. NEXT-ADMISSION is an unexecuted guide, not panel admission.",
+    "Pinned tokenizer measurements confirm 4096+4096 exceeds context8192; a smaller common cap remains unadopted. Patched CPU JAX real-weight diagnostics matched four greedy technical tokens and rel_l2=0.0175<=0.03, but max_abs=0.58885>0.5 fails the fixed combined parity gate. Separate PyTorch controls retain single-line 'by ring_nf' rejection. Production JAX/Controller integration, actual TPU v5e-8 parity/cost and Kaggle isolation remain unqualified.",
     "No target-model paired comparison on a frozen panel obtained; proof/joint gain is not estimable. Implementer self-tests and local CPU/WSL2 runs do not establish independent acceptance or TPU efficacy.",
-    "PR10 independent review5568170709 confirmed M002-R1/R2/R3 pass bounded regressions and M002-CI1 admission on fedf3a0a; missing remote archive tag refs/tags/archive/pre-product-transition-2026-09-17 was restored to original object 658cdd6c under owner authorization on 2026-10-20 and verified on a fresh clone (602/602 public suite tests), awaiting new PR CI and independent delivery review."
+    "Independent delivery acceptance remains pending. Read-only CI metadata on 2026-10-21 for delivery9d986261 shows push39388389083 and PR39388394270 each have 28 public jobs,4 formal jobs and gate successful; ARC audit and legacy aggregate remain scope-stopped/non-success. Artifact source bindings were not revalidated here. Earlier missing-tag failures/reviews and fresh-clone602/602 on104245ac are preserved; new documentation edits have no CI result. Owner currently permits documentation/receipt correction only, with no model,Lean/WSL or test-suite execution."
   ],
   "handoff_ref": "math-002-handoff",
   "verification_refs": [
@@ -73,7 +73,9 @@
     "math-002-review-repair-ci-readback",
     "math-002-review-repair-preservation",
     "math-002-archive-ci-restoration",
-    "math-002-local-qwen3-4b-lean-validation"
+    "math-002-local-qwen3-4b-lean-validation",
+    "math-002-local-validation-provenance-20261021",
+    "math-002-delivery-ci-readback-20261021"
   ],
   "review_refs": [
     "math-002-independent-review-20261019",

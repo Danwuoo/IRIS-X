@@ -1,5 +1,65 @@
 # MATH-002 developer/research handoff
 
+## Documentation correction and admission design, 2026-10-21
+
+Outcome: distinguish the existing validation paths, bind the latest observed CI
+to delivery `9d986261ca71f3af3e81e88038c144cfb133ca13`, and specify the evidence
+needed before a scientific pilot. The check for this documentation work is
+static document/catalog consistency and a diff showing preserved runtime,
+protocol, original receipts and review identities. No model, Lean/WSL or test
+suite is run in this scope, under the owner's current CPU/GPU constraint.
+
+The [CI readback](delivery-ci-readback-20261021.json) records both push and PR
+workstream runs: each has 28 public jobs, 4 formal-distribution jobs and the
+workstream gate successful (33/34 jobs). The remaining ARC audit and the separate
+legacy aggregate stop under the existing no-training scope. Navigation passes.
+This is GitHub job/step metadata, not a replay or independent revalidation of
+all artifact manifests; the PR comparison/test-report target was not retrieved.
+It covers the named delivery, not these later documentation edits. Full CI is
+not green and task state remains `review_ready`; scientific gain remains
+`not_estimable`. Earlier independent reviews are not superseded by this readback.
+
+The [provenance supplement](local-validation-provenance-20261021.json) preserves
+the original local validation receipt and separates three historical paths:
+
+| Path | What the evidence supports | Limit |
+| --- | --- | --- |
+| ScriptedControlModel → Controller → actual WSL Lean → Evaluator/Analyzer | Receipt, feedback and accounting integration with actual restricted Lean | Proofs/costs and expected paired gains are scripted controls, not model efficacy |
+| Local real-weight JAX versus PyTorch reference | Four technical continuation tokens and numerical diagnostics | CPU diagnostic harness patches the device/backend gate and loader, uses context64 and an mp=1 workaround; not target-TPU qualification |
+| Real Qwen3-4B through a separate PyTorch greedy harness → WSL Lean | One authored Nat witness accepted; format failures retained | Does not exercise production JAX → Controller → Lean or a frozen scoring panel |
+
+The aggregate numerical gate remains **unqualified**: `max_abs=0.588851 > 0.5`
+even though relative L2 and the four greedy tokens match their requirements.
+The ULP explanation is a diagnostic observation, not a threshold amendment or
+proof of the cause. Current hashes of ignored harnesses identify files inspected
+now; absent contemporaneous bindings are not manufactured retroactively.
+
+The original receipt's attribution of a blanket ban on runtime edits before TPU
+smoke to review5568170709 is incorrect. That review did not impose this rule.
+Applicable owner scope and new source identities govern future changes; this
+round authorizes documentation only. The pinned ProofNet toolchain was read back
+as `leanprover/lean4:v4.28.0`, correcting the earlier `rc1` typo below.
+
+Next work is specified in [NEXT-ADMISSION](NEXT-ADMISSION.zh-TW.md): source and
+answer-mode fidelity, common token/context feasibility, and runtime/model/trust
+qualification. It is an unexecuted admission guide, not a new protocol, panel
+freeze, run allowance or acceptance. The original unknown Kaggle submission
+retains its 1-attempt/1800-second reservation; no reconciliation occurred here.
+The dated sections below retain historical results and restrictions for their
+own scopes; they do not describe fresh tests or the current missing-tag state.
+
+Documentation validation on 2026-10-21: `python -P -s -B tools/dev.py render`
+completed and `python -P -s -B tools/dev.py check` passed (metadata, static
+inventory/AST and Git inspection only; no suite execution). `git diff --check`
+passed. JSON/path and CI-metadata cross-checks passed; task changes are limited
+to blockers and verification references. An initial raw-file/Git-blob comparison
+stopped at `adapter-followup-tests.json`: `git ls-files --eol` shows committed LF
+and working-tree CRLF. The corrected check reports 8 original JSON receipts
+byte-identical to their blobs and 14 differing only by checkout CRLF; none was
+rewritten or normalized by this correction. All 22 original receipt contents
+and all tracked runtime/protocol files remain unchanged. This is documentation
+validation, not a new test-suite pass or independent acceptance.
+
 ## Archive restoration, fresh-checkout CI pass, and local Qwen3-4B/Lean validation, 2026-10-20
 
 **MATH-002 scientific Goal remains unfinished (`not_estimable`); implementation code remains fixed at `fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d` (`review_ready`).** Following [independent corrective re-review 5568170709](independent-review-02.json) on `fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d` / `104245acb7230fe78642d41531b79153684c489a` (which verified that `M002-R1`, `M002-R2`, and `M002-R3` pass bounded independent regressions and `M002-CI1` narrow executable admission is in place, while `test_active_repository_is_valid` remained blocked by the missing remote ref `refs/tags/archive/pre-product-transition-2026-09-17`), no executable `.py` files or reviewed helper blobs were modified in this delivery.
@@ -11,16 +71,16 @@
    - Under explicit owner authorization on 2026-10-20, `refs/tags/archive/pre-product-transition-2026-09-17` was restored to the exact original annotated tag object `658cdd6ccc33ffd32ced70e0834726c8e30d0a7d` on `origin` and locally.
    - On a brand-new `git clone` of `104245acb7230fe78642d41531b79153684c489a`, `tools/repository_check.py` (`0` issues), `tests/test_repository_check.py` (`18/18`), `tests/test_suite_runner.py` (`31/31`), `tests/test_workstream_gate.py` (`30/30`), and all `7` committed public suites (`core` `63`, `distribution` `9`, `management` `214`, `navigation` `10`, `integrity` `18`, `arc-unit` `125`, `line-b` `163` — `602/602` tests total) passed with `attestable=true`.
 2. **Local CPU/WSL2 end-to-end validation, `ProofNet-Verified` statement audit, and real-weight `Qwen/Qwen3-4B` + WSL2 `Lean 4.19.0` validation ([local-qwen3-4b-lean-validation.json](local-qwen3-4b-lean-validation.json))**:
-   - **Statement-only `ProofNet-Verified` (`160414332dc196583f6c37c310b420d2a3b07c58`) compatibility audit**: inspected `8` `.lean` files in memory without downloading proof archives, confirming `v4.28.0-rc1` toolchain, `import Mathlib` umbrella imports, and universally quantified declarations incompatible with `Lean 4.19.0` / `closed_exists_nat_v1` without separate runtime qualification.
-   - **10-suite local CPU & WSL2 `Lean 4.19.0` (`Mathlib v4.19.0` + `closed_exists_nat_v1`) validation**: all `10` suites passed (`test_model_adapter.py` normal/`-O` `16/16`, `context_controls.py` normal/`-O`, `lean_controls.py`, `lean/mathlib_controls.py`, `lean/answer_controls.py`, and true WSL2 `Controller -> LeanWorker -> Evaluator -> Analyzer` E2E normal/`-O` `9/9`). Retained initial WSL2 cold-boot `RLIMIT_NPROC=64` observation (`isolation_probe_failed` during `systemd --user` / background `openclaw` startup before thread count settled to `10`).
+   - **Statement-only `ProofNet-Verified` (`160414332dc196583f6c37c310b420d2a3b07c58`) compatibility audit**: inspected `8` `.lean` files in memory without downloading proof archives, recording `v4.28.0` toolchain (the earlier handoff's `rc1` typo was corrected on 2026-10-21), `import Mathlib` umbrella imports, and universally quantified declarations incompatible with `closed_exists_nat_v1`; source-compatible Lean/runtime qualification remains absent.
+   - **10-suite local CPU & WSL2 `Lean 4.19.0` (`Mathlib v4.19.0` + `closed_exists_nat_v1`) validation**: all `10` suites passed (`test_model_adapter.py` normal/`-O` `16/16`, `context_controls.py` normal/`-O`, `lean_controls.py`, `lean/mathlib_controls.py`, `lean/answer_controls.py`, and scripted-model WSL2 `Controller -> LeanWorker -> Evaluator -> Analyzer` E2E normal/`-O` `9/9`). The E2E's proof proposals, model costs and expected gains are scripted, while its Lean executions are actual. Retained initial WSL2 cold-boot `RLIMIT_NPROC=64` observation (`isolation_probe_failed` during `systemd --user` / background `openclaw` startup before thread count settled to `10`).
    - **Real-weight `Qwen/Qwen3-4B` (`1cfa9a7208912126459214e8b04321603b3df60c`, `8,056,447,970` bytes) + WSL2 `Lean 4.19.0` validation**:
      - Verified all `8` pinned files by byte size and SHA-256 via `verify_candidate_files` in ignored `.irisx/line-b/MATH-002/`.
      - 36-layer `JaxQwen3Adapter` vs. PyTorch `transformers_reference` (`bfloat16`) on the technical qualification prompt produced 100% identical greedy continuation tokens (`[64, 293, 272, 151645]`, `"a b c"` + `<|im_end|>`) and `relative_l2_logit_error = 0.01750 <= 0.03`; `max_absolute_logit_error = 0.58885` (`2.36` BF16 ULPs at real 36-layer peak logit `56.25`, where `1` BF16 ULP = `0.2500`, exceeding the `0.5` limit calibrated on small-logit synthetic fixtures).
-     - On authored `find_answer` control `real_qwen3_find_nat_witness` (`: ∃ n : Nat, n * 19 = 437`), real `Qwen/Qwen3-4B` generated `{"answer": "23", "proof_body": "by\nnorm_num"}` on Attempt 0, which sandboxed WSL2 `Lean 4.19.0` (`Mathlib v4.19.0` + `closed_exists_nat_v1`) verified in `0.770s` (`status: "accepted"`, `proof_status: "kernel_verified"`, `axioms: ["propext"]`, `verified_receipt_matches: true`).
+     - On authored `find_answer` control `real_qwen3_find_nat_witness` (`: ∃ n : Nat, n * 19 = 437`), real `Qwen/Qwen3-4B` through a separate PyTorch greedy harness generated `{"answer": "23", "proof_body": "by\nnorm_num"}` on Attempt 0, which sandboxed WSL2 `Lean 4.19.0` (`Mathlib v4.19.0` + `closed_exists_nat_v1`) verified in `0.770s` (`status: "accepted"`, `proof_status: "kernel_verified"`, `axioms: ["propext"]`, `verified_receipt_matches: true`). This did not execute the production JAX adapter/Controller path.
      - Retained `invalid_format` observations on `real_qwen3_prove_ring` (literal ``Use `by\n  ring`.`` prompt escape artifact caused missing closing `}`) and `real_qwen3_prove_ring_clean_nl` (model generated valid JSON `{"answer": null, "proof_body": "by ring_nf"}`, rejected by `parse_proof_body` because `"by ring_nf"` was single-line rather than `"by\n  ring_nf"`), plus `safe_open` handle caching and CPU `all-gather` findings documented for future TPU work.
      - Per `AGENTS.md` and `M2-SMOKE`, local CPU/WSL2 validation does not substitute for Kaggle TPU v5e-8 qualification or benchmark panel efficacy. Zero Kaggle calls were made; `state.json`, `heartbeat.json`, `monitor-stopped.json`, and `run-manifest-smoke001.json` retain identical SHA-256 digests.
 
-## Current delivery: independent-review repairs, 2026-10-19
+## Historical delivery: independent-review repairs, 2026-10-19
 
 **MATH-002 remains unfinished; research is `not_estimable`. Engineering is
 `review_ready`, not independently verified.** Repair code is `fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d`,

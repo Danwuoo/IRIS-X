@@ -1,0 +1,1269 @@
+{
+  "format": "irisx.math.delivery-ci-readback.v1",
+  "task": "MATH-002",
+  "observed_on": "2026-10-21",
+  "date_timezone": "Asia/Taipei",
+  "observed_at_utc": "2026-10-21T00:38:27.425846+00:00",
+  "evidence_kind": "read_only_remote_metadata_observation_not_test_execution",
+  "reviewed_delivery_commit": "9d986261ca71f3af3e81e88038c144cfb133ca13",
+  "implementation_commit": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+  "delivery_tree": "90a78b7a5e21c8ca612f33b2484c795501deca5d",
+  "pr": {
+    "url": "https://github.com/Danwuoo/IRIS-X/pull/10",
+    "state": "open",
+    "draft": true,
+    "base_ref": "develop",
+    "head_ref": "feat/math-proof-agent-20261018",
+    "head_sha_before": "9d986261ca71f3af3e81e88038c144cfb133ca13",
+    "head_sha_after": "9d986261ca71f3af3e81e88038c144cfb133ca13"
+  },
+  "run_listing": {
+    "endpoint": "repos/Danwuoo/IRIS-X/actions/runs?head_sha=9d986261ca71f3af3e81e88038c144cfb133ca13&per_page=100",
+    "per_page": 100,
+    "pages_read": 1,
+    "total_count": 6,
+    "returned_count": 6,
+    "complete": true
+  },
+  "runs": [
+    {
+      "id": 39388394249,
+      "name": "offline-validation",
+      "event": "pull_request",
+      "head_sha": "9d986261ca71f3af3e81e88038c144cfb133ca13",
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39388394249",
+      "run_attempt": 1,
+      "created_at": "2026-10-20T07:43:23Z",
+      "updated_at": "2026-10-20T07:44:55Z",
+      "jobs_endpoint": "repos/Danwuoo/IRIS-X/actions/runs/39388394249/jobs?per_page=100",
+      "pagination": {
+        "per_page": 100,
+        "pages_read": 1,
+        "total_count": 4,
+        "returned_count": 4,
+        "complete": true
+      },
+      "conclusion_counts": {
+        "failure": 4
+      },
+      "jobs": [
+        {
+          "id": 118513716421,
+          "name": "test (windows-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Historical aggregate deferred by shared engineering no-training scope",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install --no-build-isolation -e .",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install -r tests/requirements-audit.txt",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Prepare bounded workspace scratch",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Retained complete aggregate",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package verify .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx admission validate trials/p2-admission/admission.json",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 118513716517,
+          "name": "test (ubuntu-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Historical aggregate deferred by shared engineering no-training scope",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install --no-build-isolation -e .",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install -r tests/requirements-audit.txt",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Prepare bounded workspace scratch",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Retained complete aggregate",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package verify .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx admission validate trials/p2-admission/admission.json",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 118513716781,
+          "name": "test (windows-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Historical aggregate deferred by shared engineering no-training scope",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install --no-build-isolation -e .",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install -r tests/requirements-audit.txt",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Prepare bounded workspace scratch",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Retained complete aggregate",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package verify .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx admission validate trials/p2-admission/admission.json",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 118513716813,
+          "name": "test (ubuntu-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Historical aggregate deferred by shared engineering no-training scope",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install --no-build-isolation -e .",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install -r tests/requirements-audit.txt",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Prepare bounded workspace scratch",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Retained complete aggregate",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package verify .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx admission validate trials/p2-admission/admission.json",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 39388394316,
+      "name": "workstream-navigation",
+      "event": "pull_request",
+      "head_sha": "9d986261ca71f3af3e81e88038c144cfb133ca13",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39388394316",
+      "run_attempt": 1,
+      "created_at": "2026-10-20T07:43:23Z",
+      "updated_at": "2026-10-20T07:43:59Z",
+      "jobs_endpoint": "repos/Danwuoo/IRIS-X/actions/runs/39388394316/jobs?per_page=100",
+      "pagination": {
+        "per_page": 100,
+        "pages_read": 1,
+        "total_count": 4,
+        "returned_count": 4,
+        "complete": true
+      },
+      "conclusion_counts": {
+        "success": 4
+      },
+      "jobs": [
+        {
+          "id": 118513716569,
+          "name": "navigation (windows-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716898,
+          "name": "navigation (ubuntu-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716909,
+          "name": "navigation (windows-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513717154,
+          "name": "navigation (ubuntu-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 39388394270,
+      "name": "workstream-validation",
+      "event": "pull_request",
+      "head_sha": "9d986261ca71f3af3e81e88038c144cfb133ca13",
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39388394270",
+      "run_attempt": 1,
+      "created_at": "2026-10-20T07:43:23Z",
+      "updated_at": "2026-10-20T07:50:30Z",
+      "jobs_endpoint": "repos/Danwuoo/IRIS-X/actions/runs/39388394270/jobs?per_page=100",
+      "pagination": {
+        "per_page": 100,
+        "pages_read": 1,
+        "total_count": 34,
+        "returned_count": 34,
+        "complete": true
+      },
+      "conclusion_counts": {
+        "success": 33,
+        "failure": 1
+      },
+      "jobs": [
+        {
+          "id": 118513716353,
+          "name": "formal-distribution (windows-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716474,
+          "name": "public-suites (windows-latest, 3.11, distribution)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716494,
+          "name": "arc-public-audit",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Original ARC audit deferred by shared engineering no-training scope",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install -r tests/requirements-audit.txt",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python tools/dev.py verify --require-committed --suite arc-unit-audit --output .irisx/arc-agi-2/ci/public-audit",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/upload-artifact@v4",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 118513716538,
+          "name": "formal-distribution (ubuntu-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716546,
+          "name": "public-suites (windows-latest, 3.14, navigation)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716548,
+          "name": "public-suites (ubuntu-latest, 3.14, management)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716556,
+          "name": "formal-distribution (windows-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716561,
+          "name": "public-suites (windows-latest, 3.11, line-b)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716564,
+          "name": "public-suites (ubuntu-latest, 3.11, integrity)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716572,
+          "name": "public-suites (ubuntu-latest, 3.14, navigation)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716574,
+          "name": "public-suites (ubuntu-latest, 3.11, core)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716580,
+          "name": "public-suites (windows-latest, 3.11, arc-unit)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716581,
+          "name": "public-suites (ubuntu-latest, 3.11, line-b)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716600,
+          "name": "public-suites (windows-latest, 3.14, integrity)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716603,
+          "name": "public-suites (ubuntu-latest, 3.11, distribution)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716621,
+          "name": "public-suites (ubuntu-latest, 3.14, integrity)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716626,
+          "name": "public-suites (windows-latest, 3.14, line-b)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716638,
+          "name": "public-suites (ubuntu-latest, 3.11, arc-unit)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716642,
+          "name": "public-suites (windows-latest, 3.14, management)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716645,
+          "name": "public-suites (ubuntu-latest, 3.14, arc-unit)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716647,
+          "name": "public-suites (ubuntu-latest, 3.14, core)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716651,
+          "name": "public-suites (windows-latest, 3.11, navigation)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716671,
+          "name": "public-suites (ubuntu-latest, 3.14, line-b)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716705,
+          "name": "public-suites (ubuntu-latest, 3.11, navigation)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716722,
+          "name": "public-suites (ubuntu-latest, 3.11, management)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716743,
+          "name": "public-suites (ubuntu-latest, 3.14, distribution)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716756,
+          "name": "formal-distribution (ubuntu-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716757,
+          "name": "public-suites (windows-latest, 3.14, distribution)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716799,
+          "name": "public-suites (windows-latest, 3.11, core)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716845,
+          "name": "public-suites (windows-latest, 3.11, integrity)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716861,
+          "name": "public-suites (windows-latest, 3.14, arc-unit)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716876,
+          "name": "public-suites (windows-latest, 3.11, management)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513716890,
+          "name": "public-suites (windows-latest, 3.14, core)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118516271745,
+          "name": "workstream-gate",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 39388389083,
+      "name": "workstream-validation",
+      "event": "push",
+      "head_sha": "9d986261ca71f3af3e81e88038c144cfb133ca13",
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39388389083",
+      "run_attempt": 1,
+      "created_at": "2026-10-20T07:43:20Z",
+      "updated_at": "2026-10-20T07:48:05Z",
+      "jobs_endpoint": "repos/Danwuoo/IRIS-X/actions/runs/39388389083/jobs?per_page=100",
+      "pagination": {
+        "per_page": 100,
+        "pages_read": 1,
+        "total_count": 34,
+        "returned_count": 34,
+        "complete": true
+      },
+      "conclusion_counts": {
+        "failure": 1,
+        "success": 33
+      },
+      "jobs": [
+        {
+          "id": 118513699429,
+          "name": "arc-public-audit",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Original ARC audit deferred by shared engineering no-training scope",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install -r tests/requirements-audit.txt",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python tools/dev.py verify --require-committed --suite arc-unit-audit --output .irisx/arc-agi-2/ci/public-audit",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/upload-artifact@v4",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 118513699497,
+          "name": "formal-distribution (windows-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699549,
+          "name": "public-suites (windows-latest, 3.14, line-b)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699553,
+          "name": "public-suites (ubuntu-latest, 3.14, arc-unit)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699581,
+          "name": "public-suites (windows-latest, 3.14, management)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699600,
+          "name": "formal-distribution (ubuntu-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699610,
+          "name": "public-suites (windows-latest, 3.14, core)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699618,
+          "name": "public-suites (windows-latest, 3.14, distribution)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699623,
+          "name": "public-suites (windows-latest, 3.14, navigation)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699626,
+          "name": "formal-distribution (ubuntu-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699632,
+          "name": "formal-distribution (windows-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699645,
+          "name": "public-suites (windows-latest, 3.11, management)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699695,
+          "name": "public-suites (windows-latest, 3.14, arc-unit)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699707,
+          "name": "public-suites (windows-latest, 3.11, navigation)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699757,
+          "name": "public-suites (windows-latest, 3.14, integrity)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699825,
+          "name": "public-suites (ubuntu-latest, 3.11, distribution)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699848,
+          "name": "public-suites (ubuntu-latest, 3.11, line-b)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513699984,
+          "name": "public-suites (ubuntu-latest, 3.11, core)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700002,
+          "name": "public-suites (windows-latest, 3.11, core)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700028,
+          "name": "public-suites (ubuntu-latest, 3.14, distribution)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700049,
+          "name": "public-suites (ubuntu-latest, 3.11, arc-unit)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700051,
+          "name": "public-suites (ubuntu-latest, 3.14, core)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700131,
+          "name": "public-suites (ubuntu-latest, 3.11, integrity)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700144,
+          "name": "public-suites (ubuntu-latest, 3.14, integrity)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700185,
+          "name": "public-suites (windows-latest, 3.11, line-b)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700198,
+          "name": "public-suites (ubuntu-latest, 3.14, navigation)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700218,
+          "name": "public-suites (ubuntu-latest, 3.14, line-b)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700226,
+          "name": "public-suites (windows-latest, 3.11, arc-unit)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700245,
+          "name": "public-suites (ubuntu-latest, 3.14, management)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700252,
+          "name": "public-suites (windows-latest, 3.11, integrity)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700256,
+          "name": "public-suites (ubuntu-latest, 3.11, navigation)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700269,
+          "name": "public-suites (ubuntu-latest, 3.11, management)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700495,
+          "name": "public-suites (windows-latest, 3.11, distribution)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118515370035,
+          "name": "workstream-gate",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 39388389336,
+      "name": "workstream-navigation",
+      "event": "push",
+      "head_sha": "9d986261ca71f3af3e81e88038c144cfb133ca13",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39388389336",
+      "run_attempt": 1,
+      "created_at": "2026-10-20T07:43:20Z",
+      "updated_at": "2026-10-20T07:44:55Z",
+      "jobs_endpoint": "repos/Danwuoo/IRIS-X/actions/runs/39388389336/jobs?per_page=100",
+      "pagination": {
+        "per_page": 100,
+        "pages_read": 1,
+        "total_count": 4,
+        "returned_count": 4,
+        "complete": true
+      },
+      "conclusion_counts": {
+        "success": 4
+      },
+      "jobs": [
+        {
+          "id": 118513700175,
+          "name": "navigation (ubuntu-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700490,
+          "name": "navigation (ubuntu-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700622,
+          "name": "navigation (windows-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 118513700777,
+          "name": "navigation (windows-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 39388389356,
+      "name": "offline-validation",
+      "event": "push",
+      "head_sha": "9d986261ca71f3af3e81e88038c144cfb133ca13",
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/Danwuoo/IRIS-X/actions/runs/39388389356",
+      "run_attempt": 1,
+      "created_at": "2026-10-20T07:43:20Z",
+      "updated_at": "2026-10-20T07:44:02Z",
+      "jobs_endpoint": "repos/Danwuoo/IRIS-X/actions/runs/39388389356/jobs?per_page=100",
+      "pagination": {
+        "per_page": 100,
+        "pages_read": 1,
+        "total_count": 4,
+        "returned_count": 4,
+        "complete": true
+      },
+      "conclusion_counts": {
+        "failure": 4
+      },
+      "jobs": [
+        {
+          "id": 118513700115,
+          "name": "test (windows-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Historical aggregate deferred by shared engineering no-training scope",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install --no-build-isolation -e .",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install -r tests/requirements-audit.txt",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Prepare bounded workspace scratch",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Retained complete aggregate",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package verify .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx admission validate trials/p2-admission/admission.json",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 118513700538,
+          "name": "test (windows-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Historical aggregate deferred by shared engineering no-training scope",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install --no-build-isolation -e .",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install -r tests/requirements-audit.txt",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Prepare bounded workspace scratch",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Retained complete aggregate",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package verify .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx admission validate trials/p2-admission/admission.json",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 118513700610,
+          "name": "test (ubuntu-latest, 3.11)",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Historical aggregate deferred by shared engineering no-training scope",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install --no-build-isolation -e .",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install -r tests/requirements-audit.txt",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Prepare bounded workspace scratch",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Retained complete aggregate",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package verify .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx admission validate trials/p2-admission/admission.json",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 118513700676,
+          "name": "test (ubuntu-latest, 3.14)",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "conclusion": "success"
+            },
+            {
+              "name": "Historical aggregate deferred by shared engineering no-training scope",
+              "conclusion": "failure"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install --no-build-isolation -e .",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run python -m pip install -r tests/requirements-audit.txt",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Prepare bounded workspace scratch",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Retained complete aggregate",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx fixture prepare --output .irisx/ci/fixture",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx trial run --trial .irisx/ci/fixture/trial.json --output .irisx/ci/run",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package build --run .irisx/ci/run --output .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx package verify .irisx/ci/package",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Run irisx admission validate trials/p2-admission/admission.json",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Complete job",
+              "conclusion": "success"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "review_submissions": [
+    {
+      "id": 5567278465,
+      "state": "COMMENTED",
+      "commit_id": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+      "submitted_at": "2026-10-19T05:26:54Z",
+      "html_url": "https://github.com/Danwuoo/IRIS-X/pull/10#pullrequestreview-5567278465"
+    },
+    {
+      "id": 5568170709,
+      "state": "COMMENTED",
+      "commit_id": "104245acb7230fe78642d41531b79153684c489a",
+      "submitted_at": "2026-10-19T07:21:50Z",
+      "html_url": "https://github.com/Danwuoo/IRIS-X/pull/10#pullrequestreview-5568170709"
+    }
+  ],
+  "archive_ref": {
+    "ref": "refs/tags/archive/pre-product-transition-2026-09-17",
+    "annotated_tag_object": "658cdd6ccc33ffd32ced70e0834726c8e30d0a7d",
+    "object_type": "tag",
+    "peeled_commit": "83207e48cc44ce26d0bcb0c98006facfc4f01844",
+    "read_only": true
+  },
+  "assessment": {
+    "public_jobs_per_workstream_run": 28,
+    "formal_distribution_jobs_per_workstream_run": 4,
+    "workstream_gate": "success on both push and pull_request runs",
+    "workstream_run_totals": "34 jobs:33 success,1 failure on each run",
+    "remaining_workstream_failure": "arc-public-audit stops at Original ARC audit deferred by shared engineering no-training scope before checkout/import; artifact upload also fails because the blocked job produced none",
+    "navigation": "both runs success,4 jobs each",
+    "offline_validation": "both runs failure,4 jobs each; Historical aggregate deferred by shared engineering no-training scope fails before the aggregate",
+    "full_ci_green": false,
+    "independent_acceptance_established": false,
+    "scientific_result": "not_estimable"
+  },
+  "limitations": [
+    "GitHub workflow head_sha binds the triggering delivery; PR comparison/test-report target commits and individual artifact source manifests were not downloaded or independently revalidated in this readback.",
+    "No artifacts or full logs were downloaded. Job/step metadata establish reported status, not a fresh independent replay or exact per-job test count.",
+    "Historical fresh-clone 602/602 results bind 104245acb7230fe78642d41531b79153684c489a, not this delivery. They are not reattributed here.",
+    "This receipt covers delivery 9d986261 only; current uncommitted documentation and any later commit require their own CI result.",
+    "Review submissions remain COMMENTED on earlier deliveries; this readback does not supersede those reviews or promote task acceptance."
+  ],
+  "actions": {
+    "models_run": 0,
+    "lean_or_wsl_started": 0,
+    "test_suites_run": 0,
+    "ci_reruns_requested": 0,
+    "kaggle_operations": 0,
+    "remote_writes": 0,
+    "benchmark_statement_or_proof_bodies_acquired": 0
+  }
+}
