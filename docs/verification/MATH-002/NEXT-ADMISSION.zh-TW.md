@@ -4,6 +4,12 @@
 基準交付：`9d986261ca71f3af3e81e88038c144cfb133ca13`；受審程式碼：
 `fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d`。
 
+2026-10-23文件細化：[P0預算方案](P0-BUDGET.zh-TW.md)、
+[P1／P2介面與變更清單](P1-P2-DESIGN.zh-TW.md)、
+[未執行驗收案例](P1-P2-ACCEPTANCE.zh-TW.md)。這些文件具體化下列G1–G5，
+不取代其gate、修改protocol或門檻，也不授予實作／測試／模型／遠端操作權限。
+唯一canonical plan仍為[原MATH-002計畫](../../plan/2026-10-19-math-proof-agent-round02.md)。
+
 本輪唯一成果是可審閱的准入規格；檢查方式是逐條對照既有來源、程式碼與收據，
 確認每個 gate 有具體證據要求、未完成狀態及執行邊界。本文件不修改正式協定、
 模型門檻或研究目標，不選題、不凍結面板，也不產生新的執行授權。

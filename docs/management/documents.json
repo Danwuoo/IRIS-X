@@ -150,7 +150,10 @@
     {"id":"math-002-local-qwen3-4b-lean-validation","path":"docs/verification/MATH-002/local-qwen3-4b-lean-validation.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
     {"id":"math-002-local-validation-provenance-20261021","path":"docs/verification/MATH-002/local-validation-provenance-20261021.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
     {"id":"math-002-delivery-ci-readback-20261021","path":"docs/verification/MATH-002/delivery-ci-readback-20261021.json","kind":"evidence","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
-    {"id":"math-002-next-admission","path":"docs/verification/MATH-002/NEXT-ADMISSION.zh-TW.md","kind":"guide","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]}
+    {"id":"math-002-next-admission","path":"docs/verification/MATH-002/NEXT-ADMISSION.zh-TW.md","kind":"guide","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
+    {"id":"math-002-p0-budget","path":"docs/verification/MATH-002/P0-BUDGET.zh-TW.md","kind":"guide","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
+    {"id":"math-002-p1-p2-design","path":"docs/verification/MATH-002/P1-P2-DESIGN.zh-TW.md","kind":"guide","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]},
+    {"id":"math-002-p1-p2-acceptance","path":"docs/verification/MATH-002/P1-P2-ACCEPTANCE.zh-TW.md","kind":"guide","workstream":"line-b","status":"active","owner_role":"math-researcher","related_tasks":["MATH-002"],"supersedes":[]}
   ],
   "legacy_indexes": [
     {"id":"legacy-development-index","url":"https://github.com/Danwuoo/IRIS-X/blob/cc14bd1a79aac1fe6135017c9e09d4834300675d/docs/README.md","scope":["docs/decisions/**","docs/plan/**","docs/development/**"]},

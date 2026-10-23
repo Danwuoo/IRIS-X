@@ -1,5 +1,74 @@
 # MATH-002 developer/research handoff
 
+## P0 budget and P1/P2 reviewable design, 2026-10-23
+
+Outcome: deliver a concrete budget proposal, versioned interface/change design
+and unexecuted acceptance cases for the original M-SAMPLE versus M-REPAIR
+question. The check is documentary consistency, arithmetic, local links and
+preservation of executable/protocol/evidence inputs. This is documentation
+delivery and implementing-agent self-review, not implementation or independent
+acceptance. The owner explicitly prohibited model, Lean/WSL, test and Kaggle
+execution in this round.
+
+Identity: task `MATH-002`, recorded state `review_ready`; branch
+`feat/math-proof-agent-20261018`; starting delivery HEAD
+`73544d6156775f9525129e3fcd4fb55cbfddae25`; unchanged implementation
+`fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d`. This is a document-only delivery;
+its eventual commit/tree identities are recorded in Draft PR #10 after ordinary
+publication, without requiring this document to name its own commit. There is
+no new tested commit, runtime qualification, experiment result or independently
+accepted delivery.
+
+| Review artifact | Scope and acceptance boundary |
+| --- | --- |
+| [P0 budget](P0-BUDGET.zh-TW.md) | Original caps and unresolved reservation, 24-item feasibility arithmetic, conditional complete seed0 envelope including M-DIRECT, overhead and stop conditions. Proposal only; no new reservation, selected panel or schedule. |
+| [P1/P2 design](P1-P2-DESIGN.zh-TW.md) | Source/statement/header/answer/context/qualification contracts, trusted scoring launcher and analysis design, path-level change list and dependencies. Proposed interfaces are not current production APIs. |
+| [Acceptance cases](P1-P2-ACCEPTANCE.zh-TW.md) | Inputs, expected admission/rejection, evidence types and original acceptance-ID mapping. All future execution cases are not_run; case specifications are not test results. |
+
+The [canonical plan](../../plan/2026-10-19-math-proof-agent-round02.md) now routes
+to this review package. NEXT-ADMISSION retains G1–G5 and links the detailed
+documents; the catalog registers them as guides, not execution evidence. Task
+blockers and the generated BOARD expose that budget/panel/context/runner
+decisions remain unadopted. Existing acceptance IDs, scope, review references,
+implementation commit and original verification receipts are preserved.
+
+The original complete-proof and answer-discovery-plus-proof objectives remain.
+ProofNet proof-only work cannot satisfy the joint denominator. No proposal here
+adopts a smaller panel, omits replication as completed, changes the 600-second
+provisional wall or the unqualified 8192/4096 context arrangement, or relaxes
+parity/trust gates. The sole historical submission remains attributed to the
+retained receipt: submission_unknown/version null, one attempt and 1800 seconds
+reserved. No current account/status readback was performed in this round.
+
+Future offline engineering can proceed within its applicable scope while the
+remote state is unresolved. A later model/Lean/test execution needs its applicable
+owner scope; remote dispatch additionally needs the matching reconciliation and
+actual target-runtime gates. The three existing scripted-controller, patched CPU
+JAX diagnostic and separate PyTorch-to-Lean paths remain distinct. Scientific
+result is still `not_estimable`; independent delivery acceptance is pending.
+
+Documentary checks on 2026-10-23, from
+`C:\Users\wurre\Desktop\IRIS-X-Math`, Windows / Python 3.14.7:
+
+| Actual action | Observation and limit |
+| --- | --- |
+| `python -P -s -B tools/dev.py render`; final `python -P -s -B tools/dev.py render --check` | Both exit0; only the marked BOARD was regenerated, then its consistency was checked from task/catalog/review metadata. No suite selected. |
+| `python -P -s -B tools/dev.py check` | Exit0, `management: PASS (structure only; independent evidence review remains separate)`; management, static inventory/AST and Git inspection, without research or test execution. |
+| PowerShell document-only JSON/link/arithmetic inspection | Three new guides registered; state/implementation unchanged; all 68 local file links across the six review/plan/handoff/admission Markdown files resolve. There are 25 unique CASE handles and eight BUD cases, all future cases not_run. No runtime/control function was called. |
+| Budget arithmetic | Remaining19800; future1800+9000+9000=19800; each scoring shard7200 arm seconds+1800 overhead=9000. Original24-item one-seed primary28800/all-arms43200 and three-seed86400/129600 remain infeasible under conservative reservation. No cost benchmark or ledger operation. |
+| `git diff --check` and scope inspection | No whitespace errors. Only the nine named document/metadata paths in this package changed; all tracked source, tests, workflows, thesis, ARC/archive/trials and original receipts/reviews remain unchanged. The three new guides were untracked during the original drafting checks. |
+
+These observations are documentary self-review. No test counts/passes, model
+outputs, Lean proofs, target-runtime costs, CI reruns or new independent review
+were produced. The new specifications are cataloged as guides and were not
+added to verification_refs as execution evidence. The owner subsequently
+authorized ordinary commit/push of exactly these nine document/metadata paths
+on the current Math branch and an update to Draft PR #10. This publication
+scope preserves unadopted proposals and not_run cases; it permits no model,
+Lean/WSL, test or Kaggle operation, no CI rerun request and no PR merge. Any
+repository automation caused by Git publication has a separate source/status;
+no new-head CI outcome is claimed by these document checks.
+
 ## Documentation correction and admission design, 2026-10-21
 
 Outcome: distinguish the existing validation paths, bind the latest observed CI

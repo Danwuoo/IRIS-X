@@ -1,5 +1,8 @@
 # MATH-002：固定模型的採樣與工具回饋修復
 
+目前文件交付入口：[2026-10-23 P0／P1／P2 審閱包](#2026-10-23p0p1p2-文件交付)。
+下列原始執行範圍及歷史修正保留其日期與脈絡；最新文件工作不啟動其中的操作。
+
 日期：2026-10-19。本 task 的 owner scope 來自本次原始 ChatGPT 指示。
 在既有數學 branch `feat/math-proof-agent-20261018` 延續，起點
 `0deff2254d2e3b63b88c2eefc4c4f73856663047`；實際桌面 checkout 為
@@ -100,3 +103,59 @@ normal/-O 定向正負控制分列；已有 Lean 僅重跑既有受限常數控�
 1800/21600 秒。日後平台或權限改變，唯讀 reconcile 必須由原研究 task 的範圍
 另行記錄；不明仍不得派送。工程交付只到 review_ready，研究保持 not_estimable；
 MATH-001/R001/WSF-R5 歷史獨立驗證狀態不變。
+
+## 2026-10-23：P0／P1／P2 文件交付
+
+本輪 outcome：交付可審閱的資源方案、介面與變更設計，以及尚未執行的驗收案例，
+讓正式 M-SAMPLE／M-REPAIR 對照的開發依賴與停止條件可逐項審查。
+本輪 check：文件／catalog／task／生成 BOARD 一致性、相對連結、預算算術及 Git
+差異範圍；這些是文件檢查，不是測試套件、runtime 資格或獨立 acceptance。
+
+| 審閱文件 | 內容與交付界線 |
+| --- | --- |
+| [P0-BUDGET](../verification/MATH-002/P0-BUDGET.zh-TW.md) | 原有物理預留、24 題方案的上限算術、含 M-DIRECT 的條件式可行排程、實測待補項及 BUD-01–08。不是 ledger 或新預算授權。 |
+| [P1-P2-DESIGN](../verification/MATH-002/P1-P2-DESIGN.zh-TW.md) | 來源、可信 header、答案綁定、完整 context、資格收據、評分入口與分析介面；逐路徑變更清單與依賴。全部是未實作提案。 |
+| [P1-P2-ACCEPTANCE](../verification/MATH-002/P1-P2-ACCEPTANCE.zh-TW.md) | 輸入、預期結果、拒絕條件及所需證據；區分靜態／mock、真 Lean／模型與目標環境資格。案例均未執行。 |
+
+### 不變的研究與驗收基線
+
+主問題維持相同資源上限下，M-REPAIR 相對 M-SAMPLE 的完整原題證明率及找答案與
+證明共同成功率；M-DIRECT 保留一次生成參考。proof-only 與 answer-given 不進
+joint discovery 分母；ProofNet 的較窄 proof-only pilot 不能完成 joint 目標。
+固定來源／命題忠實性、最終 theorem axiom policy、答案／證明／收據綁定及 evaluator
+隔離要求不變。既有數值 gate 仍同時要求所有 logits 有限、shape 一致、greedy tokens
+一致、max absolute error <=0.5、relative L2 <=0.03、warm repeat 一致及非 deadline。
+
+原四次提交／21600 秒、單次至多10800秒、單一 publisher、未知仍占一次／1800秒
+的規則不變；失敗與後續 qualification 也占預留。兩主臂最多四次生成／四次工具不變。
+既有600秒 wall 為 provisional；8192 context／4096 completion 已知未合格。
+本輪不採用2048 completion、512-token回饋、更大 context、縮小面板、刪除seed、
+新模型或任何門檻變更。P0 的數字方案供審閱，未選題、未排定正式 run、未 freeze。
+
+### 開發依賴與未來驗收順序
+
+1. P0先建立整輪可行性與未定項。P1來源／可信header與runtime設計、共同context及
+   adapter數值問題可並行；不以未知遠端狀態禁止這些離線準備。
+2. P2先完成可信 scoring packager／runner、schema轉換、確定排程及分析報告契約。
+   原smoke manifest的raw-file hashes與scoring=false不能改旗標後充當評分身份。
+3. 實作須有新的code/source身份、影響範圍回歸與適用審查；本輪沒有授權執行這些
+   驗收案例。資格階段須實際走真模型adapter→controller→Lean worker→evaluator/analyze，
+   scripted及獨立PyTorch控制保持各自來源。
+4. 平台／權限確有變更後，才在原研究適用範圍記錄唯讀reconcile；unknown未解除
+   仍不得派送。目標TPU、同環境Lean／隔離／成本／輸出取回資格皆需其實際證據。
+5. 所有適用gate齊備及所需審查完成後，才固定protocol/panel/model/verifier/code、
+   seed及共同預算，再進正式評分。結果保留planned分母、未生成／缺失配對與不完整
+   成本；seed按題重複測量，不充作獨立樣本。零／負增益亦可構成完整可信交付。
+
+### 本輪操作界線與交接狀態
+
+本次owner明確要求文件工作；不啟動模型、Lean／WSL、測試或Kaggle，不安裝環境、
+下載權重／題目、取得benchmark解答、修改ledger或啟動監看。只允許必要文件編輯、
+metadata生成與靜態文件檢查。protocol、panel、model候選、runtime source與原始
+收據／review不變，實作checkpoint仍為`fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d`。
+工程仍`review_ready`，科學結果仍`not_estimable`；本輪文件的後續commit身份不能
+追認為新程式資格或獨立驗收。具體改動與檢查記錄見[HANDOFF](../verification/MATH-002/HANDOFF.md)。
+
+後續owner已明確允許將這九個文件／metadata變更普通commit、push至目前數學分支，
+並更新Draft PR #10；方案仍未採用、案例仍未執行，實作仍固定於上述checkpoint。
+此Git交付不啟動模型、Lean／WSL、測試或Kaggle，不要求CI重跑，也不合併PR。
