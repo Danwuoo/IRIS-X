@@ -1,0 +1,126 @@
+{
+  "format": "irisx.math.adapter-followup-tests.v1",
+  "task": "MATH-002",
+  "scope": "Implementer self-test only: CPU tiny random Qwen3 numerical parity and authored interface/identity/cost controls. Not pretrained model, TPU, Lean, scored-panel, or independent-verification evidence.",
+  "execution_date": "2026-10-19",
+  "command": [
+    "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\adapter-venv\\Scripts\\python.exe",
+    "-P",
+    "-s",
+    "-B",
+    "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\research\\math-proof-agent\\round002\\test_model_adapter.py"
+  ],
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "jax": "0.6.2",
+      "jaxlib": "0.6.2",
+      "numpy": "2.2.5",
+      "torch": "2.6.0+cpu",
+      "transformers": "4.51.3",
+      "ml-dtypes": "0.5.1",
+      "safetensors": "0.5.3",
+      "tokenizers": "0.21.1",
+      "huggingface-hub": "0.30.2"
+    }
+  },
+  "environment_overrides": {
+    "XLA_FLAGS": "--xla_force_host_platform_device_count=8",
+    "JAX_PLATFORMS": "cpu",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "PYTHONHASHSEED": "0",
+    "IRISX_ADAPTER_CONTROL_REPORT": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\adapter-readiness-details.json"
+  },
+  "exit_code": 0,
+  "tests": 16,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "unittest_duration_seconds": 12.202,
+  "details": [
+    {
+      "tied_embeddings": false,
+      "backend": "cpu",
+      "cpu_device_count": 8,
+      "greedy_token_ids": [
+        42,
+        34,
+        4,
+        30,
+        45,
+        29,
+        53,
+        44
+      ],
+      "reference_token_ids": [
+        42,
+        34,
+        4,
+        30,
+        45,
+        29,
+        53,
+        44
+      ],
+      "max_absolute_logit_error": 0.0024167001247406006,
+      "relative_l2_logit_error": 0.006046596448868513,
+      "cold_compile_seconds": 0.4529999999995198
+    },
+    {
+      "tied_embeddings": true,
+      "backend": "cpu",
+      "cpu_device_count": 8,
+      "greedy_token_ids": [
+        4,
+        4,
+        4,
+        46,
+        46,
+        46,
+        46,
+        46
+      ],
+      "reference_token_ids": [
+        4,
+        4,
+        4,
+        46,
+        46,
+        46,
+        46,
+        46
+      ],
+      "max_absolute_logit_error": 0.002238944172859192,
+      "relative_l2_logit_error": 0.006056309677660465,
+      "cold_compile_seconds": 0.31300000000010186
+    }
+  ],
+  "source_sha256": {
+    "model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8",
+    "test_model_adapter.py": "7329db8b85d006c9481232a6163a51ee5efd952cbf6df31f76659b63cdf76582"
+  },
+  "details_file_sha256": "62b705ede91347d6e99687cf2d31bc84ce259ff70a5745af1af537e213461036",
+  "raw_details_path": ".irisx/line-b/MATH-002/adapter-readiness-details.json",
+  "stdout_evidence": "Actual executed tool transcript: Ran 16 tests in 12.202s; OK; process exit 0. Full stdout was not separately persisted as a file.",
+  "coverage": [
+    "Eight virtual CPU devices exercise mp=8 numerical layout for tiny random GQA with tied/untied embeddings; eight greedy tokens match official Transformers reference.",
+    "Context-budget exception is distinct and raised before compilation.",
+    "Generation timeout receipts retain actual consumed prompt tokens, no fabricated output tokens, elapsed allocation/prefill time, and newly incurred compile cost only.",
+    "Expired deadlines prevent allocation/compilation.",
+    "Local checkpoint bytes and ambient unpinned files are validated.",
+    "Model spec is detached and its canonical identity changes with configuration/runtime/source identity."
+  ],
+  "public_weights_downloaded_locally": false,
+  "remote_calls": 0,
+  "independent_verification": false,
+  "historical_report_preserved": "docs/verification/MATH-002/adapter-tests.json",
+  "source_base_sha": "3fcb8410a4bf8dacb374e3cb3d42e7b881314af2",
+  "tested_source_scope": "Dirty working-tree bytes of model_adapter.py and test_model_adapter.py, bound by source_sha256 above; this was not a clean committed-code execution.",
+  "tested_code_commit": null,
+  "delivery_binding": "Final code/delivery SHA is recorded separately in MATH-002 HANDOFF after commit; no future commit is claimed as the test-time checkout.",
+  "delivered_code_sha": "6eb0c1e242fda087f46024307f505aaee74cede4",
+  "delivery_sha_policy": "Containing delivery SHA is provided by final response and Draft PR #10; no self-containing hash.",
+  "execution_commit_scope": "Tests ran on exact recorded dirty working bytes based on 3fcb8410a4bf8dacb374e3cb3d42e7b881314af2; delivered source matches after CRLF/LF normalization. Not a claim of rerunning at a future commit."
+}

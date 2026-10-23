@@ -1,0 +1,61 @@
+{
+  "kind": "implementer_self_tests_not_model_efficacy",
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10"
+  },
+  "records": [
+    {
+      "mode": "normal",
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+        "-P",
+        "-s",
+        "-B",
+        "research/math-proof-agent/round002/controls.py"
+      ],
+      "exit_code": 0,
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "mode": "optimized",
+      "command": [
+        "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe",
+        "-P",
+        "-s",
+        "-B",
+        "-O",
+        "research/math-proof-agent/round002/controls.py"
+      ],
+      "exit_code": 0,
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  ],
+  "source_sha256": {
+    "common.py": "b149f8f0afbdd7efc181a36499550ce5ad5bbd34b426979a8b3d8570778e4aab",
+    "controller.py": "b24c12c0c7e53eeee2399b45c6efd6541d7a08ea6a7f643621e2d390276e7941",
+    "analyze.py": "3aa3100f1e3c3187c5d6f4cd0baf751cabd395ab440c35b4d9117f43c4c7f737",
+    "evaluator.py": "917fac158cb4e9cbf684bfea219b03fa03a19b1d13327a6c099c36494c217442",
+    "controls.py": "a407a8756af591f7db48acf0b7cc86f28a689f7abef155427993f283397df6cc",
+    "protocol.json": "0642a831cdab6511a6e42e687e81a5da4eb458cfaf61406343eb3d5be6fdaec1",
+    "kaggle_run.py": "99820390b19cee9527a55eea1f6aa8332f062a95e767fcbc596d84e60bd55401",
+    "package_run.py": "335c436a41c80ea9521e1180b70b615fc1f0ba7407ef47e4972577f6f0606782",
+    "remote_bootstrap.py": "39b36680278ce902a597aa42d6df15dd1858338b1e710545def098326f7e00fc",
+    "sdk_readback.py": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964"
+  },
+  "limitations": [
+    "scripted controller fixtures are not model outputs or human-reviewed scoring problems",
+    "No TPU/model efficacy established by these tests"
+  ],
+  "final_rerun_after_remote_gate_changes": {
+    "normal_exit_code": 0,
+    "optimized_exit_code": 0,
+    "logs": ".irisx/line-b/MATH-002/final-controls.py-*.txt"
+  }
+}

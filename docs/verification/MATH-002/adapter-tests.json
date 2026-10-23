@@ -1,0 +1,107 @@
+{
+  "task": "MATH-002",
+  "scope": "author self-test; tiny random tensors on CPU, not target-model/TPU/Lean or scientific efficacy",
+  "command": [
+    "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\adapter-venv\\Scripts\\python.exe",
+    "-P",
+    "-s",
+    "-B",
+    "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\research\\math-proof-agent\\round002\\test_model_adapter.py"
+  ],
+  "environment_overrides": {
+    "XLA_FLAGS": "--xla_force_host_platform_device_count=8",
+    "JAX_PLATFORMS": "cpu",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "PYTHONHASHSEED": "0",
+    "IRISX_ADAPTER_CONTROL_REPORT": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\adapter-control-details.json"
+  },
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "jax": "0.6.2",
+      "jaxlib": "0.6.2",
+      "numpy": "2.2.5",
+      "torch": "2.6.0+cpu",
+      "transformers": "4.51.3",
+      "ml-dtypes": "0.5.1",
+      "safetensors": "0.5.3",
+      "tokenizers": "0.21.1",
+      "huggingface-hub": "0.30.2"
+    }
+  },
+  "exit_code": 0,
+  "tests": 9,
+  "failures": 0,
+  "skips": 0,
+  "elapsed_seconds": 19.92200000000048,
+  "details": [
+    {
+      "tied_embeddings": false,
+      "backend": "cpu",
+      "cpu_device_count": 8,
+      "greedy_token_ids": [
+        42,
+        34,
+        4,
+        30,
+        45,
+        29,
+        53,
+        44
+      ],
+      "reference_token_ids": [
+        42,
+        34,
+        4,
+        30,
+        45,
+        29,
+        53,
+        44
+      ],
+      "max_absolute_logit_error": 0.0024167001247406006,
+      "relative_l2_logit_error": 0.006046596448868513,
+      "cold_compile_seconds": 0.7810000000008586
+    },
+    {
+      "tied_embeddings": true,
+      "backend": "cpu",
+      "cpu_device_count": 8,
+      "greedy_token_ids": [
+        4,
+        4,
+        4,
+        46,
+        46,
+        46,
+        46,
+        46
+      ],
+      "reference_token_ids": [
+        4,
+        4,
+        4,
+        46,
+        46,
+        46,
+        46,
+        46
+      ],
+      "max_absolute_logit_error": 0.002238944172859192,
+      "relative_l2_logit_error": 0.006056309677660465,
+      "cold_compile_seconds": 0.5779999999995198
+    }
+  ],
+  "files_sha256": {
+    "test_model_adapter.py": "31a5b3b9606c75f15d981d3a797489da20f51ded9395f6172afddcd51bb563cb",
+    "model_adapter.py": "ccfa60ae46b78290f22a72b5ee1df5d05eff64838ff9ce52f140d79fba61593c",
+    "remote_smoke.py": "8970f0f7d4f61f1655de8a8c3c24afac68e022d81e5d83eb92af3fd35c0bb4d8",
+    "model-candidates.json": "1bed070145da3c020832cb049e4c2335db0af15f4fde377317bbb71fb577af8f"
+  },
+  "raw_log": ".irisx/line-b/MATH-002/adapter-controls.log",
+  "public_weights_downloaded_locally": false,
+  "independent_verification": false,
+  "cost_accounting": "Each generation cost records cold compilation only when newly incurred; lifetime compilation metadata is separate. Scoring requires precompiled qualified adapter."
+}

@@ -1,0 +1,210 @@
+{
+  "schema": "irisx.math002.lean-self-test.v1",
+  "task": "MATH-002",
+  "classification": "implementer_self_test_not_independent_verification",
+  "source_base_sha": "0deff2254d2e3b63b88c2eefc4c4f73856663047",
+  "tested_source_state": "new files before parent code commit; exact file hashes below",
+  "source_files": {
+    "lean_worker.py": "b7f757e9bccf01716dd5f9609a4c05a9b688b029eda027f32585f4aae01b4a4b",
+    "lean_controls.py": "346bd1a9f912ad8b7509cccca22ede0a746b2b552023493b1cd840819412dabd"
+  },
+  "environment": {
+    "os": "Ubuntu 24.04 via WSL2",
+    "kernel": "Linux 6.6.87.2-microsoft-standard-WSL2",
+    "python": "3.12.3",
+    "lean": "Lean (version 4.19.0, x86_64-unknown-linux-gnu, commit 6caaee842e94, Release)",
+    "lake": "Lake version 5.0.0-6caaee8 (Lean version 4.19.0)",
+    "mathlib": "not_acquired_or_qualified",
+    "bwrap": "0.9.0 (Ubuntu 0.9.0-1ubuntu0.3)",
+    "notebook_id": null,
+    "notebook_version": null
+  },
+  "workspace_mapping": {
+    "repository_windows": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math",
+    "repository_wsl": "/mnt/c/Users/wurre/Desktop/IRIS-X-Math",
+    "task_owned_scratch": "/home/wurre/irisx-math-m002-lean-20261019",
+    "partial_venv_preserved": ".irisx/line-b/MATH-002/abandoned-wsl-venv"
+  },
+  "runtime_identities": {
+    "lean_archive_sha256": "6fe3ce97a58f44e2b3567d455b994eacec5bfe9ae7774f2a573444480ba813fe",
+    "lean_tree_sha256": "2f0099538d4ccc23173829faa440c7dccfca1e790807336a24a75cba18c6038a",
+    "bwrap_deb_sha256": "2461f1beee9cb04c8942739fe1a2b37e7b7c2a3d518f0779dc75f9245baa3094",
+    "bwrap_executable_sha256": "e318903862396f96de3df57264e0158682b952fd3fb53ac23d876413e7b30f71"
+  },
+  "commands": [
+    {
+      "command": "PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean_controls.py --config .irisx/line-b/MATH-002/lean-config-local.json --output .irisx/line-b/MATH-002/lean-controls-local.json",
+      "observed_outer_exit_code": 1,
+      "qualified": false,
+      "note": "Retained failed attempt 1: Lean -T parameter was unsupported; semantic controls did not qualify."
+    },
+    {
+      "command": "PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean_controls.py --config .irisx/line-b/MATH-002/lean-config-local.json --output .irisx/line-b/MATH-002/lean-controls-local-attempt02.json",
+      "observed_outer_exit_code": 0,
+      "qualified": true,
+      "tests": 7,
+      "passed": 7
+    },
+    {
+      "command": "PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean_controls.py --parser-only --output .irisx/line-b/MATH-002/lean-parser-final.json",
+      "observed_outer_exit_code": 0,
+      "tests": 13,
+      "passed": 13
+    },
+    {
+      "command": "PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean_controls.py --config .irisx/line-b/MATH-002/lean-config-local.json --output .irisx/line-b/MATH-002/lean-controls-local-final.json",
+      "observed_outer_exit_code": 0,
+      "qualified": true,
+      "tests": 7,
+      "passed": 7
+    }
+  ],
+  "isolation": {
+    "qualified_local_only": true,
+    "checks": {
+      "credential_sentinel_hidden": true,
+      "environment_cleared": true,
+      "file_size_limit_enforced": true,
+      "home_hidden": true,
+      "host_loopback_unreachable": true,
+      "input_readonly": true,
+      "isolated_mnt": true,
+      "isolated_net": true,
+      "isolated_pid": true,
+      "isolated_user": true,
+      "limit_core": true,
+      "limit_cpu": true,
+      "limit_file_size": true,
+      "limit_memory": true,
+      "limit_open_files": true,
+      "limit_processes": true,
+      "memory_limit_enforced": true,
+      "no_network_routes": true,
+      "process_limit_enforced": true
+    },
+    "count": 19,
+    "execution_exit_code": 0,
+    "wall_seconds": 0.12446696800000012,
+    "limits": {
+      "wall_seconds": 20,
+      "cpu_seconds": 5,
+      "memory_bytes": 268435456,
+      "process_count": 64,
+      "output_bytes": 65536,
+      "open_files": 64
+    },
+    "remote_kaggle": "not_tested_by_this_local_record"
+  },
+  "lean_controls": [
+    {
+      "id": "true_rfl",
+      "expected_accept": true,
+      "matched": true,
+      "status": "accepted",
+      "accepted": true,
+      "exit_code": 0,
+      "wall_seconds": 0.22338880799999927,
+      "axioms": []
+    },
+    {
+      "id": "false_rfl",
+      "expected_accept": false,
+      "matched": true,
+      "status": "rejected",
+      "accepted": false,
+      "exit_code": 1,
+      "wall_seconds": 0.22632988500000017,
+      "axioms": null
+    },
+    {
+      "id": "incomplete",
+      "expected_accept": false,
+      "matched": true,
+      "status": "rejected",
+      "accepted": false,
+      "exit_code": 1,
+      "wall_seconds": 0.17191594099999996,
+      "axioms": null
+    },
+    {
+      "id": "sorry_injection",
+      "expected_accept": false,
+      "matched": true,
+      "status": "invalid_format",
+      "accepted": false,
+      "exit_code": null,
+      "wall_seconds": null,
+      "axioms": null
+    },
+    {
+      "id": "command_injection",
+      "expected_accept": false,
+      "matched": true,
+      "status": "invalid_format",
+      "accepted": false,
+      "exit_code": null,
+      "wall_seconds": null,
+      "axioms": null
+    },
+    {
+      "id": "implication",
+      "expected_accept": true,
+      "matched": true,
+      "status": "accepted",
+      "accepted": true,
+      "exit_code": 0,
+      "wall_seconds": 0.2751207200000003,
+      "axioms": []
+    },
+    {
+      "id": "transitive_axiom",
+      "expected_accept": false,
+      "matched": true,
+      "status": "trust_rejected",
+      "accepted": false,
+      "exit_code": 0,
+      "wall_seconds": 0.22551094800000016,
+      "axioms": [
+        "irisx_bad"
+      ]
+    }
+  ],
+  "cost": {
+    "scoring_model_calls": 0,
+    "tpu_runs": 0,
+    "lean_candidate_processes_final_run": 5,
+    "lean_candidate_wall_seconds_final_run": 1.1222663019999999
+  },
+  "failed_iterations": [
+    {
+      "stage": "namespace_probe",
+      "cause": "RLIMIT_NPROC 32 prevented namespace creation; raised within bounded policy to 64"
+    },
+    {
+      "stage": "environment_probe",
+      "cause": "bubblewrap created controlled PWD=/work; explicit expected key/value admitted"
+    },
+    {
+      "stage": "Lean_attempt_1",
+      "cause": "Lean 4.19 -T legacy option rejected; removed and retained failure receipt"
+    }
+  ],
+  "blocked": [
+    "No human-reviewed formal panel",
+    "Mathlib not pinned or qualified",
+    "Local WSL isolation does not qualify Kaggle",
+    "No independent proof checker or independent review"
+  ],
+  "unknown": [
+    "Formal model proof performance",
+    "M-SAMPLE versus M-REPAIR effect",
+    "Kaggle namespace support"
+  ],
+  "raw_receipts": {
+    "lean-controls-local.json": "af4ce05b288fc59851fde7ba6dd035df27968965cfdb0a789ea89940e891f7bd",
+    "lean-controls-local-attempt02.json": "02c0ae163a1aa66a1803448ca5dd3db05193c841f860351652edf587519388cc",
+    "lean-controls-local-final.json": "d5128695d1d21b1bfeca49ea8031dd036db5e2f6253075f418d547ec2261de25",
+    "lean-parser-final.json": "6a272c61dba23390b49ce7c57b28b15423a8d96d250cb686ed9825fe886fa32e"
+  },
+  "scope_note": "All proofs are authored public engineering controls; no model output or benchmark proof is included. Final theorem axiom checks are transitive, not exit-code-only. Public system runtime directories are trusted and must contain no credentials."
+}

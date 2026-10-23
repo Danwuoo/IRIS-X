@@ -9,7 +9,7 @@ evidence, limitations and the route to original research.
 | --- | --- | --- |
 | Core | [STATUS](core/STATUS.md) | Shared contracts, reference flow, packaging, CLI routing and repository tooling |
 | ARC-AGI-2 | [STATUS](arc-agi-2/STATUS.md) → [RESEARCH](arc-agi-2/RESEARCH.md) | Mutable CLI facade at `src/irisx/domains/arc_agi_2/`; retained legacy modules and run tools keep their original paths |
-| line-b | [STATUS](line-b/STATUS.md) | Independent synthetic engineering fixture at `src/irisx/domains/line_b/`; real domain remains unassigned |
+| Math (line-b compatibility ID) | [STATUS](line-b/STATUS.md) → [RESEARCH](line-b/RESEARCH.md) | Proof-agent research at `research/math-proof-agent/`; original synthetic engineering fixture remains unchanged |
 
 [registry.json](registry.json) remains a navigation index containing stream IDs,
 roles and repository-relative STATUS paths. It contains no task states,
@@ -31,7 +31,8 @@ active shared engineering baseline**, descended from PR9 delivery
 [core branch register](core/STATUS.md#branch-register) records retained and retired
 roles. `main` is unchanged; live ARC work stays on
 `feat/arc2-sft-rl-continuation-20261014`. No ARC merge or research-source migration
-is implied. Future math work starts from `develop`, not from ARC/run008.
+is implied. Math work starts from `develop`, not from ARC/run008. The initial
+math branch is `feat/math-proof-agent-20261018` at recorded develop base `9389f433a1fbe41d25f8ce1248fde07f7ce9250d`.
 
 Use a short-lived task branch from a recorded `develop` SHA for shared work,
 with `develop` as its Draft PR base. Do not create another permanent common
@@ -95,7 +96,9 @@ ARC STATUS → RESEARCH → R1–R5 routes readers to the original question,
 method assessments, results and current SFT256/RL/extra-SFT experiment.
 Historical direct-grid/program/feedback-repair comparisons and modified-input
 BASE/TTT results keep their original roles and denominators. `arc-next-line` is
-ARC research and does not assign line-b's domain.
+ARC research, not the math line. The owner separately assigned line-b to math
+on 2026-10-18; follow its RESEARCH entry. Prize attainment is not a development
+objective, and the authored first certificate audit is not a model benchmark.
 
 The foundation is fixed at `08b1cee49b0c677ec9ca8bfdf76e5e4f16b26059`.
 Run008 is separately fixed at `cc14bd1a79aac1fe6135017c9e09d4834300675d`;

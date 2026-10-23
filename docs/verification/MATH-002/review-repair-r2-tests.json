@@ -1,0 +1,434 @@
+{
+  "format": "irisx.math002.review-repair-r2.v1",
+  "review_item": "M002-R2",
+  "classification": "developer_self_tests_not_independent_verification",
+  "attempts": [
+    {
+      "source_base_sha": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+      "environment": {
+        "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0"
+      },
+      "source_sha256_before": {
+        "research/math-proof-agent/round002/common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+        "research/math-proof-agent/round002/controller.py": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+        "research/math-proof-agent/round002/analyze.py": "2e312152109e1d4f26fe78ac7a10ff0683b2bf6ee789ebc0107caff566297b93",
+        "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+        "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+        "research/math-proof-agent/round002/controls.py": "20bafb72d9a30616fc6f25716f019992ee0e599789763a326914f8ce7864eaaa",
+        "research/math-proof-agent/round002/test_answer_pipeline.py": "c0c63d848b243c7ade96542544fd71cdf42b7d68041c9268a19852f47dda9bfc",
+        "research/math-proof-agent/round002/test_cost_schema.py": "e10b2fea7501193c7dff234cdbb0de970c385bbe58f6b888412eda9bd2374916",
+        "research/math-proof-agent/round002/kaggle_run.py": "1a595d0f7b87f4a92652a4d46d9184d1a316c93ef70c06c1819ffaf03af2b790"
+      },
+      "source_sha256_after": {
+        "research/math-proof-agent/round002/common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+        "research/math-proof-agent/round002/controller.py": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+        "research/math-proof-agent/round002/analyze.py": "2e312152109e1d4f26fe78ac7a10ff0683b2bf6ee789ebc0107caff566297b93",
+        "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+        "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+        "research/math-proof-agent/round002/controls.py": "20bafb72d9a30616fc6f25716f019992ee0e599789763a326914f8ce7864eaaa",
+        "research/math-proof-agent/round002/test_answer_pipeline.py": "c0c63d848b243c7ade96542544fd71cdf42b7d68041c9268a19852f47dda9bfc",
+        "research/math-proof-agent/round002/test_cost_schema.py": "e10b2fea7501193c7dff234cdbb0de970c385bbe58f6b888412eda9bd2374916",
+        "research/math-proof-agent/round002/kaggle_run.py": "1a595d0f7b87f4a92652a4d46d9184d1a316c93ef70c06c1819ffaf03af2b790"
+      },
+      "source_unchanged": true,
+      "commands": [
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "research/math-proof-agent/round002/test_cost_schema.py"
+          ],
+          "exit_code": 0,
+          "tests": 19,
+          "wall_seconds": 0.813,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 0,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390236614332100/test_cost_schema.py-normal.log",
+          "raw_log_sha256": "e73cdba17a646813581d03debb68c934779776d1c661b356f23275dc525b108b"
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "research/math-proof-agent/round002/controls.py"
+          ],
+          "exit_code": 0,
+          "tests": 45,
+          "wall_seconds": 1.094,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 0,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390236614332100/controls.py-normal.log",
+          "raw_log_sha256": "32fd43141ce7ff1ef9a7a3d20f39b9b0a513980d15eeff071922ca177de1a62c"
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "research/math-proof-agent/round002/test_answer_pipeline.py"
+          ],
+          "exit_code": 0,
+          "tests": 20,
+          "wall_seconds": 1.86,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 0,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390236614332100/test_answer_pipeline.py-normal.log",
+          "raw_log_sha256": "5e54ad6b58fb3ab694487c2138af2b0c4b8e5370ebaf018f34e828da1346abfa"
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "research/math-proof-agent/round002/test_cost_schema.py"
+          ],
+          "exit_code": 0,
+          "tests": 19,
+          "wall_seconds": 2.515,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 1,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390236614332100/test_cost_schema.py-optimized.log",
+          "raw_log_sha256": "d7073eff87ed91038d973d759da13d515b494e22d2dad7bc2eec33e1ffe38370"
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "research/math-proof-agent/round002/controls.py"
+          ],
+          "exit_code": 0,
+          "tests": 45,
+          "wall_seconds": 1.594,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 1,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390236614332100/controls.py-optimized.log",
+          "raw_log_sha256": "e862c98ea83c89ce570dec4334eb293cb73a90b3345f22c88b723b7c144a5aa3"
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "research/math-proof-agent/round002/test_answer_pipeline.py"
+          ],
+          "exit_code": 0,
+          "tests": 20,
+          "wall_seconds": 2.219,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 1,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390236614332100/test_answer_pipeline.py-optimized.log",
+          "raw_log_sha256": "e6fc45c531565c3392a38e9da7e02c898cc1792f11bf5e082970307842ed3063"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "source_base_sha": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+      "environment": {
+        "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0"
+      },
+      "source_sha256_before": {
+        "research/math-proof-agent/round002/common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+        "research/math-proof-agent/round002/controller.py": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+        "research/math-proof-agent/round002/analyze.py": "2e312152109e1d4f26fe78ac7a10ff0683b2bf6ee789ebc0107caff566297b93",
+        "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+        "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+        "research/math-proof-agent/round002/controls.py": "20bafb72d9a30616fc6f25716f019992ee0e599789763a326914f8ce7864eaaa",
+        "research/math-proof-agent/round002/test_answer_pipeline.py": "c0c63d848b243c7ade96542544fd71cdf42b7d68041c9268a19852f47dda9bfc",
+        "research/math-proof-agent/round002/test_cost_schema.py": "e10b2fea7501193c7dff234cdbb0de970c385bbe58f6b888412eda9bd2374916",
+        "research/math-proof-agent/round002/kaggle_run.py": "c9cf424edf45d6ecfb4df4b878cbd778770f6d40591b9a71982cd36801c6a5b3"
+      },
+      "source_sha256_after": {
+        "research/math-proof-agent/round002/common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+        "research/math-proof-agent/round002/controller.py": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+        "research/math-proof-agent/round002/analyze.py": "2e312152109e1d4f26fe78ac7a10ff0683b2bf6ee789ebc0107caff566297b93",
+        "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+        "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+        "research/math-proof-agent/round002/controls.py": "20bafb72d9a30616fc6f25716f019992ee0e599789763a326914f8ce7864eaaa",
+        "research/math-proof-agent/round002/test_answer_pipeline.py": "c0c63d848b243c7ade96542544fd71cdf42b7d68041c9268a19852f47dda9bfc",
+        "research/math-proof-agent/round002/test_cost_schema.py": "e10b2fea7501193c7dff234cdbb0de970c385bbe58f6b888412eda9bd2374916",
+        "research/math-proof-agent/round002/kaggle_run.py": "c9cf424edf45d6ecfb4df4b878cbd778770f6d40591b9a71982cd36801c6a5b3"
+      },
+      "source_unchanged": true,
+      "commands": [
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "research/math-proof-agent/round002/test_cost_schema.py"
+          ],
+          "exit_code": 0,
+          "tests": 19,
+          "wall_seconds": 0.812,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 0,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390617772950600/test_cost_schema.py-normal.log",
+          "raw_log_sha256": "b9e7a66a78e057e226524fc619da7994390379f3100d4e94b329a1ba7e0377c4"
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "research/math-proof-agent/round002/controls.py"
+          ],
+          "exit_code": 0,
+          "tests": 45,
+          "wall_seconds": 1.125,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 0,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390617772950600/controls.py-normal.log",
+          "raw_log_sha256": "32fd43141ce7ff1ef9a7a3d20f39b9b0a513980d15eeff071922ca177de1a62c"
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "research/math-proof-agent/round002/test_answer_pipeline.py"
+          ],
+          "exit_code": 0,
+          "tests": 20,
+          "wall_seconds": 1.719,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 0,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390617772950600/test_answer_pipeline.py-normal.log",
+          "raw_log_sha256": "5a07c36f01223419f55cbbb266ce54b31ec66084f03e04cca4d495f8f032875d"
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "research/math-proof-agent/round002/test_cost_schema.py"
+          ],
+          "exit_code": 0,
+          "tests": 19,
+          "wall_seconds": 1.344,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 1,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390617772950600/test_cost_schema.py-optimized.log",
+          "raw_log_sha256": "9a61a85c80ad2728d0f9bd255fcfa015ed9a879d92ef61ce5b7ebdd30a723f32"
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "research/math-proof-agent/round002/controls.py"
+          ],
+          "exit_code": 0,
+          "tests": 45,
+          "wall_seconds": 1.657,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 1,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390617772950600/controls.py-optimized.log",
+          "raw_log_sha256": "e862c98ea83c89ce570dec4334eb293cb73a90b3345f22c88b723b7c144a5aa3"
+        },
+        {
+          "command": [
+            "<task-venv-python>",
+            "-P",
+            "-s",
+            "-B",
+            "-O",
+            "research/math-proof-agent/round002/test_answer_pipeline.py"
+          ],
+          "exit_code": 0,
+          "tests": 20,
+          "wall_seconds": 2.218,
+          "startup": {
+            "seed": "0",
+            "ignore_environment": 0,
+            "hash_randomization": 0,
+            "optimize": 1,
+            "probe": -2047299629619174822
+          },
+          "raw_log": ".irisx/line-b/MATH-002/review-repair-20261019/r2-controls-1792390617772950600/test_answer_pipeline.py-optimized.log",
+          "raw_log_sha256": "4df95405836681f2ec4ac101b8f81602492082af57a122de3bf9b379cd628d28"
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "review_target_code_sha": "d6e4309607936b66d34573350b9697e5fddc7b0f",
+  "review_target_delivery_sha": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+  "no_model_or_kernel_or_provider_execution": true,
+  "latest_passed": true,
+  "latest_test_executions": 168,
+  "final_source_sha256": {
+    "research/math-proof-agent/round002/common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+    "research/math-proof-agent/round002/controller.py": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+    "research/math-proof-agent/round002/analyze.py": "2e312152109e1d4f26fe78ac7a10ff0683b2bf6ee789ebc0107caff566297b93",
+    "research/math-proof-agent/round002/evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+    "research/math-proof-agent/round002/lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+    "research/math-proof-agent/round002/controls.py": "20bafb72d9a30616fc6f25716f019992ee0e599789763a326914f8ce7864eaaa",
+    "research/math-proof-agent/round002/test_answer_pipeline.py": "c0c63d848b243c7ade96542544fd71cdf42b7d68041c9268a19852f47dda9bfc",
+    "research/math-proof-agent/round002/test_cost_schema.py": "e10b2fea7501193c7dff234cdbb0de970c385bbe58f6b888412eda9bd2374916",
+    "research/math-proof-agent/round002/kaggle_run.py": "c9cf424edf45d6ecfb4df4b878cbd778770f6d40591b9a71982cd36801c6a5b3"
+  },
+  "baseline_reproduction": {
+    "classification": "developer_reproduction_of_published_review_not_original_reviewer_receipts",
+    "source_base": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+    "sources_sha256": {
+      "common.py": "04895e449839ca44c4a5abb9ea5170edcd1f11f6281e751a6969e98bfe206ad8",
+      "analyze.py": "6e684f020df05f164acca6e98df71f86cc6968f4e2e9ed3e0dfc5a5e8d37202f",
+      "evaluator.py": "68495f362bbea2e547cfc726c844d3a1e5755cb0e8cb1a1aa92fac74e12c58b4",
+      "lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a"
+    },
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "startup": {
+      "seed": "0",
+      "ignore_environment": 0
+    },
+    "cases": [
+      {
+        "case": "valid_positive",
+        "required_cost_complete": true,
+        "observed_cost_complete": true,
+        "contract_passed": true,
+        "observed_lower_bound": {
+          "prompt_tokens": 7,
+          "output_tokens": 5,
+          "wall_seconds": 0.1
+        }
+      },
+      {
+        "case": "negative_prompt",
+        "required_cost_complete": false,
+        "observed_cost_complete": true,
+        "contract_passed": false,
+        "observed_lower_bound": {
+          "output_tokens": 5,
+          "wall_seconds": 0.1
+        }
+      },
+      {
+        "case": "nan_output",
+        "required_cost_complete": false,
+        "observed_cost_complete": true,
+        "contract_passed": false,
+        "observed_lower_bound": {
+          "prompt_tokens": 7,
+          "wall_seconds": 0.1
+        }
+      },
+      {
+        "case": "negative_wall",
+        "required_cost_complete": false,
+        "observed_cost_complete": true,
+        "contract_passed": false,
+        "observed_lower_bound": {
+          "prompt_tokens": 7,
+          "output_tokens": 5
+        }
+      },
+      {
+        "case": "bool_prompt",
+        "required_cost_complete": false,
+        "observed_cost_complete": true,
+        "contract_passed": false,
+        "observed_lower_bound": {
+          "output_tokens": 5,
+          "wall_seconds": 0.1
+        }
+      },
+      {
+        "case": "missing_output",
+        "required_cost_complete": false,
+        "observed_cost_complete": true,
+        "contract_passed": false,
+        "observed_lower_bound": {
+          "prompt_tokens": 7,
+          "wall_seconds": 0.1
+        }
+      }
+    ],
+    "passes": 1,
+    "failures": 5,
+    "exit_code": 1,
+    "model_Lean_provider_operations": 0,
+    "raw_path": ".irisx/line-b/MATH-002/review-repair-20261019/r2-baseline-1792390343708137300/baseline-reproduction.json",
+    "raw_sha256": "6f77302b604a187a695f9eb254946c19d810634fe0ccb167cd95039583b8b32e"
+  },
+  "delivered_code_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+  "delivery_sha_reference": "Final response and PR10; delivery commit cannot embed its own SHA.",
+  "delivery_binding_note": "Original execution source hashes/commands/attempts are retained. Local working-byte tests are not retrospectively labeled as committed-source CI; separate CI readback names its actual target."
+}

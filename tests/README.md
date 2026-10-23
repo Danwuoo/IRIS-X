@@ -13,13 +13,22 @@ No metadata field can supply a shell command.
 | management / navigation / integrity | Repository structure, catalog, research pins, runner/gate negatives; stdlib + available local Git objects |
 | core / distribution | Shared contracts/reference flow/CLI, formal wheel safety; no ARC operational inputs |
 | arc-unit | Explicit self-contained CPU smoke surface,124 tests in initial local run; `packaging` test-only dependency |
-| line-b | Independent synthetic label engineering loop; no ARC implementation or inputs |
+| line-b | Independent synthetic label engineering loop and MATH-002 stdlib/mock safety controls; no ARC implementation, model/Lean execution or provider inputs |
 | arc-unit-audit | Remaining public ARC CPU modules, including tool-local suites and unresolved imports/platform failures; visible audit, never relabeled private merely because it fails |
 | arc-reconstruction / operational | Authentic historical/private inputs; blocked before import under this task |
 | arc-native | Optional native model/training dependencies; blocked before import because training is outside this task |
+| math-native | Optional NumPy/JAX adapter controls; non-public and blocked before import, never part of the public line-b job |
 
 Every Python file under tests/ and every tools/**/test_*.py is indexed. Additional
 tool-local helper/fixture modules are explicit helper entries, not zero-test passes.
+The two exact `research/math-proof-agent/round001/` and `round002/` roots also
+require inventory entries for every `test_*.py`; round002's named `controls.py`
+is covered explicitly. Only registered stdlib/mock controls enter public line-b.
+The runner and authoritative commit gate enforce the same narrow coverage, and
+whole-source snapshots include these research files in their source identity.
+Repository source admission permits only Python files in these two research
+rounds; it does not authorize execution of their Lean, tokenizer, model or remote
+scripts. Other research executable roots and non-Python executables remain denied.
 Special `*_strict.py`, `load_tests` wrappers and four import-side-effect scripts
 retain named classification reasons. Public audit modules remain executable and
 visible in CI alongside the original legacy aggregate. No tests were deleted or

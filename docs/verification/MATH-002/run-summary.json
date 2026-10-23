@@ -1,0 +1,304 @@
+{
+  "format": "irisx.math002.run-summary.v1",
+  "task": "MATH-002",
+  "code_sha": "ae051a79359c4e0be9658d89452c05793d64d831",
+  "offline_followup_code_sha": "6eb0c1e242fda087f46024307f505aaee74cede4",
+  "offline_followup": {
+    "new_remote_submissions": 0,
+    "readback": "Read-only goal continuation again returned exact source HTTP403; submission_unknown unchanged",
+    "readback_receipt": ".irisx/line-b/MATH-002/continuation-02-readback.json",
+    "local_mathlib_scope": "Pinned v4.19.0 Ring/NormNum transitive closure only; 10 controls, 7 actual Lean processes, 19 isolation checks; separate6 synthetic exit checks",
+    "mathlib_report": "mathlib-tests.json",
+    "controller_report": "controller-followup-tests.json; final45 normal and45 optimized passed; prior42 each retained",
+    "adapter_report": "adapter-followup-tests.json;16 CPU controls passed",
+    "source_correction": "Attributable upstream human review is available; no requirement for the owner personally to re-review each problem. Exact statement-only acquisition/runtime admission still pending.",
+    "science_gates": "Joint answer-proof binding and feasible common repair context not qualified; controller blocks find_answer and analyzer emits null for no-generation/joint metrics. No efficacy claim.",
+    "first_smoke_identity_unchanged": true
+  },
+  "delivery_sha_policy": "containing delivery SHA is returned in final message and PR; no self-containing hash",
+  "run_id": "m002-smoke-20261019-a7f91c",
+  "notebook_id": "danielwuu/irisx-math-m002-20261019-a7f91c",
+  "notebook_version": null,
+  "state": "submission_unknown",
+  "push_command": [
+    "kaggle",
+    "kernels",
+    "push",
+    "-p",
+    ".irisx/line-b/MATH-002/staging",
+    "--accelerator",
+    "TpuV5E8",
+    "--timeout",
+    "1800"
+  ],
+  "cli_version": "2.2.4",
+  "kagglesdk_version": "0.1.37",
+  "push_exit_code": 0,
+  "push_response": "Kernel push error: Maximum batch TPU session count of 1 reached.",
+  "readback": {
+    "http_status": 403,
+    "exact_version": null,
+    "source_verified": false,
+    "search_result": "private notebook placeholder without ref/version; no task identity established"
+  },
+  "budget": {
+    "submissions_reserved": 1,
+    "submissions_limit": 4,
+    "reserved_timeout_seconds": 1800,
+    "total_limit_seconds": 21600,
+    "remaining_ceiling_seconds": 19800,
+    "actual_tpu_seconds": null,
+    "unknown_reservation_not_refunded": true
+  },
+  "fingerprints": {
+    "source_sha256": "984ec856c441da75001fa0b25264c310bebebbae57daa8063e91198bc7ade937",
+    "protocol_sha256": "c261c0ca8899f0395fde355ea1718341f343ceeb73803adaa4f4098f502bcfab",
+    "panel_sha256": "b3241b94b3a193644e1b2a322f8d43e67287cc88bcba1596558d4d57fa35df5a",
+    "model_sha256": "54ce12f740cc2c9725ec90c53e4b9bbfe49d6d189004dbd4c48dfd9255cf4562",
+    "notebook_sha256": "d07468b53fb6e4215d705fb96fcb30848ea285c621150432c484f4990927dfef"
+  },
+  "model_revision_candidates": {
+    "Qwen/Qwen3-4B": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "Goedel-LM/Goedel-Prover-V2-8B": "dfd02e6271a58375dfbf3ece0175277cf6b6a89a"
+  },
+  "research": {
+    "frozen_scoring_panel": false,
+    "human_reviewed_selected_questions": 0,
+    "observed_model_outputs": 0,
+    "observed_tpu_devices": null,
+    "proof_rate": null,
+    "joint_success_rate": null,
+    "repair_minus_sample": null,
+    "conclusion": "not_estimable; no target-model comparison executed or retrieved"
+  },
+  "costs": {
+    "prompt_tokens": null,
+    "output_tokens": null,
+    "compile_seconds": null,
+    "inference_seconds": null,
+    "lean_remote_seconds": null,
+    "note": "No bound remote output; unknown values are not zero-cost claims"
+  },
+  "monitor": {
+    "mode": "bounded read-only reconciliation/status-only",
+    "running": false,
+    "background_process_claimed": false,
+    "stop_reason": "submission_unknown and HTTP403 prevent binding any target version",
+    "checkpoint_retrieved": false
+  },
+  "raw_receipts_ignored": ".irisx/line-b/MATH-002/receipts/",
+  "receipts": [
+    {
+      "filename": "1792381669365920600-9ba602.json",
+      "sha256": "f73185fc4f64236750e544d08a0d20cc5c62a16f675a42c41fac6764cea7bd59",
+      "command_kind": "kaggle kernels list",
+      "exit_code": 0,
+      "seconds": 3.54700000000048
+    },
+    {
+      "filename": "1792381672931077800-ca273c.json",
+      "sha256": "a5579fe0ebb12132b96337de7e626672b0aa2dc59a7beb2e1dcfbdfa002df173",
+      "command_kind": "kaggle kernels push",
+      "exit_code": 0,
+      "seconds": 4.686999999999898
+    },
+    {
+      "filename": "1792381700197998300-202376.json",
+      "sha256": "db7c0f5eb4be296d8bf4c96af1e253cc36544f0cb980c074464088f6e2e3c28c",
+      "command_kind": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe -P -s",
+      "exit_code": 2,
+      "seconds": 2.8589999999985594
+    },
+    {
+      "filename": "1792381735718783400-3168c9.json",
+      "sha256": "f0e5cae14529d27762646f2745a4cea2bd7596f14be8c37ce0e0585765b0e129",
+      "command_kind": "kaggle kernels list",
+      "exit_code": 0,
+      "seconds": 3.610000000000582
+    },
+    {
+      "filename": "1792382011840794800-f76b9e.json",
+      "sha256": "e247975bf13d08bca09975326591630db5913df9216d0d589f906c4395878b7a",
+      "command_kind": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\venv\\Scripts\\python.exe -P -s",
+      "exit_code": 2,
+      "seconds": 3.17200000000048
+    }
+  ],
+  "blockers": [
+    "Kaggle only push reports batch TPU capacity=1; exact task source previously HTTP403 and latest readback HTTPError, version remains unknown. submission_unknown retains 1 submit/1800 seconds and blocks new dispatch.",
+    "No frozen scoring panel. Generic closed Nat witness binding passed authored Lean controls, but exact statement-only acquisition, original answer-slot fidelity and source-compatible runtime remain unqualified for actual sources.",
+    "Pinned tokenizer measurements confirm 4096+4096 exceeds context8192. A smaller equal ceiling is only a candidate; exact panel prompt/feedback policy and actual TPU model parity, prefill cost and Kaggle isolation remain unqualified.",
+    "No target-model paired comparison obtained; proof/joint gain is not estimable. Implementer self-tests do not establish independent acceptance."
+  ],
+  "no_training": true,
+  "no_paid_api": true,
+  "no_other_task_resource_operation": true,
+  "self_review_only": true,
+  "final_read_only_reconciliation": "Third consecutive goal turn still submission_unknown/versionnull. Latest SDK helper HTTPError exit2; no second push or refund.",
+  "preservation": {
+    "base_sha": "0deff2254d2e3b63b88c2eefc4c4f73856663047",
+    "unchanged_protected_paths": [
+      "src",
+      "tools",
+      "tests",
+      ".github",
+      "research/math-proof-agent/round001",
+      "docs/verification/MATH-001",
+      "docs/verification/WSF-R5",
+      "docs/management/tasks/MATH-001.json",
+      "docs/management/tasks/WSF-R5.json"
+    ],
+    "git_diff_exit_code": 0,
+    "full_ci_claimed": false,
+    "management_check": "PASS",
+    "render_check": "PASS",
+    "diff_check": "PASS"
+  },
+  "latest_offline_code_sha": "d6e4309607936b66d34573350b9697e5fddc7b0f",
+  "offline_answer_binding_followup": {
+    "goal_turn": 3,
+    "previous_delivery_sha": "8ba60f78cd96a7fedda0d05d730dd3d62027f4a0",
+    "code_sha": "d6e4309607936b66d34573350b9697e5fddc7b0f",
+    "remote_submissions_added": 0,
+    "readback_command": ".irisx/line-b/MATH-002/venv/Scripts/python.exe research/math-proof-agent/round002/kaggle_run.py reconcile",
+    "reconcile_exit_code": 0,
+    "sdk_readback_exit_code": 2,
+    "readback_receipt": ".irisx/line-b/MATH-002/receipts/1792384842269717000-c913ea.json",
+    "readback_receipt_sha256": "893a6a5bbbd87846d7645da9d9e97628cb7a50c2636167ed64f68c9b4501c9fb",
+    "latest_readback_error": "HTTPError (helper suppressed status code); earlier HTTP403 remains historical evidence, not a newly captured status",
+    "remote_state": "submission_unknown",
+    "notebook_version": null,
+    "generic_answer_binding": "closed_exists_nat_v1 passed authored controls only; immutable original theorem, fixed Nat witness, final transitive axioms, exact candidate/spec/statement hashes",
+    "answer_binding_report": "answer-binding-tests.json",
+    "answer_pipeline_report": "answer-pipeline-tests.json",
+    "context_report": "context-tests.json",
+    "answer_pipeline_latest_test_executions": 130,
+    "context_controls": 23,
+    "context_observations": 34,
+    "context_conclusion": "4096 previous +4096 new exceeds8192 even in shortest authored case (9209). 2048 is only a candidate; one measured case8136 leaves56, and larger cases overflow. No formal cap adopted.",
+    "source_audit": "research/math-proof-agent/round002/source-feasibility-audit-03.json",
+    "source_admitted": false,
+    "incidental_audit_exposure": "Methodology search exposed one example answer for amc12b_2021_p3 to audit agent; no value reproduced or sent to solver, no panel selected/changed.",
+    "retained_failures": "Concurrent Lean core/mathlib checks hit thread creation failures (candidate exit1 and version exit134). Classified infrastructure; final checks sequential. Earlier pass receipts also retained.",
+    "no_generation_pair_fix": "No-generation rows cannot be paired tie/gain/loss; planned denominators remain.",
+    "tested_source_mapping": {
+      "research/math-proof-agent/round002/lean_worker.py": {
+        "tested_working_bytes_sha256": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+        "committed_blob_sha256": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/lean/answer_controls.py": {
+        "tested_working_bytes_sha256": "9567ff4ef39d405403db00fb52da946a351197925fceead7496121c2f67215b4",
+        "committed_blob_sha256": "9567ff4ef39d405403db00fb52da946a351197925fceead7496121c2f67215b4",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/lean_controls.py": {
+        "tested_working_bytes_sha256": "346bd1a9f912ad8b7509cccca22ede0a746b2b552023493b1cd840819412dabd",
+        "committed_blob_sha256": "346bd1a9f912ad8b7509cccca22ede0a746b2b552023493b1cd840819412dabd",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/lean/mathlib_controls.py": {
+        "tested_working_bytes_sha256": "50313dc6c28b1c6e0f2320c6aa45209eb6f03079ce43c0216ca6f1c50988e6a5",
+        "committed_blob_sha256": "50313dc6c28b1c6e0f2320c6aa45209eb6f03079ce43c0216ca6f1c50988e6a5",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/test_answer_pipeline.py": {
+        "tested_working_bytes_sha256": "2e9f7eb97f28d6acfb2b5eaa43376187fb237454f6be5de165fb4680f38e7282",
+        "committed_blob_sha256": "2e9f7eb97f28d6acfb2b5eaa43376187fb237454f6be5de165fb4680f38e7282",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/controls.py": {
+        "tested_working_bytes_sha256": "314148a1a2d8fa9f23911615938065e2bf15da1bfa17c163f450f7fc0d42bcae",
+        "committed_blob_sha256": "1700d4077785b7f8535118f24ff17901e2a57247457ca69e3dc9560ad1fa7675",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/common.py": {
+        "tested_working_bytes_sha256": "04895e449839ca44c4a5abb9ea5170edcd1f11f6281e751a6969e98bfe206ad8",
+        "committed_blob_sha256": "04895e449839ca44c4a5abb9ea5170edcd1f11f6281e751a6969e98bfe206ad8",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/controller.py": {
+        "tested_working_bytes_sha256": "a03138ddbf9a46a29bd26698027156fe7c8a515e125bfba0a446e2ee3fc3c0d5",
+        "committed_blob_sha256": "a03138ddbf9a46a29bd26698027156fe7c8a515e125bfba0a446e2ee3fc3c0d5",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/analyze.py": {
+        "tested_working_bytes_sha256": "6e684f020df05f164acca6e98df71f86cc6968f4e2e9ed3e0dfc5a5e8d37202f",
+        "committed_blob_sha256": "6e684f020df05f164acca6e98df71f86cc6968f4e2e9ed3e0dfc5a5e8d37202f",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/evaluator.py": {
+        "tested_working_bytes_sha256": "68495f362bbea2e547cfc726c844d3a1e5755cb0e8cb1a1aa92fac74e12c58b4",
+        "committed_blob_sha256": "68495f362bbea2e547cfc726c844d3a1e5755cb0e8cb1a1aa92fac74e12c58b4",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/model_adapter.py": {
+        "tested_working_bytes_sha256": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8",
+        "committed_blob_sha256": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/kaggle_run.py": {
+        "tested_working_bytes_sha256": "99820390b19cee9527a55eea1f6aa8332f062a95e767fcbc596d84e60bd55401",
+        "committed_blob_sha256": "99820390b19cee9527a55eea1f6aa8332f062a95e767fcbc596d84e60bd55401",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/sdk_readback.py": {
+        "tested_working_bytes_sha256": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964",
+        "committed_blob_sha256": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/protocol.json": {
+        "tested_working_bytes_sha256": "9a8ab76b39a7faeec693dcef423c2b1f9442c89ca15290cd27651eaea0c9261f",
+        "committed_blob_sha256": "ba8a49962b69ba804f45c4053314a98aa6b0f46c37e15989a95871148450add5",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/context_controls.py": {
+        "tested_working_bytes_sha256": "ab0d39c34c8e060beb4ea78e3e105679409d526f848d941e5ec340c663f5edb3",
+        "committed_blob_sha256": "ab0d39c34c8e060beb4ea78e3e105679409d526f848d941e5ec340c663f5edb3",
+        "equal_after_newline_normalization": true
+      },
+      "research/math-proof-agent/round002/model-candidates.json": {
+        "tested_working_bytes_sha256": "1bed070145da3c020832cb049e4c2335db0af15f4fde377317bbb71fb577af8f",
+        "committed_blob_sha256": "54ce12f740cc2c9725ec90c53e4b9bbfe49d6d189004dbd4c48dfd9255cf4562",
+        "equal_after_newline_normalization": true
+      }
+    },
+    "first_smoke_manifest_unchanged": true,
+    "scientific_conclusion": "not_estimable; no target model or TPU result established",
+    "independent_verification": false,
+    "delivery_validation": {
+      "code_sha": "d6e4309607936b66d34573350b9697e5fddc7b0f",
+      "checks": [
+        {
+          "name": "management_check",
+          "exit_code": 0
+        },
+        {
+          "name": "original_renderer_check",
+          "exit_code": 0
+        },
+        {
+          "name": "diff_check",
+          "exit_code": 0
+        },
+        {
+          "name": "protected_history_check",
+          "exit_code": 0
+        },
+        {
+          "name": "first_smoke_manifest_check",
+          "exit_code": 0
+        }
+      ],
+      "prior_expected_stale_board_check": {
+        "exit_code": 1,
+        "message": "stale or missing generated BOARD",
+        "resolution": "Original renderer regenerated BOARD after task/catalog changes; subsequent check and render --check passed."
+      },
+      "raw_receipt_ignored_path": ".irisx/line-b/MATH-002/answer-management-checks.json",
+      "raw_receipt_sha256": "8d88a57e42d92d0fd866a06f49c61b15a27767e32311a9efe6e671d5e7ed8cd1",
+      "full_ci": "not_run",
+      "independent_review": "not_performed"
+    }
+  }
+}

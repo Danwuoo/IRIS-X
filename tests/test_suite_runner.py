@@ -117,6 +117,49 @@ class SuiteRunnerTests(unittest.TestCase):
         self.write_text("tools/new_probe/test_new.py", TOOL_TEST)
         self.assert_invalid("coverage", "unregistered", "unclassified", "missing")
 
+    def test_scoped_math_tests_run_from_snapshot_without_importing_native_tests(self) -> None:
+        directory = "research/math-proof-agent/round002"
+        path = directory + "/controls.py"
+        native_path = directory + "/test_native.py"
+        self.write_text(path, TOOL_TEST)
+        self.write_text(native_path, PRIVATE_TEST)
+        entry = self.entry(path, "core")
+        entry.update(workstream="line-b", import_roots=[directory], module_name="controls")
+        native = self.entry(native_path, "operational", "native")
+        native.update(workstream="line-b", import_roots=[directory], module_name="test_native")
+        self.data["entries"].extend([entry, native])
+        report = self.run_suite()
+        self.assertEqual(report["status"], "passed", report)
+        self.assertEqual(report["tests"], 3)
+        self.assertIn(path, report["selected_paths"])
+        self.assertNotIn(native_path, report["selected_paths"])
+        snapshot = Path(report["execution_root"])
+        self.assertEqual((snapshot / path).read_bytes(), (self.root / path).read_bytes())
+        self.assertFalse((snapshot / directory / "PRIVATE_IMPORTED").exists())
+        child = next(row for row in report["modules"] if row["path"] == path)
+        self.assertEqual(child["source_identity"], report["source_identity"])
+        self.assertEqual(runner.validate_child_startup(child["interpreter_startup"]), [])
+
+    def test_new_math_test_and_named_controls_require_inventory_coverage(self) -> None:
+        for path in ("research/math-proof-agent/round001/test_new.py",
+                     "research/math-proof-agent/round002/nested/test_new.py",
+                     "research/math-proof-agent/round002/controls.py"):
+            with self.subTest(path=path):
+                self.write_text(path, TOOL_TEST)
+                self.assertIn("unregistered inventory coverage: " + path,
+                              runner.validate_inventory(self.root, self.data))
+
+    def test_inventory_cannot_expand_to_other_research_or_similar_rounds(self) -> None:
+        for path in ("research/other/test_control.py",
+                     "research/math-proof-agent/round003/test_control.py",
+                     "research/math-proof-agent/round002-extra/test_control.py"):
+            with self.subTest(path=path):
+                self.write_text(path, TOOL_TEST)
+                self.data["entries"].append(self.entry(path, "core"))
+                self.assertIn("path outside managed test roots: " + path,
+                              runner.validate_inventory(self.root, self.data))
+                self.data["entries"].pop()
+
     def test_duplicate_classification_rejected(self) -> None:
         self.data["entries"].append(copy.deepcopy(self.data["entries"][0]))
         self.assert_invalid("duplicate", "classification")

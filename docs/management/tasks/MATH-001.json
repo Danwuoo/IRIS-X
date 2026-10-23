@@ -1,0 +1,44 @@
+{
+  "format": "irisx.task.v1",
+  "id": "MATH-001",
+  "title": "Math proof-agent direction and first certificate audit",
+  "workstream": "line-b",
+  "state": "review_ready",
+  "depends_on": [],
+  "owner_role": "math-researcher",
+  "plan_ref": "math-001-01",
+  "scope_paths": [
+    "research/math-proof-agent/**",
+    "docs/workstreams/line-b/**",
+    "docs/plan/2026-10-18-math-proof-agent-round01.md",
+    "docs/verification/MATH-001/**",
+    "docs/management/documents.json",
+    "docs/management/tasks/MATH-001.json",
+    "docs/management/BOARD.md",
+    "docs/workstreams/registry.json",
+    "AGENTS.md",
+    "docs/workstreams/README.md"
+  ],
+  "base_branch": "develop",
+  "head_branch": "feat/math-proof-agent-20261018",
+  "base_commit": "9389f433a1fbe41d25f8ce1248fde07f7ce9250d",
+  "implementation_commit": "06965ac5e85b208f67c3a64bb6431bcf3962766d",
+  "acceptance": [
+    "M1-DIRECTION",
+    "M1-SOURCES",
+    "M1-PILOT",
+    "M1-EVAL",
+    "M1-HARDWARE",
+    "M1-PRESERVE"
+  ],
+  "blockers": [
+    "No target-model, Lean or TPU efficacy measured; full checkout verification unavailable."
+  ],
+  "handoff_ref": "math-001-02",
+  "verification_refs": [
+    "math-001-05",
+    "math-001-06"
+  ],
+  "review_refs": [],
+  "concurrency_group": null
+}

@@ -33,6 +33,13 @@ OPTIONAL_FIELDS = {"import_roots", "module_name"}
 CLASSES = {"stdlib", "small-python", "historical", "operational", "native", "training", "unclassified-public"}
 PROTECTED = {"historical", "operational", "native", "training"}
 PYTHON_ENVIRONMENT = {"PYTHONHASHSEED": "0", "PYTHONDONTWRITEBYTECODE": "1"}
+MATH_TEST_ROOTS = ("research/math-proof-agent/round001", "research/math-proof-agent/round002")
+MATH_NAMED_TESTS = {"research/math-proof-agent/round002/controls.py"}
+
+
+def managed_test_path(path: str) -> bool:
+    return (path.startswith(("tests/", "tools/"))
+            or any(path.startswith(directory + "/") for directory in MATH_TEST_ROOTS))
 
 
 def controlled_python_environment(inherited=None) -> dict:
@@ -119,7 +126,7 @@ def validate_inventory(root: Path, data=None) -> list[str]:
             if not FIELDS <= set(entry) or set(entry) - FIELDS - OPTIONAL_FIELDS:
                 raise ValueError("unknown or missing inventory entry fields; commands forbidden")
             path = safe_path(root, entry["path"])
-            if not entry["path"].startswith(("tests/", "tools/")):
+            if not managed_test_path(entry["path"]):
                 errors.append(f"path outside managed test roots: {entry['path']}")
             if path.suffix != ".py" or not path.is_file():
                 errors.append(f"missing Python path: {entry['path']}")
@@ -145,6 +152,10 @@ def validate_inventory(root: Path, data=None) -> list[str]:
         # Inventory completeness is checked without importing any test modules.
         required = {p.relative_to(root).as_posix().casefold() for p in (root / "tests").rglob("*.py")}
         required.update(p.relative_to(root).as_posix().casefold() for p in (root / "tools").rglob("test_*.py"))
+        for directory in MATH_TEST_ROOTS:
+            required.update(p.relative_to(root).as_posix().casefold()
+                            for p in (root / directory).rglob("test_*.py"))
+        required.update(path.casefold() for path in MATH_NAMED_TESTS if (root / path).is_file())
         for missing in sorted(required - paths):
             errors.append(f"unregistered inventory coverage: {missing}")
     except (OSError, ValueError, TypeError, KeyError, AttributeError) as exc:

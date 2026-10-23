@@ -1,0 +1,118 @@
+{
+  "format": "irisx.math.source-gap-audit.v1",
+  "task": "MATH-002",
+  "goal_turn": 3,
+  "reviewed_on": "2026-10-19",
+  "scope": "Primary metadata and methodology audit only. No benchmark dataset file or reference-proof archive was fetched. No dataset rows endpoint, model, researcher contact, panel selection or freeze was used.",
+  "source_pin": {
+    "repository": "https://github.com/roozbeh-mohit/miniF2F_v2",
+    "revision": "905eca84f37cf38a49ec54f0f03e7bf99b510168",
+    "candidate_path": "datasets/miniF2F_v2c.jsonl",
+    "candidate_git_blob_sha1": "9df7ea761861ad0281013b6d94179136d87ecd17",
+    "candidate_bytes": 296726,
+    "hf_repository": "https://huggingface.co/datasets/roozbeh-yz/miniF2F_v2",
+    "hf_revision": "065cb8057ccfc6e70f4afdd4d8542306c0f7cdb2"
+  },
+  "metadata_findings": [
+    {
+      "url": "https://api.github.com/repos/roozbeh-mohit/miniF2F_v2/git/trees/905eca84f37cf38a49ec54f0f03e7bf99b510168?recursive=1",
+      "http_status": 200,
+      "finding": "Complete tree is not truncated. It contains LICENSE, README, one comparison image, and four v2c/v2s JSON/JSONL files. No producer/parser/schema code or Lean/toolchain/manifest file exists in this pinned tree. Image and dataset bodies were not fetched."
+    },
+    {
+      "url": "https://huggingface.co/api/datasets/roozbeh-yz/miniF2F_v2/revision/065cb8057ccfc6e70f4afdd4d8542306c0f7cdb2",
+      "http_status": 200,
+      "finding": "Public ungated repository; Apache-2.0 card. Siblings are .gitattributes, README.md, miniF2F_v2c.jsonl and miniF2F_v2s.jsonl. No dataset_info/features metadata is supplied."
+    },
+    {
+      "url": "https://datasets-server.huggingface.co/info?dataset=roozbeh-yz%2FminiF2F_v2&config=default",
+      "http_status": 500,
+      "exception_class": "DatasetGenerationCastError",
+      "expected_feature_names_extracted_from_metadata_error": [
+        "formal_proof",
+        "formal_statement",
+        "header",
+        "informal_proof",
+        "informal_statement",
+        "name",
+        "split"
+      ],
+      "incoming_arrow_field_names_extracted_from_metadata_error": [
+        "formal_proof",
+        "formal_statement",
+        "header",
+        "informal statement",
+        "informal_proof",
+        "name",
+        "split"
+      ],
+      "diagnostic_data_filename_only": "miniF2F_v2s.jsonl",
+      "finding": "The default loader mixes versions and fails on a space-versus-underscore informal-statement field. Both schemas contain formal_proof and informal_proof fields. Error field names were extracted without emitting traceback or values. Their contents are unknown; proof-named fields could be placeholders, but the future-proof-release card is insufficient to certify that. Live viewer metadata is not bound to the pinned source revision."
+    },
+    {
+      "url": "https://datasets-server.huggingface.co/is-valid?dataset=roozbeh-yz%2FminiF2F_v2",
+      "http_status": 200,
+      "metadata": {
+        "preview": true,
+        "viewer": false,
+        "search": false,
+        "filter": false,
+        "statistics": false
+      },
+      "finding": "No working server-side field projection was established. Preview was not used because it returns rows."
+    },
+    {
+      "url": "https://datasets-server.huggingface.co/croissant?dataset=roozbeh-yz%2FminiF2F_v2",
+      "http_status": 404
+    },
+    {
+      "url": "https://huggingface.co/api/datasets/roozbeh-yz/miniF2F_v2/croissant",
+      "http_status": 200,
+      "recordSet": [],
+      "finding": "Hub Croissant endpoint exists but exposes no fields. Its distribution points at convert/parquet, not a separately pinned statement-only artifact. No linked dataset artifact was downloaded."
+    }
+  ],
+  "formal_shape_evidence": {
+    "primary_methodology_url": "https://openreview.net/pdf/dac291045a82bf9d17ddb270006def064bc96457.pdf",
+    "paper": "https://arxiv.org/abs/2511.03108v1",
+    "finding": "Section 2.1 distinguishes multiple-choice tasks, whose formal statements include all options, from tasks whose solution was previously supplied inside a formal statement. For the latter, v2c replaces the solution with a sorry placeholder for the prover to fill. Metadata does not support assuming every find-answer task is a fixed existential proposition with only a proof-body hole.",
+    "implementation_implication": "The current worker only replaces a proof body for an immutable declaration. Filling answer holes inside a declaration would change those bytes; it needs an explicitly reviewed typed answer-slot/witness-binding design rather than silently relabeling the current proof-only interface. A correct separate answer string plus a proof of an options disjunction remains insufficient to bind that answer."
+  },
+  "incidental_exposure": {
+    "occurred": true,
+    "mechanism": "A primary-paper methodology search unexpectedly expanded the adjacent comparison figure and exposed an example answer in the audit agent context.",
+    "problem_identifier": "amc12b_2021_p3",
+    "answer_values_recorded_in_this_note": false,
+    "dataset_file_download": false,
+    "solver_or_target_model_transmission": false,
+    "action": "Reported immediately to the parent, stopped paper-search expansion, and retained this exposure record. Do not claim zero answer content seen by the audit agent; do not use it to select successful items or feed any solver. No panel exists and none was changed."
+  },
+  "assessment": {
+    "bulk_v2c_statement_only_acquisition_established": false,
+    "reason": "The official snapshot includes proof-named fields with unobserved values, no producer/schema contract certifying placeholders, and no functioning metadata-only projection service. Acquiring the entire file and deleting proof fields afterward would not meet the no-solution-acquisition requirement.",
+    "not_a_claim": "This does not assert the v2c file contains actual reference proofs, nor that lawful reviewed sources do not exist. It records the narrower acquisition assurance gap.",
+    "safe_offline_progress": [
+      "Implement and test a typed answer/witness-binding contract using authored engineering controls without claiming benchmark efficacy.",
+      "Preserve a strict column allowlist and separate source-version fingerprints, but do not infer that an unvalidated importer makes bulk source acquisition safe.",
+      "Qualify an alternative already-published statement-only source such as ProofNet-Verified with its exact Lean 4.28.0 dependencies for proof-only work, if accepted by the parent task; this does not satisfy joint discovery metrics."
+    ],
+    "remaining_actual_gates": [
+      "miniF2F-v2c statement-only acquisition and original formal answer-slot semantics remain unresolved.",
+      "No pinned compatible miniF2F-v2c Lean/mathlib environment is established by current metadata.",
+      "Current local Mathlib v4.19.0 limited import controls do not qualify arbitrary source statements or a new runtime version.",
+      "Actual Kaggle TPU v5e-8 model qualification and the reviewed answer-binding path still cannot be replaced by CPU/offline controls."
+    ],
+    "owner_contact_required_by_metadata": false,
+    "no_new_remote_submission_recommended_from_this_audit_alone": true,
+    "even_if_generic_nat_answer_binding_implemented": {
+      "actual_panel_still_blocked": true,
+      "reasons": [
+        "A generic Nat witness interface supplies neither the original miniF2F-v2c schema nor evidence that its reviewed answer slots use that type and binding shape.",
+        "The no-solution-acquisition gate remains unresolved while proof-named source fields have unknown values and no verified statement-only projection is available.",
+        "The source-compatible Lean/mathlib runtime and immutable statement extraction remain unqualified.",
+        "Parent reports actual Kaggle TPU status/qualification still unknown. Offline Nat controls cannot establish target-model execution, eight v5e devices, costs or paired efficacy."
+      ],
+      "safe_progress_distinction": "Generic typed binding can close an implementation gap using authored controls. It cannot by itself authorize or identify a scored panel, eliminate source uncertainty, or turn unknown TPU execution into a research result."
+    }
+  }
+}

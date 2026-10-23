@@ -1,0 +1,870 @@
+{
+  "format": "irisx.math.local-cpu-wsl-qwen3-4b-validation.v1",
+  "recorded_at": "2026-10-20T07:38:00Z",
+  "target_code_commit": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+  "governance_boundary": "Local CPU/GPU and WSL2 Lean 4.19.0 validation qualifies engineering contracts, 36-layer Qwen/Qwen3-4B JAX vs PyTorch BF16 numerical parity diagnostics, and real Qwen/Qwen3-4B generation into sandboxed WSL2 Lean 4.19.0 (Mathlib v4.19.0 + closed_exists_nat_v1). Per AGENTS.md and M2-SMOKE, local CPU/WSL2 results do not substitute for Kaggle TPU v5e-8 qualification or benchmark efficacy. Zero Kaggle operations were performed.",
+  "proofnet_verified_statement_only_compatibility_audit": {
+    "format": "irisx.math.offline-statement-compatibility-audit.v1",
+    "recorded_at": "2026-10-20T04:28:34.308363+00:00",
+    "task": "MATH-002",
+    "scope": "Ignored local offline statement-only compatibility study in .irisx/line-b/MATH-002/offline-research-20261020/. Zero benchmark proof files or answer keys were fetched; only 8 statement-only .lean files ending in `:= by sorry` from ProofNet-Verified tree 394620c77ebfc275c4cd4e740a2d7c0926b2d8a5 were inspected in memory without storing benchmark declarations or modifying any WSL/local runtime.",
+    "source_tree": {
+      "repository": "https://github.com/marcusm117/ProofNet-Verified",
+      "revision": "160414332dc196583f6c37c310b420d2a3b07c58",
+      "statement_only_dir": "proofnet-verified",
+      "git_tree_sha1": "394620c77ebfc275c4cd4e740a2d7c0926b2d8a5",
+      "total_lean_files": 367,
+      "truncated": false,
+      "prefix_distribution": {
+        "proofnet": 367
+      }
+    },
+    "local_lean_environment_comparison": {
+      "qualified_local_lean_toolchain": "leanprover/lean4:v4.19.0",
+      "qualified_local_mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+      "qualified_local_mathlib_project_sha256": "d0bb542569dd4742f2b883fea29caf41be39694a3d776c47a5a70d013c8faf79",
+      "qualified_local_cached_closure": [
+        "Mathlib.Tactic.Ring",
+        "Mathlib.Tactic.NormNum"
+      ],
+      "upstream_proofnet_verified_toolchain": "leanprover/lean4:v4.28.0",
+      "upstream_proofnet_verified_mathlib_revision": "8f9d9cff6bd728b17a24e163c9402775d9e6a365"
+    },
+    "sample_count": 8,
+    "sample_results": [
+      {
+        "path": "proofnet-verified/proofnet-1.lean",
+        "git_blob_sha1": "2519a3145168d6591e66ad1dbd0bbd0a2270228c",
+        "sha256": "a9ea15e08b984edb0690348b953a11bf0a1c2cd2541131323c26c243f21ee7fc",
+        "bytes": 419,
+        "theorem_name": "Artin_exercise_2_2_9",
+        "imports": [
+          "import Mathlib"
+        ],
+        "opens": [
+          "open Function Fintype Subgroup Ideal Polynomial Submodule Zsqrtd",
+          "open scoped BigOperators"
+        ],
+        "mentions_canonical_or_smt": false,
+        "ends_with_by_sorry": true,
+        "contains_any_proof_body": false,
+        "matches_closed_exists_nat_v1": false,
+        "uses_open_or_scoped_header_commands": true
+      },
+      {
+        "path": "proofnet-verified/proofnet-14.lean",
+        "git_blob_sha1": "b3d390eedafb928233c3792e41c1086a28ea498c",
+        "sha256": "4a7ec2698b680a053ec4bd268e9f5b6912c03b5db0d4700955ac91854cf89ad2",
+        "bytes": 400,
+        "theorem_name": "Artin_exercise_13_4_10",
+        "imports": [
+          "import Mathlib"
+        ],
+        "opens": [
+          "open Function Fintype Subgroup Ideal Polynomial Submodule Zsqrtd",
+          "open scoped BigOperators"
+        ],
+        "mentions_canonical_or_smt": false,
+        "ends_with_by_sorry": true,
+        "contains_any_proof_body": false,
+        "matches_closed_exists_nat_v1": false,
+        "uses_open_or_scoped_header_commands": true
+      },
+      {
+        "path": "proofnet-verified/proofnet-180.lean",
+        "git_blob_sha1": "c08d294fc8e533d1727b07b7cd2e51ae11a7a7a0",
+        "sha256": "0d92efe8f11a138b38e2735bdc3366cbbfe238a2cc8501370fb44c144b8b6aaf",
+        "bytes": 801,
+        "theorem_name": "Shakarchi_exercise_2_9",
+        "imports": [
+          "import Mathlib"
+        ],
+        "opens": [
+          "open Complex Filter Function Metric Finset",
+          "open scoped BigOperators Topology"
+        ],
+        "mentions_canonical_or_smt": false,
+        "ends_with_by_sorry": true,
+        "contains_any_proof_body": false,
+        "matches_closed_exists_nat_v1": false,
+        "uses_open_or_scoped_header_commands": true
+      },
+      {
+        "path": "proofnet-verified/proofnet-220.lean",
+        "git_blob_sha1": "57582b8b5ae5f35fdf972f31983b1bfe841321e9",
+        "sha256": "235106e83589db5dd67bae21fbfefccec5e41ebf5c826633374d9290aa380cfc",
+        "bytes": 517,
+        "theorem_name": "Dummit_Foote_exercise_1_6_23",
+        "imports": [
+          "import Mathlib"
+        ],
+        "opens": [
+          "open Fintype Subgroup Set Polynomial Ideal",
+          "open scoped BigOperators"
+        ],
+        "mentions_canonical_or_smt": false,
+        "ends_with_by_sorry": true,
+        "contains_any_proof_body": false,
+        "matches_closed_exists_nat_v1": false,
+        "uses_open_or_scoped_header_commands": true
+      },
+      {
+        "path": "proofnet-verified/proofnet-261.lean",
+        "git_blob_sha1": "e9fb47c7e72ad41a2725d9790ecc93c63ad0204a",
+        "sha256": "130b1fd479c988b4ded2c880245efeec0496ede3196f2eb208e30556ed165151",
+        "bytes": 531,
+        "theorem_name": "Herstein_exercise_2_5_31",
+        "imports": [
+          "import Mathlib"
+        ],
+        "opens": [
+          "open Fintype Set Real Ideal Polynomial",
+          "open scoped BigOperators"
+        ],
+        "mentions_canonical_or_smt": false,
+        "ends_with_by_sorry": true,
+        "contains_any_proof_body": false,
+        "matches_closed_exists_nat_v1": false,
+        "uses_open_or_scoped_header_commands": true
+      },
+      {
+        "path": "proofnet-verified/proofnet-301.lean",
+        "git_blob_sha1": "9d0eadeaccd8802bb41d24ed0f96f19239da76d5",
+        "sha256": "2c2292dc8b9da6512fa0baceb0533b24ab104cb41f36e9b983a272edcbcb7eba",
+        "bytes": 503,
+        "theorem_name": "Munkres_exercise_22_5",
+        "imports": [
+          "import Mathlib"
+        ],
+        "opens": [
+          "open Filter Set TopologicalSpace",
+          "open scoped Topology"
+        ],
+        "mentions_canonical_or_smt": false,
+        "ends_with_by_sorry": true,
+        "contains_any_proof_body": false,
+        "matches_closed_exists_nat_v1": false,
+        "uses_open_or_scoped_header_commands": true
+      },
+      {
+        "path": "proofnet-verified/proofnet-342.lean",
+        "git_blob_sha1": "9ece8cf0660f93d008a0a6383a21d837e7252050",
+        "sha256": "15200089c699dd4d76a5351c3eb017510cec467b3dbd035dee11c45a3124ba32",
+        "bytes": 346,
+        "theorem_name": "Rudin_exercise_3_2a",
+        "imports": [
+          "import Mathlib"
+        ],
+        "opens": [
+          "open Topology Filter Real TopologicalSpace Finset",
+          "open scoped BigOperators"
+        ],
+        "mentions_canonical_or_smt": false,
+        "ends_with_by_sorry": true,
+        "contains_any_proof_body": false,
+        "matches_closed_exists_nat_v1": false,
+        "uses_open_or_scoped_header_commands": true
+      },
+      {
+        "path": "proofnet-verified/proofnet-52.lean",
+        "git_blob_sha1": "361ebf61ee487f4adb495ede2763f8da92c16011",
+        "sha256": "6079cc9dc548eae805969ef8cfb7cae34828835ca92f6426712edfda01170382",
+        "bytes": 398,
+        "theorem_name": "Dummit_Foote_exercise_4_5_14",
+        "imports": [
+          "import Mathlib"
+        ],
+        "opens": [
+          "open Fintype Subgroup Set Polynomial Ideal",
+          "open scoped BigOperators"
+        ],
+        "mentions_canonical_or_smt": false,
+        "ends_with_by_sorry": true,
+        "contains_any_proof_body": false,
+        "matches_closed_exists_nat_v1": false,
+        "uses_open_or_scoped_header_commands": true
+      }
+    ],
+    "findings": {
+      "canonical_or_smt_in_sampled_statement_files": false,
+      "all_sampled_files_end_with_by_sorry": true,
+      "all_sampled_files_use_umbrella_import_mathlib": true,
+      "sampled_files_using_open_or_scoped_commands": 8,
+      "sampled_files_matching_closed_exists_nat_v1": 0,
+      "architectural_implications": [
+        "1. No Canonical/Smt contamination in statement files: All 8 sampled statement-only .lean files in proofnet-verified/ (tree 394620c77ebfc275c4cd4e740a2d7c0926b2d8a5) only `import Mathlib` and end in `:= by sorry`; none import `Canonical` or `Smt` (which only appear in upstream lakefile.lean).",
+        "2. Header structure (`open` / `open scoped` + `import Mathlib`): Upstream ProofNet-Verified files use `import Mathlib` plus `open` / `open scoped` header lines (e.g. `open Filter Real Topology`, `open scoped Topology BigOperators`), whereas `lean_worker.py` currently admits a fixed module allowlist (`ALLOWED_IMPORTS`) and renders `import <mod>` directly before `theorem irisx_final <declaration> :=`. Supporting arbitrary upstream textbook statements in a future revision would require either per-item submodule imports + scoped namespace bindings inside the declaration or an explicitly reviewed header field in `statement_digest`.",
+        "3. Runtime & cache boundary: Upstream ProofNet-Verified targets Lean v4.28.0 + full `import Mathlib` (`8f9d9cff6bd728b17a24e163c9402775d9e6a365`), whereas our frozen local WSL Mathlib project (`d0bb542569dd4742f2b883fea29caf41be39694a3d776c47a5a70d013c8faf79`) is pinned to Lean v4.19.0 (`c44e0c8ee63ca166450922a373c7409c5d26b00b`) with the 691-file `Ring`/`NormNum` cache closure.",
+        "4. Denominator boundary: All 367 files in `proofnet-verified/` are pure `prove` tasks (the 4 non-proof items were removed upstream), so ProofNet-Verified alone cannot supply the `find_answer` denominator required for the joint answer+proof hypothesis.",
+        "5. Sequencing rule per independent review 5568170709: Do not modify tracked runtime files (`lean_worker.py`, `controller.py`, `protocol.json`, `panel-proposal.json`) before Kaggle TPU smoke reconciliation and M2-SMOKE qualification."
+      ]
+    }
+  },
+  "local_engineering_and_wsl_e2e_suites": {
+    "hardware_observed": {
+      "host_platform": "Windows-11-10.0.26200-SP0",
+      "host_logical_cpus": 18,
+      "local_gpu_detected": "NVIDIA GeForce RTX 3050 6GB Laptop GPU, 6144 MiB, 591.59",
+      "local_gpu_vram_note": "NVIDIA GeForce RTX 3050 6GB Laptop GPU has 6144 MiB VRAM; Qwen/Qwen3-4B BF16 weights are 8,044,982,000 bytes (~7.49 GiB) and Goedel-Prover-V2-8B BF16 weights are 16,381,516,824 bytes (~15.26 GiB), so full BF16 weights exceed 6 GB single-GPU VRAM without CPU/GPU offload or quantization."
+    },
+    "steps_executed": [
+      {
+        "name": "test_model_adapter_normal",
+        "command": [
+          "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\adapter-venv\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "research/math-proof-agent/round002/test_model_adapter.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 7.485000000000582,
+        "stdout_tail": [],
+        "stderr_tail": [
+          "",
+          "----------------------------------------------------------------------",
+          "Ran 16 tests in 6.431s",
+          "",
+          "OK"
+        ]
+      },
+      {
+        "name": "test_model_adapter_optimized",
+        "command": [
+          "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\adapter-venv\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "research/math-proof-agent/round002/test_model_adapter.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 16.156000000002678,
+        "stdout_tail": [],
+        "stderr_tail": [
+          "",
+          "----------------------------------------------------------------------",
+          "Ran 16 tests in 14.663s",
+          "",
+          "OK"
+        ]
+      },
+      {
+        "name": "context_controls_normal",
+        "command": [
+          "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\adapter-venv\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "research/math-proof-agent/round002/context_controls.py",
+          "--asset-dir",
+          "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\tokenizer-context",
+          "--report",
+          "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\local-cpu-gpu-validation-20261020\\context-controls-normal.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 2.5780000000086147,
+        "stdout_tail": [
+          "  \"observations\": 34,",
+          "  \"network_bytes\": 0,",
+          "  \"wall_seconds\": 2.311999999990803,",
+          "  \"report\": \"C:\\\\Users\\\\wurre\\\\Desktop\\\\IRIS-X-Math\\\\.irisx\\\\line-b\\\\MATH-002\\\\local-cpu-gpu-validation-20261020\\\\context-controls-normal.json\"",
+          "}"
+        ],
+        "stderr_tail": [
+          "None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used."
+        ]
+      },
+      {
+        "name": "context_controls_optimized",
+        "command": [
+          "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\adapter-venv\\Scripts\\python.exe",
+          "-P",
+          "-s",
+          "-B",
+          "-O",
+          "research/math-proof-agent/round002/context_controls.py",
+          "--asset-dir",
+          "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\tokenizer-context",
+          "--report",
+          "C:\\Users\\wurre\\Desktop\\IRIS-X-Math\\.irisx\\line-b\\MATH-002\\local-cpu-gpu-validation-20261020\\context-controls-optimized.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 3.812999999994645,
+        "stdout_tail": [
+          "  \"observations\": 34,",
+          "  \"network_bytes\": 0,",
+          "  \"wall_seconds\": 3.25,",
+          "  \"report\": \"C:\\\\Users\\\\wurre\\\\Desktop\\\\IRIS-X-Math\\\\.irisx\\\\line-b\\\\MATH-002\\\\local-cpu-gpu-validation-20261020\\\\context-controls-optimized.json\"",
+          "}"
+        ],
+        "stderr_tail": [
+          "None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used."
+        ]
+      },
+      {
+        "name": "wsl_lean_parser_controls",
+        "command": [
+          "wsl.exe",
+          "--",
+          "bash",
+          "-lc",
+          "cd /mnt/c/Users/wurre/Desktop/IRIS-X-Math && PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean_controls.py --parser-only --output /mnt/c/Users/wurre/Desktop/IRIS-X-Math/.irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/lean-parser-controls.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 2.0929999999934807,
+        "stdout_tail": [
+          "  \"passed\": 13,",
+          "  \"total\": 13,",
+          "  \"ok\": true",
+          "}",
+          ""
+        ],
+        "stderr_tail": []
+      },
+      {
+        "name": "wsl_lean_core_and_isolation_controls",
+        "command": [
+          "wsl.exe",
+          "--",
+          "bash",
+          "-lc",
+          "cd /mnt/c/Users/wurre/Desktop/IRIS-X-Math && PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean_controls.py --config .irisx/line-b/MATH-002/lean-config-local.json --output /mnt/c/Users/wurre/Desktop/IRIS-X-Math/.irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/lean-core-controls.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 6.094000000011874,
+        "stdout_tail": [
+          "    }",
+          "  ],",
+          "  \"qualified\": true",
+          "}",
+          ""
+        ],
+        "stderr_tail": []
+      },
+      {
+        "name": "wsl_lean_mathlib_controls",
+        "command": [
+          "wsl.exe",
+          "--",
+          "bash",
+          "-lc",
+          "cd /mnt/c/Users/wurre/Desktop/IRIS-X-Math && PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean/mathlib_controls.py --config .irisx/line-b/MATH-002/lean-config-mathlib-4g-local.json --output /mnt/c/Users/wurre/Desktop/IRIS-X-Math/.irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/lean-mathlib-controls.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 11.640999999988708,
+        "stdout_tail": [
+          "{\"output\": \"/mnt/c/Users/wurre/Desktop/IRIS-X-Math/.irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/lean-mathlib-controls.json\", \"passed_count\": 10, \"preflight_blocker\": null, \"qualified\": true, \"test_count\": 10}"
+        ],
+        "stderr_tail": []
+      },
+      {
+        "name": "wsl_lean_answer_binding_controls",
+        "command": [
+          "wsl.exe",
+          "--",
+          "bash",
+          "-lc",
+          "cd /mnt/c/Users/wurre/Desktop/IRIS-X-Math && PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B research/math-proof-agent/round002/lean/answer_controls.py --config .irisx/line-b/MATH-002/lean-config-local.json --output /mnt/c/Users/wurre/Desktop/IRIS-X-Math/.irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/lean-answer-controls.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 2.6560000000026776,
+        "stdout_tail": [
+          "{\"qualified\": true, \"test_count\": 44, \"passed_count\": 44, \"actual_Lean_executions\": 6, \"preflight_blocker\": null, \"output\": \"/mnt/c/Users/wurre/Desktop/IRIS-X-Math/.irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/lean-answer-controls.json\"}"
+        ],
+        "stderr_tail": []
+      },
+      {
+        "name": "wsl_e2e_controller_lean_verify_normal",
+        "command": [
+          "wsl.exe",
+          "--",
+          "bash",
+          "-lc",
+          "cd /mnt/c/Users/wurre/Desktop/IRIS-X-Math && PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B /mnt/c/Users/wurre/Desktop/IRIS-X-Math/.irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/wsl_e2e_controller_lean_verify.py"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 31.172000000005937,
+        "stdout_tail": [
+          "WSL E2E PASS in 28.63s -> wsl-e2e-controller-lean-receipt.json"
+        ],
+        "stderr_tail": []
+      },
+      {
+        "name": "wsl_e2e_controller_lean_verify_optimized",
+        "command": [
+          "wsl.exe",
+          "--",
+          "bash",
+          "-lc",
+          "cd /mnt/c/Users/wurre/Desktop/IRIS-X-Math && PYTHONHASHSEED=0 /home/wurre/irisx-math-m002-lean-20261019/venv/bin/python -P -s -B -O /mnt/c/Users/wurre/Desktop/IRIS-X-Math/.irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/wsl_e2e_controller_lean_verify.py"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 32.375,
+        "stdout_tail": [
+          "WSL E2E PASS in 30.06s -> wsl-e2e-controller-lean-receipt.json"
+        ],
+        "stderr_tail": []
+      }
+    ],
+    "retained_first_attempt_wsl_cold_boot_observation": {
+      "description": "During initial WSL2 cold boot, systemd --user and background /home/wurre/openclaw/dist/index.js momentarily exceeded 60 threads under UID wurre, causing RLIMIT_NPROC=64 in probe_isolation() to fail closed with blocker=isolation_probe_failed (bwrap: Can't fork for pid 1: Resource temporarily unavailable). After WSL2 boot settled (~2s, 10 host threads), all 19/19 isolation checks and Lean executions passed."
+    },
+    "wsl_e2e_controller_lean_analyzer_summary": {
+      "format": "irisx.math.local-wsl-e2e-controller-lean-verification.v1",
+      "recorded_at": "2026-10-20T05:50:48.051976+00:00",
+      "scope": "Authored local end-to-end engineering verification of Controller + Real Sandboxed WSL2 Lean 4.19.0 (Mathlib v4.19.0 + closed_exists_nat_v1) + Evaluator + Analyzer. Not benchmark or target-model efficacy.",
+      "wall_seconds": 30.06011179700002,
+      "source_files_sha256": {
+        "analyze.py": "2e312152109e1d4f26fe78ac7a10ff0683b2bf6ee789ebc0107caff566297b93",
+        "common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+        "controller.py": "684211722971460470e6276e46c0e9cdf33b9749d5ad8d98036dc69673364802",
+        "evaluator.py": "e00d5a7e065c0cf6c5d0c4641d23b4f00b85d32e61a35831006b89121975e658",
+        "lean_worker.py": "9689c970560d6b98fe419a3eb4d83e2d0a1079ebe60f3ed61b559ff6a77f148a",
+        "model_adapter.py": "a8cd56ed5e8b535a67ca7fc4154c0620956a01a9ae7cbf37f2c6858c21d836c8"
+      },
+      "checks": {
+        "m_direct_proof_accepted": true,
+        "m_sample_proof_accepted": true,
+        "m_repair_proof_accepted": true,
+        "m_repair_joint_success": true,
+        "m_repair_joint_status_kernel_bound": true,
+        "all_arms_cost_complete": true,
+        "paired_gain_is_2": true,
+        "paired_joint_gain_is_1": true,
+        "repair_prompts_received_real_lean_errors": true
+      },
+      "analysis_summary": {
+        "arms": {
+          "M-DIRECT": {
+            "planned": 2,
+            "counts": {
+              "generation_observed_rows": 2,
+              "budget_exhausted": 2,
+              "joint_denominator": 1,
+              "joint_unqualified": 0,
+              "joint_generation_observed_rows": 1,
+              "answer_correct": 0,
+              "joint_success": 0,
+              "evaluator_key_disagreements": 0
+            },
+            "observed_model_cost_lower_bound": {
+              "prompt_tokens": 240,
+              "consumed_prompt_tokens": 240,
+              "output_tokens": 32,
+              "wall_seconds": 0.1,
+              "cold_compile_seconds": 0.0,
+              "cache_allocation_seconds": 0.01,
+              "prefill_seconds": 0.04,
+              "decode_seconds": 0.05
+            },
+            "model_cost_issues": [],
+            "observed_execution_cost": {
+              "verifier_setup_seconds": 6.122522322999998,
+              "wall_seconds": 1.6069964369999923,
+              "generation_attempts": 2,
+              "incomplete_model_cost_receipts": 0,
+              "tool_calls": 2,
+              "tool_wall_seconds": 1.445148945999989
+            },
+            "cost_complete": true,
+            "proof_rate": 0.0,
+            "proof_rate_scope": "known successes over planned denominator; missing items retained; null when no generation observed",
+            "joint_rate": 0.0,
+            "joint_status": "kernel_bound_witness"
+          },
+          "M-SAMPLE": {
+            "planned": 2,
+            "counts": {
+              "generation_observed_rows": 2,
+              "budget_exhausted": 2,
+              "joint_denominator": 1,
+              "joint_unqualified": 0,
+              "joint_generation_observed_rows": 1,
+              "answer_correct": 0,
+              "joint_success": 0,
+              "evaluator_key_disagreements": 0
+            },
+            "observed_model_cost_lower_bound": {
+              "prompt_tokens": 960,
+              "consumed_prompt_tokens": 960,
+              "output_tokens": 128,
+              "wall_seconds": 0.39999999999999997,
+              "cold_compile_seconds": 0.0,
+              "cache_allocation_seconds": 0.04,
+              "prefill_seconds": 0.16,
+              "decode_seconds": 0.19999999999999998
+            },
+            "model_cost_issues": [],
+            "observed_execution_cost": {
+              "verifier_setup_seconds": 5.796227729000009,
+              "wall_seconds": 6.439148713000009,
+              "generation_attempts": 8,
+              "incomplete_model_cost_receipts": 0,
+              "tool_calls": 8,
+              "tool_wall_seconds": 5.877300840999993
+            },
+            "cost_complete": true,
+            "proof_rate": 0.0,
+            "proof_rate_scope": "known successes over planned denominator; missing items retained; null when no generation observed",
+            "joint_rate": 0.0,
+            "joint_status": "kernel_bound_witness"
+          },
+          "M-REPAIR": {
+            "planned": 2,
+            "counts": {
+              "generation_observed_rows": 2,
+              "proof_accepted": 2,
+              "joint_denominator": 1,
+              "joint_unqualified": 0,
+              "joint_generation_observed_rows": 1,
+              "answer_correct": 1,
+              "joint_success": 1,
+              "evaluator_key_disagreements": 0
+            },
+            "observed_model_cost_lower_bound": {
+              "prompt_tokens": 560,
+              "consumed_prompt_tokens": 560,
+              "output_tokens": 64,
+              "wall_seconds": 0.2,
+              "cold_compile_seconds": 0.0,
+              "cache_allocation_seconds": 0.02,
+              "prefill_seconds": 0.08,
+              "decode_seconds": 0.1
+            },
+            "model_cost_issues": [],
+            "observed_execution_cost": {
+              "verifier_setup_seconds": 6.151169256000003,
+              "wall_seconds": 3.401051721000016,
+              "generation_attempts": 4,
+              "incomplete_model_cost_receipts": 0,
+              "tool_calls": 4,
+              "tool_wall_seconds": 3.0896363880000024
+            },
+            "cost_complete": true,
+            "proof_rate": 1.0,
+            "proof_rate_scope": "known successes over planned denominator; missing items retained; null when no generation observed",
+            "joint_rate": 1.0,
+            "joint_status": "kernel_bound_witness"
+          }
+        },
+        "paired": {
+          "gain": 2
+        },
+        "paired_joint": {
+          "gain": 1
+        },
+        "unit": "problem; seeds are repeated measures",
+        "conclusion": "descriptive_pilot_only"
+      }
+    }
+  },
+  "real_weight_qwen3_4b_and_wsl_lean_validation": {
+    "format": "irisx.math.local-real-qwen3-4b-validation.v1",
+    "recorded_at": "2026-10-20T07:22:29.511988+00:00",
+    "scope": "Local real-weight Qwen/Qwen3-4B (revision 1cfa9a7208912126459214e8b04321603b3df60c) validation on local CPU + sandboxed WSL2 Lean 4.19.0 (Mathlib v4.19.0 + closed_exists_nat_v1). Preserves all raw parity and generation diagnostics and does not claim TPU v5e-8 qualification or benchmark panel efficacy.",
+    "verified_checkpoint_files": [
+      {
+        "path": "config.json",
+        "bytes": 726,
+        "sha256": "8ba006f74fecfaaeb392872a60f4a480e7ec9860153d2e1b769ec81f9a147f8a"
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 239,
+        "sha256": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2"
+      },
+      {
+        "path": "model-00001-of-00003.safetensors",
+        "bytes": 3957900840,
+        "sha256": "328a91d3122359d5547f9d79521205bc0a46e1f79a792dfe650e99fc2d651223"
+      },
+      {
+        "path": "model-00002-of-00003.safetensors",
+        "bytes": 3987450520,
+        "sha256": "6cd087b316306a68c562436b5492edbcf6e16c6dba3a1308279caa5a58e21ca5"
+      },
+      {
+        "path": "model-00003-of-00003.safetensors",
+        "bytes": 99630640,
+        "sha256": "e4bf436957184f4eeb86a80e9db394503f1f56446b2e6b7edeac5b81470f4ca1"
+      },
+      {
+        "path": "model.safetensors.index.json",
+        "bytes": 32819,
+        "sha256": "6dc0981b8829fead746441f68f38f24c5ca4a3a66351f652c26c6df0efc43ab2"
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 11422654,
+        "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 9732,
+        "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+      }
+    ],
+    "stage2_and_3_jax_vs_pytorch_bf16_parity_observed": {
+      "prompt_messages": [
+        {
+          "role": "user",
+          "content": "Repeat these letters in lowercase, separated by spaces: A B C."
+        }
+      ],
+      "jax_load_seconds": 32.5,
+      "jax_cold_compile_seconds": 0.39,
+      "jax_prefill_seconds": 226.41,
+      "jax_decode_seconds": 23.36,
+      "jax_greedy_text": "a b c",
+      "jax_output_token_ids": [
+        64,
+        293,
+        272,
+        151645
+      ],
+      "pytorch_bf16_greedy_text": "a b c",
+      "pytorch_bf16_output_token_ids": [
+        64,
+        293,
+        272,
+        151645
+      ],
+      "same_shape": true,
+      "all_finite": true,
+      "greedy_tokens_equal": true,
+      "relative_l2_logit_error": 0.0175038930028677,
+      "relative_l2_limit": 0.03,
+      "relative_l2_within_limit": true,
+      "max_absolute_logit_error": 0.5888514518737793,
+      "max_absolute_limit": 0.5,
+      "max_absolute_within_limit": false,
+      "max_abs_logit_magnitude": 56.25,
+      "bf16_ulp_at_max_logit": 0.25,
+      "max_abs_error_in_bf16_ulps": 2.355405807495117,
+      "finding": "Across 36 pretrained layers of Qwen/Qwen3-4B (607,744 compared logits across 4 decode steps), greedy continuation tokens match 100% ('a b c' + <|im_end|>, [64, 293, 272, 151645]) and relative L2 logit error is 0.01750 <= 0.03. Because real 36-layer pretrained logits reach magnitude 56.25 (where 1 BF16 ULP = 0.2500), the max absolute logit difference between XLA BF16 and PyTorch oneDNN BF16 is 0.58885 (~2.36 BF16 ULPs), slightly exceeding the 0.5 threshold calibrated on small-logit synthetic fixtures."
+    },
+    "stage4_and_5_real_qwen3_4b_to_wsl_lean_e2e": {
+      "preflight": {
+        "policy": "math002-restricted-lean-v1",
+        "qualified": true,
+        "status": "passed",
+        "platform": "linux",
+        "bwrap_sha256": "e318903862396f96de3df57264e0158682b952fd3fb53ac23d876413e7b30f71",
+        "execution": {
+          "exit_code": 0,
+          "timed_out": false,
+          "wall_seconds": 0.06995410000000035,
+          "output": "{\"checks\": {\"credential_sentinel_hidden\": true, \"environment_cleared\": true, \"file_size_limit_enforced\": true, \"home_hidden\": true, \"host_loopback_unreachable\": true, \"input_readonly\": true, \"isolated_mnt\": true, \"isolated_net\": true, \"isolated_pid\": true, \"isolated_user\": true, \"limit_core\": true, \"limit_cpu\": true, \"limit_file_size\": true, \"limit_memory\": true, \"limit_open_files\": true, \"limit_processes\": true, \"memory_limit_enforced\": true, \"no_network_routes\": true, \"process_limit_enforced\": true}}\n",
+          "output_truncated": false,
+          "limits": {
+            "wall_seconds": 20,
+            "cpu_seconds": 5,
+            "memory_bytes": 268435456,
+            "process_count": 64,
+            "output_bytes": 65536,
+            "open_files": 64
+          }
+        },
+        "trust_boundary": "Linux kernel, bubblewrap, public system runtime, pinned Lean libraries",
+        "checks": {
+          "credential_sentinel_hidden": true,
+          "environment_cleared": true,
+          "file_size_limit_enforced": true,
+          "home_hidden": true,
+          "host_loopback_unreachable": true,
+          "input_readonly": true,
+          "isolated_mnt": true,
+          "isolated_net": true,
+          "isolated_pid": true,
+          "isolated_user": true,
+          "limit_core": true,
+          "limit_cpu": true,
+          "limit_file_size": true,
+          "limit_memory": true,
+          "limit_open_files": true,
+          "limit_processes": true,
+          "memory_limit_enforced": true,
+          "no_network_routes": true,
+          "process_limit_enforced": true
+        },
+        "runtime_qualified": true,
+        "runtime_sha256": "2f0099538d4ccc23173829faa440c7dccfca1e790807336a24a75cba18c6038a",
+        "lean_version_execution": {
+          "exit_code": 0,
+          "timed_out": false,
+          "wall_seconds": 0.06877358900000008,
+          "output": "Lean (version 4.19.0, x86_64-unknown-linux-gnu, commit 6caaee842e94, Release)\n",
+          "output_truncated": false,
+          "limits": {
+            "wall_seconds": 30,
+            "cpu_seconds": 20,
+            "memory_bytes": 4294967296,
+            "process_count": 64,
+            "output_bytes": 65536,
+            "open_files": 64
+          }
+        },
+        "project_sha256": "d0bb542569dd4742f2b883fea29caf41be39694a3d776c47a5a70d013c8faf79",
+        "library_scope": "pinned_mathlib"
+      },
+      "results": [
+        {
+          "problem_id": "real_qwen3_prove_ring",
+          "answer_mode": "proof_only",
+          "attempts_count": 2,
+          "attempts": [
+            {
+              "attempt": 0,
+              "status": "invalid_format",
+              "feedback": "Expecting ',' delimiter: line 3 column 29 (char 48)",
+              "model_text": "{\n  \"answer\": null,\n  \"proof_body\": \"by\\n  ring\""
+            },
+            {
+              "attempt": 1,
+              "status": "invalid_format",
+              "feedback": "Expecting ',' delimiter: line 3 column 29 (char 48)",
+              "model_text": "{\n  \"answer\": null,\n  \"proof_body\": \"by\\n  ring\""
+            }
+          ],
+          "lean_result": null,
+          "evaluator_receipt_verified": false
+        },
+        {
+          "problem_id": "real_qwen3_find_nat_witness",
+          "answer_mode": "find_answer",
+          "attempts_count": 1,
+          "attempts": [
+            {
+              "attempt": 0,
+              "status": "parsed",
+              "feedback": null,
+              "model_text": "{\n  \"answer\": \"23\",\n  \"proof_body\": \"by\\nnorm_num\"\n}"
+            }
+          ],
+          "model_text": "{\n  \"answer\": \"23\",\n  \"proof_body\": \"by\\nnorm_num\"\n}",
+          "parsed_candidate": {
+            "answer": "23",
+            "proof_body": "by\nnorm_num"
+          },
+          "generation_metrics": {
+            "prompt_tokens": 507,
+            "output_tokens": 22,
+            "prefill_seconds": 114.96899999999732,
+            "decode_seconds": 9.764999999999418,
+            "wall_seconds": 124.73399999999674
+          },
+          "lean_result": {
+            "policy": "math002-restricted-lean-v1",
+            "status": "accepted",
+            "proof_status": "kernel_verified",
+            "accepted": true,
+            "trust_policy_passed": true,
+            "candidate_sha256": "e0330cdcc67e6158f0c359dd4d3199a6e14741deb479589b3fe20e1f3d1bb2a2",
+            "statement_sha256": "c8fdaeb182fbe5ee0ed9896f7f375d6a62d4e4f3e71982c29a0e745a78a2b9c3",
+            "source_sha256": "1a7cd4f2536ec147478f31d3ca048580e53f1d828883181dd027f2ccd18791fa",
+            "execution": {
+              "exit_code": 0,
+              "timed_out": false,
+              "wall_seconds": 0.7716239180000013,
+              "output": "'irisx_final' depends on axioms: [propext]\n",
+              "output_truncated": false,
+              "limits": {
+                "wall_seconds": 30,
+                "cpu_seconds": 20,
+                "memory_bytes": 4294967296,
+                "process_count": 64,
+                "output_bytes": 65536,
+                "open_files": 64
+              }
+            },
+            "axioms": [
+              "propext"
+            ],
+            "axiom_audit": "Lean #print axioms of final theorem, including transitive dependencies",
+            "answer_binding": {
+              "kind": "closed_exists_nat_v1",
+              "status": "kernel_verified",
+              "statement_sha256": "c8fdaeb182fbe5ee0ed9896f7f375d6a62d4e4f3e71982c29a0e745a78a2b9c3",
+              "spec_sha256": "2725d47510838dd351fbc596fd3902987b6ed7772a8b5f2379a276707ffb800c",
+              "normalized_answer_sha256": "535fa30d7e25dd8a49f1536779734ec8286108d115da5045d77f3b4185d8f790",
+              "candidate_sha256": "e0330cdcc67e6158f0c359dd4d3199a6e14741deb479589b3fe20e1f3d1bb2a2"
+            },
+            "trust_base": "pinned Lean kernel/libraries + restricted tactic grammar + measured Linux isolation"
+          },
+          "evaluator_receipt_verified": true
+        },
+        {
+          "problem_id": "real_qwen3_prove_ring_clean_nl",
+          "answer_mode": "proof_only",
+          "attempts_count": 2,
+          "attempts": [
+            {
+              "attempt": 0,
+              "status": "invalid_format",
+              "feedback": "expected by followed by at most 128 tactic lines",
+              "model_text": "{\n  \"answer\": null,\n  \"proof_body\": \"by ring_nf\" \n}"
+            },
+            {
+              "attempt": 1,
+              "status": "invalid_format",
+              "feedback": "expected by followed by at most 128 tactic lines",
+              "model_text": "{\n  \"answer\": null,\n  \"proof_body\": \"by ring_nf\" \n}"
+            }
+          ],
+          "model_text": "{\n  \"answer\": null,\n  \"proof_body\": \"by ring_nf\" \n}",
+          "parsed_candidate": {
+            "answer": null,
+            "proof_body": "by ring_nf"
+          },
+          "generation_metrics": {
+            "prompt_tokens": 540,
+            "output_tokens": 20,
+            "prefill_seconds": 122.73399999999674,
+            "decode_seconds": 8.85899999999674,
+            "wall_seconds": 131.59299999999348
+          },
+          "lean_result": {
+            "policy": "math002-restricted-lean-v1",
+            "status": "invalid_format",
+            "proof_status": "unsupported",
+            "accepted": false,
+            "trust_policy_passed": false,
+            "candidate_sha256": "1066d2497ec3e99a39f27e12a5c9d9ca8d9334b2d8c0e0bee9ad111010a0644f",
+            "statement_sha256": "c94cfa8dd03626a24120b771ba7dceca33f24e296bff55beb1db99bd393d899d",
+            "reason": "expected by followed by at most 128 tactic lines"
+          },
+          "evaluator_receipt_verified": false
+        }
+      ]
+    }
+  },
+  "protected_ledger_preservation": {
+    ".irisx/line-b/MATH-002/state.json": {
+      "before_sha256": "84a8d616a3e4d27134d1203357b10a2260cbae03dcebacd8db7c468385451892",
+      "after_sha256": "84a8d616a3e4d27134d1203357b10a2260cbae03dcebacd8db7c468385451892",
+      "bytes": 3457,
+      "unchanged": true
+    },
+    ".irisx/line-b/MATH-002/heartbeat.json": {
+      "before_sha256": "0344de7f15280db5e7b67e14bc396e8ec0aed44dd2d5fdc754f272be29e96de4",
+      "after_sha256": "0344de7f15280db5e7b67e14bc396e8ec0aed44dd2d5fdc754f272be29e96de4",
+      "bytes": 197,
+      "unchanged": true
+    },
+    ".irisx/line-b/MATH-002/monitor-stopped.json": {
+      "before_sha256": "7a023ca482f515a7a4d4a3180ad71f09180c21f7564373a8d41497a439a37918",
+      "after_sha256": "7a023ca482f515a7a4d4a3180ad71f09180c21f7564373a8d41497a439a37918",
+      "bytes": 169,
+      "unchanged": true
+    },
+    "research/math-proof-agent/round002/run-manifest-smoke001.json": {
+      "before_sha256": "650bf66469674da1594da9bd3a6dc7e4411b63c529ef54ffa3b35da9b5c46cb3",
+      "after_sha256": "650bf66469674da1594da9bd3a6dc7e4411b63c529ef54ffa3b35da9b5c46cb3",
+      "bytes": 2568,
+      "unchanged": true
+    }
+  }
+}

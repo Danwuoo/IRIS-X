@@ -1,0 +1,138 @@
+{
+  "format": "irisx.math.review-repair-r3-tests.v1",
+  "task": "MATH-002",
+  "review": "5567278465",
+  "issue": "M002-R3",
+  "recorded_at_utc": "2026-10-19T06:14:02.7602431Z",
+  "source_base_sha": "fb5cc667a2971f53a3fe3a6c387b02a0ff08f3fa",
+  "tested_code_commit": null,
+  "tested_source_scope": "Uncommitted working bytes; each normal/-O log records source hashes before imports and verifies them unchanged at teardown. No tested-commit claim.",
+  "scope": "Implementer self-tests only, constant mocked provider receipts and temporary state directories. No Kaggle operation, provider authentication, real state read/write, model execution or independent verification.",
+  "environment_overrides": {
+    "PYTHONHASHSEED": "0",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "inherited_PYTHON_variables": "removed in launcher before setting controlled overrides"
+  },
+  "runs": [
+    {
+      "mode": "normal",
+      "command": [
+        ".irisx/line-b/MATH-002/venv/Scripts/python.exe",
+        "-P",
+        "-s",
+        "-B",
+        "research/math-proof-agent/round002/test_remote_controls.py"
+      ],
+      "cwd": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math",
+      "environment": {
+        "python": "3.12.10",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "optimize": 0,
+        "hash_randomization": 0,
+        "safe_path": true,
+        "no_user_site": 1,
+        "dont_write_bytecode": true,
+        "source_files": {
+          "test_remote_controls.py": "d6ea2040aab7ebd119515d3c2875a4c48bc7c377124ccaa112aac36cbac2a05f",
+          "kaggle_run.py": "c9cf424edf45d6ecfb4df4b878cbd778770f6d40591b9a71982cd36801c6a5b3",
+          "common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+          "sdk_readback.py": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964"
+        },
+        "mode": "mocked; process/network audit denial; temp states only"
+      },
+      "exit_code": 0,
+      "tests": 47,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "unittest_duration_seconds": 0.992,
+      "log_path": ".irisx/line-b/MATH-002/review-repair-20261019/r3-normal-03.log",
+      "log_sha256": "10117a74c9ded1655e15907bcd9a35c28ba71d8942a6f80584324bd251680a2e",
+      "source_unchanged_during_run": true
+    },
+    {
+      "mode": "optimized",
+      "command": [
+        ".irisx/line-b/MATH-002/venv/Scripts/python.exe",
+        "-O",
+        "-P",
+        "-s",
+        "-B",
+        "research/math-proof-agent/round002/test_remote_controls.py"
+      ],
+      "cwd": "C:\\Users\\wurre\\Desktop\\IRIS-X-Math",
+      "environment": {
+        "python": "3.12.10",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "optimize": 1,
+        "hash_randomization": 0,
+        "safe_path": true,
+        "no_user_site": 1,
+        "dont_write_bytecode": true,
+        "source_files": {
+          "test_remote_controls.py": "d6ea2040aab7ebd119515d3c2875a4c48bc7c377124ccaa112aac36cbac2a05f",
+          "kaggle_run.py": "c9cf424edf45d6ecfb4df4b878cbd778770f6d40591b9a71982cd36801c6a5b3",
+          "common.py": "7e4351f2b6756e91f5cc7d6993ba1de3e4330994a515a7c6d12011e158db4a76",
+          "sdk_readback.py": "7d4ac8c49464fe9844f8a0014d9ea4153ca5bba59489368345e28c8d007e2964"
+        },
+        "mode": "mocked; process/network audit denial; temp states only"
+      },
+      "exit_code": 0,
+      "tests": 47,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "unittest_duration_seconds": 1.004,
+      "log_path": ".irisx/line-b/MATH-002/review-repair-20261019/r3-optimized-03.log",
+      "log_sha256": "d8727b59c0223f632ae8229ee626314f38a2ad55b658b5de92bee8d16ecb8b37",
+      "source_unchanged_during_run": true
+    }
+  ],
+  "tests_per_mode": 47,
+  "current_source_test_executions": 94,
+  "all_passed": true,
+  "change_summary": [
+    "Keep historical terminal state and verified-output evidence separate from current dispatch_state/identity_status.",
+    "Readback/status failure records a sticky needs_reconcile/identity_unknown guard and preserves charged timeout/submission history.",
+    "Reservation rejects known legacy observation errors, unknown identity markers, and mismatched current dispatch identities.",
+    "Only an exact-version/latest/status/latest matched observation clears the guard; changed terminal or active status cannot reuse a prior terminal completion.",
+    "Read-only reconcile can recover a withdrawn terminal identity without a push, refund or terminal rewrite.",
+    "Retrieval readback failures also revoke current dispatch; successful retrieval alone does not clear the sticky guard."
+  ],
+  "covered_cases": [
+    "source/version/privacy drift and invalid version types",
+    "failure at each exact/latest guard",
+    "unavailable, unknown or ambiguous status",
+    "historical complete followed by active or different terminal status",
+    "failed terminal with retained diagnosis and timeout charge",
+    "mismatch -> blocked reserve -> matched reconciliation -> eligible reserve",
+    "legacy observation_error and identity_unknown flags",
+    "unknown submission matching/mismatching reconciliation without new push/refund",
+    "retrieval drift and inability of successful outputs alone to restore eligibility",
+    "normal and optimized Python, effective seed zero, network/subprocess audit denial"
+  ],
+  "real_operations": {
+    "kaggle_calls": 0,
+    "network_calls": 0,
+    "subprocesses_started_by_tests": 0,
+    "real_state_reads": 0,
+    "real_state_writes": 0,
+    "tpu_submissions": 0,
+    "budget_refunds": 0,
+    "note": "Launcher starts only the two local Python test processes; process/network attempts inside tests are denied before execution. Protected-state guard tested directly without opening the real file."
+  },
+  "earlier_iteration_logs_preserved": [
+    ".irisx/line-b/MATH-002/review-repair-20261019/r3-normal-01.log",
+    ".irisx/line-b/MATH-002/review-repair-20261019/r3-normal-02.log",
+    ".irisx/line-b/MATH-002/review-repair-20261019/r3-optimized-02.log"
+  ],
+  "limitations": [
+    "No real provider reconciliation was authorized or attempted; the existing real submission_unknown remains unresolved.",
+    "Legacy terminal records with no error/identity marker retain prior policy; any recorded observation error or unknown marker requires reconciliation.",
+    "Mock controls do not qualify Kaggle current status, notebook version, runtime or mathematical results."
+  ],
+  "outcome": "review_ready_not_independently_verified",
+  "delivered_code_sha": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+  "delivery_sha_reference": "Final response and PR10; delivery commit cannot embed its own SHA.",
+  "delivery_binding_note": "Original execution source hashes/commands/attempts are retained. Local working-byte tests are not retrospectively labeled as committed-source CI; separate CI readback names its actual target."
+}

@@ -1,36 +1,94 @@
-# line-b STATUS
+# Math proof-agent STATUS (compatibility workstream: line-b)
 
-Updated:2026-10-14. Workstream:`line-b` (temporary name). Task state:[board](../../management/BOARD.md).
+Updated: 2026-10-21. Task state: [generated board](../../management/BOARD.md).
+Research entry: [RESEARCH.md](RESEARCH.md).
 
 ## Scope
 
-An independent synthetic engineering-only,non-deployable six-case label workload
-now exercises specification/workload,baseline/candidate,evaluation/selection and
-package build/verify through the common P1 contracts. Source:[engineering guide](../../../src/irisx/domains/line_b/README.md).
-The real domain remains unassigned;this scaffold does not choose one.
+Owner selected proof-oriented tool-augmented mathematical reasoning, with IMO /
+Putnam as capability probes, not prize targets. The research branch is
+`feat/math-proof-agent-20261018`, based on shared `develop` commit
+`9389f433a1fbe41d25f8ce1248fde07f7ce9250d`. Management ID remains `line-b`
+for compatibility; this does not create another shared engineering branch.
+
+The original six-case label fixture under `src/irisx/domains/line_b/` remains
+unchanged and synthetic. New research lives in `research/math-proof-agent/`;
+no production math solver is claimed. Research assistance/autonomous discovery
+and contact with possible collaborators are deferred.
 
 ## Evidence
 
-New fixtures have distinct domain/workload/trial/case/config/evaluator identities.
-The existing P1 deployment/limitations placeholder IDs are fixed shared-profile
-exceptions. Reproducible bytes,unmet/missing evidence,tampering,fresh-process ARC/ML
-blockers and simultaneous core/line-b output isolation have developer self-tests.
-Reports and independent acceptance are separate from synthetic lookup outcomes.
+MATH-001 contains primary-source review, an answer/proof/cost evaluation design,
+a TPU feasibility plan, and an executed 32-case exact-certificate audit. It is
+an authored CPU verifier pilot, not an LLM/Lean/TPU or IMO/Putnam benchmark.
+See the source-bound handoff for actual commands, outcomes and limitations.
+
+MATH-002 adds one pinned TPU model adapter, restricted Lean worker, bounded
+sampling/repair controller and task-owned monitor. Local safety/CPU numerical
+controls and actual WSL Lean core/mathlib import-closure/isolation controls ran; these are engineering
+evidence. The first private TPU push returned a batch-session-capacity error
+despite CLI exit0. Exact task readback returned HTTP403; version remains unknown.
+See [R002 results](../../../research/math-proof-agent/ROUND002-RESULTS.zh-TW.md).
+
+PR10 independent review5567278465 requested changes on d6e4309/fb5cc66, and
+follow-up independent review5568170709 on fedf3a0/104245a verified that R1–R3
+pass bounded regressions and CI1 executable admission is in place while archival
+tag integrity remained blocked. On 2026-10-20, under owner authorization,
+`refs/tags/archive/pre-product-transition-2026-09-17` was restored to original
+annotated tag object `658cdd6ccc33ffd32ced70e0834726c8e30d0a7d` and verified across
+all 7 public suites (602/602 tests on a fresh clone). Local CPU/WSL2 validation
+also exercised pinned `Qwen/Qwen3-4B` (8.04 GB) through a separate PyTorch harness
+into WSL2 `Lean 4.19.0` (`Mathlib v4.19.0` + `closed_exists_nat_v1`). The
+[provenance supplement](../../verification/MATH-002/local-validation-provenance-20261021.json)
+distinguishes that path from scripted Controller E2E and patched CPU JAX numerical
+diagnostics; production JAX/Controller/model qualification is not established.
+
+The [2026-10-21 CI readback](../../verification/MATH-002/delivery-ci-readback-20261021.json)
+binds delivery `9d986261ca71f3af3e81e88038c144cfb133ca13`: push/PR workstream runs
+each have 28 public jobs, 4 formal-distribution jobs and gate successful; ARC
+audit and legacy aggregate remain scope-stopped/non-success. Navigation succeeds.
+Job metadata readback is not artifact re-attestation, fresh local test execution,
+independent acceptance or full-green CI. Current documentation changes have no
+new CI result. Original receipts and implementation `fedf3a0` remain preserved.
 
 ## Blockers
 
-Real workload,representative cases,quality requirements,resource budget and data
-classification are not specified. Scientific/customer-domain capability and
-deployment remain unverified. Independent engineering review is pending.
+No actual TPU target model or representative human-reviewed evaluation panel
+has been qualified. Local Lean core and pinned mathlib Ring/NormNum controls passed;
+full mathlib and Kaggle Lean/isolation remain unqualified. Upstream human-reviewed
+source candidates exist; safe per-item acquisition/runtime admission and feasible
+repair context remain open. A narrow Nat-witness binding now passed authored
+Lean controls; no real source statement has been admitted to it. Exact tokenizer
+checks confirm the 4096+4096 repair context conflict; a smaller common ceiling
+is still only a candidate. Local real-weight JAX diagnostics fail the fixed
+max-absolute parity gate (`0.588851 > 0.5`); four matching greedy tokens and
+relative-L2 success do not qualify the adapter. The unresolved submission retains one attempt
+and 1800 seconds of the 4-attempt/21600-second ceiling and blocks further push.
+Shared WSF-R5 independent
+acceptance remains unresolved; this research does not change existing reviews.
+The inherited management/suite IDs are not renamed in this documentation task.
 
 ## Next
 
-Follow task records through the board. Run `python tools/dev.py verify --suite line-b`
-and use the actual code-path AGENTS. A future owner-defined Domain Specification
-opens real-domain work separately;synthetic results do not authorize it.
+Use the [admission guide](../../verification/MATH-002/NEXT-ADMISSION.zh-TW.md)
+for source fidelity/answer modes, common context policy and runtime qualification.
+The current owner scope is documentation and receipt correction only: no model,
+Lean/WSL or test-suite execution while CPU/GPU resources are busy. The guide
+does not adopt a new protocol, freeze a panel or grant execution authority.
+Independent delivery review remains outstanding. Only after a platform/permission
+change, under the original research task, reconcile the unknown submission read-only, without
+disturbing other account work. Bind available upstream human-review evidence and actual
+runtime qualification before freezing any scoring panel. Only then can a
+fixed-model paired sampling/repair pilot answer the research question. No model
+gain, zero gain or negative effect is inferred from a provider rejection.
 
 ## Boundaries
 
-Use separate worktrees/environments and new ignored `.irisx/line-b/<task>/` roots.
-No ARC internal imports,private fixtures,training,GPU,provider access,paid execution
-or deployment. Common contracts/engine/package remain single-sourced.
+Keep main, develop, active ARC and historical research refs untouched. Use
+separate worktrees and ignored `.irisx/line-b/<task>/` outputs. MATH-001's initial
+stdlib-only scope remains historical. The owner's 2026-10-19 MATH-002 scope
+permits bounded private Kaggle inference/verification and compatible public
+dependencies/models, as recorded in its single plan. No training, paid API,
+ARC resource operation, blocked transfer archive, public benchmark solution
+acquisition or external contact is authorized. Do not publish PutnamBench
+proofs or hidden evaluator data. This exception does not broaden other tasks.

@@ -1,0 +1,210 @@
+{
+  "format": "irisx.math.local-validation-provenance.v1",
+  "evidence_kind": "supplemental_documentary_provenance_correction",
+  "supersedes": [],
+  "recorded_on": "2026-10-21",
+  "date_timezone": "Asia/Taipei",
+  "task": "MATH-002",
+  "target_delivery_commit": "9d986261ca71f3af3e81e88038c144cfb133ca13",
+  "target_implementation_commit": "fedf3a0ac60365fc840b7ae9aefac84a9ba7ba2d",
+  "purpose": "Clarify the execution paths and evidentiary limits of the 2026-10-20 local validation without rewriting its original receipt or reporting any new experiment.",
+  "authorization_scope": "Owner-approved documentation and receipt corrections only; this supplement supplies no new execution, threshold, promotion, or external-operation authority.",
+  "original_receipt": {
+    "path": "docs/verification/MATH-002/local-qwen3-4b-lean-validation.json",
+    "git_blob_sha1_at_target_delivery": "32049854e90365d1144ae6b484b578f55dce3946",
+    "bytes": 38952,
+    "sha256": "ff9889b60ba36121df779671881206fc97db1840562d8edb1165e1892365f02f",
+    "hash_scope": "Raw file bytes observed on 2026-10-21; independently read target-delivery Git blob has the same length and SHA-256.",
+    "preservation": "Original receipt remains unchanged; this file supplements its interpretation. Original observations and failures are not superseded."
+  },
+  "independent_review_source": {
+    "path": "docs/verification/MATH-002/independent-review-02.json",
+    "review_id": 5568170709,
+    "git_blob_sha1_at_target_delivery": "8e8d049fd8a203559614b65532e0aabc0f519d26",
+    "bytes": 13017,
+    "sha256": "cb0a735a8f2b6d52b331fa8a47d27e433286664bb7c4affcf90e5dd64c0fa1b3",
+    "hash_scope": "Raw file bytes and target-delivery Git blob observed on 2026-10-21.",
+    "preserved_outcome": "blocked",
+    "preserved_api_state": "COMMENTED",
+    "scope": "The published review verifies bounded R1-R3 regressions and CI1 admission. It did not execute real model weights, tokenizer, Lean/kernel/bubblewrap, TPU or Kaggle. This supplement does not extend that review's acceptance."
+  },
+  "local_file_observation_policy": {
+    "observed_on": "2026-10-21",
+    "location": "Ignored .irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/ files in the current checkout.",
+    "meaning": "The following hashes identify the small files available during this documentary review. They do not retrospectively prove which bytes executed on 2026-10-20 or establish an immutable execution log.",
+    "execution_performed": false,
+    "checkpoint_weights_read_or_hashed": false,
+    "historical_execution_identity_fully_bound": false
+  },
+  "local_file_observations": [
+    {
+      "path": ".irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/wsl_e2e_controller_lean_verify.py",
+      "bytes": 10354,
+      "sha256": "163f3b2dffdc7ff93d6568c7cda1938a33e34da884923502859d4c011382ba61",
+      "role": "ScriptedControlModel drives production controller, Lean worker, evaluator and analyzer; model outputs and model costs are authored constants."
+    },
+    {
+      "path": ".irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/run_real_qwen3_4b_local_validation.py",
+      "bytes": 17816,
+      "sha256": "33adbbbf986ee1305473eda03dc25a6a4dfb405f3462bb6e939ff838f145d08d",
+      "role": "CPU JAX technical-prompt diagnostic with runtime patches and a parity failure stop; current source is not proof of all earlier run variants."
+    },
+    {
+      "path": ".irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/run_stage4_and_5_qwen3_lean.py",
+      "bytes": 14865,
+      "sha256": "eb2991950ab6b616809f3ac8587dbc296c676b3087c24de5fc48406b5cb0247f",
+      "role": "Separate PyTorch eager BF16 greedy generator and custom candidate/repair loop, followed by WSL Lean verification."
+    },
+    {
+      "path": ".irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/finalize_real_qwen3_receipt.py",
+      "bytes": 8520,
+      "sha256": "fb398f298a54ac5a58f9869f89382915ad70a009680751c8d4a62a0588262908",
+      "role": "Adds a clean-natural-language authored control using the separate PyTorch generator and transcribes earlier parity values into a receipt."
+    },
+    {
+      "path": ".irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/wsl_verify_saved_qwen3_outputs.py",
+      "bytes": 3991,
+      "sha256": "5e79aef4150efa02152c4faf8390e53adf1174670e9867ab8d6372a5ebee5181",
+      "role": "Verifies saved authored-control candidates through LeanWorker and evaluator receipt matching."
+    },
+    {
+      "path": ".irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/test_m_repair_on_clean_nl.py",
+      "bytes": 7650,
+      "sha256": "180b96e133f985a82c482d7c33edeff5c54d66546a8eb1f0b300b6a1e868a70c",
+      "role": "Separate custom PyTorch follow-up on the saved clean-natural-language control; transcribes prior parity constants into the final receipt."
+    },
+    {
+      "path": ".irisx/line-b/MATH-002/local-cpu-gpu-validation-20261020/LOCAL-CPU-GPU-VALIDATION-REPORT.md",
+      "bytes": 11366,
+      "sha256": "9d1b4689aa3d52fcd02051e15acef301f1a640a147c09eda6f06ebcc6c1527d7",
+      "role": "Contemporaneous narrative reports real-weight CPU memory/all-gather failures and use of a one-device CPU mesh; narrative is not raw execution telemetry."
+    }
+  ],
+  "execution_path_clarifications": {
+    "scripted_controller_lean_e2e": {
+      "original_section": "local_engineering_and_wsl_e2e_suites.wsl_e2e_controller_lean_analyzer_summary",
+      "evidence_kind": "authored_scripted_model_with_reported_real_lean_controls",
+      "harness": "wsl_e2e_controller_lean_verify.py",
+      "source_locations": ["lines 34-98", "lines 218-255"],
+      "model": "ScriptedControlModel; no pretrained-model generation in this path.",
+      "model_costs": "Authored schema-compatible constants, not measured inference costs. Reported Lean/tool timing remains separate.",
+      "engineered_expectations": {
+        "planned_control_problems": 2,
+        "direct_proof_successes": 0,
+        "sample_proof_successes": 0,
+        "repair_proof_successes": 2,
+        "paired_gain": 2,
+        "paired_joint_gain": 1
+      },
+      "interpretation": "These counts test controller/receipt/analysis behavior under deliberately scripted successes and failures. They are not a measured repair advantage, real-model baseline comparison, or benchmark result.",
+      "replayed_by_this_review": false
+    },
+    "cpu_jax_real_weight_diagnostic": {
+      "original_section": "real_weight_qwen3_4b_and_wsl_lean_validation.stage2_and_3_jax_vs_pytorch_bf16_parity_observed",
+      "evidence_kind": "reported_cpu_technical_prompt_diagnostic_with_runtime_patches",
+      "harness": "run_real_qwen3_4b_local_validation.py",
+      "source_locations": ["lines 137-184", "lines 191-222"],
+      "model_revision": "Qwen/Qwen3-4B@1cfa9a7208912126459214e8b04321603b3df60c",
+      "reported_successful_mesh": "CPU mp=1, according to LOCAL-CPU-GPU-VALIDATION-REPORT.md:88; earlier real-weight eight-virtual-CPU-device all-gather attempt failed.",
+      "context_length_in_observed_harness": 64,
+      "runtime_patches_in_observed_harness": [
+        "jax.default_backend is temporarily reported as tpu to bypass the constructor's TPU backend requirement during this CPU diagnostic.",
+        "The first jax.devices call returns the first real CPU device repeated eight times to satisfy the constructor count check; subsequent calls return the actual CPU devices for mesh construction.",
+        "safetensors.safe_open is wrapped with a per-file handle cache.",
+        "importlib.metadata.distributions is replaced with a deduplicated local-venv enumeration.",
+        "The runtime identity backend label is restored to the actual backend after construction."
+      ],
+      "qualification_flag_caveat": "The observed harness assigns adapter.qualification='passed' before comparing parity. It then raises on failed parity or warm-repeat mismatch and does not thereby establish model qualification. This assignment and the CPU patches are harness behavior, not a finding that tracked production files were modified.",
+      "reported_prompt_scope": "One technical letter-repetition prompt; four continuation tokens including the terminal token. No mathematical panel or long-context behavior is qualified.",
+      "reported_parity": {
+        "observed_continuation_tokens": 4,
+        "greedy_tokens_equal": true,
+        "relative_l2_logit_error": 0.0175038930028677,
+        "relative_l2_limit": 0.03,
+        "relative_l2_within_limit": true,
+        "max_absolute_logit_error": 0.5888514518737793,
+        "max_absolute_limit": 0.5,
+        "max_absolute_within_limit": false,
+        "aggregate_fixed_parity_gate": "failed",
+        "conversion_qualification": "unqualified"
+      },
+      "qualification_rule": "research/math-proof-agent/round002/model-candidates.json requires both bounded full-logit errors and every greedy continuation token to agree; failure leaves conversion unqualified. The ULP interpretation does not change that fixed rule.",
+      "limitations": [
+        "The mp=8 label in current harness comments/print strings does not establish an eight-device real-weight run.",
+        "CPU mp=1, context64 and patched constructor behavior do not qualify the target TPU mp=8/context8192 execution path.",
+        "The original receipt does not fully bind the raw parity output, patch configuration, all attempted run variants or contemporaneous harness hashes. Current file observations cannot repair those historical gaps retrospectively."
+      ],
+      "replayed_by_this_review": false
+    },
+    "pytorch_generation_to_lean": {
+      "original_section": "real_weight_qwen3_4b_and_wsl_lean_validation.stage4_and_5_real_qwen3_4b_to_wsl_lean_e2e",
+      "evidence_kind": "reported_real_model_authored_controls_via_separate_pytorch_harness",
+      "harnesses": ["run_stage4_and_5_qwen3_lean.py", "finalize_real_qwen3_receipt.py", "test_m_repair_on_clean_nl.py", "wsl_verify_saved_qwen3_outputs.py"],
+      "source_locations": ["run_stage4_and_5_qwen3_lean.py:37-77,94-104,170-191", "finalize_real_qwen3_receipt.py:70-104", "test_m_repair_on_clean_nl.py:47-103"],
+      "generation_backend": "Transformers AutoModelForCausalLM, PyTorch eager BF16 on CPU, custom greedy_generate; max_new_tokens=64 for the authored mathematical controls.",
+      "controller_path": "The harness reuses solver_view/parse_candidate and Lean/evaluator helpers, but its custom attempt loops do not call the production controller execute_arm or use JaxQwen3Adapter generation.",
+      "reported_outcomes_retained": [
+        "real_qwen3_find_nat_witness: one authored candidate reported accepted/kernel_verified with matching evaluator receipt.",
+        "real_qwen3_prove_ring: invalid JSON-format observations retained.",
+        "real_qwen3_prove_ring_clean_nl: single-line proof-body grammar rejection retained, including the custom follow-up."
+      ],
+      "interpretation": "Evidence for local authored-control generation and Lean receipt binding through this separate harness; no production-controller real-model paired comparison or benchmark efficacy is established.",
+      "replayed_by_this_review": false
+    }
+  },
+  "lineage_gaps": [
+    "run_stage4_and_5_qwen3_lean.py, finalize_real_qwen3_receipt.py and test_m_repair_on_clean_nl.py embed earlier JAX timings/parity values as constants. The original receipt lacks a complete raw-output/hash chain for that transcription; these values remain attributed historical observations, not newly recomputed measurements.",
+    "The ignored harness hashes in this supplement describe files present on 2026-10-21. No contemporaneous signed or immutable record binds every executed harness/patch variant to those exact hashes.",
+    "The original committed source hashes and unchanged production file bytes do not by themselves identify monkey patches, custom generator loops, runtime device topology, or generated candidate provenance.",
+    "No new model output, proof, token/logit sample, timing, isolation result, source-fidelity judgment or TPU observation was produced during this correction."
+  ],
+  "documentary_corrections": [
+    {
+      "original_location": "docs/verification/MATH-002/local-qwen3-4b-lean-validation.json:199",
+      "issue": "Incorrectly attributes a blanket ban on tracked runtime changes before Kaggle reconciliation/M2-SMOKE to independent review 5568170709.",
+      "correction": "The preserved published review contains no such blanket sequencing rule. It separates archival/CI maintenance from scientific continuation and retains runtime/source/panel/target-hardware gates. Offline reversible work follows applicable owner scope and source-identity/review requirements; this clarification does not authorize remote operations or protocol/threshold changes.",
+      "basis": "independent-review-02.json published_review_body, retained unchanged and bound above."
+    },
+    {
+      "original_location": "docs/verification/MATH-002/HANDOFF.md:14 at target delivery",
+      "issue": "The prose names ProofNet-Verified toolchain v4.28.0-rc1 while the pinned source receipt names v4.28.0.",
+      "correction": "Use leanprover/lean4:v4.28.0 for the recorded ProofNet-Verified revision 160414332dc196583f6c37c310b420d2a3b07c58; v4.28.0-rc1 is the erroneous handoff summary.",
+      "basis": "Original receipt proofnet_verified_statement_only_compatibility_audit.local_lean_environment_comparison.upstream_proofnet_verified_toolchain and proofnet_verified_statement_only_compatibility_audit.findings.architectural_implications[2], corroborated by the coordinating agent's read-only exact-revision GitHub API readback on 2026-10-21. Neither toolchain was executed for this correction.",
+      "coordinating_agent_source_readback": {
+        "observed_on": "2026-10-21",
+        "evidence_kind": "read_only_exact_revision_source_metadata",
+        "url": "https://github.com/marcusm117/ProofNet-Verified/blob/160414332dc196583f6c37c310b420d2a3b07c58/lean-toolchain",
+        "text": "leanprover/lean4:v4.28.0",
+        "bytes": 24,
+        "trailing_newline": false,
+        "git_blob_sha1": "ea6ca7fff3a830e0da25a6e2084636933696ab7d",
+        "sha256": "26df5f74b79af0cd9e298b6583993699a54938d047ba1919428da80d3ae80c6e",
+        "attribution": "Exact source readback reported by the coordinating agent; the receipt-authoring subtask did not repeat the network request."
+      },
+      "runtime_qualification": "Still unqualified for these source statements; existing Lean4.19 controls do not qualify Lean4.28 or full Mathlib."
+    }
+  ],
+  "correction_actions": {
+    "scope": "Actions of the receipt-authoring subtask; the coordinating agent's source-metadata readback is separately attributed above.",
+    "performed": [
+      "Read the original committed receipts and selected small local harness/narrative files.",
+      "Read Git target identities and the two original receipt blobs; hash only those receipts and the seven selected small local source/narrative files.",
+      "Create this supplemental JSON receipt; parse it for JSON syntax without importing or executing research code."
+    ],
+    "model_lean_wsl_or_test_execution": false,
+    "new_download_or_provider_operation": false,
+    "large_artifact_or_model_hashing": false,
+    "production_code_changed_by_this_supplement": false,
+    "historical_receipts_changed_by_this_supplement": false,
+    "new_independent_acceptance": false,
+    "new_experiment": false
+  },
+  "remaining_state": {
+    "engineering_task_state": "review_ready",
+    "scientific_result": "not_estimable",
+    "actual_tpu_qualification": "unqualified",
+    "scoring_panel": "not_frozen",
+    "historical_remote_state": "submission_unknown; original reservation remains 1 attempt and 1800 seconds, with no new reconciliation or dispatch in this correction.",
+    "next_use": "Use the clarified path boundaries when planning the next scoped engineering work. Preserve the failed parity gate, unqualified target runtime and absent paired efficacy evidence."
+  }
+}

@@ -186,6 +186,24 @@ REPRESENTATIVE_CATEGORIES = {
 
 LINK_RE = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 EXECUTABLE_SUFFIXES = {".py", ".ps1", ".sh", ".bat", ".cmd", ".exe"}
+MATH_PYTHON_ROOTS = {
+    "research/math-proof-agent/round001",
+    "research/math-proof-agent/round002",
+}
+
+
+def allowed_active_executable(path: str) -> bool:
+    """Admit the two scoped math rounds without opening other research code.
+
+    This is source admission only, not permission to execute a model, Lean,
+    provider operation or every admitted script. Existing AST checks still apply.
+    """
+    if path.startswith(("src/irisx/", "tests/", "tools/")):
+        return True
+    parts = path.split("/")
+    return (len(parts) >= 4 and "/".join(parts[:3]) in MATH_PYTHON_ROOTS
+            and path.endswith(".py") and "\\" not in path
+            and all(part not in {"", ".", ".."} for part in parts))
 
 
 def git(root: Path, *args: str) -> bytes:
@@ -654,8 +672,7 @@ def validate_active_surface(root: Path, issues: list[str]) -> set[str]:
 
     for path in sorted(tracked):
         if Path(path).suffix.lower() in EXECUTABLE_SUFFIXES:
-            allowed_prefix = path.startswith(("src/irisx/", "tests/", "tools/"))
-            add(allowed_prefix, f"unexpected active executable: {path}", issues)
+            add(allowed_active_executable(path), f"unexpected active executable: {path}", issues)
 
     python_paths = {path for path in tracked if path.endswith(".py")}
     for path in sorted(python_paths):

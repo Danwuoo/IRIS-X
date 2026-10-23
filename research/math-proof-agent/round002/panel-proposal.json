@@ -1,0 +1,78 @@
+{
+  "format": "irisx.math.panel-proposal.v1",
+  "task": "MATH-002",
+  "proposal_version": "round002-p1-source-correction",
+  "previous_snapshot": "round002-p0 is preserved in code commit ae051a79359c4e0be9658d89452c05793d64d831 and smoke001 manifest; no scored output was observed before this revision.",
+  "source_feasibility_update": "source-feasibility-notes.json records attributable upstream human review for miniF2F-v2c and ProofNet-Verified. A separate owner-performed review is not intrinsically required. No source is admitted until exact statements, legal acquisition, runtime and answer-proof binding are qualified.",
+  "created_on": "2026-10-19",
+  "status": "not_frozen",
+  "scored_model_outputs_observed": 0,
+  "selected_problems": [],
+  "frozen_panel_fingerprint": null,
+  "original_proposal": {
+    "problems": 24,
+    "families": {"algebra": 8, "number_theory": 8, "combinatorics": 8},
+    "answer_discovery_and_proof": 12,
+    "pure_proof": 12,
+    "status": "retained proposal only; not an acquired or human-reviewed panel"
+  },
+  "preregistered_seed_order": [0, 1, 2],
+  "seed_policy": "Use seed 0 first; seeds 1 and 2 only after qualified smoke and budget reservation. Sampling seeds are separate from mandatory PYTHONHASHSEED=0 startup.",
+  "panel_size_rule": "Decide a feasible size from lawful source availability, statement fidelity and non-scoring smoke cost before any scored target-model output. Record a new protocol/panel version before reducing the proposed size. Do not select, replace or remove questions after observing scored outputs.",
+  "source_candidates": [
+    {
+      "source_id": "minif2f-lean4",
+      "repository": "https://github.com/yangky11/miniF2F-lean4",
+      "revision": "5746b7d6c47855ce1294bed87329618ff7f1bc31",
+      "lean_toolchain": "leanprover/lean4:v4.24.0",
+      "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+      "intended_role": "publicly exposed proof-only regression candidate",
+      "acquired_scope": "README, LICENSE, lean-toolchain and lake-manifest.json only; no benchmark solution collection",
+      "formal_statements_selected": 0,
+      "local_human_statement_fidelity_review": "not_available",
+      "answer_visibility": "must be classified per statement before selection; a result embedded in the theorem is answer_given",
+      "joint_success_eligible": false,
+      "reason_not_frozen": "No statement-only acquisition and exact per-item fidelity record was completed; upstream port warns that it is not regularly maintained. An existing benchmark name does not establish this task's per-statement fidelity."
+    },
+    {
+      "source_id": "putnambench",
+      "revision": "a635813f5edf297d928f9bd5ef8324a26bdde09c",
+      "intended_role": "excluded from this round",
+      "reason_not_frozen": "Conservatively excluded in favor of alternative sources. No public generated proofs is explicit; construing all private automated evaluation as requiring prior contact was an earlier interpretation, not a license prohibition. See source-feasibility-notes.json. No contact is authorized."
+    },
+    {
+      "source_id": "authored_integration_controls",
+      "intended_role": "non-scoring engineering controls only",
+      "exposure": "designer_authored_public_engineering_cases",
+      "joint_success_eligible": false,
+      "reason_not_frozen": "Agent-authored control statements are not human-reviewed benchmark problems or model capability evidence. No control passes may replace a scored denominator."
+    }
+  ],
+  "required_frozen_problem_fields": [
+    "problem_id", "source_id", "source_revision", "source_path", "source_sha256",
+    "formal_statement", "formal_statement_sha256", "family", "exposure",
+    "answer_visibility", "answer_kind", "statement_fidelity_review_ref",
+    "statement_fidelity_status", "imports_fingerprint", "lean_toolchain",
+    "mathlib_revision", "seed_order", "per_arm_budget", "proof_publication_policy"
+  ],
+  "answer_rules": {
+    "pure_proof": "answer_status=not_applicable; excluded from answer-discovery and joint denominators",
+    "answer_given": "May contribute only to proof rate; never claim the provided answer was found",
+    "answer_discovery": "Answer must be absent from proposer/refiner/retrieval inputs; joint success requires a correct discovered answer and a verified proof for the fixed original statement"
+  },
+  "freeze_gates": [
+    "A lawful statement-only source and complete per-item provenance are available without acquiring public benchmark solutions",
+    "Already human-checked formal statements are supported by attributable review evidence; preserve hypotheses, types, domains, quantifiers and goal",
+    "All selected statement and dependency fingerprints, exposure and answer visibility are recorded",
+    "The trusted Lean worker passes positive/negative controls and measured isolation before arbitrary candidate execution",
+    "The fixed model, tokenizer, dependencies, prompt template, dtype, sharding and sampling settings pass non-scoring TPU v5e-8 smoke",
+    "Measured smoke cost establishes shared M-SAMPLE/M-REPAIR token, tool and wall ceilings within remaining reserved submission budget",
+    "The protocol and panel are committed and hashed before scored output is generated"
+  ],
+  "blocked_metrics": [
+    "No complete-proof rate is estimated because no scored panel was frozen or run",
+    "No answer-and-proof joint success is estimated because no eligible answer-discovery items were qualified",
+    "No feedback-versus-independent-sampling effect is estimated from engineering controls"
+  ],
+  "failure_accounting": "Once frozen, retain every planned item and seed in end-to-end denominators, including timeout, invalid_format, infrastructure_error, unknown and not_reached. Report exact completed subsets separately without removing incomplete items."
+}

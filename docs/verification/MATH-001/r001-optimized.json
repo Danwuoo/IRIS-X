@@ -1,0 +1,321 @@
+{
+  "format": "irisx.math.round001.v1",
+  "scope": "authored verifier pilot; NOT model, Lean, IMO, Putnam or TPU efficacy",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "optimize": 1,
+  "script_sha256": "0c6d155ee75161ed93b9356984223a4e852fd5f87738570b96f621ec09b1cde0",
+  "protocol_sha256": "e88ede66a095b3aff783e8816ea10271b62c36f63162180e1553d0f1b2b807dc",
+  "panel_sha256": "4bd55e7bd90d0da0c874c6dabb2b7e79fc1799ffbb83d481a747d281873d3530",
+  "summary": {
+    "cases": 32,
+    "certificate_verified": 12,
+    "rejected": 16,
+    "unknown": 4,
+    "expected_decision_mismatches": 0,
+    "false_mathematical_claims": 8,
+    "false_claims_promoted_by_finite_probes": 4,
+    "false_claims_accepted_by_certificates": 0
+  },
+  "rows": [
+    {
+      "id": "V01",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "V02",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "V03",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "V04",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "V05",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "V06",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "V07",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "V08",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "V09",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "V10",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "V11",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "V12",
+      "category": "valid",
+      "claim_true": true,
+      "expected": "certificate_verified",
+      "decision": "certificate_verified",
+      "reason": "exact identity + nonnegative terms + attainment; trusted Python, not Lean",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "F01",
+      "category": "false_claim_finite_grid_trap",
+      "claim_true": false,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "polynomial identity mismatch",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "F02",
+      "category": "false_claim_finite_grid_trap",
+      "claim_true": false,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "polynomial identity mismatch",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "F03",
+      "category": "false_claim_finite_grid_trap",
+      "claim_true": false,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "polynomial identity mismatch",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "F04",
+      "category": "false_claim_finite_grid_trap",
+      "claim_true": false,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "polynomial identity mismatch",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "D01",
+      "category": "false_claim_missing_assumption",
+      "claim_true": false,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "missing x >= 0 assumption",
+      "finite_probe_promotes": false
+    },
+    {
+      "id": "D02",
+      "category": "false_claim_missing_assumption",
+      "claim_true": false,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "missing x >= 0 assumption",
+      "finite_probe_promotes": false
+    },
+    {
+      "id": "D03",
+      "category": "false_claim_missing_assumption",
+      "claim_true": false,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "missing x >= 0 assumption",
+      "finite_probe_promotes": false
+    },
+    {
+      "id": "D04",
+      "category": "false_claim_missing_assumption",
+      "claim_true": false,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "missing x >= 0 assumption",
+      "finite_probe_promotes": false
+    },
+    {
+      "id": "W01",
+      "category": "true_claim_invalid_certificate",
+      "claim_true": true,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "negative square weight",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "W02",
+      "category": "true_claim_invalid_certificate",
+      "claim_true": true,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "negative square weight",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "W03",
+      "category": "true_claim_invalid_certificate",
+      "claim_true": true,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "negative square weight",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "W04",
+      "category": "true_claim_invalid_certificate",
+      "claim_true": true,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "negative square weight",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "B01",
+      "category": "true_claim_wrong_statement_binding",
+      "claim_true": true,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "statement binding mismatch",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "B02",
+      "category": "true_claim_wrong_statement_binding",
+      "claim_true": true,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "statement binding mismatch",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "B03",
+      "category": "true_claim_wrong_statement_binding",
+      "claim_true": true,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "statement binding mismatch",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "B04",
+      "category": "true_claim_wrong_statement_binding",
+      "claim_true": true,
+      "expected": "rejected",
+      "decision": "rejected",
+      "reason": "statement binding mismatch",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "U01",
+      "category": "true_claim_unsupported_evidence",
+      "claim_true": true,
+      "expected": "unknown",
+      "decision": "unknown",
+      "reason": "unsupported evidence; not a disproof",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "U02",
+      "category": "true_claim_unsupported_evidence",
+      "claim_true": true,
+      "expected": "unknown",
+      "decision": "unknown",
+      "reason": "unsupported evidence; not a disproof",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "U03",
+      "category": "true_claim_unsupported_evidence",
+      "claim_true": true,
+      "expected": "unknown",
+      "decision": "unknown",
+      "reason": "unsupported evidence; not a disproof",
+      "finite_probe_promotes": true
+    },
+    {
+      "id": "U04",
+      "category": "true_claim_unsupported_evidence",
+      "claim_true": true,
+      "expected": "unknown",
+      "decision": "unknown",
+      "reason": "unsupported evidence; not a disproof",
+      "finite_probe_promotes": true
+    }
+  ],
+  "elapsed_seconds": 0.002665202999992289,
+  "model_calls": 0,
+  "training_updates": 0,
+  "lean_executions": 0,
+  "tpu_executions": 0,
+  "independent_review": "pending",
+  "limitations": [
+    "Deliberately constructed, non-blinded small panel.",
+    "Python certificate checker is not kernel-formalized.",
+    "No agent repair or model-accuracy delta measured."
+  ]
+}
