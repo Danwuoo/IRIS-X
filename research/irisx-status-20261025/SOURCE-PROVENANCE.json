@@ -1,0 +1,105 @@
+{
+  "base_remote_commit": "3bbb6b73f27bc40d909bada9426a0714424d1dbd",
+  "no_active_checkout_modified": true,
+  "no_model_or_cloud_execution": true,
+  "omitted": [
+    "weights/checkpoints",
+    "raw datasets/pools/traces",
+    "evaluator answers",
+    "credentials/environment",
+    "private Library IDs",
+    "cloud object/resource IDs",
+    "live control ledgers and operation logs"
+  ],
+  "schema": "irisx-sanitized-source-provenance/v1",
+  "source_files": [
+    {
+      "bytes": 6158,
+      "original_run": "irisx-sft139-p1-three-arm-20261025-k1",
+      "repository_path": "tools/postsft_loss_contracts_20261025/objectives.py",
+      "sha256": "320ab4218f7e960af164268840490adf32b95dddafc0895ba4cff813f5be2d15",
+      "transformation": "byte-identical first-party source; no runtime/data/dependency bundling"
+    },
+    {
+      "bytes": 5389,
+      "original_run": "irisx-sft139-p1-three-arm-20261025-k1",
+      "repository_path": "tools/postsft_loss_contracts_20261025/query_spans.py",
+      "sha256": "eb9a368b395c52a209b5e0e32a734ca6ffa2094b8e8487b6ef4a81bf796cc6f7",
+      "transformation": "byte-identical first-party source; no runtime/data/dependency bundling"
+    },
+    {
+      "bytes": 7348,
+      "independent_review_sha256": "d223c2a563348e57ba02dcdc7f7da7dd5c93e4e190e5056098fb85b122bedea2",
+      "repository_path": "tools/grid16_train_length_census_20261025/census.py",
+      "sha256": "c01a4bfaf81ea6688f2b4c5976cfaa5edab421e06b4dabe43316b539c455d216",
+      "transformation": "byte-identical reviewed TRAIN-only length census/source tests; no raw documents or row-level metadata distributed"
+    },
+    {
+      "bytes": 1418,
+      "independent_review_sha256": "d223c2a563348e57ba02dcdc7f7da7dd5c93e4e190e5056098fb85b122bedea2",
+      "repository_path": "tools/grid16_train_length_census_20261025/test_census.py",
+      "sha256": "4000fc20f42cce118d8d5692ef4b40adb125d472dd30e5c0342e7f4ab69747cb",
+      "transformation": "byte-identical reviewed TRAIN-only length census/source tests; no raw documents or row-level metadata distributed"
+    },
+    {
+      "bytes": 4406,
+      "repository_path": "research/irisx-status-20261025/gpu-search/GPU-STUDY-PROTOCOL.json",
+      "review_scope": "author sanitized proposal; reviewed by the current publication audit, not by the historical selector-only review",
+      "sha256": "42cc4b7cffd1caa1b82f70290221cbbbef21c91444daae9fa309bcde270db1a3",
+      "transformation": "sanitized author proposal; not native evidence"
+    },
+    {
+      "bytes": 621,
+      "independent_review_sha256": "b3cd39eeb89b25c9195b1a3864a085b1ce31a64d5eb65893b75a7c6e05771bfd",
+      "repository_path": "research/irisx-status-20261025/gpu-search/PLAN-ERRATUM.json",
+      "sha256": "8be9c830f8184be5162ec4cd6d432292da115eca889bb37cba0e14b8f3cfb389",
+      "transformation": "byte-identical independently reviewed public-only proposal/CPU selector artifact"
+    },
+    {
+      "bytes": 1860,
+      "repository_path": "research/irisx-status-20261025/gpu-search/README.md",
+      "review_scope": "author sanitized proposal; reviewed by the current publication audit, not by the historical selector-only review",
+      "sha256": "fdcf039983b99623ec182549498c44cbfbb4a35f81bd2502e0af8185ee5d0ebc",
+      "transformation": "sanitized author proposal documentation with repository-relative source/test paths"
+    },
+    {
+      "bytes": 429,
+      "repository_path": "research/irisx-status-20261025/gpu-search/RERANK-CPU-RESULT.json",
+      "sha256": "d9daf222179e2a7698bbe0d16441ea8edfd119cf47cb0c9da08e694b123a4743",
+      "transformation": "byte-identical author synthetic-only CPU result; current publication audit verifies provenance, not a GPU result"
+    },
+    {
+      "bytes": 2561,
+      "independent_review_sha256": "b3cd39eeb89b25c9195b1a3864a085b1ce31a64d5eb65893b75a7c6e05771bfd",
+      "repository_path": "research/irisx-status-20261025/gpu-search/SELECTOR-INDEPENDENT-REVIEW.json",
+      "sha256": "b3cd39eeb89b25c9195b1a3864a085b1ce31a64d5eb65893b75a7c6e05771bfd",
+      "transformation": "byte-identical prior selector-only review receipt; not a review of the newer GPU study protocol or README"
+    },
+    {
+      "bytes": 4577,
+      "independent_review_sha256": "b3cd39eeb89b25c9195b1a3864a085b1ce31a64d5eb65893b75a7c6e05771bfd",
+      "repository_path": "tools/postsft_gpu_selector_20261025/rerank_candidates.py",
+      "sha256": "3c8be05c57a1503ada3b1db38892dbc402b373896599a85c5c1748d4422b8a14",
+      "transformation": "byte-identical independently reviewed selector/test source; relocated to repository executable-tools root"
+    },
+    {
+      "bytes": 2327,
+      "independent_review_sha256": "b3cd39eeb89b25c9195b1a3864a085b1ce31a64d5eb65893b75a7c6e05771bfd",
+      "repository_path": "tools/postsft_gpu_selector_20261025/test_rerank.py",
+      "sha256": "1f711cb85a75b4e4063ffe9137c6bce5e90aee3d8d60fb36aa9e8f2cb29bcd8b",
+      "transformation": "byte-identical independently reviewed selector/test source; relocated to repository executable-tools root"
+    },
+    {
+      "bytes": 2486,
+      "repository_path": "tools/grid16_train_length_census_20261025/README.md",
+      "sha256": "3357ba4d9639ed2f27f2bb96c35a324d7211ba857c35508e0602971f469fc9f0",
+      "transformation": "byte-identical reviewed small source documentation/aggregate; no raw or per-parent data"
+    },
+    {
+      "bytes": 2418,
+      "repository_path": "research/irisx-status-20261025/postsft/OFFICIAL800-LENGTH-SUMMARY.json",
+      "sha256": "5e1a54a11aff7ff34ddfc516d36fed61181cc4f92d546a7e835cd015f8ce4be4",
+      "transformation": "byte-identical reviewed small source documentation/aggregate; no raw or per-parent data"
+    }
+  ]
+}

@@ -1,0 +1,517 @@
+{
+  "GPU_to_TPU_offline_pool_candidate": {
+    "RLVR": "never substitute old GPU baseline rollouts for current TPU on-policy samples; fresh actor generation/replay required after each policy update",
+    "TPU_reference": "recompute all reference sequence log-probabilities under the actual frozen TPU reference; do not reuse or mix GPU logps with TPU policy ratios",
+    "benefit": "reuse one unadapted GPU baseline TRAIN candidate pool for TPU offline natural-pair DPO and winner SFT, avoiding redundant TPU generation if total transfer/verification cost is lower",
+    "iterative_boundary": "an unadapted baseline pool can seed round 1 only; calling repeated training on it iterative self-training is false. A later round needs genuinely fresh samples from its named updated policy plus separate cost/scope approval.",
+    "no_gold_transfer": "no holdout answers, credentials or unknown teacher traces; any cross-service artifact move needs separately checked exact authorization",
+    "offpolicy_boundary": "DPO/SFT may consume provenance-verified off-policy examples, but no claim CUDA P1 and TPU P1 are numerically identical without native parity",
+    "quality": "support consistency and parse validity do not prove query correctness; exact TRAIN verifier only",
+    "required_provenance": [
+      "exact model version and all weight hashes",
+      "adapter/root-policy digest and numeric/backend policy",
+      "original TRAIN parent/source lineage",
+      "exact prompt/completion token IDs and EOS with hashes",
+      "sampling/legal-mask implementation and temperature/top-p/seed/slot",
+      "full completion/truncation status and dedup identity",
+      "fixed TRAIN verifier source/hash and validity/correctness receipt"
+    ],
+    "status": "PROPOSAL_ONLY_NOT_IMPLEMENTED_NOT_A_NEW_CROSS_SERVICE_DATA_GRANT"
+  },
+  "TPU_experiment_matrix": {
+    "checkpoint_and_stop": {
+      "existing_per_checkpoint_engineering_envelope_bytes": 838860800,
+      "hard_stops": [
+        "native allocation lifetime",
+        "science cutoff plus reserved export/cleanup tail",
+        "actual budget and storage/served-byte caps",
+        "unknown rank state or failed reset",
+        "numeric/replay/restore failure"
+      ],
+      "not_a_new_storage_grant": "must re-predict actual tensor/optimizer shapes and account every generation/retry/model/source/result against current cumulative storage/transfer ledger; old ceilings do not reset",
+      "proposed_final_checkpoints_per_seed_max": 3,
+      "restore": "each produced method checkpoint must reload adapter/optimizer/all RNG and match logits/next update before comparison validity; no waiting for RL success to restore DPO/SFT",
+      "scope": "no new QR, run, upload, retention extension or financial authority from this document",
+      "three_seed_final_checkpoint_payload_envelope_bytes": 7549747200
+    },
+    "fixed_hyperparameters": "inherit P1/LoRA r32 alpha32 dropout0, Adam lr1e-5, DPO beta0.1, RL clip0.2/KL0.01; no automatic LR/rank sweep",
+    "formal_training_promotion": {
+      "next_data_scale": "derive new unique-parent requirement from discovery/heldout learning curves; not a 10B-token target and not automatic generation authorization",
+      "no_shortcut": "K1 one-update engineering PASS, discovery reward improvement or a large corpus count alone cannot promote",
+      "requires": [
+        "reproducible positive paired effect across prespecified seeds with uncertainty on an evaluator-approved independent panel",
+        "retention noninferiority threshold fixed BEFORE final eval, threshold presently undecided",
+        "signal/data coverage across multiple independent parents and mechanisms, not repeated copies",
+        "all per-arm numeric/gradient/ratio/save-restore/data-cursor gates",
+        "measured training throughput and exact unique-target exposure plan",
+        "bounded full-run data/storage/network/compute cost plus explicit user training authorization"
+      ],
+      "status": "NO_GO"
+    },
+    "maximum_token_accounting_example": {
+      "RL_8_32_evaluation_pools": 2,
+      "RL_onpolicy_32_groups_tokens": 65536,
+      "all_three_method_one_seed_tokens": 294912,
+      "base_plus_DPO_winner_8_32_evaluation_pools": 5,
+      "conclusion": "large full matrix is not a 2-hour job; choose tier/prefix from measured feasibility, not outcome, and request an exact bounded execution scope",
+      "decode_only_three_seed_hours_k1_proxy_times2": 224.783203125,
+      "iterative_one_extra_generation_and_one_final_eval_per_seed_tokens": 65536,
+      "maximum_backward_target_tokens_per_seed": 114688,
+      "maximum_backward_target_tokens_three_seeds": 344064,
+      "meaning": "ceiling for a 16-parent G4/512 planning matrix, not a promise to execute all cells",
+      "not_included": [
+        "support training tokens",
+        "pretraining/load/compile",
+        "verification and replay passes",
+        "checkpoint I/O",
+        "locked holdout inference"
+      ],
+      "one_pool": 32768,
+      "three_seeds_tokens": 884736
+    },
+    "parameter_scope": "frozen 4B base plus LoRA r32 only; not 4B full-parameter training",
+    "runtime_code_gaps": [
+      "multi-update DPO parent cycling versus current one-pass pairs",
+      "RL fresh generation/replay/update loop versus current one-group update",
+      "every-arm native save/load equivalence",
+      "explicit measured-cost comparator and multi-seed aggregate",
+      "locked grid16 holdout interface"
+    ],
+    "seed_policy": "fixed before discovery results; common initial adapter/RNG within each paired arm; no best-seed picking; 1729 has prior engineering exposure",
+    "seeds": [
+      1729,
+      2718,
+      31415
+    ],
+    "stages": [
+      {
+        "data": "fixed existing long probes plus selected-prefix public prompt buckets",
+        "failure": "technical/numerical fail stops dependent model work, not a scientific zero score",
+        "id": "S0",
+        "required": "per-arm save/load equivalence including adapter/optimizer/RNG; same-policy ratio, four-rank or device-correct denominators; source/weights pins",
+        "topic": "restore and scalar/numerical/cost gate"
+      },
+      {
+        "G": 2,
+        "decision": "freeze largest cost-feasible prefix before any rewards; report all parents; no searching seeds until mixed reward",
+        "id": "S1",
+        "new_token_cap": 512,
+        "policy": "root P1, fixed slot seeds and original public-support/last-TRAIN-query protocol",
+        "prefix_options": [
+          4,
+          8,
+          16
+        ],
+        "topic": "TRAIN reward-coverage scout"
+      },
+      {
+        "controls": [
+          "frozen no-update root",
+          "winner SFT on exactly same selected natural-positive bodies and parent sequence"
+        ],
+        "evaluation": "discovery only at 8/32; no final-holdout access for method/checkpoint selection",
+        "fairness": "same update count/data exposure is NOT equal FLOPs; report an additional actual-cost frontier/paired budget comparison using separate frozen checkpoints",
+        "id": "S2",
+        "scope": "at most 1 natural pair per parent; fixed cyclic replay; each method starts from same root",
+        "topic": "DPO vs paired winner SFT",
+        "updates": [
+          8,
+          32
+        ]
+      },
+      {
+        "G": 4,
+        "controls": [
+          "root frozen exact same sampler",
+          "continued winner-SFT control with measured compute ceiling"
+        ],
+        "group_attempts": 32,
+        "id": "S3",
+        "required": "fresh actor samples each attempted group, root reference fixed; canonical legal-mask distribution and unchanged-policy replay",
+        "skip": "uniform reward groups are SCI_SKIP and still consume generation budget; no fabricated negative, no arbitrary retry",
+        "topic": "RLVR/GRPO-style on-policy signal and optimization",
+        "update_count": "commits may be 0..32; never equate 32 attempted groups with 32 updates"
+      },
+      {
+        "controls": "one-shot continued SFT with same positive data/exposure and measured compute",
+        "data": "one fresh pool over the SAME frozen discovery prefix, verifier-accepted natural correct bodies only; dedup against prior rounds",
+        "extra_rounds": 1,
+        "id": "S4",
+        "limit": "no unbounded teacher calls, new parents or generation-until-success; failure to add diverse valid examples is a negative finding",
+        "topic": "one bounded iterative-SFT round only if S2 has a validated direction"
+      },
+      {
+        "condition": "evaluator source/lineage/codec gates resolved and method/checkpoint frozen",
+        "id": "E",
+        "primary": "paired exact-grid top1/select2 over unique parents plus uncertainty; report per-family and retention degradation",
+        "restriction": "one final evaluation; no gold or answer-derived tuning feedback",
+        "topic": "locked independent evaluation and retention"
+      }
+    ],
+    "status": "CONDITIONAL_MATRIX_NOT_A_SINGLE_RUN_AND_NOT_YET_RUNTIME_IMPLEMENTED"
+  },
+  "cost": {
+    "additional_required_measurements": [
+      "selected public prompt prefill buckets",
+      "backward/optimizer per actual target length",
+      "legal-mask/replay cost",
+      "checkpoint save+restore",
+      "device peak memory",
+      "compile and material verification"
+    ],
+    "complete_modelwall": "sampling, verifier, replay, failed/unknown work, backward, rollback, save and reload all count; no idle padding and no refund of physical costs",
+    "dollar_budget": null,
+    "formula": "setup+export+sum(pool_parent_slots*(measured_prefill+2*token_cap*measured_decode+replay))+actual_update_limit*measured_update",
+    "gpu_run_authorized": false,
+    "k1_decode_proxy_seconds_per_token": 0.4573225975036621,
+    "not_a_guarantee": "one TPU prompt/short decode sample; not steady-state, CPU, GPU benchmark or a runtime upper bound",
+    "not_shareable": [
+      "TTT adapted candidates across parents/states",
+      "post-update evaluations across method states",
+      "RLVR fresh on-policy group after policy changes"
+    ],
+    "runtime_budget": null,
+    "seven_pool_table": "planning illustration, not a promise every DAG needs exactly seven; count actual shared and fresh pools explicitly",
+    "shareable": "one unchanged-policy B0 pool and reference logps for DPO/winner; identical policy/prompt/seed/mask only",
+    "table": [
+      {
+        "G": 2,
+        "complete_runtime_estimate": null,
+        "decode_only_seconds_using_k1_sample_times_2": 3746.38671875,
+        "one_pool_candidate_slots": 8,
+        "one_pool_new_token_ceiling": 4096,
+        "parents": 4,
+        "seven_pool_decode_only_seconds_same_proxy": 26224.70703125,
+        "seven_pool_new_token_ceiling": 28672
+      },
+      {
+        "G": 4,
+        "complete_runtime_estimate": null,
+        "decode_only_seconds_using_k1_sample_times_2": 7492.7734375,
+        "one_pool_candidate_slots": 16,
+        "one_pool_new_token_ceiling": 8192,
+        "parents": 4,
+        "seven_pool_decode_only_seconds_same_proxy": 52449.4140625,
+        "seven_pool_new_token_ceiling": 57344
+      },
+      {
+        "G": 2,
+        "complete_runtime_estimate": null,
+        "decode_only_seconds_using_k1_sample_times_2": 7492.7734375,
+        "one_pool_candidate_slots": 16,
+        "one_pool_new_token_ceiling": 8192,
+        "parents": 8,
+        "seven_pool_decode_only_seconds_same_proxy": 52449.4140625,
+        "seven_pool_new_token_ceiling": 57344
+      },
+      {
+        "G": 4,
+        "complete_runtime_estimate": null,
+        "decode_only_seconds_using_k1_sample_times_2": 14985.546875,
+        "one_pool_candidate_slots": 32,
+        "one_pool_new_token_ceiling": 16384,
+        "parents": 8,
+        "seven_pool_decode_only_seconds_same_proxy": 104898.828125,
+        "seven_pool_new_token_ceiling": 114688
+      },
+      {
+        "G": 2,
+        "complete_runtime_estimate": null,
+        "decode_only_seconds_using_k1_sample_times_2": 14985.546875,
+        "one_pool_candidate_slots": 32,
+        "one_pool_new_token_ceiling": 16384,
+        "parents": 16,
+        "seven_pool_decode_only_seconds_same_proxy": 104898.828125,
+        "seven_pool_new_token_ceiling": 114688
+      },
+      {
+        "G": 4,
+        "complete_runtime_estimate": null,
+        "decode_only_seconds_using_k1_sample_times_2": 29971.09375,
+        "one_pool_candidate_slots": 64,
+        "one_pool_new_token_ceiling": 32768,
+        "parents": 16,
+        "seven_pool_decode_only_seconds_same_proxy": 209797.65625,
+        "seven_pool_new_token_ceiling": 229376
+      },
+      {
+        "G": 2,
+        "complete_runtime_estimate": null,
+        "decode_only_seconds_using_k1_sample_times_2": 29971.09375,
+        "one_pool_candidate_slots": 64,
+        "one_pool_new_token_ceiling": 32768,
+        "parents": 32,
+        "seven_pool_decode_only_seconds_same_proxy": 209797.65625,
+        "seven_pool_new_token_ceiling": 229376
+      },
+      {
+        "G": 4,
+        "complete_runtime_estimate": null,
+        "decode_only_seconds_using_k1_sample_times_2": 59942.1875,
+        "one_pool_candidate_slots": 128,
+        "one_pool_new_token_ceiling": 65536,
+        "parents": 32,
+        "seven_pool_decode_only_seconds_same_proxy": 419595.3125,
+        "seven_pool_new_token_ceiling": 458752
+      }
+    ]
+  },
+  "go_no_go": {
+    "authorization": [
+      "new model run scope/time/storage/spend required; QuickSave alone not Run"
+    ],
+    "code": "new plan only; no executable integration into GPU or TPU",
+    "formal_training": "NO_GO",
+    "native": [
+      "CUDA P1 stack/parity/memory/restore still untested",
+      "TPU K1 numerical source is not proof of new 512-token sampling context performance"
+    ],
+    "scientific": [
+      "fixed scout natural signal coverage",
+      "measured and paired multi-update cost feasibility",
+      "independent grid16 holdout and retention source"
+    ]
+  },
+  "gpu_quicksave_replication_changed": false,
+  "historical_pin_caveat": {
+    "artifact_identity_clarification": "The old pin identifies full parent-tokenizer metadata; the current pin identifies a 32-row query-response metadata derivative. Different hashes are expected and are not by themselves a historical defect.",
+    "current_metadata_sha256": "eea00518a63e3b85dbbe67f072a332f60e1e2e5542b66649af1d4fa488d45d6e",
+    "old_common_panel_claimed_row_metadata_sha256": "001911ff69d88ae26789ae986ae818a2773bc934656340609d047cfe5b7be214",
+    "replacement_basis": "all 32 parent/source/prompt length/target length fields independently match frozen true K1 TRAIN data pin",
+    "same_bytes_claimed": false
+  },
+  "historical_primary_source_crosscheck": {
+    "author_direct_read": {
+      "agent-architectures.zh-TW.md": "selector/trajectory/multiagent tail and sections 5/6; not claimed whole directory",
+      "agent-factory3/integration.zh-TW.md": "lines1-120: actual upstream CPU bridge, protocol and admission limits",
+      "method-landscape.zh-TW.md": "sections 1/3/5/6/7/8; primary decision table fully read"
+    },
+    "independent_worker_read": "audit_arc_data_mix READ-LEDGER pins11files with exact full/partial ranges; historical document claims, not a new replay of old raw model artifacts",
+    "inherited_decisions": [
+      {
+        "from": "method-landscape section7 steps0-1",
+        "use": "finish interpretable same-root engineering and complete costs before method-effect claims; failed infrastructure is not score0"
+      },
+      {
+        "from": "section7 step2a",
+        "use": "if signal is sparse, investigate verified training supply/trajectory/rejection-SFT; do not blindly add RL steps, reward-conditioned resampling or partial-credit success"
+      },
+      {
+        "from": "section7 step2b",
+        "use": "after real RL updates compare B with both frozen A and total-modelwall SFT C on a new independent panel; B>A but C>=B does not support extra RL value"
+      },
+      {
+        "from": "section7 steps3-5 and agent-architectures sections5/6",
+        "use": "separate GPU TTT/search/rerank; complete resets and full costs; selector only justified by sealed-pool oracle-vs-select gap, not missing correct candidates"
+      },
+      {
+        "from": "agent-architectures lineage/LODO",
+        "use": "whole parent/ancestor/alias closures share split; changing view or device does not create a holdout; true LODO removes the output from every solver path"
+      },
+      {
+        "from": "AF3 integration sections1/3/4/5",
+        "use": "actual upstream CPU loss/gradient parity is reusable component evidence only; it proves neither 4B LoRA replay/update/reload nor reward benefit"
+      }
+    ],
+    "known_old_results_as_documented_not_newly_rescored": {
+      "interpretation": "neither old run establishes a positive/negative causal RL effectiveness comparison; no inherited paid/run authority",
+      "v43": "A256; reward15/64; eight backwards but zero RL optimizer commits due replay rejection; C203; source PUBLIC0/167 not a newly independently scored/admitted result",
+      "v45": "12 rejected replay trajectories, zero RL commit; pooled p95 cannot replace per-trajectory gates; sparse shadow did not prove kernel root cause"
+    },
+    "not_inherited": [
+      "old replay tolerances are not substituted for current stricterP1 gates",
+      "old public/dev/held32 exposure cannot be relabeled clean",
+      "old rank/model/vocabulary/group size cannot be called current replication",
+      "old framework names do not justify new installation or architecture"
+    ],
+    "pins": [
+      {
+        "bytes": 20589,
+        "path": "iris-setup/repo/research/arc2-sft-rl-continuation-20261014/method-landscape.zh-TW.md",
+        "sha256": "aeaf12a08552d47ddef51ef50af3bfee25f87031fb62937af169c7c7d4f979a9"
+      },
+      {
+        "bytes": 28829,
+        "path": "iris-setup/repo/research/arc2-sft-rl-continuation-20261014/agent-architectures.zh-TW.md",
+        "sha256": "a3cfd2141e269dccf4afa520a9911441296fee1a812337954455944e8cda49d6"
+      },
+      {
+        "bytes": 17850,
+        "path": "iris-setup/repo/research/arc2-sft-rl-continuation-20261014/agent-factory3/integration.zh-TW.md",
+        "sha256": "9fa0ace3e7f986f588258c9bfabd1e42760dbf04a2c0295e3129c31674a5dca2"
+      },
+      {
+        "bytes": 11489,
+        "path": "irisx-arc2-historical-method-read-review-20261025/READ-LEDGER.json",
+        "sha256": "b07255e95bc72ccb081c8bdc1cd1e504862f4ff1f63ebfcdc1a6de5cf47ed2c1"
+      }
+    ],
+    "repo_commit": "ef6e7831dbea08ad2a02cc46212e6b480f9b1039",
+    "three_protocols_kept_separate": {
+      "20261014_predecessor": "14B A=SFT256, B32parentsG8/disjoint64slots, C fresh optimizer from A matched total B modelwall; DFA-conditioned centered-advantage detached-ratio DDIS, no default std normalization or reference KL",
+      "20261017_goal_successor": "separate full-vocabulary AF3/partial-reward/TTT protocol; last v50 RUNNING then denied, no verified terminal effectiveness in read record",
+      "20261025_current": "SFT1394B vocab16, P1FP32 compute, frozen base+LoRAr32, query-only/EOS objectives, G2 micro and proposedG4; min-clipped/std-normalized/referenceKL RL differs from predecessor DDIS"
+    }
+  },
+  "holdout": {
+    "TTT_on_holdout": "legal episodic support-only adaptation allowed under frozen protocol, complete reset per task and fixed compute; no query gold/scorer feedback for adaptation",
+    "current_gold_body_reads": false,
+    "existing_192_optional": "at most a separately named grid-only diagnostic after evaluator-owned re-encoding/review; not silently promoted to independent holdout",
+    "existing_448": "whole-family labels do not prove independent DSL/source; 96 dev explicitly separate",
+    "existing_544": "design-seen 35B UTF-8/JSON contract: 192 grid discovery + 352 algorithm cases; cannot directly use with 16-token 4B vocabulary",
+    "final_eval_execution_authorized": false,
+    "metrics": [
+      "exact top1/select2 by unique parent",
+      "pool pass@k explicitly oracle not deployable select@k",
+      "parse/timeout/overflow retaining denominator",
+      "paired parent differences and uncertainty, known-family slices",
+      "retention panel separately frozen"
+    ],
+    "required_proof": [
+      "source and generator/parent/component lineage disjoint from all discovery/training/tuning sources",
+      "dedup and fixed equivalence-class audit by isolated evaluator",
+      "grid16 representability and a frozen input-only contract",
+      "private gold hash and verifier correctness proof held only by evaluator",
+      "base-SFT139 historical exposure explicitly unknown, not cured by post-SFT split"
+    ],
+    "return_boundary": "evaluator sends approved aggregate/integrity only; never gold or per-parent answer-derived hints to method/generator",
+    "status": "STRICT_SOURCE_INDEPENDENT_GRID16_HOLDOUT_NOT_ESTABLISHED",
+    "use": "hyperparameters and selection decided on TRAIN discovery only; freeze chosen method/seed/checkpoint/compute before one final holdout evaluation"
+  },
+  "k1_delta_not_nine_route_rewrite": {
+    "DPO": 1,
+    "RLVR": 0,
+    "TTT": 2,
+    "candidate_slots": 24,
+    "checkpoint_saved_but_native_restore_not_executed": true,
+    "clean_holdout": false,
+    "meaning": "proof of selected engineering operations, not a positive or conclusive negative method trial",
+    "method_updates": 4,
+    "paired_winner_SFT": 1,
+    "quality_gain": false,
+    "unique_parent_body_pairs": 3
+  },
+  "model_calls": 0,
+  "nontrain_gold_reads": 0,
+  "panel_sha256": "ef40c3732ce06c465ed82c4950ed375e65dbcf7e584e7b6343627825baae16ab",
+  "preserved_gpu_default": {
+    "G": 2,
+    "max_new_tokens": 160,
+    "ordinals": [
+      4,
+      6
+    ]
+  },
+  "private_original_plan_sha256": "c209d1471ebbe3f44f5da5cc5ba429ae3dba0e41ae83a7c489c890811644f0f2",
+  "provider_calls": 0,
+  "publication": "Sanitized static research derivative; not runtime configuration or authorization. Relative artifact references are source lineage, not files bundled in this repository.",
+  "recommendation": [
+    "Share only a minimal correctness smoke across GPU and TPU; GPU studies episodic TTT/search/reranking, while TPU studies DPO, winner/iterative SFT and RLVR. Do not repeat the complete three-arm experiment on both devices.",
+    "Then use fixed TRAIN scout to measure diversity, natural preference coverage and on-policy variance; do not run all nine methods.",
+    "TPU topic: natural-pair DPO versus matched winner SFT; then bounded iterative SFT and conditional on-policy RLVR signal/update study.",
+    "GPU topic is support-only TTT/search/reranking, owned by the separate GPU worker; share minimal numerical smoke and data pins, not the full experimental DAG.",
+    "No learned RM/distillation/ORPO/CPT expansion in this plan."
+  ],
+  "schema": "sanitized-postsft-research-plan/v1",
+  "signal_and_updates": {
+    "DPO_winner": {
+      "no_pair": "DPO SCI_SKIP; positive-only SFT can be reported separately, never paired-DPO effect",
+      "pair": "at most one first valid correct and first valid wrong distinct body per parent in fixed slot order; no fabricated negatives",
+      "repeats": "fixed parent cycling; repeated exposure explicitly counted, not new examples",
+      "same_data": "same parent list and positive bodies for paired winner SFT; separate reset baseline for each method",
+      "stop_points": "predeclared checkpoints after 8 and 32 attempted updates; native cost admission first; no choosing checkpoint on final holdout",
+      "updates_proposed": [
+        8,
+        32
+      ]
+    },
+    "GPU_TTT_interface_only_not_TPU_arm": {
+      "control": "no-TTT may spend saved adaptation time on more candidates within the SAME wall/token/Gmax bounds; no idle-padding masquerading as compute matching",
+      "fairness": "matched common wall/generated-token ceilings is primary budget comparison, not equal realized compute",
+      "observations": "only public support examples; query gold and scorer feedback never used",
+      "per_candidate_cap": 512,
+      "proposed_common_candidate_cap": 16,
+      "proposed_common_generated_token_cap": 2048,
+      "query_evaluation": "one frozen post-adaptation policy per episode; not adapt on query outputs",
+      "realized_compute": "record prefill/decode/backward/update time and candidates; separately report cost-quality frontier, not superiority from unequal actual cost",
+      "reset": "complete adapter, optimizer, Python/NumPy/device RNG per episode from same root",
+      "support_update_limit_proposal": 4,
+      "wall_cap_seconds": null
+    },
+    "RLVR": {
+      "attempted_group_update_limit": 32,
+      "eligibility": "fresh group requires natural nonzero reward variance; an offline mixed B0 group does not establish later on-policy variance",
+      "max_new_tokens": 512,
+      "maximum_fresh_generation_tokens": 65536,
+      "numerics": "same-policy replay ratio first, group normalization as pinned objective, reference/KL policy explicit before admission",
+      "on_policy_G": 4,
+      "selection": "fixed scout prefix parent cycle, no reward-selected resampling; uniform group skips do not count as updates"
+    },
+    "all_methods": "no single update is efficacy evidence; insufficient signal/updates/cost is reported as such, not optimized away",
+    "exact_reward_only": "TRAIN query gold used by the fixed exact verifier, never exposed in model prompt or TTT support; no shape reward/partial-credit redesign here",
+    "minimum_method_signal_proposal": {
+      "distinct_declared_known_families": 3,
+      "distinct_signal_parents": 4,
+      "note": "planning sufficiency gate, not statistical power proof; official unknown mechanisms do not invent family counts"
+    },
+    "scout_reports": [
+      "all-wrong/all-correct/mixed groups",
+      "valid parse fraction and EOS truncations",
+      "unique body count per parent",
+      "natural positive-negative pair parents",
+      "known family coverage",
+      "unchanged-policy ratio/parity"
+    ]
+  },
+  "source_pins": [
+    {
+      "bytes": 34870,
+      "path": "irisx-sft139-postsft-evidence-bundle-20261024-1609/history/MATRIX.json",
+      "sha256": "b4556751c6af6b0a4af3e1e32f58e20b8300b294030003ce93dea2a90e209738"
+    },
+    {
+      "bytes": 9706,
+      "path": "irisx-sft139-postsft-nine-routes-20261024/MINIMUM-COMMON-PANEL-PROPOSAL.json",
+      "sha256": "dfe690554c27fd0c30c7d951e964fc6a09253574f37b9b53e1de653f70f59499"
+    },
+    {
+      "bytes": 90960,
+      "path": "irisx-sft139-k1-native-author-audit-20261025/NATIVE-RESULT-REVIEW.json",
+      "sha256": "9a911c62693f1bbd3a84c01a47bb5609a8bddf80afcbb8e5e8ab6ed7312f20a4"
+    },
+    {
+      "bytes": 6456,
+      "path": "irisx-research-restored-20261024-1220/snapshot-0720/irisx-research-readiness-snapshot-20261024-0720/isolated-eval-public/README.md",
+      "sha256": "4a2be9e14cd49d7609a7b6975af6a491a7185fe02d134c4cfa0cd0e55eb4766e"
+    },
+    {
+      "bytes": 6521,
+      "path": "irisx-research-restored-20261024-1220/new/evaluation-public-only/aggregate-receipt.json",
+      "sha256": "19879de773f1db62b462e4a7dafbadf110a29b1576c977d493414b77dc0579b0"
+    }
+  ],
+  "source_pins_are_static_not_bundled": true,
+  "status": "DISABLED_RESEARCH_CANDIDATE_NO_EXECUTION_AUTHORITY",
+  "supply_vs_run": {
+    "G2_vs_G4": "initial coverage scout is fixed G2; larger G4 matrix is separately cost-gated, never increased automatically to force mixed reward; two draws cannot establish that a parent has no variance",
+    "available_supply_parents": 16,
+    "context": 3072,
+    "context_boundary": "3072 context/querychunk512 is native-tested only for executed probes. No silent support/target truncation; metadata overflow retains exclusion counts and coverage. Larger buckets require a separate native numeric/VMEM/memory gate.",
+    "incomplete_prefix": "retain all selected parents in denominator; report partial/timeout, never backfill using reward",
+    "native_selection_rule": "largest complete fixed prefix whose full work projection plus setup/export/cleanup fits owner-approved remaining runtime/bytes; select before any new reward inspection",
+    "no_reward_based_size_or_seed_change": true,
+    "ordinal_stride": 4,
+    "overflow": "unfinished/no EOS or malformed grid is failure; keep full denominator; never append ground truth",
+    "permitted_prefix_options": [
+      4,
+      8,
+      16
+    ],
+    "policy": "same pinned P1 root, legal grid mask independent of query target shape; no prompts/labels/LoRA changes from outcome",
+    "scout_G": 2,
+    "scout_max_new_tokens": 512,
+    "seed_base": 1729,
+    "temperature": 1.0,
+    "top_p": 1.0
+  }
+}

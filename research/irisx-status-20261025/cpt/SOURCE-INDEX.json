@@ -1,0 +1,51 @@
+{
+  "archive_name": "irisx-research-consolidated-20261024-0832.tar.gz",
+  "archive_sha256": "bc25bb70d30c6fba51ee65af3d9e7b02fd6e6319061a3378f5c89c25480d0c6f",
+  "files": [
+    {
+      "archive_relative_path": "README.md",
+      "bytes": 4504,
+      "purpose_zh_TW": "08:32 的合併研究總覽（歷史快照）",
+      "sha256": "ec938dc66fa37ceb3f79c3ce1b9642c40ad694c4c48f28eae69a4b4e93c90c43"
+    },
+    {
+      "archive_relative_path": "00-LATEST-v5.md",
+      "bytes": 3316,
+      "purpose_zh_TW": "最新 v5 增量與未通過界線；優先讀",
+      "sha256": "4f9fd24ead3ca76372af9879285a274700af5ade997fe6dc0ec945f6a76e6b58"
+    },
+    {
+      "archive_relative_path": "snapshot-0720/irisx-research-readiness-snapshot-20261024-0720/methods/METHOD.md",
+      "bytes": 13038,
+      "purpose_zh_TW": "CPT fulltext / answer-only / trace objective、配比與驗收候選",
+      "sha256": "ca0a2698745d2248d38c0d2d73da6f209dd4a9fd71d1f7a6f18bef2541353a3e"
+    },
+    {
+      "archive_relative_path": "snapshot-0720/irisx-research-readiness-snapshot-20261024-0720/data/READINESS.md",
+      "bytes": 9551,
+      "purpose_zh_TW": "一手資料、供給量、來源與 admission 限制",
+      "sha256": "489a9dc18f579b66508b373c690e8a070a44dddd955244ef86a5ccfcf71c565d"
+    },
+    {
+      "archive_relative_path": "snapshot-0720/irisx-research-readiness-snapshot-20261024-0720/methods/throughput-horizon-001/README.md",
+      "bytes": 5193,
+      "purpose_zh_TW": "訓練 token / 時間 / 成本可行性門檻",
+      "sha256": "2b8a76f62d414fe9c5daef72f6ad4d8f993f0b1a4600929d7dfdaaa6d5f91daf"
+    },
+    {
+      "archive_relative_path": "snapshot-0720/irisx-research-readiness-snapshot-20261024-0720/isolated-eval-public/README.md",
+      "bytes": 6456,
+      "purpose_zh_TW": "隔離評估公開契約；不含 gold",
+      "sha256": "4a2be9e14cd49d7609a7b6975af6a491a7185fe02d134c4cfa0cd0e55eb4766e"
+    },
+    {
+      "archive_relative_path": "update-1023/METHOD-STATUS.md",
+      "bytes": 4261,
+      "purpose_zh_TW": "後續方法狀態與仍未驗證項",
+      "sha256": "fb6fd6b398255953df9108095c895aa12e883d9e2a618bac542127c010e04d30"
+    }
+  ],
+  "sanitization": "Library identities, private absolute locations and operational state intentionally omitted; this index is not the archive and does not assert native acceptance.",
+  "schema": "sanitized-cpt-archive-index/v1",
+  "status": "CPT_PAUSED_NOT_FORMAL_RECIPE"
+}

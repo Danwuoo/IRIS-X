@@ -1,5 +1,7 @@
 # ARC-AGI-2：SFT、可驗證 reward 與等成本學習比較
 
+> 2026-10-25 整理入口：[CPT 暫停索引、K1 真結果與 GPU／TPU post-SFT 分線](../irisx-status-20261025/README.md)。以下歷史協定／結果保持原樣；新入口不構成執行或正式訓練授權。
+
 2026-10-17 新的目標導向工作已開啟：[AF3 完整學習與評分 successor](GOAL-SPRINT-20261017.md)。
 它允許重新設計新實驗，優先真正 AF3 model loss 接線、廣泛 SFT／RL／TTT，並完成完整評分。
 下方 frozen A/B/C 與既有結果保留為歷史比較，不能當作新 successor 已執行或已達標。

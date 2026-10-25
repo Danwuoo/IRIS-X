@@ -1,0 +1,35 @@
+{
+  "status": "PASS_BOUNDED_PURE_CPU_FIXED_POOL_SELECTOR_REVIEW",
+  "created_utc": "2026-10-25T05:05:03.241402+00:00",
+  "final_pins": {
+    "rerank_candidates.py": "3c8be05c57a1503ada3b1db38892dbc402b373896599a85c5c1748d4422b8a14",
+    "test_rerank.py": "1f711cb85a75b4e4063ffe9137c6bce5e90aee3d8d60fb36aa9e8f2cb29bcd8b",
+    "PLAN-ERRATUM.json": "8be9c830f8184be5162ec4cd6d432292da115eca889bb37cba0e14b8f3cfb389"
+  },
+  "initial_source_sha256": "098d09c77d8fe99b97962349ec441d153697a2f52df6888e7dafb8bd7c911b7f",
+  "preserved_initial_findings": [
+    "R0 all-invalid [] contradicted frozen plan fallback; immutable erratum now aligns plan to abstention",
+    "bool slots=True previously accepted as1; exact int guard now rejects"
+  ],
+  "reviewed_properties": [
+    "closed top-level/candidate key sets reject query_gold/reward fields",
+    "same supplied draws retained in denominator, invalid/truncated excluded from outputs but counted, duplicates grouped by canonical grid SHA and multiplicity retained",
+    "first/vote/mean-logp deterministic original-ordinal ties; mean-logp duplicate confidence is explicitly max observed mean",
+    "EOS flag, truncation flag and strict rectangular integer grid checks; all-invalid yields empty selection",
+    "source imports stdlib only and has no model/scorer/provider/file-reading call"
+  ],
+  "executed": [
+    "original author synthetic suite from isolated snapshot",
+    "two independent tiny initial reproductions",
+    "final author synthetic suite from isolated copy",
+    "two same independent checks: all-invalid abstention and boolean slot rejection"
+  ],
+  "limits": [
+    "This is a pure selector over caller-supplied prevalidated data, not a seal/provenance/authentication mechanism. Pool identifiers and hash-shaped strings are not authority.",
+    "EOS presence, sampled-logprob alignment to actual generated tokens including EOS, inverse-transform correctness and unchanged-policy numerical validity are NOT certified here; a future runner must bind them before this function.",
+    "No actual logits, model, query gold, training data, scorer, CUDA, provider or new generation was used. No algorithm quality gain is proved.",
+    "Original fe8d plan is unchanged; read together with exact pinned erratum.",
+    "Inputs are ordinary Python values; immutable sealed artifacts and evaluator isolation require separate runtime implementation."
+  ],
+  "test_execution_preservation": "Tests were copied because author test writes RERANK-CPU-RESULT.json; original author receipts were not overwritten."
+}

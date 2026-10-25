@@ -1,0 +1,85 @@
+{
+  "schema": "iris-gpu-ttt-search-study/v1",
+  "status": "PROPOSAL_NOT_NATIVE_RESULT",
+  "research_source": "research/arc2-sft-rl-continuation-20261014/method-landscape.zh-TW.md section7",
+  "model": "qwen3_4b_grids15_sft139 fixedv1; originalcheckpoint, no TPU-updatedweights",
+  "numerical_policy": "FP32 compute from BF16 checkpointvalues, r32/alpha32; actualCUDA parity notyet demonstrated",
+  "GPU_topic": "episodicTTT and candidatecoverage/search/selection",
+  "TPU_topic": "separatepreference/iterativeSFT/RLVR line",
+  "first_run": {
+    "first_run_order": [
+      "Actual requested device and exact runtime/material/source checks",
+      "Original P1 cached/full/replay finite gates; realoneupdate/reset/independentrestore; peakmemory",
+      "Fixed8-parent metadata order timing and boundedbudget curves; no full32x3matrix beforetiming"
+    ],
+    "fixed8_ordinals": [
+      0,
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14
+    ],
+    "prefix_choices": [
+      2,
+      4,
+      8
+    ],
+    "selection_rule": "Freeze largest feasible whole prefix from timing and VRAM only, before any discovery rewards are exposed. Same prefix across compared policies. No parent substitution or reward-based sample filtering.",
+    "seeds_first_run": [
+      1729
+    ],
+    "multi_seed_expansion": "Three seeds belongs to later discovery expansion after complete cost evidence; do not label one seed as three.",
+    "curve_limits_first_run": {
+      "K_readouts": [
+        1,
+        2,
+        4
+      ],
+      "response_token_cap": 512,
+      "policy_order_per_parent": [
+        "GPU_BASE_CANONICAL",
+        "GPU_BASE_AUGMENTED_SEARCH",
+        "GPU_TTT_AUGMENTED_SEARCH"
+      ],
+      "incomplete": "If only hardware/calibration or partialcurve completes, mark thatexactoutcome; no claimfullthree-policycomparison."
+    },
+    "future_batching_design": {
+      "first_correctness_reference": "batch1, fixed candidate order and per-draw seeds",
+      "candidate_batch_options": [
+        1,
+        2,
+        4
+      ],
+      "admission": "Measured peakmemory and batch1vsbatchN logits/replay parity at originaltolerance before adopting higherbatch. Staticshape onlywithtruepad/causalmask checks.",
+      "prefix_KV_reuse": "Only identical model+adapterfingerprint, tokenprefix, mask, positions, dtype and kernel contract. Clone/fork perdraw mutablecache; no sharedmutatingcache.",
+      "adapter_update": "Invalidate all cachedKV afterTTT/adaptorupdate/reset; nevercarry oldpolicyKV to newpolicy.",
+      "RNG": "Independent fixed per-draw RNG streams preserve logicalcandidate order. BatchedTorch random consumption may differ; measure andbind, not assume scalar/batchedsameoutputs.",
+      "claim": "designonly; no batchingimplementation or GPUbenchmark"
+    }
+  },
+  "data_scope": {
+    "known_training_discovery_parents": 32,
+    "firstparty_parents": 20,
+    "firstparty_mechanism_labels": 10,
+    "official_training_parents": 12,
+    "independent_clean_holdout": "NOT_ESTABLISHED",
+    "query_gold_access": "isolatedevaluator only afterpredictions/selectionsealed; never inTTT orranker"
+  },
+  "cost": {
+    "boundary": "Entire synchronized arm modelphase including setup, augmentation, adaptation, sampling, verification, Python/hash, failure/rollback andsave/reload; no idlepadding.",
+    "samecaps_note": "Equal limits not equalrealizedcost. Report fullwall andtokens separately. Ifbudget matchingfails, marknotmatched.",
+    "TTT_control": "FreezeTTTpredictions then noTTTfreshroot search usingmeasuredwholeTTTwall; recordorderbias andcaps.",
+    "large_matrix_only": "32parentsx3seedsx3policiesx8candidatesx512tokens=1179648maximumnewtokens; notthefirstrun nor observedthroughput."
+  },
+  "selector_trigger": "Diagnostics onfixedpool only. Moreselectorwork requiresoraclepoolcoverage aboveactualtop2; missinganswerscannotbecreatedbyreranking.",
+  "historical_limits": [
+    "TTT008 verified128updates/reset but0generations/qualityscores, L4 BF16 r256 ratherthan newFP32r32.",
+    "Old14Bv43 hadRLcommit0, extraSFT203 wholewallcontrol, sourcepublic0/167 notofficialindependent score.",
+    "Old14Bv45 replaygatefailed, RLcommit0.",
+    "Prior41candidatepool hadoracle1/6; differentdataset/exposure."
+  ],
+  "promotion": "No automaticformaltraining. Require independentparent/family confirmation, reproduciblecost-controlledsignal, scopedrecipe/data/budget androllback."
+}

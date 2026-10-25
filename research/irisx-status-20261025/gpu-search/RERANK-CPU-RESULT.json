@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "synthetic_fixtures_only": true,
+  "GPU_or_model_calls": 0,
+  "query_gold_read": false,
+  "tested": [
+    "first/vote/logp ordering",
+    "draws vs unique and invalid accounting",
+    "unknown gold/reward field rejection",
+    "duplicate ID rejection",
+    "nonfinite logprob rejection",
+    "nonrectangular grid exclusion",
+    "stable ties",
+    "missingEOS exclusion",
+    "boolean slots rejected"
+  ]
+}

@@ -1,0 +1,232 @@
+{
+  "TTT": {
+    "arm_worst_rank_seconds": [
+      {
+        "no_ttt": 21.906103134155273,
+        "ttt": 40.452816009521484
+      },
+      {
+        "no_ttt": 119.95463562011719,
+        "ttt": 136.2585906982422
+      }
+    ],
+    "equal_realized_compute": false,
+    "parent_denominator": 2,
+    "same_caps": true,
+    "top1_no_ttt": 2,
+    "top1_ttt": 2
+  },
+  "analysis_archive_sha256": "32e5e131d1e27bd923bbc94d7c4a72cacbcf7ddca5efeafa6a143d619510904b",
+  "author_audit_sha256": "9a911c62693f1bbd3a84c01a47bb5609a8bddf80afcbb8e5e8ab6ed7312f20a4",
+  "checkpoints": [
+    {
+      "arm": "dpo",
+      "bytes": 794296320,
+      "restore_executed": false,
+      "save_verified": true,
+      "verification_scope": "guest exact-generation full SHA; no full checkpoint bytes distributed here"
+    },
+    {
+      "arm": "winner_sft",
+      "bytes": 794296320,
+      "restore_executed": false,
+      "save_verified": true,
+      "verification_scope": "guest exact-generation full SHA; no full checkpoint bytes distributed here"
+    }
+  ],
+  "clean_holdout": false,
+  "distinct_parent_body_pairs_across_all_pools": 3,
+  "engineering_smoke_updates_then_reset": 1,
+  "generated_candidate_slots_total": 24,
+  "generated_new_tokens_total": 1699,
+  "limitations": [
+    "Fixed two training-parent engineering panel, not holdout/generalization.",
+    "P1 FP32 compute is not equivalence to original BF16 policy.",
+    "Numerical gates cover executed fixed shapes only.",
+    "Gradient validation executed in source before optimizer step; no standalone numeric gradient tensor/l2 export.",
+    "DPO/winner saved checkpoints are not restore-validated.",
+    "RLVR update/restore not exercised: four new on-policy candidates all correct, zero reward variance.",
+    "TTT same maximum wall/token/G ceilings is not equal realized compute.",
+    "All five common-seed comparison pools have identical output bodies; no observed improvement.",
+    "Author result audit does not establish live resource/financial closure."
+  ],
+  "memory_scope": "TorchTPU allocator only; excludes untracked runtime allocations, not simultaneous sum or full HBM capacity",
+  "method_optimizer_updates_total": 4,
+  "method_order": [
+    "baseline",
+    "replay",
+    "ttt",
+    "dpo",
+    "winner_sft",
+    "rlvr"
+  ],
+  "native_checkpoint_restore_pass": false,
+  "peak_allocator_allocated_bytes": 7770912256,
+  "pools": {
+    "baseline": {
+      "candidate_slots": 4,
+      "correct_slots": 3,
+      "max_abs_cached_full_legal_logratio": 5.900859832763672e-06,
+      "new_tokens": 283,
+      "unique_parent_body_pairs": 3
+    },
+    "dpo": {
+      "candidate_slots": 4,
+      "correct_slots": 3,
+      "max_abs_cached_full_legal_logratio": 5.7220458984375e-06,
+      "new_tokens": 283,
+      "unique_parent_body_pairs": 3
+    },
+    "rlvr-onpolicy": {
+      "candidate_slots": 4,
+      "correct_slots": 4,
+      "max_abs_cached_full_legal_logratio": 2.175569534301758e-06,
+      "new_tokens": 284,
+      "unique_parent_body_pairs": 2
+    },
+    "ttt": {
+      "candidate_slots": 4,
+      "correct_slots": 3,
+      "max_abs_cached_full_legal_logratio": 1.1086463928222656e-05,
+      "new_tokens": 283,
+      "unique_parent_body_pairs": 3
+    },
+    "ttt_control": {
+      "candidate_slots": 4,
+      "correct_slots": 3,
+      "max_abs_cached_full_legal_logratio": 5.900859832763672e-06,
+      "new_tokens": 283,
+      "unique_parent_body_pairs": 3
+    },
+    "winner_sft": {
+      "candidate_slots": 4,
+      "correct_slots": 3,
+      "max_abs_cached_full_legal_logratio": 1.7404556274414062e-05,
+      "new_tokens": 283,
+      "unique_parent_body_pairs": 3
+    }
+  },
+  "quality_gain_observed": false,
+  "rank_metrics": [
+    {
+      "max_abs_legal_logp": 2.288818359375e-05,
+      "max_abs_logit": 3.814697265625e-05,
+      "observed_compute_dtypes": {
+        "attention": "torch.float32",
+        "embedding": "torch.float32",
+        "head": "torch.float32",
+        "k_proj": "torch.float32",
+        "q_proj": "torch.float32",
+        "v_proj": "torch.float32"
+      },
+      "rank": 0
+    },
+    {
+      "max_abs_legal_logp": 2.288818359375e-05,
+      "max_abs_logit": 3.814697265625e-05,
+      "observed_compute_dtypes": {
+        "attention": "torch.float32",
+        "embedding": "torch.float32",
+        "head": "torch.float32",
+        "k_proj": "torch.float32",
+        "q_proj": "torch.float32",
+        "v_proj": "torch.float32"
+      },
+      "rank": 1
+    },
+    {
+      "max_abs_legal_logp": 2.288818359375e-05,
+      "max_abs_logit": 3.814697265625e-05,
+      "observed_compute_dtypes": {
+        "attention": "torch.float32",
+        "embedding": "torch.float32",
+        "head": "torch.float32",
+        "k_proj": "torch.float32",
+        "q_proj": "torch.float32",
+        "v_proj": "torch.float32"
+      },
+      "rank": 2
+    },
+    {
+      "max_abs_legal_logp": 2.288818359375e-05,
+      "max_abs_logit": 3.814697265625e-05,
+      "observed_compute_dtypes": {
+        "attention": "torch.float32",
+        "embedding": "torch.float32",
+        "head": "torch.float32",
+        "k_proj": "torch.float32",
+        "q_proj": "torch.float32",
+        "v_proj": "torch.float32"
+      },
+      "rank": 3
+    }
+  ],
+  "rank_replication_factor_not_example_multiplier": 4,
+  "review_basis": "Scientific-source author audit of retrieved native evidence. This sanitized aggregate is not a complete raw receipt, independent re-execution or current resource status.",
+  "schema": "sanitized-k1-native-aggregate/v1",
+  "source_archive_sha256": "4d464148489d09e6706997f3ef79bce024b42d5473952f171995a4aaf3605cd4",
+  "stage_wall_seconds_sum": 1100.7919895648956,
+  "stages": {
+    "baseline": {
+      "backward_target_tokens": 0,
+      "optimizer_updates": 0,
+      "raw_status": "PASS",
+      "sampled_tokens": 283,
+      "wall_seconds": 194.49033665657043
+    },
+    "dpo": {
+      "backward_target_tokens": 31,
+      "optimizer_updates": 1,
+      "raw_status": "PASS",
+      "sampled_tokens": 283,
+      "wall_seconds": 172.05607867240906
+    },
+    "replay": {
+      "backward_target_tokens": 0,
+      "optimizer_updates": 0,
+      "raw_status": "PASS",
+      "sampled_tokens": 0,
+      "wall_seconds": 3.6530566215515137
+    },
+    "rlvr": {
+      "backward_target_tokens": 0,
+      "optimizer_updates": 0,
+      "raw_status": "BLOCKED_NO_COMPLETE_MIXED_REWARD_GROUP",
+      "sampled_tokens": 284,
+      "wall_seconds": 144.7239899635315
+    },
+    "smoke": {
+      "backward_target_tokens": 221,
+      "optimizer_updates": 1,
+      "raw_status": "PASS_ENGINEERING_SMOKE",
+      "sampled_tokens": 0,
+      "wall_seconds": 111.83041572570801
+    },
+    "ttt": {
+      "backward_target_tokens": 204,
+      "optimizer_updates": 2,
+      "raw_status": "PASS_PAIRED_BUDGET_CAPS_NOT_EQUAL_ACTUAL_COST",
+      "sampled_tokens": 566,
+      "wall_seconds": 319.0983819961548
+    },
+    "winner_sft": {
+      "backward_target_tokens": 16,
+      "optimizer_updates": 1,
+      "raw_status": "PASS",
+      "sampled_tokens": 283,
+      "wall_seconds": 154.93972992897034
+    }
+  },
+  "status": "ENGINEERING_PROGRESS_WITH_RL_SCIENTIFIC_SKIP_NOT_QUALITY_PASS",
+  "throughput": {
+    "candidate_new_tokens_per_stage_second": {
+      "baseline": 1.455085146465242,
+      "dpo": 1.6448125645059346,
+      "rlvr": 1.9623560687593273,
+      "ttt": 1.7737476337527165,
+      "winner_sft": 1.8265166728361852
+    },
+    "decode_seconds_observed": 0.4573225975036621,
+    "throughput_scope": "one 1724-token prompt, second repeat/max five decode calls; not steady-state/full-training throughput"
+  }
+}

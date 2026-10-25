@@ -1,0 +1,61 @@
+{
+  "full_episode_ids_total": 899071,
+  "generation_caps": {
+    "160": {
+      "known_train_target_tokens_eligible": 116753,
+      "parents_all_views": 484,
+      "parents_any_view": 586,
+      "views_both_conditions": 1789,
+      "views_known_train_target_fits_cap": 1800,
+      "views_prompt_plus_reserve_fits": 2474
+    },
+    "320": {
+      "known_train_target_tokens_eligible": 222182,
+      "parents_all_views": 657,
+      "parents_any_view": 708,
+      "views_both_conditions": 2233,
+      "views_known_train_target_fits_cap": 2260,
+      "views_prompt_plus_reserve_fits": 2443
+    },
+    "512": {
+      "known_train_target_tokens_eligible": 284902,
+      "parents_all_views": 727,
+      "parents_any_view": 743,
+      "views_both_conditions": 2380,
+      "views_known_train_target_fits_cap": 2447,
+      "views_prompt_plus_reserve_fits": 2414
+    },
+    "930": {
+      "known_train_target_tokens_eligible": 278402,
+      "parents_all_views": 725,
+      "parents_any_view": 733,
+      "views_both_conditions": 2350,
+      "views_known_train_target_fits_cap": 2573,
+      "views_prompt_plus_reserve_fits": 2350
+    }
+  },
+  "input_pins": {
+    "documents": "017b4f6fb60d0e80cb71426533ce3cf827feac76a6952fbea7af1ac758e9d37c",
+    "index": "022be83469311ef64642616b5f0cda7b1e359d657f5c5e0fc5eb90e1972c3f24",
+    "prior_metadata": "001911ff69d88ae26789ae986ae818a2773bc934656340609d047cfe5b7be214"
+  },
+  "length_metadata_only": true,
+  "limits": [
+    "All views reuse known TRAIN demonstrations; no original task.test query is present.",
+    "Length is not mechanism diversity, difficulty, nonexposure or semantic deduplication proof.",
+    "Known TRAIN answer lengths are disclosed engineering eligibility metadata, never final-holdout selection.",
+    "A target fitting the cap does not guarantee the model emits EOS or a correct answer within it.",
+    "Parent/ancestor split precedes views; no different-view holdout claim.",
+    "No panel adoption, sampling, training or provider action is performed."
+  ],
+  "lodo_prompt_ids_total": 2466423,
+  "metadata_sha256": "584687ef0bb720ea0f37b771b08a678e549611d25eb2a034d1c559671c3a6fd2",
+  "native_or_model_test": false,
+  "new_parents": 0,
+  "nontrain_or_task_test_reads": false,
+  "parents": 800,
+  "query_target_ids_total": 393867,
+  "source_sha256": "c01a4bfaf81ea6688f2b4c5976cfaa5edab421e06b4dabe43316b539c455d216",
+  "truncation": false,
+  "views": 2573
+}

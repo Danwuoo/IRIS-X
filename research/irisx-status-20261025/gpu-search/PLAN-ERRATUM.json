@@ -1,0 +1,11 @@
+{
+  "schema": "gpu-study-plan-erratum/v1",
+  "supersedes_only": {
+    "plan_sha256": "fe8d9f59c40916e41e3ca24ad7f9e9a3abc8cdff4c7e101bba76f83cc2a71fd7",
+    "field": "rerankers.R0",
+    "old": "first generated valid output, deterministic fallback to first if allinvalid",
+    "new": "first generated valid output; if every draw is invalid or truncated, return no selected answer (abstain), never output an invalid grid as fallback"
+  },
+  "reason": "Align pre-registered diagnostic policy with the safer existing selector and its all-invalid test. The frozen original plan is not edited.",
+  "not_a_model_result": true
+}
